@@ -6230,6 +6230,181 @@ def quiet_host_smoke_live(flags, placed=()):
     return out
 
 
+# E5 starvation fix A (2026-11-23, inf45-e5v2-stageb-r8-20261122): an orphaned llama-server (pid 2003761, :8080, launcher
+# dead) ran outside every grant; the keeper granted E5 the whole host 4 times (23:22Z-04:35Z) and each time the row's
+# clean-runtime gate refused ("existing llama processes would contaminate P-BENCH-3"), burning its auto-requeues. A
+# quiet-host / whole-host row is now never granted while an inference server runs that no open grant, no live smoke
+# and no orchestrator-stack service owns. Detection only: never kills (the stack, or the owner, decides).
+INFER_SERVER_RE = re.compile(r"^(llama-server|sd-server|whisper[\w.-]*)$")
+STACK_STATE_FILE = os.environ.get("ROWFLOW_STACK_STATE", "/mnt/raid0/llm/epyc-orchestrator/logs/orchestrator_state.json")
+FOREIGN_GATE_SHAPES = ("quiet-host", "host")
+
+
+def inference_server_procs(proc=None):
+    """[{pid, ppid, pgid, birth, comm, cmd}] for every live llama-server / sd-server / whisper* process on the host.
+    ROWFLOW_INFER_SCAN_ROOT replaces /proc (the test suite points it at an empty dir: a test never sees live servers)."""
+    proc = proc or os.environ.get("ROWFLOW_INFER_SCAN_ROOT") or "/proc"
+    out = []
+    try:
+        names = os.listdir(proc)
+    except OSError:
+        return out
+    for q in names:
+        if not q.isdigit():
+            continue
+        try:
+            comm = open(f"{proc}/{q}/comm").read().strip()
+        except OSError:
+            continue
+        if not INFER_SERVER_RE.match(comm):
+            continue
+        st = _proc_stat(int(q))
+        if not st:
+            continue
+        out.append({"pid": int(q), "ppid": st[0], "pgid": st[1], "birth": st[2], "comm": comm, "cmd": _cmdline(q)})
+    return out
+
+
+def stack_service_pids(path=None):
+    """{pid: port|None} of every service the orchestrator stack registered (its state file); {} when unreadable."""
+    d = load_json(path or STACK_STATE_FILE) or {}
+    out = {}
+    for v in (d.values() if isinstance(d, dict) else ()):
+        if isinstance(v, dict) and str(v.get("pid") or "").lstrip("-").isdigit() and int(v["pid"]) > 0:
+            port = v.get("port")
+            out[int(v["pid"])] = int(port) if str(port or "").isdigit() else None
+    return out
+
+
+def _stack_owns(p, stack):
+    """A stack pid counts only when the process still serves the registered port (a stale state file's reused pid does not)."""
+    if p["pid"] not in stack:
+        return False
+    port = stack[p["pid"]]
+    return port is None or re.search(rf"--port[ =]{port}\b", p.get("cmd") or "") is not None
+
+
+def _owner_roots(flags, grants):
+    """Pids whose descendants are owned: every open grant's pid / ARMED pid / own_pids, every live smoke's roots."""
+    roots = set()
+    for g in grants:
+        for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
+            if str(x or "").isdigit():
+                roots.add(int(x))
+        try:
+            roots |= set(own_pids(flags, g))
+        except Exception:  # noqa: BLE001 - an unreadable cgroup never hides the grant's root pid
+            pass
+    for pat in ("RUNNING.json", "SMOKE.lock", "SMOKE-PLACED.json"):   # the roots running_smoke_gpu_occupants walks
+        for rp in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
+            d = load_json(rp) or {}
+            for x in (d.get("pid"), d.get("pgid"), d.get("harness_pid")):
+                if str(x or "").isdigit():
+                    roots.add(int(x))
+    return roots
+
+
+def foreign_inference_servers(flags, grants, procs=None, stack=None, parent=None):
+    """The inference servers no open grant, live smoke or stack service owns: [{pid, birth, comm, cmd, ...}]. Owned = its
+    own pid or process group is an owner root, or any ancestor is one (harness_tree walked upwards, which also covers
+    setsid'd children while their launcher lives). An orphan whose launcher died has no owning ancestor: foreign."""
+    procs = inference_server_procs() if procs is None else procs
+    if not procs:
+        return []
+    stack = stack_service_pids() if stack is None else stack
+    pp = {int(p["pid"]): int(p.get("ppid") or 0) for p in procs}   # the scan's own ppids first, then /proc
+    parent = parent or (lambda pid: pp[pid] if pid in pp else (_proc_stat(pid) or (0,))[0])
+    roots = _owner_roots(flags, grants) | {p["pid"] for p in procs if _stack_owns(p, stack)}
+    out = []
+    for p in procs:
+        if p["pid"] in roots or int(p.get("pgid") or 0) in roots:
+            continue
+        cur, owned = p["pid"], False
+        for _ in range(64):
+            cur = int(parent(cur) or 0)
+            if cur <= 1:
+                break
+            if cur in roots:
+                owned = True
+                break
+        if not owned:
+            out.append(p)
+    return out
+
+
+def foreign_server_gate(flags, cands, grants, log, dry=False, procs=None, stack=None, parent=None, emit=None):
+    """Fix A: -> (kept cands, [(row, reason)] for the removed quiet-host/whole-host rows). Logs one WAIT line per removed
+    row per tick and raises ONE owner + pipeline alert per (row, foreign pid) (notify.emit is idempotent). Never kills."""
+    gated = [c for c in cands if c.get("shape") in FOREIGN_GATE_SHAPES]
+    if not gated:
+        return cands, []
+    try:
+        foreign = foreign_inference_servers(flags, grants, procs=procs, stack=stack, parent=parent)
+    except Exception as e:  # noqa: BLE001 - a scan fault never stops allocation; it is logged
+        log(f"FOREIGN-SERVER scan failed: {type(e).__name__}: {e}")
+        return cands, []
+    if not foreign:
+        return cands, []
+    f0 = foreign[0]
+    desc = f"foreign inference server pid={f0['pid']} cmd={f0['cmd'][:100]!r} (no grant owns it)"
+    if len(foreign) > 1:
+        desc += f" +{len(foreign) - 1} more (pids {','.join(str(p['pid']) for p in foreign[1:6])})"
+    waits = []
+    emit = emit or notify.emit
+    for c in gated:
+        log(f"WAIT {c['id']}: {desc}")
+        waits.append((c, f"{c.get('shape')} row {c['id']} (rank {float(c['rank']):g}) WAIT: {desc}"))
+        if dry:
+            continue
+        owner = str((load_json(ready_path(flags, c["id"])) or {}).get("owner") or "")
+        for p in foreign:
+            try:
+                emit(flags, "foreign-inference-server", c["id"], f"{p['pid']}:{p['birth']}",
+                     f"{c['id']} ({c.get('shape')}) not granted: foreign inference server pid {p['pid']} `{p['cmd'][:120]}` runs "
+                     "outside every grant, smoke and stack service. The keeper never kills it: its owner or the stack must "
+                     "stop it.", "warning", owner, {"pid": p.get("pid"), "birth": p.get("birth"), "comm": p.get("comm"), "cmd": str(p.get("cmd") or "")[:400]})
+            except Exception as ex:  # noqa: BLE001 - an alert failure never stops allocation
+                log(f"FOREIGN-SERVER {c['id']}: notify failed: {type(ex).__name__}: {ex}")
+    return [c for c in cands if c not in gated], waits
+
+
+# E5 starvation fix B (2026-11-23): before r8 was raised to rank 15, WAIT-FOR-SMOKE kept the rank-25 quiet-host row out of
+# planning while 16 better-ranked GPU smokes stayed queued, so its drain never formed (the PM-DRAINFIX exemption covers
+# formed drains only). A quiet-host row that has waited longer than this behind queued smokes enters planning anyway.
+QH_SMOKE_WAIT_MAX_S = 1200
+
+
+def qh_smoke_wait_max_s(flags):
+    """env ROWFLOW_QH_SMOKE_WAIT_MAX_S, else <flags>/allocator.json {"quiet_smoke_wait_max_s": N}, else 20 min."""
+    v = os.environ.get("ROWFLOW_QH_SMOKE_WAIT_MAX_S") or (load_json(os.path.join(flags, "allocator.json")) or {}).get("quiet_smoke_wait_max_s")
+    try:
+        return max(0.0, float(v)) if v is not None else float(QH_SMOKE_WAIT_MAX_S)
+    except (TypeError, ValueError):
+        return float(QH_SMOKE_WAIT_MAX_S)
+
+
+def smoke_wait_starved(flags, worse, now=None, persist=True):
+    """-> ids of quiet-host rows in `worse` (rows WAIT-FOR-SMOKE would remove) that have waited > qh_smoke_wait_max_s.
+    The first-wait epoch per row lives in state/smoke_wait_since.json; a row that stops waiting is forgotten."""
+    now = time.time() if now is None else now
+    sp = os.path.join(state_dir(flags), "smoke_wait_since.json")
+    prev = load_json(sp) or {}
+    cur, out, lim = {}, [], qh_smoke_wait_max_s(flags)
+    for c in worse:
+        if c.get("shape") != "quiet-host":
+            continue
+        s0 = float(prev.get(c["id"]) or now)
+        cur[c["id"]] = s0
+        if now - s0 >= lim:
+            out.append(c["id"])
+    if persist and cur != prev:
+        try:
+            atomic_json(sp, cur)
+        except OSError:
+            pass
+    return out
+
+
 def smoke_queued_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-QUEUED.json")
 def smoke_placed_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-PLACED.json")
 
@@ -6700,12 +6875,21 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         # PM-DRAINFIX 2026-11-22: a row with a live drain is exempt too - removing it dropped the drain and its T slid
         worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr
                  and not (qh_hold and c["id"] == qh_hold[0]["id"]) and c["id"] not in _dp]
+        # E5 fix B 2026-11-23: a quiet-host row never waits behind queued smokes indefinitely; past the limit its drain forms
+        starved = set(smoke_wait_starved(flags, worse, persist=not dry))
+        log_transition(flags, "smoke-starved", {rid: f"SMOKE-WAIT-LIMIT {rid}: quiet-host row waited > "
+                       f"{int(qh_smoke_wait_max_s(flags))}s behind queued GPU smokes (rank {qr:g}); it enters planning and "
+                       "its drain forms; the smokes run after it or inside the drain" for rid in sorted(starved)},
+                       log, persist=not dry)
+        worse = [c for c in worse if c["id"] not in starved]
         if worse:
             smoke_waits += [(c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT-FOR-SMOKE: "
                                 f"queued GPU smoke rank {qr:g} runs first") for c in worse]
             cands = [c for c in cands if c not in worse]
             wl = f"WAIT-FOR-SMOKE: queued GPU smoke rank {qr:g} runs first; GPU row(s) {','.join(c['id'] for c in worse[:5])} (worse rank) wait"
             wait_lines[wl] = wl
+    else:
+        smoke_wait_starved(flags, [], persist=not dry)   # no smoke queued: every quiet-host wait clock resets
     log_transition(flags, "wait-for-smoke", wait_lines, log, persist=not dry)   # only when the waiting set changes
     # keeper-scheduled smokes (operator 2026-11-05 "that's the keeper's ENTIRE point"): placed ahead of every row on
     # genuinely free cores, packed onto partly used quarters; and
@@ -6765,6 +6949,9 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             quiet_ok = False
             if any(c.get("shape") == "quiet-host" for c in cands):
                 log(f"QUIET-HOST-WAIT smoke(s) live in pockets ({','.join(smoke_live[:5])}): no quiet-host grant this tick")
+    # E5 fix A 2026-11-23: no quiet-host / whole-host grant while a foreign inference server runs (never kills it)
+    cands, fwaits = foreign_server_gate(flags, cands, grants, log, dry=dry)
+    smoke_waits = fwaits + smoke_waits   # named in this tick's IDLE-WHY lines for the regions the row needs
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
     ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
     r_ends = region_end_map(flags, grants, busy)

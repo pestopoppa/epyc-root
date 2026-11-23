@@ -13,7 +13,9 @@ Suppressed (known, intended causes -- never an alarm):
   * DISK-PAUSE or an operator HOLD-ADMISSIONS file (rowflow diskpause.admission_gate: no new grants by design);
   * quiet-guard regions: quarters a RUNNING row booked on purpose and keeps idle (ready/<id>.json quiet_guard_regions);
   * a GPU smoke gap shorter than one keeper tick (the GPU's IDLE-WHY names a smoke and the free streak < 2 ticks);
-  * "free" in the keeper's list but measurably busy (snapshot util >= 20 %, or a RUNNING grant covers the region).
+  * "free" in the keeper's list but measurably busy (snapshot util >= 20 %, or a RUNNING grant covers the region);
+  * a region held idle by an active DRAIN for a reserved row (the keeper's IDLE-WHY reads "draining for <shape> <row>
+    until HH:MMZ" and HH:MMZ is still ahead): reported as context, never an alarm (E5 drain false alarm, 2026-11-23).
 
     idle_alarm.py [--flags DIR] [--json]          one evaluation; exit 0 = no alarm, 3 = alarm (flag written)
     idle_alarm.py --watch [--interval 120]        loop; exits 3 on the FIRST alarm (run with run_in_background)
@@ -123,6 +125,24 @@ def ready_for(region: str, grantable: list[dict]) -> list[dict]:
     return out
 
 
+DRAIN_RE = re.compile(r"draining for (\S+) (\S+) until (\d\d):(\d\d)Z")
+
+
+def active_drain(line: str, line_t: float, now: float) -> dict | None:
+    """{"shape", "row", "until"} when an IDLE-WHY line says the region is held idle by a drain whose target is still
+    ahead of `now` (HH:MMZ resolved to the first such time at or after the line's own timestamp), else None."""
+    m = DRAIN_RE.search(line or "")
+    if not m or not line_t:
+        return None
+    base = datetime.fromtimestamp(line_t, timezone.utc)
+    until = base.replace(hour=int(m.group(3)), minute=int(m.group(4)), second=0, microsecond=0).timestamp()
+    if until < line_t - 43200:
+        until += 86400   # the target is after midnight (a drain never reserves 12 h ahead; a past target is a stale line)
+    if until < now:
+        return None
+    return {"shape": m.group(1), "row": m.group(2), "until": datetime.fromtimestamp(until, timezone.utc).strftime("%H:%MZ")}
+
+
 def evaluate(snaps, why, qjson, *, guards=(), admission=None, now=None, idle_s=300.0, stale_s=360.0) -> dict:
     """Pure decision. -> {"alarm": bool, "alarms": [...], "suppressed": [...]}"""
     now = time.time() if now is None else now
@@ -146,11 +166,14 @@ def evaluate(snaps, why, qjson, *, guards=(), admission=None, now=None, idle_s=3
         cands = ready_for(r, grantable)
         if not cands:
             continue
-        line = (why.get(r) or (0, f"(no IDLE-WHY line logged for {r})"))[1]
+        line_t, line = why.get(r) or (0, f"(no IDLE-WHY line logged for {r})")
         base = {"region": r, "free_s": round(st), "ready": [c.get("id") for c in cands[:5]], "ready_n": len(cands),
                 "reason": line}
         if admission:
             res["suppressed"].append(dict(base, cause=admission))
+        elif (dr := active_drain(line, line_t, now)) is not None and line_t >= snaps[-1]["t"] - 2 * tk:
+            res["suppressed"].append(dict(base, cause=f"held idle by an active DRAIN for {dr['shape']} row {dr['row']} "
+                                                      f"until {dr['until']}", drain=dr))
         elif r in guards:
             res["suppressed"].append(dict(base, cause="quiet-guard region of a RUNNING row"))
         elif any(_covers(x.get("regions"), r) for x in running):

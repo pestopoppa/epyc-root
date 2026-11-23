@@ -209,6 +209,8 @@ class World:
         self.t = 0.0
         self.alive = set()
         self.kfd = {}
+        self.infer = []
+        self.stack = {}
         self.rl = {}
         self.util = {"q0": 0.0, "q1": 0.0, "q2": 0.0, "q3": 0.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}
         self.mem_gib = 900.0
@@ -327,6 +329,10 @@ def load_candidate(rowflow_dir, flags, tmp):
     patch("vram_used_bytes", lambda: W.vram)
     patch("gpu_occupancy", lambda: {"pids": {int(k): int(v) for k, v in W.kfd.items()}, "vram_used": W.vram})
     patch("disk_free_gib", lambda *a, **k: W.disk)
+    # E5 fix A 2026-11-23: the sandbox never scans the REAL host's inference servers or the live stack state file
+    patch("inference_server_procs", lambda *a, **k: [dict(p) for p in W.infer])
+    patch("stack_service_pids", lambda *a, **k: dict(W.stack))
+    patch("start_gpu_batch", lambda *a, **k: False)   # queued GPU smokes (tick "gpu_smoke_queued") stay queued: no batch subprocess
     patch("cpu_sample", lambda *a, **k: {})
     patch("armed_engine_ok", lambda pid, rid, proc="/proc": bool(pid) and _int(pid) in W.alive)
     patch("row_orphans", lambda rid: [])
@@ -586,6 +592,13 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
         W.vram = int(tick.get("vram_bytes") or 0)
         W.kfd = dict(tick.get("kfd") or {})   # host-view KFD clients {pid: vram bytes} (foreign containers included)
         W.disk = float(tick.get("disk_free_gib") or 400.0)
+        W.infer = list(tick.get("infer_procs") or [])   # [{pid, ppid, pgid, birth, comm, cmd}] host-view inference servers
+        W.stack = {int(k): v for k, v in (tick.get("stack_pids") or {}).items()}
+        for q in glob.glob(os.path.join(sb.flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+            with contextlib.suppress(OSError):
+                os.remove(q)
+        for sid, rank in (tick.get("gpu_smoke_queued") or {}).items():   # {smoke row id: priority_rank}
+            _jdump(os.path.join(sb.flags, "dryrun", sid, "GPU-SMOKE-QUEUED.json"), {"id": sid, "spec": {"id": sid, "priority_rank": rank}})
         sb.advance(tick)
         sb.materialize(tick, rf)
         W.admit = {rid: b["admit"] for rid, b in tick["rows"].items() if isinstance(b.get("admit"), dict)}

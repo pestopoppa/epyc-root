@@ -1086,7 +1086,90 @@ def sc_sticky_drain_e5_overnight(path):
     return write(path, ticks), check
 
 
+def _e5_qh(rank=25):
+    return row("e5-stageb-qh", lane="gpu", regions="mi210_0,0-95", cls="cpu+gpu", gpu_quiet="exclusive", claim="0-95",
+               role="bench", extra="llama-server -t 48 --port 8099", est=3600, rank=rank,
+               man={"shape": "quiet-host", "declared_shape": "quiet-host", "admission_class": "block-timing-quiet",
+                    "baseline_ref": "replay fixture: E5 stage-B", "resumable": True})
+
+
+ORPHAN = {"pid": 2003761, "ppid": 1, "pgid": 2003761, "birth": "123456", "comm": "llama-server",
+          "cmd": "/mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-server -m spec-stale1.gguf --port 8080"}
+
+
+def sc_foreign_server_blocks_quiet_host(path):
+    """E5 fix A 2026-11-23 (inf45-e5v2-stageb-r8-20261122): an orphaned llama-server (pid 2003761, :8080, launcher dead)
+    ran outside every grant; the keeper granted E5 the whole host 4 times and its clean-runtime gate refused each time.
+    While a foreign inference server runs, a quiet-host row is NOT granted (WAIT + IDLE-WHY name the pid); once it is
+    gone the row is granted. Never killed by the keeper."""
+    e5 = _e5_qh()
+    world = {"infer_procs": [ORPHAN]}
+    ticks = [({"e5-stageb-qh": e5}, world)] * 4 + [({"e5-stageb-qh": e5}, {})] * 4
+
+    def check(d):
+        out = []
+        g = _granted(d, "e5-stageb-qh")
+        if any(i < 4 for i, _ in g):
+            out.append(f"quiet-host row granted at tick {g[0][0]} while orphan llama-server pid 2003761 ran")
+        if not any(i >= 4 for i, _ in g):
+            out.append("quiet-host row never granted after the foreign server left")
+        if not any("pid=2003761" in l for _, l in _lines(d, "WAIT e5-stageb-qh: foreign inference server")):
+            out.append("no WAIT line naming the foreign server pid")
+        if not any("pid=2003761" in l for _, l in _lines(d, "IDLE-WHY")):
+            out.append("no IDLE-WHY line naming the foreign server pid")
+        return out
+    return write(path, ticks), check
+
+
+def sc_stack_server_not_foreign(path):
+    """Counter-case: the same llama-server registered in the orchestrator stack state (pid + --port match) is stack-managed:
+    the quiet-host row is granted as before (the stack decides about its own services)."""
+    e5 = _e5_qh()
+    world = {"infer_procs": [ORPHAN], "stack_pids": {"2003761": 8080}}
+    ticks = [({"e5-stageb-qh": e5}, world)] * 4
+
+    def check(d):
+        out = []
+        if not _granted(d, "e5-stageb-qh"):
+            out.append("quiet-host row refused although the only inference server is stack-managed")
+        if _lines(d, "WAIT e5-stageb-qh: foreign"):
+            out.append("stack-managed server reported as foreign")
+        return out
+    return write(path, ticks), check
+
+
+def sc_quiet_host_not_starved_by_smokes(path):
+    """E5 fix B 2026-11-23: before r8 was raised to rank 15, WAIT-FOR-SMOKE kept the rank-25 quiet-host row out of
+    planning while 16 rank-20 GPU smokes stayed queued, so its drain never formed. After QH_SMOKE_WAIT_MAX_S (20 min)
+    behind queued smokes, it enters planning and its drain forms."""
+    e5 = _e5_qh()
+    q1 = row("busy-q1", regions="any-of q1", extra="make -j 24", est=7200, rank=50)
+    q2 = row("busy-q2", regions="any-of q2", extra="make -j 24", est=7200, rank=50)
+    held = {"busy-q1": q1, "busy-q2": q2}
+    rows = dict(held, **{"e5-stageb-qh": e5})
+    world = {"gpu_smoke_queued": {f"ak-smoke-{k}": 20 for k in range(16)}}
+    ticks = [(held, {})] + [(rows, world)] * 16   # 16 ticks x 120 s = 32 min of waiting
+
+    def check(d):
+        out = []
+        if len(_granted(d, "busy-q1")) != 1 or len(_granted(d, "busy-q2")) != 1:
+            return ["fixture: q1/q2 rows not granted on tick 0"]
+        lim = [i for i, _ in _lines(d, "SMOKE-WAIT-LIMIT e5-stageb-qh")]
+        if not lim:
+            return ["quiet-host row never released from WAIT-FOR-SMOKE (starved behind queued smokes)"]
+        if lim[0] < 10:
+            out.append(f"released at tick {lim[0]}, before 20 min of waiting")
+        drained = [i for i, l in _lines(d, "IDLE-WHY") if "draining for quiet-host e5-stageb-qh" in l]
+        if not drained:
+            out.append("no drain formed for the quiet-host row after its smoke-wait limit")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
+    "foreign-server-blocks-quiet-host": sc_foreign_server_blocks_quiet_host,
+    "stack-server-not-foreign": sc_stack_server_not_foreign,
+    "quiet-host-not-starved-by-smokes": sc_quiet_host_not_starved_by_smokes,
     "sched-sticky-drain-e5-overnight": sc_sticky_drain_e5_overnight,
     "cpu-quarter-prefers-q0-over-q3": sc_cpu_quarter_prefers_q0_over_q3,
     "sched-foreign-hold-keeps-drain": sc_foreign_hold_keeps_drain,

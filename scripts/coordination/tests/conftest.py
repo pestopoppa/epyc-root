@@ -20,6 +20,8 @@ def _no_real_tmux_or_engines(monkeypatch):
     monkeypatch.setenv("HS_TMUX_SOCKET", "hs-test-%d" % os.getpid())
     monkeypatch.setenv("TMUX_TMPDIR", d)
     monkeypatch.setenv("ROWFLOW_NO_VIEW_REFRESH", "1")  # never force-checkout the real hub view from a test
+    os.makedirs(os.path.join(d, "noproc"), exist_ok=True)
+    monkeypatch.setenv("ROWFLOW_INFER_SCAN_ROOT", os.path.join(d, "noproc"))  # E5 fix A: never gate on the live host's servers
     yield
     shutil.rmtree(d, ignore_errors=True)
 

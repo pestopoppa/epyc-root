@@ -105,6 +105,38 @@ def test_gpu_smoke_gap_under_one_tick_suppressed():
     assert not r2["alarm"] and "smoke gap" in r2["suppressed"][0]["cause"]
 
 
+def _drain_log(n, until_ts, step=150):
+    lines = []
+    for i in range(n):
+        t = _ts(T0 + i * step)
+        lines.append(f"{t} SNAPSHOT free=q1,q2,q3 busy=q0:rowx cands=3 assigned=0 lanes cpu=3 gpu=6 util q0=60% q1=1% q2=1% q3=1% gpu=0% vram=0%")
+        for q in ("q1", "q2", "q3"):
+            lines.append(f"{t} IDLE-WHY {q}: grant e5-r8 draining for quiet-host e5-r8 until {until_ts[11:16]}Z; "
+                         "needs gpu-quiet,q0,q1,q2,q3: q0 busy")
+    return "\n".join(lines), T0 + (n - 1) * step
+
+
+def test_active_drain_suppressed_with_context_and_expired_drain_alarms():
+    """E5 2026-11-23: q1-q3 held idle by the quiet-host row's DRAIN falsely raised idle-with-backlog."""
+    text, now = _drain_log(5, _ts(T0 + 3600))
+    snaps, why, _ = IA.parse_log(text)
+    q = {"buckets": {"GRANTABLE": [{"id": "e5-r8", "shape": "quiet-host"}, {"id": "big-row", "shape": "multi-quarter(3)"}]}}
+    r = IA.evaluate(snaps, why, q, now=now)
+    assert not r["alarm"]
+    assert {s["region"] for s in r["suppressed"]} == {"q1", "q2", "q3"}
+    assert all("active DRAIN for quiet-host row e5-r8" in s["cause"] and s["drain"]["row"] == "e5-r8" for s in r["suppressed"])
+    # the drain target already passed: the region is idle with backlog again -> alarm
+    text, now = _drain_log(5, _ts(T0 - 600))
+    snaps, why, _ = IA.parse_log(text)
+    assert IA.evaluate(snaps, why, q, now=now)["alarm"]
+
+
+def test_active_drain_target_after_midnight():
+    t = T0 - (T0 % 86400) + 23 * 3600 + 50 * 60   # 23:50Z
+    d = IA.active_drain("IDLE-WHY q1: grant x draining for quiet-host x until 00:20Z; needs ...", t, t + 60)
+    assert d and d["until"] == "00:20Z"
+
+
 def test_keeper_stale_alarm():
     text, now = _log(["q1"] * 2)
     snaps, why, _ = IA.parse_log(text)
