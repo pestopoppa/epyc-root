@@ -9819,6 +9819,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   adapter; established runtime combinations skip critic calls. Hardware execution follows its gate.
       · class: non-inference
       · done when: runtime recipes resolve with explicit unsets, effective environment/dispatch witnesses, option compatibility, same-binary arms and the canonical CPU adapter, and established runtime combinations skip critic calls
+      · 2026-11-23 (pipeline-mgmt/codex): existing recipe/unset/CPU launcher fixtures verified at research `8cc78558d` (154 recipe and scratch tests passed); no new implementation landed. Open: define which established multi-option combinations qualify for critic bypass and verify that path with its effective dispatch witness; the existing bypass in `loop.py` selects individual runtime dimensions.
   - [x] **AKU-02a — explicit environment-unset semantics**: inherited treatment is absent in the ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02b — frozen launch resolution and CPU serving consumer**: explicit artifact identities, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02c — canonical CPU/GPU launcher recipe adapter and existing serving conformance**: ✅ 2026-09-09 _(detail → completed ledger)_
