@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T11:19:33Z",
+  "generated_at": "2026-11-23T11:41:22Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 944,
-      "dispatchable": 131,
+      "closed": 946,
+      "dispatchable": 129,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-23",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 131,
+      "open": 129,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1508,7 +1508,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 21,
+          "dispatchable": 19,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1526,7 +1526,7 @@
           ],
           "line": 10971,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 21,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
@@ -1767,15 +1767,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 267,
-      "dispatchable": 35,
+      "closed": 268,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-23",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 37,
+      "open": 36,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1818,14 +1818,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 25,
+          "dispatchable": 24,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 906,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 26,
+          "open": 25,
           "readiness": "blocked"
         }
       ]
@@ -3130,18 +3130,18 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 3,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 311,
-      "dispatchable": 86,
+      "closed": 312,
+      "dispatchable": 85,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
-      "last_advanced": "2026-11-20",
+      "last_advanced": "2026-11-23",
       "next_action": "TOOLPERM+AGENTFILE-INJECT after prod relaunch+matrix refresh; CTX-DEPTH after v11; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
-      "open": 86,
+      "open": 85,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3206,11 +3206,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 34,
+          "dispatchable": 33,
           "gates": [],
           "line": 1576,
           "name": "refactoring-multirepo-2026-10",
-          "open": 34,
+          "open": 33,
           "readiness": "ready"
         },
         {
