@@ -9811,6 +9811,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   immutable registry/recipe/model identities, local candidate seeds, idempotent aliases/requests,
   per-target missing/unsupported state, pinned baseline and no silent reference movement. Pure resolver
   and dry-run fixtures first; no resource authority inferred from a manifest.
+      · 2026-11-23 (pipeline-mgmt/codex): existing explicit-snapshot resolver and offline CLI verified at research `8cc78558d` (140 enrollment/CLI/production/scratch tests passed); no new implementation landed. Open: native append-only enrollment and explicit missing-artifact resolution events, including the durable request identity owner and replay contract (§8.17D).
   - [x] **AKU-01a — explicit-snapshot enrollment and offline CLI**: immutable typed CPU/GPU targets, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-01b — canonical production exporter and local-model seed enrollment consumer**: ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
