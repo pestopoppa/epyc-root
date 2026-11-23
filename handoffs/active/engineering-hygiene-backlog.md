@@ -1630,7 +1630,7 @@ BK-1..5 are ticked, two consecutive nightly snapshots exist with valid manifests
       · section: Wave 1: bugs, hazards, ruled deletions
 - [ ] **LOOP-78** P5: Autopilot evaluator: ONE batched era event (operator decision 2026-10-24) [B5-03, B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, B2-04, B2-05, B2-06, B2-07, B2-08, B2-14, B2-15, B2-18, B2-12, B2-13, B5-14, B3-09]
       · section: Wave 2: decision-dependent and structural
-- [ ] **LOOP-79** K3: AutoKernel prune of the three approved planes, after fresh closure and retained-contract checks [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]; C4-01's old deletion advice is superseded by INF64's retained manifest.
+- [x] **LOOP-79** K3: AutoKernel prune of the three approved planes, after fresh closure and retained-contract checks [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]; C4-01's old deletion advice is superseded by INF64's retained manifest.  ✅ 2026-11-23 SUPERSEDED [no-belief: operator ruling] — operator 2026-11-23 (AskUserQuestion, pipeline-mgmt): AKU rebuild supersedes the K3 prune; C2-01 cluster is live AKU code (AutoKernel audit)
       · section: Wave 2: decision-dependent and structural
 - [ ] **LOOP-80** K4: AutoKernel regrowth guard and CI repair (operator decision 2026-10-24) [C2-04, C5-02, C3-05, C1-02, C1-M3, C5-01, C6-01, C5-14, C6-13, C3-11, C2-02, C6-16]
       · section: Wave 2: decision-dependent and structural
