@@ -33,6 +33,18 @@ class QuietGate(unittest.TestCase):
         self.assertFalse(rf.bandwidth_heavy({"busy_fraction": 1.0, "bandwidth_heavy": False}))
         self.assertTrue(rf.bandwidth_heavy({"bandwidth_heavy": True}))
 
+    def test_gpu_grant_not_heavy_unless_declared(self):
+        gpu = {"shape": "gpu-q3", "busy_fraction": 1.0, "regions": "mi210_0,88-95,184-191"}
+        self.assertFalse(rf.bandwidth_heavy(gpu))
+        self.assertTrue(rf.bandwidth_heavy(dict(gpu, bandwidth_heavy=True)))
+        rows = {"gpu": gpu, "q": {"requires_quiet_host": True}}
+        grants = [{"id": "gpu", "holds": ["c88", "c89", "gpu-quiet", "t184"]}]
+        kept, waits, _ = rf.quiet_gate([cand("q", [{"q0"}, {"q1"}])], rows, grants, UTIL_QUIET)
+        self.assertEqual(len(kept[0]["options"]), 2)
+        self.assertEqual(waits, [])
+        rows["gpu"] = dict(gpu, bandwidth_heavy=True)
+        self.assertEqual(rf.quiet_gate([cand("q", [{"q0"}])], rows, grants, UTIL_QUIET)[0], [])
+
     def test_foreign_busy_drops_option(self):
         rows = {"gdn": {"requires_quiet_host": True}}
         c = cand("gdn", [{"q0"}, {"q1"}, {"q2"}])

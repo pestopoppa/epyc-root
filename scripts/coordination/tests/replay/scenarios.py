@@ -1229,7 +1229,26 @@ def sc_superseded_predecessor_never_regranted(path):
     return write(path, ticks), check
 
 
+def sc_quiet_row_granted_beside_gpu_grant(path):
+    """2026-11-23 quiet-gate fix: a GPU grant (shape gpu-q3, busy_fraction 1.0 = the DEVICE's busy share, no declared
+    bandwidth_heavy) must not count as bandwidth-heavy, so a requires_quiet_host CPU row is granted on a quiet quarter."""
+    g = row("gpu-fold-r2", lane="gpu", regions="mi210_0,88-95,184-191", cls="gpu", gpu_quiet="exclusive", role="bench",
+            nofold=True, est=7200, extra="llama-bench -t 8", man={"shape": "gpu-q3", "busy_fraction": 1.0})
+    q = row("quiet-cpu-r1", regions="any-of q0", role="bench", extra="llama-bench -t 24", est=1800,
+            man={"requires_quiet_host": True})
+    ticks = [({"gpu-fold-r2": g}, {})] * 3 + [({"gpu-fold-r2": g, "quiet-cpu-r1": q}, {})] * 4
+
+    def check(d):
+        if not _granted(d, "gpu-fold-r2"):
+            return ["GPU row never granted (scenario precondition)"]
+        if not _granted(d, "quiet-cpu-r1"):
+            return ["quiet CPU row never granted beside a GPU grant that declares no bandwidth_heavy"]
+        return []
+    return write(path, ticks), check
+
+
 SCENARIOS = {
+    "quiet-row-granted-beside-gpu-grant": sc_quiet_row_granted_beside_gpu_grant,
     "instant-complete-is-suspect": sc_instant_complete_suspect,
     "quiet-host-waits-for-foreign-busy": sc_quiet_host_waits_for_foreign_busy,
     "superseded-predecessor-never-regranted": sc_superseded_predecessor_never_regranted,

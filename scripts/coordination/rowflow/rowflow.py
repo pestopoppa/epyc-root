@@ -6559,6 +6559,10 @@ def bandwidth_heavy(d):
     d = d or {}
     if isinstance(d.get("bandwidth_heavy"), bool):
         return d["bandwidth_heavy"]
+    # A GPU-lane row's busy_fraction is the DEVICE's busy share; its 8 host threads are no DRAM-wide load. Heavy only when
+    # it declares `bandwidth_heavy: true` (2026-11-23 quiet-gate fix: c19-fold-a3b-gpu busy_fraction 1.0 starved q0-q2).
+    if str(d.get("shape") or "") == "gpu-q3" or d.get("gpu_use") or "mi210" in str(d.get("regions") or "") or "gpu-quiet" in str(d.get("regions") or ""):
+        return False
     b = d.get("busy_fraction")
     return isinstance(b, (int, float)) and not isinstance(b, bool) and float(b) >= QUIET_HEAVY_BUSY
 
