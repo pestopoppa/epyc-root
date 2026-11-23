@@ -1,0 +1,342 @@
+From c6d3bbb47b32f3552cc93b5e14e31dccd63b69be Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Mon, 23 Nov 2026 18:51:30 +0000
+Subject: [PATCH] registry: frontdoor A3B CPU MTP draft_p_min 0.5 -> 0.75
+ (amendment RATIFY-A3B-PMIN075-20261123, unapplied)
+
+Carries the selection-matched distribution evidence (results.json + analyze.py).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01F1v5qCZ3QJbHavUMsZnzEM
+---
+ .../analyze.py                                | 127 ++++++++++++++++
+ .../results.json                              | 138 ++++++++++++++++++
+ orchestration/model_registry.yaml             |  18 ++-
+ 3 files changed, 275 insertions(+), 8 deletions(-)
+ create mode 100644 data/pmin-dist-investigation-20261123/analyze.py
+ create mode 100644 data/pmin-dist-investigation-20261123/results.json
+
+diff --git a/data/pmin-dist-investigation-20261123/analyze.py b/data/pmin-dist-investigation-20261123/analyze.py
+new file mode 100644
+index 000000000..63e9260d5
+--- /dev/null
++++ b/data/pmin-dist-investigation-20261123/analyze.py
+@@ -0,0 +1,127 @@
++#!/usr/bin/env python3
++"""Offline re-analysis of CAFE-1-SERVED-T r2 DIST captures (no inference).
++1) recompute per-arm token counts / rank hist, 2) selection-matched A0 (emulate p-min truncation on A0 rounds using
++the MTP drafter confidence that is logged), 3) request-level block bootstrap / permutation chi2, 4) KS-PIT recheck."""
++import glob, json, math, random, sys, collections
++sys.path.insert(0, '/mnt/raid0/llm/tmp/ak-cafe1-served-t-cpu-20261123-r2')
++import importlib.util
++spec = importlib.util.spec_from_file_location('job', '/mnt/raid0/llm/tmp/ak-cafe1-served-t-cpu-20261123-r2/job.py')
++CAP = '/mnt/raid0/llm/tmp/ak-cafe1-served-t-cpu-20261123-r2/out/capture'
++OUT = '/mnt/raid0/llm/tmp/pmin-dist-investigation-20261123/results.json'
++
++
++def chi2_sf(x, k):
++    # regularized upper gamma via series/continued fraction
++    a, x2 = k / 2.0, x / 2.0
++    if x2 <= 0: return 1.0
++    if x2 < a + 1:
++        s = t = 1.0 / a; n = a
++        for _ in range(1000):
++            n += 1; t *= x2 / n; s += t
++            if abs(t) < abs(s) * 1e-15: break
++        return 1 - s * math.exp(-x2 + a * math.log(x2) - math.lgamma(a))
++    b = x2 + 1 - a; c = 1e300; d = 1 / b; h = d
++    for i in range(1, 1000):
++        an = -i * (i - a); b += 2; d = an * d + b; d = 1 / d if d else 1e300; c = b + an / c; h *= d * c
++        if abs(d * c - 1) < 1e-15: break
++    return math.exp(-x2 + a * math.log(x2) - math.lgamma(a)) * h
++
++
++def homog(a, b, minpool=10):
++    # same as job.chi2_homog: merge tail bins to >= minpool pooled
++    bins = []; ca = cb = 0
++    for x, y in zip(a, b):
++        ca += x; cb += y
++        if ca + cb >= minpool:
++            bins.append((ca, cb)); ca = cb = 0
++    if ca + cb and bins:
++        x, y = bins[-1]; bins[-1] = (x + ca, y + cb)
++    na, nb = sum(x for x, _ in bins), sum(y for _, y in bins)
++    if len(bins) < 2 or not na or not nb: return 0.0, 0, 1.0
++    chi = 0.0
++    for x, y in bins:
++        t = x + y; ea = t * na / (na + nb); eb = t * nb / (na + nb)
++        chi += (x - ea) ** 2 / ea + (y - eb) ** 2 / eb
++    return chi, len(bins) - 1, chi2_sf(chi, len(bins) - 1)
++
++
++def ks_p(u):
++    u = sorted(u); n = len(u)
++    d = max(max((i + 1) / n - x, x - i / n) for i, x in enumerate(u))
++    lam = (math.sqrt(n) + 0.12 + 0.11 / math.sqrt(n)) * d
++    p = 2 * sum((-1) ** (j - 1) * math.exp(-2 * j * j * lam * lam) for j in range(1, 101))
++    return max(0.0, min(1.0, p)), d
++
++
++def load(T, arm, thr=None):
++    """Return list of requests; each request = list of (rank, U-ish, conf_ok) per accepted token.
++    thr: if given, emulate p-min truncation: keep a row only if the drafter confidence of the draft at that row >= thr
++    (row starts a draft) or the previous row's draft had confidence >= thr (bonus row after an accepted confident chain)."""
++    reqs = collections.defaultdict(list)
++    rng = random.Random(12345)
++    for f in sorted(glob.glob(f'{CAP}/cap-dist-b*-T{T}-{arm}.jsonl')):
++        for ln in open(f):
++            r = json.loads(ln)
++            if r.get('k') == 'task': continue
++            key = (f, r['task'])
++            conf = [m[0][2] if m else 0.0 for m in r.get('mtp_top') or []]
++            for i, x in enumerate(r['acc']):
++                cands = sorted(((int(t), float(p)) for t, p in r['rows'][i][1]), key=lambda z: -z[1])
++                d = dict(cands)
++                if x not in d: continue
++                if thr is not None:
++                    # row i exists in a p-min round iff the round exists (conf[0] >= thr) and the chain was not truncated
++                    # before it (conf[0..i-1] >= thr); row n_draft is the bonus row.
++                    if not conf or conf[0] < thr or any(c < thr for c in conf[:i]): continue
++                px = d[x]; s = sum(p for _, p in cands if p < px)
++                rk = min(20, [t for t, _ in cands].index(x))
++                reqs[key].append((rk, s + rng.random() * px))
++    return list(reqs.values())
++
++
++def hist(reqs):
++    h = [0] * 21
++    for q in reqs:
++        for rk, _ in q: h[rk] += 1
++    return h
++
++
++def perm_p(ra, rb, n=2000, seed=1):
++    """Request-level permutation test of the chi2 statistic: shuffle whole requests between arms (respects within-sequence
++    dependence; exchangeable under H0 'same law' given matched prompts/seeds design)."""
++    obs = homog(hist(ra), hist(rb))[0]
++    pool = ra + rb; na = len(ra); rng = random.Random(seed); ge = 0
++    for _ in range(n):
++        rng.shuffle(pool)
++        if homog(hist(pool[:na]), hist(pool[na:]))[0] >= obs: ge += 1
++    return obs, (ge + 1) / (n + 1)
++
++
++def first_k_per_req(reqs, k):
++    return [q[:k] for q in reqs]
++
++
++def thin(reqs, step):
++    return [q[::step] for q in reqs]
++
++
++res = {}
++for T in ('0.3', '1.0'):
++    A0 = load(T, 'A0')
++    res[T] = {}
++    for arm, thr in (('P05', 0.5), ('P075', 0.75)):
++        B = load(T, arm)
++        A0m = load(T, 'A0', thr)
++        r = {'tokens_arm': sum(map(len, B)), 'tokens_A0': sum(map(len, A0)), 'tokens_A0_matched': sum(map(len, A0m)),
++             'rank0_frac_A0': hist(A0)[0] / max(1, sum(hist(A0))), 'rank0_frac_A0_matched': hist(A0m)[0] / max(1, sum(hist(A0m))),
++             'rank0_frac_arm': hist(B)[0] / max(1, sum(hist(B)))}
++        r['naive_chi2'] = homog(hist(A0), hist(B))
++        r['naive_perm_p'] = perm_p(A0, B)[1]
++        r['thin8_chi2'] = homog(hist(thin(A0, 8)), hist(thin(B, 8)))
++        r['matched_chi2'] = homog(hist(A0m), hist(B))
++        r['matched_perm_p'] = perm_p(A0m, B)[1]
++        r['ks_arm'] = ks_p([u for q in B for _, u in q])
++        r['ks_A0_matched'] = ks_p([u for q in A0m for _, u in q])
++        res[T][arm] = r
++        print(T, arm, json.dumps(r))
++json.dump(res, open(OUT, 'w'), indent=1)
+diff --git a/data/pmin-dist-investigation-20261123/results.json b/data/pmin-dist-investigation-20261123/results.json
+new file mode 100644
+index 000000000..ffeade687
+--- /dev/null
++++ b/data/pmin-dist-investigation-20261123/results.json
+@@ -0,0 +1,138 @@
++{
++ "0.3": {
++  "P05": {
++   "tokens_arm": 3495,
++   "tokens_A0": 3822,
++   "tokens_A0_matched": 3222,
++   "rank0_frac_A0": 0.9589220303506018,
++   "rank0_frac_A0_matched": 0.9667908131595282,
++   "rank0_frac_arm": 0.9662374821173104,
++   "naive_chi2": [
++    2.7962853987386147,
++    3,
++    0.42411177167027225
++   ],
++   "naive_perm_p": 0.5977011494252874,
++   "thin8_chi2": [
++    0.3192431170826985,
++    2,
++    0.8524663365335243
++   ],
++   "matched_chi2": [
++    0.03480314243310527,
++    3,
++    0.9982911003433054
++   ],
++   "matched_perm_p": 1.0,
++   "ks_arm": [
++    0.9533361398409876,
++    0.008697807593924356
++   ],
++   "ks_A0_matched": [
++    0.5310425207285063,
++    0.01420572610202131
++   ]
++  },
++  "P075": {
++   "tokens_arm": 3082,
++   "tokens_A0": 3822,
++   "tokens_A0_matched": 2459,
++   "rank0_frac_A0": 0.9589220303506018,
++   "rank0_frac_A0_matched": 0.9788531923546157,
++   "rank0_frac_arm": 0.9743672939649578,
++   "naive_chi2": [
++    14.033355275212521,
++    3,
++    0.0028601003101025235
++   ],
++   "naive_perm_p": 0.0864567716141929,
++   "thin8_chi2": [
++    0.36165898617511494,
++    1,
++    0.5475863176243861
++   ],
++   "matched_chi2": [
++    1.2656247413761288,
++    2,
++    0.5310960597124001
++   ],
++   "matched_perm_p": 0.7076461769115442,
++   "ks_arm": [
++    0.7274146908813981,
++    0.012405977528174017
++   ],
++   "ks_A0_matched": [
++    0.4670812700298421,
++    0.017075685414272956
++   ]
++  }
++ },
++ "1.0": {
++  "P05": {
++   "tokens_arm": 3429,
++   "tokens_A0": 3819,
++   "tokens_A0_matched": 3115,
++   "rank0_frac_A0": 0.8295365278868814,
++   "rank0_frac_A0_matched": 0.8683788121990369,
++   "rank0_frac_arm": 0.8553514144065325,
++   "naive_chi2": [
++    16.23413241254856,
++    8,
++    0.03914895490954944
++   ],
++   "naive_perm_p": 0.26936531734132935,
++   "thin8_chi2": [
++    7.740270133003899,
++    4,
++    0.10156935682355431
++   ],
++   "matched_chi2": [
++    3.362844383958125,
++    7,
++    0.8495321815911814
++   ],
++   "matched_perm_p": 0.9335332333833083,
++   "ks_arm": [
++    0.8363410147881215,
++    0.010570690512098024
++   ],
++   "ks_A0_matched": [
++    0.8374203594725547,
++    0.01107599789052105
++   ]
++  },
++  "P075": {
++   "tokens_arm": 2915,
++   "tokens_A0": 3819,
++   "tokens_A0_matched": 2377,
++   "rank0_frac_A0": 0.8295365278868814,
++   "rank0_frac_A0_matched": 0.8986116954143879,
++   "rank0_frac_arm": 0.9080617495711836,
++   "naive_chi2": [
++    94.70443439120862,
++    8,
++    5.138731091233731e-17
++   ],
++   "naive_perm_p": 0.00399800099950025,
++   "thin8_chi2": [
++    22.62513699602647,
++    3,
++    4.8340251130477065e-05
++   ],
++   "matched_chi2": [
++    4.355006957006202,
++    6,
++    0.6287520102262407
++   ],
++   "matched_perm_p": 0.7896051974012993,
++   "ks_arm": [
++    0.38946362520938027,
++    0.01667577032252565
++   ],
++   "ks_A0_matched": [
++    0.22858296628750246,
++    0.021299163207405325
++   ]
++  }
++ }
++}
+\ No newline at end of file
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index 12ccc8e74..36ed55f79 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1067,12 +1067,14 @@ server_mode:
+       # is the production recipe (was `draft-mtp` alone until 2026-07-31).
+       spec_type: draft-mtp
+       draft_max: 4
+-      # 2026-11-23 CAFE-1-SERVED-T (RATIFY-A3B-PMIN05-20261123): --draft-p-min 0.5 (== --spec-draft-p-min).
+-      # A3B CPU MTP decode +22.1 % (T0.3) / +27.9 % (T1.0) vs A/A floors 0.8 / 2.9 %; SPEC-PIT.1
+-      # distribution gate PASS at both T. 0.75 REJECTED (chi2 1.6e-16 at T1.0). Measured on a
+-      # 24t quarter, -np 1; served-shape A/B is a KEEP condition of the bring-up (see package).
+-      # Applies to EVERY role on this process (shared_with list below).
+-      draft_p_min: 0.5
++      # 2026-11-23 CAFE-1-SERVED-T: --draft-p-min (== --spec-draft-p-min). 0.5 signed RATIFY-A3B-PMIN05-20261123;
++      # AMENDED to 0.75 by RATIFY-A3B-PMIN075-20261123. A3B CPU MTP decode vs p-min 0: 0.75 +23.0 % (T0.3) /
++      # +35.2 % (T1.0); 0.5 was +22.1 / +27.9 %; A/A floors 0.8 / 2.9 %. The r2 rank chi2 FAIL of 0.75 at
++      # T1.0 was a selection-bias artefact (p-min skips drafts at low-confidence positions); selection-
++      # matched + request-level permutation p = 0.53/0.71 (T0.3), 0.63/0.79 (T1.0); KS-PIT passes every arm.
++      # Evidence: data/pmin-dist-investigation-20261123/results.json. Applies to EVERY role
++      # on this process (shared_with list below).
++      draft_p_min: 0.75
+       lookup: false
+       corpus_retrieval: false
+     throughput: 40.22  # category=OPTIMUM t/s, full instance canonical placement, draft-mtp, short ctx.
+@@ -1240,7 +1242,7 @@ server_mode:
+       spec_type: draft-mtp        # the INHERITED recipe, stated so a reader of this row alone
+                                   # does not conclude the role serves without speculation
+       draft_max: 4
+-      draft_p_min: 0.5            # INHERITED from server_mode.frontdoor (CAFE-1-SERVED-T, 2026-11-23); documentation only
++      draft_p_min: 0.75           # INHERITED from server_mode.frontdoor (CAFE-1-SERVED-T, RATIFY-A3B-PMIN075-20261123); documentation only
+       lookup: false
+       corpus_retrieval: false
+       # numa_instances/numa_ports DELETED 2026-09-22. They were retained as explicit
+@@ -2913,7 +2915,7 @@ roles:
+       # is the production recipe (was `draft-mtp` alone until 2026-07-31).
+       spec_type: draft-mtp
+       draft_max: 4
+-      draft_p_min: 0.5  # CAFE-1-SERVED-T KEEP P05 (2026-11-23, row ak-cafe1-served-t-cpu-20261123-r2): parity with server_mode.frontdoor
++      draft_p_min: 0.75  # CAFE-1-SERVED-T P075 (row ak-cafe1-served-t-cpu-20261123-r2 + corrected dist gate; RATIFY-A3B-PMIN075-20261123): parity with server_mode.frontdoor
+       draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+       lookup: false
+       corpus_retrieval: false
+-- 
+2.56.0
+
