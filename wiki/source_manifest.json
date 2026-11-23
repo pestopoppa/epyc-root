@@ -4,34 +4,30 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1486,
+    "progress": 1487,
     "research": 483
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 8,
+      "added": 1,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-23T18:31:08Z",
+    "at": "2026-11-23T19:57:15Z",
     "scope_paths": [
-      "handoffs/active/autokernel-akx-program.md",
       "handoffs/active/autokernel-loop.md",
-      "handoffs/active/cpu-decode-roofline-program.md",
-      "handoffs/active/kernel-champion-and-promotion.md",
-      "handoffs/active/rocm-kernel-authoring.md",
-      "handoffs/active/speculative-decoding.md",
-      "progress/2026-11/2026-11-23-autokernel.md",
-      "research/deep-dives/intake-ak-1123/stage3-plan.md"
+      "handoffs/active/churn-pipeline.md",
+      "handoffs/active/coordination-and-churn-pipeline.md",
+      "progress/2026-11/2026-11-23-pipeline-mgmt.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-23T18:31:08Z",
+  "scan_time": "2026-11-23T19:57:15Z",
   "schema_version": 1,
-  "source_set_hash": "69985a3add163f9ccdabb197f54b39216c158c4a0efe70f11511a704f676cd23",
+  "source_set_hash": "e07607740accda7326aa38e06b3f8a4796910afd431a90c07de5365aa921fc08",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -50,10 +46,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "181aecac271eab6865e85ea83ee94156850ec25b32441e047fc8464e7d4d0954",
-      "modified": "2026-11-23T18:26:15Z",
+      "content_hash": "da6454ac87aef7fd4073c2b5308de7c9bc6512605ffef07367a78b6e6f0aa98d",
+      "modified": "2026-11-23T19:57:14Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1528046,
+      "size": 1547538,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -74,10 +70,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8ae54b66ef0dedaec61106e6d34191b71f307f15bca8febd923a08c9ed5ce622",
-      "modified": "2026-11-23T09:36:21Z",
+      "content_hash": "b72ea98c9610bb8dcc5a89fff670d7d793580c3d91cf1c4ae1ca5dd62d7db83c",
+      "modified": "2026-11-23T19:52:24Z",
       "path": "handoffs/active/churn-pipeline.md",
-      "size": 74999,
+      "size": 76460,
       "title": "Churn Pipeline \u2014 dispatcher, backlogs, rows",
       "type": "handoff-active"
     },
@@ -90,10 +86,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d43bafe32520a16e774c48c854ea45d56a9383bafb7690ef6fa43da71b823814",
-      "modified": "2026-11-23T09:36:21Z",
+      "content_hash": "51ef1faa833a75f16797be3765826a845e15bc78478a588f22c225c9ba038ab7",
+      "modified": "2026-11-23T19:52:52Z",
       "path": "handoffs/active/coordination-and-churn-pipeline.md",
-      "size": 607765,
+      "size": 610893,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -18954,6 +18950,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "42fab7b8a6362dd6e6188c1d4defc453b921579a6dbe0b5033a3250ecb139a80",
+      "modified": "2026-11-23T19:53:19Z",
+      "path": "progress/2026-11/2026-11-23-pipeline-mgmt.md",
+      "size": 4884,
+      "title": "2026-11-23 \u2014 pipeline-mgmt",
+      "type": "progress"
+    },
+    {
       "content_hash": "0412267d1044dc81a2a2d008806c740651691fac124a35700f332ee702aead6f",
       "modified": "2026-11-23T18:02:41Z",
       "path": "progress/2026-11/autokernel-loop-box-history-20261122.md",
@@ -23834,7 +23838,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2975,
+  "total_new": 2976,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
