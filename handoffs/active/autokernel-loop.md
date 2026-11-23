@@ -11150,6 +11150,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   direct-completion read-only loops, capped by live `/slots` (reserve ≥ 1), and they finish before the planner
   turn. Governance note: they bypass the `LLMPrimitives` gates (contention, region lock, inference tap) → OAB-16.
   Acceptance still waits on OAB-4's live `orch` arm.
+  - 2026-11-23 OAB-8 (pipeline-mgmt): offline clauses verified, not ticked. `test_oab8_scouts.py` 39 tests pass (concurrency via `test_scouts_run_concurrently`, launch cap by free slots, read-only confinement, planner context built from scout summaries). Remaining clause needs a live run: OAB-4 `orch` arm showing >=2 concurrent scout calls on :8083 per proposal. [no-belief: software]
 
 **SEARCH primitive handoff (REPL-EMB-5.1, 2026-11-01).** Orchestrator main
 `eb77f45cfb52791c031bf38dce13c66cc03f18af` publishes `src/scout_search.py` and its tests. The reusable API is
@@ -11395,6 +11396,7 @@ Not measured:
   request id. Acceptance: an OAB-4 `orch`-arm call shows its scout calls in the tap next to the planner turn.
   - PARKED 2026-09-27 (operator): not started. OAB-8 scouts still bypass `LLMPrimitives`, and no tap record exists for a scout call; resume by emitting one inference-tap record per scout call (role, slot, prompt and decoded tokens, wall, parent request id) from the orchestrator scout stage, then checking it on an OAB-4 `orch`-arm call.
   - 2026-11-19 OAB-16 (2026-11-19): scouts already write one `serving_call.v1` record per call (role scout, slot via timings, tokens, wall; UFH14-LB6.2). The missing piece was the parent id: `run_scouts(parent_request_id=...)` now stamps `notes.parent_request_id` on every scout record (chat.py passes `request.request_id`; contextvar copied into the scout threads); orchestrator `c84de235`, `test_oab16_scout_tap_parent.py` 3 passed. Open: the acceptance check on a live OAB-4 `orch`-arm call.
+  - 2026-11-23 OAB-16 (pipeline-mgmt): offline clauses verified, not ticked. orchestrator `c225c55a` adds `test_oab16_scout_tap_join.py` (real serving_calls writer, no mock): two concurrent scout records (role scout, slot, prompt/decoded tokens, wall) carry `notes.parent_request_id` that equals the planner turn record's `caller.parent_request_id`, so they join next to it; with `test_oab16_scout_tap_parent.py` 5 tests pass. Remaining clause needs a live run: the same join on an OAB-4 `orch`-arm call. [no-belief: software]
 - [x] **OAB-17 — triage the unfixed second-review items F8-F11, F15, F16 and R2-R4.** F1-F7 and F12-F14 landed in  every finding has a fix or a written decline: orchestrator 2c0117d3 (bb owner review: F8 reservation leak on cancel fixed, F9, F10, F15 _select_mode, F16(a)/(b), json_diet fail-open; … ✅ 2026-11-19 [no-belief: code] [no-belief: code fixes and tests, no run] [no-belief: code and tests, no run] [no-belief: code fix and tests, no run] _(detail → completed ledger)_
 - [ ] **OAB-18 — turn on `PREFIX_STABLE_ORDER` for scoped REPL calls, or measure why not.** With the prod default
   (off), each turn's state block precedes the task, so the whole task is re-prefilled every turn: measured on the
