@@ -45,12 +45,14 @@
       · owner: autopilot-backlog-session
 
 > Folded from the body of `handoffs/active/autopilot-program.md` (row RTG-02), from its first `##` section on, @ `e8deee0a4de8` on 2026-11-03 (BRF-T7-F12, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
-- [ ] **AP-BSV2-RIGOR-PIN** [non-inference] Pin autopilot_bsv2_accept_gate and autopilot_bsv2_accept_rigor observe-only so the proposer cannot flip its own accept gate; update test_flag_surface.py's pinned set
+- [x] **AP-BSV2-RIGOR-PIN** [non-inference] Pin autopilot_bsv2_accept_gate and autopilot_bsv2_accept_rigor observe-only so the proposer cannot flip its own accept gate; update test_flag_surface.py's pinned set [no-belief: build/landing]
       · done when: both flags absent from HOT_SWAP_FEATURES mutation surface, test_flag_surface.py passes
       · gate: none
-- [ ] **AP-BSV2-RIGOR-STATE** [non-inference] Populate ctx.state['bsv2_rigor'] (proposal_qids, sealed_qids, budget unit/limit) and a proposal-disjoint accept partition in the autopilot loop so the R1-R5 gate stops failing closed
+  - **2026-11-23 DONE.** Orchestrator commit `3421892f` (branch `ap-bsv2-rigor-pin-state`, PRE-PUSH, may be rebased): both flags added to `PINNED_OBSERVE_ONLY_FLAGS` (structural_lab, so `propose_flag_experiment` / `apply_flag_experiment` refuse them) and removed from `HOT_SWAP_FEATURES`; still FeatureSpec + `runtime_flags.spec.yaml` + operator-settable; `program.md` row says observe-only. `test_flag_surface.py` pinned-set and planner-block assertions updated; 153 pass with test_bsv2_accept_rigor and test_repl_child_lane_full.
+- [x] **AP-BSV2-RIGOR-STATE** [non-inference] Populate ctx.state['bsv2_rigor'] (proposal_qids, sealed_qids, budget unit/limit) and a proposal-disjoint accept partition in the autopilot loop so the R1-R5 gate stops failing closed [no-belief: build/landing]
       · done when: unit test: rigor gate on, loop-populated state, a valid accept passes and an overlapping one is refused
       · gate: AP-BSV2-RIGOR-PIN
+  - **2026-11-23 DONE.** Same orchestrator commit `3421892f` (PRE-PUSH, may be rebased). `dispatch_action` calls `_bsv2_rigor_prepare` (gate+rigor on only): proposal batch = previous eval's qids (known-empty on the first round; None, so fail closed, when traces exist but the batch is unknown), sealed hash split of the pool (`AUTOPILOT_BSV2_SEALED_FRACTION`, default 0.2), budget unit/limit (`AUTOPILOT_BSV2_BUDGET_UNIT` default rollouts, `_LIMIT` default 5000); `EvalTower.bsv2_exclude_qids` makes the T1 legacy-pool draw skip proposal and sealed qids (core_id suffix `_bsv2part`), so both arms share one disjoint partition. Unit tests: a valid disjoint accept passes, an overlapping accept and a sealed-qid accept are refused, unknown batch fails closed, inert with flags off. Neighbours (actions, config_applicator, eval_tower hybrid/partitions, structural_lab) 234 pass. Caveat: tests use a fake tower; the real `eval_t1` exclusion path is exercised only by neighbour tests, not a live draw.
 
 ## 2026-11-23 post-reboot sequence (operator-agreed; canonical home)
 

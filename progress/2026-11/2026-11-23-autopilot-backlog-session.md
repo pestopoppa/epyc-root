@@ -52,3 +52,10 @@ not retried, so that class is unreplayed. Box left open with a checkpoint. Detai
 - Wired: FeatureSpecs `autopilot_bsv2_accept_gate` and `autopilot_bsv2_accept_rigor`, `runtime_flags.spec.yaml`, `HOT_SWAP_FEATURES`, `scripts/autopilot/program.md`.
 - Tests (fakes only): 12 new pass; test_runtime_flag_spec, test_features, test_flag_surface, test_ap72_speed_ceiling_table 165 pass; existing `-k bsv2` actions tests 3 pass. System pytest with the orchestrator venv python (venv has no pytest).
 - Fails closed on unknown proposal-qid set; live use needs the loop to populate `state["bsv2_rigor"]`. Open: the gate flags are proposer-flippable (hot swap); pinning needs a `test_flag_surface.py` change. Autopilot not started. [no-belief: build/landing]
+
+## AP-BSV2-RIGOR-PIN and AP-BSV2-RIGOR-STATE (non-inference, code + unit tests)
+
+- Orchestrator commit `3421892f` on branch `ap-bsv2-rigor-pin-state` (worktree `/mnt/raid0/llm/worktrees/bsv2-rigor-pin`), PRE-PUSH and may be rebased.
+- PIN: both BSV-2 flags moved from `HOT_SWAP_FEATURES` into `PINNED_OBSERVE_ONLY_FLAGS` (the proposer's propose/apply paths refuse them); FeatureSpec, `runtime_flags.spec.yaml` and operator settability kept; `program.md` says observe-only; `test_flag_surface.py` pinned-set assertions updated.
+- STATE: `dispatch_action` populates `state["bsv2_rigor"]` (proposal batch = previous eval qids, sealed hash split, budget unit/limit) when gate+rigor are on, and `EvalTower.bsv2_exclude_qids` partitions the T1 accept draw away from proposal and sealed qids. Unit tests: valid accept passes, overlapping and sealed accepts refused, unknown batch fails closed, inert when off.
+- Tests: 153 pass (rigor, flag_surface, repl_child_lane_full); 234 pass on actions/config_applicator/eval_tower hybrid+partitions/structural_lab neighbours. Autopilot not started; nothing pushed. [no-belief: build/landing]
