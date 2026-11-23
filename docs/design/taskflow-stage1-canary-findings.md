@@ -187,3 +187,41 @@ This is not a canary data point.
   2 orphans (06a9, 3572). The lane root is empty. Branch tips are logged in `/mnt/raid0/llm/tf/sweep.log`.
   r8d was filed SUPERSEDED by `tf1-cpu-r8e-canary-35b-q0q2-20261123`. r8e has the same 5 tasks x 2 arms and the r8d
   estimate, and is prepared but not published.
+
+## r8e (2026-11-23): CPU canary after the r8c fixes and the r8d lane-cap fix, hand-audited — verdict FIX-HARNESS (near saturation)
+Row `tf1-cpu-r8e-canary-35b-q0q2-20261123`, rc=0 complete 06:47Z, C14 CPU build, Qwen3.6-35B-A3B-MTP-Q8_0, np1, 1 stint per arm,
+5 tasks x 2 arms. RESULT.json is final, `aggregated_from: results.jsonl`, covers all 10 units; `check_complete.py` exits 0 and
+is honest (no harness/lane records). **Reported: canary-nothink 3/5, canary-think 4/5 = 7/10. Audited: 6/10 = 0.6.**
+Perf: decode median 15.3 / 15.2 tok/s, prefill median 59 / 182 tok/s, MTP acceptance 0.92 / 0.86, prefix hit 0.96 / 0.93.
+
+| task | nothink: audited (classifier) | think: audited (classifier) |
+|---|---|---|
+| TU-GR-1 | a: shell allowlist denied `orch-py.sh -c`, scratch scripts and `rm`; the model wrote `tests/test_unshare_debug.py`, emptied it but could not delete it, and ran out of 30 steps. outside-pathspec is a correct reject (harness, agree) | c: **false verify.** `test_isolated_launch_denies` is vacuous: the launcher execs the sentinel dir as `$0`, the child prints no JSON, the probe returns `ok=False` (json-parse-failed), so the test passes without isolating anything. The reachable case probes in-process, not via a child. The reviewer passed it (model; classifier said verified) |
+| LOOP-62 | a: ~15 of 30 steps were shell denials for one-line python probes; the model wrote `tests/unit/_debug_alias.py` to get around them and could not run or delete it. Correct outside-pathspec reject (harness, agree) | verified: 16 parametrized identity asserts against `sys.modules[target]`, mixed concurrent test `xfail(strict=False)`; legitimate |
+| NOFOLD-1 | verified; legitimate | verified; the SKILL.md cite is a bare path, not a markdown link, but the acceptance grep and done-when hold |
+| WS4-WAKE-IMPERATIVE | verified: `ensure_imperative` wraps all 6 builders, tmux_adapter imports it, test file present; legitimate. The done-when's "a live woken session acts on one" is not covered by the packet acceptance (packet gap; the box stays open) | c: timed out at 1739 s after 20 steps, never wrote the test file (rc=4). Decode median 6.3 tok/s vs 15 for the phase, so slow throughput contributed (model, agree) |
+| MM-5 | verified: env-gated `max_pixels` default None, resize to multiples of 28, estimate(896,896)=1024; legitimate | verified; legitimate (ceil-based estimate, still 1024 at 896) |
+
+**Audited counts (10 runs):** verified 6, (a) harness 2, (c) model 2, (b) packet 0. The classifier agrees on 9/10; its one miss is
+the think TU-GR-1 false verify, which is a reviewer defect.
+
+**The r8c/r8d fixes held:** 0 lane errors and `lane_path_repairs` 0; 0 reviewer template echoes (all 7 reviewer verdicts are
+29-57 tokens, `reviewer-done`); no outside-pathspec on approach-named files (both rejects are real scratch files); the stale
+packets were dropped at selection (all 5 `stale: []`; the in-run skip path was not exercised); stage1_result aggregation correct.
+
+**Verdict by the box rule: FIX-HARNESS.** 0.6 >= 0.3, but model failures are 2/4 (not the minority) and harness failures are 2/4
+(>= 50%). This is near saturation: 4 of 5 tasks have a legitimate verify in at least one arm, and both nothink rejects were
+otherwise-complete work. TRY-27B is not supported.
+
+**Fixes before r8f** (listed, not implemented):
+1. Shell allowlist: allow `bash <row>/orch-py.sh -c ...` and `bash <row>/orch-py.sh <lane-relative .py>` inside the lane.
+   Today only `orch-py.sh -m pytest ...` passes, and the model writes scratch files to get around it.
+2. Deletion: allow `rm` of untracked files inside the lane. Alternatively, have the commit step drop zero-byte new files and
+   report them, so a model that emptied its scratch file is not rejected.
+3. Reviewer must see the acceptance log (pytest `-rA` pass/skip/xfail lines) and the approach's "never pass vacuously" clause.
+   It should reject a test whose isolation case passes on a launcher error. Cheaper check: a probe result carrying
+   `launcher_error` must not count as denial (packet-level hint for TU-GR-1).
+4. Think-arm wall: WS4 think ran at 6.3 tok/s decode against 15 for the phase. Before r8f, check whether host contention hit the
+   unit's window (requests.jsonl timestamps against the grant calendar). If it did, classify that timeout as env, not model.
+5. Packet: the WS4 done-when has a live-session clause the acceptance cannot show. Split it into its own box, or mark the
+   canary verify as "acceptance only".
