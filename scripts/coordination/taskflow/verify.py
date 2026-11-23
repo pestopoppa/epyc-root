@@ -189,6 +189,13 @@ def approach_guards(task: dict) -> list[str]:
 # asserts a denial through ok/unreachable, and no test line distinguishes a real denial (errno / ENOENT / EACCES /
 # launcher_error) from the error.
 _LAUNCHER_ERR = re.compile(r"""["'](?:launcher_error|probe_error)["']\s*:|json-parse-failed""")
+# r8f fix 1 (TU-GR-1 nothink, false verify): the child printed nothing and `probe_grader_access` mapped empty stdout to
+# {"ok": False, "errno": "no-output"}, a denial-shaped result, so the isolation test passed with no isolation. Empty
+# child stdout is an error, never a denial. Two shapes: a quoted no-output / empty-stdout token, and an
+# `if not <stdout-ish>:` branch that returns a dict carrying `ok: False`.
+_EMPTY_STDOUT_DENIAL = re.compile(
+    r"""["'](?:no[-_]output|empty[-_](?:stdout|output)|no[-_]stdout)["']"""
+    r"""|if\s+not\s+[\w.]*(?:out|stdout|output)\w*(?:\.strip\(\))?\s*:[^\n]*\n(?:[^\n]*\n){0,4}?[^\n]*return\s*\{[^}]*["']ok["']\s*:\s*False""")
 _DENIAL_ASSERT = re.compile(r"""assert\s+not\s+[\w.\[\]"'()]*ok\b|\.get\(\s*["']ok["']\s*\)\s*(?:is\s+False|==\s*False)|"""
                             r"""\[\s*["']ok["']\s*\]\s*(?:is\s+False|==\s*False)|assert_\w*unreachable\s*\(""")
 _DISCRIMINATES = re.compile(r"\berrno\b|\bE(?:NOENT|ACCES|PERM)\b|launcher_error|probe_error|open_errno")
@@ -241,11 +248,11 @@ def vacuity_hits(diff: str) -> list[str]:
         code = _code_only("\n".join(lines), new)
         (tests if Path(p).name.startswith("test_") else src).append((p, code))
     hits = []
-    err = [p for p, c in src + tests if _LAUNCHER_ERR.search(c)]
+    err = [p for p, c in src + tests if _LAUNCHER_ERR.search(c) or _EMPTY_STDOUT_DENIAL.search(c)]
     deny = [p for p, c in tests if _DENIAL_ASSERT.search(c)]
     disc = [p for p, c in tests if _DISCRIMINATES.search(c)]
     if err and deny and not disc:
-        hits.append(f"launcher_error: {','.join(err)} returns an error-shaped probe result and {','.join(deny)} "
+        hits.append(f"launcher_error: {','.join(err)} returns an error-shaped probe result (launcher_error / empty child stdout mapped to ok=False) and {','.join(deny)} "
                     "asserts a denial without checking errno / launcher_error, so a launcher failure passes as a denial")
     return hits
 

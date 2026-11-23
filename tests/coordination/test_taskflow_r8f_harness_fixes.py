@@ -251,3 +251,30 @@ def test_acceptance_only_verified_is_held_never_ticked(tmp_path):
 def test_verify_scope_is_a_brief_key():
     from taskflow import schema
     assert "verify_scope" in schema.BRIEF_KEYS
+
+
+# ------------------------------------------------------------------------- r8g fix 1: empty stdout is an error, not a denial
+TUGR1_NOTHINK_DIFF = (Path(__file__).parent / "taskflow_r8f_tugr1_nothink_diff.patch").read_text()
+
+
+def test_vacuity_guard_flags_the_r8f_tugr1_nothink_empty_stdout_denial():
+    from taskflow import verify
+    hits = verify.vacuity_hits(TUGR1_NOTHINK_DIFF)
+    assert hits and "launcher_error" in hits[0], hits
+
+
+def test_vacuity_guard_empty_stdout_ok_when_test_pins_errno():
+    from taskflow import verify
+    d = TUGR1_NOTHINK_DIFF.replace(
+        "+    assert_grader_unreachable(result)  # should NOT raise",
+        "+    assert result[\"errno\"] in (\"2\", \"13\")\n+    assert_grader_unreachable(result)")
+    assert d != TUGR1_NOTHINK_DIFF and verify.vacuity_hits(d) == []
+
+
+def test_vacuity_guard_empty_stdout_branch_shape_without_token():
+    from taskflow import verify
+    src = ("+def probe(c):\n+    out = run(c).stdout.strip()\n+    if not out:\n+        return {\"ok\": False, \"why\": 1}\n+    return load(out)\n")
+    diff = ("diff --git a/x/p.py b/x/p.py\nnew file mode 100644\n--- /dev/null\n+++ b/x/p.py\n@@ -0,0 +1,5 @@\n" + src +
+            "diff --git a/x/test_p.py b/x/test_p.py\nnew file mode 100644\n--- /dev/null\n+++ b/x/test_p.py\n@@ -0,0 +1,2 @@\n"
+            "+def test_a():\n+    assert not probe(1)['ok']\n")
+    assert verify.vacuity_hits(diff)
