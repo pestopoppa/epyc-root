@@ -29,3 +29,11 @@ not retried, so that class is unreplayed. Box left open with a checkpoint. Detai
 
 - Logs only: 126 progress JSONL files (digest c01b6b49...586c), 167,076 episodes, 127,966 escalation-eligible. Script `scripts/analysis/rtg_ask1_log_replay.py`, results `research/deep-dives/intake-ak-1123/rtg-ask-1-results.md`.
 - Counts: 3,154 policy escalations, 0 logged model-initiated `escalate()`, 1,632 plan_reviewed consults. Entropy-only baseline unavailable (entropy never logged); ask-time probe holdout AUROC 0.593 (n=37,503). M4 did not fire (not evaluable). Budget-price replay invalid (selection-confounded uplift). Box ticked as counts-plus-stop; needs entropy and escalate/consult telemetry.
+
+## Closeout (main session)
+
+- TOC-SUPERSEDE-1 closed as SPLIT by operator decision (AgentDiet skipped; the subagent's refused extraction-script write, which it then wrote via a shell heredoc, was not re-attempted). M2 dormant.
+- Filed TOC-SUPERSEDE-REPL-LOG (context-and-token-economy.md) and RTG-ASK-TELEMETRY (routing-program.md); both gated on post-reload traffic.
+- KV-EVICT-COST-1 smoke, both telemetry boxes and the sampler-tap commit (orch e21a312e7049) join the STACK-UP-RELOAD-QUEUE.
+- Taskflow r6c/r7d (pipeline-mgmt): 0/8 verified either arm; briefs move failures from "never edits" to "edits but fails". Lesson for WORKER-TASK-BRIEF: give the 35B relative paths, resolve in the harness. Orchestrator already parses reasoning_content (llama_server.py:1027/2144); measured-rate wall budgets to fold into the WORKER-TASK-BRIEF plan.
+- Wrap-up: index --check rc=0; belief ledger fresh (lag 0); wiki delta 63 sources and research README (60 days) dispatched to subagents.
