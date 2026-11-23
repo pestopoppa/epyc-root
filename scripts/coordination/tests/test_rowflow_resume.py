@@ -119,6 +119,7 @@ class Resume(unittest.TestCase):
         self.assertFalse(filing.is_filed(self.f, RID))
         self.assertTrue(os.listdir(os.path.join(self.f, "filing-done", ".resumed")))
         self.assertNotIn(RID, filing.ended_unfiled(self.f))
+        open(self.stop + "-FINAL", "w").close()   # AK audit B8: a plain owner STOP now auto-requeues; FINAL makes it terminal
         open(os.path.join(self.G, RID + ".ended"), "w").write("rc=75 reason=stopped\n")   # second stop
         self.assertIn(RID, filing.ended_unfiled(self.f))
         self.assertTrue(filing.write_filed(self.f, RID, "FILED again", {"id": RID}))
