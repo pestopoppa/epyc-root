@@ -1,7 +1,7 @@
 {
  "session_id": "intake-ak-1123",
  "started_at": "2026-11-23T09:45:00Z",
- "last_checkpoint": "2026-11-23T12:30:00Z",
+ "last_checkpoint": "2026-11-23T12:45:00Z",
  "stage": 3,
  "phase": "stage3-plan-presented",
  "lane": "intake/ak-1123-hip-spec (worktree /workspace/.worktrees/intake-ak-1123)",
@@ -6700,5 +6700,40 @@
    "status": "complete",
    "approved": "2026-11-22 operator via coordinator, with 3 edits"
   }
+ },
+ "operator_decisions": [
+  {
+   "id": "OD-1",
+   "answer": "A",
+   "ts": "2026-11-23",
+   "via": "coordinator",
+   "effect": "reopen the MI210 post-training smoke as a pinned gfx90a environment build after E5 Stage-B (trigger M9 becomes the reopen condition), 0.6B then 1.7B, CreditFilter off/on, 3 steps, no quality claim"
+  },
+  {
+   "id": "OD-2",
+   "answer": "B",
+   "ts": "2026-11-23",
+   "via": "coordinator",
+   "effect": "no HIL-6 allowance extension now; revisit after AP-BSV2-ACCEPT-RIGOR lands (M10 stays dormant)"
+  },
+  {
+   "id": "OD-3",
+   "answer": "A",
+   "ts": "2026-11-23",
+   "via": "coordinator",
+   "effect": "approve the lineage_capture producer at keep_the_diff behind a default-off flag (M13 fires at Stage 4)"
+  },
+  {
+   "id": "OD-4",
+   "answer": "A",
+   "ts": "2026-11-23",
+   "via": "coordinator",
+   "effect": "at Stage 4, drop the 18 second-reader 'no' anchors from claim_anchors; claims stay, cited only where anchored"
+  }
+ ],
+ "plan_review": {
+  "status": "under operator review",
+  "open_question": "operator is questioning the DICE gating (M6/K1) for the tree-drafting track",
+  "stage4": "not applied; stand by for plan approval"
  }
 }
