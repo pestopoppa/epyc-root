@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T21:08:28Z",
+  "generated_at": "2026-11-23T21:19:20Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1775,15 +1775,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 279,
-      "dispatchable": 34,
+      "closed": 280,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-23",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 36,
+      "open": 35,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1826,14 +1826,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 24,
+          "dispatchable": 23,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 971,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 25,
+          "open": 24,
           "readiness": "blocked"
         }
       ]
