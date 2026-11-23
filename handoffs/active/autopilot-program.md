@@ -21,7 +21,89 @@
 ## Track: autopilot-program
 <!-- gate: none -->
 
+### Backlog
+- [ ] **AP-POSTREBOOT-LH-RIGOR** [non-inference] Enforce AP-BSV2-ACCEPT-RIGOR rules R1-R5 in the Life-Harness run's own accept step, and route its improver calls through a loopback proxy to the served architect model; see the post-reboot sequence section above (step 2).
+      · done when: dry-run plan (python -m evolution.reproduce without --launch) shows the R1-R5 accept check wired, plus one recorded improver-conformance replay through the proxy returning tool_calls and integer usage, or a recorded failure naming the unmet rule
+      · gate: none
+      · owner: autopilot-backlog-session
+- [ ] **AP-POSTREBOOT-ALF-SMOKE** [inference] After the host reboot, run the ALFWorld-only AgentBench smoke: 5 episodes, AgentRL controller plus one worker, a local role served by llama-server via tool calls, no Redis (post-reboot sequence step 1; gated on the host reboot, an external event with no box).
+      · done when: 5 episodes complete with a filed verdict.json, or a recorded failure naming the failing layer (controller, worker, tool-call path)
+      · gate: none
+      · owner: autopilot-backlog-session
+- [ ] **AP-POSTREBOOT-LH-RUN** [inference] Run the Life-Harness evolve-from-scratch run on ALFWorld (about 710 solver episodes, 6 rounds; solver Qwen3.6-35B-A3B, improver the served architect model via the loopback proxy) BEFORE the Autopilot hold is lifted; book as measured rate x units + 25% (post-reboot sequence step 2).
+      · done when: 6 rounds complete with per-round R4 decision records and the sealed TEST score filed, or a recorded stop naming the rule that failed
+      · gate: AP-POSTREBOOT-LH-RIGOR, AP-POSTREBOOT-ALF-SMOKE
+      · owner: autopilot-backlog-session
+- [ ] **AP-POSTREBOOT-FOLDIN-DECISION** [operator-decision] Decide what folds into the Autopilot loop from the Life-Harness run: if gains survive R1-R5 the architect-proposer becomes an Autopilot proposal source; otherwise record why not (post-reboot sequence step 3).
+      · done when: decision recorded under this box (fold-in yes/no with the R1-R5 survival numbers), delivered as an options package
+      · gate: AP-POSTREBOOT-LH-RUN
+      · owner: autopilot-backlog-session
+- [x] **AP-BSV2-RIGOR-GATE-CODE** [non-inference] Implement R1-R5 in the AUTOPILOT_BSV2_ACCEPT_GATE accept path (default off) in epyc-orchestrator; code and unit tests need no run and no Autopilot, so this does not wait on the relaunch. [no-belief: build/landing]
+      · done when: unit tests pass for R1-R5 (an accept sharing a qid with the proposal batch, or compared against a cached parent, or missing the R4 record, is refused) and the commit SHA is recorded under this box
+      · gate: none
+  - **2026-11-23 DONE.** Orchestrator commit `31ee413c` on main (rebased from `3f14c783`): `scripts/autopilot/bsv2_accept_rigor.py` + wiring in `actions._bsv2_accepts`, tests `tests/unit/test_bsv2_accept_rigor.py` (12 pass; flag/feature/AP-72 neighbours 177 pass). Enforced under a new sub-flag `autopilot_bsv2_accept_rigor` (env `AUTOPILOT_BSV2_ACCEPT_RIGOR`, default off, requires the existing gate on); the previously env-only `AUTOPILOT_BSV2_ACCEPT_GATE` also became FeatureSpec `autopilot_bsv2_accept_gate`. Both in `runtime_flags.spec.yaml`, `HOT_SWAP_FEATURES`, `scripts/autopilot/program.md`. Fails closed when the proposal-qid set (`state["bsv2_rigor"]["proposal_qids"]`) is unknown, so live use needs the loop to populate it plus a disjoint accept partition, and `sealed_qids` / `budget.unit` set. Unresolved design point: both flags are hot-swap, so the proposer could flip the gate; pinning them observe-only needs `test_flag_surface.py` (pinned set == 2 flags) changed. [no-belief: build/landing]
+      · owner: autopilot-backlog-session
+
 > Folded from the body of `handoffs/active/autopilot-program.md` (row RTG-02), from its first `##` section on, @ `e8deee0a4de8` on 2026-11-03 (BRF-T7-F12, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
+- [x] **AP-BSV2-RIGOR-PIN** [non-inference] Pin autopilot_bsv2_accept_gate and autopilot_bsv2_accept_rigor observe-only so the proposer cannot flip its own accept gate; update test_flag_surface.py's pinned set [no-belief: build/landing]
+      · done when: both flags absent from HOT_SWAP_FEATURES mutation surface, test_flag_surface.py passes
+      · gate: none
+  - **2026-11-23 DONE.** Orchestrator commit `3421892f` (branch `ap-bsv2-rigor-pin-state`, PRE-PUSH, may be rebased): both flags added to `PINNED_OBSERVE_ONLY_FLAGS` (structural_lab, so `propose_flag_experiment` / `apply_flag_experiment` refuse them) and removed from `HOT_SWAP_FEATURES`; still FeatureSpec + `runtime_flags.spec.yaml` + operator-settable; `program.md` row says observe-only. `test_flag_surface.py` pinned-set and planner-block assertions updated; 153 pass with test_bsv2_accept_rigor and test_repl_child_lane_full.
+- [x] **AP-BSV2-RIGOR-STATE** [non-inference] Populate ctx.state['bsv2_rigor'] (proposal_qids, sealed_qids, budget unit/limit) and a proposal-disjoint accept partition in the autopilot loop so the R1-R5 gate stops failing closed [no-belief: build/landing]
+      · done when: unit test: rigor gate on, loop-populated state, a valid accept passes and an overlapping one is refused
+      · gate: AP-BSV2-RIGOR-PIN
+  - **2026-11-23 DONE.** Same orchestrator commit `3421892f` (PRE-PUSH, may be rebased). `dispatch_action` calls `_bsv2_rigor_prepare` (gate+rigor on only): proposal batch = previous eval's qids (known-empty on the first round; None, so fail closed, when traces exist but the batch is unknown), sealed hash split of the pool (`AUTOPILOT_BSV2_SEALED_FRACTION`, default 0.2), budget unit/limit (`AUTOPILOT_BSV2_BUDGET_UNIT` default rollouts, `_LIMIT` default 5000); `EvalTower.bsv2_exclude_qids` makes the T1 legacy-pool draw skip proposal and sealed qids (core_id suffix `_bsv2part`), so both arms share one disjoint partition. Unit tests: a valid disjoint accept passes, an overlapping accept and a sealed-qid accept are refused, unknown batch fails closed, inert with flags off. Neighbours (actions, config_applicator, eval_tower hybrid/partitions, structural_lab) 234 pass. Caveat: tests use a fake tower; the real `eval_t1` exclusion path is exercised only by neighbour tests, not a live draw.
+
+## 2026-11-23 post-reboot sequence (operator-agreed; canonical home)
+
+Operator agreed 2026-11-23, after OD-2 was answered B ("wait for AP-BSV2-ACCEPT-RIGOR", now DONE). This section is the ONE canonical statement; M10 (`eval-tower-program.md`), the HIL-6 entry (`harness-program.md`) and the stage-3 ledger box AKI-45 (`research/deep-dives/intake-ak-1123/stage3-plan.md`) point here. The sequence runs on the CURRENT stack; none of steps 1-3 starts the Autopilot loop, and the HOLD stays in force until step 5.
+
+1. **After the host reboot:** ALFWorld-only AgentBench smoke, 5 episodes (AgentRL controller plus one worker; a local role served by llama-server through tool calls; no Redis). Box AP-POSTREBOOT-ALF-SMOKE (inference).
+2. **Life-Harness evolve-from-scratch run** (about 710 solver episodes = 6 TRAIN rounds x 100 + 109 TEST + 1 smoke, ALFWorld) BEFORE the hold is lifted. Solver = Qwen3.6-35B-A3B (the orchestrator's worker-to-be); improver = the served architect model, through a loopback proxy (the shipped proposer call is hardwired to `MR_HOST/protocol/openai/v1/chat/completions`; intake-2861#record claim 1, LH4a). The run's own accept step MUST enforce AP-BSV2-ACCEPT-RIGOR R1-R5 (rules listed under that box, "RESULT"): R1 disjoint accept tasks, R2 fresh parent re-run (the shipped `strict_improvement` already re-runs the incumbent, intake-2861#record claim 4, but accepts on one extra success of 50), R3 sealed test split, R4 per-round decision record with status split and tokens per accepted gain, R5 budgets in rollouts or tokens. Booking = measured rate x units + ~25% (never padded guesses). Boxes AP-POSTREBOOT-LH-RIGOR (non-inference, build first) then AP-POSTREBOOT-LH-RUN (inference; gated on LH-RIGOR and ALF-SMOKE).
+3. **Decide what folds into the Autopilot loop** from step 2's result: if the gains survive R1-R5 the architect-proposer becomes an Autopilot proposal source. Box AP-POSTREBOOT-FOLDIN-DECISION (operator decision, gated on LH-RUN).
+4. **Autopilot journal-staleness audit, LAST** before relaunch (existing rule, operator 2026-11-19): AP-JOURNAL-STALENESS-AUDIT, now gated on AP-POSTREBOOT-FOLDIN-DECISION.
+5. **Operator lifts the hold**, after AP-HOLD-RELEASE-REVIEW and its restart-preconditions checklist (W-11..W-22) are re-proved.
+
+Independent non-inference prep that does not wait on any of this: AP-BSV2-RIGOR-GATE-CODE (R1-R5 in the `AUTOPILOT_BSV2_ACCEPT_GATE` path; default-off code and unit tests).
+
+Ordering DECIDED (operator, 2026-11-23): W-11 and W-13 stay as written. The hold lifts only AFTER the v11 production kernel promotion and PIP02-PADDLE-STACK-ENTRY, so autopilot relaunches on the new kernel with a fresh baseline. Steps 1-4 run now on the v10 stack and do not wait on either.
+
+### Audit: every track waiting on the Autopilot hold or relaunch (2026-11-23)
+
+Timing: BEFORE = non-inference prep that can be done now; WITH = runs as part of the relaunch / first cycle; AFTER = needs a live loop first. Line numbers are hints (the box ID is the identity).
+
+| ID | File:line (approx) | Waits on | Still accurate? | Timing |
+|---|---|---|---|---|
+| AP-JOURNAL-STALENESS-AUDIT | autopilot-program.md ~956 | "DO LAST", before any relaunch | Yes; now also gated on AP-POSTREBOOT-FOLDIN-DECISION | LAST before relaunch |
+| AP-HOLD-RELEASE-REVIEW | autopilot-program.md ~71 | immediately before the lift | Yes (its box list unchanged) | at the lift |
+| BSV-2 live paired runs | autopilot-program.md ~145 (+ `/mnt/raid0/llm/tmp/bsv2-paired-20261119T082025Z/`) | relaunch, after the journal audit | Yes, except the "R1-R5 waits on the audit and relaunch" clause (fixed in place): the code does not need the loop. Booking 15,700 s is August-era; re-derive | code BEFORE (AP-BSV2-RIGOR-GATE-CODE); live runs WITH relaunch |
+| BSV-3 | ~161 | BSV-2 paired-gate rollout evidence | Yes | AFTER |
+| AP-19b supervised first `gepa_optimize` | ~187 | next stack bring-up, operator-watched | Yes | WITH (first watched window) |
+| AP-27, AP-29, AP-48, AP-WM-1b, AP-CH-2, AP-54b, AP-56 | ~187-830 | NEEDS-RUN (live loop or its eval slots) | Yes, per the 2026-11-09 audit; each re-read at AP-HOLD-RELEASE-REVIEW | WITH / AFTER |
+| AP-70 | ~937 | rotation boundaries in a live run; VB-AP70-ROTATION-READ ingests them | Yes | WITH |
+| AP-DGM-PROV, AP-DGM-SEL, SEQ-SHINKA-1 | ~970, ~977, ~4802 | prospective write-side capture during a model-producing run (flags in W-21) | Yes; options A and C code already shipped default-off | flags set at launch WITH; replay AFTER |
+| AP-55-ARM, BEP-2, DCP-6, W8, W8b, W6f, W5, BT-5b, real_suite_v1 discriminability | ~1049, ~2246, ~2364, ~2707, ~3106, ~3766, ~3800, (see AP-HOLD-RELEASE-REVIEW list) | live run / new-era baseline | Yes; W6f and W5 are era-dependent, re-derive under the new era | WITH / AFTER |
+| W-36 SEQ-3c | ~4578 | relaunch, new era, fresh pool | Yes | AFTER |
+| W-11..W-22 restart preconditions | AP-HOLD-RELEASE-REVIEW sub-list | each re-proved at the lift | W-11 and W-13 kept: lift waits on v11 + PIP02 (operator 2026-11-23) | at the lift |
+| TD-36/37/38/42 (DAR-LAT-1/2/3/3i), TD-39 (LRC-1) | routing-program.md ~483-563, ~2279 | FROZEN: "autopilot has trained on the swapped stack AND UFH-13 re-opened" (operator 2026-09-29) | Yes; they cannot start earlier than the relaunch | AFTER |
+| TD-41 (TD-28 typed routing as advice) | routing-program.md ~3287 | v11 promotion AND trained autopilot AND UFH-13 | Yes | AFTER |
+| P3-3, P3-4, P4-2 | routing-program.md ~862, ~866, ~883 | P3-3 runs through the Autopilot `consult_gate_probe` action; P3-4 needs a week of its shadow data; P4-2 needs P3-3 calibration | Yes | P3-3 WITH; P3-4, P4-2 AFTER |
+| VB-AP-SPINUP-AP3-SCOPED (+ORCH-CLONE, STRATEGY-STORE) | vidya-belief-substrate-program.md ~4119 | the spin-up env check; the single spin-up checklist | Yes | WITH (spin-up) |
+| VB-AP-FIRST-CYCLE, SC14-B | vidya ~504, ~942 | first post-restart cycle | Yes | AFTER spin-up |
+| VB-CANARY-B-FRONTIER | vidya ~4434 | first post-fence frontier keep | Yes; its canary B does not exercise `plan_with_providers` (2026-11-09 audit note) | AFTER; the canary rewrite BEFORE |
+| VB-AP70-ROTATION-READ | vidya ~1907 | prospective AP-70 records | Yes | adapter BEFORE, data AFTER |
+| VB-REFOCUS-NONEMPTY-READ-PROOF, P1-PHASE2 (two-CPU-model autopilot smoke) | vidya ~4110, ~4160 | a live planner turn in each loop | Yes | AFTER spin-up |
+| M-11a first re-distil (`distill_skillbank`) | memory-program.md ~153 | operator choice: (a) distil now via `seed_skills.py --teacher claude`, (b) wait for traffic after relaunch (recommended) | Yes; the HOLD does not block (a) | operator choice; AFTER if (b) |
+| refactoring-multirepo-2026-10 track | engineering-hygiene-backlog.md ~1664 | operator 2026-11-09: after the production kernel promotion AND the Autopilot relaunch | Yes | AFTER |
+| V11-POST-PADDLE / PIP02-PADDLE-STACK-ENTRY | v11-promotion-checklist.md ~188; knowledge-pipelines.md ~1980 | v11 freeze, then BEFORE the relaunch (operator 2026-11-10) | Yes; the 2026-11-23 sequence is silent on it (ordering question above) | BEFORE the lift |
+| frontier-f2-self-running-lab track | autopilot-program.md ~5095 (moved from frontier-lab-automation) | "resume when the AutoPilot loop is relaunched" | Yes | AFTER |
+| context-and-token-economy.md | whole file | nothing | Yes (RTG-08: the HOLD gates nothing here) | n/a |
+| kv-cache-program.md, eval-tower-program.md | whole files | no box waits on the HOLD; eval-tower ~1164 "when AutoPilot is deliberately stopped" is a quiet-window condition, not a wait; M10 (~162) trigger text was stale (fixed in place) | see left | n/a |
+| memory-program.md, knowledge-pipelines.md, routing-program.md, vidya, CURRENT-CAMPAIGN | premise-reset headers | "Autopilot stays on HOLD" | Yes (headers); CURRENT-CAMPAIGN ~261 (2026-08-09 stop notice) is historical staging text, not a gate | n/a |
+| STACK-UP-RELOAD-QUEUE | harness-program.md ~546 | stack up + one API-only reload | Yes; NOT gated on the HOLD (do not stop autopilot); the smoke and the LH run need the same stack-up | BEFORE step 1 where possible |
+| HIL-6 / HIL-6j pilot | harness-program.md ~1724 | pilot deferred 2026-10-22 until the post-second-MI210 stack redefinition is ratified; this sequence's Life-Harness run is a separate, now-agreed run, not the HIL-6 pilot | pointer added | separate |
+
+Non-inference prep dispatchable now: (1) AP-POSTREBOOT-LH-RIGOR (R1-R5 in the Life-Harness accept step, the loopback `/protocol/openai/v1` to `/v1` proxy, and a `reproduce` dry-run without `--launch`); (2) AP-BSV2-RIGOR-GATE-CODE; (3) stand up the Life-Harness native ALFWorld environment without Docker (LH4b, no model calls); (4) rewrite the VB-CANARY-B-FRONTIER canary to go through `plan_with_providers`; (5) PIP02-PADDLE-STACK-ENTRY build-side prep, which the operator sequenced before the relaunch.
 
 ## 2026-11-09 audit refresh
 
@@ -135,6 +217,7 @@ This packet is staging only; it does not run live RLM tasks, start Ouro training
       - **R5 budget unit:** budgets are counted in rollouts or tokens, never wall-clock, trial count or iterations; the unit is stored in the R4 record.
     - **Offline replay** (script `scripts/autopilot_replay/bsv2_accept_rigor_replay.py`; read-only over BOTH shards `autopilot_journal.jsonl` + `autopilot_journal_1.jsonl`, 1,390 lines, 1,372 trial rows, 0 unparseable): accepts = `keep_revert_decision=keep` on mutation-class actions (numeric_trial, structural_experiment, prompt_mutation, gepa_optimize, code_mutation) = **130**, of which only 49 carry per-question vectors. Survivors: R1 **0/130** (measured: every accept with vectors re-uses qids seen in earlier trials; the 81 without vectors are not evidenced), R3 **0/130** (measured: no accept holds a never-before-seen `audit` qid), R2 **0/130**, R4 **0/130**, R5 **1/130** (R2/R4/R5 are field-absence counts; the one R5 hit is an unverified key-name match). **All rules together: 0 of 130 past accepts survive.** The journals are not too sparse to decide: R1/R3 are measured and the R2/R4/R5 fields never existed. Caveat: this shows the pre-gate accepts were not auditable under the new rules, not that they were wrong; the gate was never live (flag default-off, 0 `seq_paired_baseline` on any keep).
     - Implementing R1-R5 in the gate waits on AP-JOURNAL-STALENESS-AUDIT and the relaunch. The design side of OD-2 = B (Life-Harness local-improver run) is now unblocked.
+    - 2026-11-23 correction (post-reboot audit): the clause above is stale for the CODE. R1-R5 in the gate is default-off code with unit tests and needs neither the loop nor the journal audit: box AP-BSV2-RIGOR-GATE-CODE. Only the LIVE paired runs (BSV-2 below) wait on the relaunch. The Life-Harness run enforces R1-R5 in its own accept step before the hold lifts: see "2026-11-23 post-reboot sequence" at the top of this track. [no-belief: pointer correction]
 
 - [ ] **BSV-3 — Conflict-aware acceptance.** When two independently-accepted mutations touch the same subsystem (prompt + routing, two prompts, prompt + tool policy, context packer + batch editor), flag potential *semantic* conflict for review rather than blind compose. **2026-06-21 observe-only ledger landed in orchestrator `168e9bd8`**: under `AUTOPILOT_BSV_OBSERVE=1`, frontier/safety-passing trials now append a bounded `bsv_mutation_dependency_ledger` state row and journal `eval_details.bsv_observe.mutation_dependency` / `conflict_report`, keyed by `subsystem`, `files_touched`, `prompt_sections_touched`, `feature_flags`, `behavior_signature_delta`, and `parent_trial`. Conflict severity increases on shared subsystem/file/section/flag overlap, blocking BSV deltas, different behavior surfaces, or disjoint/opposing sentinel movement across accepted mutations. Still observe-only/default-off; open work is production conflict-policy enforcement after BSV-2 paired-gate rollout evidence is available.
   - 2026-11-19 (autopilot-backlog-session) code complete on main; remaining is an operator decision / live paired run (see operator batch 2026-11-19). [no-belief: audit]
@@ -933,6 +1016,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 
 - [ ] **AP-JOURNAL-STALENESS-AUDIT — review the autopilot journal for stale assumptions before any relaunch. DO LAST (operator 2026-11-19).** Autopilot has not run since 2026-08-09 (focus moved to autokernel and kernel performance, with large gains). Before autopilot runs again — not soon — audit `orchestration/autopilot_journal*.jsonl` (1,390 records, 2026-05-26 to 2026-08-09) and everything derived from it (priors, Pareto archive, strategy store, AP-71 lineage audit, MHS-8 census, BSV-2 per-trial timings, AP-72 ceilings from August-era throughput) for conclusions that the current kernels, lineup and code invalidate; purge or re-baseline what is stale. Owner autopilot-backlog-session. [no-belief: task filing]
   - 2026-11-19 AP-72 (autopilot-backlog-session): per-model speed ceiling table landed on orchestrator main (`a6f65249`; `orchestration/autopilot_speed_ceilings.yaml`: measured throughput_tps × slots × 1.10 — 27B 210.3, A3B 177.0, Flash-Next 58.0, VL 123.4 t/s), new flag `autopilot_speed_physical_bound` default OFF (operator chose the roofline×concurrency source; numbers shown before enabling). Note the values are achieved spec-decode rates, not pure bandwidth rooflines. TTFT/TPOT floors stay open (EvalResult has no per-trial TTFT/TPOT). [no-belief: table from existing priors, no measurement]
+      · gate: AP-POSTREBOOT-FOLDIN-DECISION
 - [ ] **AP-72 (S3-AP-10) — metric-event physicality bound in SafetyGate.** A trial whose reported
       speed exceeds a physical bound (tokens/s above the surface roofline ceiling, or TTFT/TPOT
       below a hardware floor) is invalid, not a keep. Scoring runs from the harness's own canonical

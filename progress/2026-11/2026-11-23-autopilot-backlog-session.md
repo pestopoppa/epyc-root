@@ -37,3 +37,25 @@ not retried, so that class is unreplayed. Box left open with a checkpoint. Detai
 - KV-EVICT-COST-1 smoke, both telemetry boxes and the sampler-tap commit (orch e21a312e7049) join the STACK-UP-RELOAD-QUEUE.
 - Taskflow r6c/r7d (pipeline-mgmt): 0/8 verified either arm; briefs move failures from "never edits" to "edits but fails". Lesson for WORKER-TASK-BRIEF: give the 35B relative paths, resolve in the harness. Orchestrator already parses reasoning_content (llama_server.py:1027/2144); measured-rate wall budgets to fold into the WORKER-TASK-BRIEF plan.
 - Wrap-up: index --check rc=0; belief ledger fresh (lag 0); wiki delta 63 sources and research README (60 days) dispatched to subagents.
+
+## Post-reboot Autopilot sequence and hold audit (ap-postreboot-audit)
+
+- Recorded the operator-agreed sequence (reboot, ALFWorld smoke, Life-Harness run with R1-R5 accept, fold-in decision, journal-staleness audit LAST, operator lifts hold) as "2026-11-23 post-reboot sequence" in `handoffs/active/autopilot-program.md`, with the full audit table of every box waiting on the hold or relaunch (BEFORE / WITH / AFTER).
+- Filed AP-POSTREBOOT-LH-RIGOR, AP-POSTREBOOT-ALF-SMOKE, AP-POSTREBOOT-LH-RUN, AP-POSTREBOOT-FOLDIN-DECISION and AP-BSV2-RIGOR-GATE-CODE; AP-JOURNAL-STALENESS-AUDIT now gated on AP-POSTREBOOT-FOLDIN-DECISION.
+- Fixed stale text in place: BSV-2 "R1-R5 waits on the audit" (code does not need the loop), M10 trigger in `eval-tower-program.md`; pointers added at HIL-6, STACK-UP-RELOAD-QUEUE and stage-3 AKI-45.
+- Open ordering question recorded (not decided): W-11/W-13 still require the v11 promotion and PIP02-PADDLE-STACK-ENTRY before the lift; the agreed sequence is silent on both.
+- No inference, no process started. [no-belief: documentation and audit]
+
+## AP-BSV2-RIGOR-GATE-CODE (non-inference, code + unit tests)
+
+- Orchestrator commit `31ee413c` on main (rebased from `3f14c783`): R1-R5 in `scripts/autopilot/bsv2_accept_rigor.py`, called from `actions._bsv2_accepts` (prompt, GEPA, code paths) behind new default-off sub-flag `AUTOPILOT_BSV2_ACCEPT_RIGOR` under the existing `AUTOPILOT_BSV2_ACCEPT_GATE`.
+- Wired: FeatureSpecs `autopilot_bsv2_accept_gate` and `autopilot_bsv2_accept_rigor`, `runtime_flags.spec.yaml`, `HOT_SWAP_FEATURES`, `scripts/autopilot/program.md`.
+- Tests (fakes only): 12 new pass; test_runtime_flag_spec, test_features, test_flag_surface, test_ap72_speed_ceiling_table 165 pass; existing `-k bsv2` actions tests 3 pass. System pytest with the orchestrator venv python (venv has no pytest).
+- Fails closed on unknown proposal-qid set; live use needs the loop to populate `state["bsv2_rigor"]`. Open: the gate flags are proposer-flippable (hot swap); pinning needs a `test_flag_surface.py` change. Autopilot not started. [no-belief: build/landing]
+
+## AP-BSV2-RIGOR-PIN and AP-BSV2-RIGOR-STATE (non-inference, code + unit tests)
+
+- Orchestrator commit `3421892f` on branch `ap-bsv2-rigor-pin-state` (worktree `/mnt/raid0/llm/worktrees/bsv2-rigor-pin`), PRE-PUSH and may be rebased.
+- PIN: both BSV-2 flags moved from `HOT_SWAP_FEATURES` into `PINNED_OBSERVE_ONLY_FLAGS` (the proposer's propose/apply paths refuse them); FeatureSpec, `runtime_flags.spec.yaml` and operator settability kept; `program.md` says observe-only; `test_flag_surface.py` pinned-set assertions updated.
+- STATE: `dispatch_action` populates `state["bsv2_rigor"]` (proposal batch = previous eval qids, sealed hash split, budget unit/limit) when gate+rigor are on, and `EvalTower.bsv2_exclude_qids` partitions the T1 accept draw away from proposal and sealed qids. Unit tests: valid accept passes, overlapping and sealed accepts refused, unknown batch fails closed, inert when off.
+- Tests: 153 pass (rigor, flag_surface, repl_child_lane_full); 234 pass on actions/config_applicator/eval_tower hybrid+partitions/structural_lab neighbours. Autopilot not started; nothing pushed. [no-belief: build/landing]

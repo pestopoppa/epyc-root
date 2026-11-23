@@ -1,0 +1,1 @@
+{"token":"RATIFY-A3B-PMIN05-20261123","signed_at":"2026-11-23T18:23:53Z","package":"artifacts/operator/stack-change-a3b-pmin05-20261123","research_commit":"ed7796375","roles":["frontdoor","worker_summarize","worker_general","worker_explore","worker_math","toolrunner","worker"],"change":"server_mode.frontdoor.acceleration.draft_p_min=0.5"}

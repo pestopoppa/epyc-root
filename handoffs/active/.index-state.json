@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 595
+      "open": 591
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -15,8 +15,8 @@
     "research-evaluation-index.md": {
       "blocked": 2,
       "handoffs": 4,
-      "oldest_advance": "2026-11-03",
-      "open": 250
+      "oldest_advance": "2026-11-19",
+      "open": 249
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 955,
+      "closed": 957,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 127,
+      "open": 125,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 442,
+          "closed": 443,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 61
+          "open": 60
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5368,
+          "line": 5372,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5453,
+          "line": 5457,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,24 +160,24 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5634,
+          "line": 5638,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 11
         },
         {
           "blocked": 0,
-          "closed": 281,
+          "closed": 282,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7517,
+          "line": 7521,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 26
+          "open": 25
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10753,
+          "line": 10758,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11000,
+          "line": 11005,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -937,10 +937,10 @@
     },
     "eval-tower-program.md": {
       "blocked": 0,
-      "closed": 215,
+      "closed": 216,
       "guarded": 1,
-      "last_advanced": "2026-11-03",
-      "open": 44,
+      "last_advanced": "2026-11-23",
+      "open": 43,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -953,13 +953,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 74,
+          "closed": 75,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 22
+          "open": 21
         },
         {
           "blocked": 0,
@@ -2350,11 +2350,11 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 269,
+      "closed": 272,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 40,
+      "open": 38,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,18 +2363,18 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 312,
+      "total": 313,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 123,
+          "closed": 126,
           "frozen": 1,
           "gates": [],
           "guarded": 0,
           "line": 15,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 15
+          "open": 13
         },
         {
           "blocked": 1,
@@ -2384,7 +2384,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 935,
+          "line": 940,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 25

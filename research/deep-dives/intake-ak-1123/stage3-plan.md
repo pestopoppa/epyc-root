@@ -155,7 +155,7 @@ Consumer discovery (searched: lane handoffs, epyc-inference-research loop/, llam
 | AKI-42 | intake-2857 HR1/HR3 + intake-2858 LH1/LH3 + intake-2859 PR3 | HIL-2 checklist cases, taxonomy, validity gate, install envelope | P6 / HIL-EVO-CASES-1 |
 | AKI-43 | intake-2836 H2 + intake-2859 PR2 + intake-2862 PR2a | Map hook events and a versioned plugin manifest onto AP-DGM-PROV | P6 / AP-BSV2-ACCEPT-RIGOR |
 | AKI-44 | intake-2836 H3 | Executable-guard arm beside the text-skill arm in the SkillBank A/B | M12 |
-| AKI-45 | intake-2858 LH4 + intake-2861 LH4a-c | Life-Harness evolve-from-scratch with a local improver | M10 |
+| AKI-45 | intake-2858 LH4 + intake-2861 LH4a-c | Life-Harness evolve-from-scratch with a local improver | M10; sequence and boxes 2026-11-23: `handoffs/active/autopilot-program.md` (AP-POSTREBOOT-LH-RIGOR, AP-POSTREBOOT-LH-RUN) |
 | AKI-46 | intake-2857 HR4 | No-model HookEvo smoke | decline: it exercises a JavaScript runtime we do not use |
 | AKI-47 | intake-2836 H4 + intake-2857 HR5/HR6 + intake-2858 LH5 + intake-2859 PR5 + intake-2861 LH4d + intake-2862 PR6 | Reproduce headline numbers, vendor packages, copy slot/quota-hold | decline: they measure other harnesses; rowflow already covers slots |
 | AKI-48 | intake-2847 S1 + intake-2832 A1 gate | Exact longest-suffix coverage curve over COPYSPEC P1 outputs | P7 / SPEC-COPY-COV-1 |

@@ -1,0 +1,173 @@
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index b4ccceef..5ac9aebd 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,47 +48,47 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-11-19T01:04:25Z'
++compiled_at: '2026-11-23T18:19:33Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: 9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79
+-    repo_commit: 7f70e338
++    sha256: fbd6081dfe0c3ab68d046f84eb7ecdcb5ee92f9ace8f88e32e360eb374a16fed
++    repo_commit: f15d2775
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: 028b1e795e7f72c8125fc0947a7fcefed5f9d5f2d6d8f7752cd3fbf602a6f1ac
+-    repo_commit: 7f70e338
++    sha256: fd0f46307d74255d1d953f2c0fb85cb0dc8b0ad53290f1de35be18f39b69937a
++    repo_commit: f15d2775
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+     sha256: 8329d81f8a7435f0e1cfce1e3a32e4a8635d0e80bc92fcf21100fd2e813b9143
+-    repo_commit: 7f70e338
++    repo_commit: f15d2775
+   stack_numa:
+     path: scripts/server/stack_numa.py
+     sha256: edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32
+-    repo_commit: 7f70e338
++    repo_commit: f15d2775
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+     sha256: 8ebd0f7e92b5d27b252211bf7e7c912775711db9f0ee8701c908ba96712b4583
+-    repo_commit: 7f70e338
++    repo_commit: f15d2775
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+     sha256: 15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1
+-    repo_commit: 7f70e338
++    repo_commit: f15d2775
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+-    sha256: 09f8ef6e21b2411bdb4c5d82cbe9392a6ec3e69bfe4407ffe4346a07e11dd944
+-    repo_commit: 7f70e338
++    sha256: 9cb73f6aae3d24ab6e84aacc3df905d3de5da7216af1f90864f468792c3e975a
++    repo_commit: f15d2775
+   stack_paths:
+     path: scripts/server/stack_paths.py
+     sha256: 85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5
+-    repo_commit: 7f70e338
++    repo_commit: f15d2775
+   stack_runtime:
+     path: scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: 7f70e338
++    repo_commit: f15d2775
+ roles:
+   architect_critic:
+     role: architect_critic
+@@ -832,7 +832,7 @@ roles:
+               draft_model_path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+               draft_max: 4
+               draft_min: null
+-              draft_p_min: null
++              draft_p_min: 0.5
+               draft_p_split: null
+               threads_draft: null
+               ngram_mod_n_min: null
+@@ -906,6 +906,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+@@ -1281,6 +1282,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+@@ -1782,6 +1784,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+@@ -2186,6 +2189,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+@@ -2391,6 +2395,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+@@ -2596,6 +2601,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+@@ -2801,6 +2807,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+@@ -3006,6 +3013,7 @@ roles:
+         k: null
+         v: null
+       draft_max: 4
++      draft_p_min: 0.5
+       lookup: false
+       corpus_retrieval: false
+     model:
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index 404870b2..f39f7669 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-11-19T01:04:24Z'
++compiled_at: '2026-11-23T18:19:32Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+-    repo_commit: 7f70e338
+-    sha256: 9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79
++    repo_commit: f15d2775
++    sha256: fbd6081dfe0c3ab68d046f84eb7ecdcb5ee92f9ace8f88e32e360eb374a16fed
+   research:
+-    path: origin/main:orchestration/model_registry.yaml
+-    repo_commit: b620a0f23
+-    sha256: 2e153d548f377016bcffe605184dfeac0900c200b78746146845b449b1a8da06
++    path: /mnt/raid0/llm/epyc-inference-research/.worktrees/sc-a3b-pmin05-20261123/orchestration/model_registry.yaml
++    repo_commit: a84600e30
++    sha256: 82b8fb07d677f55c8d83d5c4479481ab22e308e351e5a5accc8b932e72755f63
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+@@ -330,6 +330,7 @@ models:
+       k: null
+       v: null
+     draft_max: 4
++    draft_p_min: 0.5
+     lookup: false
+     corpus_retrieval: false
+   serving:

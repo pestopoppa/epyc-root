@@ -3399,3 +3399,12 @@ Sources: [progress 2026-11-23 autokernel](../progress/2026-11/2026-11-23-autoker
 - [intake-2846 Kobus ERSD](../research/deep-dives/intake-ak-1123/intake-2846-kobus.md)
 - [intake-2847 SAM Decoding](../research/deep-dives/intake-ak-1123/intake-2847-samdecoding.md)
 - [intake-2848 ReTrace](../research/deep-dives/intake-ak-1123/intake-2848-retrace.md)
+
+### Compiled Update — 2026-11-23 evening (operator wiki sweep, autokernel slice): served spec-decode measurements
+
+- **An offline replay is only as good as its baseline.** The DICE replay (research `03c100462`) projects +7-11 % acceptance for sampled trees, and DICE node selection adds nothing on top. The first served sampled-tree run (`25f846c35`) was not a valid test. MTP/DFlash alternatives are built only at T<=0, so no siblings existed. On 27B, `spec_dists.clear()` also downgraded DFlash2's rejection accept to sample-and-compare. With V0 checked against served acceptance (within ±2.6 %), the A3B tree is parked on verify cost: W8/W12 cost 26 %/45 % of throughput. 27B stays open. Sampled-tree v2 (fork `8bbc8a26e`, recursive rejection-sampling verify) is held for the 27B replay.
+- **Served temperature changes the verdicts.** CAFE-1-SERVED-T (A3B CPU, `--draft-p-min 0.5`) is a KEEP at +22/+28 % at one CPU quarter, with SPEC-PIT.1 passing. That is a relative effect at one placement, not a served throughput number. The operator signed the stack package (RATIFY-A3B-PMIN05-20261123). The greedy re-tests (research `da6e2f5ae`) leave most parks standing, and showed that CAFE-1 had been wrongly gated at T=0. SPEC-COUPLE-MTP-1 is futile at <=1.2 %.
+- **Identity under speculation is margin-classed.** SPEC-ID-NOISE-1 (CPU + GPU): a single request on the same server is deterministic. Batched and DFlash2 cross-launch runs diverge on near-ties. Batch SIZE breaks invariance. Position in the batch is invariant on CPU, and on GPU varies only with deterministic mode off. Ragged rollback is clean on both devices. So a single divergence inside cross-server noise, such as Q4X R9's FAIL_CORRECTNESS, is not a correctness verdict. Q4X-REPLAY-VS-SNAPSHOT is the queued discriminator.
+
+#### Source References (2026-11-23 evening, autokernel slice)
+- [speculative-decoding handoff](../handoffs/active/speculative-decoding.md), [autokernel-loop handoff](../handoffs/active/autokernel-loop.md), [progress](../progress/2026-11/2026-11-23-autokernel.md), [intake-ak-1123 stage 3 plan](../research/deep-dives/intake-ak-1123/stage3-plan.md)
