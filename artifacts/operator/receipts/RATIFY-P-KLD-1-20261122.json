@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-P-KLD-1-20261122",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_p_kld_divergence_protocol_20261122.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

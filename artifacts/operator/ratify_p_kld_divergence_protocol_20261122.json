@@ -1,0 +1,44 @@
+{
+  "schema": "epyc.measurement.annex_creation.v1",
+  "decision": "CREATE-ANNEX-V",
+  "gate_id": "RATIFY-P-KLD-1-20261122",
+  "ratified_at": "2026-11-23T08:00:29Z",
+  "applied_at": "2026-11-23T08:00:29Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "protocol_id": "P-KLD-1",
+  "annex_letter": "V",
+  "annex_path": "measurement/protocols/divergence.md",
+  "annex_sha256": "1b407e27d5aa4a8769af9df17f034988cf6320fd60945032895774a81f54bdc6",
+  "staged_text": {
+    "path": "artifacts/operator/staged/p-kld-annex-20261122.md",
+    "sha256": "1b407e27d5aa4a8769af9df17f034988cf6320fd60945032895774a81f54bdc6"
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "92199cbbfa3500da8a41cd6803fe7ba99165365f96b4a5b15183a16a2f580152",
+      "sha256_after": "258147f7ee517dce04e338797ac4962134ea1be8a891aacd6e994263242b926a"
+    }
+  },
+  "measurement_md_edits": [
+    "layout six->seven",
+    "annex key +V",
+    "section-2 +P-KLD-1 (end of table)",
+    "CHANGELOG 2026-11-22 entry"
+  ],
+  "scope": "Protocol text only. No measurement is taken, relabelled or edited. Pre-annex divergence numbers are demote-to-prior under Annex V V10 unless their receipts prove every V9 field. V11 leaves Annex K P-AK-SEARCH-1-A5 operative.",
+  "consolidated_receipt": "artifacts/operator/ratify_p_kld_divergence_protocol_20261122.receipt.json",
+  "provenance": {
+    "source": "local-inference-lab/rtx6kpro@44e817b kld/README.md",
+    "source_sha256": "b1501772150998a3546a0d864726f19eaa0cb880f7d7db51c1f93df43c803346",
+    "intake": "docs/research-intake/rtx6kpro-20260907.md item 4.5",
+    "handoff": "autokernel-rebuild R23-47",
+    "operator_queue": "OP-38",
+    "decision_package": "artifacts/operator/op38-pkld-decision-20260915.md",
+    "rebuilt_from": "artifacts/operator/ratify_p_kld_divergence_protocol_20260915.sh (branch sub/op38-pkld-package)"
+  },
+  "applied_by": {
+    "path": "scripts/operator/ratify_p_kld_divergence_protocol_20261122.sh",
+    "sha256": "efe628bb43603e7031d39b0b2eccf5de79ae5b8be456f1e0256abc90a41279a3"
+  }
+}

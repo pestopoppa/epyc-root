@@ -1,0 +1,145 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-23T08:00:29Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "42620ac85578f7fbf50ef2c22b0e25abcf5cff5a",
+  "git_head_before": "42620ac85578f7fbf50ef2c22b0e25abcf5cff5a",
+  "operator": "Daniele",
+  "protocol_id": "P-KLD-1",
+  "ratification_id": "RATIFY-P-KLD-1-20261122",
+  "ratify_script": {
+    "exists": true,
+    "path": "scripts/operator/ratify_p_kld_divergence_protocol_20261122.sh",
+    "sha256": "efe628bb43603e7031d39b0b2eccf5de79ae5b8be456f1e0256abc90a41279a3"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/op-p-kld-ratify-20261122",
+  "sections": {
+    "coherence": {
+      "data": {
+        "MEASUREMENT.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: protocol-text adoption; no new measurement. Distilled from local-inference-lab/rtx6kpro@44e817b kld/README.md (sha256 b1501772150998a3546a0d864726f19eaa0cb880f7d7db51c1f93df43c803346) via docs/research-intake/rtx6kpro-20260907.md item 4.5; annex sha256 1b407e27d5aa4a8769af9df17f034988cf6320fd60945032895774a81f54bdc6"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-KLD-1 present in MEASUREMENT.md",
+        "declared NEW by this amendment",
+        "anchor present in MEASUREMENT.md: **V** = `measurement/protocols/divergence.md`.",
+        "anchor present in MEASUREMENT.md: - **2026-11-22 (v2.x)** \u2014 AMENDMENT: **Annex V** (`measurement/protoco"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 19,
+      "lines_after": 740,
+      "lines_before": 723,
+      "lines_removed": 2,
+      "path": "MEASUREMENT.md",
+      "sha256_after": "258147f7ee517dce04e338797ac4962134ea1be8a891aacd6e994263242b926a",
+      "sha256_before": "92199cbbfa3500da8a41cd6803fe7ba99165365f96b4a5b15183a16a2f580152",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/MEASUREMENT.md",
+        "+++ b/MEASUREMENT.md",
+        "@@ -15,7 +15,7 @@",
+        " ",
+        " **Document layout (v2).** This core file holds the constitution: claim grammar, metric scoping,",
+        " protocol index, noise table, governance, and retroactivity. Full normative protocol text lives in",
+        "-six annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this",
+        "+seven annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this",
+        " file \u2014 they are the constitution, filed by family or instrument class, not commentary on it. Daily-use guidance for",
+        " sessions is the digest at `agents/shared/MEASUREMENT_POLICY.md`; when in doubt, this file and its",
+        " annexes win.",
+        "@@ -46,7 +46,8 @@",
+        " `measurement/protocols/quality-eval.md`, **G** = `measurement/protocols/gpu-cross-device.md`,",
+        " **K** = `measurement/protocols/kernel-research.md`,",
+        " **S** = `measurement/protocols/speech.md`,",
+        "-**D** = `measurement/protocols/determinism-parity.md`.",
+        "+**D** = `measurement/protocols/determinism-parity.md`,",
+        "+**V** = `measurement/protocols/divergence.md`.",
+        " Status: \u2705 ratified, \ud83d\udccb staged (operator-apply).",
+        " ",
+        " | Protocol | Scope | Metric (direction) | Status | Annex |",
+        "@@ -81,6 +82,7 @@",
+        " | P-SERVE-SEL-1 | Text-LLM serving-selection load-sweep A/B: selection-policy arms on a single-instance saturating tier, TTFT-bound, orchestrator in the loop (`instrument_class=serving`) | TTFT-SLO attainment per block (\u2191); realized quality non-inferior (per-suite quantum) | \u2705 2026-09-26 | Q |",
+        " | P-DOCPARSE-1 | Document-parser comparison on the 200-PDF OpenDataLoader corpus: LiteParse vs OpenDataLoader as the born-digital fast path, paired by document | per-document `overall` (\u2191), 95% paired bootstrap; median latency gate (\u2193) in the ADOPT clause | \u2705 2026-11-08 | Q |",
+        " | P-SERVE-1 | Kernel-champion serving A/B instrument: fresh `llama-server` launch per sample under the role's registered production recipe, paired ABBA, with its serving floor, serving gate and headline admissibility (`instrument_class=serving`, unit = process) | aggregate decode tok/s (\u2191); effect = median(candidate)/median(anchor) \u2212 1 against a process-unit floor | \u2705 2026-11-19 | K |",
+        "+| P-KLD-1 | Teacher-forced next-token distribution divergence between a named reference R and candidate Q of the same model (quantization/codec, precision swap, kernel/route, KV type, graph change); on a MoE, codec attribution requires a route-pinned R\u00d7Q cell | mean KL(R\u2016Q) nats (\u2193) with a source-cluster bootstrap CI; ln PPL ratio and top-1 agreement secondary \u2014 **not a claim** without a declared estimand, and **never** against a universal band | \u2705 2026-11-22 | V |",
+        " ",
+        " ## 3. Claim grammar & examples",
+        " ",
+        "@@ -347,6 +349,21 @@",
+        " ",
+        " ## CHANGELOG",
+        " ",
+        "+- **2026-11-22 (v2.x)** \u2014 AMENDMENT: **Annex V** (`measurement/protocols/divergence.md`) created as a",
+        "+  **seventh** annex holding `P-KLD-1`, the protocol for any KL-divergence, perplexity or top-1",
+        "+  agreement number used to compare two artifacts, kernels, routes or configurations of one model.",
+        "+  Supersedes the layout sentence (`six` \u2192 `seven`) and the annex key line; \u00a72 gains one row. Load-bearing",
+        "+  content: full-vocabulary only, with `llama-perplexity --kl-divergence` declared a lossy, truncated",
+        "+  instrument (`uint16` base window of 16 nats, reference entries below \u221216 nats dropped); FP64 summary",
+        "+  sums; a declared estimand before capture; a source-document-cluster bootstrap, never the tool's",
+        "+  per-token `\u00b1` or a \u03c3 multiple built from it; no model-independent bands; a fail-closed runner and a",
+        "+  durable receipt; and, on a MoE, no attribution to the codec without a route-pinned `R\u00d7Q` cell.",
+        "+  Defines how PPL, top-1 agreement, coherence and speculative `\u03b1` relate to KLD (none substitutes for",
+        "+  it) and demotes earlier divergence numbers to prior unless their receipts prove every field. \u00a7V11",
+        "+  leaves Annex K `P-AK-SEARCH-1-A5` (graph-fusion KLD keep gate) operative as a search verdict.",
+        "+  Distilled from `local-inference-lab/rtx6kpro@44e817b` `kld/README.md` (research intake",
+        "+  2026-09-07, item 4.5; autokernel-rebuild R23-47; operator queue OP-38).",
+        "+",
+        " - **2026-11-19 (v2.x)** \u2014 AMENDMENT (Annex K, new protocol `P-SERVE-1`): the kernel-champion serving",
+        "   A/B instrument. It records the recipe a run must pin (recipe hash, launch argv, resolved-recipe build",
+        "   digests, paired ABBA order, `np`, frozen prompt set), the per-launch residency proof (R23-60), the"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "bash scripts/validate/check_claims_grammar.sh --files measurement/protocols/divergence.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "check_claims_grammar: clean"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

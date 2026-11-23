@@ -15,7 +15,7 @@ Everything else exists to make that rule cheap to follow.
 
 **Document layout (v2).** This core file holds the constitution: claim grammar, metric scoping,
 protocol index, noise table, governance, and retroactivity. Full normative protocol text lives in
-six annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
+seven annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
 file — they are the constitution, filed by family or instrument class, not commentary on it. Daily-use guidance for
 sessions is the digest at `agents/shared/MEASUREMENT_POLICY.md`; when in doubt, this file and its
 annexes win.
@@ -46,7 +46,8 @@ Full normative text: **B** = `measurement/protocols/bench-cpu.md`, **Q** =
 `measurement/protocols/quality-eval.md`, **G** = `measurement/protocols/gpu-cross-device.md`,
 **K** = `measurement/protocols/kernel-research.md`,
 **S** = `measurement/protocols/speech.md`,
-**D** = `measurement/protocols/determinism-parity.md`.
+**D** = `measurement/protocols/determinism-parity.md`,
+**V** = `measurement/protocols/divergence.md`.
 Status: ✅ ratified, 📋 staged (operator-apply).
 
 | Protocol | Scope | Metric (direction) | Status | Annex |
@@ -81,6 +82,7 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-SERVE-SEL-1 | Text-LLM serving-selection load-sweep A/B: selection-policy arms on a single-instance saturating tier, TTFT-bound, orchestrator in the loop (`instrument_class=serving`) | TTFT-SLO attainment per block (↑); realized quality non-inferior (per-suite quantum) | ✅ 2026-09-26 | Q |
 | P-DOCPARSE-1 | Document-parser comparison on the 200-PDF OpenDataLoader corpus: LiteParse vs OpenDataLoader as the born-digital fast path, paired by document | per-document `overall` (↑), 95% paired bootstrap; median latency gate (↓) in the ADOPT clause | ✅ 2026-11-08 | Q |
 | P-SERVE-1 | Kernel-champion serving A/B instrument: fresh `llama-server` launch per sample under the role's registered production recipe, paired ABBA, with its serving floor, serving gate and headline admissibility (`instrument_class=serving`, unit = process) | aggregate decode tok/s (↑); effect = median(candidate)/median(anchor) − 1 against a process-unit floor | ✅ 2026-11-19 | K |
+| P-KLD-1 | Teacher-forced next-token distribution divergence between a named reference R and candidate Q of the same model (quantization/codec, precision swap, kernel/route, KV type, graph change); on a MoE, codec attribution requires a route-pinned R×Q cell | mean KL(R‖Q) nats (↓) with a source-cluster bootstrap CI; ln PPL ratio and top-1 agreement secondary — **not a claim** without a declared estimand, and **never** against a universal band | ✅ 2026-11-22 | V |
 
 ## 3. Claim grammar & examples
 
@@ -346,6 +348,21 @@ confers no authority beyond its own enumeration.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-11-22 (v2.x)** — AMENDMENT: **Annex V** (`measurement/protocols/divergence.md`) created as a
+  **seventh** annex holding `P-KLD-1`, the protocol for any KL-divergence, perplexity or top-1
+  agreement number used to compare two artifacts, kernels, routes or configurations of one model.
+  Supersedes the layout sentence (`six` → `seven`) and the annex key line; §2 gains one row. Load-bearing
+  content: full-vocabulary only, with `llama-perplexity --kl-divergence` declared a lossy, truncated
+  instrument (`uint16` base window of 16 nats, reference entries below −16 nats dropped); FP64 summary
+  sums; a declared estimand before capture; a source-document-cluster bootstrap, never the tool's
+  per-token `±` or a σ multiple built from it; no model-independent bands; a fail-closed runner and a
+  durable receipt; and, on a MoE, no attribution to the codec without a route-pinned `R×Q` cell.
+  Defines how PPL, top-1 agreement, coherence and speculative `α` relate to KLD (none substitutes for
+  it) and demotes earlier divergence numbers to prior unless their receipts prove every field. §V11
+  leaves Annex K `P-AK-SEARCH-1-A5` (graph-fusion KLD keep gate) operative as a search verdict.
+  Distilled from `local-inference-lab/rtx6kpro@44e817b` `kld/README.md` (research intake
+  2026-09-07, item 4.5; autokernel-rebuild R23-47; operator queue OP-38).
 
 - **2026-11-19 (v2.x)** — AMENDMENT (Annex K, new protocol `P-SERVE-1`): the kernel-champion serving
   A/B instrument. It records the recipe a run must pin (recipe hash, launch argv, resolved-recipe build
