@@ -113,6 +113,7 @@ Retired Codex NI ROOT worktree custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy
   - Include prospective C5 one-request boundary functional records: bind the source/image/request and model preparation, claim and target birth, scoped maps/socket, independent observer and cleanup, native outputs and refusals at write time. Project through the existing carrier and `claim_tuple.grade()` and prove a planning-context canary; no smoke, continuous placement, contention or floor warrant follows. [no-belief: prospective wiring task]
 
 ## 2026-11-09 audit refresh
+- *Knowledge (intake-ak-1123 K6, no checkbox):* Second-reader disagreements: 18 of 409 anchors judged no (listed in OD-4); never auto-overturned.
 
 Autopilot stays on operator HOLD (never start it); campaign goal is the orchestration stack running by end of November 2026 under a brand-new era. Autopilot last truly ran 2026-08-09T19:29Z (trial 1503). Findings from the 2026-11-09 staleness audit (EVL-47), verified against code and artifacts:
 

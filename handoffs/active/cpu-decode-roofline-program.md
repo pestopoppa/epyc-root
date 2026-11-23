@@ -102,6 +102,10 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 
 ### Backlog
 
+- [ ] **TOK-BPE-TIME-1** [non-inference] Time tokenization of one real 100k-token orchestrator prompt with the vocab only (no weights, one core, seconds) on the Qwen3.8-27B and Qwen3.6-35B-A3B vocabularies at C19 a6a32c1 (intake-2829#00, intake-2829#04, intake-2829#05). Compare with the cached-turn TTFT of the same roles from existing rows. If tokenization is under 2% of cached-turn TTFT, close the upstream #32859 port; if 2% or more, port it as one commit on an experimental branch after upstream human review, with test-tokenizer-0 for qwen2 and qwen35 and a token-id diff on 20 real prompts.
+      · done when: per-vocab tokenize ms and share of cached-turn TTFT recorded under this box with the port closed or filed
+      · gate: none
+
 - [ ] **DEPTH-ENV-1 — Publish one measured context-depth throughput envelope for the models under launch-flag exploration: prefill and decode at 16K, 32K, 48K and 128K, assembled from existing runs (Q38FN depth record, KVU-12.6 and the 16k/64k exact-comparison row) with the source commit and binary per cell, adding at most one new cell where a compaction-relevant budget is missing; hand the table, not flag changes, to the OpenCode launch-flag session.**
       · class: non-inference
       · section: Context-depth throughput envelope — intake 2026-11-06 (2611.05306)

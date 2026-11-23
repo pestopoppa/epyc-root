@@ -207,6 +207,11 @@ If DAR-3 / DAR-4 / DAR-4b / DAR-5 underdeliver on the zero-predictive-spread pat
 
 The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Options 2 and 3 are recorded for completeness, not roadmap commitments.
 
+- [ ] **RTG-ASK-1** [non-inference] Calibrate when our small roles ask for help, from logs only (intake-2835#00, intake-2835#01, intake-2855#00, intake-2855#02, intake-2856#00). (1) Tabulate escalations per task and role from existing taps and progress logs, counting `escalate()` hand-offs (src/repl_environment/routing.py:303-319) and consult advice separately. (2) Fit a residual-risk probe on logged non-escalated episodes labelled by their own episode outcome and compare it with the entropy-only baseline (generation_monitor.py). (3) Replay-evaluate replacing the fixed `escalation_penalty = len(escalations) * 0.15` (orchestration/repl_memory/q_reward.py:173) with a price solved against a consults-per-task budget. Six controls: frozen log manifest with digest, baseline = current rule policy (src/orchestration/escalation.py:227-350), per-episode outputs, holdout = later time window, all episodes counted, decision rule fixed first: adopt the probe only if its holdout AUROC beats entropy-only by >= 0.05; stop and report counts only if fewer than 200 escalation-eligible episodes exist.
+      · done when: per-role counts, holdout AUROC of probe versus entropy-only, and the replayed budget-price result filed under this box
+      · gate: none
+  - *Trigger (intake-ak-1123 M4, no checkbox):* RTG-ASK-1 probe beating entropy-only by >= 0.05 AUROC on holdout fires J17 ask-calibration readouts (entropy-only, heuristic, oracle-timing ceiling) in eval-tower-program.md and a design note for a trained ask policy costed from consultant_device_seconds.
+
 ##### DAR-6: Swarm-Fanout Mode for High-Injection-Risk Prompts (intake-614/615, ~1–2 days + one eval run) — ❄ FROZEN (fable5-02)
 
 **Source**: arxiv:2510.24801 (intake-615) — peer-ranked consensus across heterogeneous models reportedly shows 0.12% adversarial-degradation vs 6.20% for single-model baseline on prompt injection. If even a third of that delta survives independent replication on our suite, swarm-fanout is a routing **mode**, not just a research curiosity.

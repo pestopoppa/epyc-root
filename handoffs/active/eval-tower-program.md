@@ -156,6 +156,11 @@ From Aletheia (intake-370, TU Darmstadt):
 | **7B** | Preferred | Helpful | Required | Yes (with good data) |
 | **14B** | Preferred | **Mandatory** | **Critical** (stability) | Yes (Easy→Hard) |
 
+- [ ] **EVT-DGX-PREMISE-FIX** [non-inference] Replace the stale premise at eval-tower-program.md:159 ("Training requires GPU (GRPO needs 16 rollouts/step) — defer to DGX Spark.") with: training requires a GPU; the DGX Spark path is closed and the MI210 is present, so a post-training lane is an operator decision (intake-ak-1123 OD-1; intake-2834#record).
+      · done when: sentence replaced and the 'when DGX Spark available' roadmap heading at :161 re-pointed to the OD-1 outcome
+      · gate: none
+  - *Trigger (intake-ak-1123 M10, no checkbox):* Operator approval of OD-2 fires the ALFWorld-only AgentBench smoke (AgentRL controller plus one worker, no Redis, local role via llama-server tool calls, 5 episodes) and the Life-Harness local-improver run.
+
 **For our CPU-only environment**: The 1.5B scale is the sweet spot for verification model inference. Training requires GPU (GRPO needs 16 rollouts/step) — defer to DGX Spark. Pre-trained ThinkPRM-1.5B or Aletheia-1.5B models can be downloaded and quantized today.
 
 **Training roadmap** (when DGX Spark available):

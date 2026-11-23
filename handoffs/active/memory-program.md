@@ -691,6 +691,7 @@ failure caught in amber.
   (9) Print the skill-off pass rate beside every cell delta and list cells at or above 95 percent skill-off as ceiling-limited, excluded from the negative-cell denominator (intake-2337#record).
   (10) Record each injected skill source role at distil time and whether the injection was same-role or cross-role, because the retriever has no role term (intake-2333#record).
   (11) Report write-side cost as LLM calls plus input and output tokens summed over every memory-construction call, judge calls excluded, beside the read-side line (intake-2311#record).
+  - *Trigger (intake-ak-1123 M12, no checkbox):* When the M-23 SkillBank A/B is next booked: add an executable-guard arm beside the text-skill arm (HookEvo scope C finding).
 
 - [ ] **M-20 — telemetry and evaluation for the model-initiated `recall()` / `route_advice()` REPL tools**
       (`src/repl_environment/routing.py:93` `_recall`, `:339` `_route_advice`; anchors re-resolved 2026-11-09). Zero observed calls in
