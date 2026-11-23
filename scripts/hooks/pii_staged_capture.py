@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
+import gzip
+import shutil
+import time
 from datetime import datetime, timezone
 import hashlib
 import importlib.util
@@ -113,52 +117,87 @@ def trusted_git(repo, *args, input=None, index=None):
 
 
 def comparison_objects(repo, comparison, directory):
+    """Bind the comparison to Git's own object store; no tree bytes are copied.
+
+    Trees are content-addressed and already held by the repository, so custody
+    records only the HEAD commit (captured separately) and its tree id. The
+    reader re-derives every subtree through the repository's object database
+    and refuses when any of them is missing (see reader_repository)."""
     tree = git(repo, "rev-parse", comparison + "^{tree}").stdout.decode().strip()
-    descendants = git(repo, "ls-tree", "-r", "-d", "-z", tree).stdout
-    trees = {tree}
-    for row in descendants.split(b"\0"):
-        if row:
-            fields, _ = row.split(b"\t", 1)
-            trees.add(fields.decode().split()[2])
-    result = []
-    for number, oid in enumerate(sorted(trees)):
-        raw = git(repo, "cat-file", "tree", oid).stdout
-        result.append({"oid": oid, "kind": "tree",
-                       "artifact": write(directory, f"comparison-tree-{number}.bin", raw)})
-    return tree, result
+    git(repo, "cat-file", "-e", tree)
+    return tree, []
 
 
-def verify_original_selection(directory, request):
-    if not request["supported_index"]:
-        return
+def frozen_index_bytes(directory, record):
+    """Original index bytes, raw or gzip (finish compresses; the pin is of the raw bytes)."""
+    storage = record.get("index_storage")
+    if storage is None:
+        return regular(directory / record["index"]["name"])
+    if (storage.get("encoding") != "gzip" or storage.get("name") != record["index"]["name"] + ".gz"
+            or (directory / record["index"]["name"]).exists()):
+        raise ValueError("frozen original index storage refused")
+    packed = regular(directory / storage["name"])
+    if sha(packed) != storage["sha256"]:
+        raise ValueError("frozen original index storage digest refused")
+    try:
+        raw = gzip.decompress(packed)
+    except (OSError, EOFError, ValueError):
+        raise ValueError("frozen original index storage refused") from None
+    return raw
+
+
+@contextlib.contextmanager
+def reader_repository(directory, record):
+    """Throwaway trusted repo that reads trees from the original object store.
+
+    Yields (repo, index_path). Subtrees come from the original repository via
+    objects/info/alternates (content-addressed; a missing object fails the
+    read closed). Nothing from the original repository's config is used."""
     with tempfile.TemporaryDirectory(prefix="pii-native-index-reader-") as temporary:
         repo = Path(temporary)
-        trusted_git(repo, "init", "--quiet", "--object-format=" + request["object_format"])
-        index = directory / request["index"]["name"]
-        entries = trusted_git(repo, "ls-files", "--stage", "-z", index=index).stdout
-        if entries != regular(directory / request["stage_entries"]["name"]):
-            raise ValueError("frozen original index/stage entries refused")
-        for item in request["comparison_objects"]:
-            raw = regular(directory / item["artifact"]["name"])
-            oid = trusted_git(repo, "hash-object", "-w", "-t", item["kind"], "--stdin", input=raw).stdout.decode().strip()
-            if oid != item["oid"] or item["kind"] != "tree":
-                raise ValueError("original comparison object binding refused")
-        if request["head"] is None:
-            if request["comparison"] != request["comparison_tree"]:
-                raise ValueError("unborn original comparison refused")
-        else:
-            raw = regular(directory / request["comparison_commit"]["name"])
-            oid = trusted_git(repo, "hash-object", "-w", "-t", "commit", "--stdin", input=raw).stdout.decode().strip()
-            if (oid != request["head"] or request["comparison"] != request["head"]
-                    or raw.splitlines()[0] != b"tree " + request["comparison_tree"].encode()):
-                raise ValueError("original HEAD/tree comparison binding refused")
-        # Name-only, no rename detection, attributes/textconv/external execution.
-        selected = trusted_git(repo, "diff", "--cached", "--no-ext-diff", "--no-textconv",
-                               "--no-renames", request["comparison_tree"], "--name-only",
-                               "-z", "--diff-filter=ACM", index=index).stdout
-        reproducible = selected == regular(directory / request["selection"]["name"])
-        if reproducible is not request["selection_reproducible"]:
-            raise ValueError("original frozen Git diff membership refused")
+        trusted_git(repo, "init", "--quiet", "--object-format=" + record["object_format"])
+        source = Path(record["repo"])
+        common = Path(trusted_git(source, "rev-parse", "--path-format=absolute",
+                                  "--git-common-dir").stdout.decode().strip())
+        alternates = repo / ".git" / "objects" / "info"
+        alternates.mkdir(parents=True, exist_ok=True)
+        (alternates / "alternates").write_text(str(common / "objects") + "\n")
+        index = repo / "frozen-index"
+        index.write_bytes(frozen_index_bytes(directory, record))
+        yield repo, index
+
+
+def frozen_entries(repo, index):
+    return trusted_git(repo, "ls-files", "--stage", "-z", index=index).stdout
+
+
+def verify_original_selection(directory, request, repo=None, index=None):
+    if not request["supported_index"]:
+        return
+    if repo is None:
+        with reader_repository(directory, request) as (repo, index):
+            return verify_original_selection(directory, request, repo, index)
+    if request["comparison_objects"]:
+        raise ValueError("original comparison object binding refused")
+    if request["head"] is None:
+        empty = trusted_git(repo, "hash-object", "-w", "-t", "tree", "--stdin", input=b"").stdout.decode().strip()
+        if request["comparison"] != request["comparison_tree"] or request["comparison_tree"] != empty:
+            raise ValueError("unborn original comparison refused")
+    else:
+        raw = regular(directory / request["comparison_commit"]["name"])
+        oid = trusted_git(repo, "hash-object", "-w", "-t", "commit", "--stdin", input=raw).stdout.decode().strip()
+        if (oid != request["head"] or request["comparison"] != request["head"]
+                or raw.splitlines()[0] != b"tree " + request["comparison_tree"].encode()):
+            raise ValueError("original HEAD/tree comparison binding refused")
+        # Every subtree must resolve from the original object store.
+        trusted_git(repo, "ls-tree", "-r", "-d", "-z", request["comparison_tree"])
+    # Name-only, no rename detection, attributes/textconv/external execution.
+    selected = trusted_git(repo, "diff", "--cached", "--no-ext-diff", "--no-textconv",
+                           "--no-renames", request["comparison_tree"], "--name-only",
+                           "-z", "--diff-filter=ACM", index=index).stdout
+    reproducible = selected == regular(directory / request["selection"]["name"])
+    if reproducible is not request["selection_reproducible"]:
+        raise ValueError("original frozen Git diff membership refused")
 
 
 def private_directory(path):
@@ -200,7 +239,7 @@ def begin(repo):
     private_directory(directory)
     index_pin = write(directory, "original-index", original)
     raw_entries = git(repo, "ls-files", "--stage", "-z").stdout
-    entries_pin = write(directory, "original-stage-entries", raw_entries)
+    entries_pin = None  # supported: regenerable from the frozen index; see below
     entries = {}
     unmerged = False
     for row in raw_entries.split(b"\0"):
@@ -212,6 +251,9 @@ def begin(repo):
         if stage == "0":
             entries[path.decode("utf-8", "surrogateescape")] = {"mode": mode, "oid": oid}
     supported = not split and not unmerged
+    if not supported:
+        # A split/unmerged index cannot be re-listed by the trusted reader.
+        entries_pin = write(directory, "original-stage-entries", raw_entries)
     # An unborn comparison is an explicit empty Git tree, never a later HEAD.
     comparison = comparison_head
     if comparison is None:
@@ -286,7 +328,7 @@ def begin(repo):
                "object_format": git(repo, "rev-parse", "--show-object-format").stdout.decode().strip(),
                "original_index": str(original_index), "original_index_sha256": sha(original),
                "index": index_pin, "stage_entries_sha256": sha(raw_entries),
-               "stage_entries": entries_pin,
+               "stage_entries": entries_pin, "custody_format": 2,
                "selection": write(directory, "original-selection", changed),
                "supported_index": supported, "split_index": split, "unmerged": unmerged,
                "selection_reproducible": reproducible,
@@ -473,6 +515,7 @@ def finish(directory, exit_code, logs_complete=True):
                 "events_sha256": sha(regular(directory / "events.nul")),
                 "request_sha256": sha(regular(directory / "execution-request.json"))}
     terminal_pin = write(directory, "original-terminal.json", canonical(terminal) + b"\n")
+    index_storage = pack_index(directory, request)
     artifacts = []
     for path in sorted(directory.rglob("*")):
         if path.is_file():
@@ -482,12 +525,105 @@ def finish(directory, exit_code, logs_complete=True):
               "checks": checks, "counts": counts,
               "policy_digest": sha(canonical(request["policy"])),
               "pii_staged_policy_check_passed": value}
+    if index_storage is not None:
+        record["index_storage"] = index_storage
     record["decided_proposition"] = proposition(record) if not diagnostic else ""
     record["receipt_sha256"] = sha(canonical(record))
     write(directory, "receipt.json", canonical(record) + b"\n")
+    prune_quietly(directory.parent, keep=directory)
+
+
+PRUNE_AGE_SECONDS = 2 * 86400
+PRUNE_BUDGET_SECONDS = 0.5
+PRUNE_MAX_DELETIONS = 40
+CAPSULE_NAME = frozenset("0123456789abcdef")
+
+
+def pack_index(directory, request):
+    """Replace the raw frozen index with a deterministic gzip once all checks used it.
+
+    The request still pins the RAW digest; readers decompress and compare. A
+    failure leaves the raw index in place (larger, never less verifiable)."""
+    raw_path = directory / request["index"]["name"]
+    try:
+        raw = regular(raw_path)
+        if sha(raw) != request["index"]["sha256"]:
+            return None
+        packed = gzip.compress(raw, compresslevel=6, mtime=0)
+        pin = write(directory, request["index"]["name"] + ".gz", packed)
+        raw_path.unlink()
+        return {"name": pin["name"], "sha256": pin["sha256"], "encoding": "gzip"}
+    except (OSError, ValueError):
+        with contextlib.suppress(OSError):
+            (directory / (request["index"]["name"] + ".gz")).unlink()
+        return None
+
+
+def capsule_is_clean(capsule):
+    """True only for a sealed receipt that decided TRUE with no diagnostic and no blocked file.
+
+    Everything else (finding, diagnostic, no/unreadable/odd receipt) is kept."""
+    receipt = capsule / "receipt.json"
+    metadata = receipt.lstat()
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > 64 * 1048576:
+        return False
+    record = load(regular(receipt))
+    counts = record.get("counts")
+    return (record.get("schema") == SCHEMA and record.get("pii_staged_policy_check_passed") is True
+            and record.get("exit_code") == 0 and not record.get("diagnostic")
+            and isinstance(counts, dict) and counts.get("blocked") == 0)
+
+
+def prune(parent, keep=None, now=None, max_age=PRUNE_AGE_SECONDS, budget=PRUNE_BUDGET_SECONDS,
+          max_deletions=PRUNE_MAX_DELETIONS):
+    """Delete CLEAN capsules older than max_age; bounded by time and count. Returns the count.
+
+    Never touches a capsule with a finding, a diagnostic or no sealed receipt, a
+    non-capsule name, a symlink, a foreign owner, or `keep`. Oldest first."""
+    parent = Path(parent)
+    metadata = parent.lstat()
+    if not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid != os.getuid() or stat.S_IMODE(metadata.st_mode) != 0o700:
+        return 0
+    now = time.time() if now is None else now
+    deadline = time.monotonic() + budget
+    old = []
+    with os.scandir(parent) as entries:
+        for entry in entries:
+            if len(entry.name) != 32 or not set(entry.name) <= CAPSULE_NAME or entry.name == (keep.name if keep else None):
+                continue
+            info = entry.stat(follow_symlinks=False)
+            if (stat.S_ISDIR(info.st_mode) and info.st_uid == os.getuid()
+                    and info.st_mtime < now - max_age):
+                old.append((info.st_mtime, entry.name))
+    removed = 0
+    for _, name in sorted(old):
+        if removed >= max_deletions or time.monotonic() > deadline:
+            break
+        capsule = parent / name
+        try:
+            if not capsule_is_clean(capsule):
+                continue
+            shutil.rmtree(capsule)
+            removed += 1
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return removed
+
+
+def prune_quietly(parent, keep=None):
+    # Retention must never change the gate's verdict, exit status or output.
+    try:
+        prune(parent, keep=keep)
+    except Exception:
+        pass
 
 
 def read_receipt(path):
+    with contextlib.ExitStack() as stack:
+        return _read_receipt(path, stack)
+
+
+def _read_receipt(path, stack):
     path = Path(path)
     if (path.name != "receipt.json" or path.parent.is_symlink() or stat.S_IMODE(path.parent.stat().st_mode) != 0o700
             or path.parent.stat().st_uid != os.getuid()):
@@ -525,7 +661,11 @@ def read_receipt(path):
     events = events_from(regular(path.parent / "events.nul"))
     if events != record["events"]:
         raise ValueError("native event binding refused")
-    required = [record["terminal"], request["index"], request["stage_entries"], request["selection"],
+    storage = record.get("index_storage")
+    index_pin = ({"name": storage["name"], "sha256": storage["sha256"]} if storage is not None
+                 else request["index"])
+    required = [record["terminal"], index_pin, request["selection"],
+                *([request["stage_entries"]] if request["stage_entries"] else []),
                 *[p["artifact"] for p in request["comparison_objects"]],
                 *([request["comparison_commit"]] if request["comparison_commit"] else []),
                 *[p["artifact"] for p in request["policy"]],
@@ -539,13 +679,27 @@ def read_receipt(path):
             or terminal["request_sha256"] != sha(regular(path.parent / "execution-request.json"))):
         raise ValueError("original terminal outcome/check binding refused")
     if (request["index"]["sha256"] != request["original_index_sha256"]
-            or request["stage_entries"]["sha256"] != request["stage_entries_sha256"]):
+            or (request["stage_entries"] and request["stage_entries"]["sha256"] != request["stage_entries_sha256"])):
         raise ValueError("original index identity refused")
+    if sha(frozen_index_bytes(path.parent, record)) != request["index"]["sha256"]:
+        raise ValueError("original index identity refused")
+    if (request["stage_entries"] is None) != bool(request["supported_index"]) or request.get("custody_format") != 2:
+        raise ValueError("original custody format refused")
+    if request["comparison_objects"]:
+        raise ValueError("original comparison object binding refused")
     selected = [p.decode("utf-8", "surrogateescape") for p in regular(path.parent / request["selection"]["name"]).split(b"\0") if p]
     if len(selected) != len(set(selected)) or selected != [i["path"] for i in request["inputs"]]:
         raise ValueError("original selection membership refused")
+    if request["supported_index"]:
+        reader_repo, reader_index = stack.enter_context(reader_repository(path.parent, record))
+        raw_entries = frozen_entries(reader_repo, reader_index)
+        if sha(raw_entries) != request["stage_entries_sha256"]:
+            raise ValueError("frozen original index/stage entries refused")
+    else:
+        reader_repo = reader_index = None
+        raw_entries = regular(path.parent / request["stage_entries"]["name"])
     entries = {}
-    for row in regular(path.parent / request["stage_entries"]["name"]).split(b"\0"):
+    for row in raw_entries.split(b"\0"):
         if row:
             fields, name = row.split(b"\t", 1)
             mode, oid, stage = fields.decode("ascii").split()
@@ -562,7 +716,7 @@ def read_receipt(path):
     if (any(type(request[k]) is not bool for k in ("supported_index", "split_index", "unmerged", "selection_reproducible"))
             or request["supported_index"] != (not request["split_index"] and not request["unmerged"])):
         raise ValueError("original index capability metadata refused")
-    verify_original_selection(path.parent, request)
+    verify_original_selection(path.parent, request, reader_repo, reader_index)
     if (request["metric"], request["metric_direction"], request["category"]) != (
             "pii_staged_policy_check_passed", "higher_better", "CANDIDATE"):
         raise ValueError("native criterion metadata refused")
@@ -592,7 +746,7 @@ def read_receipt(path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("begin", "event", "finish"))
+    parser.add_argument("command", choices=("begin", "event", "finish", "prune"))
     parser.add_argument("directory", type=Path)
     parser.add_argument("values", nargs="*")
     args = parser.parse_args()
@@ -601,6 +755,13 @@ def main():
             directory, comparison, supported = begin(args.directory)
             sys.stdout.buffer.write(os.fsencode(directory) + b"\0" + comparison.encode() + b"\0"
                                     + (b"1" if supported else b"0") + b"\0")
+        elif args.command == "prune":
+            # Operator bulk run: prune <pii-gates dir> [all] ; unbounded with "all".
+            everything = "all" in args.values
+            count = prune(args.directory, max_age=PRUNE_AGE_SECONDS,
+                          budget=float("inf") if everything else PRUNE_BUDGET_SECONDS,
+                          max_deletions=10**9 if everything else PRUNE_MAX_DELETIONS)
+            print(f"pruned {count} clean capsules")
         elif args.command == "event":
             event(args.directory, *args.values)
         else:

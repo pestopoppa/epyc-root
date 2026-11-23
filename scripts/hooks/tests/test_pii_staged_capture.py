@@ -553,6 +553,10 @@ def test_coherent_metadata_reseal_cannot_change_original_git_snapshot(repo, fiel
     request = capture.load(request_path.read_bytes())
     if field == "comparison_tree":
         request[field] = "0" * len(request[field])
+    elif field == "stage_entries":
+        # Custody format 2 regenerates entries from the frozen index; a coherent
+        # reseal of only the recorded digest must not bind a different listing.
+        request["stage_entries_sha256"] = capture.sha(b"")
     else:
         member = receipt.parent / request[field]["name"]
         # A coherent temporary metadata reseal still lacks the original Git
@@ -742,3 +746,154 @@ def test_unsafe_existing_ancestor_is_not_migrated(repo, permission):
 
 if __name__ == "__main__":
     raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/hooks/tests/test_pii_staged_capture.py -q")
+
+
+# --- custody format 2: no copied trees, compressed index, bounded retention ---
+
+def test_capsule_has_no_copied_trees_or_stage_entries_and_packed_index(repo):
+    for number in range(30):
+        stage(repo, name=f"d{number}/e{number}/f.txt")
+    git(repo, "commit", "--quiet", "-m", "many subtrees")
+    stage(repo)
+    _, receipt = run(repo)
+    names = {p.name for p in receipt.parent.iterdir()}
+    assert not any(n.startswith("comparison-tree-") for n in names)
+    assert "original-stage-entries" not in names and "original-index" not in names
+    assert "original-index.gz" in names
+    record, _ = capture.read_receipt(receipt)
+    assert record["comparison_objects"] == [] and record["index_storage"]["encoding"] == "gzip"
+    assert capture.sha(capture.frozen_index_bytes(receipt.parent, record)) == record["index"]["sha256"]
+    assert sum(p.stat().st_size for p in receipt.parent.iterdir()) < 200000
+
+
+def test_reader_refuses_when_original_object_store_lacks_the_comparison_tree(repo):
+    stage(repo)
+    git(repo, "commit", "--quiet", "-m", "base")
+    stage(repo, name="second.txt")
+    _, receipt = run(repo)
+    capture.read_receipt(receipt)
+    record = capture.load(receipt.read_bytes())
+    # Same bytes, different object store: the reader must fail closed, not trust itself.
+    other = receipt.parent.parent.parent.parent / "moved-objects"
+    objects = repo / ".git" / "objects"
+    objects.rename(other)
+    try:
+        with pytest.raises(ValueError):
+            capture.read_receipt(receipt)
+    finally:
+        other.rename(objects)
+    capture.read_receipt(receipt)
+    assert record["head"]
+
+
+@pytest.mark.parametrize("mutation", ["gz-bytes", "raw-beside-gz", "storage-name"])
+def test_packed_index_mutation_is_refused(repo, mutation):
+    stage(repo)
+    _, receipt = run(repo)
+    packed = receipt.parent / "original-index.gz"
+    if mutation == "gz-bytes":
+        packed.write_bytes(packed.read_bytes()[:-8])
+    elif mutation == "raw-beside-gz":
+        (receipt.parent / "original-index").write_bytes(b"x")
+    else:
+        packed.rename(receipt.parent / "other.gz")
+    with pytest.raises(ValueError):
+        capture.read_receipt(receipt)
+
+
+def make_capsule(parent, name, clean, age_days, receipt=True, body=None):
+    capsule = parent / name
+    capsule.mkdir(mode=0o700)
+    (capsule / "payload.bin").write_bytes(b"x" * 10)
+    if receipt:
+        record = body if body is not None else {
+            "schema": capture.SCHEMA, "pii_staged_policy_check_passed": clean, "exit_code": 0 if clean else 1,
+            "diagnostic": "", "counts": {"blocked": 0 if clean else 1}}
+        (capsule / "receipt.json").write_text(json.dumps(record))
+    old = __import__("time").time() - age_days * 86400
+    os.utime(capsule, (old, old))
+    return capsule
+
+
+def test_prune_removes_only_old_clean_capsules(tmp_path):
+    parent = tmp_path / "gates"
+    parent.mkdir(mode=0o700)
+    keep_new = make_capsule(parent, "a" * 32, True, 0.5)
+    old_clean = make_capsule(parent, "b" * 32, True, 3)
+    finding = make_capsule(parent, "c" * 32, False, 30)
+    diagnostic = make_capsule(parent, "d" * 32, True, 30, body={
+        "schema": capture.SCHEMA, "pii_staged_policy_check_passed": None, "exit_code": 0,
+        "diagnostic": "boom", "counts": {"blocked": 0}})
+    no_receipt = make_capsule(parent, "e" * 32, True, 30, receipt=False)
+    garbage = make_capsule(parent, "f" * 32, True, 30, body={})
+    (parent / "garbage.json").write_text("{")
+    foreign = parent / "not-a-capsule-name"
+    foreign.mkdir()
+    old = __import__("time").time() - 99 * 86400
+    os.utime(foreign, (old, old))
+    assert capture.prune(parent) == 1
+    survivors = {p.name for p in parent.iterdir()}
+    assert not old_clean.exists()
+    assert all(p.exists() for p in (keep_new, finding, diagnostic, no_receipt, garbage, foreign))
+    assert len(survivors) == 7
+
+
+def test_prune_is_bounded_in_count_and_time_and_spares_current_and_symlinks(tmp_path):
+    parent = tmp_path / "gates"
+    parent.mkdir(mode=0o700)
+    names = [format(i, "032x") for i in range(1, 8)]
+    for name in names:
+        make_capsule(parent, name, True, 5)
+    assert capture.prune(parent, max_deletions=3) == 3
+    assert capture.prune(parent, budget=0) == 0
+    current = parent / names[-1]
+    if current.exists():
+        assert capture.prune(parent, keep=current) == len([p for p in parent.iterdir() if p != current]) or current.exists()
+        assert current.exists()
+    target = tmp_path / "victim"
+    target.mkdir()
+    (target / "receipt.json").write_text(json.dumps({"schema": capture.SCHEMA, "pii_staged_policy_check_passed": True,
+                                                    "exit_code": 0, "diagnostic": "", "counts": {"blocked": 0}}))
+    (parent / ("9" * 32)).symlink_to(target)
+    capture.prune(parent)
+    assert target.exists() and (target / "receipt.json").exists()
+
+
+def test_prune_refuses_a_parent_that_is_not_private(tmp_path):
+    parent = tmp_path / "gates"
+    parent.mkdir(mode=0o755)
+    capsule = make_capsule(parent, "b" * 32, True, 9)
+    assert capture.prune(parent) == 0 and capsule.exists()
+
+
+def test_finish_prunes_old_clean_but_failure_never_changes_exit_or_finding_capsules(repo):
+    stage(repo)
+    _, first = run(repo)
+    gates = first.parent.parent
+    old = __import__("time").time() - 5 * 86400
+    os.utime(first.parent, (old, old))
+    stage(repo, secret=True, name="bad.txt")
+    code, second = run(repo)
+    assert code == 1
+    stage(repo, name="third.txt")
+    run_code, third = run(repo)
+    assert run_code == 1  # the blocked staged file is still staged
+    assert not first.parent.exists(), "old clean capsule pruned at finish"
+    assert second.parent.exists() and third.parent.exists()
+    os.utime(second.parent, (old, old))
+    git(repo, "reset", "--quiet")
+    stage(repo, name="fourth.txt")
+    run(repo)
+    assert second.parent.exists(), "finding capsule retained regardless of age"
+    assert gates.exists()
+
+
+def test_prune_cli_all_drains_backlog(tmp_path):
+    parent = tmp_path / "gates"
+    parent.mkdir(mode=0o700)
+    for i in range(1, 60):
+        make_capsule(parent, format(i, "032x"), True, 4)
+    result = subprocess.run([sys.executable, str(ROOT / "scripts/hooks/pii_staged_capture.py"), "prune",
+                             str(parent), "all"], capture_output=True)
+    assert result.returncode == 0 and b"pruned 59" in result.stdout
+    assert list(parent.iterdir()) == []
