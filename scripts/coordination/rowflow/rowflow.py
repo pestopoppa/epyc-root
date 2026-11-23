@@ -4092,10 +4092,9 @@ def gpu_residency_required(d, regions):
     return "mi210_0" in regions and (d or {}).get("gpu_use") != "quiet-only"
 
 
-# 2026-11-23 (pipeline-mgmt): SMOKE-NO-MEASURE and the kfd-only GPU residency check are WARN-only until every AK row writes smoke_measure.json.
+# 2026-11-23 (pipeline-mgmt): SMOKE-NO-MEASURE is WARN-only (kfd residency stays enforced) until every AK row writes smoke_measure.json.
 # Queued rows whose job never writes one (c20-fold-*, ak-cpu-aa-calibration-q-*, rka-a3b-d-remeasure-q-*-r3,
-# ak-ea-pool-screen-gpu-*-r6) would FAIL every re-smoke; GPU rows queued before 7edd5d77b start servers with
-# start_new_session and may show no owned KFD process. Enforce after AK rows write smoke_measure.json: set True.
+# ak-ea-pool-screen-gpu-*-r6) would FAIL every re-smoke. Casualty: c20-fold-cpu-20261123-r3 22:39:55Z. Enforce after AK rows write smoke_measure.json: set True.
 SMOKE_MEASURE_ENFORCE = False
 
 
@@ -4279,10 +4278,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
     def residency_ok():
         nonlocal vram_max
         vram_max = own_vram_peak(kfd_seen) or vram_max
-        if kfd_seen or SMOKE_MEASURE_ENFORCE:
-            return bool(kfd_seen)
-        out.write(f"==== dry run WARN: GPU row: no owned KFD process observed (warn-only, SMOKE_MEASURE_ENFORCE=False) ({now_iso()})\n")
-        return True
+        return bool(kfd_seen)   # enforced: a348c1816 attributes start_new_session servers by FILLER_ID
     first_unit_at = None
     progress = None
     stop_requested = None
