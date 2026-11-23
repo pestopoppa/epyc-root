@@ -7140,6 +7140,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       diff, gate-parameter history and (when landed) AK-PM-17 records. It writes a plan artifact into
       `hypotheses/inbox/` containing:
       · history: notes moved to autokernel-loop-box-history-20261122.md
+      - 2026-11-23 R24-7 (pipeline-mgmt, ruling: advisory only, never a gate; research `96147502e`): `keep_drought` now declares `ADVISORY_ONLY` and `FORBIDDEN_VERDICT_KEYS`; 6 new tests (16 pass) assert Fired is always advisory and frozen, no result carries a verdict/gate key, rows and a gate decision are never altered, the module exposes no gate surface, and a plan carrying a gate is refused. NOT ticked: the exit criterion still needs the real run-18/run-24 experiments.db retrodiction and the defect-naming half (no such store on disk; the live actor call is unbuilt). Resume: `retrodict` on those stores.
       - a diagnosis against the checklist {repetition, wrong bottleneck, instrument/anchor broken, surface
         anti-correlated with production, exhausted rung};
       - ranked actions;
@@ -11401,6 +11402,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   here, and the chosen fix drives `output_capped_empty` to ~0 over the next batches without raising
   `budget_exhausted`. Tie the per-role budget to OAB-32.
   · history: notes moved to autokernel-loop-box-history-20261122.md
+  - 2026-11-23 OAB-34 (pipeline-mgmt; research `96147502e`): disposition recorded. The applied per-role caps are planner 32,000, critic 32,000 (it takes the planner's limit), author 40,960 (medium; 16,384 only in best-of `off` mode); the planner has the DS41-C70 salvage turn and critic pass 1 retries `CRITIC1_RETRIES`. `call_budget.DEFAULT_OUTPUT_TOKENS` still said 16,384 for author/critic; it now derives from the `actor_opencode_config` constants, with a test (59 pass). Cap-hit rate per role is recorded in the 2026-11-19 note (0 of 14 calls). NOT ticked: the acceptance clause "`output_capped_empty` ~0 over the next batches without `budget_exhausted`" needs live batches (`python3 -m autokernel.loop.actor_metrics <state_dir>`).
 - [x] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** (research 93c01b3c7; 106 units + 15/15 native PASS on current main a5310d94; code-budget guard pre-existing FAIL carried, see INF78-CODE-BUDGET-RATCHET)  Add a scripted [no-belief: verifier/correctness, native-wire belief wiring tracked as VB-AK-NATIVE-WIRE-WRITE] _(detail → completed ledger)_
 - [x] **INF78-CODE-BUDGET-RATCHET** (research cc82bb19c; 25 tests pass, guard 0 violations)  (T3, directed by ws58 2026-10-26T00:16:57Z) — replace the unenforceable global 2560 code budget with a reviewed ratcheted per-file baseline in research … [no-belief: tooling] _(detail → completed ledger)_
 - [x] **OAB-30 — a stub end-to-end dry iteration, including continuation after a keep.**  (research bdef2d014 + fixture cdf6faa44; 12 tests pass)  Add a fast campaign [no-belief: tooling] _(detail → completed ledger)_
