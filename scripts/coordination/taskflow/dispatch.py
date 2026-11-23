@@ -730,6 +730,8 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
     if w.get("timed_out"):
         if real_test_fail and (v.get("evidence") or {}).get("paths"):
             return "model-limitation"   # r8c LOOP-62 think: wrote asserts that fail 15/16; the clock did not write them
+        if v.get("reason") == "no-change" and w.get("rc") == 130:
+            return "model-limitation"   # r8g fix 3: the budget ran out with nothing written; env only via contention_class
         return "harness"        # r8b: 600 s GPU-sized budget on CPU prefill (WS4, MM-5, TU-GR-1 / LOOP-62 think)
     rv = v.get("review") or {}
     if (reason in ("reviewer-unparseable", "reviewer-None") or rv.get("empty") or rv.get("template_echo")
@@ -769,33 +771,82 @@ def _dec(rs: list[dict]) -> list[tuple[int, float]]:
             if r.get("decode_tok_s") and int(r.get("predicted_n") or 0) >= _MIN_DECODE_N]
 
 
-def contention_check(unit_reqs: list[dict], phase_reqs: list[dict], ctx_band: float = 0.25, min_ref: int = 5) -> dict:
-    """Unit decode median vs the phase's, at matched context. `phase_reqs` may include the unit (it is excluded).
-    -> {unit_decode, phase_decode, ref_decode, ref_n, unit_ctx, slow (bool | None = no comparable reference)}."""
+def _req_key(reqs: list[dict]) -> tuple | None:
+    r = next((r for r in reqs if r.get("task")), None)
+    return (r.get("arm"), r["task"]) if r else None
+
+
+def _first_decode(reqs: list[dict]) -> tuple[int, float] | None:
+    """(ctx, decode tok/s) of a unit's FIRST usable request: earliest by t0, among its first 3 (a 1-token reply has no rate)."""
+    for r in sorted(reqs, key=lambda r: r.get("t0") or 0)[:3]:
+        d = _dec([r])
+        if d:
+            return d[0]
+    return None
+
+
+def contention_check(unit_reqs: list[dict], phase_reqs: list[dict], ctx_band: float = 0.25, min_ref: int = 5,
+                     job_reqs: list[dict] | None = None, min_first: int = 3) -> dict:
+    """Unit decode vs references. `phase_reqs` may include the unit (it is excluded).
+    1. context-matched phase reference (>= min_ref requests within ctx_band of the unit's median context);
+    2. r8g fix 3: when that has < min_ref, the whole job's requests (all arms, all stints; `job_reqs`) in the same band;
+    3. r8g fix 3: early-context check: the unit's first-request decode against the median of the OTHER units' first
+       requests (>= min_first of them): at a few k tokens of context the host, not the KV length, sets the rate
+       (r8f think WS4: 2.5-3.5 tok/s at 3.7k vs 20-27 for every other unit's first request).
+    -> {unit_decode, phase_decode, ref_decode, ref_n, ref_scope, unit_ctx, first_decode, first_ref, first_n,
+        slow (bool | None = no comparable reference), slow_by}."""
     import statistics as st
     ids = {id(r) for r in unit_reqs}
-    u, ph = _dec(unit_reqs), _dec([r for r in phase_reqs if id(r) not in ids])
-    if not u or not ph:
+    ukey = _req_key(unit_reqs)
+    others = lambda rs: [r for r in rs if id(r) not in ids and not (ukey and (r.get("arm"), r.get("task")) == ukey)]  # noqa: E731
+    u = _dec(unit_reqs)
+    ph = _dec(others(phase_reqs))
+    jb = _dec(others(job_reqs or []))
+    if not u or not (ph or jb):
         return {"slow": None, "why": "no decode samples"}
     uctx = st.median(c for c, _ in u)
-    ud, pd = st.median(d for _, d in u), st.median(d for _, d in ph)
-    ref = [d for c, d in ph if abs(c - uctx) <= ctx_band * uctx]
-    out = {"unit_decode": round(ud, 1), "phase_decode": round(pd, 1), "unit_ctx": int(uctx), "ref_n": len(ref)}
-    if len(ref) >= min_ref:
-        out["ref_decode"] = round(st.median(ref), 1)
-        out["slow"] = ud < CONTENTION_FRACTION * out["ref_decode"]
-    else:
-        out["slow"] = None
-        out["why"] = f"no context-matched reference (<{min_ref} phase requests within {ctx_band:.0%} of {int(uctx)} tok)"
+    ud = st.median(d for _, d in u)
+    out = {"unit_decode": round(ud, 1), "unit_ctx": int(uctx)}
+    if ph:
+        out["phase_decode"] = round(st.median(d for _, d in ph), 1)
+    slow_by: list[str] = []
+    verdicts: list[bool] = []
+    for scope, pool in (("phase", ph), ("job", jb)):
+        ref = [d for c, d in pool if abs(c - uctx) <= ctx_band * uctx]
+        if len(ref) >= min_ref:
+            out.update(ref_scope=scope, ref_n=len(ref), ref_decode=round(st.median(ref), 1))
+            if ud < CONTENTION_FRACTION * out["ref_decode"]:
+                slow_by.append(f"{scope}-context-matched")
+            verdicts.append(ud < CONTENTION_FRACTION * out["ref_decode"])
+            break
+        out.setdefault("ref_n", len(ref))
+    if "ref_scope" not in out:
+        out["why"] = f"no context-matched reference (<{min_ref} requests within {ctx_band:.0%} of {int(uctx)} tok, phase or job)"
+    uf = _first_decode(unit_reqs)
+    if uf and job_reqs:
+        by_unit: dict = {}
+        for r in others(job_reqs):
+            by_unit.setdefault((r.get("arm"), r.get("task")), []).append(r)
+        firsts = [f[1] for f in (_first_decode(v) for v in by_unit.values()) if f]
+        if len(firsts) >= min_first:
+            out.update(first_decode=round(uf[1], 1), first_ctx=uf[0], first_ref=round(st.median(firsts), 1), first_n=len(firsts))
+            verdicts.append(uf[1] < CONTENTION_FRACTION * out["first_ref"])
+            if verdicts[-1]:
+                slow_by.append("early-context-first-request")
+    out["slow"] = any(verdicts) if verdicts else None
+    if slow_by:
+        out["slow_by"] = slow_by
     return out
 
 
-def contention_class(row: dict, unit_reqs: list[dict], phase_reqs: list[dict]) -> str | None:
-    """Re-class a timed-out, model-charged unit as env-contention when its decode was under half a context-matched
-    phase reference. Returns the new class, or None to keep the row's class. Writes row["contention"]."""
-    if not row.get("timed_out") or row.get("failure_class") != "model-limitation":
+def contention_class(row: dict, unit_reqs: list[dict], phase_reqs: list[dict], job_reqs: list[dict] | None = None) -> str | None:
+    """Re-class a TIMED-OUT unit as env-contention when its decode was under half a reference (see contention_check).
+    r8g fix 3: runs on every timed-out row whose class is not a packet defect -- no-change and harness included (r8f
+    think WS4 was classed harness/no-change and never evaluated). Returns the new class, or None to keep the row's
+    class. Writes row["contention"]."""
+    if not row.get("timed_out") or row.get("failure_class") in (None, "task", "env-contention"):
         return None
-    c = contention_check(unit_reqs, phase_reqs)
+    c = contention_check(unit_reqs, phase_reqs, job_reqs=job_reqs)
     row["contention"] = c
     return "env-contention" if c.get("slow") else None
 
@@ -978,6 +1029,7 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                                failure_class=needs_brief_class(task))
                     row["tag"] = tag_needs_brief(task, tdir, row["reason"], apply)   # box_index then skips the box
                     raise _EndRun()
+            lane_was_live = not lane_destroyed(lane)
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
             if lane_was_live and lane_destroyed(lane):                            # r8g fix 2 (r8f MM-5): the worker removed its own lane
                 row.update(verdict="error", reason="lane-destroyed-by-worker", failure_class="harness",
@@ -1029,7 +1081,6 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
             with ledger.open("a") as f:
                 f.write(json.dumps({"sweep": sw, "at": time.time()}) + "\n")
     except Exception as e:  # noqa: BLE001 - the sweep never fails a batch
-            lane_was_live = not lane_destroyed(lane)
         _sweep_log(f"sweep error {type(e).__name__}: {e}")
     return rows
 

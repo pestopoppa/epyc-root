@@ -211,7 +211,8 @@ def test_contention_only_reclasses_timed_out_model_rows():
     phase = [_req(40000, 12.0)] * 10
     unit = [_req(40000, 5.0)] * 6
     assert dispatch.contention_class({"timed_out": False, "failure_class": "model-limitation"}, unit, phase) is None
-    assert dispatch.contention_class({"timed_out": True, "failure_class": "harness"}, unit, phase) is None
+    # r8g fix 3: harness / no-change timeouts are evaluated too (the class is not fixed before the contention check)
+    assert dispatch.contention_class({"timed_out": True, "failure_class": "harness"}, unit, phase) == "env-contention"
     assert dispatch.contention_class({"timed_out": True, "failure_class": "model-limitation"},
                                      [_req(40000, 1e6, n=1)], phase) is None        # 1-token replies ignored
 
@@ -342,3 +343,70 @@ def test_lane_destroyed_is_not_a_finished_unit():
     from taskflow import stage1_result
     assert stage1_result.no_model_work({"reason": "lane-destroyed-by-worker"})
     assert not stage1_result.no_model_work({"reason": "reviewer-done"})
+# ------------------------------------------------------------------------- r8g fix 3: contention classifier
+# Fixture: the real r8f request log (all arms, both stints). think WS4 decoded 2.5-3.5 tok/s at 3.7k context on its
+# first requests against 20-27 tok/s for every other unit's first request; nothink WS4 was NOT contention (decode fell
+# smoothly with a 36-79k context).
+R8F_REQS = json.loads((Path(__file__).parent / "taskflow_r8f_requests.json").read_text())["requests"]
+
+
+def _unit(arm, task):
+    return [r for r in R8F_REQS if r["arm"] == arm and r["task"] == task]
+
+
+def test_contention_think_ws4_nochange_timeout_is_env_with_job_fallback_and_early_check():
+    from taskflow import dispatch
+    row = {"timed_out": True, "failure_class": "harness", "reason": "no-change", "rc": 130}
+    unit = _unit("canary-think", "WS4-WAKE-IMPERATIVE")
+    phase = [r for r in R8F_REQS if r["arm"] == "canary-think"]
+    assert dispatch.contention_class(row, unit, phase, job_reqs=R8F_REQS) == "env-contention"
+    c = row["contention"]
+    assert c["slow"] and "early-context-first-request" in c["slow_by"], c
+    assert c["first_decode"] < 0.5 * c["first_ref"] and c["first_ctx"] < 6000, c
+
+
+def test_contention_not_evaluated_before_r8g_no_job_reqs_means_no_early_check():
+    from taskflow import dispatch
+    row = {"timed_out": True, "failure_class": "harness", "reason": "no-change", "rc": 130}
+    unit = _unit("canary-think", "WS4-WAKE-IMPERATIVE")
+    assert dispatch.contention_class(row, unit, unit + [r for r in R8F_REQS if r["arm"] == "canary-think"]) is None
+
+
+def test_contention_nothink_ws4_is_not_flagged():
+    from taskflow import dispatch
+    row = {"timed_out": True, "failure_class": "model-limitation", "reason": "tests-fail", "rc": 130}
+    unit = _unit("canary-nothink", "WS4-WAKE-IMPERATIVE")
+    phase = [r for r in R8F_REQS if r["arm"] == "canary-nothink"]
+    assert dispatch.contention_class(row, unit, phase, job_reqs=R8F_REQS) is None
+    assert row["contention"]["slow"] is False, row["contention"]
+
+
+def test_contention_job_wide_fallback_when_phase_has_few_matched():
+    from taskflow import dispatch
+    unit = [{"arm": "a", "task": "T", "t0": i, "prompt_n": 20000, "cache_n": 0, "predicted_n": 100, "decode_tok_s": 4.0}
+            for i in range(6)]
+    phase = [dict(r, arm="a", task="X", prompt_n=3000) for r in unit]            # phase has nothing near 20k
+    job = [{"arm": "b", "task": "Y", "t0": i, "prompt_n": 21000, "cache_n": 0, "predicted_n": 100, "decode_tok_s": 12.0}
+           for i in range(8)]
+    c = dispatch.contention_check(unit, phase, job_reqs=job)
+    assert c["ref_scope"] == "job" and c["slow"] is True and "job-context-matched" in c["slow_by"], c
+
+
+def test_contention_runs_on_model_class_rows_and_skips_task_and_verified():
+    from taskflow import dispatch
+    unit = _unit("canary-think", "WS4-WAKE-IMPERATIVE")
+    for cls in ("task", None, "env-contention"):
+        assert dispatch.contention_class({"timed_out": True, "failure_class": cls}, unit, unit, job_reqs=R8F_REQS) is None
+    assert dispatch.contention_class({"timed_out": False, "failure_class": "harness"}, unit, unit, job_reqs=R8F_REQS) is None
+    assert dispatch.contention_class({"timed_out": True, "failure_class": "model-limitation"}, unit, unit,
+                                     job_reqs=R8F_REQS) == "env-contention"
+
+
+def test_no_change_timeout_rc130_does_not_default_to_harness():
+    from taskflow import dispatch
+    w = {"usage": {"steps": 20}, "errors": [], "tools": ["read"] * 20, "tool_errors": [], "timed_out": True, "rc": 130,
+         "result": None}
+    v = {"verdict": "rejected", "reason": "no-change", "checks": []}
+    assert dispatch.failure_class(w, v, {}) == "model-limitation"
+
+
