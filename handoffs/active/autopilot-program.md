@@ -38,12 +38,19 @@
       · done when: decision recorded under this box (fold-in yes/no with the R1-R5 survival numbers), delivered as an options package
       · gate: AP-POSTREBOOT-LH-RUN
       · owner: autopilot-backlog-session
-- [ ] **AP-BSV2-RIGOR-GATE-CODE** [non-inference] Implement R1-R5 in the AUTOPILOT_BSV2_ACCEPT_GATE accept path (default off) in epyc-orchestrator; code and unit tests need no run and no Autopilot, so this does not wait on the relaunch.
+- [x] **AP-BSV2-RIGOR-GATE-CODE** [non-inference] Implement R1-R5 in the AUTOPILOT_BSV2_ACCEPT_GATE accept path (default off) in epyc-orchestrator; code and unit tests need no run and no Autopilot, so this does not wait on the relaunch. [no-belief: build/landing]
       · done when: unit tests pass for R1-R5 (an accept sharing a qid with the proposal batch, or compared against a cached parent, or missing the R4 record, is refused) and the commit SHA is recorded under this box
       · gate: none
+  - **2026-11-23 DONE.** Orchestrator commit `31ee413c` on main (rebased from `3f14c783`): `scripts/autopilot/bsv2_accept_rigor.py` + wiring in `actions._bsv2_accepts`, tests `tests/unit/test_bsv2_accept_rigor.py` (12 pass; flag/feature/AP-72 neighbours 177 pass). Enforced under a new sub-flag `autopilot_bsv2_accept_rigor` (env `AUTOPILOT_BSV2_ACCEPT_RIGOR`, default off, requires the existing gate on); the previously env-only `AUTOPILOT_BSV2_ACCEPT_GATE` also became FeatureSpec `autopilot_bsv2_accept_gate`. Both in `runtime_flags.spec.yaml`, `HOT_SWAP_FEATURES`, `scripts/autopilot/program.md`. Fails closed when the proposal-qid set (`state["bsv2_rigor"]["proposal_qids"]`) is unknown, so live use needs the loop to populate it plus a disjoint accept partition, and `sealed_qids` / `budget.unit` set. Unresolved design point: both flags are hot-swap, so the proposer could flip the gate; pinning them observe-only needs `test_flag_surface.py` (pinned set == 2 flags) changed. [no-belief: build/landing]
       · owner: autopilot-backlog-session
 
 > Folded from the body of `handoffs/active/autopilot-program.md` (row RTG-02), from its first `##` section on, @ `e8deee0a4de8` on 2026-11-03 (BRF-T7-F12, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
+- [ ] **AP-BSV2-RIGOR-PIN** [non-inference] Pin autopilot_bsv2_accept_gate and autopilot_bsv2_accept_rigor observe-only so the proposer cannot flip its own accept gate; update test_flag_surface.py's pinned set
+      · done when: both flags absent from HOT_SWAP_FEATURES mutation surface, test_flag_surface.py passes
+      · gate: none
+- [ ] **AP-BSV2-RIGOR-STATE** [non-inference] Populate ctx.state['bsv2_rigor'] (proposal_qids, sealed_qids, budget unit/limit) and a proposal-disjoint accept partition in the autopilot loop so the R1-R5 gate stops failing closed
+      · done when: unit test: rigor gate on, loop-populated state, a valid accept passes and an overlapping one is refused
+      · gate: AP-BSV2-RIGOR-PIN
 
 ## 2026-11-23 post-reboot sequence (operator-agreed; canonical home)
 
