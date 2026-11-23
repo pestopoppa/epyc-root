@@ -336,3 +336,9 @@ def test_lane_destroyed_by_worker_is_a_harness_row_not_calledprocesserror(tmp_pa
     rows = dispatch.run([task], "http://x", tmp_path / "out", apply=False, use_reviewer=False, check_fresh=False)
     assert rows[0]["reason"] == "lane-destroyed-by-worker" and rows[0]["failure_class"] == "harness", rows[0]
     assert "opencode_worktree_remove" in rows[0]["detail"]
+
+
+def test_lane_destroyed_is_not_a_finished_unit():
+    from taskflow import stage1_result
+    assert stage1_result.no_model_work({"reason": "lane-destroyed-by-worker"})
+    assert not stage1_result.no_model_work({"reason": "reviewer-done"})

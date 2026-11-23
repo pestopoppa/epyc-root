@@ -979,7 +979,7 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                     row["tag"] = tag_needs_brief(task, tdir, row["reason"], apply)   # box_index then skips the box
                     raise _EndRun()
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
-            if lane_destroyed(lane):                            # r8g fix 2 (r8f MM-5): the worker removed its own lane
+            if lane_was_live and lane_destroyed(lane):                            # r8g fix 2 (r8f MM-5): the worker removed its own lane
                 row.update(verdict="error", reason="lane-destroyed-by-worker", failure_class="harness",
                            detail=f"{lane} is gone or no longer a git worktree after the worker ran; tools: "
                                   + ",".join(sorted({t for t in w.get("tools") or [] if "worktree" in t}) or ["?"]),
@@ -1029,6 +1029,7 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
             with ledger.open("a") as f:
                 f.write(json.dumps({"sweep": sw, "at": time.time()}) + "\n")
     except Exception as e:  # noqa: BLE001 - the sweep never fails a batch
+            lane_was_live = not lane_destroyed(lane)
         _sweep_log(f"sweep error {type(e).__name__}: {e}")
     return rows
 

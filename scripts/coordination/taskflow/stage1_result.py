@@ -107,7 +107,8 @@ def rollup(rows: list[dict], stint_phases: list[dict] | None = None, arm_order: 
                       "failure_classes": fc}}
 
 
-NO_MODEL_WORK_REASONS = ("harness", "lane")
+# r8g fix 2: lane-destroyed-by-worker leaves no diff to judge (the worker removed its own lane): never a finished unit
+NO_MODEL_WORK_REASONS = ("harness", "lane", "lane-destroyed-by-worker")
 
 
 def no_model_work(r: dict) -> bool:
