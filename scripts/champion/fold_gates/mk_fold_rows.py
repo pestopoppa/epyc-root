@@ -9,7 +9,11 @@ Template rules (C19 lessons, scripts/champion/fold_gates/fold_row_guard.py):
     completes through `fold_row_guard.py check` (requires that RUN.json, rc 0 and the bound RESULT);
   * a "library differs between arms" proof must come from fold_row_guard.libs_differ(repo, REF, CAND, ref_bin, cand_bin),
     which derives the libraries from the candidate's own commits; never a fixed list (C19 CPU r1: libllama.so was
-    byte-identical because C19 touched no src/ file, and the fixed-list proof filed FUTILITY with nothing measured)."""
+    byte-identical because C19 touched no src/ file, and the fixed-list proof filed FUTILITY with nothing measured).  * GPU gate rows must not run the FULL test-backend-ops suite under the exclusive GPU grant (c20-fold-gpu-20261123-r2,
+    2026-11-23: two full suites, C18 then C20, are mostly CPU-reference bound - 0 % GPU busy, 1 % VRAM - while the GPU queue
+    waits). Scope tbo with `-o` to the ops the fold touched (MUL_MAT, MUL_MAT_ID, GATED_DELTA_NET, SSM_CONV, ARGSORT/TOP_K/
+    TOPK_MOE for routers), or run the full suite as a separate CPU-lane step before the GPU grant.
+"""
 import importlib.util as _ilu
 import hashlib, json, os, re, shutil, sys
 
