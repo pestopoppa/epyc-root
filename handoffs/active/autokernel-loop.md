@@ -6320,7 +6320,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
 
 ##### Open
 
-- [ ] **R21-5 — Standing community-intake → hypothesis-inbox pipeline.** Operator 2026-08-31:
+- [x] **R21-5 — Standing community-intake → hypothesis-inbox pipeline.** Operator 2026-08-31:
       "I imagine we could distill a lot of autokernel-valuable insights from the wider internet
       community." The qwen38-mtp sweep is the pilot; make it a repeatable flow. Three source
       tiers by evidence quality: (1) **upstream llama.cpp commits/PRs since the 0db32c06 freeze**
@@ -6334,6 +6334,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       STANDING; the pilot sub-items below are done:**
       · history: notes moved to autokernel-loop-box-history-20261122.md
       · class: non-inference (standing intake pipeline; zero compute until the loop elects a seed)
+      · 2026-11-23: research tool prepares reviewable Markdown seeds with provenance, bandwidth context, hotspot matches and measured-null lookup; optional upstream commit enumeration. Choice: manually verified source claims and supplied current profile, exact mechanism/symbol null matches, unknown bandwidth retained as unknown; operator reviews and injects manually. Five targeted tests passed. ✅ 2026-11-23 [no-belief: software] 89eda2bbd971
   - [x] Pilot sweep (a) — qwen38-mtp . BW-utilization arithmetic: MI210 production ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] Pilot sweep (b) — upstream llama.cpp v0.2.0 delta since the 0db32c06 freeze ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] All 13 seeds from the two sweeps injected into the live hypothesis inbox ✅ 2026-08-31 _(detail → completed ledger)_
