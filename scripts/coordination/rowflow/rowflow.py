@@ -799,7 +799,68 @@ def disk_floor_predecessor(flags, rid):
     return best[1], (load_json(ready_path(flags, best[1])) or {}).get("scratch_root")
 
 
+def check_kernel_store(spec):
+    """Verify an explicitly declared store and every entry in its SHA256SUMS.
+
+    kernel_store is a root path, or {"path": root, "sha256": SHA256SUMS digest}; the
+    optional top-level kernel_store_sha256 is equivalent. A declared source_sha
+    is checked against BUILD-IDENTITY.json.
+    """
+    declared = spec.get("kernel_store")
+    if declared is None:
+        return
+    root = declared.get("path") if isinstance(declared, dict) else declared
+    expected = declared.get("sha256") if isinstance(declared, dict) else None
+    top_digest = spec.get("kernel_store_sha256")
+    need(not (expected is not None and top_digest is not None and expected != top_digest),
+         "STORE-MISMATCH: conflicting store digests")
+    expected = expected if expected is not None else top_digest
+    source_sha = declared.get("source_sha") if isinstance(declared, dict) else None
+    need(isinstance(root, str) and root and os.path.isabs(root) and os.path.isdir(root),
+            f"STORE-MISSING: declared kernel store {root!r} is not a directory")
+    root = os.path.realpath(root)
+    if source_sha is not None:
+        identity_path = os.path.join(root, "BUILD-IDENTITY.json")
+        identity = load_json(identity_path)
+        need(identity is not None, f"STORE-MISSING: {identity_path} is missing or invalid")
+        need(isinstance(source_sha, str) and source_sha and identity.get("source_sha") == source_sha,
+             f"STORE-MISMATCH: {identity_path} source_sha differs from declaration")
+    manifest = os.path.join(root, "SHA256SUMS")
+    need(os.path.isfile(manifest), f"STORE-MISSING: {manifest} is missing")
+    need(os.path.commonpath([root, os.path.realpath(manifest)]) == root,
+         f"STORE-MISMATCH: {manifest} resolves outside the store")
+    if expected is not None:
+        need(isinstance(expected, str) and re.fullmatch(r"[0-9a-fA-F]{64}", expected) is not None,
+                "STORE-MISMATCH: kernel store digest must be a SHA-256 hex string")
+        try:
+            manifest_digest = sha256(manifest)
+        except OSError as e:
+            raise Refused(f"STORE-MISSING: cannot read {manifest}: {e}")
+        need(manifest_digest == expected.lower(), f"STORE-MISMATCH: {manifest} digest differs from declaration")
+    try:
+        with open(manifest, encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except (OSError, UnicodeError) as e:
+        raise Refused(f"STORE-MISSING: cannot read {manifest}: {e}")
+    need(bool(lines), f"STORE-MISMATCH: {manifest} is empty")
+    for line in lines:
+        match = re.fullmatch(r"([0-9a-fA-F]{64}) [ *](.+)", line)
+        need(match is not None, f"STORE-MISMATCH: malformed checksum entry in {manifest}")
+        rel = match.group(2)
+        path = os.path.realpath(os.path.join(root, rel))
+        need(not os.path.isabs(rel) and os.path.commonpath([root, path]) == root and path != root,
+                f"STORE-MISMATCH: checksum path escapes store: {rel!r}")
+        need(os.path.isfile(path), f"STORE-MISSING: {path} named by {manifest}")
+        try:
+            digest = sha256(path)
+        except OSError as e:
+            raise Refused(f"STORE-MISSING: cannot read {path}: {e}")
+        need(digest == match.group(1).lower(), f"STORE-MISMATCH: {path} digest differs from {manifest}")
+
+
+
 def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
+    check_kernel_store(spec)
     for k in ("id", "owner", "launcher", "lane", "result_path", "decision_rule", "estimate_s", "handoff_task"):
         need(k in spec and spec[k] not in (None, ""), f"spec.{k} missing")
     rid = str(spec["id"])
@@ -972,7 +1033,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen", "autorequeue_max"):
+              "kernel_store", "kernel_store_sha256", "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen", "autorequeue_max"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish

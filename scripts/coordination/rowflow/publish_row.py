@@ -70,7 +70,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction", "handoff_task_sha",
              "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
-             "resumable", "max_window_s", "expects_created", "quiet_guard_regions", "scratch_gb", "reclaimable", "declared_threads", "shape_widen", "autorequeue_max")
+             "kernel_store", "kernel_store_sha256", "resumable", "max_window_s", "expects_created", "quiet_guard_regions", "scratch_gb", "reclaimable", "declared_threads", "shape_widen", "autorequeue_max")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -241,9 +241,12 @@ def check_smoke_estimate(spec):
         _warn(spec, "estimate-unmeasured: " + warns[0] + " (publish continues)")
 
 
+check_kernel_store = rf.check_kernel_store
+
 def lint(spec):
     """Rewrite the known spec defects in place; returns the LINT notes. Everything else is rowflow.publish's job."""
     notes = []
+    check_kernel_store(spec)
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
         findings = ak_row_lint.lint_dir(os.path.dirname(launcher))
