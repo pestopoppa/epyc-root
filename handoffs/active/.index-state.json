@@ -28,13 +28,13 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 472
+      "open": 471
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 109
+      "open": 108
     }
   },
   "duplicates": {},
@@ -219,10 +219,10 @@
     },
     "autopilot-program.md": {
       "blocked": 1,
-      "closed": 296,
+      "closed": 297,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
-      "open": 83,
+      "last_advanced": "2026-11-23",
+      "open": 82,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -235,13 +235,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 47,
+          "closed": 48,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 49
+          "open": 48
         },
         {
           "blocked": 0,
@@ -258,7 +258,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1064,
+          "line": 1073,
           "markers": 1,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 1
@@ -268,7 +268,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1474,
+          "line": 1483,
           "markers": 1,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1
@@ -278,7 +278,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2172,
+          "line": 2181,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
           "open": 2
@@ -288,7 +288,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2309,
+          "line": 2318,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
           "open": 1
@@ -298,7 +298,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2379,
+          "line": 2388,
           "markers": 1,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2
@@ -308,7 +308,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2573,
+          "line": 2582,
           "markers": 1,
           "name": "evidence-plane-instrument-repair",
           "open": 3
@@ -318,7 +318,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 2733,
+          "line": 2742,
           "markers": 1,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1
@@ -328,7 +328,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 3118,
+          "line": 3127,
           "markers": 1,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1
@@ -338,7 +338,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 3510,
+          "line": 3519,
           "markers": 1,
           "name": "objective-task-rate-goodput",
           "open": 5
@@ -348,7 +348,7 @@
           "closed": 47,
           "gates": [],
           "guarded": 0,
-          "line": 3855,
+          "line": 3864,
           "markers": 1,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4
@@ -358,7 +358,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 4110,
+          "line": 4119,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7
@@ -381,7 +381,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4344,
+          "line": 4353,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
           "open": 4
@@ -404,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4807,
+          "line": 4816,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -414,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 5084,
+          "line": 5093,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
@@ -557,7 +557,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 616,
+          "line": 617,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -567,7 +567,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 882,
+          "line": 883,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 5
@@ -577,7 +577,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1394,
+          "line": 1395,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -587,7 +587,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1931,
+          "line": 1932,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -597,7 +597,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2693,
+          "line": 2694,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -607,7 +607,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3120,
+          "line": 3121,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 8
@@ -617,7 +617,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 3796,
+          "line": 3797,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
@@ -1055,12 +1055,12 @@
     },
     "harness-program.md": {
       "blocked": 1,
-      "closed": 269,
+      "closed": 270,
       "frozen": 14,
       "guarded": 0,
-      "last_advanced": "2026-11-22",
+      "last_advanced": "2026-11-23",
       "needs_owner": 8,
-      "open": 102,
+      "open": 101,
       "owner_index": "user-facing-harness-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -1114,7 +1114,7 @@
         },
         {
           "blocked": 1,
-          "closed": 42,
+          "closed": 43,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
@@ -1122,7 +1122,7 @@
           "line": 1719,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 9
+          "open": 8
         },
         {
           "blocked": 0,
@@ -1404,7 +1404,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1928,
+          "line": 1929,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 7
@@ -1417,7 +1417,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2368,
+          "line": 2369,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 32
