@@ -2,103 +2,6 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-11-19 (wrap-up: code-mode C3 results, import bug, MCP session contract, P6 catalog capture). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): typed-decision plane TD-29.M4 cache pairs (12/18 valid, INCOMPLETE), request-source/RTE source, ThinkPRM verifier plumbing, thinking-budget flag, TD-15a. Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: the 4-arm turn-1 grammar run: no grammar beats legacy, default off; LB3.3 and LB11.1 counters). Earlier: 2026-10-23 (wrap-up sweep 17, workspace-f8: a swallowed exception disabled the turn-1 grammar; the code extractor now strips `<think>`). Earlier: 2026-10-22 (wrap-up sweep 10: loop guards, trajectory producers, repeat-call decision). Earlier: 2026-10-22 (wrap-up sweep 7: structured-output abort, repair telemetry, trajectory artifact). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-06 (root final wrap-up; incremental synthesis appended); previous compile record:  (orch prior-art intake: `/v1` backpressure is 502 with no Retry-After; the HS-OD-8/9, HS-16 and HS-17 fixes; no dependency on MCP sampling); previous: 2026-09-25 (main-ak-seat wrap-up compile: file-backed context needs retrieval budgets; live preflight must enforce COR/anchor identity; interrupted actor calls remain typed evidence); earlier: 2026-09-24 (speech-lane wrap-up compile: a byte-identical tool-output cache keyed on argv plus input identity (R4 precursor); TOC-RD-1b PII hook over-blocks perf periods in table cells); earlier: 2026-09-19 (TD-12..TD-15 one-call tool + argument arm from intake-1493's operation × conditional-target heads; tool-args wiring behind `typed_decisions_tool_args`; id_only native default); 2026-09-18 (backlog-churn-2 sweep: the OpenCode reaper on three-state liveness with `unobservable` withholding VACUUM; the daemon stale-inode class (NIB2-81) and why the static census cannot see an instance; `x_force_role`/422 contract; TD-1d contested at n=4); 2026-09-17 (wrap-up sweep: TD-1d id-only cue bench, TD-4 closed-set 18/18 vs free-form 6/18, HS-15 capability contract, the reviewer-truncation and dead `/chat` tool-field fixes, the trace pairing-key producers, dashboard token provenance, and the stale-next-action reporter); 2026-09-17 (doc audit: FastMCP 3 refuses an undeclared argument — P0.3 finding reversed; the four-layer `/v1` structured-output record and the Harness Cards get standing homes; three seam residuals recorded; the typed-decision native arm fails closed on non-tokenized candidates → TD-1b; installed-pin vs Dockerfile drift); earlier 2026-09-17 (research-intake delta: the typed-decision call path (TD-1/TD-1a), closed-set tool arguments (TU-TD-1), the fuzzy/deterministic GUI build posture (FW-2), and the PAW compile spike tooling; evening: NIB2-79 dead registry entries removed; NIB2-78a one-line degrade and the `close()` lock-release fix; root `.mcp.json` on the venv); earlier 2026-09-17 (afternoon: OP-9 resolved as a pinned host cron, with a single documented hub lifecycle; two dead startup surfaces filed); earlier 2026-09-17 (later pass: the closure audit's triage counts and clean cite-check are recorded, and a hub manifest naming a stopped store is reverted; earlier: the hub readiness deploy question is resolved with the deployed read-only origin/main view; earlier incremental: closure audit proves ticks true, readiness rendered on the backlog graph, re-point reasons and promote-vs-inline rule, hub served from a read-only origin/main view, container-aware supervision cron); earlier: 2026-09-14 (noninf sweep addendum: the `ToolRegistry` invocation-log contract is now explicit — process-global, a bounded `deque(maxlen=1000)` diagnostic ring with `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX`, `get_invocation_log()` guarded by an `ast` test against request-scoped callers, and `clear_invocation_log()` documented as not a per-request mechanism; per-request tool telemetry reads `REPLEnvironment._invoked_tools` instead — `d65a4e93`); same day: the silent-contract-mismatch family: six REPL/tool paths emitted an instruction, pointer or argument that another component of the same runtime rejected, ignored or ran without — `FINAL('done')`, `{}` tool arguments, spill-footer argument order, a never-matching output regex, an unreachable `fetch_report`, an unredacted compressor — fixed with executing tests; plus measure-first rows for verify-before-stop, announced-action nudges and reasoning runaway); previously 2026-08-24 (the hub wrong-checkout incident: a dashboard process launched from a frozen worktree checkout certifies its own staleness, the watchdog cannot see it, and /proc cwd comparison is an unreliable probe here); previously 2026-08-23 (evening tier-1 pass: the two-valued-health-check family gets its enforcement pass — OBS-3/4/5/7 all converted to three-state checks where unobservable ≠ clear: an unreadable MemAvailable now fails the inference guard instead of degrading to all-clear, `autopilot_running()` is three-valued via the singleton flock with only a confirmed `stopped` licensing a shadow launch, the bench preflight's `unobservable` FAILS in strict and advisory modes, and the committed `sudo pkill -f claude` in emergency_cleanup.sh is DELETED; earlier 2026-08-13 note: a research-intake round on agent-fleet failure grading found an Apache-2.0 trace-annotation tool (AdaMAST) that runs against our own Claude Code / Codex transcripts with no success/failure oracle required, superseding an unlicensed predecessor (MAST) — see below; earlier 2026-08-12 note (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
-
-## Compiled Update — 2026-11-09: churn tooling defects and install-closure rule
-
-- **Installed-copy defects.** `churn_up.sh` `start_bg` wrote a wrapper pid to the janitor pidfile (box PIPE-EVE-CHURN-UP-PIDFILE), and `bin/churn/reclaim_row.py` expects the repo `scripts/` tree so its imports fail from the installed copy (box PIPE-EVE-BIN-CHURN-MODULES). Rule recorded: an installed script's import closure is part of what the install list must cover. Pipeline filed results with the repo `file_result.py --no-reclaim --verdict-json` because the installed copy lacks `row_worktree` / `worktree_gate` / `keep_tail`; 107 results were unfiled. Sources: [backlog-churn-runbook](../docs/guides/agent-workflows/backlog-churn-runbook.md), [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
-- **Guards landed (workspace-f2):** worktree_gate per-repo bases, first-push / update-ref / regen guards, `close-lane` with token-boundary ticket match and idle floor (LR-11), NIB2-98 job-fence RAM admission gate (20 tests plus negative control, ac89176ab; opt-in until Pipeline injects `--need-ram-gib`; grant checks still use a 64 GiB margin against the ratified 100), NIB2-99 workspace-clone-drift alarm, PII-NM-OFFSET narrow nm-row rule, LR-10 orchestrator age-based eviction (the Fable audit also fixed a cache-eviction race, 02af4bda). Sources: [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md), [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
-- **PII hook bypass.** The Fable audit found a bypass through the nm size field (0d4658ad1). Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
-- **Backup tooling.** The host owner corrected a first handoff that had real errors (crontab owner, restore-test parsing, unsafe retention): ai-sessions keep 2, opencode keep 3 per store, loop-state 04:45; restore test 24 DBs PASS, chain_ok PASS. Same source.
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **agent-browser** (intake-257#00) Apache-2.0 Rust browser-automation CLI emitting accessibility-tree snapshots for LLMs. Not applicable as filed; possible tool-layer reference.
-- **OpenAI Privacy Parser** (intake-452#01) Inverse of the Privacy Filter: returns PII spans over an 8-label taxonomy with regex, 1.5B model (0.733 F1, ~500 ms CPU) and hybrid backends. Adopt patterns for CPU-side PII span detection.
-- **MultiKernelBench** (intake-667#00) 285 kernel-generation tasks in 14 categories with a pluggable Backend interface. Dive (2026-08-10) narrowed the premise: upstream now ships its own HIP backend, so adopt the harness component for gfx90a kernel generation.
-- **text-to-cad CAD Skills** (intake-915#record) MIT library of 11 model-agnostic skills, STEP-first artifacts and build123d-default sources with mandatory visual review. Dive found no fabricated performance claims; adopt as a skill-packaging pattern.
-- **Qwen-MM-Plugins tracker** (intake-1101#record) Issue #7 on pluggable search is open; none of serper, exa or tavily is self-hostable, but the maintainer plans an API-key-free core with search split out, resolving our policy blocker by removal. QMP_REF pinning is not an effective supply-chain mitigation for most harnesses.
-- **omp.sh landing and distribution endpoint** (intake-1149#record) Canonical claim surface and install endpoint for oh-my-pi; verified inside the a related entry dive and nothing overturned (the Stage-1 decline was reversed per operator "deep dive all").
-- **The Bitter Lesson of Tool Calling** (intake-1124#record) Selected as a free-lunch interface change but does not survive the primary source: programmatic tool calling underperforms JSON by an absolute 14.1% on average in parallel categories. Verdict superseded; keep JSON tool calling for local models.
-- **AsyncFC future-based async function calling** (intake-1119#record) Execution-layer-only async calls reach 1.26x on BFCL v4 Web Search and 1.44x on SWE-bench Lite. The dive deflated the headline: the model does not reason over an unresolved future when later decoding depends on the result. Relevant to the orchestrator tool loop.
-- **skydiscover repo: EvoX/AdaEvolve implementations** (intake-1453#record) Apache-2.0 code: EvoX as a hot-swappable EvolvedProgramDatabase with score formula matching the paper; AdaEvolve intensity defaults 0.1/0.7 (shipped config 0.15/0.5), UCB C=1.41; 12 --search choices (4 external wrappers). Repro issue #57 (plateau 2.5414 vs 2.629) closed as a missing scipy extra. Installable artifact for autokernel search experiments.
-- **CORAL companion code** (intake-1455#record) Shared state in .coral/public (atomic attempt JSON, notes with claim/evidence frontmatter, skills, heartbeat); manager polls every 5 s with defaults reflect=1, consolidate=10, pivot=5. Runtimes include claude_code, codex and opencode, and OpenAI-speaking ones can target the local orchestrator /v1. The paper's best-of-4 control arm is not shipped and multi-island defaults to count=1.
-- **system-one-adapter-python (LLM-backed TypeSafeClient)** (intake-1473#02) Drop-in replacement scoped to the system_one evaluation call, backed by OpenAI or Anthropic APIs or custom OpenAI-compatible endpoints; the output schema is built per request with msgspec.defstruct (intake-1473#02) and the score is (max_prob - uniform)/(1 - uniform) (intake-1473#05). Corrections: normalization is off by default and discrete mode collapses confidence to 1.0. A pattern for pointing a typed-decision client at our local orchestrator /v1.
-- **SakanaAI/ShinkaEvolve framework** (intake-1596#01) Runnable Apache-2.0 local/Slurm framework with asynchronous proposal and evaluation; 41 targeted mechanism tests passed. Implements a capped archive, island sampling, parent policies, novelty filtering and optional migration (intake-1596#01), but is configuration-sensitive and has drifted from paper-era code; main cannot replay the AIME, ALE or MoE results.
-- **SakanaAI/ALE-Bench evaluator** (intake-1599#01) Benchmark and generic evaluation toolkit for score-based AHC tasks, explicitly not officially supported by Sakana or AtCoder (intake-1599#00). The one-private-evaluation budget is a software workflow rule, not a sealed grader (intake-1599#01); private seeds live in same-process state. The complete ALE-Agent and paper trajectories are absent; the toolkit includes an MCP surface.
-- **SakanaAI/drq minimal implementation** (intake-1602#00) Minimal pure-Python DRQ loop with prompts, a CPU simulator, OpenAI client and 317 human warriors (intake-1602#00). Overturned: it cannot reproduce paper aggregates, since discovered-warrior data and analysis are absent. No official ROCm or llama.cpp path, but the AsyncOpenAI client can be redirected via OPENAI_BASE_URL to a local llama.cpp server; simulator license metadata conflicts (CC BY-NC-SA vs MIT).
-- **sakana-ai-reproduction-uni-siegen repo** (intake-1608#00) Singularity/Slurm scaffolding, a modified AI Scientist tree, KNN and SGD templates and reviewer-decision utilities (intake-1608#00). Only five generated PDFs are top-level result artifacts and no ledger of attempted/failed runs exists (intake-1608#01), so aggregates cannot be reconstructed; root license unspecified.
-- **Population DRQ implementation and result subset** (intake-1613#00) MIT repo releases external benchmark summaries, ten champion files, two battle traces and a toy ecology summary (intake-1613#00). Prompts, completions and trajectories for the 40 campaign replicates are absent despite the paper saying they were logged (intake-1613#01), narrowing reproducibility.
-- **DEI asynchronous QD implementation** (intake-1615#00) Supports Linux vLLM (NVIDIA only), macOS MLX and remote APIs (intake-1615#00), but the tree has no paper outputs or run manifests, no documented ROCm path and no root license (intake-1615#01 scope). Component adoption declined (not applicable) on that basis.
-- **LMCA mutation-chain analysis toolkit** (intake-1617#00) Apache-2.0 code, configs, notebooks and tests for neutral mutation-chain diagnostics (intake-1617#00). The paper's result CSV/JSON and trajectory archive are omitted and reruns need provider keys (intake-1617#01), so published measurements cannot be reconstructed.
-- **SWE-bench canonical harness** (intake-1684#00) Docker-based evaluation harness for GitHub issue patching, now a v5-era CLI under the renamed canonical owner; materially newer than the harness pinned by DGM. Adopt as eval component after pinning version.
-- **sums-and-differences-of-sets evaluator** (intake-1689#00) Repo gives an exact 3-argument evaluator and a 5-argument floating-point bounded search computing theta = 1 + (log|U-U| - log|U+U|)/log q(U); a comparator for GHR theta, not one-set C(A). Verifier for search-produced constructions.
-- **Monty Python sandbox** (intake-1850#00) Pydantic's Rust Python sandbox with pooled persistent sessions and suspend/resume snapshots; host capabilities explicit but callbacks run with host authority and need validation. Static verification only; candidate REPL sandbox.
-- **Monty Rust Python sandbox** (intake-1864#00) MIT-licensed Python 3.14-subset sandbox in Rust with explicit host functions and mounts (intake-1864#01). The full Monty server is closed-source, distributed as a private container (intake-1864#02). EPYC: candidate sandbox for REPL tool execution, with the closed server excluded.
-
-## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the 4-arm turn-1 grammar run, and the default is now off
-
-**Confidence: verified** for the pass rates and timings (30/30 cells, task-cluster bootstrap); the gain is being confirmed on a larger task set (UFH14-LB3.4).
-
-- **Result.** On a private frontdoor-shaped server (Qwen3.6-35B-A3B MTP Q8_0), 30 cells per arm: `off` passed 66.7% at 17.8 ms/token on turn 1, `legacy` 40.0% at 23.6, `call` 36.7%, and `lazy-legacy` 3.3% at 54.8. Off vs legacy: +26.7 pp (95% CI +10 to +46.7).
-- **Why lazy lost.** `lazy-legacy` forced an immediate FINAL on every task (1.0 turns) and PATTERN-trigger grammar evaluation was about 2x slower per token on this server. The measured result supersedes the 2.1% lazy-cost figure from the synthetic window. GRAM-LAZY-1 is closed and the lazy branch was not landed ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh)).
-- **Decision.** The operator set the turn-1 grammar default to off (orchestrator main `93055064`; opt back in with `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call`). It goes live at the next API reload, together with `a498ffba`, `96c30079` and `a73af3cc` ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) UFH14-LB3.1/1b/1c).
-- **The silent-failure path is closed (UFH14-LB3.3, orchestrator main `f3ab78b2`).** The turn-1 grammar block's blanket `except` now warns once per exception type, bumps `diag_counters["turn1_grammar_error"]` and writes a `turn1_grammar` parse_event, so the sweep-17 defect (a grammar that never applied, with no trace) cannot recur unseen.
-- **Fence-cut thinking turns are now counted (UFH14-LB11.1, same commit, flag-off).** A `turn_ended_in_unclosed_think` counter and a `think_fence_cut` parse_event are always on; one bounded continuation of a fence-cut turn sits behind `REPL_THINK_FENCE_CONTINUE` (default off, byte-identical). Dropping the fence stop was rejected because it brings back repetition loops. Next: read the counter on live traffic after the reload ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
-- **What still needs the grammar work.** XGRAMMAR-A2 remains relevant for opted-in grammars and for json_schema structured output, which is eager by construction, but no longer for the frontdoor default.
-
-### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
-
-- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB3.1b/1c, LB3.3, LB3.4, LB11.1)
-- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (GRAM-LAZY-1 closed, XGRAMMAR-A2 reconciled)
-- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
-
-
-## Compiled Update — 2026-10-23 (wrap-up sweep 17, workspace-f8): a swallowed exception disabled the turn-1 grammar, and the code extractor now strips `<think>` blocks
-
-**Confidence: verified** (orchestrator main commits `a498ffba` and `96c30079`, their tests, and the KPF-LB1.1 run artifacts).
-
-- **UFH14-LB3.2: the turn-1 grammar was dead code for a day.** A conditional function-local `import os` in `_execute_turn` made `os` a local name. The `os.environ.get` added by UFH14-LB3 then raised `UnboundLocalError` on every first turn, and `except Exception: pass` hid it.
-  - Fixed on orchestrator main `a498ffba`, with an AST regression test that refuses a local `import os` there.
-  - It was found by the mock proof of the 4-arm grammar run, not by any test or log.
-  - UFH14-LB3.3 makes that `except` log and count ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
-- **UFH14-LB11: `extract_code_from_response` now strips Qwen3 `<think>...</think>`.** Before the fix, reasoning prose containing `=` was swept into the code candidate and `ast.parse` failed. The extractor returned `''`, the "all comments" nudge fired, and after 3 nudges the graph raised "Max nudges (3) reached".
-  - Fixed on orchestrator main `96c30079` (160 prompt_builders tests pass). Complete and empty blocks are removed, an unclosed `<think>` drops everything after it, and a stray `</think>` drops everything before it.
-  - Exposed roles: those with thinking on and the raw `/completion` lane, i.e. `architect_critic`, `coder_escalation` and `ingest_long_context` while `thinking_roles_chat_lane` is off.
-  - It was found when KPF-LB1.1's capture came back INCOMPLETE ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
-  - Open follow-up UFH14-LB11.1: the `"\n```\n"` stop sequence can still cut a turn inside an unclosed `<think>`.
-- **Both defects fail into a plausible outcome, not an error.** One produced "no grammar", the other an empty code block plus nudges. Neither is live yet: both go live at the operator's next API-only reload, together with `exec_write_flags`.
-
-### Source References (2026-10-23 wrap-up sweep 17)
-
-- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB3.2, LB3.3, LB11, LB11.1, LB10 reload box)
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-LB1.1 run 1 INCOMPLETE)
-- [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
-
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): constrained output stays unguarded, the producers of the trajectory artifact are wired, and repeat-call steering is not worth building
-
-**Confidence: verified** for the landed code and the offline measurements named below (orchestrator commits, test counts, sample sizes); **inferred** for what the live API will show, because most of it goes live only at the next API reload and the 14-day parse-event window has not started.
-
-- **Loop guards: the existing L2 detector stays best, and constrained output stays unguarded (HIL-LB1, orchestrator `258ce2d7`).** Locals' token-period and paraphrase detectors, a 1,024-token grace window and an in-grammar variant were ported and scored on the Who&When Pro injected loops (N=53 of 6,257, all ALFWorld): the existing L2 detector P 0.264 / R 0.623 / F1 0.371; Locals token-period P 0.318 / R 0.132; paraphrase and in-grammar+grace fire on none because the 30-line window and grace exceed whole trajectories; repeated-call >=1 gives R 1.0 / P 0.113. A test-after-edit exemption (a verifying call repeating an identical call after a mutating one) changes no verdict on 150 natural coding sessions (2 exempt of 11,376 calls). Decision: no loop guard on constrained output (`n_predict` bounds a runaway; in-grammar+grace cuts legitimate repetitive arrays past about 1,400-1,600 tokens and fires on 0 of 649 recorded JSON-shaped replies); the free-form guard is rejected because it reproduces the earlier TD-1d.2 cut. Reopen trigger: a census finds a constrained reply ending at the token limit with a periodic tail.
-- **A side finding is unproven, not a bug (HIL-LB1a).** Replayed at the recorded chunk boundaries, the live free-form streaming repetition guard fires on 26 of 649 JSON-shaped tap replies (16 end exactly at the firing chunk; only 8 of 26 parse as JSON). The tap never stored the request grammar, so the flag cannot be recovered retroactively; inferred from the call-site template, 575 of 649 replies come from sites that pass `json_schema`, and all 26 firing replies fall in that inferred-constrained class. If those requests were constrained in production the guard was inactive for them and the replay firing is not a live cut. The tap now records `request_constraints`; the claim stays an inference until a post-hook tap shows it.
-- **Trajectory-artifact producers are wired (orchestrator `9eeb7ba8`).** Rendered-history changes (summary refresh, two-level consolidation, escalation compression) now count as `prefix_cache_invalidations`; session compaction is deliberately NOT a producer because `TaskState.context` is never rendered into a prompt. Shell compaction arrives as a control-only `/v1` packet `x_session_compacted` (no inference) forwarded by the OpenCode plugin `session.compacted` hook, with the caveat that turns that do not run the graph produce no trajectory. Error-turn tool calls (baseline-diffed exploration calls) reach the trajectory artifact only, because the session-log record's `tools:[...]` renders into the prompt and adding them would change prompt bytes.
-- **Repeat-call steering is not wired (TOC-SP-LB1, decided).** Consecutive identical (name, args) calls: qwen-gpu 1/3,383 (0.03%), qwen-local 0/918, cloud deepseek 1/2,745 (0.04%), Claude vault 77/32,179 (0.24%; 83% result-equal), Codex vault 28/7,107 (0.39%; polling tools excluded). Neither the result-equality notice nor the one-reply tool ban pays back its tokens and prompt surface at one repeat in 4,301 local calls; if a trigger fires, build the notice, not the ban (the one sizeable pattern is a cloud-agent `Edit` retried with an identical failing argument). Reopen above a 1% local repeat rate over at least 5,000 local calls.
-- **Structured-output and serving-record observability.** `parse_events.v1` (orchestrator branch, since reported landed on main) records finish_reason, n_tokens, max_tokens and site per parse, with truncation tri-state (never folded into "malformed"); the 14-day classification needs merge, reload and time. The `serving_calls` recorder is the sharper lesson: the shared clone held 75 records and zero `method=infer`, against 4,739 `llama POST ... start` lines from the non-stream path, and the writer swallowed every exception, so nothing said it was dead. The cause is not reproduced offline; the fix counts recorded/skipped/failed writes (`health()`) and `record_http_call` now wraps worker_pool `/completion`, schema repair and both VL calls (`d0e0e477`); four call sites remain unwrapped and restoration is unproven until a post-reload infer-record to log-line ratio near 1.
-- **Turn-1 grammar has a shape defect (proposal, default unchanged).** The grammar's tool-call shape is `TOOL("name", ...)` while the REPL's stop regex and `_call_tool` path use `CALL("name", ...)`; of 81 grammar-enforced March frontdoor rows 4 (4.9%) called any tool vs 26/685 (3.8%) non-enforced, pass 27/81 (33%) vs 311/685 (45%), confounded by suite mix. The flag `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call|off` and raw turn-1 logging (`d0e0e477`) are in; the A/B (about 60 min CPU, ABA-alternated, rule predeclared) is open.
-- **Frozen-build crash class closed on the experimental line, not in production.** The `%llguidance` GGML_ABORT now throws a request error (server answers 400 and keeps serving) on `experimental/locals-kernel-fixes-20261022`, build and test passed (server pytest 3/3); production stays frozen and protected by the orchestrator guard until the fold (UFH14-LB1.1). A new side finding: a client echoing a call's invalid-JSON `arguments` into history makes `workaround::func_args_not_string` throw, plausibly a 500 poisoning every later turn of that conversation (UFH14-LB4.1, untraced).
-- **Re-tokenization is not a source of tool-call prefix divergence (UFH14-LB9/LB9.1).** Plain-text replies re-tokenize with a one-token excess (EOS) in 85/87 (97.7%) and one extra token in 2/87 (2.3%); rendering logged tool-call turns through each role's GGUF template gives 444 of 450 exact (98.7%), with Flash-Next 2 of 150 at +1 token and the two longer-than-generated rows being logging effects. So the 17.8% of follow-on turns diverging inside the previous output is not explained by tool-call arguments.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-LB1 scoring and decision, HIL-LB1a
-- [progress/2026-10/2026-10-22-hil17-lb1-writes.md](../progress/2026-10/2026-10-22-hil17-lb1-writes.md) — LB1a labelling result
-- [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-WRITER producers, TOC-SP-LB1
-- [progress/2026-10/2026-10-22-a1-orch-code.md](../progress/2026-10/2026-10-22-a1-orch-code.md) — compaction-is-not-invalidation finding
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — parse events, serving_calls, grammar, LB1/LB4.1/LB9
-- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — Locals packet D and locals-a results
 
 ## Latest source review — 2026-10-07
 
@@ -132,355 +35,6 @@ The [max_tokens decision package](../docs/design/hs-od-4-max-tokens-decision-pre
 - [Shared exploration contract](../docs/design/hs4-p6-shared-exploration-source-contract-20261006.md)
 - [current source acceptance](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - [max_tokens decision package](../docs/design/hs-od-4-max-tokens-decision-prep-20261006.md)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): structured-output and trajectory artifact
-
-**Confidence: verified** for the trajectory-artifact writer and `tool_output` layout block (orchestrator `e9cf0949`, 44 tests passed, flag-off byte identity in three cases); **inferred** for UFH14-LB1..LB10 and TOC-WRITER-* (filed, not run).
-
-- **Structured output is observed blind.** Repair counters are in-process only and no event records `finish_reason`; UFH14-LB2 persists finish_reason, n_tokens, max_tokens and call site per parse event, then after 14 days splits parse failures into length-truncated vs malformed. UFH14-LB4 tests five crafted strings (native tool call cut by max_tokens, non-partial parse failure) for invalid-JSON arguments and HTTP 500. UFH14-LB3 replays turn-1 `grammar_enforced` REPL outputs, since the code-line rule admits any line.
-- **Per-call serving records have decayed:** `serving_calls` holds 19 records since 2026-10-05 despite a live hook (UFH14-LB6); the fix extends records with finish_reason and stream inter-token gap p99/p99.9/max/stall count, and a p99.9 gap is never reported without its sample and stall-arrival counts.
-- **Trajectory artifact writer landed (default off):** one append-only JSONL per task with a `turn` event per REPL turn (prompt chars, server prompt/cached/completion tokens, null when unobserved, `n_ctx`, retrieval-vs-execution split, spill-ledger fields). TOC-SP-5 stays open because no run has emitted artifacts. Two producer gaps filed: TOC-WRITER-HOOKS-1 (`note_history_rewrite`/`note_shell_compaction` have no callers, so `prefix_cache_invalidations` is always 0) and TOC-WRITER-TOOLCALLS-1 (error-path turns pass no tool_calls, undercounting the retrieval split).
-- **TOC-SP-LB1** measures consecutive identical (name, args) tool calls in the conversation stores before choosing between a result-equality repeat notice and model-voiced steering with a one-reply tool ban.
-
-### Source References (2026-10-22 sweep 7)
-
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)
-- [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
-- [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
-
-## Compiled Update — 2026-09-25: control retrieval, validate live state, and preserve interrupted calls
-
-**Confidence: verified** from the OAB-9 two-pair A/B and the run-9 refusal/stop records. The A/B is small
-(`n=2`, inline-first), so it establishes the failure mode rather than a universal ranking.
-
-- **A file-backed context tool needs an explicit retrieval budget.** The file arm cut first-step context from
-  40.6k to 19.1k tokens, then the model read every withheld section and explored more source. Its wall time,
-  steps, tool calls, decoded tokens and peak context were worse in both pairs. The interface should count the
-  exact sections and bytes returned, enforce caps, and let orchestrator-side scouts select evidence when the
-  model does not pull precisely. Moving bytes behind `read` is not itself an efficiency feature.
-- **Record efficiency beside the closed call record.** `epyc.autokernel.actor_call_metrics.v1` carries steps,
-  tool calls by name, compactions, prompt/decoded/cache tokens and first/max context, while `actor_call.v1`
-  remains closed and self-hashed. Metrics errors are data and do not fail the call. The OAB-9 artifacts show
-  why this belongs on the write path: they distinguish a smaller initial prompt from greater total work.
-- **Dry-run preflight must exercise identity checks used by the live runner.** Run 9's dry run succeeded, but
-  live execution refused because the store's champion of record did not equal the requested anchor. A useful
-  preflight checks that exact invariant before an expensive off-hours window, along with the resolved target,
-  serving generation, and evidence store identity.
-- **Termination should leave a typed negative result.** TERM during a live planner call reaped the runner and
-  opencode, released the CPU locks, and emitted `actor_call.v1` with rc −15. This makes an interrupted call
-  distinguishable from a missing record. Calibration owns a different child process path and needs a separate
-  stop/reap test.
-
-### Source References (2026-09-25)
-
-- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
-  OAB-7/OAB-9/OAB-12 and the actor-call metrics contract.
-- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C24,
-  DS41-C25, DS41-C27, and DS41-C28.
-- [`agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md) — operational and tool-interface
-  form of the run-9 and context-placement findings.
-- [`2026-09-25-main-ak-seat.md`](../progress/2026-09/2026-09-25-main-ak-seat.md) — measurements and process
-  observations.
-
-## Compiled Update — 2026-09-24 (speech-lane wrap-up): a byte-identical tool-output cache, and a PII hook that changed a fixture's bytes
-
-**Confidence: verified** for the cache timing and the hook trip, both measured on real artifacts. **inferred** for
-the premise check.
-
-- **Cache a deterministic tool's output on its exact argv plus its input's identity.** The research build is
-  `f4a5d240`, a seat-side precursor of R4. The identity is the realpath, size, `mtime_ns`, a content hash (first
-  and last 1 MiB) and the memoized tool version. Add a build-id when an input is rewritten in place at a stable
-  path. A hit is then literally the bytes of a prior run.
-  - Keep client-side knobs such as `limit` out of the key. They never reach the tool, so one report serves every
-    limit.
-  - Keep the cache beside an integrity-checked directory, never inside it.
-  - Measured on the run-7 profile (25.7 MB, 114K samples): `perf report` went from 1.283 s to 0.0012 s, and the
-    output was byte-identical.
-- **Before building a speed fix, check it against the loss it claims to fix.** At 1.3 s per call, perf-tool time
-  cannot explain the bounded seat's ~12-minute loss in C20c. The plain seat does not use these tools at all. The
-  per-call metrics (see [agent-architecture](agent-architecture.md)) are the instrument that says where the time
-  goes. Measure first.
-- **TOC-RD-1b: the root PII pre-commit hook over-blocks `perf` sample periods in markdown table cells.**
-  - The `account_number` rule (`\b[0-9]{12,19}\b`) tripped on 12–13-digit periods in 7 cells of a real DS41
-    planner-prompt fixture. The author redacted them, so the committed fixture's bytes differ from the real
-    prompt.
-  - Inline mode's byte-for-byte fidelity was therefore shown against the copy recovered from the opencode store,
-    whose sha equals the call record's, and not against the committed fixture. A fidelity claim has to name the
-    copy it was checked against.
-  - The candidate exemption is a digit run in a `|`-delimited cell whose header or row names a perf field, with no
-    account/card/customer/iban/routing/ssn token on the line.
-  - The exemption has to ship with a must-block negative control (an account number in a markdown table) in the
-    same change. This surface is already flagged for being tuned on its own over-blocks (see
-    [formal-verification](formal-verification.md), the PII-hook exemption surface).
-
-### Source References (2026-09-24 speech-lane)
-
-- [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Tool-output caching*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §3 (key, placement,
-  premise check).
-- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression): TOC-RD-1b.
-
-## Compiled Update — 2026-09-19: one call for the tool and its arguments — the operation × conditional-target pattern (TD-12..TD-15)
-
-**Confidence: verified** for the filings and the dive-verified intake mechanics; nothing below is implemented or measured on this host yet (TD-12..TD-15 are open).
-
-### Key findings
-
-- **The pattern: ask the operation and a speculative target head per operation in one typed call, consume only the chosen operation's head.** intake-1493 (browser-use/jev-ultrafast, MIT, dive-verified @ `1231850a`; 31/31 offline tests pass) does this per browser step — one request carries CLICK/TYPE_TEXT/SELECT/SCROLL/WAIT/DONE/BLOCKED plus one target question per operation, and "unused target heads cannot cause an action" (`model.py:94-133`). Its vendor-authored comparison (3 alternating pairs, one task; the authors' sign-test p = 0.25, not a reliability benchmark) splits the median gain roughly in half between fewer decision requests (~1.0 s of 2.36 s, from fewer stale invalidations) and less browser/wait time (~1.1 s). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-19-intake-jev-ultrafast.md))
-- **TD-12 carries it to tool calls:** one call choosing over `ToolRegistry.list_tools(role)` plus one argument-head set per candidate tool (instructions naming the tool they assume), consuming only the chosen tool's heads, compared against the current tool-then-arguments path (TD-4, closed-set 18/18 vs free-form 6/18 — see the 2026-09-17 section below) on exact tool+argument correctness and wall time. **A required code change**: today any failed head rejects the pass (`tool_args_integration.py:197-198`); a failed head for an UNUSED tool must not. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-13 gates TD-12 on contamination between sibling heads.** The local flip-rate receipts (TD-2 6.25%/37.5%, TD-3b 87.5% agreement) cover flat catalogues only; TD-13 answers the chosen tool's heads alone vs batched with the unused tools' heads and reports the top-answer flip rate for the worker model before the heads are trusted as independent. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-14: options become describable.** `Question` options are a bare label list today (`types.py:66-68`, rendered `candidates: a | b`); an optional per-option description, rendered by both JSON and native arms, grounds tool or element tables without stuffing the shared state. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-15 is conditional and may close as not-needed:** only if TD-12 needs more candidates than the TD-9 code map's 36 symbols (`routing_replay.py:153`) or the 128 `n_probs` cap (`native.py:259`) — hierarchical codes or chunked tables. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **Two landings the 2026-09-17 section below predates:** closed-set tool arguments are wired into the orchestrator tool path (`src/repl_environment/context.py` `_dispatch_tool`) behind `typed_decisions_tool_args`, default off, fail-open to the model's own arguments; and `id_only` is now the native default (TD-6). The 11.98x figure that section records is contested (9.60x at n=4, per decision 6.40x); the TD-1d.1 blocker still stands — `/v1` forwards neither `grammar` nor `json_schema`, so no typed arm deploys through `LLMPrimitives` yet. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [re-measurement](../progress/2026-09/2026-09-18-td1d-remeasure.md))
-- The same pattern is the design core of the dormant interactive-browser stub — see [agent-architecture](agent-architecture.md).
-
-### Open questions
-
-- Does one-call tool+argument selection beat TD-4's two-step path on the worker, or does sibling-head contamination (TD-13) eat the saving?
-- Do the role's tool catalogues stay under 36 candidates, closing TD-15?
-
-### Source References (2026-09-19)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-12..TD-15, the tool-args wiring policy, TD-6, TD-1d.1.
-- [2026-09-19-intake-jev-ultrafast.md](../progress/2026-09/2026-09-19-intake-jev-ultrafast.md) — the intake-1493 dive outcome.
-- [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — the contested speed figure.
-- [intake-1493] Jev Ultrafast (browser-use/jev-ultrafast) — operation × conditional-target heads; dive-verified, `research/intake_index.yaml`.
-
-## Compiled Update — 2026-09-18: a destructive branch gated on certainty, and the daemon that never received its own fix
-
-**Confidence: verified** — code landings with tests, and a read-only `/proc` census with pids and inodes recorded. Session record: [`progress/2026-09/2026-09-18-backlog-churn-2.md`](../progress/2026-09/2026-09-18-backlog-churn-2.md); census: `tmp/daemon-staleness-20260917/report.md`.
-
-### Key findings
-
-- **NI-OC-a: the reaper's VACUUM gate moved from a bare name probe to `observer_guard.sh` three states, mapped so only certainty permits destruction** (root `49e85ab7`). `pgrep -x opencode` was two-state, and a drifted argv read a LIVE process as ABSENT — the state that *permits* rewriting the operator's live `opencode.db` under an exclusive lock. Now `present` → withhold; **`unobservable` → withhold plus an alarm breadcrumb that clears on the next sighting**; `absent` → permit, only when every channel that could speak agrees. Two read-only channels, neither a kill target: `proc_scan` matches `"opencode "` *with the trailing space* (so the reaper's own argv and `opencode.db` cannot self-match) and `db_fd` walks `/proc/*/fd` for an open descriptor on the DB — argv-independent, and the thing VACUUM cares about. A missing DB is `unavailable`, never `absent`; channel disagreement is `unobservable`. The unlucky case now defers a VACUUM by one cycle and says so, instead of guessing. `observe` subcommand for inspection; registry row adopted at contract v1; a test asserts no bare name probe survives. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
-- **NIB2-81: a long-running daemon executes the script inode it was launched with, so a committed fix never reaches it — and the census that said OK cannot see an instance.** The same night NI-OC-a landed and "census OK (17 observers)" printed, the live reaper (pid 2873259, started 09-08) was executing a 1,802-byte lane copy under `worktrees/mains/ak-rebuild-20260828` — 461 iterations, 39 VACUUMs on the two-state code. Mechanism: bash holds `fd/255` for life; git never writes in place, so each commit moves the PATH to a new inode; no cron in the container, so daemons are hand-launched with the launcher's cwd, and an abandoned lane never advances. Three live shapes: **stale-and-diverged** (the reaper), **orphaned inode** (hub and bus supervisors show `(deleted)`, orphaned by a `git reset --hard origin/main`; identical content today, diverging silently on the next commit), **orphaned tree** (a `:8101` hub from a worktree that no longer exists — no registry row, pidfile or probe). `observer_census.py` is static by design (Rule A/B over `git ls-files`; its runtime battery uses a sandboxed stand-in, never a live pid): it certifies the FILE and has no notion of an INSTANCE. `check_lane_worktree.py` looks the other way; `/api/health` folds data freshness, not code provenance. The one loop that works is the bus supervisor's H-4 tree-divergence check, which restarted the coordinator daemon at 23:34. Recommended: startup self-attestation (own `fd/255` inode vs `HEAD:<relpath>`) + registry `runtime:{pidfile,expected_path}` + `observer_census.py --live` into the fleet alarm; generalising H-4 is the proven follow-through. Restart identity comes from the daemon's own pid record, never a name. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
-- **`x_force_model` never forced a model; the seam is role-keyed end to end, so the field was renamed to what it is and the old name deprecated, not deleted** (HS-OD-3/7, orchestrator `2a609f5c`): `x_force_role > x_force_model > x_orchestrator_role > model`; unservable values (registry model names, typos, `Role` members with no server) are a 422 naming the field, where before they died at `server_urls.get(role, "")` with no diagnostic. Detail and the operator ruling: [agent-architecture](agent-architecture.md).
-- **TD-1d's "11.98x" below is contested**: re-measured at n=4 alternated it is 9.60x (bar not cleared), and the disagreement is the single-sample JSON baseline; per decision 6.40x. See [benchmark-methodology](benchmark-methodology.md).
-
-### Open questions
-
-- Which of the three NIB2-81 remedies lands first — self-attestation is one line per daemon with no kill path; the `--live` census is the only one that sees an unregistered stray?
-- Should `hub_supervisor`/`bus_supervisor` be restarted at a quiet boundary now, or ride until the class fix moves them?
-
-### Source References (2026-09-18)
-
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NI-OC-a, NI-OC-a.1, NIB2-81.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-3..7.
-- [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — the judgement calls.
-
-## Compiled Update — 2026-09-17 (wrap-up sweep): the native arm gets its cue, closed-set tool arguments win exactness, and the cooperation contract drops field names
-
-**Confidence: verified** for the local fixture numbers and the code landings; **external** for intake figures.
-
-### Key findings
-
-- **TD-1d accepted: the id-only cue recovers 11.98x at parity.** Cue sweep on the worker (Qwen3.6-35B-A3B, MI210, same 24-question fixture, one run each): JSON 19.3 s / 1,354 tok; native full 7.3 s (2.66x) / 523 tok; short 3.2 s (6.0x) / 239 tok; **id_only 1.6 s (11.98x) / 112 tok** — all three native styles 15/16 agreement and 15/16 accuracy on the overlap. Adopting `id_only` as the native default after review (keeping `full`/`short` selectable) is TD-6, still open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-4 closed-set tool arguments: 18/18 exact vs 6/18 free-form.** 18 deterministic cases across 3 tool schemas: closed-set 18/18 exact-match (0 failures) vs free-form 6/18 (12 failures — parse/schema failures, not merely wrong values), per-argument exact 66 vs 24, at 116.6 s vs 11.4 s (10.2x wall for the free-form arm). Exact tool use is the closed-set arm's to win; coordinate with `tool-use-eval-contract` TU-TD-1. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **Native parity was a prompt-cueing bug, not a decoding one.** TD-1b fixed token identity (candidates resolved through the server `/tokenize` seam, exact-token grammar terminals `<[id]>`, probability rows matched by token id), but agreement was 11/16. TD-1c root-caused the 5/16 disagreement: only the first answer was grounded on the prompt; later positions were conditioned on prior answer tokens, collapsing `noul` answers to false. Replaying each question's cue as tokenized grammar terminals restored 15/16. **The fail-closed shape is the one to keep**: the original native failure surfaced as typed `native_unknown_candidate` errors, never as wrong answers. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **HS-15: the cooperation contract is a capability, not a field name.** Restated as *config-declarable arbitrary top-level body keys on the openai-completions path, on the call verb the harness actually uses*, with all three qualifiers load-bearing, and the five names it ships under listed (`extra_body`, `compat.extraBody`, `Model.samplingParams`, `chat.params` → `options`, `provider.<id>.models.<m>.options`). Two forks of one repository grew the same primitive under different names on different objects, so a name-keyed contract mis-scored candidates twice in one batch. Step 1 of the [client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) now tells the auditor to grep for the capability rather than a known name. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **Scoring-infra 1c-fix (b)/(d) closed** (orchestrator `9a7181f2`): reviewer truncation replaced by `ArchitectReviewService.condense_output()` — head 60% + tail 40% with an explicit elision marker naming the elided character count (budget config `review_output_max_chars`, default 4000; `quick_mode`'s silent `[:200]` routed through the same helper). The old 500-char prefix cut fed `all_approved` → memrl reward, so it was a latent scoring bias as much as a readability defect. And dead `ChatRequest.tools`/`tool_choice` are **deprecated, deliberately not removed** — they are part of a published `/chat` schema whose model sets `extra="ignore"`, so removal would swallow them silently; `/chat` now logs when a caller sets them. ([scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
-- **The trace pairing keys now have producers** (unified-trace UTM-P1a / P1a.2, orchestrator `9a7181f2`/`7887e7ae`): the review plane stamps `harness`/`task_key`/`turn_ordinal` (and rejects `subtask_id` as a key — "S1" recurs across unrelated tasks, so a fabricated key pairs unrelated runs), and replay + delegator add the second harness. Unset keys stay NULL = "never captured". Real-data reachability (separate stores, no shared ids, turn alignment) is UTM-P1a.3, compute-gated. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
-- **Dashboard data plane: measured and estimated prompt tokens are no longer indistinguishable.** The inference tap stamps `prompt_tokens_source="server_terminal"` and cards render `↑ N tok` only for that source, while the chars fallback renders as `prompt Nc` — an estimate and a measurement can no longer wear the same label. Declared (not observed) node substrate now carries `substrate_source` = `process | role-kind | manifest`; an unknown role declares nothing rather than guessing. ([dashboard-architecture-restructure](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure))
-- **Handoff-index authoring gained its staleness reporter.** `scripts/handoffs/stale_next_action.py` flags a row only when **every** task id its `Next action` names resolves to a ticked box — the well-formed≠still-needed gap `index_state.py --check` cannot see. Measured on introduction (2026-09-17): 7 stale rows, one naming a task ticked five weeks earlier. It is a reporter, not a gate. ([handoff-index-authoring guide](../docs/guides/agent-workflows/handoff-index-authoring.md))
-- **FW-2 placement is decided and VB-FW-1 files the write-side hook at design time.** The workflow document schema, executor and `/dashboard/api/workflows/*` contract live in `epyc-orchestrator`; the authoring page, registry row, probe and freshness envelope live on the hub `:8100`; nothing in the shell. The first GUI-authored run emits one ClaimTuple carrying the document hash, executed node types, each fuzzy node's model pin and catalogue, and per-gate outcomes. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **NIB2-78/79 closed zero-inference** (orchestrator `61793b38`, `0c03e658`): the graph layer's missing-`kuzu` path is one WARNING line (operator ruled kuzu stays uninstalled), every graph class `close()` now releases its Kuzu file lock, and the four dead `archive_*` tool-registry entries were removed with a test that gates every registry handler. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
-
-### Open questions
-
-- Does the id-only lead reproduce on a second run and a different model, or is it a single-run artifact?
-- Do the closed-set tool arguments hold under the fleet's template diversity (the TU-HR-1 native-convention audit is the standing constraint)?
-- Should `/v1` reject unknown `x_*` keys once the typed set is stable?
-
-### Source References (2026-09-17 wrap-up sweep)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1b/1c/1d, TD-4, TD-5, TD-6.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) and [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — HS-15 capability contract and the call-verb check.
-- [scoring-infra-standardization.md](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — 1c-fix (b)/(d) and the reviewer-truncation bias.
-- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a/P1a.2 pairing-key producers.
-- [dashboard-architecture-restructure.md](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure) — prompt-token provenance and declared substrate.
-- [handoff-index-authoring.md](../docs/guides/agent-workflows/handoff-index-authoring.md) — the stale-next-action reporter.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — FW-2 placement and VB-FW-1.
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-78/79.
-
-## Compiled Update — 2026-09-17 (typed-decision round 2): token identity fixes the native failure, but speed is not semantic parity
-
-**Confidence: verified** for the recorded local MI210 fixture and focused tests. The 18.9x timing is for the tested 24-question fixture on Qwen3.6-35B-A3B, not a general tool-use speedup.
-
-- TD-1b now asks the server `/tokenize` for candidate IDs, builds exact-token grammar terminals and matches probability rows by token ID. The previous 23/24 `native_unknown_candidate` failures fell to zero; 8/24 candidates are explicitly unsupported because they tokenize to multiple tokens and fall back to JSON. On the 16 native-resolved questions, timing was 1.03 s versus 19.4 s for JSON, but native/JSON agreement was only 11/16 and native accuracy 68.8% versus JSON's 91.7% on the overlap. The native arm therefore remains non-authoritative; TD-1c owns semantic parity before a speed claim can guide routing.
-- TD-5 is a bounded, default-off shadow at the routing review gate, not an enforcement route. A live smoke produced one record with incumbent, typed decisions, confidences and prompt/state hashes. The next evidence is a labeled window to assess agreement and calibration; the smoke alone cannot license a gate.
-- The longer fan-out run measured 3.22x wall/serial improvement for three 40k-character states on the same worker, but its catalogue was content-neutral, so agreement is uninterpretable. TD-3b asks for the real 24-question catalogue. Closed-set tool arguments still await their free-form-path live pilot (TD-4).
-
-Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) and [intake implementation record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md). The earlier compiled section below is the historical first-run state; its TD-1b question is superseded by this update.
-
-## Compiled Update — 2026-09-17 (doc audit): FastMCP 3 refuses an undeclared argument, the `/v1` structured-output record gets a standing home, and the typed-decision runner's native arm fails closed
-
-**Confidence: verified** for source facts at the cited commits and the executed tests; **verified** for the MI210 runner results (first measurement, one fixture).
-
-### Key findings
-
-- **FastMCP 3 refuses, it does not drop — and the 2026-09-16 P0.3 finding is reversed.** The orchestrator pins `fastmcp>=3,<4`; a stamped call carrying an undeclared `session_id` is rejected, proven by `tests/unit/test_mcp_undeclared_args_refused.py`. The earlier shard had read `mcp` 1.27.0's `ArgModelBase` (no `extra="forbid"`) and concluded "silently drops". The tool-side requirement is the same under either behaviour — every session-aware tool declares `session_id: str = ""` and forwards it (`ChatRequest.session_id` already exists) — and every `@mcp.tool()` in `src/mcp_server.py` now does (orch `54b6439d`). If the P2 memory tools ship as a separate MCP server, that server needs the same declares-and-refuses tests (`HS-4 P2 carry`). Rule: a dependency's behaviour is read from the pinned version, never from whichever copy is on the path ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
-- **The structured-output capability record is now a standing reference, four layers read together** ([`v1-structured-output-capability.md`](../docs/reference/v1-structured-output-capability.md)). Kernel (frozen v9 `0db32c06e`): `response_format` `json_object[+schema]` / `json_schema` → grammar; any other non-`text` type → `invalid_argument`. Orchestrator internal: `LLMPrimitives.llm_call(json_schema=…)` threads `json_schema`/`grammar` into the backend body — grammar-constrained; live consumers are native `/chat` direct mode and consultations. Native `/chat` REPL mode: **not** constrained — schema in the prompt, `FINAL()` parse-and-retry, and only when `final_schema_validation` (default off) is on. `/v1` seam (`:8000`): any `response_format` other than `text` → **422 naming the field, by decision** (HS-OD-1); `max_completion_tokens` honoured as alias. Quoted alone, either half misleads: a harness using OpenAI JSON mode gets a 422 today although the kernel could serve it; wiring is a small direct-path mapping, but REPL-mode consumers stay parse-and-retry. **Kernel-doc defect, no action on the frozen tree:** `README.md:1239` puts `schema` at the top level while the code reads `response_format.json_schema.schema` (`server-common.cpp:947-949`), so the README's form yields an empty schema and *silently unconstrained* JSON — the silent-no-op class applies to servers, not only clients.
-- **Two Harness Cards have a consumer outside the handoff that wrote them**, which is why they moved to [`harness-card.md`](../docs/reference/harness-candidates/harness-card.md): `agents/shared/HARNESS_RUN_POLICY.md` requires a run report to name "the applicable Harness Card". The editable-vs-code-owned card answers *what can be changed without code*; the conformant ETCSOVG card answers *what configuration produced a score* and is conformant *because* it names its 13 undisclosed/unfixed fields (no REPL/scorer isolation, no eval-wide network-off, auto-approve, …). Re-publishing rule: a model or freeze change refreshes the conformant card before a result is called re-targetable.
-- **Three `/v1` seam residuals recorded, none fixed here.** `src/api/models/openai.py` describes `x_max_escalation` as capping escalation while `/v1` only records it (one-line description fix filed as `HS-4 P4-pre`; enforcement is P4). Unknown `x_*` keys outside the typed set are still silently ignored (`extra="ignore"`). `/v1` B2 compression still fails open to the unfolded history.
-- **The typed-decision runner: the JSON arm works, the native arm fails closed for a reason that is a tooling fact.** `src/typed_decisions/` (epyc-orchestrator, flag `typed_decisions` default off, no route wired, 87 tests) ran the 24-question fixture 24/24 clean in 36.7 s on the 27B via `response_format json_schema` with corrective retry. The TD-1a native candidate-scoring arm (enum-constrained single-token readout with `n_probs`) resolved 1/24 and raised 23 typed `native_unknown_candidate` failures: the emitted tokens were `'fal'`/`'set'`, because the candidate strings had been presumed single-token without tokenizer access. Fix (TD-1b): obtain each candidate's token id(s) from the server's `/tokenize` before building the grammar, and make multi-token candidates fall back to JSON mode *explicitly*. The failure surfaced as a typed error rather than a wrong answer — the fail-closed shape is the one to keep. TD-4's closed-set tool-argument mapping (`src/typed_decisions/tool_args.py`, 19 tests) landed; its live pilot against the free-form path is the remaining step. Measurement receipts ride through `scripts/vidya/adapters/typed_decisions_measurement.py` (CLI ingest; a bench report is refused as a non-measurement; the producer's `metric_direction` gap was fixed on the write side) ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [intake session](../progress/2026-09/2026-09-17-intake-jev-sageattn.md)).
-- **Installed-tool pins live in two places, and only one survives a rebuild.** `opencode-ai@1.18.31` was installed under `/usr/local/share/npm-global` to match the audited pin `350c726a`, but `.devcontainer/Dockerfile` installs no OpenCode, so a container rebuild silently reverts to whatever the host has (`1.18.18`). The P0.4 runner's `plan` preflight checks the pinned version, so the drift is caught at run time; the Dockerfile pin is the standing fix ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)). The same shape holds for the orchestrator MCP server: root `.mcp.json` now launches it on the project venv, and that path resolves only inside the container.
-- **FW-2 is no longer a build-posture question.** The fuzzy-workflow GUI's data contract (workflow document schema, executor, `/dashboard/api/workflows/*`) lives in `epyc-orchestrator`; the authoring page, registry row, `health_path` probe and freshness envelope live on the hub `:8100`; nothing lives in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze (HS-5b) ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md)).
-
-### Open questions
-
-- TD-1b: after tokenizer-aware candidates, does the native arm reproduce the JSON arm's argmax (≥20/24) and show a speedup on the same server?
-- Should `/v1` move from `extra="ignore"` to rejecting unknown `x_*` keys once the typed set is stable, and what does that do to the eval tower's golden-pinned REPL bridge?
-
-### Source References (2026-09-17 doc audit)
-
-- [v1-structured-output-capability.md](../docs/reference/v1-structured-output-capability.md) — the four-layer record and the kernel-README defect.
-- [harness-card.md](../docs/reference/harness-candidates/harness-card.md) — both cards and the re-publishing rule.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — P0-MCP-b, P2 carry, P4-pre, the Dockerfile pin follow-up.
-- [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md) — the appended FastMCP correction.
-- [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — the residuals list.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane), [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the runner, the native-arm failure, TD-1b.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-2 placement.
-
-## Compiled Update — 2026-09-17 (research-intake delta: the typed-decision call path and closed-set tool arguments)
-
-**Confidence: verified** for the filings; **external** for the intake figures. Nothing here is implemented beyond the stubs; TD-1…TD-5 are open.
-
-Two implementation surfaces arrive from the intake batch, both aimed at the orchestrator's schema/tool-call layer: a local one-pass typed-decision call path over frozen v9, and closed-set tool arguments.
-
-### Key findings
-
-- **TD-1 — implement the local typed-decision call path over frozen v9.** Per-request JSON-Schema generation from declared questions (`choice`/`score`/`noul`), one chat completion with `response_format json_schema`, client-side decode + validation with corrective retry, expected-value scoring, fixed local confidence formulas, and a per-call diagnostics record. Acceptance: an ≥20-question fixture returns schema-valid typed answers with per-question probabilities and the retry path is exercised. Open question: whether v9's `json_schema`→GBNF converter accepts the nested probability-map schemas the adapter generates. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-1a — the actual speed lever is the native candidate-scoring fast path**: enum-constrained single-token readout with `n_probs`/`completion_probabilities` over a shared prompt prefix with prompt-cache reuse. It is benchmarked against TD-1 on wall time, output tokens, argmax agreement, and cache-reuse drift.
-- **TD-4 / TU-TD-1 — closed-set tool-argument selection.** Map tool arguments to closed sets (Literal→Choice, list[Literal]→multi-choice, bool→Noul) with per-argument confidence; score exact-match argument correctness against the current free-form tool-call path. ([tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
-- **FW-2 — the fuzzy/deterministic authoring GUI's build posture is an operator decision against HS-4.** HS-4 settled on a thin OpenCode shell with Hermes features inside the orchestrator; FW-2 asks whether the GUI is an orchestrator page, a harness plugin, or deferred. FW-3 is a ≤1-day prior-art survey (Dify/LangFlow-class flow UIs; the PAW playground). ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
-- **PAW-2 — self-hosted compile spike tooling.** Prove one end-to-end compile producing a modern GGUF-ZIP `.paw` using the unofficial MIT compile server with pinned weights, then one local call; measure compile wall time, peak RAM and disk; document the Compact GPT-2 canonicalization caveat and CPU-only workability before MI210. ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
-- **The audit discipline is part of the tooling.** The independent audit of the reference implementation found the shipped shuffled-context control defective (informed-vs-blind lift ~25 points after correction, intake-1490); expect the same class of control defect in a first local implementation.
-
-### Open questions
-
-- Does the frozen v9 server accept the generated schemas, and how much of the JSON-schema generation path can TD-1a's enum readout avoid?
-- Does the closed-set arm beat free-form tool arguments on exact-match correctness at our fleet's template diversity (the TU-HR-1 native-convention audit is the standing constraint)?
-
-### Source References (2026-09-17 research-intake delta)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1/TD-1a fast path, TD-4 pilot, the converter question.
-- [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TD-1.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-2 build posture, FW-3 prior art.
-- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-2 compile spike and its measurements.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record.
-
-## Compiled Update — 2026-09-17 (evening): the dead registry entries never existed, and a lock that `close()` never released
-
-**Confidence: verified**: `git log -S`, negative-control test runs and venv-isolated tests. No production venv
-was modified.
-
-### Key findings
-
-- **NIB2-79: the four `archive_*` registry entries were dead from the day they were added (orchestrator
-  `0c03e658`).**
-  - **Evidence.** `git log -S` shows them added in `882d97d4` (2026-01-26), already pointing at
-    `src.services.archive_extractor.archive_*`. No commit ever defined those functions. They were the only 4
-    of 45 python handlers that did not resolve.
-  - **Why they were removed rather than repointed.** The real tools are REPL builtins. They keep
-    opened-archive state per session and apply `_validate_file_path`, and a stateless module-level handler
-    would lose both.
-  - **Test.** `tests/unit/test_tool_registry_handlers_resolve.py` requires every handler to import and be
-    callable, and fails 6 tests against the old YAML.
-  - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md)
-- **NIB2-78a: startup noise became one line, and a real resource bug surfaced (orchestrator `61793b38`).**
-  - `graph_backend.py` gains a `find_spec` probe, a lock-contention classifier and `close_kuzu_handles`.
-  - Every graph class's `close()` had been a no-op, so the Kuzu file lock was never released in-process,
-    including after canvas export.
-  - Tests: 117 passed in a throwaway venv with kuzu 0.11.3, which read prod site-packages through a
-    `.pth` file and never wrote to them. 148 passed and 7 skipped in the prod venv without kuzu.
-  - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
-- **The HS-4 MCP launcher is fixed on both sides.** The operator applied the root `.mcp.json` edit, which
-  points the `orchestrator` server at the project venv (root `ed1dfd57`). The venv interpreter resolves only
-  inside the container. [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
-
-### Source References (2026-09-17 evening)
-
-- [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md): NIB2-79 evidence, NIB2-78a changes and tests.
-- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78a/79 ticks.
-- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0-MCP-a.
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the evening landing table.
-
-## Compiled Update — 2026-09-17 (afternoon): the watchdog's watchdog runs a pinned copy, and the hub lifecycle is written down once
-
-**Confidence: verified**: installer code and tests, the cron log, and the API startup log.
-
-### Key findings
-
-- **OP-9 option B: the host cron runs an immutable, pinned supervisor.** It never runs the mutable shared
-  clone, and never the view, which is force-checked-out every 180 s. `install_supervision_cron_20260916.sh --all`
-  works in three steps:
-  - it `git archive`s the supervisor closure (`hub_supervisor.sh`, `hub_launch_spec.py`,
-    `refresh_hub_view.sh`) into `/mnt/raid0/llm/ops/hub-supervisor/<sha>/`;
-  - it checks each file byte for byte and makes the copy read-only;
-  - it writes a `*/2` cron line that runs `once` (`cadf0cb5`; test 40/40).
-
-  Single instance needed no change, because `once` and the daemon share one flock. After the operator
-  installed it, the cron log shows "another supervisor already holds" while the daemon is alive.
-  [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph)
-- **One lifecycle story, four layers.** The layers are: the launch spec (manifest `handoff_dashboard`), the
-  managed service (`orchestrator_stack.py`), the watchdog daemon, and the pinned cron. The story now lives in
-  [`dashboard/README.md`](../dashboard/README.md) → *Lifecycle and supervision*, which closes the RTG-47
-  supervision task. [dashboard-architecture-restructure](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure)
-- **Registry entries that resolve nowhere fail at every start, quietly.** Four `archive_*` entries in
-  `tool_registry.yaml` name functions that `src.services.archive_extractor` does not define; the working
-  versions are the REPL mixin methods. Separately, `kuzu` is absent from the venv, so `GraphEnhancedRetriever`
-  falls back on every start (474 log hits). Both are filed as NIB2-79 and NIB2-78.
-  [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
-
-### Source References (2026-09-17 afternoon)
-
-- [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): OP-9 ruling and install verification.
-- [dashboard-architecture-restructure](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure): the supervision task closure.
-- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78/79.
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): Afternoon section.
-
-## Compiled Update — 2026-09-17: well-formed is not true — the closure audit, the readiness graph, and a hub that serves a read-only main view
-
-**Confidence: verified.** These are code, test and git facts from the 2026-09-16 lanes. Everything here was merged to root `main`: RTG-46 via `e0a600a5`, the closure-audit tool with the sub-closure-fix work, and the supervisor rework via `86be4a5e`. The hub view deploy sequence is recorded, not independently re-observed here.
-
-The 2026-09-16 governance-tooling work shares one theme. `index_state.py --check` proves an index is **well-formed**, but it cannot tell whether a ticked box is **true**, whether a node is actually workable, or whether the hub renders the repo that was pushed. Each of those questions now has its own instrument. The closure audit checks ticked boxes against `origin/main`. The graph builder's `readiness` field is now rendered on the hub. And the :8100 hub is served from a marked, read-only clone of origin/main instead of a lane worktree.
-
-### Key findings
-
-- **Closure audit: a checker for whether ticks are true (`scripts/handoffs/closure_audit.py`).** For every `- [x]` in `handoffs/active/`, it extracts backticked identifiers, paths and 7–40-hex SHAs. It resolves them against `origin/main` of root, orchestrator and research using git plumbing only; `--fetch` touches remote-tracking refs only. Unresolved references go through six fallbacks: branch tips, `log --all -S`, kernel trees, local clones, a same-subject commit, and a fuzzy definition match. Each is then classed `a` (off-main), `b` (on no ref), `c` (renamed), `d` (external) or `e` (evidence path). A raw `b` is only a candidate: most `b` SHAs are upstream pins, digests or garbage-collected cherry-picks, so every box must be read. The first audit checked 3,359 ticked boxes. It found five that asserted code on no ref (RC-9, E1a, UTM-M7, UTM-M8 and a SQLite exporter), **all ticked by one commit, `4762625d`**. Manual triage of the 265 unresolved references (210 boxes) sorted them into 3 true on-no-ref items (1 in the main table, 2 from the cohort sweep) plus the already-remediated UTM-M7/M8, 28 off-main, 15 renamed, 3 external, 25 same-subject-on-main and 193 false positives — a phantom rate of about **0.15%** (5 of 3,359), one cohort rather than a diffuse habit. The belief kernel's `cite-check` read 1,468 citations across 122 active handoffs the same day and exited 0 (no refuted, conflicted or dangling), so no intake or belief entry rests on a refuted box. [sub-closure-audit](../progress/2026-09/2026-09-16-sub-closure-audit.md), [handoff-closure-audit guide](../docs/guides/agent-workflows/handoff-closure-audit.md), [sub-closure-fix](../progress/2026-09/2026-09-16-sub-closure-fix.md)
-- **Performance: one tokenizing pass instead of thousands of grep patterns.** The first strict run timed out. `git grep -w -F -f` with about 2,200 patterns ran for over 20 minutes on the root tree alone. Word search is now a single tokenizing pass over `cat-file --batch`, and branch tips are scanned only over the files changed since their merge-base. The full `--strict-idents` sweep then took 63 minutes and exited 0: 3,374 checked boxes, 270 flagged. It found **one new phantom**, `token_observed_turns` (tool-output-compression "Instrument TOTAL tokens", ticked by `08e9d60d`), which was reopened. The other 96 new class-b identifiers were triaged as false positives: file-stem test names (the tool now resolves these), memory-file names, about 40 external symbols, design prose and run ids. The triage file (`closure_audit_triage.json`) holds 407 override keys, all without line numbers because line numbers drift and ref text does not. Unmatched rows are marked `UNTRIAGED`, which becomes the next audit's work queue. [sub-closure-fix](../progress/2026-09/2026-09-16-sub-closure-fix.md), [handoff-closure-audit guide](../docs/guides/agent-workflows/handoff-closure-audit.md)
-- **What to do with a confirmed phantom depends on why it is phantom.** A box whose code never existed is unticked, keeps its text, and gets a dated reopen note ("exists on no ref" plus the checked ref). Code that was built and later deleted is **not** a reopen: DAR-6.3/6.4 stay ticked and are labelled SUPERSEDED/REMOVED, citing `771348c8`, and the dependent DAR-6.5 gets a note. Boxes owned by a live session get only a factual note. Local-only commits are preservation risks for their owner, for example Hermes `532a49f1`, which exists only on a local `main` whose sole remote is upstream. [sub-closure-fix](../progress/2026-09/2026-09-16-sub-closure-fix.md), [handoff-closure-audit guide](../docs/guides/agent-workflows/handoff-closure-audit.md)
-- **Backlog graph: readiness is rendered, still derived only in the producer (RTG-46, `ec7dfaf7`).** The `index_graph.v2` derivation had landed earlier (`457abd40`), but `dashboard/static/handoffs.html` never read it; its `n.blocked` was the blocked-*checkbox* count. The page now shows blocked nodes with a hatch, `no_open` nodes faded and ready nodes solid. The legend uses the producer's `readiness_counts`, and the tooltip names `blocked_by`. The page computes nothing, and a v1 sidecar renders no hatch and says so. There are 5 tests, including `loadGraph` executed under node with a v1 mutation pair; the test was verified to fail when the hatch is removed. Live sidecar at tick time: 29 blocked / 135 ready / 9 no_open. [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md)
-- **Graph layout: the lattice look is gone in the numbers; the human check is still open (`4cd106c2`).** A pure `packBands()` now places nodes with a staggered seed, a deterministic FNV-1a per-id jitter of 0.3 cell, and a push-only relax. On the live 173-node graph, row-aligned nodes fell from 98% to 6% and column-aligned from 89% to 0%, with 0 overlaps; SVG height grew from 603 to 669 px. The parent box stays open because "does it still read as a lattice" needs a human look at :8100. [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md)
-- **Re-point history is now recoverable (`a0700b2a`).** A check found that `build_handoff_timeline.py` tracked only checkbox lines, never index rows, so the reason a `Next action` was abandoned was lost. It now emits `next_action_repoints` (from, to, reason, reason_source) into `data/handoff_timeline.json`. The reason comes from a `Repoint-Reason: <ID>: <why>` commit line, or falls back to the commit subject. Over real history it recovered **370 re-points, all sourced from commit subjects** (no commit carried the new line yet). The sidecar grew from 52 KB to 243 KB. [handoff-index-authoring guide](../docs/guides/agent-workflows/handoff-index-authoring.md), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md)
-- **Promote or inline: a rule measured on our own backlog.** Over 1,635 open top-level boxes in 173 active handoffs, box length in lines was p50 3, p90 11, p99 32, max 160. The rule: ≤ 11 lines inline; 12–31 is the ambiguous band (136 boxes), decided by named signals; ≥ 32 promote (18 boxes in 11 handoffs). Under uncertainty the tie-break is **promote**, the reverse of intake-1309#record's rule. The reason is visibility: an inlined item has no graph node, so a wrong inline fails silently. A separate failure-isolation criterion promotes an item at any size if it can block on something its parent does not. The guide rejects intake-1309#record's 10/40 constants as unmeasured. Reproduce with `scripts/handoffs/row_size_distribution.py`. [handoff-index-authoring guide](../docs/guides/agent-workflows/handoff-index-authoring.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph)
-- **The 2026-08-24 wrong-checkout class recurred, and was fixed structurally.** A replacement supervisor (pid 996612) ran with `EPYC_ROOT` set to lane `autokernel-unified-20260908`. Its deploy-sync wrote origin/main dashboard files into that lane's working tree on 09-10, 09-11, 09-14 and 09-15. Serving the lane was *intended* by orchestrator `f5476148`. The actual defects were that the supervisor hard-coded `cwd=EPYC_ROOT` instead of reading the manifest, and that deploy-sync wrote into a lane. Rework `034dccbe` + `31d95ad8` (merged as `86be4a5e`, marker `HUB_SUPERVISOR_MANIFEST_LAUNCH_V1`) makes four changes: the supervisor launches from the manifest; a failed restart no longer aborts the loop under `set -e`; a kill requires two failed `/health` probes; and `once` runs the same sequence as `loop`. **This supersedes the 2026-08-24 fix recorded below** ("relaunch the supervisor from the canonical repo"): the hub source is now whatever the manifest names. [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [progress 2026-09-16](../progress/2026-09/2026-09-16.md)
-- **The hub now serves a read-only origin/main view.** The lane was 141 commits behind origin/main, so pushed progress never appeared on :8100. `/mnt/raid0/llm/views/epyc-root-main` is a standalone `--reference` clone, never a linked worktree, detached at origin/main and carrying the marker `.epyc-view-readonly`. `refresh_hub_view.sh` refuses (exit 3) any tree that is unmarked, not a git top-level, or a linked worktree. It then fetches, runs `update-index --refresh`, and runs `checkout --detach --force`. Refreshing the stat info first means only a real content change moves `dashboard/*.py` mtimes, so the stale-source check restarts the hub on a code change and never on a handoff-only refresh. The supervisor runs its **own** sibling copy of the refresher every 180 s, because the refresher overwrites the view's files while bash may still be reading a running script. Tests: `test_hub_view_refresh.sh` 42/42, `test_hub_manifest_launch.sh` 38/38. [sub-hubview](../progress/2026-09/2026-09-16-sub-hubview.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph)
-- **Supervision must run inside the container; the 2026-08-24 cron line would not have.** Everything runs in the devcontainer `epyc-root`, which has private `/tmp` and no cron. The 2026-08-24 host crontab line would have taken a host `/tmp` lock the container daemon cannot see, and started a hub under a host uid that container sessions cannot signal. The joint OP-9 + FW-3 package therefore uses `docker exec … epyc-root`. It also records that `fleet_watch.sh` had been **dead for about 29 days**: its last log write was 2026-08-18T12:54:29Z, with no "stopping" line, matching the container restart. `--once` cannot serve as the restart primitive because it raises nothing; the bare launch can, because its `flock` sits in the bind-mounted `logs/`. The operator approved this on 2026-09-16 via `install_supervision_cron_20260916.sh`: `--fleet-watch-only` can be installed now, and `--all` only after the canonical relaunch. Pass 2 relaunched the supervisor canonically (pid 820799, launching the hub from the manifest). [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [progress 2026-09-16](../progress/2026-09/2026-09-16.md)
-- **A hub manifest change that named a stopped store was reverted (`e7bfc62b` → `0329ab10`).** Its premise was wrong: v12 had been stopped, and aku12a is the live store. [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- **Fan-out measurement: citation form fixed; no new data.** FM-6's reconnection rule now cites intake-1299#05. The measured figures are unchanged: orphan rate 35.0%, and measured width 928 against a declared 1,187 (−21.8%). [fleet-fanout-measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement)
-
-### Open questions
-
-- **Hub readiness deploy: RESOLVED 2026-09-16.** The handoff box that still said "hub deploy pending" is superseded: `:8100` now serves the read-only origin/main view `/mnt/raid0/llm/views/epyc-root-main` (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`) and renders the hatch from it. The human "does it still read as a lattice" verdict remains open. ([handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph))
-- Nothing yet writes `Repoint-Reason:` lines (0 of 370). Is the fallback to commit subjects good enough, or should a commit hook require the line when an index row changes?
-- Should `next_action_repoints` feed "rejected path" beliefs in the belief kernel? sub-rtg46 flagged it as a verified-history record, not a measurement, so no adapter row was filed.
-- Is the `--all` cron line installed yet? The supervisor was relaunched canonically, which was the stated precondition.
-
-### Sources
-
-- [docs/guides/agent-workflows/handoff-closure-audit.md](../docs/guides/agent-workflows/handoff-closure-audit.md): the tool's reference extraction, fallback order, class table, triage-key rules and phantom-handling policy.
-- [docs/guides/agent-workflows/handoff-index-authoring.md](../docs/guides/agent-workflows/handoff-index-authoring.md): the `Repoint-Reason:` convention and the measured promote-or-inline rule.
-- [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): RTG-46 ticks, the layout sub-box, the joint OP-9 + FW-3 package, and dashboard fix A.
-- [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md): FW-3, `fleet_watch.sh` dead for about 29 days, and why `--once` cannot restart it.
-- [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement): FM-6 citation form, with figures unchanged.
-- [progress/2026-09/2026-09-16-sub-closure-fix.md](../progress/2026-09/2026-09-16-sub-closure-fix.md): reopened phantoms, the tool rewrite and the strict-sweep triage.
-- [progress/2026-09/2026-09-16-sub-closure-audit.md](../progress/2026-09/2026-09-16-sub-closure-audit.md): the audit's scope, class table, triage counts and the cite-check result.
-- [progress/2026-09/2026-09-16-sub-rtg46.md](../progress/2026-09/2026-09-16-sub-rtg46.md): readiness rendering, re-point capture, the row-size distribution and layout metrics.
-- [progress/2026-09/2026-09-16-sub-hubview.md](../progress/2026-09/2026-09-16-sub-hubview.md): the read-only view, the refresher's refusals, restart semantics and tests.
-- [progress/2026-09/2026-09-16-sub-integrate.md](../progress/2026-09/2026-09-16-sub-integrate.md): merge SHAs (`e0a600a5`, `86be4a5e`) and test totals for the merged tooling.
-- [progress/2026-09/2026-09-16.md](../progress/2026-09/2026-09-16.md): the OP-9 + FW-3 approval, the canonical supervisor relaunch and hub restart, and the supervisor-rework caveat.
 
 ## Summary
 
@@ -588,125 +142,6 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 - **The model-stack single-source update pipeline is itself a tool surface: structured truth is compiled into generated contracts that every consumer reads, and launch/AutoPilot-resume/benchmark interpretation fail-closed on drift.** Stack-specific facts (shared models, HOT/WARM status, memory footprints, context windows, launch ports, q_scorer costs, role labels) are edited once in structured truth, compiled into generated model descriptors + `orchestration/derived/stack_priors.yaml`, then projected to ~13 consumer surfaces (27 scanner rules). The canonical entry point is `scripts/registry/stack_change_pipeline.py check [--run-promotion-gate]`; consumers keep generated priors primary with explicit, manifest-owned degraded fallbacks. Notable hardening: AutoPilot system-card rendering now **fails closed** (it refuses to fall back to a checked-in stale `system_card.md`, instead marking live role/port/tier/throughput facts unavailable and forbidding historical docs/memories/logs as stack truth) — the tooling enforces the measurement-trust-boundary rule that stale numbers must not gate decisions. [confidence: verified — stack_change_pipeline.py, validator commits 471a4d2/523cb02] [model-stack-single-source-update-pipeline.md, standardized-stack-update-pipeline-finalization.md]
 
 - **Magika (intake-398, ICSE 2025, Apache 2.0) is a 1 MB byte-embedding MLP that outperforms libmagic on text-format discrimination, but is not_applicable to EPYC's pipeline.** Contrary to reviews describing it as a CNN, the model is a shallow MLP: three fixed 512-byte windows (beginning, middle, end) are embedded at the byte level into 128-dim vectors, reshaped, passed through two 256-d Dense+GELU layers, global max-pooled for size invariance, and classified over 200+ content types with per-class thresholds calibrated for 99% precision. Training set grew from 24 M to ~100 M samples (GitHub + VirusTotal). The threshold mechanism causes abstention (falls back to `txt`/`unknown`) when confidence is below per-class calibration point — this is how the paper reports 99% F1 without claiming that accuracy on all inputs. Cold-start on the EPYC host measured 225 ms (onnxruntime init dominates); amortized per-file latency is 2.8 ms (better than the paper's 5.77 ms, consistent with the hardware). libmagic is 5-8x faster per file and has <1 ms cold-start, but struggles with text-format discrimination (Python vs Ruby vs JS). **Not applicable to EPYC**: the orchestrator's document-ingestion corpus is a five-format, already-labeled set (arXiv PDF, GitHub MD, HTML, HuggingFace MD, user-uploaded PDF) where format is declared by URL pattern, HTTP Content-Type header, or file extension. No pipeline stage (`pdf_router.py`, `document_preprocessor.py`, `fetch.py`, `research.py`) requires generic filetype detection. A trivial extension-plus-4-byte-magic check has essentially zero false-positive rate on this corpus. Live measurement confirmed the JSON/JSONL confusion documented in external reviews: Magika classified a `.json` file as `jsonl` (JSONL is line-delimited JSON, a distinct format). Integration cost would be ~80 MB of transitive dependencies (onnxruntime) and 225 ms cold-start with no accuracy gain. Reconsider only if the pipeline begins ingesting truly arbitrary binary corpora (malware, forensic dumps, archives with unknown extensions). [confidence: verified — magika-filetype-detection.md deep dive, 2026-04-17]
-
-## Compiled Update — 2026-09-14: the runtime told the model to do things the runtime itself would not accept
-
-**Confidence: verified.** The code facts are file:line records from a dive against `epyc-orchestrator@5a9442d3`.
-The fixes are nine commits merged to orchestrator main `35b05fde` (pushed to origin
-2026-09-14), and the merged tree passed 1,856 tests with 52 skipped. External failure rates are OBSERVATION-grade
-and only motivate local measurement.
-
-A research-intake audit of external harness-search write-ups turned up one defect **family** in our own REPL
-and tool layer. One component emits an instruction, pointer or argument. A second component of the same
-runtime rejects it, ignores it, or runs without it, and nothing errors. Each instance looked correct from
-either end alone:
-
-| Path | Emitter said | Receiver did | Fix |
-|---|---|---|---|
-| Finish instruction (MF-FIN-1) | loop-guard HALT and interleaved-edit rider: finish with `FINAL('done')` | status-message guard rejects `"done"`, burning nudges toward `MAX_CONSECUTIVE_NUDGES` | `0b261dde`: a turn-local sanction flag, set only where that rider/HALT was injected; every other status phrase and normal mode still rejected |
-| Tool-call arguments (TU-TC-1) | model emits malformed JSON `arguments` | parser substitutes `{}` and **runs the tool with no arguments**; tagged payloads failing `json.loads` silently skipped | `b32f683c`: deterministic repair only when `json.loads` fails, else a visible `[ERROR: tool call … NOT executed]` result plus repair counters |
-| Spill footer (TOC-SP-1) | `peek("{path}")`, `grep("{path}", pattern)` | signatures are `_peek(n, file_path)`, `_grep(pattern, file_path)`; the file was never read | `1e2a6315`: keyword arguments, same fix in `suggestions.py`; the test **executes** the emitted calls on a real spill |
-| Output classifier (CF-RX-1) | REPL wraps output in `<<<END_TOOL_OUTPUT>>>` | regex looked for `<<<\/TOOL_OUTPUT>>>`; a `">>>"` fallback hid the miss | `090c63d9`: regex built from the `types.py` delimiter constants |
-| Report handle (DCP-13) | synthesis prompt advertises `fetch_report` | the architect decision loop breaks on turn 0 in every branch, so the tool is unreachable; D\|Approved and timeout returns could hand the user handle+summary text | `2bffb45b` removes the advertisement; `57ceb7d5` returns full reports on user-facing returns; `a2af42ad` skips `worker_summarize` on rescued reports |
-| MCP bash compressor (TOC-RD-1) | compressor returns output to the client | no redaction ran | `118b65e5`: redact before and after compression; PEM rule also covers truncated keys |
-
-A related coverage gap was closed alongside (DCP-10a, `982ca87c`): the task-root discovery whitelist had no
-`.c/.cc/.cpp/.h/.hpp/.go/.rs/.java`.
-
-**The lesson is about tests.** A test that checks the emitter's string, or the guard's rejection, in
-isolation cannot see a mismatch between them. The regression tests that close this family run the emitted
-artifact through the real receiver. This is the same trap as the HS-1g "silent no-op" check for harness
-levers: establish which code path actually consumes a field before trusting the field.
-
-**Residuals, filed rather than claimed:**
-
-- TU-TC-1a: a refusal's raw echo could contain `FINAL(` / `file_write_safe` text and count as loop-guard
-  progress.
-- DCP-13a: handle text still says "Use fetch_report(…)".
-- DCP-13b: delegation-cache hits on non-rescued runs still return the short form.
-- TOC-RD-1a: the root PII pre-commit hook misses `OPENSSH`/`ED25519` headers and blocks any edit to the
-  credential-fixture test file. Widening the pattern and adding a reviewed fixture allow-list together is
-  an operator decision.
-
-**Repair is hygiene, not a solve-rate lever, and the next rows measure before they build:**
-
-- **Tool-call repair.** Never running a tool with `{}` is a correctness property whatever it does to scores.
-  But externally, stock OpenCode on GPT-OSS-20B at low reasoning logged 0 malformed-call rejections in
-  1,798 tool calls. On a model with ~98% first-try-valid calls, four repair commits produced 0 net solves.
-  Rank any further repair work by our own telemetry.
-- **MF-VBS-1, verify-before-stop.** Measure how often FINAL follows `file_write_safe` with no later
-  execution, including the "delegates execution to the user" variant. The external prior: 110 of 248
-  voluntary stops (44%) came right after an unexecuted edit.
-- **MF-NDG-1, announced action.** The empty/comment-only nudge says "Call FINAL now", which steers a
-  prose-announced action toward stopping. Measure how often empty-code turns announce an action before
-  rewording the nudge to "execute it".
-- **MF-RR-1, reasoning runaway.** When a turn hits the token cap without code, retry with thinking off and
-  a single-concise-action prompt. Externally this was the largest single promoted step (+5 of 38 tasks) in
-  a determinism-gated search. That was a single run with train/eval overlap, so measure the local
-  cutoff-without-code rate first.
-
-### The `ToolRegistry` invocation log is a diagnostic ring, not per-request state (2026-09-14, noninf sweep)
-
-**Confidence: verified** — code read at `epyc-orchestrator` `origin/main` `35b05fde`, fixed in `d65a4e93`.
-A sibling of the family above: the registry exposed one thing and four consumers read it as another.
-
-The registry contract, stated here so a future caller does not repeat the mistake.
-`ToolRegistry._invocation_log` is **process-global** — one registry per API process — and it is now a bounded
-`deque(maxlen=1000)`, override `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX` (`<= 0` disables the ring entirely).
-`get_invocation_log()` returns a snapshot for **tests and process-level diagnostics only**; an `ast` guard test
-forbids any request-scoped module from *calling* it, and run against `origin/main` it fires on all four pre-fix
-call sites. `clear_invocation_log()` is kept functional for tests and interactive use but is explicitly **not**
-a per-request mechanism — clearing a shared log narrows a race window rather than closing it — and bounding the
-ring additionally invalidates the old `log[prev_tool_count:]` cursor idiom, because eviction shifts indices.
-Per-request tool telemetry comes from `REPLEnvironment._invoked_tools` at the `_invoke_tool` chokepoint
-instead. Why that is the only correct scope, and the two paired write-path defects found alongside it, are
-compiled in [Agent Architecture](agent-architecture.md) → *process-global mutable state read as if it were
-per-request*.
-
-### Source References (2026-09-14 silent contract mismatches)
-
-- [`tool-use-eval-contract.md`](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TC-1 fix detail and TU-TC-1a residual, TU-LED-1 ledger.
-- [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — MF-FIN-1 fix, MF-VBS-1, MF-NDG-1, MF-RR-1.
-- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-SP-1 and TOC-RD-1 fixes, TOC-RD-1a hook gaps.
-- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13 hand-off fixes, DCP-13a/b residuals, DCP-10a.
-- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — CF-RX-1.
-- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — the nine commits, merged branch and test totals.
-- intake-1351#record — the failure taxonomy (verify-before-stop, announced actions, malformed calls) and the two defects its code audit found.
-- intake-1362#04 — stock failure base rates: 110/248 stop-after-unexecuted-edit, 0/1,798 malformed-call rejections.
-- intake-1352#record — the gated JSON-repair pattern and its scope (provider-corrupted arguments).
-- intake-1355#02 — promoted mechanisms incl. reasoning-runaway repair and net-0 tool-call repairs.
-- intake-1358#record — the hand-off failure class that prompted the `fetch_report` reachability audit.
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — RTG-02, the paired boxes at `:1787` and `:1793`: the four request-scoped readers of the shared invocation log, and the paired write-path defects.
-- [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — the noninf-sweep session record for the registry change and the `ast` guard's pre-fix call sites.
-- `epyc-orchestrator` `d65a4e93` and `b69bda61` — bounded diagnostic ring plus re-documented `get_invocation_log()`/`clear_invocation_log()`, request-local `_invoked_tools` telemetry, and the idempotent work sanitizer. [confidence: verified — code + `test_invocation_log_request_scope.py` (15 tests)]
-
-## Compiled Update — 2026-08-24: a healthy-looking dashboard can serve a frozen checkout — and the watchdog cannot see it
-
-Sources: `handoffs/active/coordination-and-churn-pipeline.md`, `progress/2026-08/2026-08-24.md`.
-
-- **A dashboard process launched from the wrong checkout certifies its own staleness.** The :8100
-  hub was launched 2026-08-21 from a scratch worktree (`dashboard-v26-telemetry-integrity-20260821`)
-  whose `handoffs/` copy froze on 2026-08-21; the board showed that data for three days while its
-  freshness badge read **fresh**, because the board panel is a live scan of its own checkout — a
-  frozen checkout scans as current. The C42 stale-source watchdog cannot see this either: it
-  compares the hub against `${EPYC_ROOT}/dashboard`, which is the same frozen checkout. Detected by
-  `progress/2026-08/2026-08-24.md`'s board-vs-repo comparison (counts, `activity_today`, per-day
-  window max date); fixed by relaunching the supervisor from the canonical repo. The `handoff_graph`
-  panel's "index_state.py has never run in this checkout" absence was collateral of the same cause.
-  [handoff-index-and-backlog-graph.md, progress/2026-08/2026-08-24.md]
-- **`/proc/<pid>/cwd` comparison is not a reliable wrong-checkout detector in this containerized
-  environment.** A guard comparing `readlink -f /proc/<pid>/cwd` to `$EPYC_ROOT` false-positived on a
-  hub launched with `cd ${EPYC_ROOT}` (resolved to a different inode than the path — namespace
-  artifact), producing a ~15 s restart loop; reverted byte-identical. The wrong-checkout class
-  therefore remains visible only via manual `/api/health` + board-mtime comparison until a different
-  probe (e.g. serving-evidence mtime deltas) is built. [handoff-index-and-backlog-graph.md]
-- **Two derived artifacts can silently lag the repo: the timeline artifact and the benchmark
-  artifact inventory.** The timeline hooks regenerate in the checkout where the commit/merge
-  happens, so lane-worktree commits and the detached promotion merge never touch the real repo's
-  artifact (observed 26 h of lag; manual regen restores). The benchmark inventory
-  (`data/benchmark_artifact_inventory.json`) froze 2026-07-29→2026-08-24 with no alarm stronger
-  than "aging" — regenerated (157 matched / 6 models, 1545 unmatched); its regeneration cadence is
-  unowned. [handoff-index-and-backlog-graph.md, progress/2026-08/2026-08-24.md]
 
 ## 2026-06-13 Update — Review And Governance Tools
 
@@ -1007,402 +442,6 @@ The wrap-up command and Codex wrap-up skill were updated together so handoff com
 
 Sources: [`scripts/validate/validate_doc_drift.py`](../scripts/validate/validate_doc_drift.py), [`scripts/validate/validate_agents_references.py`](../scripts/validate/validate_agents_references.py), [`wrap-up.md`](../.claude/commands/wrap-up.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
 
-## Compiled Update — 2026-08-12: a health check with two values is a tool that cannot report its own blindness
-
-**Confidence: verified** — each item carries a commit and a test-count delta; one item is verified *from a ref* rather than from the working tree, deliberately.
-
-### The defect class, stated once
-
-Every item below is the same shape: **a check whose output has two states (`ok` / `not ok`) when its input has three (`ok` / `not ok` / `could not observe`)**. The third state gets folded into one of the first two, and which one it folds into decides whether the tool fails loud or fails silent. Three independent instances landed in one week:
-
-- A hub supervisor's `health_ok()` collapses a curl timeout, a missing binary and a wrong port into the same value as a genuinely dead service — so "cannot observe" becomes "restart it", and the restart loop is indistinguishable from remediation. Filed, **open**.
-- A bus supervisor's daemon-liveness predicate matched only self-launched daemons, so a healthy 75-minute-old daemon read as absent and was killed; its replacement predicate is **vacuous in a five-writer tree** and was observed killing healthy daemons in **11 cycles over 35 minutes**. (Full detail on [Agent Architecture](agent-architecture.md).)
-- A production-kernel dashboard panel was **absence-tolerant quietly**: a missing attestation rendered as a muted line rather than an alarm. Fixed to render a loud `ATTESTATION UNAVAILABLE`; a cosmetic residual remains, in that the underlying function still returns `error: None` for a merely-absent file — the panel is loud now, the function still cannot say why.
-
-The rule this yields for any probe: **enumerate the states of the observation, not the states of the subject.** A check that cannot emit "I cannot tell" will emit something else instead, and that something else will be actionable.
-
-### The probe-semantics fix the plane rule implies
-
-The plane rule recorded below says every dashboard needs a health probe; this week supplies the sharper version of *which* probe. A Kernel-R&D registry entry was pointing its `health_path` at the **transport** probe (`/health`) — which stays green over a dead producer, because the process is serving fine — and was moved to a **semantic** data-health probe (`/api/kernel/health`) that returns 503 when the champion, headroom or release package is unreported. Roughly 74 lines of server and 110 lines of tests. The generalisable statement: `/health` answers *is this process alive*, `/api/health` answers *is what this page shows still true*, and a registry that stores the first while the page promises the second is a correctly-configured lie.
-
-A related wiring defect is worth carrying because it is cheap to reproduce: a staleness check was hooked into the one-shot command path and **never into the loop**, which is the default long-running mode — so the check existed, passed its tests, and never ran in production. The identical shape had already been fixed once in a sibling supervisor.
-
-### Verify from a ref, not from the shared working tree
-
-One verification in this pass was deliberately performed against a committed ref rather than the working tree, and the reason generalises to every multi-writer repo: **the working tree is the one surface that can show you a repair with no evidence that it is a repair.** The precedent is a same-week adjudication where a reviewer refuted a peer's finding 20 seconds *before* the fixing commit existed — they had read the peer's uncommitted edit and concluded the defect never existed. The rule adopted: adjudicate a peer's finding from `git show <ref>:<path>`.
-
-### Counting instruments must anchor their own patterns
-
-A checkbox counter using an unanchored `- [ ]` regex matched mid-line and was **wrong in both directions** — re-derived with an anchored pattern the real movement was 1273 → 1242 open (−31) and 2306 → 2368 done (+62), against circulated figures that had both endpoints wrong. A canonical anchored counter already existed in the repo and was not used. When a project has one, a hand-rolled grep is not a second opinion; it is an unvalidated instrument.
-
-### Source References (2026-08-12)
-
-- [`dashboard-architecture-restructure.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure) — the D-1 absence-tolerant panel, the D-2 transport→semantic probe move, and the open D-3 two-valued supervisor check.
-- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — the OBS-series "fails to say I cannot tell" sweep, including a fail-open guard and a duplicated liveness oracle across four files.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the supervisor liveness and watchdog defects that share the class.
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the verify-from-a-ref rule and the anchored-counter correction.
-
-## Compiled Update — 2026-08-10: dashboards split by plane, not by transport
-
-> The settled architecture from the dashboard restructure. The fix list is still moving; the
-> decisions below are ratified and are what the next monitoring surface must be built against.
-
-- **The ownership rule compiled above is a *transport* rule, and its premise has eroded.** The recorded
-  boundary — *live orchestrator in-process state / SSE → the API's own page; artifact- or file-backed
-  and project-wide → the hub* — governs **which process serves bytes, not what shares a page**, which
-  is exactly how one page accreted into a 7,855-line route file plus a 7,649-line single HTML document
-  mixing three concerns (a global machine/live-inference monitor, the autopilot loop's planning and
-  governance surface, and orchestrator serving telemetry). The premise is now largely false as well:
-  the topology and region-lock builders are `/proc`/`ps` scans verified network-free, the taps tail
-  rotating event files, and the autopilot panels read journal and state files. What genuinely *is*
-  in-process is per-worker fragmented — i.e. the part a fidelity audit already says should not be
-  trusted as served. **Superseded by the plane rule below.**
-
-- **The plane rule (ratified 2026-08-10)**: *data contracts live with the subsystem they observe;
-  pages, navigation and the surface registry live with the governance hub; every new dashboard is a
-  registry entry plus a health probe plus a freshness envelope; no unregistered pages.* Repos own
-  **data endpoints and export contracts, not pages** — the exporter versions with the code it measures,
-  so schema authority stays where the numbers are made. The proof it works here is the kernel-R&D
-  split (a producer in the research repo exports schema'd JSON after fsync, the hub renders it, the
-  seam is tested, and the hub never imports producer code); the counter-proof is that the one repo
-  which owned a whole page grew the monolith. Cross-origin is the enabling detail: a hub page fetches
-  the API's JSON/SSE **directly from the browser** under a path-scoped CORS allowlist, so there is no
-  proxy, the hub stays stdlib, the processes stay independent, and when the API is down its panels go
-  honestly dead instead of the page vanishing.
-
-- **A global monitor whose data plane lives inside the most-restarted process on the host is an
-  architecture smell, not merely an information-architecture one.** Under the optimization loop the API
-  restarts every ~20–25 minutes per trial, so the machine monitor's delivery path blinks precisely when
-  the machine is busiest — and a transport watchdog existed to paper over it. Naming that is what
-  turned a layout question into an ownership decision. The matching discipline is that the standalone
-  exporter was **deferred** pending observed blink-out evidence: state the coupling, do not build ahead
-  of the evidence.
-
-- **A constraint, not a preference, chose the larger option.** The recommendation was the minimal split
-  (hub owns the global page; the process-specific page stays with its process). Full view-plane
-  consolidation won because the operator depends on the old page *right now*: the minimal option's
-  "slim the monolith in place" step surgically edits the live surface, while consolidation never
-  touches it — both replacement pages are built fresh alongside it and the old page is deleted wholesale
-  at operator-declared deprecation, with its data routes retained. **When the incumbent surface must
-  stay live, the option that never edits it can be cheaper than the option that does less work.**
-
-- **Navigation drift had one root cause and therefore one fix.** There was no shared nav component and
-  no machine-readable directory of dashboards, so every page hand-copied its own `<nav>` and cross-server
-  URLs were re-derived ad hoc in at least three places — one of them shipping a same-origin `href="/"`
-  rewritten by JS, which silently pointed at the wrong server whenever the script did not run. The fix
-  is a `registry.json` SSOT of surfaces (`id`, `title`, `port`, `path`, `owner_repo`, `health_path`,
-  `blurb`) served as an API with per-`(port, health_path)` loopback probes behind a short TTL cache,
-  plus **one generated nav asset with the registry inlined**, adopted by every page including the
-  cross-origin one — where a `<script>` bootstrap works precisely because script tags are CORS-exempt,
-  with an `onerror` fallback so the page never loses its one exit if the hub is down. Once the registry
-  exists, drift becomes a **testable property**: a bidirectional routes↔registry check, an assertion
-  that every page carries the nav, and a ban on the retired link patterns.
-  One deliberate exclusion: the probes stay **out of** the health fold, because a down neighbour must
-  not restart-loop the hub that reports on it.
-
-- **Absence must be loud, and the honest states are the deliverable.** Render "slots `?` = unknown, not
-  zero"; distinguish a lease held from decoding actually happening; keep stale panels **readable** with
-  a bold "no data — last seen …" pill instead of greying them out (greying makes an operator squint at
-  data that may still be true); surface a fan-out that answered 0/19 loudly as a machine-truth question
-  rather than rendering zeros; and when all-time and windowed KPIs disagree sharply, render **both**,
-  because choosing one would mislead. Staleness thresholds are set from the *observed* frame cadence
-  rather than a flat constant, or the honest state flaps against a slower producer.
-
-- **Two assembly paths for one payload is a defect class, not an incident.** A 32,851-token prefill
-  rendered no progress counter because the SSE stream ran its own parse-and-enrich while only the
-  unwatched polling endpoint attached the enrichment. Collapsing both onto one assembly function fixed
-  it and incidentally recovered off-window holder handling the stream had silently lacked. From the same
-  buildout, two honesty rules worth generalizing: attach live counters **only from fresh samples and
-  never to completed requests** (a completed request on a shared port was caught wearing a running
-  request's counters), and mark shared-port aggregates `ambiguous` rather than guessing.
-
-- **Derive substrate from process evidence, never from names.** GPU/CPU labelling comes from the server
-  binary path, `/proc` argv0, mapped HIP runtime libraries and a model-label hint — because a role named
-  `architect_general` is a GPU role and nothing in its name says so, and the image-generation server
-  turned out to be genuinely CPU-built on this host (no HIP libraries mapped, no `/dev/kfd`), contra the
-  obvious assumption. A service is never allowed to claim "CPU" from the mere absence of a marker, since
-  a Python wrapper's child process holds the evidence.
-
-- **Two divergent freshness grammars is a live cost, and merging the code is not the fix.** Both servers
-  independently grew panel→producer registries with freshness envelopes in different vocabularies
-  (`fresh/aging/stale/missing` with reporting/content axes versus `fresh/aging/stale/dead` with
-  gating/informational). Both are tested, so the proposal is to harmonize the **wire vocabulary only**
-  and leave the implementations separate — the actual cost today is that every new dashboard must pick
-  one of two grammars and the two health folds cannot be read uniformly.
-
-### Source References
-
-- [`handoffs/active/coordination-and-churn-pipeline.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure) — the audit, the ownership answer, and the ratified D1–D3 decision package
-- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the buildout record, the deploy checks and the eyeball-pass findings
-- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-autopilot-dashboard-fidelity-audit-2026-07-22) — the data-truth defects that remain owned separately from this information-architecture work
-- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05) — the liveness-vs-value instrument finding this plan builds on
-- [`handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md`](../handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md) — the producer/renderer contract used as the working precedent for the data-plane split
-
-## Compiled Update — 2026-08-13: a licence blocker on failure-trace grading resolved by finding the maintained successor, not by waiting
-
-**Confidence: external** for the tool's own reported metrics (vendor/author-reported, not measured on
-our stack); **verified** for the licence and repository-state facts, which were read directly.
-
-A research-intake dive on MAST (intake-1110#02, arXiv:2503.13657, the multi-agent failure taxonomy paper)
-found its reference implementation unusable under EPYC's open-source-only sourcing policy: the
-`multi-agent-systems-failure-taxonomy/MAST` repository carries no LICENSE file at all — all rights
-reserved by default. A follow-up dive on the same authors' successor project, AdaMAST (intake-1127,
-arXiv:2607.16387), found it Apache-2.0, actively maintained, and — the detail that matters for us — able
-to detect Codex session transcripts natively, since its loader keys on the exact record-type set our own
-Codex rollouts already use. Claude Code transcripts need a small normalizer (roughly 60–120 LOC) to the
-tool's four-field canonical schema (`problem_id, task, raw_trajectory, metadata`); Codex needs none.
-
-**The more important reversal happened inside the same dive.** An earlier pass on this material had
-concluded that neither of our transcript corpora carries a machine-readable success/failure verdict, and
-that building one was "the real blocker" before any grading tool could run. Re-reading AdaMAST's own
-induction code overturned that: its taxonomy-induction step is deliberately **outcome-blind** — it
-strips any outcome or gate-status field from a trace before an LLM judge ever sees it, precisely so the
-induced categories describe failure *modes*, not success labels. A fixed-catalog grading pass (running
-MAST's 14 published codes through AdaMAST's judge rather than inducing a new taxonomy) needs no oracle
-and costs roughly one LLM call per trace. The oracle question is real but smaller than first framed: it
-gates a *second-stage*, fleet-specific taxonomy induction, not the first useful grading pass.
-
-Both tools are cited on the strength of author-reported metrics only; neither has been run against our
-own corpus yet. The work is filed, not adopted — see the [Fleet Fan-Out
-Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) stub's FM-2 task for the planned pilot.
-
-### Source References
-
-- `research/intake_index.yaml` intake-1110#record (MAST) and intake-1127 (AdaMAST) — full dive records, including the mid-dive retraction of the "success/failure oracle required" finding
-- [Fleet Fan-Out Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-2, the planned pilot run
-
-2026-11-18 prospective source control: one original trace produced a valid zero-code native judgment with exact source/request/response/grant custody. Strict replay and the scoped `coordination.fm2` shared-reader canary passed as diagnostic `Judged/Located` context, excluded from reliance and unrelated consumers. Actual coordinator consumption remains separate; this establishes no prevalence, accuracy, faithfulness or causal fan-out result. [Native findings](../docs/findings/fm2-native-source-control-20261118.md).
-- [Coordinator role — failure modes and refactor](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — R-24, the cross-walk of MAST's 14 modes against our own hand-built failure ledger
-- [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record
-
-## Compiled Update — 2026-08-18: the edit format is a real lever, but the headline is measured against the broken baseline
-
-An agent's **edit tool** — the format in which a model expresses a code change — moves coding pass
-rate by more than most model upgrades, holding model and prompt fixed. The claim is real. Three of
-its four popular framings are not, and the difference matters for anyone choosing a format.
-
-**The three formats in the field.** `apply_patch` (OpenAI/Codex) takes a diff blob validated against
-strict unstated rules; models not tuned to it fail catastrophically — measured patch-failure rates of
-**99.3%** (Grok Code Fast 1), 50.7% (Grok 4), 46.2% (GLM-4.7). `str_replace` (Claude Code and most
-others) requires perfect character-level reproduction including whitespace, and rejects multiple
-matches. Cursor trained a **70B model** whose only job is merging a draft edit into a file — the
-problem is hard enough that a well-funded lab threw a second model at it.
-
-**What actually replicates.** Against `apply_patch`, a line-anchored format is worth a mean **+19.4 pp**
-across 19 models (17/19, two-sided sign p=0.0007) — an enormous, robust effect. Against `str_replace`,
-the realistic baseline, the same published runs give a mean of **+2.97 pp** (14/19, p=0.064), with four
-models outright worse. **The 10× headline is a patch-baseline artifact for one model.** Cite the
-delta-vs-`str_replace` column, or name the baseline every time.
-
-**Line numbers are contested, and the field moved against them.** Cursor names line-number emission as
-a *tokenizer-level* failure mode — a digit run tokenized as a single token forces the model to commit
-to a line number in one forward pass — and adopted aider's search/replace blocks specifically to
-eliminate it. aider's unified diffs likewise carry no line numbers. Both predate content-hash anchoring.
-
-**The strongest evidence that per-line content hashes are not the answer is that their author dropped
-them.** `hashline` originally tagged every line with a short content hash (`2:f1|  return "world";`),
-which is the format every published benchmark measures. Three months later it shipped **one file-level
-4-hex tag plus plain line numbers** — i.e. it moved *toward* the thing Cursor and aider both avoid, and
-never re-benchmarked. A file-level tag is also just whole-file optimistic concurrency, which most apply
-paths (ours included, via `current_shas`) already have.
-
-**The pairing rule, which is easy to miss.** A format change without a matching *tolerant applier* is a
-different intervention: disabling flexible patching produced a **9× increase in editing errors** on
-aider's own benchmark. Format and applier are one design, not two.
-
-### Source References
-
-- `research/intake_index.yaml` intake-1148#record, intake-1150#record (oh-my-pi / hashline and its benchmark — dive records, including the abandonment timeline at commits `30793c165`/`7c6457652`)
-- `research/intake_index.yaml` intake-1153 (Cursor, *Editing Files at 1000 Tokens per Second*) and intake-1154 (aider, *Unified diffs make GPT-4 Turbo 3X less lazy*) — the two independent line-number arguments and the 9× pairing measurement
-- `research/intake_index.yaml` intake-1151 (Diff-XYZ, JetBrains) — the independent academic cross-format comparison; note it is single-turn and disclaims production prediction
-- [Batched edit / parallel apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) — BEP-6 (the granularity finding) and BEP-7 (the two external rules)
-- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
-
-## Compiled Update — 2026-08-18: a guard must fire on what a command DOES, not on what its text SAYS
-
-Four PreToolUse guards in this repo, written independently over ten months, all had the same defect.
-Each decided whether to refuse a command by inspecting the command's own characters, rather than by
-establishing what the command would actually do.
-
-| Guard | Matched on | What it refused that it should not have |
-|---|---|---|
-| pytest worker cap | `pytest.*-n\s*[0-9]+` over the whole string | a pytest run piped into a `sed` line range — the range read as a worker count; and a heredoc listing `-n auto` as an example |
-| D9 loop-plane commit gate | every token after the first `--`, to end-of-string | a docs commit chained ahead of `; python3 scripts/coordination/serialized_push.py` — the pusher's path read as the commit's pathspec |
-| commit hygiene | newline-split segments, heredoc bodies included | a `python3 - <<'PY'` block whose Python *source* contained the text of a commit |
-| drop_caches interference | the write regex over the raw command | a heredoc documenting the guard, and a `grep` searching for the pattern |
-
-**The failure mode is self-referential, which is how it keeps being found.** Each guard blocked the
-documentation about itself, the search for it, or the bus message reporting the bug. One blocked its
-own commit message during bring-up; another blocked its own test fixture.
-
-**Two properties make it worse than an ordinary false positive.**
-
-*It teaches evasion.* A guard that refuses unrelated work trains people to split commands rather than
-respect the gate — and routing around a control is precisely how the unguarded direct-commit path the
-D9 gate exists to close came to exist in the first place. A control with an unguarded path is not a
-control; it is a habit that happens to hold.
-
-*It can be latent.* The drop_caches guard only reaches its refusal when a CPU region is actually
-claimed, so its false positives fire rarely, unpredictably, and mid-bench — the moment a session is
-least able to work out why an unrelated command was refused. A guard that is wrong 1% of the time, at
-the worst moment, is harder to debug than one that is wrong always.
-
-**The fix is to stop deciding and ask the system.** Where an authority exists, defer to it: the commit
-gate now asks git which paths a commit records (`git diff --cached` for a plain commit,
-`git diff HEAD -- <pathspec>` for a pathspec commit, since a pathspec commit bypasses the index
-entirely); the drop_caches guard asks whether a region lock is genuinely held. Text scanning narrows
-what is worth asking about; it does not decide.
-
-**Where text scanning is unavoidable, strip the data first** — heredoc bodies, quoted runs and
-comments are inputs to a program, not commands. Order is load-bearing: heredocs must be stripped
-before quotes, or a quoted marker (`<<'EOF'`) has its name blanked as a quoted run, leaving `<<''`
-with no detectable terminator and the body scanned as commands again.
-
-**Carve-outs keep the narrowing honest.** Stripping *all* heredoc bodies would open a hole, because
-`bash <<'EOF' … EOF` really does execute its body; so the body is kept when the receiving word is a
-shell. And opener lines are always kept, because `git commit -F - <<'MSG'` is a real commit whose
-message merely arrives on stdin.
-
-**Testing shape that catches this class.** Pair every permissive case with an enforcement case. A
-guard that simply stopped looking would pass the permissive half alone — which is exactly what a
-suite of "must not block" cases measures. Two live examples of suites that were passing for the wrong
-reason: the drop_caches suite skipped all five of its blocking cases whenever the host happened to
-have no region claimed, and still printed "all checks passed"; and a verification probe reported a
-real refusal as absent because the guarded file happened to be clean, so nothing could be recorded.
-
-### Source References
-
-- `scripts/hooks/shell_scan.py` — the shared strippers and the incident record; four guards import it
-- `scripts/hooks/check_d9_loop_plane.py` and `scripts/hooks/check_commit_hygiene.py` — the ask-the-system pattern, with `scripts/hooks/tests/test_d9_loop_plane.py` (11 paired cases)
-- `scripts/hooks/drop_caches_write_scan.py` and `scripts/hooks/tests/live_holder_interference_cases.json` — the latent case, and the suite made deterministic with a synthetic lock
-- [Loop-owned fleet implementation](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) — D9, the loop-plane gate these guards enforce
-- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
-
----
-
-## Compiled Update — 2026-08-23 (evening): the two-valued-health-check family gets its enforcement pass (OBS-3/4/5/7)
-
-**Confidence: verified** — all four closures are landed changes with truth-table tests (10-, 15-, and suite-level counts below).
-
-The 2026-08-12 note recorded three supervisors resolving a two-valued check's "cannot tell" into a confident restart/kill/green. The tier-1 backlog pass closed four more instances of the same family, each by converting a two-state collapse into a **three-state check where unobservable ≠ clear** (the polarity rule `inference_load_check.py` already states: *for EXCLUSION, unknown must mean busy*):
-
-- **OBS-3** — `nightshift/inference_guard.sh` failed OPEN into a live inference run: `pgrep -f 'llama-server|llama.cpp' | xargs … || true` summed into an RSS total, so a missing `pgrep`, argv drift, renamed binary, or `xargs` error ALL yielded 0 GB → the `else` branch printed "No heavy inference detected" and `run_wrapper.sh` launched the full workload on top of a live 200 GB+ inference. Fix: unreadable `MemAvailable` now returns `failed` (rc 1, loud `MEASUREMENT FAILED`) — one negative and one blind eye is not a clear; run_wrapper's existing exit-4 refusal covers it. Follow-up **OBS-3a**: add a mutation case for "MemAvailable unreadable → failed" to the test suite, which predates the fail-closed semantics.
-- **OBS-4** — `run_wrapper.sh:79`'s `autopilot_running()` required `start` immediately after the script path; any flag inserted into the daemon argv read as "AutoPilot not running" and lab shadow jobs launched into a live AutoPilot. Now three-valued (running/stopped/unconfirmed): the authoritative channel is the singleton flock on `orchestration/.autopilot.lock` (argv-independent, held by the daemon by construction), corroborated by an adjacency-robust dual pgrep; pgrep rc≥2 / missing pgrep / untestable lock → `unconfirmed`, which SUPPRESSES the shadow launch — only a confirmed `stopped` licenses it. The three `skip … return 0` branches on missing cross-repo paths now emit `AUX-DEPENDENCY-MISSING` and exit 5 (partial run). Truth table tested (10 cases).
-- **OBS-5** — `rustevo2_bench_preflight.py` treated an EMPTY pgrep as a positive "no AutoPilot" (and a missing `pgrep` binary raised `FileNotFoundError` before the rc handling). Now `autopilot_state()`: missing pgrep → `unobservable`; an empty result is never trusted alone (a negative requires the flock provably free too — the drifted daemon still holds it); `unobservable` FAILS the preflight in strict and advisory modes. 15-case truth table tested.
-- **OBS-7** — `emergency_cleanup.sh:26` carried a committed `sudo pkill -f claude`, the exact idiom INC-20260731-broad-process-pattern-kills forbids — and the PreToolUse pattern-kill hook cannot see it (it inspects the typed command, not the script body). The `pkill` and its `pgrep` are DELETED; the section now refuses to guess and prints operator steps for killing only PIDs the operator verified themselves; umount failure reports loudly instead of aborting under `set -e`; the delete prompt warns that a live bind mount makes `rm -rf` reach `/mnt/raid0/llm/tmp/claude`. Registry row migrated to `exempt`.
-
-The family rule, now with four more instances on file: **a guard whose failure mode is "proceed" is not a guard** — every process-safety probe on a shared host needs a third state for "I could not tell", and that state must take the dangerous branch.
-
-### Source References (2026-08-23 evening)
-
-- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics and truth-table counts, OBS-3a follow-up, NIB2-57a reader audit and NIB2-58a build-path wiring (cross-listed with [Benchmark Methodology](benchmark-methodology.md))
-
-## Compiled Update — 2026-09-07: an agent tool's event log is not its data, and deleting it costs a full rewrite of what you delete
-
-The coding-agent CLI backing four autokernel lanes grew its SQLite store to **236 GB in ~5 months**, 210 GB
-of it in a single `event` table, while the content it renders occupied under 11 GB. The store is an
-outbox-style change feed: each streamed update writes a *fresh snapshot of the object as it stood at that
-instant*, so a tool output arriving in N chunks is retained N times. Measured globally: **416,980
-`message.part.updated` events for 131,394 actual parts — 3.2 retained copies**, weighted toward the largest
-payloads (largest single row: 93.5 MB). The current state lives in the `session`/`message`/`part` tables;
-the log is pure redundancy once a stream ends.
-
-**The generalisable shape.** Any agent runtime that streams tool output into an event-sourced store has this
-growth curve, and it is invisible until the volume forces a look: the store sits in a dotfile directory, not
-in the repo, and no dashboard watches it. The bill scales with *tool-output verbosity*, which is exactly what
-long-horizon agent lanes maximise.
-
-**Three findings that make a prune safe, cheap, and reversible:**
-
-1. **Prove the log is not load-bearing before deleting any of it.** The binary was a minified bundle with
-   runtime-generated SQL, so static reading could not settle whether the app replays events to rebuild state.
-   The empirical gate costs two minutes and is decisive: export one old session, delete *that session's*
-   events, re-export, diff. Byte-identical (357,641,061 B, 1,458 messages, 6,035 parts) → the log is a
-   notification channel, not a source of truth. Absence of `replay*` symbols was suggestive; the diff was
-   proof.
-2. **`SQLITE_SECURE_DELETE` turns a mass delete into a full-size write.** Debian/Ubuntu's libsqlite3 (3.46.1)
-   compiles it in, so every freed page is zero-filled *through the WAL*: deleting ~200 GB **wrote ~270 GB** at
-   ~4.5 MB/s and grew the WAL to 66 GB. The same work with `PRAGMA secure_delete=OFF` on the deleting
-   connection: **277 s**, versus 98 minutes for a smaller batch with it on. `VACUUM` then reclaimed 54.85 M
-   freelist pages in 133 s. Final: 236.1 GB → **11.4 GB**, `quick_check` ok.
-3. **VACUUM alone is a no-op on a store like this** — `freelist_count` was 0, so it would have rewritten
-   220 GB to return nothing. Rows must be deleted first; VACUUM is only the step that hands pages back to the
-   filesystem.
-
-**Operational rules that fell out.** Delete by *whole aggregate* (session), never partially — a retained
-aggregate with sequence gaps is a corrupted cursor. Checkpoint `wal_checkpoint(TRUNCATE)` between batches, and
-keep every reader off the DB while doing it: a read snapshot blocks the truncation and the WAL balloons
-unboundedly. Run exactly one instance in one foreground terminal — two concurrent instances race the write
-lock (the loser dies `database is locked` after the busy timeout) and a `Ctrl-Z`'d instance holds its
-transaction open indefinitely, which reads as a hang. Back up only the small content tables; a `.dump` of the
-event table is the problem, not the backup.
-
-**A reclaim's last trap: the recipe itself was scratch-only.** The pruner that recovered 225 GB lived in
-`/mnt/raid0/llm/tmp/` alongside the 11 GB of backups it produced, so the obvious cleanup — delete the scratch
-directory once the operator confirms the app still renders — would have destroyed the only copy of the method
-while keeping none of its output. The standing rule (*verify the regeneration recipe is in git before deleting
-the artifacts*) exists for model files and benchmark outputs, but it binds hardest on **one-off maintenance
-scripts**, which are precisely the artifacts nobody thinks of as deliverables. It now lives at
-`scripts/system/prune_agent_event_store.py` with the executed result and preconditions in its header.
-
-**Cross-reference:** this is the store-side twin of the guard-side rule in
-[Benchmark Methodology](benchmark-methodology.md) — an instrument that cannot report its own state gets read
-as healthy. A 236 GB store on a 3.7 TB array is 6% of capacity and drew no alarm until a disk-reclaim pass
-went looking.
-
-### Source References (2026-09-07)
-
-- `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` — the prune record: gate result, secure_delete
-  measurement, before/after sizes
-- `/mnt/raid0/llm/tmp/opencode-prune-20260907/prune.py` — the batch pruner (whole-aggregate deletes,
-  `secure_delete=OFF`, per-batch checkpoint, dry-run default)
-- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NI-IO and the disk-reclaim lineage
-
-## Compiled Update — 2026-09-25: Maintenance Work Must Prove It Has Work
-
-An opencode event-reaper VACUUM ran with a zero-page freelist, held an exclusive SQLite lock for 34 seconds,
-and caused a concurrent author call to fail after the 5-second busy timeout. The repair skips VACUUM below a
-1,024-page freelist, truncates WAL after real work, classifies store failures separately, and applies bounded
-backoff. Per-call metrics now ignore sessions created before the call, preventing a failed author row from
-inheriting an earlier planner session.
-
-The general rule matches the project's other maintenance gates: a disruptive maintenance operation must
-first prove that useful work exists, and telemetry attribution must be bounded by the operation's actual
-window.
-
-### Source References
-
-- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-14 root cause and fixes.
-- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — incident chronology.
-- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — campaign and actor observability rules.
-
-**Confidence:** verified from the failure timeline and landed fixes.
-
-
-## Compiled Update — 2026-09-26: The `/v1` Seam Must Speak the Shell's Retry and Timeout Dialect
-
-**Confidence: verified** against the source (orch `fb7871ea`; OpenCode at tag `v1.18.31`); none of the fixes has landed yet.
-
-Reading OpenCode's retry, session and MCP code against the orchestrator found four places where overload or identity never reaches the shell in a form the shell understands:
-- **HS-OD-8: backpressure is not retryable.** A full admission queue answers **502** with no `Retry-After`. On `stream:true`, which is OpenCode's main loop, every denial arrives as an SSE event after a 200, so no header can reach the client. The in-stream error text matches none of OpenCode's retry patterns, so a queued turn can fail with no retry at all. The fix: admit before returning the stream, answer a denial as 503 with both `Retry-After` and `retry-after-ms` (OpenCode reads the `-ms` header first), and keep 502 for genuine upstream faults (intake-1790#1, intake-1792#1).
-- **HS-OD-9: the delay should come from live queue state.** The hard-coded 5/10/30 s constants are replaced by the DAR-LAT-1 wait estimate. While that estimate fits the orchestrator's own wait budget, the request is held in the orchestrator; it bounces only beyond that, so OpenCode's 5-retry budget spans the queue. One receipt is written per bounce.
-- **HS-16: session identity from headers, as a fallback.** OpenCode already sends `X-Session-Id` and `x-parent-session-id` on every non-opencode provider, including the child→parent link its plugin hook cannot see. Precedence is body → Dynamo header → OpenCode header, and the body wins on conflict. Per-session state expires on an idle TTL. Tool start/end events are not forwarded.
-- **HS-17: MCP calls die at 60 s.** OpenCode's MCP client uses the SDK's 60 s default, reset only by progress notifications. `orchestrator_chat` defaults to 120 s, so a queued call dies in the shell. Both sides get fixed: the template sets an explicit MCP timeout, which a lint enforces, and the server emits `report_progress` while `/chat` is in flight (intake-1792#4).
-
-**Standing rule.** The orchestrator stays the sole caller of models. No feature may depend on MCP sampling, which is deprecated in the 2026-07-28 protocol, and OpenCode's only provider is the orchestrator anyway (intake-1791#0, intake-1791#4).
-
-**Declined, with reasons:**
-- Aliasing the `x_*` keys to Dynamo's `nvext.agent_hints`. No client in the stack emits `nvext`, Dynamo describes the API as still being co-designed, and `agent_hints` has no field for role forcing, REPL, memory or tool mode (intake-1785#2, intake-1785#5).
-- Treating ACP `providers/set` as a routing surface. It is a process-scoped upstream redirect in a Draft RFD, which `baseURL` already provides (intake-1790#0).
-
-**MCP catalog growth needs acceptance.** Before the MCP tool catalog OpenCode sees grows, a frozen set of previously passing tasks is re-run before and after the change, with per-task tokens reported. In EvoHarnessBench, exposing the full tool catalog raised ReAct's pass rate from 26.0 to 30.2 but its tokens from 27.2M to 75.8M (intake-1821#2).
-
-### Source References
-- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-8/9, HS-16/17/18, the standing rule, the catalog-growth acceptance, the dormant triggers.
-- [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 2026-09-26 addendum (E2 correction, session headers, MCP timeout).
-- [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — the two request headers the API reads; `x_force_role`, with `x_force_model` as its deprecated alias.
-
-
 ## Incremental Update — 2026-10-05: Tested shell and API contracts
 
 The reviewed `/v1` implementation now admits before streaming: capacity denials return HTTP 503
@@ -1613,23 +652,6 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 2026-10-06 NI05-76 completed: original CI37396700409 at recipe591bd02d148bba94ee1ecc271183337493665c85 passes ONE native pytest testcase with103 actual descriptive controls, including CPU GLOBAL shared-inode and GLOBAL/build-alias refusals. Main independently verifies the complete API ZIP seal, every original member,103 exclusive sidecars equal to aggregate records, original statuses and denial snapshots, the exact50-input readset (15 ROOT Git,16 APP Git,7 approved fixture,12 context), pre-execution bindings and postchecks. Strict native TRUE1/1 projects through the existing shared grader as Judged/Located; no second ladder or retrofit. ROOT4 and APP3 guard-related implementation files are published; APP main405a5e7c162480c6cbc5919ecfa626850c08c7e0. All seven native CLI closure files remain byte-identical to tested APPb27e5543199ba4f7a8c3fec87c263f35fb5bcbf1; peer FIFO/runtime changes are preserved, without a new whole-current-main validation claim. CPU admission requires eight distinct single-link files, four GLOBAL plus four build, with actual write flocks attributed to one live same-UID ancestor. Refusal64 occurs before downstream index/global-tool mutation; nontruncating writer-lock contention returns75 and its FD is carried across child/exec. CI=true grants no exemption. Validation bypasses API preflight only on the disposable runner while real CPU claims remain mandatory. This is point-in-time admission, not continuous CPU-owner supervision, host-index execution/recovery, runtime deployment, or inference-noninterference evidence. The canonical host index remains untrusted after the recorded incident. Earlier ordinary audit negatives, native600s/85-record failure, prior101-control TRUE slice and failed103/16-record FIFO-message run remain private and unchanged; the original race assertion was preserved. New single-link diagnostics are separate from the original regular-file message. Public metadata/log originals are at artifacts/ni05/code-index-admission-37396700409; excluded private inputs/control snapshots are explicitly hashed, so the public prefix cannot independently reopen. GitNexus impact for new helpers remains UNASSESSED with manual caller review; no host graph query or rebuild was run.
 
 2026-10-06 NI05-75 completed after MAIN review and publication: original CI37406900511 at recipee1c234b527900c8096032122eaa3c844fd837356 passes all six focused executor fallback cases with no skips/failures/errors. APPfa1eb43a2c4431d695e5c4339373ecbf3b96aed6 changes only get_binary_paths registry-load failure handling: one patchable load attempt, unchanged legacy names, stripped explicit override precedence, otherwise CPU kernel-store resolution with KernelPathError propagated before any Popen. Successful registry delegation/custom names remain unchanged. Original native TRUE6/6 is captured prospectively through unchanged producer2dff56e6 and existing shared grader; MAIN independently reopens all original ZIP/readset/context/fixture/postcheck evidence before acceptance. Three private nonexistent ambient overrides permit eager configuration imports; each fallback test explicitly clears/sets the CPU override and no kernel/model process is launched or store directory materialized. Prior original CI37406127191 remains NULL/exit4/noJUnit before collection, with zero projected rows; original HIGH-impact negative query CI37361379823 remains unchanged ordinary evidence, and the operator approved its10-node/one-direct/three-module repair scope. No production capacity, binary linkage, deployment, inference noninterference or whole-suite pass is claimed. Scoped published completion tally78/78; larger parent programs and standing rules remain open.
-
-## Compiled Update — 2026-10-06: repair narrow seams while preserving default refusals
-
-The 2026-10-05/06 non-inference queue repeatedly found fixture failures caused by an absent path, cache, or explicit dependency at the test boundary. Accepted repairs bind a disposable path or deterministic input through an existing seam, then rerun the unchanged assertion body. The design keeps production guards, default behavior, and real process boundaries intact; a fixture that only composes argv does not launch a model, server, or kernel. ([system-card fixtures](../progress/2026-10/2026-10-06-ni68-owned-system-card.md), [external-drafter fixtures](../progress/2026-10/2026-10-06-ni69-owned-external-drafter.md), [speech composition](../progress/2026-10/2026-10-06-ni72-owned-speech-composition.md))
-
-A separate executor repair closes an early fallback path: when registry loading fails, explicit overrides retain precedence; absent overrides now go through the kernel-store resolver and propagate its refusal before `Popen`. Successful registry delegation and custom names remain unchanged. The focused capture passed six fallback cases, while production capacity, binary linkage, deployment, and whole-suite behavior remain outside that evidence. ([NI05-75 final report](../progress/2026-10/2026-10-06-ni75-executor-fallback-native-report.md))
-
-The repository also added a CPU-claim admission guard around host code-index refresh. It rejects aliased or hard-linked claim files before downstream index/tool mutation and keeps off-host validation separate from canonical-host execution. This is point-in-time admission; it does not establish continuous ownership or repair the currently untrusted host index. ([NI05-76 report](../progress/2026-10/2026-10-06-ni76-code-index-admission.md))
-
-### Source References (2026-10-06)
-
-- [NI05-68 report](../progress/2026-10/2026-10-06-ni68-owned-system-card.md) — path-only compilation fixtures.
-- [NI05-69 report](../progress/2026-10/2026-10-06-ni69-owned-external-drafter.md) — no-execution argv fixtures.
-- [NI05-72 report](../progress/2026-10/2026-10-06-ni72-owned-speech-composition.md) — path composition separated from actual loader cases.
-- [NI05-75 report](../progress/2026-10/2026-10-06-ni75-executor-fallback-native-report.md) — registry-error fallback behavior and test boundary.
-- [NI05-76 report](../progress/2026-10/2026-10-06-ni76-code-index-admission.md) — exclusive CPU claim identity controls.
-- [NI05-78 report](../progress/2026-10/2026-10-05-ni78-direct-entry-refusal.md) — direct invocation refusal kept distinct from pytest execution.
 
 ## Static tool-rendering paths — 2026-10-06
 
@@ -1915,7 +937,994 @@ Sources: [CH-19 implementation and test record](../progress/2026-10/2026-10-21-c
 
 The versioned pre-commit extras call a staged-blob checker for producer pipelines using `grep -q` while pipefail is active. Early consumer exit can give the producer SIGPIPE and turn a successful match into a failed pipeline. The checker recommends a consuming safe form and stays warn-only, including scan errors. Original hosted run39617059382 at source56b782ebf20a88b356057983bf73594b5e22a907 passed all11 named checker controls. Source inspection covers installer wiring; the controls do not establish live installed-hook activation. [Native evidence](../artifacts/ci/lint-sigpipe-source-20261021/README.md).
 
-## Compiled Update — 2026-10-29 (wrap-up sweep)
+## FM2 and FM4 native diagnostic context acceptance — 2026-11-18
+
+The official retained-native FM2 coordinator entrypoint canary selected one original diagnostic with no refusals or reliance; the official FM4 shared-reader canary selected both original terminal-dispatch receipts with no refusals or task-gate claims. Both completed allocator rc0 and preserved the existing Judged/Located harness scope. FM4 task outcomes remain null. These results establish diagnostic context assembly; genuine coordinator review and suitable oracle/task-accuracy acceptance remain separate. See [FM2 findings](../docs/findings/fm2-native-source-control-20261118.md) and [FM4 findings](../docs/findings/fm4-native-dispatch-projection-20261118.md).
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-19 (wrap-up: code-mode C3 results, import bug, MCP session contract, P6 catalog capture). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): typed-decision plane TD-29.M4 cache pairs (12/18 valid, INCOMPLETE), request-source/RTE source, ThinkPRM verifier plumbing, thinking-budget flag, TD-15a. Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: the 4-arm turn-1 grammar run: no grammar beats legacy, default off; LB3.3 and LB11.1 counters). Earlier: 2026-10-23 (wrap-up sweep 17, workspace-f8: a swallowed exception disabled the turn-1 grammar; the code extractor now strips `<think>`). Earlier: 2026-10-22 (wrap-up sweep 10: loop guards, trajectory producers, repeat-call decision). Earlier: 2026-10-22 (wrap-up sweep 7: structured-output abort, repair telemetry, trajectory artifact). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-06 (root final wrap-up; incremental synthesis appended); previous compile record:  (orch prior-art intake: `/v1` backpressure is 502 with no Retry-After; the HS-OD-8/9, HS-16 and HS-17 fixes; no dependency on MCP sampling); previous: 2026-09-25 (main-ak-seat wrap-up compile: file-backed context needs retrieval budgets; live preflight must enforce COR/anchor identity; interrupted actor calls remain typed evidence); earlier: 2026-09-24 (speech-lane wrap-up compile: a byte-identical tool-output cache keyed on argv plus input identity (R4 precursor); TOC-RD-1b PII hook over-blocks perf periods in table cells); earlier: 2026-09-19 (TD-12..TD-15 one-call tool + argument arm from intake-1493's operation × conditional-target heads; tool-args wiring behind `typed_decisions_tool_args`; id_only native default); 2026-09-18 (backlog-churn-2 sweep: the OpenCode reaper on three-state liveness with `unobservable` withholding VACUUM; the daemon stale-inode class (NIB2-81) and why the static census cannot see an instance; `x_force_role`/422 contract; TD-1d contested at n=4); 2026-09-17 (wrap-up sweep: TD-1d id-only cue bench, TD-4 closed-set 18/18 vs free-form 6/18, HS-15 capability contract, the reviewer-truncation and dead `/chat` tool-field fixes, the trace pairing-key producers, dashboard token provenance, and the stale-next-action reporter); 2026-09-17 (doc audit: FastMCP 3 refuses an undeclared argument — P0.3 finding reversed; the four-layer `/v1` structured-output record and the Harness Cards get standing homes; three seam residuals recorded; the typed-decision native arm fails closed on non-tokenized candidates → TD-1b; installed-pin vs Dockerfile drift); earlier 2026-09-17 (research-intake delta: the typed-decision call path (TD-1/TD-1a), closed-set tool arguments (TU-TD-1), the fuzzy/deterministic GUI build posture (FW-2), and the PAW compile spike tooling; evening: NIB2-79 dead registry entries removed; NIB2-78a one-line degrade and the `close()` lock-release fix; root `.mcp.json` on the venv); earlier 2026-09-17 (afternoon: OP-9 resolved as a pinned host cron, with a single documented hub lifecycle; two dead startup surfaces filed); earlier 2026-09-17 (later pass: the closure audit's triage counts and clean cite-check are recorded, and a hub manifest naming a stopped store is reverted; earlier: the hub readiness deploy question is resolved with the deployed read-only origin/main view; earlier incremental: closure audit proves ticks true, readiness rendered on the backlog graph, re-point reasons and promote-vs-inline rule, hub served from a read-only origin/main view, container-aware supervision cron); earlier: 2026-09-14 (noninf sweep addendum: the `ToolRegistry` invocation-log contract is now explicit — process-global, a bounded `deque(maxlen=1000)` diagnostic ring with `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX`, `get_invocation_log()` guarded by an `ast` test against request-scoped callers, and `clear_invocation_log()` documented as not a per-request mechanism; per-request tool telemetry reads `REPLEnvironment._invoked_tools` instead — `d65a4e93`); same day: the silent-contract-mismatch family: six REPL/tool paths emitted an instruction, pointer or argument that another component of the same runtime rejected, ignored or ran without — `FINAL('done')`, `{}` tool arguments, spill-footer argument order, a never-matching output regex, an unreachable `fetch_report`, an unredacted compressor — fixed with executing tests; plus measure-first rows for verify-before-stop, announced-action nudges and reasoning runaway); previously 2026-08-24 (the hub wrong-checkout incident: a dashboard process launched from a frozen worktree checkout certifies its own staleness, the watchdog cannot see it, and /proc cwd comparison is an unreliable probe here); previously 2026-08-23 (evening tier-1 pass: the two-valued-health-check family gets its enforcement pass — OBS-3/4/5/7 all converted to three-state checks where unobservable ≠ clear: an unreadable MemAvailable now fails the inference guard instead of degrading to all-clear, `autopilot_running()` is three-valued via the singleton flock with only a confirmed `stopped` licensing a shadow launch, the bench preflight's `unobservable` FAILS in strict and advisory modes, and the committed `sudo pkill -f claude` in emergency_cleanup.sh is DELETED; earlier 2026-08-13 note: a research-intake round on agent-fleet failure grading found an Apache-2.0 trace-annotation tool (AdaMAST) that runs against our own Claude Code / Codex transcripts with no success/failure oracle required, superseding an unlicensed predecessor (MAST) — see below; earlier 2026-08-12 note (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
+
+### Compiled Update — 2026-11-09: churn tooling defects and install-closure rule
+
+- **Installed-copy defects.** `churn_up.sh` `start_bg` wrote a wrapper pid to the janitor pidfile (box PIPE-EVE-CHURN-UP-PIDFILE), and `bin/churn/reclaim_row.py` expects the repo `scripts/` tree so its imports fail from the installed copy (box PIPE-EVE-BIN-CHURN-MODULES). Rule recorded: an installed script's import closure is part of what the install list must cover. Pipeline filed results with the repo `file_result.py --no-reclaim --verdict-json` because the installed copy lacks `row_worktree` / `worktree_gate` / `keep_tail`; 107 results were unfiled. Sources: [backlog-churn-runbook](../docs/guides/agent-workflows/backlog-churn-runbook.md), [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
+- **Guards landed (workspace-f2):** worktree_gate per-repo bases, first-push / update-ref / regen guards, `close-lane` with token-boundary ticket match and idle floor (LR-11), NIB2-98 job-fence RAM admission gate (20 tests plus negative control, ac89176ab; opt-in until Pipeline injects `--need-ram-gib`; grant checks still use a 64 GiB margin against the ratified 100), NIB2-99 workspace-clone-drift alarm, PII-NM-OFFSET narrow nm-row rule, LR-10 orchestrator age-based eviction (the Fable audit also fixed a cache-eviction race, 02af4bda). Sources: [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md), [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
+- **PII hook bypass.** The Fable audit found a bypass through the nm size field (0d4658ad1). Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
+- **Backup tooling.** The host owner corrected a first handoff that had real errors (crontab owner, restore-test parsing, unsafe retention): ai-sessions keep 2, opencode keep 3 per store, loop-state 04:45; restore test 24 DBs PASS, chain_ok PASS. Same source.
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **agent-browser** (intake-257#00) Apache-2.0 Rust browser-automation CLI emitting accessibility-tree snapshots for LLMs. Not applicable as filed; possible tool-layer reference.
+- **OpenAI Privacy Parser** (intake-452#01) Inverse of the Privacy Filter: returns PII spans over an 8-label taxonomy with regex, 1.5B model (0.733 F1, ~500 ms CPU) and hybrid backends. Adopt patterns for CPU-side PII span detection.
+- **MultiKernelBench** (intake-667#00) 285 kernel-generation tasks in 14 categories with a pluggable Backend interface. Dive (2026-08-10) narrowed the premise: upstream now ships its own HIP backend, so adopt the harness component for gfx90a kernel generation.
+- **text-to-cad CAD Skills** (intake-915#record) MIT library of 11 model-agnostic skills, STEP-first artifacts and build123d-default sources with mandatory visual review. Dive found no fabricated performance claims; adopt as a skill-packaging pattern.
+- **Qwen-MM-Plugins tracker** (intake-1101#record) Issue #7 on pluggable search is open; none of serper, exa or tavily is self-hostable, but the maintainer plans an API-key-free core with search split out, resolving our policy blocker by removal. QMP_REF pinning is not an effective supply-chain mitigation for most harnesses.
+- **omp.sh landing and distribution endpoint** (intake-1149#record) Canonical claim surface and install endpoint for oh-my-pi; verified inside the a related entry dive and nothing overturned (the Stage-1 decline was reversed per operator "deep dive all").
+- **The Bitter Lesson of Tool Calling** (intake-1124#record) Selected as a free-lunch interface change but does not survive the primary source: programmatic tool calling underperforms JSON by an absolute 14.1% on average in parallel categories. Verdict superseded; keep JSON tool calling for local models.
+- **AsyncFC future-based async function calling** (intake-1119#record) Execution-layer-only async calls reach 1.26x on BFCL v4 Web Search and 1.44x on SWE-bench Lite. The dive deflated the headline: the model does not reason over an unresolved future when later decoding depends on the result. Relevant to the orchestrator tool loop.
+- **skydiscover repo: EvoX/AdaEvolve implementations** (intake-1453#record) Apache-2.0 code: EvoX as a hot-swappable EvolvedProgramDatabase with score formula matching the paper; AdaEvolve intensity defaults 0.1/0.7 (shipped config 0.15/0.5), UCB C=1.41; 12 --search choices (4 external wrappers). Repro issue #57 (plateau 2.5414 vs 2.629) closed as a missing scipy extra. Installable artifact for autokernel search experiments.
+- **CORAL companion code** (intake-1455#record) Shared state in .coral/public (atomic attempt JSON, notes with claim/evidence frontmatter, skills, heartbeat); manager polls every 5 s with defaults reflect=1, consolidate=10, pivot=5. Runtimes include claude_code, codex and opencode, and OpenAI-speaking ones can target the local orchestrator /v1. The paper's best-of-4 control arm is not shipped and multi-island defaults to count=1.
+- **system-one-adapter-python (LLM-backed TypeSafeClient)** (intake-1473#02) Drop-in replacement scoped to the system_one evaluation call, backed by OpenAI or Anthropic APIs or custom OpenAI-compatible endpoints; the output schema is built per request with msgspec.defstruct (intake-1473#02) and the score is (max_prob - uniform)/(1 - uniform) (intake-1473#05). Corrections: normalization is off by default and discrete mode collapses confidence to 1.0. A pattern for pointing a typed-decision client at our local orchestrator /v1.
+- **SakanaAI/ShinkaEvolve framework** (intake-1596#01) Runnable Apache-2.0 local/Slurm framework with asynchronous proposal and evaluation; 41 targeted mechanism tests passed. Implements a capped archive, island sampling, parent policies, novelty filtering and optional migration (intake-1596#01), but is configuration-sensitive and has drifted from paper-era code; main cannot replay the AIME, ALE or MoE results.
+- **SakanaAI/ALE-Bench evaluator** (intake-1599#01) Benchmark and generic evaluation toolkit for score-based AHC tasks, explicitly not officially supported by Sakana or AtCoder (intake-1599#00). The one-private-evaluation budget is a software workflow rule, not a sealed grader (intake-1599#01); private seeds live in same-process state. The complete ALE-Agent and paper trajectories are absent; the toolkit includes an MCP surface.
+- **SakanaAI/drq minimal implementation** (intake-1602#00) Minimal pure-Python DRQ loop with prompts, a CPU simulator, OpenAI client and 317 human warriors (intake-1602#00). Overturned: it cannot reproduce paper aggregates, since discovered-warrior data and analysis are absent. No official ROCm or llama.cpp path, but the AsyncOpenAI client can be redirected via OPENAI_BASE_URL to a local llama.cpp server; simulator license metadata conflicts (CC BY-NC-SA vs MIT).
+- **sakana-ai-reproduction-uni-siegen repo** (intake-1608#00) Singularity/Slurm scaffolding, a modified AI Scientist tree, KNN and SGD templates and reviewer-decision utilities (intake-1608#00). Only five generated PDFs are top-level result artifacts and no ledger of attempted/failed runs exists (intake-1608#01), so aggregates cannot be reconstructed; root license unspecified.
+- **Population DRQ implementation and result subset** (intake-1613#00) MIT repo releases external benchmark summaries, ten champion files, two battle traces and a toy ecology summary (intake-1613#00). Prompts, completions and trajectories for the 40 campaign replicates are absent despite the paper saying they were logged (intake-1613#01), narrowing reproducibility.
+- **DEI asynchronous QD implementation** (intake-1615#00) Supports Linux vLLM (NVIDIA only), macOS MLX and remote APIs (intake-1615#00), but the tree has no paper outputs or run manifests, no documented ROCm path and no root license (intake-1615#01 scope). Component adoption declined (not applicable) on that basis.
+- **LMCA mutation-chain analysis toolkit** (intake-1617#00) Apache-2.0 code, configs, notebooks and tests for neutral mutation-chain diagnostics (intake-1617#00). The paper's result CSV/JSON and trajectory archive are omitted and reruns need provider keys (intake-1617#01), so published measurements cannot be reconstructed.
+- **SWE-bench canonical harness** (intake-1684#00) Docker-based evaluation harness for GitHub issue patching, now a v5-era CLI under the renamed canonical owner; materially newer than the harness pinned by DGM. Adopt as eval component after pinning version.
+- **sums-and-differences-of-sets evaluator** (intake-1689#00) Repo gives an exact 3-argument evaluator and a 5-argument floating-point bounded search computing theta = 1 + (log|U-U| - log|U+U|)/log q(U); a comparator for GHR theta, not one-set C(A). Verifier for search-produced constructions.
+- **Monty Python sandbox** (intake-1850#00) Pydantic's Rust Python sandbox with pooled persistent sessions and suspend/resume snapshots; host capabilities explicit but callbacks run with host authority and need validation. Static verification only; candidate REPL sandbox.
+- **Monty Rust Python sandbox** (intake-1864#00) MIT-licensed Python 3.14-subset sandbox in Rust with explicit host functions and mounts (intake-1864#01). The full Monty server is closed-source, distributed as a private container (intake-1864#02). EPYC: candidate sandbox for REPL tool execution, with the closed server excluded.
+
+### Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the 4-arm turn-1 grammar run, and the default is now off
+
+**Confidence: verified** for the pass rates and timings (30/30 cells, task-cluster bootstrap); the gain is being confirmed on a larger task set (UFH14-LB3.4).
+
+- **Result.** On a private frontdoor-shaped server (Qwen3.6-35B-A3B MTP Q8_0), 30 cells per arm: `off` passed 66.7% at 17.8 ms/token on turn 1, `legacy` 40.0% at 23.6, `call` 36.7%, and `lazy-legacy` 3.3% at 54.8. Off vs legacy: +26.7 pp (95% CI +10 to +46.7).
+- **Why lazy lost.** `lazy-legacy` forced an immediate FINAL on every task (1.0 turns) and PATTERN-trigger grammar evaluation was about 2x slower per token on this server. The measured result supersedes the 2.1% lazy-cost figure from the synthetic window. GRAM-LAZY-1 is closed and the lazy branch was not landed ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh)).
+- **Decision.** The operator set the turn-1 grammar default to off (orchestrator main `93055064`; opt back in with `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call`). It goes live at the next API reload, together with `a498ffba`, `96c30079` and `a73af3cc` ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) UFH14-LB3.1/1b/1c).
+- **The silent-failure path is closed (UFH14-LB3.3, orchestrator main `f3ab78b2`).** The turn-1 grammar block's blanket `except` now warns once per exception type, bumps `diag_counters["turn1_grammar_error"]` and writes a `turn1_grammar` parse_event, so the sweep-17 defect (a grammar that never applied, with no trace) cannot recur unseen.
+- **Fence-cut thinking turns are now counted (UFH14-LB11.1, same commit, flag-off).** A `turn_ended_in_unclosed_think` counter and a `think_fence_cut` parse_event are always on; one bounded continuation of a fence-cut turn sits behind `REPL_THINK_FENCE_CONTINUE` (default off, byte-identical). Dropping the fence stop was rejected because it brings back repetition loops. Next: read the counter on live traffic after the reload ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
+- **What still needs the grammar work.** XGRAMMAR-A2 remains relevant for opted-in grammars and for json_schema structured output, which is eager by construction, but no longer for the frontdoor default.
+
+#### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
+
+- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB3.1b/1c, LB3.3, LB3.4, LB11.1)
+- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (GRAM-LAZY-1 closed, XGRAMMAR-A2 reconciled)
+- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+
+### Compiled Update — 2026-10-23 (wrap-up sweep 17, workspace-f8): a swallowed exception disabled the turn-1 grammar, and the code extractor now strips `<think>` blocks
+
+**Confidence: verified** (orchestrator main commits `a498ffba` and `96c30079`, their tests, and the KPF-LB1.1 run artifacts).
+
+- **UFH14-LB3.2: the turn-1 grammar was dead code for a day.** A conditional function-local `import os` in `_execute_turn` made `os` a local name. The `os.environ.get` added by UFH14-LB3 then raised `UnboundLocalError` on every first turn, and `except Exception: pass` hid it.
+  - Fixed on orchestrator main `a498ffba`, with an AST regression test that refuses a local `import os` there.
+  - It was found by the mock proof of the 4-arm grammar run, not by any test or log.
+  - UFH14-LB3.3 makes that `except` log and count ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
+- **UFH14-LB11: `extract_code_from_response` now strips Qwen3 `<think>...</think>`.** Before the fix, reasoning prose containing `=` was swept into the code candidate and `ast.parse` failed. The extractor returned `''`, the "all comments" nudge fired, and after 3 nudges the graph raised "Max nudges (3) reached".
+  - Fixed on orchestrator main `96c30079` (160 prompt_builders tests pass). Complete and empty blocks are removed, an unclosed `<think>` drops everything after it, and a stray `</think>` drops everything before it.
+  - Exposed roles: those with thinking on and the raw `/completion` lane, i.e. `architect_critic`, `coder_escalation` and `ingest_long_context` while `thinking_roles_chat_lane` is off.
+  - It was found when KPF-LB1.1's capture came back INCOMPLETE ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
+  - Open follow-up UFH14-LB11.1: the `"\n```\n"` stop sequence can still cut a turn inside an unclosed `<think>`.
+- **Both defects fail into a plausible outcome, not an error.** One produced "no grammar", the other an empty code block plus nudges. Neither is live yet: both go live at the operator's next API-only reload, together with `exec_write_flags`.
+
+#### Source References (2026-10-23 wrap-up sweep 17)
+
+- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB3.2, LB3.3, LB11, LB11.1, LB10 reload box)
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-LB1.1 run 1 INCOMPLETE)
+- [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): constrained output stays unguarded, the producers of the trajectory artifact are wired, and repeat-call steering is not worth building
+
+**Confidence: verified** for the landed code and the offline measurements named below (orchestrator commits, test counts, sample sizes); **inferred** for what the live API will show, because most of it goes live only at the next API reload and the 14-day parse-event window has not started.
+
+- **Loop guards: the existing L2 detector stays best, and constrained output stays unguarded (HIL-LB1, orchestrator `258ce2d7`).** Locals' token-period and paraphrase detectors, a 1,024-token grace window and an in-grammar variant were ported and scored on the Who&When Pro injected loops (N=53 of 6,257, all ALFWorld): the existing L2 detector P 0.264 / R 0.623 / F1 0.371; Locals token-period P 0.318 / R 0.132; paraphrase and in-grammar+grace fire on none because the 30-line window and grace exceed whole trajectories; repeated-call >=1 gives R 1.0 / P 0.113. A test-after-edit exemption (a verifying call repeating an identical call after a mutating one) changes no verdict on 150 natural coding sessions (2 exempt of 11,376 calls). Decision: no loop guard on constrained output (`n_predict` bounds a runaway; in-grammar+grace cuts legitimate repetitive arrays past about 1,400-1,600 tokens and fires on 0 of 649 recorded JSON-shaped replies); the free-form guard is rejected because it reproduces the earlier TD-1d.2 cut. Reopen trigger: a census finds a constrained reply ending at the token limit with a periodic tail.
+- **A side finding is unproven, not a bug (HIL-LB1a).** Replayed at the recorded chunk boundaries, the live free-form streaming repetition guard fires on 26 of 649 JSON-shaped tap replies (16 end exactly at the firing chunk; only 8 of 26 parse as JSON). The tap never stored the request grammar, so the flag cannot be recovered retroactively; inferred from the call-site template, 575 of 649 replies come from sites that pass `json_schema`, and all 26 firing replies fall in that inferred-constrained class. If those requests were constrained in production the guard was inactive for them and the replay firing is not a live cut. The tap now records `request_constraints`; the claim stays an inference until a post-hook tap shows it.
+- **Trajectory-artifact producers are wired (orchestrator `9eeb7ba8`).** Rendered-history changes (summary refresh, two-level consolidation, escalation compression) now count as `prefix_cache_invalidations`; session compaction is deliberately NOT a producer because `TaskState.context` is never rendered into a prompt. Shell compaction arrives as a control-only `/v1` packet `x_session_compacted` (no inference) forwarded by the OpenCode plugin `session.compacted` hook, with the caveat that turns that do not run the graph produce no trajectory. Error-turn tool calls (baseline-diffed exploration calls) reach the trajectory artifact only, because the session-log record's `tools:[...]` renders into the prompt and adding them would change prompt bytes.
+- **Repeat-call steering is not wired (TOC-SP-LB1, decided).** Consecutive identical (name, args) calls: qwen-gpu 1/3,383 (0.03%), qwen-local 0/918, cloud deepseek 1/2,745 (0.04%), Claude vault 77/32,179 (0.24%; 83% result-equal), Codex vault 28/7,107 (0.39%; polling tools excluded). Neither the result-equality notice nor the one-reply tool ban pays back its tokens and prompt surface at one repeat in 4,301 local calls; if a trigger fires, build the notice, not the ban (the one sizeable pattern is a cloud-agent `Edit` retried with an identical failing argument). Reopen above a 1% local repeat rate over at least 5,000 local calls.
+- **Structured-output and serving-record observability.** `parse_events.v1` (orchestrator branch, since reported landed on main) records finish_reason, n_tokens, max_tokens and site per parse, with truncation tri-state (never folded into "malformed"); the 14-day classification needs merge, reload and time. The `serving_calls` recorder is the sharper lesson: the shared clone held 75 records and zero `method=infer`, against 4,739 `llama POST ... start` lines from the non-stream path, and the writer swallowed every exception, so nothing said it was dead. The cause is not reproduced offline; the fix counts recorded/skipped/failed writes (`health()`) and `record_http_call` now wraps worker_pool `/completion`, schema repair and both VL calls (`d0e0e477`); four call sites remain unwrapped and restoration is unproven until a post-reload infer-record to log-line ratio near 1.
+- **Turn-1 grammar has a shape defect (proposal, default unchanged).** The grammar's tool-call shape is `TOOL("name", ...)` while the REPL's stop regex and `_call_tool` path use `CALL("name", ...)`; of 81 grammar-enforced March frontdoor rows 4 (4.9%) called any tool vs 26/685 (3.8%) non-enforced, pass 27/81 (33%) vs 311/685 (45%), confounded by suite mix. The flag `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call|off` and raw turn-1 logging (`d0e0e477`) are in; the A/B (about 60 min CPU, ABA-alternated, rule predeclared) is open.
+- **Frozen-build crash class closed on the experimental line, not in production.** The `%llguidance` GGML_ABORT now throws a request error (server answers 400 and keeps serving) on `experimental/locals-kernel-fixes-20261022`, build and test passed (server pytest 3/3); production stays frozen and protected by the orchestrator guard until the fold (UFH14-LB1.1). A new side finding: a client echoing a call's invalid-JSON `arguments` into history makes `workaround::func_args_not_string` throw, plausibly a 500 poisoning every later turn of that conversation (UFH14-LB4.1, untraced).
+- **Re-tokenization is not a source of tool-call prefix divergence (UFH14-LB9/LB9.1).** Plain-text replies re-tokenize with a one-token excess (EOS) in 85/87 (97.7%) and one extra token in 2/87 (2.3%); rendering logged tool-call turns through each role's GGUF template gives 444 of 450 exact (98.7%), with Flash-Next 2 of 150 at +1 token and the two longer-than-generated rows being logging effects. So the 17.8% of follow-on turns diverging inside the previous output is not explained by tool-call arguments.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-LB1 scoring and decision, HIL-LB1a
+- [progress/2026-10/2026-10-22-hil17-lb1-writes.md](../progress/2026-10/2026-10-22-hil17-lb1-writes.md) — LB1a labelling result
+- [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-WRITER producers, TOC-SP-LB1
+- [progress/2026-10/2026-10-22-a1-orch-code.md](../progress/2026-10/2026-10-22-a1-orch-code.md) — compaction-is-not-invalidation finding
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — parse events, serving_calls, grammar, LB1/LB4.1/LB9
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — Locals packet D and locals-a results
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): structured-output and trajectory artifact
+
+**Confidence: verified** for the trajectory-artifact writer and `tool_output` layout block (orchestrator `e9cf0949`, 44 tests passed, flag-off byte identity in three cases); **inferred** for UFH14-LB1..LB10 and TOC-WRITER-* (filed, not run).
+
+- **Structured output is observed blind.** Repair counters are in-process only and no event records `finish_reason`; UFH14-LB2 persists finish_reason, n_tokens, max_tokens and call site per parse event, then after 14 days splits parse failures into length-truncated vs malformed. UFH14-LB4 tests five crafted strings (native tool call cut by max_tokens, non-partial parse failure) for invalid-JSON arguments and HTTP 500. UFH14-LB3 replays turn-1 `grammar_enforced` REPL outputs, since the code-line rule admits any line.
+- **Per-call serving records have decayed:** `serving_calls` holds 19 records since 2026-10-05 despite a live hook (UFH14-LB6); the fix extends records with finish_reason and stream inter-token gap p99/p99.9/max/stall count, and a p99.9 gap is never reported without its sample and stall-arrival counts.
+- **Trajectory artifact writer landed (default off):** one append-only JSONL per task with a `turn` event per REPL turn (prompt chars, server prompt/cached/completion tokens, null when unobserved, `n_ctx`, retrieval-vs-execution split, spill-ledger fields). TOC-SP-5 stays open because no run has emitted artifacts. Two producer gaps filed: TOC-WRITER-HOOKS-1 (`note_history_rewrite`/`note_shell_compaction` have no callers, so `prefix_cache_invalidations` is always 0) and TOC-WRITER-TOOLCALLS-1 (error-path turns pass no tool_calls, undercounting the retrieval split).
+- **TOC-SP-LB1** measures consecutive identical (name, args) tool calls in the conversation stores before choosing between a result-equality repeat notice and model-voiced steering with a one-reply tool ban.
+
+#### Source References (2026-10-22 sweep 7)
+
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)
+- [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
+- [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
+
+### Compiled Update — 2026-09-25: control retrieval, validate live state, and preserve interrupted calls
+
+**Confidence: verified** from the OAB-9 two-pair A/B and the run-9 refusal/stop records. The A/B is small
+(`n=2`, inline-first), so it establishes the failure mode rather than a universal ranking.
+
+- **A file-backed context tool needs an explicit retrieval budget.** The file arm cut first-step context from
+  40.6k to 19.1k tokens, then the model read every withheld section and explored more source. Its wall time,
+  steps, tool calls, decoded tokens and peak context were worse in both pairs. The interface should count the
+  exact sections and bytes returned, enforce caps, and let orchestrator-side scouts select evidence when the
+  model does not pull precisely. Moving bytes behind `read` is not itself an efficiency feature.
+- **Record efficiency beside the closed call record.** `epyc.autokernel.actor_call_metrics.v1` carries steps,
+  tool calls by name, compactions, prompt/decoded/cache tokens and first/max context, while `actor_call.v1`
+  remains closed and self-hashed. Metrics errors are data and do not fail the call. The OAB-9 artifacts show
+  why this belongs on the write path: they distinguish a smaller initial prompt from greater total work.
+- **Dry-run preflight must exercise identity checks used by the live runner.** Run 9's dry run succeeded, but
+  live execution refused because the store's champion of record did not equal the requested anchor. A useful
+  preflight checks that exact invariant before an expensive off-hours window, along with the resolved target,
+  serving generation, and evidence store identity.
+- **Termination should leave a typed negative result.** TERM during a live planner call reaped the runner and
+  opencode, released the CPU locks, and emitted `actor_call.v1` with rc −15. This makes an interrupted call
+  distinguishable from a missing record. Calibration owns a different child process path and needs a separate
+  stop/reap test.
+
+#### Source References (2026-09-25)
+
+- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
+  OAB-7/OAB-9/OAB-12 and the actor-call metrics contract.
+- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C24,
+  DS41-C25, DS41-C27, and DS41-C28.
+- [`agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md) — operational and tool-interface
+  form of the run-9 and context-placement findings.
+- [`2026-09-25-main-ak-seat.md`](../progress/2026-09/2026-09-25-main-ak-seat.md) — measurements and process
+  observations.
+
+### Compiled Update — 2026-09-24 (speech-lane wrap-up): a byte-identical tool-output cache, and a PII hook that changed a fixture's bytes
+
+**Confidence: verified** for the cache timing and the hook trip, both measured on real artifacts. **inferred** for
+the premise check.
+
+- **Cache a deterministic tool's output on its exact argv plus its input's identity.** The research build is
+  `f4a5d240`, a seat-side precursor of R4. The identity is the realpath, size, `mtime_ns`, a content hash (first
+  and last 1 MiB) and the memoized tool version. Add a build-id when an input is rewritten in place at a stable
+  path. A hit is then literally the bytes of a prior run.
+  - Keep client-side knobs such as `limit` out of the key. They never reach the tool, so one report serves every
+    limit.
+  - Keep the cache beside an integrity-checked directory, never inside it.
+  - Measured on the run-7 profile (25.7 MB, 114K samples): `perf report` went from 1.283 s to 0.0012 s, and the
+    output was byte-identical.
+- **Before building a speed fix, check it against the loss it claims to fix.** At 1.3 s per call, perf-tool time
+  cannot explain the bounded seat's ~12-minute loss in C20c. The plain seat does not use these tools at all. The
+  per-call metrics (see [agent-architecture](agent-architecture.md)) are the instrument that says where the time
+  goes. Measure first.
+- **TOC-RD-1b: the root PII pre-commit hook over-blocks `perf` sample periods in markdown table cells.**
+  - The `account_number` rule (`\b[0-9]{12,19}\b`) tripped on 12–13-digit periods in 7 cells of a real DS41
+    planner-prompt fixture. The author redacted them, so the committed fixture's bytes differ from the real
+    prompt.
+  - Inline mode's byte-for-byte fidelity was therefore shown against the copy recovered from the opencode store,
+    whose sha equals the call record's, and not against the committed fixture. A fidelity claim has to name the
+    copy it was checked against.
+  - The candidate exemption is a digit run in a `|`-delimited cell whose header or row names a perf field, with no
+    account/card/customer/iban/routing/ssn token on the line.
+  - The exemption has to ship with a must-block negative control (an account number in a markdown table) in the
+    same change. This surface is already flagged for being tuned on its own over-blocks (see
+    [formal-verification](formal-verification.md), the PII-hook exemption surface).
+
+#### Source References (2026-09-24 speech-lane)
+
+- [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Tool-output caching*.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §3 (key, placement,
+  premise check).
+- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression): TOC-RD-1b.
+
+### Compiled Update — 2026-09-19: one call for the tool and its arguments — the operation × conditional-target pattern (TD-12..TD-15)
+
+**Confidence: verified** for the filings and the dive-verified intake mechanics; nothing below is implemented or measured on this host yet (TD-12..TD-15 are open).
+
+#### Key findings
+
+- **The pattern: ask the operation and a speculative target head per operation in one typed call, consume only the chosen operation's head.** intake-1493 (browser-use/jev-ultrafast, MIT, dive-verified @ `1231850a`; 31/31 offline tests pass) does this per browser step — one request carries CLICK/TYPE_TEXT/SELECT/SCROLL/WAIT/DONE/BLOCKED plus one target question per operation, and "unused target heads cannot cause an action" (`model.py:94-133`). Its vendor-authored comparison (3 alternating pairs, one task; the authors' sign-test p = 0.25, not a reliability benchmark) splits the median gain roughly in half between fewer decision requests (~1.0 s of 2.36 s, from fewer stale invalidations) and less browser/wait time (~1.1 s). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-19-intake-jev-ultrafast.md))
+- **TD-12 carries it to tool calls:** one call choosing over `ToolRegistry.list_tools(role)` plus one argument-head set per candidate tool (instructions naming the tool they assume), consuming only the chosen tool's heads, compared against the current tool-then-arguments path (TD-4, closed-set 18/18 vs free-form 6/18 — see the 2026-09-17 section below) on exact tool+argument correctness and wall time. **A required code change**: today any failed head rejects the pass (`tool_args_integration.py:197-198`); a failed head for an UNUSED tool must not. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-13 gates TD-12 on contamination between sibling heads.** The local flip-rate receipts (TD-2 6.25%/37.5%, TD-3b 87.5% agreement) cover flat catalogues only; TD-13 answers the chosen tool's heads alone vs batched with the unused tools' heads and reports the top-answer flip rate for the worker model before the heads are trusted as independent. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-14: options become describable.** `Question` options are a bare label list today (`types.py:66-68`, rendered `candidates: a | b`); an optional per-option description, rendered by both JSON and native arms, grounds tool or element tables without stuffing the shared state. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-15 is conditional and may close as not-needed:** only if TD-12 needs more candidates than the TD-9 code map's 36 symbols (`routing_replay.py:153`) or the 128 `n_probs` cap (`native.py:259`) — hierarchical codes or chunked tables. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **Two landings the 2026-09-17 section below predates:** closed-set tool arguments are wired into the orchestrator tool path (`src/repl_environment/context.py` `_dispatch_tool`) behind `typed_decisions_tool_args`, default off, fail-open to the model's own arguments; and `id_only` is now the native default (TD-6). The 11.98x figure that section records is contested (9.60x at n=4, per decision 6.40x); the TD-1d.1 blocker still stands — `/v1` forwards neither `grammar` nor `json_schema`, so no typed arm deploys through `LLMPrimitives` yet. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [re-measurement](../progress/2026-09/2026-09-18-td1d-remeasure.md))
+- The same pattern is the design core of the dormant interactive-browser stub — see [agent-architecture](agent-architecture.md).
+
+#### Open questions
+
+- Does one-call tool+argument selection beat TD-4's two-step path on the worker, or does sibling-head contamination (TD-13) eat the saving?
+- Do the role's tool catalogues stay under 36 candidates, closing TD-15?
+
+#### Source References (2026-09-19)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-12..TD-15, the tool-args wiring policy, TD-6, TD-1d.1.
+- [2026-09-19-intake-jev-ultrafast.md](../progress/2026-09/2026-09-19-intake-jev-ultrafast.md) — the intake-1493 dive outcome.
+- [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — the contested speed figure.
+- [intake-1493] Jev Ultrafast (browser-use/jev-ultrafast) — operation × conditional-target heads; dive-verified, `research/intake_index.yaml`.
+
+### Compiled Update — 2026-09-18: a destructive branch gated on certainty, and the daemon that never received its own fix
+
+**Confidence: verified** — code landings with tests, and a read-only `/proc` census with pids and inodes recorded. Session record: [`progress/2026-09/2026-09-18-backlog-churn-2.md`](../progress/2026-09/2026-09-18-backlog-churn-2.md); census: `tmp/daemon-staleness-20260917/report.md`.
+
+#### Key findings
+
+- **NI-OC-a: the reaper's VACUUM gate moved from a bare name probe to `observer_guard.sh` three states, mapped so only certainty permits destruction** (root `49e85ab7`). `pgrep -x opencode` was two-state, and a drifted argv read a LIVE process as ABSENT — the state that *permits* rewriting the operator's live `opencode.db` under an exclusive lock. Now `present` → withhold; **`unobservable` → withhold plus an alarm breadcrumb that clears on the next sighting**; `absent` → permit, only when every channel that could speak agrees. Two read-only channels, neither a kill target: `proc_scan` matches `"opencode "` *with the trailing space* (so the reaper's own argv and `opencode.db` cannot self-match) and `db_fd` walks `/proc/*/fd` for an open descriptor on the DB — argv-independent, and the thing VACUUM cares about. A missing DB is `unavailable`, never `absent`; channel disagreement is `unobservable`. The unlucky case now defers a VACUUM by one cycle and says so, instead of guessing. `observe` subcommand for inspection; registry row adopted at contract v1; a test asserts no bare name probe survives. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
+- **NIB2-81: a long-running daemon executes the script inode it was launched with, so a committed fix never reaches it — and the census that said OK cannot see an instance.** The same night NI-OC-a landed and "census OK (17 observers)" printed, the live reaper (pid 2873259, started 09-08) was executing a 1,802-byte lane copy under `worktrees/mains/ak-rebuild-20260828` — 461 iterations, 39 VACUUMs on the two-state code. Mechanism: bash holds `fd/255` for life; git never writes in place, so each commit moves the PATH to a new inode; no cron in the container, so daemons are hand-launched with the launcher's cwd, and an abandoned lane never advances. Three live shapes: **stale-and-diverged** (the reaper), **orphaned inode** (hub and bus supervisors show `(deleted)`, orphaned by a `git reset --hard origin/main`; identical content today, diverging silently on the next commit), **orphaned tree** (a `:8101` hub from a worktree that no longer exists — no registry row, pidfile or probe). `observer_census.py` is static by design (Rule A/B over `git ls-files`; its runtime battery uses a sandboxed stand-in, never a live pid): it certifies the FILE and has no notion of an INSTANCE. `check_lane_worktree.py` looks the other way; `/api/health` folds data freshness, not code provenance. The one loop that works is the bus supervisor's H-4 tree-divergence check, which restarted the coordinator daemon at 23:34. Recommended: startup self-attestation (own `fd/255` inode vs `HEAD:<relpath>`) + registry `runtime:{pidfile,expected_path}` + `observer_census.py --live` into the fleet alarm; generalising H-4 is the proven follow-through. Restart identity comes from the daemon's own pid record, never a name. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
+- **`x_force_model` never forced a model; the seam is role-keyed end to end, so the field was renamed to what it is and the old name deprecated, not deleted** (HS-OD-3/7, orchestrator `2a609f5c`): `x_force_role > x_force_model > x_orchestrator_role > model`; unservable values (registry model names, typos, `Role` members with no server) are a 422 naming the field, where before they died at `server_urls.get(role, "")` with no diagnostic. Detail and the operator ruling: [agent-architecture](agent-architecture.md).
+- **TD-1d's "11.98x" below is contested**: re-measured at n=4 alternated it is 9.60x (bar not cleared), and the disagreement is the single-sample JSON baseline; per decision 6.40x. See [benchmark-methodology](benchmark-methodology.md).
+
+#### Open questions
+
+- Which of the three NIB2-81 remedies lands first — self-attestation is one line per daemon with no kill path; the `--live` census is the only one that sees an unregistered stray?
+- Should `hub_supervisor`/`bus_supervisor` be restarted at a quiet boundary now, or ride until the class fix moves them?
+
+#### Source References (2026-09-18)
+
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NI-OC-a, NI-OC-a.1, NIB2-81.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-3..7.
+- [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — the judgement calls.
+
+### Compiled Update — 2026-09-17 (wrap-up sweep): the native arm gets its cue, closed-set tool arguments win exactness, and the cooperation contract drops field names
+
+**Confidence: verified** for the local fixture numbers and the code landings; **external** for intake figures.
+
+#### Key findings
+
+- **TD-1d accepted: the id-only cue recovers 11.98x at parity.** Cue sweep on the worker (Qwen3.6-35B-A3B, MI210, same 24-question fixture, one run each): JSON 19.3 s / 1,354 tok; native full 7.3 s (2.66x) / 523 tok; short 3.2 s (6.0x) / 239 tok; **id_only 1.6 s (11.98x) / 112 tok** — all three native styles 15/16 agreement and 15/16 accuracy on the overlap. Adopting `id_only` as the native default after review (keeping `full`/`short` selectable) is TD-6, still open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-4 closed-set tool arguments: 18/18 exact vs 6/18 free-form.** 18 deterministic cases across 3 tool schemas: closed-set 18/18 exact-match (0 failures) vs free-form 6/18 (12 failures — parse/schema failures, not merely wrong values), per-argument exact 66 vs 24, at 116.6 s vs 11.4 s (10.2x wall for the free-form arm). Exact tool use is the closed-set arm's to win; coordinate with `tool-use-eval-contract` TU-TD-1. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **Native parity was a prompt-cueing bug, not a decoding one.** TD-1b fixed token identity (candidates resolved through the server `/tokenize` seam, exact-token grammar terminals `<[id]>`, probability rows matched by token id), but agreement was 11/16. TD-1c root-caused the 5/16 disagreement: only the first answer was grounded on the prompt; later positions were conditioned on prior answer tokens, collapsing `noul` answers to false. Replaying each question's cue as tokenized grammar terminals restored 15/16. **The fail-closed shape is the one to keep**: the original native failure surfaced as typed `native_unknown_candidate` errors, never as wrong answers. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **HS-15: the cooperation contract is a capability, not a field name.** Restated as *config-declarable arbitrary top-level body keys on the openai-completions path, on the call verb the harness actually uses*, with all three qualifiers load-bearing, and the five names it ships under listed (`extra_body`, `compat.extraBody`, `Model.samplingParams`, `chat.params` → `options`, `provider.<id>.models.<m>.options`). Two forks of one repository grew the same primitive under different names on different objects, so a name-keyed contract mis-scored candidates twice in one batch. Step 1 of the [client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) now tells the auditor to grep for the capability rather than a known name. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **Scoring-infra 1c-fix (b)/(d) closed** (orchestrator `9a7181f2`): reviewer truncation replaced by `ArchitectReviewService.condense_output()` — head 60% + tail 40% with an explicit elision marker naming the elided character count (budget config `review_output_max_chars`, default 4000; `quick_mode`'s silent `[:200]` routed through the same helper). The old 500-char prefix cut fed `all_approved` → memrl reward, so it was a latent scoring bias as much as a readability defect. And dead `ChatRequest.tools`/`tool_choice` are **deprecated, deliberately not removed** — they are part of a published `/chat` schema whose model sets `extra="ignore"`, so removal would swallow them silently; `/chat` now logs when a caller sets them. ([scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
+- **The trace pairing keys now have producers** (unified-trace UTM-P1a / P1a.2, orchestrator `9a7181f2`/`7887e7ae`): the review plane stamps `harness`/`task_key`/`turn_ordinal` (and rejects `subtask_id` as a key — "S1" recurs across unrelated tasks, so a fabricated key pairs unrelated runs), and replay + delegator add the second harness. Unset keys stay NULL = "never captured". Real-data reachability (separate stores, no shared ids, turn alignment) is UTM-P1a.3, compute-gated. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
+- **Dashboard data plane: measured and estimated prompt tokens are no longer indistinguishable.** The inference tap stamps `prompt_tokens_source="server_terminal"` and cards render `↑ N tok` only for that source, while the chars fallback renders as `prompt Nc` — an estimate and a measurement can no longer wear the same label. Declared (not observed) node substrate now carries `substrate_source` = `process | role-kind | manifest`; an unknown role declares nothing rather than guessing. ([dashboard-architecture-restructure](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure))
+- **Handoff-index authoring gained its staleness reporter.** `scripts/handoffs/stale_next_action.py` flags a row only when **every** task id its `Next action` names resolves to a ticked box — the well-formed≠still-needed gap `index_state.py --check` cannot see. Measured on introduction (2026-09-17): 7 stale rows, one naming a task ticked five weeks earlier. It is a reporter, not a gate. ([handoff-index-authoring guide](../docs/guides/agent-workflows/handoff-index-authoring.md))
+- **FW-2 placement is decided and VB-FW-1 files the write-side hook at design time.** The workflow document schema, executor and `/dashboard/api/workflows/*` contract live in `epyc-orchestrator`; the authoring page, registry row, probe and freshness envelope live on the hub `:8100`; nothing in the shell. The first GUI-authored run emits one ClaimTuple carrying the document hash, executed node types, each fuzzy node's model pin and catalogue, and per-gate outcomes. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **NIB2-78/79 closed zero-inference** (orchestrator `61793b38`, `0c03e658`): the graph layer's missing-`kuzu` path is one WARNING line (operator ruled kuzu stays uninstalled), every graph class `close()` now releases its Kuzu file lock, and the four dead `archive_*` tool-registry entries were removed with a test that gates every registry handler. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
+
+#### Open questions
+
+- Does the id-only lead reproduce on a second run and a different model, or is it a single-run artifact?
+- Do the closed-set tool arguments hold under the fleet's template diversity (the TU-HR-1 native-convention audit is the standing constraint)?
+- Should `/v1` reject unknown `x_*` keys once the typed set is stable?
+
+#### Source References (2026-09-17 wrap-up sweep)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1b/1c/1d, TD-4, TD-5, TD-6.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) and [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — HS-15 capability contract and the call-verb check.
+- [scoring-infra-standardization.md](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — 1c-fix (b)/(d) and the reviewer-truncation bias.
+- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a/P1a.2 pairing-key producers.
+- [dashboard-architecture-restructure.md](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure) — prompt-token provenance and declared substrate.
+- [handoff-index-authoring.md](../docs/guides/agent-workflows/handoff-index-authoring.md) — the stale-next-action reporter.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — FW-2 placement and VB-FW-1.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-78/79.
+
+### Compiled Update — 2026-09-17 (typed-decision round 2): token identity fixes the native failure, but speed is not semantic parity
+
+**Confidence: verified** for the recorded local MI210 fixture and focused tests. The 18.9x timing is for the tested 24-question fixture on Qwen3.6-35B-A3B, not a general tool-use speedup.
+
+- TD-1b now asks the server `/tokenize` for candidate IDs, builds exact-token grammar terminals and matches probability rows by token ID. The previous 23/24 `native_unknown_candidate` failures fell to zero; 8/24 candidates are explicitly unsupported because they tokenize to multiple tokens and fall back to JSON. On the 16 native-resolved questions, timing was 1.03 s versus 19.4 s for JSON, but native/JSON agreement was only 11/16 and native accuracy 68.8% versus JSON's 91.7% on the overlap. The native arm therefore remains non-authoritative; TD-1c owns semantic parity before a speed claim can guide routing.
+- TD-5 is a bounded, default-off shadow at the routing review gate, not an enforcement route. A live smoke produced one record with incumbent, typed decisions, confidences and prompt/state hashes. The next evidence is a labeled window to assess agreement and calibration; the smoke alone cannot license a gate.
+- The longer fan-out run measured 3.22x wall/serial improvement for three 40k-character states on the same worker, but its catalogue was content-neutral, so agreement is uninterpretable. TD-3b asks for the real 24-question catalogue. Closed-set tool arguments still await their free-form-path live pilot (TD-4).
+
+Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) and [intake implementation record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md). The earlier compiled section below is the historical first-run state; its TD-1b question is superseded by this update.
+
+### Compiled Update — 2026-09-17 (doc audit): FastMCP 3 refuses an undeclared argument, the `/v1` structured-output record gets a standing home, and the typed-decision runner's native arm fails closed
+
+**Confidence: verified** for source facts at the cited commits and the executed tests; **verified** for the MI210 runner results (first measurement, one fixture).
+
+#### Key findings
+
+- **FastMCP 3 refuses, it does not drop — and the 2026-09-16 P0.3 finding is reversed.** The orchestrator pins `fastmcp>=3,<4`; a stamped call carrying an undeclared `session_id` is rejected, proven by `tests/unit/test_mcp_undeclared_args_refused.py`. The earlier shard had read `mcp` 1.27.0's `ArgModelBase` (no `extra="forbid"`) and concluded "silently drops". The tool-side requirement is the same under either behaviour — every session-aware tool declares `session_id: str = ""` and forwards it (`ChatRequest.session_id` already exists) — and every `@mcp.tool()` in `src/mcp_server.py` now does (orch `54b6439d`). If the P2 memory tools ship as a separate MCP server, that server needs the same declares-and-refuses tests (`HS-4 P2 carry`). Rule: a dependency's behaviour is read from the pinned version, never from whichever copy is on the path ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
+- **The structured-output capability record is now a standing reference, four layers read together** ([`v1-structured-output-capability.md`](../docs/reference/v1-structured-output-capability.md)). Kernel (frozen v9 `0db32c06e`): `response_format` `json_object[+schema]` / `json_schema` → grammar; any other non-`text` type → `invalid_argument`. Orchestrator internal: `LLMPrimitives.llm_call(json_schema=…)` threads `json_schema`/`grammar` into the backend body — grammar-constrained; live consumers are native `/chat` direct mode and consultations. Native `/chat` REPL mode: **not** constrained — schema in the prompt, `FINAL()` parse-and-retry, and only when `final_schema_validation` (default off) is on. `/v1` seam (`:8000`): any `response_format` other than `text` → **422 naming the field, by decision** (HS-OD-1); `max_completion_tokens` honoured as alias. Quoted alone, either half misleads: a harness using OpenAI JSON mode gets a 422 today although the kernel could serve it; wiring is a small direct-path mapping, but REPL-mode consumers stay parse-and-retry. **Kernel-doc defect, no action on the frozen tree:** `README.md:1239` puts `schema` at the top level while the code reads `response_format.json_schema.schema` (`server-common.cpp:947-949`), so the README's form yields an empty schema and *silently unconstrained* JSON — the silent-no-op class applies to servers, not only clients.
+- **Two Harness Cards have a consumer outside the handoff that wrote them**, which is why they moved to [`harness-card.md`](../docs/reference/harness-candidates/harness-card.md): `agents/shared/HARNESS_RUN_POLICY.md` requires a run report to name "the applicable Harness Card". The editable-vs-code-owned card answers *what can be changed without code*; the conformant ETCSOVG card answers *what configuration produced a score* and is conformant *because* it names its 13 undisclosed/unfixed fields (no REPL/scorer isolation, no eval-wide network-off, auto-approve, …). Re-publishing rule: a model or freeze change refreshes the conformant card before a result is called re-targetable.
+- **Three `/v1` seam residuals recorded, none fixed here.** `src/api/models/openai.py` describes `x_max_escalation` as capping escalation while `/v1` only records it (one-line description fix filed as `HS-4 P4-pre`; enforcement is P4). Unknown `x_*` keys outside the typed set are still silently ignored (`extra="ignore"`). `/v1` B2 compression still fails open to the unfolded history.
+- **The typed-decision runner: the JSON arm works, the native arm fails closed for a reason that is a tooling fact.** `src/typed_decisions/` (epyc-orchestrator, flag `typed_decisions` default off, no route wired, 87 tests) ran the 24-question fixture 24/24 clean in 36.7 s on the 27B via `response_format json_schema` with corrective retry. The TD-1a native candidate-scoring arm (enum-constrained single-token readout with `n_probs`) resolved 1/24 and raised 23 typed `native_unknown_candidate` failures: the emitted tokens were `'fal'`/`'set'`, because the candidate strings had been presumed single-token without tokenizer access. Fix (TD-1b): obtain each candidate's token id(s) from the server's `/tokenize` before building the grammar, and make multi-token candidates fall back to JSON mode *explicitly*. The failure surfaced as a typed error rather than a wrong answer — the fail-closed shape is the one to keep. TD-4's closed-set tool-argument mapping (`src/typed_decisions/tool_args.py`, 19 tests) landed; its live pilot against the free-form path is the remaining step. Measurement receipts ride through `scripts/vidya/adapters/typed_decisions_measurement.py` (CLI ingest; a bench report is refused as a non-measurement; the producer's `metric_direction` gap was fixed on the write side) ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [intake session](../progress/2026-09/2026-09-17-intake-jev-sageattn.md)).
+- **Installed-tool pins live in two places, and only one survives a rebuild.** `opencode-ai@1.18.31` was installed under `/usr/local/share/npm-global` to match the audited pin `350c726a`, but `.devcontainer/Dockerfile` installs no OpenCode, so a container rebuild silently reverts to whatever the host has (`1.18.18`). The P0.4 runner's `plan` preflight checks the pinned version, so the drift is caught at run time; the Dockerfile pin is the standing fix ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)). The same shape holds for the orchestrator MCP server: root `.mcp.json` now launches it on the project venv, and that path resolves only inside the container.
+- **FW-2 is no longer a build-posture question.** The fuzzy-workflow GUI's data contract (workflow document schema, executor, `/dashboard/api/workflows/*`) lives in `epyc-orchestrator`; the authoring page, registry row, `health_path` probe and freshness envelope live on the hub `:8100`; nothing lives in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze (HS-5b) ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md)).
+
+#### Open questions
+
+- TD-1b: after tokenizer-aware candidates, does the native arm reproduce the JSON arm's argmax (≥20/24) and show a speedup on the same server?
+- Should `/v1` move from `extra="ignore"` to rejecting unknown `x_*` keys once the typed set is stable, and what does that do to the eval tower's golden-pinned REPL bridge?
+
+#### Source References (2026-09-17 doc audit)
+
+- [v1-structured-output-capability.md](../docs/reference/v1-structured-output-capability.md) — the four-layer record and the kernel-README defect.
+- [harness-card.md](../docs/reference/harness-candidates/harness-card.md) — both cards and the re-publishing rule.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — P0-MCP-b, P2 carry, P4-pre, the Dockerfile pin follow-up.
+- [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md) — the appended FastMCP correction.
+- [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — the residuals list.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane), [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the runner, the native-arm failure, TD-1b.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-2 placement.
+
+### Compiled Update — 2026-09-17 (research-intake delta: the typed-decision call path and closed-set tool arguments)
+
+**Confidence: verified** for the filings; **external** for the intake figures. Nothing here is implemented beyond the stubs; TD-1…TD-5 are open.
+
+Two implementation surfaces arrive from the intake batch, both aimed at the orchestrator's schema/tool-call layer: a local one-pass typed-decision call path over frozen v9, and closed-set tool arguments.
+
+#### Key findings
+
+- **TD-1 — implement the local typed-decision call path over frozen v9.** Per-request JSON-Schema generation from declared questions (`choice`/`score`/`noul`), one chat completion with `response_format json_schema`, client-side decode + validation with corrective retry, expected-value scoring, fixed local confidence formulas, and a per-call diagnostics record. Acceptance: an ≥20-question fixture returns schema-valid typed answers with per-question probabilities and the retry path is exercised. Open question: whether v9's `json_schema`→GBNF converter accepts the nested probability-map schemas the adapter generates. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-1a — the actual speed lever is the native candidate-scoring fast path**: enum-constrained single-token readout with `n_probs`/`completion_probabilities` over a shared prompt prefix with prompt-cache reuse. It is benchmarked against TD-1 on wall time, output tokens, argmax agreement, and cache-reuse drift.
+- **TD-4 / TU-TD-1 — closed-set tool-argument selection.** Map tool arguments to closed sets (Literal→Choice, list[Literal]→multi-choice, bool→Noul) with per-argument confidence; score exact-match argument correctness against the current free-form tool-call path. ([tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
+- **FW-2 — the fuzzy/deterministic authoring GUI's build posture is an operator decision against HS-4.** HS-4 settled on a thin OpenCode shell with Hermes features inside the orchestrator; FW-2 asks whether the GUI is an orchestrator page, a harness plugin, or deferred. FW-3 is a ≤1-day prior-art survey (Dify/LangFlow-class flow UIs; the PAW playground). ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
+- **PAW-2 — self-hosted compile spike tooling.** Prove one end-to-end compile producing a modern GGUF-ZIP `.paw` using the unofficial MIT compile server with pinned weights, then one local call; measure compile wall time, peak RAM and disk; document the Compact GPT-2 canonicalization caveat and CPU-only workability before MI210. ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
+- **The audit discipline is part of the tooling.** The independent audit of the reference implementation found the shipped shuffled-context control defective (informed-vs-blind lift ~25 points after correction, intake-1490); expect the same class of control defect in a first local implementation.
+
+#### Open questions
+
+- Does the frozen v9 server accept the generated schemas, and how much of the JSON-schema generation path can TD-1a's enum readout avoid?
+- Does the closed-set arm beat free-form tool arguments on exact-match correctness at our fleet's template diversity (the TU-HR-1 native-convention audit is the standing constraint)?
+
+#### Source References (2026-09-17 research-intake delta)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1/TD-1a fast path, TD-4 pilot, the converter question.
+- [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TD-1.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-2 build posture, FW-3 prior art.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-2 compile spike and its measurements.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record.
+
+### Compiled Update — 2026-09-17 (evening): the dead registry entries never existed, and a lock that `close()` never released
+
+**Confidence: verified**: `git log -S`, negative-control test runs and venv-isolated tests. No production venv
+was modified.
+
+#### Key findings
+
+- **NIB2-79: the four `archive_*` registry entries were dead from the day they were added (orchestrator
+  `0c03e658`).**
+  - **Evidence.** `git log -S` shows them added in `882d97d4` (2026-01-26), already pointing at
+    `src.services.archive_extractor.archive_*`. No commit ever defined those functions. They were the only 4
+    of 45 python handlers that did not resolve.
+  - **Why they were removed rather than repointed.** The real tools are REPL builtins. They keep
+    opened-archive state per session and apply `_validate_file_path`, and a stateless module-level handler
+    would lose both.
+  - **Test.** `tests/unit/test_tool_registry_handlers_resolve.py` requires every handler to import and be
+    callable, and fails 6 tests against the old YAML.
+  - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md)
+- **NIB2-78a: startup noise became one line, and a real resource bug surfaced (orchestrator `61793b38`).**
+  - `graph_backend.py` gains a `find_spec` probe, a lock-contention classifier and `close_kuzu_handles`.
+  - Every graph class's `close()` had been a no-op, so the Kuzu file lock was never released in-process,
+    including after canvas export.
+  - Tests: 117 passed in a throwaway venv with kuzu 0.11.3, which read prod site-packages through a
+    `.pth` file and never wrote to them. 148 passed and 7 skipped in the prod venv without kuzu.
+  - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
+- **The HS-4 MCP launcher is fixed on both sides.** The operator applied the root `.mcp.json` edit, which
+  points the `orchestrator` server at the project venv (root `ed1dfd57`). The venv interpreter resolves only
+  inside the container. [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
+
+#### Source References (2026-09-17 evening)
+
+- [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md): NIB2-79 evidence, NIB2-78a changes and tests.
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78a/79 ticks.
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0-MCP-a.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the evening landing table.
+
+### Compiled Update — 2026-09-17 (afternoon): the watchdog's watchdog runs a pinned copy, and the hub lifecycle is written down once
+
+**Confidence: verified**: installer code and tests, the cron log, and the API startup log.
+
+#### Key findings
+
+- **OP-9 option B: the host cron runs an immutable, pinned supervisor.** It never runs the mutable shared
+  clone, and never the view, which is force-checked-out every 180 s. `install_supervision_cron_20260916.sh --all`
+  works in three steps:
+  - it `git archive`s the supervisor closure (`hub_supervisor.sh`, `hub_launch_spec.py`,
+    `refresh_hub_view.sh`) into `/mnt/raid0/llm/ops/hub-supervisor/<sha>/`;
+  - it checks each file byte for byte and makes the copy read-only;
+  - it writes a `*/2` cron line that runs `once` (`cadf0cb5`; test 40/40).
+
+  Single instance needed no change, because `once` and the daemon share one flock. After the operator
+  installed it, the cron log shows "another supervisor already holds" while the daemon is alive.
+  [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph)
+- **One lifecycle story, four layers.** The layers are: the launch spec (manifest `handoff_dashboard`), the
+  managed service (`orchestrator_stack.py`), the watchdog daemon, and the pinned cron. The story now lives in
+  [`dashboard/README.md`](../dashboard/README.md) → *Lifecycle and supervision*, which closes the RTG-47
+  supervision task. [dashboard-architecture-restructure](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure)
+- **Registry entries that resolve nowhere fail at every start, quietly.** Four `archive_*` entries in
+  `tool_registry.yaml` name functions that `src.services.archive_extractor` does not define; the working
+  versions are the REPL mixin methods. Separately, `kuzu` is absent from the venv, so `GraphEnhancedRetriever`
+  falls back on every start (474 log hits). Both are filed as NIB2-79 and NIB2-78.
+  [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
+
+#### Source References (2026-09-17 afternoon)
+
+- [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): OP-9 ruling and install verification.
+- [dashboard-architecture-restructure](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure): the supervision task closure.
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78/79.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): Afternoon section.
+
+### Compiled Update — 2026-09-17: well-formed is not true — the closure audit, the readiness graph, and a hub that serves a read-only main view
+
+**Confidence: verified.** These are code, test and git facts from the 2026-09-16 lanes. Everything here was merged to root `main`: RTG-46 via `e0a600a5`, the closure-audit tool with the sub-closure-fix work, and the supervisor rework via `86be4a5e`. The hub view deploy sequence is recorded, not independently re-observed here.
+
+The 2026-09-16 governance-tooling work shares one theme. `index_state.py --check` proves an index is **well-formed**, but it cannot tell whether a ticked box is **true**, whether a node is actually workable, or whether the hub renders the repo that was pushed. Each of those questions now has its own instrument. The closure audit checks ticked boxes against `origin/main`. The graph builder's `readiness` field is now rendered on the hub. And the :8100 hub is served from a marked, read-only clone of origin/main instead of a lane worktree.
+
+#### Key findings
+
+- **Closure audit: a checker for whether ticks are true (`scripts/handoffs/closure_audit.py`).** For every `- [x]` in `handoffs/active/`, it extracts backticked identifiers, paths and 7–40-hex SHAs. It resolves them against `origin/main` of root, orchestrator and research using git plumbing only; `--fetch` touches remote-tracking refs only. Unresolved references go through six fallbacks: branch tips, `log --all -S`, kernel trees, local clones, a same-subject commit, and a fuzzy definition match. Each is then classed `a` (off-main), `b` (on no ref), `c` (renamed), `d` (external) or `e` (evidence path). A raw `b` is only a candidate: most `b` SHAs are upstream pins, digests or garbage-collected cherry-picks, so every box must be read. The first audit checked 3,359 ticked boxes. It found five that asserted code on no ref (RC-9, E1a, UTM-M7, UTM-M8 and a SQLite exporter), **all ticked by one commit, `4762625d`**. Manual triage of the 265 unresolved references (210 boxes) sorted them into 3 true on-no-ref items (1 in the main table, 2 from the cohort sweep) plus the already-remediated UTM-M7/M8, 28 off-main, 15 renamed, 3 external, 25 same-subject-on-main and 193 false positives — a phantom rate of about **0.15%** (5 of 3,359), one cohort rather than a diffuse habit. The belief kernel's `cite-check` read 1,468 citations across 122 active handoffs the same day and exited 0 (no refuted, conflicted or dangling), so no intake or belief entry rests on a refuted box. [sub-closure-audit](../progress/2026-09/2026-09-16-sub-closure-audit.md), [handoff-closure-audit guide](../docs/guides/agent-workflows/handoff-closure-audit.md), [sub-closure-fix](../progress/2026-09/2026-09-16-sub-closure-fix.md)
+- **Performance: one tokenizing pass instead of thousands of grep patterns.** The first strict run timed out. `git grep -w -F -f` with about 2,200 patterns ran for over 20 minutes on the root tree alone. Word search is now a single tokenizing pass over `cat-file --batch`, and branch tips are scanned only over the files changed since their merge-base. The full `--strict-idents` sweep then took 63 minutes and exited 0: 3,374 checked boxes, 270 flagged. It found **one new phantom**, `token_observed_turns` (tool-output-compression "Instrument TOTAL tokens", ticked by `08e9d60d`), which was reopened. The other 96 new class-b identifiers were triaged as false positives: file-stem test names (the tool now resolves these), memory-file names, about 40 external symbols, design prose and run ids. The triage file (`closure_audit_triage.json`) holds 407 override keys, all without line numbers because line numbers drift and ref text does not. Unmatched rows are marked `UNTRIAGED`, which becomes the next audit's work queue. [sub-closure-fix](../progress/2026-09/2026-09-16-sub-closure-fix.md), [handoff-closure-audit guide](../docs/guides/agent-workflows/handoff-closure-audit.md)
+- **What to do with a confirmed phantom depends on why it is phantom.** A box whose code never existed is unticked, keeps its text, and gets a dated reopen note ("exists on no ref" plus the checked ref). Code that was built and later deleted is **not** a reopen: DAR-6.3/6.4 stay ticked and are labelled SUPERSEDED/REMOVED, citing `771348c8`, and the dependent DAR-6.5 gets a note. Boxes owned by a live session get only a factual note. Local-only commits are preservation risks for their owner, for example Hermes `532a49f1`, which exists only on a local `main` whose sole remote is upstream. [sub-closure-fix](../progress/2026-09/2026-09-16-sub-closure-fix.md), [handoff-closure-audit guide](../docs/guides/agent-workflows/handoff-closure-audit.md)
+- **Backlog graph: readiness is rendered, still derived only in the producer (RTG-46, `ec7dfaf7`).** The `index_graph.v2` derivation had landed earlier (`457abd40`), but `dashboard/static/handoffs.html` never read it; its `n.blocked` was the blocked-*checkbox* count. The page now shows blocked nodes with a hatch, `no_open` nodes faded and ready nodes solid. The legend uses the producer's `readiness_counts`, and the tooltip names `blocked_by`. The page computes nothing, and a v1 sidecar renders no hatch and says so. There are 5 tests, including `loadGraph` executed under node with a v1 mutation pair; the test was verified to fail when the hatch is removed. Live sidecar at tick time: 29 blocked / 135 ready / 9 no_open. [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md)
+- **Graph layout: the lattice look is gone in the numbers; the human check is still open (`4cd106c2`).** A pure `packBands()` now places nodes with a staggered seed, a deterministic FNV-1a per-id jitter of 0.3 cell, and a push-only relax. On the live 173-node graph, row-aligned nodes fell from 98% to 6% and column-aligned from 89% to 0%, with 0 overlaps; SVG height grew from 603 to 669 px. The parent box stays open because "does it still read as a lattice" needs a human look at :8100. [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md)
+- **Re-point history is now recoverable (`a0700b2a`).** A check found that `build_handoff_timeline.py` tracked only checkbox lines, never index rows, so the reason a `Next action` was abandoned was lost. It now emits `next_action_repoints` (from, to, reason, reason_source) into `data/handoff_timeline.json`. The reason comes from a `Repoint-Reason: <ID>: <why>` commit line, or falls back to the commit subject. Over real history it recovered **370 re-points, all sourced from commit subjects** (no commit carried the new line yet). The sidecar grew from 52 KB to 243 KB. [handoff-index-authoring guide](../docs/guides/agent-workflows/handoff-index-authoring.md), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md)
+- **Promote or inline: a rule measured on our own backlog.** Over 1,635 open top-level boxes in 173 active handoffs, box length in lines was p50 3, p90 11, p99 32, max 160. The rule: ≤ 11 lines inline; 12–31 is the ambiguous band (136 boxes), decided by named signals; ≥ 32 promote (18 boxes in 11 handoffs). Under uncertainty the tie-break is **promote**, the reverse of intake-1309#record's rule. The reason is visibility: an inlined item has no graph node, so a wrong inline fails silently. A separate failure-isolation criterion promotes an item at any size if it can block on something its parent does not. The guide rejects intake-1309#record's 10/40 constants as unmeasured. Reproduce with `scripts/handoffs/row_size_distribution.py`. [handoff-index-authoring guide](../docs/guides/agent-workflows/handoff-index-authoring.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph)
+- **The 2026-08-24 wrong-checkout class recurred, and was fixed structurally.** A replacement supervisor (pid 996612) ran with `EPYC_ROOT` set to lane `autokernel-unified-20260908`. Its deploy-sync wrote origin/main dashboard files into that lane's working tree on 09-10, 09-11, 09-14 and 09-15. Serving the lane was *intended* by orchestrator `f5476148`. The actual defects were that the supervisor hard-coded `cwd=EPYC_ROOT` instead of reading the manifest, and that deploy-sync wrote into a lane. Rework `034dccbe` + `31d95ad8` (merged as `86be4a5e`, marker `HUB_SUPERVISOR_MANIFEST_LAUNCH_V1`) makes four changes: the supervisor launches from the manifest; a failed restart no longer aborts the loop under `set -e`; a kill requires two failed `/health` probes; and `once` runs the same sequence as `loop`. **This supersedes the 2026-08-24 fix recorded below** ("relaunch the supervisor from the canonical repo"): the hub source is now whatever the manifest names. [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [progress 2026-09-16](../progress/2026-09/2026-09-16.md)
+- **The hub now serves a read-only origin/main view.** The lane was 141 commits behind origin/main, so pushed progress never appeared on :8100. `/mnt/raid0/llm/views/epyc-root-main` is a standalone `--reference` clone, never a linked worktree, detached at origin/main and carrying the marker `.epyc-view-readonly`. `refresh_hub_view.sh` refuses (exit 3) any tree that is unmarked, not a git top-level, or a linked worktree. It then fetches, runs `update-index --refresh`, and runs `checkout --detach --force`. Refreshing the stat info first means only a real content change moves `dashboard/*.py` mtimes, so the stale-source check restarts the hub on a code change and never on a handoff-only refresh. The supervisor runs its **own** sibling copy of the refresher every 180 s, because the refresher overwrites the view's files while bash may still be reading a running script. Tests: `test_hub_view_refresh.sh` 42/42, `test_hub_manifest_launch.sh` 38/38. [sub-hubview](../progress/2026-09/2026-09-16-sub-hubview.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph)
+- **Supervision must run inside the container; the 2026-08-24 cron line would not have.** Everything runs in the devcontainer `epyc-root`, which has private `/tmp` and no cron. The 2026-08-24 host crontab line would have taken a host `/tmp` lock the container daemon cannot see, and started a hub under a host uid that container sessions cannot signal. The joint OP-9 + FW-3 package therefore uses `docker exec … epyc-root`. It also records that `fleet_watch.sh` had been **dead for about 29 days**: its last log write was 2026-08-18T12:54:29Z, with no "stopping" line, matching the container restart. `--once` cannot serve as the restart primitive because it raises nothing; the bare launch can, because its `flock` sits in the bind-mounted `logs/`. The operator approved this on 2026-09-16 via `install_supervision_cron_20260916.sh`: `--fleet-watch-only` can be installed now, and `--all` only after the canonical relaunch. Pass 2 relaunched the supervisor canonically (pid 820799, launching the hub from the manifest). [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [progress 2026-09-16](../progress/2026-09/2026-09-16.md)
+- **A hub manifest change that named a stopped store was reverted (`e7bfc62b` → `0329ab10`).** Its premise was wrong: v12 had been stopped, and aku12a is the live store. [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **Fan-out measurement: citation form fixed; no new data.** FM-6's reconnection rule now cites intake-1299#05. The measured figures are unchanged: orphan rate 35.0%, and measured width 928 against a declared 1,187 (−21.8%). [fleet-fanout-measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement)
+
+#### Open questions
+
+- **Hub readiness deploy: RESOLVED 2026-09-16.** The handoff box that still said "hub deploy pending" is superseded: `:8100` now serves the read-only origin/main view `/mnt/raid0/llm/views/epyc-root-main` (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`) and renders the hatch from it. The human "does it still read as a lattice" verdict remains open. ([handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph))
+- Nothing yet writes `Repoint-Reason:` lines (0 of 370). Is the fallback to commit subjects good enough, or should a commit hook require the line when an index row changes?
+- Should `next_action_repoints` feed "rejected path" beliefs in the belief kernel? sub-rtg46 flagged it as a verified-history record, not a measurement, so no adapter row was filed.
+- Is the `--all` cron line installed yet? The supervisor was relaunched canonically, which was the stated precondition.
+
+#### Sources
+
+- [docs/guides/agent-workflows/handoff-closure-audit.md](../docs/guides/agent-workflows/handoff-closure-audit.md): the tool's reference extraction, fallback order, class table, triage-key rules and phantom-handling policy.
+- [docs/guides/agent-workflows/handoff-index-authoring.md](../docs/guides/agent-workflows/handoff-index-authoring.md): the `Repoint-Reason:` convention and the measured promote-or-inline rule.
+- [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): RTG-46 ticks, the layout sub-box, the joint OP-9 + FW-3 package, and dashboard fix A.
+- [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md): FW-3, `fleet_watch.sh` dead for about 29 days, and why `--once` cannot restart it.
+- [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement): FM-6 citation form, with figures unchanged.
+- [progress/2026-09/2026-09-16-sub-closure-fix.md](../progress/2026-09/2026-09-16-sub-closure-fix.md): reopened phantoms, the tool rewrite and the strict-sweep triage.
+- [progress/2026-09/2026-09-16-sub-closure-audit.md](../progress/2026-09/2026-09-16-sub-closure-audit.md): the audit's scope, class table, triage counts and the cite-check result.
+- [progress/2026-09/2026-09-16-sub-rtg46.md](../progress/2026-09/2026-09-16-sub-rtg46.md): readiness rendering, re-point capture, the row-size distribution and layout metrics.
+- [progress/2026-09/2026-09-16-sub-hubview.md](../progress/2026-09/2026-09-16-sub-hubview.md): the read-only view, the refresher's refusals, restart semantics and tests.
+- [progress/2026-09/2026-09-16-sub-integrate.md](../progress/2026-09/2026-09-16-sub-integrate.md): merge SHAs (`e0a600a5`, `86be4a5e`) and test totals for the merged tooling.
+- [progress/2026-09/2026-09-16.md](../progress/2026-09/2026-09-16.md): the OP-9 + FW-3 approval, the canonical supervisor relaunch and hub restart, and the supervisor-rework caveat.
+
+### Compiled Update — 2026-09-14: the runtime told the model to do things the runtime itself would not accept
+
+**Confidence: verified.** The code facts are file:line records from a dive against `epyc-orchestrator@5a9442d3`.
+The fixes are nine commits merged to orchestrator main `35b05fde` (pushed to origin
+2026-09-14), and the merged tree passed 1,856 tests with 52 skipped. External failure rates are OBSERVATION-grade
+and only motivate local measurement.
+
+A research-intake audit of external harness-search write-ups turned up one defect **family** in our own REPL
+and tool layer. One component emits an instruction, pointer or argument. A second component of the same
+runtime rejects it, ignores it, or runs without it, and nothing errors. Each instance looked correct from
+either end alone:
+
+| Path | Emitter said | Receiver did | Fix |
+|---|---|---|---|
+| Finish instruction (MF-FIN-1) | loop-guard HALT and interleaved-edit rider: finish with `FINAL('done')` | status-message guard rejects `"done"`, burning nudges toward `MAX_CONSECUTIVE_NUDGES` | `0b261dde`: a turn-local sanction flag, set only where that rider/HALT was injected; every other status phrase and normal mode still rejected |
+| Tool-call arguments (TU-TC-1) | model emits malformed JSON `arguments` | parser substitutes `{}` and **runs the tool with no arguments**; tagged payloads failing `json.loads` silently skipped | `b32f683c`: deterministic repair only when `json.loads` fails, else a visible `[ERROR: tool call … NOT executed]` result plus repair counters |
+| Spill footer (TOC-SP-1) | `peek("{path}")`, `grep("{path}", pattern)` | signatures are `_peek(n, file_path)`, `_grep(pattern, file_path)`; the file was never read | `1e2a6315`: keyword arguments, same fix in `suggestions.py`; the test **executes** the emitted calls on a real spill |
+| Output classifier (CF-RX-1) | REPL wraps output in `<<<END_TOOL_OUTPUT>>>` | regex looked for `<<<\/TOOL_OUTPUT>>>`; a `">>>"` fallback hid the miss | `090c63d9`: regex built from the `types.py` delimiter constants |
+| Report handle (DCP-13) | synthesis prompt advertises `fetch_report` | the architect decision loop breaks on turn 0 in every branch, so the tool is unreachable; D\|Approved and timeout returns could hand the user handle+summary text | `2bffb45b` removes the advertisement; `57ceb7d5` returns full reports on user-facing returns; `a2af42ad` skips `worker_summarize` on rescued reports |
+| MCP bash compressor (TOC-RD-1) | compressor returns output to the client | no redaction ran | `118b65e5`: redact before and after compression; PEM rule also covers truncated keys |
+
+A related coverage gap was closed alongside (DCP-10a, `982ca87c`): the task-root discovery whitelist had no
+`.c/.cc/.cpp/.h/.hpp/.go/.rs/.java`.
+
+**The lesson is about tests.** A test that checks the emitter's string, or the guard's rejection, in
+isolation cannot see a mismatch between them. The regression tests that close this family run the emitted
+artifact through the real receiver. This is the same trap as the HS-1g "silent no-op" check for harness
+levers: establish which code path actually consumes a field before trusting the field.
+
+**Residuals, filed rather than claimed:**
+
+- TU-TC-1a: a refusal's raw echo could contain `FINAL(` / `file_write_safe` text and count as loop-guard
+  progress.
+- DCP-13a: handle text still says "Use fetch_report(…)".
+- DCP-13b: delegation-cache hits on non-rescued runs still return the short form.
+- TOC-RD-1a: the root PII pre-commit hook misses `OPENSSH`/`ED25519` headers and blocks any edit to the
+  credential-fixture test file. Widening the pattern and adding a reviewed fixture allow-list together is
+  an operator decision.
+
+**Repair is hygiene, not a solve-rate lever, and the next rows measure before they build:**
+
+- **Tool-call repair.** Never running a tool with `{}` is a correctness property whatever it does to scores.
+  But externally, stock OpenCode on GPT-OSS-20B at low reasoning logged 0 malformed-call rejections in
+  1,798 tool calls. On a model with ~98% first-try-valid calls, four repair commits produced 0 net solves.
+  Rank any further repair work by our own telemetry.
+- **MF-VBS-1, verify-before-stop.** Measure how often FINAL follows `file_write_safe` with no later
+  execution, including the "delegates execution to the user" variant. The external prior: 110 of 248
+  voluntary stops (44%) came right after an unexecuted edit.
+- **MF-NDG-1, announced action.** The empty/comment-only nudge says "Call FINAL now", which steers a
+  prose-announced action toward stopping. Measure how often empty-code turns announce an action before
+  rewording the nudge to "execute it".
+- **MF-RR-1, reasoning runaway.** When a turn hits the token cap without code, retry with thinking off and
+  a single-concise-action prompt. Externally this was the largest single promoted step (+5 of 38 tasks) in
+  a determinism-gated search. That was a single run with train/eval overlap, so measure the local
+  cutoff-without-code rate first.
+
+#### The `ToolRegistry` invocation log is a diagnostic ring, not per-request state (2026-09-14, noninf sweep)
+
+**Confidence: verified** — code read at `epyc-orchestrator` `origin/main` `35b05fde`, fixed in `d65a4e93`.
+A sibling of the family above: the registry exposed one thing and four consumers read it as another.
+
+The registry contract, stated here so a future caller does not repeat the mistake.
+`ToolRegistry._invocation_log` is **process-global** — one registry per API process — and it is now a bounded
+`deque(maxlen=1000)`, override `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX` (`<= 0` disables the ring entirely).
+`get_invocation_log()` returns a snapshot for **tests and process-level diagnostics only**; an `ast` guard test
+forbids any request-scoped module from *calling* it, and run against `origin/main` it fires on all four pre-fix
+call sites. `clear_invocation_log()` is kept functional for tests and interactive use but is explicitly **not**
+a per-request mechanism — clearing a shared log narrows a race window rather than closing it — and bounding the
+ring additionally invalidates the old `log[prev_tool_count:]` cursor idiom, because eviction shifts indices.
+Per-request tool telemetry comes from `REPLEnvironment._invoked_tools` at the `_invoke_tool` chokepoint
+instead. Why that is the only correct scope, and the two paired write-path defects found alongside it, are
+compiled in [Agent Architecture](agent-architecture.md) → *process-global mutable state read as if it were
+per-request*.
+
+#### Source References (2026-09-14 silent contract mismatches)
+
+- [`tool-use-eval-contract.md`](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TC-1 fix detail and TU-TC-1a residual, TU-LED-1 ledger.
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — MF-FIN-1 fix, MF-VBS-1, MF-NDG-1, MF-RR-1.
+- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-SP-1 and TOC-RD-1 fixes, TOC-RD-1a hook gaps.
+- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13 hand-off fixes, DCP-13a/b residuals, DCP-10a.
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — CF-RX-1.
+- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — the nine commits, merged branch and test totals.
+- intake-1351#record — the failure taxonomy (verify-before-stop, announced actions, malformed calls) and the two defects its code audit found.
+- intake-1362#04 — stock failure base rates: 110/248 stop-after-unexecuted-edit, 0/1,798 malformed-call rejections.
+- intake-1352#record — the gated JSON-repair pattern and its scope (provider-corrupted arguments).
+- intake-1355#02 — promoted mechanisms incl. reasoning-runaway repair and net-0 tool-call repairs.
+- intake-1358#record — the hand-off failure class that prompted the `fetch_report` reachability audit.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — RTG-02, the paired boxes at `:1787` and `:1793`: the four request-scoped readers of the shared invocation log, and the paired write-path defects.
+- [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — the noninf-sweep session record for the registry change and the `ast` guard's pre-fix call sites.
+- `epyc-orchestrator` `d65a4e93` and `b69bda61` — bounded diagnostic ring plus re-documented `get_invocation_log()`/`clear_invocation_log()`, request-local `_invoked_tools` telemetry, and the idempotent work sanitizer. [confidence: verified — code + `test_invocation_log_request_scope.py` (15 tests)]
+
+### Compiled Update — 2026-08-24: a healthy-looking dashboard can serve a frozen checkout — and the watchdog cannot see it
+
+Sources: `handoffs/active/coordination-and-churn-pipeline.md`, `progress/2026-08/2026-08-24.md`.
+
+- **A dashboard process launched from the wrong checkout certifies its own staleness.** The :8100
+  hub was launched 2026-08-21 from a scratch worktree (`dashboard-v26-telemetry-integrity-20260821`)
+  whose `handoffs/` copy froze on 2026-08-21; the board showed that data for three days while its
+  freshness badge read **fresh**, because the board panel is a live scan of its own checkout — a
+  frozen checkout scans as current. The C42 stale-source watchdog cannot see this either: it
+  compares the hub against `${EPYC_ROOT}/dashboard`, which is the same frozen checkout. Detected by
+  `progress/2026-08/2026-08-24.md`'s board-vs-repo comparison (counts, `activity_today`, per-day
+  window max date); fixed by relaunching the supervisor from the canonical repo. The `handoff_graph`
+  panel's "index_state.py has never run in this checkout" absence was collateral of the same cause.
+  [handoff-index-and-backlog-graph.md, progress/2026-08/2026-08-24.md]
+- **`/proc/<pid>/cwd` comparison is not a reliable wrong-checkout detector in this containerized
+  environment.** A guard comparing `readlink -f /proc/<pid>/cwd` to `$EPYC_ROOT` false-positived on a
+  hub launched with `cd ${EPYC_ROOT}` (resolved to a different inode than the path — namespace
+  artifact), producing a ~15 s restart loop; reverted byte-identical. The wrong-checkout class
+  therefore remains visible only via manual `/api/health` + board-mtime comparison until a different
+  probe (e.g. serving-evidence mtime deltas) is built. [handoff-index-and-backlog-graph.md]
+- **Two derived artifacts can silently lag the repo: the timeline artifact and the benchmark
+  artifact inventory.** The timeline hooks regenerate in the checkout where the commit/merge
+  happens, so lane-worktree commits and the detached promotion merge never touch the real repo's
+  artifact (observed 26 h of lag; manual regen restores). The benchmark inventory
+  (`data/benchmark_artifact_inventory.json`) froze 2026-07-29→2026-08-24 with no alarm stronger
+  than "aging" — regenerated (157 matched / 6 models, 1545 unmatched); its regeneration cadence is
+  unowned. [handoff-index-and-backlog-graph.md, progress/2026-08/2026-08-24.md]
+
+### Compiled Update — 2026-08-12: a health check with two values is a tool that cannot report its own blindness
+
+**Confidence: verified** — each item carries a commit and a test-count delta; one item is verified *from a ref* rather than from the working tree, deliberately.
+
+#### The defect class, stated once
+
+Every item below is the same shape: **a check whose output has two states (`ok` / `not ok`) when its input has three (`ok` / `not ok` / `could not observe`)**. The third state gets folded into one of the first two, and which one it folds into decides whether the tool fails loud or fails silent. Three independent instances landed in one week:
+
+- A hub supervisor's `health_ok()` collapses a curl timeout, a missing binary and a wrong port into the same value as a genuinely dead service — so "cannot observe" becomes "restart it", and the restart loop is indistinguishable from remediation. Filed, **open**.
+- A bus supervisor's daemon-liveness predicate matched only self-launched daemons, so a healthy 75-minute-old daemon read as absent and was killed; its replacement predicate is **vacuous in a five-writer tree** and was observed killing healthy daemons in **11 cycles over 35 minutes**. (Full detail on [Agent Architecture](agent-architecture.md).)
+- A production-kernel dashboard panel was **absence-tolerant quietly**: a missing attestation rendered as a muted line rather than an alarm. Fixed to render a loud `ATTESTATION UNAVAILABLE`; a cosmetic residual remains, in that the underlying function still returns `error: None` for a merely-absent file — the panel is loud now, the function still cannot say why.
+
+The rule this yields for any probe: **enumerate the states of the observation, not the states of the subject.** A check that cannot emit "I cannot tell" will emit something else instead, and that something else will be actionable.
+
+#### The probe-semantics fix the plane rule implies
+
+The plane rule recorded below says every dashboard needs a health probe; this week supplies the sharper version of *which* probe. A Kernel-R&D registry entry was pointing its `health_path` at the **transport** probe (`/health`) — which stays green over a dead producer, because the process is serving fine — and was moved to a **semantic** data-health probe (`/api/kernel/health`) that returns 503 when the champion, headroom or release package is unreported. Roughly 74 lines of server and 110 lines of tests. The generalisable statement: `/health` answers *is this process alive*, `/api/health` answers *is what this page shows still true*, and a registry that stores the first while the page promises the second is a correctly-configured lie.
+
+A related wiring defect is worth carrying because it is cheap to reproduce: a staleness check was hooked into the one-shot command path and **never into the loop**, which is the default long-running mode — so the check existed, passed its tests, and never ran in production. The identical shape had already been fixed once in a sibling supervisor.
+
+#### Verify from a ref, not from the shared working tree
+
+One verification in this pass was deliberately performed against a committed ref rather than the working tree, and the reason generalises to every multi-writer repo: **the working tree is the one surface that can show you a repair with no evidence that it is a repair.** The precedent is a same-week adjudication where a reviewer refuted a peer's finding 20 seconds *before* the fixing commit existed — they had read the peer's uncommitted edit and concluded the defect never existed. The rule adopted: adjudicate a peer's finding from `git show <ref>:<path>`.
+
+#### Counting instruments must anchor their own patterns
+
+A checkbox counter using an unanchored `- [ ]` regex matched mid-line and was **wrong in both directions** — re-derived with an anchored pattern the real movement was 1273 → 1242 open (−31) and 2306 → 2368 done (+62), against circulated figures that had both endpoints wrong. A canonical anchored counter already existed in the repo and was not used. When a project has one, a hand-rolled grep is not a second opinion; it is an unvalidated instrument.
+
+#### Source References (2026-08-12)
+
+- [`dashboard-architecture-restructure.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure) — the D-1 absence-tolerant panel, the D-2 transport→semantic probe move, and the open D-3 two-valued supervisor check.
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — the OBS-series "fails to say I cannot tell" sweep, including a fail-open guard and a duplicated liveness oracle across four files.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the supervisor liveness and watchdog defects that share the class.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the verify-from-a-ref rule and the anchored-counter correction.
+
+### Compiled Update — 2026-08-10: dashboards split by plane, not by transport
+
+> The settled architecture from the dashboard restructure. The fix list is still moving; the
+> decisions below are ratified and are what the next monitoring surface must be built against.
+
+- **The ownership rule compiled above is a *transport* rule, and its premise has eroded.** The recorded
+  boundary — *live orchestrator in-process state / SSE → the API's own page; artifact- or file-backed
+  and project-wide → the hub* — governs **which process serves bytes, not what shares a page**, which
+  is exactly how one page accreted into a 7,855-line route file plus a 7,649-line single HTML document
+  mixing three concerns (a global machine/live-inference monitor, the autopilot loop's planning and
+  governance surface, and orchestrator serving telemetry). The premise is now largely false as well:
+  the topology and region-lock builders are `/proc`/`ps` scans verified network-free, the taps tail
+  rotating event files, and the autopilot panels read journal and state files. What genuinely *is*
+  in-process is per-worker fragmented — i.e. the part a fidelity audit already says should not be
+  trusted as served. **Superseded by the plane rule below.**
+
+- **The plane rule (ratified 2026-08-10)**: *data contracts live with the subsystem they observe;
+  pages, navigation and the surface registry live with the governance hub; every new dashboard is a
+  registry entry plus a health probe plus a freshness envelope; no unregistered pages.* Repos own
+  **data endpoints and export contracts, not pages** — the exporter versions with the code it measures,
+  so schema authority stays where the numbers are made. The proof it works here is the kernel-R&D
+  split (a producer in the research repo exports schema'd JSON after fsync, the hub renders it, the
+  seam is tested, and the hub never imports producer code); the counter-proof is that the one repo
+  which owned a whole page grew the monolith. Cross-origin is the enabling detail: a hub page fetches
+  the API's JSON/SSE **directly from the browser** under a path-scoped CORS allowlist, so there is no
+  proxy, the hub stays stdlib, the processes stay independent, and when the API is down its panels go
+  honestly dead instead of the page vanishing.
+
+- **A global monitor whose data plane lives inside the most-restarted process on the host is an
+  architecture smell, not merely an information-architecture one.** Under the optimization loop the API
+  restarts every ~20–25 minutes per trial, so the machine monitor's delivery path blinks precisely when
+  the machine is busiest — and a transport watchdog existed to paper over it. Naming that is what
+  turned a layout question into an ownership decision. The matching discipline is that the standalone
+  exporter was **deferred** pending observed blink-out evidence: state the coupling, do not build ahead
+  of the evidence.
+
+- **A constraint, not a preference, chose the larger option.** The recommendation was the minimal split
+  (hub owns the global page; the process-specific page stays with its process). Full view-plane
+  consolidation won because the operator depends on the old page *right now*: the minimal option's
+  "slim the monolith in place" step surgically edits the live surface, while consolidation never
+  touches it — both replacement pages are built fresh alongside it and the old page is deleted wholesale
+  at operator-declared deprecation, with its data routes retained. **When the incumbent surface must
+  stay live, the option that never edits it can be cheaper than the option that does less work.**
+
+- **Navigation drift had one root cause and therefore one fix.** There was no shared nav component and
+  no machine-readable directory of dashboards, so every page hand-copied its own `<nav>` and cross-server
+  URLs were re-derived ad hoc in at least three places — one of them shipping a same-origin `href="/"`
+  rewritten by JS, which silently pointed at the wrong server whenever the script did not run. The fix
+  is a `registry.json` SSOT of surfaces (`id`, `title`, `port`, `path`, `owner_repo`, `health_path`,
+  `blurb`) served as an API with per-`(port, health_path)` loopback probes behind a short TTL cache,
+  plus **one generated nav asset with the registry inlined**, adopted by every page including the
+  cross-origin one — where a `<script>` bootstrap works precisely because script tags are CORS-exempt,
+  with an `onerror` fallback so the page never loses its one exit if the hub is down. Once the registry
+  exists, drift becomes a **testable property**: a bidirectional routes↔registry check, an assertion
+  that every page carries the nav, and a ban on the retired link patterns.
+  One deliberate exclusion: the probes stay **out of** the health fold, because a down neighbour must
+  not restart-loop the hub that reports on it.
+
+- **Absence must be loud, and the honest states are the deliverable.** Render "slots `?` = unknown, not
+  zero"; distinguish a lease held from decoding actually happening; keep stale panels **readable** with
+  a bold "no data — last seen …" pill instead of greying them out (greying makes an operator squint at
+  data that may still be true); surface a fan-out that answered 0/19 loudly as a machine-truth question
+  rather than rendering zeros; and when all-time and windowed KPIs disagree sharply, render **both**,
+  because choosing one would mislead. Staleness thresholds are set from the *observed* frame cadence
+  rather than a flat constant, or the honest state flaps against a slower producer.
+
+- **Two assembly paths for one payload is a defect class, not an incident.** A 32,851-token prefill
+  rendered no progress counter because the SSE stream ran its own parse-and-enrich while only the
+  unwatched polling endpoint attached the enrichment. Collapsing both onto one assembly function fixed
+  it and incidentally recovered off-window holder handling the stream had silently lacked. From the same
+  buildout, two honesty rules worth generalizing: attach live counters **only from fresh samples and
+  never to completed requests** (a completed request on a shared port was caught wearing a running
+  request's counters), and mark shared-port aggregates `ambiguous` rather than guessing.
+
+- **Derive substrate from process evidence, never from names.** GPU/CPU labelling comes from the server
+  binary path, `/proc` argv0, mapped HIP runtime libraries and a model-label hint — because a role named
+  `architect_general` is a GPU role and nothing in its name says so, and the image-generation server
+  turned out to be genuinely CPU-built on this host (no HIP libraries mapped, no `/dev/kfd`), contra the
+  obvious assumption. A service is never allowed to claim "CPU" from the mere absence of a marker, since
+  a Python wrapper's child process holds the evidence.
+
+- **Two divergent freshness grammars is a live cost, and merging the code is not the fix.** Both servers
+  independently grew panel→producer registries with freshness envelopes in different vocabularies
+  (`fresh/aging/stale/missing` with reporting/content axes versus `fresh/aging/stale/dead` with
+  gating/informational). Both are tested, so the proposal is to harmonize the **wire vocabulary only**
+  and leave the implementations separate — the actual cost today is that every new dashboard must pick
+  one of two grammars and the two health folds cannot be read uniformly.
+
+#### Source References
+
+- [`handoffs/active/coordination-and-churn-pipeline.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure) — the audit, the ownership answer, and the ratified D1–D3 decision package
+- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the buildout record, the deploy checks and the eyeball-pass findings
+- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-autopilot-dashboard-fidelity-audit-2026-07-22) — the data-truth defects that remain owned separately from this information-architecture work
+- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05) — the liveness-vs-value instrument finding this plan builds on
+- [`handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md`](../handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md) — the producer/renderer contract used as the working precedent for the data-plane split
+
+### Compiled Update — 2026-08-13: a licence blocker on failure-trace grading resolved by finding the maintained successor, not by waiting
+
+**Confidence: external** for the tool's own reported metrics (vendor/author-reported, not measured on
+our stack); **verified** for the licence and repository-state facts, which were read directly.
+
+A research-intake dive on MAST (intake-1110#02, arXiv:2503.13657, the multi-agent failure taxonomy paper)
+found its reference implementation unusable under EPYC's open-source-only sourcing policy: the
+`multi-agent-systems-failure-taxonomy/MAST` repository carries no LICENSE file at all — all rights
+reserved by default. A follow-up dive on the same authors' successor project, AdaMAST (intake-1127,
+arXiv:2607.16387), found it Apache-2.0, actively maintained, and — the detail that matters for us — able
+to detect Codex session transcripts natively, since its loader keys on the exact record-type set our own
+Codex rollouts already use. Claude Code transcripts need a small normalizer (roughly 60–120 LOC) to the
+tool's four-field canonical schema (`problem_id, task, raw_trajectory, metadata`); Codex needs none.
+
+**The more important reversal happened inside the same dive.** An earlier pass on this material had
+concluded that neither of our transcript corpora carries a machine-readable success/failure verdict, and
+that building one was "the real blocker" before any grading tool could run. Re-reading AdaMAST's own
+induction code overturned that: its taxonomy-induction step is deliberately **outcome-blind** — it
+strips any outcome or gate-status field from a trace before an LLM judge ever sees it, precisely so the
+induced categories describe failure *modes*, not success labels. A fixed-catalog grading pass (running
+MAST's 14 published codes through AdaMAST's judge rather than inducing a new taxonomy) needs no oracle
+and costs roughly one LLM call per trace. The oracle question is real but smaller than first framed: it
+gates a *second-stage*, fleet-specific taxonomy induction, not the first useful grading pass.
+
+Both tools are cited on the strength of author-reported metrics only; neither has been run against our
+own corpus yet. The work is filed, not adopted — see the [Fleet Fan-Out
+Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) stub's FM-2 task for the planned pilot.
+
+#### Source References
+
+- `research/intake_index.yaml` intake-1110#record (MAST) and intake-1127 (AdaMAST) — full dive records, including the mid-dive retraction of the "success/failure oracle required" finding
+- [Fleet Fan-Out Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-2, the planned pilot run
+
+2026-11-18 prospective source control: one original trace produced a valid zero-code native judgment with exact source/request/response/grant custody. Strict replay and the scoped `coordination.fm2` shared-reader canary passed as diagnostic `Judged/Located` context, excluded from reliance and unrelated consumers. Actual coordinator consumption remains separate; this establishes no prevalence, accuracy, faithfulness or causal fan-out result. [Native findings](../docs/findings/fm2-native-source-control-20261118.md).
+- [Coordinator role — failure modes and refactor](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — R-24, the cross-walk of MAST's 14 modes against our own hand-built failure ledger
+- [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record
+
+### Compiled Update — 2026-08-18: the edit format is a real lever, but the headline is measured against the broken baseline
+
+An agent's **edit tool** — the format in which a model expresses a code change — moves coding pass
+rate by more than most model upgrades, holding model and prompt fixed. The claim is real. Three of
+its four popular framings are not, and the difference matters for anyone choosing a format.
+
+**The three formats in the field.** `apply_patch` (OpenAI/Codex) takes a diff blob validated against
+strict unstated rules; models not tuned to it fail catastrophically — measured patch-failure rates of
+**99.3%** (Grok Code Fast 1), 50.7% (Grok 4), 46.2% (GLM-4.7). `str_replace` (Claude Code and most
+others) requires perfect character-level reproduction including whitespace, and rejects multiple
+matches. Cursor trained a **70B model** whose only job is merging a draft edit into a file — the
+problem is hard enough that a well-funded lab threw a second model at it.
+
+**What actually replicates.** Against `apply_patch`, a line-anchored format is worth a mean **+19.4 pp**
+across 19 models (17/19, two-sided sign p=0.0007) — an enormous, robust effect. Against `str_replace`,
+the realistic baseline, the same published runs give a mean of **+2.97 pp** (14/19, p=0.064), with four
+models outright worse. **The 10× headline is a patch-baseline artifact for one model.** Cite the
+delta-vs-`str_replace` column, or name the baseline every time.
+
+**Line numbers are contested, and the field moved against them.** Cursor names line-number emission as
+a *tokenizer-level* failure mode — a digit run tokenized as a single token forces the model to commit
+to a line number in one forward pass — and adopted aider's search/replace blocks specifically to
+eliminate it. aider's unified diffs likewise carry no line numbers. Both predate content-hash anchoring.
+
+**The strongest evidence that per-line content hashes are not the answer is that their author dropped
+them.** `hashline` originally tagged every line with a short content hash (`2:f1|  return "world";`),
+which is the format every published benchmark measures. Three months later it shipped **one file-level
+4-hex tag plus plain line numbers** — i.e. it moved *toward* the thing Cursor and aider both avoid, and
+never re-benchmarked. A file-level tag is also just whole-file optimistic concurrency, which most apply
+paths (ours included, via `current_shas`) already have.
+
+**The pairing rule, which is easy to miss.** A format change without a matching *tolerant applier* is a
+different intervention: disabling flexible patching produced a **9× increase in editing errors** on
+aider's own benchmark. Format and applier are one design, not two.
+
+#### Source References
+
+- `research/intake_index.yaml` intake-1148#record, intake-1150#record (oh-my-pi / hashline and its benchmark — dive records, including the abandonment timeline at commits `30793c165`/`7c6457652`)
+- `research/intake_index.yaml` intake-1153 (Cursor, *Editing Files at 1000 Tokens per Second*) and intake-1154 (aider, *Unified diffs make GPT-4 Turbo 3X less lazy*) — the two independent line-number arguments and the 9× pairing measurement
+- `research/intake_index.yaml` intake-1151 (Diff-XYZ, JetBrains) — the independent academic cross-format comparison; note it is single-turn and disclaims production prediction
+- [Batched edit / parallel apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) — BEP-6 (the granularity finding) and BEP-7 (the two external rules)
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
+
+### Compiled Update — 2026-08-18: a guard must fire on what a command DOES, not on what its text SAYS
+
+Four PreToolUse guards in this repo, written independently over ten months, all had the same defect.
+Each decided whether to refuse a command by inspecting the command's own characters, rather than by
+establishing what the command would actually do.
+
+| Guard | Matched on | What it refused that it should not have |
+|---|---|---|
+| pytest worker cap | `pytest.*-n\s*[0-9]+` over the whole string | a pytest run piped into a `sed` line range — the range read as a worker count; and a heredoc listing `-n auto` as an example |
+| D9 loop-plane commit gate | every token after the first `--`, to end-of-string | a docs commit chained ahead of `; python3 scripts/coordination/serialized_push.py` — the pusher's path read as the commit's pathspec |
+| commit hygiene | newline-split segments, heredoc bodies included | a `python3 - <<'PY'` block whose Python *source* contained the text of a commit |
+| drop_caches interference | the write regex over the raw command | a heredoc documenting the guard, and a `grep` searching for the pattern |
+
+**The failure mode is self-referential, which is how it keeps being found.** Each guard blocked the
+documentation about itself, the search for it, or the bus message reporting the bug. One blocked its
+own commit message during bring-up; another blocked its own test fixture.
+
+**Two properties make it worse than an ordinary false positive.**
+
+*It teaches evasion.* A guard that refuses unrelated work trains people to split commands rather than
+respect the gate — and routing around a control is precisely how the unguarded direct-commit path the
+D9 gate exists to close came to exist in the first place. A control with an unguarded path is not a
+control; it is a habit that happens to hold.
+
+*It can be latent.* The drop_caches guard only reaches its refusal when a CPU region is actually
+claimed, so its false positives fire rarely, unpredictably, and mid-bench — the moment a session is
+least able to work out why an unrelated command was refused. A guard that is wrong 1% of the time, at
+the worst moment, is harder to debug than one that is wrong always.
+
+**The fix is to stop deciding and ask the system.** Where an authority exists, defer to it: the commit
+gate now asks git which paths a commit records (`git diff --cached` for a plain commit,
+`git diff HEAD -- <pathspec>` for a pathspec commit, since a pathspec commit bypasses the index
+entirely); the drop_caches guard asks whether a region lock is genuinely held. Text scanning narrows
+what is worth asking about; it does not decide.
+
+**Where text scanning is unavoidable, strip the data first** — heredoc bodies, quoted runs and
+comments are inputs to a program, not commands. Order is load-bearing: heredocs must be stripped
+before quotes, or a quoted marker (`<<'EOF'`) has its name blanked as a quoted run, leaving `<<''`
+with no detectable terminator and the body scanned as commands again.
+
+**Carve-outs keep the narrowing honest.** Stripping *all* heredoc bodies would open a hole, because
+`bash <<'EOF' … EOF` really does execute its body; so the body is kept when the receiving word is a
+shell. And opener lines are always kept, because `git commit -F - <<'MSG'` is a real commit whose
+message merely arrives on stdin.
+
+**Testing shape that catches this class.** Pair every permissive case with an enforcement case. A
+guard that simply stopped looking would pass the permissive half alone — which is exactly what a
+suite of "must not block" cases measures. Two live examples of suites that were passing for the wrong
+reason: the drop_caches suite skipped all five of its blocking cases whenever the host happened to
+have no region claimed, and still printed "all checks passed"; and a verification probe reported a
+real refusal as absent because the guarded file happened to be clean, so nothing could be recorded.
+
+#### Source References
+
+- `scripts/hooks/shell_scan.py` — the shared strippers and the incident record; four guards import it
+- `scripts/hooks/check_d9_loop_plane.py` and `scripts/hooks/check_commit_hygiene.py` — the ask-the-system pattern, with `scripts/hooks/tests/test_d9_loop_plane.py` (11 paired cases)
+- `scripts/hooks/drop_caches_write_scan.py` and `scripts/hooks/tests/live_holder_interference_cases.json` — the latent case, and the suite made deterministic with a synthetic lock
+- [Loop-owned fleet implementation](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) — D9, the loop-plane gate these guards enforce
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
+
+---
+
+### Compiled Update — 2026-08-23 (evening): the two-valued-health-check family gets its enforcement pass (OBS-3/4/5/7)
+
+**Confidence: verified** — all four closures are landed changes with truth-table tests (10-, 15-, and suite-level counts below).
+
+The 2026-08-12 note recorded three supervisors resolving a two-valued check's "cannot tell" into a confident restart/kill/green. The tier-1 backlog pass closed four more instances of the same family, each by converting a two-state collapse into a **three-state check where unobservable ≠ clear** (the polarity rule `inference_load_check.py` already states: *for EXCLUSION, unknown must mean busy*):
+
+- **OBS-3** — `nightshift/inference_guard.sh` failed OPEN into a live inference run: `pgrep -f 'llama-server|llama.cpp' | xargs … || true` summed into an RSS total, so a missing `pgrep`, argv drift, renamed binary, or `xargs` error ALL yielded 0 GB → the `else` branch printed "No heavy inference detected" and `run_wrapper.sh` launched the full workload on top of a live 200 GB+ inference. Fix: unreadable `MemAvailable` now returns `failed` (rc 1, loud `MEASUREMENT FAILED`) — one negative and one blind eye is not a clear; run_wrapper's existing exit-4 refusal covers it. Follow-up **OBS-3a**: add a mutation case for "MemAvailable unreadable → failed" to the test suite, which predates the fail-closed semantics.
+- **OBS-4** — `run_wrapper.sh:79`'s `autopilot_running()` required `start` immediately after the script path; any flag inserted into the daemon argv read as "AutoPilot not running" and lab shadow jobs launched into a live AutoPilot. Now three-valued (running/stopped/unconfirmed): the authoritative channel is the singleton flock on `orchestration/.autopilot.lock` (argv-independent, held by the daemon by construction), corroborated by an adjacency-robust dual pgrep; pgrep rc≥2 / missing pgrep / untestable lock → `unconfirmed`, which SUPPRESSES the shadow launch — only a confirmed `stopped` licenses it. The three `skip … return 0` branches on missing cross-repo paths now emit `AUX-DEPENDENCY-MISSING` and exit 5 (partial run). Truth table tested (10 cases).
+- **OBS-5** — `rustevo2_bench_preflight.py` treated an EMPTY pgrep as a positive "no AutoPilot" (and a missing `pgrep` binary raised `FileNotFoundError` before the rc handling). Now `autopilot_state()`: missing pgrep → `unobservable`; an empty result is never trusted alone (a negative requires the flock provably free too — the drifted daemon still holds it); `unobservable` FAILS the preflight in strict and advisory modes. 15-case truth table tested.
+- **OBS-7** — `emergency_cleanup.sh:26` carried a committed `sudo pkill -f claude`, the exact idiom INC-20260731-broad-process-pattern-kills forbids — and the PreToolUse pattern-kill hook cannot see it (it inspects the typed command, not the script body). The `pkill` and its `pgrep` are DELETED; the section now refuses to guess and prints operator steps for killing only PIDs the operator verified themselves; umount failure reports loudly instead of aborting under `set -e`; the delete prompt warns that a live bind mount makes `rm -rf` reach `/mnt/raid0/llm/tmp/claude`. Registry row migrated to `exempt`.
+
+The family rule, now with four more instances on file: **a guard whose failure mode is "proceed" is not a guard** — every process-safety probe on a shared host needs a third state for "I could not tell", and that state must take the dangerous branch.
+
+#### Source References (2026-08-23 evening)
+
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics and truth-table counts, OBS-3a follow-up, NIB2-57a reader audit and NIB2-58a build-path wiring (cross-listed with [Benchmark Methodology](benchmark-methodology.md))
+
+### Compiled Update — 2026-09-07: an agent tool's event log is not its data, and deleting it costs a full rewrite of what you delete
+
+The coding-agent CLI backing four autokernel lanes grew its SQLite store to **236 GB in ~5 months**, 210 GB
+of it in a single `event` table, while the content it renders occupied under 11 GB. The store is an
+outbox-style change feed: each streamed update writes a *fresh snapshot of the object as it stood at that
+instant*, so a tool output arriving in N chunks is retained N times. Measured globally: **416,980
+`message.part.updated` events for 131,394 actual parts — 3.2 retained copies**, weighted toward the largest
+payloads (largest single row: 93.5 MB). The current state lives in the `session`/`message`/`part` tables;
+the log is pure redundancy once a stream ends.
+
+**The generalisable shape.** Any agent runtime that streams tool output into an event-sourced store has this
+growth curve, and it is invisible until the volume forces a look: the store sits in a dotfile directory, not
+in the repo, and no dashboard watches it. The bill scales with *tool-output verbosity*, which is exactly what
+long-horizon agent lanes maximise.
+
+**Three findings that make a prune safe, cheap, and reversible:**
+
+1. **Prove the log is not load-bearing before deleting any of it.** The binary was a minified bundle with
+   runtime-generated SQL, so static reading could not settle whether the app replays events to rebuild state.
+   The empirical gate costs two minutes and is decisive: export one old session, delete *that session's*
+   events, re-export, diff. Byte-identical (357,641,061 B, 1,458 messages, 6,035 parts) → the log is a
+   notification channel, not a source of truth. Absence of `replay*` symbols was suggestive; the diff was
+   proof.
+2. **`SQLITE_SECURE_DELETE` turns a mass delete into a full-size write.** Debian/Ubuntu's libsqlite3 (3.46.1)
+   compiles it in, so every freed page is zero-filled *through the WAL*: deleting ~200 GB **wrote ~270 GB** at
+   ~4.5 MB/s and grew the WAL to 66 GB. The same work with `PRAGMA secure_delete=OFF` on the deleting
+   connection: **277 s**, versus 98 minutes for a smaller batch with it on. `VACUUM` then reclaimed 54.85 M
+   freelist pages in 133 s. Final: 236.1 GB → **11.4 GB**, `quick_check` ok.
+3. **VACUUM alone is a no-op on a store like this** — `freelist_count` was 0, so it would have rewritten
+   220 GB to return nothing. Rows must be deleted first; VACUUM is only the step that hands pages back to the
+   filesystem.
+
+**Operational rules that fell out.** Delete by *whole aggregate* (session), never partially — a retained
+aggregate with sequence gaps is a corrupted cursor. Checkpoint `wal_checkpoint(TRUNCATE)` between batches, and
+keep every reader off the DB while doing it: a read snapshot blocks the truncation and the WAL balloons
+unboundedly. Run exactly one instance in one foreground terminal — two concurrent instances race the write
+lock (the loser dies `database is locked` after the busy timeout) and a `Ctrl-Z`'d instance holds its
+transaction open indefinitely, which reads as a hang. Back up only the small content tables; a `.dump` of the
+event table is the problem, not the backup.
+
+**A reclaim's last trap: the recipe itself was scratch-only.** The pruner that recovered 225 GB lived in
+`/mnt/raid0/llm/tmp/` alongside the 11 GB of backups it produced, so the obvious cleanup — delete the scratch
+directory once the operator confirms the app still renders — would have destroyed the only copy of the method
+while keeping none of its output. The standing rule (*verify the regeneration recipe is in git before deleting
+the artifacts*) exists for model files and benchmark outputs, but it binds hardest on **one-off maintenance
+scripts**, which are precisely the artifacts nobody thinks of as deliverables. It now lives at
+`scripts/system/prune_agent_event_store.py` with the executed result and preconditions in its header.
+
+**Cross-reference:** this is the store-side twin of the guard-side rule in
+[Benchmark Methodology](benchmark-methodology.md) — an instrument that cannot report its own state gets read
+as healthy. A 236 GB store on a 3.7 TB array is 6% of capacity and drew no alarm until a disk-reclaim pass
+went looking.
+
+#### Source References (2026-09-07)
+
+- `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` — the prune record: gate result, secure_delete
+  measurement, before/after sizes
+- `/mnt/raid0/llm/tmp/opencode-prune-20260907/prune.py` — the batch pruner (whole-aggregate deletes,
+  `secure_delete=OFF`, per-batch checkpoint, dry-run default)
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NI-IO and the disk-reclaim lineage
+
+### Compiled Update — 2026-09-25: Maintenance Work Must Prove It Has Work
+
+An opencode event-reaper VACUUM ran with a zero-page freelist, held an exclusive SQLite lock for 34 seconds,
+and caused a concurrent author call to fail after the 5-second busy timeout. The repair skips VACUUM below a
+1,024-page freelist, truncates WAL after real work, classifies store failures separately, and applies bounded
+backoff. Per-call metrics now ignore sessions created before the call, preventing a failed author row from
+inheriting an earlier planner session.
+
+The general rule matches the project's other maintenance gates: a disruptive maintenance operation must
+first prove that useful work exists, and telemetry attribution must be bounded by the operation's actual
+window.
+
+#### Source References
+
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-14 root cause and fixes.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — incident chronology.
+- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — campaign and actor observability rules.
+
+**Confidence:** verified from the failure timeline and landed fixes.
+
+
+### Compiled Update — 2026-09-26: The `/v1` Seam Must Speak the Shell's Retry and Timeout Dialect
+
+**Confidence: verified** against the source (orch `fb7871ea`; OpenCode at tag `v1.18.31`); none of the fixes has landed yet.
+
+Reading OpenCode's retry, session and MCP code against the orchestrator found four places where overload or identity never reaches the shell in a form the shell understands:
+- **HS-OD-8: backpressure is not retryable.** A full admission queue answers **502** with no `Retry-After`. On `stream:true`, which is OpenCode's main loop, every denial arrives as an SSE event after a 200, so no header can reach the client. The in-stream error text matches none of OpenCode's retry patterns, so a queued turn can fail with no retry at all. The fix: admit before returning the stream, answer a denial as 503 with both `Retry-After` and `retry-after-ms` (OpenCode reads the `-ms` header first), and keep 502 for genuine upstream faults (intake-1790#1, intake-1792#1).
+- **HS-OD-9: the delay should come from live queue state.** The hard-coded 5/10/30 s constants are replaced by the DAR-LAT-1 wait estimate. While that estimate fits the orchestrator's own wait budget, the request is held in the orchestrator; it bounces only beyond that, so OpenCode's 5-retry budget spans the queue. One receipt is written per bounce.
+- **HS-16: session identity from headers, as a fallback.** OpenCode already sends `X-Session-Id` and `x-parent-session-id` on every non-opencode provider, including the child→parent link its plugin hook cannot see. Precedence is body → Dynamo header → OpenCode header, and the body wins on conflict. Per-session state expires on an idle TTL. Tool start/end events are not forwarded.
+- **HS-17: MCP calls die at 60 s.** OpenCode's MCP client uses the SDK's 60 s default, reset only by progress notifications. `orchestrator_chat` defaults to 120 s, so a queued call dies in the shell. Both sides get fixed: the template sets an explicit MCP timeout, which a lint enforces, and the server emits `report_progress` while `/chat` is in flight (intake-1792#4).
+
+**Standing rule.** The orchestrator stays the sole caller of models. No feature may depend on MCP sampling, which is deprecated in the 2026-07-28 protocol, and OpenCode's only provider is the orchestrator anyway (intake-1791#0, intake-1791#4).
+
+**Declined, with reasons:**
+- Aliasing the `x_*` keys to Dynamo's `nvext.agent_hints`. No client in the stack emits `nvext`, Dynamo describes the API as still being co-designed, and `agent_hints` has no field for role forcing, REPL, memory or tool mode (intake-1785#2, intake-1785#5).
+- Treating ACP `providers/set` as a routing surface. It is a process-scoped upstream redirect in a Draft RFD, which `baseURL` already provides (intake-1790#0).
+
+**MCP catalog growth needs acceptance.** Before the MCP tool catalog OpenCode sees grows, a frozen set of previously passing tasks is re-run before and after the change, with per-task tokens reported. In EvoHarnessBench, exposing the full tool catalog raised ReAct's pass rate from 26.0 to 30.2 but its tokens from 27.2M to 75.8M (intake-1821#2).
+
+#### Source References
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-8/9, HS-16/17/18, the standing rule, the catalog-growth acceptance, the dormant triggers.
+- [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 2026-09-26 addendum (E2 correction, session headers, MCP timeout).
+- [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — the two request headers the API reads; `x_force_role`, with `x_force_model` as its deprecated alias.
+
+
+### Compiled Update — 2026-10-06: repair narrow seams while preserving default refusals
+
+The 2026-10-05/06 non-inference queue repeatedly found fixture failures caused by an absent path, cache, or explicit dependency at the test boundary. Accepted repairs bind a disposable path or deterministic input through an existing seam, then rerun the unchanged assertion body. The design keeps production guards, default behavior, and real process boundaries intact; a fixture that only composes argv does not launch a model, server, or kernel. ([system-card fixtures](../progress/2026-10/2026-10-06-ni68-owned-system-card.md), [external-drafter fixtures](../progress/2026-10/2026-10-06-ni69-owned-external-drafter.md), [speech composition](../progress/2026-10/2026-10-06-ni72-owned-speech-composition.md))
+
+A separate executor repair closes an early fallback path: when registry loading fails, explicit overrides retain precedence; absent overrides now go through the kernel-store resolver and propagate its refusal before `Popen`. Successful registry delegation and custom names remain unchanged. The focused capture passed six fallback cases, while production capacity, binary linkage, deployment, and whole-suite behavior remain outside that evidence. ([NI05-75 final report](../progress/2026-10/2026-10-06-ni75-executor-fallback-native-report.md))
+
+The repository also added a CPU-claim admission guard around host code-index refresh. It rejects aliased or hard-linked claim files before downstream index/tool mutation and keeps off-host validation separate from canonical-host execution. This is point-in-time admission; it does not establish continuous ownership or repair the currently untrusted host index. ([NI05-76 report](../progress/2026-10/2026-10-06-ni76-code-index-admission.md))
+
+#### Source References (2026-10-06)
+
+- [NI05-68 report](../progress/2026-10/2026-10-06-ni68-owned-system-card.md) — path-only compilation fixtures.
+- [NI05-69 report](../progress/2026-10/2026-10-06-ni69-owned-external-drafter.md) — no-execution argv fixtures.
+- [NI05-72 report](../progress/2026-10/2026-10-06-ni72-owned-speech-composition.md) — path composition separated from actual loader cases.
+- [NI05-75 report](../progress/2026-10/2026-10-06-ni75-executor-fallback-native-report.md) — registry-error fallback behavior and test boundary.
+- [NI05-76 report](../progress/2026-10/2026-10-06-ni76-code-index-admission.md) — exclusive CPU claim identity controls.
+- [NI05-78 report](../progress/2026-10/2026-10-05-ni78-direct-entry-refusal.md) — direct invocation refusal kept distinct from pytest execution.
+
+### Compiled Update — 2026-10-29 (wrap-up sweep)
 
 **Confidence: verified, single-case diagnostic.**
 
@@ -1925,7 +1934,7 @@ The versioned pre-commit extras call a staged-blob checker for producer pipeline
 
 Sources: [tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md).
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for source-closure facts and the recorded pair observations; the TD-29 cache question, RTE-LOG-1 live acceptance and ThinkPRM quality are all unresolved.
 
@@ -1937,13 +1946,13 @@ Sources: [tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-t
 
 Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) · [eval-tower-verification](../handoffs/active/eval-tower-program.md) · [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) · [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) · [RTE/T2 source checkpoint](../progress/2026-10/2026-10-30-codex-ni-rte-t2-source-checkpoint.md)
 
-## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - TOC-MP-1 pointer custody repaired (47 tests); TOC-MP-2i default-off A/B arms (108 tests). Design finding: the REPL turn prompt carries no history and the 'full log' pointer targets a journal truncated to 200 chars. ([design](../docs/design/toc-mp-ab-design-20261031.md))
 
-## Compiled Update — 2026-11-01 (codex3 wrap-up)
+### Compiled Update — 2026-11-01 (codex3 wrap-up)
 
 **Confidence: verified for published source and finite controls; no live performance or deployment conclusion.**
 
@@ -1952,7 +1961,7 @@ Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-type
 
 Sources: [autopilot handoff](../handoffs/active/autopilot-program.md) · [C6 handoff](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [belief source table](../scripts/vidya/adapters/README.md)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
@@ -1960,23 +1969,23 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-program.md) · [C6 han
 - A native evaluator provenance bridge rejects malformed or unverifiable provenance at the `DistillationPipeline`/`SkillBank` boundary; absent provenance stays UNKNOWN. TU-LED captures argument-validation outcomes per request (cap 4,096 calls); the box stays open.
 - MHS-11 replaced `prompt_forge.py` line-number citations with symbol names (docs-only). [promptforge](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
 **Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+#### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2118#record (deepseek-recipe): Special-token injection is prevented by structural provenance rather than escaping. A static read found llama-server at the pinned commit does not do this; no live probe has been run yet. Verdict worth_investigating, integrated; linked to qwen-chat-template-evaluation.
 - intake-2132#record (XGrammar): Citable for the mechanism: context-independent token masks precomputed per automaton position, only the sub-1% context-dependent remainder checked at runtime, O(1) persistent-stack rollback, plus the authors own per-token overhead claim. Verdict worth_investigating, integrated; linked to speculative-decoding-mtp-refresh.
 - intake-2137#record (XGrammar-2): Citable for TagDispatch free-then-constrained semantics, the finding that dynamic tool sets defeat whole-grammar caches (0% reuse) while substructure reuse rises with tool count, and the JIT trade (cheaper compile, costlier mask). Verdict worth_investigating, integrated.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 8 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+#### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
 
 - intake-2388#record (Space Barrier paper): memory comparison is against token tables, not llguidance; the 2.5x agent result includes the engine kernels and reverses at 8 agents; forced-span gain vanishes at 16 slots. Verdict worth_investigating; linked to agentic-serving-harness-fixes.md.
 - intake-2391#record (Pre3 DPDA): the +36% throughput figure is not found in the body (20% in Sec. 4.4, 40% in the conclusion) and -40% TPOT is a single table cell. Verdict worth_investigating.
@@ -1986,21 +1995,21 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-program.md) · [C6 han
 - intake-2416#record (SGLang jump-forward removal): removal was maintenance simplification; jump-forward was already inert under the overlap scheduler, not abandoned because forced spans do not pay. Verdict worth_investigating.
 - intake-2423#record (Formalizing BPE): on-topic for canonical-tokenization trimming; the paper supports the concern that append can invalidate many tokens. Verdict worth_investigating.
 
-### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+#### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2536#record (spotify portal-ai-plugins shunt plugin): Plugin source read fully except eval fixtures and transport-eval bodies (partial read). Adopt-patterns for hook-based delegation; no dive-surfaced sources.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
 
 **Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+#### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1237#record (QiMeng-Xpiler (OSDI 2025)): The dive confirmed the headline 100/100 for CUDA C to HIP is accuracy, not performance; the four-direction average is 0.78x, below parity, and HIPIFY already reaches 85.7 on the same cases. The repo has no license. Verdict adopt_patterns, dive-verified.
 
 
-## Compiled Update — 2026-11-01 (EVL38 scheduled-gate retirement)
+### Compiled Update — 2026-11-01 (EVL38 scheduled-gate retirement)
 
 **Confidence: verified for workflow deletion and the shared CI run; the run is not a whole-candidate readiness result.**
 
@@ -2008,13 +2017,13 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-program.md) · [C6 han
 
 Sources: [EVL38 retirement report](../docs/reports/evl38-schedule-retirement-20261101.md) · [manual CI capture](../artifacts/ci/evl38-manual-dispatch-20261101/README.md) · [NI progress](../progress/2026-11/2026-11-01-codex-ni.md) · [shared ROOT tests workflow](../.github/workflows/tests.yml)
 
-## Compiled Update — 2026-11-05 (operator-adhoc-ops wrap-up 3): llguidance fold
+### Compiled Update — 2026-11-05 (operator-adhoc-ops wrap-up 3): llguidance fold
 
 - llguidance folded onto the C5 champion (V11-122). Serving A/B: ~3% TPOT gain on tool-call grammar, none on json_schema. Production gain is zero today because `ORCHESTRATOR_TURN1_GRAMMAR` has been off since 10-23 — a landed speedup behind an off flag needs its own enable box (V11-122-PROMOTE-FLAG). GPU no-regression gate row queued.
 
 Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md)
 
-## Compiled Update — 2026-11-18 (REPL code mode vs direct calls, tool picker, CM-2..CM-5)
+### Compiled Update — 2026-11-18 (REPL code mode vs direct calls, tool picker, CM-2..CM-5)
 
 - **Probe v1 (CODEMODE-AB): code mode lost to direct calls, tentatively.** 35B-A3B (stop-on-answer n50, descriptive interim): success 0.10 vs 0.43 (p=1.2e-4) at about 20x fewer tokens; 27B (complete, 264 episodes): 0.03 vs 0.30 (p=4e-5). Per-request top-8 tool selection beat the static list plus `list_tools` on the 35B (0.38 vs 0.10, both the C1 embedding and C2 Jev one-shot pickers; C2 recall 0.65 vs 0.45); the 27B selector arms were floor-bound and inconclusive. The operator ruled on 2026-11-18 that "direct calls win" is NOT adopted: the 8-20x token saving makes code-mode reliability the priority. Confidence: verified as a measurement, tentative as a conclusion.
 - **Probe v2 stage 1 (CODEMODE-AB-V2), 30 pairs per arm, 35B / 27B, descriptive:** A (direct) 0.43 / 0.47, A_pick (direct plus hardened picker) 0.67 / 0.63, B (code mode) 0.07 / 0.03, B1 (B plus reliability fixes) 0.70 / 0.53, B2 (B1 plus turn memory) 0.70 / 0.23, C3 (full configuration) 0.80 / 1.00. C3 uses about 11x (35B) and 16x (27B) fewer tokens than A; against A_pick it is inconclusive on the 35B and better on the 27B at about 2.5x fewer tokens. Turn memory is neutral on the 35B and hurts the 27B, which opened an ablation box.
@@ -2030,14 +2039,64 @@ Source References:
 - [autopilot-backlog-session 2026-11-17](../progress/2026-11/2026-11-17-autopilot-backlog-session.md)
 - [tool-picker recall alarm proposal](../docs/design/tool-picker-recall-alarm-proposal.md)
 
-## FM2 and FM4 native diagnostic context acceptance — 2026-11-18
-
-The official retained-native FM2 coordinator entrypoint canary selected one original diagnostic with no refusals or reliance; the official FM4 shared-reader canary selected both original terminal-dispatch receipts with no refusals or task-gate claims. Both completed allocator rc0 and preserved the existing Judged/Located harness scope. FM4 task outcomes remain null. These results establish diagnostic context assembly; genuine coordinator review and suitable oracle/task-accuracy acceptance remain separate. See [FM2 findings](../docs/findings/fm2-native-source-control-20261118.md) and [FM4 findings](../docs/findings/fm4-native-dispatch-projection-20261118.md).
-
-## Compiled Update — 2026-11-19 (code-mode results, import bug, MCP session contract, P6 catalog capture)
+### Compiled Update — 2026-11-19 (code-mode results, import bug, MCP session contract, P6 catalog capture)
 
 - **REPL import bug.** The REPL stripped imports it could not satisfy, so a C3 cell importing a module failed silently; it sank 20 of 44 35B C3 episodes before the fix (24/24 clean after; orchestrator `de0f1144`).
 - **C3 code-mode results.** 27B r2 (filed pass): C3 42/42, A_pick 0.62, B1 0.57, A 0.40, B2 0.26, B 0.02; C3 uses about 23x fewer tokens than A and about 4x fewer than A_pick. Post-fix GPU rows on the C15 champion: 35B C3 9/10 vs A_pick 3/10 (sign p 0.031; 2.9 s vs 27.9 s wall), 27B C3 30/30. Turn memory: 35B 29/30 vs 26/30 without, 27B 30/30 vs 30/30; the operator chose GLOBAL ON since the flag is global. The C3 flip branch waits only on the production stack being up ([autopilot-backlog-session 2026-11-19](../progress/2026-11/2026-11-19-autopilot-backlog-session.md)).
 - **Tool surface.** UFH14-TOOLS-1 tool-surface counting and cap landed (`273ba3ff`, default off), as did `ms.search`/`ms.expand` for MCP and REPL.
 - **MCP session-contract check.** A reusable check asserts every selected tool carries an optional string `session_id` and `additionalProperties: false`, then proves a stamped read-only probe and an explicit unknown-argument refusal; empty catalogs and unmatched prefixes fail. It is conformance only ([HS-4 P2](../docs/reports/hs4-p2-mcp-session-contract-20261119.md)).
 - **P6 catalog capture.** `hs4_p04_acceptance.py prepare` binds manifest, catalog snapshot, config, prompt, fixture and plugin before execution; an exposed trial cannot be rerun in place, and `--mcp-launch-spec` selects an arm-specific isolated MCP server whose argv/file hashes are pinned in the manifest ([design](../docs/design/hs4-p6-prospective-catalog-capture-20261119.md)).
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): client-side tool-call guards, P6 MCP candidate, typed-decision capture
+
+- **Client-side guards landed in the orchestrator, all default-off on the autopilot surface. Each has an open on-vs-off A/B box before any default-ON.**
+  - **TOOLCALL-PARSE-CLIENT** (`1a10541b`): two flags for malformed Qwen3.6-A3B tool calls. The source-side fix is AutoKernel's PFXC-TOOLPARSE strict parser.
+  - **STREAM-DEGEN-GUARD** (`22cf7041` + `63011c76`): aborts repetitive streams. About 1% of 35B-A3B requests loop to the 4096-token cap at near-zero MTP acceptance.
+  - **PREFIX-CACHE-LAYOUT** (`e8293839`): three flags. Hit rate is measured as `cache_n / (cache_n + prompt_n)`.
+  - **TASKFLOW-CANARY-LESSONS-ORCH** (`54f1764f` + `427008f7`): `repl_syntax_loop_breaker` hints on the 2nd consecutive SyntaxError and ends the task on the 3rd, plus `repl_plan_narration_nudge` and `harness_failure_ratio_guard`.
+  - **Order-dependent test flake:** `test_openai_client_tool_mode.py` fails only in a broad `-k` run.
+  
+  ([harness-program](../handoffs/active/harness-program.md); [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md)).
+- **HS-4 P6 isolated MCP candidate, built offline.**
+  - The comparator CLI now exits 0 on pass, 1 on regression and 2 on unknown/invalid input.
+  - Prospective paired catalog capture was added to the P0.4 runner, with manifest-pinned arm-specific MCP launch and drift refusal before exposure.
+  - `hs4_p6_candidate_mcp.py` exposes read_range/peek/grep/peek_grep/outline over admitted roots (23 controls PASS), plus root-bound code search, actor requests, binary-read and C/C++ outline.
+  - Live `tools/list` catalog capture refuses removal of a baseline tool.
+  - `memory_*` MCP tools must declare `session_id`.
+  
+  ([harness-program](../handoffs/active/harness-program.md); [harness-selection-and progress](../progress/2026-11/2026-11-19-handoff-harness-selection-and.md); [agentic-serving-harness-fixes progress](../progress/2026-11/2026-11-19-handoff-agentic-serving-harness-fixes.md)).
+- **Typed-decision capture and screens (Qwen3.6-35B-A3B-MTP-Q8_0, frozen v10 CPU, no MTP).**
+  - **HS-TD-1 capture:** opt-in native pre-dispatch and permission-event capture, exact offline permission joins (`dispatch-join.ts`; missing or ambiguous joins stay unknown) and an observed-policy shadow classifier.
+  - **HS-TD-1 screen:** risk/intent/policy agreement 9/12, 11/12 and 12/12.
+  - **HS-TD-2 self-check:** 32/32 valid, reference agreement 30/32 (93.75%), mean extra-call cost 5.19 s (p95 8.51 s), confidence 0.9875, uncalibrated.
+  - **HS-9 open-weight interpreter probe:** bounded live transport landed, and seed rows were pinned (Qwen2.5-0.5B F16, Qwen3-1.7B Q8_0).
+  
+  ([harness-program](../handoffs/active/harness-program.md); [repl-turn-efficiency progress](../progress/2026-11/2026-11-19-handoff-repl-turn-efficiency.md)).
+- **Code mode closed on GPU.**
+  - **35B:** C3 9/10 vs A_pick 3/10 (sign p 0.031). Turn memory ON helps: C3 29/30 vs 26/30 without it.
+  - **27B:** 30/30 vs 30/30, with no turn-memory benefit. The operator chose GLOBAL ON.
+  - **Import-strip bug:** a REPL bug (fixed `de0f1144`) had sunk 20/44 pre-fix 35B C3 episodes.
+  - **CM-2/4/5 probe rows** are prepared and wait on S4.
+  
+  ([harness-program](../handoffs/active/harness-program.md)).
+- **REPL tool-surface plumbing, default off:**
+  - `tool_surface_logging` and `tool_surface_cap`, with an allowlist that stays empty until measured usage fills it.
+  - `spill_extractive_summary`.
+  - The embedder HTTP client now honours `EmbeddingConfig.timeout`: default 30 s, previously hard-coded to 10 s.
+  
+  ([harness-program](../handoffs/active/harness-program.md)).
+- **BFCL native capture custody.**
+  - `bfcl_capture_run.py` now requires a `LocalNativeTransport`; `software_control=True` is a labelled opt-out.
+  - Models are prepared once offline, with a SHA-256 and stat identity.
+  - The launcher must pin the server binary, every mapped ggml library, the model and the argv.
+  - The observed rate of about 1.08 tokens/second supports a budget mismatch, not a quality verdict.
+  - The CJ-3d republish needs a measured estimate (about 4-6 h on a full quarter), because the unmeasured estimate produced a 52 h grant on 8 cores.
+  
+  ([bfcl-local-residency](../docs/design/bfcl-local-residency.md); [churn-pipeline](../handoffs/active/churn-pipeline.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md)
+- [handoffs/active/engineering-hygiene-backlog.md](../handoffs/active/engineering-hygiene-backlog.md)
+- [handoffs/active/churn-pipeline.md](../handoffs/active/churn-pipeline.md)
+- [docs/design/bfcl-local-residency.md](../docs/design/bfcl-local-residency.md)
+- [progress/2026-11/2026-11-19-handoff-harness-selection-and.md](../progress/2026-11/2026-11-19-handoff-harness-selection-and.md), [2026-11-19-handoff-agentic-serving-harness-fixes.md](../progress/2026-11/2026-11-19-handoff-agentic-serving-harness-fixes.md), [2026-11-19-handoff-repl-turn-efficiency.md](../progress/2026-11/2026-11-19-handoff-repl-turn-efficiency.md)

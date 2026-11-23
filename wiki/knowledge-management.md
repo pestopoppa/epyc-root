@@ -2,253 +2,6 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-11-19 (wrap-up: native belief wiring detail, committed-conclusion observations, reader slices). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-03 (wrap-up compile sweep). Earlier: 2026-11-02 (ws58 LLM-wiki transparency intake). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): Codex persistent lane checkouts and legacy/worktree retirement, disk-emergency triage, belief-kernel write wiring (LB4.9 wired, PIP-02 TEDS, CAFE-1 source enrolled). Earlier: 2026-10-28 (workspace-58 overnight wrap delta). Earlier: 2026-10-28 (owner-scope full-wrap delta): CME7T, CS22 and STT2 source enrollment remains separate from reader/canary completion. Earlier: 2026-10-27 (operator full wrap, Codex NI, cutoff 16:26:29Z; scoped conclusion capture and no new measurement warrant). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): results-harvest projectability: what can enter the belief ledger now, what needs a write side, and what must project nothing, plus the FA4 nan_A quarantine. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): 267 of 497 cited tmp paths are gone, committed conclusions get a belief path, the first loop canaries run, and seven native ingests append 102 frames. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the P1-PHASE2 served-shape recalibration passes and ingests, gitnexus recovers from a SIGSEGV, Omega and M26 are wired into the belief kernel, and the DS41-1017 ABA files are not native measurements. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): shared clones are never modified without operator approval. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): belief-kernel wiring for the 10-24 measurement sources, native-harness OTel lineage gap, and the non-inference campaign. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: orchestrator code index segfault; llama-bench protocol field enters the belief adapters). Earlier: 2026-10-22 (wrap-up sweep 10: ten write sides and producer emits wired, protocol_id grading bug, dev-harness trace backup coverage and OTel fields). Earlier: 2026-10-22 (wrap-up sweep 9: a pinned source digest goes stale whenever its producer changes). Earlier: 2026-10-22 (wrap-up sweep 7: dev-harness mining, privacy gate and write-side wiring tasks). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 5: loop belief readers landed, device-scoped claims, new write-side rows). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-06 (root final wrap-up; incremental synthesis appended); previous compile record:  (scoped: decision-tools filing and three-campaign practical-application review); previous: 2026-10-03 (wrap-up compile: belief-kernel wiring for the new serving producers — VB-SERVING-DF2, VB-SERVE-TIMING-1 (per-call serving records, era ST1); VB-RI18a sidecar gaps; VB-REVIEW-GATE declined with the gate; governance lesson: an operator recipe ruling must land as a registry field plus a compile check); previous: 2026-09-29 (wrap-up compile: handoff compaction moves closed scope to completed siblings without deleting it; VB-UFH12-PLACEMENT-DISC finds the arm sidecars invisible to ingest; operator ruling 2026-09-29 writes compound thaw triggers into frozen write sides; VB-KVQ-V10-DICT heads the KV-quant queue); previous: 2026-09-27 late (wrap-up compile: the freeze convention — a marker, a reason and an unfreeze trigger, and the box stays open; the park convention; ratifiers refuse a defaulted signer and four chat-approved ratifications await countersignature; VB-THESIS-1/2 and VB-DISPATCH-S2 filed, producerless write sides frozen); previous: 2026-09-27 (wrap-up compile: VB-UFH12-PLACEMENT, SC84a and VB-DS41-C57 write sides; a GATED research item is filed durable; HipKittens intake-flow practices); previous: 2026-09-26 (orch prior-art Stage-3 plan: parallel sections with an authoritative reconciliation; `#record` asserts nothing; recommendation vs ruling); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-25 (KV-quant reader and planner receipts); 2026-09-24 (speech-lane wrap-up compile: VB-SPEECH-CONV-1 filed write-side before any conversation-stack run; VB-AK-METRICS-1 grows a closed contract by sibling and needs a root contract module plus an explicit join; VB-AK-CTX-1 offered-not-read; VB-KVU-1/VB-SPEECH-CPU-1 not backfilled); earlier: 2026-09-24 (wrap-up compile: two `open` items had been fixed for weeks and never ticked, and the wrap-up heavy-e2e failure was a TEST defect that reproduced on a pristine HEAD; VB-MFVBS-1 and VB-EVALDISC-1 filed write-side with per-field admissibility cautions; a laneless session landing shared work through a private landing worktree; four of seven subagent results needed main-thread correction); earlier: 2026-09-23 (evening wrap-up compile: the wiki source scanner's mtime blindness and per-worktree watermark are both closed against 0ea91f3e (content-hash selection against the tracked manifest; the lane failure was 919 phantom sources against a true delta of 2), both boxes having stayed unticked for weeks after the fix landed; KB-WM-5 shards the shared agent session file per AGENT_ID; PAW-4 shows a record corrected in two of three fields still misleading from the third); earlier: 2026-09-23 (wrap-up compile: three belief-kernel read-side adapters filed for producers whose write side already exists — VB-KVQ-V10, VB-VRAM-1 (the first 2026-09-22 probe run is INADMISSIBLE), VB-ARCH-CPU-QUAL (instrument_class and truncation must reach the tuple); SSU-F6 closed with a `truncation_audit` sub-gate; HelixDB added as a graph-backend candidate if the graph layer revives); 2026-09-23 (private-index committing protects peers but freezes the SHARED index, and the rot reads as mass deletions any pathspec-less commit would publish; `git diff` cannot see it by construction; `git reset -- <paths>` must run AFTER each commit; a stale `wiki/source_manifest.json` would have rolled the compile watermark back); earlier: 2026-09-22 (incremental: second subject deletion: GLM-5.3 → DeepSeek-V4.1 retarget, subject-deleted rows left unticked, VB-DSV41 filed before first run); earlier: 2026-09-19 (VB-FW-1 GUI fuzzy-workflow and VB-AK-HELDOUT held-out AutoKernel confirmation write-side rows filed before their producers run); earlier 2026-09-17 (doc audit + restructure: the decided-handoff restructure pattern — archive the pre-decision trail, promote standing material to `docs/reference/`, move open boxes up, line-level conservation check, `../active/` link repair; corrections appended to dated shards; approved-but-gated structural moves; the shared-clone backup/reset/restore-live-state procedure; two overturned absence claims in intake); earlier 2026-09-17 (evening: three ticked vidya adapter branches landed and the closure-inflation audit, the `git cherry` landing rule, `speed_axis_reseed` not projected, VB-RUNNER-PATHS-2, SC87-89, KB-WM-3, OBS-12); earlier 2026-09-17 (afternoon: AutoPilot promotion rules reach the belief-kernel adapter with a commit join; runner capture paths are resolved, not guessed); earlier 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
-
-
-## Compiled Update — 2026-11-09: dashboard Flow counter root cause, audit findings, citation form
-
-- **Dashboard Flow panel defect.** The panel read +208 while open boxes fell 2806 to 1516 in 7 days. Root cause: edits to existing open boxes counted as filings, declines and removals were ignored, and the timeline dated merged lanes on their merge day. Fix: `build_handoff_timeline.py` is the only counter, the hub sums its rows, `hub_view` exposes the served commit and refresh failures. Independent review confirmed 22 sampled commits and the 1263 removals on 11-03 as real retirements; after the fix, hub live at e4668444c with today -87, 7d -1290. Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
-- **Incident: incomplete pin list.** The 13:02 re-pin to 2c62d9458 lacked `observer_guard.sh` and `env.sh`, so every supervisor pass failed and the view froze until the third install at 14:28 (e4668444c); `index_regen.py` joined the pin list. Same source.
-- **RTG-22 audit.** 115 open boxes, with the shared clone 78 commits behind origin/main, so the audit ran against origin/main. A planned LOOP-11 closure was refuted (a refusal still orphans pollers); AFC-P5.E3 had finished 11-07 but was never filed because its owner session ended; `76d21aa9f` (research, 08-25) silently reverted the NIB2-58a linkage gates. Sources: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md), [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md).
-- **Citation form.** The ID-25 decision package now cites intake-362#record and intake-363#record (they discuss the record and assert nothing), per the cite-check grammar. Source: [frontier-lab-automation decision package](../docs/design/backlog-refactor-2026-11/decision-packages/frontier-lab-automation.md).
-- **Stale status corrected:** the DeepSeek-V4.1-Flash-DSpark GGUF is gone (only `-1017-DSpark.gguf` remains), so "PENDING OPERATOR" was stale; no graveyard row was found, so that box stays open for the row only. Source: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
-- **GitHub workflows:** 66 stale workflows with no file on main were disabled by operator decision; LOOP-54 stays open. Source: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
-
-## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): Vidya capture paths accept A/A steps and actor-wire matrices, but the actor-wire planning canary still fails and the glob-recovery fix landed
-
-**Confidence: verified** (live filed results).
-
-- **Accepted captures.** `vb-sl2-steps-r1` (two same-image A/A pairs) ingested 15 frames for five claims with `steps_projected=2`, no refusals; the estimator is `predicted_n_minus_draft_n_accepted`, reporting-only. The actor-wire matrix (15/15 seats) projected 31 verifier findings / 93 frames with no refusals. G-P1 parity wiring closed on three existing projected claims (min cosine 0.999993 over 211 chunks / 45 queries).
-- **Failed or open.** The actor-wire planning canary FAILED (planner ready, nothing refused, ledger unchanged, but the proposition was absent from the Q38FN planning evidence because the tuple carries empty applicability); r3 then stopped at the disk floor. Canary B (failed keep recovery) failed because its reference trial 1472 is excluded from learning (`reproduction_confirmed`), a defective sentinel not an embedder defect. R18 symbol comparison is UNKNOWN (pinned input changed).
-- **Plumbing.** The completed-smoke result-glob fix (exactly one in-scratch result, content bindings, `--resume-complete`) landed upstream with 24 publisher tests. A same-code-excursion adapter binds the newest earlier matching work-key prior and refuses mutation after verification. A strict EXP01 reader and GPU-pool capture helper are prospective, unregistered components; wiring is only claimed when a planning-context canary passes.
-
-Sources: [Vidya live captures](../docs/reference/vidya-live-captures-20261104.md) · [vidya progress](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [kvu19b belief integration](../progress/evidence/kvu19b-gap-clean-20261104/BELIEF-INTEGRATION.md) · [belief-substrate handoff](../handoffs/active/vidya-belief-substrate-program.md)
-
-## Compiled Update — 2026-11-03 (evening): belief-substrate adapters and D-LSA filing
-
-**Confidence: verified** (tests and validators named in the progress log).
-
-- **Vidya wiring landed**: INF-66 R23-64 thread-sweep adapter (VB-R2364-SWEEP-WIRE, verdicts carried verbatim, no new grading rule), optional journal fields carried through the existing `autopilot-journal` frame (VB-AP-JOURNAL-CARRY; missing fields stay UNKNOWN), and `reliance_review.py` flagging experiments whose `relies_on_claims` carry a retracted or corrected claim.
-- **SC64 sequential certification (closed 2026-11-03)**: the original DONE WHEN (accept crossing blocks 8 or 10) was impossible: an exhaustive scan shows blocks 8 and 10 are unreachable at threshold 20 with lambda cap 0.5, so the DONE WHEN was corrected rather than the checker (`handoffs/active/vidya-belief-substrate-program.md`, SC64).
-- **Intake validator tolerates handoff folds**: committed lineage now resolves to the surviving owner; unknown, ambiguous, cyclic or dangling references still fail (2,623 entries validated; 53 tests + 16 subtests).
-- **D-LSA (intake-2622..2627#record)**: literature shows Qwen3.8-27B with frozen base and released maps; NVIDIA attention-layer speedups are not EPYC/MI210 whole-model numbers; no local quality or latency claim made.
-- **Backlog refactor outcome**: active handoffs 176 -> 29 with zero lost tasks; the four pilots all returned REVISE with owner fixes filed.
-
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [progress 2026-11-03](../progress/2026-11/2026-11-03.md) · [ws58 progress](../progress/2026-11/2026-11-03-ws58.md)
-
-## Compiled Update — 2026-11-02: prospective source capture and event identity
-
-The R18 independent r4 symbol comparison reported zero differences on all three surfaces, and the v10 reference predicate was set true; that completed result remains a committed conclusion because it preceded the new capture hook. For KVU-19a-2, 20 producer-authored diagnostic rows entered a private ledger, but their original capture lacked device-applicability scope. A later prospective writer requires the relevant source, HIP and in-window device witnesses; it does not backfill the old rows, and a real planning-context canary remains open. Sources: [belief-substrate handoff](../handoffs/active/vidya-belief-substrate-program.md), [R18 source progress](../progress/2026-11/2026-11-02-r18-belief-source.md), [RTG-57 diagnostic checkpoint](../progress/2026-11/2026-11-02-rtg57-readiness-audit.md).
-
-
-A source review found that independent session document, finding and tag inserts do not overwrite distinct keys, but they also do not check the session lease fence; a stale owner can therefore write after lease loss. Foreign-key enforcement was not enabled in the reviewed connection factory, and finding sync used separate transactions. The review recommends in-transaction fence and session checks plus atomic or idempotent sync; it is source analysis, not a live concurrency test or deployed fix. Sources: [session mutation review](../docs/reports/repl-session-lease-append-review-20261102.md), [live verification readiness](../docs/reports/repl-session-memory-snapshot-review-20261102.md), [trace-memory preparation](../progress/2026-11/2026-11-02-handoff-unified-trace-memory-service.md).
-
-
-The read-only knowledge browser links claim, recorded evidence grade and observed run; it reports commit identity only where a frame actually records one. The wiki lint gained orphan, unsourced-bullet, conflicted-citation and contradiction checks; its initial full run reported zero errors and 705 warnings, including section-sourced bullets. The contradiction gate files a pending pair only when both quoted anchors and hashes are independently re-found; it does not adjudicate the conflict. These are implemented controls; the hub session recorded that a restart was still needed before the new routes would load. Sources: [hub implementation](../progress/2026-11/2026-11-02-ws58-hub-pages.md), [wiki and contradiction implementation](../progress/2026-11/2026-11-02-ws58-knowledge.md), [source intake assessment](../progress/2026-11/2026-11-02-ws58-intake-jev-superagent.md).
-
-
-The R18 guarded symbol-comparison writer and adapter preserve source, compiler, comparator, dependency, build and terminal identities; the final producer/planner regression suite passed 69 tests and a claimed CPU launcher smoke passed. The full native successor is prospective, so prior results do not acquire a new native warrant. Separately, the trace-memory preparation found that raw source coordinates alone are not necessarily unique per event; a proposed projection-file/line key would support within-run idempotence while retaining the original coordinates. Sources: [R18 source work](../progress/2026-11/2026-11-02-r18-belief-source.md), [trace-memory preparation](../progress/2026-11/2026-11-02-handoff-unified-trace-memory-service.md), [belief-substrate progress](../progress/2026-11/2026-11-02-handoff-vidya-belief-substrate.md).
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **OKF-KB hardware debugging workflow** (intake-799#record) Stratified KB with immutable Findings, Concepts, Principles and Outcomes, and contradictions preserved. Already integrated (maps to intake_index, chapters, CLAUDE.md, handoffs); dive confirms the tutorial numbers are a fictional composite.
-- **Agent traces to trust survey** (intake-1034#record) Taxonomy of evidence tracing and execution provenance with a nine-relation vocabulary (PROV Use/Generate/Derive plus Support, Depend-on, Contradict). Corrections: relations are nine not seven, the memory-provenance gap is in section 6.4/Table 6, and the paper is now v4.
-- **Semiring provenance for fixed-point logic** (intake-1039#00) Generalized absorptive polynomials give the universal provenance semiring for full LFP (Theorem 17); all four Stage-1 claims confirmed verbatim, incl. the counterexample showing omega-continuity alone is insufficient. Basis for the replayable provenance fold in the belief ledger.
-- **Datalog convergence over semirings** (intake-1040#01) 0-stable semirings converge in N steps (polynomial time in the number of ground atoms); a finite max/min chain is 0-stable, absorptive and fully continuous. Definitions confirmed verbatim in the 55-page PDF; licenses bounded fixed-point folds.
-- **Circuits for Datalog provenance** (intake-1041#record) No faithful datalog semantics has poly-size Boolean formula provenance, but poly-size monotone circuits exist; the circuit result is for the free absorptive semiring so it specializes to any commutative absorptive semiring. Dive-verified from the primary PDF.
-- **Circuits and formulas for Datalog over semirings** (intake-1042#record) Correction to Stage-1 phrasing: a two-point depth dichotomy, Theta(log m) vs Theta(log^2 m), not a single optimality claim; linear programs over absorptive semirings get depth O(log^2 m) circuits (parallelizable in NC^2).
-- **Least/greatest fixed points in absorptive semirings** (intake-1043#record) Least solution is F^n(0) and greatest is F^n(F^n(1)^inf), each a polynomial number of semiring operations. Caveat: LNCS volume/pages were not re-verified; confirm before formal citation.
-- **Polynomial-time Datalog-degree convergence** (intake-1044#record) Polynomial convergence over any p-stable commutative semiring; operator question whether it supersedes the JACM bounds for the finite-chain case was answered no, with the reason recorded.
-- **Semirings of Evidence** (intake-1045#record) Semiring semantics for justification logic (joint use multiplicative, sum additive); soundness/completeness proved, deduction theorem fails. Correction: arXiv v2 corrects the CLAR 2020 completeness proof, so cite the JLC/arXiv version; venue corrected LFCS to CLAR.
-- **in-toto attestation + SLSA provenance** (intake-1047#record) Typed signed statements in DSSE envelopes, layouts as signed policy, and verification as deterministic replay; SLSA separates buildDefinition from runDetails. Template for signed, typed result attestations in the measurement/belief pipeline.
-- **RFC 9162 / tlog-tiles / Rekor v2** (intake-1048#record) Authenticated append-only Merkle logs without consensus. Correction: RFC 9162 is Experimental and the ecosystem converged on the C2SP static-log family; Rekor v2 GA 2025-10-10 keeps only hashedrekord and dsse entry types.
-- **Weighted bipolar argumentation dynamics** (intake-1049#record) Convergence proven for acyclic graphs (linear time) and support-only cycles; general cycles remain open. Quadratic-energy model has a per-node closed form; the paper's 30-second wall-clock cap is nondeterministic and must not be copied into a deterministic system.
-- **Carneades proof standards** (intake-1050#record) Overturned the Stage-1 framing: the 2007 AIJ paper defines three proof standards (SE, BA, DV), the five-standard set is from the later Gordon-Walton line. Proof standards are assigned per statement and act as consumer policy.
-- **Gordon & Walton proof burdens** (intake-1062#record) Primary-source recovery of the five-standard definitions over audience weights in [0,1]; aggregation is MAX, never SUM (arguments not independent), and thresholds are owned by the dialogue protocol, not per query.
-- **C2SP signed-note and tlog-checkpoint** (intake-1063#record) Byte-exact checkpoint format for the L1 ledger rung. Drift finding: tagged v1.0.0 says SHOULD use Ed25519 while main now says SHOULD use ML-DSA-44; pin the tagged version. tlog-cosignature declined with trigger.
-- **SLSA Verification Summary Attestation** (intake-1064#record) A VSA is itself an in-toto attestation, so the output of verification has the same type as its inputs, which lets delegated verification compose; template for replayable query-response certificates.
-- **Esparza-Luttenberger derivation-tree fixed points** (intake-1065#02) Theorem 6: over 1-bounded (absorptive) semirings plain Kleene iteration reaches the lfp in n steps. This is the licence for the simple fold; the E&L engine, ICDT circuit and stability bounds are one cross-cited family.
-- **Gradel-Tannen provenance for FO model checking** (intake-1066#record) Dual indeterminates give negation as first-class tokens, and zero-substitution retraction on the positive polynomial is wrong for queries with negation (worked counterexample). Certified absence is expressible as pi[[not phi]]; critical for retraction in the belief ledger.
-- **Compound deception in peer review** (intake-1386#00) GPTZero's Hallucination Check scanned 4,841 of 5,290 accepted NeurIPS 2025 papers; a five-class taxonomy of 100 fabricated citations is by one author (University of Chester), not GPTZero. Primary codes: TF 66, PAC 27, IH 4, PH 2, SH 1. Supports citation verification in intake.
-
-## Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): tmp evidence loss, the committed-conclusions belief path, the first loop canaries, and 102 frames from native ingests that never ran
-
-**Confidence: verified** (inventories, ledger line counts, canary summaries); the canary verdicts are **inferred** (assembled by read-only harnesses, not each loop's own entry point).
-
-- **Lost tmp evidence.** 267 of 497 cited tmp paths are gone:
-  - Classes: A 102 ticked evidence, B 28 open inputs, C 131 historical, D 6 unclear.
-  - Causes: the 08-23 reclaim; the 10-20 reclaim, whose citation check skipped entries under 0.02 GiB (2,518 unchecked) while a purge emptied the trash in 2 min; and workspace-58's own sweeps on 10-23 and 10-24.
-  - Backups held transcripts only. Conclusions survive for ~95 of the 102 in progress reports and tick lines, but only 2 were in the belief ledger.
-  - Policy restated: MEASUREMENT.md §5 already puts ratified evidence in research `data/<campaign>/`; tmp is scratch. This wrap-up moved three calendar evidence sets there and committed the canary, calendar and arbiter records to `docs/reference/`.
-- **Loop state has no backup.** The planning-inputs audit found nothing required missing; the 10-21 fail-closed rule is implemented in both loops. It did find several defects:
-  - a reader that defaults to a stale `/workspace`;
-  - silent-empty store, inbox and journal defaults;
-  - polluted AutoPilot telemetry;
-  - single-copy loop state on RAID0.
-  - The fix is RTG-60: a nightly off-RAID0 backup (~0.5 GiB: the ledger, AK stores via `sqlite3 .backup`, AutoPilot state), owned by the operator's filesystem agent.
-- **Committed conclusions as beliefs.** A conclusion in a committed progress line or tick fits the existing `measurement` class with an empty `protocol_id`, which grades **Judged/Located**. That is the planner floor: usable as a prior, never for decisions. The native record is the committed sentence (commit, path, line, verbatim quote), not the lost run. The tick contract `[belief: clm_…]` / `[belief: cc]` / `[no-belief: reason]` and a wrap-up gate are proposed (VB-TICK-CONTRACT, VB-CC-PILOT). Baseline: 0 of 690 ticks from 10-20 to 10-24 carried a belief reference.
-- **The first belief-capture pass (VB-NATIVE-INGEST-10-24).** Seven real ingests ran from the views reader, and the canonical ledger grew 38,452 → 38,554 (+102 frames, nothing refused).
-  - Appended: pb-hol M4.2 18 frames; kv-prefix-fork KPF-17.4c 6, KPF-18.0b 21, KPF-18.0d item 3 3; pb-qcost confirm-R 54.
-  - Already live: PB-QCOST-1 confirm (54 frames) and the 10-20 AKX-ALL-26 CPU artifact (30). Two of the canary's "never ingested" claims were wrong.
-  - AKX-ALL-26b's own run dir matches 0 units, so the knob-off column has no belief.
-  - Remaining adapter gaps go to Codex C5: pb-hol single-arm and nested layouts, KPF-18-S1.R4 pre-hook, the AKX-26b CPU run dir and HIP half, and NIB2-GNX-1.
-- **The 2026-10-21 belief-kernel review and redesign are now durable docs.** At the time of the review there was no consumer that changed an outcome, 52 of 72 adapters had never produced a frame, and 89% of the ledger was intake re-projection. The redesign's verdict: the loops already produce the beliefs they need.
-
-Sources: [tmp-loss reconcile](../docs/reference/tmp-loss-reconcile-2026-10-25.md) · [tmp-loss handoff diffs](../docs/reference/tmp-loss-handoff-diffs-proposed-2026-10-25.md) · [loop planning-inputs audit](../docs/reference/loop-planning-inputs-audit-2026-10-25.md) · [loop-state-offraid-backup](../handoffs/active/engineering-hygiene-backlog.md#track-loop-state-offraid-backup) · [committed-conclusions belief capture](../docs/design/committed-conclusions-belief-capture-2026-10-25.md) · [belief-kernel review 2026-10-21](../docs/design/belief-kernel-review-2026-10-21.md) · [belief-storage redesign 2026-10-21](../docs/design/belief-storage-redesign-2026-10-21.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-NATIVE-INGEST-10-24) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): P1-PHASE2 passes and ingests 148 rows, gitnexus SIGSEGV recovery, Omega/M26 belief wiring, and the ABA native-source audit
-
-**Confidence: verified** (run verdicts, ingest logs, pinned audits).
-
-- **P1-PHASE2 served-shape recalibration: PASS.** Run VERDICT PASS at 17:12:58Z on cpus 0-47 (gap-filled across q0+q1, est 3000 s). The earlier rc 6 was a missing root checkout carrying 495a62d0f (`_launch_binding`), and the rc 3 refusal a 7800 s requirement against a 4800 s entry. The real ingest (17:14:21Z, run from an origin/main worktree) wrote 148 rows / 444 frames with 0 refused, and `loop_beliefs.py prepare` on the DS41-1017 target now reads 151 target-tier claims, because the re-run re-projected the same claim ids with model scope instead of lane/anchor scope (`launch_binding: drifted` is gone). The parent P1-PHASE2 box stays open for AKEXP-MERGE.
-- **gitnexus SIGSEGV recovery (GNX-SEGV-1).** The incremental orchestrator `analyze` died with signal 11 after `+1063 importer(s) added to writable set`, inside the write-back window (`incrementalInProgress`, `toWriteCount: 99`; the DB grew 435,286,016 to 511,283,200 bytes). Writes happened; row-level damage is unproven, and no native frame was captured (a LadybugDB binding fault is plausible, not established). Recovery: the untrusted partial index was moved aside, the verified backup restored, then a forced full analyze under a whole-host claim (a first attempt was refused rc 64 for lacking an ancestor write flock); the index is current at 84f6f6f. Never query the partial database. Existing coverage is NIB2-GNX-1 / VB-GNX-REINDEX-1.
-- **S4 Omega ROOT belief adapter and M26 producer/reader published.** The Omega adapter (merge 16c0fa1ba) passes 10 tests, a 199-tuple carrier audit with 0 violations, and replays 30 native rows with 0 frames emitted and 90 skipped on an unchanged ledger. M26 (ROOT 2387f65d7, orchestrator 2cefc2411) preserves the native Boolean integrity verdict (`false_0_true_1`) and delegates grading to `claim_tuple.grade()`; the supplemental CLI run passed 10 tests with 6 tuples and 0 violations. Fixture and mock tests only: projected records stay Judged/Located, no real S4 A/B or pool capture has occurred, and no efficacy or cost claim exists. Next step is ingestion of real native captures with the existing reader, not a duplicate experiment.
-- **DS41-1017 ABA timing files are not native measurements.** The 48-file ABA scope (research da71fa603) has no `belief_measurements.jsonl`, receipt or manifest, and its `served.py`/`bench.sh` never called the writer (c057f930d); the five original W5 rows stay as captured. Recomputing a sidecar or ClaimTuple now would assert write-time warrant that was never captured, so no backfill: a future ABA run should call the existing writer at each bench/served boundary, with scope `model_file` plus `backend: cpu` and quant omitted.
-- **15 closures checkpointed.** The backlog-audit checkpoint counts 15 published closures (8 backlog, 5 scoped, 2 belief-wiring), none newly completed by the checkpoint.
-
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [ds41-1017 ABA audit](../docs/reference/ds41-1017-aba-native-source-audit-2026-10-24.md) · [backlog-audits checkpoint](../docs/reference/backlog-audits-2026-10-24-checkpoint.md) · [omega_belief_wire](../progress/2026-10/2026-10-24-omega_belief_wire.md) · [m26_final_publication](../progress/2026-10/2026-10-24-m26_final_publication.md) · [batch_checkpoint_wrap](../progress/2026-10/2026-10-24-batch_checkpoint_wrap.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): shared clones are never modified without operator approval
-
-**Confidence: verified** (operator rule, recorded mistake).
-
-- **Never modify a shared clone (e.g. `/workspace`) without operator approval.** A session fast-forwarded the shared clone without asking and recorded it as a mistake. The pattern instead: a detached worktree at the needed commit (here `root-served-shape-binding` at origin/main `655f596c6`, which fixed `p1-phase2-served-shape-calib` rc 6 caused by a clone missing `495a62d0f`) leaves the shared clone untouched.
-
-Sources: [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): belief-kernel wiring for the 10-24 measurement sources, native-harness OTel lineage gap, and the non-inference campaign
-
-**Confidence: verified** (run records and predeclared rules in the cited sources).
-
-- **New belief-kernel adapters (write side first).** `np_ctx_kvu.py` (KVU-12 CPU study: strict, re-hashes `row_sha256`, re-derives cell medians), `ch19_t3_screen.py`, `ufh14_lb7_stall.py`, `akx_lb32.py` (AKX-ALL-LB3.2 attribution; edited PREDECLARATION voids the file), PB-QCOST-1, SPEC-RNG.1.2 (`analyze` stamps the full predeclaration sha and `analyzed_at`), FD-DIV-1a, HSF-5.P, and the KPF-17.4c arm declaration (`kpf174c_bisect_spec_off`). Each projects into a `ClaimTuple` and `claim_tuple.grade()` decides; none adds a ladder. The KPF-18-S1.R3 sidecar first voided on read (arms `long6_teacher_forced` / `item2q_g3s2` undeclared, VB-KVU-PF.7), then projected 1 file / 2 rows / 0 refused after item 186's arms were declared. Real ingests: q38-serving-gate 5, clbench-cache-hit 5, moe-routing 309+309 rows (re-ingest skipped all 927 frames), nemotron-bolt-fold 30 rows, DS41 original-five 15 frames (idempotent on repeat); 0 refused. The synthetic UFH12 parity sidecar was deliberately not ingested. `agents_reference_guard.sh` blocked edits to the adapters README until 6 bare `.md` references were qualified.
-- **DS41-1017 scope correction.** The native producer binds each exact artifact and CPU backend but records no whole-model census quant; the adapter now omits `quant` rather than trusting arm labels (actual census: Q8_0 dominant at 321 tensors, MXFP4 120). The DS41-W5d result supersedes the invalid -29.9% baseline for the campaign note: MXFP4 CPU_REPACK MUL_MAT_ID takes 1.783x the Q4_K iqk per-layer time at pp512 (95% CI 1.778-1.789, PREMISE_STANDS, S5 ceiling about 22% of the pp512 wall).
-- **Native-harness OTel (UTM-LB4.1).** One `claude -p` session (CLI 2.1.308) with content toggles off: `tool_decision` and `tool_result` carry ids, success and sizes but no arguments. No event carries `agent_id` or a parent id; a sub-agent shares the parent's `session.id` and is marked only by `query_source = agent:builtin:general-purpose` on `api_request` and `assistant_response`. Gap: tool events carry no `query_source`, so a sub-agent's tool call is indistinguishable from a parent call except via the `tool_use_id` join to the transcript JSONL. OTel-only fields: `ttft_ms`, per-request and tool `duration_ms`, `tool_decision` source / classifier_verdict.
-- **Non-inference campaign (codex-ni-01a16d6b).** S4-T1.SRC (turns copied into `RoleResult`, orch `7c0f2929`) and M-26 (`distill_skillbank` escalation count wired from native `action_type`, orch `96dc99c9`, fake-record tests only) are accepted at source scope; the first 22+1 test claim was retracted because it ran in the shared checkout rather than the private snapshot. Both parents stay open for live inference proof. The handoff-graph UI fixes (non-scaling dep edges, daily open-box stock chart, priority-gradient rings) are shipped; BACKLOG-PRIORITY (a tiered total order) is prepared.
-
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [episodic-memory-integrity](../handoffs/active/memory-program.md), [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [ni08 continuation](../docs/reference/ni08-non-inference-continuation.md), [codex-ni checkpoint](../progress/2026-10/2026-10-24-codex-ni-checkpoint.md), [coordination](../progress/2026-10/2026-10-24-codex-ni-01a16d6b-coordination.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md), [s4-turns](../progress/2026-10/2026-10-24-codex-ni-s4-turns.md), [codex-ni-vidya](../progress/2026-10/2026-10-24-codex-ni-vidya.md), [wave1 ingest](../progress/2026-10/2026-10-24-codex-ni-wave1-native-ingest.md), [daily log](../progress/2026-10/2026-10-24.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources, a gitnexus index receipt, and host-housekeeping closures
-
-**Confidence: verified** (dry runs and commits named in the handoffs); adapters remain dry-run until real ingest.
-
-- **Read-side adapters landed on `f8/vidya-wire-1024`:** `pb_qcost.py` (original run 8 tuples, confirm run 18; refit with the producer's own fit code, refuses on any difference; INDICATIVE and its cause ride in `applicability`), `pb_hol.py` (M4.2 phase dirs, verdict partition re-derived, C2 NOT_MEASURED carries no value), `spec_rng_1_2.py` (8 verifier-class observations per valid run, every statistic re-derived), `kv_prefix_fork.py` (declares `KPF18_SUB_ARMS[3] = item3v2_load<N>`; the aborted partial load projects as an attested incomplete attempt; `hsf_*` records are declined because they carry no graphs state). Rule: never project a 0 hit count as a measurement and never word a claim as graphs-only cause.
-- **Integrator-landed wiring:** `repl_embedder_parity`, `q38_serving_gate` (5 rows per run), `nemotron_bolt_fold` (30 observation rows; box open, no CPU speed leg), `clbench_cache_hit` (5 rows) and `moe_routing` (309 rows per model, producer stamps `content_sha256` and `input_traces`). Still owed on the write side: PB-QCOST and SPEC-RNG runners emitting `belief_measurements.jsonl` themselves.
-- **NIB2-GNX-1 re-index PASSED at `fd1a894` (85,231 nodes, 3,435 clusters) but is not ticked:** origin/main was two commits ahead. A false-positive warning (registry path `/workspace/repos` vs `/mnt/raid0`) was traced. `scripts/gitnexus-index-receipt.py` (`epyc.gitnexus.index_receipt.v1`, self-hashed) now lets the next re-index cite freshness by sha; the index is dependency evidence, not a ClaimTuple.
-- **Host housekeeping.** Session-backup retention `KEEP=14` to `3` freed ~33 GiB (rotation observed). The invisible space was the Docker root, 250.8 GiB; an operator-approved prune of 40 stopped `sweb.eval.*` containers and 49 `sweb.*` images took it to 224.0 GiB with the running set unchanged. The 8 dangling devcontainer images (~30.5 GB) wait for the operator's next reboot window. The memory sampler is live in cron (~2 lines/min); the pipefail lint is at 0 findings with signed ratify scripts as reviewed exceptions. The HF token file was chmod 600 (contents never read).
-- **Scheduling incidents (workspace-58).** A 3.7 h whole-host idle came from a watcher that re-touched its stamp at every re-arm (fixed: the stamp advances only to the time of the find that fired). Others: a `/proc/$SPID/status` main-thread mask false FAIL, the `SHRD` label unmatched, and an unfixed job re-granted before its fix. All are rows in the inference-backlog-scheduling incident ledger.
-
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md), [workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
-
-## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the orchestrator code index is stale, and llama-bench rows gain a protocol field
-
-**Confidence: verified** (re-index run log; adapter survey in the filed task).
-
-- **NIB2-GNX-1.** The 06:37Z re-index rebuilt epyc-root cleanly (78,127 nodes), but the orchestrator re-index segfaulted during its incremental pass, and gitnexus reports that a stale feature branch, not `main`, owns the orchestrator's flat index slot. That index is about 1,290 commits behind. The repair re-points the slot through the documented gitnexus command (never by deleting `.gitnexus/`) and runs a full re-index ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)).
-- **VB-LLAMA-BENCH-HARDEN-PROTOCOL.** None of the four adapters that project llama-bench output into claim tuples reads `autokernel_hardened`. They will carry it as a protocol field and refuse unrequested hardened rows, so a row from the defect window cannot enter the ledger as an ordinary bench number. The source is also listed in the adapter table ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); see benchmark-methodology).
-
-### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
-
-- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-GNX-1)
-- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-LLAMA-BENCH-HARDEN-PROTOCOL)
-- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
-
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): write sides and producer emits are wired, a pseudo-protocol id was grading observations as Witnessed, and the dev-harness backup has uncovered stores
-
-**Confidence: verified** for the adapters, tests, the protocol_id fix, the backup-coverage census and the full-corpus projection run; **inferred** for any claim that a producer's first live record will grade (no producer had yet written a ledger row for these six source kinds: 0 rows).
-
-- **Ten write sides landed in one pass; the producer calls were the second half.** Root `scripts/vidya/adapters/` gained capture writer, strict reader and registered projection for HIL-15a AUC, D-RI-PREVIEW, RTE-PFX-2 (plus a `chunk_kv` kind), HS-PROF-1 profile arms, RUS-2, EV-19 gold self-check, Oolong, YaRN gate aggregation and the paired-loadgen/AKR-SG claim text; shared grade only, README rows appended. A separate pass wired the PRODUCER-side calls (HIL-15a driver, HS-PROF-1 job, RTE-PFX-2 recipe, Oolong, D-RI-PREVIEW, EV-19, RUS-2, YaRN `decision_records.py`). Emit failure never blocks the producer: it is recorded (`belief_emit.status == "error"`, `auc_sidecar`), not fatal. The YaRN emitter splits a bin that straddles zones by zone (never `mixed`), emits only on a FINAL decision, excludes items with no measured real length with a listed reason, and sets `comparable_to_published` false; ruler cells were added later with the RULER checkout pin and a non-empty deviations list. Verdict rows leave `protocol_id` empty until a ratified protocol is cited.
-- **A pseudo-protocol id silently upgraded observations.** `harness_improvement`, `hil15a_auc`, `repl_preview`, `toc_ab`, `skillbank_ab` and `ak_history` wrote a non-empty `protocol_id` (`observation:none` or the capture schema string), so `grade()` returned Witnessed/Attested for rows with no ratified protocol. Writers now store the empty string and projection re-maps legacy ids; tests assert Judged/Located (140 passed over eight carrier families). The same class remained open in `chunk_kv`, `hs_prof1_profile_arms` and `ibench` when it was filed. No ledger row had been written for the six kinds, so nothing was rewritten.
-- **Speech write sides exist before any run.** `conversation-stack-measurement` (kinds `stt_arm_wer`, `stt_fitting_screen`, `stt_lexicon_trial`, `vad_arm`, `end_of_turn`, `time_to_final`, `interruption`, `coresidency_degraded`), `speech-ggml-optest-measurement` (CS-43.1 and the v11 gfx90a op-test; value = failed cases, lower_better; every tuple an observation because experimental-tree runs are P-AK-SEARCH-1 search records) and `speech-cpu-measurement` (capture rows only when `SPEECH_CPU_CAPTURE_DIR` names a new directory; the original `live_llm_contention.py` stays byte-identical because SHA256SUMS and a prebinding pin it). Refusals are by construction: a timing oracle that is the gate under test (the circularity rule), a tuple without A/B/A arm ids or the region-claim id, a non-production runner without its parity-gate ref, per-utterance values on a confirmation stratum. A human listen/rating emitter (VB-SPEECH-LISTEN-1) covers the Italian check.
-- **First live ingests, and what they were not.** The akrsg A/A shakedown was ingested pipeline-only (3 claims, Judged/Located); session-unit captures now state their real `reps_basis` (session rounds, not independent launches) without moving any grade. The AKX width-dimension record became a new adapter (4 count tuples). Findings: the CPU AKX-ALL-26 cells have no reader, so only the HIP half is closed; comparison buckets sum to 99 while the run-header count is 97; one idempotence test fails on clean origin/main too (4 new claims versus 3 expected, unrelated). KPF-18-S1 wrote 15 records but the read side voided the whole file on the first invalid line (13 invalid: sub-arm names outside the allowed set), so 0 of 15 project; filed as a read-side fix.
-- **The dev-harness trace backup is live but incomplete (read-only census).** Covered: Claude transcripts with subagents, Claude memory, Codex rollouts (vault plus tarball). Partial: opencode.db. NOT covered: `history.jsonl`, the Codex state sqlite, agent_audit shards with orchestrator logs, `serving_calls.jsonl`, `planner_archive.jsonl`. Anomalies: only 6 of 14 ai-sessions tarballs on disk (rotation logs "kept 14"), a 62-day log gap (2026-08-03 to 10-03) from rsync code-23 errors on immutable dirs. The operator waved the decision off (the root-filesystem agent owns backups) and then that agent delivered hourly consistent read-only opencode snapshots (nightly zstd plus 72 hourly copies); scope ruling: mine everything, every Unit/event/session record carries a `source` tag (`epyc|host|twyne`), readers open snapshots only and REFUSE live stores. `backup_coverage.py` judges coverage by snapshot freshness (under 3 h), not by the nightly job.
-- **The projector ran over the full corpus.** Sample 20 main sessions: 66 units, 16,006 events in 2.2 s at 64 MB RSS, nice 19. Full run `full-20261022T1310Z`: 42,744 units (claude_code 4,907, codex 20,547, opencode 17,290), 3.2M events, 4,066 commits joined, 858 s, private output only (content becomes keyed-HMAC 64-token block hashes). Design rules kept: usage normalised to inclusive OTel input tokens with the raw tuple retained, Claude usage deduped by message id, Codex usage read from `token_usage_record` (never summed `token_count`), spawn-versus-fork edge kinds, semconv commit stamped. The agent_audit ingester now reads every `agent_audit*.log` shard (18 tests).
-- **What this Claude Code version emits over OTel (one `claude -p` session, content toggles off).** Content fields are redacted but lengths remain; metrics `session.count`, `token.usage`, `cost.usage`, `active_time.total`; log events include `api_request` (with `ttft_ms`, cache read/creation token splits, cost), hook registered/start/complete events, `user_prompt`/`assistant_response` (lengths only), `mcp_server_connection` and `plugin_loaded`. Two gaps remain open (tool-call event fields, sub-agent lineage ids); compaction is not forced via OTel because the projector already reads compaction boundaries from the transcripts.
-- **Lesson, producer side.** A fail-open writer that swallows every exception cannot be told from one that was never reached: a recorder census showed 75 records and 0 `infer` events versus 4,739 `llama POST start` lines. Fail-open writers need a per-process drop counter.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — write-side tasks, protocol_id fix, speech and quant-comparison rows
-- [progress/2026-10/2026-10-22-vb-write-sides.md](../progress/2026-10/2026-10-22-vb-write-sides.md) — ten write sides and open producer calls
-- [progress/2026-10/2026-10-22-producer-belief-emits.md](../progress/2026-10/2026-10-22-producer-belief-emits.md) — producer emits, protocol_id bug, YaRN field mismatches
-- [progress/2026-10/2026-10-22-final-producer-emits.md](../progress/2026-10/2026-10-22-final-producer-emits.md) — YaRN, EV-19, RUS-2 emit decisions
-- [progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md](../progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md) — first live ingests and findings
-- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — backup coverage, projector, OTel fields
-- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — KPF read-side void, drop-counter lesson
-- [progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md](../progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md) — speech adapters
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 9): a pinned source digest goes stale whenever its producer changes, and a family of failures can share one cause
-
-**Confidence: verified** for the test outcomes; the re-pin cadence is a proposal now filed as a task.
-
-- **One cause, 15 failures.** With `EPYC_RESEARCH_ROOT` set, 12 tests in `test_autokernel_profile_adapter.py` and 3 in `test_loop_cpu_profile_adapter.py` failed. Research `07333b884` (2026-09-17) had changed the producer's capture shape (sampled-CPU topology) and the root reader still pinned the old one. The reader now carries two closed versions (`legacy-v1` and `sampled-cpu-topology-v2`), reads the version from the receipt's own `perf record` command, rederives the per-phase topology digest and the sample totals, and leaves `claim_tuple.grade()` unchanged.
-- **The pin is the hazard.** The reader pins two source digests (07333b884 and research main b93017dc9), so any later change to a producer file stales the adapter. VB-AK-PIN-REPIN files a recurring read-only check that lists pins whose file changed on research main.
-- **A guard moved and a test pinned the old place.** Orchestrator seam S1 moved the MHS guards to `src/autopilot_core/mutation_guards.py`; `test_mhs_guard_adapter.py` now searches both files and still asserts the pinned prefixes.
-- **New sources wired.** `ak-width-cells-cpu` (4761 cells, re-derived from rep digests and a freeze hash) and `speech-listen-rating`; both project and let `grade()` decide.
-
-### Source References (2026-10-22 wrap-up sweep 9)
-
-- [progress/2026-10/2026-10-22-ak-profile-reader-v2.md](../progress/2026-10/2026-10-22-ak-profile-reader-v2.md)
-- [progress/2026-10/2026-10-22-vidya-test-fixes.md](../progress/2026-10/2026-10-22-vidya-test-fixes.md)
-- [progress/2026-10/2026-10-22-akx26-cpu-wire.md](../progress/2026-10/2026-10-22-akx26-cpu-wire.md)
-- [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): trace mining and belief wiring
-
-**Confidence: inferred** for the filed UTM-LB/F3-LB1/VB-LB1 tasks (not run); **verified** for the TOC A/B sidecar writer (orchestrator `e9cf0949`, 44 tests passed) and the HIL replay belief writer (root `116356c87`).
-
-- **Mine the backup we already have, do not build a second one.** UTM-LB1 verifies the nightly cloud-llm-vault sync (02:00Z, immutable), 14 retained ai-sessions tarballs and micron snapshots (keep 60) cover each of nine dev-harness stores; UTM-LB2 projects Claude Code JSONL, Codex rollouts and opencode V1/V2 into OTel-GenAI-named events, read-only and private. UTM-LB3 repoints the agent_audit ingester from the frozen legacy log to per-agent shards.
-- **Privacy gate before any trace-derived output (F3-LB1):** per-session results only under a private gitignored path, commits carry aggregate counts and rule text through `raw_trace_publish_preflight`, and the staged PII guard is extended to transcript-JSON shapes; epyc-root is public, so transcript content is never committed.
-- **Write side first, again.** VB-LB1 wires diagnostic aggregate-only rows for mining reports, structured-output repair/finish_reason counters, the opencode prefix/gap baseline and interrupt series. Landed: `hil_replay_capture.py`/`hil_replay.py` (refuses any report whose label is not exactly `measurement`, so a forged sidecar over the synthetic example reads back as zero rows) and `toc_ab_sidecar.py` (VB-TOC-AB-WRITE ticked). Filed: VB-HIL15A-WRITE, VB-DRIPREVIEW-WRITE, VB-AKRSG-WRITE, VB-HSPROF1-WRITE, VB-RTEPFX2-WIRE, VB-CAL-OVERRUN-WIRE (after D4 k5_s4 ran 2.1x its estimate), VB-GPU-CPU-NOISE-WIRE.
-- **Retroactive wiring is allowed only by the task owner at finalize:** the CT-18 Skill-Inject results were wired as three sidecars, one per served pin (a worker run mixing CPU and GPU kernels would break the one-pin-per-row contract); this is not a reader-side reconstruction.
-- **Operator rulings:** DP-1 = (a), retrofit backfill of AutoKernel records allowed (graded Judged, flagged retrofit); DP-4 = (A), counterfactual-confirmed reliance for the AutoPilot PASS rule, with AP3 role restart scoped to `spec_draft`/`kv_profile` on three roles.
-- **Memory-lesson efficacy is an open measurement:** whether a memory-only lesson changes violation rate at all, or only hook-enforced ones, is what DHM-3's interrupted-time-series pilot is for. LLM-mediated consolidation needs a paired accuracy-per-cost readout against a BM25 baseline, and observation masking stays the default compaction.
-
-### Source References (2026-10-22 sweep 7)
-
-- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
-- [handoffs/completed/frontier-lab-automation.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
-- [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
-- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
-- [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
-
-## Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): belief-kernel readers landed, storage redesign approved and Phase 1 integrated
-
-**Confidence:** verified for commits, test counts and acceptance results named in the handoff and progress file; inferred for the effect on planner behaviour, since no live loop has yet made a decision from a non-empty read.
-
-- **Both consumers now read the ledger before planning.** Orchestrator `955b6f28` lands `loop_beliefs_bridge.py` (runs root `loop_beliefs.py prepare` as a child before every planner turn, requires a sealed `ReadyBeliefs`, missing reader raises a critical alarm); research `b7b23fe1c` does the same for AutoKernel and ingests `serving-beliefs` A/B receipts via `--source-root`. Degraded mode runs only queued or preseeded work. `/workspace` was 466 commits behind and lacked the reader, so path resolution falls back to the epyc-root-main view.
-- **Proof of use is still open.** VB-REFOCUS-NONEMPTY-READ-PROOF needs one decision whose input was a non-empty read (count non-empty reads, not total). Both smokes returned the same 12 device-scoped claims (`epyc-9655`) for three different CPU models, so VB-LOOP-TEXT is open until P1 acceptance passes.
-- **Storage redesign approved by the operator.** The 933 empty reads are answered by a demand-driven schema keyed by the scope the loops query, with `claim_tuple.grade()` still the only grader. Tasks P1-A..P1-N: carrier, serving v2, experiments and floor adapters, reader with target/sibling/host and knob/lineup tiers, loop consumers, README rows, KPF-18 scope, PB-HOL-1 and `autopilot_journal` adapters are ticked; P1-F (backfill), P1-N, P1-LAND, P1-EVDUR-FIX and P1-PHASE2 remain.
-- **Phase 1 integration.** Root `f8/belief-p1-integrated` @ `d83f69357` (31 commits); `tests/vidya` 2390 passed, 2 failed (both `test_evidence_durability_adapter.py`, producer sha / CLI drift, unrelated). Rehearsal backfill on a ledger copy: +942 frames; AC1-AC4, AC7-AC9 pass. AC5 was amended because the 35B now has real KPF-18 target beliefs; it runs after 2026-10-22 06:30Z (CPU timing). Orchestrator `f8/belief-p1-ap-consumer` @ `f0e670a1` (62 + 125 tests); research `f8/belief-p1-ak-consumer` @ `2a2b5c823` (328 tests).
-- **Two operator gates.** DP-1 (retrofit projection of historical AutoKernel records, graded Judged, flagged retrofit) gates P1-F and P1-LAND; DP-4 (AutoPilot PASS rule A/B/C, recommendation A) gates only P1-N. Order: AC5 on the copy, DP-1, canonical backfill, P1-LAND.
-- **Trial clock moved to 2026-11-30** (from 2026-11-11); each loop needs 7 days live, so start by about 2026-11-23. The reminder is an hourly nohup loop, not cron (no `crontab` binary in the container); it does not survive a host reboot.
-
-### Source References (2026-10-21 sweep 6)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-REFOCUS-* tasks, P1-A..P1-N, DP-1, DP-4, trial clock.
-- [workspace-f8 progress 2026-10-21](../progress/2026-10/2026-10-21-workspace-f8.md) — Afternoon and Evening sections (Phase-1 integration, rehearsal).
-- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — rows added under P1-H.
-- [loop_beliefs reader](../scripts/vidya/loop_beliefs.py) and [trial reminder](../scripts/vidya/belief_trial_reminder.py).
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): knowledge-management — write sides that now exist, and a measurand note as governance
-
-**Confidence: verified** for the built writers/test counts and the frozen note's rules; none of the underlying measurements is yet a graded claim.
-
-- **The retrieval eval is the first run through a new write side, and its box is still open.** VB-UFH12-RETR gained a native capture module (a run writes a record plus belief-measurement rows) and a read-side adapter pinned to the capture file's hash; the pre-registered rule values ride in every row and different values are refused without a dated amendment. Run `repl-emb-22-20261020` wrote 275 rows (260 recall, 15 paired-diff) that all projected and graded in a dry run. The done criterion is not met: no cost rows exist (the speed block was dropped by operator ruling and timings were contended), the real ingest has not run because the adapter's pinned module path is absent on the shared checkout, and vs-BGE diffs, per-stratum diffs and the kill-rule verdict are not projected (the record is immutable; they live in the analysis file). A companion writer for embedder speed (VB-UFH12-EMBSPEED) refuses any speed row lacking the full timing context or an A/A noise floor carried in the metric's own unit. The pilot timing file stays retrospective with zero tuples.
-- **Retrospective versus prospective stays strict.** CPU-only n-gram replay results (VB-DF2-REPLAY) are token-level predictability under a retokenization proxy, not drafter acceptance, so the filed adapter must project arm hit rates with pinned inputs as the locator and cannot claim acceptance. The CPU np-by-context-by-KV-mode study (VB-KVU-CPU) reuses the existing KV capture adapter: one source class, one ladder, project, do not grade.
-- **A measurand note is a governance artifact, not a ratification.** Tying quantities to direction, denominator, stratum (only human-recorded evidence may advance an arm), era (each scorer substitution is a boundary) and reference-row tagging means a later grader inherits the reading rules instead of re-deriving them. The note explicitly leaves the human-only Annex S amendment boundary untouched. Pattern worth reusing: write the measurand and strata rules before the first scored run, in the same commit as the pins.
-- **Process lessons visible in these records.** Pre-registered numbers must travel with the rows (done above); operator rulings that change a pre-registered source definition are recorded as dated amendments with the rule numbers explicitly unchanged; a checkbox is left open when a human review (CS-45) or a read-side ingest (VB-UFH12-RETR) is still owed, even when the artifact exists.
-
-Cross-refs: [search-retrieval](search-retrieval.md), [multimodal](multimodal.md).
-
-### Source References (2026-10-20 sweep 2, knowledge-management)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-RETR / EMBSPEED build notes, VB-DF2-REPLAY, VB-KVU-CPU, VB-AK-HISTORY (newest sections only; the 421 KB file was not read in full).
-- [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — frozen rules and strata.
-- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — the run being recorded.
-- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-45 evidence note and review-pending checkbox.
 
 ## Latest source review — 2026-10-07
 
@@ -280,25 +33,6 @@ Periodic validation also separates making a red gate visible from fixing its fai
 - [Repo readiness](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — periodic red gate and reference follow-on.
 - [Agent-file completed ledger](../handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md) — dated investigation versus vendor account, intake-896#record.
 
-## Compiled Update — 2026-10-07: retained originals distinguish evidence from identity metadata
-
-**Confidence: verified** for accepted source boundaries and their preserved synthetic receipts; no new scientific measurement is compiled here.
-
-The RAW-anchor and analysis-report work closes two versions of the same provenance gap. A quote hash alongside a revision is insufficient unless the quote can be found again in the retained original. Likewise, deterministic report JSON cannot recover input custody that its writer never recorded. SC76/SC77 now use one retained-RAW verifier before assigning literature support; missing originals remain unknown. The accepted numeric child checks claim-to-quote magnitude agreement, but one shared magnitude is sufficient under that helper: it supplies neither full numeric entailment nor semantic, title or negation verification. The parent SC78/SC79 extraction work remains open. ([Current source acceptance](../handoffs/active/vidya-belief-substrate-program.md#newly-unlocked-retained-source-numeric-controls))
-
-Verify-before-stop and suite-discriminability reports now have prospective writers that retain the exact parsed inputs, source identity and snapshots before strict adapter projection. Identityless legacy reports are refused rather than assigned reconstructed warrants. Their existing metric definitions and per-metric denominators remain authoritative; an undefined zero-denominator rate stays absent. SC80 separately makes an out-of-range claim citation dangling and blocking, while a valid but uningested claim remains unknown. These distinctions prevent malformed references and missing evidence from collapsing into the same state. ([Analysis writer acceptance](../artifacts/ni08/analysis-report-source-20261006/README.md), [capture recipe and failed predecessors](../docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md))
-
-The recipes document preparation and earlier failures; current owning acceptance records establish the later bounded synthetic capture. RAW-anchor retention is accepted after original 51/51 controls, and the analysis pair after ROOT 38/38 and APP 20/20. Those fixture counts warrant source conformance through the existing CI carrier and `claim_tuple.grade()`, not live paper accuracy, corpus measurements or historical recovery. Failed originals remain unchanged. No adapter introduces a second grading ladder or policy authority. ([RAW recipe](../docs/reviews/ni08-vb-raw-anchor-capture-recipe-20261006.md), [RAW acceptance](../artifacts/ni08/raw-anchor-source-20261007/README.md))
-
-A related CI lesson is that dependency checkout paths are evidence boundaries too. The initial research checkout destination collided with ROOT's tracked intake tree; the corrected job uses a separate `.ci-research-producers` location and three test-only source seams. Synthetic producer outputs stay outside the canonical measurement ledger. A passing targeted capture and a failing generic suite are separate propositions, even when produced by the same commit. ([Hermetic producer contract](../docs/reference/hermetic-research-producer-ci-contract.md))
-
-### Source References (2026-10-07 retained originals)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — current closures, retained failures and still-open parent scopes.
-- [RAW-anchor recipe](../docs/reviews/ni08-vb-raw-anchor-capture-recipe-20261006.md) — prospective capture custody and its bounded ceiling.
-- [Analysis capture recipe](../docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md) — exact source closure, original failures and denominator controls.
-- [Hermetic producer contract](../docs/reference/hermetic-research-producer-ci-contract.md) — checkout collision repair and test-only dependency routing.
-
 ## Source References
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
@@ -317,1268 +51,6 @@ A related CI lesson is that dependency checkout paths are evidence boundaries to
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md), [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md), [`refactoring-multirepo-2026-10.md`](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10) — 2026-10-28 ledger, idle-compute and enrollment items
 - [`registration-sweep-v1.md`](../docs/reference/non-inference/registration-sweep-v1.md), [`scratch-reclaim-audit-20261027.md`](../docs/drafts/scratch-reclaim-audit-20261027.md), [`2026-10-27-scratch-reclaim-prep.md`](../progress/2026-10/2026-10-27-scratch-reclaim-prep.md), [`2026-10-28-workspace-58.md`](../progress/2026-10/2026-10-28-workspace-58.md)
 
-## Compiled Update — 2026-09-25: KV-quant beliefs reach both planners
-
-**Confidence: verified** for the implemented reader and synthetic round-trip. No complete
-post-hook sweep has been ingested, so there is no live KV-quant belief to cite yet.
-
-- The v10 MI210 KV-quant capture now has a strict Vidya adapter and an ingest source. A
-  planner receives a comparison only from a complete, ingested 12-row run. The saved
-  September 22 runs have no producer-authored sidecar and cannot be backfilled.
-- AutoPilot reads one structured snapshot per turn and stores its run, fold frontier,
-  state hash, and displayed claim IDs on the existing planner decision row. Its
-  rationale may name claims that influenced the action; the receipt checks those IDs
-  against the displayed set. Exposure alone is not reliance. AutoKernel's matching
-  GPU/model planner reads the same bounded context. Neither reader grants promotion
-  authority, and an invalid or incomplete manifest is unavailable.
-- The September 23 section below describes the then-open reader gap. That gap is now
-  closed for KV-quant only. The first live ingest and AutoPilot correction review
-  remain open; the VRAM and architect quality adapters in that section remain separate work.
-
-### Source References (2026-09-25)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — completed KVQ reader and AutoPilot receipt; live-ingest and correction-review tasks.
-- [Codex session progress](../progress/2026-09/2026-09-25-codex-vidya.md) — tested reader and planner paths, and the no-backfill finding.
-- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer identity, caution fields, source kind, and reader location.
-
-**Sources**: 209 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
-
-## Compiled Update — 2026-11-03: backlog refactor completed (process note) and a commit-time gate on instruction surfaces
-
-The 2026-11 backlog refactor closed on 2026-11-03: 43 folds (route 1a 26, route 1b 17) took the active backlog from 176 to 29 handoffs, folded handoffs became redirect stubs in `handoffs/completed/`, and every retired ID carries a `Repoint-Reason:` trailer. These are moves, not new findings; plan, decision packages and audits are under `docs/design/backlog-refactor-2026-11/`. Source: [refactor handoff](../handoffs/completed/backlog-refactor-2026-11.md), [PLAN](../docs/design/backlog-refactor-2026-11/PLAN.md).
-
-AUD-15: `CLAUDE.md`, `agents/AGENT_INSTRUCTIONS.md` and `agents/shared/*.md` were human-only but enforced only against the Write/Edit tools, so a shell write or a commit of a peer's edit passed. A commit-msg hook now inspects the exact index git is committing (renames counted on both sides) and lands such a commit only with an `Operator-Ratified: yes` trailer; it is attributable but not tamper-proof (`--no-verify` skips it). Source: commit `49368eaff`, `scripts/hooks/check_instruction_surface_ratified.py`.
-
-## Compiled Update — 2026-09-24 (speech-lane wrap-up): write side before the first run for the conversation stack, and a closed contract grows by sibling, not by widening
-
-**Confidence: verified** for the filings and their source rows. All five tasks are **open**: none of these
-producers projects a tuple yet.
-
-- **VB-SPEECH-CONV-1: the write side was filed before any run exists.** The operator ratified the speech vision on
-  2026-09-24 as INF-79, and it will produce a new measurement family: the interlocutor bake-off on a PyTorch
-  reference harness, GPU co-residency and CU masking on the second MI210, end-to-end voice turns, and a
-  quantization ladder.
-  - Every harness row has to carry: a schema version, a row hash, `protocol_id`, reps and reps basis, `metric`
-    with an explicit per-metric `metric_direction`, model and quant, runtime (reference vs port) with its digest,
-    device and host-lane placement, and the co-tenant state sampled *during* the row.
-  - `protocol_id` stays null until the CS-2 Annex S amendment is ratified, which is a human-only step. Until then
-    every row is an OBSERVATION and is graded by `claim_tuple.grade()` like any other measurement. No new ladder.
-  - Four cautions ride in the source row:
-    1. The direction is mixed, so it is written per metric. Latency, TTFA, RTF, WER, cancel latency and co-tenant
-       slowdown are `lower_better`. Routing precision/recall, paralinguistic accuracy and exact-value retention
-       are `higher_better`.
-    2. Co-tenant state and placement are part of the measurand.
-    3. Semantic fidelity is LLM-judged, so the SC58 judgment-frame rules apply.
-    4. Reference-harness numbers are never serving claims for the eventual llama.cpp port.
-- **VB-AK-METRICS-1: a closed contract grows by sibling, and the sibling then needs a contract of its own.** The
-  per-call metrics row is correctly written *beside* the closed, self-hashed `actor_call.v1` record, not inside
-  it. The `autokernel-actor-seat` reader skips it as a foreign schema, so it is safe, but it projects nothing.
-  - Today the row has no self-hash and no root contract module. It joins only on role + backend + call window,
-    because the v1 `call_id` is minted inside root's module and never returned.
-  - The remedy is the VB-AK-SEAT-a pattern. Put a closed schema plus a reference writer and validator in root,
-    beside `autokernel_actor_seat_capture.py`, so writer and reader share one definition. Add an explicit join:
-    either return the v1 `call_id`, or bind both lines to one shared `call_nonce`.
-  - This has to land before the OAB-9 verdict gates a campaign default.
-  - Its cautions: decoded includes reasoning; totals sum novelty-identified sessions; per-tool latency is
-    *absent, never zero*; a `metrics_error` row is a failed measurement, not a zero-cost call.
-- **VB-AK-CTX-1: a provenance manifest records what was OFFERED, never what was READ.** The context-bundle manifest
-  joins `actor_call.v1` on `prompt.sha256` as the call's context-provenance facet.
-  - Refuse a manifest whose prompt sha matches no call record, or whose section files no longer concatenate to the
-    recorded digest.
-  - Reads come only from the export's tool parts, and must never be synthesized from the manifest.
-  - A bundle is lossless, so an inline/variable pair differs in where the context sits, not in what it holds.
-- **VB-KVU-1 / VB-SPEECH-CPU-1 (filed earlier the same day): retrospective records are not backfilled.** The
-  np × ctx `--kv-unified` drivers and `speech_cpu_bench.py` landed without a write-side hook. Their existing
-  outputs produce zero tuples, because a tuple invented on read would claim a warrant the run never captured.
-  - A log-derived depth figure that is really a truncation projection has to be marked
-    `estimate_kind: projection`, never passed off as a measured arm.
-  - A speech row has to record its cap and whether a guard aborted the arm, so that a capped or aborted row cannot
-    read as a completed measurement.
-  - Domain detail is compiled in [kv-cache](kv-cache.md) and [multimodal](multimodal.md).
-
-### Source References (2026-09-24 speech-lane)
-
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AK-METRICS-1, VB-AK-CTX-1, VB-KVU-1/1a, VB-SPEECH-CPU-1/1a,
-  VB-SPEECH-CONV-1.
-- [scripts/vidya/adapters/README.md](../scripts/vidya/adapters/README.md): the conversation-stack, `actor_call_metrics.v1` and
-  `actor_context_bundle.v1` source rows and their cautions.
-- [conversation-stack.md](../handoffs/active/speech-and-multimodal.md): INF-79, the ratified speech vision that produces the new family.
-
-## Compiled Update — 2026-09-24 (wrap-up compile): two "open" items had been fixed for weeks and never ticked, and two new belief-kernel sources were filed write-side first
-
-**Confidence: verified** — each item was re-verified against the tracked file or re-run, not taken on the
-commit message.
-
-### Key findings
-
-- **An unticked box is not an open defect, and the cost of assuming otherwise is a re-investigation.** Two
-  of the seven Tier-2 items resolved to "already fixed, never ticked": the wrap-up heavy-e2e failure
-  (`test_full_wrap_transaction_end_to_end`) was fixed by `40034bf1` on 2026-09-16, and the RTG-51 e2e test
-  likewise. Both were re-verified rather than assumed — `test_heavy_wrap.py` 14/14 with the e2e case run
-  20/20 times, and 14/14 + 20/20 for RTG-51. The recurrence check in the project's own *Act, Don't Defer*
-  rule exists for exactly this shape.
-  ([wrap-up-division-of-labor-policy](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy);
-  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
-- **The wrap-up e2e failure was a TEST defect, not a code one — and the distinction was load-bearing.** The
-  assertion hard-coded the fixture day `2026-08-23` while `step_6_freshness` stamps the progress shard with
-  the **wall clock**, so the test could only pass on one calendar day. It now globs
-  `progress/*/*-{AGENT}.md`. The earlier diagnosis had located the defect "upstream of `step_7_compile_wiki`"
-  and had been proven twice on a pristine HEAD — correct that it reproduced, wrong about what it was.
-  A reproduction on a clean checkout establishes that a failure is real, never that the *subject* is at fault.
-  ([wrap-up-division-of-labor-policy](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy))
-- **Two new belief-kernel sources filed on the write side, at the moment the producers were built.** Both
-  are read-side adapter tasks against producers that already emit deterministic JSON:
-  **VB-MFVBS-1** for the verify-before-stop measurement (orch `scripts/analysis/mf_vbs1_verify_before_stop.py`,
-  `86471b1f`; n, denominator and Wilson CI per rate) and **VB-EVALDISC-1** for the eval-suite
-  discriminability audit (`eval_suite_discriminability_report.v1`, locator = report × suite × metric). Each
-  carries its cautions in the source row rather than in prose: VB-MFVBS-1 records that the measurement is
-  one day, one role, one voluntarily-stopping task, that the rider never asks for verification, and that
-  forced stops sit outside the voluntary denominator; VB-EVALDISC-1 records that reports older than orch
-  `8a829233` must have their `run_unstable`/`brittle`/flip_rate claims **refused** where an input run was
-  error-dominated, while their MDE and pass_rate stay admissible. Both say *project, do not grade* — the
-  adapter projects into a `ClaimTuple` and the shared ladder decides.
-  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-MFVBS-1,
-  VB-EVALDISC-1)
-- **A per-field admissibility split is the right granularity for retracting instrument output.** Rather
-  than voiding every pre-fix discriminability report, VB-EVALDISC-1 refuses exactly the three fields the
-  defect touched and keeps the rest. That is only expressible because the adapter locator is
-  report × suite × **metric** — a coarser locator would have forced an all-or-nothing retraction.
-  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **A laneless session can still land shared-repo work, via a private landing worktree.** The Tier-2 sweep
-  had no roster lane: all root edits went through a private landing worktree (`noninf/landing-20260924`)
-  rather than the shared index, and the shared clones were only fast-forwarded — a peer's staged
-  `src/typed_decisions/native.py` in the orchestrator clone was left untouched. That is the working form of
-  the shared-clone rules (never `git add` a peer's staged file; private-index commits rot the shared index).
-  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
-- **Parallel-subagent results must be re-tested on the main thread, and this sweep shows why.** Every one
-  of the seven items was reviewed and re-run before landing, and four carried corrections: a README that
-  claimed a whole test glob runs when four suites fail to collect; a reward change that flipped the live
-  distribution with no era row; a nested `fork` that committed unrequested registry work and registry
-  comments claiming a prepared fix was "CLOSED"; and a "0 executions" claim that needed re-checking against
-  in-REPL verification (0/14 confirmed). Relaying a subagent's report unreviewed would have landed all four.
-  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
-  main-thread review")
-
-### Open questions
-
-- Three operator decisions are queued out of this sweep and none of them is a blocker on the work that
-  produced them: OP-47 (RTG-09 ratification), OP-48 (S-11a signature plus a contention-matrix bench),
-  OP-49 (how to collect tool-compressor telemetry at all).
-- Both new belief-kernel rows are filed but **unwritten** — the adapters do not exist yet, so neither
-  producer's output can gate a decision.
-
-### Source References (2026-09-24 wrap-up compile)
-
-- [wrap-up-division-of-labor-policy.md](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — the heavy-wrap
-  e2e defect, its true cause and the re-verification.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-MFVBS-1 and
-  VB-EVALDISC-1 source rows and their cautions.
-- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the seven-item results
-  table, the main-thread corrections, the private-landing-worktree working mode, and the OP-47/48/49 queue.
-
-## Compiled Update — 2026-09-23 (evening wrap-up compile): the wiki scanner's two watermark defects are closed, the shared agent session file is sharded, and a record corrected in two fields still misled from the third
-
-**Confidence: verified** — each item is a landed commit checked against the tracked file, not a plan.
-
-### Key findings
-
-- **The wiki source scanner no longer selects by filesystem mtime, and its watermark is shared.** OBS-13 and NIB2-68 were both closed on 2026-09-23 against `0ea91f3e` (which had landed 2026-09-08): `compile_sources.py` selects sources by **content hash against the tracked `wiki/source_manifest.json`**, never `st_mtime`, and `--touch` advances that tracked manifest. This removes the lane-worktree failure in which every file's mtime is the checkout time, so a lane scan reported the full-history backlog — measured at **919 phantom "new" sources on 2026-09-01 against a true delta of 2** — and a lane `--touch` would have written a watermark nobody else could see. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) OBS-13, NIB2-68)
-- **A landed fix whose box is never ticked reads as open work for three weeks.** Both boxes above described defects that had already been fixed; the closure on 2026-09-23 was bookkeeping, not engineering. The same session closed four other stale boxes (NI-IO, NIB2-81b, PAW-4, and the reaper item) the same way. The recurrence check in the operating constraints exists for exactly this: an item carried forward unchanged is evidence about the record, not about the work. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
-- **KB-WM-5: one session file shared by every agent meant agents logged under each other's ids.** `scripts/utils/agent_log.sh`'s `AGENT_SESSION_FILE` put every writer's session id in the same `LOG_DIR` file, and `agent_session_end` deleted it for everyone. It is now sharded per `AGENT_ID` (`logs/.current_session.<id>`) with the legacy file left inert, plus a 4-test two-writer suite (epyc-root `c8dbb5d4`). Any audit trail spanning the fix boundary must treat pre-fix session attribution as unreliable when agents ran concurrently. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md) KB-WM-5)
-- **PAW-4: a record corrected in two fields kept misleading from the third.** The intake-811 blocker entry had `contradicting_evidence` and `notes` corrected on 2026-09-17, but `recommended_actions` still carried the stale 2026-07-11 "closed cloud compiler + no downloadable dataset" clause until 2026-09-23. Partial correction of a structured record is a distinct failure mode from an uncorrected one: the entry looks reviewed. ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) PAW-4)
-- **A descriptor "drift" can be a spelling, not a change.** The K4 item declared `-ub 2048` (the effective value was already that) and recompiled the derived chain; the apparent descriptor drift turned out to be **symlink path spelling only**. Worth a check before treating a descriptor mismatch as a state divergence. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
-
-### Open questions
-
-- Do other intake records carry the PAW-4 shape — some fields corrected, one stale clause left behind?
-- SW-7 (general worktree resolution of gitignored citations) is verified still needed.
-
-### Source References (2026-09-23 evening wrap-up compile)
-
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — OBS-13 and NIB2-68 closure notes against `0ea91f3e`.
-- [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md) — KB-WM-5 and the per-agent shard (epyc-root `c8dbb5d4`).
-- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-4 record correction.
-- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch: stale boxes closed, K4, and what remains open.
-
-## Compiled Update — 2026-09-23 (wrap-up compile): three producers already write belief rows, and nothing reads them yet
-
-**Confidence: verified** for the filed rows and the producer facts they cite (schemas, commits, `ingest_sources.py` contents). No adapter here is built yet.
-
-### Key findings
-
-- **The gap has flipped from write side to read side for three producers.** Each one already emits self-describing, self-hashed records, and each lacks an adapter and a `Source(...)` row in `scripts/vidya/ingest_sources.py`. All three rows repeat the carrier contract: *project, do not grade*. `claim_tuple.grade()` decides, the `measurement` ladder is already registered, and the registry refuses a second one ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)):
-  - **VB-KVQ-V10: the MI210 KV-quant sweep at v10.** The producer is wired *before* the sweep runs: schema `epyc.vidya.kv_quant_27b_v10_capture.v1`, a `belief_measurements.jsonl` sidecar, per-row `row_sha256`, and a shared `validate_row()`.
-    - The adapter re-runs the producer's own `validate_row()`, pinning the producer file's sha256, so a mutated or pre-hook row voids the whole file to zero rows.
-    - It uses `attestation_locator`, because the artifact lives in the research repo, outside `REPO_ROOT`.
-    - The load-bearing caution is that K and V are reported separately, with `-fa on` fixed. This host measured a 1.52x swing from that flag alone, so a KV ratio quoted without it is a flash-attention number.
-  - **VB-VRAM-1: the per-process VRAM decomposition.** `scripts/measure/vram_headroom_probe.py` emits `epyc.vram_headroom_probe.v1` and has run twice. Three cautions travel verbatim:
-    - `transient_headroom_gib` is a floor *for the workload named in `exercised`*, never a general number.
-    - A `NOT TESTED` fragmentation verdict is not `absent`.
-    - **The first 2026-09-22 run is inadmissible.** Its driver failed silently after cycle 1, so its `RATCHET` verdict is an artifact of cycle marks landing in idle time. The admissible run is the six-verified-cycle one that replaced it.
-  - **VB-ARCH-CPU-QUAL: the architect quality gate, CPU live-serving and GPU arms together.** Both forwarders embed producer-authored rows in the run's own `result.json` under one schema. SC32 wired the GPU side on 2026-08-26 and SSU-F2 wired the CPU side on 2026-09-23, but **neither has ever been ingested**. Two cautions are load-bearing:
-    - `instrument_class` must reach the tuple. CPU arms are `serving` and GPU arms are an owned bench, and flattening them manufactures the cross-class comparison the constitution forbids.
-    - Truncation must be projected next to accuracy. An accuracy alone read an 18.5-point cap artifact as an 8-point regression; see [benchmark-methodology](benchmark-methodology.md).
-- **SSU-F6 closed: the quality gate now records its own cap.** `promotion_gates.yaml gates.quality` records `max_tokens: 64` as what v9 and v10 actually ran. A nested `truncation_audit` sub-gate (`required: true`) carries the measured non-neutrality, the method, and the degeneracy caution. The required-gate set is verified unchanged, because the nesting keeps `package.sh`'s top-level enumeration from seeing a seventh gate. SSU-F7 (two recipe env knobs absent from `:8074`) was root-caused as SSU-F11: nothing reads `recipe.env` (see [inference-serving](inference-serving.md)). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline))
-- **If the Kuzu graph layer is revived, HelixDB joins the backend candidates.** It is Apache-2.0, a Rust graph+vector store on a slatedb LSM, listed beside maintained Kuzu forks. It runs in server mode, not embedded, which works against the locality rationale for Kuzu (intake-1496#record). ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-78c)
-
-### Open questions
-
-- Who authors the three adapters? Each row names "whoever next runs/touches" the producer. Until then, the producers' rows accumulate unprojected, and pre-hook runs will never be retrofitted.
-
-### Source References (2026-09-23 wrap-up compile)
-
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-KVQ-V10, VB-VRAM-1, VB-ARCH-CPU-QUAL, SSU-F6, SSU-F7.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F2 (the CPU forwarder), SSU-F11 (SSU-F7's root cause).
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-78c HelixDB note.
-
-## Compiled Update — 2026-09-23: private-index committing protects your peers and rots the SHARED index — and the rot reads as mass deletions
-
-**Confidence: verified** — reproduced from the staged-vs-HEAD diffs of ten real entries across two
-sessions in one shared clone, and cleared.
-
-### Key findings
-
-- **The mechanism.** Committing through a *private* index seeded from `origin/main` is what stops a
-  session sweeping peers' hunks all day, and it is correct. But it never advances the **shared** index, so
-  a stale entry there stays pinned to old blob content while HEAD moves past it. The growing gap between
-  the pinned blob and HEAD **reads as deletions**, and a plain pathspec-less `git commit` from *any*
-  session in that clone would publish them. Observed spans: −379, −154, −43, −31, −18, −14, −7, −2 lines.
-- **The damage is proportional to how much you have committed since the entry went stale.** It starts at
-  zero and grows silently, so there is no moment at which it announces itself.
-- **The command a careful person reaches for cannot see it.** `git diff -- <file>` is worktree-vs-INDEX
-  and **cannot show this class of damage by construction**; it needs `--cached` or `git diff HEAD`.
-  `git status` does show the tell — `MM` rather than `M` — but that renders as ordinary dirt in a clone
-  with dozens of dirty paths. One session had seen the staged list hours earlier and called it benign
-  without running `--cached`: **looking is not checking**.
-- **The remedy already existed in writing and was unenforced.** `agents/commands/wrap-up.md`: *after*
-  committing, `git reset -q -- <the same paths>`. **After** is load-bearing — `git reset` sets the index
-  to HEAD *as of that moment*, so running it before the commit re-arms the trap. The step was dropped
-  exactly when the session switched to `commit-tree -p origin/main`, because in that shape the shared
-  index is provably irrelevant to what *you* publish: **the hygiene step that protects peers looks
-  redundant from inside the very pattern that makes you safe from peers.** The fix is detection, not a
-  new rule.
-- **The knowledge base was in the blast radius.** Among the restored files was
-  `wiki/source_manifest.json`, whose worktree copy was five days stale — publishing it would have rolled
-  the **wiki compile watermark backwards**, re-opening compiled sources as an apparent delta. A
-  content-hash watermark is only as trustworthy as the copy of it that gets committed.
-- **Clear only your own entries.** Both sessions cleared their own and checked each of the peer's before
-  leaving them alone — in one case adjacent staged deletions in the same file belonged to different
-  sessions.
-
-### Open questions
-
-- Detection is unbuilt: nothing routinely runs `git diff --cached --stat` (or flags `MM`) in the shared
-  clone, which is what would have surfaced this on day one instead of a day later.
-- Should `serialized_push.py` or the pre-push hook refuse a push whose index-vs-HEAD delta contains
-  deletions the author did not author?
-
-### Source References (2026-09-23)
-
-- [2026-09-23 — main-kernel](../progress/2026-09/2026-09-23-main-kernel.md) — the six-file table, the
-  three compounding reasons it was invisible, and the *looking is not checking* close-out.
-- [2026-09-23 — main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md) — the second session's half,
-  the restored `wiki/source_manifest.json`, and the after-not-before ordering of `git reset`.
-- [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — the INF-77 work
-  whose commits were the ones at risk of being published as deletions.
-
-## Compiled Update — 2026-09-22: the second subject deletion — the retarget rule held, and the write-side row went in before the first run
-
-**Confidence: verified** (the handoff edits and the filed rows).
-
-- On 2026-09-22 the operator deleted GLM-5.3-Flash and asked for its handoffs to be translated to
-  DeepSeek-V4.1-Flash "assuming they are applicable". The 2026-09-01 rule below was applied again.
-  INF-69 [closed](../handoffs/completed/glm53-flash-evaluation.md) with its unrun gates marked
-  "closed unrun, translated to DS41-Tn". Its findings were **extracted to a durable doc** before
-  closure, because they lived only in checkbox bodies
-  ([GLM-5.3 source handoff](../docs/reference/models/glm53-autokernel-handoff.md)). The successor
-  [INF-77](../handoffs/active/deepseek-v41-flash-evaluation.md) lists what transfers, and it has an
-  explicit **"Not carried over"** section for KDA, `kpool`, the DFlash2 drafter, and the GLM kernel
-  experiments.
-- In the reviewer gates and the AutoKernel rows, a row whose subject is gone was annotated
-  **"[Subject deleted 2026-09-22]"** and left **unticked**. Unrunnable is not done. Model-agnostic
-  rows were marked as carrying over
-  ([reviewer gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates),
-  [research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)).
-- **Belief kernel.** VB-GLM53-MTP produces no further records, and its completed evidence stays as
-  history to project. **VB-DSV41** was filed to wire the `deepseek41` validation/serving producer at
-  write time, **before DS41-T1**, the first measured run. It reuses the VB-GLM53-MTP carrier and adds
-  reference-parity records bound to the official `inference/` revision, with quantization drift kept
-  separate from port defects
-  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
-- Links in the wiki to the moved handoff were re-pointed to `handoffs/completed/` in the same change
-  that moved it.
-
-### Source References (2026-09-22)
-
-- [`progress/2026-09/2026-09-22-main-dsv41.md`](../progress/2026-09/2026-09-22-main-dsv41.md) — deletion and retarget record
-- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — translated gates and not-carried-over list
-- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — closure banner
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — VB-DSV41
-- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — disposition gate 2
-
-## Compiled Update — 2026-09-19: two write-side rows filed before their producers run — GUI fuzzy workflows and held-out AutoKernel confirmation
-
-**Confidence: verified** for the filings (both are open tasks in [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)). Neither producer has emitted a tuple yet, so nothing below is a measurement.
-
-### Key findings
-
-- **VB-FW-1: GUI-authored fuzzy workflows (filed 2026-09-17, FW-4).** The source row went into `scripts/vidya/adapters/README.md` on the day the GUI was designed, before anything runs, because the read side cannot be retrofitted. Each workflow-document run emits **one** self-hashed `ClaimTuple`. It carries:
-  - the workflow-document hash (the canvas is the unit of identity, not the session);
-  - the node types actually executed;
-  - each fuzzy node's model pin **and** its question catalogue. It needs both because FW-1's L2 lift is per `(model pin, catalogue)`, so a calibration record keyed on only one is unusable;
-  - per-gate outcomes with their rejection destinations.
-
-  A fuzzy node's confidence is **recorded, never read by an edge** (FW-1 L2), so it rides as evidence, not as a gate input. The adapter projects and `claim_tuple.grade()` decides, with no new ladder. The row lands with the FW-2 executor. Authoring it takes zero inference. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **VB-AK-HELDOUT: AutoKernel CPU held-out serving confirmation (filed 2026-09-18).** Research `9eee67c1` introduced `epyc.autokernel.heldout_serving_confirm.v1`, before the first GLM v27 confirmation, as plain per-candidate JSON. The task is to add a producer-authored, self-hashed ClaimTuple. It binds:
-  - the exact attempt/tree;
-  - distinct public and held-out request digests;
-  - the model and recipe;
-  - both executable/build identities;
-  - the instrument and a separately calibrated floor;
-  - paired raw vectors and their units;
-  - the actual integrity-gate veto outcome.
-
-  A strict reader must reopen the native bytes and project them through `grade()`. There is no new ladder and **no champion-promotion warrant**. Pre-hook plain records remain historical evidence but emit no graded row, the same zero-rows-before-the-hook rule recorded in the 2026-09-17 wiring wave below. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-
-### Open questions
-
-- VB-FW-1 has no reader input until the FW-2 executor exists. Who builds it, and does the hook land in the same change?
-
-### Source References (2026-09-19)
-
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-FW-1 and VB-AK-HELDOUT filings.
-
-## Compiled Update — 2026-09-17 (doc audit + restructure): a decided handoff is restructured — archive the pre-decision trail, promote the standing material, move the open boxes up, and prove conservation
-
-**Confidence: verified** for the procedure and its checks (`index_state.py --check` exit 0; `cite-check` 106 citations, 0 problems); **inferred** for the pattern statements. Session record: [`progress/2026-09/2026-09-17-harness-doc-audit.md`](../progress/2026-09/2026-09-17-harness-doc-audit.md).
-
-The harness-selection handoff had carried a candidate comparison for two months and then absorbed the decision it was arguing toward. The result was a 468-line file in which the ✅ line said DECIDED while the candidates table, Status, Objective, dependency graph and Reporting section all still read as open. The audit-then-restructure that fixed it is the reusable pattern; it complements the 2026-06-19 index-history compaction rule recorded further down this page (that one compacts *indices*; this one compacts a *decided handoff*).
-
-### Key findings
-
-- **A decision ✅ propagates to nothing by itself.** Every summary surface a reader trusts before reading the task list — candidates table, Status line, Objective, dependency graph, Reporting instructions — was still pre-decision. Refreshing them is part of recording the decision, not a follow-up. The same audit found two IDs each naming two tasks (`HS-5`, `HS-6`): the rule applied was **the archived, earlier-born row keeps the ID; the live later-born one is renamed** (`HS-5c`, `HS-15`), and the residual handoff lists every closed ID that no longer appears in it so the archive stays findable by ID. IDs are stable and never reused ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
-- **Split by kind of content, not by age — and write the destination table into the file that shrinks.** 468 → 153 lines by four moves, each with a stated *why*: the pre-decision candidate comparison (HS-1/HS-2 findings, 2026-07 intake updates, trainability and Stage-4 sections, closed seam defects HS-OD-1/2, 2026-09-14 intake rows) → `handoffs/archived/harness-selection-history-through-2026-09-16.md` (*closed, and written while the selection was still open — not a task list*); the two Harness Cards → `docs/reference/harness-candidates/harness-card.md` (*a consumer outside the handoff*: `HARNESS_RUN_POLICY.md` requires a run report to cite one); HS-7 re-targetability and HS-10 randomization → `harness-doctrine.md` (*standing criteria cited by the feature map and the improvement loop*); the HS-13 structured-output record → `docs/reference/v1-structured-output-capability.md` (*a kernel+seam capability cited by instruments unrelated to selection*); the HS-1g call-verb matrix → `client-surface-audit.md` (*the instrument and its results belong together*). The handoff keeps the decision record, the live task list and the P0–P5 gates.
-- **Open boxes move UP, not out.** Three live tasks (HS-5b freeze-before-tuning, HS-9 open-weight interpreter probe, HS-E1 harness-null-pool evidence) were embedded inside sections that were otherwise closed history. Archiving those sections wholesale would have taken open work dark; the boxes were lifted to top-level rows first, with a one-line pointer to their archived context.
-- **Conservation is checked line by line, and a moved file's relative links break in a predictable direction.** Every substantive line of the original was matched against the six destination files; the only 8 unmatched lines were boxes deliberately re-pointed because their "see below" targets had moved. A file moved from `handoffs/active/` down to `handoffs/archived/` inherits `](sibling.md)` links that now need `../active/` — 4 broken links, all of that shape. Run a relative-link pass over the whole touched set, not only the file edited last.
-- **Corrections are appended to dated session shards, never written into them.** Three 2026-09-16 shards carried facts that were true when written and wrong the next day (two pre-rebase commit hashes that exist on no ref; "FastMCP silently drops" where the pinned FastMCP 3 refuses; two fixed defects described as live). Each received a `## Correction (2026-09-17)` section; the original text stands as the record of what was believed and why.
-- **Attribution is a fact to audit.** The 2026-09-16 record credited the operator with the OpenCode pick; the operator had chosen the *posture* and named two shells, and the design pass settled the shell. The record now says so, and the operator's 2026-09-17 confirmation closes the gap (root `927d44cb`). A decision record that over-attributes to the operator is as wrong as one that under-attributes.
-- **A structural move can be approved and still gated.** Splitting Phase 0 into its own `opencode-shell-integration.md` was approved in-session but waits for the P0.4 live run, because that run is owned by another session and moving its handoff mid-flight would strand its evidence (`HS-4 P0-split`). Likewise, **no checkbox was ticked** by the audit: the Phase-0 work belongs to other sessions, so evidence went into box text and the live gate stays theirs to flip.
-- **Record the non-items too.** An operator remark made during the session (small models reviewing bugs, a larger model recommending fixes) was a thought about a research task, not work to file; it is written down *as* a non-item so the next audit does not re-raise it as dropped work.
-- **Shared-clone drift is handled by backup, reset, restore-live-state — not by merging stale edits.** `/workspace` was 623 commits behind `origin/main` with 63 dirty tracked files and 145 untracked entries. File-by-file the dirty copies were *older* states already superseded upstream, and the one local commit was upstream by content (`git cherry` applied; byte-identical file). Procedure: patch backups of every diff (vs local HEAD and vs origin/main) plus verbatim copies; `reset --hard origin/main`; **restore the six live runtime/state files** (`.research-session.json`, the two session-bus state files, `.devc/overrides.json`, `.devcontainer/devcontainer.json`, `data/benchmark_artifact_inventory.json`) so no daemon loses state; move aside, never delete, the 65 untracked paths that shadow now-tracked files.
-- **Intake hygiene from the same day's research session.** Two dive verdicts were *overturned* and both were claims of absence ("no accuracy numbers on the docs site", "no sample sizes") — an absence claim needs the negative verified before it is recorded; two entries stay `stage1-unverified` because their thread sources are unfetchable, and their numbers are non-citable; a prose reference to a whole entry was converted to `#record` so the write-up stopped flagging itself; an operator-queue row (OP-43) was opened and closed in-session with the ruling recorded in the stub and the row removed (the OP-9 precedent). The write side was wired before the first measurement (VB-TDP-1): 5 receipts → 11 claims / 33 frames, the bench report refused as a non-measurement, and a producer-side `metric_direction` gap fixed where it originated ([intake session](../progress/2026-09/2026-09-17-intake-jev-sageattn.md)).
-
-### Open questions
-
-- Should the "decision ✅ must refresh every summary surface" rule become a lint (a `DECIDED` Status with an `OPEN`/`TBD` candidates table is mechanically detectable) or stay an audit item?
-- When the P0.4 run lands and Phase 0 splits out, does the residual handoff keep the P1–P5 gates or hand them to the mechanism-owning handoffs it already points at?
-
-### Source References (2026-09-17 doc audit + restructure)
-
-- [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — audit findings, Part 2 destination table, conservation and link checks, operator decisions, the clone-reset procedure.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the residual handoff: post-decision record, "History and promoted material" table, closed-ID list.
-- [harness-card.md](../docs/reference/harness-candidates/harness-card.md), [harness-doctrine.md](../docs/reference/harness-candidates/harness-doctrine.md), [v1-structured-output-capability.md](../docs/reference/v1-structured-output-capability.md), [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the promoted material, each with its "Promoted 2026-09-17" provenance header.
-- [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md), [2026-09-16-sub-hermes-memory.md](../progress/2026-09/2026-09-16-sub-hermes-memory.md) — appended-correction shape.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — overturned absence claims, `#record` conversion, OP-43, write-side-first wiring.
-- [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md), [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — outcome banners added to design docs after the decision.
-
-## Compiled Update — 2026-09-17 (evening): three ticked adapter branches had never landed, a task is done only when `git cherry` is empty, and a receipt that is not a measurement stays unprojected
-
-**Confidence: verified**: `git cherry`, the merge commits and the vidya test runs recorded in the
-sub-lane logs.
-
-### Key findings
-
-- **Three root vidya branches had been reported and ticked, but were not on root main.**
-  - **What was missing.** `sub/ap54-root-20260916` (`eval_fence_enforcement`),
-    `sub/ap55bc-root-20260916` (`ap55_gate`) and `sub/vb-writers-root-20260916` (VB-AP53-RATE and SC83).
-    Their orchestrator halves were already on main in the AutoPilot train (`a1a0251a`). `git cherry` listed
-    every root commit as missing, and a grep of root main found none of the content.
-  - **How it landed.** Merges `7d1ed3a5`, `48dc08b3` and `3671df47`, plus `9d3d4f82`, which carries the
-    `cd79b80e` `would_hold_*` counterfactual verbatim. The adapter copies those keys only when a row
-    recorded them, and never reconstructs them. The shard note is in root `52b12f09`.
-  - **Tests.** 1391 vidya tests pass, and the real-writer end-to-end adapter tests pass 22/22.
-  - [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md)
-- **Closure inflation: four boxes were ticked on evidence that included an unlanded half.**
-  - **Premature ticks, now re-dated to the landing.** VB-AP53-RATE had a duplicate ticked box on the
-    branch, now folded into main's box. SC83 was ticked with the note "Neither is merged yet".
-  - **Unchanged boxes that got a dated note.** AP-54 and AP-55 are ticked on orchestrator evidence that
-    names a root carry that had not landed.
-  - **Not premature.** VB-MHS-OPS, because `mhs_guard.py` is on root main.
-  - **Also found.** `vidya-belief-substrate-program.md` auto-merged into a wrong result, with two
-    VB-AP53-RATE boxes. A clean auto-merge is not a correct one.
-  - **The standing rule that followed.** A task is done only when `git cherry origin/main <branch>` is
-    empty in every repo it touched. The evening landing table was checked against that gate.
-  - [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md),
-    [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- **VB-AP53-RATE and SC83 are wired, and both have zero rows today.**
-  - **Re-proposal rate.** `reproposal_rate.py` writes one self-hashed line per closed 100-trial window. A
-    rewound journal rotates the file.
-    - A read-only backfill over trials 0–1505 found 48 re-proposals, which is 48/216 keyed trials and
-      48/1366 overall. It writes only a `retrospective: true` file that the reader declines.
-    - The earlier one-off 133/1372 counted numeric trials, which this key excludes, so it stays a
-      non-gating observation.
-  - **SC83.** It writes one `false_accept_run.v1` line per scoring run, and its reader grades rows
-    `Judged/Located`. Nothing can be backfilled, because no decoy corpus exists.
-  - **Dry runs.** `ingest autopilot-reproposal-rate` and `ingest reviewer-fa` both matched 0 units. The
-    triggers are an AutoPilot restart on main and the first scored decoy corpus.
-  - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
-- **`speed_axis_reseed` is deliberately not projected (root `1d5f8cba`).** It records a state write, not a
-  measurement. Its trial row is already projected, and it never commits a promotion. Projecting it would
-  need a new settle rule for every refused newest-trial row. A test pins that frames are identical with and
-  without the event. AP-63(a)'s manifest digest *is* carried, ungraded (root `df295516`).
-  [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md)
-- **VB-RUNNER-PATHS-2 is closed (research `ae92ac5c`).**
-  - `score_tulving_run.py`, `occ1/run_occ1.py` and `score_beam_run.py` now load capture through
-    `belief_capture.load_capture`, which reads `EPYC_ROOT` only.
-  - The removed fallback was a live risk: the shared root clone is behind origin/main and lacks all three
-    capture modules.
-  - Tests: 10 new cases fail on the old code.
-  - VB-RUNNER-PATHS-3 lists the remaining hard-coded roots. Among them, the AutoKernel belief writers
-    default `EPYC_ROOT_REPO` to `/workspace`.
-  - [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md)
-- **More AutoKernel sources were filed before their first run.**
-  - SC87 covers spawn lineage. Its write side is done (`a6288858`), and its reader is pending.
-  - SC88 covers fresh seeded correctness, SC89 the plateau reporter's provenance, and VB-AK-LINEAGE code
-    lineage. All three are write-side first, and none may be backfilled.
-  - VB-AK-UNIFIED-PROFILE gains a sampled CPU/NUMA-location extension. Old captures stay location-unknown.
-  - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md),
-    intake-1439#record, intake-1454#record, intake-1440#record, intake-1446#record, intake-1451#record,
-    intake-1458#record, intake-1442#record
-- **KB-WM-3 is closed (root `4120af69`).**
-  - **`.index-state.json`: SAFE.** It is derived from tracked sources and never read back.
-  - **`.index-graph.json`: PARTIAL.**
-    - Absence was indistinguishable from "not blocked", so `index_graph_status()` now records
-      `ok`/`absent`/`unreadable`/`no_nodes`/`no_readiness` in the premise screener's provenance.
-    - `blocked/` handoffs looked for a graph that exists only in `active/`.
-    - A graph that parsed as valid JSON but was not an object crashed the reader.
-  - **`logs/agent_audit.log`: PARTIAL.**
-    - `.gitignore` re-included the 46 live shards, so `git clean -fd` would have deleted them. The
-      negation is removed.
-    - The legacy monolith was already missing from the shared checkout. It was restored from `f1717d80^`
-      (4402 lines).
-  - **Follow-ups.** KB-WM-5 (`logs/.current_session` is shared by every agent) and KB-WM-6 (graph freshness
-    is unchecked; the recommendation keeps it provenance-only, with a `--check` warning).
-  - [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)
-- **OBS-12 is closed (root `afb9745c`).**
-  - **Method.** `python3 -s` reproduces the interpreter left after a rebuild wipes `~/.local`.
-  - **Silent config loss.** Under it, `compile_sources` silently ignored `wiki.yaml`, which dropped
-    `SCHEMA.md` from `skip_filenames`. `wiki_writer_review` also ignored its config block. Both now raise.
-  - **Other fixes.** Six scripts now refuse with the venv command, and `coordinator-agent/SKILL.md` names
-    the venv.
-  - **Guard.** 18 cases, 16 of which fail before the fix.
-  - **Follow-ups.** OBS-12a covers the CLAUDE.md bus commands, which need PyYAML through a `python3`
-    shebang. OBS-12b (dangling `security-review-skill.md` links) was already fixed by the pass-2 compile.
-  - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
-
-### Open questions
-
-- KB-WM-6: should a stale or missing readiness graph ever reach the screener's prompt (reversing AIR-13)?
-- OBS-12a: venv in the doctrine commands, a PyYAML-free roster read, or a `health_check.sh` check?
-
-### Source References (2026-09-17 evening)
-
-- [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md): landing, conflicts, closure-inflation audit.
-- [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md): OBS-12, KB-WM-3, VB-RUNNER-PATHS-2.
-- [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): the non-projection decision.
-- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): VB-AP53-RATE, SC83, SC87–89, VB-AK-LINEAGE, VB-RUNNER-PATHS-2/3.
-- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): KB-WM-3/5/6.
-- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): OBS-12/12a/12b.
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the landing audit and the `git cherry` rule.
-
-## Compiled Update — 2026-09-17 (afternoon): a promotion is a claim only once its commit is seen
-
-**Confidence: verified**: adapter code and tests against the real `ExperimentJournal`. The first live ingest
-yielded 0 rows because the journal has no post-hook trials yet.
-
-### Key findings
-
-- **VB-AP-PROMO-RULE (root `f71277f7`).** Orchestrator main now stamps three fields on journal rows:
-  - `frontier_admission = "representative"`;
-  - `promotion_rule`, one of `frontier`, `empty_frontier_repro`, `seed`, `archive_unavailable_no_baseline` or
-    `refused_guard_unavailable`;
-  - `promotion_status`, either `pending_commit` or `refused`.
-
-  The adapter carries all three verbatim. It confirms a `pending_commit` only by joining a later
-  `baseline_promotion` ledger event with the same `source_trial_id`. It holds back a pending row on the
-  shard's newest trial, so the append-only ledger never records "uncommitted" while the commit is still being
-  written. The grade is unchanged, and absent keys stay absent.
-  [sub-vb-wire](../progress/2026-09/2026-09-17-sub-vb-wire.md)
-- **Capture must fail loudly at preflight, not silently after the GPU claim.** In research `0b295a25`, the new
-  `scripts/benchmark/belief_capture.py` does four things:
-  - it resolves the root from `EPYC_ROOT` and refuses when that is wrong;
-  - it loads capture modules by path;
-  - it runs `preflight()` before the claim;
-  - it sets exit code 3 on a failed capture.
-
-  The `/workspace/scripts/vidya` literal and the exception swallow in `ev13b_run.py` are gone, and
-  `prb_t4_tale_gpu.py` was ported to main.
-  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
-- Follow-ups: VB-RUNNER-PATHS-2 (two scripts still use guessed-root fallbacks) and VB-AP-PROMO-RULE-INGEST
-  (first real ingest after AutoPilot restarts on main).
-- **VB-PRB-T4 is closed.** Write-time capture ran through the hook on the first PRB-T4 run and ingested 24
-  rows, and the driver is on research main `0b295a25`. The sample-scope caveat is tracked separately as
-  VB-PRB-T4-CAVEAT. [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
-
-### Source References (2026-09-17 afternoon)
-
-- [sub-vb-wire](../progress/2026-09/2026-09-17-sub-vb-wire.md)
-- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the train landing that the producer shape was verified on.
-
-## Compiled Update — 2026-09-17 (later): a reader's consistency check can void a correct writer, and an identifier rename is a tripwire event
-
-**Confidence: verified** for the reviewed code and the test counts (read from the sub-lane records), and for the deployments at the named SHAs. **Inferred** for the two projection rows, which are filed and not built.
-
-Four items from the belief-kernel and index planes. Two are the same shape one level apart: a source of truth and a consumer of it disagree about a field's meaning, and the first failure is a whole-file void rather than a wrong number.
-
-### Key findings
-
-- **SC83: the writer and the reader disagreed about what `stale` meant, and the reader voided the file.** The AP-53/SC83 writer listed **every** stale decoy under `stale`, including `needs_arbitration` decoys that `false_accept_rate` routes to `excluded_for_arbitration`; the reader's `stale <= unscored` check then rejected the file as inconsistent. The fix separates the populations: `stale` holds settled decoys only, a new `stale_excluded` holds the arbitration decoys, and the reader checks it against `excluded_for_arbitration`. Tests exist on both sides, the `fixture-r3` fixture comes from the real writer, and the reviewer's reproduction now projects. Orchestrator `e93edfdb`. The general pattern: **a structural invariant checked across two files needs both sides to share the field's definition, and a voided file is the loud-but-total failure mode.** ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **AP-53: the journal writer now refuses to write over a rewound history.** Before writing, `record_closed_windows` checks each emitted window's recorded journal prefix digests against the current shards — one hashing pass per shard, memoised by inode, with a size check first so in-place truncation is still caught. On a mismatch it renames the file to `*.rewound-<utc>`, logs a warning, and re-arms. Tests cover a rewind followed by a re-run window, and an in-place edit that keeps both size and inode. **Content digests, not mtimes, are what a writer of derived history must key on.** Same review, same commit. ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md))
-- **A source-identity key is a global identifier, not a local name.** The key was renamed `mutation_ledger` → `rejected_mutation_ledger` because the BSV-3 tripwire (`test_mutation_ledger_tripwire.py`) greps tracked files for the whole identifier, and the committed file tripped it. Checks after the review fixes: orchestrator 897 passed across the new and adjacent suites; root `tests/vidya` 1305 passed, 80 skipped. ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md))
-- **The hub now serves a deployed read-only origin/main view, and the backlog graph renders readiness.** `:8100` serves `/mnt/raid0/llm/views/epyc-root-main` (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`), which supersedes the stale lane the hub used to serve. The RTG-46 readiness rendering (blocked = hatch, `no_open` = faded, ready = solid, legend from the producer's `readiness_counts`) is deployed with it, which resolves the "hub deploy pending" open item; the rendered-lattice human verdict remains open. ([handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md))
-- **Two write-side rows are filed for the belief kernel, and one closes.** SC85 (OCC-1 optical compression) is ticked: the writer/`validate_row` and the strict reader are on origin/main (root `1d5f5314`; research `2f053f61` + `e2c48c13`). VB-RUNNER-PATHS files a portability defect: `scripts/benchmark/review_f1/ev13b_run.py:197` hard-codes `sys.path.insert(0, "/workspace/scripts/vidya")` — as does the unmerged PRB-T4 driver `prb_t4_tale_gpu.py` — and both swallow a capture failure into their log, so the runner must resolve the root from `EPYC_ROOT` (or refuse) and make a failed capture visible, and VB-PRB-T4 cannot close until that driver merges. VB-AP-PROMO-RULE files the projection of `eval_details.promotion_rule` and `eval_details.frontier_admission` into the support frame once the gate-frontier branch is on main — additive, no grade change. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **Citation precision has a fix, a residual and a collision.** The bare run-form citing entries 882–883 (now `intake-882#record`/`intake-883#record`) in `agent-collab-rnd-harness.md` was a provenance note; rewriting it to `#record` for 882–885 turned `cite-check` from exit 3 (an overturned `clm_intake_883_03`) to exit 0 against a fresh ledger — the stale `/workspace/.vidya` ledger does not show the overturn, so a stale ledger under-reports. Separately, `SC76` is allocated twice in `vidya-belief-substrate-program.md` (VB-VGPR-STATIC and the 2026-09-15 wave heading); and the HEAD-4 35B max-perf figures were recomputed from raw JSON, matched, and a README arithmetic error corrected ("+28% from 8 to 12" → +10.45%; +28.05% is the 4→8 step). ([sub-misc](../progress/2026-09/2026-09-16-sub-misc.md))
-
-### Open questions
-
-- SC83's `stale_excluded`/`excluded_for_arbitration` split needs a decoy corpus and a scored reviewer run before it can produce a false-accept rate at all (SC83's own first trigger).
-- Does the stale `/workspace/.vidya` ledger get refreshed, or does `cite-check` need to refuse a ledger older than some threshold rather than silently under-report?
-- The `SC76` double allocation wants a renumber, and the wave heading it collides with cannot be edited without touching a historical section.
-
-### Source References (2026-09-17 later pass)
-
-- [2026-09-16-sub-vb-writers.md](../progress/2026-09/2026-09-16-sub-vb-writers.md): the SC83 stale/arbitration split, the AP-53 prefix-digest rewind guard, and the identifier rename.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): SC85 closure, VB-RUNNER-PATHS and VB-AP-PROMO-RULE.
-- [handoff-index-and-backlog-graph.md](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): the hub view deployment and the readiness rendering.
-- [2026-09-16-sub-rtg46.md](../progress/2026-09/2026-09-16-sub-rtg46.md): the readiness deployment record.
-- [2026-09-16-sub-misc.md](../progress/2026-09/2026-09-16-sub-misc.md): the citation-precision fix, the SC76 collision, and the HEAD-4 recompute.
-
-## Compiled Update — 2026-09-17: belief-kernel wiring wave — every file-shaped adapter gets an `ingest` name, pre-hook data stays at zero rows, and `.last_compile` is retired
-
-**Confidence: verified** for the landed code, tests, commits and dry-run counts (read from the vidya
-program, internal-kb-rag and the 2026-09-16 subagent logs); **inferred** for the open decisions
-(VB-HARNESS-AUDIT, VB-SL2-STEPS), which are recorded, not taken.
-
-The 2026-09-16 wave turned a register of filed write-side tasks into wired code. The main change is
-a dispatcher: `scripts/vidya/ingest_sources.py` gives every file-shaped adapter a `cli.py ingest`
-name. It does not grade; it calls each adapter's own projection and emits through
-`claim_tuple.to_frames`. Around it, several producers got durable writers, and one rule was applied
-everywhere: **data produced before a hook existed emits zero rows and is never rebuilt on read.**
-The same day retired the last trace of the old compile watermark (`wiki/.last_compile`), fixed a
-chain of evidence-plane snapshot defects, and showed that a batch of intake citations used the wrong
-index.
-
-### Key findings
-
-- **VB-WIRE-1: 15 new ingest names**, including `kb-rag-qlen`, `inf70-arms`, `contention-gate`,
-  `contention-matrix`, `beam`, `tulving`, `autopilot-journal` and `sealed-manifest`.
-  `dflash2_experimental_runtime` is left out on purpose, with the reason recorded in `UNWIRED`. The
-  test checks that each ledger grade equals `claim_tuple.grade()` of the adapter's own projection
-  (22 pass). Real-corpus dry runs: contention-gate 382 rows, fanout-outcome 5, sealed-manifest 6
-  (8 unsealed manifests declined), contention-matrix 6 runs all pre-hook and declined, inf70-arms 0
-  sidecars. After review, the dispatcher also refuses an adapter that declares no `AUTHORITY`
-  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md),
-  [sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md)).
-- **SC75 / VB-WIRE-2: the INF-70 serving-arm verdict now has a writer and a producer call.**
-  - The writer (root `685a72bc`) records one tuple per arm and keeps DIRECT and SMT-SIBLING contention
-    counts separate. It refuses to write when:
-    - the coresidency is missing;
-    - the classifier returned CLASSIFY-ERROR;
-    - the sampler used the legacy vocabulary;
-    - the arm started before 2026-09-07;
-    - the capture runs more than 1 h after the arm's rows.
-  - It has 36 tests. A mutation that disables the date gate fails 3 of them.
-  - The harness was promoted out of scratch to root `scripts/inf70/harness1/` (`b57b1efb`), and the
-    capture call was wired in `3c5a4b30`.
-  - `gguf_sha256` must be supplied rather than hashed inline, because hashing would refill the page
-    cache that the eviction step had just emptied
-    ([vidya program](../handoffs/active/vidya-belief-substrate-program.md),
-    [sub-own](../progress/2026-09/2026-09-16-sub-own.md),
-    [sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md)).
-- **The backfill rule, applied exactly (spec §4.7).** The AP-53 re-proposal-rate writer (orchestrator
-  `2789b56d`) arms itself on first call and writes one self-hashed row per closed 100-trial window.
-  Its `backfill` mode writes only `retrospective: true` lines with `belief_measurements: []`, because
-  today's key definition and supersessions are not the ones that applied to those trials. The
-  read-only replay (trials 0–1505) found 48 re-proposals: 48/216 keyed trials and 48/1366 overall
-  (structural 43, prompt 3, code 2). That matches the planner-fold replay. The scratch-script figure
-  of 133/1372 counted numeric trials, which this key excludes, so it stays a non-gating observation.
-  SC83 (reviewer false-accept rate) has nothing to backfill, because no decoy corpus or scored
-  reviewer run exists yet ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md)).
-- **VB-MHS-OPS: a guard's silence is not a 0 % rate.** `mhs_guard.py` projects eval-leakage-guard
-  rejection rates per closed UTC-day window. `vocabulary_unavailable` rejections are held out of the
-  leakage denominator, and `syntax_validation` rejects are held out of every denominator. The producer
-  persists nothing that marks a clean window as "screened", so the verdict source declines every unit
-  until `HOOK_SINCE` is set to the AutoPilot restart on the merged producer (VB-MHS-OPS-HOOK, waiting
-  on that merge and restart). A drift test compares the pinned producer field names with the branch
-  source. It found that the README said `ts` where the events actually carry `timestamp`
-  ([sub-vbmhsops](../progress/2026-09/2026-09-16-sub-vbmhsops.md)).
-- **First rows through the new hooks, and a sampling caveat.** EV-13b review-F1 projected 2 units →
-  6 rows with 0 refused (research `aac025a4`). PRB-T4 TALE projected 24 rows. Those 24 are
-  **sample-scoped**, because the harness took the first n rows in file order: the `math` claims cover
-  GSM8K only (150/150), and the `olympiadbench` draw is skewed (geometry 15/300 trials against a 19 %
-  population share). The fix is a correction frame, never a ledger edit. The livecodebench sidecar is
-  withheld because its accuracy comes from the vacuous `substring 'def '` scorer
-  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
-- **The ported TALE/review-F1 writers project an EMPTY `protocol_id`, and that is a grade ceiling, not
-  a formality.** On `sub/runner-adapters-20260916` (`2d45240f`, not pushed), both readers project
-  `protocol_id=""`. Before this, the writer cited its own capture schema, which let tuples reach
-  Witnessed/Attested without a codified protocol; the same-day OCC-1/SC85 precedent forbids that.
-  Legacy rows that cite the schema stay admissible, and any other citation voids the file. The TALE
-  writer also gained `tale_mean_latency_s_answer_only`, because VB-PRB-T4 requires answer-only AND
-  incl-estimator latency and only the latter was emitted. Checks: `tests/vidya` 1,304 passed / 80
-  skipped; `index_state.py --check` 0 problems; cite-check clean (rc 0). The two capture call sites
-  stay only in the unmerged GPU drivers and hard-code `/workspace/scripts/vidya`, which is filed as
-  VB-RUNNER-PATHS ([sub-runner-adapters](../progress/2026-09/2026-09-16-sub-runner-adapters.md)).
-- **VB-EVCONF2 writer plus a spec-decode caveat.** `confidence_source_capture.py` (root `c8c68662`,
-  merged `1e1de5fb`) emits AUROC, ECE and reweighted ECE per arm × source. The E7c and EV-4c
-  calibration numbers were measured with `draft-mtp` on. llama.cpp reports p=1.0 for draft-accepted
-  tokens:
-  - E7c is visibly saturated (1528/1684 and 1485/1628 rows at confidence ≥ 0.999999);
-  - EV-4c is not saturated (0/820 and 2/817), so its contamination is real but unmeasured.
-
-  Every citation of those ECE/AUROC values must carry "spec-on, confidence void pending the A-specoff
-  arm". The P-CAL amendment itself is human-only and has been prepared for the operator
-  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
-- **Write-side tasks filed before their producers first run** (the rule in practice): SC82
-  champion max-perf sweeps (the 2026-09-08 sweeps are pre-hook), SC85 OCC-1 optical compression,
-  SC86 HS-4 OpenCode-shell runs (adapter ready, 32 tests), VB-NIAH-E1A (a row carrying only one of
-  the strict/lenient accuracies is refused), and VB-GPU-RUNNER (six 2026-09-16 sweeps that went
-  through wrappers with no hook, so they emit zero rows). Rows without a codified protocol cap at
-  `Judged/Located` ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
-- **SC id collision.** SC76 had been allocated three times. S3-VID-02 keeps SC76, VB-VGPR-STATIC
-  becomes SC84 and the reviewer FA-rate filing becomes SC83. `research/intake_index.yaml`
-  (intake-1398#record) still says SC76 for VGPR
-  ([sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md)).
-- **Citation anchors indexed the wrong list (MHS-5, intake-1323#record).** Handoff `#NN` suffixes
-  numbered the entry's `dive_actionables_ledger` (D0–D9), not its five `key_claims`, so `#00`–`#04`,
-  `#06`, `#07` and `#09` were all mis-anchored. They were rewritten as `intake-1323#record (dive
-  actionable Dn)`. The MHS-5 corpus (23 patches) **narrows** dive correction (6) and does not
-  overturn claim 04. REPLACE patches are 4/4 negative (mean −8.4 pp), but the single worst patch is a
-  hint-only CONSTRAIN patch (−16.9 pp). The prior therefore ranks risk; it does not certify safety.
-  Marking claim 04 overturned would have refuted a true claim and flagged every bare citation
-  ([sub-own](../progress/2026-09/2026-09-16-sub-own.md),
-  [sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md)).
-- **VB-KBRAG-QLEN: the telemetry writer and its adapter landed together.** Producer rows cite no
-  protocol, so they are observations. The attestation is the log path plus the sha256 of the exact
-  byte prefix read, not a whole-file digest. An empty log yields no rows (adapter root `039a4f3b`,
-  12 pass / 1 skip) ([vidya program](../handoffs/active/vidya-belief-substrate-program.md),
-  [sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md)).
-- **KB-WM-1/2 were closed as superseded, and KB-WM-4 retired `wiki/.last_compile`** (root
-  `40034bf1`). The file had two writers with incompatible formats (plain ISO, and
-  `"<request_id> <iso>"`) and one live reader. That reader, `build_manifest()`, copied the stale
-  clone value `2026-09-08T09:28:51Z` into every emitted manifest while the tracked manifest read
-  2026-09-16. `build_manifest` now reads the tracked manifest through an ISO normalizer. A hidden
-  defect also surfaced: `heavy_wrap`'s write of the gitignored path could never commit, because
-  `git add --intent-to-add` exits 1 on it. The test fixture had no `.gitignore`, which is why this
-  never showed. Tests: 97/97 across five suites. **This supersedes** the 2026-08 recommendation
-  lower on this page (fall back to the tracked manifest when `.last_compile` is absent and emit a
-  `last_compile_source` field): that helper is deleted, not extended
-  ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md),
-  [sub-kbwm4](../progress/2026-09/2026-09-16-sub-kbwm4.md)).
-- **OP-34 scoped `--touch`** (root `7cfc4846`, merged by `719ac638`). `--touch SCOPE` advances only
-  the in-scope manifest entries and records `last_touch`. Out-of-scope deltas stay visible, and a
-  scope that matches nothing exits 1. Bare `--touch` behaves as before. Both touches refuse to run
-  without a tracked baseline ([sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md),
-  [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)).
-- **Evidence plane W3: segment snapshots are chained, and two fail-open defects are closed**
-  (orchestrator `b7a61c02` + `06cf82dc`, merged `753343f5`). The fixes:
-  - Prefix replay counted tail-only supersessions, which produced false `archive_prefix_drift`.
-  - The authority path consumed any verified snapshot whose objective policy matched, ignoring
-    `exclude_before_ts` and deinflation. `_snapshot_scope_matches()` now fails closed.
-
-  The live snapshot through trial 1458 is correctly `prefix_invalidated`: its terminalizer payload
-  is not a pure fold, so startup stays on full replay. The live chain verifies `ok` (7 events). The
-  first automatic segment snapshot lands at the 1999 → 2000 rollover
-  ([evidence plane](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative)).
-
-### Open questions
-
-- VB-HARNESS-AUDIT: should pinned source-read findings (the HS-1g matrix, HS-13, the HS-6c card)
-  enter the ledger through the `verifier` class, as dependency edges only, or not at all? Whichever
-  is chosen, the locator must carry the sha.
-- VB-SL2-STEPS: should the `target_sample_steps_est` estimate get its own rows? If so, only with the
-  estimator string attached.
-- KB-WM-3: do the other three files that `f1717d80` untracked have the same failure shape?
-- W3 still needs its bounded-startup demonstration after the restart.
-
-### Sources
-
-- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC75/VB-WIRE status, VB-GPU-PREP, the PRB-T4 caveat, VB-EVCONF2, VB-MHS, SC82–SC86, VB-NIAH-E1A
-- [vidya-pilot-spec](../docs/design/vidya-pilot-spec.md): one corroboration citation made precise (intake-1300#02)
-- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): the KB-WM-1/2/4 closures, H2, C7
-- [evidence-plane-event-sourcing-and-narrative](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative): W3 segment chaining and the scope fixes
-- [2026-09-16-sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md): the ingest dispatcher, dry-run counts, the SC renumbering, the prepared intake-1323 amendment
-- [2026-09-16-sub-own](../progress/2026-09/2026-09-16-sub-own.md): the MHS-5 correction as applied, the mis-anchor root cause, the VB-WIRE-2 harness promotion
-- [2026-09-16-sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md): the AP-53 and SC83 durable writers and the backfill decision
-- [2026-09-16-sub-vbmhsops](../progress/2026-09/2026-09-16-sub-vbmhsops.md): the guard adapter pair and its absence rules
-- [2026-09-16-sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md): the SC75 writer, and the 377-commits-behind `/workspace` baseline
-- [2026-09-16-sub-kbwm4](../progress/2026-09/2026-09-16-sub-kbwm4.md): the `.last_compile` retirement and the heavy_wrap defect
-- [2026-09-16-sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md): OP-34 scoped touch with its decision package, and the VB-KBRAG-QLEN adapter
-
-## Compiled Update — 2026-09-15: the belief substrate's carrier contract — adapters project, one ladder per source class, and `grade()` is the sole rule
-
-**Confidence: verified** for the substrate mechanics and the mutation audit (vidya belief-substrate
-program); **verified** for the publication gates (frontier-f6 upstream publication).
-
-- **Carrier contract.** Adapters **project** native records into a canonical `ClaimTuple` (product lattice `Q × T` = warrant quality × traceability) and never grade; each *source class* has exactly one ladder (`register_ladder()` refuses a second), and `claim_tuple.grade()` is the sole grading rule. Binding spec: `docs/design/vidya-pilot-spec.md` §4.7.
-- **Write-side rule (SC9, operator-adopted 2026-08-10).** A process producing measurements or verified findings gets its wiring task filed the moment it is noticed — the write side is cheap and permanent, the read side impossible to retrofit (a tuple invented on read claims warrant the original run never captured). Standing proof: `benchmarks/results` at 4,562 files, 0 of 200 sampled carrying a usable claim tuple.
-- **Citation gate.** `cite-check` resolves `intake-NNN` citations through the merge map and blocks only `{dangling, overturned, conflicted}`; live over 1,754 citations in 142 documents it found 6 overturned, 3 conflicted, and 144 resting on an unadjudicated correction. `intake-NNN#record` marks a reference that *discusses* a record rather than relying on its claims — non-blocking by construction.
-- **Attested was unverified (SC69 P1, fixed `5d7f14be`).** `claim_tuple.py` length-checked `attestation_sha256` and branched on presence only, so `attestation_path="MEASUREMENT.md"` with `"0"*64` graded `Witnessed/Attested`; the fix keeps `grade()` pure and carries `attestation_verified: bool | None` set at the write boundary.
-- **Kernel mutation audit (SC69–SC73).** 62 mutations introduced into `tests/vidya/`, 32 survived — all sharing one shape, a *presence check standing in for a verification* (an empty required-set grades SATISFIED, `ledger.verify()` clean on an empty ledger).
-- **Publication gate.** Only protocol-tagged numbers are publishable; the public-results page is generated from `RESULTS.md` (never hand-edited), protocol-complete rows fail closed to `hold_for_public_scrub` on internal identifiers, and explicit-but-unparseable protocol markers stay held rather than promoted. The review overlay retired **325** unverified historical rows without mutating the source. The canonical-benchmarking collapse is the worked example: the April 26 frontdoor **"+17%"** is **+1.6%** against proper canonical measurement.
-- **Publication discipline.** One artifact/month; every posted thread gets an append-only ledger row **before** it goes out (`docs/publication/social/`); corrections are appended, never rewritten; no F1 personal-task data is published.
-
-### Open Questions (2026-09-15)
-
-- The uncoverable bucket grows with the citation graph with no cross-entry evidential edge — an open design question, not a defect.
-- SC64's anytime-valid sequential test pins its stopping time to the observed value, so it certifies *this run's transcript* rather than the procedure.
-
-### Source References (2026-09-15)
-
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — the carrier contract, the write-side rule, the citation gate, and the mutation audit.
-- [frontier-f6-upstream-publication.md](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
-- [docs/publication/social/README.md](../docs/publication/social/README.md) — the append-only social conversation ledger schema and gates.
-
-## Compiled Update — 2026-09-08: the watermark saga closed as a fix — selection is content-hash against the tracked manifest, mtime never consulted
-
-**Confidence: verified** — `0ea91f3e` (6 files, 11 new tests) closes NIB2-68 together with OBS-13;
-the phantom-942 mechanism below was reproduced from the shared clone with a genuine local watermark
-before the fix; the post-fix reconcile counts come from a scan against the tracked baseline.
-
-The three failure shapes compiled on 2026-09-03 (watermark destroyed · written to a vanished tree ·
-never present in a worktree) shared one root the fixes could not reach: **incremental selection keyed
-on `mtime > since` is only valid in the checkout that produced those mtimes**. The shipped remedy
-now removes the mtime basis entirely rather than patching around it:
-
-- **Selection is a content-hash diff against the TRACKED `wiki/source_manifest.json`** — mtime is
-  never consulted. Scratch proof: a run with every source stamped 2030 returns 0 new. The
-  phantom-942 mechanism is dead.
-- **`--touch` advances the tracked manifest**, regenerating it from the current full set — lane-safe
-  by construction (identical per-file hashes lane-vs-main; `--touch` in a worktree can no longer
-  serialize nothing).
-- **No baseline → one full emission plus a stderr note, never a phantom.** Incremental scans
-  refuse to overwrite the tracked manifest with a partial set (`--full` required to regenerate).
-- The gitignored `wiki/.last_compile` file is retired from the decision path; the tracked manifest
-  is the single watermark.
-
-**The 942 phantom (2026-09-07) proved the failure fires from `/workspace` itself, no lane
-involved**: run correctly from the shared clone against a genuinely-real 2026-09-03 local
-`.last_compile`, `total_new` read **942** — not a checkout-time mtime artifact, but a 4-day gap
-dominated by a ~300-commit campaign merge. The addendum's own diagnosis generalizes: mtime-since-
-watermark is unreliable from ANY single checkout whenever a different clone (or a peer session's
-independently-touched watermark) has already compiled part of the delta. `--touch` was withheld
-rather than run (it would have falsely marked all 942 compiled), and the genuinely-real subset was
-compiled by hand (`95c7e46d`). This was the same row all along — no separate filing was needed.
-
-**Linter half of OBS-13**: `lint_wiki.py` now proves a missing link target is cross-repo —
-`repos/<member>/` with `<member>` in the tracked `scripts/clone-repos.sh` farm array and no farm in
-this worktree — before INFO-skipping it; farm present or non-farm paths keep ERROR. The linter can
-now say "I cannot tell from here" instead of silently assuming the shared clone.
-
-**Reconcile note — quantified, not falsified.** The tracked manifest's baseline is 2026-08-27, so
-the first post-fix scan reports the real unrecorded drift. Measured against that baseline:
-**87 genuinely-pending sources** (57 handoff-active, 24 progress, 4 handoff-completed, 2 docs) —
-the `95c7e46d` hand-compile predates the wave's closure edits, so no subset is provably compiled
-as-of-current content. Advancing the manifest now would falsify it; the decision recorded is to
-**compile the 87 at the next operator-invoked `/wrap-up` — no `--touch` before** (the sweep stays
-operator-cadence; deployment reconcile is the wrap-up owner's call, not a code question).
-
-**The compile-receipt fix that protects the new basis**: `heavy_wrap.step_7_compile_wiki` used to
-overwrite the tracked content-hash manifest with a bare receipts dict — which would now make the
-next incremental scan fail loudly *by design*. Fixed (`af4c5c63`): the manifest is preserved
-wholesale with `compiled_by` merged as an extra top-level key, a corrupt manifest raises
-`WrapError`, and the scanner tolerates the extra key. Executor-side detail on [Agent
-Architecture](agent-architecture.md); the consequence for this page is that the wiki toolchain's
-write side and read side now agree on one tracked artifact.
-
-### Source References (2026-09-08 watermark closure)
-
-- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-68 (the
-  2026-09-07 addendum: the 942 shared-clone measurement and the withheld `--touch`) and OBS-13
-  (both instrument halves) with the `0ea91f3e` closure text.
-- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the NIB2-68/OBS-13 landing
-  record (11 tests, scratch proof) and the wave-2 reconcile quantification (87 pending) +
-  `af4c5c63`.
-- [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
-  — the hand-compile of the real subset (`95c7e46d`) in the 942 window.
-- [Agent Architecture](agent-architecture.md) — the heavy-wrap receipt fix compiled (RTG-51
-  executor half).
-
-## Compiled Update — 2026-09-08: the vidya register tells the truth again — SC47/48 decline verdicts applied to the rows, and the ledger holds at frontier 13,141 after its own fail-open fix
-
-**Confidence: verified** — row states in the program handoff (inline verdicts applied 2026-09-07);
-the frontier is the SC73 post-fix live-ledger smoke (`5d7f14be`).
-
-- **SC47 and SC48 kept rendering open for nearly two weeks because their verdicts were never
-  applied to the rows.** Both were decided 2026-08-26 — recorded in the program summary and in
-  `progress/2026-08/2026-08-26.md` §Track E — but the checkbox rows carried no inline verdict, so
-  the register misstated them as open work until the 2026-09-07 Tier-C disposition applied the
-  verdicts per the SC11/SC13 precedent. The meta-lesson is the register-hygiene one: **a decision
-  recorded in prose is not a closed row** — the register's open count stayed wrong until the row
-  itself carried the verdict.
-- **SC48 — priced-and-declined.** The MI210 power-sensor probe corpus is two persistent
-  observations, below the SC9 pay line for an adapter; the verdict is recorded rather than carried,
-  with an explicit re-file trigger at the first successor power-probe campaign with a larger
-  corpus.
-- **SC47 — declined as a carrier, adopted as corroboration.** FlashInfer-Bench's
-  `Definition x Solution x Workload x Evaluation` record shape is not adopted as the
-  kernel-candidate carrier, but its per-operation-class evaluator registry stands as **external
-  corroboration that the one-ladder-per-source-class adapter contract is right** (the registry
-  comparison and the record-shape analysis remain the record); the tolerance-constant read stays
-  tracked as RVP-C6-23.
-- **The gen-2 ledger survives its own fail-open class.** The SC73 closure made
-  `ledger.verify()` refuse what it used to certify — a missing/empty ledger now reports problems,
-  and a ledger truncated below the newest published checkpoint tree size fails chain. The post-fix
-  live smoke read **frontier 13,141, chain OK, checkpoints OK** — up from 12,479 at the 2026-08-26
-  P5c promotion-gate execution, reflecting the intake-wave and citation-gate re-ingests since. The
-  kernel-integrity wave that produced it (SC61 + SC69-73, `5d7f14be`, 43 files, suite 899 → 967)
-  is compiled on [formal-verification](formal-verification.md); what belongs to this page is the
-  program state: the ledger's own integrity claims now come from the same refusal discipline the
-  substrate imposes on every producer.
-
-### Source References (2026-09-08 vidya state)
-
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) —
-  SC47/SC48 closure text (2026-08-26 decision, 2026-09-07 inline application, SC9 re-file
-  triggers) and the SC73 closure with its frontier-13,141 smoke.
-- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the Tier-C disposition
-  table (SC47/SC48 rows, evidence, SC11/SC13 precedent) and the `5d7f14be` wave record.
-- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
-  SC69-73 audit-origin and filing record (32 surviving mutations, five filed).
-
-## Compiled Update — 2026-09-08: the backlog graph derives ready/blocked — and the cycle class that blocked the readiness rule is now a gate
-
-**Confidence: verified** — commit `457abd40` and the measured baseline in the owning handoff row;
-`dep_cycles()` in `index_state.py --check` (12 tests).
-
-- **Per-node ready/blocked is now derived, never authored** (`index_state.py`, schema
-  `index_graph.v2`): a node is `blocked` iff at least one `dep` target still has `open > 0`, else
-  `ready`; a handoff with no open work of its own is `no_open` — a distinct third value, because
-  `open` counts DISPATCHABLE boxes and a handoff whose remaining boxes are all guarded or
-  classify-refused also reads `open == 0`. Calling that `ready` would put undispatchable rows on
-  the dispatch frontier (the same category error the module header already rules on, one level
-  down). `blocked` is a floor, not a finding: active+blocked and blocked+ready are both meaningful
-  and must not merge.
-- **First measured baseline (2026-09-07): 170 nodes, 42 `dep` edges — 136 ready / 24 blocked /
-  10 no_open.** 85% of rows were already ready, so the derivation is priced honestly: its value is
-  that cycle-class defects become visible on the hub instead of requiring the computation to be
-  run by hand — not that it discriminates dispatch.
-- **Generated means timestamped.** The sidecar regenerates as rows close (the 2026-09-08
-  regeneration reads 135 ready / 29 blocked / 10 no_open over 174 nodes), so a quoted count is
-  only valid with its `generated_at` — the row's own 41-vs-42 edge-count correction is the
-  standing lesson (a six-day-old sidecar was measured without regenerating first).
-- **The cycle class is now a gate.** `BAD DEP` validated only that a dep points at a *known* row —
-  which every edge in a cycle does — so cycles were invisible while each edge was well-formed.
-  `dep_cycles()` (iterative DFS, one error per elementary cycle, unknown ids left to `BAD DEP`)
-  closes that. The real instance it would have caught: **INF-06 ⇄ INF-64**, a rider-of relation
-  written into the blocked-on column — found 2026-09-07 by the first readiness run over
-  `.index-graph.json`; the back-edge cell was deleted and the relationship survives untouched as
-  the derived `ref` edge the graph builder already generates from the markdown link.
-- **The dispatch screener now reads the sidecar — advisory only.** AIR-13 wires
-  `index_graph_readiness()` into `backlog_row_check.classify()` with an explicit
-  INDEX-GRAPH (advisory, NOT a refusal) reason; flag, never hard-refuse, because handoff-granular
-  readiness is over-broad at row level (2 of 3 blocked rows were legitimately completed while
-  their handoff was marked blocked). Full compiled record of the AIR-12/13/14 premise-screening
-  closure is on [agent-architecture](agent-architecture.md); this page's interest is the coupling:
-  the graph's derived readiness is now consumed by a second surface (the row screener) that never
-  reads the `Deps` column.
-
-### Source References (2026-09-08 index graph)
-
-- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) —
-  the INF-06/INF-64 cycle record, the `dep_cycles()` gate, the ready/blocked/no_open derivation
-  row with its measured baseline and its regeneration lesson.
-- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
-  `457abd40` execution record (136 ready / 24 blocked / 10 no_open) and the gate.py defect fix
-  that rode the same wave.
-- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — AIR-12/13/14 landing
-  record (`945c8820`, 719 coordination tests).
-
-## Compiled Update — 2026-09-07: WikiSkill corroborates the clean-window compile rule — its window never overlaps the phenomenon
-
-**Confidence: verified** — the concession and the observation window are read from the source itself; the
-degradation phenomenon they are being weighed against is the one already compiled from
-`intake-899` and `intake-1129`.
-
-### WikiSkill concedes no pruning, and its window is too short to see the thing it would be cited against
-
-WikiSkill **concedes that it performs no wiki pruning**. Its observation window is at most **8 iterations**
-and **6.3–8.9 patterns** — a window that **does not overlap the degradation phenomenon** that `intake-899`
-and `intake-1129` describe. A knowledge layer that is never pruned degrades on a horizon longer than the one
-WikiSkill ever observed, so its clean result is not a licence for an unbounded layer; it is a measurement
-taken before the failure mode has anywhere to appear.
-
-**The reading, therefore, is the opposite of the obvious one.** WikiSkill **corroborates our clean-window
-compile rule** — compile into a bounded, pruned window — rather than licensing an unbounded knowledge layer.
-Cited the other way it would be the standing observation-window error: a measurement whose window does not
-overlap the phenomenon is not evidence of its absence. `intake-1317#record`.
-
-### Source References (2026-09-07)
-
-- `research/intake_index.yaml` `intake-1317#record` — the WikiSkill record this entry discusses.
-- `research/intake_index.yaml` `intake-899`, `intake-1129` — the degradation phenomenon the window fails to
-  reach.
-
-## Compiled Update — 2026-08-23: skill-documented commands must name an interpreter that has the imports
-
-**Confidence: verified** — the OBS-12 sweep audited all 15 skills and landed 8 documented-interpreter
-fixes (`f21be7c2`, `4aadd382`); the disk outcomes carry verification records (`08e8bba6`,
-`3227ec5f`). Source: [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md).
-
-### The OBS-12 interpreter-venv convention
-
-Skill (and agent-file) documents that tell an agent to run a command must name an interpreter that
-actually has the imports the command needs — `python3` on this host does not have
-`PyYAML`/`requests` in the environments where the skills run. The convention that closed the sweep:
-documented invocations point at the orchestrator venv interpreter
-(`/workspace/repos/epyc-orchestrator/.venv/bin/python`), not bare `python3`. Eight fixes landed
-across the 15 audited skills: project-wiki's `lint_wiki.py`/`query_wiki.py`/`compile_sources.py`
-invocations, `wrap-up.md` steps, `resolve_intake_id`, the `log` skill's pytest line, and
-`claude-md-accounting` path rot. A same-sweep follow-on fixed the wiki tool itself:
-`query_wiki.py` crashed on 13 intake entries with null `techniques` lists — `_safe_join` now guards
-the list fields (`03345e50`). The pattern generalizes beyond this repo's skills: **any command an
-agent is told to run is a contract, and the interpreter named in the contract must be able to
-execute it — a bare `python3` with a missing import is a landmine the doc placed, not the agent.**
-
-### Disk hygiene: NIB2-60..63 verified resolved, NIB2-64..67 are the phase-2 candidates
-
-The 2026-08-18/22 disk-hygiene backlog rows all closed with verification, not just ticks
-(`08e8bba6`, restored after a peer revert in `3227ec5f`):
-
-- **NIB2-60** `tmp_pack` — VERIFIED RESOLVED (garbage = 0)
-- **NIB2-61** logs — VERIFIED RESOLVED
-- **NIB2-62** `Dockerfile.orig` — DELETED (4,854 B, unreferenced)
-- **NIB2-63** `.bak` clones — VERIFIED RESOLVED (none exist)
-
-The 2026-08-18/22 `.bak` residue on disk was kept (no gitignore rule; devcontainer edits live) and
-recorded as one-rm-each if wanted. **Phase-2 candidates filed as NIB2-64..67** (from the census that
-found /mnt/raid0/llm at 3.4T/3.7T = 97% used): NIB2-64 autokernel/worktrees 165G (144/146 stale,
-2 referenced by active handoffs), NIB2-65 model duplicates/orphans ~25G (safe set listed in the
-census), NIB2-66 stale kernel trees ~18G (preserved-20260724T135832Z, v6-iqk, v7-sanitize-audit,
-k28-prototype), NIB2-67 `cache/huggingface` 127G re-downloadable. EVL-28's archive also flagged a
-GGUF for NIB2-64. All four are operator options, not actioned.
-
-### The disk reclamation record (2026-08-23): 111G → 371G free in the approved scope
-
-Operator-approved scope was tmp/ scratch + worktrees. `tmp/` went 285G → 2.9G: 138 registered
-worktrees removed (epyc-inference-research 88, workspace 44, llama.cpp-experimental 4, llama.cpp
-4, epyc-orchestrator 2) plus ~15k stale loose files. **Method discipline: strictly per-worktree
-`git worktree remove --force`, NEVER `git worktree prune`** (the 2026-08-12 lane-destruction
-incident) — and worktree branches/commits persist in their shared repos, so nothing was deleted
-from git. Four worktrees preserved (`dashboard-v26-telemetry-integrity-20260821` in use;
-`evaluator-91a-audit.3i6ycm`, `merge-20260816`, `root-session-wrapup-20260820` dirty) plus all live
-coordination files (runtime facts, `*_started_at` markers, locks). Result: 97% → 90% used, ~260G
-reclaimed in scope. Source: [`progress/2026-08/2026-08-23-disk-reclaim.md`](../progress/2026-08/2026-08-23-disk-reclaim.md).
-
-### Source References (2026-08-23 hygiene sweep)
-
-- [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md) — the OBS-12
-  sweep, the NIB2-60..63 verification record, and the EVL/pointer retirement batch.
-- [`progress/2026-08/2026-08-23-disk-reclaim.md`](../progress/2026-08/2026-08-23-disk-reclaim.md) — census, per-path changes, preserved set, deferred options.
-- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — the NIB2-60..67 rows with their tick/verification state.
-
-## Compiled Update — 2026-08-20: write-side evidence begins with the next DFlash2 panel
-
-**Confidence: verified implementation boundary.** The producer and reader exist on pushed integration
-branches, and synthetic projection tests pass; this does not retrofit the completed np1 campaign.
-
-The DFlash2 carrier pair records six arms times two metrics (decode throughput and weighted draft
-acceptance) with exact campaign, manifest, build, model, protocol, released-claim, KFD, and VRAM
-identity. It declares `higher_better` and delegates grading to the shared `ClaimTuple` ladder rather
-than inventing a DFlash2-specific grade. The research producer must integrate before the root reader.
-
-The completed DF2-4 np1 campaign finalized before that write hook existed, so it emits zero rows.
-Reconstructing a tuple from request logs would invent warrant at read time and erase the distinction
-between measured evidence and evidence captured under the belief contract. DF2-5 is therefore the
-first eligible native source; its finalizer must write the carriers while original claim and residency
-witnesses still exist.
-
-### Source References (2026-08-20 DFlash2 claim carrier)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC44 integration order, carrier schema, and pre-hook zero-row rule.
-- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — immutable DF2-4 evidence and DF2-5 measurement plan.
-- [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact producer/reader commits and operational boundary.
-- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — runtime-campaign receipt chain and no-source-champion authority.
-
-## Compiled Update — 2026-08-18: link integrity became a lint pass, and the watermark proved load-bearing
-
-**Confidence: verified** — every defect below was reproduced or mutation-tested before its guard was
-recorded as built; counts are from the live tree at the recording session's boundary.
-
-### 151 dangling wiki links, with every lint pass green
-
-A routine handoff prune rotted 151 of this wiki's links while the entire lint suite stayed green,
-because the coverage had two holes that compounded: the crossref pass ran **handoff→wiki only**, and
-it accepted a link-target basename found in *either* `active/` or `completed/` — so moving a handoff
-between them was invisible — while **nothing resolved wiki→repo at all**. The fix is lint pass 7,
-`wiki_link_targets` (dangling target = ERROR, dangling anchor = WARNING), verified with five
-mutations covering both the checks and the reporter counting them. The instructive failure was the
-pass's own first mutation: the anchor check's dedup key ignored the anchor, so a plain link earlier
-in a page masked a broken anchor later — a key-too-wide defect inside the guard being built to catch
-staleness. 18 of the 151 resolved only through the `/workspace/repos/` symlinks, which had
-themselves silently vanished (below); after symlink repair plus pass 7, all 3,183 relative wiki
-links resolve.
-
-### The watermark is untracked-but-load-bearing state — and `git clean` found it
-
-The same `git clean` event recorded in `INC-20260816-git-clean-shared-clone` destroyed
-`wiki/.last_compile`, and the damage shape is worth keeping: the next compile did not fail — it
-confidently reported **844 new sources (the whole repo) instead of 51**, because an absent watermark
-and an epoch watermark are indistinguishable to the scanner. It had to be reconstructed from the
-last genuine `--touch`. Watermarks, receipts, symlinks and staged artifacts share one class:
-untracked operational state that no commit protects and no diff shows, whose loss surfaces later as
-unrelated-looking breakage. The standing rule: such state must be tracked, live off-tree, or be
-listed in a manifest a restorer can replay — and `git clean` never runs in the shared clone.
-
-### Four handoffs held split identities, and the checker was blind to all four
-
-Four handoffs existed simultaneously in `active/` and `completed/`; `index_state.py --check` could
-not see any of them. It now carries a **SPLIT IDENTITY** pass whose only exemption is a deliberate
-compatibility pointer (a body containing `../completed/<name>`), mutation-verified to fire exactly
-once per reintroduced duplicate. One of the four mattered materially: `fable5-window2-findings-05`
-had been archived on 2026-08-13 *while still holding a live go/no-go*, so the resolution kept the
-newer **active** copy and renamed the completed one — the duplicate-resolution direction is decided
-by content recency, not by which directory "should" win.
-
-### Parallel lanes mint colliding ids; renumber at port time, record the collision inline
-
-Two sessions independently filed belief-kernel wiring tasks as "SC37" while a third SC37 already
-existed on `main`. The forward-port renumbered them (SC41, SC42) with the collision recorded inline
-and content unchanged. Sequential ids handed out by whoever files next are a shared-clone artifact:
-they cannot be minted safely in parallel lanes, so the reconciliation step must treat id assignment
-as port-time work — and must *say so* in the row, or the old number's citations dangle silently
-(the wiki and a progress entry already cited one of the colliding numbers by the time the port ran).
-
-### A14: landed, independently audited — and still not wired, which is the point
-
-The A14 merge-gate surface is on the orchestrator branch as `c61b8184`, and an independent merge
-audit ACCEPTED it (same stable patch-id and six-file `+299/-0` diff as its source commit, the merge
-gate classifying the range autonomous, 118 focused tests passing). Zero `gate_decisions` have been
-emitted — the API is down and the code unpushed — so SC19 stays open **until the producer-written
-adapter emits its first tuple**. This extends the 2026-08-13 finding below with its second half: an
-*audit-accepted* landing is still not wiring; the row closes on the first emitted tuple, not on any
-amount of code provenance.
-
-### Source References (2026-08-18 KB integrity)
-
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
-  the wrap-up findings: the 151-link rot mechanism, pass 7 with its five mutations, the `repos/`
-  repair, and the split-identity pass with its one material case.
-- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
-  `INC-20260816-git-clean-shared-clone`: the watermark loss, the 844-vs-51 false report, and the
-  untracked-but-load-bearing rule.
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
-  SC41/SC42 renumbering notes and the A14 status with its independent merge audit.
-- [`progress/2026-08/2026-08-16-coordinator-agent.md`](../progress/2026-08/2026-08-16-coordinator-agent.md)
-  — the wrap-up narrative in which the split-identity check and the link-rot repair were built.
-- [`.claude/skills/project-wiki/scripts/lint_wiki.py`](../.claude/skills/project-wiki/scripts/lint_wiki.py)
-  — pass 7 as shipped.
-
-## Compiled Update — 2026-08-16: the register moved to design time, and three of its newest rows are not measurements at all
-
-**Confidence: verified** — the register rows and their reasoning are read from
-[`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) and the SC37–SC40 tasks in
-[`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md); the
-ladder registry, the two named producer modules, and the adapter inventory were inspected directly on
-disk for this compile rather than restated from the handoff.
-
-### Filing moved *before* the producer, and the window is already closing on two of them
-
-The standing rule (file the wiring task the moment you notice a producer) has drifted earlier with
-each instance, and the four newest rows sit at the far end of that drift:
-
-| row | filed | producer state when filed |
-|---|---|---|
-| SC37 eval-tower per-suite resolution band | 2026-08-15 | the band has never been measured; `core_v2_calibrate.py --repeats` is the planned instrument |
-| SC38 worker-pool completion reports | 2026-08-16 | `worker_runner.py` still being authored, before the P2-9 pilot |
-| SC39 headless audit verdicts | 2026-08-16 | module **unwritten** — "the cheapest possible moment" |
-| SC40 loop-owned-fleet plan metrics | 2026-08-16 | four metrics computed nowhere; no unattended night scored yet |
-
-**Filed is not wired, and the gap is measurable today.** As of this compile
-`scripts/coordination/worker_runner.py` (82 KB) and `scripts/coordination/headless_audit.py` (38 KB)
-both exist on disk, and **neither contains a single `belief` reference**; `scripts/vidya/adapters/`
-holds twelve adapter modules and none of them reads either producer. So the two rows filed at design time
-have already watched their producers land without the hook — which is precisely the interval the rule
-exists to prevent, and the honest register status stays `candidate`, never `live`. The design-time
-filing bought the *knowledge* cheaply; it has not yet bought the *warrant*.
-
-### Not everything a producer emits is a measurement — the categorical/rate boundary
-
-SC39 is the sharpest instance the program has produced. The headless auditor writes one typed verdict
-per completion (`accept | accept-with-followups | needs-rework | blocked-evidence`). **A single
-verdict has no metric and no direction, and must not be forced through `ClaimTuple`** — the rule is
-stated as: never invent a metric direction to push a record through the carrier. What *is* an honest
-measurement is a **rate over a declared window** — verdict-mix share, and above all the
-operator-vs-auditor disagreement rate that the owning plan's kill criterion reads at a 20% threshold
-over any 7-day window. Those are lower-is-better fractions whose scored denominator is the audits
-actually *adjudicated*, never the audits emitted.
-
-This is the dependency-evidence call of 2026-08-11 (preflight findings are real but not ordinal) moved
-one level up: the same discipline now applies to a *verdict stream* rather than a capability check.
-SC37 records the mirror-image error on the other side of the boundary — a resolution band **attests
-the resolution of the instrument and says nothing about the quality of any config**, so a projection
-that reads a band as "this delta is significant" repeats the SC21 category error one level up. Two
-rows, one lesson: the carrier's shape is not a licence to put a record in it.
-
-### Independence is a property that can be spent
-
-Two of the new rows turn on warrant that a careless projection would destroy rather than merely
-overstate:
-
-- **SC39**: the audit packet is a pointer *whitelist* precisely so the review is not anchored on the
-  worker's own summary. A projection that folded worker-reported outcomes into the verdict rate would
-  destroy the property being measured. Independence is the entire warrant of that source.
-- **SC38**: `subagents_spawned`, `tokens_used` and `denials` are schema-required and type-validated —
-  `validate_report()` refuses a batch that omits any of them, so a clean run and an unreported one
-  cannot render identically. That is a genuine upgrade on a prose self-report, and it is **still
-  self-reported**: both counters are written by the worker into its own report file. The projection
-  must state *self-reported* plainly instead of claiming an independent witness; the independent count
-  would come from the harness transcript the runner already keeps a pointer to.
-
-### The locator rule now has five spellings and one shape
-
-Support is counted by source locator, so the same trap recurs wherever a run emits many rows. Recorded
-instances, all of them the same defect:
-
-| source | naive key | correct locator | inflation |
-|---|---|---|---|
-| `benchmarks/results` | the result file | the run | 2,605 files → 2,605 "witnesses" |
-| A14 contention gate (SC19) | the gate decision | the request | one request walks N candidates |
-| affinity preflight (SC13) | the artifact file | the cell run | repeated preflights of one cell |
-| worker-pool reports (SC38) | the row | the **batch** | 3 rows per invocation, batch-level counters |
-| loop-fleet metrics (SC40) | the sample | the **window** | a 60 s poller reads one night as 1,440 |
-
-SC38 adds the corollary that matters downstream: with a batch-level counter, tokens-per-row is a
-*derived quotient masquerading as a measured value*.
-
-### Two attestation limits worth carrying past this program
-
-- **A path outside git proves nothing on read.** SC38's runtime root (`/mnt/raid0/llm/worker-pool`) is
-  outside any tree, so the hook must write a sha256 over the report content at collect time or the
-  claim honestly tops out at `Witnessed/Anchored`. The same limit applies to every scratch artifact —
-  the 2026-08-13 document-parser runs sit in `/mnt/raid0/llm/tmp/`, present on disk and unattested.
-- **Pin the classifier version inside the tuple.** SC40's coordination self-repair share is a ratio
-  over commits classified *by path*, so it moves whenever the path taxonomy moves and two windows stop
-  being comparable. Its sibling caveat is a scope limit of the same family: compute duty cycle attests
-  **hardware occupancy**, never useful work.
-
-### Pricing now applies at design time too, and "no adapter" is a valid verdict
-
-The P2 discipline (sample ~50 records, count full tuples, before writing a bulk adapter) has acquired
-a design-time form: SC40 states outright that the corpus is one row per night, so the honest answer
-may be a hand-written record rather than an adapter — **and that verdict should be written down rather
-than leaving the row open**. This is the same standard that killed the `benchmarks/results` adapter on
-evidence rather than deferring it.
-
-### The registry invariant, re-verified this compile
-
-Reading the code rather than the docs: `scripts/vidya/claim_tuple.py` defines `register_ladder()` and
-raises `ProjectionError` on a second registration for a class ("*a second implementation of one rule
-becomes two dialects of it*"). Exactly two ladders are registered repo-wide — `measurement` in
-`claim_tuple.py:213` and `literature` in `adapters/research_intake.py:113`. The contract is enforced
-in code, not merely written down.
-
-### A stale premise replicates through the corpus faster than the correction (2026-07-03)
-
-Retro-compiled from the window-2 intake sweep, because it is the KB-hygiene half of the same problem.
-A read-only sweep over **769 intake entries and 125 deep-dives** against 119 active handoffs found
-**22 genuinely missed tasks, 95 dead-confirmed, 135 already covered** — and the missed tasks were not
-22 independent oversights but **one stale gating premise repeated across eleven handoffs and indices**
-(a hardware purchase changed, and every document written before it still read "GPU-gated / deferred").
-Two rules the sweep's own self-critique makes explicit and this page adopts: the sweep was
-*index/intake-grounded*, so a deciding fact wrong inside an intake entry propagates into every
-derived plan; and an adversarial verification pass demoted **both** proposed P1s (one to MEDIUM, one
-to "already owned elsewhere"), which is the routine outcome when a sweep's recommendations are checked
-against the owning handoff's actual gate line rather than the index row.
-
-### External publication is the same claim grammar with a fail-closed default
-
-The publication pipeline (F6) is the outward-facing instance of everything above and is worth reading
-as a governance pattern rather than a marketing task. Its generator turns `RESULTS.md` into a public
-draft where **no row publishes without a protocol tag**, and its current state is 374 rows of which
-**zero** are publishable: 31 held for historical-attestation review, 18 needing protocol tags, 325
-routed to `retired_from_public_claims`. Three transferable design choices:
-
-- **Differentiate holds by what would close them.** "374 blocked" is unactionable; splitting it into
-  attestation / protocol-tag / verification-decision buckets is what made the queue drainable, and the
-  generator emits that triage plus the named missing fields per row.
-- **Refuse retro-certification explicitly.** Rows dated before the host-attestation era get
-  `hold_for_historical_attestation_review`, not ordinary backfill, so a 2026-03-21 number cannot be
-  certified by today's host — it needs a historical artifact, a remeasurement, or retirement.
-- **Keep the decision layer out of the source.** The retirement of 325 rows lives in a dependency-free
-  JSON overlay applied at render time; `RESULTS.md` is never mutated. Fail-closed parsing completes
-  the pattern — an unparseable protocol marker holds the row instead of falling through to publishable.
-
-### Source References (2026-08-16 design-time register)
-
-- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the source register rows
-  for SC37–SC40, the locator warnings, the P2 pricing discipline, and the consumer table
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
-  — SC37/SC38/SC39/SC40 as filed, including the categorical-verdict refusal and the independence rule
-- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.7 — the normative
-  projection contract and the dependency-evidence boundary the SC39 call extends
-- [`scripts/vidya/claim_tuple.py`](../scripts/vidya/claim_tuple.py) `register_ladder()` — the enforced
-  one-ladder-per-class invariant, read for this compile
-- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication)
-  W3 checkpoints — the 374-row publication queue, its triage buckets, and the review-decision overlay
-- [`handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md`](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md)
-  §1 and §8 — the 769-intake sweep counts, the single repeated stale gate, and the sweep's self-critique
-
-## Compiled Update — 2026-08-13: landing a producer is not wiring its evidence
-
-**Confidence: verified for code identity and tests; prospective for belief capture.** The A14
-contention-decision echo now exists on the local orchestrator main and passed independent patch/test
-audit. Yet it has produced zero belief tuples: the API has not served the local commit, and the
-producer-written adapter remains open. This is the precise distinction the source roster needs to
-preserve—implementation can be accepted while evidence status remains `candidate` or `wired`, not
-`live`.
-
-The locator constraint is equally load-bearing. One request can walk several topology candidates and
-emit several gate decisions; treating each decision as an independent witness would manufacture N
-supports from one request. The durable locator is the request/chat identity, with the decision list as
-one observation payload. SC19 stays open until that shape emits and round-trips its first tuple.
-
-### Source References (2026-08-13 A14 write-side boundary)
-
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
-  producer state, locator trap, and first-tuple closure condition.
-- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — local
-  GateDecision echo landing.
-- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
-  [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — producer
-  record and independent audit.
-
-## Compiled Update — 2026-08-12 (third pass): the projection contract, and what "wired" is not
-
-**Confidence: verified** — the contract is read from the ratified pilot spec and the adapter registry's own conformance tests; the roster status is read from the adapter source table.
-
-### One ladder per source class, and an adapter never grades
-
-The rule the substrate is built on is short enough to quote and is now enforced rather than documented: **an adapter PROJECTS; it never grades.** A native record is projected into a `ClaimTuple`, and `claim_tuple.grade()` returns `(Q, T, reasons)`. The carrier is shared, but each *source class* has exactly one ladder and `register_ladder()` refuses a second — with a conformance test that fails on any undeclared ladder. Two classes exist: `measurement`, graded by the measurement constitution's claim rule (metric, protocol_id, n/reps, date, durable host attestation) with a ceiling of **Witnessed**; and `literature`, graded by verification status, ceiling **Verified**.
-
-The defect that produced this contract is the argument for it: on identical input (no protocol, no attestation) two adapters disagreed — one returned `Judged/T0`, the other `Judged/Located`. Two graders will drift; one grader with many projections cannot.
-
-**Dependency evidence is deliberately not a third class.** It may write self-hashed native rows and be integrity-checked and classified, but it must **not** register a `ClaimTuple` projection or emit `evidence_supports_claim` until a shared dependency-evidence carrier and warrant rule are declared. The concrete consequence: multiple legs of one rehearsal support the *run*, not each leg — so a per-leg warrant would multiply one witness into several. Two rehearsal-class sources are live under exactly this restriction.
-
-Also worth recording as a superseded design: the v1 chain `Hinted < Judged < Corroborated < Traced < Verified < Witnessed` is declared **wrong and `Corroborated` was dropped from the carrier**, because it ranked two independent Judged sources *below* one unverified anchor. Warrant quality and traceability are separate axes; conflating them is what produced the indefensible ordering.
-
-### "Wired" is not "validated", and the distinction is now the roster's main axis
-
-The adapter roster grew by roughly a dozen entries across 2026-08-11/12, and almost all of the new ones are **prospective**: the write path exists and is tested, and **zero real post-hook records have flowed through it**. Only a handful are live on real data (the intake index at 1,068 entries, six sealed measurement manifests, the GEAK/Arena round-trip, the gfx90a saturation and vendor-GEMM diagnostics, and the planner-reduction receipts). Reading a wired adapter as a validated one is the error this distinction exists to prevent.
-
-The standing rejection also holds and is worth repeating because it is the roster's most-cited decision: `benchmarks/results` is **rejected on evidence** — 0 of 200 sampled files carry a usable claim tuple, so no volume of them can gate anything.
-
-### Three completed measurements that can never be graded
-
-Three real 2026-08-12 measurement sets — an architect MMLU-Pro hardened GPU control, an AutoKernel reward-integrity corpus, and E5 cell affinity-preflight artifacts — carry native captures, exact claims, pinned digests and attestation, and **predate their producer's write hook**. They emit zero rows and, by the substrate's own no-backfill rule, must **never be reconstructed on read**. This is the third repeat of the same shape in one program, which is the real finding: *wiring the write side is cheap and permanent; the read side cannot be retrofitted*, and every gap between a producer shipping and its hook landing is permanently unpriceable evidence.
-
-### Source References (2026-08-12, third pass)
-
-- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) — §4.1 the dropped `Corroborated` grade, §4.7 the ingestion contract, and the dependency-evidence restriction.
-- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the project-never-grade rule, the one-ladder-per-class registry, and the live/wired/candidate/rejected source table.
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the 2026-08-11/12 wiring sprint and the three pre-hook measurement gaps.
-
 ## Summary
 
 Knowledge management in EPYC encompasses two complementary architectures: **internal KB-RAG** (ColBERT-based retrieval over the project's markdown knowledge bases) and **structured-DB alternatives** (SQL-based extraction-and-reasoning for long-document aggregation, tracked separately under `rag-alternatives.md`). Both replace keyword-only retrieval with semantic understanding, but via orthogonal mechanisms — retrieval-then-rerank vs persistent-schema SQL. This page documents the KB-RAG architecture, the Flywheel-derived evaluation methodology adopted for K7, and the wiki/governance pipeline that compiles handoffs and research notes into curated wiki articles.
@@ -1588,125 +60,6 @@ The core insight from the 2026-04-28 intake update is that *the right architectu
 A third architectural pattern — **persistent compiled wikis** — is itself a knowledge-management approach. This very wiki is an instance: knowledge is pre-compiled by the `project-wiki` skill from handoffs/research/progress logs into curated topic articles, trading per-query synthesis latency for curation burden and staleness risk. EPYC uses a hybrid: `project-wiki` for stable / cross-cutting topics, KB-RAG for dense ad-hoc cross-referencing during Explore-agent runs.
 
 The 2026-05-27 handoff-index audit sharpened the governance side of that architecture: indices are executable coordination surfaces, not passive navigation pages. A coverage check now treats every non-index active handoff as requiring an owning index or top-level tracking entry, and the blocked index is kept as a live unblock queue rather than a historical graveyard. The latest audit closed the active coverage invariant at 84/84 active non-index handoffs linked, 0 missing index links, and 0 broken relative links across active/blocked/README surfaces.
-## Compiled Update — 2026-08-12: fourteen ways a check passes for the wrong reason, and a correction queue drained to zero
-
-**Confidence: verified** — the catalogue is read directly from [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md); the queue drain from [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC15 and the ledger commits it names.
-
-### The verification-failure catalogue: fourteen faces, and the eight that defeat the standard remedy
-
-The project's standing "eight ways a check passes for the wrong reason" note is now a compiled reference at **fourteen faces**. Its provenance matters more than its length: **every face is an instance that actually occurred on this fleet in one night, across five agents, in roughly six hours** — measured, not theorised. The rate is the argument for a catalogue: everyone involved already knew "verify your work", and knowing it prevented none of them.
-
-The one-line remedy stands — *mutation-test the guard: change the code so the property is genuinely violated and confirm the check FAILS; if you cannot make it fail, it is not a guard.* The genuinely new contribution of this pass is the **partition of where that remedy does not reach**. For **eight of the fourteen** mutation testing fails silently, for three distinct reasons:
-
-| Why mutation testing fails | Faces |
-|---|---|
-| The instrument cannot see the mutation | probe outside the tool's universe · right key, wrong universe · a check that is never run · a reader that truncated the input |
-| The mutation produces no distinguishable signal | a pre-written verdict label (a constant cannot move) · an error laundered into a plausible `0` |
-| The check is right about the wrong thing | it models a different subsystem than the one that broke · it was true when written and the world moved |
-
-Faces caught by an honest mutation test — empty input, over-wide key, target read from the working tree, assertion pinning a spelling, unchecked container, sentinel counted as content — carry one caveat: **empty-input defeats mutation testing under its own condition.** Mutation-test while the input is genuinely empty and the empty set satisfies the check, so the mutation goes unseen. *Assert the input is non-empty first, then mutate the guard* — which is why input assertion precedes rather than replaces mutation testing.
-
-Five faces are new enough to be worth stating in full, because each has a different tell and none of their tests catches the others:
-
-- **Right key, wrong universe.** Verifying a handover's commit list, `git cat-file -t <hash>` was run for every hash — but an earlier `cd` persisted in the same shell invocation, so root-repo hashes resolved against a *different* repo and eight valid hashes reported BAD. **In a multi-repo tree, a lookup that does not name its repo is not a lookup** (`git -C <repo> …`). Corollary: treat a run of identical failures as a scope bug before a content bug. Fails CLOSED and loud — in a handover it would have discredited a correct list.
-- **Sentinel counted where it also occurs as content.** Counting `<<<<<<<` markers in merge output to size a merge is sound until a file in the tree *documents* conflict markers — and in a repo whose agents write about merge hazards all night, several do. **Attribute the token to a path before counting it**; a sentinel is only a sentinel where the instrument put it. The same run produced the mirror image: a pattern returned nothing on 670 KB of non-empty output at exit 0 because that git emits different wording — *when a pattern returns zero on a large non-empty output, suspect the pattern before the tree.*
-- **The instrument models a different subsystem than the failure.** A conflict check reported zero conflicts, independently verified by two agents who both got exactly the right answer — and the merge still aborted, because an untracked (byte-identical) file triggered *worktree-safety*, a subsystem no conflict metric inspects. The durable form: **every readiness metric models one subsystem, and the failure will come from the one it does not model.** Name the subsystem out loud next to the claim it licenses — "zero conflicts" licenses *the index would merge*, not *the merge will run* — and prefer an end-to-end rehearsal over any single metric. Fails OPEN *while carrying independent confirmation*: two agents agreeing does not widen a metric's domain.
-- **Verified at one timestamp, read at another.** The only face where the check was right; soundness is no defence. Reproduced independently by three agents within one hour, on three freshly-certified handover documents. The sharpest sub-case is a **self-verifying claim with a hard-coded total** — *"all 35 hashes in this document resolve"* was true when written and made false on save by the same commit that fixed two other decays. **The version that expires is the one that reads most rigorous**, because a bare assertion has nothing to go stale. Remedy: **cite the resolver, not the total** — ship the command that re-derives the claim; where a number must appear, stamp it (*"38 as of 04:35Z"*) so a reader sees a measurement rather than a fact; and **re-check a document before it is read, not before it is committed.**
-- **Reader dropped part of the input and said nothing.** The first face on the *input* side. Bus payload fields were printed to 230 characters; a coordinator's instruction *"Do NOT build it tonight"* began at character **265** of a 348-character field, and the thing was built. Four agents then recorded it as a deliberate override — **which is worse, because a knowing override can be argued about and a silent truncation cannot even be noticed.** Sweeping the same inbox: **980 payload fields that day, 608 (62%) longer than the cutoff, 37 carrying directive language in the part never displayed.** Remedy: **never truncate an input you intend to act on — only one you intend to skim.** If volume forces a cut, make it visible and structural (drop whole fields with a marker), never a character cutoff that can land mid-sentence, and never truncate a field whose name or tail carries directive language. Fails OPEN and uniquely **self-concealing**: the evidence never entered the room, so the actor's own account of events is sincere and wrong.
-
-Two meta-observations from the same night ride with the catalogue:
-
-- **A retraction that publishes its mechanism is worth more than one that merely withdraws.** One refutation in this set was itself wrong; because the retraction explained *why*, it corrected a mechanism that had been written down under the wrong description. A quiet withdrawal would have left the wrong version standing.
-- **When an edit and its announcement are written in the same breath, the announcement lands even if the edit does not.** Two commit messages in one night described notes their edits had failed to apply. Assert the edit applied *before* writing the claim.
-
-The catalogue's own instruction for using it: walk the fourteen questions keyed on the **diff**, not on intent — and ask the twelfth question of any document you are about to hand to someone: not *"was this right?"* but *"is it still right?"*
-
-### The correction queue drained 129 → 0, and the distinction that made it possible
-
-The stalled citation-correction backlog triaged in the prior pass is now **fully drained: 129 unadjudicated → 0, blocked claims 571 → 0, the `review` bucket empty**, across 233+ review frames in 13 batches. Each carries a per-claim corrections block written back into the intake index, so the next re-ingest grades opposition **per claim**. Integrity was re-verified after every batch rather than at the end: ledger chain plus all three checkpoints, index entry count held at 1,097 throughout, and the `conflicted` count unmoved at 3 — so no batch introduced one.
-
-The load-bearing distinction, and the reason a summariser could not have done this work:
-
-> **A heavily corrected ENTRY is not the same thing as corrected CLAIMS.** Roughly two-thirds of these corrections land on Stage-1 prose, a verdict justification, an applicability call, or an actionable about *our own* repo — not on any key claim. Propagating the entry-level label would have mass-downgraded claims that are fine.
-
-**Three systematic hazards, on record for anyone re-running a pass like this:**
-
-1. **Correction texts number their claims against a different list than the ledger's `claim_index`** — hit three separate times. Adjudicate on **content**, never on that numbering.
-2. **Some entries were written with their dive corrections already folded in**, so their claims *state* the corrected position and must read as **confirmed**, not corrected.
-3. **A citation-hygiene family**: four consecutive entries were each ingested only because a recommendation cited them with a **neighbouring entry's id** attached. Four wrong ids in one batch is a pattern, not four accidents.
-
-**Draining unmasked a consumer defect rather than causing one.** Moving ~140 citations out of `review` revealed the real grade underneath — mostly `ok`, but a *bare* `intake-NNN` citation in this very article surfaced as `conflicted`, inheriting a pre-existing overturned claim from an entry it was only *discussing*. That is the precise case the `#record` form exists for; the citation has been narrowed in this pass. The general rule it reinforces: **a bare entry citation inherits every defect of every claim in the entry**, so prose that merely writes *about* an entry should say `#record`, and prose relying on one claim should say `#NN`.
-
-### The write-side hook trigger is the diff, not the intent
-
-The standing rule (wire a producer's write side immediately; the read side can never be retrofitted) failed four times in one day *among agents who were actively citing it* — including once by the author of the belief-substrate work, against a surface they had built hours earlier. What closed it was not more emphasis but a **different trigger**:
-
-> The test is **"you touched a producer"**, not **"you thought about producers"**. A checklist keyed on the diff catches it; one keyed on intent does not.
-
-Two **locator traps** were recorded alongside, both of the same shape — *a naive per-record count reads ONE witness as N*:
-
-- A per-request gate surface deliberately records **every candidate tried**, not just the winner, so the probe can see the walk down the placement priority order. Key on the **request**, not the decision.
-- Repeated pre-flight artifacts for one benchmark cell are the **same witness**, not N. Key at run level, not file level.
-
-And a pricing discipline that keeps the register honest: **price a candidate source with a ~50-record sample before building any adapter** — for a small corpus the honest answer may be that the volume never justifies one, in which case *record that verdict* rather than leaving the row open. A surface whose branch has not landed is `candidate — ready, unwritten`, not `live`.
-
-### Fold purity: reject a bad stamp at append time, not at read time
-
-A ledger `fold` did not exclude frames dated *after* its `as_of`, so a future-stamped frame took effect immediately at any earlier instant — which is how 895 future-stamped frames from a date incident still folded in. Two designs were defensible (filter in `fold`, or refuse at append); the chosen one keeps **`fold` pure** — `created_at` stays publication metadata the fold never reads — and puts the guard in an **append-time refusal** with a bounded future-skew tolerance. Deliberately tolerant in two directions so the guard cannot fire on its own idiom: absent or malformed stamps pass (frame construction's contract; maintenance frames carry none), and past stamps pass (history is untouched — the existing future-stamped frames are correction-queue territory, not a validation matter). Tests cover both directions including the yes-paths.
-
-### Source References (2026-08-12)
-
-- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) — the fourteen faces, the mutation-testing partition, and the two meta-observations
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC15/§SC13/§SC17/§SC19 — the queue drain, the three re-run hazards, fold purity, and the diff-keyed write-side trigger
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — batch-by-batch drain chronology and the self-caught write-side instance
-- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the source register the locator traps and pricing discipline are recorded against
-
-## Compiled Update — 2026-08-11: provenance discipline from a same-day audit — receipts outrank messages, filesystem presence is not provenance
-
-**Confidence: verified** — every finding below is read directly from `artifacts/audit/completion-flurry-wiring-audit-20260811.md`, an operator-commissioned four-section audit (commits `5c2212ce`→`fc8d4d52`), cross-checked against git and the filesystem rather than restated from the audit's own claims.
-
-### A four-state wiring test, reusable beyond this audit
-
-The audit's standing question was never "was it done" but "is it wired in, and is it live" — resolving every completion claim into one of four states: **(1) committed and live** · **(2) committed, not live** (code merged, but the running process predates it, or nothing calls it) · **(3) claimed, not committed** (a bus message or handoff checkbox asserts work git does not contain) · **(4) live, wired to the wrong thing** (the code runs, but reads or writes the wrong source of truth). Applied to eleven 2026-07-29 completions: 8 were state 1; one instrument (`utm-m5`) was state 2 — tests pass, box reconciled `[x]`, but zero callers and zero runs anywhere on the filesystem, so the question it was built to answer remains unanswered; one batch (`repl-turn-efficiency-ready-batch`) was state 3 — wiped by an unrelated same-day tree-restore and never re-applied, with no incident-log entry for the restore that caused it; and the token relay itself was found in state 4 — live code, reading bus-message state as if it were world state.
-
-### The rule the whole audit reduces to: artifacts on disk outrank any bus message when they disagree
-
-The concrete failure this rule fixes: a post-reboot fleet rebuilt its worldview from twelve-day-old undelivered bus messages and re-presented two operator tokens as pending — both had actually been signed 07-29, with `status: ratified` receipts sitting on disk the whole time (see [Benchmark Methodology](benchmark-methodology.md) and [Agent Architecture](agent-architecture.md) §C39 for the mechanism fix this produced). The delivery plane had been treating *message-not-delivered* as *decision-not-made*. Generalized: **the receipt on disk, not the bus message, is the source of truth for whether a decision was made** — a message queue records that something was *sent*, never that it was *decided*, and rebuilding worldview from the queue conflates the two.
-
-### Filesystem presence is not provenance
-
-Twice in one day, an artifact's mere presence on disk was mistaken for its being committed. A completion citing a doc as evidence found that doc **untracked on any ref to this day** — present on disk, never `git add`-ed, so a fresh checkout of the repo would not have it. And the auditor's own conformance check made the identical mistake against itself: three receipt-index pointers asserted `ratified` by stat-ing the filesystem, not by checking git-tracking, over receipts that had themselves been untracked since 07-29. Both were closed the same way: commit the artifact, then extend the checker to verify git-tracking of every index target it points at, not merely the target's existence. The generalizable rule: a check that answers "does this file exist" is not the same check as "will the next person who clones this repo have it" — an evidence chain built on the former silently breaks on the latter.
-
-### A closed box carrying real, correct measurements is more misleading than an open one
-
-The sharpest single finding: an agent that had *itself disclosed* the exact "committed but the live process predates the fix" hazard for one fix that same morning failed to apply the same disclosure to a second, structurally identical fix a few hours later — flipping its checkbox to `[x]` with accurate before/after numbers while the still-unrestarted daemon kept executing the pre-fix code underneath it. The numbers were true; the state they implied was not. **Knowing a rule is not the same as applying it to your own closure** — the failure mode survives self-awareness of the exact failure mode, which is why an external audit caught it rather than the same agent's own review pass. Both agents in this audit — the closer and the auditor — disclosed a symmetric defect in their own prior work the same day, which the audit names as the reason its numbers are worth anything: closures need a second reader, not just a careful first one.
-
-### `git commit --amend` in a shared clone is a standing trap, confirmed a third time in one day
-
-Three independent same-day incidents shared one root cause: `--amend` (or a broad `git add`) in a repository multiple sessions write to concurrently sweeps other sessions' *currently-staged* files into the amending commit. One instance moved 4→37 files into a single amended commit; recovery in every case was `git reset --soft` plus a pathspec-scoped re-commit, never a force-push or history rewrite. This reinforces, rather than introduces, the project's existing pathspec-limited-commit discipline for shared trees — the finding is that the discipline needs to extend to `--amend` specifically, since `--amend`'s scope is "whatever is staged right now," which in a shared clone is not fully under any one session's control.
-
-### A near-duplicate scorer function is not a migration target merely because it resembles the canonical one
-
-`score_aa_omniscience_run.py`'s answer-extraction routine resembles the canonical letter/answer extractor closely enough to look like a mergeable duplicate, but a per-consumer proof found real behavioral deltas: it compiles with no `re.DOTALL` flag (so it stops matching a multi-line `<answer>` block the canonical path handles) and falls back to the last non-empty line where canonical falls back to the whole response — differences that would move precision/recall/F1 on every unparsed response if merged. Verdict: not a migration target; both functions now cross-reference each other's deltas in comments, with zero behavior change. Reusable method: two similar-looking scorers are not provably identical until every fallback path is compared, not just the primary match pattern — the same discipline already on record in this project for an earlier `debug_scorer` comparison.
-
-### A citation gate needs a way to say "discusses the record" without asserting the record's claims
-
-The `cite-check` gate (which refutes/conflicts citations of intake entries against the belief substrate) could not distinguish an entry *relying on* a claim from an entry *discussing the fact that the claim was fabricated and struck* — flagging a document that correctly recorded a fabrication as if it were relying on the fabrication itself. Fixed by adding a third citation form, `intake-NNN#record`: non-blocking on grade, but still reports a dangling reference (an entry that does not exist cannot be discussed either) and still counts as a dependency edge, because "which pages name this entry" and "which pages rest on its claims" are different questions worth keeping separate. A second, unrelated citation in the same pass was a real defect, not a false positive: three documents had carried forward a paper's superseded accuracy-uplift claim after the authors' own appendix corrected the number — a reminder that a citation gate catching false positives on one entry does not mean the next flagged entry is also a false positive.
-
-### Belief-substrate write-side hook: scope widened, still a TODO
-
-The belief-kernel write-hook obligation (standing project rule: wire the write side immediately when a process starts producing measurements) was generalized today from "experimental kernel candidate receipts" to **all kernel promotion validation/certification receipts** — the v9 freeze's own qualification and certification writers, DFlash's production-certification summaries, and K35's GPU/DSpark results all still lack a prospective ClaimTuple write hook (see [Hardware Optimization](hardware-optimization.md) for the v9 freeze itself). The read-side planner seam (AutoPilot's supersession folding, graded against Vidya's canonical ladder) is live and advisory-only — it never gates generation. Promotion-gate wiring is explicitly blocked pending durable current-trial attestation. **IN-PROGRESS**, not settled: no read-side provenance has been retrofitted into any of the already-completed v9 promotion artifacts.
-
-### A 129-item correction backlog was triaged by splitting on what each item demands, not by working through it in arrival order
-
-A stalled 129-entry citation-correction backlog looked intractable only because it had never been decomposed. Splitting by what adjudication each item actually requires found 37 are scope/framing corrections, 31 numeric, 16 provenance, 6 superseded, 38 need a primary-source read — and **exactly one** needs a genuine primary-source dive (the entry with the most citations, at 7). The other ~99 need not queue behind that one. Deliberately not resolved into verdicts in the same pass: recording a verdict requires a human `--actor`, and manufacturing 129 verdicts from a triage pass would inject the exact unwarranted warrant the correction substrate exists to prevent — the ordering, not the verdicts, was the deliverable. Generalizable triage pattern: split a stalled backlog by the *kind* of work each item needs before attempting any of it, then start with whatever is both rare and highest-leverage (here, the most-cited entry) rather than processing in arrival order.
-
-### Source References (2026-08-11)
-
-- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) — the four-state wiring test (§A), the receipts-outrank-messages rule (§D, §D5, §A-rc RC2), the two filesystem-presence-is-not-provenance instances (§A item 9, §"Signed-but-untracked closure"), the closed-box-more-misleading-than-open finding and its self-referential closure (§"Tonight-commits audit" item 1, §"Self-referential closure")
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the three `--amend`-sweeps-shared-tree incidents, the scorer-duplication verdict (A10), and the 129-item correction-backlog triage (A9)
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC12/§SC14 — the belief-kernel write-hook scope widening and the advisory-only planner read-side seam
-- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110#record superseded-claim correction (commit `a48e04ba`). *(Narrowed from a bare `intake-110` on 2026-08-12: this line discusses the record, it does not rely on the entry's claims, and the bare form inherits every defect of every claim in the entry — which is how it surfaced as `conflicted` once the correction queue drained.)*
 ## Internal KB-RAG Architecture (K1–K8 work items)
 
 Per [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross-repo) `epyc-inference-research/docs/chapters` with heading-aware chunking. Storage: per-document `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, line_range, heading_path, mtime, content_hash)`. Per-document files keep incremental rebuild cheap — only re-encode files whose `content_hash` changed since last index. Excluded by design: `handoffs/archived/*.md` (archived state is misleading by design and pollutes retrieval signal).
@@ -2025,436 +378,6 @@ be named, because an unexplained `superseded` is unfalsifiable.
 
 _Sources: `.claude/skills/research-intake/SKILL.md`; `references/intake-schema.md` § Verification
 lifecycle; `references/session-persistence.md` § Steering ledger; `progress/2026-07/2026-07-25.md`._
-## Compiled Update — 2026-07-29: a stale record is an active liability — the correction pass
-
-**Confidence**: verified — each correction below was settled against a primary
-artifact (a file at a pinned commit, a repository listing, a weight map, a
-paper's own table), not against a secondary summary. **Caveat on independence**:
-the corrections and the records they correct were both produced by this project,
-and in several cases by the same session; what is independently checkable is the
-artifact each correction cites.
-
-### The batch outcome makes the point
-
-Of the 19 intake entries selected for deep dives in this batch, **9 were
-overturned** and 10 verified. The dives changed decisions rather than merely
-enriching records — a framing was inverted, a vendor uplift claim died, a
-drop-in candidate was killed, one entry was found to be substantially fabricated
-at Stage 1, another had been read from a stale version, and a ranking this repo
-had restated was found to be backwards. **The corrections are the durable
-knowledge; the original claims are not.**
-[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §"The dives changed decisions, not just records"
-
-### Verify a negative before asserting absence
-
-Two records asserted a capability gap that did not exist, and both were actively
-mis-scoping live work:
-
-- A handoff line asserted a retrieval model was framework-only with "no GGUF /
-  llama.cpp / Transformers / ONNX". **Three GGUF repositories exist**, one of
-  them published **five months before that line was written**, and our frozen
-  production tree already supports the path end to end. The stale line was
-  pricing a live evaluation as "stand up a new serving stack" when it is a
-  one-line server invocation. See [Search & Retrieval](search-retrieval.md).
-- An intake entry claimed our pinned image-backend checkout lacks support for a
-  model. The pinned commit contains that model's implementation header (646
-  lines) and its documentation, and the deployed GPU binary was **built from that
-  source**. Struck in both the entry's `recommended_actions` and its
-  `verdict_justification`.
-
-The generalized rule — never assert "absent" or "identical" from one encoding,
-one key, or one file listing — is the same one that governs architecture
-verification: read the artifact that would have to contain the thing.
-[`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) §Open Question 1 (corrected);
-[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
-
-### Verify architecture from the weight map, not the declaration
-
-A config-level check reports a model's draft head "preserved" while the model
-ships **zero** such tensors. Any architecture claim about a fine-tune must be
-settled against `model.safetensors.index.json` or GGUF tensor counts. Full rule
-and evidence: [Speculative Decoding](speculative-decoding.md).
-[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) §2026-07-29 Stage-4
-
-### Two intake-pipeline failure modes with named remedies
-
-- **Stage-1 fabrication.** One entry's Stage-1 body contained a product name
-  appearing **zero times** in the paper, process metrics that do not exist, and a
-  verifier result with its **sign inverted** (+8.40 recorded as −8.4). The body
-  was rebuilt from primary source at Stage 2. Follow-on filed: audit the single
-  non-dived entry in the batch for the same mode. The structural lesson is that a
-  Stage-1 summary is **unverified by construction** and must be labelled as such
-  until a dive touches the primary source.
-- **Stale-version reads.** Another entry was summarized from a v1 while the live
-  v2 had released code under Apache-2.0, added an open-weight arm, and — decisive
-  — the authors had **downgraded their own headline 34.2% → 20%**. Both "direct
-  tensions" recorded at Stage 1 were wrong. Always resolve to the live version
-  before recording tensions against internal work.
-
-[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §dive table
-
-### Cite by identifier, not by title; and check the cross-reference resolves
-
-Two distinct hazards surfaced in one batch. First, a paper from the same week
-carries a **near-identical title** to one of the anchors, so anyone re-fetching
-by title lands on the wrong document — cite the arXiv ID.
-[`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) §Dedup hazard.
-Second, a handoff *and* its deep dive both cite an intake ID as their subject's
-entry, and that ID belongs to an entirely different entry; **no row for the
-actual subject exists at all**. A citation that resolves to *something* is not a
-citation that resolves to the *right* thing.
-
-**Resolved 2026-07-29** (`intake-937` created; all 6 references repointed). The
-failure mode generalises, and it is worth stating in its sharpest form: **a
-missing index entry is loud; a wrongly-pointed one is silent.** The subject here
-was not obscure — it was the *deployed production model*, with a deep dive, an
-active handoff, and a live serving path. What was missing was only the index row,
-and because two documents cited a plausible-looking ID, every reader who checked
-was *reassured* by an unrelated CPU-matmul blog entry. It survived from
-deployment until a dive on a competing model happened to grep the index rather
-than trust the handoff — i.e. it was caught by accident, not by any control.
-
-Two durable consequences. (1) **Validators check resolution, not correctness.**
-`validate_intake.sh` confirms that referenced handoff files exist; nothing checks
-that a cited intake ID is the *right* entry. Cross-reference validity needs a
-periodic sweep, and "the link works" must never be read as "the link is right."
-(2) **Repointing is not a find-and-replace.** Three of the six references were
-verdict-*promotion* instructions ("promote to `new_opportunity` once GPU lands")
-that are nonsense against an already-deployed row — both triggers had fired
-months earlier. Each repoint carried an inline dated note, so the superseded ID
-stays traceable instead of being silently erased.
-
-### Never round-trip a whole document to append to it
-
-Persisting 24 new entries via `yaml.safe_load` → `safe_dump` **destroyed the
-index header comments** and reflowed all 18,935 lines, presenting a 24-entry
-addition as a whole-file rewrite. Comments are not part of the YAML data model,
-so a round-trip discards them without error — the operation *succeeds* while
-losing information, which is why nothing caught it. Recovery required verifying
-all 912 pre-existing entries field-by-field to prove no semantic change rode
-along (none did), and the reformat is not reversible once pushed.
-
-The fix is preventive: **append as text**. Exercised on the very next write, the
-same operation produced **101 lines added, 0 removed**, header intact, validator
-green. Two orders of magnitude less churn for identical semantics. Worth carrying
-beyond YAML — any serialize-parse-reserialize cycle over a human-maintained file
-silently drops whatever the parser does not model (comments, key order,
-formatting, anchors), and a reviewer facing a whole-file diff cannot see the
-actual change.
-
-### Process amendment: the dive-surfaced source gate
-
-The research-intake skill gained a **Stage 2b** gate: dives must emit the list of
-new sources they surface, the operator selects from it, and those run as a
-combined Stage-1+2 pass **before Stage 3 opens** — plus a fifth Stage-3
-completeness gate and a separate entry cap. Motivating failure, from this batch:
-four papers were raised only at Stage 3 and had to be bolted on as a
-post-approval round, so the rest of the plan was authored without their findings
-— and one of them **partly deflated the very entry whose dive had surfaced it**.
-
-### Two record-keeping hazards worth carrying
-
-- **Staged-files ride-along.** Index rows authored by this session were swept
-  into a *parallel* session's commit. Content survived intact; only attribution
-  moved. On a shared tree, authorship is not established by who wrote the lines.
-- **Prose is invisible to the dashboard.** A hardening item recorded only as
-  prose inside another checkbox did not count toward progress; it was converted
-  to its own `- [ ]` line during this pass. Any edit recording completed work
-  must flip a checkbox, not narrate.
-
-[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Note on attribution;
-[`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) §2a-iv
-
-### Source References
-
-- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — batch outcome (24 entries, 19 dives, 9 overturned), the per-entry overturn table, records corrected, the skill amendment, and the attribution note
-- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the five-month-stale capability assertion and its live mis-scoping effect
-- [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
-- [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
-- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — weight-map-over-config verification rule
-- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — near-identical-title dedup hazard; cite by arXiv ID
-- [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — prose-to-checkbox conversion during the same pass
-## Compiled Update — 2026-08-09: a citation graph nobody had measured was 23.5% broken, and the ranking derived from it was wrong
-
-> **Review flag (project-wiki writer-evidence policy):** model-compiled; the index defect and its repair were measured directly against `research/intake_index.yaml` before and after migration on 2026-08-09.
-
-- **The intake index's citation graph was silently dropping roughly a quarter of its edges.** A census found **458 of 1,952 `cross_references.intake_entries` values (23.5%), across 133 entries, did not resolve** to any existing entry. The dominant class was annotated IDs of the form `intake-261 (Skill0 — RL-based skill internalization)` — a valid ID made unresolvable to tooling by a human-readable suffix. Eight values were worse: an unquoted `:` inside the annotation caused YAML to parse the list item as a **mapping**, so the value stopped being a string at all. Repair normalised every value to a bare resolvable ID and preserved all 458 annotations verbatim in a new `intake_entry_notes` sibling: **0 values lost, 0 unresolvable remaining**, resolvable edges 1,494 → 1,940. Sources: [research/intake_index.yaml](../research/intake_index.yaml), [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [progress 2026-08-09](../progress/2026-08/2026-08-09.md).
-
-- **The generalizable failure is that a broken graph does not announce itself — it produces plausible, wrong rankings.** Repair reordered the most-cited list substantially (one entry moved 12 → 27 inbound and became the index's most-cited; another moved 3 → 17; **239 entries gained edges**). A backfill population that had been *scoped by inbound-citation count* was therefore measuring the wrong set and had to be recomputed against the repaired graph. **Any selection rule computed over a reference graph inherits that graph's defects silently**, which is the same class of error as gating on a metric whose scope does not match the measured subset. Sources: [research/intake_index.yaml](../research/intake_index.yaml), [progress 2026-08-09](../progress/2026-08/2026-08-09.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md).
-
-- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
-
-- **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
-## Compiled Update — 2026-08-09 (second batch): auditing a belief-system design, and what the epistemic literature actually licenses
-
-> **Review flag (project-wiki writer-evidence policy):** model-compiled from a single research-intake
-> session that ingested and dive-verified 37 sources (`intake-1031`–`intake-1067`); every formal claim
-> below was checked against primary text during that session, and each is cited to its intake entry.
-
-- **When a design proposes infrastructure, audit the codebase before auditing the literature.** A
-  2,682-line proposal for an "append-only ledger of typed frames plus derived belief state" was
-  reviewed against the actual tree first, and the pattern turned out to be **landed in-project three
-  times over** — the evidence-plane ledger (13/14 waypoints done, typed sequential e-process
-  verdicts, per-candidate views rebuilt by fold), the AutoKernel journal (fsync-per-event, seven
-  schema-bound record kinds, pure `rebuild_views()` bound to an events digest, `RETRIEVAL_SUPERSEDED`
-  so a record can leave *retrieval* without leaving the *record*), and the experiment journal
-  (supersession fold with baseline authority already cut over to `ledger_fold`). The honest scope of
-  the proposal shrank from "EPYC lacks a substrate" to three verified gaps: claim-level dependency
-  edges (wiki dependency tracking existed nowhere as a design), refusal-semantics freshness gating,
-  and provenance-gated actuation. Sources:
-  [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/autopilot-program.md#track-evidence-plane-ledger-and-sequential-verdicts),
-  [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md),
-  [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md).
-
-- **Vocabulary reuse is a hard governance constraint, not a style preference.** Three independent
-  vocabularies already own parts of this space: `MEASUREMENT.md`'s reconciliation verbs
-  (`retro-certify` / `demote-to-prior` / `retire-view`), the dashboard's freshness classifier — which
-  declares itself "THE ONE CLASSIFIER" over `fresh`/`aging`/`stale`/`missing` plus the independent
-  `observed|silent|absent` × `populated|empty|unknown` axes — and the sequential-verdict states
-  (`accumulating` / `confirmed_improvement`). Any new taxonomy **maps onto these or extends them
-  explicitly; it never forks them**, or the project acquires a second governance system whose
-  disagreement with the first is undetectable. Sources: [MEASUREMENT.md](../MEASUREMENT.md) §6,
-  `dashboard/freshness.py`, [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md) §3.
-
-- **The frame and ledger layers of any claim-tracking system are solved prior art; only the epistemic
-  kernel is unserved.** Typed, content-addressed claim units with provenance, actor signature, and
-  supersession/retraction are **nanopublications**, running publicly for fifteen years (three named
-  graphs; content addressing over a *normalized* graph so identity survives serialization; retraction
-  valid only when signed with the original author's key). The field vocabulary is **W3C PROV-O**
-  (including `wasInvalidatedBy`/`invalidatedAtTime`). The typed-signed-statement encoding with
-  per-step scoped authority is **in-toto/DSSE + SLSA** — which already occupies the exact epistemic
-  stance ("verification proves the derivation followed registered rules, not that the artifact is
-  good"). The authenticated append-only log without consensus is **RFC 9162 / C2SP tile logs**,
-  self-hostable and freshly re-engineered. What remains genuinely unbuilt is the kernel: a
-  deterministic fold to *graded* belief state, freshness gates that refuse, and certificates over an
-  accumulating supersession-aware state. Sources: intake-1031, 1046, 1047, 1048, 1063, 1064.
-
-- **A semantic trap worth internalizing: record-lifecycle time and world-truth time are different
-  clocks.** PROV's `invalidatedAtTime` means *the record became unusable*; a bi-temporal knowledge
-  graph's `invalid_at` means *the fact stopped being true in the world*. Aliasing both to one field
-  is a category error that silently corrupts every freshness query built on it. The corrected field
-  set keeps five distinct times — ledger-side `created_at`/`expired_at`, world-side
-  `valid_at`/`invalid_at`, and the source's own `reference_time` (a 2025 paper read in 2026 asserting
-  a 2024 fact carries three). Sources: intake-1046, intake-1032.
-
-- **Similarity cannot detect contradiction — so no retraction path may be gated on an embedding
-  threshold.** Measured on 98 labelled pairs, cosine similarity separates duplicates from
-  contradictions at **AUROC 0.5926**, barely above chance, because a contradiction is often *more*
-  embedding-similar to the original than a harmless rephrasing is. This is the empirical basis for
-  requiring key-equality-plus-value-inequality (or an explicitly logged adjudicator) rather than a
-  similarity score anywhere in an invalidation path. Source: intake-1036.
-
-- **Any LLM judgment that can affect a derived result must be logged as a keyed input, or replay is
-  provably inconsistent.** A 2026 result establishes *necessity*: for a boundedly nondeterministic
-  judge, a system without a durable keyed log admits an adversarial replay pair that reaches
-  different conclusions from identical committed state — and with the log, that anomaly is excluded
-  (a tight characterization). Three operational rules follow: key judgment records by the read-set
-  plus the full decoder tuple (prompt, seed, model version, temperature, tool-output hash); enforce
-  first-committed-vote-wins per key so a re-run judge is short-circuited rather than appended; and
-  invoke no model during a fold or replay. The trap: **greedy/temperature-0 decoding does not make a
-  judge deterministic** under this model, because the nondeterminism space includes sampling state
-  and hardware numerics. Source: intake-1035.
-
-- **Advisory provenance display does not change behaviour; refusal does.** A controlled n=26 study of
-  a claim-level provenance interface found it *significantly lowered* participants' trust in
-  LLM-generated scholarly edits while **not changing their reliance** on those edits under time
-  pressure. Independently, a RAG staleness benchmark found one outdated passage cuts overall scores
-  by more than 24% and raises harmful outputs, while retrieval-side mitigation still surfaced stale
-  content roughly half the time. Together these are the empirical case for gates that block or
-  abstain at serve time over banners that warn — and for a scoring scheme that penalizes confidently
-  stale answers (+1 correct / 0 abstain / −1 harmful) rather than rewarding abstention as safety.
-  Sources: intake-1060, intake-1054.
-
-- **A published citation can be correct in every particular and still be attributed wrongly.** Five
-  formal citations underpinning the design were checked against primary text: four confirmed, one
-  partial — the convergence bound the draft attributed to a specific paper is standard Kleene-iteration
-  folklore, and the citable theorem is in fact *stronger* than what was claimed. Two further
-  corrections came from reading the sources rather than their abstracts: an argumentation paper
-  defines **three** proof standards, not the five widely associated with it (the other two arrive in a
-  later chapter by the same authors), and a "counterexample" scope caveat turned a headline retraction
-  primitive into a positive-fragment-only result. The transferable rule: **verify the attribution, not
-  just the existence** — "this paper says X" is a claim about the paper, and it fails independently of
-  whether X is true. Sources: intake-1038, 1039, 1040, 1050, 1062, 1066.
-
-### Source References
-
-- [`research/deep-dives/vidya-belief-substrate-audit.md`](../research/deep-dives/vidya-belief-substrate-audit.md) — the consolidated audit: verdict, seven wrinkles, corrections ledger, corrected formal foundations, adoption kit, landscape, machine-wide assessment, and the 37-entry reference table
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the resulting program: spec-amendment sheet, downscoped gold corpus, shadow pilot, research track, operator decision queue
-- [`progress/2026-08/2026-08-09.md`](../progress/2026-08/2026-08-09.md) — session record for the audit batch
-- [`research/intake_index.yaml`](../research/intake_index.yaml) — entries `intake-1031`–`intake-1067`, each carrying its verified claims, adoption extract, and dated `dive_corrections`
-## Compiled Update — 2026-08-09/10: what building the belief substrate actually taught
-
-> **Review flag (project-wiki writer-evidence policy):** model-compiled from an implementation
-> session that landed ~2,600 lines under `scripts/vidya/` with 156 tests passing on two
-> architectures. Every measurement below was produced by running the code against the real
-> 1,067-entry intake index, not estimated.
-
-- **A correction recorded only in narrative is not a correction — it is worse than none.** A
-  fabricated `/doctor` mechanism was reported "struck" on 2026-07-25 by three separate records (a
-  progress file, a governance handoff, and a later re-source note) and was **never removed from the
-  index**. It served as "CONFIRMED and understated" for fifteen days. The failure is worse than an
-  uncorrected entry because a reader who checks the record is told the problem was handled. The
-  generalizable rule: **verify a correction in the artifact it claims to change**, not in the prose
-  that claims to have changed it. Sources: [research/intake_index.yaml](../research/intake_index.yaml)
-  intake-896#record `dive_corrections`, [vidya-pilot-corpus.md](../docs/design/vidya-pilot-corpus.md) §4.
-
-- **A validator that checks key presence does not check anything.** Two defects of the same shape
-  landed the same day: 538 entries carried duplicate `cross_references.intake_entries` keys (PyYAML
-  resolves duplicates last-one-wins, silently), and 9 entries satisfied the *required* `url` field
-  with a null. Both had passed every validation run for as long as they existed. The duplicate check
-  had to move to **parse time** — after `safe_load` the earlier value is already gone, so it is
-  undetectable by inspecting the parsed structure. The empty-field case resolved into a
-  **locatability** rule rather than a backfill: an entry needs a url, an arxiv_id, *or* a
-  `locator_note` explaining why neither exists, because all 9 were legitimate operator-supplied
-  inline material where inventing a URL would be strictly worse than leaving it blank. Sources:
-  [validate_intake.py](../.claude/skills/research-intake/scripts/validate_intake.py),
-  [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md).
-
-- **Recording where a claim was read costs seconds at dive time and is often impossible later.** A
-  pass over all 1,067 entries found **zero** claims anchored to a span — every entry identified a
-  *document*, so no claim could be cited as checkable at a location. That is now measurable as a
-  grade: claims without an anchor cap at "located", and a policy requiring an anchored claim was
-  satisfied by **0 of 4,191**. Recording the anchor while the source is open is now a Stage-2
-  obligation in the intake skill. This is the same failure as the renamed-kernel incident, priced.
-  Sources: [SKILL.md](../.claude/skills/research-intake/SKILL.md) Stage 2,
-  [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md).
-
-- **An evaluation that passes first time has not been tested.** The gold-corpus mutation suite
-  ultimately scored 28/28, but scored **20/28 on the first run**, and all four failures were real:
-  two engine bugs (retraction operated per-*frame* while evidence lives in per-*token*, so a
-  discredited source kept supporting its other claims) and two gold-label errors where the corpus
-  encoding was less faithful than reality. Four defects in a system its author had just written and
-  believed correct. Corollary observed twice more the same session: a negative control that does not
-  verify its own mutation took effect proves nothing, and a test asserting a value the code cannot
-  affect (`iterations >= 1` on frames that create no claims) passes against a broken implementation.
-  Sources: [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md).
-
-- **A rising correction rate can mean rising verification, not falling quality.** The monthly series
-  shows corrections climbing from 1% (March) to 68% (August), which reads as collapse. It is a
-  confound: corrections are recorded by dives, and dive activity went from ~0/month to 123 in August.
-  The series measures *when verification happened*. The confound-free figure is the overturn rate
-  among dived entries — **27 of 160 = 16.9%**, roughly one dived entry in six with a load-bearing
-  claim falsified. Any metric whose denominator is "everything" cannot distinguish an uncorrected
-  claim from an unexamined one. Sources:
-  [vidya-r4-r5-corroboration-and-decay.md](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md).
-
-- **Independence is unmeasurable when identity is per-source.** 100% of 4,191 beliefs rest on at most
-  one support path — not because the corroboration statistic is wrong, but because claim IDs are
-  minted per entry, so two sources can never support the *same* claim. The data model forecloses
-  independence before any statistic runs. Cross-entry claim identity is therefore a prerequisite, and
-  it is irreducibly human: deciding two differently-worded claims are the same proposition is exactly
-  the judgment a deterministic fold must not make.
-
-- **A refusal without a named next action is a shrug, and a one-way flag deadlocks the work it
-  protects.** The first live run of the freshness gate blocked 652 claims with no way to clear them,
-  because every dived entry carries a correction and the review flag had no counterpart. The fix was
-  a `correction_reviewed` frame, so the gate's named next action produces the thing that unblocks it.
-  Related: an unprovable absence is refused outright rather than approximated — "no rule can produce
-  X" is kept as a function that *raises*, because a plausible implementation would be an unprovable
-  absence that looks like a proof. Sources:
-  [vidya-pilot-spec.md](../docs/design/vidya-pilot-spec.md) §8, `scripts/vidya/absence.py`.
-
-- **A null result needs demonstrated detection power to mean anything.** An exhaustive search for a
-  counterexample to an open conjecture found none across 5,670 instances. On its own that is worth
-  little. Two things make it a result: boundary growth was confirmed present in the corpus (so the
-  search exercised the case at issue), and a mutation test replaced the implementation with a
-  plausible-but-wrong variant, which produced **2,715 counterexamples from the same instances**. The
-  comparison can see a wrong answer; it does not see one here. Sources:
-  [vidya-r1-r2-stratified-negation.md](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4b.
-
-### Source References
-
-- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) — the binding pilot contract, all §19 decisions ratified 2026-08-09
-- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — 19 gold claims from four documented real corrections
-- [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) — 28/28, and the four failures found first; verdict ITERATE
-- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) · [`vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md)
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — 58 done / 4 open
-## Compiled Update — 2026-08-10: a citation is not a dependency, and a check can be passed by deleting what it inspects
-
-> Model-compiled from an implementation session (vidya program + a full citation audit of the intake
-> index). Every number below is measured against the live index or ledger and is reproducible from
-> the cited artifact. **Retracts one claim from the 2026-08-09/10 section — see the first item.**
-
-- **RETRACTION: the "5,670 instances, 0 counterexamples" null recorded above is vacuous.** The two
-  routes it compared reduce to the same expression — specializing a base fact to ⊥ and then dropping
-  ⊥ entries *is* deleting that fact — so agreement was guaranteed by construction and measured
-  nothing. The mutation test was sound but showed only that the harness can detect disagreement; it
-  could not show the routes differed, which is how it was read. The lesson generalizes past this
-  instance: **a mutation test validates the detector, never the distinctness of the things being
-  compared.** Pin the distinctness separately, or a tautology passes as a result. Replaced by a real
-  finding — genuinely incremental retraction across a negation boundary is **refuted** (2,241 of
-  5,670), dual tokens cut it to 270, and only dual tokens plus intra-stratum dependency closure is
-  exact. Source: [vidya-r1-r2-stratified-negation.md](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c.
-
-- **A citation is not a dependency, and the gap is measurable.** Hand-classifying a 20-edge uniform
-  sample of the intake citation graph suggested that citations from *dived* entries were evidential
-  at 4/6 precision. A **60-edge sample stratified over the 672 dived-source edges refuted it: 18%
-  evidential, 75% topical, 7% companion artifact.** The first figure was a small-sample artifact —
-  its edges happened to fall in one intake batch where citations really are foundational. Promoting
-  all 672 would have created ~550 false dependencies, and a false dependency is worse than a missing
-  one because it propagates invalidation into work that never depended on anything. Two mechanical
-  shortcuts were tried on the same sample and both failed (naming the target in the claim text:
-  precision 0.50, recall 0.09; verification-language keywords: 0.50/0.27). **Dependency has to be its
-  own edge, written when the dependency is real** — hence the `depends_on` field with a required
-  `why` and a counterfactual authoring test. Source:
-  [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) §4d.
-
-- **A validation rule can be passed by omitting the field it inspects.** Duplicate `arxiv_id` was a
-  hard error. Exactly **3 entries in 1,067** carried an arXiv *URL* with a null `arxiv_id` — all three
-  `novelty: duplicate`, all three from one 2026-07-08 batch, and all three holding an id that already
-  existed elsewhere. Each would have failed validation had the field been filled in. Whether that was
-  deliberate is unknowable and irrelevant: the check could not see its own blind spot, because absence
-  of a field is indistinguishable from a source that genuinely has none. The fix looks at the *other*
-  field (the URL) rather than trusting the one being validated.
-
-- **Labelling a duplicate is not the same as refusing to create one.** Dedup was working — it
-  correctly marked collisions `novelty: duplicate` — and then persisted them as full entries anyway,
-  each with its own `key_claims`. **12 such entries existed and 10 were cited by other entries**, so
-  every one read downstream as an independent source. A classifier whose output is a label rather than
-  a control-flow branch does not prevent anything.
-
-- **Five sources were cited across the knowledge base and had never been ingested**, each carrying a
-  *neighbouring* entry's id — which reads as provenance and is not. All five turned out to be real
-  papers (ADAS, Hyperagents, Self-Harness, ACE, RE-Bench). The papers were never the problem: **two
-  headline claims resting on them were false.** "LLM-as-judge benchmark design is itself optimizable"
-  is supported by none of its three sources — all three optimize harness or context against a *fixed*
-  benchmark. "A trajectory toward fully autonomous task generation" is supported by none of the
-  ADAS → DGM → Hyperagents lineage; Hyperagents lists *"a fixed task and evaluation distribution"*
-  among its own limitations. A downstream scoping document had already taken *"only the
-  task-generation half"* of a system with no task-generation half.
-
-- **Verifying one clean fix is what finds the rest.** The audit began with two mis-stamps noticed by
-  accident while checking something unrelated. A naive label-vs-title checker over 271 files produced
-  **780 hits, almost all noise** (any prose before a parenthetical id). Tightened to name-like labels
-  in curated paths, it found 8 real mis-stamps — and separately revealed that **101 entries, the whole
-  2026-03 seed batch, had titles that were just their arXiv id**, which is why four *correct*
-  citations (YaRN, Sarathi-Serve, Cascade, SkillRL) had looked like mismatches. One batched arXiv
-  sweep (25 ids per request, 5 requests) resolved all 101.
-
-- **An identifier stops being cheap to change the moment something immutable references it.** Merging
-  four duplicate entries left permanent id gaps. Closing them would have renumbered 728 entries,
-  rewritten 5,565 references across 479 files, and changed 731 of the 1,067 intake ids embedded in
-  append-only ledger claim identifiers whose hash chain a checkpoint had already signed. The argument
-  that decides it holds even without the ledger: **a reused id makes an old reference resolve to the
-  wrong thing, silently; a removed id resolves to nothing, visibly.** But that defence is only valid
-  if the absence is *recoverable* — 44 references to absorbed ids sat in 20 files with no forward
-  pointer until a generated redirect map was published. **A redirect map must be generated from the
-  data, never hand-kept**, because one that drifts answers confidently and wrongly.
-
-- **Resolution is a lookup, not a rewrite.** The obvious follow-up — bulk-repoint every reference to a
-  merged id — would have corrupted records. Of 57 references, exactly **one** was mechanically safe to
-  rewrite; four would have been damaged, three of them because the dead id is named *precisely because
-  it was wrong* (a correction record), and one because it is a range endpoint. Historical records
-  naming a superseded identifier are correct as written.
-
-### Source References
-
-- [`research/intake_merge_map.md`](../research/intake_merge_map.md) — generated redirect table for merged ids
-- [`.claude/skills/research-intake/references/intake-schema.md`](../.claude/skills/research-intake/references/intake-schema.md) — `depends_on`, `merged_ids`, ID-sequencing rationale
-- [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) §4b–4d — promotion status, live-ledger evaluation, the citation-edge samples
-- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c — the vacuity retraction and the four retraction routes
-- [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, source-identity defect
-- [`research/recommendations.md`](../research/recommendations.md) — rec-001 and rec-002 rewritten after their sources were read
 ## Belief-kernel ingestion contract — one carrier, one ladder per source class (2026-08-10)
 
 Heterogeneous producers write measurements in different shapes: an autopilot trial row, an
@@ -2510,172 +433,6 @@ independent evidence.
 - [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — implementer's guide and the live source register
 - [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — the withdrawn 2.2% ceiling and the corrected structured-corpus measurement
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC1–SC11 — the source-coverage track
-## Compiled Update — 2026-08-10 (promotion track): what it took to make one belief rest on two sources
-
-> Model-compiled from the belief-substrate promotion track and the R-program closeout. Every figure
-> below was produced by running the code against the live 4,181-belief ledger or the real 1,067-entry
-> intake index. **Two earlier compiled claims are amended here — see the corroboration and R1b items.**
-
-- **Corroboration was degenerate because support was counted by LABEL, not by SOURCE.** The earlier
-  section recorded "100% of 4,191 beliefs rest on at most one support path" and attributed it to
-  per-entry claim identity. That was half the cause. `_disjoint_supports` counted evidence *labels*,
-  which are minted per claim, so two records of the same paper produced two labels and would have
-  read as independent support the moment aliasing landed. Counting by **source locator**, and
-  collapsing alias groups the reviewer marked non-independent to one witness, produced the first
-  non-zero `disjoint_supports ≥ 2` in the program's history: over 4,181 beliefs the distribution is
-  **0 → 112, 1 → 4,066, 2 → 3**. Of the reviewer's ten "same" verdicts, the seven same-source or
-  linked ones correctly yield nothing and exactly the three genuinely independent ones count. Had the
-  aliases been emitted before the counting change, the statistic's first positive result would have
-  been one paper counted twice — strictly worse than the honest zero it replaced.
-
-- **"Human-gated" describes the judgment, not the search.** R4b sat blocked on the claim that deciding
-  two differently-worded claims are the same proposition is irreducibly human. True, and beside the
-  point: nobody was ever going to hand-scan 8.8M pairs. Deterministic IDF-weighted Jaccard over
-  stopword-stripped terms reduced **4,191 claims → 780,140 blocked pairs → 74,948 scored → 45
-  candidates** at threshold 0.35 — an afternoon of review, no model call, so a review can be paused,
-  resumed or audited. Two filters carry the design: same-entry pairs are never proposed (two claims of
-  one entry are one source, and aliasing them manufactures the exact fake independence the statistic
-  exists to detect), and every row starts `pending` with no pre-filled decision.
-
-- **A duplicate-id check cannot see a duplicate source.** The validator had errored on duplicate
-  `arxiv_id` for as long as it existed and was blind to **5 duplicate-locator groups covering 11
-  entries**, because one entry of each pair records the arXiv id and the other records only the URL.
-  Normalizing both forms to one key finds them; the check **warns rather than errors**, deliberately,
-  since a repository or project page can legitimately back two distinct artifacts and this project has
-  a standing lesson against conflating a companion repo with its paper.
-
-- **A longitudinal question is blocked by its instrument long before it is blocked by the clock.** R5
-  was filed elapsed-time-gated, which was true and concealed the real blocker: the `query_served` and
-  `obligation_disposition` frames existed and **nothing emitted them**, so no clock had started. Both
-  are now wired **opt-out rather than opt-in** (`--no-log` to suppress) on the principle that the
-  failure mode is silent and unrecoverable — a default of "off" leaves the series empty while every
-  command still appears to work.
-
-- **When a bar cannot be met by hand, add a rung — do not lower the bar.** Anchoring was the promotion
-  gap: 667 entries cited by active handoffs and design docs, **5 anchored**, and hand-anchoring 2,994
-  claims is not a path. The ratified answer inserts **`T2 MachineLocated` between Located and
-  Anchored** (carrier 25 elements) and caps `located_by: machine` there regardless of completeness, so
-  a machine anchor can never be mistaken for a human one. Ordinal-safe because grades serialize as
-  names, so no stored frame changed meaning — and the compliance test caught the carrier-size change,
-  which is what it is for. At scale: **351 anchors across 158 entries**, taking the T axis from 5
-  anchored claims to 371 at `MachineLocated` plus the 5 human ones.
-
-- **The review step on that pass earned itself three times, and each defect had a different shape.**
-  (1) Two anchors passed every threshold and were wrong — a WER claim pinned to a sentence that only
-  *named* the metric, and a token-reduction claim pinned to a span whose numbers **contradicted** it —
-  because term overlap is number-blind and this corpus is numeric. (2) The numeric guard added to fix
-  that passed the contradiction anyway on its first version, because `MATH-500` contributed "500" to
-  both sides: **a shared name reading as a shared number**; identifiers are now excluded. (3) A silent
-  index bug — the anchorer filtered non-string entries out of `key_claims` and then enumerated the
-  *filtered* list, shifting every index after a non-string claim and pinning a quote hash to the wrong
-  claim. The affected entry was dropped from the batch rather than repaired: re-running under fixed
-  code is cheap, guessing which claim it meant is not.
-
-- **A record nobody touched became false, which is the freshness failure in its purest form.** An
-  entry's claim is a verbatim copy of an arXiv v1 abstract; the authors later found the headline
-  "+9–16 points" was a **scoring artifact** (the base model split answers across two formats, so a
-  boxed-only grader undercounted it) and revised the paper — current table +0.0 and +3.3, and **−1.2**
-  on a benchmark where the entry claimed +10. This motivated a drift detector that batches the arXiv
-  API and flags any entry whose paper was updated after our `ingested_date`; it independently re-found
-  the case that motivated it. **Then the triage reframed the finding and dissolved 67 of 68 items**:
-  of 68 drifted entries in 617, 64 are `unverified` and 3 `stage1-unverified` — exactly one is dived.
-  For an unverified entry drift is not a correctness problem, because the record already says nobody
-  checked; reading 67 papers to confirm that unverified things are unverified is work with no
-  consumer. What the finding licenses is a Stage-2 rule — *dive the CURRENT version and record which
-  one you read* — which prevents the class instead of draining it.
-
-- **An entry-level correction is not evidence about any particular claim.** Blanket application of
-  `dive_corrections` produced 114 opposition frames. Reading the divers' own prose per claim — *the
-  prose the divers wrote IS the record; reading it is the method* — recovered verdicts for all 26
-  entries: of **106 claim verdicts, 68 unaffected, 25 narrowed, 6 uncertain, 3 reattributed, and 4
-  overturned**. Opposition output drops 114 → 6. A fifth verdict, `uncertain`, had to be invented to
-  separate "a reader examined the prose and it still does not say" from "nobody looked" — only the
-  second should make a future reader repeat the work. And emitting the right frame is not withdrawing
-  the wrong one: **204 superseded opposition edges retracted** (retracted, not deleted — an earlier
-  frontier must still fold to what we believed then) and **103 corrections marked reviewed**.
-
-- **An authored dependency edge the engine ignores does nothing, and only measurement could show it.**
-  After `depends_on` was adopted, the counterfactual authoring test (*if that entry's claim were
-  retracted tomorrow, would a claim in THIS entry have to change?*) admitted only **4 of the 11 edges**
-  the 60-edge sample had labelled evidential — and one runs **opposite** to the citation that suggested
-  it, since the cited work is older than the claim that transports its theorem. The propagation
-  evaluation then scored **0 of 4**: the fold listed `claim_depends_on` under `ignored_frame_types`.
-  Getting to 4/4 needed two closes and the second is the lesson: `impact_of_retracting` compared grades
-  and broken paths only, so a **review-only effect read as "unaffected"** — a report that cannot see
-  the one effect the ratified rule produces is not reporting impact. Ratified semantics: a dependency
-  whose source has lost all support flags its dependents `review_required` and **no grade moves** (we
-  know the ground shifted, not by how much), and a new dependency alert counts as impact even on an
-  already-flagged claim, because "my source was corrected" and "something I rest on was withdrawn" are
-  obligations cleared by different people.
-
-- **Re-ingest was not idempotent, and the fix that absorbed the damage was a different fix.** Because
-  `frame_id` hashes `created_at`, a fresh `--as-of` re-emitted the whole corpus: **9,599 → 19,270
-  frames with zero new information** (dedup is now keyed on `(frame_type, assertion)`). The
-  independent-support distribution was unchanged across the duplication *only because* support had
-  already moved to locator counting — under the old label counting every claim would have shown two
-  supports. A duplication bug and a fake-independence bug are the same bug seen from two directions.
-
-- **The wiki is a dependent, not a claimant.** Wiki citations were modelled as **707 dependency edges
-  from 28 pages into 477 distinct intake entries**, implemented as a *projection over the fold* that
-  writes nothing to the ledger: a page's citations are re-derivable from a file already in git, and
-  the alternative would have put 28 non-beliefs into the belief set. Result: 12 pages carry a stale
-  dependency (all unreviewed corrections) and **real decay is zero**. The first draft reported 16 —
-  **a coverage gap was being read as decay**, because nine entries flagged "lost all support" had never
-  had a claim ingested at all. That is a gap in the reader, not rot in the page; `uningested` and
-  `unsupported` are now distinct and only decay marks a page stale.
-
-- **Two denominators with one name understate a corpus by 40 points.** A reps extractor that read only
-  modern denominator keys found coverage of 46%; probing the gap rather than accepting it found 545
-  older rows carrying the denominator under `details.total`, taking coverage to **86%**. Because
-  `total` counts what was ATTEMPTED and `quality_denominator` counts what SCORED, the claim tuple now
-  records `reps_basis` and the grade reasons state it — "n=55 attempted" and "n=55 scored" are
-  different claims. A neighbouring trap from the same wiring: the optimizer declares
-  `directions=["maximize"]*4` over `(quality, speed, -cost, reliability)`, so the raw `cost` field is
-  **lower-better** and reading the maximize-list alone inverts it. Direction is now recorded, never
-  inferred.
-
-- **R1b RESOLVED — and "exhaustive over a generator is not exhaustive."** A depth-3 sweep over 40,500
-  instances found 0 counterexamples to the dual-token + intra-stratum-closure route while the
-  detection control (plain circuit specialization) produced 16,911, which is what made the null a
-  result rather than a shrug. An adversarial three-rule program then refuted composition anyway:
-  `p :- a` / `r :- not p` / `t :- r`, retract `a` — ground truth derives `{r, t}`, the route derives
-  `{r}`, because at record time `r` was absent and the stratum-3 circuit was therefore empty. The
-  generator had never emitted a stratum-3 rule with a bare positive body over a stratum-2 negation
-  head. The repair (seed each stratum's closure with the heads the stratum below *could* derive,
-  guards ignored) restores exactness over the same 40,500 instances and retains **88.4%** of stratum
-  rules — an 11.6% saving over full re-evaluation, so the conclusion is unchanged: **closed as a
-  research question, and the engineering is not worth building.** A bug found first matters more than
-  the number: the initial depth-3 run reported 1,836 counterexamples, every one shaped `s :- r` listed
-  *before* the rule deriving `r`, because the single-pass ground-truth evaluator made rule ORDER change
-  the meaning of a stratum — a fully-formed, completely spurious refutation, stopped only by suspecting
-  the test method before believing the result.
-
-- **Most rules that look like they need negation do not.** Naming the first rule that genuinely
-  requires stratified negation eliminated two of three candidates: "no unretracted opposition exists"
-  and "no fresher measurement supersedes this" are both *materialized then read* — ordinary evaluation
-  followed by a filter, not negation-as-failure. The qualifying rule is **correction discharge over the
-  transitive dependency closure** (*a correction is discharged when no claim that transitively depends
-  on it remains flagged*), where both halves are load-bearing: transitivity makes the relation
-  recursive, and "no dependent remains flagged" is negation over a relation derived in the same
-  program. It is wanted rather than hypothetical — **678 claims sit `review_required` with no closure
-  rule at all**, the one-way-ratchet shape reappearing at the level of a correction's whole blast
-  radius.
-
-- **A provenance program stamped 37 dates two days in the future.** Found during wrap-up across handoff
-  checkboxes, a spec section, code comments, a README and a memory entry; corrected across 15 files in
-  two repos. Ledger frames appended that day carry the wrong `created_at` and were verified **cosmetic,
-  not functional** — folding at the true date returns identical results, because the fold does not
-  exclude on `created_at`. Synthetic fixture dates were deliberately left alone: arbitrary literals are
-  not claims. In a system whose subject is provenance, the date on a record is part of the record.
-
-### Source References
-
-- [`handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md`](../handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md) — the promotion track (PR0–PR3), its ratifications and every defect found by hand-review
-- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4e/§2.4f — the depth-3 sweep, the composition refutation, the repair and its price
-- [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, the duplicate-locator sweep, and the R5 instruments
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC5/SC6 — wiki-as-dependents, the autopilot write hook and `reps_basis`
-- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) · [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the session records for both halves
-- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.2 — the amended carrier with `T2 MachineLocated`
 ## Discussing a record is not relying on it (2026-08-10)
 
 The first production run of a citation gate over this repository flagged six documents as resting on
@@ -2714,734 +471,6 @@ corpus before choosing the default, and reserve the strict floor for the load-be
 - [`scripts/vidya/citation_gate.py`](../scripts/vidya/citation_gate.py) — the gate, its blocking set, and why `review` only warns
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC12–SC17 — the consumption track
 - [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the run that produced these numbers
-## Compiled Update — 2026-08-12 (first live GEAK/Arena belief rows)
-
-The producer-side GEAK/Arena boundary has crossed from prospective wiring to live evidence. INF-03
-r3's terminal Claude/Codex 2h and 8h checkpoints each wrote two measurements: correctness pass rate
-and timing-harness validity rate. The generic adapter projects only those producer-authored rows
-through the shared ladder; it does not infer speedup, campaign rank, or promotion authority from the
-receipts. Earlier pre-hook smokes remain deliberately unprojected.
-
-This is also a useful example of why storage and resource authority are distinct. Terminal cells can
-remain durable, restart-safe evidence while the wider campaign pauses to repair over-broad GPU claim
-scope. No read-side reconstruction is needed, and no invalid/incomplete cell enters the belief set.
-
-### Source References (2026-08-12 live Arena rows)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20's live receipt boundary
-- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — current write/read status and no-backfill rule
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact terminal receipts and paused-campaign chronology
-## Compiled Update — 2026-08-12 (AutoKernel governed receipts)
-
-AutoKernel's live controls and governed async-prefetch replay now write belief semantics at the
-producer boundary. Future receipts carry protocol and metric direction, scored-block basis, exact
-source/binary/model/resource-claim/producer identities, the native verdict, and immutable evidence
-digests. The Vidya adapter independently re-derives those bindings and delegates grading to the one
-shared measurement ladder; it does not introduce a source-specific grade rule.
-
-The temporal boundary is deliberate. The accepted controls, hardened-instrument smoke, and GPU replay
-completed before this hook and therefore project no Vidya rows. A reader cannot manufacture write-time
-warrant after the fact. Research `730adb1d` and root `2a4e170a` close SC27 prospectively; the next
-governed controls or replay will be the first admissible source records.
-
-### Source References (2026-08-12 SC27)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC27 contract and completion boundary
-- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — live source register and projection semantics
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — promoted commits, tests, and no-backfill evidence
-## Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
-
-The GEAK/AgentKernelArena adapter now has a prospective belief writer rather than relying on a later
-reader to reinterpret generic benchmark fields. Successful future round trips emit two explicitly
-typed measurements—correctness and timing—using the same measurement ladder as the existing ROCm
-profiling producers. Failed or incomplete runs emit no performance belief. The compatibility
-preflight remains dependency evidence only: source pins, platform reachability, and compile success
-are important facts, but none has an honest higher-is-better or lower-is-better ordinal direction.
-
-This is a small but general rule for evidence systems: **write semantic measurement intent at the
-producer boundary, and classify capability checks separately from ranked observations**. It prevents
-a dashboard or ledger adapter from inventing metric direction after the experiment, and makes future
-controller A/B results comparable without retrofitting old receipts. Existing 2026-08-11 receipts are
-deliberately unchanged.
-
-The same boundary now applies to the admitted MMQ-WGM negative. Its wall-time, TCC-hit-rate, and
-read-request observations are direct measurements, but the receipt predates any `ClaimTuple` writer.
-SC22 therefore files a producer-side hook before any successor launch-order experiment and explicitly
-forbids retrofitting r2 on read. This preserves the negative as durable experiment evidence without
-claiming that a later adapter witnessed semantics the original producer never wrote.
-
-### Source References (2026-08-11 AutoKernel Arena writer)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance, SC22 MMQ-WGM write-side task, and classification
-- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors, MMQ-WGM candidate source, and dependency-evidence handling
-- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — receipt hashes, negative disposition, and closeout boundary
-
-## Compiled Update — 2026-08-18: `open == 0` is not "complete", and a screen is not a verdict
-
-Index hygiene wants to retire finished handoffs, and the obvious signal — a handoff with no open
-checkboxes — is wrong often enough to destroy live work. Measured across the 15 handoffs then
-reporting `open == 0`: **13 were false positives**, in five distinct shapes.
-
-| Shape | Why `open == 0` was true | Example |
-|---|---|---|
-| `pointer` | its whole job is keeping a path resolving | a retained compatibility pointer; archiving it breaks the routing it exists to provide |
-| `prose-open` | open work stated in prose, never checkboxed | *"artifact ingestion and UI remain open"* in the status line |
-| `not-a-task-list` | never carried tasks at all | *"a prompt, not a task list"*; *"notes-only topology reference"* |
-| `no-checkboxes` | 0 of 0 boxes | a dossier |
-| `undispatchable-tasks` | boxes remain, but guarded or blocked rather than done | unresolved, and archiving buries the reason |
-
-This is the same category error as dating a handoff's liveness by file mtime: it reads the **absence
-of a signal** as the **presence of its opposite**. Prose churns without progress, and a document can
-have no open boxes because it never had any.
-
-**Where the open work is stated matters, and it is rarely the status line.** A second pass found four
-more handoffs whose open work lived in a *heading* (`## Still open`, `## Open Questions`,
-`## NEXT STEP`) or a *line-leading bold run* (`**Still OPEN (not measured-dead):** …`). Both are
-structural claims about the document, unlike incidental body prose, and both are cheap to detect.
-
-**Build the screen conservative and make every rejection legible.** A miss costs a candidate that a
-human then reviews; a wrong match makes a handoff unprunable forever. So a candidate requires boxes,
-none open or undispatchable, and no disqualifying marker — and every rejection carries a named
-blocker plus the evidence line that produced it, so a reader can overrule it deliberately rather than
-by re-deriving the judgement.
-
-**Guard against the screen becoming vacuous.** After tightening, the active tree yielded **zero**
-candidates — which is indistinguishable from a broken screen unless you prove otherwise. Two checks
-separate them: a real-world positive control (a handoff archived in the same commit still evaluates
-to `candidate: true`), and negative tests asserting that ordinary bold lead-ins and closed task lines
-mentioning "remaining" do *not* block.
-
-**The screen is what makes you look, and looking is what finds things.** Two of the three handoffs
-eventually archived turned out to be safe only after tracing each open item to a live owner
-elsewhere — and that tracing surfaced an unrelated defect: two active handoffs asserted that a
-*supplement* owned a decision gate that actually lived in its parent. Archiving on the checkbox count
-alone would have converted a wrong ownership claim into a dangling one.
-
-### Source References
-
-- `scripts/handoffs/index_state.py` — `prune_signal()`, the blocker taxonomy, and the measured incident record; `tests/test_index_state_prune.py` (17 cases, mutation-paired)
-- `agents/commands/wrap-up.md` Step 3 — the replacement selection command, stated as a screen rather than a verdict
-- [Wrap-up division of labor](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — the wrap-up routine this governs
-- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record, including the three archives and what each open item routed to
-
-## Compiled Update — 2026-08-22: the publication generator scrubs by rewriting, contains protocol evidence to its own row, and demotes what it cannot re-derive to paraphrase
-
-**Confidence: verified** — every mechanism below is landed and validated (focused pytest counts,
-ruff, `--check` runs recorded per slice in the source handoff). This extends the 2026-08-16 section
-*"External publication is the same claim grammar with a fail-closed default"*: the row counts there
-(374 total; 31 historical-attestation / 18 protocol-tag / 325 retired) are unchanged — what is new
-here is mechanism, not state.
-
-**Scrubbing has two layers, and the second one is a rewrite, not a hold.** The first scrub gate
-(2026-06-21) fail-closed rows whose generated fields exposed local paths, loopback endpoints,
-internal role aliases, or operator/internal workflow terms — leaving `public-safe surface=364` with
-10 `internal role alias` blockers. The 2026-06-27 slice resolved those not by widening the hold but
-by **rewriting internal orchestration labels (`frontdoor`, `worker_general`, `toolrunner`,
-`ingest_long_context`, architect/coder aliases) to public-safe display labels *before* both row
-rendering and scrub classification**, clearing all 10 (`public-safe surface=374`) without mutating
-the source. The transferable split: an internal identifier with a faithful public equivalent is a
-*display* problem solved by deterministic rewrite; only content with no safe equivalent should
-consume a hold. Ordering matters — the rewrite runs before scrub classification, so the scrub gate
-judges what a reader would actually see.
-
-**Protocol evidence is contained to the row that owns it.** The parser limits protocol evidence to
-the current row, its section heading, and the table preamble — so **a complete protocol marker in
-one row can no longer promote adjacent rows** (neighboring-row bleed, closed 2026-06-28). This
-completes the fail-closed parsing set already compiled: an *unparseable* marker holds its row
-instead of falling through to publishable, and a *valid* marker now promotes exactly one row. Both
-defects share a shape this page keeps meeting under different names — evidence attributed wider than
-the unit that produced it (the key-too-wide family) — here appearing as spatial bleed in a parsed
-table rather than an over-wide dedup key.
-
-**A number whose raw log cannot be produced is demoted to paraphrase — not published with softer
-wording.** The W2 methodology-draft publication-prep packet (2026-07-06) applies the same
-demote-or-remeasure ladder as the 325-row retirement, but at prose level inside a draft:
-
-| Claim class in the draft | Disposition |
-|---|---|
-| April 26 collapse rows (`+17% → +1.6%`) | Publishable candidates — each names its exact raw log (`V2_q8_cold_canonical_repeat.log`, `E_q8_EP.log`) |
-| April 24 Q8 microkernel exact numbers | **Paraphrase-only** unless the raw repack logs are found or the rows are remeasured |
-| 2026-06-14 recipe dry-run witness | Flagged **pre-v6** — must be regenerated from the current single-kernel recipe before external publication |
-
-Every candidate claim also carries a stable public-safe handle (`F6-METH-C1`, `F6-METH-C2`,
-`F6-METH-S1`, `F6-METH-P1`), so review discussion can reference a claim without restating its
-number — the same decision-layer-out-of-the-source move as the review-decision JSON overlay, applied
-to prose. The instrument-era flag is the subtle one: a witness generated under a retired kernel era
-is not wrong, but publishing it as current would be — era identity travels with the witness exactly
-as pool identity travels with a recall number.
-
-### Source References
-
-- [`frontier-f6-upstream-publication.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) —
-  the 2026-06-27 alias-rewrite slice with its 10→0 blocker clearance, the 2026-06-28 parser
-  containment, and the 2026-07-06 W2 publication-prep packet, each with its validation record.
-- [`scripts/publication/generate_public_results.py`](../scripts/publication/generate_public_results.py)
-  — the generator as shipped: display-label rewrite, per-row protocol-evidence scoping, scrub
-  classification, and the review-decision overlay application.
-- [`docs/publication/canonical-cpu-benchmarking-methodology-draft.md`](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md)
-  — the W2 draft carrying the claim handles, the named raw logs, the paraphrase-only demotion, and
-  the pre-v6 witness flag.
-
-## Compiled Update — 2026-08-23: the belief kernel wires its first template-axis adapter, and the KB-RAG record corrects two of its own beliefs
-
-**Confidence: verified** — the SC46 wiring is read from commit `24ab3090` (adapter, reader, 16 tests,
-conformance green) and its handoff rows; the record corrections are read from the 2026-08-21
-Stage-2b updates in [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md), the latter
-corrected again on 2026-08-22; the intake-wave findings are read from commit `9cb94047` and its
-progress record. Nothing below was re-derived on read — every figure was captured at write time by
-the cited source.
-
-### The template axis finally has a carrier: SC46/CT-8 wired end to end
-
-The CT-1 chat-template A/B was filed at first-measurement time on 2026-08-21 (source-table row,
-SC46, CT-8 — all the same hour), and the write side landed as commit `24ab3090` on 2026-08-22:
-writer `chat_template_ab_capture.py` (atomic sidecar, fail-loud, results-hash attestation, shared
-`validate_row`) plus strict reader `chat_template_ab.py` registered as `chat-template-ab-measurement`.
-The tuple carries the **template axis** — `template_sha256` per arm — alongside model/quant/kernel/
-serving/sampling/paired-flips, which is the whole point per the E-7 amendment: a claim can now name
-*which template* produced it. Grading is delegated to `claim_tuple.grade()` with zero local grading
-logic (the no-private-ladder sweep passes over both files); well-formed rows grade
-Witnessed/Attested, a malformed line voids the file, moved artifacts grade DOWN to Anchored, and
-pre-hook runs emit zero rows (the DF2-4 precedent, verified live). CT-8 and SC46 are flipped.
-
-The same compile records the continuing pre-run cohort that keeps the register honest: SC49 (G1–G4
-compute-gated sweeps filed BEFORE any of them runs, with the two load-bearing caveats riding in every
-tuple — G1 is a correctness observation, not a throughput one, and its repeated-pangram arm is a
-negative control; G2's acceptance ratio is not comparable across `--spec-draft-n-max` values), SC45
-(ParEval, wired before its first run; its `O0`-wrapped timed region must never be graded against the
-llama-bench protocol), SC48 (the MI210 power-sensor probe suite — OBSERVATIONS with no protocol id,
-per-field metric direction, and the raw-counter ×15.3 API-scaling caveat), and SC47 (FlashInfer-Bench
-`intake-1245#record`: its `Definition x Solution x Workload x Evaluation` record is a write-side
-claim-tuple carrier "in all but name", and its per-operation-class evaluator registry is **external
-corroboration that the one-ladder-per-source-class registry design is right** — recorded as such in
-the row). EVL-47 (the research-evaluation-index row for this program) still points at SC19 — the
-prospective claim-tuple wiring of the AutoKernel C6 admission receipts — as its next action.
-
-### The KB-RAG record corrected two of its own beliefs — both in the direction of honesty
-
-C1: the on-file rationale for the answerai→GTE encoder retirement said "answerai unscored". It was
-**scored** — on the same BEIR-15, since 2025-05-14 — and the controlled gap is **54.67 (GTE) vs
-53.35 (answerai, LightOn's own re-run) = 1.32 pp, inside the ~2 pp noise floor this handoff itself
-declares**. Corrected again on 2026-08-22: two harnesses, not three — the apparent third measurement
-(mixedbread, arXiv 2510.14880) transcribed LightOn's model card 15/15 per-task, 36 days later. The
-decision record also never weighed the cost side: 4.46× fewer parameters and a measured −24.3% index
-footprint (0.757×, cross-validated against the stored `.npz` to 0.2%), with the tokenizer swap a wash
-at 1.026. The correction does not argue for reverting; it argues the swap rests on a delta the
-project's own doctrine calls noise, and the record should say so plainly. C2 companion: never record
-`54.89` as the incumbent's BEIR-15 — it appears nowhere on the model card; the comparable figure is
-54.67 over 15 named tasks. The live corpus figures have also outgrown the record: the handoff header
-says 577 files / 18,010 chunks / 1,227.6 MiB, but the index measured 2026-08-21 is **943 files /
-28,110 chunks / 2,199.13 MiB — roughly 56% understated** (flagged, may belong to the watermark
-items). Three code gaps ride alongside (K1: `token_type_ids` missing-input blocks ALL BERT-family
-late-interaction ONNX, fix already exists in `cross_encoder.py`; K2: honour `onnx_config.json`
-instead of hard-coding, `_QUERY_MAX_TOKENS = 48` overruns two candidates' declared 32; K3: stamp
-`embedding_dim` + tokenizer hash into `index_meta` — verification that is not vacuous).
-
-### The intake wave that corrected what we believed (Stage-2b wave 2, commit `9cb94047`)
-
-Thirteen dive-verified entries (intake-1238..1250) landed 2026-08-21 with the index at 1,246 and
-validators green. Five of them **corrected something already believed** — the stale-premise family
-this page has compiled before (2026-07-03), now with a machine-gated instance:
-
-1. **L1+L2 is not a sufficient C6 gate.** Omission of a required operator component passes both
-   tiers, so the third tier must be a semantic judge (train-free); the planned NVIDIA-only L3 is
-   **dropped, not deferred**, and the downgrade of precision is defended by nothing the project
-   holds — `intake-1227`'s dtype-keyed tolerance actively rewards it. The RVP-C6-20 falsification run
-   (same day, GPU window co-residency) confirmed it empirically: **L1 + L2 + a sound value oracle at
-   standard inputs accepted 2 of 3 omission mutants** — LayerNorm-no-affine with max error
-   bit-identical to the honest kernel (4.768e-07), softmax-no-maxsub at 5.6e-09 — while the
-   matmul-no-transpose mutant was caught exactly as pre-registered.
-2. **"Illusion of solvedness" was mis-attributed.** Neither PyTorch blog post contains the phrase;
-   it is KernelGenBench's own gloss, so a third independent voice on KernelBench weakness may not be
-   counted.
-3. **The memory-family evidence moved against building.** Nine systems, one significance test in the
-   whole literature — non-significant; the best-constructed ablation returns a negative at the loose
-   threshold. The project's own §19.3 receipt rule is *ahead* of this literature.
-4. **The `intake-1222` energy claim was overturned by direct measurement here.** ROCm 6.2 does
-   expose a monotonic microjoule accumulator (15.30 uJ/tick across 23 deltas, cross-checked against
-   `--showpower`) — scoped honestly as evidence about the instrument, not about any run. RVP-PWR-3
-   closed via `intake-1251` (McDaniel et al., the gfx90a/CDNA2 power datasheet), with its caveats
-   traveling: no external physical meter (credibility cap 4/6), MI250X dual-die OAM vs our single-die
-   MI210, zero ML content — and the phase-lock hazard remains ours to measure (`RVP-PWR-2`).
-5. **The "AutoKernel G15 without a source" premise is struck** — it is a homonym of the project's
-   own program.
-
-And the 2026-08-20 wrap-up gates caught two governance facts worth compiling: the **checklist-sync
-gate** — three Stage-4 defects existed only as prose bullets, and the dashboard counts checkbox
-state only, so completed work was invisible until converted to `KV-0a/0b/0c` — and the
-**derived-actionables gate**, which caught two items that existed only in chat. Both are the same
-lesson the wiki's own compile discipline relies on: a record that is not in the counted shape is
-not a record at all.
-
-### Source References (2026-08-23 belief adapter + KB-RAG corrections)
-
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
-  — SC46 wired (commit `24ab3090`), the SC45/SC47/SC48/SC49 pre-run filings, and the EVL-47 row's
-  standing SC19 next action.
-- [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation)
-  — CT-8, the consumer task the SC46 adapter serves.
-- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md) — the C1/C2/C7 record
-  corrections, the K1–K3 code gaps, and the 943-file live-index staleness flag (measured 2026-08-21).
-- [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
-  — Stage-2b wave 2 (commit `9cb94047`): the five corrections, the C6-gate finding with the RVP-C6-20
-  falsification, and the RVP-PWR-3/intake-1251 close-out.
-- [`progress/2026-08/2026-08-20-research-intake.md`](../progress/2026-08/2026-08-20-research-intake.md)
-  — the checklist-sync and derived-actionables wrap-up gates that caught prose-invisible and
-  chat-only records.
-
----
-
-## Compiled Update — 2026-08-23 (evening): the internal-KB-RAG encoder fixes landed, and the answerai retirement rationale was wrong in a load-bearing way
-
-**Confidence: verified** — the K1/K2/K3 landings are a shipped orchestrator commit (`4e5e84c0`) with mutation tests; the C1/C2 corrections re-derive from the model cards and a measured index cross-validation; H1 is a read-only measurement of the live catalog; SC50 is a pre-run filing.
-
-### The ColBERT encoder class fix landed — three defects in one commit (`4e5e84c0`)
-
-**K1 — the ColBERT encoder could not load ANY BERT-family late-interaction ONNX** (graphs declare `token_type_ids` as a required input with no initializer default; the encoder fed only `input_ids`/`attention_mask` → `InvalidArgument: Missing Input` on the first call). `ensure_loaded()` now captures `_input_names` from `session.get_inputs()` at load time and `encode()` feeds exactly the inputs the graph declares, with all-zero `token_type_ids` for single-segment input; an input it cannot satisfy raises instead of degrading to an empty index. The swallowed failure also rose from `logger.debug` to `logger.warning` with the exception type, so the exact `InvalidArgument` is now visible at default log level instead of presenting as an ordinary miss. **Unblocks answerai-colbert-small-v1, ColBERTv2 and Jina-ColBERT-v2 as a class** (the mxbai family never needed it — H5 below). **K2 — honour `onnx_config.json`** (partially landed): `_load_declared_config()` reads `onnx_config.json` AND `config_sentence_transformers.json`, format-mandated `onnx_config.json` winning; `do_lower_case` is honoured (applied to the text only, never the prefix — before this, loading mxbai-32m fed cased text to a lower-case-trained model with no error anywhere). Remaining scope: declared `query_length`/`document_length`/`embedding_dim`/`uses_token_type_ids`/`do_query_expansion` are readable but not yet acted on; `_QUERY_MAX_TOKENS = 48` remains hard-coded on both call sites — and the three-slot spread is 8× (LateOn 32 / GTE 48 / Reason-mxbai 256), so **LateOn is overrun by 16 tokens while Reason-mxbai is under-used by 208**. **K3 — stamp `embedding_dim`** (half landed): `_stamp_meta()` writes it and `_check_embedding_dim()` now **raises** when the live encoder's width differs from the stored one — a 128→64 swap previously surfaced as a numpy shape error inside `maxsim()`, swallowed by `encode()`'s broad `except`, and reported as an ordinary miss. The tokenizer sha256 is still NOT stamped — and that is not hypothetical: mxbai-32m and the deployed GTE share a **byte-identical 50,280-token vocabulary** with different `tokenizer.json` files (H6), so a same-dim, same-directory tokenizer swap is invisible to every key now stamped.
-
-### The answerai retirement rationale was wrong: scored, not unscored — 1.32 pp, inside our own noise floor
-
-The Feb-2026 encoder swap was justified with "**answerai unscored**". It was scored, on the same BEIR-15, on the successor's own model card, since 2025-05-14: **54.67 (GTE) vs 53.35 (answerai, LightOn's own re-run)** = **1.32 pp — inside the ~2 pp noise floor this handoff declares**. (Corrected 2026-08-22: TWO harnesses, not three — the apparent third, mixedbread arXiv 2510.14880, transcribed both ColBERT baseline rows from LightOn's model card, 15/15 exact per-task match.) The cost side the original decision never weighed: **4.46× fewer parameters and a measured −24.3% index footprint** (0.757×, cross-validated to 0.2% — essentially the bare 96/128 dim ratio). This does not argue for reverting; it argues the swap rests on a delta our own doctrine calls noise, which the record should say plainly. Never record **54.89** as the incumbent's BEIR-15 — it does not exist on the model card (`grep -c` = 0 at rev `25f6f7bb`); the comparable figure is 54.67 (BEIR table added `78d50a16` 2025-05-14, FiQA corrected `6605e431`). The swap decision (B6) is a **decision, not a task**: 1.32 pp of BEIR against −24.3% footprint on a corpus whose own noise floor is 2 pp — blocked on G11 (INT8-vs-fp32 parity fixture) before it returns a number.
-
-### H4 — the ONNX file-selection rule; H1 — the doc-truncation defect is the largest on the page, now measured
-
-**H4 (Z):** for any BERT-family late-interaction checkpoint, take the mirror's `model_int8.onnx`; failing that, upstream's **root** `model_int8.onnx`; **never anything under `onnx/`, never `vespa_colbert.onnx`** — upstream answerai holds 11 ONNX files / 10 distinct blobs; the `onnx/` family terminates at `last_hidden_state [batch, seq, 384]` (no ColBERT projection, no L2 norm, ir_version 10 vs root's 7) and `vespa_colbert.onnx` names its output `contextual` (a third naming convention). **Picking by folder name builds a silently wrong index and raises no error.** H5: K1 was never a gate on the mxbai family (both configs declare `uses_token_type_ids: false`; zero `token_type` strings in the 33.2 MB graph) — its real blocker was `do_lower_case`, also closed in `4e5e84c0`. **H1 (the largest retrieval defect on the page, now measured first-party):** `markdown_chunker.py:25` chunks at 4000 chars while `kb_rag.py:67` embeds at `_DOC_MAX_TOKENS = 256` (~1,024-char budget) — **11,410 of 28,155 chunks (40.5%) sit at or above the 256-token cap and are silently truncated** (mean `token_count` 170.3; the catalog's `token_count` is `emb.shape[0]`, i.e. **post-truncation, saturates at 256** — it can report *that* a chunk was truncated, never *by how much*). Quantifying is zero-compute; the remedy needs a full corpus re-embed (G13, sweep 256 vs 300 vs chunker ~1,100 chars, batched with the model's unused 32-entry `skiplist_words`). **H2 (Z):** no query-length instrumentation exists anywhere in the retrieval path — we cannot answer whether a live agent query has ever exceeded 48 tokens; the instrument must take the count from a truncation-disabled tokenization (`enable_truncation(max_length=max_tokens)` + `enable_padding` would report the cap, not the query — over-cap rate would read 0% forever).
-
-### SC50 — the wave-2 write-side hooks, filed before any of the measurements run
-
-The 2026-08-22 Stage-2b wave specified compute-gated measurements across three distinct source classes; the write-side adapters are filed **before any run** (same rule as SC49 — wiring the write side is cheap and permanent; retrofitting the read side is impossible): KV-quantization evals (G2/G3/G4/G5 → per-layer/per-head max÷median for K and V separately; paired exact-match deltas; FP16-anchored CondFlip), draft-acceptance sweeps (G8/G9 → mean accepted length and per-token agreement per `--draft-max`; per-prompt PASS/FAIL), and the retrieval fidelity fixture (G11/G12/G13 → per-token cosine distribution, max abs Δ, MaxSim top-1 agreement; recall@10 per arm). Four load-bearing caveats ride in the tuples: (a) a fidelity cosine is a claim about ONE graph pair, never a retrieval-quality claim — different ladder rungs; (b) G4's CondFlip is paired and FP16-anchored — not interchangeable with an aggregate pass rate; (c) G8 measures α, not speedup; (d) G2's dynamic range is meaningful only per layer and per head, K and V separately. Project, not grade — one ladder per source class, the registry refuses a second.
-
-### Source References (2026-08-23 evening)
-
-- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — K1/K2/K3 landing (`4e5e84c0`) with the mutation-test controls, C1/C2 record corrections, H4/H5/H6, H1's measured 40.5% truncation, H2's instrument trap, G11/G12/G13 and B6/B7 with their gates, the 943-file live-index staleness flag
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC50 pre-run filing with the three source classes and the four tuple caveats
-- [`colbert-reranker-web-research.md`](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) — the mxbai 32M slot re-point and Table 13 correction (cross-listed with [Search & Retrieval](search-retrieval.md))
-- [`progress/2026-08/2026-08-23-research-intake.md`](../progress/2026-08/2026-08-23-research-intake.md) — the wave-2 record: ten of fifteen dives corrected our own records, the two live bugs fixed in-session
-
----
-
-## Compiled Update — 2026-08-23 (evening, part 2): the HTML-artifacts discovery surface
-
-**Confidence: verified** — the runbook and index landed with a drift checker (commit `0904d2ca`, index + runbook + checker in one change).
-
-**The project's standalone HTML artifacts now have a discovery surface and a placement contract.** Before 2026-08-23 there was no single index of self-contained HTML documents (design docs, flow maps, deep-dive write-ups, operator reports) — a repo scan found only 5 real artifacts, so the fix is a thin index (`docs/reference/html-artifacts-index.md`) plus a runbook, not heavier tooling. The placement rule: pick by what the document *is* — `research/deep-dives/`, `docs/design/`, `docs/infrastructure/`, `docs/coordination/`, or `artifacts/operator/` — **never a generic catch-all folder** (that recreates the discovery problem under a different name; the index is the one place things are "collected"). Registration is mandatory in the same change (one index row + `python3 scripts/docs/check_html_artifact_index.py --check` exit 0), and the checker fails loudly on a file with no row or a row pointing nowhere — the same coverage-gate shape as the handoff index. Self-containment is the standing contract for the class (inline CSS/JS, no external fonts/CDN/scripts, no build step, opens straight from a checkout); `dashboard/static/*.html` (hub UI), `tmp/**` (scratch), and `worktrees/**` (duplicates) are explicitly out of scope.
-
-### Source References (2026-08-23 evening, part 2)
-
-- [`docs/guides/agent-workflows/html-artifacts-runbook.md`](../docs/guides/agent-workflows/html-artifacts-runbook.md) — the runbook: placement table, companion-file and STATUS-note conventions, registration gate, update discipline, explicit out-of-scope list
-- [`docs/reference/html-artifacts-index.md`](../docs/reference/html-artifacts-index.md) — the discovery catalog the runbook keeps in register (same change)
-
-## Compiled Update — 2026-08-25: handoff-index hygiene automation — semantic duplicates, Deps edges, canonical-checkout hooks
-
-**Confidence: verified** — detector recall 1.00 on the 10 resolvable C2 pairs (precision 0.86 at
-threshold 0.38 over 148 hand-classified pairs); `backlog_row_check.py` mid-text owner detection
-27/1528 with zero new false positives (71 tests); hooks verified from a lane worktree.
-
-Three backlog-graph gaps closed: **(1)** a semantic cross-file duplicate-TASK detector
-(`scripts/handoffs/duplicate_task_scan.py`, pure-stdlib) re-discovered all 10 resolvable pairs
-from the hand-found C2 list (4 more were closed history) and found new clusters beyond it — the
-DR-3 7-pair cluster, reviewer-typed-artifacts ≡ security-review-skill, glm51-reap ≡ glm52 gates,
-deepseek-v4-flash ≡ v9-kernel cutover — with the C2 list re-homed into the owning handoff;
-**(2)** the `Deps` column went from near-empty to 25 hand-verified edges (8 added this session,
-direction-checked verbatim against source text; bulk heuristic import stays rejected — phrase
-direction cannot disambiguate "X gates Y" vs "gated by X"); **(3)** the timeline and benchmark
-inventory artifacts now regenerate in the CANONICAL checkout from any worktree commit (the hook
-resolves the primary via `git worktree list`; inventory regen is delta-guarded, ~0.55 s, no-op on
-the common path), ending the lane-worktree staleness class. The narrow-owner-anchor rule
-(`Owner:` mid-sentence, immediate colon) preserves the measured 26/1528 baseline exactly.
-
-### Source References (2026-08-25)
-
-- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) — five boxes ticked; C2 pair table; Deps evidence; hub-cron operator decision package
-- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record
-
-## Compiled Update — 2026-08-25: orphaned staged-rollback resolution — a shared-clone hazard class
-
-**Confidence: verified** — 115 staged entries + 52 worktree-reverted paths restored to committed truth in epyc-root; 21 staged entries in epyc-orchestrator; `index_state.py --check` 0 problems; both repos 0 ahead of origin/main.
-
-A now-inactive session left a hand-staged ~08-21-era rollback in the shared index and worktree — covering committed FM-1 files, handoff-content deletions, a measurement Annex-D ratification artifact, and even the live autokernel session's own handoff docs (reverted to older status lines). The index tree matched no recent commit, identifying it as a revert-style operation rather than a checkout. Resolution pattern that worked, from a no-lane session: (1) `git reset` (mixed) to align the index with HEAD without touching the worktree; (2) `git restore --source HEAD` per path, excluding daemon-owned runtime files (`coordination/session-bus/{alarm_state,relay_state}.json`) and untracked live-session artifacts; (3) private-index commits + serialized pushes, so no peer state is ever swept; (4) verify with `index_state.py --check` and the wiki lint's dangling-link pass (the two rollback-caused dangling progress links disappeared once the files were restored). Diagnostic signature worth remembering: **worktree rows OLDER than HEAD's in a file the current session never touched = an orphaned rollback, not a checkout** — check `git write-tree` against recent commits before believing any "peer revert".
-
-### Source References (2026-08-25)
-
-- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the staged-rollback resolution record (investigation + resolution + verification)
-## Compiled Update — 2026-08-27: SC52 preserves the line between native evidence and invented warrant
-
-**Confidence: verified contract and producer boundary.** The current G1 corpus is valid native
-experiment evidence, but it predates the producer hook and therefore projects no Vidya rows.
-
-The INF-42 amnesia probe exposed the exact failure mode behind the belief substrate's write-side
-rule. Per-question JSONs can preserve scores and make a run safely resumable, yet that is not enough
-to reconstruct a trustworthy `ClaimTuple` later: the original record did not bind the complete
-model/kernel/server/request/CPU-placement/KV-control identity or declare which paired reduction the
-claim would use. SC52 therefore applies prospectively. A successor G1 run must emit a producer-
-written, self-hashed belief-measurement vector at per-question persistence/finalization, and a
-strict adapter may project only those post-hook rows through the existing measurement ladder.
-
-SC52 keeps three quantities separate: per-length/per-depth exact-match accuracy; paired 4K→long-
-context drop with confidence interval; and timing, which is not the G1 quality claim. Only scored
-questions count as repetitions, metric direction is explicit, and one run-level source locator and
-support key bind the grid. This matters in the recovered run because its first 161 records came from
-a malformed 48-thread launch while later records use a corrected 96-thread launch. Recall remains
-usable and timing remains stratified, but **neither phase may be retroactively back-filled into
-Vidya**. The first fully post-hook run is the first eligible belief source.
-
-### Source References (2026-08-27)
-
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC52 producer vector, strict adapter, identity bindings and explicit no-backfill rule.
-- [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
-- [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — checkpoint inventory, 161-record recovery and the prospective-source decision.
-
-## Compiled Update — 2026-08-30: the belief substrate is promoted — all four §4 requirements met, shadow status ends
-
-**Confidence: verified** — the verdict is recorded with its full evidence block in
-`research/deep-dives/vidya-p5c-evaluation-and-decision.md` §6; every number below is from that
-block or the 2026-08-26 state block of the program handoff (gen-2 ledger, frontier 12,479,
-checkpoint committed, corrections 0 unadjudicated, chain=OK).
-
-The vidya substrate is now what the audit said EPYC needed and nothing more: typed
-claim/evidence/intent frames on an append-only JSONL ledger (fsync-per-append, torn-tail
-handling; SQLite is a rebuildable derived index), folded deterministically through
-`claim_tuple.grade()` into a Q × T graded belief state — never by prose, never by a second
-ladder (`register_ladder()` refuses one per source class, and the adapters PROJECT native
-records into a `ClaimTuple` without ever grading them). Refusal semantics carry the load:
-freshness gating maps onto `dashboard/freshness.py`'s one classifier, future-stamped frames are
-refused at append time, an unsealed manifest is a run in progress rather than a result, and a
-pre-hook run emits zero rows, always. The read side was already wired before this promotion —
-`cite-check` gates every commit through `index_state.py --check` (self-heals a missing ledger by
-re-ingesting; blocking is exactly `{dangling, overturned, conflicted}`), the correction queue is
-drained to zero, and the kernel's first live contention-gate measurements (`clm_cg_api-*` at
-Witnessed/Anchored, SC19 closed) prove a producer-authored envelope can reach the fold.
-
-**The 2026-08-26 promotion ran the P5c gate to verdict PROMOTE.** The gate's first execution
-returned ITERATE only because requirement-4 evidence was freshly "never started" — the run then
-surfaced two eval-harness defects (`_index_claims` indexed only `evidence_supports_claim`, so a
-retraction never retracted its dive refutations; and 13 declared dependents of dive-overturned
-`intake-664#record` had never had support, an expectation no ledger could satisfy), and the
-re-run on the UNCHANGED ledger came back clean: default draw **161/161** and verified-only
-**155/155**, invalidation_recall 1.0, discrimination 1.0, harmful 0; gold corpus re-measured
-28/28, 598 tests green. All four §4 requirements are MET: (1) cited claims anchored at B
-semantics — machine-anchor admissibility RATIFIED by the operator, with machine-located spans
-grading `MachineLocated` (quote-pinned, unreviewed), never `Anchored` without a human reading;
-(2) cross-entry claim identity — the operator passed all 43 pairs (18 same / 25 different) and
-17 `claim_alias` frames were emitted, one transitive group (144_03=254_04=411_04); (3) query
-log + obligation disposition MET; (4) the live-ledger eval EXECUTED. The "shadow-only until
-promotion" constraint is lifted.
-
-**What stays open is a list of named producer events, not open questions.** Every open row
-carries a STATUS and a SHARPENED TRIGGER: SC6-LIVE/SC7 ride the first autopilot cycle after the
-operator-owned restart; SC12 closes at the first COMPLETED post-hook K35 paired run; SC12-ARTIFACT
-at the next model acquisition emitting its run-level record; SC14-B at the first promotion after
-the freeze lift (behind the pre-promotion journal-ordering attestation, confirmed absent today);
-SC38/SC39/SC40 at pool re-enable; SC37 at EV-14a's first band (CPU-attempted 2026-08-28,
-fail-closed on infra, held on GPU); SC41 at the V27 screen's completion; SC43 at the first RM-11
-run; SC45 at RVP-C5-6 (schedule-gated, not operator-gated); SC49/SC50 residuals at their first
-sweeps. The program's own close: these are "tracked work, not gate conditions" — and two
-triggers already fired since the verdict (SC20's first tuple ingested and SC49's G1 executed,
-both 2026-08-27), which is the model working, not the promotion needing maintenance.
-
-**The promotion changes nothing about the write-side rule, and that is the rule's whole point.**
-Wiring the write side is cheap and permanent; retrofitting the read side is impossible — a tuple
-invented on read claims warrant the original run never captured, which is why `benchmarks/results`
-stays permanently rejected (4,562 files, 0 of 200 sampled carrying a usable tuple) and why every
-pre-hook corpus (DF2-4 np1, the 2026-08-12 A1/A3/A4 panel, SC6-LIVE's 1,390 rows) emits zero rows
-rather than reconstructed ones. An empty capture is not a measurement; a verdict drawn from a
-ledger is only worth as much as the producers that wrote into it while the evidence was alive.
-
-Key findings:
-
-- **Verdict PROMOTE, 2026-08-26** — all four §4 requirements met; decision doc §6 carries the
-  full evidence block; shadow status ends.
-- **Requirement-4 evidence**: 161/161 + 155/155, invalidation_recall 1.0, discrimination 1.0,
-  harmful 0 (the pre-fix 3 harmfuls were harness artifacts, engine exonerated); gold corpus 28/28
-  unchanged; ledger frontier 12,479 with chain/checkpoints verified.
-- **Read side fully wired before promotion**: `cite-check` in `index_state.py --check`; correction
-  queue 129 → 0; first live contention-gate tuples at Witnessed/Anchored (SC19).
-- **Open rows are freeze-gated producer triggers only** — named events (freeze lift, autopilot
-  restart, capture flag, successor runs), not gate conditions; SC20 and SC49-G1 have already fired
-  post-promotion.
-
-### Source References (2026-08-30)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — the P5c
-  promotion-gate evidence block, the §4 requirement status table, the verdict, and the open rows
-  with their sharpened triggers.
-- [Vidya belief-substrate audit](../research/deep-dives/vidya-belief-substrate-audit.md) — the
-  dive-verified gap analysis and adoption kit the program was built from (37 sources,
-  intake-1031..1067).
-- [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md)
-  §6 — the ratified decision record: the operator's machine-anchor admissibility call and the
-  full evidence block behind the PROMOTE verdict.
-
-
-## Compiled Update — 2026-09-01 (incremental): a classification is evidence about a moment, not a property of a file
-
-**Confidence: verified** (22-artifact purge executed on a re-verified list; three prior classifications measured wrong).
-
-A ~476 GB "zero active consumer" model purge was approved from a reclaim menu. Re-verifying every
-path independently before deleting kept **~220 GB of that approved list** and deleted artifacts the
-menu never named. The executed set was 22 artifacts / +267 GB, all ledgered.
-
-Key findings:
-
-- **Never inherit a classification; re-derive it.** This is now the THIRD time an inherited
-  disk/model classification was wrong here, in both directions each time. The approved list called
-  safe: an 85 GB model whose tensors are the subject of an open kernel task, a 56 GB pair under an
-  explicit "retain this item open" row, a 27 GB model whose deletion is itself an operator-gated
-  task whose gate has not fired, and two arms of an open sweep. The same menu called *unsafe* a
-  6 GB artifact it claimed "live smoke scripts consume" — nothing references it at all.
-- **A tier label can be overloaded across documents, and the collision can be destructive.** In the
-  master registry `tier: D` is the DRAFT/EMBEDDER tier — live drafters and embedders bound to
-  active roles. A reclaim document independently used "Tier D" as its own ad-hoc label for
-  zero-consumer candidates. Executing "delete Tier D" as a literal registry query would have
-  destroyed the active drafting set. The tier meaning deprecated is `tier: X`.
-- **Registry tier is not evidence of disuse.** `gemma-4-26B-A4B-it-Q4_K_M` is marked `tier: X`
-  ("eval-only, not deployable") and is being SERVED right now by a live role. Tier records an
-  intention at authoring time; only the runtime registry and the process table record use.
-- **Retention language is a distinct keep-reason and needs its own sweep.** Artifacts with no role
-  and no open task can still be deliberate ROLLBACK ANCHORS. Grep for `rollback` / `retained` /
-  `REMAIN ON DISK` / `kept per` / `preserved` before deleting anything, in BOTH registries — four
-  artifacts survived this purge on that basis alone.
-- **Prose records a deletion; only a ledger row makes it findable.** Four historical deletions were
-  documented in `deprecated_reason` fields and handoff resolutions but had no machine-readable
-  ledger row, so an enumerable audit read their paths as unexplained dangling citations. Backfilled.
-  A record that cannot be enumerated does not function as a record.
-- **Audit-tool caveat, learned twice:** match ledger coverage by path PREFIX (shards under a
-  ledgered directory are covered — an exact-match check produced 30+ false positives), and run the
-  audit where the evidence physically lives: the repo's evidence-durability hook checks that cited
-  paths exist, and large evidence dirs are untracked artifacts absent from any fresh worktree.
-
-### Source References (2026-09-01)
-
-- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the purge and audit record.
-- [`2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md) — the
-  original menu, kept as the counter-example its own re-verification produced.
-- `epyc-inference-research/orchestration/model_registry.yaml` — `deprecated_models`, now 69 entries.
-
-## Compiled Update — 2026-09-07 (incremental): a citation's defects are invisible from the citing document — the only detector is reading the cited source
-
-**Confidence: verified** (three defects found in one published paper during the 2026-09-07 intake
-wave, each by diving a source that paper cites; none was visible in the citing text).
-
-We already treat an intake entry as a graded object and gate its use (`cite-check`, the
-`intake-NNN` / `#NN` / `#record` grammar). This wave measured the limit of that machinery. A
-gate can prove a citation **resolves**, that its entry is not refuted, and that the citing prose
-uses the right form. It cannot prove the cited source **says what the sentence built on it
-claims** — and three separate failures of exactly that kind were found inside one carefully
-written, conspicuously honest paper (`intake-1297#record`), all of them only by fetching and
-reading what it cited.
-
-**Three defects, three different shapes:**
-
-- **Attribution error in a body sentence.** The paper describes a single-agent formalization as
-  "roughly 130k lines of **Lean**". The checker is **Megalodon**, a higher-order set-theory system
-  with no mathlib (`intake-1306#record`). The bibliography carries the correct title, so the error
-  is confined to one body sentence — a bibliography audit, the cheap check, passes.
-- **A half-unsupported joint citation.** A claim of "five-figure budgets per project" is attributed
-  to two papers. The second contains **no dollar figure of any kind** — zero occurrences of USD,
-  dollar or any currency amount (`intake-1305#record`) — so the claim rests on one source, whose
-  own figure is modelled from token logs missing the caching field rather than billed
-  (`intake-1304#01`). Two citations look like corroboration; here one of them is decoration.
-- **A table caption contradicting its own source on the unit.** The caption defines an "Agents"
-  column as a population ("including subagents launched by the same user"); the cited source counts
-  agent **runs**, each with an outcome (`intake-1304#00`), and the citing paper's own later prose
-  says "agent runs". Any per-agent arithmetic across those rows is unit-incoherent — and that cell
-  was precisely the one our own fan-out question was aimed at.
-
-A fourth shape appeared in the same wave and is worth naming separately because nothing about it is
-an error: **an accurate quote can still lose its scope in transit.** The ~43%-faithful figure is
-transcribed verbatim and correctly attributed, but stripped of every qualifier that made it
-readable — a reweighted projection from a 45-example single-annotator audit, on one dataset, with
-one formalizer (`intake-1307#record`). Nothing in the citing sentence is false; the number simply
-arrives general when it was never general.
-
-**The compiled rule.** *A citation's defects are invisible from the citing document.* In all four
-cases the citing text is internally well-formed: correct bibliography, plausible unit, faithful
-quotation. The only detector is reading the cited source — which means **dive breadth is citation
-hygiene**, not a nice-to-have. Four cited sources were expanded and dived in this wave and three
-carried a defect. Two consequences for how this KB is maintained:
-
-1. **Record the defect on the citing entry, not only on the cited one.** All three are filed under
-   the citing entry's `contradicting_evidence`, because that is where a future reader who cites the
-   paper will look. None changed its verdict — the mechanisms it describes are unaffected — but
-   each is a claim we would otherwise have inherited unexamined.
-2. **Prefer the precise citation form for anything single-sourced.** An entry-level citation
-   inherits every defect of every claim in the entry, by design. Where figures exist in exactly one
-   document and in no supporting artifact — four such figures were identified in this wave, and two
-   more are contradicted by the producer's own released repository — the record now mandates the
-   `intake-NNNN#NN` form so a later correction lands on the one claim that carried the weight
-   (`intake-1298#record`, `intake-1310#record`).
-
-### Sources
-
-- [intake-1297#record](https://arxiv.org/abs/2608.28433) — the citing paper; its three citation defects are
-  recorded under `contradicting_evidence`, verdict unchanged.
-- [intake-1304#record](https://arxiv.org/abs/2604.03071) — the agent-runs-versus-agents unit and the
-  modelled (not billed) cost figure.
-- [intake-1305#record](https://arxiv.org/abs/2605.29955) — the cited paper carrying no budget figure at
-  all, and no merge-queue measurement either.
-- [intake-1306#record](https://arxiv.org/abs/2601.03298) — Megalodon, not Lean; the misattributed
-  proof assistant.
-- [intake-1307#record](https://arxiv.org/abs/2605.28365) — the accurately quoted number that lost its
-  scope; see [Formal Verification](formal-verification.md) for how it may be used.
-- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
-  record: 14 entries, 42 claim anchors, 20 claim corrections.
-
-## Compiled Update — 2026-09-01: killing a model does not close its handoff — it splits the handoff into what transfers and what does not
-
-**Confidence: verified** — the retarget note is in the handoff's own header, the kill ruling and artifact
-deletion are recorded independently in the same-week audit log, and the successor handoff records the same
-lineage from its own side.
-
-GLM-5.2 UD-IQ2_M (754B, ~239 GB) was ruled **KILL** by the operator (OP-8) after failing patch-review
-admission, and its artifact was deleted. The handoff that had carried 39 capability-gate tasks against it,
-`glm52-reviewer-capability-gates.md`, was not closed — it was **retargeted in place** to GLM-5.3-Flash,
-keeping its filename (and its ~19 inbound links) rather than forking a new handoff.
-
-### What the retarget kept, and what it discarded
-
-The header states the split explicitly, and that is the reusable part: **infrastructure survives a killed
-subject; measurements and serving constants do not.**
-
-| Kept (model-agnostic) | Discarded (a property of the deleted model) |
-|---|---|
-| The three capability questions (strict-IF/typed emission, rubric authoring, why-diagnosis) | Every GLM-5.2 measurement (`FA 41.7%` / `FR 25.0%` C-CRAB, JudgeBench-GPT `22/24`, SWE-bench-V `22/24`) |
-| The corpus/harness fixes: the representation-mixing guard that refuses `substring`/`exact_match` answer-fragment rows in a "balanced" slice, and the C-CRAB accept-control relabel that produced a decision-grade hard-accept pool | The serving constants: the `indexer_top_k` next-power-of-two schedule (`2048`/`4096`/`16384`) and the DSA-DENSE-MASK disposition |
-| The standing rule against rerunning unchanged slices | The `intake-836` IQ2-quant why-diagnosis hypothesis — explicitly **void**, because GLM-5.3-Flash is UD-Q4_K_XL, a different quant entirely |
-
-**Why the split had to be explicit rather than inferred.** GLM-5.3-Flash is architecture **`glm5next`**
-(288×10B), not `glm-dsa` — a different family, not a version bump — and it carries a *new* `indexer.kpool`
-field with no known-safe value. The handoff calls out by name that assuming the old `indexer_top_k` schedule
-transfers "is the fastest way to get a wrong quality verdict": an under-sized cap corrupted GLM-5.2's exact
-output above its prompt band, so a constant that gates **correctness**, not merely quality, can never be
-inherited from a sibling model on faith. A downstream GC-4 RAM-residency decision sized against GLM-5.2's
-239 GB footprint was voided the same day for the identical reason — the successor "has a different footprint
-entirely."
-
-### The general rule
-
-When a subject model is killed mid-evaluation, do not close the handoff and do not silently keep running it
-against the successor. **Split explicitly, in the header, before any task resumes**: name every asset that
-is model-agnostic (harness, scorer fixes, corpus, standing rules) as carried forward, and name every asset
-that is a property of the deleted model (measured numbers, tuned serving constants, quant-specific
-hypotheses) as void. A handoff that keeps its filename for link stability must say so loudly enough that a
-reader skimming the task list cannot mistake an old measurement for a claim about the new subject.
-
-### Source References (2026-09-01 subject retarget)
-
-- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — the
-  RETARGETED header (2026-09-01), its "What transfers" / "What does NOT transfer" split, the voided
-  `intake-836` hypothesis on GC-3a, and the GC-4 void note.
-- [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the OP-8
-  execution record: GLM-5.2 ruled KILL, artifact deleted, as a merge-preserved deliberate deletion.
-- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — the successor handoff's own
-  header, "spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings", confirming the lineage from
-  the other side.
-## Compiled Update — 2026-09-03: the compile watermark failed again with no `git clean` in sight — the remedy was scoped to the wrong threat
-
-**Confidence: verified** — every count below is a re-run of the shipped scanner against two checkouts of
-the same commit; the mtime evidence is the scanner's own emitted manifest.
-
-### The 844-vs-51 failure recurred as 928-vs-52, and this time nothing was destroyed
-
-The 2026-08-18 entry above records `wiki/.last_compile` being destroyed by `git clean`, the next compile
-"confidently reporting **844 new sources (the whole repo) instead of 51**", and a standing rule ending
-"`git clean` never runs in the shared clone." That remedy was scoped to the wrong threat surface. On
-2026-09-03 a routine audit lane reproduced the identical failure — the scanner reported
-**`last_compile: None` and `total_new: 928`, the entire corpus** — with no `git clean` anywhere in its
-history. The lane was a linked `git worktree`, level with `origin/main`, created normally.
-
-The mechanism is one line of configuration: `.last_compile` is listed **twice** in `.gitignore` (lines 38
-and 44), and `git worktree add` populates a checkout from the index, so it never receives an ignored file.
-Every worktree, and every fresh clone, is therefore born reporting a fictional whole-repo backlog. This is
-not a hazard that discipline about `git clean` can reach, and it recurs on the *normal* path rather than an
-exceptional one.
-
-**The correction to carry: untracked-but-load-bearing state does not need to be destroyed to be lost — it
-only needs to be absent.** A rule that names the destroying command protects one path; the property that
-matters is that the state is absent from any checkout that did not personally create it.
-
-### The manifest that would have prevented it was sitting next to the scanner, unread
-
-The 2026-08-18 remedy offered three escapes — track the state, keep it off-tree, or list it "in a manifest
-a restorer can replay." The third is **already satisfied**: `wiki/source_manifest.json` is tracked, is
-schema-versioned (`project-wiki-source-manifest` v1), and carries `"last_compile": "2026-08-27T11:11:58Z"`
-in its own header. `compile_sources.py`'s `get_last_compile()` never consults it — it stats
-`wiki/.last_compile`, returns `0.0` when the file is missing, and the caller cannot distinguish that from
-an epoch watermark. The replayable manifest existed, in the same directory, and the recovery path was
-simply not wired to it.
-
-Reading the true drift from that manifest instead — `--check-manifest`, which compares **content hashes**
-rather than mtimes — put the real backlog at **34 added, 18 changed, 1 removed: 52 sources, not 928**, an
-18× overstatement. Recommended fix, not yet applied (the skill script is permission-protected in this
-lane): fall back to the tracked manifest's `last_compile` when the watermark file is absent, and emit a
-`last_compile_source` field so a consumer can see which one it got.
-
-### A restored watermark still would not have helped, because incremental mode is mtime-based
-
-The second defect is independent of the first and survives fixing it. `scan_sources()` selects work with
-`if mtime <= since: continue`, and `git worktree add` stamps every file it checks out with the checkout
-instant. In the manifest this lane emitted, **916 of the 928 sources carry one identical `modified`
-timestamp** — `2026-09-02T09:43:53Z`, the moment the worktree was created. Only 12 files, the ones edited
-afterwards, carry a meaningful time.
-
-So in a linked worktree the mtime basis conveys no information at all, and a correctly-restored watermark
-would merely move the fiction's boundary rather than remove it. Only the content-hash instruments —
-`--check-manifest` and `--changed-since-manifest` — report true drift there. **An incremental instrument
-keyed on mtime is only valid in the checkout that produced those mtimes; anywhere else it must key on
-content.**
-
-### Three distinct shapes, not three repeats — and half of this was already known one day earlier
-
-It would be wrong to file these as one recurring bug. The watermark has now failed in **three
-mechanically different ways**, and only the first was previously compiled:
-
-1. **Destroyed** (2026-08-16, `INC-20260816-git-clean-shared-clone`): `git clean` removed the file; the
-   scanner over-reported **844 instead of 51**.
-2. **Written to a tree that then vanished** (2026-09-02): a session ran `--touch` *inside a throwaway
-   worktree and then deleted it*, so the compiled pages landed on `main` while the watermark advanced only
-   in a directory that no longer existed. That session recorded the correct general rule — "**the wiki
-   compile step is not worktree-safe.** Page edits are ordinary tracked work and travel fine; the watermark
-   does not. Run `--touch` where `.last_compile` persists."
-3. **Never present at all** (2026-09-03, this entry): no destruction and no lost write — a normal worktree
-   simply never receives an ignored file, and the mtime basis collapses on top of it.
-
-Shape 2 is the important precedent, because it means the *write* side of the worktree hazard was already
-diagnosed and written down a day before the *read* side surfaced here. The two halves were filed in
-different places by different sessions, and neither reached the tooling. **A defect noted in a session log
-is not a fixed defect; the note and the fix are separate deliverables, and only the fix protects the next
-reader.**
-
-### Why this stayed a backlog, and what the honest output of the pass was
-
-The reported 928 is also what made the debt look unclearable, and the deferral was rational under the false
-number: `--touch` writes a single fleet-wide watermark at *now*, with no scoping by path, type, or date, so
-touching it after compiling a fraction marks the remainder compiled forever and loses their knowledge
-silently. Under a 928-source premise no session could finish, so every session deferred rather than
-half-do it — and the fiction preserved itself, because a partial compile that correctly declines to touch
-the watermark leaves the same 928 for the next reader.
-
-The pass that diagnosed this compiled its finding and **did not touch the watermark**, which remains
-correct while `--touch` has no scoped form: the tracked manifest, not the ignored file, is the artifact a
-successor should advance.
-
-### Source References (2026-09-03 watermark recurrence)
-
-- [`.claude/skills/project-wiki/scripts/compile_sources.py`](../.claude/skills/project-wiki/scripts/compile_sources.py)
-  — `get_last_compile()` returning `0.0` on a missing file, `scan_sources()`'s `mtime <= since` selection,
-  and `touch_last_compile()` writing an unscoped fleet-wide `now`.
-- `.gitignore` lines 38 and 44 — `.last_compile` ignored twice; the reason no worktree or fresh clone
-  receives it.
-- [`wiki/source_manifest.json`](source_manifest.json) — the tracked v1 manifest carrying
-  `last_compile: 2026-08-27T11:11:58Z`, the unread recovery path, and the content-hash baseline that put
-  the true drift at 52 sources.
-- [`wiki/knowledge-management.md` § 2026-08-18](knowledge-management.md) — the prior 844-vs-51 write-up and
-  the `git clean`-scoped rule this entry corrects.
-- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
-  `INC-20260816-git-clean-shared-clone`, the first occurrence of the same damage shape.
-- [`progress/2026-09/2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) § 6 — the
-  write-side half found one day earlier: `--touch` run inside a throwaway worktree, and the
-  "the wiki compile step is not worktree-safe" rule quoted above.
-
 ## Two ways a long-unruled queue row goes bad — STALE and MISFILED — and the screen that tells them apart (2026-09-08)
 
 **Confidence: verified** — both dispositions below were executed the same afternoon on two rows of
@@ -3526,53 +555,6 @@ practices follow, all applied here:
 - [`handoffs/active/cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md)
   — `D4`, the worked example of a closed item whose stated re-open condition later fired.
 
-## Compiled Update — 2026-09-25: Decision and Research Receipts
-
-The intake closed 135 surfaced records with explicit dispositions: 120 integrated, 12 retained as knowledge only, 2 placed on monitoring, and 1 declined. Three factual ingestion tasks were completed. The initial 53 follow-up rows were subsequently compressed by the Stage 3 action-distillation pass into shared immediate packets and dormant trigger records; the original count describes intake output, not the current active backlog. These counts are useful because every source has a durable outcome instead of disappearing into an undifferentiated reading list.
-
-Decision-model and autonomous-research runs need write-side receipts before execution. The minimum record includes model, base and head hashes; dataset and split; candidate schema; prompt or contract version; environment and dependency identity; raw per-item outputs; timing and cost; fallback and validation outcomes; and a digest linking the aggregate to its rows. For evolutionary runs, add lineage, parent policy, mutation operator, evaluator version, seeds, budgets, rejected children, and archive events. A later narrative cannot reconstruct evidence that the original run never captured.
-
-Vidya source registration records where future native artifacts enter the belief substrate. Registration is prospective: it does not convert the research-intake prose or historical benchmark files into measured claim tuples. Consumers should cite the exact claim when one exists and use `#record` when merely discussing an intake entry.
-
-### Source References
-
-- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
-- [Session research-intake progress](../progress/2026-09/2026-09-25.md)
-- [System One session wrap-up](../progress/2026-09/2026-09-25-codex-system1-wrapup.md)
-
-**Confidence:** verified from the committed intake plan, repository task records, and source-registration changes.
-
-## Compiled Update — 2026-09-25: Stage 3 Distills Research into an Execution Program
-
-Research intake now requires each verified actionable to name the project decision it can change, one
-owning handoff, every discoverable consumer, the reusable primitive or cheapest deciding probe, the
-minimum evidence controls, and the observable trigger for any broader follow-on. Consumer discovery is a
-repository search, not an inferred shortlist. Several papers may therefore collapse into one work packet,
-and fewer than three packets is valid when the decision surface is genuinely narrow.
-
-The default output is a small execution program: implement a deterministic primitive that is useful even
-if the learned method loses, run one bounded empirical screen, and keep expensive replications behind
-trigger records. A trigger record carries its condition, owner, inputs, and acceptance rule but no active
-checkbox or index next action until the condition fires. This preserves the research without turning every
-interesting paper into immediate backlog.
-
-The paired write-side rule is equally compact. Every empirical screen records a frozen manifest, incumbent
-baseline, per-item outputs, holdout or later window, complete denominator, and predeclared disposition.
-The shared Vidya envelope captures those fields prospectively; source-specific readers appear only after a
-parent trigger fires. This is sufficient rigor to guide an engineering decision while keeping full
-benchmark recreation available for claims that later require it.
-
-### Source References
-
-- [Research-intake Stage 3 action distillation](../.claude/skills/research-intake/references/stage3-action-distillation.md) — normative workflow.
-- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — canonical minimum execution contract and consumer map.
-- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — shared receipt and trigger-specific profiles.
-- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — worked compression from paper-specific tasks to one shared screen.
-- [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — applied reconciliation and validation record.
-
-**Confidence:** verified as the installed Claude/Codex research-intake workflow and committed project task structure.
-
 ## Correction — 2026-10-04: operational context precedes primitive selection
 
 **Confidence:** verified for installed workflow, filings and inspected code; operational benefits remain hypotheses.
@@ -3612,276 +594,6 @@ or omission prevalence; missing original transcripts and selected-source coverag
 - [Wrap-up progress](../progress/2026-10/2026-10-04-codex-intake-wrap.md) — separate review and derived-actionables accounting.
 - [Intake-derived owner](../handoffs/completed/frontier-lab-automation.md) — completed review and proposed refinement.
 - [Adapter source table](../scripts/vidya/adapters/README.md) — prospective capture versus already-live EXL3 source.
-
-## Compiled Update — 2026-10-04: practical-outcome checks are implemented, not semantic proof
-
-**Confidence:** verified for implementation and regression results; no research-ROI improvement is claimed.
-
-New Stage-3 plans now carry a v2 source-first opportunity scan, full verbatim steering reconciliation,
-plan-only actionable additions and per-recommendation outcome reviews. Exact owner, extracted task
-identity, checkbox text and acceptance bind each immediate outcome. Same-ID refinements also bind
-the incumbent task text. Stage 4 checks the reconciled checkpoint and actually applied task,
-stub and index-row text. Historical completed filings and default index validation retain their
-legacy behavior. The installed Codex mirror has the same practical-outcome emphasis.
-
-These checks make declared omissions and substitution easier to inspect, but cannot discover an
-application omitted from the source scan itself or prove that an enabling task supplies the
-required operational behavior. Main must independently read the selected verified mechanism and
-current consumer. Production-activation gates and graph risk do not, by themselves, close a
-useful implementation or permitted deciding probe. The workflow keeps that semantic judgment
-separate from structural validation and adds no classifier or grading ladder.
-
-The implementation suite passed 73 tests and 218 subtests, and the full wrap-up rerun returned
-the same counts. Bounded semantic fixtures are qualitative review cases, not blind behavioral
-validation or a corpus-wide omission estimate. The native conformance source remains prospective
-under the existing `VB-RI-OPS-WIRE` registration; ordinary test results are not retroactively
-converted into measurement warrant. The preceding audit's routing-concurrency, valid EXL3 graph
-replay and ISA-runner binding proposals remain unexecuted.
-
-### Source References
-
-- [Coverage-delta implementation](../progress/2026-10/2026-10-04-intake-coverage-delta.md) — published changes, checks and limits.
-- [Current distillation instructions](../.claude/skills/research-intake/references/stage3-action-distillation.md) — source-first discovery and independent outcome review.
-- [Persistence contract](../.claude/skills/research-intake/references/session-persistence.md) — plan-only v2 additions and approved Stage-4 reconciliation.
-- [Wrap-up and earlier-session review](../progress/2026-10/2026-10-04-intake-earlier-wrap.md) — rerun, isolation and retrospective scope.
-
-## Compiled Update — 2026-10-04: older intake mappings weakened distinct operational outcomes
-
-**Confidence:** verified for selected source/plan/owner/code inspection; application benefits remain hypotheses.
-
-The older Jev/EXL3, Dream-RSI and MI210 compiler reviews recovered four bounded outcomes. A shared
-prefix is not question isolation: TD-1d.3 now requires question-only branches, checkpoint-safe state
-and singleton/sibling/whole-cost comparisons using existing TD-23/TD-31/KPF machinery. The existing
-target-precision control now keeps backend and verification shape fixed; CPU BF16 versus HIP Q4
-cannot attribute a precision cause. No second cache or speculative-decoding framework is needed.
-
-Dream-RSI's checkpoint-pruned allocation had been mapped to a collaboration spec. AC-CHECKPOINT-ALLOC
-instead uses independent existing batch continuations and prefix-visible score/cost records over
-at most three eligible configurations. It must not rerun OAB-9b's unchanged parked comparison or
-misread a shared advancing champion as independent trajectories. Missing counterfactual support
-returns unavailable, not fabricated replay gain.
-
-The multi-token MoE GLU opportunity was filed only under IQ residency, although static inspection
-found a Q8 MoE MTP recipe with separate gate/up tensors and a source fusion-width restriction.
-INF37-MOE-Q8-FUSION is a single experimental compatibility/correctness slice, not a broad campaign:
-resolve AMD correctness, preserve v10's CPU-only top-k guard, prove the actual route and compare
-matched controls before any speed claim. Metadata eligibility is not runtime residency or benefit.
-
-Two proposed tasks and two existing-task refinements were filed. Four prospective native evidence
-profiles extend VB-RI-OPS-WIRE before measured runs; no new grader or historical tuple backfill.
-Compiler falsifiers, routing-feature/label repair, selectors and operator-loop mechanisms remain
-with existing owners. Historical freeze/no-weight-update arguments were not accepted as proof
-of irrelevance, but do not justify duplicating covered work. This selected review supplies neither
-corpus-wide completeness nor an omission rate. Skill conformance does not replace semantic review.
-
-### Source References
-
-- [Earlier-campaign retrospective](../docs/reviews/research-intake-earlier-applications-20261004.md) — inspected bytes, actual consumers, counter-coverage and bounded proposals.
-- [Wrap-up progress](../progress/2026-10/2026-10-04-intake-earlier-wrap.md) — test rerun, custody and validation.
-- [Coverage-delta implementation](../progress/2026-10/2026-10-04-intake-coverage-delta.md) — structural checks versus semantic limits.
-
-## Compiled Update — 2026-09-25: A Reader Does Not Complete the Write Side
-
-The generic AutoKernel belief reader surfaced three schema boundaries before its first governed use. The
-KV-quant producer emits statistics objects where the root adapter expects scalar numbers; the shared
-`ClaimTuple` projection drops applicability fields needed to match evidence to a model and backend; and
-repeated ingestion needs an idempotent run identity. The reader remains unmerged until the producer shape,
-adapter validation, applicability projection, and receipt contract agree.
-
-This is the write-side rule in concrete form: an implemented projection path is not evidence readiness.
-The producer must author the fields a future decision needs, and the adapter may only preserve and validate
-those fields. A later reader cannot infer missing applicability, completeness, or run identity without
-manufacturing warrant.
-
-### Source References
-
-- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-BELIEF, producer/adapter mismatch, and applicability gap.
-- [Vidya adapter registry](../scripts/vidya/adapters/README.md) — canonical source and consumer contracts.
-- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — planner consumer boundary.
-- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day reader review.
-
-**Confidence:** verified from code review and strict failing fixtures; no historical record is backfilled.
-
-
-## Compiled Update — 2026-09-26: A Parallel-Drafted Stage-3 Plan Needs One Authoritative Reconciliation Pass
-
-**Confidence: verified** from the committed plan and its Stage-4 application (root `0c8e227e`).
-
-The orchestration prior-art intake drafted its Stage-3 plan as four sections in parallel (harness front doors; capacity-aware selection; hybrid CPU/GPU; Stage-2b actionables). The last section ended with a reconciliation, declared authoritative wherever it conflicted with the others. That pass caught defects no single section could see:
-- **ID collisions.** An operator-queue ID was claimed twice and had to be renumbered.
-- **Split ownership.** Retry-After work was homed in two handoffs.
-- **Competing owners for one component.** The shared wait estimator had two candidates: a design-only rider, and the handoff that already carried the build checkbox. The build owner won.
-- **Duplicated state.** Session state was headed for four homes and was collapsed to one table, with the other three reading it.
-- **Colliding appends.** All four sections appended a belief-kernel section at the same end of file, so they were merged into one. Two empirical items had no belief-kernel row at all and got activation records.
-- **Edit mechanics.** Edits by several sections to one file are applied by quoted text, bottom-up, never by line number. An orchestrator HEAD move (`fb7871ea` → `a439070e`) shifted one cited file by 5 lines, so the pasted text keeps its commit pin.
-
-**Three citation lessons:**
-- No number from a stage1-unverified entry is quoted anywhere. Those entries appear only as triggers, declines or lineage, in `#record` form.
-- `#record` asserts nothing, so a fact written under `#record` is invisible to cite-check. When text asserts a fact from an entry, it needs a claim-level or whole-entry citation.
-- Second-reader disagreements with dive claims go to the operator as a list. They become `claim_corrections` only if the operator accepts them.
-
-**A recommendation can change after a late fill, and the ruling is recorded beside it, not over it.** Stage-2b (intake-1818#record) changed OD-A's recommendation from B to A. The operator then took only part of A: the runtime was declined, but a port investigation was opened instead of closing the question. The rider records the ruling as the decision and keeps the recommendation as history.
-
-The plan also drafted the exact text for its wiki corrections, and Stage 4 applied it in the same commit.
-
-### Source References
-- [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — "How to read this plan", the completeness gates, and Reconciliation R1–R6.
-- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the Stage 2b/3/4 landing record.
-
-
-## Compiled Update — 2026-09-27: three new producers get write sides, and a gated research item is filed durable, not dropped
-
-**Confidence: verified** from the committed handoff items and the Stage-3 plan's completeness gates.
-
-- **Write sides were wired or filed as each producer appeared, not after.**
-  - The UFH-12 embedder placement gate: the capture script emits `<record-stem>.belief_measurements.jsonl`, and the read side is the `embedder-placement-gate` adapter. The 2026-09-26 Phase-0 files stay retrospective, because a tuple invented on read would claim warrant the run never captured. A G3 re-run must write its record through the same capture window (VB-UFH12-PLACEMENT).
-  - The gfx90a ISA audit tool shipped with its own `claim_projection` (schema `epyc.gfx90a.isa_audit.v1`), so its reads can land in the SC84 static-register source. SC84a widens that tuple first (AGPR count, accum offset, in-hot-loop spill reloads, in-loop `v_accvgpr` copies, and the toolchain's MFMA-form regime), at OBSERVATION grade and with no new grading rule. The register audit reads existing binaries only, so it is the cheapest measurement source to wire.
-  - The DS41-C57 barrier-sleep probe records (VB-DS41-C57): one locator per launch × arm, carrying the binary digest, an argv/env hash (OMP places, load threads), voluntary context switches and per-request tok/s. They are OBSERVATION grade (1–2 launches per arm) and are **never merged into the loop's matched-floor rows**. The raw directory sits in `/mnt/raid0/llm/tmp`, so it must be copied somewhere durable before projection. The follow-on runtime-arm compare rides the loop's existing evaluation path and needs no new adapter.
-- **A research item blocked by a standing directive is filed with a `GATED` marker, not dropped.** The HipKittens GEMM-ladder Stage-3 plan filed its GPU MMQ seeds and the MFMA-form arm as durable, dispatchable tasks marked GATED under the 2026-09-08 kernel-research directive, each with a falsifier. When the operator lifted the gate on 2026-09-27, the seeds were ready to run the same day, and the first one (AK-MMQ-H10) produced a clean negative result by its pre-stated falsifier.
-- **Other intake-flow practices the plan made explicit:**
-  - Every Stage-1 draft actionable and every dive-ledger row maps either to a plan item or to a row in an explicit declines table with its reason. Mechanisms with no counterpart on our hardware are **flagged for operator review, not dismissed**.
-  - Entries renumbered after a parallel intake landed first (1783–1785 → 1822–1826) are re-cited in every handoff line that named the old numbers.
-  - Stage 2's close-out gate needs every dive-surfaced source either ingested and dived or explicitly declined. Here the operator chose the recommended option: one re-encounter sets a missing arXiv id on an older entry, and two sources are declined for this lane, to be ingested in a DS41-focused intake.
-  - As in the previous intake, no plan text quotes a number from the one stage1-unverified entry (intake-1824#record).
-
-### Source References
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-PLACEMENT, the SC84 producer note, SC84a, VB-DS41-C57.
-- [HipKittens GEMM ladder Stage-3 plan](../docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md) — gating, OD-1, P6, the declines table and the completeness gates.
-- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — INF03-REGAUDIT-1 and its belief-kernel write side.
-- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the GATED seed set, the gate-lifted note, AK-MMQ-H10.
-- [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — the intake record (renumbering, filed-task counts).
-
-
-## Compiled Update — 2026-09-27 (late): freezes carry their own thaw condition, and a ratifier refuses a defaulted signer
-
-**Confidence: verified** for the conventions as applied, the guard and the checker counts; the countersignatures are **pending**.
-
-- **The freeze convention (narrowed plan).** A frozen box keeps its checkbox open and gets an inline `❄ FROZEN 2026-09-27 — resume only once …` prefix, plus an indented note with the reason and the unfreeze trigger: "frozen is not done". The central list lives in the experiment that gates the thaw (the UFH-13 handoff). Index rows are re-pointed to the next *live* step, and a top-priority banner in the master and UFH indices asks "does this move UFH-13?" before any other row is taken.
-- **The park convention.** A box the operator parks gets a `PARKED 2026-09-27 (operator)` note that says what exists (commits, branches), what does not (no build, no run), and the exact resume step. The next agent can resume without reconstructing state, and nobody mistakes the note for progress.
-- **Governance repair: no ratifier records a defaulted signer.** Every ratifier in `scripts/operator/`, and the `run_*` wrappers, now refuses an unset `RATIFY_OPERATOR`, a system account, the login account and agent ids. The shared guard is `scripts/operator/lib/ratify_operator.sh`, and the rules live once in `ratification_receipt.py check-operator`. The receipt tool returns REFUSED instead of recording `$USER`: one earlier receipt had recorded `operator: "node"`.
-  - One historical exempt script was deliberately left untouched. Its exemption pins the as-run sha256, so editing it would lapse the exemption, and the exemption list is human-only.
-  - The receipt checker reads 45 scripts: 16 receipted, 29 exempt, 0 failing.
-- **Chat approval is recorded as such, not upgraded.** Four ratifications (P-SERVE-SEL-1, OP-63, TRUST-BOUNDARY-RECEIPTS-FIX, DAR-LAT-3h) were approved in chat and executed by the agent. They stand as CHAT-CONFIRMED, with a terminal countersignature script for the operator to run (master queue OP-67).
-- **Belief-kernel write sides, filed at design time and frozen with their producers:**
-  - VB-THESIS-1: per-item and run-level rows for UFH-13. The producer exists: research `2b59bebe` writes a `ufh13-thesis-belief/v1` sidecar. VB-THESIS-2 files the read-side adapter now, so the verdict is ingestible the day it lands.
-  - VB-DISPATCH-S2 was filed with the stage-2 design and frozen with HS-19d P3a/P5. VB-TD-ADVICE and VB-SEL-LOADAB are frozen because their only producers (TD-28, DAR-LAT-3) are frozen: "wiring a source with no producer is dead code".
-  - The `gfx90a-static-register` read side is wired, but every audit on disk predates the hook, so it ingests 0 tuples ([Hardware Optimization](hardware-optimization.md)).
-  - A gap to note: the DAR-LAT-3h critic thread gate had no source row, so its G1 result is recorded in progress and the handoff only.
-
-### Source References
-
-- [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — freezes, governance repair, countersignature record.
-- [2026-09-27 orch-design progress](../progress/2026-09/2026-09-27-orch-design.md) — § Governance guard and countersignature record; the belief-kernel note on G1.
-- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-THESIS-1/2, VB-DISPATCH-S2, the frozen VB-TD-ADVICE / VB-SEL-LOADAB, SC84 read side.
-- [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the central frozen list.
-- [COUNTERSIGN-20260927](../artifacts/operator/countersign/COUNTERSIGN-20260927.md) — the four CHAT-CONFIRMED ratifications.
-
-
-## Compiled Update — 2026-09-29: compaction moves history without deleting it, and a wired write side can still ingest nothing
-
-**Confidence: verified** for the compaction being a move: every removed line was checked against the active files at `d3b960cc` and found again in its completed sibling (by ID, with link paths rewritten), or kept in the active file. **Verified** for the discovery gap and the stats-dict mismatch, both of which the handoff records against file and line. **Ruled** (operator, 2026-09-29) for the thaw triggers. The fixes are **open**.
-
-- **The handoff compaction convention.** Four long active handoffs moved their closed scope into `handoffs/completed/` siblings: vidya (through 2026-08-10, plus a *Completed 2026-08-10 → 2026-09-27* section), harness-selection, model-stack SSU and the non-inference backlog. Superseded snapshots and dependency graphs went to `handoffs/archived/*-history-through-2026-09-27.md`. Each active file now opens with a *Start here* block (Next, Waiting, Frozen or Operator-held, Standing) and a *Completed Scope* table that maps each scope to where it lives. The stated rule is "Nothing was deleted: the siblings are the evidence record for every gate this program has already passed." For wiki readers, a `handoffs/active/` link to a closed item now resolves one hop further, into the sibling.
-- **Before a parent moves, its orphaned residuals get their own box.** Two residuals sat inside closed NIB items with no box of their own, so moving their parents would have buried them. They became NIB2-88 (the opencode reaper relaunch step, which no cold-start document mentioned) and NIB2-89 (generalizing H-4 self-restart). A second hazard showed up in the same pass: open NIB2-80/81 shared IDs with closed items, so they were renumbered to NIB2-86/87 and each keeps a "filed as" note. SSU's § Outstanding Work holds seven open boxes that are standing rules, not tasks: "Never dispatch or tick them." An open checkbox therefore does not always mean pending work.
-- **VB-UFH12-PLACEMENT-DISC: the write side is wired, but ingest never sees the arm sidecars.** The A0 and A3 arm sidecars (nine files) live at `data/embedder_placement/arms/<run>/<N>-{base,cand}.belief_measurements.jsonl`. The `embedder-placement-gate` source in `ingest_sources.py` globs only the root, so `cli.py ingest` returns nothing for them and does not error. The fix is a recursive glob, following the `kv-quant-27b-v10-measurement` pattern, plus a two-level fixture test and a check that every refusal names its reason. **Lesson: wiring a producer is not the same as the ledger receiving it. Prove discovery on the real directory layout, not a flat fixture.**
-- **VB-KVQ-V10-DICT heads the KV-quant queue.** The producer writes `prompt_tokens` and `kv_{k,v}_mib` as `{n, median, mad}` dicts, but the root adapter's `_check_row` requires plain numbers. The first real sweep's sidecar would therefore be refused wholesale. Both test suites miss this, because root's fixture hand-builds scalars and the producer's test asserts the dict shape. This is the same flat-fixture blind spot as the placement gap. The recommended fix has the adapter accept a stats dict with a finite numeric `median` now, with the producer emitting plain medians in its next revision. DICT blocks VB-KVQ-V10-INGEST, and VB-KVQ-V10-RECONSIDER can be dispatched now. The substrate itself has been promoted since 2026-08-26 (P5c): `cite-check` blocks commits only on dangling, overturned or conflicted citations.
-- **Frozen write sides now carry compound thaw triggers inline (operator ruling 2026-09-29).** VB-TD-ADVICE resumes only once TD-28 unfreezes, which needs v11 promoted AND the autopilot trained on the swapped stack AND UFH-13 re-opened. VB-SEL-LOADAB resumes only once DAR-LAT-3 unfreezes, which needs the autopilot trained on the swapped stack AND UFH-13 re-opened. The same trigger was written into TD-28, LRC-1/2 and all eight DAR-LAT boxes. The 2026-09-27 marker only named the producer; the ruling adds the producer's own preconditions, so no agent has to chase the chain.
-- **Duplicate owners were folded, not left to diverge.** JSON repair was struck from PAW-5's candidate list, because `typed-decision-plane.md` TD-21's shared repair helper already owns and solves it. REPL-EMB-B.1 now points at the thesis arm A0 as run through `/v1` (`--transport v1`, TE-3a), and its decision rule was pre-registered on 2026-09-27, which closed OP-66.
-
-### Source References
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — compaction table, promoted status, VB-UFH12-PLACEMENT-DISC, VB-KVQ-V10-DICT queue order, the 2026-09-29 thaw triggers on VB-TD-ADVICE / VB-SEL-LOADAB.
-- [Vidya completed sibling](../handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md) — the moved evidence record (pilot build, promotion track, SC-series through 2026-09-27).
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — the orphaned-residual boxing (NIB2-88/89) and the NIB2-86/87 renumbering.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — *Start here* and the standing-rule boxes that must never be ticked.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the *Completed Scope* table pattern.
-- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-5 JSON repair struck (TD-21 owns it).
-- [repl-embedding-retrieval.md](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-B.1 via `/v1`, OP-66 closed.
-
-
-## Compiled Update — 2026-10-03: wiring the new serving producers, and rulings that never compiled
-
-**Confidence: verified** for the filed tasks, the declines and the incidents. No adapter in this section has been
-written yet; each item is wiring that is owed.
-
-- **Three new serving measurement sources (VB-SERVING-DF2).** Each one gets a source-table row and a `ClaimTuple`
-  projection, and no new grading rule:
-  - per-call serving telemetry;
-  - DFlash2 at the production shape (Q38-T7), carrying the kernel-store build id, the drafter GGUF sha and the full
-    argv;
-  - Qwen3-VL-30B on CPU (S-18).
-
-  The measured DFlash2 VRAM components are also a capacity source for SSU-F3's claim tuple.
-- **VB-SERVE-TIMING-1, the read side of the per-call records** (`serving_call.v1`). The write side has been live
-  since 2026-10-03 04:59Z, and era row ST1 is in `instrument_eras.yaml`. The adapter must:
-  - refuse rows whose `record_sha256` does not re-derive;
-  - project each `timings` metric plus queue wait, with unit and direction fixed by the schema;
-  - carry argv sha, binary, model path and orch commit as identity, never graded;
-  - skip `timings_source="absent"` rows rather than emit zeros.
-
-  Open design question: window aggregates such as per-role prefill share need a second producer or a sealed window
-  manifest, because a per-call tuple cannot carry a share.
-- **VB-RI18a: the RI-18 sidecar does not meet its own contract.**
-  - Its 6 rows are pooled only and lack the served orch commit and the store-snapshot sha. As written, the adapter
-    would ingest nothing.
-  - The whole run lives in scratch.
-  - Fix: extend the `score` sidecar writer (offline, seconds, not a re-run) or join `run_manifest.json`. Then copy the
-    run to a durable path.
-- **VB-REVIEW-GATE declined.** RI-18 scored DROP, and RI-18c deletes the gate and its event. An adapter for a
-  producer being deleted is not worth writing.
-- **VB-DS41-C95 filed.** It covers the blind-graded harness records. Calibration rows are never pooled, and no-reply
-  calls count as misses. The write-side sidecar goes in before the next arms run.
-- **Governance lessons (2026-10-03 incidents):**
-  - **A ruling that lives only in prose does not get applied.** The 2026-08-27 DFlash2 ruling sat in two handoffs
-    for five weeks while :8083 served MTP. An operator ruling that names a launch recipe is a stack-change intent;
-    the handoff carries only a pointer to the package or an open task (SCG-RULING-TO-FIELD).
-  - **For an urgent production fix, offer the fast path first** (an operator-terminal relaunch with the target
-    argv) with the permanent package behind it. Do not bundle an unrelated lineup move without the operator
-    choosing to (SCG-FASTPATH). The DFlash2 fix took two days and two operator pushes.
-  - **An idle session does not drain its inbox.** Two bus messages queued while a session waited on an operator
-    decision were never processed before the host went down. Put a pending decision to the operator as options when
-    it arises.
-  - **Record a runtime enable as what it is.** A `POST /config` enable persists across reboots, so a "runtime-only"
-    note was wrong.
-
-### Source References
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-SERVING-DF2, VB-SERVE-TIMING-1, VB-RI18/VB-RI18a, VB-REVIEW-GATE (declined), VB-DS41-C95.
-- [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-dflash2-ruling-never-compiled, INC-20261003-urgent-fix-slowed-by-bundling, INC-20261003-runtime-flag-survived-reboot.
-- [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — SCG-RULING-TO-FIELD, SCG-FASTPATH.
-- [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — lost cross-session messages while idle; the session failures.
-
-## Compiled Update — 2026-10-06: capture evidence at the write boundary
-
-New evidence producers follow the existing shared verifier carrier and single grading ladder. They bind the source/readset and applicability before execution, retain original output and refusal outcomes, and project only the proposition that the native record can support. Counts may describe a run, but they do not silently become quality or performance claims. The strategy report, optional scoring fixtures, and code-index controls follow this same pattern without creating a second grader. ([strategy-report custody](../progress/2026-10/2026-10-05-ni53-strategy-report-custody.md), [optional scoring lock](../progress/2026-10/2026-10-05-ni41-eval-scoring-extra.md), [code-index admission](../progress/2026-10/2026-10-06-ni76-code-index-admission.md))
-
-A source boundary also matters for gaps: a captured serving-call census with 19 records but no session keys yielded zero eligible pairs and no tuple. That is evidence about the sampled records, not evidence that the larger distribution, enqueue behavior, or TTL is known. The owning HSF-3 handoff therefore remains open for properly keyed windows. ([NI10 gap census](../progress/2026-10/2026-10-05-ni10-gap-census.md), [NI32 schema-boundary report](../progress/2026-10/2026-10-05-ni32-synthetic-schema-boundaries.md))
-
-The campaign record reinforces a durable rule: if a process produces measurements or verified findings, define the source adapter when the write path is built. Retrofitting a tuple from a later read cannot recover identities or applicability the original run never captured. Existing shared grading decides the claim; source adapters only project native records into that contract. ([Belief Substrate program](../handoffs/active/vidya-belief-substrate-program.md), [NI05-13 verifier projection](../progress/2026-10/2026-10-05-ni13-durability-native-projection.md), [NI05-15 CI capture](../progress/2026-10/2026-10-05-ni15-ci-conformance.md))
-
-### Source References (2026-10-06)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — write-side source adapter and native-record boundary.
-- [NI10 gap-census report](../progress/2026-10/2026-10-05-ni10-gap-census.md) — zero keyed pairs in the bounded census; no distribution claim.
-- [NI32 schema-boundary report](../progress/2026-10/2026-10-05-ni32-synthetic-schema-boundaries.md) — synthetic controls do not replace live source data.
-- [NI05-13 verifier projection](../progress/2026-10/2026-10-05-ni13-durability-native-projection.md) — existing carrier and shared grade.
-- [NI05-15 CI conformance](../progress/2026-10/2026-10-05-ni15-ci-conformance.md) — prospective capture and command enrollment.
-- [NI05-53 strategy report](../progress/2026-10/2026-10-05-ni53-strategy-report-custody.md) — opt-in custody and claim limits.
-## Compiled Update — 2026-10-06: fix read-depth forward, audit past dives separately
-
-A Stage-2 entry marked `dive-verified` can still rest on a model-summarized WebFetch digest: the old skill asked for source passages but did not define full-read depth, while claim anchors were prose-required, schema-optional and unenforced. The accepted fix makes `read_depth` explicit (`FULL|PARTIAL|DIGEST`) and sets claim anchors with quote hashes as the contract. The schema documents both `dive-verified` and `dive-overturned` for entries ingested from 2026-10-07 onward (or whenever `read_depth` is declared), but the current validator actually enforces the depth and non-empty-anchor gate only when `verification == dive-verified`. Do not describe `dive-overturned` as validator-enforced; its owner must reconcile the schema/code scope before relying on that part of the contract. For the implemented `dive-verified` gate, older entries without declared depth remain grandfathered; this is forward enforcement, not a historical audit.
-
-The audit snapshot classified 352 of 889 dived entries as *at risk* under a heuristic (A=191 missing anchors, B=100 digest/WebFetch mentions, C=109 no recorded full-read evidence). These are overlapping risk flags, not 352 proven bad dives. Recompute against the current intake index before using the count. Prioritize entries that are cited or gate open work; a digest-era confirmed claim without anchors can merit re-dive, while uncited low-relevance entries can be demoted only through the stage machine with a reason. The 2026-10-06 nine-entry batch was subsequently redone against full sources at `1c5183df9`; the audit's earlier note that its fix patch was unapplied is a point-in-time snapshot, not current state. Seven follow-up tasks in the active handoff remain open and belong to their owners; this compilation performs no historical re-verification or index edits.
-
-### Source References (2026-10-06 read-depth controls)
-
-- [Intake re-verification handoff](../handoffs/completed/intake-reverification.md) — risk rubric, explicit legacy boundary and seven owner tasks.
-- [Read-depth audit](../artifacts/intake-depth-audit-20261006/AUDIT.md) — root-cause and historical snapshot; not a current proof for each dive.
-- [Research-intake skill](../.claude/skills/research-intake/SKILL.md) — forward Stage-2 depth and anchor requirements.
-- [Intake schema](../.claude/skills/research-intake/references/intake-schema.md) — optional/required schema transition.
-- [Intake validator](../.claude/skills/research-intake/scripts/validate_intake.py) — enforcement boundary and grandfathering.
-- [At-risk list generator](../.claude/skills/research-intake/scripts/at_risk_list.py) — reproducible heuristic flags; its output is not a verdict.
 
 ## Incremental synthesis — 2026-10-06: JEV-aware handoff audit
 
@@ -4189,20 +901,3330 @@ The reviewed C49 comment correction remains a separate protected-path proposal p
 
 The [accepted HG5 source boundary](../artifacts/ni08/hg5-native-labels-reader-source-20261008/README.md) now separates two original controls: APP249 qualifies the optional pre-capture declaration producer, and ROOT84 qualifies the strict reader plus registered Source and actual CLI temporary-ledger ingestion. Version1 events remain unchanged/ungraded; version2 projects only native recorded category, direction and protocol through the existing shared ladder. A protocol citation does not establish human ratification, and source identity does not establish the loaded runtime origin. The earlier ROOT setup NULL and 83/84 fixture FALSE stay immutable; the corrected source successor retains every assertion and case identity. MAIN closes exactly two scoped source tasks under independently accepted ordinary integration and original native custody. Live HG5/H3 parents remain open, with no activation, historical backfill or efficacy/correctness claim.
 
-## Compiled Update — 2026-10-20: new belief-kernel write-side obligations from the DS41 swap, the Q38FN depth sweep and the conversation bake-offs
+## Compiled update — 2026-11-04 (wrap-up sweep): Vidya live captures and wiring gaps
+
+- **Serving steps capture accepted:** `vb-sl2-steps-r1` A/A (two C5 pairs) ingested 15 frames, two steps estimates (`predicted_n_minus_draft_n_accepted`, 9.57 vs 7.00 steps/s), no refusals. It proves the producer/reader path only; the 41.5 vs 30.4 tok/s gap is launch noise (per-launch CV ~15 %, n=1).
+- **Actor-wire matrix PASS 15/15** (93 frames, 31 findings) but the planning canary FAILED: the tuples carry empty applicability, and every planner tier was model- or device-scoped. Fixed by a consumer-scoped `harness` tier (cap 3, not evidence; `e9f943781`); re-ingest plus a new canary are pending with the owning session.
+- **Canary B FAIL is a bad sentinel, not a retrieval defect:** the live BGE-large embedder worked, but trial 1472 is learning-excluded (`reproduction_confirmed`) and pre-era. A future canary needs an eligible current-era keep.
+- 11-03 fan-out landed `cert_check.py`, AK/autopilot/INF-66 adapters (R2364 ingest rows=5, frames=15) and `reliance_review.py`; the canary-A guard was kept (≥3 scoped comparable answers refuse).
+
+Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [fan-out](../progress/2026-11/2026-11-03-vidya-fanout-20261103.md) · [handoff log](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [program](../handoffs/active/vidya-belief-substrate-program.md)
+
+## Compiled update — 2026-11-04 (wrap-up 2 sweep): belief wiring and run-end alerting
+
+- New prospective belief-wire tasks were filed for CH-26 overhead and replay, C6 MMQ full-op, KPF-61 permutation, KPF-50 counterfactual, KPF-17 oracle, KPF-18 GPU residency witness, AKX-ALL-8 and the Q38P compatibility source; all project through existing carriers and shared `ClaimTuple.grade()`.
+- Rowflow now alerts the owner on every row end, smoke FAIL and disk-floor crossing (`notify.py`, bus plus `alerts.jsonl`; first live alert 23:23Z), after a disk-floor kill went unreported.
+- Question-discipline hook now allows real operator decision packages.
+- Long-context recall/spec-guard builds (LSA) completed model-free; a CPU phase-timing request exceeded its cap and was filed inconclusive.
+
+Sources: [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) · [long-context](../handoffs/active/long-context-program.md) · [progress](../progress/2026-11/2026-11-04-inf22.md)
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-19 (wrap-up: native belief wiring detail, committed-conclusion observations, reader slices). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-03 (wrap-up compile sweep). Earlier: 2026-11-02 (ws58 LLM-wiki transparency intake). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): Codex persistent lane checkouts and legacy/worktree retirement, disk-emergency triage, belief-kernel write wiring (LB4.9 wired, PIP-02 TEDS, CAFE-1 source enrolled). Earlier: 2026-10-28 (workspace-58 overnight wrap delta). Earlier: 2026-10-28 (owner-scope full-wrap delta): CME7T, CS22 and STT2 source enrollment remains separate from reader/canary completion. Earlier: 2026-10-27 (operator full wrap, Codex NI, cutoff 16:26:29Z; scoped conclusion capture and no new measurement warrant). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): results-harvest projectability: what can enter the belief ledger now, what needs a write side, and what must project nothing, plus the FA4 nan_A quarantine. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): 267 of 497 cited tmp paths are gone, committed conclusions get a belief path, the first loop canaries run, and seven native ingests append 102 frames. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the P1-PHASE2 served-shape recalibration passes and ingests, gitnexus recovers from a SIGSEGV, Omega and M26 are wired into the belief kernel, and the DS41-1017 ABA files are not native measurements. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): shared clones are never modified without operator approval. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): belief-kernel wiring for the 10-24 measurement sources, native-harness OTel lineage gap, and the non-inference campaign. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: orchestrator code index segfault; llama-bench protocol field enters the belief adapters). Earlier: 2026-10-22 (wrap-up sweep 10: ten write sides and producer emits wired, protocol_id grading bug, dev-harness trace backup coverage and OTel fields). Earlier: 2026-10-22 (wrap-up sweep 9: a pinned source digest goes stale whenever its producer changes). Earlier: 2026-10-22 (wrap-up sweep 7: dev-harness mining, privacy gate and write-side wiring tasks). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 5: loop belief readers landed, device-scoped claims, new write-side rows). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-06 (root final wrap-up; incremental synthesis appended); previous compile record:  (scoped: decision-tools filing and three-campaign practical-application review); previous: 2026-10-03 (wrap-up compile: belief-kernel wiring for the new serving producers — VB-SERVING-DF2, VB-SERVE-TIMING-1 (per-call serving records, era ST1); VB-RI18a sidecar gaps; VB-REVIEW-GATE declined with the gate; governance lesson: an operator recipe ruling must land as a registry field plus a compile check); previous: 2026-09-29 (wrap-up compile: handoff compaction moves closed scope to completed siblings without deleting it; VB-UFH12-PLACEMENT-DISC finds the arm sidecars invisible to ingest; operator ruling 2026-09-29 writes compound thaw triggers into frozen write sides; VB-KVQ-V10-DICT heads the KV-quant queue); previous: 2026-09-27 late (wrap-up compile: the freeze convention — a marker, a reason and an unfreeze trigger, and the box stays open; the park convention; ratifiers refuse a defaulted signer and four chat-approved ratifications await countersignature; VB-THESIS-1/2 and VB-DISPATCH-S2 filed, producerless write sides frozen); previous: 2026-09-27 (wrap-up compile: VB-UFH12-PLACEMENT, SC84a and VB-DS41-C57 write sides; a GATED research item is filed durable; HipKittens intake-flow practices); previous: 2026-09-26 (orch prior-art Stage-3 plan: parallel sections with an authoritative reconciliation; `#record` asserts nothing; recommendation vs ruling); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-25 (KV-quant reader and planner receipts); 2026-09-24 (speech-lane wrap-up compile: VB-SPEECH-CONV-1 filed write-side before any conversation-stack run; VB-AK-METRICS-1 grows a closed contract by sibling and needs a root contract module plus an explicit join; VB-AK-CTX-1 offered-not-read; VB-KVU-1/VB-SPEECH-CPU-1 not backfilled); earlier: 2026-09-24 (wrap-up compile: two `open` items had been fixed for weeks and never ticked, and the wrap-up heavy-e2e failure was a TEST defect that reproduced on a pristine HEAD; VB-MFVBS-1 and VB-EVALDISC-1 filed write-side with per-field admissibility cautions; a laneless session landing shared work through a private landing worktree; four of seven subagent results needed main-thread correction); earlier: 2026-09-23 (evening wrap-up compile: the wiki source scanner's mtime blindness and per-worktree watermark are both closed against 0ea91f3e (content-hash selection against the tracked manifest; the lane failure was 919 phantom sources against a true delta of 2), both boxes having stayed unticked for weeks after the fix landed; KB-WM-5 shards the shared agent session file per AGENT_ID; PAW-4 shows a record corrected in two of three fields still misleading from the third); earlier: 2026-09-23 (wrap-up compile: three belief-kernel read-side adapters filed for producers whose write side already exists — VB-KVQ-V10, VB-VRAM-1 (the first 2026-09-22 probe run is INADMISSIBLE), VB-ARCH-CPU-QUAL (instrument_class and truncation must reach the tuple); SSU-F6 closed with a `truncation_audit` sub-gate; HelixDB added as a graph-backend candidate if the graph layer revives); 2026-09-23 (private-index committing protects peers but freezes the SHARED index, and the rot reads as mass deletions any pathspec-less commit would publish; `git diff` cannot see it by construction; `git reset -- <paths>` must run AFTER each commit; a stale `wiki/source_manifest.json` would have rolled the compile watermark back); earlier: 2026-09-22 (incremental: second subject deletion: GLM-5.3 → DeepSeek-V4.1 retarget, subject-deleted rows left unticked, VB-DSV41 filed before first run); earlier: 2026-09-19 (VB-FW-1 GUI fuzzy-workflow and VB-AK-HELDOUT held-out AutoKernel confirmation write-side rows filed before their producers run); earlier 2026-09-17 (doc audit + restructure: the decided-handoff restructure pattern — archive the pre-decision trail, promote standing material to `docs/reference/`, move open boxes up, line-level conservation check, `../active/` link repair; corrections appended to dated shards; approved-but-gated structural moves; the shared-clone backup/reset/restore-live-state procedure; two overturned absence claims in intake); earlier 2026-09-17 (evening: three ticked vidya adapter branches landed and the closure-inflation audit, the `git cherry` landing rule, `speed_axis_reseed` not projected, VB-RUNNER-PATHS-2, SC87-89, KB-WM-3, OBS-12); earlier 2026-09-17 (afternoon: AutoPilot promotion rules reach the belief-kernel adapter with a commit join; runner capture paths are resolved, not guessed); earlier 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
+
+### Compiled Update — 2026-11-09: dashboard Flow counter root cause, audit findings, citation form
+
+- **Dashboard Flow panel defect.** The panel read +208 while open boxes fell 2806 to 1516 in 7 days. Root cause: edits to existing open boxes counted as filings, declines and removals were ignored, and the timeline dated merged lanes on their merge day. Fix: `build_handoff_timeline.py` is the only counter, the hub sums its rows, `hub_view` exposes the served commit and refresh failures. Independent review confirmed 22 sampled commits and the 1263 removals on 11-03 as real retirements; after the fix, hub live at e4668444c with today -87, 7d -1290. Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
+- **Incident: incomplete pin list.** The 13:02 re-pin to 2c62d9458 lacked `observer_guard.sh` and `env.sh`, so every supervisor pass failed and the view froze until the third install at 14:28 (e4668444c); `index_regen.py` joined the pin list. Same source.
+- **RTG-22 audit.** 115 open boxes, with the shared clone 78 commits behind origin/main, so the audit ran against origin/main. A planned LOOP-11 closure was refuted (a refusal still orphans pollers); AFC-P5.E3 had finished 11-07 but was never filed because its owner session ended; `76d21aa9f` (research, 08-25) silently reverted the NIB2-58a linkage gates. Sources: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md), [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md).
+- **Citation form.** The ID-25 decision package now cites intake-362#record and intake-363#record (they discuss the record and assert nothing), per the cite-check grammar. Source: [frontier-lab-automation decision package](../docs/design/backlog-refactor-2026-11/decision-packages/frontier-lab-automation.md).
+- **Stale status corrected:** the DeepSeek-V4.1-Flash-DSpark GGUF is gone (only `-1017-DSpark.gguf` remains), so "PENDING OPERATOR" was stale; no graveyard row was found, so that box stays open for the row only. Source: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
+- **GitHub workflows:** 66 stale workflows with no file on main were disabled by operator decision; LOOP-54 stays open. Source: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
+
+### Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): Vidya capture paths accept A/A steps and actor-wire matrices, but the actor-wire planning canary still fails and the glob-recovery fix landed
+
+**Confidence: verified** (live filed results).
+
+- **Accepted captures.** `vb-sl2-steps-r1` (two same-image A/A pairs) ingested 15 frames for five claims with `steps_projected=2`, no refusals; the estimator is `predicted_n_minus_draft_n_accepted`, reporting-only. The actor-wire matrix (15/15 seats) projected 31 verifier findings / 93 frames with no refusals. G-P1 parity wiring closed on three existing projected claims (min cosine 0.999993 over 211 chunks / 45 queries).
+- **Failed or open.** The actor-wire planning canary FAILED (planner ready, nothing refused, ledger unchanged, but the proposition was absent from the Q38FN planning evidence because the tuple carries empty applicability); r3 then stopped at the disk floor. Canary B (failed keep recovery) failed because its reference trial 1472 is excluded from learning (`reproduction_confirmed`), a defective sentinel not an embedder defect. R18 symbol comparison is UNKNOWN (pinned input changed).
+- **Plumbing.** The completed-smoke result-glob fix (exactly one in-scratch result, content bindings, `--resume-complete`) landed upstream with 24 publisher tests. A same-code-excursion adapter binds the newest earlier matching work-key prior and refuses mutation after verification. A strict EXP01 reader and GPU-pool capture helper are prospective, unregistered components; wiring is only claimed when a planning-context canary passes.
+
+Sources: [Vidya live captures](../docs/reference/vidya-live-captures-20261104.md) · [vidya progress](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [kvu19b belief integration](../progress/evidence/kvu19b-gap-clean-20261104/BELIEF-INTEGRATION.md) · [belief-substrate handoff](../handoffs/active/vidya-belief-substrate-program.md)
+
+### Compiled Update — 2026-11-03 (evening): belief-substrate adapters and D-LSA filing
+
+**Confidence: verified** (tests and validators named in the progress log).
+
+- **Vidya wiring landed**: INF-66 R23-64 thread-sweep adapter (VB-R2364-SWEEP-WIRE, verdicts carried verbatim, no new grading rule), optional journal fields carried through the existing `autopilot-journal` frame (VB-AP-JOURNAL-CARRY; missing fields stay UNKNOWN), and `reliance_review.py` flagging experiments whose `relies_on_claims` carry a retracted or corrected claim.
+- **SC64 sequential certification (closed 2026-11-03)**: the original DONE WHEN (accept crossing blocks 8 or 10) was impossible: an exhaustive scan shows blocks 8 and 10 are unreachable at threshold 20 with lambda cap 0.5, so the DONE WHEN was corrected rather than the checker (`handoffs/active/vidya-belief-substrate-program.md`, SC64).
+- **Intake validator tolerates handoff folds**: committed lineage now resolves to the surviving owner; unknown, ambiguous, cyclic or dangling references still fail (2,623 entries validated; 53 tests + 16 subtests).
+- **D-LSA (intake-2622..2627#record)**: literature shows Qwen3.8-27B with frozen base and released maps; NVIDIA attention-layer speedups are not EPYC/MI210 whole-model numbers; no local quality or latency claim made.
+- **Backlog refactor outcome**: active handoffs 176 -> 29 with zero lost tasks; the four pilots all returned REVISE with owner fixes filed.
+
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [progress 2026-11-03](../progress/2026-11/2026-11-03.md) · [ws58 progress](../progress/2026-11/2026-11-03-ws58.md)
+
+### Compiled Update — 2026-11-02: prospective source capture and event identity
+
+The R18 independent r4 symbol comparison reported zero differences on all three surfaces, and the v10 reference predicate was set true; that completed result remains a committed conclusion because it preceded the new capture hook. For KVU-19a-2, 20 producer-authored diagnostic rows entered a private ledger, but their original capture lacked device-applicability scope. A later prospective writer requires the relevant source, HIP and in-window device witnesses; it does not backfill the old rows, and a real planning-context canary remains open. Sources: [belief-substrate handoff](../handoffs/active/vidya-belief-substrate-program.md), [R18 source progress](../progress/2026-11/2026-11-02-r18-belief-source.md), [RTG-57 diagnostic checkpoint](../progress/2026-11/2026-11-02-rtg57-readiness-audit.md).
+
+
+A source review found that independent session document, finding and tag inserts do not overwrite distinct keys, but they also do not check the session lease fence; a stale owner can therefore write after lease loss. Foreign-key enforcement was not enabled in the reviewed connection factory, and finding sync used separate transactions. The review recommends in-transaction fence and session checks plus atomic or idempotent sync; it is source analysis, not a live concurrency test or deployed fix. Sources: [session mutation review](../docs/reports/repl-session-lease-append-review-20261102.md), [live verification readiness](../docs/reports/repl-session-memory-snapshot-review-20261102.md), [trace-memory preparation](../progress/2026-11/2026-11-02-handoff-unified-trace-memory-service.md).
+
+
+The read-only knowledge browser links claim, recorded evidence grade and observed run; it reports commit identity only where a frame actually records one. The wiki lint gained orphan, unsourced-bullet, conflicted-citation and contradiction checks; its initial full run reported zero errors and 705 warnings, including section-sourced bullets. The contradiction gate files a pending pair only when both quoted anchors and hashes are independently re-found; it does not adjudicate the conflict. These are implemented controls; the hub session recorded that a restart was still needed before the new routes would load. Sources: [hub implementation](../progress/2026-11/2026-11-02-ws58-hub-pages.md), [wiki and contradiction implementation](../progress/2026-11/2026-11-02-ws58-knowledge.md), [source intake assessment](../progress/2026-11/2026-11-02-ws58-intake-jev-superagent.md).
+
+
+The R18 guarded symbol-comparison writer and adapter preserve source, compiler, comparator, dependency, build and terminal identities; the final producer/planner regression suite passed 69 tests and a claimed CPU launcher smoke passed. The full native successor is prospective, so prior results do not acquire a new native warrant. Separately, the trace-memory preparation found that raw source coordinates alone are not necessarily unique per event; a proposed projection-file/line key would support within-run idempotence while retaining the original coordinates. Sources: [R18 source work](../progress/2026-11/2026-11-02-r18-belief-source.md), [trace-memory preparation](../progress/2026-11/2026-11-02-handoff-unified-trace-memory-service.md), [belief-substrate progress](../progress/2026-11/2026-11-02-handoff-vidya-belief-substrate.md).
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **OKF-KB hardware debugging workflow** (intake-799#record) Stratified KB with immutable Findings, Concepts, Principles and Outcomes, and contradictions preserved. Already integrated (maps to intake_index, chapters, CLAUDE.md, handoffs); dive confirms the tutorial numbers are a fictional composite.
+- **Agent traces to trust survey** (intake-1034#record) Taxonomy of evidence tracing and execution provenance with a nine-relation vocabulary (PROV Use/Generate/Derive plus Support, Depend-on, Contradict). Corrections: relations are nine not seven, the memory-provenance gap is in section 6.4/Table 6, and the paper is now v4.
+- **Semiring provenance for fixed-point logic** (intake-1039#00) Generalized absorptive polynomials give the universal provenance semiring for full LFP (Theorem 17); all four Stage-1 claims confirmed verbatim, incl. the counterexample showing omega-continuity alone is insufficient. Basis for the replayable provenance fold in the belief ledger.
+- **Datalog convergence over semirings** (intake-1040#01) 0-stable semirings converge in N steps (polynomial time in the number of ground atoms); a finite max/min chain is 0-stable, absorptive and fully continuous. Definitions confirmed verbatim in the 55-page PDF; licenses bounded fixed-point folds.
+- **Circuits for Datalog provenance** (intake-1041#record) No faithful datalog semantics has poly-size Boolean formula provenance, but poly-size monotone circuits exist; the circuit result is for the free absorptive semiring so it specializes to any commutative absorptive semiring. Dive-verified from the primary PDF.
+- **Circuits and formulas for Datalog over semirings** (intake-1042#record) Correction to Stage-1 phrasing: a two-point depth dichotomy, Theta(log m) vs Theta(log^2 m), not a single optimality claim; linear programs over absorptive semirings get depth O(log^2 m) circuits (parallelizable in NC^2).
+- **Least/greatest fixed points in absorptive semirings** (intake-1043#record) Least solution is F^n(0) and greatest is F^n(F^n(1)^inf), each a polynomial number of semiring operations. Caveat: LNCS volume/pages were not re-verified; confirm before formal citation.
+- **Polynomial-time Datalog-degree convergence** (intake-1044#record) Polynomial convergence over any p-stable commutative semiring; operator question whether it supersedes the JACM bounds for the finite-chain case was answered no, with the reason recorded.
+- **Semirings of Evidence** (intake-1045#record) Semiring semantics for justification logic (joint use multiplicative, sum additive); soundness/completeness proved, deduction theorem fails. Correction: arXiv v2 corrects the CLAR 2020 completeness proof, so cite the JLC/arXiv version; venue corrected LFCS to CLAR.
+- **in-toto attestation + SLSA provenance** (intake-1047#record) Typed signed statements in DSSE envelopes, layouts as signed policy, and verification as deterministic replay; SLSA separates buildDefinition from runDetails. Template for signed, typed result attestations in the measurement/belief pipeline.
+- **RFC 9162 / tlog-tiles / Rekor v2** (intake-1048#record) Authenticated append-only Merkle logs without consensus. Correction: RFC 9162 is Experimental and the ecosystem converged on the C2SP static-log family; Rekor v2 GA 2025-10-10 keeps only hashedrekord and dsse entry types.
+- **Weighted bipolar argumentation dynamics** (intake-1049#record) Convergence proven for acyclic graphs (linear time) and support-only cycles; general cycles remain open. Quadratic-energy model has a per-node closed form; the paper's 30-second wall-clock cap is nondeterministic and must not be copied into a deterministic system.
+- **Carneades proof standards** (intake-1050#record) Overturned the Stage-1 framing: the 2007 AIJ paper defines three proof standards (SE, BA, DV), the five-standard set is from the later Gordon-Walton line. Proof standards are assigned per statement and act as consumer policy.
+- **Gordon & Walton proof burdens** (intake-1062#record) Primary-source recovery of the five-standard definitions over audience weights in [0,1]; aggregation is MAX, never SUM (arguments not independent), and thresholds are owned by the dialogue protocol, not per query.
+- **C2SP signed-note and tlog-checkpoint** (intake-1063#record) Byte-exact checkpoint format for the L1 ledger rung. Drift finding: tagged v1.0.0 says SHOULD use Ed25519 while main now says SHOULD use ML-DSA-44; pin the tagged version. tlog-cosignature declined with trigger.
+- **SLSA Verification Summary Attestation** (intake-1064#record) A VSA is itself an in-toto attestation, so the output of verification has the same type as its inputs, which lets delegated verification compose; template for replayable query-response certificates.
+- **Esparza-Luttenberger derivation-tree fixed points** (intake-1065#02) Theorem 6: over 1-bounded (absorptive) semirings plain Kleene iteration reaches the lfp in n steps. This is the licence for the simple fold; the E&L engine, ICDT circuit and stability bounds are one cross-cited family.
+- **Gradel-Tannen provenance for FO model checking** (intake-1066#record) Dual indeterminates give negation as first-class tokens, and zero-substitution retraction on the positive polynomial is wrong for queries with negation (worked counterexample). Certified absence is expressible as pi[[not phi]]; critical for retraction in the belief ledger.
+- **Compound deception in peer review** (intake-1386#00) GPTZero's Hallucination Check scanned 4,841 of 5,290 accepted NeurIPS 2025 papers; a five-class taxonomy of 100 fabricated citations is by one author (University of Chester), not GPTZero. Primary codes: TF 66, PAC 27, IH 4, PH 2, SH 1. Supports citation verification in intake.
+
+### Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): tmp evidence loss, the committed-conclusions belief path, the first loop canaries, and 102 frames from native ingests that never ran
+
+**Confidence: verified** (inventories, ledger line counts, canary summaries); the canary verdicts are **inferred** (assembled by read-only harnesses, not each loop's own entry point).
+
+- **Lost tmp evidence.** 267 of 497 cited tmp paths are gone:
+  - Classes: A 102 ticked evidence, B 28 open inputs, C 131 historical, D 6 unclear.
+  - Causes: the 08-23 reclaim; the 10-20 reclaim, whose citation check skipped entries under 0.02 GiB (2,518 unchecked) while a purge emptied the trash in 2 min; and workspace-58's own sweeps on 10-23 and 10-24.
+  - Backups held transcripts only. Conclusions survive for ~95 of the 102 in progress reports and tick lines, but only 2 were in the belief ledger.
+  - Policy restated: MEASUREMENT.md §5 already puts ratified evidence in research `data/<campaign>/`; tmp is scratch. This wrap-up moved three calendar evidence sets there and committed the canary, calendar and arbiter records to `docs/reference/`.
+- **Loop state has no backup.** The planning-inputs audit found nothing required missing; the 10-21 fail-closed rule is implemented in both loops. It did find several defects:
+  - a reader that defaults to a stale `/workspace`;
+  - silent-empty store, inbox and journal defaults;
+  - polluted AutoPilot telemetry;
+  - single-copy loop state on RAID0.
+  - The fix is RTG-60: a nightly off-RAID0 backup (~0.5 GiB: the ledger, AK stores via `sqlite3 .backup`, AutoPilot state), owned by the operator's filesystem agent.
+- **Committed conclusions as beliefs.** A conclusion in a committed progress line or tick fits the existing `measurement` class with an empty `protocol_id`, which grades **Judged/Located**. That is the planner floor: usable as a prior, never for decisions. The native record is the committed sentence (commit, path, line, verbatim quote), not the lost run. The tick contract `[belief: clm_…]` / `[belief: cc]` / `[no-belief: reason]` and a wrap-up gate are proposed (VB-TICK-CONTRACT, VB-CC-PILOT). Baseline: 0 of 690 ticks from 10-20 to 10-24 carried a belief reference.
+- **The first belief-capture pass (VB-NATIVE-INGEST-10-24).** Seven real ingests ran from the views reader, and the canonical ledger grew 38,452 → 38,554 (+102 frames, nothing refused).
+  - Appended: pb-hol M4.2 18 frames; kv-prefix-fork KPF-17.4c 6, KPF-18.0b 21, KPF-18.0d item 3 3; pb-qcost confirm-R 54.
+  - Already live: PB-QCOST-1 confirm (54 frames) and the 10-20 AKX-ALL-26 CPU artifact (30). Two of the canary's "never ingested" claims were wrong.
+  - AKX-ALL-26b's own run dir matches 0 units, so the knob-off column has no belief.
+  - Remaining adapter gaps go to Codex C5: pb-hol single-arm and nested layouts, KPF-18-S1.R4 pre-hook, the AKX-26b CPU run dir and HIP half, and NIB2-GNX-1.
+- **The 2026-10-21 belief-kernel review and redesign are now durable docs.** At the time of the review there was no consumer that changed an outcome, 52 of 72 adapters had never produced a frame, and 89% of the ledger was intake re-projection. The redesign's verdict: the loops already produce the beliefs they need.
+
+Sources: [tmp-loss reconcile](../docs/reference/tmp-loss-reconcile-2026-10-25.md) · [tmp-loss handoff diffs](../docs/reference/tmp-loss-handoff-diffs-proposed-2026-10-25.md) · [loop planning-inputs audit](../docs/reference/loop-planning-inputs-audit-2026-10-25.md) · [loop-state-offraid-backup](../handoffs/active/engineering-hygiene-backlog.md#track-loop-state-offraid-backup) · [committed-conclusions belief capture](../docs/design/committed-conclusions-belief-capture-2026-10-25.md) · [belief-kernel review 2026-10-21](../docs/design/belief-kernel-review-2026-10-21.md) · [belief-storage redesign 2026-10-21](../docs/design/belief-storage-redesign-2026-10-21.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-NATIVE-INGEST-10-24) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): P1-PHASE2 passes and ingests 148 rows, gitnexus SIGSEGV recovery, Omega/M26 belief wiring, and the ABA native-source audit
+
+**Confidence: verified** (run verdicts, ingest logs, pinned audits).
+
+- **P1-PHASE2 served-shape recalibration: PASS.** Run VERDICT PASS at 17:12:58Z on cpus 0-47 (gap-filled across q0+q1, est 3000 s). The earlier rc 6 was a missing root checkout carrying 495a62d0f (`_launch_binding`), and the rc 3 refusal a 7800 s requirement against a 4800 s entry. The real ingest (17:14:21Z, run from an origin/main worktree) wrote 148 rows / 444 frames with 0 refused, and `loop_beliefs.py prepare` on the DS41-1017 target now reads 151 target-tier claims, because the re-run re-projected the same claim ids with model scope instead of lane/anchor scope (`launch_binding: drifted` is gone). The parent P1-PHASE2 box stays open for AKEXP-MERGE.
+- **gitnexus SIGSEGV recovery (GNX-SEGV-1).** The incremental orchestrator `analyze` died with signal 11 after `+1063 importer(s) added to writable set`, inside the write-back window (`incrementalInProgress`, `toWriteCount: 99`; the DB grew 435,286,016 to 511,283,200 bytes). Writes happened; row-level damage is unproven, and no native frame was captured (a LadybugDB binding fault is plausible, not established). Recovery: the untrusted partial index was moved aside, the verified backup restored, then a forced full analyze under a whole-host claim (a first attempt was refused rc 64 for lacking an ancestor write flock); the index is current at 84f6f6f. Never query the partial database. Existing coverage is NIB2-GNX-1 / VB-GNX-REINDEX-1.
+- **S4 Omega ROOT belief adapter and M26 producer/reader published.** The Omega adapter (merge 16c0fa1ba) passes 10 tests, a 199-tuple carrier audit with 0 violations, and replays 30 native rows with 0 frames emitted and 90 skipped on an unchanged ledger. M26 (ROOT 2387f65d7, orchestrator 2cefc2411) preserves the native Boolean integrity verdict (`false_0_true_1`) and delegates grading to `claim_tuple.grade()`; the supplemental CLI run passed 10 tests with 6 tuples and 0 violations. Fixture and mock tests only: projected records stay Judged/Located, no real S4 A/B or pool capture has occurred, and no efficacy or cost claim exists. Next step is ingestion of real native captures with the existing reader, not a duplicate experiment.
+- **DS41-1017 ABA timing files are not native measurements.** The 48-file ABA scope (research da71fa603) has no `belief_measurements.jsonl`, receipt or manifest, and its `served.py`/`bench.sh` never called the writer (c057f930d); the five original W5 rows stay as captured. Recomputing a sidecar or ClaimTuple now would assert write-time warrant that was never captured, so no backfill: a future ABA run should call the existing writer at each bench/served boundary, with scope `model_file` plus `backend: cpu` and quant omitted.
+- **15 closures checkpointed.** The backlog-audit checkpoint counts 15 published closures (8 backlog, 5 scoped, 2 belief-wiring), none newly completed by the checkpoint.
+
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [ds41-1017 ABA audit](../docs/reference/ds41-1017-aba-native-source-audit-2026-10-24.md) · [backlog-audits checkpoint](../docs/reference/backlog-audits-2026-10-24-checkpoint.md) · [omega_belief_wire](../progress/2026-10/2026-10-24-omega_belief_wire.md) · [m26_final_publication](../progress/2026-10/2026-10-24-m26_final_publication.md) · [batch_checkpoint_wrap](../progress/2026-10/2026-10-24-batch_checkpoint_wrap.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): shared clones are never modified without operator approval
+
+**Confidence: verified** (operator rule, recorded mistake).
+
+- **Never modify a shared clone (e.g. `/workspace`) without operator approval.** A session fast-forwarded the shared clone without asking and recorded it as a mistake. The pattern instead: a detached worktree at the needed commit (here `root-served-shape-binding` at origin/main `655f596c6`, which fixed `p1-phase2-served-shape-calib` rc 6 caused by a clone missing `495a62d0f`) leaves the shared clone untouched.
+
+Sources: [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): belief-kernel wiring for the 10-24 measurement sources, native-harness OTel lineage gap, and the non-inference campaign
+
+**Confidence: verified** (run records and predeclared rules in the cited sources).
+
+- **New belief-kernel adapters (write side first).** `np_ctx_kvu.py` (KVU-12 CPU study: strict, re-hashes `row_sha256`, re-derives cell medians), `ch19_t3_screen.py`, `ufh14_lb7_stall.py`, `akx_lb32.py` (AKX-ALL-LB3.2 attribution; edited PREDECLARATION voids the file), PB-QCOST-1, SPEC-RNG.1.2 (`analyze` stamps the full predeclaration sha and `analyzed_at`), FD-DIV-1a, HSF-5.P, and the KPF-17.4c arm declaration (`kpf174c_bisect_spec_off`). Each projects into a `ClaimTuple` and `claim_tuple.grade()` decides; none adds a ladder. The KPF-18-S1.R3 sidecar first voided on read (arms `long6_teacher_forced` / `item2q_g3s2` undeclared, VB-KVU-PF.7), then projected 1 file / 2 rows / 0 refused after item 186's arms were declared. Real ingests: q38-serving-gate 5, clbench-cache-hit 5, moe-routing 309+309 rows (re-ingest skipped all 927 frames), nemotron-bolt-fold 30 rows, DS41 original-five 15 frames (idempotent on repeat); 0 refused. The synthetic UFH12 parity sidecar was deliberately not ingested. `agents_reference_guard.sh` blocked edits to the adapters README until 6 bare `.md` references were qualified.
+- **DS41-1017 scope correction.** The native producer binds each exact artifact and CPU backend but records no whole-model census quant; the adapter now omits `quant` rather than trusting arm labels (actual census: Q8_0 dominant at 321 tensors, MXFP4 120). The DS41-W5d result supersedes the invalid -29.9% baseline for the campaign note: MXFP4 CPU_REPACK MUL_MAT_ID takes 1.783x the Q4_K iqk per-layer time at pp512 (95% CI 1.778-1.789, PREMISE_STANDS, S5 ceiling about 22% of the pp512 wall).
+- **Native-harness OTel (UTM-LB4.1).** One `claude -p` session (CLI 2.1.308) with content toggles off: `tool_decision` and `tool_result` carry ids, success and sizes but no arguments. No event carries `agent_id` or a parent id; a sub-agent shares the parent's `session.id` and is marked only by `query_source = agent:builtin:general-purpose` on `api_request` and `assistant_response`. Gap: tool events carry no `query_source`, so a sub-agent's tool call is indistinguishable from a parent call except via the `tool_use_id` join to the transcript JSONL. OTel-only fields: `ttft_ms`, per-request and tool `duration_ms`, `tool_decision` source / classifier_verdict.
+- **Non-inference campaign (codex-ni-01a16d6b).** S4-T1.SRC (turns copied into `RoleResult`, orch `7c0f2929`) and M-26 (`distill_skillbank` escalation count wired from native `action_type`, orch `96dc99c9`, fake-record tests only) are accepted at source scope; the first 22+1 test claim was retracted because it ran in the shared checkout rather than the private snapshot. Both parents stay open for live inference proof. The handoff-graph UI fixes (non-scaling dep edges, daily open-box stock chart, priority-gradient rings) are shipped; BACKLOG-PRIORITY (a tiered total order) is prepared.
+
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [episodic-memory-integrity](../handoffs/active/memory-program.md), [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [ni08 continuation](../docs/reference/ni08-non-inference-continuation.md), [codex-ni checkpoint](../progress/2026-10/2026-10-24-codex-ni-checkpoint.md), [coordination](../progress/2026-10/2026-10-24-codex-ni-01a16d6b-coordination.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md), [s4-turns](../progress/2026-10/2026-10-24-codex-ni-s4-turns.md), [codex-ni-vidya](../progress/2026-10/2026-10-24-codex-ni-vidya.md), [wave1 ingest](../progress/2026-10/2026-10-24-codex-ni-wave1-native-ingest.md), [daily log](../progress/2026-10/2026-10-24.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources, a gitnexus index receipt, and host-housekeeping closures
+
+**Confidence: verified** (dry runs and commits named in the handoffs); adapters remain dry-run until real ingest.
+
+- **Read-side adapters landed on `f8/vidya-wire-1024`:** `pb_qcost.py` (original run 8 tuples, confirm run 18; refit with the producer's own fit code, refuses on any difference; INDICATIVE and its cause ride in `applicability`), `pb_hol.py` (M4.2 phase dirs, verdict partition re-derived, C2 NOT_MEASURED carries no value), `spec_rng_1_2.py` (8 verifier-class observations per valid run, every statistic re-derived), `kv_prefix_fork.py` (declares `KPF18_SUB_ARMS[3] = item3v2_load<N>`; the aborted partial load projects as an attested incomplete attempt; `hsf_*` records are declined because they carry no graphs state). Rule: never project a 0 hit count as a measurement and never word a claim as graphs-only cause.
+- **Integrator-landed wiring:** `repl_embedder_parity`, `q38_serving_gate` (5 rows per run), `nemotron_bolt_fold` (30 observation rows; box open, no CPU speed leg), `clbench_cache_hit` (5 rows) and `moe_routing` (309 rows per model, producer stamps `content_sha256` and `input_traces`). Still owed on the write side: PB-QCOST and SPEC-RNG runners emitting `belief_measurements.jsonl` themselves.
+- **NIB2-GNX-1 re-index PASSED at `fd1a894` (85,231 nodes, 3,435 clusters) but is not ticked:** origin/main was two commits ahead. A false-positive warning (registry path `/workspace/repos` vs `/mnt/raid0`) was traced. `scripts/gitnexus-index-receipt.py` (`epyc.gitnexus.index_receipt.v1`, self-hashed) now lets the next re-index cite freshness by sha; the index is dependency evidence, not a ClaimTuple.
+- **Host housekeeping.** Session-backup retention `KEEP=14` to `3` freed ~33 GiB (rotation observed). The invisible space was the Docker root, 250.8 GiB; an operator-approved prune of 40 stopped `sweb.eval.*` containers and 49 `sweb.*` images took it to 224.0 GiB with the running set unchanged. The 8 dangling devcontainer images (~30.5 GB) wait for the operator's next reboot window. The memory sampler is live in cron (~2 lines/min); the pipefail lint is at 0 findings with signed ratify scripts as reviewed exceptions. The HF token file was chmod 600 (contents never read).
+- **Scheduling incidents (workspace-58).** A 3.7 h whole-host idle came from a watcher that re-touched its stamp at every re-arm (fixed: the stamp advances only to the time of the find that fired). Others: a `/proc/$SPID/status` main-thread mask false FAIL, the `SHRD` label unmatched, and an unfixed job re-granted before its fix. All are rows in the inference-backlog-scheduling incident ledger.
+
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md), [workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+
+### Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the orchestrator code index is stale, and llama-bench rows gain a protocol field
+
+**Confidence: verified** (re-index run log; adapter survey in the filed task).
+
+- **NIB2-GNX-1.** The 06:37Z re-index rebuilt epyc-root cleanly (78,127 nodes), but the orchestrator re-index segfaulted during its incremental pass, and gitnexus reports that a stale feature branch, not `main`, owns the orchestrator's flat index slot. That index is about 1,290 commits behind. The repair re-points the slot through the documented gitnexus command (never by deleting `.gitnexus/`) and runs a full re-index ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)).
+- **VB-LLAMA-BENCH-HARDEN-PROTOCOL.** None of the four adapters that project llama-bench output into claim tuples reads `autokernel_hardened`. They will carry it as a protocol field and refuse unrequested hardened rows, so a row from the defect window cannot enter the ledger as an ordinary bench number. The source is also listed in the adapter table ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); see benchmark-methodology).
+
+#### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
+
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-GNX-1)
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-LLAMA-BENCH-HARDEN-PROTOCOL)
+- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): write sides and producer emits are wired, a pseudo-protocol id was grading observations as Witnessed, and the dev-harness backup has uncovered stores
+
+**Confidence: verified** for the adapters, tests, the protocol_id fix, the backup-coverage census and the full-corpus projection run; **inferred** for any claim that a producer's first live record will grade (no producer had yet written a ledger row for these six source kinds: 0 rows).
+
+- **Ten write sides landed in one pass; the producer calls were the second half.** Root `scripts/vidya/adapters/` gained capture writer, strict reader and registered projection for HIL-15a AUC, D-RI-PREVIEW, RTE-PFX-2 (plus a `chunk_kv` kind), HS-PROF-1 profile arms, RUS-2, EV-19 gold self-check, Oolong, YaRN gate aggregation and the paired-loadgen/AKR-SG claim text; shared grade only, README rows appended. A separate pass wired the PRODUCER-side calls (HIL-15a driver, HS-PROF-1 job, RTE-PFX-2 recipe, Oolong, D-RI-PREVIEW, EV-19, RUS-2, YaRN `decision_records.py`). Emit failure never blocks the producer: it is recorded (`belief_emit.status == "error"`, `auc_sidecar`), not fatal. The YaRN emitter splits a bin that straddles zones by zone (never `mixed`), emits only on a FINAL decision, excludes items with no measured real length with a listed reason, and sets `comparable_to_published` false; ruler cells were added later with the RULER checkout pin and a non-empty deviations list. Verdict rows leave `protocol_id` empty until a ratified protocol is cited.
+- **A pseudo-protocol id silently upgraded observations.** `harness_improvement`, `hil15a_auc`, `repl_preview`, `toc_ab`, `skillbank_ab` and `ak_history` wrote a non-empty `protocol_id` (`observation:none` or the capture schema string), so `grade()` returned Witnessed/Attested for rows with no ratified protocol. Writers now store the empty string and projection re-maps legacy ids; tests assert Judged/Located (140 passed over eight carrier families). The same class remained open in `chunk_kv`, `hs_prof1_profile_arms` and `ibench` when it was filed. No ledger row had been written for the six kinds, so nothing was rewritten.
+- **Speech write sides exist before any run.** `conversation-stack-measurement` (kinds `stt_arm_wer`, `stt_fitting_screen`, `stt_lexicon_trial`, `vad_arm`, `end_of_turn`, `time_to_final`, `interruption`, `coresidency_degraded`), `speech-ggml-optest-measurement` (CS-43.1 and the v11 gfx90a op-test; value = failed cases, lower_better; every tuple an observation because experimental-tree runs are P-AK-SEARCH-1 search records) and `speech-cpu-measurement` (capture rows only when `SPEECH_CPU_CAPTURE_DIR` names a new directory; the original `live_llm_contention.py` stays byte-identical because SHA256SUMS and a prebinding pin it). Refusals are by construction: a timing oracle that is the gate under test (the circularity rule), a tuple without A/B/A arm ids or the region-claim id, a non-production runner without its parity-gate ref, per-utterance values on a confirmation stratum. A human listen/rating emitter (VB-SPEECH-LISTEN-1) covers the Italian check.
+- **First live ingests, and what they were not.** The akrsg A/A shakedown was ingested pipeline-only (3 claims, Judged/Located); session-unit captures now state their real `reps_basis` (session rounds, not independent launches) without moving any grade. The AKX width-dimension record became a new adapter (4 count tuples). Findings: the CPU AKX-ALL-26 cells have no reader, so only the HIP half is closed; comparison buckets sum to 99 while the run-header count is 97; one idempotence test fails on clean origin/main too (4 new claims versus 3 expected, unrelated). KPF-18-S1 wrote 15 records but the read side voided the whole file on the first invalid line (13 invalid: sub-arm names outside the allowed set), so 0 of 15 project; filed as a read-side fix.
+- **The dev-harness trace backup is live but incomplete (read-only census).** Covered: Claude transcripts with subagents, Claude memory, Codex rollouts (vault plus tarball). Partial: opencode.db. NOT covered: `history.jsonl`, the Codex state sqlite, agent_audit shards with orchestrator logs, `serving_calls.jsonl`, `planner_archive.jsonl`. Anomalies: only 6 of 14 ai-sessions tarballs on disk (rotation logs "kept 14"), a 62-day log gap (2026-08-03 to 10-03) from rsync code-23 errors on immutable dirs. The operator waved the decision off (the root-filesystem agent owns backups) and then that agent delivered hourly consistent read-only opencode snapshots (nightly zstd plus 72 hourly copies); scope ruling: mine everything, every Unit/event/session record carries a `source` tag (`epyc|host|twyne`), readers open snapshots only and REFUSE live stores. `backup_coverage.py` judges coverage by snapshot freshness (under 3 h), not by the nightly job.
+- **The projector ran over the full corpus.** Sample 20 main sessions: 66 units, 16,006 events in 2.2 s at 64 MB RSS, nice 19. Full run `full-20261022T1310Z`: 42,744 units (claude_code 4,907, codex 20,547, opencode 17,290), 3.2M events, 4,066 commits joined, 858 s, private output only (content becomes keyed-HMAC 64-token block hashes). Design rules kept: usage normalised to inclusive OTel input tokens with the raw tuple retained, Claude usage deduped by message id, Codex usage read from `token_usage_record` (never summed `token_count`), spawn-versus-fork edge kinds, semconv commit stamped. The agent_audit ingester now reads every `agent_audit*.log` shard (18 tests).
+- **What this Claude Code version emits over OTel (one `claude -p` session, content toggles off).** Content fields are redacted but lengths remain; metrics `session.count`, `token.usage`, `cost.usage`, `active_time.total`; log events include `api_request` (with `ttft_ms`, cache read/creation token splits, cost), hook registered/start/complete events, `user_prompt`/`assistant_response` (lengths only), `mcp_server_connection` and `plugin_loaded`. Two gaps remain open (tool-call event fields, sub-agent lineage ids); compaction is not forced via OTel because the projector already reads compaction boundaries from the transcripts.
+- **Lesson, producer side.** A fail-open writer that swallows every exception cannot be told from one that was never reached: a recorder census showed 75 records and 0 `infer` events versus 4,739 `llama POST start` lines. Fail-open writers need a per-process drop counter.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — write-side tasks, protocol_id fix, speech and quant-comparison rows
+- [progress/2026-10/2026-10-22-vb-write-sides.md](../progress/2026-10/2026-10-22-vb-write-sides.md) — ten write sides and open producer calls
+- [progress/2026-10/2026-10-22-producer-belief-emits.md](../progress/2026-10/2026-10-22-producer-belief-emits.md) — producer emits, protocol_id bug, YaRN field mismatches
+- [progress/2026-10/2026-10-22-final-producer-emits.md](../progress/2026-10/2026-10-22-final-producer-emits.md) — YaRN, EV-19, RUS-2 emit decisions
+- [progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md](../progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md) — first live ingests and findings
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — backup coverage, projector, OTel fields
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — KPF read-side void, drop-counter lesson
+- [progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md](../progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md) — speech adapters
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 9): a pinned source digest goes stale whenever its producer changes, and a family of failures can share one cause
+
+**Confidence: verified** for the test outcomes; the re-pin cadence is a proposal now filed as a task.
+
+- **One cause, 15 failures.** With `EPYC_RESEARCH_ROOT` set, 12 tests in `test_autokernel_profile_adapter.py` and 3 in `test_loop_cpu_profile_adapter.py` failed. Research `07333b884` (2026-09-17) had changed the producer's capture shape (sampled-CPU topology) and the root reader still pinned the old one. The reader now carries two closed versions (`legacy-v1` and `sampled-cpu-topology-v2`), reads the version from the receipt's own `perf record` command, rederives the per-phase topology digest and the sample totals, and leaves `claim_tuple.grade()` unchanged.
+- **The pin is the hazard.** The reader pins two source digests (07333b884 and research main b93017dc9), so any later change to a producer file stales the adapter. VB-AK-PIN-REPIN files a recurring read-only check that lists pins whose file changed on research main.
+- **A guard moved and a test pinned the old place.** Orchestrator seam S1 moved the MHS guards to `src/autopilot_core/mutation_guards.py`; `test_mhs_guard_adapter.py` now searches both files and still asserts the pinned prefixes.
+- **New sources wired.** `ak-width-cells-cpu` (4761 cells, re-derived from rep digests and a freeze hash) and `speech-listen-rating`; both project and let `grade()` decide.
+
+#### Source References (2026-10-22 wrap-up sweep 9)
+
+- [progress/2026-10/2026-10-22-ak-profile-reader-v2.md](../progress/2026-10/2026-10-22-ak-profile-reader-v2.md)
+- [progress/2026-10/2026-10-22-vidya-test-fixes.md](../progress/2026-10/2026-10-22-vidya-test-fixes.md)
+- [progress/2026-10/2026-10-22-akx26-cpu-wire.md](../progress/2026-10/2026-10-22-akx26-cpu-wire.md)
+- [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): trace mining and belief wiring
+
+**Confidence: inferred** for the filed UTM-LB/F3-LB1/VB-LB1 tasks (not run); **verified** for the TOC A/B sidecar writer (orchestrator `e9cf0949`, 44 tests passed) and the HIL replay belief writer (root `116356c87`).
+
+- **Mine the backup we already have, do not build a second one.** UTM-LB1 verifies the nightly cloud-llm-vault sync (02:00Z, immutable), 14 retained ai-sessions tarballs and micron snapshots (keep 60) cover each of nine dev-harness stores; UTM-LB2 projects Claude Code JSONL, Codex rollouts and opencode V1/V2 into OTel-GenAI-named events, read-only and private. UTM-LB3 repoints the agent_audit ingester from the frozen legacy log to per-agent shards.
+- **Privacy gate before any trace-derived output (F3-LB1):** per-session results only under a private gitignored path, commits carry aggregate counts and rule text through `raw_trace_publish_preflight`, and the staged PII guard is extended to transcript-JSON shapes; epyc-root is public, so transcript content is never committed.
+- **Write side first, again.** VB-LB1 wires diagnostic aggregate-only rows for mining reports, structured-output repair/finish_reason counters, the opencode prefix/gap baseline and interrupt series. Landed: `hil_replay_capture.py`/`hil_replay.py` (refuses any report whose label is not exactly `measurement`, so a forged sidecar over the synthetic example reads back as zero rows) and `toc_ab_sidecar.py` (VB-TOC-AB-WRITE ticked). Filed: VB-HIL15A-WRITE, VB-DRIPREVIEW-WRITE, VB-AKRSG-WRITE, VB-HSPROF1-WRITE, VB-RTEPFX2-WIRE, VB-CAL-OVERRUN-WIRE (after D4 k5_s4 ran 2.1x its estimate), VB-GPU-CPU-NOISE-WIRE.
+- **Retroactive wiring is allowed only by the task owner at finalize:** the CT-18 Skill-Inject results were wired as three sidecars, one per served pin (a worker run mixing CPU and GPU kernels would break the one-pin-per-row contract); this is not a reader-side reconstruction.
+- **Operator rulings:** DP-1 = (a), retrofit backfill of AutoKernel records allowed (graded Judged, flagged retrofit); DP-4 = (A), counterfactual-confirmed reliance for the AutoPilot PASS rule, with AP3 role restart scoped to `spec_draft`/`kv_profile` on three roles.
+- **Memory-lesson efficacy is an open measurement:** whether a memory-only lesson changes violation rate at all, or only hook-enforced ones, is what DHM-3's interrupted-time-series pilot is for. LLM-mediated consolidation needs a paired accuracy-per-cost readout against a BM25 baseline, and observation masking stays the default compaction.
+
+#### Source References (2026-10-22 sweep 7)
+
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
+- [handoffs/completed/frontier-lab-automation.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
+- [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
+- [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
+
+### Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): belief-kernel readers landed, storage redesign approved and Phase 1 integrated
+
+**Confidence:** verified for commits, test counts and acceptance results named in the handoff and progress file; inferred for the effect on planner behaviour, since no live loop has yet made a decision from a non-empty read.
+
+- **Both consumers now read the ledger before planning.** Orchestrator `955b6f28` lands `loop_beliefs_bridge.py` (runs root `loop_beliefs.py prepare` as a child before every planner turn, requires a sealed `ReadyBeliefs`, missing reader raises a critical alarm); research `b7b23fe1c` does the same for AutoKernel and ingests `serving-beliefs` A/B receipts via `--source-root`. Degraded mode runs only queued or preseeded work. `/workspace` was 466 commits behind and lacked the reader, so path resolution falls back to the epyc-root-main view.
+- **Proof of use is still open.** VB-REFOCUS-NONEMPTY-READ-PROOF needs one decision whose input was a non-empty read (count non-empty reads, not total). Both smokes returned the same 12 device-scoped claims (`epyc-9655`) for three different CPU models, so VB-LOOP-TEXT is open until P1 acceptance passes.
+- **Storage redesign approved by the operator.** The 933 empty reads are answered by a demand-driven schema keyed by the scope the loops query, with `claim_tuple.grade()` still the only grader. Tasks P1-A..P1-N: carrier, serving v2, experiments and floor adapters, reader with target/sibling/host and knob/lineup tiers, loop consumers, README rows, KPF-18 scope, PB-HOL-1 and `autopilot_journal` adapters are ticked; P1-F (backfill), P1-N, P1-LAND, P1-EVDUR-FIX and P1-PHASE2 remain.
+- **Phase 1 integration.** Root `f8/belief-p1-integrated` @ `d83f69357` (31 commits); `tests/vidya` 2390 passed, 2 failed (both `test_evidence_durability_adapter.py`, producer sha / CLI drift, unrelated). Rehearsal backfill on a ledger copy: +942 frames; AC1-AC4, AC7-AC9 pass. AC5 was amended because the 35B now has real KPF-18 target beliefs; it runs after 2026-10-22 06:30Z (CPU timing). Orchestrator `f8/belief-p1-ap-consumer` @ `f0e670a1` (62 + 125 tests); research `f8/belief-p1-ak-consumer` @ `2a2b5c823` (328 tests).
+- **Two operator gates.** DP-1 (retrofit projection of historical AutoKernel records, graded Judged, flagged retrofit) gates P1-F and P1-LAND; DP-4 (AutoPilot PASS rule A/B/C, recommendation A) gates only P1-N. Order: AC5 on the copy, DP-1, canonical backfill, P1-LAND.
+- **Trial clock moved to 2026-11-30** (from 2026-11-11); each loop needs 7 days live, so start by about 2026-11-23. The reminder is an hourly nohup loop, not cron (no `crontab` binary in the container); it does not survive a host reboot.
+
+#### Source References (2026-10-21 sweep 6)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-REFOCUS-* tasks, P1-A..P1-N, DP-1, DP-4, trial clock.
+- [workspace-f8 progress 2026-10-21](../progress/2026-10/2026-10-21-workspace-f8.md) — Afternoon and Evening sections (Phase-1 integration, rehearsal).
+- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — rows added under P1-H.
+- [loop_beliefs reader](../scripts/vidya/loop_beliefs.py) and [trial reminder](../scripts/vidya/belief_trial_reminder.py).
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): knowledge-management — write sides that now exist, and a measurand note as governance
+
+**Confidence: verified** for the built writers/test counts and the frozen note's rules; none of the underlying measurements is yet a graded claim.
+
+- **The retrieval eval is the first run through a new write side, and its box is still open.** VB-UFH12-RETR gained a native capture module (a run writes a record plus belief-measurement rows) and a read-side adapter pinned to the capture file's hash; the pre-registered rule values ride in every row and different values are refused without a dated amendment. Run `repl-emb-22-20261020` wrote 275 rows (260 recall, 15 paired-diff) that all projected and graded in a dry run. The done criterion is not met: no cost rows exist (the speed block was dropped by operator ruling and timings were contended), the real ingest has not run because the adapter's pinned module path is absent on the shared checkout, and vs-BGE diffs, per-stratum diffs and the kill-rule verdict are not projected (the record is immutable; they live in the analysis file). A companion writer for embedder speed (VB-UFH12-EMBSPEED) refuses any speed row lacking the full timing context or an A/A noise floor carried in the metric's own unit. The pilot timing file stays retrospective with zero tuples.
+- **Retrospective versus prospective stays strict.** CPU-only n-gram replay results (VB-DF2-REPLAY) are token-level predictability under a retokenization proxy, not drafter acceptance, so the filed adapter must project arm hit rates with pinned inputs as the locator and cannot claim acceptance. The CPU np-by-context-by-KV-mode study (VB-KVU-CPU) reuses the existing KV capture adapter: one source class, one ladder, project, do not grade.
+- **A measurand note is a governance artifact, not a ratification.** Tying quantities to direction, denominator, stratum (only human-recorded evidence may advance an arm), era (each scorer substitution is a boundary) and reference-row tagging means a later grader inherits the reading rules instead of re-deriving them. The note explicitly leaves the human-only Annex S amendment boundary untouched. Pattern worth reusing: write the measurand and strata rules before the first scored run, in the same commit as the pins.
+- **Process lessons visible in these records.** Pre-registered numbers must travel with the rows (done above); operator rulings that change a pre-registered source definition are recorded as dated amendments with the rule numbers explicitly unchanged; a checkbox is left open when a human review (CS-45) or a read-side ingest (VB-UFH12-RETR) is still owed, even when the artifact exists.
+
+Cross-refs: [search-retrieval](search-retrieval.md), [multimodal](multimodal.md).
+
+#### Source References (2026-10-20 sweep 2, knowledge-management)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-RETR / EMBSPEED build notes, VB-DF2-REPLAY, VB-KVU-CPU, VB-AK-HISTORY (newest sections only; the 421 KB file was not read in full).
+- [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — frozen rules and strata.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — the run being recorded.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-45 evidence note and review-pending checkbox.
+
+### Compiled Update — 2026-10-07: retained originals distinguish evidence from identity metadata
+
+**Confidence: verified** for accepted source boundaries and their preserved synthetic receipts; no new scientific measurement is compiled here.
+
+The RAW-anchor and analysis-report work closes two versions of the same provenance gap. A quote hash alongside a revision is insufficient unless the quote can be found again in the retained original. Likewise, deterministic report JSON cannot recover input custody that its writer never recorded. SC76/SC77 now use one retained-RAW verifier before assigning literature support; missing originals remain unknown. The accepted numeric child checks claim-to-quote magnitude agreement, but one shared magnitude is sufficient under that helper: it supplies neither full numeric entailment nor semantic, title or negation verification. The parent SC78/SC79 extraction work remains open. ([Current source acceptance](../handoffs/active/vidya-belief-substrate-program.md#newly-unlocked-retained-source-numeric-controls))
+
+Verify-before-stop and suite-discriminability reports now have prospective writers that retain the exact parsed inputs, source identity and snapshots before strict adapter projection. Identityless legacy reports are refused rather than assigned reconstructed warrants. Their existing metric definitions and per-metric denominators remain authoritative; an undefined zero-denominator rate stays absent. SC80 separately makes an out-of-range claim citation dangling and blocking, while a valid but uningested claim remains unknown. These distinctions prevent malformed references and missing evidence from collapsing into the same state. ([Analysis writer acceptance](../artifacts/ni08/analysis-report-source-20261006/README.md), [capture recipe and failed predecessors](../docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md))
+
+The recipes document preparation and earlier failures; current owning acceptance records establish the later bounded synthetic capture. RAW-anchor retention is accepted after original 51/51 controls, and the analysis pair after ROOT 38/38 and APP 20/20. Those fixture counts warrant source conformance through the existing CI carrier and `claim_tuple.grade()`, not live paper accuracy, corpus measurements or historical recovery. Failed originals remain unchanged. No adapter introduces a second grading ladder or policy authority. ([RAW recipe](../docs/reviews/ni08-vb-raw-anchor-capture-recipe-20261006.md), [RAW acceptance](../artifacts/ni08/raw-anchor-source-20261007/README.md))
+
+A related CI lesson is that dependency checkout paths are evidence boundaries too. The initial research checkout destination collided with ROOT's tracked intake tree; the corrected job uses a separate `.ci-research-producers` location and three test-only source seams. Synthetic producer outputs stay outside the canonical measurement ledger. A passing targeted capture and a failing generic suite are separate propositions, even when produced by the same commit. ([Hermetic producer contract](../docs/reference/hermetic-research-producer-ci-contract.md))
+
+#### Source References (2026-10-07 retained originals)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — current closures, retained failures and still-open parent scopes.
+- [RAW-anchor recipe](../docs/reviews/ni08-vb-raw-anchor-capture-recipe-20261006.md) — prospective capture custody and its bounded ceiling.
+- [Analysis capture recipe](../docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md) — exact source closure, original failures and denominator controls.
+- [Hermetic producer contract](../docs/reference/hermetic-research-producer-ci-contract.md) — checkout collision repair and test-only dependency routing.
+
+### Compiled Update — 2026-09-25: KV-quant beliefs reach both planners
+
+**Confidence: verified** for the implemented reader and synthetic round-trip. No complete
+post-hook sweep has been ingested, so there is no live KV-quant belief to cite yet.
+
+- The v10 MI210 KV-quant capture now has a strict Vidya adapter and an ingest source. A
+  planner receives a comparison only from a complete, ingested 12-row run. The saved
+  September 22 runs have no producer-authored sidecar and cannot be backfilled.
+- AutoPilot reads one structured snapshot per turn and stores its run, fold frontier,
+  state hash, and displayed claim IDs on the existing planner decision row. Its
+  rationale may name claims that influenced the action; the receipt checks those IDs
+  against the displayed set. Exposure alone is not reliance. AutoKernel's matching
+  GPU/model planner reads the same bounded context. Neither reader grants promotion
+  authority, and an invalid or incomplete manifest is unavailable.
+- The September 23 section below describes the then-open reader gap. That gap is now
+  closed for KV-quant only. The first live ingest and AutoPilot correction review
+  remain open; the VRAM and architect quality adapters in that section remain separate work.
+
+#### Source References (2026-09-25)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — completed KVQ reader and AutoPilot receipt; live-ingest and correction-review tasks.
+- [Codex session progress](../progress/2026-09/2026-09-25-codex-vidya.md) — tested reader and planner paths, and the no-backfill finding.
+- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer identity, caution fields, source kind, and reader location.
+
+**Sources**: 209 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
+
+### Compiled Update — 2026-11-03: backlog refactor completed (process note) and a commit-time gate on instruction surfaces
+
+The 2026-11 backlog refactor closed on 2026-11-03: 43 folds (route 1a 26, route 1b 17) took the active backlog from 176 to 29 handoffs, folded handoffs became redirect stubs in `handoffs/completed/`, and every retired ID carries a `Repoint-Reason:` trailer. These are moves, not new findings; plan, decision packages and audits are under `docs/design/backlog-refactor-2026-11/`. Source: [refactor handoff](../handoffs/completed/backlog-refactor-2026-11.md), [PLAN](../docs/design/backlog-refactor-2026-11/PLAN.md).
+
+AUD-15: `CLAUDE.md`, `agents/AGENT_INSTRUCTIONS.md` and `agents/shared/*.md` were human-only but enforced only against the Write/Edit tools, so a shell write or a commit of a peer's edit passed. A commit-msg hook now inspects the exact index git is committing (renames counted on both sides) and lands such a commit only with an `Operator-Ratified: yes` trailer; it is attributable but not tamper-proof (`--no-verify` skips it). Source: commit `49368eaff`, `scripts/hooks/check_instruction_surface_ratified.py`.
+
+### Compiled Update — 2026-09-24 (speech-lane wrap-up): write side before the first run for the conversation stack, and a closed contract grows by sibling, not by widening
+
+**Confidence: verified** for the filings and their source rows. All five tasks are **open**: none of these
+producers projects a tuple yet.
+
+- **VB-SPEECH-CONV-1: the write side was filed before any run exists.** The operator ratified the speech vision on
+  2026-09-24 as INF-79, and it will produce a new measurement family: the interlocutor bake-off on a PyTorch
+  reference harness, GPU co-residency and CU masking on the second MI210, end-to-end voice turns, and a
+  quantization ladder.
+  - Every harness row has to carry: a schema version, a row hash, `protocol_id`, reps and reps basis, `metric`
+    with an explicit per-metric `metric_direction`, model and quant, runtime (reference vs port) with its digest,
+    device and host-lane placement, and the co-tenant state sampled *during* the row.
+  - `protocol_id` stays null until the CS-2 Annex S amendment is ratified, which is a human-only step. Until then
+    every row is an OBSERVATION and is graded by `claim_tuple.grade()` like any other measurement. No new ladder.
+  - Four cautions ride in the source row:
+    1. The direction is mixed, so it is written per metric. Latency, TTFA, RTF, WER, cancel latency and co-tenant
+       slowdown are `lower_better`. Routing precision/recall, paralinguistic accuracy and exact-value retention
+       are `higher_better`.
+    2. Co-tenant state and placement are part of the measurand.
+    3. Semantic fidelity is LLM-judged, so the SC58 judgment-frame rules apply.
+    4. Reference-harness numbers are never serving claims for the eventual llama.cpp port.
+- **VB-AK-METRICS-1: a closed contract grows by sibling, and the sibling then needs a contract of its own.** The
+  per-call metrics row is correctly written *beside* the closed, self-hashed `actor_call.v1` record, not inside
+  it. The `autokernel-actor-seat` reader skips it as a foreign schema, so it is safe, but it projects nothing.
+  - Today the row has no self-hash and no root contract module. It joins only on role + backend + call window,
+    because the v1 `call_id` is minted inside root's module and never returned.
+  - The remedy is the VB-AK-SEAT-a pattern. Put a closed schema plus a reference writer and validator in root,
+    beside `autokernel_actor_seat_capture.py`, so writer and reader share one definition. Add an explicit join:
+    either return the v1 `call_id`, or bind both lines to one shared `call_nonce`.
+  - This has to land before the OAB-9 verdict gates a campaign default.
+  - Its cautions: decoded includes reasoning; totals sum novelty-identified sessions; per-tool latency is
+    *absent, never zero*; a `metrics_error` row is a failed measurement, not a zero-cost call.
+- **VB-AK-CTX-1: a provenance manifest records what was OFFERED, never what was READ.** The context-bundle manifest
+  joins `actor_call.v1` on `prompt.sha256` as the call's context-provenance facet.
+  - Refuse a manifest whose prompt sha matches no call record, or whose section files no longer concatenate to the
+    recorded digest.
+  - Reads come only from the export's tool parts, and must never be synthesized from the manifest.
+  - A bundle is lossless, so an inline/variable pair differs in where the context sits, not in what it holds.
+- **VB-KVU-1 / VB-SPEECH-CPU-1 (filed earlier the same day): retrospective records are not backfilled.** The
+  np × ctx `--kv-unified` drivers and `speech_cpu_bench.py` landed without a write-side hook. Their existing
+  outputs produce zero tuples, because a tuple invented on read would claim a warrant the run never captured.
+  - A log-derived depth figure that is really a truncation projection has to be marked
+    `estimate_kind: projection`, never passed off as a measured arm.
+  - A speech row has to record its cap and whether a guard aborted the arm, so that a capped or aborted row cannot
+    read as a completed measurement.
+  - Domain detail is compiled in [kv-cache](kv-cache.md) and [multimodal](multimodal.md).
+
+#### Source References (2026-09-24 speech-lane)
+
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AK-METRICS-1, VB-AK-CTX-1, VB-KVU-1/1a, VB-SPEECH-CPU-1/1a,
+  VB-SPEECH-CONV-1.
+- [scripts/vidya/adapters/README.md](../scripts/vidya/adapters/README.md): the conversation-stack, `actor_call_metrics.v1` and
+  `actor_context_bundle.v1` source rows and their cautions.
+- [conversation-stack.md](../handoffs/active/speech-and-multimodal.md): INF-79, the ratified speech vision that produces the new family.
+
+### Compiled Update — 2026-09-24 (wrap-up compile): two "open" items had been fixed for weeks and never ticked, and two new belief-kernel sources were filed write-side first
+
+**Confidence: verified** — each item was re-verified against the tracked file or re-run, not taken on the
+commit message.
+
+#### Key findings
+
+- **An unticked box is not an open defect, and the cost of assuming otherwise is a re-investigation.** Two
+  of the seven Tier-2 items resolved to "already fixed, never ticked": the wrap-up heavy-e2e failure
+  (`test_full_wrap_transaction_end_to_end`) was fixed by `40034bf1` on 2026-09-16, and the RTG-51 e2e test
+  likewise. Both were re-verified rather than assumed — `test_heavy_wrap.py` 14/14 with the e2e case run
+  20/20 times, and 14/14 + 20/20 for RTG-51. The recurrence check in the project's own *Act, Don't Defer*
+  rule exists for exactly this shape.
+  ([wrap-up-division-of-labor-policy](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy);
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **The wrap-up e2e failure was a TEST defect, not a code one — and the distinction was load-bearing.** The
+  assertion hard-coded the fixture day `2026-08-23` while `step_6_freshness` stamps the progress shard with
+  the **wall clock**, so the test could only pass on one calendar day. It now globs
+  `progress/*/*-{AGENT}.md`. The earlier diagnosis had located the defect "upstream of `step_7_compile_wiki`"
+  and had been proven twice on a pristine HEAD — correct that it reproduced, wrong about what it was.
+  A reproduction on a clean checkout establishes that a failure is real, never that the *subject* is at fault.
+  ([wrap-up-division-of-labor-policy](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy))
+- **Two new belief-kernel sources filed on the write side, at the moment the producers were built.** Both
+  are read-side adapter tasks against producers that already emit deterministic JSON:
+  **VB-MFVBS-1** for the verify-before-stop measurement (orch `scripts/analysis/mf_vbs1_verify_before_stop.py`,
+  `86471b1f`; n, denominator and Wilson CI per rate) and **VB-EVALDISC-1** for the eval-suite
+  discriminability audit (`eval_suite_discriminability_report.v1`, locator = report × suite × metric). Each
+  carries its cautions in the source row rather than in prose: VB-MFVBS-1 records that the measurement is
+  one day, one role, one voluntarily-stopping task, that the rider never asks for verification, and that
+  forced stops sit outside the voluntary denominator; VB-EVALDISC-1 records that reports older than orch
+  `8a829233` must have their `run_unstable`/`brittle`/flip_rate claims **refused** where an input run was
+  error-dominated, while their MDE and pass_rate stay admissible. Both say *project, do not grade* — the
+  adapter projects into a `ClaimTuple` and the shared ladder decides.
+  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-MFVBS-1,
+  VB-EVALDISC-1)
+- **A per-field admissibility split is the right granularity for retracting instrument output.** Rather
+  than voiding every pre-fix discriminability report, VB-EVALDISC-1 refuses exactly the three fields the
+  defect touched and keeps the rest. That is only expressible because the adapter locator is
+  report × suite × **metric** — a coarser locator would have forced an all-or-nothing retraction.
+  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **A laneless session can still land shared-repo work, via a private landing worktree.** The Tier-2 sweep
+  had no roster lane: all root edits went through a private landing worktree (`noninf/landing-20260924`)
+  rather than the shared index, and the shared clones were only fast-forwarded — a peer's staged
+  `src/typed_decisions/native.py` in the orchestrator clone was left untouched. That is the working form of
+  the shared-clone rules (never `git add` a peer's staged file; private-index commits rot the shared index).
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **Parallel-subagent results must be re-tested on the main thread, and this sweep shows why.** Every one
+  of the seven items was reviewed and re-run before landing, and four carried corrections: a README that
+  claimed a whole test glob runs when four suites fail to collect; a reward change that flipped the live
+  distribution with no era row; a nested `fork` that committed unrequested registry work and registry
+  comments claiming a prepared fix was "CLOSED"; and a "0 executions" claim that needed re-checking against
+  in-REPL verification (0/14 confirmed). Relaying a subagent's report unreviewed would have landed all four.
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
+  main-thread review")
+
+#### Open questions
+
+- Three operator decisions are queued out of this sweep and none of them is a blocker on the work that
+  produced them: OP-47 (RTG-09 ratification), OP-48 (S-11a signature plus a contention-matrix bench),
+  OP-49 (how to collect tool-compressor telemetry at all).
+- Both new belief-kernel rows are filed but **unwritten** — the adapters do not exist yet, so neither
+  producer's output can gate a decision.
+
+#### Source References (2026-09-24 wrap-up compile)
+
+- [wrap-up-division-of-labor-policy.md](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — the heavy-wrap
+  e2e defect, its true cause and the re-verification.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-MFVBS-1 and
+  VB-EVALDISC-1 source rows and their cautions.
+- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the seven-item results
+  table, the main-thread corrections, the private-landing-worktree working mode, and the OP-47/48/49 queue.
+
+### Compiled Update — 2026-09-23 (evening wrap-up compile): the wiki scanner's two watermark defects are closed, the shared agent session file is sharded, and a record corrected in two fields still misled from the third
+
+**Confidence: verified** — each item is a landed commit checked against the tracked file, not a plan.
+
+#### Key findings
+
+- **The wiki source scanner no longer selects by filesystem mtime, and its watermark is shared.** OBS-13 and NIB2-68 were both closed on 2026-09-23 against `0ea91f3e` (which had landed 2026-09-08): `compile_sources.py` selects sources by **content hash against the tracked `wiki/source_manifest.json`**, never `st_mtime`, and `--touch` advances that tracked manifest. This removes the lane-worktree failure in which every file's mtime is the checkout time, so a lane scan reported the full-history backlog — measured at **919 phantom "new" sources on 2026-09-01 against a true delta of 2** — and a lane `--touch` would have written a watermark nobody else could see. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) OBS-13, NIB2-68)
+- **A landed fix whose box is never ticked reads as open work for three weeks.** Both boxes above described defects that had already been fixed; the closure on 2026-09-23 was bookkeeping, not engineering. The same session closed four other stale boxes (NI-IO, NIB2-81b, PAW-4, and the reaper item) the same way. The recurrence check in the operating constraints exists for exactly this: an item carried forward unchanged is evidence about the record, not about the work. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
+- **KB-WM-5: one session file shared by every agent meant agents logged under each other's ids.** `scripts/utils/agent_log.sh`'s `AGENT_SESSION_FILE` put every writer's session id in the same `LOG_DIR` file, and `agent_session_end` deleted it for everyone. It is now sharded per `AGENT_ID` (`logs/.current_session.<id>`) with the legacy file left inert, plus a 4-test two-writer suite (epyc-root `c8dbb5d4`). Any audit trail spanning the fix boundary must treat pre-fix session attribution as unreliable when agents ran concurrently. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md) KB-WM-5)
+- **PAW-4: a record corrected in two fields kept misleading from the third.** The intake-811 blocker entry had `contradicting_evidence` and `notes` corrected on 2026-09-17, but `recommended_actions` still carried the stale 2026-07-11 "closed cloud compiler + no downloadable dataset" clause until 2026-09-23. Partial correction of a structured record is a distinct failure mode from an uncorrected one: the entry looks reviewed. ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) PAW-4)
+- **A descriptor "drift" can be a spelling, not a change.** The K4 item declared `-ub 2048` (the effective value was already that) and recompiled the derived chain; the apparent descriptor drift turned out to be **symlink path spelling only**. Worth a check before treating a descriptor mismatch as a state divergence. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
+
+#### Open questions
+
+- Do other intake records carry the PAW-4 shape — some fields corrected, one stale clause left behind?
+- SW-7 (general worktree resolution of gitignored citations) is verified still needed.
+
+#### Source References (2026-09-23 evening wrap-up compile)
+
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — OBS-13 and NIB2-68 closure notes against `0ea91f3e`.
+- [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md) — KB-WM-5 and the per-agent shard (epyc-root `c8dbb5d4`).
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-4 record correction.
+- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch: stale boxes closed, K4, and what remains open.
+
+### Compiled Update — 2026-09-23 (wrap-up compile): three producers already write belief rows, and nothing reads them yet
+
+**Confidence: verified** for the filed rows and the producer facts they cite (schemas, commits, `ingest_sources.py` contents). No adapter here is built yet.
+
+#### Key findings
+
+- **The gap has flipped from write side to read side for three producers.** Each one already emits self-describing, self-hashed records, and each lacks an adapter and a `Source(...)` row in `scripts/vidya/ingest_sources.py`. All three rows repeat the carrier contract: *project, do not grade*. `claim_tuple.grade()` decides, the `measurement` ladder is already registered, and the registry refuses a second one ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)):
+  - **VB-KVQ-V10: the MI210 KV-quant sweep at v10.** The producer is wired *before* the sweep runs: schema `epyc.vidya.kv_quant_27b_v10_capture.v1`, a `belief_measurements.jsonl` sidecar, per-row `row_sha256`, and a shared `validate_row()`.
+    - The adapter re-runs the producer's own `validate_row()`, pinning the producer file's sha256, so a mutated or pre-hook row voids the whole file to zero rows.
+    - It uses `attestation_locator`, because the artifact lives in the research repo, outside `REPO_ROOT`.
+    - The load-bearing caution is that K and V are reported separately, with `-fa on` fixed. This host measured a 1.52x swing from that flag alone, so a KV ratio quoted without it is a flash-attention number.
+  - **VB-VRAM-1: the per-process VRAM decomposition.** `scripts/measure/vram_headroom_probe.py` emits `epyc.vram_headroom_probe.v1` and has run twice. Three cautions travel verbatim:
+    - `transient_headroom_gib` is a floor *for the workload named in `exercised`*, never a general number.
+    - A `NOT TESTED` fragmentation verdict is not `absent`.
+    - **The first 2026-09-22 run is inadmissible.** Its driver failed silently after cycle 1, so its `RATCHET` verdict is an artifact of cycle marks landing in idle time. The admissible run is the six-verified-cycle one that replaced it.
+  - **VB-ARCH-CPU-QUAL: the architect quality gate, CPU live-serving and GPU arms together.** Both forwarders embed producer-authored rows in the run's own `result.json` under one schema. SC32 wired the GPU side on 2026-08-26 and SSU-F2 wired the CPU side on 2026-09-23, but **neither has ever been ingested**. Two cautions are load-bearing:
+    - `instrument_class` must reach the tuple. CPU arms are `serving` and GPU arms are an owned bench, and flattening them manufactures the cross-class comparison the constitution forbids.
+    - Truncation must be projected next to accuracy. An accuracy alone read an 18.5-point cap artifact as an 8-point regression; see [benchmark-methodology](benchmark-methodology.md).
+- **SSU-F6 closed: the quality gate now records its own cap.** `promotion_gates.yaml gates.quality` records `max_tokens: 64` as what v9 and v10 actually ran. A nested `truncation_audit` sub-gate (`required: true`) carries the measured non-neutrality, the method, and the degeneracy caution. The required-gate set is verified unchanged, because the nesting keeps `package.sh`'s top-level enumeration from seeing a seventh gate. SSU-F7 (two recipe env knobs absent from `:8074`) was root-caused as SSU-F11: nothing reads `recipe.env` (see [inference-serving](inference-serving.md)). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline))
+- **If the Kuzu graph layer is revived, HelixDB joins the backend candidates.** It is Apache-2.0, a Rust graph+vector store on a slatedb LSM, listed beside maintained Kuzu forks. It runs in server mode, not embedded, which works against the locality rationale for Kuzu (intake-1496#record). ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-78c)
+
+#### Open questions
+
+- Who authors the three adapters? Each row names "whoever next runs/touches" the producer. Until then, the producers' rows accumulate unprojected, and pre-hook runs will never be retrofitted.
+
+#### Source References (2026-09-23 wrap-up compile)
+
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-KVQ-V10, VB-VRAM-1, VB-ARCH-CPU-QUAL, SSU-F6, SSU-F7.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F2 (the CPU forwarder), SSU-F11 (SSU-F7's root cause).
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-78c HelixDB note.
+
+### Compiled Update — 2026-09-23: private-index committing protects your peers and rots the SHARED index — and the rot reads as mass deletions
+
+**Confidence: verified** — reproduced from the staged-vs-HEAD diffs of ten real entries across two
+sessions in one shared clone, and cleared.
+
+#### Key findings
+
+- **The mechanism.** Committing through a *private* index seeded from `origin/main` is what stops a
+  session sweeping peers' hunks all day, and it is correct. But it never advances the **shared** index, so
+  a stale entry there stays pinned to old blob content while HEAD moves past it. The growing gap between
+  the pinned blob and HEAD **reads as deletions**, and a plain pathspec-less `git commit` from *any*
+  session in that clone would publish them. Observed spans: −379, −154, −43, −31, −18, −14, −7, −2 lines.
+- **The damage is proportional to how much you have committed since the entry went stale.** It starts at
+  zero and grows silently, so there is no moment at which it announces itself.
+- **The command a careful person reaches for cannot see it.** `git diff -- <file>` is worktree-vs-INDEX
+  and **cannot show this class of damage by construction**; it needs `--cached` or `git diff HEAD`.
+  `git status` does show the tell — `MM` rather than `M` — but that renders as ordinary dirt in a clone
+  with dozens of dirty paths. One session had seen the staged list hours earlier and called it benign
+  without running `--cached`: **looking is not checking**.
+- **The remedy already existed in writing and was unenforced.** `agents/commands/wrap-up.md`: *after*
+  committing, `git reset -q -- <the same paths>`. **After** is load-bearing — `git reset` sets the index
+  to HEAD *as of that moment*, so running it before the commit re-arms the trap. The step was dropped
+  exactly when the session switched to `commit-tree -p origin/main`, because in that shape the shared
+  index is provably irrelevant to what *you* publish: **the hygiene step that protects peers looks
+  redundant from inside the very pattern that makes you safe from peers.** The fix is detection, not a
+  new rule.
+- **The knowledge base was in the blast radius.** Among the restored files was
+  `wiki/source_manifest.json`, whose worktree copy was five days stale — publishing it would have rolled
+  the **wiki compile watermark backwards**, re-opening compiled sources as an apparent delta. A
+  content-hash watermark is only as trustworthy as the copy of it that gets committed.
+- **Clear only your own entries.** Both sessions cleared their own and checked each of the peer's before
+  leaving them alone — in one case adjacent staged deletions in the same file belonged to different
+  sessions.
+
+#### Open questions
+
+- Detection is unbuilt: nothing routinely runs `git diff --cached --stat` (or flags `MM`) in the shared
+  clone, which is what would have surfaced this on day one instead of a day later.
+- Should `serialized_push.py` or the pre-push hook refuse a push whose index-vs-HEAD delta contains
+  deletions the author did not author?
+
+#### Source References (2026-09-23)
+
+- [2026-09-23 — main-kernel](../progress/2026-09/2026-09-23-main-kernel.md) — the six-file table, the
+  three compounding reasons it was invisible, and the *looking is not checking* close-out.
+- [2026-09-23 — main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md) — the second session's half,
+  the restored `wiki/source_manifest.json`, and the after-not-before ordering of `git reset`.
+- [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — the INF-77 work
+  whose commits were the ones at risk of being published as deletions.
+
+### Compiled Update — 2026-09-22: the second subject deletion — the retarget rule held, and the write-side row went in before the first run
+
+**Confidence: verified** (the handoff edits and the filed rows).
+
+- On 2026-09-22 the operator deleted GLM-5.3-Flash and asked for its handoffs to be translated to
+  DeepSeek-V4.1-Flash "assuming they are applicable". The 2026-09-01 rule below was applied again.
+  INF-69 [closed](../handoffs/completed/glm53-flash-evaluation.md) with its unrun gates marked
+  "closed unrun, translated to DS41-Tn". Its findings were **extracted to a durable doc** before
+  closure, because they lived only in checkbox bodies
+  ([GLM-5.3 source handoff](../docs/reference/models/glm53-autokernel-handoff.md)). The successor
+  [INF-77](../handoffs/active/deepseek-v41-flash-evaluation.md) lists what transfers, and it has an
+  explicit **"Not carried over"** section for KDA, `kpool`, the DFlash2 drafter, and the GLM kernel
+  experiments.
+- In the reviewer gates and the AutoKernel rows, a row whose subject is gone was annotated
+  **"[Subject deleted 2026-09-22]"** and left **unticked**. Unrunnable is not done. Model-agnostic
+  rows were marked as carrying over
+  ([reviewer gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates),
+  [research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)).
+- **Belief kernel.** VB-GLM53-MTP produces no further records, and its completed evidence stays as
+  history to project. **VB-DSV41** was filed to wire the `deepseek41` validation/serving producer at
+  write time, **before DS41-T1**, the first measured run. It reuses the VB-GLM53-MTP carrier and adds
+  reference-parity records bound to the official `inference/` revision, with quantization drift kept
+  separate from port defects
+  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
+- Links in the wiki to the moved handoff were re-pointed to `handoffs/completed/` in the same change
+  that moved it.
+
+#### Source References (2026-09-22)
+
+- [`progress/2026-09/2026-09-22-main-dsv41.md`](../progress/2026-09/2026-09-22-main-dsv41.md) — deletion and retarget record
+- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — translated gates and not-carried-over list
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — closure banner
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — VB-DSV41
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — disposition gate 2
+
+### Compiled Update — 2026-09-19: two write-side rows filed before their producers run — GUI fuzzy workflows and held-out AutoKernel confirmation
+
+**Confidence: verified** for the filings (both are open tasks in [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)). Neither producer has emitted a tuple yet, so nothing below is a measurement.
+
+#### Key findings
+
+- **VB-FW-1: GUI-authored fuzzy workflows (filed 2026-09-17, FW-4).** The source row went into `scripts/vidya/adapters/README.md` on the day the GUI was designed, before anything runs, because the read side cannot be retrofitted. Each workflow-document run emits **one** self-hashed `ClaimTuple`. It carries:
+  - the workflow-document hash (the canvas is the unit of identity, not the session);
+  - the node types actually executed;
+  - each fuzzy node's model pin **and** its question catalogue. It needs both because FW-1's L2 lift is per `(model pin, catalogue)`, so a calibration record keyed on only one is unusable;
+  - per-gate outcomes with their rejection destinations.
+
+  A fuzzy node's confidence is **recorded, never read by an edge** (FW-1 L2), so it rides as evidence, not as a gate input. The adapter projects and `claim_tuple.grade()` decides, with no new ladder. The row lands with the FW-2 executor. Authoring it takes zero inference. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **VB-AK-HELDOUT: AutoKernel CPU held-out serving confirmation (filed 2026-09-18).** Research `9eee67c1` introduced `epyc.autokernel.heldout_serving_confirm.v1`, before the first GLM v27 confirmation, as plain per-candidate JSON. The task is to add a producer-authored, self-hashed ClaimTuple. It binds:
+  - the exact attempt/tree;
+  - distinct public and held-out request digests;
+  - the model and recipe;
+  - both executable/build identities;
+  - the instrument and a separately calibrated floor;
+  - paired raw vectors and their units;
+  - the actual integrity-gate veto outcome.
+
+  A strict reader must reopen the native bytes and project them through `grade()`. There is no new ladder and **no champion-promotion warrant**. Pre-hook plain records remain historical evidence but emit no graded row, the same zero-rows-before-the-hook rule recorded in the 2026-09-17 wiring wave below. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+
+#### Open questions
+
+- VB-FW-1 has no reader input until the FW-2 executor exists. Who builds it, and does the hook land in the same change?
+
+#### Source References (2026-09-19)
+
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-FW-1 and VB-AK-HELDOUT filings.
+
+### Compiled Update — 2026-09-17 (doc audit + restructure): a decided handoff is restructured — archive the pre-decision trail, promote the standing material, move the open boxes up, and prove conservation
+
+**Confidence: verified** for the procedure and its checks (`index_state.py --check` exit 0; `cite-check` 106 citations, 0 problems); **inferred** for the pattern statements. Session record: [`progress/2026-09/2026-09-17-harness-doc-audit.md`](../progress/2026-09/2026-09-17-harness-doc-audit.md).
+
+The harness-selection handoff had carried a candidate comparison for two months and then absorbed the decision it was arguing toward. The result was a 468-line file in which the ✅ line said DECIDED while the candidates table, Status, Objective, dependency graph and Reporting section all still read as open. The audit-then-restructure that fixed it is the reusable pattern; it complements the 2026-06-19 index-history compaction rule recorded further down this page (that one compacts *indices*; this one compacts a *decided handoff*).
+
+#### Key findings
+
+- **A decision ✅ propagates to nothing by itself.** Every summary surface a reader trusts before reading the task list — candidates table, Status line, Objective, dependency graph, Reporting instructions — was still pre-decision. Refreshing them is part of recording the decision, not a follow-up. The same audit found two IDs each naming two tasks (`HS-5`, `HS-6`): the rule applied was **the archived, earlier-born row keeps the ID; the live later-born one is renamed** (`HS-5c`, `HS-15`), and the residual handoff lists every closed ID that no longer appears in it so the archive stays findable by ID. IDs are stable and never reused ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
+- **Split by kind of content, not by age — and write the destination table into the file that shrinks.** 468 → 153 lines by four moves, each with a stated *why*: the pre-decision candidate comparison (HS-1/HS-2 findings, 2026-07 intake updates, trainability and Stage-4 sections, closed seam defects HS-OD-1/2, 2026-09-14 intake rows) → `handoffs/archived/harness-selection-history-through-2026-09-16.md` (*closed, and written while the selection was still open — not a task list*); the two Harness Cards → `docs/reference/harness-candidates/harness-card.md` (*a consumer outside the handoff*: `HARNESS_RUN_POLICY.md` requires a run report to cite one); HS-7 re-targetability and HS-10 randomization → `harness-doctrine.md` (*standing criteria cited by the feature map and the improvement loop*); the HS-13 structured-output record → `docs/reference/v1-structured-output-capability.md` (*a kernel+seam capability cited by instruments unrelated to selection*); the HS-1g call-verb matrix → `client-surface-audit.md` (*the instrument and its results belong together*). The handoff keeps the decision record, the live task list and the P0–P5 gates.
+- **Open boxes move UP, not out.** Three live tasks (HS-5b freeze-before-tuning, HS-9 open-weight interpreter probe, HS-E1 harness-null-pool evidence) were embedded inside sections that were otherwise closed history. Archiving those sections wholesale would have taken open work dark; the boxes were lifted to top-level rows first, with a one-line pointer to their archived context.
+- **Conservation is checked line by line, and a moved file's relative links break in a predictable direction.** Every substantive line of the original was matched against the six destination files; the only 8 unmatched lines were boxes deliberately re-pointed because their "see below" targets had moved. A file moved from `handoffs/active/` down to `handoffs/archived/` inherits `](sibling.md)` links that now need `../active/` — 4 broken links, all of that shape. Run a relative-link pass over the whole touched set, not only the file edited last.
+- **Corrections are appended to dated session shards, never written into them.** Three 2026-09-16 shards carried facts that were true when written and wrong the next day (two pre-rebase commit hashes that exist on no ref; "FastMCP silently drops" where the pinned FastMCP 3 refuses; two fixed defects described as live). Each received a `## Correction (2026-09-17)` section; the original text stands as the record of what was believed and why.
+- **Attribution is a fact to audit.** The 2026-09-16 record credited the operator with the OpenCode pick; the operator had chosen the *posture* and named two shells, and the design pass settled the shell. The record now says so, and the operator's 2026-09-17 confirmation closes the gap (root `927d44cb`). A decision record that over-attributes to the operator is as wrong as one that under-attributes.
+- **A structural move can be approved and still gated.** Splitting Phase 0 into its own `opencode-shell-integration.md` was approved in-session but waits for the P0.4 live run, because that run is owned by another session and moving its handoff mid-flight would strand its evidence (`HS-4 P0-split`). Likewise, **no checkbox was ticked** by the audit: the Phase-0 work belongs to other sessions, so evidence went into box text and the live gate stays theirs to flip.
+- **Record the non-items too.** An operator remark made during the session (small models reviewing bugs, a larger model recommending fixes) was a thought about a research task, not work to file; it is written down *as* a non-item so the next audit does not re-raise it as dropped work.
+- **Shared-clone drift is handled by backup, reset, restore-live-state — not by merging stale edits.** `/workspace` was 623 commits behind `origin/main` with 63 dirty tracked files and 145 untracked entries. File-by-file the dirty copies were *older* states already superseded upstream, and the one local commit was upstream by content (`git cherry` applied; byte-identical file). Procedure: patch backups of every diff (vs local HEAD and vs origin/main) plus verbatim copies; `reset --hard origin/main`; **restore the six live runtime/state files** (`.research-session.json`, the two session-bus state files, `.devc/overrides.json`, `.devcontainer/devcontainer.json`, `data/benchmark_artifact_inventory.json`) so no daemon loses state; move aside, never delete, the 65 untracked paths that shadow now-tracked files.
+- **Intake hygiene from the same day's research session.** Two dive verdicts were *overturned* and both were claims of absence ("no accuracy numbers on the docs site", "no sample sizes") — an absence claim needs the negative verified before it is recorded; two entries stay `stage1-unverified` because their thread sources are unfetchable, and their numbers are non-citable; a prose reference to a whole entry was converted to `#record` so the write-up stopped flagging itself; an operator-queue row (OP-43) was opened and closed in-session with the ruling recorded in the stub and the row removed (the OP-9 precedent). The write side was wired before the first measurement (VB-TDP-1): 5 receipts → 11 claims / 33 frames, the bench report refused as a non-measurement, and a producer-side `metric_direction` gap fixed where it originated ([intake session](../progress/2026-09/2026-09-17-intake-jev-sageattn.md)).
+
+#### Open questions
+
+- Should the "decision ✅ must refresh every summary surface" rule become a lint (a `DECIDED` Status with an `OPEN`/`TBD` candidates table is mechanically detectable) or stay an audit item?
+- When the P0.4 run lands and Phase 0 splits out, does the residual handoff keep the P1–P5 gates or hand them to the mechanism-owning handoffs it already points at?
+
+#### Source References (2026-09-17 doc audit + restructure)
+
+- [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — audit findings, Part 2 destination table, conservation and link checks, operator decisions, the clone-reset procedure.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the residual handoff: post-decision record, "History and promoted material" table, closed-ID list.
+- [harness-card.md](../docs/reference/harness-candidates/harness-card.md), [harness-doctrine.md](../docs/reference/harness-candidates/harness-doctrine.md), [v1-structured-output-capability.md](../docs/reference/v1-structured-output-capability.md), [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the promoted material, each with its "Promoted 2026-09-17" provenance header.
+- [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md), [2026-09-16-sub-hermes-memory.md](../progress/2026-09/2026-09-16-sub-hermes-memory.md) — appended-correction shape.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — overturned absence claims, `#record` conversion, OP-43, write-side-first wiring.
+- [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md), [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — outcome banners added to design docs after the decision.
+
+### Compiled Update — 2026-09-17 (evening): three ticked adapter branches had never landed, a task is done only when `git cherry` is empty, and a receipt that is not a measurement stays unprojected
+
+**Confidence: verified**: `git cherry`, the merge commits and the vidya test runs recorded in the
+sub-lane logs.
+
+#### Key findings
+
+- **Three root vidya branches had been reported and ticked, but were not on root main.**
+  - **What was missing.** `sub/ap54-root-20260916` (`eval_fence_enforcement`),
+    `sub/ap55bc-root-20260916` (`ap55_gate`) and `sub/vb-writers-root-20260916` (VB-AP53-RATE and SC83).
+    Their orchestrator halves were already on main in the AutoPilot train (`a1a0251a`). `git cherry` listed
+    every root commit as missing, and a grep of root main found none of the content.
+  - **How it landed.** Merges `7d1ed3a5`, `48dc08b3` and `3671df47`, plus `9d3d4f82`, which carries the
+    `cd79b80e` `would_hold_*` counterfactual verbatim. The adapter copies those keys only when a row
+    recorded them, and never reconstructs them. The shard note is in root `52b12f09`.
+  - **Tests.** 1391 vidya tests pass, and the real-writer end-to-end adapter tests pass 22/22.
+  - [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md)
+- **Closure inflation: four boxes were ticked on evidence that included an unlanded half.**
+  - **Premature ticks, now re-dated to the landing.** VB-AP53-RATE had a duplicate ticked box on the
+    branch, now folded into main's box. SC83 was ticked with the note "Neither is merged yet".
+  - **Unchanged boxes that got a dated note.** AP-54 and AP-55 are ticked on orchestrator evidence that
+    names a root carry that had not landed.
+  - **Not premature.** VB-MHS-OPS, because `mhs_guard.py` is on root main.
+  - **Also found.** `vidya-belief-substrate-program.md` auto-merged into a wrong result, with two
+    VB-AP53-RATE boxes. A clean auto-merge is not a correct one.
+  - **The standing rule that followed.** A task is done only when `git cherry origin/main <branch>` is
+    empty in every repo it touched. The evening landing table was checked against that gate.
+  - [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md),
+    [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **VB-AP53-RATE and SC83 are wired, and both have zero rows today.**
+  - **Re-proposal rate.** `reproposal_rate.py` writes one self-hashed line per closed 100-trial window. A
+    rewound journal rotates the file.
+    - A read-only backfill over trials 0–1505 found 48 re-proposals, which is 48/216 keyed trials and
+      48/1366 overall. It writes only a `retrospective: true` file that the reader declines.
+    - The earlier one-off 133/1372 counted numeric trials, which this key excludes, so it stays a
+      non-gating observation.
+  - **SC83.** It writes one `false_accept_run.v1` line per scoring run, and its reader grades rows
+    `Judged/Located`. Nothing can be backfilled, because no decoy corpus exists.
+  - **Dry runs.** `ingest autopilot-reproposal-rate` and `ingest reviewer-fa` both matched 0 units. The
+    triggers are an AutoPilot restart on main and the first scored decoy corpus.
+  - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+- **`speed_axis_reseed` is deliberately not projected (root `1d5f8cba`).** It records a state write, not a
+  measurement. Its trial row is already projected, and it never commits a promotion. Projecting it would
+  need a new settle rule for every refused newest-trial row. A test pins that frames are identical with and
+  without the event. AP-63(a)'s manifest digest *is* carried, ungraded (root `df295516`).
+  [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md)
+- **VB-RUNNER-PATHS-2 is closed (research `ae92ac5c`).**
+  - `score_tulving_run.py`, `occ1/run_occ1.py` and `score_beam_run.py` now load capture through
+    `belief_capture.load_capture`, which reads `EPYC_ROOT` only.
+  - The removed fallback was a live risk: the shared root clone is behind origin/main and lacks all three
+    capture modules.
+  - Tests: 10 new cases fail on the old code.
+  - VB-RUNNER-PATHS-3 lists the remaining hard-coded roots. Among them, the AutoKernel belief writers
+    default `EPYC_ROOT_REPO` to `/workspace`.
+  - [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md)
+- **More AutoKernel sources were filed before their first run.**
+  - SC87 covers spawn lineage. Its write side is done (`a6288858`), and its reader is pending.
+  - SC88 covers fresh seeded correctness, SC89 the plateau reporter's provenance, and VB-AK-LINEAGE code
+    lineage. All three are write-side first, and none may be backfilled.
+  - VB-AK-UNIFIED-PROFILE gains a sampled CPU/NUMA-location extension. Old captures stay location-unknown.
+  - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md),
+    intake-1439#record, intake-1454#record, intake-1440#record, intake-1446#record, intake-1451#record,
+    intake-1458#record, intake-1442#record
+- **KB-WM-3 is closed (root `4120af69`).**
+  - **`.index-state.json`: SAFE.** It is derived from tracked sources and never read back.
+  - **`.index-graph.json`: PARTIAL.**
+    - Absence was indistinguishable from "not blocked", so `index_graph_status()` now records
+      `ok`/`absent`/`unreadable`/`no_nodes`/`no_readiness` in the premise screener's provenance.
+    - `blocked/` handoffs looked for a graph that exists only in `active/`.
+    - A graph that parsed as valid JSON but was not an object crashed the reader.
+  - **`logs/agent_audit.log`: PARTIAL.**
+    - `.gitignore` re-included the 46 live shards, so `git clean -fd` would have deleted them. The
+      negation is removed.
+    - The legacy monolith was already missing from the shared checkout. It was restored from `f1717d80^`
+      (4402 lines).
+  - **Follow-ups.** KB-WM-5 (`logs/.current_session` is shared by every agent) and KB-WM-6 (graph freshness
+    is unchecked; the recommendation keeps it provenance-only, with a `--check` warning).
+  - [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)
+- **OBS-12 is closed (root `afb9745c`).**
+  - **Method.** `python3 -s` reproduces the interpreter left after a rebuild wipes `~/.local`.
+  - **Silent config loss.** Under it, `compile_sources` silently ignored `wiki.yaml`, which dropped
+    `SCHEMA.md` from `skip_filenames`. `wiki_writer_review` also ignored its config block. Both now raise.
+  - **Other fixes.** Six scripts now refuse with the venv command, and `coordinator-agent/SKILL.md` names
+    the venv.
+  - **Guard.** 18 cases, 16 of which fail before the fix.
+  - **Follow-ups.** OBS-12a covers the CLAUDE.md bus commands, which need PyYAML through a `python3`
+    shebang. OBS-12b (dangling `security-review-skill.md` links) was already fixed by the pass-2 compile.
+  - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
+
+#### Open questions
+
+- KB-WM-6: should a stale or missing readiness graph ever reach the screener's prompt (reversing AIR-13)?
+- OBS-12a: venv in the doctrine commands, a PyYAML-free roster read, or a `health_check.sh` check?
+
+#### Source References (2026-09-17 evening)
+
+- [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md): landing, conflicts, closure-inflation audit.
+- [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md): OBS-12, KB-WM-3, VB-RUNNER-PATHS-2.
+- [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): the non-projection decision.
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): VB-AP53-RATE, SC83, SC87–89, VB-AK-LINEAGE, VB-RUNNER-PATHS-2/3.
+- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): KB-WM-3/5/6.
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): OBS-12/12a/12b.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the landing audit and the `git cherry` rule.
+
+### Compiled Update — 2026-09-17 (afternoon): a promotion is a claim only once its commit is seen
+
+**Confidence: verified**: adapter code and tests against the real `ExperimentJournal`. The first live ingest
+yielded 0 rows because the journal has no post-hook trials yet.
+
+#### Key findings
+
+- **VB-AP-PROMO-RULE (root `f71277f7`).** Orchestrator main now stamps three fields on journal rows:
+  - `frontier_admission = "representative"`;
+  - `promotion_rule`, one of `frontier`, `empty_frontier_repro`, `seed`, `archive_unavailable_no_baseline` or
+    `refused_guard_unavailable`;
+  - `promotion_status`, either `pending_commit` or `refused`.
+
+  The adapter carries all three verbatim. It confirms a `pending_commit` only by joining a later
+  `baseline_promotion` ledger event with the same `source_trial_id`. It holds back a pending row on the
+  shard's newest trial, so the append-only ledger never records "uncommitted" while the commit is still being
+  written. The grade is unchanged, and absent keys stay absent.
+  [sub-vb-wire](../progress/2026-09/2026-09-17-sub-vb-wire.md)
+- **Capture must fail loudly at preflight, not silently after the GPU claim.** In research `0b295a25`, the new
+  `scripts/benchmark/belief_capture.py` does four things:
+  - it resolves the root from `EPYC_ROOT` and refuses when that is wrong;
+  - it loads capture modules by path;
+  - it runs `preflight()` before the claim;
+  - it sets exit code 3 on a failed capture.
+
+  The `/workspace/scripts/vidya` literal and the exception swallow in `ev13b_run.py` are gone, and
+  `prb_t4_tale_gpu.py` was ported to main.
+  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+- Follow-ups: VB-RUNNER-PATHS-2 (two scripts still use guessed-root fallbacks) and VB-AP-PROMO-RULE-INGEST
+  (first real ingest after AutoPilot restarts on main).
+- **VB-PRB-T4 is closed.** Write-time capture ran through the hook on the first PRB-T4 run and ingested 24
+  rows, and the driver is on research main `0b295a25`. The sample-scope caveat is tracked separately as
+  VB-PRB-T4-CAVEAT. [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+
+#### Source References (2026-09-17 afternoon)
+
+- [sub-vb-wire](../progress/2026-09/2026-09-17-sub-vb-wire.md)
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the train landing that the producer shape was verified on.
+
+### Compiled Update — 2026-09-17 (later): a reader's consistency check can void a correct writer, and an identifier rename is a tripwire event
+
+**Confidence: verified** for the reviewed code and the test counts (read from the sub-lane records), and for the deployments at the named SHAs. **Inferred** for the two projection rows, which are filed and not built.
+
+Four items from the belief-kernel and index planes. Two are the same shape one level apart: a source of truth and a consumer of it disagree about a field's meaning, and the first failure is a whole-file void rather than a wrong number.
+
+#### Key findings
+
+- **SC83: the writer and the reader disagreed about what `stale` meant, and the reader voided the file.** The AP-53/SC83 writer listed **every** stale decoy under `stale`, including `needs_arbitration` decoys that `false_accept_rate` routes to `excluded_for_arbitration`; the reader's `stale <= unscored` check then rejected the file as inconsistent. The fix separates the populations: `stale` holds settled decoys only, a new `stale_excluded` holds the arbitration decoys, and the reader checks it against `excluded_for_arbitration`. Tests exist on both sides, the `fixture-r3` fixture comes from the real writer, and the reviewer's reproduction now projects. Orchestrator `e93edfdb`. The general pattern: **a structural invariant checked across two files needs both sides to share the field's definition, and a voided file is the loud-but-total failure mode.** ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **AP-53: the journal writer now refuses to write over a rewound history.** Before writing, `record_closed_windows` checks each emitted window's recorded journal prefix digests against the current shards — one hashing pass per shard, memoised by inode, with a size check first so in-place truncation is still caught. On a mismatch it renames the file to `*.rewound-<utc>`, logs a warning, and re-arms. Tests cover a rewind followed by a re-run window, and an in-place edit that keeps both size and inode. **Content digests, not mtimes, are what a writer of derived history must key on.** Same review, same commit. ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md))
+- **A source-identity key is a global identifier, not a local name.** The key was renamed `mutation_ledger` → `rejected_mutation_ledger` because the BSV-3 tripwire (`test_mutation_ledger_tripwire.py`) greps tracked files for the whole identifier, and the committed file tripped it. Checks after the review fixes: orchestrator 897 passed across the new and adjacent suites; root `tests/vidya` 1305 passed, 80 skipped. ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md))
+- **The hub now serves a deployed read-only origin/main view, and the backlog graph renders readiness.** `:8100` serves `/mnt/raid0/llm/views/epyc-root-main` (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`), which supersedes the stale lane the hub used to serve. The RTG-46 readiness rendering (blocked = hatch, `no_open` = faded, ready = solid, legend from the producer's `readiness_counts`) is deployed with it, which resolves the "hub deploy pending" open item; the rendered-lattice human verdict remains open. ([handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md))
+- **Two write-side rows are filed for the belief kernel, and one closes.** SC85 (OCC-1 optical compression) is ticked: the writer/`validate_row` and the strict reader are on origin/main (root `1d5f5314`; research `2f053f61` + `e2c48c13`). VB-RUNNER-PATHS files a portability defect: `scripts/benchmark/review_f1/ev13b_run.py:197` hard-codes `sys.path.insert(0, "/workspace/scripts/vidya")` — as does the unmerged PRB-T4 driver `prb_t4_tale_gpu.py` — and both swallow a capture failure into their log, so the runner must resolve the root from `EPYC_ROOT` (or refuse) and make a failed capture visible, and VB-PRB-T4 cannot close until that driver merges. VB-AP-PROMO-RULE files the projection of `eval_details.promotion_rule` and `eval_details.frontier_admission` into the support frame once the gate-frontier branch is on main — additive, no grade change. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **Citation precision has a fix, a residual and a collision.** The bare run-form citing entries 882–883 (now `intake-882#record`/`intake-883#record`) in `agent-collab-rnd-harness.md` was a provenance note; rewriting it to `#record` for 882–885 turned `cite-check` from exit 3 (an overturned `clm_intake_883_03`) to exit 0 against a fresh ledger — the stale `/workspace/.vidya` ledger does not show the overturn, so a stale ledger under-reports. Separately, `SC76` is allocated twice in `vidya-belief-substrate-program.md` (VB-VGPR-STATIC and the 2026-09-15 wave heading); and the HEAD-4 35B max-perf figures were recomputed from raw JSON, matched, and a README arithmetic error corrected ("+28% from 8 to 12" → +10.45%; +28.05% is the 4→8 step). ([sub-misc](../progress/2026-09/2026-09-16-sub-misc.md))
+
+#### Open questions
+
+- SC83's `stale_excluded`/`excluded_for_arbitration` split needs a decoy corpus and a scored reviewer run before it can produce a false-accept rate at all (SC83's own first trigger).
+- Does the stale `/workspace/.vidya` ledger get refreshed, or does `cite-check` need to refuse a ledger older than some threshold rather than silently under-report?
+- The `SC76` double allocation wants a renumber, and the wave heading it collides with cannot be edited without touching a historical section.
+
+#### Source References (2026-09-17 later pass)
+
+- [2026-09-16-sub-vb-writers.md](../progress/2026-09/2026-09-16-sub-vb-writers.md): the SC83 stale/arbitration split, the AP-53 prefix-digest rewind guard, and the identifier rename.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): SC85 closure, VB-RUNNER-PATHS and VB-AP-PROMO-RULE.
+- [handoff-index-and-backlog-graph.md](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): the hub view deployment and the readiness rendering.
+- [2026-09-16-sub-rtg46.md](../progress/2026-09/2026-09-16-sub-rtg46.md): the readiness deployment record.
+- [2026-09-16-sub-misc.md](../progress/2026-09/2026-09-16-sub-misc.md): the citation-precision fix, the SC76 collision, and the HEAD-4 recompute.
+
+### Compiled Update — 2026-09-17: belief-kernel wiring wave — every file-shaped adapter gets an `ingest` name, pre-hook data stays at zero rows, and `.last_compile` is retired
+
+**Confidence: verified** for the landed code, tests, commits and dry-run counts (read from the vidya
+program, internal-kb-rag and the 2026-09-16 subagent logs); **inferred** for the open decisions
+(VB-HARNESS-AUDIT, VB-SL2-STEPS), which are recorded, not taken.
+
+The 2026-09-16 wave turned a register of filed write-side tasks into wired code. The main change is
+a dispatcher: `scripts/vidya/ingest_sources.py` gives every file-shaped adapter a `cli.py ingest`
+name. It does not grade; it calls each adapter's own projection and emits through
+`claim_tuple.to_frames`. Around it, several producers got durable writers, and one rule was applied
+everywhere: **data produced before a hook existed emits zero rows and is never rebuilt on read.**
+The same day retired the last trace of the old compile watermark (`wiki/.last_compile`), fixed a
+chain of evidence-plane snapshot defects, and showed that a batch of intake citations used the wrong
+index.
+
+#### Key findings
+
+- **VB-WIRE-1: 15 new ingest names**, including `kb-rag-qlen`, `inf70-arms`, `contention-gate`,
+  `contention-matrix`, `beam`, `tulving`, `autopilot-journal` and `sealed-manifest`.
+  `dflash2_experimental_runtime` is left out on purpose, with the reason recorded in `UNWIRED`. The
+  test checks that each ledger grade equals `claim_tuple.grade()` of the adapter's own projection
+  (22 pass). Real-corpus dry runs: contention-gate 382 rows, fanout-outcome 5, sealed-manifest 6
+  (8 unsealed manifests declined), contention-matrix 6 runs all pre-hook and declined, inf70-arms 0
+  sidecars. After review, the dispatcher also refuses an adapter that declares no `AUTHORITY`
+  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md),
+  [sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md)).
+- **SC75 / VB-WIRE-2: the INF-70 serving-arm verdict now has a writer and a producer call.**
+  - The writer (root `685a72bc`) records one tuple per arm and keeps DIRECT and SMT-SIBLING contention
+    counts separate. It refuses to write when:
+    - the coresidency is missing;
+    - the classifier returned CLASSIFY-ERROR;
+    - the sampler used the legacy vocabulary;
+    - the arm started before 2026-09-07;
+    - the capture runs more than 1 h after the arm's rows.
+  - It has 36 tests. A mutation that disables the date gate fails 3 of them.
+  - The harness was promoted out of scratch to root `scripts/inf70/harness1/` (`b57b1efb`), and the
+    capture call was wired in `3c5a4b30`.
+  - `gguf_sha256` must be supplied rather than hashed inline, because hashing would refill the page
+    cache that the eviction step had just emptied
+    ([vidya program](../handoffs/active/vidya-belief-substrate-program.md),
+    [sub-own](../progress/2026-09/2026-09-16-sub-own.md),
+    [sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md)).
+- **The backfill rule, applied exactly (spec §4.7).** The AP-53 re-proposal-rate writer (orchestrator
+  `2789b56d`) arms itself on first call and writes one self-hashed row per closed 100-trial window.
+  Its `backfill` mode writes only `retrospective: true` lines with `belief_measurements: []`, because
+  today's key definition and supersessions are not the ones that applied to those trials. The
+  read-only replay (trials 0–1505) found 48 re-proposals: 48/216 keyed trials and 48/1366 overall
+  (structural 43, prompt 3, code 2). That matches the planner-fold replay. The scratch-script figure
+  of 133/1372 counted numeric trials, which this key excludes, so it stays a non-gating observation.
+  SC83 (reviewer false-accept rate) has nothing to backfill, because no decoy corpus or scored
+  reviewer run exists yet ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md)).
+- **VB-MHS-OPS: a guard's silence is not a 0 % rate.** `mhs_guard.py` projects eval-leakage-guard
+  rejection rates per closed UTC-day window. `vocabulary_unavailable` rejections are held out of the
+  leakage denominator, and `syntax_validation` rejects are held out of every denominator. The producer
+  persists nothing that marks a clean window as "screened", so the verdict source declines every unit
+  until `HOOK_SINCE` is set to the AutoPilot restart on the merged producer (VB-MHS-OPS-HOOK, waiting
+  on that merge and restart). A drift test compares the pinned producer field names with the branch
+  source. It found that the README said `ts` where the events actually carry `timestamp`
+  ([sub-vbmhsops](../progress/2026-09/2026-09-16-sub-vbmhsops.md)).
+- **First rows through the new hooks, and a sampling caveat.** EV-13b review-F1 projected 2 units →
+  6 rows with 0 refused (research `aac025a4`). PRB-T4 TALE projected 24 rows. Those 24 are
+  **sample-scoped**, because the harness took the first n rows in file order: the `math` claims cover
+  GSM8K only (150/150), and the `olympiadbench` draw is skewed (geometry 15/300 trials against a 19 %
+  population share). The fix is a correction frame, never a ledger edit. The livecodebench sidecar is
+  withheld because its accuracy comes from the vacuous `substring 'def '` scorer
+  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
+- **The ported TALE/review-F1 writers project an EMPTY `protocol_id`, and that is a grade ceiling, not
+  a formality.** On `sub/runner-adapters-20260916` (`2d45240f`, not pushed), both readers project
+  `protocol_id=""`. Before this, the writer cited its own capture schema, which let tuples reach
+  Witnessed/Attested without a codified protocol; the same-day OCC-1/SC85 precedent forbids that.
+  Legacy rows that cite the schema stay admissible, and any other citation voids the file. The TALE
+  writer also gained `tale_mean_latency_s_answer_only`, because VB-PRB-T4 requires answer-only AND
+  incl-estimator latency and only the latter was emitted. Checks: `tests/vidya` 1,304 passed / 80
+  skipped; `index_state.py --check` 0 problems; cite-check clean (rc 0). The two capture call sites
+  stay only in the unmerged GPU drivers and hard-code `/workspace/scripts/vidya`, which is filed as
+  VB-RUNNER-PATHS ([sub-runner-adapters](../progress/2026-09/2026-09-16-sub-runner-adapters.md)).
+- **VB-EVCONF2 writer plus a spec-decode caveat.** `confidence_source_capture.py` (root `c8c68662`,
+  merged `1e1de5fb`) emits AUROC, ECE and reweighted ECE per arm × source. The E7c and EV-4c
+  calibration numbers were measured with `draft-mtp` on. llama.cpp reports p=1.0 for draft-accepted
+  tokens:
+  - E7c is visibly saturated (1528/1684 and 1485/1628 rows at confidence ≥ 0.999999);
+  - EV-4c is not saturated (0/820 and 2/817), so its contamination is real but unmeasured.
+
+  Every citation of those ECE/AUROC values must carry "spec-on, confidence void pending the A-specoff
+  arm". The P-CAL amendment itself is human-only and has been prepared for the operator
+  ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
+- **Write-side tasks filed before their producers first run** (the rule in practice): SC82
+  champion max-perf sweeps (the 2026-09-08 sweeps are pre-hook), SC85 OCC-1 optical compression,
+  SC86 HS-4 OpenCode-shell runs (adapter ready, 32 tests), VB-NIAH-E1A (a row carrying only one of
+  the strict/lenient accuracies is refused), and VB-GPU-RUNNER (six 2026-09-16 sweeps that went
+  through wrappers with no hook, so they emit zero rows). Rows without a codified protocol cap at
+  `Judged/Located` ([vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
+- **SC id collision.** SC76 had been allocated three times. S3-VID-02 keeps SC76, VB-VGPR-STATIC
+  becomes SC84 and the reviewer FA-rate filing becomes SC83. `research/intake_index.yaml`
+  (intake-1398#record) still says SC76 for VGPR
+  ([sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md)).
+- **Citation anchors indexed the wrong list (MHS-5, intake-1323#record).** Handoff `#NN` suffixes
+  numbered the entry's `dive_actionables_ledger` (D0–D9), not its five `key_claims`, so `#00`–`#04`,
+  `#06`, `#07` and `#09` were all mis-anchored. They were rewritten as `intake-1323#record (dive
+  actionable Dn)`. The MHS-5 corpus (23 patches) **narrows** dive correction (6) and does not
+  overturn claim 04. REPLACE patches are 4/4 negative (mean −8.4 pp), but the single worst patch is a
+  hint-only CONSTRAIN patch (−16.9 pp). The prior therefore ranks risk; it does not certify safety.
+  Marking claim 04 overturned would have refuted a true claim and flagged every bare citation
+  ([sub-own](../progress/2026-09/2026-09-16-sub-own.md),
+  [sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md)).
+- **VB-KBRAG-QLEN: the telemetry writer and its adapter landed together.** Producer rows cite no
+  protocol, so they are observations. The attestation is the log path plus the sha256 of the exact
+  byte prefix read, not a whole-file digest. An empty log yields no rows (adapter root `039a4f3b`,
+  12 pass / 1 skip) ([vidya program](../handoffs/active/vidya-belief-substrate-program.md),
+  [sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md)).
+- **KB-WM-1/2 were closed as superseded, and KB-WM-4 retired `wiki/.last_compile`** (root
+  `40034bf1`). The file had two writers with incompatible formats (plain ISO, and
+  `"<request_id> <iso>"`) and one live reader. That reader, `build_manifest()`, copied the stale
+  clone value `2026-09-08T09:28:51Z` into every emitted manifest while the tracked manifest read
+  2026-09-16. `build_manifest` now reads the tracked manifest through an ISO normalizer. A hidden
+  defect also surfaced: `heavy_wrap`'s write of the gitignored path could never commit, because
+  `git add --intent-to-add` exits 1 on it. The test fixture had no `.gitignore`, which is why this
+  never showed. Tests: 97/97 across five suites. **This supersedes** the 2026-08 recommendation
+  lower on this page (fall back to the tracked manifest when `.last_compile` is absent and emit a
+  `last_compile_source` field): that helper is deleted, not extended
+  ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md),
+  [sub-kbwm4](../progress/2026-09/2026-09-16-sub-kbwm4.md)).
+- **OP-34 scoped `--touch`** (root `7cfc4846`, merged by `719ac638`). `--touch SCOPE` advances only
+  the in-scope manifest entries and records `last_touch`. Out-of-scope deltas stay visible, and a
+  scope that matches nothing exits 1. Bare `--touch` behaves as before. Both touches refuse to run
+  without a tracked baseline ([sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md),
+  [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)).
+- **Evidence plane W3: segment snapshots are chained, and two fail-open defects are closed**
+  (orchestrator `b7a61c02` + `06cf82dc`, merged `753343f5`). The fixes:
+  - Prefix replay counted tail-only supersessions, which produced false `archive_prefix_drift`.
+  - The authority path consumed any verified snapshot whose objective policy matched, ignoring
+    `exclude_before_ts` and deinflation. `_snapshot_scope_matches()` now fails closed.
+
+  The live snapshot through trial 1458 is correctly `prefix_invalidated`: its terminalizer payload
+  is not a pure fold, so startup stays on full replay. The live chain verifies `ok` (7 events). The
+  first automatic segment snapshot lands at the 1999 → 2000 rollover
+  ([evidence plane](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative)).
+
+#### Open questions
+
+- VB-HARNESS-AUDIT: should pinned source-read findings (the HS-1g matrix, HS-13, the HS-6c card)
+  enter the ledger through the `verifier` class, as dependency edges only, or not at all? Whichever
+  is chosen, the locator must carry the sha.
+- VB-SL2-STEPS: should the `target_sample_steps_est` estimate get its own rows? If so, only with the
+  estimator string attached.
+- KB-WM-3: do the other three files that `f1717d80` untracked have the same failure shape?
+- W3 still needs its bounded-startup demonstration after the restart.
+
+#### Sources
+
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC75/VB-WIRE status, VB-GPU-PREP, the PRB-T4 caveat, VB-EVCONF2, VB-MHS, SC82–SC86, VB-NIAH-E1A
+- [vidya-pilot-spec](../docs/design/vidya-pilot-spec.md): one corroboration citation made precise (intake-1300#02)
+- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): the KB-WM-1/2/4 closures, H2, C7
+- [evidence-plane-event-sourcing-and-narrative](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative): W3 segment chaining and the scope fixes
+- [2026-09-16-sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md): the ingest dispatcher, dry-run counts, the SC renumbering, the prepared intake-1323 amendment
+- [2026-09-16-sub-own](../progress/2026-09/2026-09-16-sub-own.md): the MHS-5 correction as applied, the mis-anchor root cause, the VB-WIRE-2 harness promotion
+- [2026-09-16-sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md): the AP-53 and SC83 durable writers and the backfill decision
+- [2026-09-16-sub-vbmhsops](../progress/2026-09/2026-09-16-sub-vbmhsops.md): the guard adapter pair and its absence rules
+- [2026-09-16-sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md): the SC75 writer, and the 377-commits-behind `/workspace` baseline
+- [2026-09-16-sub-kbwm4](../progress/2026-09/2026-09-16-sub-kbwm4.md): the `.last_compile` retirement and the heavy_wrap defect
+- [2026-09-16-sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md): OP-34 scoped touch with its decision package, and the VB-KBRAG-QLEN adapter
+
+### Compiled Update — 2026-09-15: the belief substrate's carrier contract — adapters project, one ladder per source class, and `grade()` is the sole rule
+
+**Confidence: verified** for the substrate mechanics and the mutation audit (vidya belief-substrate
+program); **verified** for the publication gates (frontier-f6 upstream publication).
+
+- **Carrier contract.** Adapters **project** native records into a canonical `ClaimTuple` (product lattice `Q × T` = warrant quality × traceability) and never grade; each *source class* has exactly one ladder (`register_ladder()` refuses a second), and `claim_tuple.grade()` is the sole grading rule. Binding spec: `docs/design/vidya-pilot-spec.md` §4.7.
+- **Write-side rule (SC9, operator-adopted 2026-08-10).** A process producing measurements or verified findings gets its wiring task filed the moment it is noticed — the write side is cheap and permanent, the read side impossible to retrofit (a tuple invented on read claims warrant the original run never captured). Standing proof: `benchmarks/results` at 4,562 files, 0 of 200 sampled carrying a usable claim tuple.
+- **Citation gate.** `cite-check` resolves `intake-NNN` citations through the merge map and blocks only `{dangling, overturned, conflicted}`; live over 1,754 citations in 142 documents it found 6 overturned, 3 conflicted, and 144 resting on an unadjudicated correction. `intake-NNN#record` marks a reference that *discusses* a record rather than relying on its claims — non-blocking by construction.
+- **Attested was unverified (SC69 P1, fixed `5d7f14be`).** `claim_tuple.py` length-checked `attestation_sha256` and branched on presence only, so `attestation_path="MEASUREMENT.md"` with `"0"*64` graded `Witnessed/Attested`; the fix keeps `grade()` pure and carries `attestation_verified: bool | None` set at the write boundary.
+- **Kernel mutation audit (SC69–SC73).** 62 mutations introduced into `tests/vidya/`, 32 survived — all sharing one shape, a *presence check standing in for a verification* (an empty required-set grades SATISFIED, `ledger.verify()` clean on an empty ledger).
+- **Publication gate.** Only protocol-tagged numbers are publishable; the public-results page is generated from `RESULTS.md` (never hand-edited), protocol-complete rows fail closed to `hold_for_public_scrub` on internal identifiers, and explicit-but-unparseable protocol markers stay held rather than promoted. The review overlay retired **325** unverified historical rows without mutating the source. The canonical-benchmarking collapse is the worked example: the April 26 frontdoor **"+17%"** is **+1.6%** against proper canonical measurement.
+- **Publication discipline.** One artifact/month; every posted thread gets an append-only ledger row **before** it goes out (`docs/publication/social/`); corrections are appended, never rewritten; no F1 personal-task data is published.
+
+#### Open Questions (2026-09-15)
+
+- The uncoverable bucket grows with the citation graph with no cross-entry evidential edge — an open design question, not a defect.
+- SC64's anytime-valid sequential test pins its stopping time to the observed value, so it certifies *this run's transcript* rather than the procedure.
+
+#### Source References (2026-09-15)
+
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — the carrier contract, the write-side rule, the citation gate, and the mutation audit.
+- [frontier-f6-upstream-publication.md](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
+- [docs/publication/social/README.md](../docs/publication/social/README.md) — the append-only social conversation ledger schema and gates.
+
+### Compiled Update — 2026-09-08: the watermark saga closed as a fix — selection is content-hash against the tracked manifest, mtime never consulted
+
+**Confidence: verified** — `0ea91f3e` (6 files, 11 new tests) closes NIB2-68 together with OBS-13;
+the phantom-942 mechanism below was reproduced from the shared clone with a genuine local watermark
+before the fix; the post-fix reconcile counts come from a scan against the tracked baseline.
+
+The three failure shapes compiled on 2026-09-03 (watermark destroyed · written to a vanished tree ·
+never present in a worktree) shared one root the fixes could not reach: **incremental selection keyed
+on `mtime > since` is only valid in the checkout that produced those mtimes**. The shipped remedy
+now removes the mtime basis entirely rather than patching around it:
+
+- **Selection is a content-hash diff against the TRACKED `wiki/source_manifest.json`** — mtime is
+  never consulted. Scratch proof: a run with every source stamped 2030 returns 0 new. The
+  phantom-942 mechanism is dead.
+- **`--touch` advances the tracked manifest**, regenerating it from the current full set — lane-safe
+  by construction (identical per-file hashes lane-vs-main; `--touch` in a worktree can no longer
+  serialize nothing).
+- **No baseline → one full emission plus a stderr note, never a phantom.** Incremental scans
+  refuse to overwrite the tracked manifest with a partial set (`--full` required to regenerate).
+- The gitignored `wiki/.last_compile` file is retired from the decision path; the tracked manifest
+  is the single watermark.
+
+**The 942 phantom (2026-09-07) proved the failure fires from `/workspace` itself, no lane
+involved**: run correctly from the shared clone against a genuinely-real 2026-09-03 local
+`.last_compile`, `total_new` read **942** — not a checkout-time mtime artifact, but a 4-day gap
+dominated by a ~300-commit campaign merge. The addendum's own diagnosis generalizes: mtime-since-
+watermark is unreliable from ANY single checkout whenever a different clone (or a peer session's
+independently-touched watermark) has already compiled part of the delta. `--touch` was withheld
+rather than run (it would have falsely marked all 942 compiled), and the genuinely-real subset was
+compiled by hand (`95c7e46d`). This was the same row all along — no separate filing was needed.
+
+**Linter half of OBS-13**: `lint_wiki.py` now proves a missing link target is cross-repo —
+`repos/<member>/` with `<member>` in the tracked `scripts/clone-repos.sh` farm array and no farm in
+this worktree — before INFO-skipping it; farm present or non-farm paths keep ERROR. The linter can
+now say "I cannot tell from here" instead of silently assuming the shared clone.
+
+**Reconcile note — quantified, not falsified.** The tracked manifest's baseline is 2026-08-27, so
+the first post-fix scan reports the real unrecorded drift. Measured against that baseline:
+**87 genuinely-pending sources** (57 handoff-active, 24 progress, 4 handoff-completed, 2 docs) —
+the `95c7e46d` hand-compile predates the wave's closure edits, so no subset is provably compiled
+as-of-current content. Advancing the manifest now would falsify it; the decision recorded is to
+**compile the 87 at the next operator-invoked `/wrap-up` — no `--touch` before** (the sweep stays
+operator-cadence; deployment reconcile is the wrap-up owner's call, not a code question).
+
+**The compile-receipt fix that protects the new basis**: `heavy_wrap.step_7_compile_wiki` used to
+overwrite the tracked content-hash manifest with a bare receipts dict — which would now make the
+next incremental scan fail loudly *by design*. Fixed (`af4c5c63`): the manifest is preserved
+wholesale with `compiled_by` merged as an extra top-level key, a corrupt manifest raises
+`WrapError`, and the scanner tolerates the extra key. Executor-side detail on [Agent
+Architecture](agent-architecture.md); the consequence for this page is that the wiki toolchain's
+write side and read side now agree on one tracked artifact.
+
+#### Source References (2026-09-08 watermark closure)
+
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-68 (the
+  2026-09-07 addendum: the 942 shared-clone measurement and the withheld `--touch`) and OBS-13
+  (both instrument halves) with the `0ea91f3e` closure text.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the NIB2-68/OBS-13 landing
+  record (11 tests, scratch proof) and the wave-2 reconcile quantification (87 pending) +
+  `af4c5c63`.
+- [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
+  — the hand-compile of the real subset (`95c7e46d`) in the 942 window.
+- [Agent Architecture](agent-architecture.md) — the heavy-wrap receipt fix compiled (RTG-51
+  executor half).
+
+### Compiled Update — 2026-09-08: the vidya register tells the truth again — SC47/48 decline verdicts applied to the rows, and the ledger holds at frontier 13,141 after its own fail-open fix
+
+**Confidence: verified** — row states in the program handoff (inline verdicts applied 2026-09-07);
+the frontier is the SC73 post-fix live-ledger smoke (`5d7f14be`).
+
+- **SC47 and SC48 kept rendering open for nearly two weeks because their verdicts were never
+  applied to the rows.** Both were decided 2026-08-26 — recorded in the program summary and in
+  `progress/2026-08/2026-08-26.md` §Track E — but the checkbox rows carried no inline verdict, so
+  the register misstated them as open work until the 2026-09-07 Tier-C disposition applied the
+  verdicts per the SC11/SC13 precedent. The meta-lesson is the register-hygiene one: **a decision
+  recorded in prose is not a closed row** — the register's open count stayed wrong until the row
+  itself carried the verdict.
+- **SC48 — priced-and-declined.** The MI210 power-sensor probe corpus is two persistent
+  observations, below the SC9 pay line for an adapter; the verdict is recorded rather than carried,
+  with an explicit re-file trigger at the first successor power-probe campaign with a larger
+  corpus.
+- **SC47 — declined as a carrier, adopted as corroboration.** FlashInfer-Bench's
+  `Definition x Solution x Workload x Evaluation` record shape is not adopted as the
+  kernel-candidate carrier, but its per-operation-class evaluator registry stands as **external
+  corroboration that the one-ladder-per-source-class adapter contract is right** (the registry
+  comparison and the record-shape analysis remain the record); the tolerance-constant read stays
+  tracked as RVP-C6-23.
+- **The gen-2 ledger survives its own fail-open class.** The SC73 closure made
+  `ledger.verify()` refuse what it used to certify — a missing/empty ledger now reports problems,
+  and a ledger truncated below the newest published checkpoint tree size fails chain. The post-fix
+  live smoke read **frontier 13,141, chain OK, checkpoints OK** — up from 12,479 at the 2026-08-26
+  P5c promotion-gate execution, reflecting the intake-wave and citation-gate re-ingests since. The
+  kernel-integrity wave that produced it (SC61 + SC69-73, `5d7f14be`, 43 files, suite 899 → 967)
+  is compiled on [formal-verification](formal-verification.md); what belongs to this page is the
+  program state: the ledger's own integrity claims now come from the same refusal discipline the
+  substrate imposes on every producer.
+
+#### Source References (2026-09-08 vidya state)
+
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) —
+  SC47/SC48 closure text (2026-08-26 decision, 2026-09-07 inline application, SC9 re-file
+  triggers) and the SC73 closure with its frontier-13,141 smoke.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the Tier-C disposition
+  table (SC47/SC48 rows, evidence, SC11/SC13 precedent) and the `5d7f14be` wave record.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
+  SC69-73 audit-origin and filing record (32 surviving mutations, five filed).
+
+### Compiled Update — 2026-09-08: the backlog graph derives ready/blocked — and the cycle class that blocked the readiness rule is now a gate
+
+**Confidence: verified** — commit `457abd40` and the measured baseline in the owning handoff row;
+`dep_cycles()` in `index_state.py --check` (12 tests).
+
+- **Per-node ready/blocked is now derived, never authored** (`index_state.py`, schema
+  `index_graph.v2`): a node is `blocked` iff at least one `dep` target still has `open > 0`, else
+  `ready`; a handoff with no open work of its own is `no_open` — a distinct third value, because
+  `open` counts DISPATCHABLE boxes and a handoff whose remaining boxes are all guarded or
+  classify-refused also reads `open == 0`. Calling that `ready` would put undispatchable rows on
+  the dispatch frontier (the same category error the module header already rules on, one level
+  down). `blocked` is a floor, not a finding: active+blocked and blocked+ready are both meaningful
+  and must not merge.
+- **First measured baseline (2026-09-07): 170 nodes, 42 `dep` edges — 136 ready / 24 blocked /
+  10 no_open.** 85% of rows were already ready, so the derivation is priced honestly: its value is
+  that cycle-class defects become visible on the hub instead of requiring the computation to be
+  run by hand — not that it discriminates dispatch.
+- **Generated means timestamped.** The sidecar regenerates as rows close (the 2026-09-08
+  regeneration reads 135 ready / 29 blocked / 10 no_open over 174 nodes), so a quoted count is
+  only valid with its `generated_at` — the row's own 41-vs-42 edge-count correction is the
+  standing lesson (a six-day-old sidecar was measured without regenerating first).
+- **The cycle class is now a gate.** `BAD DEP` validated only that a dep points at a *known* row —
+  which every edge in a cycle does — so cycles were invisible while each edge was well-formed.
+  `dep_cycles()` (iterative DFS, one error per elementary cycle, unknown ids left to `BAD DEP`)
+  closes that. The real instance it would have caught: **INF-06 ⇄ INF-64**, a rider-of relation
+  written into the blocked-on column — found 2026-09-07 by the first readiness run over
+  `.index-graph.json`; the back-edge cell was deleted and the relationship survives untouched as
+  the derived `ref` edge the graph builder already generates from the markdown link.
+- **The dispatch screener now reads the sidecar — advisory only.** AIR-13 wires
+  `index_graph_readiness()` into `backlog_row_check.classify()` with an explicit
+  INDEX-GRAPH (advisory, NOT a refusal) reason; flag, never hard-refuse, because handoff-granular
+  readiness is over-broad at row level (2 of 3 blocked rows were legitimately completed while
+  their handoff was marked blocked). Full compiled record of the AIR-12/13/14 premise-screening
+  closure is on [agent-architecture](agent-architecture.md); this page's interest is the coupling:
+  the graph's derived readiness is now consumed by a second surface (the row screener) that never
+  reads the `Deps` column.
+
+#### Source References (2026-09-08 index graph)
+
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) —
+  the INF-06/INF-64 cycle record, the `dep_cycles()` gate, the ready/blocked/no_open derivation
+  row with its measured baseline and its regeneration lesson.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
+  `457abd40` execution record (136 ready / 24 blocked / 10 no_open) and the gate.py defect fix
+  that rode the same wave.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — AIR-12/13/14 landing
+  record (`945c8820`, 719 coordination tests).
+
+### Compiled Update — 2026-09-07: WikiSkill corroborates the clean-window compile rule — its window never overlaps the phenomenon
+
+**Confidence: verified** — the concession and the observation window are read from the source itself; the
+degradation phenomenon they are being weighed against is the one already compiled from
+`intake-899` and `intake-1129`.
+
+#### WikiSkill concedes no pruning, and its window is too short to see the thing it would be cited against
+
+WikiSkill **concedes that it performs no wiki pruning**. Its observation window is at most **8 iterations**
+and **6.3–8.9 patterns** — a window that **does not overlap the degradation phenomenon** that `intake-899`
+and `intake-1129` describe. A knowledge layer that is never pruned degrades on a horizon longer than the one
+WikiSkill ever observed, so its clean result is not a licence for an unbounded layer; it is a measurement
+taken before the failure mode has anywhere to appear.
+
+**The reading, therefore, is the opposite of the obvious one.** WikiSkill **corroborates our clean-window
+compile rule** — compile into a bounded, pruned window — rather than licensing an unbounded knowledge layer.
+Cited the other way it would be the standing observation-window error: a measurement whose window does not
+overlap the phenomenon is not evidence of its absence. `intake-1317#record`.
+
+#### Source References (2026-09-07)
+
+- `research/intake_index.yaml` `intake-1317#record` — the WikiSkill record this entry discusses.
+- `research/intake_index.yaml` `intake-899`, `intake-1129` — the degradation phenomenon the window fails to
+  reach.
+
+### Compiled Update — 2026-08-23: skill-documented commands must name an interpreter that has the imports
+
+**Confidence: verified** — the OBS-12 sweep audited all 15 skills and landed 8 documented-interpreter
+fixes (`f21be7c2`, `4aadd382`); the disk outcomes carry verification records (`08e8bba6`,
+`3227ec5f`). Source: [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md).
+
+#### The OBS-12 interpreter-venv convention
+
+Skill (and agent-file) documents that tell an agent to run a command must name an interpreter that
+actually has the imports the command needs — `python3` on this host does not have
+`PyYAML`/`requests` in the environments where the skills run. The convention that closed the sweep:
+documented invocations point at the orchestrator venv interpreter
+(`/workspace/repos/epyc-orchestrator/.venv/bin/python`), not bare `python3`. Eight fixes landed
+across the 15 audited skills: project-wiki's `lint_wiki.py`/`query_wiki.py`/`compile_sources.py`
+invocations, `wrap-up.md` steps, `resolve_intake_id`, the `log` skill's pytest line, and
+`claude-md-accounting` path rot. A same-sweep follow-on fixed the wiki tool itself:
+`query_wiki.py` crashed on 13 intake entries with null `techniques` lists — `_safe_join` now guards
+the list fields (`03345e50`). The pattern generalizes beyond this repo's skills: **any command an
+agent is told to run is a contract, and the interpreter named in the contract must be able to
+execute it — a bare `python3` with a missing import is a landmine the doc placed, not the agent.**
+
+#### Disk hygiene: NIB2-60..63 verified resolved, NIB2-64..67 are the phase-2 candidates
+
+The 2026-08-18/22 disk-hygiene backlog rows all closed with verification, not just ticks
+(`08e8bba6`, restored after a peer revert in `3227ec5f`):
+
+- **NIB2-60** `tmp_pack` — VERIFIED RESOLVED (garbage = 0)
+- **NIB2-61** logs — VERIFIED RESOLVED
+- **NIB2-62** `Dockerfile.orig` — DELETED (4,854 B, unreferenced)
+- **NIB2-63** `.bak` clones — VERIFIED RESOLVED (none exist)
+
+The 2026-08-18/22 `.bak` residue on disk was kept (no gitignore rule; devcontainer edits live) and
+recorded as one-rm-each if wanted. **Phase-2 candidates filed as NIB2-64..67** (from the census that
+found /mnt/raid0/llm at 3.4T/3.7T = 97% used): NIB2-64 autokernel/worktrees 165G (144/146 stale,
+2 referenced by active handoffs), NIB2-65 model duplicates/orphans ~25G (safe set listed in the
+census), NIB2-66 stale kernel trees ~18G (preserved-20260724T135832Z, v6-iqk, v7-sanitize-audit,
+k28-prototype), NIB2-67 `cache/huggingface` 127G re-downloadable. EVL-28's archive also flagged a
+GGUF for NIB2-64. All four are operator options, not actioned.
+
+#### The disk reclamation record (2026-08-23): 111G → 371G free in the approved scope
+
+Operator-approved scope was tmp/ scratch + worktrees. `tmp/` went 285G → 2.9G: 138 registered
+worktrees removed (epyc-inference-research 88, workspace 44, llama.cpp-experimental 4, llama.cpp
+4, epyc-orchestrator 2) plus ~15k stale loose files. **Method discipline: strictly per-worktree
+`git worktree remove --force`, NEVER `git worktree prune`** (the 2026-08-12 lane-destruction
+incident) — and worktree branches/commits persist in their shared repos, so nothing was deleted
+from git. Four worktrees preserved (`dashboard-v26-telemetry-integrity-20260821` in use;
+`evaluator-91a-audit.3i6ycm`, `merge-20260816`, `root-session-wrapup-20260820` dirty) plus all live
+coordination files (runtime facts, `*_started_at` markers, locks). Result: 97% → 90% used, ~260G
+reclaimed in scope. Source: [`progress/2026-08/2026-08-23-disk-reclaim.md`](../progress/2026-08/2026-08-23-disk-reclaim.md).
+
+#### Source References (2026-08-23 hygiene sweep)
+
+- [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md) — the OBS-12
+  sweep, the NIB2-60..63 verification record, and the EVL/pointer retirement batch.
+- [`progress/2026-08/2026-08-23-disk-reclaim.md`](../progress/2026-08/2026-08-23-disk-reclaim.md) — census, per-path changes, preserved set, deferred options.
+- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — the NIB2-60..67 rows with their tick/verification state.
+
+### Compiled Update — 2026-08-20: write-side evidence begins with the next DFlash2 panel
+
+**Confidence: verified implementation boundary.** The producer and reader exist on pushed integration
+branches, and synthetic projection tests pass; this does not retrofit the completed np1 campaign.
+
+The DFlash2 carrier pair records six arms times two metrics (decode throughput and weighted draft
+acceptance) with exact campaign, manifest, build, model, protocol, released-claim, KFD, and VRAM
+identity. It declares `higher_better` and delegates grading to the shared `ClaimTuple` ladder rather
+than inventing a DFlash2-specific grade. The research producer must integrate before the root reader.
+
+The completed DF2-4 np1 campaign finalized before that write hook existed, so it emits zero rows.
+Reconstructing a tuple from request logs would invent warrant at read time and erase the distinction
+between measured evidence and evidence captured under the belief contract. DF2-5 is therefore the
+first eligible native source; its finalizer must write the carriers while original claim and residency
+witnesses still exist.
+
+#### Source References (2026-08-20 DFlash2 claim carrier)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC44 integration order, carrier schema, and pre-hook zero-row rule.
+- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — immutable DF2-4 evidence and DF2-5 measurement plan.
+- [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact producer/reader commits and operational boundary.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — runtime-campaign receipt chain and no-source-champion authority.
+
+### Compiled Update — 2026-08-18: link integrity became a lint pass, and the watermark proved load-bearing
+
+**Confidence: verified** — every defect below was reproduced or mutation-tested before its guard was
+recorded as built; counts are from the live tree at the recording session's boundary.
+
+#### 151 dangling wiki links, with every lint pass green
+
+A routine handoff prune rotted 151 of this wiki's links while the entire lint suite stayed green,
+because the coverage had two holes that compounded: the crossref pass ran **handoff→wiki only**, and
+it accepted a link-target basename found in *either* `active/` or `completed/` — so moving a handoff
+between them was invisible — while **nothing resolved wiki→repo at all**. The fix is lint pass 7,
+`wiki_link_targets` (dangling target = ERROR, dangling anchor = WARNING), verified with five
+mutations covering both the checks and the reporter counting them. The instructive failure was the
+pass's own first mutation: the anchor check's dedup key ignored the anchor, so a plain link earlier
+in a page masked a broken anchor later — a key-too-wide defect inside the guard being built to catch
+staleness. 18 of the 151 resolved only through the `/workspace/repos/` symlinks, which had
+themselves silently vanished (below); after symlink repair plus pass 7, all 3,183 relative wiki
+links resolve.
+
+#### The watermark is untracked-but-load-bearing state — and `git clean` found it
+
+The same `git clean` event recorded in `INC-20260816-git-clean-shared-clone` destroyed
+`wiki/.last_compile`, and the damage shape is worth keeping: the next compile did not fail — it
+confidently reported **844 new sources (the whole repo) instead of 51**, because an absent watermark
+and an epoch watermark are indistinguishable to the scanner. It had to be reconstructed from the
+last genuine `--touch`. Watermarks, receipts, symlinks and staged artifacts share one class:
+untracked operational state that no commit protects and no diff shows, whose loss surfaces later as
+unrelated-looking breakage. The standing rule: such state must be tracked, live off-tree, or be
+listed in a manifest a restorer can replay — and `git clean` never runs in the shared clone.
+
+#### Four handoffs held split identities, and the checker was blind to all four
+
+Four handoffs existed simultaneously in `active/` and `completed/`; `index_state.py --check` could
+not see any of them. It now carries a **SPLIT IDENTITY** pass whose only exemption is a deliberate
+compatibility pointer (a body containing `../completed/<name>`), mutation-verified to fire exactly
+once per reintroduced duplicate. One of the four mattered materially: `fable5-window2-findings-05`
+had been archived on 2026-08-13 *while still holding a live go/no-go*, so the resolution kept the
+newer **active** copy and renamed the completed one — the duplicate-resolution direction is decided
+by content recency, not by which directory "should" win.
+
+#### Parallel lanes mint colliding ids; renumber at port time, record the collision inline
+
+Two sessions independently filed belief-kernel wiring tasks as "SC37" while a third SC37 already
+existed on `main`. The forward-port renumbered them (SC41, SC42) with the collision recorded inline
+and content unchanged. Sequential ids handed out by whoever files next are a shared-clone artifact:
+they cannot be minted safely in parallel lanes, so the reconciliation step must treat id assignment
+as port-time work — and must *say so* in the row, or the old number's citations dangle silently
+(the wiki and a progress entry already cited one of the colliding numbers by the time the port ran).
+
+#### A14: landed, independently audited — and still not wired, which is the point
+
+The A14 merge-gate surface is on the orchestrator branch as `c61b8184`, and an independent merge
+audit ACCEPTED it (same stable patch-id and six-file `+299/-0` diff as its source commit, the merge
+gate classifying the range autonomous, 118 focused tests passing). Zero `gate_decisions` have been
+emitted — the API is down and the code unpushed — so SC19 stays open **until the producer-written
+adapter emits its first tuple**. This extends the 2026-08-13 finding below with its second half: an
+*audit-accepted* landing is still not wiring; the row closes on the first emitted tuple, not on any
+amount of code provenance.
+
+#### Source References (2026-08-18 KB integrity)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
+  the wrap-up findings: the 151-link rot mechanism, pass 7 with its five mutations, the `repos/`
+  repair, and the split-identity pass with its one material case.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
+  `INC-20260816-git-clean-shared-clone`: the watermark loss, the 844-vs-51 false report, and the
+  untracked-but-load-bearing rule.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
+  SC41/SC42 renumbering notes and the A14 status with its independent merge audit.
+- [`progress/2026-08/2026-08-16-coordinator-agent.md`](../progress/2026-08/2026-08-16-coordinator-agent.md)
+  — the wrap-up narrative in which the split-identity check and the link-rot repair were built.
+- [`.claude/skills/project-wiki/scripts/lint_wiki.py`](../.claude/skills/project-wiki/scripts/lint_wiki.py)
+  — pass 7 as shipped.
+
+### Compiled Update — 2026-08-16: the register moved to design time, and three of its newest rows are not measurements at all
+
+**Confidence: verified** — the register rows and their reasoning are read from
+[`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) and the SC37–SC40 tasks in
+[`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md); the
+ladder registry, the two named producer modules, and the adapter inventory were inspected directly on
+disk for this compile rather than restated from the handoff.
+
+#### Filing moved *before* the producer, and the window is already closing on two of them
+
+The standing rule (file the wiring task the moment you notice a producer) has drifted earlier with
+each instance, and the four newest rows sit at the far end of that drift:
+
+| row | filed | producer state when filed |
+|---|---|---|
+| SC37 eval-tower per-suite resolution band | 2026-08-15 | the band has never been measured; `core_v2_calibrate.py --repeats` is the planned instrument |
+| SC38 worker-pool completion reports | 2026-08-16 | `worker_runner.py` still being authored, before the P2-9 pilot |
+| SC39 headless audit verdicts | 2026-08-16 | module **unwritten** — "the cheapest possible moment" |
+| SC40 loop-owned-fleet plan metrics | 2026-08-16 | four metrics computed nowhere; no unattended night scored yet |
+
+**Filed is not wired, and the gap is measurable today.** As of this compile
+`scripts/coordination/worker_runner.py` (82 KB) and `scripts/coordination/headless_audit.py` (38 KB)
+both exist on disk, and **neither contains a single `belief` reference**; `scripts/vidya/adapters/`
+holds twelve adapter modules and none of them reads either producer. So the two rows filed at design time
+have already watched their producers land without the hook — which is precisely the interval the rule
+exists to prevent, and the honest register status stays `candidate`, never `live`. The design-time
+filing bought the *knowledge* cheaply; it has not yet bought the *warrant*.
+
+#### Not everything a producer emits is a measurement — the categorical/rate boundary
+
+SC39 is the sharpest instance the program has produced. The headless auditor writes one typed verdict
+per completion (`accept | accept-with-followups | needs-rework | blocked-evidence`). **A single
+verdict has no metric and no direction, and must not be forced through `ClaimTuple`** — the rule is
+stated as: never invent a metric direction to push a record through the carrier. What *is* an honest
+measurement is a **rate over a declared window** — verdict-mix share, and above all the
+operator-vs-auditor disagreement rate that the owning plan's kill criterion reads at a 20% threshold
+over any 7-day window. Those are lower-is-better fractions whose scored denominator is the audits
+actually *adjudicated*, never the audits emitted.
+
+This is the dependency-evidence call of 2026-08-11 (preflight findings are real but not ordinal) moved
+one level up: the same discipline now applies to a *verdict stream* rather than a capability check.
+SC37 records the mirror-image error on the other side of the boundary — a resolution band **attests
+the resolution of the instrument and says nothing about the quality of any config**, so a projection
+that reads a band as "this delta is significant" repeats the SC21 category error one level up. Two
+rows, one lesson: the carrier's shape is not a licence to put a record in it.
+
+#### Independence is a property that can be spent
+
+Two of the new rows turn on warrant that a careless projection would destroy rather than merely
+overstate:
+
+- **SC39**: the audit packet is a pointer *whitelist* precisely so the review is not anchored on the
+  worker's own summary. A projection that folded worker-reported outcomes into the verdict rate would
+  destroy the property being measured. Independence is the entire warrant of that source.
+- **SC38**: `subagents_spawned`, `tokens_used` and `denials` are schema-required and type-validated —
+  `validate_report()` refuses a batch that omits any of them, so a clean run and an unreported one
+  cannot render identically. That is a genuine upgrade on a prose self-report, and it is **still
+  self-reported**: both counters are written by the worker into its own report file. The projection
+  must state *self-reported* plainly instead of claiming an independent witness; the independent count
+  would come from the harness transcript the runner already keeps a pointer to.
+
+#### The locator rule now has five spellings and one shape
+
+Support is counted by source locator, so the same trap recurs wherever a run emits many rows. Recorded
+instances, all of them the same defect:
+
+| source | naive key | correct locator | inflation |
+|---|---|---|---|
+| `benchmarks/results` | the result file | the run | 2,605 files → 2,605 "witnesses" |
+| A14 contention gate (SC19) | the gate decision | the request | one request walks N candidates |
+| affinity preflight (SC13) | the artifact file | the cell run | repeated preflights of one cell |
+| worker-pool reports (SC38) | the row | the **batch** | 3 rows per invocation, batch-level counters |
+| loop-fleet metrics (SC40) | the sample | the **window** | a 60 s poller reads one night as 1,440 |
+
+SC38 adds the corollary that matters downstream: with a batch-level counter, tokens-per-row is a
+*derived quotient masquerading as a measured value*.
+
+#### Two attestation limits worth carrying past this program
+
+- **A path outside git proves nothing on read.** SC38's runtime root (`/mnt/raid0/llm/worker-pool`) is
+  outside any tree, so the hook must write a sha256 over the report content at collect time or the
+  claim honestly tops out at `Witnessed/Anchored`. The same limit applies to every scratch artifact —
+  the 2026-08-13 document-parser runs sit in `/mnt/raid0/llm/tmp/`, present on disk and unattested.
+- **Pin the classifier version inside the tuple.** SC40's coordination self-repair share is a ratio
+  over commits classified *by path*, so it moves whenever the path taxonomy moves and two windows stop
+  being comparable. Its sibling caveat is a scope limit of the same family: compute duty cycle attests
+  **hardware occupancy**, never useful work.
+
+#### Pricing now applies at design time too, and "no adapter" is a valid verdict
+
+The P2 discipline (sample ~50 records, count full tuples, before writing a bulk adapter) has acquired
+a design-time form: SC40 states outright that the corpus is one row per night, so the honest answer
+may be a hand-written record rather than an adapter — **and that verdict should be written down rather
+than leaving the row open**. This is the same standard that killed the `benchmarks/results` adapter on
+evidence rather than deferring it.
+
+#### The registry invariant, re-verified this compile
+
+Reading the code rather than the docs: `scripts/vidya/claim_tuple.py` defines `register_ladder()` and
+raises `ProjectionError` on a second registration for a class ("*a second implementation of one rule
+becomes two dialects of it*"). Exactly two ladders are registered repo-wide — `measurement` in
+`claim_tuple.py:213` and `literature` in `adapters/research_intake.py:113`. The contract is enforced
+in code, not merely written down.
+
+#### A stale premise replicates through the corpus faster than the correction (2026-07-03)
+
+Retro-compiled from the window-2 intake sweep, because it is the KB-hygiene half of the same problem.
+A read-only sweep over **769 intake entries and 125 deep-dives** against 119 active handoffs found
+**22 genuinely missed tasks, 95 dead-confirmed, 135 already covered** — and the missed tasks were not
+22 independent oversights but **one stale gating premise repeated across eleven handoffs and indices**
+(a hardware purchase changed, and every document written before it still read "GPU-gated / deferred").
+Two rules the sweep's own self-critique makes explicit and this page adopts: the sweep was
+*index/intake-grounded*, so a deciding fact wrong inside an intake entry propagates into every
+derived plan; and an adversarial verification pass demoted **both** proposed P1s (one to MEDIUM, one
+to "already owned elsewhere"), which is the routine outcome when a sweep's recommendations are checked
+against the owning handoff's actual gate line rather than the index row.
+
+#### External publication is the same claim grammar with a fail-closed default
+
+The publication pipeline (F6) is the outward-facing instance of everything above and is worth reading
+as a governance pattern rather than a marketing task. Its generator turns `RESULTS.md` into a public
+draft where **no row publishes without a protocol tag**, and its current state is 374 rows of which
+**zero** are publishable: 31 held for historical-attestation review, 18 needing protocol tags, 325
+routed to `retired_from_public_claims`. Three transferable design choices:
+
+- **Differentiate holds by what would close them.** "374 blocked" is unactionable; splitting it into
+  attestation / protocol-tag / verification-decision buckets is what made the queue drainable, and the
+  generator emits that triage plus the named missing fields per row.
+- **Refuse retro-certification explicitly.** Rows dated before the host-attestation era get
+  `hold_for_historical_attestation_review`, not ordinary backfill, so a 2026-03-21 number cannot be
+  certified by today's host — it needs a historical artifact, a remeasurement, or retirement.
+- **Keep the decision layer out of the source.** The retirement of 325 rows lives in a dependency-free
+  JSON overlay applied at render time; `RESULTS.md` is never mutated. Fail-closed parsing completes
+  the pattern — an unparseable protocol marker holds the row instead of falling through to publishable.
+
+#### Source References (2026-08-16 design-time register)
+
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the source register rows
+  for SC37–SC40, the locator warnings, the P2 pricing discipline, and the consumer table
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
+  — SC37/SC38/SC39/SC40 as filed, including the categorical-verdict refusal and the independence rule
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.7 — the normative
+  projection contract and the dependency-evidence boundary the SC39 call extends
+- [`scripts/vidya/claim_tuple.py`](../scripts/vidya/claim_tuple.py) `register_ladder()` — the enforced
+  one-ladder-per-class invariant, read for this compile
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication)
+  W3 checkpoints — the 374-row publication queue, its triage buckets, and the review-decision overlay
+- [`handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md`](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md)
+  §1 and §8 — the 769-intake sweep counts, the single repeated stale gate, and the sweep's self-critique
+
+### Compiled Update — 2026-08-13: landing a producer is not wiring its evidence
+
+**Confidence: verified for code identity and tests; prospective for belief capture.** The A14
+contention-decision echo now exists on the local orchestrator main and passed independent patch/test
+audit. Yet it has produced zero belief tuples: the API has not served the local commit, and the
+producer-written adapter remains open. This is the precise distinction the source roster needs to
+preserve—implementation can be accepted while evidence status remains `candidate` or `wired`, not
+`live`.
+
+The locator constraint is equally load-bearing. One request can walk several topology candidates and
+emit several gate decisions; treating each decision as an independent witness would manufacture N
+supports from one request. The durable locator is the request/chat identity, with the decision list as
+one observation payload. SC19 stays open until that shape emits and round-trips its first tuple.
+
+#### Source References (2026-08-13 A14 write-side boundary)
+
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
+  producer state, locator trap, and first-tuple closure condition.
+- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — local
+  GateDecision echo landing.
+- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
+  [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — producer
+  record and independent audit.
+
+### Compiled Update — 2026-08-12 (third pass): the projection contract, and what "wired" is not
+
+**Confidence: verified** — the contract is read from the ratified pilot spec and the adapter registry's own conformance tests; the roster status is read from the adapter source table.
+
+#### One ladder per source class, and an adapter never grades
+
+The rule the substrate is built on is short enough to quote and is now enforced rather than documented: **an adapter PROJECTS; it never grades.** A native record is projected into a `ClaimTuple`, and `claim_tuple.grade()` returns `(Q, T, reasons)`. The carrier is shared, but each *source class* has exactly one ladder and `register_ladder()` refuses a second — with a conformance test that fails on any undeclared ladder. Two classes exist: `measurement`, graded by the measurement constitution's claim rule (metric, protocol_id, n/reps, date, durable host attestation) with a ceiling of **Witnessed**; and `literature`, graded by verification status, ceiling **Verified**.
+
+The defect that produced this contract is the argument for it: on identical input (no protocol, no attestation) two adapters disagreed — one returned `Judged/T0`, the other `Judged/Located`. Two graders will drift; one grader with many projections cannot.
+
+**Dependency evidence is deliberately not a third class.** It may write self-hashed native rows and be integrity-checked and classified, but it must **not** register a `ClaimTuple` projection or emit `evidence_supports_claim` until a shared dependency-evidence carrier and warrant rule are declared. The concrete consequence: multiple legs of one rehearsal support the *run*, not each leg — so a per-leg warrant would multiply one witness into several. Two rehearsal-class sources are live under exactly this restriction.
+
+Also worth recording as a superseded design: the v1 chain `Hinted < Judged < Corroborated < Traced < Verified < Witnessed` is declared **wrong and `Corroborated` was dropped from the carrier**, because it ranked two independent Judged sources *below* one unverified anchor. Warrant quality and traceability are separate axes; conflating them is what produced the indefensible ordering.
+
+#### "Wired" is not "validated", and the distinction is now the roster's main axis
+
+The adapter roster grew by roughly a dozen entries across 2026-08-11/12, and almost all of the new ones are **prospective**: the write path exists and is tested, and **zero real post-hook records have flowed through it**. Only a handful are live on real data (the intake index at 1,068 entries, six sealed measurement manifests, the GEAK/Arena round-trip, the gfx90a saturation and vendor-GEMM diagnostics, and the planner-reduction receipts). Reading a wired adapter as a validated one is the error this distinction exists to prevent.
+
+The standing rejection also holds and is worth repeating because it is the roster's most-cited decision: `benchmarks/results` is **rejected on evidence** — 0 of 200 sampled files carry a usable claim tuple, so no volume of them can gate anything.
+
+#### Three completed measurements that can never be graded
+
+Three real 2026-08-12 measurement sets — an architect MMLU-Pro hardened GPU control, an AutoKernel reward-integrity corpus, and E5 cell affinity-preflight artifacts — carry native captures, exact claims, pinned digests and attestation, and **predate their producer's write hook**. They emit zero rows and, by the substrate's own no-backfill rule, must **never be reconstructed on read**. This is the third repeat of the same shape in one program, which is the real finding: *wiring the write side is cheap and permanent; the read side cannot be retrofitted*, and every gap between a producer shipping and its hook landing is permanently unpriceable evidence.
+
+#### Source References (2026-08-12, third pass)
+
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) — §4.1 the dropped `Corroborated` grade, §4.7 the ingestion contract, and the dependency-evidence restriction.
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the project-never-grade rule, the one-ladder-per-class registry, and the live/wired/candidate/rejected source table.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the 2026-08-11/12 wiring sprint and the three pre-hook measurement gaps.
+
+### Compiled Update — 2026-08-12: fourteen ways a check passes for the wrong reason, and a correction queue drained to zero
+
+**Confidence: verified** — the catalogue is read directly from [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md); the queue drain from [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC15 and the ledger commits it names.
+
+#### The verification-failure catalogue: fourteen faces, and the eight that defeat the standard remedy
+
+The project's standing "eight ways a check passes for the wrong reason" note is now a compiled reference at **fourteen faces**. Its provenance matters more than its length: **every face is an instance that actually occurred on this fleet in one night, across five agents, in roughly six hours** — measured, not theorised. The rate is the argument for a catalogue: everyone involved already knew "verify your work", and knowing it prevented none of them.
+
+The one-line remedy stands — *mutation-test the guard: change the code so the property is genuinely violated and confirm the check FAILS; if you cannot make it fail, it is not a guard.* The genuinely new contribution of this pass is the **partition of where that remedy does not reach**. For **eight of the fourteen** mutation testing fails silently, for three distinct reasons:
+
+| Why mutation testing fails | Faces |
+|---|---|
+| The instrument cannot see the mutation | probe outside the tool's universe · right key, wrong universe · a check that is never run · a reader that truncated the input |
+| The mutation produces no distinguishable signal | a pre-written verdict label (a constant cannot move) · an error laundered into a plausible `0` |
+| The check is right about the wrong thing | it models a different subsystem than the one that broke · it was true when written and the world moved |
+
+Faces caught by an honest mutation test — empty input, over-wide key, target read from the working tree, assertion pinning a spelling, unchecked container, sentinel counted as content — carry one caveat: **empty-input defeats mutation testing under its own condition.** Mutation-test while the input is genuinely empty and the empty set satisfies the check, so the mutation goes unseen. *Assert the input is non-empty first, then mutate the guard* — which is why input assertion precedes rather than replaces mutation testing.
+
+Five faces are new enough to be worth stating in full, because each has a different tell and none of their tests catches the others:
+
+- **Right key, wrong universe.** Verifying a handover's commit list, `git cat-file -t <hash>` was run for every hash — but an earlier `cd` persisted in the same shell invocation, so root-repo hashes resolved against a *different* repo and eight valid hashes reported BAD. **In a multi-repo tree, a lookup that does not name its repo is not a lookup** (`git -C <repo> …`). Corollary: treat a run of identical failures as a scope bug before a content bug. Fails CLOSED and loud — in a handover it would have discredited a correct list.
+- **Sentinel counted where it also occurs as content.** Counting `<<<<<<<` markers in merge output to size a merge is sound until a file in the tree *documents* conflict markers — and in a repo whose agents write about merge hazards all night, several do. **Attribute the token to a path before counting it**; a sentinel is only a sentinel where the instrument put it. The same run produced the mirror image: a pattern returned nothing on 670 KB of non-empty output at exit 0 because that git emits different wording — *when a pattern returns zero on a large non-empty output, suspect the pattern before the tree.*
+- **The instrument models a different subsystem than the failure.** A conflict check reported zero conflicts, independently verified by two agents who both got exactly the right answer — and the merge still aborted, because an untracked (byte-identical) file triggered *worktree-safety*, a subsystem no conflict metric inspects. The durable form: **every readiness metric models one subsystem, and the failure will come from the one it does not model.** Name the subsystem out loud next to the claim it licenses — "zero conflicts" licenses *the index would merge*, not *the merge will run* — and prefer an end-to-end rehearsal over any single metric. Fails OPEN *while carrying independent confirmation*: two agents agreeing does not widen a metric's domain.
+- **Verified at one timestamp, read at another.** The only face where the check was right; soundness is no defence. Reproduced independently by three agents within one hour, on three freshly-certified handover documents. The sharpest sub-case is a **self-verifying claim with a hard-coded total** — *"all 35 hashes in this document resolve"* was true when written and made false on save by the same commit that fixed two other decays. **The version that expires is the one that reads most rigorous**, because a bare assertion has nothing to go stale. Remedy: **cite the resolver, not the total** — ship the command that re-derives the claim; where a number must appear, stamp it (*"38 as of 04:35Z"*) so a reader sees a measurement rather than a fact; and **re-check a document before it is read, not before it is committed.**
+- **Reader dropped part of the input and said nothing.** The first face on the *input* side. Bus payload fields were printed to 230 characters; a coordinator's instruction *"Do NOT build it tonight"* began at character **265** of a 348-character field, and the thing was built. Four agents then recorded it as a deliberate override — **which is worse, because a knowing override can be argued about and a silent truncation cannot even be noticed.** Sweeping the same inbox: **980 payload fields that day, 608 (62%) longer than the cutoff, 37 carrying directive language in the part never displayed.** Remedy: **never truncate an input you intend to act on — only one you intend to skim.** If volume forces a cut, make it visible and structural (drop whole fields with a marker), never a character cutoff that can land mid-sentence, and never truncate a field whose name or tail carries directive language. Fails OPEN and uniquely **self-concealing**: the evidence never entered the room, so the actor's own account of events is sincere and wrong.
+
+Two meta-observations from the same night ride with the catalogue:
+
+- **A retraction that publishes its mechanism is worth more than one that merely withdraws.** One refutation in this set was itself wrong; because the retraction explained *why*, it corrected a mechanism that had been written down under the wrong description. A quiet withdrawal would have left the wrong version standing.
+- **When an edit and its announcement are written in the same breath, the announcement lands even if the edit does not.** Two commit messages in one night described notes their edits had failed to apply. Assert the edit applied *before* writing the claim.
+
+The catalogue's own instruction for using it: walk the fourteen questions keyed on the **diff**, not on intent — and ask the twelfth question of any document you are about to hand to someone: not *"was this right?"* but *"is it still right?"*
+
+#### The correction queue drained 129 → 0, and the distinction that made it possible
+
+The stalled citation-correction backlog triaged in the prior pass is now **fully drained: 129 unadjudicated → 0, blocked claims 571 → 0, the `review` bucket empty**, across 233+ review frames in 13 batches. Each carries a per-claim corrections block written back into the intake index, so the next re-ingest grades opposition **per claim**. Integrity was re-verified after every batch rather than at the end: ledger chain plus all three checkpoints, index entry count held at 1,097 throughout, and the `conflicted` count unmoved at 3 — so no batch introduced one.
+
+The load-bearing distinction, and the reason a summariser could not have done this work:
+
+> **A heavily corrected ENTRY is not the same thing as corrected CLAIMS.** Roughly two-thirds of these corrections land on Stage-1 prose, a verdict justification, an applicability call, or an actionable about *our own* repo — not on any key claim. Propagating the entry-level label would have mass-downgraded claims that are fine.
+
+**Three systematic hazards, on record for anyone re-running a pass like this:**
+
+1. **Correction texts number their claims against a different list than the ledger's `claim_index`** — hit three separate times. Adjudicate on **content**, never on that numbering.
+2. **Some entries were written with their dive corrections already folded in**, so their claims *state* the corrected position and must read as **confirmed**, not corrected.
+3. **A citation-hygiene family**: four consecutive entries were each ingested only because a recommendation cited them with a **neighbouring entry's id** attached. Four wrong ids in one batch is a pattern, not four accidents.
+
+**Draining unmasked a consumer defect rather than causing one.** Moving ~140 citations out of `review` revealed the real grade underneath — mostly `ok`, but a *bare* `intake-NNN` citation in this very article surfaced as `conflicted`, inheriting a pre-existing overturned claim from an entry it was only *discussing*. That is the precise case the `#record` form exists for; the citation has been narrowed in this pass. The general rule it reinforces: **a bare entry citation inherits every defect of every claim in the entry**, so prose that merely writes *about* an entry should say `#record`, and prose relying on one claim should say `#NN`.
+
+#### The write-side hook trigger is the diff, not the intent
+
+The standing rule (wire a producer's write side immediately; the read side can never be retrofitted) failed four times in one day *among agents who were actively citing it* — including once by the author of the belief-substrate work, against a surface they had built hours earlier. What closed it was not more emphasis but a **different trigger**:
+
+> The test is **"you touched a producer"**, not **"you thought about producers"**. A checklist keyed on the diff catches it; one keyed on intent does not.
+
+Two **locator traps** were recorded alongside, both of the same shape — *a naive per-record count reads ONE witness as N*:
+
+- A per-request gate surface deliberately records **every candidate tried**, not just the winner, so the probe can see the walk down the placement priority order. Key on the **request**, not the decision.
+- Repeated pre-flight artifacts for one benchmark cell are the **same witness**, not N. Key at run level, not file level.
+
+And a pricing discipline that keeps the register honest: **price a candidate source with a ~50-record sample before building any adapter** — for a small corpus the honest answer may be that the volume never justifies one, in which case *record that verdict* rather than leaving the row open. A surface whose branch has not landed is `candidate — ready, unwritten`, not `live`.
+
+#### Fold purity: reject a bad stamp at append time, not at read time
+
+A ledger `fold` did not exclude frames dated *after* its `as_of`, so a future-stamped frame took effect immediately at any earlier instant — which is how 895 future-stamped frames from a date incident still folded in. Two designs were defensible (filter in `fold`, or refuse at append); the chosen one keeps **`fold` pure** — `created_at` stays publication metadata the fold never reads — and puts the guard in an **append-time refusal** with a bounded future-skew tolerance. Deliberately tolerant in two directions so the guard cannot fire on its own idiom: absent or malformed stamps pass (frame construction's contract; maintenance frames carry none), and past stamps pass (history is untouched — the existing future-stamped frames are correction-queue territory, not a validation matter). Tests cover both directions including the yes-paths.
+
+#### Source References (2026-08-12)
+
+- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) — the fourteen faces, the mutation-testing partition, and the two meta-observations
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC15/§SC13/§SC17/§SC19 — the queue drain, the three re-run hazards, fold purity, and the diff-keyed write-side trigger
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — batch-by-batch drain chronology and the self-caught write-side instance
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the source register the locator traps and pricing discipline are recorded against
+
+### Compiled Update — 2026-08-11: provenance discipline from a same-day audit — receipts outrank messages, filesystem presence is not provenance
+
+**Confidence: verified** — every finding below is read directly from `artifacts/audit/completion-flurry-wiring-audit-20260811.md`, an operator-commissioned four-section audit (commits `5c2212ce`→`fc8d4d52`), cross-checked against git and the filesystem rather than restated from the audit's own claims.
+
+#### A four-state wiring test, reusable beyond this audit
+
+The audit's standing question was never "was it done" but "is it wired in, and is it live" — resolving every completion claim into one of four states: **(1) committed and live** · **(2) committed, not live** (code merged, but the running process predates it, or nothing calls it) · **(3) claimed, not committed** (a bus message or handoff checkbox asserts work git does not contain) · **(4) live, wired to the wrong thing** (the code runs, but reads or writes the wrong source of truth). Applied to eleven 2026-07-29 completions: 8 were state 1; one instrument (`utm-m5`) was state 2 — tests pass, box reconciled `[x]`, but zero callers and zero runs anywhere on the filesystem, so the question it was built to answer remains unanswered; one batch (`repl-turn-efficiency-ready-batch`) was state 3 — wiped by an unrelated same-day tree-restore and never re-applied, with no incident-log entry for the restore that caused it; and the token relay itself was found in state 4 — live code, reading bus-message state as if it were world state.
+
+#### The rule the whole audit reduces to: artifacts on disk outrank any bus message when they disagree
+
+The concrete failure this rule fixes: a post-reboot fleet rebuilt its worldview from twelve-day-old undelivered bus messages and re-presented two operator tokens as pending — both had actually been signed 07-29, with `status: ratified` receipts sitting on disk the whole time (see [Benchmark Methodology](benchmark-methodology.md) and [Agent Architecture](agent-architecture.md) §C39 for the mechanism fix this produced). The delivery plane had been treating *message-not-delivered* as *decision-not-made*. Generalized: **the receipt on disk, not the bus message, is the source of truth for whether a decision was made** — a message queue records that something was *sent*, never that it was *decided*, and rebuilding worldview from the queue conflates the two.
+
+#### Filesystem presence is not provenance
+
+Twice in one day, an artifact's mere presence on disk was mistaken for its being committed. A completion citing a doc as evidence found that doc **untracked on any ref to this day** — present on disk, never `git add`-ed, so a fresh checkout of the repo would not have it. And the auditor's own conformance check made the identical mistake against itself: three receipt-index pointers asserted `ratified` by stat-ing the filesystem, not by checking git-tracking, over receipts that had themselves been untracked since 07-29. Both were closed the same way: commit the artifact, then extend the checker to verify git-tracking of every index target it points at, not merely the target's existence. The generalizable rule: a check that answers "does this file exist" is not the same check as "will the next person who clones this repo have it" — an evidence chain built on the former silently breaks on the latter.
+
+#### A closed box carrying real, correct measurements is more misleading than an open one
+
+The sharpest single finding: an agent that had *itself disclosed* the exact "committed but the live process predates the fix" hazard for one fix that same morning failed to apply the same disclosure to a second, structurally identical fix a few hours later — flipping its checkbox to `[x]` with accurate before/after numbers while the still-unrestarted daemon kept executing the pre-fix code underneath it. The numbers were true; the state they implied was not. **Knowing a rule is not the same as applying it to your own closure** — the failure mode survives self-awareness of the exact failure mode, which is why an external audit caught it rather than the same agent's own review pass. Both agents in this audit — the closer and the auditor — disclosed a symmetric defect in their own prior work the same day, which the audit names as the reason its numbers are worth anything: closures need a second reader, not just a careful first one.
+
+#### `git commit --amend` in a shared clone is a standing trap, confirmed a third time in one day
+
+Three independent same-day incidents shared one root cause: `--amend` (or a broad `git add`) in a repository multiple sessions write to concurrently sweeps other sessions' *currently-staged* files into the amending commit. One instance moved 4→37 files into a single amended commit; recovery in every case was `git reset --soft` plus a pathspec-scoped re-commit, never a force-push or history rewrite. This reinforces, rather than introduces, the project's existing pathspec-limited-commit discipline for shared trees — the finding is that the discipline needs to extend to `--amend` specifically, since `--amend`'s scope is "whatever is staged right now," which in a shared clone is not fully under any one session's control.
+
+#### A near-duplicate scorer function is not a migration target merely because it resembles the canonical one
+
+`score_aa_omniscience_run.py`'s answer-extraction routine resembles the canonical letter/answer extractor closely enough to look like a mergeable duplicate, but a per-consumer proof found real behavioral deltas: it compiles with no `re.DOTALL` flag (so it stops matching a multi-line `<answer>` block the canonical path handles) and falls back to the last non-empty line where canonical falls back to the whole response — differences that would move precision/recall/F1 on every unparsed response if merged. Verdict: not a migration target; both functions now cross-reference each other's deltas in comments, with zero behavior change. Reusable method: two similar-looking scorers are not provably identical until every fallback path is compared, not just the primary match pattern — the same discipline already on record in this project for an earlier `debug_scorer` comparison.
+
+#### A citation gate needs a way to say "discusses the record" without asserting the record's claims
+
+The `cite-check` gate (which refutes/conflicts citations of intake entries against the belief substrate) could not distinguish an entry *relying on* a claim from an entry *discussing the fact that the claim was fabricated and struck* — flagging a document that correctly recorded a fabrication as if it were relying on the fabrication itself. Fixed by adding a third citation form, `intake-NNN#record`: non-blocking on grade, but still reports a dangling reference (an entry that does not exist cannot be discussed either) and still counts as a dependency edge, because "which pages name this entry" and "which pages rest on its claims" are different questions worth keeping separate. A second, unrelated citation in the same pass was a real defect, not a false positive: three documents had carried forward a paper's superseded accuracy-uplift claim after the authors' own appendix corrected the number — a reminder that a citation gate catching false positives on one entry does not mean the next flagged entry is also a false positive.
+
+#### Belief-substrate write-side hook: scope widened, still a TODO
+
+The belief-kernel write-hook obligation (standing project rule: wire the write side immediately when a process starts producing measurements) was generalized today from "experimental kernel candidate receipts" to **all kernel promotion validation/certification receipts** — the v9 freeze's own qualification and certification writers, DFlash's production-certification summaries, and K35's GPU/DSpark results all still lack a prospective ClaimTuple write hook (see [Hardware Optimization](hardware-optimization.md) for the v9 freeze itself). The read-side planner seam (AutoPilot's supersession folding, graded against Vidya's canonical ladder) is live and advisory-only — it never gates generation. Promotion-gate wiring is explicitly blocked pending durable current-trial attestation. **IN-PROGRESS**, not settled: no read-side provenance has been retrofitted into any of the already-completed v9 promotion artifacts.
+
+#### A 129-item correction backlog was triaged by splitting on what each item demands, not by working through it in arrival order
+
+A stalled 129-entry citation-correction backlog looked intractable only because it had never been decomposed. Splitting by what adjudication each item actually requires found 37 are scope/framing corrections, 31 numeric, 16 provenance, 6 superseded, 38 need a primary-source read — and **exactly one** needs a genuine primary-source dive (the entry with the most citations, at 7). The other ~99 need not queue behind that one. Deliberately not resolved into verdicts in the same pass: recording a verdict requires a human `--actor`, and manufacturing 129 verdicts from a triage pass would inject the exact unwarranted warrant the correction substrate exists to prevent — the ordering, not the verdicts, was the deliverable. Generalizable triage pattern: split a stalled backlog by the *kind* of work each item needs before attempting any of it, then start with whatever is both rare and highest-leverage (here, the most-cited entry) rather than processing in arrival order.
+
+#### Source References (2026-08-11)
+
+- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) — the four-state wiring test (§A), the receipts-outrank-messages rule (§D, §D5, §A-rc RC2), the two filesystem-presence-is-not-provenance instances (§A item 9, §"Signed-but-untracked closure"), the closed-box-more-misleading-than-open finding and its self-referential closure (§"Tonight-commits audit" item 1, §"Self-referential closure")
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the three `--amend`-sweeps-shared-tree incidents, the scorer-duplication verdict (A10), and the 129-item correction-backlog triage (A9)
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC12/§SC14 — the belief-kernel write-hook scope widening and the advisory-only planner read-side seam
+- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110#record superseded-claim correction (commit `a48e04ba`). *(Narrowed from a bare `intake-110` on 2026-08-12: this line discusses the record, it does not rely on the entry's claims, and the bare form inherits every defect of every claim in the entry — which is how it surfaced as `conflicted` once the correction queue drained.)*
+### Compiled Update — 2026-07-29: a stale record is an active liability — the correction pass
+
+**Confidence**: verified — each correction below was settled against a primary
+artifact (a file at a pinned commit, a repository listing, a weight map, a
+paper's own table), not against a secondary summary. **Caveat on independence**:
+the corrections and the records they correct were both produced by this project,
+and in several cases by the same session; what is independently checkable is the
+artifact each correction cites.
+
+#### The batch outcome makes the point
+
+Of the 19 intake entries selected for deep dives in this batch, **9 were
+overturned** and 10 verified. The dives changed decisions rather than merely
+enriching records — a framing was inverted, a vendor uplift claim died, a
+drop-in candidate was killed, one entry was found to be substantially fabricated
+at Stage 1, another had been read from a stale version, and a ranking this repo
+had restated was found to be backwards. **The corrections are the durable
+knowledge; the original claims are not.**
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §"The dives changed decisions, not just records"
+
+#### Verify a negative before asserting absence
+
+Two records asserted a capability gap that did not exist, and both were actively
+mis-scoping live work:
+
+- A handoff line asserted a retrieval model was framework-only with "no GGUF /
+  llama.cpp / Transformers / ONNX". **Three GGUF repositories exist**, one of
+  them published **five months before that line was written**, and our frozen
+  production tree already supports the path end to end. The stale line was
+  pricing a live evaluation as "stand up a new serving stack" when it is a
+  one-line server invocation. See [Search & Retrieval](search-retrieval.md).
+- An intake entry claimed our pinned image-backend checkout lacks support for a
+  model. The pinned commit contains that model's implementation header (646
+  lines) and its documentation, and the deployed GPU binary was **built from that
+  source**. Struck in both the entry's `recommended_actions` and its
+  `verdict_justification`.
+
+The generalized rule — never assert "absent" or "identical" from one encoding,
+one key, or one file listing — is the same one that governs architecture
+verification: read the artifact that would have to contain the thing.
+[`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) §Open Question 1 (corrected);
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
+
+#### Verify architecture from the weight map, not the declaration
+
+A config-level check reports a model's draft head "preserved" while the model
+ships **zero** such tensors. Any architecture claim about a fine-tune must be
+settled against `model.safetensors.index.json` or GGUF tensor counts. Full rule
+and evidence: [Speculative Decoding](speculative-decoding.md).
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) §2026-07-29 Stage-4
+
+#### Two intake-pipeline failure modes with named remedies
+
+- **Stage-1 fabrication.** One entry's Stage-1 body contained a product name
+  appearing **zero times** in the paper, process metrics that do not exist, and a
+  verifier result with its **sign inverted** (+8.40 recorded as −8.4). The body
+  was rebuilt from primary source at Stage 2. Follow-on filed: audit the single
+  non-dived entry in the batch for the same mode. The structural lesson is that a
+  Stage-1 summary is **unverified by construction** and must be labelled as such
+  until a dive touches the primary source.
+- **Stale-version reads.** Another entry was summarized from a v1 while the live
+  v2 had released code under Apache-2.0, added an open-weight arm, and — decisive
+  — the authors had **downgraded their own headline 34.2% → 20%**. Both "direct
+  tensions" recorded at Stage 1 were wrong. Always resolve to the live version
+  before recording tensions against internal work.
+
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §dive table
+
+#### Cite by identifier, not by title; and check the cross-reference resolves
+
+Two distinct hazards surfaced in one batch. First, a paper from the same week
+carries a **near-identical title** to one of the anchors, so anyone re-fetching
+by title lands on the wrong document — cite the arXiv ID.
+[`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) §Dedup hazard.
+Second, a handoff *and* its deep dive both cite an intake ID as their subject's
+entry, and that ID belongs to an entirely different entry; **no row for the
+actual subject exists at all**. A citation that resolves to *something* is not a
+citation that resolves to the *right* thing.
+
+**Resolved 2026-07-29** (`intake-937` created; all 6 references repointed). The
+failure mode generalises, and it is worth stating in its sharpest form: **a
+missing index entry is loud; a wrongly-pointed one is silent.** The subject here
+was not obscure — it was the *deployed production model*, with a deep dive, an
+active handoff, and a live serving path. What was missing was only the index row,
+and because two documents cited a plausible-looking ID, every reader who checked
+was *reassured* by an unrelated CPU-matmul blog entry. It survived from
+deployment until a dive on a competing model happened to grep the index rather
+than trust the handoff — i.e. it was caught by accident, not by any control.
+
+Two durable consequences. (1) **Validators check resolution, not correctness.**
+`validate_intake.sh` confirms that referenced handoff files exist; nothing checks
+that a cited intake ID is the *right* entry. Cross-reference validity needs a
+periodic sweep, and "the link works" must never be read as "the link is right."
+(2) **Repointing is not a find-and-replace.** Three of the six references were
+verdict-*promotion* instructions ("promote to `new_opportunity` once GPU lands")
+that are nonsense against an already-deployed row — both triggers had fired
+months earlier. Each repoint carried an inline dated note, so the superseded ID
+stays traceable instead of being silently erased.
+
+#### Never round-trip a whole document to append to it
+
+Persisting 24 new entries via `yaml.safe_load` → `safe_dump` **destroyed the
+index header comments** and reflowed all 18,935 lines, presenting a 24-entry
+addition as a whole-file rewrite. Comments are not part of the YAML data model,
+so a round-trip discards them without error — the operation *succeeds* while
+losing information, which is why nothing caught it. Recovery required verifying
+all 912 pre-existing entries field-by-field to prove no semantic change rode
+along (none did), and the reformat is not reversible once pushed.
+
+The fix is preventive: **append as text**. Exercised on the very next write, the
+same operation produced **101 lines added, 0 removed**, header intact, validator
+green. Two orders of magnitude less churn for identical semantics. Worth carrying
+beyond YAML — any serialize-parse-reserialize cycle over a human-maintained file
+silently drops whatever the parser does not model (comments, key order,
+formatting, anchors), and a reviewer facing a whole-file diff cannot see the
+actual change.
+
+#### Process amendment: the dive-surfaced source gate
+
+The research-intake skill gained a **Stage 2b** gate: dives must emit the list of
+new sources they surface, the operator selects from it, and those run as a
+combined Stage-1+2 pass **before Stage 3 opens** — plus a fifth Stage-3
+completeness gate and a separate entry cap. Motivating failure, from this batch:
+four papers were raised only at Stage 3 and had to be bolted on as a
+post-approval round, so the rest of the plan was authored without their findings
+— and one of them **partly deflated the very entry whose dive had surfaced it**.
+
+#### Two record-keeping hazards worth carrying
+
+- **Staged-files ride-along.** Index rows authored by this session were swept
+  into a *parallel* session's commit. Content survived intact; only attribution
+  moved. On a shared tree, authorship is not established by who wrote the lines.
+- **Prose is invisible to the dashboard.** A hardening item recorded only as
+  prose inside another checkbox did not count toward progress; it was converted
+  to its own `- [ ]` line during this pass. Any edit recording completed work
+  must flip a checkbox, not narrate.
+
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Note on attribution;
+[`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) §2a-iv
+
+#### Source References
+
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — batch outcome (24 entries, 19 dives, 9 overturned), the per-entry overturn table, records corrected, the skill amendment, and the attribution note
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the five-month-stale capability assertion and its live mis-scoping effect
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
+- [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — weight-map-over-config verification rule
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — near-identical-title dedup hazard; cite by arXiv ID
+- [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — prose-to-checkbox conversion during the same pass
+### Compiled Update — 2026-08-09: a citation graph nobody had measured was 23.5% broken, and the ranking derived from it was wrong
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled; the index defect and its repair were measured directly against `research/intake_index.yaml` before and after migration on 2026-08-09.
+
+- **The intake index's citation graph was silently dropping roughly a quarter of its edges.** A census found **458 of 1,952 `cross_references.intake_entries` values (23.5%), across 133 entries, did not resolve** to any existing entry. The dominant class was annotated IDs of the form `intake-261 (Skill0 — RL-based skill internalization)` — a valid ID made unresolvable to tooling by a human-readable suffix. Eight values were worse: an unquoted `:` inside the annotation caused YAML to parse the list item as a **mapping**, so the value stopped being a string at all. Repair normalised every value to a bare resolvable ID and preserved all 458 annotations verbatim in a new `intake_entry_notes` sibling: **0 values lost, 0 unresolvable remaining**, resolvable edges 1,494 → 1,940. Sources: [research/intake_index.yaml](../research/intake_index.yaml), [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [progress 2026-08-09](../progress/2026-08/2026-08-09.md).
+
+- **The generalizable failure is that a broken graph does not announce itself — it produces plausible, wrong rankings.** Repair reordered the most-cited list substantially (one entry moved 12 → 27 inbound and became the index's most-cited; another moved 3 → 17; **239 entries gained edges**). A backfill population that had been *scoped by inbound-citation count* was therefore measuring the wrong set and had to be recomputed against the repaired graph. **Any selection rule computed over a reference graph inherits that graph's defects silently**, which is the same class of error as gating on a metric whose scope does not match the measured subset. Sources: [research/intake_index.yaml](../research/intake_index.yaml), [progress 2026-08-09](../progress/2026-08/2026-08-09.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md).
+
+- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
+
+- **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
+### Compiled Update — 2026-08-09 (second batch): auditing a belief-system design, and what the epistemic literature actually licenses
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from a single research-intake
+> session that ingested and dive-verified 37 sources (`intake-1031`–`intake-1067`); every formal claim
+> below was checked against primary text during that session, and each is cited to its intake entry.
+
+- **When a design proposes infrastructure, audit the codebase before auditing the literature.** A
+  2,682-line proposal for an "append-only ledger of typed frames plus derived belief state" was
+  reviewed against the actual tree first, and the pattern turned out to be **landed in-project three
+  times over** — the evidence-plane ledger (13/14 waypoints done, typed sequential e-process
+  verdicts, per-candidate views rebuilt by fold), the AutoKernel journal (fsync-per-event, seven
+  schema-bound record kinds, pure `rebuild_views()` bound to an events digest, `RETRIEVAL_SUPERSEDED`
+  so a record can leave *retrieval* without leaving the *record*), and the experiment journal
+  (supersession fold with baseline authority already cut over to `ledger_fold`). The honest scope of
+  the proposal shrank from "EPYC lacks a substrate" to three verified gaps: claim-level dependency
+  edges (wiki dependency tracking existed nowhere as a design), refusal-semantics freshness gating,
+  and provenance-gated actuation. Sources:
+  [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/autopilot-program.md#track-evidence-plane-ledger-and-sequential-verdicts),
+  [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md),
+  [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md).
+
+- **Vocabulary reuse is a hard governance constraint, not a style preference.** Three independent
+  vocabularies already own parts of this space: `MEASUREMENT.md`'s reconciliation verbs
+  (`retro-certify` / `demote-to-prior` / `retire-view`), the dashboard's freshness classifier — which
+  declares itself "THE ONE CLASSIFIER" over `fresh`/`aging`/`stale`/`missing` plus the independent
+  `observed|silent|absent` × `populated|empty|unknown` axes — and the sequential-verdict states
+  (`accumulating` / `confirmed_improvement`). Any new taxonomy **maps onto these or extends them
+  explicitly; it never forks them**, or the project acquires a second governance system whose
+  disagreement with the first is undetectable. Sources: [MEASUREMENT.md](../MEASUREMENT.md) §6,
+  `dashboard/freshness.py`, [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md) §3.
+
+- **The frame and ledger layers of any claim-tracking system are solved prior art; only the epistemic
+  kernel is unserved.** Typed, content-addressed claim units with provenance, actor signature, and
+  supersession/retraction are **nanopublications**, running publicly for fifteen years (three named
+  graphs; content addressing over a *normalized* graph so identity survives serialization; retraction
+  valid only when signed with the original author's key). The field vocabulary is **W3C PROV-O**
+  (including `wasInvalidatedBy`/`invalidatedAtTime`). The typed-signed-statement encoding with
+  per-step scoped authority is **in-toto/DSSE + SLSA** — which already occupies the exact epistemic
+  stance ("verification proves the derivation followed registered rules, not that the artifact is
+  good"). The authenticated append-only log without consensus is **RFC 9162 / C2SP tile logs**,
+  self-hostable and freshly re-engineered. What remains genuinely unbuilt is the kernel: a
+  deterministic fold to *graded* belief state, freshness gates that refuse, and certificates over an
+  accumulating supersession-aware state. Sources: intake-1031, 1046, 1047, 1048, 1063, 1064.
+
+- **A semantic trap worth internalizing: record-lifecycle time and world-truth time are different
+  clocks.** PROV's `invalidatedAtTime` means *the record became unusable*; a bi-temporal knowledge
+  graph's `invalid_at` means *the fact stopped being true in the world*. Aliasing both to one field
+  is a category error that silently corrupts every freshness query built on it. The corrected field
+  set keeps five distinct times — ledger-side `created_at`/`expired_at`, world-side
+  `valid_at`/`invalid_at`, and the source's own `reference_time` (a 2025 paper read in 2026 asserting
+  a 2024 fact carries three). Sources: intake-1046, intake-1032.
+
+- **Similarity cannot detect contradiction — so no retraction path may be gated on an embedding
+  threshold.** Measured on 98 labelled pairs, cosine similarity separates duplicates from
+  contradictions at **AUROC 0.5926**, barely above chance, because a contradiction is often *more*
+  embedding-similar to the original than a harmless rephrasing is. This is the empirical basis for
+  requiring key-equality-plus-value-inequality (or an explicitly logged adjudicator) rather than a
+  similarity score anywhere in an invalidation path. Source: intake-1036.
+
+- **Any LLM judgment that can affect a derived result must be logged as a keyed input, or replay is
+  provably inconsistent.** A 2026 result establishes *necessity*: for a boundedly nondeterministic
+  judge, a system without a durable keyed log admits an adversarial replay pair that reaches
+  different conclusions from identical committed state — and with the log, that anomaly is excluded
+  (a tight characterization). Three operational rules follow: key judgment records by the read-set
+  plus the full decoder tuple (prompt, seed, model version, temperature, tool-output hash); enforce
+  first-committed-vote-wins per key so a re-run judge is short-circuited rather than appended; and
+  invoke no model during a fold or replay. The trap: **greedy/temperature-0 decoding does not make a
+  judge deterministic** under this model, because the nondeterminism space includes sampling state
+  and hardware numerics. Source: intake-1035.
+
+- **Advisory provenance display does not change behaviour; refusal does.** A controlled n=26 study of
+  a claim-level provenance interface found it *significantly lowered* participants' trust in
+  LLM-generated scholarly edits while **not changing their reliance** on those edits under time
+  pressure. Independently, a RAG staleness benchmark found one outdated passage cuts overall scores
+  by more than 24% and raises harmful outputs, while retrieval-side mitigation still surfaced stale
+  content roughly half the time. Together these are the empirical case for gates that block or
+  abstain at serve time over banners that warn — and for a scoring scheme that penalizes confidently
+  stale answers (+1 correct / 0 abstain / −1 harmful) rather than rewarding abstention as safety.
+  Sources: intake-1060, intake-1054.
+
+- **A published citation can be correct in every particular and still be attributed wrongly.** Five
+  formal citations underpinning the design were checked against primary text: four confirmed, one
+  partial — the convergence bound the draft attributed to a specific paper is standard Kleene-iteration
+  folklore, and the citable theorem is in fact *stronger* than what was claimed. Two further
+  corrections came from reading the sources rather than their abstracts: an argumentation paper
+  defines **three** proof standards, not the five widely associated with it (the other two arrive in a
+  later chapter by the same authors), and a "counterexample" scope caveat turned a headline retraction
+  primitive into a positive-fragment-only result. The transferable rule: **verify the attribution, not
+  just the existence** — "this paper says X" is a claim about the paper, and it fails independently of
+  whether X is true. Sources: intake-1038, 1039, 1040, 1050, 1062, 1066.
+
+#### Source References
+
+- [`research/deep-dives/vidya-belief-substrate-audit.md`](../research/deep-dives/vidya-belief-substrate-audit.md) — the consolidated audit: verdict, seven wrinkles, corrections ledger, corrected formal foundations, adoption kit, landscape, machine-wide assessment, and the 37-entry reference table
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the resulting program: spec-amendment sheet, downscoped gold corpus, shadow pilot, research track, operator decision queue
+- [`progress/2026-08/2026-08-09.md`](../progress/2026-08/2026-08-09.md) — session record for the audit batch
+- [`research/intake_index.yaml`](../research/intake_index.yaml) — entries `intake-1031`–`intake-1067`, each carrying its verified claims, adoption extract, and dated `dive_corrections`
+### Compiled Update — 2026-08-09/10: what building the belief substrate actually taught
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from an implementation
+> session that landed ~2,600 lines under `scripts/vidya/` with 156 tests passing on two
+> architectures. Every measurement below was produced by running the code against the real
+> 1,067-entry intake index, not estimated.
+
+- **A correction recorded only in narrative is not a correction — it is worse than none.** A
+  fabricated `/doctor` mechanism was reported "struck" on 2026-07-25 by three separate records (a
+  progress file, a governance handoff, and a later re-source note) and was **never removed from the
+  index**. It served as "CONFIRMED and understated" for fifteen days. The failure is worse than an
+  uncorrected entry because a reader who checks the record is told the problem was handled. The
+  generalizable rule: **verify a correction in the artifact it claims to change**, not in the prose
+  that claims to have changed it. Sources: [research/intake_index.yaml](../research/intake_index.yaml)
+  intake-896#record `dive_corrections`, [vidya-pilot-corpus.md](../docs/design/vidya-pilot-corpus.md) §4.
+
+- **A validator that checks key presence does not check anything.** Two defects of the same shape
+  landed the same day: 538 entries carried duplicate `cross_references.intake_entries` keys (PyYAML
+  resolves duplicates last-one-wins, silently), and 9 entries satisfied the *required* `url` field
+  with a null. Both had passed every validation run for as long as they existed. The duplicate check
+  had to move to **parse time** — after `safe_load` the earlier value is already gone, so it is
+  undetectable by inspecting the parsed structure. The empty-field case resolved into a
+  **locatability** rule rather than a backfill: an entry needs a url, an arxiv_id, *or* a
+  `locator_note` explaining why neither exists, because all 9 were legitimate operator-supplied
+  inline material where inventing a URL would be strictly worse than leaving it blank. Sources:
+  [validate_intake.py](../.claude/skills/research-intake/scripts/validate_intake.py),
+  [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md).
+
+- **Recording where a claim was read costs seconds at dive time and is often impossible later.** A
+  pass over all 1,067 entries found **zero** claims anchored to a span — every entry identified a
+  *document*, so no claim could be cited as checkable at a location. That is now measurable as a
+  grade: claims without an anchor cap at "located", and a policy requiring an anchored claim was
+  satisfied by **0 of 4,191**. Recording the anchor while the source is open is now a Stage-2
+  obligation in the intake skill. This is the same failure as the renamed-kernel incident, priced.
+  Sources: [SKILL.md](../.claude/skills/research-intake/SKILL.md) Stage 2,
+  [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md).
+
+- **An evaluation that passes first time has not been tested.** The gold-corpus mutation suite
+  ultimately scored 28/28, but scored **20/28 on the first run**, and all four failures were real:
+  two engine bugs (retraction operated per-*frame* while evidence lives in per-*token*, so a
+  discredited source kept supporting its other claims) and two gold-label errors where the corpus
+  encoding was less faithful than reality. Four defects in a system its author had just written and
+  believed correct. Corollary observed twice more the same session: a negative control that does not
+  verify its own mutation took effect proves nothing, and a test asserting a value the code cannot
+  affect (`iterations >= 1` on frames that create no claims) passes against a broken implementation.
+  Sources: [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md).
+
+- **A rising correction rate can mean rising verification, not falling quality.** The monthly series
+  shows corrections climbing from 1% (March) to 68% (August), which reads as collapse. It is a
+  confound: corrections are recorded by dives, and dive activity went from ~0/month to 123 in August.
+  The series measures *when verification happened*. The confound-free figure is the overturn rate
+  among dived entries — **27 of 160 = 16.9%**, roughly one dived entry in six with a load-bearing
+  claim falsified. Any metric whose denominator is "everything" cannot distinguish an uncorrected
+  claim from an unexamined one. Sources:
+  [vidya-r4-r5-corroboration-and-decay.md](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md).
+
+- **Independence is unmeasurable when identity is per-source.** 100% of 4,191 beliefs rest on at most
+  one support path — not because the corroboration statistic is wrong, but because claim IDs are
+  minted per entry, so two sources can never support the *same* claim. The data model forecloses
+  independence before any statistic runs. Cross-entry claim identity is therefore a prerequisite, and
+  it is irreducibly human: deciding two differently-worded claims are the same proposition is exactly
+  the judgment a deterministic fold must not make.
+
+- **A refusal without a named next action is a shrug, and a one-way flag deadlocks the work it
+  protects.** The first live run of the freshness gate blocked 652 claims with no way to clear them,
+  because every dived entry carries a correction and the review flag had no counterpart. The fix was
+  a `correction_reviewed` frame, so the gate's named next action produces the thing that unblocks it.
+  Related: an unprovable absence is refused outright rather than approximated — "no rule can produce
+  X" is kept as a function that *raises*, because a plausible implementation would be an unprovable
+  absence that looks like a proof. Sources:
+  [vidya-pilot-spec.md](../docs/design/vidya-pilot-spec.md) §8, `scripts/vidya/absence.py`.
+
+- **A null result needs demonstrated detection power to mean anything.** An exhaustive search for a
+  counterexample to an open conjecture found none across 5,670 instances. On its own that is worth
+  little. Two things make it a result: boundary growth was confirmed present in the corpus (so the
+  search exercised the case at issue), and a mutation test replaced the implementation with a
+  plausible-but-wrong variant, which produced **2,715 counterexamples from the same instances**. The
+  comparison can see a wrong answer; it does not see one here. Sources:
+  [vidya-r1-r2-stratified-negation.md](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4b.
+
+#### Source References
+
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) — the binding pilot contract, all §19 decisions ratified 2026-08-09
+- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — 19 gold claims from four documented real corrections
+- [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) — 28/28, and the four failures found first; verdict ITERATE
+- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) · [`vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md)
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — 58 done / 4 open
+### Compiled Update — 2026-08-10: a citation is not a dependency, and a check can be passed by deleting what it inspects
+
+> Model-compiled from an implementation session (vidya program + a full citation audit of the intake
+> index). Every number below is measured against the live index or ledger and is reproducible from
+> the cited artifact. **Retracts one claim from the 2026-08-09/10 section — see the first item.**
+
+- **RETRACTION: the "5,670 instances, 0 counterexamples" null recorded above is vacuous.** The two
+  routes it compared reduce to the same expression — specializing a base fact to ⊥ and then dropping
+  ⊥ entries *is* deleting that fact — so agreement was guaranteed by construction and measured
+  nothing. The mutation test was sound but showed only that the harness can detect disagreement; it
+  could not show the routes differed, which is how it was read. The lesson generalizes past this
+  instance: **a mutation test validates the detector, never the distinctness of the things being
+  compared.** Pin the distinctness separately, or a tautology passes as a result. Replaced by a real
+  finding — genuinely incremental retraction across a negation boundary is **refuted** (2,241 of
+  5,670), dual tokens cut it to 270, and only dual tokens plus intra-stratum dependency closure is
+  exact. Source: [vidya-r1-r2-stratified-negation.md](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c.
+
+- **A citation is not a dependency, and the gap is measurable.** Hand-classifying a 20-edge uniform
+  sample of the intake citation graph suggested that citations from *dived* entries were evidential
+  at 4/6 precision. A **60-edge sample stratified over the 672 dived-source edges refuted it: 18%
+  evidential, 75% topical, 7% companion artifact.** The first figure was a small-sample artifact —
+  its edges happened to fall in one intake batch where citations really are foundational. Promoting
+  all 672 would have created ~550 false dependencies, and a false dependency is worse than a missing
+  one because it propagates invalidation into work that never depended on anything. Two mechanical
+  shortcuts were tried on the same sample and both failed (naming the target in the claim text:
+  precision 0.50, recall 0.09; verification-language keywords: 0.50/0.27). **Dependency has to be its
+  own edge, written when the dependency is real** — hence the `depends_on` field with a required
+  `why` and a counterfactual authoring test. Source:
+  [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) §4d.
+
+- **A validation rule can be passed by omitting the field it inspects.** Duplicate `arxiv_id` was a
+  hard error. Exactly **3 entries in 1,067** carried an arXiv *URL* with a null `arxiv_id` — all three
+  `novelty: duplicate`, all three from one 2026-07-08 batch, and all three holding an id that already
+  existed elsewhere. Each would have failed validation had the field been filled in. Whether that was
+  deliberate is unknowable and irrelevant: the check could not see its own blind spot, because absence
+  of a field is indistinguishable from a source that genuinely has none. The fix looks at the *other*
+  field (the URL) rather than trusting the one being validated.
+
+- **Labelling a duplicate is not the same as refusing to create one.** Dedup was working — it
+  correctly marked collisions `novelty: duplicate` — and then persisted them as full entries anyway,
+  each with its own `key_claims`. **12 such entries existed and 10 were cited by other entries**, so
+  every one read downstream as an independent source. A classifier whose output is a label rather than
+  a control-flow branch does not prevent anything.
+
+- **Five sources were cited across the knowledge base and had never been ingested**, each carrying a
+  *neighbouring* entry's id — which reads as provenance and is not. All five turned out to be real
+  papers (ADAS, Hyperagents, Self-Harness, ACE, RE-Bench). The papers were never the problem: **two
+  headline claims resting on them were false.** "LLM-as-judge benchmark design is itself optimizable"
+  is supported by none of its three sources — all three optimize harness or context against a *fixed*
+  benchmark. "A trajectory toward fully autonomous task generation" is supported by none of the
+  ADAS → DGM → Hyperagents lineage; Hyperagents lists *"a fixed task and evaluation distribution"*
+  among its own limitations. A downstream scoping document had already taken *"only the
+  task-generation half"* of a system with no task-generation half.
+
+- **Verifying one clean fix is what finds the rest.** The audit began with two mis-stamps noticed by
+  accident while checking something unrelated. A naive label-vs-title checker over 271 files produced
+  **780 hits, almost all noise** (any prose before a parenthetical id). Tightened to name-like labels
+  in curated paths, it found 8 real mis-stamps — and separately revealed that **101 entries, the whole
+  2026-03 seed batch, had titles that were just their arXiv id**, which is why four *correct*
+  citations (YaRN, Sarathi-Serve, Cascade, SkillRL) had looked like mismatches. One batched arXiv
+  sweep (25 ids per request, 5 requests) resolved all 101.
+
+- **An identifier stops being cheap to change the moment something immutable references it.** Merging
+  four duplicate entries left permanent id gaps. Closing them would have renumbered 728 entries,
+  rewritten 5,565 references across 479 files, and changed 731 of the 1,067 intake ids embedded in
+  append-only ledger claim identifiers whose hash chain a checkpoint had already signed. The argument
+  that decides it holds even without the ledger: **a reused id makes an old reference resolve to the
+  wrong thing, silently; a removed id resolves to nothing, visibly.** But that defence is only valid
+  if the absence is *recoverable* — 44 references to absorbed ids sat in 20 files with no forward
+  pointer until a generated redirect map was published. **A redirect map must be generated from the
+  data, never hand-kept**, because one that drifts answers confidently and wrongly.
+
+- **Resolution is a lookup, not a rewrite.** The obvious follow-up — bulk-repoint every reference to a
+  merged id — would have corrupted records. Of 57 references, exactly **one** was mechanically safe to
+  rewrite; four would have been damaged, three of them because the dead id is named *precisely because
+  it was wrong* (a correction record), and one because it is a range endpoint. Historical records
+  naming a superseded identifier are correct as written.
+
+#### Source References
+
+- [`research/intake_merge_map.md`](../research/intake_merge_map.md) — generated redirect table for merged ids
+- [`.claude/skills/research-intake/references/intake-schema.md`](../.claude/skills/research-intake/references/intake-schema.md) — `depends_on`, `merged_ids`, ID-sequencing rationale
+- [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) §4b–4d — promotion status, live-ledger evaluation, the citation-edge samples
+- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c — the vacuity retraction and the four retraction routes
+- [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, source-identity defect
+- [`research/recommendations.md`](../research/recommendations.md) — rec-001 and rec-002 rewritten after their sources were read
+### Compiled Update — 2026-08-10 (promotion track): what it took to make one belief rest on two sources
+
+> Model-compiled from the belief-substrate promotion track and the R-program closeout. Every figure
+> below was produced by running the code against the live 4,181-belief ledger or the real 1,067-entry
+> intake index. **Two earlier compiled claims are amended here — see the corroboration and R1b items.**
+
+- **Corroboration was degenerate because support was counted by LABEL, not by SOURCE.** The earlier
+  section recorded "100% of 4,191 beliefs rest on at most one support path" and attributed it to
+  per-entry claim identity. That was half the cause. `_disjoint_supports` counted evidence *labels*,
+  which are minted per claim, so two records of the same paper produced two labels and would have
+  read as independent support the moment aliasing landed. Counting by **source locator**, and
+  collapsing alias groups the reviewer marked non-independent to one witness, produced the first
+  non-zero `disjoint_supports ≥ 2` in the program's history: over 4,181 beliefs the distribution is
+  **0 → 112, 1 → 4,066, 2 → 3**. Of the reviewer's ten "same" verdicts, the seven same-source or
+  linked ones correctly yield nothing and exactly the three genuinely independent ones count. Had the
+  aliases been emitted before the counting change, the statistic's first positive result would have
+  been one paper counted twice — strictly worse than the honest zero it replaced.
+
+- **"Human-gated" describes the judgment, not the search.** R4b sat blocked on the claim that deciding
+  two differently-worded claims are the same proposition is irreducibly human. True, and beside the
+  point: nobody was ever going to hand-scan 8.8M pairs. Deterministic IDF-weighted Jaccard over
+  stopword-stripped terms reduced **4,191 claims → 780,140 blocked pairs → 74,948 scored → 45
+  candidates** at threshold 0.35 — an afternoon of review, no model call, so a review can be paused,
+  resumed or audited. Two filters carry the design: same-entry pairs are never proposed (two claims of
+  one entry are one source, and aliasing them manufactures the exact fake independence the statistic
+  exists to detect), and every row starts `pending` with no pre-filled decision.
+
+- **A duplicate-id check cannot see a duplicate source.** The validator had errored on duplicate
+  `arxiv_id` for as long as it existed and was blind to **5 duplicate-locator groups covering 11
+  entries**, because one entry of each pair records the arXiv id and the other records only the URL.
+  Normalizing both forms to one key finds them; the check **warns rather than errors**, deliberately,
+  since a repository or project page can legitimately back two distinct artifacts and this project has
+  a standing lesson against conflating a companion repo with its paper.
+
+- **A longitudinal question is blocked by its instrument long before it is blocked by the clock.** R5
+  was filed elapsed-time-gated, which was true and concealed the real blocker: the `query_served` and
+  `obligation_disposition` frames existed and **nothing emitted them**, so no clock had started. Both
+  are now wired **opt-out rather than opt-in** (`--no-log` to suppress) on the principle that the
+  failure mode is silent and unrecoverable — a default of "off" leaves the series empty while every
+  command still appears to work.
+
+- **When a bar cannot be met by hand, add a rung — do not lower the bar.** Anchoring was the promotion
+  gap: 667 entries cited by active handoffs and design docs, **5 anchored**, and hand-anchoring 2,994
+  claims is not a path. The ratified answer inserts **`T2 MachineLocated` between Located and
+  Anchored** (carrier 25 elements) and caps `located_by: machine` there regardless of completeness, so
+  a machine anchor can never be mistaken for a human one. Ordinal-safe because grades serialize as
+  names, so no stored frame changed meaning — and the compliance test caught the carrier-size change,
+  which is what it is for. At scale: **351 anchors across 158 entries**, taking the T axis from 5
+  anchored claims to 371 at `MachineLocated` plus the 5 human ones.
+
+- **The review step on that pass earned itself three times, and each defect had a different shape.**
+  (1) Two anchors passed every threshold and were wrong — a WER claim pinned to a sentence that only
+  *named* the metric, and a token-reduction claim pinned to a span whose numbers **contradicted** it —
+  because term overlap is number-blind and this corpus is numeric. (2) The numeric guard added to fix
+  that passed the contradiction anyway on its first version, because `MATH-500` contributed "500" to
+  both sides: **a shared name reading as a shared number**; identifiers are now excluded. (3) A silent
+  index bug — the anchorer filtered non-string entries out of `key_claims` and then enumerated the
+  *filtered* list, shifting every index after a non-string claim and pinning a quote hash to the wrong
+  claim. The affected entry was dropped from the batch rather than repaired: re-running under fixed
+  code is cheap, guessing which claim it meant is not.
+
+- **A record nobody touched became false, which is the freshness failure in its purest form.** An
+  entry's claim is a verbatim copy of an arXiv v1 abstract; the authors later found the headline
+  "+9–16 points" was a **scoring artifact** (the base model split answers across two formats, so a
+  boxed-only grader undercounted it) and revised the paper — current table +0.0 and +3.3, and **−1.2**
+  on a benchmark where the entry claimed +10. This motivated a drift detector that batches the arXiv
+  API and flags any entry whose paper was updated after our `ingested_date`; it independently re-found
+  the case that motivated it. **Then the triage reframed the finding and dissolved 67 of 68 items**:
+  of 68 drifted entries in 617, 64 are `unverified` and 3 `stage1-unverified` — exactly one is dived.
+  For an unverified entry drift is not a correctness problem, because the record already says nobody
+  checked; reading 67 papers to confirm that unverified things are unverified is work with no
+  consumer. What the finding licenses is a Stage-2 rule — *dive the CURRENT version and record which
+  one you read* — which prevents the class instead of draining it.
+
+- **An entry-level correction is not evidence about any particular claim.** Blanket application of
+  `dive_corrections` produced 114 opposition frames. Reading the divers' own prose per claim — *the
+  prose the divers wrote IS the record; reading it is the method* — recovered verdicts for all 26
+  entries: of **106 claim verdicts, 68 unaffected, 25 narrowed, 6 uncertain, 3 reattributed, and 4
+  overturned**. Opposition output drops 114 → 6. A fifth verdict, `uncertain`, had to be invented to
+  separate "a reader examined the prose and it still does not say" from "nobody looked" — only the
+  second should make a future reader repeat the work. And emitting the right frame is not withdrawing
+  the wrong one: **204 superseded opposition edges retracted** (retracted, not deleted — an earlier
+  frontier must still fold to what we believed then) and **103 corrections marked reviewed**.
+
+- **An authored dependency edge the engine ignores does nothing, and only measurement could show it.**
+  After `depends_on` was adopted, the counterfactual authoring test (*if that entry's claim were
+  retracted tomorrow, would a claim in THIS entry have to change?*) admitted only **4 of the 11 edges**
+  the 60-edge sample had labelled evidential — and one runs **opposite** to the citation that suggested
+  it, since the cited work is older than the claim that transports its theorem. The propagation
+  evaluation then scored **0 of 4**: the fold listed `claim_depends_on` under `ignored_frame_types`.
+  Getting to 4/4 needed two closes and the second is the lesson: `impact_of_retracting` compared grades
+  and broken paths only, so a **review-only effect read as "unaffected"** — a report that cannot see
+  the one effect the ratified rule produces is not reporting impact. Ratified semantics: a dependency
+  whose source has lost all support flags its dependents `review_required` and **no grade moves** (we
+  know the ground shifted, not by how much), and a new dependency alert counts as impact even on an
+  already-flagged claim, because "my source was corrected" and "something I rest on was withdrawn" are
+  obligations cleared by different people.
+
+- **Re-ingest was not idempotent, and the fix that absorbed the damage was a different fix.** Because
+  `frame_id` hashes `created_at`, a fresh `--as-of` re-emitted the whole corpus: **9,599 → 19,270
+  frames with zero new information** (dedup is now keyed on `(frame_type, assertion)`). The
+  independent-support distribution was unchanged across the duplication *only because* support had
+  already moved to locator counting — under the old label counting every claim would have shown two
+  supports. A duplication bug and a fake-independence bug are the same bug seen from two directions.
+
+- **The wiki is a dependent, not a claimant.** Wiki citations were modelled as **707 dependency edges
+  from 28 pages into 477 distinct intake entries**, implemented as a *projection over the fold* that
+  writes nothing to the ledger: a page's citations are re-derivable from a file already in git, and
+  the alternative would have put 28 non-beliefs into the belief set. Result: 12 pages carry a stale
+  dependency (all unreviewed corrections) and **real decay is zero**. The first draft reported 16 —
+  **a coverage gap was being read as decay**, because nine entries flagged "lost all support" had never
+  had a claim ingested at all. That is a gap in the reader, not rot in the page; `uningested` and
+  `unsupported` are now distinct and only decay marks a page stale.
+
+- **Two denominators with one name understate a corpus by 40 points.** A reps extractor that read only
+  modern denominator keys found coverage of 46%; probing the gap rather than accepting it found 545
+  older rows carrying the denominator under `details.total`, taking coverage to **86%**. Because
+  `total` counts what was ATTEMPTED and `quality_denominator` counts what SCORED, the claim tuple now
+  records `reps_basis` and the grade reasons state it — "n=55 attempted" and "n=55 scored" are
+  different claims. A neighbouring trap from the same wiring: the optimizer declares
+  `directions=["maximize"]*4` over `(quality, speed, -cost, reliability)`, so the raw `cost` field is
+  **lower-better** and reading the maximize-list alone inverts it. Direction is now recorded, never
+  inferred.
+
+- **R1b RESOLVED — and "exhaustive over a generator is not exhaustive."** A depth-3 sweep over 40,500
+  instances found 0 counterexamples to the dual-token + intra-stratum-closure route while the
+  detection control (plain circuit specialization) produced 16,911, which is what made the null a
+  result rather than a shrug. An adversarial three-rule program then refuted composition anyway:
+  `p :- a` / `r :- not p` / `t :- r`, retract `a` — ground truth derives `{r, t}`, the route derives
+  `{r}`, because at record time `r` was absent and the stratum-3 circuit was therefore empty. The
+  generator had never emitted a stratum-3 rule with a bare positive body over a stratum-2 negation
+  head. The repair (seed each stratum's closure with the heads the stratum below *could* derive,
+  guards ignored) restores exactness over the same 40,500 instances and retains **88.4%** of stratum
+  rules — an 11.6% saving over full re-evaluation, so the conclusion is unchanged: **closed as a
+  research question, and the engineering is not worth building.** A bug found first matters more than
+  the number: the initial depth-3 run reported 1,836 counterexamples, every one shaped `s :- r` listed
+  *before* the rule deriving `r`, because the single-pass ground-truth evaluator made rule ORDER change
+  the meaning of a stratum — a fully-formed, completely spurious refutation, stopped only by suspecting
+  the test method before believing the result.
+
+- **Most rules that look like they need negation do not.** Naming the first rule that genuinely
+  requires stratified negation eliminated two of three candidates: "no unretracted opposition exists"
+  and "no fresher measurement supersedes this" are both *materialized then read* — ordinary evaluation
+  followed by a filter, not negation-as-failure. The qualifying rule is **correction discharge over the
+  transitive dependency closure** (*a correction is discharged when no claim that transitively depends
+  on it remains flagged*), where both halves are load-bearing: transitivity makes the relation
+  recursive, and "no dependent remains flagged" is negation over a relation derived in the same
+  program. It is wanted rather than hypothetical — **678 claims sit `review_required` with no closure
+  rule at all**, the one-way-ratchet shape reappearing at the level of a correction's whole blast
+  radius.
+
+- **A provenance program stamped 37 dates two days in the future.** Found during wrap-up across handoff
+  checkboxes, a spec section, code comments, a README and a memory entry; corrected across 15 files in
+  two repos. Ledger frames appended that day carry the wrong `created_at` and were verified **cosmetic,
+  not functional** — folding at the true date returns identical results, because the fold does not
+  exclude on `created_at`. Synthetic fixture dates were deliberately left alone: arbitrary literals are
+  not claims. In a system whose subject is provenance, the date on a record is part of the record.
+
+#### Source References
+
+- [`handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md`](../handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md) — the promotion track (PR0–PR3), its ratifications and every defect found by hand-review
+- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4e/§2.4f — the depth-3 sweep, the composition refutation, the repair and its price
+- [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, the duplicate-locator sweep, and the R5 instruments
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC5/SC6 — wiki-as-dependents, the autopilot write hook and `reps_basis`
+- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) · [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the session records for both halves
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.2 — the amended carrier with `T2 MachineLocated`
+### Compiled Update — 2026-08-12 (first live GEAK/Arena belief rows)
+
+The producer-side GEAK/Arena boundary has crossed from prospective wiring to live evidence. INF-03
+r3's terminal Claude/Codex 2h and 8h checkpoints each wrote two measurements: correctness pass rate
+and timing-harness validity rate. The generic adapter projects only those producer-authored rows
+through the shared ladder; it does not infer speedup, campaign rank, or promotion authority from the
+receipts. Earlier pre-hook smokes remain deliberately unprojected.
+
+This is also a useful example of why storage and resource authority are distinct. Terminal cells can
+remain durable, restart-safe evidence while the wider campaign pauses to repair over-broad GPU claim
+scope. No read-side reconstruction is needed, and no invalid/incomplete cell enters the belief set.
+
+#### Source References (2026-08-12 live Arena rows)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20's live receipt boundary
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — current write/read status and no-backfill rule
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact terminal receipts and paused-campaign chronology
+### Compiled Update — 2026-08-12 (AutoKernel governed receipts)
+
+AutoKernel's live controls and governed async-prefetch replay now write belief semantics at the
+producer boundary. Future receipts carry protocol and metric direction, scored-block basis, exact
+source/binary/model/resource-claim/producer identities, the native verdict, and immutable evidence
+digests. The Vidya adapter independently re-derives those bindings and delegates grading to the one
+shared measurement ladder; it does not introduce a source-specific grade rule.
+
+The temporal boundary is deliberate. The accepted controls, hardened-instrument smoke, and GPU replay
+completed before this hook and therefore project no Vidya rows. A reader cannot manufacture write-time
+warrant after the fact. Research `730adb1d` and root `2a4e170a` close SC27 prospectively; the next
+governed controls or replay will be the first admissible source records.
+
+#### Source References (2026-08-12 SC27)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC27 contract and completion boundary
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — live source register and projection semantics
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — promoted commits, tests, and no-backfill evidence
+### Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
+
+The GEAK/AgentKernelArena adapter now has a prospective belief writer rather than relying on a later
+reader to reinterpret generic benchmark fields. Successful future round trips emit two explicitly
+typed measurements—correctness and timing—using the same measurement ladder as the existing ROCm
+profiling producers. Failed or incomplete runs emit no performance belief. The compatibility
+preflight remains dependency evidence only: source pins, platform reachability, and compile success
+are important facts, but none has an honest higher-is-better or lower-is-better ordinal direction.
+
+This is a small but general rule for evidence systems: **write semantic measurement intent at the
+producer boundary, and classify capability checks separately from ranked observations**. It prevents
+a dashboard or ledger adapter from inventing metric direction after the experiment, and makes future
+controller A/B results comparable without retrofitting old receipts. Existing 2026-08-11 receipts are
+deliberately unchanged.
+
+The same boundary now applies to the admitted MMQ-WGM negative. Its wall-time, TCC-hit-rate, and
+read-request observations are direct measurements, but the receipt predates any `ClaimTuple` writer.
+SC22 therefore files a producer-side hook before any successor launch-order experiment and explicitly
+forbids retrofitting r2 on read. This preserves the negative as durable experiment evidence without
+claiming that a later adapter witnessed semantics the original producer never wrote.
+
+#### Source References (2026-08-11 AutoKernel Arena writer)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance, SC22 MMQ-WGM write-side task, and classification
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors, MMQ-WGM candidate source, and dependency-evidence handling
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — receipt hashes, negative disposition, and closeout boundary
+
+### Compiled Update — 2026-08-18: `open == 0` is not "complete", and a screen is not a verdict
+
+Index hygiene wants to retire finished handoffs, and the obvious signal — a handoff with no open
+checkboxes — is wrong often enough to destroy live work. Measured across the 15 handoffs then
+reporting `open == 0`: **13 were false positives**, in five distinct shapes.
+
+| Shape | Why `open == 0` was true | Example |
+|---|---|---|
+| `pointer` | its whole job is keeping a path resolving | a retained compatibility pointer; archiving it breaks the routing it exists to provide |
+| `prose-open` | open work stated in prose, never checkboxed | *"artifact ingestion and UI remain open"* in the status line |
+| `not-a-task-list` | never carried tasks at all | *"a prompt, not a task list"*; *"notes-only topology reference"* |
+| `no-checkboxes` | 0 of 0 boxes | a dossier |
+| `undispatchable-tasks` | boxes remain, but guarded or blocked rather than done | unresolved, and archiving buries the reason |
+
+This is the same category error as dating a handoff's liveness by file mtime: it reads the **absence
+of a signal** as the **presence of its opposite**. Prose churns without progress, and a document can
+have no open boxes because it never had any.
+
+**Where the open work is stated matters, and it is rarely the status line.** A second pass found four
+more handoffs whose open work lived in a *heading* (`## Still open`, `## Open Questions`,
+`## NEXT STEP`) or a *line-leading bold run* (`**Still OPEN (not measured-dead):** …`). Both are
+structural claims about the document, unlike incidental body prose, and both are cheap to detect.
+
+**Build the screen conservative and make every rejection legible.** A miss costs a candidate that a
+human then reviews; a wrong match makes a handoff unprunable forever. So a candidate requires boxes,
+none open or undispatchable, and no disqualifying marker — and every rejection carries a named
+blocker plus the evidence line that produced it, so a reader can overrule it deliberately rather than
+by re-deriving the judgement.
+
+**Guard against the screen becoming vacuous.** After tightening, the active tree yielded **zero**
+candidates — which is indistinguishable from a broken screen unless you prove otherwise. Two checks
+separate them: a real-world positive control (a handoff archived in the same commit still evaluates
+to `candidate: true`), and negative tests asserting that ordinary bold lead-ins and closed task lines
+mentioning "remaining" do *not* block.
+
+**The screen is what makes you look, and looking is what finds things.** Two of the three handoffs
+eventually archived turned out to be safe only after tracing each open item to a live owner
+elsewhere — and that tracing surfaced an unrelated defect: two active handoffs asserted that a
+*supplement* owned a decision gate that actually lived in its parent. Archiving on the checkbox count
+alone would have converted a wrong ownership claim into a dangling one.
+
+#### Source References
+
+- `scripts/handoffs/index_state.py` — `prune_signal()`, the blocker taxonomy, and the measured incident record; `tests/test_index_state_prune.py` (17 cases, mutation-paired)
+- `agents/commands/wrap-up.md` Step 3 — the replacement selection command, stated as a screen rather than a verdict
+- [Wrap-up division of labor](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — the wrap-up routine this governs
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record, including the three archives and what each open item routed to
+
+### Compiled Update — 2026-08-22: the publication generator scrubs by rewriting, contains protocol evidence to its own row, and demotes what it cannot re-derive to paraphrase
+
+**Confidence: verified** — every mechanism below is landed and validated (focused pytest counts,
+ruff, `--check` runs recorded per slice in the source handoff). This extends the 2026-08-16 section
+*"External publication is the same claim grammar with a fail-closed default"*: the row counts there
+(374 total; 31 historical-attestation / 18 protocol-tag / 325 retired) are unchanged — what is new
+here is mechanism, not state.
+
+**Scrubbing has two layers, and the second one is a rewrite, not a hold.** The first scrub gate
+(2026-06-21) fail-closed rows whose generated fields exposed local paths, loopback endpoints,
+internal role aliases, or operator/internal workflow terms — leaving `public-safe surface=364` with
+10 `internal role alias` blockers. The 2026-06-27 slice resolved those not by widening the hold but
+by **rewriting internal orchestration labels (`frontdoor`, `worker_general`, `toolrunner`,
+`ingest_long_context`, architect/coder aliases) to public-safe display labels *before* both row
+rendering and scrub classification**, clearing all 10 (`public-safe surface=374`) without mutating
+the source. The transferable split: an internal identifier with a faithful public equivalent is a
+*display* problem solved by deterministic rewrite; only content with no safe equivalent should
+consume a hold. Ordering matters — the rewrite runs before scrub classification, so the scrub gate
+judges what a reader would actually see.
+
+**Protocol evidence is contained to the row that owns it.** The parser limits protocol evidence to
+the current row, its section heading, and the table preamble — so **a complete protocol marker in
+one row can no longer promote adjacent rows** (neighboring-row bleed, closed 2026-06-28). This
+completes the fail-closed parsing set already compiled: an *unparseable* marker holds its row
+instead of falling through to publishable, and a *valid* marker now promotes exactly one row. Both
+defects share a shape this page keeps meeting under different names — evidence attributed wider than
+the unit that produced it (the key-too-wide family) — here appearing as spatial bleed in a parsed
+table rather than an over-wide dedup key.
+
+**A number whose raw log cannot be produced is demoted to paraphrase — not published with softer
+wording.** The W2 methodology-draft publication-prep packet (2026-07-06) applies the same
+demote-or-remeasure ladder as the 325-row retirement, but at prose level inside a draft:
+
+| Claim class in the draft | Disposition |
+|---|---|
+| April 26 collapse rows (`+17% → +1.6%`) | Publishable candidates — each names its exact raw log (`V2_q8_cold_canonical_repeat.log`, `E_q8_EP.log`) |
+| April 24 Q8 microkernel exact numbers | **Paraphrase-only** unless the raw repack logs are found or the rows are remeasured |
+| 2026-06-14 recipe dry-run witness | Flagged **pre-v6** — must be regenerated from the current single-kernel recipe before external publication |
+
+Every candidate claim also carries a stable public-safe handle (`F6-METH-C1`, `F6-METH-C2`,
+`F6-METH-S1`, `F6-METH-P1`), so review discussion can reference a claim without restating its
+number — the same decision-layer-out-of-the-source move as the review-decision JSON overlay, applied
+to prose. The instrument-era flag is the subtle one: a witness generated under a retired kernel era
+is not wrong, but publishing it as current would be — era identity travels with the witness exactly
+as pool identity travels with a recall number.
+
+#### Source References
+
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) —
+  the 2026-06-27 alias-rewrite slice with its 10→0 blocker clearance, the 2026-06-28 parser
+  containment, and the 2026-07-06 W2 publication-prep packet, each with its validation record.
+- [`scripts/publication/generate_public_results.py`](../scripts/publication/generate_public_results.py)
+  — the generator as shipped: display-label rewrite, per-row protocol-evidence scoping, scrub
+  classification, and the review-decision overlay application.
+- [`docs/publication/canonical-cpu-benchmarking-methodology-draft.md`](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md)
+  — the W2 draft carrying the claim handles, the named raw logs, the paraphrase-only demotion, and
+  the pre-v6 witness flag.
+
+### Compiled Update — 2026-08-23: the belief kernel wires its first template-axis adapter, and the KB-RAG record corrects two of its own beliefs
+
+**Confidence: verified** — the SC46 wiring is read from commit `24ab3090` (adapter, reader, 16 tests,
+conformance green) and its handoff rows; the record corrections are read from the 2026-08-21
+Stage-2b updates in [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md), the latter
+corrected again on 2026-08-22; the intake-wave findings are read from commit `9cb94047` and its
+progress record. Nothing below was re-derived on read — every figure was captured at write time by
+the cited source.
+
+#### The template axis finally has a carrier: SC46/CT-8 wired end to end
+
+The CT-1 chat-template A/B was filed at first-measurement time on 2026-08-21 (source-table row,
+SC46, CT-8 — all the same hour), and the write side landed as commit `24ab3090` on 2026-08-22:
+writer `chat_template_ab_capture.py` (atomic sidecar, fail-loud, results-hash attestation, shared
+`validate_row`) plus strict reader `chat_template_ab.py` registered as `chat-template-ab-measurement`.
+The tuple carries the **template axis** — `template_sha256` per arm — alongside model/quant/kernel/
+serving/sampling/paired-flips, which is the whole point per the E-7 amendment: a claim can now name
+*which template* produced it. Grading is delegated to `claim_tuple.grade()` with zero local grading
+logic (the no-private-ladder sweep passes over both files); well-formed rows grade
+Witnessed/Attested, a malformed line voids the file, moved artifacts grade DOWN to Anchored, and
+pre-hook runs emit zero rows (the DF2-4 precedent, verified live). CT-8 and SC46 are flipped.
+
+The same compile records the continuing pre-run cohort that keeps the register honest: SC49 (G1–G4
+compute-gated sweeps filed BEFORE any of them runs, with the two load-bearing caveats riding in every
+tuple — G1 is a correctness observation, not a throughput one, and its repeated-pangram arm is a
+negative control; G2's acceptance ratio is not comparable across `--spec-draft-n-max` values), SC45
+(ParEval, wired before its first run; its `O0`-wrapped timed region must never be graded against the
+llama-bench protocol), SC48 (the MI210 power-sensor probe suite — OBSERVATIONS with no protocol id,
+per-field metric direction, and the raw-counter ×15.3 API-scaling caveat), and SC47 (FlashInfer-Bench
+`intake-1245#record`: its `Definition x Solution x Workload x Evaluation` record is a write-side
+claim-tuple carrier "in all but name", and its per-operation-class evaluator registry is **external
+corroboration that the one-ladder-per-source-class registry design is right** — recorded as such in
+the row). EVL-47 (the research-evaluation-index row for this program) still points at SC19 — the
+prospective claim-tuple wiring of the AutoKernel C6 admission receipts — as its next action.
+
+#### The KB-RAG record corrected two of its own beliefs — both in the direction of honesty
+
+C1: the on-file rationale for the answerai→GTE encoder retirement said "answerai unscored". It was
+**scored** — on the same BEIR-15, since 2025-05-14 — and the controlled gap is **54.67 (GTE) vs
+53.35 (answerai, LightOn's own re-run) = 1.32 pp, inside the ~2 pp noise floor this handoff itself
+declares**. Corrected again on 2026-08-22: two harnesses, not three — the apparent third measurement
+(mixedbread, arXiv 2510.14880) transcribed LightOn's model card 15/15 per-task, 36 days later. The
+decision record also never weighed the cost side: 4.46× fewer parameters and a measured −24.3% index
+footprint (0.757×, cross-validated against the stored `.npz` to 0.2%), with the tokenizer swap a wash
+at 1.026. The correction does not argue for reverting; it argues the swap rests on a delta the
+project's own doctrine calls noise, and the record should say so plainly. C2 companion: never record
+`54.89` as the incumbent's BEIR-15 — it appears nowhere on the model card; the comparable figure is
+54.67 over 15 named tasks. The live corpus figures have also outgrown the record: the handoff header
+says 577 files / 18,010 chunks / 1,227.6 MiB, but the index measured 2026-08-21 is **943 files /
+28,110 chunks / 2,199.13 MiB — roughly 56% understated** (flagged, may belong to the watermark
+items). Three code gaps ride alongside (K1: `token_type_ids` missing-input blocks ALL BERT-family
+late-interaction ONNX, fix already exists in `cross_encoder.py`; K2: honour `onnx_config.json`
+instead of hard-coding, `_QUERY_MAX_TOKENS = 48` overruns two candidates' declared 32; K3: stamp
+`embedding_dim` + tokenizer hash into `index_meta` — verification that is not vacuous).
+
+#### The intake wave that corrected what we believed (Stage-2b wave 2, commit `9cb94047`)
+
+Thirteen dive-verified entries (intake-1238..1250) landed 2026-08-21 with the index at 1,246 and
+validators green. Five of them **corrected something already believed** — the stale-premise family
+this page has compiled before (2026-07-03), now with a machine-gated instance:
+
+1. **L1+L2 is not a sufficient C6 gate.** Omission of a required operator component passes both
+   tiers, so the third tier must be a semantic judge (train-free); the planned NVIDIA-only L3 is
+   **dropped, not deferred**, and the downgrade of precision is defended by nothing the project
+   holds — `intake-1227`'s dtype-keyed tolerance actively rewards it. The RVP-C6-20 falsification run
+   (same day, GPU window co-residency) confirmed it empirically: **L1 + L2 + a sound value oracle at
+   standard inputs accepted 2 of 3 omission mutants** — LayerNorm-no-affine with max error
+   bit-identical to the honest kernel (4.768e-07), softmax-no-maxsub at 5.6e-09 — while the
+   matmul-no-transpose mutant was caught exactly as pre-registered.
+2. **"Illusion of solvedness" was mis-attributed.** Neither PyTorch blog post contains the phrase;
+   it is KernelGenBench's own gloss, so a third independent voice on KernelBench weakness may not be
+   counted.
+3. **The memory-family evidence moved against building.** Nine systems, one significance test in the
+   whole literature — non-significant; the best-constructed ablation returns a negative at the loose
+   threshold. The project's own §19.3 receipt rule is *ahead* of this literature.
+4. **The `intake-1222` energy claim was overturned by direct measurement here.** ROCm 6.2 does
+   expose a monotonic microjoule accumulator (15.30 uJ/tick across 23 deltas, cross-checked against
+   `--showpower`) — scoped honestly as evidence about the instrument, not about any run. RVP-PWR-3
+   closed via `intake-1251` (McDaniel et al., the gfx90a/CDNA2 power datasheet), with its caveats
+   traveling: no external physical meter (credibility cap 4/6), MI250X dual-die OAM vs our single-die
+   MI210, zero ML content — and the phase-lock hazard remains ours to measure (`RVP-PWR-2`).
+5. **The "AutoKernel G15 without a source" premise is struck** — it is a homonym of the project's
+   own program.
+
+And the 2026-08-20 wrap-up gates caught two governance facts worth compiling: the **checklist-sync
+gate** — three Stage-4 defects existed only as prose bullets, and the dashboard counts checkbox
+state only, so completed work was invisible until converted to `KV-0a/0b/0c` — and the
+**derived-actionables gate**, which caught two items that existed only in chat. Both are the same
+lesson the wiki's own compile discipline relies on: a record that is not in the counted shape is
+not a record at all.
+
+#### Source References (2026-08-23 belief adapter + KB-RAG corrections)
+
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
+  — SC46 wired (commit `24ab3090`), the SC45/SC47/SC48/SC49 pre-run filings, and the EVL-47 row's
+  standing SC19 next action.
+- [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation)
+  — CT-8, the consumer task the SC46 adapter serves.
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md) — the C1/C2/C7 record
+  corrections, the K1–K3 code gaps, and the 943-file live-index staleness flag (measured 2026-08-21).
+- [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
+  — Stage-2b wave 2 (commit `9cb94047`): the five corrections, the C6-gate finding with the RVP-C6-20
+  falsification, and the RVP-PWR-3/intake-1251 close-out.
+- [`progress/2026-08/2026-08-20-research-intake.md`](../progress/2026-08/2026-08-20-research-intake.md)
+  — the checklist-sync and derived-actionables wrap-up gates that caught prose-invisible and
+  chat-only records.
+
+---
+
+### Compiled Update — 2026-08-23 (evening): the internal-KB-RAG encoder fixes landed, and the answerai retirement rationale was wrong in a load-bearing way
+
+**Confidence: verified** — the K1/K2/K3 landings are a shipped orchestrator commit (`4e5e84c0`) with mutation tests; the C1/C2 corrections re-derive from the model cards and a measured index cross-validation; H1 is a read-only measurement of the live catalog; SC50 is a pre-run filing.
+
+#### The ColBERT encoder class fix landed — three defects in one commit (`4e5e84c0`)
+
+**K1 — the ColBERT encoder could not load ANY BERT-family late-interaction ONNX** (graphs declare `token_type_ids` as a required input with no initializer default; the encoder fed only `input_ids`/`attention_mask` → `InvalidArgument: Missing Input` on the first call). `ensure_loaded()` now captures `_input_names` from `session.get_inputs()` at load time and `encode()` feeds exactly the inputs the graph declares, with all-zero `token_type_ids` for single-segment input; an input it cannot satisfy raises instead of degrading to an empty index. The swallowed failure also rose from `logger.debug` to `logger.warning` with the exception type, so the exact `InvalidArgument` is now visible at default log level instead of presenting as an ordinary miss. **Unblocks answerai-colbert-small-v1, ColBERTv2 and Jina-ColBERT-v2 as a class** (the mxbai family never needed it — H5 below). **K2 — honour `onnx_config.json`** (partially landed): `_load_declared_config()` reads `onnx_config.json` AND `config_sentence_transformers.json`, format-mandated `onnx_config.json` winning; `do_lower_case` is honoured (applied to the text only, never the prefix — before this, loading mxbai-32m fed cased text to a lower-case-trained model with no error anywhere). Remaining scope: declared `query_length`/`document_length`/`embedding_dim`/`uses_token_type_ids`/`do_query_expansion` are readable but not yet acted on; `_QUERY_MAX_TOKENS = 48` remains hard-coded on both call sites — and the three-slot spread is 8× (LateOn 32 / GTE 48 / Reason-mxbai 256), so **LateOn is overrun by 16 tokens while Reason-mxbai is under-used by 208**. **K3 — stamp `embedding_dim`** (half landed): `_stamp_meta()` writes it and `_check_embedding_dim()` now **raises** when the live encoder's width differs from the stored one — a 128→64 swap previously surfaced as a numpy shape error inside `maxsim()`, swallowed by `encode()`'s broad `except`, and reported as an ordinary miss. The tokenizer sha256 is still NOT stamped — and that is not hypothetical: mxbai-32m and the deployed GTE share a **byte-identical 50,280-token vocabulary** with different `tokenizer.json` files (H6), so a same-dim, same-directory tokenizer swap is invisible to every key now stamped.
+
+#### The answerai retirement rationale was wrong: scored, not unscored — 1.32 pp, inside our own noise floor
+
+The Feb-2026 encoder swap was justified with "**answerai unscored**". It was scored, on the same BEIR-15, on the successor's own model card, since 2025-05-14: **54.67 (GTE) vs 53.35 (answerai, LightOn's own re-run)** = **1.32 pp — inside the ~2 pp noise floor this handoff declares**. (Corrected 2026-08-22: TWO harnesses, not three — the apparent third, mixedbread arXiv 2510.14880, transcribed both ColBERT baseline rows from LightOn's model card, 15/15 exact per-task match.) The cost side the original decision never weighed: **4.46× fewer parameters and a measured −24.3% index footprint** (0.757×, cross-validated to 0.2% — essentially the bare 96/128 dim ratio). This does not argue for reverting; it argues the swap rests on a delta our own doctrine calls noise, which the record should say plainly. Never record **54.89** as the incumbent's BEIR-15 — it does not exist on the model card (`grep -c` = 0 at rev `25f6f7bb`); the comparable figure is 54.67 (BEIR table added `78d50a16` 2025-05-14, FiQA corrected `6605e431`). The swap decision (B6) is a **decision, not a task**: 1.32 pp of BEIR against −24.3% footprint on a corpus whose own noise floor is 2 pp — blocked on G11 (INT8-vs-fp32 parity fixture) before it returns a number.
+
+#### H4 — the ONNX file-selection rule; H1 — the doc-truncation defect is the largest on the page, now measured
+
+**H4 (Z):** for any BERT-family late-interaction checkpoint, take the mirror's `model_int8.onnx`; failing that, upstream's **root** `model_int8.onnx`; **never anything under `onnx/`, never `vespa_colbert.onnx`** — upstream answerai holds 11 ONNX files / 10 distinct blobs; the `onnx/` family terminates at `last_hidden_state [batch, seq, 384]` (no ColBERT projection, no L2 norm, ir_version 10 vs root's 7) and `vespa_colbert.onnx` names its output `contextual` (a third naming convention). **Picking by folder name builds a silently wrong index and raises no error.** H5: K1 was never a gate on the mxbai family (both configs declare `uses_token_type_ids: false`; zero `token_type` strings in the 33.2 MB graph) — its real blocker was `do_lower_case`, also closed in `4e5e84c0`. **H1 (the largest retrieval defect on the page, now measured first-party):** `markdown_chunker.py:25` chunks at 4000 chars while `kb_rag.py:67` embeds at `_DOC_MAX_TOKENS = 256` (~1,024-char budget) — **11,410 of 28,155 chunks (40.5%) sit at or above the 256-token cap and are silently truncated** (mean `token_count` 170.3; the catalog's `token_count` is `emb.shape[0]`, i.e. **post-truncation, saturates at 256** — it can report *that* a chunk was truncated, never *by how much*). Quantifying is zero-compute; the remedy needs a full corpus re-embed (G13, sweep 256 vs 300 vs chunker ~1,100 chars, batched with the model's unused 32-entry `skiplist_words`). **H2 (Z):** no query-length instrumentation exists anywhere in the retrieval path — we cannot answer whether a live agent query has ever exceeded 48 tokens; the instrument must take the count from a truncation-disabled tokenization (`enable_truncation(max_length=max_tokens)` + `enable_padding` would report the cap, not the query — over-cap rate would read 0% forever).
+
+#### SC50 — the wave-2 write-side hooks, filed before any of the measurements run
+
+The 2026-08-22 Stage-2b wave specified compute-gated measurements across three distinct source classes; the write-side adapters are filed **before any run** (same rule as SC49 — wiring the write side is cheap and permanent; retrofitting the read side is impossible): KV-quantization evals (G2/G3/G4/G5 → per-layer/per-head max÷median for K and V separately; paired exact-match deltas; FP16-anchored CondFlip), draft-acceptance sweeps (G8/G9 → mean accepted length and per-token agreement per `--draft-max`; per-prompt PASS/FAIL), and the retrieval fidelity fixture (G11/G12/G13 → per-token cosine distribution, max abs Δ, MaxSim top-1 agreement; recall@10 per arm). Four load-bearing caveats ride in the tuples: (a) a fidelity cosine is a claim about ONE graph pair, never a retrieval-quality claim — different ladder rungs; (b) G4's CondFlip is paired and FP16-anchored — not interchangeable with an aggregate pass rate; (c) G8 measures α, not speedup; (d) G2's dynamic range is meaningful only per layer and per head, K and V separately. Project, not grade — one ladder per source class, the registry refuses a second.
+
+#### Source References (2026-08-23 evening)
+
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — K1/K2/K3 landing (`4e5e84c0`) with the mutation-test controls, C1/C2 record corrections, H4/H5/H6, H1's measured 40.5% truncation, H2's instrument trap, G11/G12/G13 and B6/B7 with their gates, the 943-file live-index staleness flag
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC50 pre-run filing with the three source classes and the four tuple caveats
+- [`colbert-reranker-web-research.md`](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) — the mxbai 32M slot re-point and Table 13 correction (cross-listed with [Search & Retrieval](search-retrieval.md))
+- [`progress/2026-08/2026-08-23-research-intake.md`](../progress/2026-08/2026-08-23-research-intake.md) — the wave-2 record: ten of fifteen dives corrected our own records, the two live bugs fixed in-session
+
+---
+
+### Compiled Update — 2026-08-23 (evening, part 2): the HTML-artifacts discovery surface
+
+**Confidence: verified** — the runbook and index landed with a drift checker (commit `0904d2ca`, index + runbook + checker in one change).
+
+**The project's standalone HTML artifacts now have a discovery surface and a placement contract.** Before 2026-08-23 there was no single index of self-contained HTML documents (design docs, flow maps, deep-dive write-ups, operator reports) — a repo scan found only 5 real artifacts, so the fix is a thin index (`docs/reference/html-artifacts-index.md`) plus a runbook, not heavier tooling. The placement rule: pick by what the document *is* — `research/deep-dives/`, `docs/design/`, `docs/infrastructure/`, `docs/coordination/`, or `artifacts/operator/` — **never a generic catch-all folder** (that recreates the discovery problem under a different name; the index is the one place things are "collected"). Registration is mandatory in the same change (one index row + `python3 scripts/docs/check_html_artifact_index.py --check` exit 0), and the checker fails loudly on a file with no row or a row pointing nowhere — the same coverage-gate shape as the handoff index. Self-containment is the standing contract for the class (inline CSS/JS, no external fonts/CDN/scripts, no build step, opens straight from a checkout); `dashboard/static/*.html` (hub UI), `tmp/**` (scratch), and `worktrees/**` (duplicates) are explicitly out of scope.
+
+#### Source References (2026-08-23 evening, part 2)
+
+- [`docs/guides/agent-workflows/html-artifacts-runbook.md`](../docs/guides/agent-workflows/html-artifacts-runbook.md) — the runbook: placement table, companion-file and STATUS-note conventions, registration gate, update discipline, explicit out-of-scope list
+- [`docs/reference/html-artifacts-index.md`](../docs/reference/html-artifacts-index.md) — the discovery catalog the runbook keeps in register (same change)
+
+### Compiled Update — 2026-08-25: handoff-index hygiene automation — semantic duplicates, Deps edges, canonical-checkout hooks
+
+**Confidence: verified** — detector recall 1.00 on the 10 resolvable C2 pairs (precision 0.86 at
+threshold 0.38 over 148 hand-classified pairs); `backlog_row_check.py` mid-text owner detection
+27/1528 with zero new false positives (71 tests); hooks verified from a lane worktree.
+
+Three backlog-graph gaps closed: **(1)** a semantic cross-file duplicate-TASK detector
+(`scripts/handoffs/duplicate_task_scan.py`, pure-stdlib) re-discovered all 10 resolvable pairs
+from the hand-found C2 list (4 more were closed history) and found new clusters beyond it — the
+DR-3 7-pair cluster, reviewer-typed-artifacts ≡ security-review-skill, glm51-reap ≡ glm52 gates,
+deepseek-v4-flash ≡ v9-kernel cutover — with the C2 list re-homed into the owning handoff;
+**(2)** the `Deps` column went from near-empty to 25 hand-verified edges (8 added this session,
+direction-checked verbatim against source text; bulk heuristic import stays rejected — phrase
+direction cannot disambiguate "X gates Y" vs "gated by X"); **(3)** the timeline and benchmark
+inventory artifacts now regenerate in the CANONICAL checkout from any worktree commit (the hook
+resolves the primary via `git worktree list`; inventory regen is delta-guarded, ~0.55 s, no-op on
+the common path), ending the lane-worktree staleness class. The narrow-owner-anchor rule
+(`Owner:` mid-sentence, immediate colon) preserves the measured 26/1528 baseline exactly.
+
+#### Source References (2026-08-25)
+
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) — five boxes ticked; C2 pair table; Deps evidence; hub-cron operator decision package
+- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record
+
+### Compiled Update — 2026-08-25: orphaned staged-rollback resolution — a shared-clone hazard class
+
+**Confidence: verified** — 115 staged entries + 52 worktree-reverted paths restored to committed truth in epyc-root; 21 staged entries in epyc-orchestrator; `index_state.py --check` 0 problems; both repos 0 ahead of origin/main.
+
+A now-inactive session left a hand-staged ~08-21-era rollback in the shared index and worktree — covering committed FM-1 files, handoff-content deletions, a measurement Annex-D ratification artifact, and even the live autokernel session's own handoff docs (reverted to older status lines). The index tree matched no recent commit, identifying it as a revert-style operation rather than a checkout. Resolution pattern that worked, from a no-lane session: (1) `git reset` (mixed) to align the index with HEAD without touching the worktree; (2) `git restore --source HEAD` per path, excluding daemon-owned runtime files (`coordination/session-bus/{alarm_state,relay_state}.json`) and untracked live-session artifacts; (3) private-index commits + serialized pushes, so no peer state is ever swept; (4) verify with `index_state.py --check` and the wiki lint's dangling-link pass (the two rollback-caused dangling progress links disappeared once the files were restored). Diagnostic signature worth remembering: **worktree rows OLDER than HEAD's in a file the current session never touched = an orphaned rollback, not a checkout** — check `git write-tree` against recent commits before believing any "peer revert".
+
+#### Source References (2026-08-25)
+
+- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the staged-rollback resolution record (investigation + resolution + verification)
+### Compiled Update — 2026-08-27: SC52 preserves the line between native evidence and invented warrant
+
+**Confidence: verified contract and producer boundary.** The current G1 corpus is valid native
+experiment evidence, but it predates the producer hook and therefore projects no Vidya rows.
+
+The INF-42 amnesia probe exposed the exact failure mode behind the belief substrate's write-side
+rule. Per-question JSONs can preserve scores and make a run safely resumable, yet that is not enough
+to reconstruct a trustworthy `ClaimTuple` later: the original record did not bind the complete
+model/kernel/server/request/CPU-placement/KV-control identity or declare which paired reduction the
+claim would use. SC52 therefore applies prospectively. A successor G1 run must emit a producer-
+written, self-hashed belief-measurement vector at per-question persistence/finalization, and a
+strict adapter may project only those post-hook rows through the existing measurement ladder.
+
+SC52 keeps three quantities separate: per-length/per-depth exact-match accuracy; paired 4K→long-
+context drop with confidence interval; and timing, which is not the G1 quality claim. Only scored
+questions count as repetitions, metric direction is explicit, and one run-level source locator and
+support key bind the grid. This matters in the recovered run because its first 161 records came from
+a malformed 48-thread launch while later records use a corrected 96-thread launch. Recall remains
+usable and timing remains stratified, but **neither phase may be retroactively back-filled into
+Vidya**. The first fully post-hook run is the first eligible belief source.
+
+#### Source References (2026-08-27)
+
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC52 producer vector, strict adapter, identity bindings and explicit no-backfill rule.
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
+- [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — checkpoint inventory, 161-record recovery and the prospective-source decision.
+
+### Compiled Update — 2026-08-30: the belief substrate is promoted — all four §4 requirements met, shadow status ends
+
+**Confidence: verified** — the verdict is recorded with its full evidence block in
+`research/deep-dives/vidya-p5c-evaluation-and-decision.md` §6; every number below is from that
+block or the 2026-08-26 state block of the program handoff (gen-2 ledger, frontier 12,479,
+checkpoint committed, corrections 0 unadjudicated, chain=OK).
+
+The vidya substrate is now what the audit said EPYC needed and nothing more: typed
+claim/evidence/intent frames on an append-only JSONL ledger (fsync-per-append, torn-tail
+handling; SQLite is a rebuildable derived index), folded deterministically through
+`claim_tuple.grade()` into a Q × T graded belief state — never by prose, never by a second
+ladder (`register_ladder()` refuses one per source class, and the adapters PROJECT native
+records into a `ClaimTuple` without ever grading them). Refusal semantics carry the load:
+freshness gating maps onto `dashboard/freshness.py`'s one classifier, future-stamped frames are
+refused at append time, an unsealed manifest is a run in progress rather than a result, and a
+pre-hook run emits zero rows, always. The read side was already wired before this promotion —
+`cite-check` gates every commit through `index_state.py --check` (self-heals a missing ledger by
+re-ingesting; blocking is exactly `{dangling, overturned, conflicted}`), the correction queue is
+drained to zero, and the kernel's first live contention-gate measurements (`clm_cg_api-*` at
+Witnessed/Anchored, SC19 closed) prove a producer-authored envelope can reach the fold.
+
+**The 2026-08-26 promotion ran the P5c gate to verdict PROMOTE.** The gate's first execution
+returned ITERATE only because requirement-4 evidence was freshly "never started" — the run then
+surfaced two eval-harness defects (`_index_claims` indexed only `evidence_supports_claim`, so a
+retraction never retracted its dive refutations; and 13 declared dependents of dive-overturned
+`intake-664#record` had never had support, an expectation no ledger could satisfy), and the
+re-run on the UNCHANGED ledger came back clean: default draw **161/161** and verified-only
+**155/155**, invalidation_recall 1.0, discrimination 1.0, harmful 0; gold corpus re-measured
+28/28, 598 tests green. All four §4 requirements are MET: (1) cited claims anchored at B
+semantics — machine-anchor admissibility RATIFIED by the operator, with machine-located spans
+grading `MachineLocated` (quote-pinned, unreviewed), never `Anchored` without a human reading;
+(2) cross-entry claim identity — the operator passed all 43 pairs (18 same / 25 different) and
+17 `claim_alias` frames were emitted, one transitive group (144_03=254_04=411_04); (3) query
+log + obligation disposition MET; (4) the live-ledger eval EXECUTED. The "shadow-only until
+promotion" constraint is lifted.
+
+**What stays open is a list of named producer events, not open questions.** Every open row
+carries a STATUS and a SHARPENED TRIGGER: SC6-LIVE/SC7 ride the first autopilot cycle after the
+operator-owned restart; SC12 closes at the first COMPLETED post-hook K35 paired run; SC12-ARTIFACT
+at the next model acquisition emitting its run-level record; SC14-B at the first promotion after
+the freeze lift (behind the pre-promotion journal-ordering attestation, confirmed absent today);
+SC38/SC39/SC40 at pool re-enable; SC37 at EV-14a's first band (CPU-attempted 2026-08-28,
+fail-closed on infra, held on GPU); SC41 at the V27 screen's completion; SC43 at the first RM-11
+run; SC45 at RVP-C5-6 (schedule-gated, not operator-gated); SC49/SC50 residuals at their first
+sweeps. The program's own close: these are "tracked work, not gate conditions" — and two
+triggers already fired since the verdict (SC20's first tuple ingested and SC49's G1 executed,
+both 2026-08-27), which is the model working, not the promotion needing maintenance.
+
+**The promotion changes nothing about the write-side rule, and that is the rule's whole point.**
+Wiring the write side is cheap and permanent; retrofitting the read side is impossible — a tuple
+invented on read claims warrant the original run never captured, which is why `benchmarks/results`
+stays permanently rejected (4,562 files, 0 of 200 sampled carrying a usable tuple) and why every
+pre-hook corpus (DF2-4 np1, the 2026-08-12 A1/A3/A4 panel, SC6-LIVE's 1,390 rows) emits zero rows
+rather than reconstructed ones. An empty capture is not a measurement; a verdict drawn from a
+ledger is only worth as much as the producers that wrote into it while the evidence was alive.
+
+Key findings:
+
+- **Verdict PROMOTE, 2026-08-26** — all four §4 requirements met; decision doc §6 carries the
+  full evidence block; shadow status ends.
+- **Requirement-4 evidence**: 161/161 + 155/155, invalidation_recall 1.0, discrimination 1.0,
+  harmful 0 (the pre-fix 3 harmfuls were harness artifacts, engine exonerated); gold corpus 28/28
+  unchanged; ledger frontier 12,479 with chain/checkpoints verified.
+- **Read side fully wired before promotion**: `cite-check` in `index_state.py --check`; correction
+  queue 129 → 0; first live contention-gate tuples at Witnessed/Anchored (SC19).
+- **Open rows are freeze-gated producer triggers only** — named events (freeze lift, autopilot
+  restart, capture flag, successor runs), not gate conditions; SC20 and SC49-G1 have already fired
+  post-promotion.
+
+#### Source References (2026-08-30)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — the P5c
+  promotion-gate evidence block, the §4 requirement status table, the verdict, and the open rows
+  with their sharpened triggers.
+- [Vidya belief-substrate audit](../research/deep-dives/vidya-belief-substrate-audit.md) — the
+  dive-verified gap analysis and adoption kit the program was built from (37 sources,
+  intake-1031..1067).
+- [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md)
+  §6 — the ratified decision record: the operator's machine-anchor admissibility call and the
+  full evidence block behind the PROMOTE verdict.
+
+
+### Compiled Update — 2026-09-01 (incremental): a classification is evidence about a moment, not a property of a file
+
+**Confidence: verified** (22-artifact purge executed on a re-verified list; three prior classifications measured wrong).
+
+A ~476 GB "zero active consumer" model purge was approved from a reclaim menu. Re-verifying every
+path independently before deleting kept **~220 GB of that approved list** and deleted artifacts the
+menu never named. The executed set was 22 artifacts / +267 GB, all ledgered.
+
+Key findings:
+
+- **Never inherit a classification; re-derive it.** This is now the THIRD time an inherited
+  disk/model classification was wrong here, in both directions each time. The approved list called
+  safe: an 85 GB model whose tensors are the subject of an open kernel task, a 56 GB pair under an
+  explicit "retain this item open" row, a 27 GB model whose deletion is itself an operator-gated
+  task whose gate has not fired, and two arms of an open sweep. The same menu called *unsafe* a
+  6 GB artifact it claimed "live smoke scripts consume" — nothing references it at all.
+- **A tier label can be overloaded across documents, and the collision can be destructive.** In the
+  master registry `tier: D` is the DRAFT/EMBEDDER tier — live drafters and embedders bound to
+  active roles. A reclaim document independently used "Tier D" as its own ad-hoc label for
+  zero-consumer candidates. Executing "delete Tier D" as a literal registry query would have
+  destroyed the active drafting set. The tier meaning deprecated is `tier: X`.
+- **Registry tier is not evidence of disuse.** `gemma-4-26B-A4B-it-Q4_K_M` is marked `tier: X`
+  ("eval-only, not deployable") and is being SERVED right now by a live role. Tier records an
+  intention at authoring time; only the runtime registry and the process table record use.
+- **Retention language is a distinct keep-reason and needs its own sweep.** Artifacts with no role
+  and no open task can still be deliberate ROLLBACK ANCHORS. Grep for `rollback` / `retained` /
+  `REMAIN ON DISK` / `kept per` / `preserved` before deleting anything, in BOTH registries — four
+  artifacts survived this purge on that basis alone.
+- **Prose records a deletion; only a ledger row makes it findable.** Four historical deletions were
+  documented in `deprecated_reason` fields and handoff resolutions but had no machine-readable
+  ledger row, so an enumerable audit read their paths as unexplained dangling citations. Backfilled.
+  A record that cannot be enumerated does not function as a record.
+- **Audit-tool caveat, learned twice:** match ledger coverage by path PREFIX (shards under a
+  ledgered directory are covered — an exact-match check produced 30+ false positives), and run the
+  audit where the evidence physically lives: the repo's evidence-durability hook checks that cited
+  paths exist, and large evidence dirs are untracked artifacts absent from any fresh worktree.
+
+#### Source References (2026-09-01)
+
+- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the purge and audit record.
+- [`2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md) — the
+  original menu, kept as the counter-example its own re-verification produced.
+- `epyc-inference-research/orchestration/model_registry.yaml` — `deprecated_models`, now 69 entries.
+
+### Compiled Update — 2026-09-07 (incremental): a citation's defects are invisible from the citing document — the only detector is reading the cited source
+
+**Confidence: verified** (three defects found in one published paper during the 2026-09-07 intake
+wave, each by diving a source that paper cites; none was visible in the citing text).
+
+We already treat an intake entry as a graded object and gate its use (`cite-check`, the
+`intake-NNN` / `#NN` / `#record` grammar). This wave measured the limit of that machinery. A
+gate can prove a citation **resolves**, that its entry is not refuted, and that the citing prose
+uses the right form. It cannot prove the cited source **says what the sentence built on it
+claims** — and three separate failures of exactly that kind were found inside one carefully
+written, conspicuously honest paper (`intake-1297#record`), all of them only by fetching and
+reading what it cited.
+
+**Three defects, three different shapes:**
+
+- **Attribution error in a body sentence.** The paper describes a single-agent formalization as
+  "roughly 130k lines of **Lean**". The checker is **Megalodon**, a higher-order set-theory system
+  with no mathlib (`intake-1306#record`). The bibliography carries the correct title, so the error
+  is confined to one body sentence — a bibliography audit, the cheap check, passes.
+- **A half-unsupported joint citation.** A claim of "five-figure budgets per project" is attributed
+  to two papers. The second contains **no dollar figure of any kind** — zero occurrences of USD,
+  dollar or any currency amount (`intake-1305#record`) — so the claim rests on one source, whose
+  own figure is modelled from token logs missing the caching field rather than billed
+  (`intake-1304#01`). Two citations look like corroboration; here one of them is decoration.
+- **A table caption contradicting its own source on the unit.** The caption defines an "Agents"
+  column as a population ("including subagents launched by the same user"); the cited source counts
+  agent **runs**, each with an outcome (`intake-1304#00`), and the citing paper's own later prose
+  says "agent runs". Any per-agent arithmetic across those rows is unit-incoherent — and that cell
+  was precisely the one our own fan-out question was aimed at.
+
+A fourth shape appeared in the same wave and is worth naming separately because nothing about it is
+an error: **an accurate quote can still lose its scope in transit.** The ~43%-faithful figure is
+transcribed verbatim and correctly attributed, but stripped of every qualifier that made it
+readable — a reweighted projection from a 45-example single-annotator audit, on one dataset, with
+one formalizer (`intake-1307#record`). Nothing in the citing sentence is false; the number simply
+arrives general when it was never general.
+
+**The compiled rule.** *A citation's defects are invisible from the citing document.* In all four
+cases the citing text is internally well-formed: correct bibliography, plausible unit, faithful
+quotation. The only detector is reading the cited source — which means **dive breadth is citation
+hygiene**, not a nice-to-have. Four cited sources were expanded and dived in this wave and three
+carried a defect. Two consequences for how this KB is maintained:
+
+1. **Record the defect on the citing entry, not only on the cited one.** All three are filed under
+   the citing entry's `contradicting_evidence`, because that is where a future reader who cites the
+   paper will look. None changed its verdict — the mechanisms it describes are unaffected — but
+   each is a claim we would otherwise have inherited unexamined.
+2. **Prefer the precise citation form for anything single-sourced.** An entry-level citation
+   inherits every defect of every claim in the entry, by design. Where figures exist in exactly one
+   document and in no supporting artifact — four such figures were identified in this wave, and two
+   more are contradicted by the producer's own released repository — the record now mandates the
+   `intake-NNNN#NN` form so a later correction lands on the one claim that carried the weight
+   (`intake-1298#record`, `intake-1310#record`).
+
+#### Sources
+
+- [intake-1297#record](https://arxiv.org/abs/2608.28433) — the citing paper; its three citation defects are
+  recorded under `contradicting_evidence`, verdict unchanged.
+- [intake-1304#record](https://arxiv.org/abs/2604.03071) — the agent-runs-versus-agents unit and the
+  modelled (not billed) cost figure.
+- [intake-1305#record](https://arxiv.org/abs/2605.29955) — the cited paper carrying no budget figure at
+  all, and no merge-queue measurement either.
+- [intake-1306#record](https://arxiv.org/abs/2601.03298) — Megalodon, not Lean; the misattributed
+  proof assistant.
+- [intake-1307#record](https://arxiv.org/abs/2605.28365) — the accurately quoted number that lost its
+  scope; see [Formal Verification](formal-verification.md) for how it may be used.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
+  record: 14 entries, 42 claim anchors, 20 claim corrections.
+
+### Compiled Update — 2026-09-01: killing a model does not close its handoff — it splits the handoff into what transfers and what does not
+
+**Confidence: verified** — the retarget note is in the handoff's own header, the kill ruling and artifact
+deletion are recorded independently in the same-week audit log, and the successor handoff records the same
+lineage from its own side.
+
+GLM-5.2 UD-IQ2_M (754B, ~239 GB) was ruled **KILL** by the operator (OP-8) after failing patch-review
+admission, and its artifact was deleted. The handoff that had carried 39 capability-gate tasks against it,
+`glm52-reviewer-capability-gates.md`, was not closed — it was **retargeted in place** to GLM-5.3-Flash,
+keeping its filename (and its ~19 inbound links) rather than forking a new handoff.
+
+#### What the retarget kept, and what it discarded
+
+The header states the split explicitly, and that is the reusable part: **infrastructure survives a killed
+subject; measurements and serving constants do not.**
+
+| Kept (model-agnostic) | Discarded (a property of the deleted model) |
+|---|---|
+| The three capability questions (strict-IF/typed emission, rubric authoring, why-diagnosis) | Every GLM-5.2 measurement (`FA 41.7%` / `FR 25.0%` C-CRAB, JudgeBench-GPT `22/24`, SWE-bench-V `22/24`) |
+| The corpus/harness fixes: the representation-mixing guard that refuses `substring`/`exact_match` answer-fragment rows in a "balanced" slice, and the C-CRAB accept-control relabel that produced a decision-grade hard-accept pool | The serving constants: the `indexer_top_k` next-power-of-two schedule (`2048`/`4096`/`16384`) and the DSA-DENSE-MASK disposition |
+| The standing rule against rerunning unchanged slices | The `intake-836` IQ2-quant why-diagnosis hypothesis — explicitly **void**, because GLM-5.3-Flash is UD-Q4_K_XL, a different quant entirely |
+
+**Why the split had to be explicit rather than inferred.** GLM-5.3-Flash is architecture **`glm5next`**
+(288×10B), not `glm-dsa` — a different family, not a version bump — and it carries a *new* `indexer.kpool`
+field with no known-safe value. The handoff calls out by name that assuming the old `indexer_top_k` schedule
+transfers "is the fastest way to get a wrong quality verdict": an under-sized cap corrupted GLM-5.2's exact
+output above its prompt band, so a constant that gates **correctness**, not merely quality, can never be
+inherited from a sibling model on faith. A downstream GC-4 RAM-residency decision sized against GLM-5.2's
+239 GB footprint was voided the same day for the identical reason — the successor "has a different footprint
+entirely."
+
+#### The general rule
+
+When a subject model is killed mid-evaluation, do not close the handoff and do not silently keep running it
+against the successor. **Split explicitly, in the header, before any task resumes**: name every asset that
+is model-agnostic (harness, scorer fixes, corpus, standing rules) as carried forward, and name every asset
+that is a property of the deleted model (measured numbers, tuned serving constants, quant-specific
+hypotheses) as void. A handoff that keeps its filename for link stability must say so loudly enough that a
+reader skimming the task list cannot mistake an old measurement for a claim about the new subject.
+
+#### Source References (2026-09-01 subject retarget)
+
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — the
+  RETARGETED header (2026-09-01), its "What transfers" / "What does NOT transfer" split, the voided
+  `intake-836` hypothesis on GC-3a, and the GC-4 void note.
+- [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the OP-8
+  execution record: GLM-5.2 ruled KILL, artifact deleted, as a merge-preserved deliberate deletion.
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — the successor handoff's own
+  header, "spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings", confirming the lineage from
+  the other side.
+### Compiled Update — 2026-09-03: the compile watermark failed again with no `git clean` in sight — the remedy was scoped to the wrong threat
+
+**Confidence: verified** — every count below is a re-run of the shipped scanner against two checkouts of
+the same commit; the mtime evidence is the scanner's own emitted manifest.
+
+#### The 844-vs-51 failure recurred as 928-vs-52, and this time nothing was destroyed
+
+The 2026-08-18 entry above records `wiki/.last_compile` being destroyed by `git clean`, the next compile
+"confidently reporting **844 new sources (the whole repo) instead of 51**", and a standing rule ending
+"`git clean` never runs in the shared clone." That remedy was scoped to the wrong threat surface. On
+2026-09-03 a routine audit lane reproduced the identical failure — the scanner reported
+**`last_compile: None` and `total_new: 928`, the entire corpus** — with no `git clean` anywhere in its
+history. The lane was a linked `git worktree`, level with `origin/main`, created normally.
+
+The mechanism is one line of configuration: `.last_compile` is listed **twice** in `.gitignore` (lines 38
+and 44), and `git worktree add` populates a checkout from the index, so it never receives an ignored file.
+Every worktree, and every fresh clone, is therefore born reporting a fictional whole-repo backlog. This is
+not a hazard that discipline about `git clean` can reach, and it recurs on the *normal* path rather than an
+exceptional one.
+
+**The correction to carry: untracked-but-load-bearing state does not need to be destroyed to be lost — it
+only needs to be absent.** A rule that names the destroying command protects one path; the property that
+matters is that the state is absent from any checkout that did not personally create it.
+
+#### The manifest that would have prevented it was sitting next to the scanner, unread
+
+The 2026-08-18 remedy offered three escapes — track the state, keep it off-tree, or list it "in a manifest
+a restorer can replay." The third is **already satisfied**: `wiki/source_manifest.json` is tracked, is
+schema-versioned (`project-wiki-source-manifest` v1), and carries `"last_compile": "2026-08-27T11:11:58Z"`
+in its own header. `compile_sources.py`'s `get_last_compile()` never consults it — it stats
+`wiki/.last_compile`, returns `0.0` when the file is missing, and the caller cannot distinguish that from
+an epoch watermark. The replayable manifest existed, in the same directory, and the recovery path was
+simply not wired to it.
+
+Reading the true drift from that manifest instead — `--check-manifest`, which compares **content hashes**
+rather than mtimes — put the real backlog at **34 added, 18 changed, 1 removed: 52 sources, not 928**, an
+18× overstatement. Recommended fix, not yet applied (the skill script is permission-protected in this
+lane): fall back to the tracked manifest's `last_compile` when the watermark file is absent, and emit a
+`last_compile_source` field so a consumer can see which one it got.
+
+#### A restored watermark still would not have helped, because incremental mode is mtime-based
+
+The second defect is independent of the first and survives fixing it. `scan_sources()` selects work with
+`if mtime <= since: continue`, and `git worktree add` stamps every file it checks out with the checkout
+instant. In the manifest this lane emitted, **916 of the 928 sources carry one identical `modified`
+timestamp** — `2026-09-02T09:43:53Z`, the moment the worktree was created. Only 12 files, the ones edited
+afterwards, carry a meaningful time.
+
+So in a linked worktree the mtime basis conveys no information at all, and a correctly-restored watermark
+would merely move the fiction's boundary rather than remove it. Only the content-hash instruments —
+`--check-manifest` and `--changed-since-manifest` — report true drift there. **An incremental instrument
+keyed on mtime is only valid in the checkout that produced those mtimes; anywhere else it must key on
+content.**
+
+#### Three distinct shapes, not three repeats — and half of this was already known one day earlier
+
+It would be wrong to file these as one recurring bug. The watermark has now failed in **three
+mechanically different ways**, and only the first was previously compiled:
+
+1. **Destroyed** (2026-08-16, `INC-20260816-git-clean-shared-clone`): `git clean` removed the file; the
+   scanner over-reported **844 instead of 51**.
+2. **Written to a tree that then vanished** (2026-09-02): a session ran `--touch` *inside a throwaway
+   worktree and then deleted it*, so the compiled pages landed on `main` while the watermark advanced only
+   in a directory that no longer existed. That session recorded the correct general rule — "**the wiki
+   compile step is not worktree-safe.** Page edits are ordinary tracked work and travel fine; the watermark
+   does not. Run `--touch` where `.last_compile` persists."
+3. **Never present at all** (2026-09-03, this entry): no destruction and no lost write — a normal worktree
+   simply never receives an ignored file, and the mtime basis collapses on top of it.
+
+Shape 2 is the important precedent, because it means the *write* side of the worktree hazard was already
+diagnosed and written down a day before the *read* side surfaced here. The two halves were filed in
+different places by different sessions, and neither reached the tooling. **A defect noted in a session log
+is not a fixed defect; the note and the fix are separate deliverables, and only the fix protects the next
+reader.**
+
+#### Why this stayed a backlog, and what the honest output of the pass was
+
+The reported 928 is also what made the debt look unclearable, and the deferral was rational under the false
+number: `--touch` writes a single fleet-wide watermark at *now*, with no scoping by path, type, or date, so
+touching it after compiling a fraction marks the remainder compiled forever and loses their knowledge
+silently. Under a 928-source premise no session could finish, so every session deferred rather than
+half-do it — and the fiction preserved itself, because a partial compile that correctly declines to touch
+the watermark leaves the same 928 for the next reader.
+
+The pass that diagnosed this compiled its finding and **did not touch the watermark**, which remains
+correct while `--touch` has no scoped form: the tracked manifest, not the ignored file, is the artifact a
+successor should advance.
+
+#### Source References (2026-09-03 watermark recurrence)
+
+- [`.claude/skills/project-wiki/scripts/compile_sources.py`](../.claude/skills/project-wiki/scripts/compile_sources.py)
+  — `get_last_compile()` returning `0.0` on a missing file, `scan_sources()`'s `mtime <= since` selection,
+  and `touch_last_compile()` writing an unscoped fleet-wide `now`.
+- `.gitignore` lines 38 and 44 — `.last_compile` ignored twice; the reason no worktree or fresh clone
+  receives it.
+- [`wiki/source_manifest.json`](source_manifest.json) — the tracked v1 manifest carrying
+  `last_compile: 2026-08-27T11:11:58Z`, the unread recovery path, and the content-hash baseline that put
+  the true drift at 52 sources.
+- [`wiki/knowledge-management.md` § 2026-08-18](knowledge-management.md) — the prior 844-vs-51 write-up and
+  the `git clean`-scoped rule this entry corrects.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
+  `INC-20260816-git-clean-shared-clone`, the first occurrence of the same damage shape.
+- [`progress/2026-09/2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) § 6 — the
+  write-side half found one day earlier: `--touch` run inside a throwaway worktree, and the
+  "the wiki compile step is not worktree-safe" rule quoted above.
+
+### Compiled Update — 2026-09-25: Decision and Research Receipts
+
+The intake closed 135 surfaced records with explicit dispositions: 120 integrated, 12 retained as knowledge only, 2 placed on monitoring, and 1 declined. Three factual ingestion tasks were completed. The initial 53 follow-up rows were subsequently compressed by the Stage 3 action-distillation pass into shared immediate packets and dormant trigger records; the original count describes intake output, not the current active backlog. These counts are useful because every source has a durable outcome instead of disappearing into an undifferentiated reading list.
+
+Decision-model and autonomous-research runs need write-side receipts before execution. The minimum record includes model, base and head hashes; dataset and split; candidate schema; prompt or contract version; environment and dependency identity; raw per-item outputs; timing and cost; fallback and validation outcomes; and a digest linking the aggregate to its rows. For evolutionary runs, add lineage, parent policy, mutation operator, evaluator version, seeds, budgets, rejected children, and archive events. A later narrative cannot reconstruct evidence that the original run never captured.
+
+Vidya source registration records where future native artifacts enter the belief substrate. Registration is prospective: it does not convert the research-intake prose or historical benchmark files into measured claim tuples. Consumers should cite the exact claim when one exists and use `#record` when merely discussing an intake entry.
+
+#### Source References
+
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
+- [Session research-intake progress](../progress/2026-09/2026-09-25.md)
+- [System One session wrap-up](../progress/2026-09/2026-09-25-codex-system1-wrapup.md)
+
+**Confidence:** verified from the committed intake plan, repository task records, and source-registration changes.
+
+### Compiled Update — 2026-09-25: Stage 3 Distills Research into an Execution Program
+
+Research intake now requires each verified actionable to name the project decision it can change, one
+owning handoff, every discoverable consumer, the reusable primitive or cheapest deciding probe, the
+minimum evidence controls, and the observable trigger for any broader follow-on. Consumer discovery is a
+repository search, not an inferred shortlist. Several papers may therefore collapse into one work packet,
+and fewer than three packets is valid when the decision surface is genuinely narrow.
+
+The default output is a small execution program: implement a deterministic primitive that is useful even
+if the learned method loses, run one bounded empirical screen, and keep expensive replications behind
+trigger records. A trigger record carries its condition, owner, inputs, and acceptance rule but no active
+checkbox or index next action until the condition fires. This preserves the research without turning every
+interesting paper into immediate backlog.
+
+The paired write-side rule is equally compact. Every empirical screen records a frozen manifest, incumbent
+baseline, per-item outputs, holdout or later window, complete denominator, and predeclared disposition.
+The shared Vidya envelope captures those fields prospectively; source-specific readers appear only after a
+parent trigger fires. This is sufficient rigor to guide an engineering decision while keeping full
+benchmark recreation available for claims that later require it.
+
+#### Source References
+
+- [Research-intake Stage 3 action distillation](../.claude/skills/research-intake/references/stage3-action-distillation.md) — normative workflow.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — canonical minimum execution contract and consumer map.
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — shared receipt and trigger-specific profiles.
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — worked compression from paper-specific tasks to one shared screen.
+- [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — applied reconciliation and validation record.
+
+**Confidence:** verified as the installed Claude/Codex research-intake workflow and committed project task structure.
+
+### Compiled Update — 2026-10-04: practical-outcome checks are implemented, not semantic proof
+
+**Confidence:** verified for implementation and regression results; no research-ROI improvement is claimed.
+
+New Stage-3 plans now carry a v2 source-first opportunity scan, full verbatim steering reconciliation,
+plan-only actionable additions and per-recommendation outcome reviews. Exact owner, extracted task
+identity, checkbox text and acceptance bind each immediate outcome. Same-ID refinements also bind
+the incumbent task text. Stage 4 checks the reconciled checkpoint and actually applied task,
+stub and index-row text. Historical completed filings and default index validation retain their
+legacy behavior. The installed Codex mirror has the same practical-outcome emphasis.
+
+These checks make declared omissions and substitution easier to inspect, but cannot discover an
+application omitted from the source scan itself or prove that an enabling task supplies the
+required operational behavior. Main must independently read the selected verified mechanism and
+current consumer. Production-activation gates and graph risk do not, by themselves, close a
+useful implementation or permitted deciding probe. The workflow keeps that semantic judgment
+separate from structural validation and adds no classifier or grading ladder.
+
+The implementation suite passed 73 tests and 218 subtests, and the full wrap-up rerun returned
+the same counts. Bounded semantic fixtures are qualitative review cases, not blind behavioral
+validation or a corpus-wide omission estimate. The native conformance source remains prospective
+under the existing `VB-RI-OPS-WIRE` registration; ordinary test results are not retroactively
+converted into measurement warrant. The preceding audit's routing-concurrency, valid EXL3 graph
+replay and ISA-runner binding proposals remain unexecuted.
+
+#### Source References
+
+- [Coverage-delta implementation](../progress/2026-10/2026-10-04-intake-coverage-delta.md) — published changes, checks and limits.
+- [Current distillation instructions](../.claude/skills/research-intake/references/stage3-action-distillation.md) — source-first discovery and independent outcome review.
+- [Persistence contract](../.claude/skills/research-intake/references/session-persistence.md) — plan-only v2 additions and approved Stage-4 reconciliation.
+- [Wrap-up and earlier-session review](../progress/2026-10/2026-10-04-intake-earlier-wrap.md) — rerun, isolation and retrospective scope.
+
+### Compiled Update — 2026-10-04: older intake mappings weakened distinct operational outcomes
+
+**Confidence:** verified for selected source/plan/owner/code inspection; application benefits remain hypotheses.
+
+The older Jev/EXL3, Dream-RSI and MI210 compiler reviews recovered four bounded outcomes. A shared
+prefix is not question isolation: TD-1d.3 now requires question-only branches, checkpoint-safe state
+and singleton/sibling/whole-cost comparisons using existing TD-23/TD-31/KPF machinery. The existing
+target-precision control now keeps backend and verification shape fixed; CPU BF16 versus HIP Q4
+cannot attribute a precision cause. No second cache or speculative-decoding framework is needed.
+
+Dream-RSI's checkpoint-pruned allocation had been mapped to a collaboration spec. AC-CHECKPOINT-ALLOC
+instead uses independent existing batch continuations and prefix-visible score/cost records over
+at most three eligible configurations. It must not rerun OAB-9b's unchanged parked comparison or
+misread a shared advancing champion as independent trajectories. Missing counterfactual support
+returns unavailable, not fabricated replay gain.
+
+The multi-token MoE GLU opportunity was filed only under IQ residency, although static inspection
+found a Q8 MoE MTP recipe with separate gate/up tensors and a source fusion-width restriction.
+INF37-MOE-Q8-FUSION is a single experimental compatibility/correctness slice, not a broad campaign:
+resolve AMD correctness, preserve v10's CPU-only top-k guard, prove the actual route and compare
+matched controls before any speed claim. Metadata eligibility is not runtime residency or benefit.
+
+Two proposed tasks and two existing-task refinements were filed. Four prospective native evidence
+profiles extend VB-RI-OPS-WIRE before measured runs; no new grader or historical tuple backfill.
+Compiler falsifiers, routing-feature/label repair, selectors and operator-loop mechanisms remain
+with existing owners. Historical freeze/no-weight-update arguments were not accepted as proof
+of irrelevance, but do not justify duplicating covered work. This selected review supplies neither
+corpus-wide completeness nor an omission rate. Skill conformance does not replace semantic review.
+
+#### Source References
+
+- [Earlier-campaign retrospective](../docs/reviews/research-intake-earlier-applications-20261004.md) — inspected bytes, actual consumers, counter-coverage and bounded proposals.
+- [Wrap-up progress](../progress/2026-10/2026-10-04-intake-earlier-wrap.md) — test rerun, custody and validation.
+- [Coverage-delta implementation](../progress/2026-10/2026-10-04-intake-coverage-delta.md) — structural checks versus semantic limits.
+
+### Compiled Update — 2026-09-25: A Reader Does Not Complete the Write Side
+
+The generic AutoKernel belief reader surfaced three schema boundaries before its first governed use. The
+KV-quant producer emits statistics objects where the root adapter expects scalar numbers; the shared
+`ClaimTuple` projection drops applicability fields needed to match evidence to a model and backend; and
+repeated ingestion needs an idempotent run identity. The reader remains unmerged until the producer shape,
+adapter validation, applicability projection, and receipt contract agree.
+
+This is the write-side rule in concrete form: an implemented projection path is not evidence readiness.
+The producer must author the fields a future decision needs, and the adapter may only preserve and validate
+those fields. A later reader cannot infer missing applicability, completeness, or run identity without
+manufacturing warrant.
+
+#### Source References
+
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-BELIEF, producer/adapter mismatch, and applicability gap.
+- [Vidya adapter registry](../scripts/vidya/adapters/README.md) — canonical source and consumer contracts.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — planner consumer boundary.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day reader review.
+
+**Confidence:** verified from code review and strict failing fixtures; no historical record is backfilled.
+
+
+### Compiled Update — 2026-09-26: A Parallel-Drafted Stage-3 Plan Needs One Authoritative Reconciliation Pass
+
+**Confidence: verified** from the committed plan and its Stage-4 application (root `0c8e227e`).
+
+The orchestration prior-art intake drafted its Stage-3 plan as four sections in parallel (harness front doors; capacity-aware selection; hybrid CPU/GPU; Stage-2b actionables). The last section ended with a reconciliation, declared authoritative wherever it conflicted with the others. That pass caught defects no single section could see:
+- **ID collisions.** An operator-queue ID was claimed twice and had to be renumbered.
+- **Split ownership.** Retry-After work was homed in two handoffs.
+- **Competing owners for one component.** The shared wait estimator had two candidates: a design-only rider, and the handoff that already carried the build checkbox. The build owner won.
+- **Duplicated state.** Session state was headed for four homes and was collapsed to one table, with the other three reading it.
+- **Colliding appends.** All four sections appended a belief-kernel section at the same end of file, so they were merged into one. Two empirical items had no belief-kernel row at all and got activation records.
+- **Edit mechanics.** Edits by several sections to one file are applied by quoted text, bottom-up, never by line number. An orchestrator HEAD move (`fb7871ea` → `a439070e`) shifted one cited file by 5 lines, so the pasted text keeps its commit pin.
+
+**Three citation lessons:**
+- No number from a stage1-unverified entry is quoted anywhere. Those entries appear only as triggers, declines or lineage, in `#record` form.
+- `#record` asserts nothing, so a fact written under `#record` is invisible to cite-check. When text asserts a fact from an entry, it needs a claim-level or whole-entry citation.
+- Second-reader disagreements with dive claims go to the operator as a list. They become `claim_corrections` only if the operator accepts them.
+
+**A recommendation can change after a late fill, and the ruling is recorded beside it, not over it.** Stage-2b (intake-1818#record) changed OD-A's recommendation from B to A. The operator then took only part of A: the runtime was declined, but a port investigation was opened instead of closing the question. The rider records the ruling as the decision and keeps the recommendation as history.
+
+The plan also drafted the exact text for its wiki corrections, and Stage 4 applied it in the same commit.
+
+#### Source References
+- [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — "How to read this plan", the completeness gates, and Reconciliation R1–R6.
+- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the Stage 2b/3/4 landing record.
+
+
+### Compiled Update — 2026-09-27: three new producers get write sides, and a gated research item is filed durable, not dropped
+
+**Confidence: verified** from the committed handoff items and the Stage-3 plan's completeness gates.
+
+- **Write sides were wired or filed as each producer appeared, not after.**
+  - The UFH-12 embedder placement gate: the capture script emits `<record-stem>.belief_measurements.jsonl`, and the read side is the `embedder-placement-gate` adapter. The 2026-09-26 Phase-0 files stay retrospective, because a tuple invented on read would claim warrant the run never captured. A G3 re-run must write its record through the same capture window (VB-UFH12-PLACEMENT).
+  - The gfx90a ISA audit tool shipped with its own `claim_projection` (schema `epyc.gfx90a.isa_audit.v1`), so its reads can land in the SC84 static-register source. SC84a widens that tuple first (AGPR count, accum offset, in-hot-loop spill reloads, in-loop `v_accvgpr` copies, and the toolchain's MFMA-form regime), at OBSERVATION grade and with no new grading rule. The register audit reads existing binaries only, so it is the cheapest measurement source to wire.
+  - The DS41-C57 barrier-sleep probe records (VB-DS41-C57): one locator per launch × arm, carrying the binary digest, an argv/env hash (OMP places, load threads), voluntary context switches and per-request tok/s. They are OBSERVATION grade (1–2 launches per arm) and are **never merged into the loop's matched-floor rows**. The raw directory sits in `/mnt/raid0/llm/tmp`, so it must be copied somewhere durable before projection. The follow-on runtime-arm compare rides the loop's existing evaluation path and needs no new adapter.
+- **A research item blocked by a standing directive is filed with a `GATED` marker, not dropped.** The HipKittens GEMM-ladder Stage-3 plan filed its GPU MMQ seeds and the MFMA-form arm as durable, dispatchable tasks marked GATED under the 2026-09-08 kernel-research directive, each with a falsifier. When the operator lifted the gate on 2026-09-27, the seeds were ready to run the same day, and the first one (AK-MMQ-H10) produced a clean negative result by its pre-stated falsifier.
+- **Other intake-flow practices the plan made explicit:**
+  - Every Stage-1 draft actionable and every dive-ledger row maps either to a plan item or to a row in an explicit declines table with its reason. Mechanisms with no counterpart on our hardware are **flagged for operator review, not dismissed**.
+  - Entries renumbered after a parallel intake landed first (1783–1785 → 1822–1826) are re-cited in every handoff line that named the old numbers.
+  - Stage 2's close-out gate needs every dive-surfaced source either ingested and dived or explicitly declined. Here the operator chose the recommended option: one re-encounter sets a missing arXiv id on an older entry, and two sources are declined for this lane, to be ingested in a DS41-focused intake.
+  - As in the previous intake, no plan text quotes a number from the one stage1-unverified entry (intake-1824#record).
+
+#### Source References
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-PLACEMENT, the SC84 producer note, SC84a, VB-DS41-C57.
+- [HipKittens GEMM ladder Stage-3 plan](../docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md) — gating, OD-1, P6, the declines table and the completeness gates.
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — INF03-REGAUDIT-1 and its belief-kernel write side.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the GATED seed set, the gate-lifted note, AK-MMQ-H10.
+- [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — the intake record (renumbering, filed-task counts).
+
+
+### Compiled Update — 2026-09-27 (late): freezes carry their own thaw condition, and a ratifier refuses a defaulted signer
+
+**Confidence: verified** for the conventions as applied, the guard and the checker counts; the countersignatures are **pending**.
+
+- **The freeze convention (narrowed plan).** A frozen box keeps its checkbox open and gets an inline `❄ FROZEN 2026-09-27 — resume only once …` prefix, plus an indented note with the reason and the unfreeze trigger: "frozen is not done". The central list lives in the experiment that gates the thaw (the UFH-13 handoff). Index rows are re-pointed to the next *live* step, and a top-priority banner in the master and UFH indices asks "does this move UFH-13?" before any other row is taken.
+- **The park convention.** A box the operator parks gets a `PARKED 2026-09-27 (operator)` note that says what exists (commits, branches), what does not (no build, no run), and the exact resume step. The next agent can resume without reconstructing state, and nobody mistakes the note for progress.
+- **Governance repair: no ratifier records a defaulted signer.** Every ratifier in `scripts/operator/`, and the `run_*` wrappers, now refuses an unset `RATIFY_OPERATOR`, a system account, the login account and agent ids. The shared guard is `scripts/operator/lib/ratify_operator.sh`, and the rules live once in `ratification_receipt.py check-operator`. The receipt tool returns REFUSED instead of recording `$USER`: one earlier receipt had recorded `operator: "node"`.
+  - One historical exempt script was deliberately left untouched. Its exemption pins the as-run sha256, so editing it would lapse the exemption, and the exemption list is human-only.
+  - The receipt checker reads 45 scripts: 16 receipted, 29 exempt, 0 failing.
+- **Chat approval is recorded as such, not upgraded.** Four ratifications (P-SERVE-SEL-1, OP-63, TRUST-BOUNDARY-RECEIPTS-FIX, DAR-LAT-3h) were approved in chat and executed by the agent. They stand as CHAT-CONFIRMED, with a terminal countersignature script for the operator to run (master queue OP-67).
+- **Belief-kernel write sides, filed at design time and frozen with their producers:**
+  - VB-THESIS-1: per-item and run-level rows for UFH-13. The producer exists: research `2b59bebe` writes a `ufh13-thesis-belief/v1` sidecar. VB-THESIS-2 files the read-side adapter now, so the verdict is ingestible the day it lands.
+  - VB-DISPATCH-S2 was filed with the stage-2 design and frozen with HS-19d P3a/P5. VB-TD-ADVICE and VB-SEL-LOADAB are frozen because their only producers (TD-28, DAR-LAT-3) are frozen: "wiring a source with no producer is dead code".
+  - The `gfx90a-static-register` read side is wired, but every audit on disk predates the hook, so it ingests 0 tuples ([Hardware Optimization](hardware-optimization.md)).
+  - A gap to note: the DAR-LAT-3h critic thread gate had no source row, so its G1 result is recorded in progress and the handoff only.
+
+#### Source References
+
+- [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — freezes, governance repair, countersignature record.
+- [2026-09-27 orch-design progress](../progress/2026-09/2026-09-27-orch-design.md) — § Governance guard and countersignature record; the belief-kernel note on G1.
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-THESIS-1/2, VB-DISPATCH-S2, the frozen VB-TD-ADVICE / VB-SEL-LOADAB, SC84 read side.
+- [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the central frozen list.
+- [COUNTERSIGN-20260927](../artifacts/operator/countersign/COUNTERSIGN-20260927.md) — the four CHAT-CONFIRMED ratifications.
+
+
+### Compiled Update — 2026-09-29: compaction moves history without deleting it, and a wired write side can still ingest nothing
+
+**Confidence: verified** for the compaction being a move: every removed line was checked against the active files at `d3b960cc` and found again in its completed sibling (by ID, with link paths rewritten), or kept in the active file. **Verified** for the discovery gap and the stats-dict mismatch, both of which the handoff records against file and line. **Ruled** (operator, 2026-09-29) for the thaw triggers. The fixes are **open**.
+
+- **The handoff compaction convention.** Four long active handoffs moved their closed scope into `handoffs/completed/` siblings: vidya (through 2026-08-10, plus a *Completed 2026-08-10 → 2026-09-27* section), harness-selection, model-stack SSU and the non-inference backlog. Superseded snapshots and dependency graphs went to `handoffs/archived/*-history-through-2026-09-27.md`. Each active file now opens with a *Start here* block (Next, Waiting, Frozen or Operator-held, Standing) and a *Completed Scope* table that maps each scope to where it lives. The stated rule is "Nothing was deleted: the siblings are the evidence record for every gate this program has already passed." For wiki readers, a `handoffs/active/` link to a closed item now resolves one hop further, into the sibling.
+- **Before a parent moves, its orphaned residuals get their own box.** Two residuals sat inside closed NIB items with no box of their own, so moving their parents would have buried them. They became NIB2-88 (the opencode reaper relaunch step, which no cold-start document mentioned) and NIB2-89 (generalizing H-4 self-restart). A second hazard showed up in the same pass: open NIB2-80/81 shared IDs with closed items, so they were renumbered to NIB2-86/87 and each keeps a "filed as" note. SSU's § Outstanding Work holds seven open boxes that are standing rules, not tasks: "Never dispatch or tick them." An open checkbox therefore does not always mean pending work.
+- **VB-UFH12-PLACEMENT-DISC: the write side is wired, but ingest never sees the arm sidecars.** The A0 and A3 arm sidecars (nine files) live at `data/embedder_placement/arms/<run>/<N>-{base,cand}.belief_measurements.jsonl`. The `embedder-placement-gate` source in `ingest_sources.py` globs only the root, so `cli.py ingest` returns nothing for them and does not error. The fix is a recursive glob, following the `kv-quant-27b-v10-measurement` pattern, plus a two-level fixture test and a check that every refusal names its reason. **Lesson: wiring a producer is not the same as the ledger receiving it. Prove discovery on the real directory layout, not a flat fixture.**
+- **VB-KVQ-V10-DICT heads the KV-quant queue.** The producer writes `prompt_tokens` and `kv_{k,v}_mib` as `{n, median, mad}` dicts, but the root adapter's `_check_row` requires plain numbers. The first real sweep's sidecar would therefore be refused wholesale. Both test suites miss this, because root's fixture hand-builds scalars and the producer's test asserts the dict shape. This is the same flat-fixture blind spot as the placement gap. The recommended fix has the adapter accept a stats dict with a finite numeric `median` now, with the producer emitting plain medians in its next revision. DICT blocks VB-KVQ-V10-INGEST, and VB-KVQ-V10-RECONSIDER can be dispatched now. The substrate itself has been promoted since 2026-08-26 (P5c): `cite-check` blocks commits only on dangling, overturned or conflicted citations.
+- **Frozen write sides now carry compound thaw triggers inline (operator ruling 2026-09-29).** VB-TD-ADVICE resumes only once TD-28 unfreezes, which needs v11 promoted AND the autopilot trained on the swapped stack AND UFH-13 re-opened. VB-SEL-LOADAB resumes only once DAR-LAT-3 unfreezes, which needs the autopilot trained on the swapped stack AND UFH-13 re-opened. The same trigger was written into TD-28, LRC-1/2 and all eight DAR-LAT boxes. The 2026-09-27 marker only named the producer; the ruling adds the producer's own preconditions, so no agent has to chase the chain.
+- **Duplicate owners were folded, not left to diverge.** JSON repair was struck from PAW-5's candidate list, because `typed-decision-plane.md` TD-21's shared repair helper already owns and solves it. REPL-EMB-B.1 now points at the thesis arm A0 as run through `/v1` (`--transport v1`, TE-3a), and its decision rule was pre-registered on 2026-09-27, which closed OP-66.
+
+#### Source References
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — compaction table, promoted status, VB-UFH12-PLACEMENT-DISC, VB-KVQ-V10-DICT queue order, the 2026-09-29 thaw triggers on VB-TD-ADVICE / VB-SEL-LOADAB.
+- [Vidya completed sibling](../handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md) — the moved evidence record (pilot build, promotion track, SC-series through 2026-09-27).
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — the orphaned-residual boxing (NIB2-88/89) and the NIB2-86/87 renumbering.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — *Start here* and the standing-rule boxes that must never be ticked.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the *Completed Scope* table pattern.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-5 JSON repair struck (TD-21 owns it).
+- [repl-embedding-retrieval.md](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-B.1 via `/v1`, OP-66 closed.
+
+
+### Compiled Update — 2026-10-03: wiring the new serving producers, and rulings that never compiled
+
+**Confidence: verified** for the filed tasks, the declines and the incidents. No adapter in this section has been
+written yet; each item is wiring that is owed.
+
+- **Three new serving measurement sources (VB-SERVING-DF2).** Each one gets a source-table row and a `ClaimTuple`
+  projection, and no new grading rule:
+  - per-call serving telemetry;
+  - DFlash2 at the production shape (Q38-T7), carrying the kernel-store build id, the drafter GGUF sha and the full
+    argv;
+  - Qwen3-VL-30B on CPU (S-18).
+
+  The measured DFlash2 VRAM components are also a capacity source for SSU-F3's claim tuple.
+- **VB-SERVE-TIMING-1, the read side of the per-call records** (`serving_call.v1`). The write side has been live
+  since 2026-10-03 04:59Z, and era row ST1 is in `instrument_eras.yaml`. The adapter must:
+  - refuse rows whose `record_sha256` does not re-derive;
+  - project each `timings` metric plus queue wait, with unit and direction fixed by the schema;
+  - carry argv sha, binary, model path and orch commit as identity, never graded;
+  - skip `timings_source="absent"` rows rather than emit zeros.
+
+  Open design question: window aggregates such as per-role prefill share need a second producer or a sealed window
+  manifest, because a per-call tuple cannot carry a share.
+- **VB-RI18a: the RI-18 sidecar does not meet its own contract.**
+  - Its 6 rows are pooled only and lack the served orch commit and the store-snapshot sha. As written, the adapter
+    would ingest nothing.
+  - The whole run lives in scratch.
+  - Fix: extend the `score` sidecar writer (offline, seconds, not a re-run) or join `run_manifest.json`. Then copy the
+    run to a durable path.
+- **VB-REVIEW-GATE declined.** RI-18 scored DROP, and RI-18c deletes the gate and its event. An adapter for a
+  producer being deleted is not worth writing.
+- **VB-DS41-C95 filed.** It covers the blind-graded harness records. Calibration rows are never pooled, and no-reply
+  calls count as misses. The write-side sidecar goes in before the next arms run.
+- **Governance lessons (2026-10-03 incidents):**
+  - **A ruling that lives only in prose does not get applied.** The 2026-08-27 DFlash2 ruling sat in two handoffs
+    for five weeks while :8083 served MTP. An operator ruling that names a launch recipe is a stack-change intent;
+    the handoff carries only a pointer to the package or an open task (SCG-RULING-TO-FIELD).
+  - **For an urgent production fix, offer the fast path first** (an operator-terminal relaunch with the target
+    argv) with the permanent package behind it. Do not bundle an unrelated lineup move without the operator
+    choosing to (SCG-FASTPATH). The DFlash2 fix took two days and two operator pushes.
+  - **An idle session does not drain its inbox.** Two bus messages queued while a session waited on an operator
+    decision were never processed before the host went down. Put a pending decision to the operator as options when
+    it arises.
+  - **Record a runtime enable as what it is.** A `POST /config` enable persists across reboots, so a "runtime-only"
+    note was wrong.
+
+#### Source References
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-SERVING-DF2, VB-SERVE-TIMING-1, VB-RI18/VB-RI18a, VB-REVIEW-GATE (declined), VB-DS41-C95.
+- [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-dflash2-ruling-never-compiled, INC-20261003-urgent-fix-slowed-by-bundling, INC-20261003-runtime-flag-survived-reboot.
+- [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — SCG-RULING-TO-FIELD, SCG-FASTPATH.
+- [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — lost cross-session messages while idle; the session failures.
+
+### Compiled Update — 2026-10-06: capture evidence at the write boundary
+
+New evidence producers follow the existing shared verifier carrier and single grading ladder. They bind the source/readset and applicability before execution, retain original output and refusal outcomes, and project only the proposition that the native record can support. Counts may describe a run, but they do not silently become quality or performance claims. The strategy report, optional scoring fixtures, and code-index controls follow this same pattern without creating a second grader. ([strategy-report custody](../progress/2026-10/2026-10-05-ni53-strategy-report-custody.md), [optional scoring lock](../progress/2026-10/2026-10-05-ni41-eval-scoring-extra.md), [code-index admission](../progress/2026-10/2026-10-06-ni76-code-index-admission.md))
+
+A source boundary also matters for gaps: a captured serving-call census with 19 records but no session keys yielded zero eligible pairs and no tuple. That is evidence about the sampled records, not evidence that the larger distribution, enqueue behavior, or TTL is known. The owning HSF-3 handoff therefore remains open for properly keyed windows. ([NI10 gap census](../progress/2026-10/2026-10-05-ni10-gap-census.md), [NI32 schema-boundary report](../progress/2026-10/2026-10-05-ni32-synthetic-schema-boundaries.md))
+
+The campaign record reinforces a durable rule: if a process produces measurements or verified findings, define the source adapter when the write path is built. Retrofitting a tuple from a later read cannot recover identities or applicability the original run never captured. Existing shared grading decides the claim; source adapters only project native records into that contract. ([Belief Substrate program](../handoffs/active/vidya-belief-substrate-program.md), [NI05-13 verifier projection](../progress/2026-10/2026-10-05-ni13-durability-native-projection.md), [NI05-15 CI capture](../progress/2026-10/2026-10-05-ni15-ci-conformance.md))
+
+#### Source References (2026-10-06)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — write-side source adapter and native-record boundary.
+- [NI10 gap-census report](../progress/2026-10/2026-10-05-ni10-gap-census.md) — zero keyed pairs in the bounded census; no distribution claim.
+- [NI32 schema-boundary report](../progress/2026-10/2026-10-05-ni32-synthetic-schema-boundaries.md) — synthetic controls do not replace live source data.
+- [NI05-13 verifier projection](../progress/2026-10/2026-10-05-ni13-durability-native-projection.md) — existing carrier and shared grade.
+- [NI05-15 CI conformance](../progress/2026-10/2026-10-05-ni15-ci-conformance.md) — prospective capture and command enrollment.
+- [NI05-53 strategy report](../progress/2026-10/2026-10-05-ni53-strategy-report-custody.md) — opt-in custody and claim limits.
+### Compiled Update — 2026-10-06: fix read-depth forward, audit past dives separately
+
+A Stage-2 entry marked `dive-verified` can still rest on a model-summarized WebFetch digest: the old skill asked for source passages but did not define full-read depth, while claim anchors were prose-required, schema-optional and unenforced. The accepted fix makes `read_depth` explicit (`FULL|PARTIAL|DIGEST`) and sets claim anchors with quote hashes as the contract. The schema documents both `dive-verified` and `dive-overturned` for entries ingested from 2026-10-07 onward (or whenever `read_depth` is declared), but the current validator actually enforces the depth and non-empty-anchor gate only when `verification == dive-verified`. Do not describe `dive-overturned` as validator-enforced; its owner must reconcile the schema/code scope before relying on that part of the contract. For the implemented `dive-verified` gate, older entries without declared depth remain grandfathered; this is forward enforcement, not a historical audit.
+
+The audit snapshot classified 352 of 889 dived entries as *at risk* under a heuristic (A=191 missing anchors, B=100 digest/WebFetch mentions, C=109 no recorded full-read evidence). These are overlapping risk flags, not 352 proven bad dives. Recompute against the current intake index before using the count. Prioritize entries that are cited or gate open work; a digest-era confirmed claim without anchors can merit re-dive, while uncited low-relevance entries can be demoted only through the stage machine with a reason. The 2026-10-06 nine-entry batch was subsequently redone against full sources at `1c5183df9`; the audit's earlier note that its fix patch was unapplied is a point-in-time snapshot, not current state. Seven follow-up tasks in the active handoff remain open and belong to their owners; this compilation performs no historical re-verification or index edits.
+
+#### Source References (2026-10-06 read-depth controls)
+
+- [Intake re-verification handoff](../handoffs/completed/intake-reverification.md) — risk rubric, explicit legacy boundary and seven owner tasks.
+- [Read-depth audit](../artifacts/intake-depth-audit-20261006/AUDIT.md) — root-cause and historical snapshot; not a current proof for each dive.
+- [Research-intake skill](../.claude/skills/research-intake/SKILL.md) — forward Stage-2 depth and anchor requirements.
+- [Intake schema](../.claude/skills/research-intake/references/intake-schema.md) — optional/required schema transition.
+- [Intake validator](../.claude/skills/research-intake/scripts/validate_intake.py) — enforcement boundary and grandfathering.
+- [At-risk list generator](../.claude/skills/research-intake/scripts/at_risk_list.py) — reproducible heuristic flags; its output is not a verdict.
+
+### Compiled Update — 2026-10-20: new belief-kernel write-side obligations from the DS41 swap, the Q38FN depth sweep and the conversation bake-offs
 
 **Confidence: verified** for the filed tasks; none has run, so no claim tuple exists yet.
 
 The Vidya program and adapter source table gained or rewrote four write-side items, all following the rule that the write side is wired before the first run because a read side cannot invent a claim tuple afterwards. VB-DS41-1017-WIRE was rewritten for the MXFP4-direct plan: capture the load check, ppl, coherence, NMSE spot checks, serving speed against the September headline and the converted-drafter alpha, each bound to the nine shard sha256s and the drafter digest, through the existing VB-DSV41 carrier with no new grading rule, and before the W5 runs. VB-Q38FN-SERVED-SWEEP-WIRE wires the manual served thread-by-depth sweep records (one JSON object per request) as a source. VB-AK-HISTORY keeps the AK-HR-1 and AK-HR-2 history replays retrospective and descriptive (no producer hook, zero ClaimTuples) and wires the prospective AK-HR-3 fields on the write side. The conversation-stack family was extended to the CS-22 and CS-23 bake-offs with `metric_direction` per metric. The practical lesson repeats the existing one: artifacts retired or swapped (the uniform trunk, the September DS41 Q4) leave behind records that must name the artifact they were measured on.
 
-### Source References (2026-10-20 knowledge-management delta)
+#### Source References (2026-10-20 knowledge-management delta)
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-DS41-1017-WIRE, VB-Q38FN-SERVED-SWEEP-WIRE, VB-AK-HISTORY.
 - [Adapter source table](../scripts/vidya/adapters/README.md) — VB-DSV41 row extension for the MXFP4-direct plan.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — the W5/W6 gates the records bind.
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-47 and CS-49 outputs.
 
-## Compiled Update — 2026-10-21 (sweep 3): harness-cluster Stage 4 filing and new write-side obligations
+### Compiled Update — 2026-10-21 (sweep 3): harness-cluster Stage 4 filing and new write-side obligations
 
 - Stage 4 of the harness-cluster intake applied the approved plan on 2026-10-21: 30 checkbox tasks across 13 owner handoffs, HIL-2 items 7-22 and the HIL-4/HIL-6 notes, 16 monitor and 8 knowledge records, 3 belief-kernel source rows, 5 master-queue rows, 53 index dispositions and 20 dive_corrections lines; no compute. DP-F was decided by the operator (dive the remaining nine benched intakes; filed as M13, dives in flight). ([stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md))
 - Belief-kernel write-side rows added: VB-TOC-AB-WRITE (self-hashed per-run sidecar with arm identity, terminal_state, rolling input tokens, prefix-cache invalidations, compressor wall time; strict reader projects to ClaimTuple, `claim_tuple.grade()` decides, no retrospective tuples), VB-SKILLBANK-AB-WRITE (one record per role+model-pin cell, negative cells stay rows, no pooled mean) and VB-HIL-WRITE-FIELDS (tool-surface digest, served window, compaction-policy digest, budgets, selection rule: write-side fields unrecoverable on read). The first KVU timing producers exist (`np_context_kvu_cpu_study_20261020/w2_20261021`) and project through the existing np-ctx-kvu adapter with HTTP-400 rows in the denominator; VB-KVU-PF.1 and VB-DS41-1017-WIRE are recorded ticked. ([vidya program](../handoffs/active/vidya-belief-substrate-program.md))
@@ -4210,7 +4232,7 @@ The Vidya program and adapter source table gained or rewrote four write-side ite
 
 Sources: [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop).
 
-## Compiled Update — 2026-10-21 (sweep 4): one canonical belief ledger, prospective write-side carriers, and guards against silent handoff loss
+### Compiled Update — 2026-10-21 (sweep 4): one canonical belief ledger, prospective write-side carriers, and guards against silent handoff loss
 
 **Confidence: verified (commits and tests named); the refocus decision is the operator's and the schema redesign is open.**
 
@@ -4222,7 +4244,7 @@ Sources: [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4
 
 Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [Progress noninf-vidya](../progress/2026-10/2026-10-21-noninf-vidya.md), [Progress ds41-w5](../progress/2026-10/2026-10-21-ds41-w5.md), [Progress handoff-guard](../progress/2026-10/2026-10-21-handoff-guard.md), [Progress codify-rules](../progress/2026-10/2026-10-21-codify-rules.md), [Progress corpus-flagoff-ratify](../progress/2026-10/2026-10-21-corpus-flagoff-ratify.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md)
 
-## Compiled Update — 2026-10-21 (sweep 5): both loops read the belief ledger before planning, but the reads are not model-specific yet
+### Compiled Update — 2026-10-21 (sweep 5): both loops read the belief ledger before planning, but the reads are not model-specific yet
 
 **Confidence: verified** for the merged code, the tests and the real-ledger smokes. No live planner turn has consumed a ledger read yet.
 
@@ -4244,7 +4266,7 @@ Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substr
 
 Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress hygiene-3c4ca599](../progress/2026-10/2026-10-21-hygiene-3c4ca599.md), [Progress codex-ni-main](../progress/2026-10/2026-10-21-codex-ni-main.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **Recurring pin check for adapters.** `scripts/vidya/producer_pins.py` (check/digest/repin) lists each adapter's pinned source digest that went stale against research main. Its first run found the sampled-CPU closure pin stale (`62c2e09da` re-pinned) and the producer-backed tests passed after. No cron was installed (VB-AK-PIN-REPIN ticked).
 - **A stale "TODO" row is a defect too.** VB-SERVE-TIMING-1 was ticked after checking that the serving-call adapter, strict `record_sha256` refusal and ingest wiring already existed (106 tests pass); only the README source row still said "none (TODO)".
@@ -4256,13 +4278,13 @@ Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substr
 
 Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md), [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md)
 
-## Compiled Update — 2026-10-26 (wrap-up, workspace-58)
+### Compiled Update — 2026-10-26 (wrap-up, workspace-58)
 
 - **Belief-substrate write-side wiring continues**: fold-gate records, HPR prefix capture and AK native records each project into the existing claim ladders rather than adding grading rules; filed wiring tasks include VB-R2364-SWEEP-WIRE and VB-AK-NATIVE-WIRE-WRITE. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [workspace-58 log](../progress/2026-10/2026-10-26-workspace-58.md))
 - **Conversational/episodic memory eval** instruments (BEAM + Tulving adapters) and REPL embedding retrieval are tracked as active handoffs. ([conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval))
 - **Governance**: RATIFY-WS58-RETENTION-LESSONS-20261025 signed (calendar lessons, MEASUREMENT.md section 5 evidence retention, destructive-ops hook). Handoff-index authoring contract and agent-loop design guides were refreshed. ([workspace-58 log](../progress/2026-10/2026-10-26-workspace-58.md), [handoff-index-authoring](../docs/guides/agent-workflows/handoff-index-authoring.md), [agent-loop-design](../docs/guides/agent-workflows/agent-loop-design.md))
 
-## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** (recorded projectability notes; no ledger state is changed by this page).
 
@@ -4274,7 +4296,7 @@ Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substr
 
 Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
 
-## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
+### Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
 **Confidence: verified** (accepted task receipts and source records listed below).
 
@@ -4282,14 +4304,14 @@ The calendar overrun closeout was canonically ingested as one record with three 
 
 Sources: [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) · [Workspace-58 progress](../progress/2026-10/2026-10-27-workspace-58.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 
-## Compiled Update — 2026-10-27 (incremental full wrap, 16:26:29Z): separate conclusions from run warrants
+### Compiled Update — 2026-10-27 (incremental full wrap, 16:26:29Z): separate conclusions from run warrants
 
 The post-cut checkpoint adds a scoped C5 GitNexus caller audit to the existing committed-conclusion path: the accepted handoff records one `[belief: cc]` result tick and files the prospective `VB-GNX-C5-CALLER-AUDIT-1` source task. That observation concerns the tool's audited caller graph; it is not a measurement tuple, kernel-source application, global graph qualification, or fold decision. The INF-75 host-excluding preflight remains preparation evidence with `[no-belief]`, because no census ran. META-ASSERT-1, XGRAMMAR-A2, and M4 GPU records remain build/parser/load-only or candidate-only evidence. No wrap-up ingest was run; ledger synchronization is a read-only freshness check.
 
 Sources: [C5 accepted checkpoint](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh); [Vidya program](../handoffs/active/vidya-belief-substrate-program.md); [INF-75 handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate); [AutoKernel champion handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [WS58 result harvest](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
 
 
-## Compiled Update — 2026-10-28 (CME7T, CS22 and STT2 sources are enrolled ahead of reader use)
+### Compiled Update — 2026-10-28 (CME7T, CS22 and STT2 sources are enrolled ahead of reader use)
 
 The source tables now extend existing CME7T, CS22 and speech-conversation families with the native fields needed for prospective records. The implementation uses each existing verifier carrier and `ClaimTuple.grade()`; these source extensions do not create a second ladder. Each reader and planning-context canary is still an open gate.
 
@@ -4299,7 +4321,7 @@ The source tables now extend existing CME7T, CS22 and speech-conversation famili
 
 Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md); [CME7T instrument handoff](../handoffs/completed/conversational-memory-eval-instrument.md); [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [STT2 source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [CS22 source record](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md).
 
-## Compiled Update — 2026-10-29 (wrap-up sweep)
+### Compiled Update — 2026-10-29 (wrap-up sweep)
 
 **Confidence: verified (ledger/audit records).**
 
@@ -4309,7 +4331,7 @@ Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substr
 
 Sources: [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research).
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the custody and retirement records (gate receipts, archive refs, path absence); **not wired** for any belief source whose planning-context canary has not passed.
 
@@ -4321,14 +4343,14 @@ Sources: [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-
 
 Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) · [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [codex3 lane checkouts](../docs/guides/agent-workflows/codex3-lane-checkouts.md) · [ROOT lane reclassification](../progress/2026-10/2026-10-30-codex-ni-root-lane-reclassification.md)
 
-## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - PREFIX-4: all 44 native rows cosine-computable; qd-v1 stores now refuse under the new encoder, so a rebuild is needed. Embedding v9/v10 parity 200/200 cosines >= 0.9999 (prerequisite only). ([colbert](../progress/2026-10/2026-10-31-colbert-prefix4.md), [parity](../progress/2026-10/2026-10-31-codex3.md))
 - REPL-EMB-2.13 audit: all lookups use side=query, writes side=document; no edit needed. ([audit](../docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md))
 
-## Compiled Update — 2026-11-01 (failed-run gate and canonical engine policy)
+### Compiled Update — 2026-11-01 (failed-run gate and canonical engine policy)
 
 **Confidence: verified** for the operator rulings as recorded in the active audit/progress trail; the implementation remains open.
 
@@ -4337,7 +4359,7 @@ Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.
 
 Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) · [workspace-58 failed-run progress](../progress/2026-10/2026-10-31-workspace-58.md)
 
-## Compiled Update — 2026-11-01 (incremental source review)
+### Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited native records and source controls.**
 
@@ -4345,13 +4367,13 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 - Prospective source enrollment preserves native identity, unknowns and original write-side warrant; synthetic adapters or canaries do not prove live wiring, and previously unrecorded warrant is not invented. Existing grades remain shared. ([belief program](../handoffs/active/vidya-belief-substrate-program.md); [REPL retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - ID-19 Python session/messages envelope projection matched 14 normalized records from three eligible sessions; two others retained upstream missing-user refusal. It omits token/cost/outcome warrant and is not the full normalizer. Four new research-intake guard tasks are proposals; ID-11 evidence is prior-work hygiene. [Source](../handoffs/completed/frontier-lab-automation.md)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
@@ -4362,7 +4384,7 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 - Host-evidence checkpoint (Research `f311e004`): a partial host observation is embedded after claim admission; cache drop, re-warm and THP are NOT attested, and the warning boundary (> one week) differs from Annex B (>= one week). S-11 awaits the measurement-protocol owner. [reboot-gated](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging)
 - ETV-T2 bounded search: 454 question rows, 186 groups, zero eligible `tool_use` rows, so divergence is UNKNOWN, not zero. [progress](../progress/2026-11/2026-11-01.md)
 
-## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+### Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
 **Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
 
@@ -4370,12 +4392,12 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 - Second readers: every anchor quote was mechanically re-found; the semantic haiku reader returned 335 verdicts with 7 "no", after which 6 anchors were dropped and 1 claim narrowed. Declines (`declines_w1..w4.json`) are each also recorded on the surfacing entry, for reasons such as already carried in our tree (llama.cpp PR #28123, intake-2598#record) or no EPYC decision depending on them.
 - Corrections worth reusing as process examples: the NUPA misattribution (intake-2550#record), the d1 "text-only" premise (intake-2582#record), and the narrowed ThinkingCap headline (intake-2567#record). Declines are flagged for operator review rather than closed silently (MEM-3).
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 10 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+#### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
 
 - intake-2387#record (Agent Beacon): thresholds verified in Go source; several claims narrowed (evaluator score override, placeholder-approval guard is prompt-only, 30-day backfill, Codex lacks file/MCP capture). Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
 - intake-2403#record (OTel GenAI semconv): the brief pointer is stale (Moved stubs); the live spec lives elsewhere in the semantic-conventions repo. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
@@ -4388,7 +4410,7 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 - intake-2446#record (OpenClio): source read shows it is vLLM-in-process only (not OpenAI-compatible) and embeds facet values after LLM extraction, so not a drop-in for a llama-server endpoint. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
 - intake-2447#record (Kura): no licence file exists, contrary to the MIT-style assumption, so it is a pattern reference only and low priority. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
 
-## Compiled Update — 2026-11-02 (ws58 intake source 3: LLM wiki / second brain, operator transparency)
+### Compiled Update — 2026-11-02 (ws58 intake source 3: LLM wiki / second brain, operator transparency)
 
 - **The LLM-wiki pattern scales only with lint and supersession** (`intake-268#record`, `intake-2621#record`, external, anecdotal): append-only pages turn into a logbook once old and new facts coexist; practitioners report trouble past roughly 50-100 sources.
 - **Deterministic lint vs LLM contradiction finding** (`intake-2619#record`, `intake-2620#record`, external): link/orphan/ledger-contract lint can be deterministic; semantic contradictions need a model, and are safe only behind a quote gate that drops any contradiction whose two sides cannot be quoted verbatim. Auto-resolving contradictions works against operator transparency.
@@ -4397,7 +4419,7 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 
 Sources: [wiki3 dive](../research/deep-dives/ws58-jev-20261102/wiki3-dive.md) · [wiki3b dive](../research/deep-dives/ws58-jev-20261102/wiki3b-dive.md) · [digest 2617-2621](../research/deep-dives/intake-digests/2026-11-02-ids-2617-2621.md)
 
-## Compiled Update — 2026-11-04 (Vidya live captures)
+### Compiled Update — 2026-11-04 (Vidya live captures)
 
 **Confidence: verified** — native records retained under `data/vidya/run-filings/2026-11-04/`.
 
@@ -4409,25 +4431,7 @@ Sources: [wiki3 dive](../research/deep-dives/ws58-jev-20261102/wiki3-dive.md) ·
 
 Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [vidya shard](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [vidya program](../handoffs/active/vidya-belief-substrate-program.md)
 
-## Compiled update — 2026-11-04 (wrap-up sweep): Vidya live captures and wiring gaps
-
-- **Serving steps capture accepted:** `vb-sl2-steps-r1` A/A (two C5 pairs) ingested 15 frames, two steps estimates (`predicted_n_minus_draft_n_accepted`, 9.57 vs 7.00 steps/s), no refusals. It proves the producer/reader path only; the 41.5 vs 30.4 tok/s gap is launch noise (per-launch CV ~15 %, n=1).
-- **Actor-wire matrix PASS 15/15** (93 frames, 31 findings) but the planning canary FAILED: the tuples carry empty applicability, and every planner tier was model- or device-scoped. Fixed by a consumer-scoped `harness` tier (cap 3, not evidence; `e9f943781`); re-ingest plus a new canary are pending with the owning session.
-- **Canary B FAIL is a bad sentinel, not a retrieval defect:** the live BGE-large embedder worked, but trial 1472 is learning-excluded (`reproduction_confirmed`) and pre-era. A future canary needs an eligible current-era keep.
-- 11-03 fan-out landed `cert_check.py`, AK/autopilot/INF-66 adapters (R2364 ingest rows=5, frames=15) and `reliance_review.py`; the canary-A guard was kept (≥3 scoped comparable answers refuse).
-
-Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [fan-out](../progress/2026-11/2026-11-03-vidya-fanout-20261103.md) · [handoff log](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [program](../handoffs/active/vidya-belief-substrate-program.md)
-
-## Compiled update — 2026-11-04 (wrap-up 2 sweep): belief wiring and run-end alerting
-
-- New prospective belief-wire tasks were filed for CH-26 overhead and replay, C6 MMQ full-op, KPF-61 permutation, KPF-50 counterfactual, KPF-17 oracle, KPF-18 GPU residency witness, AKX-ALL-8 and the Q38P compatibility source; all project through existing carriers and shared `ClaimTuple.grade()`.
-- Rowflow now alerts the owner on every row end, smoke FAIL and disk-floor crossing (`notify.py`, bus plus `alerts.jsonl`; first live alert 23:23Z), after a disk-floor kill went unreported.
-- Question-discipline hook now allows real operator decision packages.
-- Long-context recall/spec-guard builds (LSA) completed model-free; a CPU phase-timing request exceeded its cap and was filed inconclusive.
-
-Sources: [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) · [long-context](../handoffs/active/long-context-program.md) · [progress](../progress/2026-11/2026-11-04-inf22.md)
-
-## Compiled Update — 2026-11-05 (operator wiki sweep 2)
+### Compiled Update — 2026-11-05 (operator wiki sweep 2)
 
 - **GitNexus compute-claim admission (operator decisions 2026-11-05).** The ROOT guard now receives the exact analyze argv; a single `--workers 1` analyze is admitted on one CPU quarter ("Change the rule: 1 quarter"), and a third route admits it on a q3 sub-quarter, scheduled through rowflow COEXIST so GPU timing runs leave spare threads for GitNexus without disturbing the independent quarters. Admission remains point-in-time and the canonical index stays untrusted.
 - **GitNexus 1.6.8 double-free** blocked the hsf3 adjacency/counter and kpf30 reruns; owner source review substituted for HIGH-impact rows (gitnexus is a helper, not a blocker).
@@ -4435,13 +4439,13 @@ Sources: [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) �
 
 Sources: [compute-claim admission](../docs/reference/gitnexus-compute-claims.md) · [operator ad-hoc ops](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [knowledge pipelines](../handoffs/active/knowledge-pipelines.md) · [long-context program](../handoffs/active/long-context-program.md) · [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) · [context economy](../handoffs/active/context-and-token-economy.md) · [harness program](../handoffs/active/harness-program.md) · [memory program](../handoffs/active/memory-program.md) · [speech and multimodal](../handoffs/active/speech-and-multimodal.md)
 
-## Compiled Update — 2026-11-05 (operator /wrap-up 5): gitnexus CUDA impact fixed
+### Compiled Update — 2026-11-05 (operator /wrap-up 5): gitnexus CUDA impact fixed
 
 - **gitnexus 1.6.8 mis-parsed CUDA `__global__` kernels** preceded by `__launch_bounds__(...)` and drew no `<<<>>>` launch edges, so impact on a kernel came back vacuously LOW. Patched (f9d1d46a3, plus a parse-cache version bump so stale CUDA parses are not replayed); KPF-41 impact r10 then PASSED with all four targets LOW on real edges. Pushing a new branch still bypasses the push lock because `serialized_push.py` cannot publish one (box SERIALIZED-PUSH-NEW-BRANCH).
 
 Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [gitnexus compute claims](../docs/reference/gitnexus-compute-claims.md) · [kv-cache program](../handoffs/active/kv-cache-program.md)
 
-## Compiled Update — 2026-11-07 (Vidya Track C canary gate and P1 AC9 amendment)
+### Compiled Update — 2026-11-07 (Vidya Track C canary gate and P1 AC9 amendment)
 
 **Confidence: verified** (progress entry and design-doc amendment; commit ids as recorded there)
 
@@ -4452,7 +4456,7 @@ Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.m
 
 Sources: [vidya trackc canary progress](../progress/2026-11/2026-11-07-vidya-trackc-canary.md) · [belief-storage-redesign](../docs/design/belief-storage-redesign-2026-10-21.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
 
-## Compiled Update — 2026-11-07 (Vidya canary B live PASS, frontier path unexercised, run-prep triage)
+### Compiled Update — 2026-11-07 (Vidya canary B live PASS, frontier path unexercised, run-prep triage)
 
 **Confidence: verified** (handoff ticks and audit note; commit ids as recorded there).
 
@@ -4465,13 +4469,13 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 - **A backlog flow number must reconcile with stock.** The hub's filed-minus-closed read +208 in a week when open boxes fell by about 1250, because edits counted as filings and retirements counted as nothing. Flow now comes from one counter, and opening stock + filed - closed - removed is checked against closing stock (2026-11-09; `scripts/handoffs/build_handoff_timeline.py`, `tests/test_dashboard_flow_counter.py`, `progress/2026-11/2026-11-09-workspace-f2.md`).
 
 
-## Compiled Update - 2026-11-17: R23-4 sweep adapter and low-confidence marker
+### Compiled Update - 2026-11-17: R23-4 sweep adapter and low-confidence marker
 Sources: `progress/2026-11/2026-11-10-vb-r234-wire.md`, `handoffs/active/vidya-belief-substrate-program.md`.
 
 - **Adapter and canary.** `autokernel_r234_sweep.py` (`cli.py ingest ak-r234-sweep`) re-derives all 63 requests and 18 comparisons and refuses unless the producer's comparisons match; the first ingest failed the planning canary because claims lacked a carrier `outcome` and were cut by the claim cap, fixed by setting `outcome` from bracket position, after which the canary passes (7 of 18 listed). The first 54 frames stay as superseded duplicates in the append-only ledger.
 - **Operator ruling.** Bracket-based IMPROVED/REGRESSED is kept, but every claim is marked `decisive=false` with a "descriptive, low confidence, no causal claim" tag, since three requests per arm are not a statistical verdict.
 
-## Compiled Update — 2026-11-18 (native belief wiring: capture is not planning acceptance, failures stay on the record)
+### Compiled Update — 2026-11-18 (native belief wiring: capture is not planning acceptance, failures stay on the record)
 
 **Confidence: verified for the recorded verdicts and counts (progress entries and the 2026-11-18 findings note); inferred for the generalisations drawn from them.**
 
@@ -4498,9 +4502,63 @@ Sources: `progress/2026-11/2026-11-10-vb-r234-wire.md`, `handoffs/active/vidya-b
 - [Publication upstream handoff progress 2026-11-17](../progress/2026-11/2026-11-17-handoff-publication-upstream.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 
-## Compiled Update — 2026-11-19 (belief wiring: committed conclusions as observations, reader slices, retained failures)
+### Compiled Update — 2026-11-19 (belief wiring: committed conclusions as observations, reader slices, retained failures)
 
 - **Native source wiring, 2026-11-18 detail.** KVU19a2 completed 20 exact-input launches with 20 rows / 60 frames ingested and zero refusals, host-tier GPU diagnostics displayed for the 27B target and excluded for the CPU control; candidate repeatability is not established. NPD1 produced four `Judged/Located` tuples (TPOT 36.3 to 41.8 ms/token, individual observations) but no target-specific planning acceptance. Failed instruments stay on record: the EOF r2 row (rc4, launcher demanded four CPUs while the record names eight), the lifecycle row (stale contention matrix rejected at preflight, masked by a missing `fresh_capture` key) and parity r1 (allocator chmod invalidated ctime pins); EOF r3 later retained nine complete model-free cases ([native wiring](../docs/findings/vidya-native-wiring-20261118.md)).
 - **FM2/FM4.** FM2 source control (one original trace, `none_apply=true`) and the FM4 two-pair dispatch census each reached their planning reader as `Judged/Located` harness context with zero refusals and stayed outside reliance; actual coordinator consumption and task gates remain separate boxes (VB-FM2-ADAMAST-WIRE, VB-FM4-ORACLE-WIRE) ([FM2](../docs/findings/fm2-native-source-control-20261118.md), [FM4](../docs/findings/fm4-native-dispatch-projection-20261118.md)).
 - **Committed conclusions enter as observations.** The HS-TD-1/2/3 and HS-9 reports each carry `[belief: cc]`, with no invented native warrant, grading ladder or read-side canary claim; dripreview12 notes that schema `epyc.repl_composite_result.v1` needs its own prospective write-side projection ([HS-TD-1](../docs/reports/hs-td1-risk-intent-20261119.md), [dripreview12](../docs/reports/dripreview12-futility-20261119.md)).
 - **Readers.** `7e6ea3c03` (VB-AP70-ROTATION-READ, first real rotation set still 0 events) and `54b9fc070` (CF-3c strict `epyc.cf3c.native.v1` sealed-window reader) landed and both stay open for real data and remaining producers ([autopilot-backlog-session 2026-11-19](../progress/2026-11/2026-11-19-autopilot-backlog-session.md)).
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): handoff standard, filing rule, native belief acceptances
+
+- **The handoff standard is ratified (Stages A, B and C landed).**
+  - **File anatomy is fixed:** Dispatch contract (at most 40 lines), then Tracks, then Findings, then History.
+  - **Box grammar:** `- [ ] **<ID>** [<class>]` plus `· done when:`, `· gate:`, `· inputs:` and, for inference boxes, model/build/harness/metric/rule/region/est and a stop rule. The classes are non-inference, inference, operator-decision, roll-up and blocked-external.
+  - **Markers:** `[~] [>] [!]` are retired. There is one tick suffix, `✅ date [belief] verdict`, written only by `wrapup.py`.
+  - **Compiled view:** `handoffs/active/.box-index.json`, generated by `index_state.py --box-index`.
+  - **Diff-scoped gate:** `index_state.py --check` fails a commit that adds a new box with no `done when`.
+  
+  The operator signed the ratify package for the human-only docs in 98342afc8 ([handoff-standard](../docs/design/handoff-standard.md); [handoff-index-authoring](../docs/guides/agent-workflows/handoff-index-authoring.md); [churn-pipeline](../handoffs/active/churn-pipeline.md)).
+- **The lint-OK canary is still below its 45% target.**
+  - **Stage A:** ba3adabf1.
+  - **Stage B:** e14edec25..e5784a93f moved lint-OK from 20.5% to 21.6%.
+  - **Stage C:** code C0-C8 landed (cbc7f4908..9557039f6, holds fail closed 1a279e306). Box-index build time fell from 54 s to 4.6 s, and lint-OK read 297/1,414 = 21.0%. Haiku produced 51 NEEDS-OWNER proposal children from 18 boxes for 66.9k tokens; proposals do not move lint until owners accept them.
+  - **Hand-row drop:** waits on 7 days at 90% or better. The first sample was 86.7%.
+  - **Index-row checks:** hard-fail only on rows a commit touches (AK audit B11). `holds.yaml` entries carry `scope: loop-launch | all-rows | boxes` (B4).
+  
+  ([handoff-standard-stage-c-brief](../docs/design/handoff-standard-stage-c-brief.md); [handoff-standard-stage-c progress](../progress/2026-11/2026-11-20-handoff-standard-stage-c.md); [churn-pipeline](../handoffs/active/churn-pipeline.md)).
+- **Filing rule: no result, no claim (operator 2026-11-21).**
+  - **Scope:** a row with no finished RESULT, meaning no result file, a non-zero rc, or `complete:false`.
+  - **Filing:** SUPERSEDED if a successor exists, otherwise WITHDRAWN. It is never filed as inconclusive.
+  - **Enforcement:** `file_result.py` converts an agent's `inconclusive` on such rows, and `gate_eval.py` emits `filing.no_result_no_claim`.
+  - **Row templates** carry polar tokens and split `FUTILITY_HARNESS_*` (inconclusive) from `FUTILITY_CANDIDATE_*` (fail).
+  - **Related rules:** a quarter booked as a contention guard must be declared, and big-model smokes test plumbing only (`smoke_cpus` 4..24).
+  
+  ([compute-fillers](../docs/guides/agent-workflows/compute-fillers.md)).
+- **Native belief acceptances (2026-11-19). None of these is a performance, causal or promotion verdict.**
+  - **GFX observed window:** `vb-ak-r18-gfx-observation-20261118` gave 2 boundary samples, an estimate of 0.4206 activity-weighted seconds, and a planner canary with eligible 1, refused 0 and 3 frames, Judged/Located.
+  - **SOFT_MAX property transport:** projected 1, refused 0 (journal `akj-000000000001-444cd0ed43b8`).
+  - **C5 historical544:** 544/544 targets UNSUPPORTED on the old artifact (NORM 320, SUM 32, SUM_ROWS 192) and 96/96 controls PASS. Strict ingest gave 96 observations and 288 frames with 0 refusals. Exact selectors exposed 15/32.
+  - **Q38 native planner:** 20 observations and 60 frames. Candidate `AgentPlanner.propose` showed visible 16, bounded 4; reliance accepted 16, rejected 4. The unpatched baseline showed 0 visible because it drops the model digest.
+  
+  ([vidya-native-results](../docs/findings/vidya-native-results-20261119.md); [vidya-c5-historical544-planner](../docs/findings/vidya-c5-historical544-planner-20261119.md); [vidya-q38-native-planner](../docs/findings/vidya-q38-native-planner-20261119.md); [vidya-belief-substrate progress 2026-11-19](../progress/2026-11/2026-11-19-handoff-vidya-belief-substrate.md)).
+- **Further vidya wiring.**
+  - **CF3C readers:** native, active-evidence and task-level readers validated, with refusal controls and recipient planning canaries.
+  - **AP-70 autopilot-rotation reader:** landed with only a synthetic canary, because the journal has 0 events.
+  - **R18-D pp512 A/A calibration:** r1-r3 failed on producer defects (a ctime-based identity check, then a resume defect fixed producer-side, "option (a)", to keep the trust boundary unchanged). r4 `vidya-r18d-aa-1p5b-20261122-r4` filed PASS / floor-eligible on 2026-11-23, and the box stays open.
+  - **Earlier acceptances (2026-11-18):** NPD1, EXP01, FM2 and FM4 native canaries.
+  
+  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [vidya-belief-substrate progress 2026-11-18](../progress/2026-11/2026-11-18-handoff-vidya-belief-substrate.md)).
+- **Other knowledge-plane changes.**
+  - **GitNexus re-index** is now a queued rowflow row: `gitnexus-reindex.py trigger` publishes `host` and q3-pocket sibling rows at rank 900, and only when the index is stale. This supersedes the self-claiming q3 launcher ([gitnexus-compute-claims](../docs/reference/gitnexus-compute-claims.md)).
+  - **Skill cards:** `row-owner-loop` and `kernel-promotion` adopted the skill-card plus `evals/evals.json` layout, 4 prompts each (intake-2745#record) ([coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)).
+  - **SkillBank paths:** the completed SkillBank handoff's sqlite paths were repointed to `/workspace/repos/epyc-orchestrator/...` ([skillbank-distillation](../handoffs/completed/skillbank-distillation.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [docs/design/handoff-standard.md](../docs/design/handoff-standard.md), [docs/design/handoff-standard-stage-c-brief.md](../docs/design/handoff-standard-stage-c-brief.md)
+- [docs/guides/agent-workflows/handoff-index-authoring.md](../docs/guides/agent-workflows/handoff-index-authoring.md), [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
+- [docs/reference/gitnexus-compute-claims.md](../docs/reference/gitnexus-compute-claims.md)
+- [docs/findings/vidya-native-results-20261119.md](../docs/findings/vidya-native-results-20261119.md), [vidya-c5-historical544-planner-20261119.md](../docs/findings/vidya-c5-historical544-planner-20261119.md), [vidya-q38-native-planner-20261119.md](../docs/findings/vidya-q38-native-planner-20261119.md)
+- [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md), [handoffs/active/churn-pipeline.md](../handoffs/active/churn-pipeline.md), [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md)
+- [handoffs/completed/skillbank-distillation.md](../handoffs/completed/skillbank-distillation.md)
+- [progress/2026-11/2026-11-18-handoff-vidya-belief-substrate.md](../progress/2026-11/2026-11-18-handoff-vidya-belief-substrate.md), [2026-11-19-handoff-vidya-belief-substrate.md](../progress/2026-11/2026-11-19-handoff-vidya-belief-substrate.md), [2026-11-20-handoff-standard-stage-c.md](../progress/2026-11/2026-11-20-handoff-standard-stage-c.md)

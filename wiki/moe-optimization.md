@@ -2,158 +2,7 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified (CPU MoE findings) · observation (2026-07-06 MI210 GPU MoE-MTP numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-11-19 (wrap-up sweep: A3B MI210 verify hotspots, A3B champion chain). Earlier: 2026-11-09 (AutoKernel wiki compile, ak-wrap d). Earlier: 2026-11-08 (operator wiki sweep, main-inf22). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): DS41 antirez-MXFP4 vs unsloth verdict, C6 MUL_MAT_ID correctness counts, DS41 IQK-FA divergence. Earlier: 2026-10-28 (ws58 delta since 2026-10-27 15:23Z; see newest Compiled Update). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): the DS41 MXFP4 CPU_REPACK MMID premise stands at 1.783x slower than Q4_K iqk, and Q38FN arm P2 does not ship. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the routing-tap schema ticks on its FILE ONLY criterion. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-22 (wrap-up sweep 7: MoE expert-kernel correctness gate). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 3: routing-tap schema, MoE keeps in candidate C). Earlier: 2026-10-20 (wrap-up sweep 2: routing-tap replays). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-26 (OD-A decided: KTransformers runtime declined for now; MI210 port investigation open via F7 source-only read, then F6); previous: 2026-09-17 (evening: the §5 pre-registration resolves on research main (`6cbdd856`); the driver was declined); earlier 2026-09-17 (afternoon: the MoE-Spec confirm is retargeted to qwen4exp on the AutoKernel champion); earlier 2026-09-17 (incremental: pre-registered MoE batched sweep: Q-A GO (E 1.021), Q-B bounded null (M2 0.619/0.655, MoE keeps ~62–66% of dense B=32 scaling), no dequant-kernel pivot; named targets were dense; GLM v16 candidate regressed); earlier: 2026-09-08 (evening): measured on ONE binary, the **MoE decodes faster than the smaller dense model** — Qwen3.6-35B-A3B beats Qwen3.8-27B by **+42.2% single-user and +73.6% peak aggregate** while being the larger file on disk (35.21 vs 27.05 GiB) — because decode is weight-bandwidth-bound and the MoE routes **8 of 256 experts** per token; and the MoE's concurrency curve does **not** turn over where the dense one does; earlier: 2026-09-08 (the INF-72 routing-locality instrument — SRP/SCH/EOR scope with chance baselines 3.13%/1.95%, the llama-moe-trace port's four adjustments, the bounded +1.58–2.03% reopen payoff, the ρ=2 residency budget, and the Qwen-fleet shared-expert census; earlier 2026-09-07 note: **llama.cpp has NO expert cache** — zero `expert_cache` occurrences in production-consolidated-v9 `@0db32c06e` or upstream b8185, and `-cmoe`/`-ncmoe` are load-time `tensor_buft_overrides`, so any published "llama.cpp expert-cache hit rate" or mmap MoE offload speedup is the Linux page cache at 4 KB granularity; plus the `T*(q*) = mS/B_H` latency-neutrality identity, under which any closed-form CPU/GPU miss-split is worth zero latency and pays only in freed residency; earlier 2026-08-16 note: **the production MoE decode kernel is a different instantiation from the one synthetic probes measure** — `mul_mat_vec_q<IQ2_XXS,1,true,false>` runs at 78 VGPR / 6 waves per SIMD vs the synthetic `<…,false,false>` at 63 / 8, which retires an earlier "IQ2_XXS MMVQ is not occupancy-limited" reading; the `mm_ids` wrapper is NOT the cost (Q8_0 = 25 VGPR on the same wrapper); 122B UD-IQ2_M decode attribution puts IQ2_XXS MMVQ at 16.42% / 85.60 µs median with a 6% spread; and the governed attribution runner hardcodes `-n 0`, making every governed rocprof-v1 capture to date prefill-only; plus the 2026-08-14 architect-residency batch — the 122B `-ncmoe` sweep declines monotonically with N (35.63 t/s at N=8 down to 19.28 at N=24), identifying the CPU-MoE tail as the whole cost, and **full UD-IQ2_M residency at 44.35 t/s beats Q4_K_M + `-ncmoe 8` by +24.5% decode / +32.4% prefill** with quality the sole open question — see top sections; earlier 2026-08-12 note: the `--moe-n-expert` fork patch resolves to **DROP** — stock v9 already reaches it via `--override-kv expert_used_count`, identically and with fewer copies; its motivating throughput numbers are v4/v5-era and unverified on v9; plus a roadmap-vs-deployment drift correction on the 122B's residency — see below; earlier 2026-07-20 note: adds the reasoning∝active MoE law, the production-representative GLM expert-routing-skew result, the IQ2 GPU big-MoE residency ladder, and the slot-fabric residency model; earlier 2026-07-17 note: adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
 **Sources**: (+ sweep 2 sources, see its Source References; +3 on 2026-11-19, see the first Compiled Update) 52 native document references (source review 2026-10-07)
-
-## Compiled Update — 2026-11-19 (wrap-up sweep): where the A3B MTP verify step spends its time on MI210, and the A3B champion-chain ratios
-
-**Confidence: observation** (existing rocprofv3 traces and fold-gate result files; no new runs).
-
-- **A3B Q8_0 MTP verify, n=4: 170.8 ms over 5 verify steps (34 ms/step).** Dense `mul_mat_vec_q` 26.9%, router `mul_mat_f` 13.4% (already in flight), `mul_mat_vec_q_moe` 13.2%, `quantize_q8_1` 9.0%, `k_bin_bcast` 7.0% (2595 launches of about 4.6 us), `rms_norm` 3.7%, `get_rows` 2.7%, argsort 2.3%.
-- **The expert GEMV is below roofline, but only as an estimate.** `mul_mat_vec_q_moe<Q8_0,2>` (gate/up 36 us, down 40 us) reaches at most about 0.9-1.0 TB/s (55-61%) even if all 32 expert slots were distinct, and overlapping experts across the 4 tokens are re-read per warp. Proposed fix: group slots by expert so each expert's rows are read once for all tokens routed to it, and sweep a CDNA rows-per-block value (2 was tuned on NVIDIA); estimated +2-4% A3B MTP. The elementwise tail (fold MoE weight multiply and expert sum into the down epilogue, residual add into rms_norm) is estimated at +3-5%. Both are unmeasured.
-- **The n>=2 router chain is the top-ranked lever (L1, 5.6% of the n=4 step).** The fused topk-moe path is refused at n>=2 by the `nrows==1` memory-range exemption although n=1 runs it in 8.6 us; candidate `C16-TOPK-STAGE` is prepared but not compiled. See [MI210 hotspots](../research/deep-dives/mi210-next-hotspots-20261118.md).
-- **A3B Q8_0 whole-candidate GPU ratios (llama-bench, candidate / predecessor).** C7r to C8: pp2048 1.2407, pp8192 1.2925, tg128 0.9976, tg@d32k 1.0724. C8 to C9: tg128 1.0125, tg@d32k 1.0331, tg@d131k 1.0730. C9 to C10: all A3B cells within 0.992-1.0005. C12 to C14 has no A3B speed row, and C15 has no valid one yet. See [gain chain](../research/deep-dives/champion-gain-chain-v10-to-c15-20261118.md).
-- **Q38FN (a QSA-attention MoE) CPU decode: the indexer, not expert or attention reads, is the context-growing part**, about 9 ms or 6-7% of a 32k step by a bytes/ops model (no measured per-op profile at depth). See [AKX-ALL-23](../research/deep-dives/akx-all-23-q38-topk-20261118.md).
-
-### Source References (2026-11-19)
-- [MI210 next hotspots](../research/deep-dives/mi210-next-hotspots-20261118.md)
-- [champion gain chain](../research/deep-dives/champion-gain-chain-v10-to-c15-20261118.md)
-- [AKX-ALL-23 Q38FN top-k](../research/deep-dives/akx-all-23-q38-topk-20261118.md)
-
-## Compiled Update — 2026-11-09 (AutoKernel wiki compile, ak-wrap d): MoE-relevant kernel status at C9
-
-- **iq3s zmm candidate**: the AVX512 IQ3_S dot-gather (`821fce89f`, `706028a57`) rides in C10 candidate `7f1bd044b` with oracle BIT_EXACT_PASS and no speed claim; the per-node profiler comparison for seed 73 (`ak-iq3s-prof-c9-20261109`) failed its keeper dry run and is not queued, because a serving A/B cannot resolve the inferred +2-4% against 2.5-8.4% noise floors ([autokernel-loop](../handoffs/active/autokernel-loop.md), [kernel-champion](../handoffs/active/kernel-champion-and-promotion.md)).
-- **Closed negative**: IQ4_NL and DSpine levers closed at C9 (the IQ4_NL down-projection lever flagged in the 2026-11-08 update is now closed); `GGML_HIP_Q8_WVSK_WIDE` ran 0.739-0.749x on the 27B at M=36 and the q8wv touch variant is about 5% slower ([kernel-champion](../handoffs/active/kernel-champion-and-promotion.md)).
-- **Q38FN floors are SUSPECT** (serving 4.146%, 64k 1.448%, accepted by the operator with the noisy r4 window; disk-janitor reap is the likely cause), so Q38FN results measured against them are untrusted ([autokernel-akx-program](../handoffs/active/autokernel-akx-program.md)). The Q38FN C5-vs-C6 PPL row (3.4464 on all arms) is INVALID because `GGML_IQK=1` was omitted ([kernel-champion](../handoffs/active/kernel-champion-and-promotion.md)).
-- **Verify cost** on hybrid targets is 2.39 ms/row on flat 8-16 row batches (OBSERVATION, flat chain not tree-masked), which withdrew the tree-lattice arm ([speculative-decoding handoff](../handoffs/active/speculative-decoding.md)).
-
-### Source References (2026-11-09 AutoKernel wiki compile)
-- [autokernel-loop](../handoffs/active/autokernel-loop.md), [autokernel-akx-program](../handoffs/active/autokernel-akx-program.md), [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md), [speculative-decoding handoff](../handoffs/active/speculative-decoding.md)
-
-## Compiled Update — 2026-11-08 (operator wiki sweep, main-inf22): Q38FN expert-ordering is closed, the next CPU lever is the IQ4_NL down-projection
-
-- **Expert ordering closed by analysis** (`/mnt/raid0/llm/tmp/c9-moe-order-reuse-20261108/`): Q38FN `mul_mat_id` already groups tokens by expert on the iqk and native paths, so grouping has about 0% ceiling. The CPU profiler's expert bytes are logical counts, so its bandwidth readings are artefacts; distinct reads need about 20-25 GB/s at pp512. No A/B was run.
-- **Where the time is** (CPU profile, one quarter, 24 threads): expert matmul 42.9% of pp512 wall and 39.9% of pp2048; the 43 `ffn_moe_down` IQ4_NL tensors run the native per-row `vec_dot` path (439 of 1398 ms expert wall, about 14% of pp512). C9-Q38FN-IQ4NL-KERNEL adds an iqk kernel behind `GGML_IQK_IQ4NL_MOE`; the build `2c39ea15d` is BUILD_OK, the paired AB/BA performance and identity row has not produced a result.
-
-### Source References (2026-11-08 main-inf22 operator wiki sweep)
-- `progress/2026-11/2026-11-08-main-inf22.md`
-- `handoffs/active/kernel-champion-and-promotion.md` (C8 package boxes; rows filed with their RESULT.json paths)
-- `handoffs/active/long-context-program.md` (YARN-NATIVE-WINDOW-GATE)
-
-## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): a fused-MoE op gate on uniform routing does not predict real routing
-
-- **AK-ASM-H8B-E2E: NO_KEEP** (`4b341ae44`). The fused MoE gate kernel H8b (J cap 48, M≤8 guard) passed its op gate r2 at 1.29x, but end to end on A3B with real routing it lost: pp512 0.949x, pp1024 0.968x. The op gate fed **uniform** expert routing; real routing is **skewed** (a few hot experts carry most tokens), which changes per-expert M and removes the win. The H8b rule set was also chosen post hoc from r4 data. H8 r4 had already dropped at 1.098 (win only at M=512, 1.23x). AK-ASM-H8 / H8B-GATE dropped; branch `experimental/c8-h8b-20261106` kept for record.
-- Lesson: MoE kernel op gates must replay a recorded real routing distribution (the routing tap), not uniform or random routing, before an e2e row is spent.
-- AK-ASM-H11 topksoftmax asm (A3B router) kept: router graph 1.25x, A3B tg 104.8 vs 101.7 on C6; C6 bug fix `c650d06e0` (topk_moe_fusion read past the last node).
-
-### Source References (2026-11-07 main-inf22 sweep)
-- `progress/2026-11/2026-11-07-main-inf22.md`, `progress/2026-11/2026-11-06-main-inf22.md`
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **Moondream 3 Preview** (intake-121#00) Compact MoE vision-language model, 9B total / 2B active, 32K context. Worth investigating as a small multimodal MoE for llama.cpp; the 2B-active footprint suits CPU decode.
-- **Sparser, Faster, Lighter LLMs (Sakana blog)** (intake-530#record) L1 regularization on FFN activations during pretraining induces very high dynamic sparsity, with ReGLU and TwELL kernels; the blog says the benefit grows with scale. Worth investigating, but kernels are Hopper-only and need pretraining.
-- **sparser-faster-llms repo** (intake-531#record) Hopper-only (SM 90A) CUDA kernels for TwELL activation-sparse gated MLPs, plus four SparseLM ReGLU checkpoints (0.5B-2B, Apache-2.0). Worth investigating for sparse-activation checkpoints on CPU, no ROCm kernel.
-- **Hot-expert cache on consumer hardware** (intake-1185#record) Runtime cache pins most-activated MoE experts in leftover VRAM; claimed 25 to a peak 50.6 tok/s for a ~90 GB DeepSeek-V4-Flash on RTX 5090 + DDR5, but the 256k-context claim is not corroborated (every benchmarked config is shorter). Relevant analogue for MI210 + EPYC expert placement.
-- **HOBBIT mixed-precision expert offloading** (intake-1200#record) Assignment premise wrong: a miss still fetches (cost (Bl/Bh)*C), not zero; precision chosen by gate magnitude (Pearson 0.99); expert loading is 85.5%-94.5% of inference time on the authors' devices. Verdict not_applicable.
-- **llama.cpp PR #20905 MoE GEMV kernel** (intake-1410#01) Adds a dedicated mul_mat_vec_q_moe kernel and raises the MUL_MAT_ID MMVQ max batch from 4 to 8 per arch and quant, swept on MI60/MI50, MI100 and others. Already integrated; batch-1 decode is unaffected, only multi-token verify shapes (ne2 >= 2) matter for our 122B IQ2 MoE.
-- **llama.cpp PR #27621 multi-token MoE GLU/top-k fusion** (intake-1420#03) Extends BS=1 MoE GLU and top-k router fusion to 2-8 token spec-decode verify (MTP/DFlash); the PR reports 2-22% E2E decode gains, largest at draft widths 2 and 4 (intake-1420#03), narrowed to NVIDIA-only data with no IQ2 and DGX Spark w4 only +0.1%. The fusion gate becomes ne2 <= get_mmvq_mmid_max_batch (intake-1420#01), so IQ2_XXS on CDNA fuses at ne2<=5; issue #28113 bisects an AMD HIP gfx1151 garbage-output regression to that line (CDNA unverified). Not in frozen v9 and a backport needs #27930 (SWIGLU_CLAMP); plausible low-single-digit gain for MTP verify on MI210 only if the GGUF has separate gate/up expert tensors.
-- **ExLlamaV3 CPU expert decode and MoE CPU offload** (intake-1533#00) Docs expose --moe_cpu_offload and CPU ISA dispatch across scalar, AVX2, AVX-512BW, VNNI and VBMI (intake-1533#00), with hot experts streamed to GPU during prefill (intake-1533#01). Eligibility is mul1-only and not shown for MCG; throughput numbers are self-reported on named CPUs. EPYC 9655 satisfies the ISA tiers, making this a pattern for hybrid CPU-tail expert execution beside the MI210.
-- **ExLlamaV3 PR #349 AVX-512BW CPU MoE tier** (intake-1538#00) Merged an AVX-512BW tier between AVX2 and VNNI/VBMI so AVX-512 systems without VNNI use 512-bit expert GEMV, with a flat tile-range scheduler for few-GEMV decode (intake-1538#01) and a cross-tier correctness test (intake-1538#02). Contributor-reported decode on a Xeon Gold 6148 rose from 4.3-4.9 to 11.7 tok/s (GLM-5.3-Flash) and 24.6 to 31.8 tok/s (Qwen3.8-Flash-Next); these are observations, not our measurements. EPYC 9655 has the VNNI/VBMI tiers, so the scheduler idea is the transferable part.
-- **ExLlamaV3 PR #392 streamed single-row MoE decode** (intake-1539#00) Open, unmerged proposal: for whole-layer CPU offload, gather selected experts from the pinned host arena over PCIe and run the resident fused GPU kernel for single-row decode (intake-1539#00). Author-reported on one RTX 3060: Qwen3.8-Flash-Next 11.2 to 19.0 tok/s at k=4 and LFM2.5-8B-A1B 30.7 to 55.5 at k=1; the fused path is not bit-equivalent to the CPU worker (max relative diff ~4.7e-2). A pattern for CPU-GPU expert streaming on the MI210 host, pending a HIP port.
-- **ExLlamaV3 PR #341 zero-copy streamed prefill arena** (intake-1540#01) Pinned expert arena is page-locked so streamed prefill DMAs contiguous expert blocks to GPU staging (intake-1540#01). Reattributed: the maintainer had already implemented the Linux core on main, and the merged PR mainly adds Windows support (intake-1540#02); the original ~2x WSL2 prefill gain predates that reimplementation. Experimental and opt-in.
-- **GLM-5.3 official card and architecture** (intake-1549#01) Same base as GLM-5.2, with gains from post-training only (intake-1549#00); 78 hidden layers, 256 routed experts, 8 selected per token, 1 shared expert, 1 MTP layer (intake-1549#01), 753,329,940,480 parameters (the ~755.68 GB figure is repository storage, not parameters). Already integrated as the architecture reference for large-MoE storage and quant planning.
-- **ExLlamaV3 CPU-MoE pinned arena and batched prefill reconstruction** (intake-1552#01) CPU offload covers routed experts in the first N MoE layers (mul1 codebook, K<=8); the commit adds an experimental default-off Linux pinned arena (memfd shared mappings, cudaHostRegister, intake-1552#01) and a default-on batched GPU reconstruction tier. The CPU path dispatches scalar through AVX-512 VBMI (Zen 4+ for VBMI, intake-1552#00 documents the knobs). Narrowed: the streaming and reconstruct work is CUDA-specific with no native HIP kernels, so MI210 would need a port.
-- **ExLlamaV3 49983698: band-contiguous trellis swizzle default** (intake-1553#01) Makes band-contiguous trellis swizzling the default for all AVX-512 CPU MoE tiers (BW, VNNI, VBMI), excluding K8 and AVX2/scalar (intake-1553#01). Project docs report +45-75% cold-decode GEMV on a Threadripper 7960X, +40% for forced VNNI and +2-29% for BW on Skylake-SP, all author-reported on named machines; the real-weight cross-tier test skips if its ladder is absent. A directly relevant memory-layout idea for Zen 5 EPYC 9655 CPU expert GEMV.
-- **vcruz305/exllamav3 mixed-K CUDA MoE ABI** (intake-1554#01) Unified mixed-K path with per-expert K arrays and pointer tables; rates serialize in half-bit units (intake-1554#01) and the ABI test only inspects source. Overturned: a universal single-launch reading does not hold at pinned HEAD, where row-tile bands may call the extension separately; a per-call row floor addresses a GB10 decode regression of 15.70-17.91%. Author reports 84-90 vs 61-65 wall tok/s on RTX PRO 6000, self-reported.
-- **ExLlamaV3 c48bb5f: Windows pinned arena and PCIe probe** (intake-1556#00) Extends the default-off pinned CPU-MoE arena to Windows via named pagefile-backed sections with transactional attachment (intake-1556#01) and a sustained-bandwidth probe (0.5 s minimum, 2 s cap). Reattributed: the Linux zero-copy core and the 700 to 1850 tok/s observation belong to the parent lineage, not this delta. Windows/CUDA only; the probe pattern is reusable for PCIe-bound expert streaming.
-- **ExLlamaV3 1c8aff47: deterministic MoE reduction, folded Hadamard** (intake-1557#01) Fused and batched expert outputs go to FP32 scratch slots and gather once in routing-k order (intake-1557#01); docs report bit-identical repeated prefill on Qwen3.8-Flash-Next, LFM2.5 and Qwen3-30B-A3B at no measurable cost, and folded reconstruction is ~4% faster but roughly doubles error vs an FP32 reference. Narrowed: the streamed CPU-offload fused tier stays atomic and the reconstruction fallback default contradicts the docs. Model for deterministic-reduction MoE gating.
-- **vcruz305/exllamav3 5e0ba478: unified runtime-K MoE dispatch** (intake-1558#00) Device-resident per-expert K arrays and trellis/scale pointer tables enable unified mixed-K dispatch only with uniform codebook flags (intake-1558#00); the kernel switches to K-templated inner GEMMs at runtime. 'Single launch per layer' is not universal (row-band dispatch can issue several calls); 84-90 vs 61-65 tok/s is unsupported author observation, and the descendant commit notes a bszN assertion fallthrough, so this commit is defective.
-- **ExLlamaV3 398729b7: sentinel fix in deterministic gather** (intake-1560#00) Five-line fix passes only the first num_ex rows of expert_start, slot_base and slot_kind to the deterministic gather, excluding the out-of-slice sentinel (intake-1560#00). The defect needs sliced experts (TP shard or CPU expert split), a nonlocal assignment and the all-fused sync bypass; no regression test was added. Relevant to CPU/GPU expert-splitting designs.
-- **vcruz305/exllamav3 bb912e82: mixed-K low-batch crash fix** (intake-1561#00) With mixedk_unified, no BC graph and bsz < f_threshold every branch predicate was false and execution hit the terminal bszN assertion (intake-1561#00); the commit routes it correctly with a BSZN_FAIL diagnostic but adds no test. The reported DDS wall rates 86/80/72 vs static 95/76/68 tok/s lack model, hardware and protocol, so they are not evidence.
-- **vcruz305/exllamav3 f6e42ecb: legacy escape hatch and GB10 launch** (intake-1562#00) EXL3_MIXEDK_LEGACY=1 is read per layer construction and disables unified mixed-K when the environment is stable (intake-1562#00). On one DGX Spark GB10 for Qwen3.8-Flash-Next EXL3 4.06 bpw the author reports 42.8 tok/s unified vs 46.6 grouped (+9%) and 46.9 with EXL3_MK_BPS=3, with no raw artifacts; the commit also bundles unrelated edits and three stale editor backups. Shows a unified kernel can lose to a grouped one at some shapes.
-- **B12X PR 49 packed MCG Trellis MoE** (intake-1756#00) Closed PR implements a plan/bind/run lifecycle that wraps packed EXL3 tensors without repacking with one caller-owned scratch arena; CUDA-only (intake-1756#01), MCG not MUL1. Lifecycle design is portable, kernel is not.
-- **MoESD sparse-MoE spec-dec model** (intake-1935#00) Spec-dec is ineffective for MoE at small batch because verifying gamma tokens activates more experts (N(t)=E(1-((E-K)/E)^t), uniform routing assumed). Roofline-fitted speedup model on vLLM/GPU only, Qwen2-57B-A14B up to 2.29x (intake-1935#record); nothing on batch 1 CPU or llama.cpp (intake-1935#record).
-- **Qwen3.8-Flash-Next 5-of-10 expert INT4 card** (intake-1939#00) Routed experts cut from 10 to 5 of 512 (config num_experts_per_tok=5), healed by KL self-distillation of only the shared expert on 14,667 examples (intake-1939#03). Speed ~67-70 tok/s vs ~57 on one Spark (intake-1939#01). Correction: capability 49.3 vs 51.8 in table but ~47 in the card text (intake-1939#02); roofline ceiling ~65 tok/s at 273 GB/s without speculation (intake-1939#record).
-- **Qwen3.8-Flash-Next architecture audit** (intake-1945#00) Main text model computes to 125.74B params with 6.04B active excl lm_head (intake-1945#01); PLE n-gram table is 51.2B params, ~5 KB gathered per token (negligible bandwidth, 102 GB bf16 capacity) (intake-1945#02). Correction: MTP head computes to ~2.6B vs the card's 4B, unexplained (intake-1945#03). GGUF IQ4_XS single-token decode measured 4.16 GB (intake-1945#04). EPYC: directly sizes the CPU decode roofline.
-
-## Compiled Update — 2026-10-28 (ws58 delta): RT-10 DS41 routing trace prepared, not run
-
-- RT-10 DS41 trace and RT-6/RT-7 analysis were **prepared with model-free verification only**: frozen C5 tool build `c72ec82f5` completed, two native CTests and selftest passed, and trace/analysis manifests are sealed in a private packet. No trace was collected and no locality claim follows. [handoff](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)
-- The iqk handoff records a prepared (not executed) one-repetition synthetic Q38FN decode profile comparison (C-L3-Q38FN-PROFILE-PREP); it does not reproduce the historical teacher-forced slowdown. [handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
-- INF-75 W5s census of `architect_general` counted target-only geometry (graphs 3/49/17; 1,224 primary tensors; MTP head excluded); acceptance withheld. [handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the routing-tap schema ticks on its FILE ONLY criterion
-
-**Confidence: verified.**
-
-- **RT-5 (schema, validator, 16 tests, C++ change spec) is met and on research main** (`ce1a1f4e5` is an ancestor of origin/main). The tap itself shipped under RT-1, and its traces carry the shape RT-6/7/8 consumed (prefill vs decode legs, T = 1 and 3). The DS41 part (hash layers, 128-expert DSpark/MTP layers, int16 ids) belongs to RT-10, which keeps RT-6 and RT-7 open.
-
-Sources: [moe-routing-tap-and-locality-measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement).
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): a cheap PPL screen for a faster Q38FN low-bit file
-
-- **Arm P: change only the expert gate/up from IQ3_S to IQ4_XS.** The old uniform file's +17.8% PPL came from degrading tensors the UD file keeps at Q8_0 (attn, ssm, shared experts), so arm P keeps every other tensor at its UD type (96,970 vs 89,332 MiB). PPL P 2.9701 vs UD 2.9761, i.e. equal, measured without iqk.
-- **The coherence half was void, not failed.** The harness ran without the serving env, so the default-ON fused decode made even the UD file produce garbage (see the FD-DIV-2 note in hardware-optimization). A v2 coherence run with the recipe env and the speed A/B (pp256 >= +27%, pp5 >= +19%, tg128 >= -2.0%, INDICATIVE on one quarter) are queued.
-- **Routing skew on the frontdoor model (RT-9).** Qwen3.6-35B-A3B top-10% expert share is 0.50 / 0.42 / 0.46 (prefill; code / prose / reasoning) against a uniform 0.104, with 0 of 40 layers at >= 0.60, so the written decision rule (>= 0.60 on >= 2 workloads) is not met on that model. The DS41 arm (RT-10) keeps the box open.
-
-Sources: [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): the repacked MXFP4 expert GEMV now has a real correctness gate
-**Confidence: verified** for the gate run (named artifacts); **inferred** for the S1-S5 seed implications and W8b (not run).
-
-- Every routed expert row on the DS41-1017 CPU server goes through `CPU_REPACK` -> `forward_mul_mat_id` -> `gemv_q4_b32_8x8_q8_0_lut_avx<block_mxfp4x8>`; AutoKernel seeds S1-S5 all change exactly this path, so a keep without a real-weight check could not be trusted.
-- The W8c gate runs MUL_MAT_ID at widths 1-512 on real 1017 MXFP4 slices (8 experts, 6 used) in both CPU_REPACK and plain buffers; calibrated max anchor NMSE 2.93e-5, passed 2026-10-22 with engagement proven on all 8 cases.
-- The repack copies all experts into about 276 GiB of anonymous RAM per server; `block_mxfp4` and `block_mxfp4x8` are both 17 B per 32 weights, so an in-place repack (W8b) is possible, but AK's capacity dimension is pass/fail so a memory-only win can never be kept by AK. W8b is not done.
-- Expert-kernel speed work on 1017 (S1-S5, prefill surface W8a) is deferred until AK kernel work lands per the 2026-10-22 operator ruling.
-
-### Source References (2026-10-22 sweep 7)
-- [handoffs/active/deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md)
-- [progress/2026-10/2026-10-21-ak-repack-gate.md](../progress/2026-10/2026-10-21-ak-repack-gate.md)
-- [progress/2026-10/2026-10-21-ds41-w8a.md](../progress/2026-10/2026-10-21-ds41-w8a.md)
-
-## Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): CH-19 T3 speed screen: the fused up/gate node is not faster
-
-**Confidence: verified** (recorded run, 0 invalid arms, marker-gated; `summary.txt`, `records.jsonl`, `provenance.json` under the out dir).
-
-- **CH-19.2 ran 19:10-19:16Z** (5 ABAB pairs x r=3, `bench_canonical.sh`, Qwen3.6-35B-A3B-MTP-Q8_0, built from `57d96e2cb`, `build-ch19/`). ON/OFF medians (fused up+gate vs unfused): pp512 d0 0.9850 (0.9604-1.0472), tg128 d0 0.9958 (0.9737-1.0029), pp512 d8192 0.9901, tg128 d8192 0.9755 (0.9554-1.0088). OFF tg128 d0 56.74 t/s, ON 56.46. Not faster on any cell.
-- **CH-19.3 filed**: by the CH-19 rule ("drop if within noise") the default-off hook is dropped unless the window floor shows a real regression; do not fold into the champion. Out `/mnt/raid0/llm/tmp/intake-fixes-20261020/t3-ch19-screen/20261021T191000Z/`.
-
-### Source References (2026-10-21 sweep 6)
-- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
-- [progress/2026-10/2026-10-21-workspace-f8.md](../progress/2026-10/2026-10-21-workspace-f8.md)
-- [handoffs/active/CURRENT-CAMPAIGN.md](../handoffs/active/CURRENT-CAMPAIGN.md)
-
-## Compiled Update — 2026-10-21 (wrap-up sweep 3: routing-tap schema, MoE keeps in candidate C)
-
-**Confidence: verified** for the recorded schema/test deliverables and ledger entries; **observation** where a keep's gain was measured on a model since deleted.
-
-- **Routing tap: schema, validator and C++ change spec landed; the tap itself is still RT-1.** epyc-inference-research `feat/rt21-20261020` @ `ce1a1f4e5` (merged to research main 2026-10-20) carries the schema, a validator, 16 tests and the C++ change spec. No tap data exists yet, so the placement replays in the sweep-2 section remain offline inputs only. ([MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement))
-- **GLM-5.3 MoE keeps were folded into candidate C, but they were measured on a model deleted 2026-09-22.** Folded: 16 clean picks including `moe-up-gate-safe-fusion` and `moe-fused-expert-cohorts`, the row-exact prerequisite `04ffb8ad0`, and `akm-moe-rowexact-weighted-slabs` re-ported by hand (active only when `mmid_rowexact`, Q4_K/Q5_K and cne1 <= `GGML_ROWEXACT_N`, so every other case is byte-identical). `akm-moe-rowexact-qact-2d-partition` (+18.168%) is SUBSUMED by the champion's flat activation grain blocks over `ne11 * ne12 * ngrain_row` in `ggml_iqk_try_mul_mat_id` (256-element grain for Q8_K activations versus the keep's fixed 128: same bytes, finer versus coarser balance only). ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
-- **Three DS41 MoE keeps were SUBSUMED, not applied.** `mmid-flat-qact-rows`, `mmid-qact-block-partition` (by `4348de400`), `mmid-verify-flat-slabs` and `mmid-deduplicate-empty-selection` (by `253e50c32`) were empty after conflict resolution because the champion's unledgered keeps carry the same optimisation; the slab path gates on `2 <= ids->ne[1] <= 8` with `slab_ok = false` whenever any active expert has `cne1 > 8`, which is exactly the earlier C112 shape gate, so that gate commit is not needed. Presence is proved by source greps plus the `GGML_MMID_SLAB` string gate. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
-- **`test-rowexact-backend-toggle` mode `mmid` returns rc=3 on C, and the control/bisect says it is not a fold regression.** Toggling row-exactness off does not change the Q4_K 4-token x 8-expert output (difference_witness=0 at ROWEXACT_N 4/8/16/32, with and without `GGML_MMID_SLAB=0`). The champion cannot be a control (it lacks the test and the setter); building only the champion plus the prerequisite `5251e5cc6` gives the same result, so none of C's other 58 commits changes it. Dense-q8 and dense-f32 modes pass. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
-- **Deterministic-batch MoE identity on C.** Qwen3.6-35B-A3B-MTP-Q8_0 greedy, MTP on, 3 prompts x 256 tokens: byte-identical to champion `dd3d9721c` on 3/3 with equal draft counters; MUL_MAT_ID 815/815 on the final build. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-
-**Sources (sweep 3):** [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md).
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): the routing tap becomes the input to two offline placement replays
-
-**Confidence: inferred.** Every item is a filed, compute-gated task or a dormant trigger; nothing here is a measurement on our fleet. DeepInfer-derived numbers (the 1.65 baseline, the 5.7x fetch-versus-read ratio) come from the intake's own dive ledger and are vendor-reported or stage1-unverified.
-
-- **The instrument is now the hub of three decisions.** INF-72's per-token routing tap (a port of `llama-moe-trace`, int16 expert ids, `-b 512`, SRP needs `ffn_moe_argsort`, strided-read hazard RT-3 BLOCKING) feeds RT-5 (expert skew, gates the conditional MI210 expert cache), and now RT-6 and RT-7. RT-4 is a documentary scope-out, accepted by an independent source check 2026-10-07 (the cacheable-by-design paper's serving numbers are one RTX 3070 with a 2.4 GB/s SSD and a projected, not deployed, PMS result; none transfer to EPYC).
-- **RT-2.1 trace-shape rider.** The tap must keep token order and sample boundaries, tag each token prefill versus decode (and speculative block size), and cover deepseek41 including the 128-expert DSpark layers (int16), so `[steps, layers, experts]` counts can be derived. An aggregate-only dump is insufficient for the replays.
-- **RT-6: offline expert-placement replay (numpy, no inference).** Bins are 4 NUMA nodes and 12 CCDs, T in {1, 3} decode plus one prefill-chunk row. Arms: DeepInfer's windowed per-step-peak policy, EPLB-global, a zero-lag exact-load oracle (UltraEP planning logic), MoonEP rank-level greedy, and the LPLB fractional LP as a bound only; each scored by per-step max/mean with the null model beside it and replication priced in copied bytes. Decision rule: if even the oracle or LP bound fails `1.65 / (best max/mean) >= 1.10` on 2 or more workloads, close as a negative (recorded in `large-moe-expert-parallelism.md`). Passing opens the CPU15-REVAL candidate with the EPLB planner as dispatch policy (CPU20 matrix, 3 reps, PPL gate).
-- **RT-7: DS41 hot-expert residency curve h(k) on the MI210.** Offline from RT-1 traces, k in {39, 53, 63} experts per layer with greedy cross-layer allocation: share of top-6 selections covered by a static ranking learned on domain A and scored on domain B, plus top-set overlap between consecutive 1k-step windows. Opens the HIP MXFP4 expert-cache work (CAFE-7) only if h(53) >= 0.30 on 2 or more workloads and the HIP resident MXFP4 MoE kernel check passes; h < 0.23 closes it. This is a stricter, second gate beside RT-5's top-10%-share >= 60%.
-- **Why two different instruments.** EPLB-style balancing is the right reference for NUMA-bin balancing (RT-6) and the wrong shape for CPU-versus-MI210 residency, which is a top-k coverage curve (RT-7). Per-step dynamic prefetch is excluded: the recorded fetch-versus-read break-even is about 5.7x a CPU read. UltraEP-style per-step planning is not a decode candidate (its authors exclude it; quota floor and byte-neutral replication at T = 1-4); revisit only if the oracle arm shows at least 1.10 headroom at T in {1, 3}.
-- **Dormant triggers.** A MoE role with MI210-resident experts where MMQ_MMID tops the HIP route log (compare against a masked-layout kernel); a model with `n_group > 1` and `topk_group` routing entering the lineup; DS41-T7 delivering `t_cpu`/`t_gpu` per token-expert together with RT-7 passing (then CAFE-7 design with MoonEP's slot-pool layout as reference). No expert-parallelism reopen without a new bottleneck proof.
-- **Hazard unchanged:** a broken flat read of a strided router tensor manufactures a plausible negative (every expert appearing exactly k times, sub-chance reuse). Check the chance baselines (3.13% for qwen35moe, 1.95% for qwen4exp) before reading any locality number.
-
-Open questions: does `qwen4exp`/`glm5next` need graph-side work for the tap? How many 512-token samples per domain stabilise SRP/SCH on our fleet (the 2,048 figure is the source's)? Cross-refs: [KV Cache](kv-cache.md), [Hardware Optimization](hardware-optimization.md).
-
-### Source References (2026-10-20 sweep 2)
-
-- [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-1..RT-7, RT-2.1, dormant triggers.
 
 ## Latest source review — 2026-10-07
 
@@ -166,310 +15,6 @@ The routing-tap handoff now owns RT-5: per-layer expert-selection shares on at l
 - [conditional MI210 cache port](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)
 - [routing instrument](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)
 - [Fable5 window-2 findings 02 — OD-A rider](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu)
-
-## Compiled Update — 2026-09-26 (research-intake orch-prior-art): Fiddler and HybriMoE are now indexed as lineage only
-
-Update 2026-09-26: Fiddler and HybriMoE are now in the index as lineage anchors only (intake-1811#record, intake-1813#record; stage1-unverified, knowledge_only). The inoculation still applies. The one Fiddler fact with dive-verified provenance comes via KTransformers' measurements of it: >7,000 CUDA kernel launches per decoded token and a 16% one-to-two-socket gain (intake-1808#00, intake-1808#02).
-
-This amends the `T*(q*)` inoculation in the 2026-09-07 update below, which says none of Fiddler, HybriMoE, SMoE and FluxMoE were ingested. SMoE and FluxMoE remain un-ingested.
-
-### Source References (2026-09-26)
-
-- [Fable5 window-2 findings 02 — OD-A rider](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) — R-A10, the KTransformers decision package.
-- `research/intake_index.yaml` — intake-1808 (dive-verified), intake-1811 and intake-1813 (stage1-unverified).
-
-**Confidence:** verified for the index state; the two Fiddler numbers are KTransformers' measurements, not ours.
-
-## Compiled Update — 2026-09-17 (evening): the §5 pre-registration is on research main; its driver is not
-
-**Confidence: verified**: byte comparison recorded by the landing audit.
-
-### Key findings
-
-- **The §5 #1 pre-registration and evidence resolve on research main.** The run's pre-registration commit
-  `18d1d7c8` is on main as `6cbdd856`, as `data/s5-moe-batched-np-20260916/PREREGISTRATION.json`,
-  byte-identical to the run's scratch copy. The top-up is `f5179054`. The Q-A GO / Q-B bounded-null result
-  compiled below is unchanged.
-  [sub-land-evidence](../progress/2026-09/2026-09-17-sub-land-evidence.md),
-  [fable5-window2-findings-05-intake-sweep-and-roofline](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md)
-- **The driver was declined.** `s5_moe_batched_np_sweep.py` and its tmp `APPROVED` gate file hard-code
-  scratch paths. It is preserved on research origin, not merged.
-  [sub-gpuprep-port](../progress/2026-09/2026-09-16-sub-gpuprep-port.md),
-  [sub-gpu-runner](../progress/2026-09/2026-09-16-sub-gpu-runner.md)
-
-### Source References (2026-09-17 evening)
-
-- [sub-land-evidence](../progress/2026-09/2026-09-17-sub-land-evidence.md)
-- [fable5-window2-findings-05-intake-sweep-and-roofline](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md): annotated runner line.
-- [sub-gpuprep-port](../progress/2026-09/2026-09-16-sub-gpuprep-port.md)
-- [sub-gpu-runner](../progress/2026-09/2026-09-16-sub-gpu-runner.md)
-
-## Compiled Update — 2026-09-17 (afternoon): the MoE-Spec confirm moves to qwen4exp on the champion
-
-**Confidence: verified** for the ruling and the gating arithmetic; nothing has been measured.
-
-### Key findings
-
-- **OP-INF40: operator Option A, then retargeted.** The confirm run was first queued on the 122B
-  `architect_critic` after the AutoKernel quiet window (`d3449013`). It was then retargeted (`6f346ea3`) to
-  Qwen3.8-Flash-Next (qwen4exp) served by champion `ef81196d5`. This follows the operator's *plan* to promote
-  the champion to production and qwen4exp to `architect_critic`; nothing has been done on that plan yet.
-  [moe-spec-cpu-spec-dec-integration](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration)
-- **The mechanism only fires when verification batches reach `moe_spec_min_batch` = 4.** That means MTP on
-  with `--spec-draft-n-max` ≥ 3. The budget grid has to be sized for 512 experts × 10 used (e.g.
-  {0, 64, 128, 256}) and pre-registered, with 5-rep alternating A/B/A/B per arm, the noise floor in t/s and %,
-  a re-measured α, and the gate-skip control. `registry_patch_proposal.yaml` is applied or retired on the
-  result. Two first-draft reasons about qwen4exp were wrong and were corrected before recording.
-  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- **The row is operator-gated twice**: by the end of the AutoKernel window and by an explicit go. It sits in
-  the inference index as INF-40. [inference-research-index](../handoffs/active/inference-research-index.md)
-
-### Source References (2026-09-17 afternoon)
-
-- [moe-spec-cpu-spec-dec-integration](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration)
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- [inference-research-index](../handoffs/active/inference-research-index.md)
-
-## Compiled Update — 2026-09-17: under batch, quantized MoE keeps Q4_K's lead but only ~62–66% of its dense sibling's scaling — a pre-registered bounded null, and no dequant-kernel pivot
-
-**Confidence: verified** for the fable5 §5 #1 MoE-half sweep: it was pre-registered and frozen before the first launch, admissible on every launch, and its table is final under the stopping rule. It is a **proxy** measurement (`llama-batched-bench`, spec off, category BASELINE), never a headline. The distinct-expert counts are **arithmetic**, not measurements.
-
-The question behind the sweep was: *does batching close GAP-A for a quantized MoE?* If it did not, a gfx90a Q4_K dequant kernel would become a throughput lever and not only a latency lever (the fable5 §8 pivot). The zero-inference threshold work split that question in two, because the earlier "proposed reading" merged them.
-
-- **Q-A** holds the model and the token stream fixed and varies only the quant format. Its statistic is the erosion E = F(32)/F(1) of the Q4_K/Q8_0 speed ratio F. Q-A is the **only kernel trigger**.
-- **Q-B** compares MoE batch scaling with the dense sibling's, via M2 = K_moe(32)/K_dense(32). It can trigger profiling only. The reason is arithmetic: under uniform routing, the distinct experts read per step grow from 8 at B=1 to ≈112 at B=32 for gemma-26B-A4B (128/8, ≈14×) and to ≈163 for Qwen3.6-35B-A3B (256/8, ≈20×). Dense weight traffic stays flat, so M2 < 1 is expected even with perfect kernels.
-
-### Key findings
-
-- **The target list had to be corrected first: both originally named "MoE" targets are dense.** The GGUF headers of `gemma-4-31B-it-Q4_K_M` (arch gemma4) and `Qwen_Qwen3.6-27B-Q8_0` (arch qwen35; the MoE arch is `qwen35moe`) carry no expert keys, so the two files became the dense controls. `gemma-4-26B-A4B-it-Q4_K_M-current` is actually Q4_0 (header ftype=2) and should be avoided. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md), [sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
-- **The pre-registration (Option A, operator-approved, frozen 2026-09-16T09:57Z).** Arms: G4 `gemma-4-26B-A4B-it-ORIG-Q4_K_M`, G8 `-ORIG-Q8_0`, Q8m `Qwen3.6-35B-A3B-MTP-Q8_0`, and the dense controls Dg4 `gemma-4-31B-it-Q4_K_M` and Dq8 `Qwen3.6-27B-MTP-Q8_0`. Dq8 is the MTP twin, so both Qwen arms carry the same unused head. n = 5 launches per arm, with one pre-committed top-up allowed. The noise band is δ_eff = max(8%, measured p95_dev), where the 8% is borrowed from the n=24 launch-unit serving floor (7.897%, CI [5.520, 11.322]%). Q-A: **GO** if E ≥ 0.92; **NO-GO** if E < 0.84 **and** F(32) < 1.0. Q-B: **PASS** if M2 ≥ 0.80, **FAIL** if M2 < 0.50. Anything with p95_dev > 16% is INVALID. The option the thresholds replaced (n=3, no noise band) could only ever have produced an observation. ([sub-s5-thresholds](../progress/2026-09/2026-09-16-sub-s5-thresholds.md))
-- **Q-A: GO. Q4_K does not erode against Q8_0 under batch on gemma-4-26B-A4B.** E median **1.021** (n=5 pairs, range 0.993–1.063, p95_dev 4.06%). F(1) median 1.028, F(32) median 1.064, secondary E(16) 0.991. All 25 first-pass launches were admissible, with residency proven on each and peak KFD count 1. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
-- **Q-B: a bounded null after the top-up.** Pooled n=10 per arm gives G4:Dg4 M2(32) = **0.619** (K32 7.98 vs 12.89) and Q8m:Dq8 M2(32) = **0.655** (K32 3.47 vs 5.30). The first-pass values were 0.602 and 0.648. Both sit mid-band, not within δ_eff of either edge. **Quantized MoE on the MI210 keeps about 62–66% of its dense sibling's B=32 decode scaling.** The top-up linkage receipt was taken before the first launch (rc 0). The first pass had none; a post-run `ldd` check PASSed. The table is final, and the sweep is not to be re-run without a new hypothesis. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
-- **Consequences.** The §8 pivot does not fire. The status-quo ranking stands: "serve batched" (§6.1) ranks above the gfx90a Q4_K dequant kernel (§6.3). No serving recipe or `np` value changes. The MoE-half box stays **unticked**, because the pre-registered tick condition was GO + PASS and the result is GO + bounded null. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
-- **Proxy speeds, median tok/s at B=1 → B=32 (never a headline):** G4 88.7 → 690.2, G8 84.0 → 647.9, Dg4 29.9 → 385.9, Q8m 100.0 → 340.0, Dq8 30.3 → 158.8. sclk dipped below 1700 MHz on 19/25 first-pass launches and 16/20 top-up launches, mostly on the dense arms. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
-- **Relation to the 09-08 evening claim that "batching amortises the expert fetches".** That claim rests on **serving** K with MTP on: the 35B reached K(16) = 310.96/112.68 = 2.76 and was still climbing. The new result is a **spec-off proxy** K, and it must never be compared with serving K. Batched-bench also uses unseeded synthetic `std::rand()` tokens, which probably route less skewed than real text and bias Q-B toward FAIL. The two findings are consistent: an MoE keeps gaining throughput under batch, just less steeply than a dense model in this proxy. ([sub-s5-thresholds](../progress/2026-09/2026-09-16-sub-s5-thresholds.md))
-- **GLM CPU AutoKernel: the first full candidate path completed, and it produced a regression.** v16 ran `akm-moe-fused-global-slab-balance` through the whole path: profile → planner → critic → patch → build/correctness → five-pair `matched_process_v2` CPU A/B. It measured **−0.953%** against retained anchor `34a8b446` with a 0.708% acceptance floor, so it was not kept, and the 27 retained keeps are unchanged. The reporting now labels a decisive negative as `regression` rather than `measured_null` (research `be6bbad9`). The CPU lifecycle census overran its diagnostic bounds during that A/B, so the A/B cannot support a clean-contention claim. ([codex-autokernel](../progress/2026-09/2026-09-16-codex-autokernel.md))
-- **The architect_critic `moe_spec_budget: 128` proposal's gate is resolved** by operator ruling `ruling_op19_e8_chain_20260827`, which binds only at promotion. The registry integration itself is still not done. ([moe-spec handoff](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration))
-
-### Open questions
-
-- GO + bounded null leaves the routing-side levers (expert-grouped dispatch, occupancy) unprofiled. Profiling was pre-registered to fire only on FAIL, so any profiling now needs a new hypothesis.
-- Does real-text routing skew change M2 enough to cross 0.80? The synthetic-token bias cannot be quantified from this sweep.
-
-### Sources
-
-- [fable5-window2-findings-05-intake-sweep-and-roofline.md](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md): the dense-target correction, the frozen pre-registration, and the first-pass and top-up results.
-- [2026-09-16-sub-s5-thresholds.md](../progress/2026-09/2026-09-16-sub-s5-thresholds.md): the Q-A/Q-B split, the distinct-expert arithmetic, the noise-floor derivation and the proxy limits.
-- [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the GGUF header scan showing the named targets are dense.
-- [2026-09-16-codex-autokernel.md](../progress/2026-09/2026-09-16-codex-autokernel.md): the GLM v16 candidate regression and the reporting fix.
-- [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration): the OP-19 ruling note.
-
-## Compiled Update — 2026-09-08 (evening): the MoE decodes FASTER than the smaller dense model on the same binary — and that is architecture, not a kernel result
-
-**Confidence: verified.** Both numbers came out of the *same* champion binary (`ef81196d5`) on the *same* MI210 within hours of each other, residency proven on every launch. The architecture facts are exact GGUF-metadata and tensor-name reads of the two model files.
-
-| | Qwen3.8-27B-Q8_0 | Qwen3.6-35B-A3B-MTP-Q8_0 |
-|---|---:|---:|
-| `general.architecture` | `qwen35` — **dense** | `qwen35moe` — **MoE** |
-| blocks · `embedding_length` | 65 · 5120 | 41 · **2048** |
-| FFN | `feed_forward_length` 17408, **all of it per token** | `expert_feed_forward_length` 512 × **8 of 256 experts routed**, plus one shared expert of 512 |
-| attention heads q/kv | 24 / 4 | 16 / 2 |
-| GGUF on disk | 27.05 GiB (+1.92 GiB drafter) | **35.21 GiB**, no drafter file |
-| single user (`np=1`) | 79.245 tok/s | **112.676 tok/s (+42.2%)** |
-| best aggregate measured | 179.122 (np=8) | **310.958 (np=16, +73.6%)** |
-
-### The bigger file is the faster model, and the mechanism is bytes-read-per-token
-
-Decode is **weight-bandwidth-bound**: the rate is set by how many bytes of weights must be read to emit one token, not by how many bytes the file occupies. The dense 27B reads essentially all of itself every token. The MoE routes **8 of 256 experts** (3.1% of the routed expert pool) plus one shared expert, so the great majority of its 35 GiB stays resident in VRAM and *untouched* on any given token — and it is smaller in every other dimension too: half the embedding width, roughly two-thirds the depth, half the KV heads.
-
-> **Record this wherever the two numbers appear together: the 35B is faster because it is an MoE, not because the kernel is better on it.** A reader who takes "35B > 27B" as a kernel result concludes the champion scales with model size, which is the opposite of true.
-
-### The same mechanism sets the shape of the concurrency curve
-
-The dense 27B's aggregate throughput turns over between 4 and 8 slots (+6.8% for ~half the per-user rate) — it saturates the memory system early. The MoE 35B was **still climbing at 16 slots** (+15.98% on its last measured step, 41.4 of 64 GiB VRAM) and its ceiling is unmeasured. At low batch an MoE is not bandwidth-saturated, so additional concurrent tokens route into expert reads already being paid for and **batching amortises the expert fetches**. This is the serving-side counterpart of the routing-locality work above: the same 256/8 geometry that makes a residency budget interesting is what makes the concurrency curve keep climbing.
-
-**Consequence for operating points:** dense and MoE models in the same fleet do not share an `np` recommendation, and the difference is structural rather than a tuning artifact.
-
-### Source References (2026-09-08, evening — the 35B sweep)
-
-- [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
-- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
-- [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
-
-## Compiled Update — 2026-09-08: the routing-locality instrument (INF-72) — SRP/SCH/EOR scope, chance baselines, and the bounded payoff of a reopen
-
-**Confidence: verified** (intake dive-verifications; the chance baselines are arithmetic); the program is compute-gated FILE-ONLY — nothing has run and no throughput claim is licensed by the instrument.
-
-### The instrument, and why this box needs its own number
-
-INF-72 stands up a per-token MoE routing tap on our own fleet so that any offload, expert-cache or residency argument rests on a measured local number instead of a foreign paper's. The deliverable per MoE layer: a top-k expert-index tensor `[samples, tokens, top_k]` (SCH) plus per-expert rank/mask (SRP), with an **EOR/IR_t rider** — `|E_t ∩ E_{t-1}| / K` over the same top-k tensor SRP already consumes, free once the tap exists. The port of `llama-moe-trace` (MIT, `cacheable-by-design` @ `03366ef1`) supersedes the from-scratch build (`intake-1328#record` → `intake-1336#00`) with four verified adjustments: (1) **int16, not int8** — our 256/512-expert fleet overflows int8; (2) `-b 512` with the existing per-chunk `llama_memory_clear` yields the `[samples, 512, top_k]` geometry by reshape; (3) SRP additionally needs `ffn_moe_argsort` (cb-named at `src/llama-graph.cpp:1985`) while SCH needs only what the tap emits; (4) v9 covers `qwen35moe` and `qwen3next` but **not** `qwen4exp` / `glm5next` — an open question whether that gap closes on a newer experimental base.
-
-**Chance baselines, mandatory so a locality number is interpretable**: 8/256 = **3.13%** (qwen35moe) and 10/512 = **1.95%** (qwen4exp), against DeepSeek-V2-Lite's 9.38% where ReMoE's baseline was already 2.91× chance. An EOR/IR_t result at or below 3.13%/1.95% is a negative and must be reported as one. `intake-1338#01`.
-
-**The stride hazard** (cross-referenced in the 09-07 section above; substance here): a flat read of a strided router tensor manufactures a plausible-looking negative — every expert appearing exactly k times with sub-chance reuse. Fix: row-by-row `ggml_backend_tensor_get` at offset `i * t->nb[1]`, anchored in our own tree at `ggml/src/ggml.c:5373` / `src/llama-graph.cpp:1987` (`intake-1336#00`). This is a measurement-integrity item: the broken read produces exactly the failure "rule out the test method first" exists to catch. **Scope-out written so the numbers are never re-cited (RT-4)**: the source's bandwidth-wall and PMS-ceiling findings do not transfer (every systems number is an 8 GB VRAM card behind a 2.4 GB/s SSD; the speed projections are modelled, not deployed), and a good SCH does not license a throughput claim (`intake-1336#05`).
-
-### What a positive would be worth: the reopen payoff is bounded
-
-The GLM hot-expert offload/REAP kill stands, and its reopen trigger was rewritten 2026-09-07: an **SRP/SCH measurement on per-token routing traces**, not "a cacheable Zipfian hot set" — the 2026-07-17 artifact is a cumulative per-expert histogram with no time axis, so it cannot observe segment-level locality (`intake-1328#00`), and corpus-mixing alone collapses the signal (per-domain entropy 0.79–0.85 → 0.9453 mixed; Gini 0.62–0.71 → 0.3889; top-10% share 0.42–0.58 → 0.252, recomputed from released traces, `intake-1336#01`). And a positive signal is not by itself a reopen: trained routing locality is worth **+1.58% to +2.03% end-to-end on this host** — ReMoE's best simulated µMiss reductions (7.34% @C=6 / 9.41% @C=12) applied to the intake-1318 expert path (20.96 ms of a 99.1 ms token), perfect-hit ceiling +27% = 10.09 → 12.80 t/s on qwen4exp (`intake-1338#03`) — and that is an UPPER bound assuming a fill-bound expert path, which ours is not. A ρ=2 residency budget against 64 GB was costed 2026-09-07 and deprioritised until SCH(ρ) has a measured knee: Qwen3.6-35B-A3B 256×8 → 16 resident routed experts/layer = 6.25% of the routed pool (not 12.5%); Qwen3.8-Flash-Next 512×10 → 20 = 3.9%; plus the shared expert, resident by definition. `intake-1328#04`.
-
-### The shared-expert census: nothing in the Qwen fleet is architecturally favourable
-
-The census that makes the offload/caching question OPEN rather than settled: all three Qwen MoE families carry a **gated shared expert** — Qwen3.6-35B-A3B (qwen35moe, 256/8 + 1, 40 blocks), Qwen3.8-Flash-Next (qwen4exp, 512/10 + 1, 48 blocks), Qwen3-Next-80B (qwen3next, 512/10 + 1) — metadata keys and tensor patterns recorded in `intake-1328#record`. Consequences: the shared expert is resident by definition and enters no ρ budget, and the offload/caching question is open because nothing in this fleet has been measured on the axis — NOT because the architecture is favourable. The tap closes the axis with a local number; its output wires into the belief kernel on the write side (SC66).
-
-### Source References (2026-09-08, routing tap)
-
-- [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-1..RT-4 with the four port adjustments, the EOR rider, the chance baselines, the stride hazard, and the open questions.
-- [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the rewritten reopen trigger, the ρ=2 budget, the OD-A evidence rider (FreeToken vs KTransformers), and the intake-1318/1328/1336/1338 dispositions.
-- [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/completed/qwen38-flash-next-fp8-evaluation.md) — the qwen4exp census half (`intake-1328#record`, `intake-1328#03`).
-
-## Compiled Update — 2026-09-07: llama.cpp has NO expert cache, and closed-form CPU/GPU miss-splitting is worth zero latency
-
-**Confidence: `verified` / `design_prior`** — the absence facts are exact greps of two named trees at exact commits (`verified`); the `T*(q*) = mS/B_H` latency-neutrality identity is a closed-form result, unmeasured on this host (`design_prior`). Both entries are **source-class inoculations**: they exist so the same derivation is not repeated on every MoE-offload paper that arrives.
-
-### There is no expert cache in llama.cpp — so a "llama.cpp expert-cache hit rate" is a page-cache measurement
-
-Zero occurrences of `expert_cache` or "expert cache" in production-consolidated-v9 `@0db32c06e` across `src/`, `common/`, `ggml/src/` and `tools/`, and zero in upstream b8185's `common/arg.cpp`. The two flags that look like the feature are not it: `-cmoe` / `-ncmoe` (`common/arg.cpp:2530-2545`) are **load-time `tensor_buft_overrides`** — they decide, once, which expert tensors are placed on which backend. There is no capacity, no admission, no eviction, and nothing that can hit or miss at run time.
-
-The consequence generalises to a whole class of papers. **Any paper reporting a "llama.cpp expert-cache hit rate", or an mmap-based MoE offload speedup, is measuring the Linux page cache at 4 KB granularity** — and only on a machine where the model does not fit in RAM. It is never a per-layer expert cache of capacity C, so its hit rate is not a routing-locality measurement and does not transfer to a host where the model is resident. Named consumers already in this wave's reference lists: **MoE-Infinity, HOBBIT, ProMoE, fMoE, FreeToken**. Read any of their llama.cpp baselines as a page-cache result before reading them as a routing result.
-
-Pair this with the existing `-ncmoe` sweep at the 2026-08-14 section below — that is the same fact measured from our own side: pushing expert layers to CPU declines monotonically with N, because the placement is static and there is nothing adaptive to win. `intake-1338#00`, `intake-1338#04`.
-
-### `T*(q*) = mS/B_H` — a closed-form miss-split is worth zero latency by construction
-
-The identity is general over **all** closed-form CPU/GPU miss-splitting schemes, not one paper's: any scheme that balances two concurrent branches under a linear residual-bandwidth model is worth **zero latency** versus simply running everything on the faster-per-byte branch. The optimum equalises the two branch times, and at that point the total is exactly what the fast branch alone would have taken — the split moves work, not time. **Its only payoff is whatever residency the slower branch leaves behind**, i.e. the freed capacity, which must then be valued on its own.
-
-This is the cheapest available inoculation against **Fiddler, HybriMoE, SMoE and FluxMoE** — none of them ingested, and none of them needing to be, unless a paper's claim rests on something other than the split itself. When one of them reports a speedup, the question is not "is the arithmetic right" but "what is the non-split difference" — a different quantisation, a different residency set, a prefetch that changes the bandwidth model's linearity. `intake-1318#00`.
-
-### Cross-reference: reading MoE routing state wrongly manufactures a plausible negative
-
-Both items above are about *not being fooled by someone else's measurement*. The mirror-image hazard on our own side — a flat read of a strided router tensor, whose tell-tale signature is **every expert appearing exactly k times with sub-chance reuse** — is recorded with its fix and its in-tree anchors in [`handoffs/active/cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) § stride hazard. Same failure family: MoE routing/expert state read wrongly yields a negative that looks entirely plausible.
-
-## Compiled Update — 2026-08-16: the MoE decode kernel is a DIFFERENT kernel from the one synthetic probes measure — and on gfx90a that difference is 2 waves/SIMD
-
-**Confidence: observation / `design_prior`** — the register figures are static reads of the shipped code object (exact, model-independent); the throughput figures are non-governed single captures. None of this is an AutoKernel `evaluation_event`.
-
-### `mul_mat_vec_q<_,1,true,false>` is the production MoE decode instantiation, and the template arguments decide the occupancy
-
-llama.cpp's batch-1 quantized GEMV has four instantiations of the same source. MoE decode goes through the `mm_ids` variant (`<TYPE,1,true,false>`); a synthetic single-op smoke goes through `<TYPE,1,false,false>`. On gfx90a they are **not the same kernel**, and for IQ2_XXS they differ by exactly the boundary that matters:
-
-| variant | VGPR | waves/SIMD | LDS | spill |
-|---|---:|---:|---:|---:|
-| `<IQ2_XXS,1,false,false>` (synthetic op path) | 63 | **8 — max** | 256 B | 0 |
-| `<IQ2_XXS,1,true,false>` (**production MoE decode**) | 78 | **6** | 512 B | 0 |
-| `<IQ2_XXS,1,false,true>` | 125 | 4 | 512 B | 0 |
-| `<IQ2_XXS,1,true,true>` | 90 | 5 | 1024 B | 0 |
-
-This **corrected an earlier reading in this project**: "IQ2_XXS MMVQ is not occupancy-limited" was concluded from the synthetic smoke's 8 waves. Production MoE decode runs at **6 of 8 waves, 75% of max**, with zero register spill in both. The generalisable rule: **a synthetic op capture is a different kernel from the production one until the template arguments are compared.**
-
-**But the MoE indirection itself is not the cost.** On the identical `<_,1,true,false>` wrapper, Q8_0 fits in **25 VGPR**. The 78 is IQ2_XXS's own dequant state machine, not the `mm_ids` gather — so an "MoE overhead" framing of the low-bit deficit is wrong. What the MoE wrapper does is *select* the expensive instantiation. Full per-quant table and the mechanism (sign unpacking, not the codebook gather) are on [Hardware Optimization](hardware-optimization.md); the throughput consequence across the quant ladder is on [Quantization](quantization.md).
-
-### Attribution on the real 122B UD-IQ2_M, and a governed-runner defect it exposed
-
-Two captures on the production `Qwen3.5-122B-A10B UD-IQ2_M`, clean frozen-v9 `0db32c06e` (build 10125), residency proven during (VRAM 57→58%, GPU 99–100%):
-
-- **Prefill (governed, receipt `passed`)** — 25,888 dispatches, 5,586 ms kernel time, 732.8 t/s. Top kernels: `mul_mat_q<IQ2_XXS,64,false>` **40.01%** (752 dispatches, the MMQ batched path), `mul_mat_q<IQ3_XXS,…>` 18.85%, `gated_delta_net_cuda<128,…>` 11.04%, rocBLAS/Tensile MFMA `Cijk_…MT64x32x64_MI16x16x16x1` 8.85%.
-- **Decode (NON-governed, no receipt, no durable identity)** — 245,246 dispatches, 3,158 ms, 39.40 t/s. `mul_mat_vec_q<IQ2_XXS,1,true,false>` is **16.42%** of decode kernel time across **6,063 dispatches at a 85.60 µs median**; IQ3_XXS 15.40%, Q5_K 13.52%, Q6_K 6.32%, `quantize_q8_1` 6.31%.
-
-**The defect the pair exposed matters more than either number**: the governed attribution runner hardcodes `-n 0` in `bench_command()` (line 69), so **every governed rocprof-v1 attribution to date is prefill-only** — including the K28 attribution the path was validated on. A batch-1 decode question cannot be answered through it as written; the decode figures above therefore come from a non-governed companion run and carry no durable identity.
-
-**The timing distribution is the most informative part**: per-dispatch duration is median 85,601 ns, min 83,520, max 88,801 — a **6% spread across 6,063 dispatches** at a single grid size. That is the signature of a throughput-limited kernel at a hard resource ceiling, not one with variable stalls.
-
-A bandwidth figure exists but **rests on a stated assumption, not a measurement**: at 39.40 t/s with ~10B active params of a 124.6B-param model at 2.7 bpw, per-token active-weight traffic is ~3.4 GB → ~133 GB/s against the 1638 GB/s datasheet peak, **~8%**, consistent with the ~10.3% figure carried elsewhere. The assumption is the active-expert byte count; it is not derived from the trace and should be confirmed before it gates anything.
-
-### What this changes for low-bit MoE serving
-
-MoE-IQ2 remains our worst roofline rung by roughly 2× (10.3% of spec / 11.8% of achievable bandwidth). Three consequences:
-
-- **Routed-expert low-bit quantization is a CAPACITY play whose decode cost is now attributable.** The asymmetric-MoE recipes recorded on [Quantization](quantization.md) (routed experts at IQ2/IQ3, shared experts and attention held at Q8_0/Q5_K/Q6_K) buy HBM footprint. On this device, below the 64-VGPR boundary they do **not** buy decode speed — a single-model dense ladder measured decode getting *absolutely slower* as the format shrank past IQ4_XS. Direction agrees between the 8B dense ladder and this 122B MoE attribution; **magnitude does not transfer** — one model, non-governed, n=1.
-- **The `v_perm_b32` sign-expansion lever is an occupancy lever with a hard threshold.** IQ2_XXS is 14 registers over 64. A reduction landing at 70 buys nothing, and spill is 0 everywhere so there is no slack — any attempt must report `vgpr_spill_count` beside occupancy or it is not evidence.
-- **The exposure is LATENT, not absent.** No IQ-format role is GPU-resident today (since the 2026-07-31 cutover the resident architect is the 27B and the 122B is retained as a CPU critic), so the 6-vs-8-wave loss costs the live stack nothing right now. It flips the day any `IQ1_*`/`IQ2_*`/`IQ3_*`/`IQ4_*` GGUF becomes resident on ROCm0 in a serving role. Do not record this as "not a problem" in the meantime — that is how a latent exposure gets closed by mistake. The existing 122B IQ2 residency ladder numbers (43.7 t/s single / 148.7 agg@B32, PPL 5.02) stand as measured, but they were taken **with** this occupancy tax already priced in.
-
-### Source References (2026-08-16)
-
-- [`artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) — both 122B captures, the four-variant occupancy correction, the `-n 0` governed-runner defect, and the timing distribution.
-- [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the four IQ2_XXS instantiations, the Q8_0-on-the-same-wrapper control at 25 VGPR, and the zero-spill constraint.
-- [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the dense-model ladder whose direction the MoE attribution agrees with, and its caveat list.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the MoE-IQ2 10.3%/11.8% rung, the latent-exposure tripwire, and the open kill-criterion probe on whether ~10% is an architectural floor.
-
-## Compiled Update — 2026-08-14: full sub-4-bit residency beats partial expert offload on the 122B, and the CPU-MoE tail is the whole cost
-
-**Confidence: observation** — frozen v9 `0db32c06e` / build `10125`, `llama-bench` on an idle MI210, single runs. **No P-GPU-1, so neither result is decision-gating**; the 12.19 t/s CPU comparison point is itself an observation.
-
-### The `-ncmoe` sweep: decode falls monotonically with every layer of experts pushed to CPU
-
-`Qwen3.5-122B-A10B-UD-Q4_K_M` (72.88 GiB, does not fit 64 GB HBM) at `-ngl 99 -ncmoe N`, keeping attention, shared experts and hot layers in HBM while N layers' routed experts run on CPU:
-
-| `-ncmoe N` | decode tg128 (t/s) | prefill pp512 (t/s) |
-|---:|---:|---:|
-| 8 | **35.63 ± 0.75** (2.92× vs 12.19) | **555.43 ± 6.01** |
-| 16 | 25.18 | 395.81 |
-| 24 | 19.28 | 315.89 |
-| 32 | not captured (script exited) | 265.80 |
-
-Op coverage was HIP-clean — no fallback warnings. **The monotone decline in N is the finding**: every additional layer of CPU-resident experts costs throughput proportionally, which identifies the **CPU-MoE tail** as the cost rather than any GPU-side inefficiency. A hybrid MoE placement is a capacity compromise that you pay for linearly.
-
-### And full IQ2 residency beats the best hybrid config outright
-
-`Qwen3.5-122B-A10B-UD-IQ2_M` is **37.59 GiB — it fits entirely** — so at `-ngl 999` with no `-ncmoe` at all: **decode 44.35 ± 0.54 t/s (3.64× the CPU observation), prefill 735.08 ± 0.99 t/s**. That is **+24.5% decode and +32.4% prefill over Q4_K_M at `-ncmoe 8`**, and the mechanism is simply that full residency eliminates the CPU tail rather than shrinking it.
-
-**The consequence for large-MoE serving is a preference order, not a throughput number**: if a sub-4-bit quantization gets the whole model into HBM, that beats a higher-precision quant with partial expert offload — on speed. **The open question is quality, and it is the only open question.** IQ2 vs Q4_K_M precision on this model has never been gated for the architect role, and the speed result creates exactly the pressure to skip that gate. Do not adopt on these numbers alone; see [Quantization](quantization.md) for why a low-bit rung's throughput ranking says nothing about its usability, and note that the same page's occupancy finding means sub-4-bit is **not** monotonically faster as it shrinks — IQ2 wins here because it *fits*, not because it is small.
-
-### Source References (2026-08-14)
-
-- [fable5 window-2 findings-02 — heterogeneous GPU](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) §5 — the M2 `-ncmoe` sweep, the M2b full-IQ2-residency comparison, and the explicit "quality, not speed" open question.
-- [fable5 window-2 findings-05c — lever × category matrix](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix) — the L15 sub-4-bit lever this confirms, and the MoE-category framing it sits in.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the MoE-IQ2 roofline rung the residency argument runs against.
-
-## Compiled Update — 2026-08-12: the expert-count fork patch is unnecessary — stock v9 already does it, and does it cheaper
-
-**Confidence: verified** for the equivalence argument and the code archaeology; **stale** for the throughput numbers, which are v4/v5-era and have not been re-run on v9.
-
-### `--moe-n-expert` resolves to DROP, via an equivalence rather than a measurement
-
-The fork's `--moe-n-expert` hard-mask commit (`86901388a`) was held for review as a capability the production kernel might be missing. It is not missing. Stock v9 provides it natively through `--override-kv <arch>.expert_used_count=int:N`, and the two are **numerically identical**: `ggml_argsort_top_k` sorts descending, so taking the top-N of a top-M selection is the same set either way. The fork version is strictly worse on cost — it pays extra `ggml_cont` copies per layer.
-
-This is the second fork patch this week to resolve to DROP for a reason other than "already merged" (see [KV Cache](kv-cache.md) for the SWA one, which resolves to DROP because it *removes* a check). The pattern worth carrying: **before porting a fork's flag, ask what the stock kernel's generic override mechanism already reaches** — a config-level equivalent is cheaper than a code-level one and does not need re-validating at every promotion.
-
-### The expert-pruning throughput numbers are v4/v5-era and need re-running
-
-The measurements that motivated the flag are retained but must be read with their era attached — **none has been re-run on v9**: Qwen3-Coder-480B-A35B 2.5 → 3.7 t/s (+48%), GLM-4.6-355B-A32B 2.2 → 3.0 (+36%), Qwen3-Coder-30B-A3B 26.6 → 33.6 (+26%), Qwen3-VL-30B-A3B 32.2 → 38.9 (+21%). The quality reading alongside them is the operative constraint and is coarse by design: **excellent at 50% of experts, degraded at 25%, gibberish at 12.5%**. That places the usable band well above the point where the speedups get interesting, which is consistent with the near-uniform GLM-5.2 routing skew recorded in the pass below.
-
-### A roadmap-vs-deployment drift correction
-
-A roadmap line describing the 122B UD-IQ2_M as "measured viable, fully GPU-resident" is true as a *viability measurement* and **false as a description of the deployed stack**: since the 2026-07-31 cutover the GPU-resident architect is the 27B, and the 122B is retained as a CPU critic. The correction was routed to the owning document rather than self-edited. Read any large-MoE residency claim against the live lineup, not against the probe that established feasibility.
-
-### Source References (2026-08-12)
-
-- [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the `--moe-n-expert` DROP verdict, the `--override-kv` equivalence, and the retained era-stamped throughput table.
-- [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism) — the CPU15 expert-parallelism disposition this sits inside.
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the argsort equivalence derivation and the AXA-1 roadmap-drift correction.
-
-## Compiled Update — 2026-07-20
-
-New evidence pins down the MoE reasoning-vs-knowledge law and settles the offload/REAP viability gate for GLM-5.2 with a measured routing-skew profile. Confidence: `external` for the sparsity literature, `verified` for the routing-skew measurement, `observation` for all MI210 residency throughput.
-
-### Key Findings (2026-07-20)
-
-- **Reasoning ∝ ACTIVE FLOPs; knowledge/memorization ∝ TOTAL params; reasoning is non-monotonic in sparsity** (intake-859 `2508.18672`, cred 5). Denser overtakes once active-param counts grow; raising total experts at fixed top-k degrades reasoning while raising top-k mitigates it; neither test-time compute nor GRPO rescues over-sparsity — it is architectural. This makes a **large-total / moderate-active MoE (122B-A10B)** the literature-default architect (active⇒reasoning, total⇒knowledge) and the 35B-A3B (3B active) the reasoning floor; on a bandwidth-bound CPU, an MoE reaching dense-level quality at ~1/10 active FLOPs is exactly why MoE wins. A mid-size MoE can Pareto-dominate a larger one at 1/3 the memory (Gemma-4-E4B ≈ Gemma-4-26B-A4B — intake-862 `2604.07035`, cred 2). ([architect-model-selection-2026-07-20](../docs/reference/architect-model-selection-2026-07-20.md))
-- **The expert-routing-skew profile (the cheap gate for offload/REAP) came back near-uniform on GLM-5.2.** Production-representative run: 19.1M selections, **global `top_32=15.19%`, entropy 0.9987, Gini 0.066**, with only weak layer-local skew (median layer `top_32=39.19%`; all 256 experts used every layer). → generic GLM hot-expert GPU residency / REAP is **NOT justified** by current workload evidence (near-uniform ⇒ PCIe-streaming-latency-bound if attempted); reopen only with a narrower role-specific corpus. REAP and offload are the *same* skew analysis, different action (permanently prune cold experts vs stream them). ([mi210-big-model-and-acceleration-roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap))
-- **IQ2 big-MoE GPU residency ladder is two-for-two viable** (observation-grade): 122B UD-IQ2_M = 43.7 t/s single / 148.7 agg@B32 (2.2× / ~8–9× over ~20 t/s CPU-Q4, PPL 5.02); Qwen3-Next-80B-A3B i1-IQ2_M = ~55.8 single / 265 agg@B32, and because it is a GDN-hybrid with O(1) KV, 32K context fits comfortably and it is compute-bound at B≈96–128. IQ2 residency **caps at ~122B**; GLM-5.2 (~238 GB even at IQ2) never fits GPU-only → offload/REAP is the only GLM path. AirLLM-style per-token weight streaming is the anti-pattern (PCIe 7–14× slower than DDR5); the HBM win exists only when weights *reside* in HBM. ([mi210-big-model-and-acceleration-roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap))
-  - **Re-measured 2026-08-14 on frozen v9 (`0db32c06e`/`10125`): 44.35 ± 0.54 t/s single, prefill 735.08 ± 0.99, file size 37.59 GiB** — consistent with the 43.7 above, so the ladder reproduces across eras. **Do not reconcile these against the 39.40 / 37.06 t/s figures reported elsewhere**: those are decode runs taken *under a profiler* (`rocprof` attribution captures), which is a different instrument and a different number by construction. Quote the `llama-bench` figure for throughput and the profiled figure only for share attribution.
-- **The slot-fabric residency model treats GPU MoE residency as a slot operation.** VRAM (64 GB) is the only scarce resource; CPU+RAM dual-residency is free (1.1 TB), so every teleport-eligible model stays hot in RAM permanently. A realistic 2-resident set is one big GDN (122B-IQ2 ~40 GB) + one small (35B-A3B IQ4) ≈ 58 GB — two big IQ2 don't co-fit. A Layer-2 residency actuator is the only VRAM-touching op (allowlist + N-dwell hysteresis + kill-switch), and every GPU MoE has a designated CPU fallback (GPU accelerates, CPU guarantees). ([heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency))
-
-### Open Questions (2026-07-20)
-
-- Does a narrower *role-specific* corpus reveal a cacheable GLM hot-expert set that the production-representative profile averaged away?
-- The GLM-5.2 endgame (expert-offload / REAP + IQ2-resident-experts + offload-cold-tail) remains operator-gated and unbuilt.
-- Does dynamic IQ2 preserve the 122B-A10B's *reasoning* (not just knowledge)? The architect bench decides, and it re-gates the whole IQ2-residency-for-the-architect program.
-
-### Source References (2026-07-20)
-
-- [architect-model-selection-2026-07-20.md](../docs/reference/architect-model-selection-2026-07-20.md) — reasoning∝active / knowledge∝total MoE law + ranking implication.
-- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — GLM routing-skew result, IQ2 residency ladder, AirLLM anti-pattern.
-- [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — GPU MoE residency as a slot operation + CPU-fallback guarantee.
-- [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — CPU+GPU hybrid MoE expert-offload (`-ot exps=CPU` / `--n-cpu-moe`) machinery.
-- intake-859 `2508.18672` (cred 5), intake-862 `2604.07035` (cred 2) — MoE sparsity/reasoning + deployment-aware Pareto-dominance.
 
 ## Summary
 
@@ -844,8 +389,467 @@ Three distinct MoE Q4 sub-classes now empirically validated:
 
 The taxonomy is determined empirically per Probe B; do NOT assume a new MoE Q4 model fits one of these classes without measurement. The 35B-A3B is its own class (MoE Q8 BW-bound frontdoor, EP stack +17%).
 
+## Compile Log
 
-## Compiled Update — 2026-09-26: OD-A Decided — KTransformers Runtime Declined for Now, MI210 Port Question Open
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-19 (wrap-up sweep: A3B MI210 verify hotspots, A3B champion chain). Earlier: 2026-11-09 (AutoKernel wiki compile, ak-wrap d). Earlier: 2026-11-08 (operator wiki sweep, main-inf22). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): DS41 antirez-MXFP4 vs unsloth verdict, C6 MUL_MAT_ID correctness counts, DS41 IQK-FA divergence. Earlier: 2026-10-28 (ws58 delta since 2026-10-27 15:23Z; see newest Compiled Update). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): the DS41 MXFP4 CPU_REPACK MMID premise stands at 1.783x slower than Q4_K iqk, and Q38FN arm P2 does not ship. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the routing-tap schema ticks on its FILE ONLY criterion. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-22 (wrap-up sweep 7: MoE expert-kernel correctness gate). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 3: routing-tap schema, MoE keeps in candidate C). Earlier: 2026-10-20 (wrap-up sweep 2: routing-tap replays). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-26 (OD-A decided: KTransformers runtime declined for now; MI210 port investigation open via F7 source-only read, then F6); previous: 2026-09-17 (evening: the §5 pre-registration resolves on research main (`6cbdd856`); the driver was declined); earlier 2026-09-17 (afternoon: the MoE-Spec confirm is retargeted to qwen4exp on the AutoKernel champion); earlier 2026-09-17 (incremental: pre-registered MoE batched sweep: Q-A GO (E 1.021), Q-B bounded null (M2 0.619/0.655, MoE keeps ~62–66% of dense B=32 scaling), no dequant-kernel pivot; named targets were dense; GLM v16 candidate regressed); earlier: 2026-09-08 (evening): measured on ONE binary, the **MoE decodes faster than the smaller dense model** — Qwen3.6-35B-A3B beats Qwen3.8-27B by **+42.2% single-user and +73.6% peak aggregate** while being the larger file on disk (35.21 vs 27.05 GiB) — because decode is weight-bandwidth-bound and the MoE routes **8 of 256 experts** per token; and the MoE's concurrency curve does **not** turn over where the dense one does; earlier: 2026-09-08 (the INF-72 routing-locality instrument — SRP/SCH/EOR scope with chance baselines 3.13%/1.95%, the llama-moe-trace port's four adjustments, the bounded +1.58–2.03% reopen payoff, the ρ=2 residency budget, and the Qwen-fleet shared-expert census; earlier 2026-09-07 note: **llama.cpp has NO expert cache** — zero `expert_cache` occurrences in production-consolidated-v9 `@0db32c06e` or upstream b8185, and `-cmoe`/`-ncmoe` are load-time `tensor_buft_overrides`, so any published "llama.cpp expert-cache hit rate" or mmap MoE offload speedup is the Linux page cache at 4 KB granularity; plus the `T*(q*) = mS/B_H` latency-neutrality identity, under which any closed-form CPU/GPU miss-split is worth zero latency and pays only in freed residency; earlier 2026-08-16 note: **the production MoE decode kernel is a different instantiation from the one synthetic probes measure** — `mul_mat_vec_q<IQ2_XXS,1,true,false>` runs at 78 VGPR / 6 waves per SIMD vs the synthetic `<…,false,false>` at 63 / 8, which retires an earlier "IQ2_XXS MMVQ is not occupancy-limited" reading; the `mm_ids` wrapper is NOT the cost (Q8_0 = 25 VGPR on the same wrapper); 122B UD-IQ2_M decode attribution puts IQ2_XXS MMVQ at 16.42% / 85.60 µs median with a 6% spread; and the governed attribution runner hardcodes `-n 0`, making every governed rocprof-v1 capture to date prefill-only; plus the 2026-08-14 architect-residency batch — the 122B `-ncmoe` sweep declines monotonically with N (35.63 t/s at N=8 down to 19.28 at N=24), identifying the CPU-MoE tail as the whole cost, and **full UD-IQ2_M residency at 44.35 t/s beats Q4_K_M + `-ncmoe 8` by +24.5% decode / +32.4% prefill** with quality the sole open question — see top sections; earlier 2026-08-12 note: the `--moe-n-expert` fork patch resolves to **DROP** — stock v9 already reaches it via `--override-kv expert_used_count`, identically and with fewer copies; its motivating throughput numbers are v4/v5-era and unverified on v9; plus a roadmap-vs-deployment drift correction on the 122B's residency — see below; earlier 2026-07-20 note: adds the reasoning∝active MoE law, the production-representative GLM expert-routing-skew result, the IQ2 GPU big-MoE residency ladder, and the slot-fabric residency model; earlier 2026-07-17 note: adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
+
+### Compiled Update — 2026-11-19 (wrap-up sweep): where the A3B MTP verify step spends its time on MI210, and the A3B champion-chain ratios
+
+**Confidence: observation** (existing rocprofv3 traces and fold-gate result files; no new runs).
+
+- **A3B Q8_0 MTP verify, n=4: 170.8 ms over 5 verify steps (34 ms/step).** Dense `mul_mat_vec_q` 26.9%, router `mul_mat_f` 13.4% (already in flight), `mul_mat_vec_q_moe` 13.2%, `quantize_q8_1` 9.0%, `k_bin_bcast` 7.0% (2595 launches of about 4.6 us), `rms_norm` 3.7%, `get_rows` 2.7%, argsort 2.3%.
+- **The expert GEMV is below roofline, but only as an estimate.** `mul_mat_vec_q_moe<Q8_0,2>` (gate/up 36 us, down 40 us) reaches at most about 0.9-1.0 TB/s (55-61%) even if all 32 expert slots were distinct, and overlapping experts across the 4 tokens are re-read per warp. Proposed fix: group slots by expert so each expert's rows are read once for all tokens routed to it, and sweep a CDNA rows-per-block value (2 was tuned on NVIDIA); estimated +2-4% A3B MTP. The elementwise tail (fold MoE weight multiply and expert sum into the down epilogue, residual add into rms_norm) is estimated at +3-5%. Both are unmeasured.
+- **The n>=2 router chain is the top-ranked lever (L1, 5.6% of the n=4 step).** The fused topk-moe path is refused at n>=2 by the `nrows==1` memory-range exemption although n=1 runs it in 8.6 us; candidate `C16-TOPK-STAGE` is prepared but not compiled. See [MI210 hotspots](../research/deep-dives/mi210-next-hotspots-20261118.md).
+- **A3B Q8_0 whole-candidate GPU ratios (llama-bench, candidate / predecessor).** C7r to C8: pp2048 1.2407, pp8192 1.2925, tg128 0.9976, tg@d32k 1.0724. C8 to C9: tg128 1.0125, tg@d32k 1.0331, tg@d131k 1.0730. C9 to C10: all A3B cells within 0.992-1.0005. C12 to C14 has no A3B speed row, and C15 has no valid one yet. See [gain chain](../research/deep-dives/champion-gain-chain-v10-to-c15-20261118.md).
+- **Q38FN (a QSA-attention MoE) CPU decode: the indexer, not expert or attention reads, is the context-growing part**, about 9 ms or 6-7% of a 32k step by a bytes/ops model (no measured per-op profile at depth). See [AKX-ALL-23](../research/deep-dives/akx-all-23-q38-topk-20261118.md).
+
+#### Source References (2026-11-19)
+- [MI210 next hotspots](../research/deep-dives/mi210-next-hotspots-20261118.md)
+- [champion gain chain](../research/deep-dives/champion-gain-chain-v10-to-c15-20261118.md)
+- [AKX-ALL-23 Q38FN top-k](../research/deep-dives/akx-all-23-q38-topk-20261118.md)
+
+### Compiled Update — 2026-11-09 (AutoKernel wiki compile, ak-wrap d): MoE-relevant kernel status at C9
+
+- **iq3s zmm candidate**: the AVX512 IQ3_S dot-gather (`821fce89f`, `706028a57`) rides in C10 candidate `7f1bd044b` with oracle BIT_EXACT_PASS and no speed claim; the per-node profiler comparison for seed 73 (`ak-iq3s-prof-c9-20261109`) failed its keeper dry run and is not queued, because a serving A/B cannot resolve the inferred +2-4% against 2.5-8.4% noise floors ([autokernel-loop](../handoffs/active/autokernel-loop.md), [kernel-champion](../handoffs/active/kernel-champion-and-promotion.md)).
+- **Closed negative**: IQ4_NL and DSpine levers closed at C9 (the IQ4_NL down-projection lever flagged in the 2026-11-08 update is now closed); `GGML_HIP_Q8_WVSK_WIDE` ran 0.739-0.749x on the 27B at M=36 and the q8wv touch variant is about 5% slower ([kernel-champion](../handoffs/active/kernel-champion-and-promotion.md)).
+- **Q38FN floors are SUSPECT** (serving 4.146%, 64k 1.448%, accepted by the operator with the noisy r4 window; disk-janitor reap is the likely cause), so Q38FN results measured against them are untrusted ([autokernel-akx-program](../handoffs/active/autokernel-akx-program.md)). The Q38FN C5-vs-C6 PPL row (3.4464 on all arms) is INVALID because `GGML_IQK=1` was omitted ([kernel-champion](../handoffs/active/kernel-champion-and-promotion.md)).
+- **Verify cost** on hybrid targets is 2.39 ms/row on flat 8-16 row batches (OBSERVATION, flat chain not tree-masked), which withdrew the tree-lattice arm ([speculative-decoding handoff](../handoffs/active/speculative-decoding.md)).
+
+#### Source References (2026-11-09 AutoKernel wiki compile)
+- [autokernel-loop](../handoffs/active/autokernel-loop.md), [autokernel-akx-program](../handoffs/active/autokernel-akx-program.md), [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md), [speculative-decoding handoff](../handoffs/active/speculative-decoding.md)
+
+### Compiled Update — 2026-11-08 (operator wiki sweep, main-inf22): Q38FN expert-ordering is closed, the next CPU lever is the IQ4_NL down-projection
+
+- **Expert ordering closed by analysis** (`/mnt/raid0/llm/tmp/c9-moe-order-reuse-20261108/`): Q38FN `mul_mat_id` already groups tokens by expert on the iqk and native paths, so grouping has about 0% ceiling. The CPU profiler's expert bytes are logical counts, so its bandwidth readings are artefacts; distinct reads need about 20-25 GB/s at pp512. No A/B was run.
+- **Where the time is** (CPU profile, one quarter, 24 threads): expert matmul 42.9% of pp512 wall and 39.9% of pp2048; the 43 `ffn_moe_down` IQ4_NL tensors run the native per-row `vec_dot` path (439 of 1398 ms expert wall, about 14% of pp512). C9-Q38FN-IQ4NL-KERNEL adds an iqk kernel behind `GGML_IQK_IQ4NL_MOE`; the build `2c39ea15d` is BUILD_OK, the paired AB/BA performance and identity row has not produced a result.
+
+#### Source References (2026-11-08 main-inf22 operator wiki sweep)
+- `progress/2026-11/2026-11-08-main-inf22.md`
+- `handoffs/active/kernel-champion-and-promotion.md` (C8 package boxes; rows filed with their RESULT.json paths)
+- `handoffs/active/long-context-program.md` (YARN-NATIVE-WINDOW-GATE)
+
+### Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): a fused-MoE op gate on uniform routing does not predict real routing
+
+- **AK-ASM-H8B-E2E: NO_KEEP** (`4b341ae44`). The fused MoE gate kernel H8b (J cap 48, M≤8 guard) passed its op gate r2 at 1.29x, but end to end on A3B with real routing it lost: pp512 0.949x, pp1024 0.968x. The op gate fed **uniform** expert routing; real routing is **skewed** (a few hot experts carry most tokens), which changes per-expert M and removes the win. The H8b rule set was also chosen post hoc from r4 data. H8 r4 had already dropped at 1.098 (win only at M=512, 1.23x). AK-ASM-H8 / H8B-GATE dropped; branch `experimental/c8-h8b-20261106` kept for record.
+- Lesson: MoE kernel op gates must replay a recorded real routing distribution (the routing tap), not uniform or random routing, before an e2e row is spent.
+- AK-ASM-H11 topksoftmax asm (A3B router) kept: router graph 1.25x, A3B tg 104.8 vs 101.7 on C6; C6 bug fix `c650d06e0` (topk_moe_fusion read past the last node).
+
+#### Source References (2026-11-07 main-inf22 sweep)
+- `progress/2026-11/2026-11-07-main-inf22.md`, `progress/2026-11/2026-11-06-main-inf22.md`
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **Moondream 3 Preview** (intake-121#00) Compact MoE vision-language model, 9B total / 2B active, 32K context. Worth investigating as a small multimodal MoE for llama.cpp; the 2B-active footprint suits CPU decode.
+- **Sparser, Faster, Lighter LLMs (Sakana blog)** (intake-530#record) L1 regularization on FFN activations during pretraining induces very high dynamic sparsity, with ReGLU and TwELL kernels; the blog says the benefit grows with scale. Worth investigating, but kernels are Hopper-only and need pretraining.
+- **sparser-faster-llms repo** (intake-531#record) Hopper-only (SM 90A) CUDA kernels for TwELL activation-sparse gated MLPs, plus four SparseLM ReGLU checkpoints (0.5B-2B, Apache-2.0). Worth investigating for sparse-activation checkpoints on CPU, no ROCm kernel.
+- **Hot-expert cache on consumer hardware** (intake-1185#record) Runtime cache pins most-activated MoE experts in leftover VRAM; claimed 25 to a peak 50.6 tok/s for a ~90 GB DeepSeek-V4-Flash on RTX 5090 + DDR5, but the 256k-context claim is not corroborated (every benchmarked config is shorter). Relevant analogue for MI210 + EPYC expert placement.
+- **HOBBIT mixed-precision expert offloading** (intake-1200#record) Assignment premise wrong: a miss still fetches (cost (Bl/Bh)*C), not zero; precision chosen by gate magnitude (Pearson 0.99); expert loading is 85.5%-94.5% of inference time on the authors' devices. Verdict not_applicable.
+- **llama.cpp PR #20905 MoE GEMV kernel** (intake-1410#01) Adds a dedicated mul_mat_vec_q_moe kernel and raises the MUL_MAT_ID MMVQ max batch from 4 to 8 per arch and quant, swept on MI60/MI50, MI100 and others. Already integrated; batch-1 decode is unaffected, only multi-token verify shapes (ne2 >= 2) matter for our 122B IQ2 MoE.
+- **llama.cpp PR #27621 multi-token MoE GLU/top-k fusion** (intake-1420#03) Extends BS=1 MoE GLU and top-k router fusion to 2-8 token spec-decode verify (MTP/DFlash); the PR reports 2-22% E2E decode gains, largest at draft widths 2 and 4 (intake-1420#03), narrowed to NVIDIA-only data with no IQ2 and DGX Spark w4 only +0.1%. The fusion gate becomes ne2 <= get_mmvq_mmid_max_batch (intake-1420#01), so IQ2_XXS on CDNA fuses at ne2<=5; issue #28113 bisects an AMD HIP gfx1151 garbage-output regression to that line (CDNA unverified). Not in frozen v9 and a backport needs #27930 (SWIGLU_CLAMP); plausible low-single-digit gain for MTP verify on MI210 only if the GGUF has separate gate/up expert tensors.
+- **ExLlamaV3 CPU expert decode and MoE CPU offload** (intake-1533#00) Docs expose --moe_cpu_offload and CPU ISA dispatch across scalar, AVX2, AVX-512BW, VNNI and VBMI (intake-1533#00), with hot experts streamed to GPU during prefill (intake-1533#01). Eligibility is mul1-only and not shown for MCG; throughput numbers are self-reported on named CPUs. EPYC 9655 satisfies the ISA tiers, making this a pattern for hybrid CPU-tail expert execution beside the MI210.
+- **ExLlamaV3 PR #349 AVX-512BW CPU MoE tier** (intake-1538#00) Merged an AVX-512BW tier between AVX2 and VNNI/VBMI so AVX-512 systems without VNNI use 512-bit expert GEMV, with a flat tile-range scheduler for few-GEMV decode (intake-1538#01) and a cross-tier correctness test (intake-1538#02). Contributor-reported decode on a Xeon Gold 6148 rose from 4.3-4.9 to 11.7 tok/s (GLM-5.3-Flash) and 24.6 to 31.8 tok/s (Qwen3.8-Flash-Next); these are observations, not our measurements. EPYC 9655 has the VNNI/VBMI tiers, so the scheduler idea is the transferable part.
+- **ExLlamaV3 PR #392 streamed single-row MoE decode** (intake-1539#00) Open, unmerged proposal: for whole-layer CPU offload, gather selected experts from the pinned host arena over PCIe and run the resident fused GPU kernel for single-row decode (intake-1539#00). Author-reported on one RTX 3060: Qwen3.8-Flash-Next 11.2 to 19.0 tok/s at k=4 and LFM2.5-8B-A1B 30.7 to 55.5 at k=1; the fused path is not bit-equivalent to the CPU worker (max relative diff ~4.7e-2). A pattern for CPU-GPU expert streaming on the MI210 host, pending a HIP port.
+- **ExLlamaV3 PR #341 zero-copy streamed prefill arena** (intake-1540#01) Pinned expert arena is page-locked so streamed prefill DMAs contiguous expert blocks to GPU staging (intake-1540#01). Reattributed: the maintainer had already implemented the Linux core on main, and the merged PR mainly adds Windows support (intake-1540#02); the original ~2x WSL2 prefill gain predates that reimplementation. Experimental and opt-in.
+- **GLM-5.3 official card and architecture** (intake-1549#01) Same base as GLM-5.2, with gains from post-training only (intake-1549#00); 78 hidden layers, 256 routed experts, 8 selected per token, 1 shared expert, 1 MTP layer (intake-1549#01), 753,329,940,480 parameters (the ~755.68 GB figure is repository storage, not parameters). Already integrated as the architecture reference for large-MoE storage and quant planning.
+- **ExLlamaV3 CPU-MoE pinned arena and batched prefill reconstruction** (intake-1552#01) CPU offload covers routed experts in the first N MoE layers (mul1 codebook, K<=8); the commit adds an experimental default-off Linux pinned arena (memfd shared mappings, cudaHostRegister, intake-1552#01) and a default-on batched GPU reconstruction tier. The CPU path dispatches scalar through AVX-512 VBMI (Zen 4+ for VBMI, intake-1552#00 documents the knobs). Narrowed: the streaming and reconstruct work is CUDA-specific with no native HIP kernels, so MI210 would need a port.
+- **ExLlamaV3 49983698: band-contiguous trellis swizzle default** (intake-1553#01) Makes band-contiguous trellis swizzling the default for all AVX-512 CPU MoE tiers (BW, VNNI, VBMI), excluding K8 and AVX2/scalar (intake-1553#01). Project docs report +45-75% cold-decode GEMV on a Threadripper 7960X, +40% for forced VNNI and +2-29% for BW on Skylake-SP, all author-reported on named machines; the real-weight cross-tier test skips if its ladder is absent. A directly relevant memory-layout idea for Zen 5 EPYC 9655 CPU expert GEMV.
+- **vcruz305/exllamav3 mixed-K CUDA MoE ABI** (intake-1554#01) Unified mixed-K path with per-expert K arrays and pointer tables; rates serialize in half-bit units (intake-1554#01) and the ABI test only inspects source. Overturned: a universal single-launch reading does not hold at pinned HEAD, where row-tile bands may call the extension separately; a per-call row floor addresses a GB10 decode regression of 15.70-17.91%. Author reports 84-90 vs 61-65 wall tok/s on RTX PRO 6000, self-reported.
+- **ExLlamaV3 c48bb5f: Windows pinned arena and PCIe probe** (intake-1556#00) Extends the default-off pinned CPU-MoE arena to Windows via named pagefile-backed sections with transactional attachment (intake-1556#01) and a sustained-bandwidth probe (0.5 s minimum, 2 s cap). Reattributed: the Linux zero-copy core and the 700 to 1850 tok/s observation belong to the parent lineage, not this delta. Windows/CUDA only; the probe pattern is reusable for PCIe-bound expert streaming.
+- **ExLlamaV3 1c8aff47: deterministic MoE reduction, folded Hadamard** (intake-1557#01) Fused and batched expert outputs go to FP32 scratch slots and gather once in routing-k order (intake-1557#01); docs report bit-identical repeated prefill on Qwen3.8-Flash-Next, LFM2.5 and Qwen3-30B-A3B at no measurable cost, and folded reconstruction is ~4% faster but roughly doubles error vs an FP32 reference. Narrowed: the streamed CPU-offload fused tier stays atomic and the reconstruction fallback default contradicts the docs. Model for deterministic-reduction MoE gating.
+- **vcruz305/exllamav3 5e0ba478: unified runtime-K MoE dispatch** (intake-1558#00) Device-resident per-expert K arrays and trellis/scale pointer tables enable unified mixed-K dispatch only with uniform codebook flags (intake-1558#00); the kernel switches to K-templated inner GEMMs at runtime. 'Single launch per layer' is not universal (row-band dispatch can issue several calls); 84-90 vs 61-65 tok/s is unsupported author observation, and the descendant commit notes a bszN assertion fallthrough, so this commit is defective.
+- **ExLlamaV3 398729b7: sentinel fix in deterministic gather** (intake-1560#00) Five-line fix passes only the first num_ex rows of expert_start, slot_base and slot_kind to the deterministic gather, excluding the out-of-slice sentinel (intake-1560#00). The defect needs sliced experts (TP shard or CPU expert split), a nonlocal assignment and the all-fused sync bypass; no regression test was added. Relevant to CPU/GPU expert-splitting designs.
+- **vcruz305/exllamav3 bb912e82: mixed-K low-batch crash fix** (intake-1561#00) With mixedk_unified, no BC graph and bsz < f_threshold every branch predicate was false and execution hit the terminal bszN assertion (intake-1561#00); the commit routes it correctly with a BSZN_FAIL diagnostic but adds no test. The reported DDS wall rates 86/80/72 vs static 95/76/68 tok/s lack model, hardware and protocol, so they are not evidence.
+- **vcruz305/exllamav3 f6e42ecb: legacy escape hatch and GB10 launch** (intake-1562#00) EXL3_MIXEDK_LEGACY=1 is read per layer construction and disables unified mixed-K when the environment is stable (intake-1562#00). On one DGX Spark GB10 for Qwen3.8-Flash-Next EXL3 4.06 bpw the author reports 42.8 tok/s unified vs 46.6 grouped (+9%) and 46.9 with EXL3_MK_BPS=3, with no raw artifacts; the commit also bundles unrelated edits and three stale editor backups. Shows a unified kernel can lose to a grouped one at some shapes.
+- **B12X PR 49 packed MCG Trellis MoE** (intake-1756#00) Closed PR implements a plan/bind/run lifecycle that wraps packed EXL3 tensors without repacking with one caller-owned scratch arena; CUDA-only (intake-1756#01), MCG not MUL1. Lifecycle design is portable, kernel is not.
+- **MoESD sparse-MoE spec-dec model** (intake-1935#00) Spec-dec is ineffective for MoE at small batch because verifying gamma tokens activates more experts (N(t)=E(1-((E-K)/E)^t), uniform routing assumed). Roofline-fitted speedup model on vLLM/GPU only, Qwen2-57B-A14B up to 2.29x (intake-1935#record); nothing on batch 1 CPU or llama.cpp (intake-1935#record).
+- **Qwen3.8-Flash-Next 5-of-10 expert INT4 card** (intake-1939#00) Routed experts cut from 10 to 5 of 512 (config num_experts_per_tok=5), healed by KL self-distillation of only the shared expert on 14,667 examples (intake-1939#03). Speed ~67-70 tok/s vs ~57 on one Spark (intake-1939#01). Correction: capability 49.3 vs 51.8 in table but ~47 in the card text (intake-1939#02); roofline ceiling ~65 tok/s at 273 GB/s without speculation (intake-1939#record).
+- **Qwen3.8-Flash-Next architecture audit** (intake-1945#00) Main text model computes to 125.74B params with 6.04B active excl lm_head (intake-1945#01); PLE n-gram table is 51.2B params, ~5 KB gathered per token (negligible bandwidth, 102 GB bf16 capacity) (intake-1945#02). Correction: MTP head computes to ~2.6B vs the card's 4B, unexplained (intake-1945#03). GGUF IQ4_XS single-token decode measured 4.16 GB (intake-1945#04). EPYC: directly sizes the CPU decode roofline.
+
+### Compiled Update — 2026-10-28 (ws58 delta): RT-10 DS41 routing trace prepared, not run
+
+- RT-10 DS41 trace and RT-6/RT-7 analysis were **prepared with model-free verification only**: frozen C5 tool build `c72ec82f5` completed, two native CTests and selftest passed, and trace/analysis manifests are sealed in a private packet. No trace was collected and no locality claim follows. [handoff](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)
+- The iqk handoff records a prepared (not executed) one-repetition synthetic Q38FN decode profile comparison (C-L3-Q38FN-PROFILE-PREP); it does not reproduce the historical teacher-forced slowdown. [handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
+- INF-75 W5s census of `architect_general` counted target-only geometry (graphs 3/49/17; 1,224 primary tensors; MTP head excluded); acceptance withheld. [handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the routing-tap schema ticks on its FILE ONLY criterion
+
+**Confidence: verified.**
+
+- **RT-5 (schema, validator, 16 tests, C++ change spec) is met and on research main** (`ce1a1f4e5` is an ancestor of origin/main). The tap itself shipped under RT-1, and its traces carry the shape RT-6/7/8 consumed (prefill vs decode legs, T = 1 and 3). The DS41 part (hash layers, 128-expert DSpark/MTP layers, int16 ids) belongs to RT-10, which keeps RT-6 and RT-7 open.
+
+Sources: [moe-routing-tap-and-locality-measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement).
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): a cheap PPL screen for a faster Q38FN low-bit file
+
+- **Arm P: change only the expert gate/up from IQ3_S to IQ4_XS.** The old uniform file's +17.8% PPL came from degrading tensors the UD file keeps at Q8_0 (attn, ssm, shared experts), so arm P keeps every other tensor at its UD type (96,970 vs 89,332 MiB). PPL P 2.9701 vs UD 2.9761, i.e. equal, measured without iqk.
+- **The coherence half was void, not failed.** The harness ran without the serving env, so the default-ON fused decode made even the UD file produce garbage (see the FD-DIV-2 note in hardware-optimization). A v2 coherence run with the recipe env and the speed A/B (pp256 >= +27%, pp5 >= +19%, tg128 >= -2.0%, INDICATIVE on one quarter) are queued.
+- **Routing skew on the frontdoor model (RT-9).** Qwen3.6-35B-A3B top-10% expert share is 0.50 / 0.42 / 0.46 (prefill; code / prose / reasoning) against a uniform 0.104, with 0 of 40 layers at >= 0.60, so the written decision rule (>= 0.60 on >= 2 workloads) is not met on that model. The DS41 arm (RT-10) keeps the box open.
+
+Sources: [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): the repacked MXFP4 expert GEMV now has a real correctness gate
+**Confidence: verified** for the gate run (named artifacts); **inferred** for the S1-S5 seed implications and W8b (not run).
+
+- Every routed expert row on the DS41-1017 CPU server goes through `CPU_REPACK` -> `forward_mul_mat_id` -> `gemv_q4_b32_8x8_q8_0_lut_avx<block_mxfp4x8>`; AutoKernel seeds S1-S5 all change exactly this path, so a keep without a real-weight check could not be trusted.
+- The W8c gate runs MUL_MAT_ID at widths 1-512 on real 1017 MXFP4 slices (8 experts, 6 used) in both CPU_REPACK and plain buffers; calibrated max anchor NMSE 2.93e-5, passed 2026-10-22 with engagement proven on all 8 cases.
+- The repack copies all experts into about 276 GiB of anonymous RAM per server; `block_mxfp4` and `block_mxfp4x8` are both 17 B per 32 weights, so an in-place repack (W8b) is possible, but AK's capacity dimension is pass/fail so a memory-only win can never be kept by AK. W8b is not done.
+- Expert-kernel speed work on 1017 (S1-S5, prefill surface W8a) is deferred until AK kernel work lands per the 2026-10-22 operator ruling.
+
+#### Source References (2026-10-22 sweep 7)
+- [handoffs/active/deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md)
+- [progress/2026-10/2026-10-21-ak-repack-gate.md](../progress/2026-10/2026-10-21-ak-repack-gate.md)
+- [progress/2026-10/2026-10-21-ds41-w8a.md](../progress/2026-10/2026-10-21-ds41-w8a.md)
+
+### Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): CH-19 T3 speed screen: the fused up/gate node is not faster
+
+**Confidence: verified** (recorded run, 0 invalid arms, marker-gated; `summary.txt`, `records.jsonl`, `provenance.json` under the out dir).
+
+- **CH-19.2 ran 19:10-19:16Z** (5 ABAB pairs x r=3, `bench_canonical.sh`, Qwen3.6-35B-A3B-MTP-Q8_0, built from `57d96e2cb`, `build-ch19/`). ON/OFF medians (fused up+gate vs unfused): pp512 d0 0.9850 (0.9604-1.0472), tg128 d0 0.9958 (0.9737-1.0029), pp512 d8192 0.9901, tg128 d8192 0.9755 (0.9554-1.0088). OFF tg128 d0 56.74 t/s, ON 56.46. Not faster on any cell.
+- **CH-19.3 filed**: by the CH-19 rule ("drop if within noise") the default-off hook is dropped unless the window floor shows a real regression; do not fold into the champion. Out `/mnt/raid0/llm/tmp/intake-fixes-20261020/t3-ch19-screen/20261021T191000Z/`.
+
+#### Source References (2026-10-21 sweep 6)
+- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
+- [progress/2026-10/2026-10-21-workspace-f8.md](../progress/2026-10/2026-10-21-workspace-f8.md)
+- [handoffs/active/CURRENT-CAMPAIGN.md](../handoffs/active/CURRENT-CAMPAIGN.md)
+
+### Compiled Update — 2026-10-21 (wrap-up sweep 3: routing-tap schema, MoE keeps in candidate C)
+
+**Confidence: verified** for the recorded schema/test deliverables and ledger entries; **observation** where a keep's gain was measured on a model since deleted.
+
+- **Routing tap: schema, validator and C++ change spec landed; the tap itself is still RT-1.** epyc-inference-research `feat/rt21-20261020` @ `ce1a1f4e5` (merged to research main 2026-10-20) carries the schema, a validator, 16 tests and the C++ change spec. No tap data exists yet, so the placement replays in the sweep-2 section remain offline inputs only. ([MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement))
+- **GLM-5.3 MoE keeps were folded into candidate C, but they were measured on a model deleted 2026-09-22.** Folded: 16 clean picks including `moe-up-gate-safe-fusion` and `moe-fused-expert-cohorts`, the row-exact prerequisite `04ffb8ad0`, and `akm-moe-rowexact-weighted-slabs` re-ported by hand (active only when `mmid_rowexact`, Q4_K/Q5_K and cne1 <= `GGML_ROWEXACT_N`, so every other case is byte-identical). `akm-moe-rowexact-qact-2d-partition` (+18.168%) is SUBSUMED by the champion's flat activation grain blocks over `ne11 * ne12 * ngrain_row` in `ggml_iqk_try_mul_mat_id` (256-element grain for Q8_K activations versus the keep's fixed 128: same bytes, finer versus coarser balance only). ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
+- **Three DS41 MoE keeps were SUBSUMED, not applied.** `mmid-flat-qact-rows`, `mmid-qact-block-partition` (by `4348de400`), `mmid-verify-flat-slabs` and `mmid-deduplicate-empty-selection` (by `253e50c32`) were empty after conflict resolution because the champion's unledgered keeps carry the same optimisation; the slab path gates on `2 <= ids->ne[1] <= 8` with `slab_ok = false` whenever any active expert has `cne1 > 8`, which is exactly the earlier C112 shape gate, so that gate commit is not needed. Presence is proved by source greps plus the `GGML_MMID_SLAB` string gate. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
+- **`test-rowexact-backend-toggle` mode `mmid` returns rc=3 on C, and the control/bisect says it is not a fold regression.** Toggling row-exactness off does not change the Q4_K 4-token x 8-expert output (difference_witness=0 at ROWEXACT_N 4/8/16/32, with and without `GGML_MMID_SLAB=0`). The champion cannot be a control (it lacks the test and the setter); building only the champion plus the prerequisite `5251e5cc6` gives the same result, so none of C's other 58 commits changes it. Dense-q8 and dense-f32 modes pass. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
+- **Deterministic-batch MoE identity on C.** Qwen3.6-35B-A3B-MTP-Q8_0 greedy, MTP on, 3 prompts x 256 tokens: byte-identical to champion `dd3d9721c` on 3/3 with equal draft counters; MUL_MAT_ID 815/815 on the final build. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+
+**Sources (sweep 3):** [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md).
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): the routing tap becomes the input to two offline placement replays
+
+**Confidence: inferred.** Every item is a filed, compute-gated task or a dormant trigger; nothing here is a measurement on our fleet. DeepInfer-derived numbers (the 1.65 baseline, the 5.7x fetch-versus-read ratio) come from the intake's own dive ledger and are vendor-reported or stage1-unverified.
+
+- **The instrument is now the hub of three decisions.** INF-72's per-token routing tap (a port of `llama-moe-trace`, int16 expert ids, `-b 512`, SRP needs `ffn_moe_argsort`, strided-read hazard RT-3 BLOCKING) feeds RT-5 (expert skew, gates the conditional MI210 expert cache), and now RT-6 and RT-7. RT-4 is a documentary scope-out, accepted by an independent source check 2026-10-07 (the cacheable-by-design paper's serving numbers are one RTX 3070 with a 2.4 GB/s SSD and a projected, not deployed, PMS result; none transfer to EPYC).
+- **RT-2.1 trace-shape rider.** The tap must keep token order and sample boundaries, tag each token prefill versus decode (and speculative block size), and cover deepseek41 including the 128-expert DSpark layers (int16), so `[steps, layers, experts]` counts can be derived. An aggregate-only dump is insufficient for the replays.
+- **RT-6: offline expert-placement replay (numpy, no inference).** Bins are 4 NUMA nodes and 12 CCDs, T in {1, 3} decode plus one prefill-chunk row. Arms: DeepInfer's windowed per-step-peak policy, EPLB-global, a zero-lag exact-load oracle (UltraEP planning logic), MoonEP rank-level greedy, and the LPLB fractional LP as a bound only; each scored by per-step max/mean with the null model beside it and replication priced in copied bytes. Decision rule: if even the oracle or LP bound fails `1.65 / (best max/mean) >= 1.10` on 2 or more workloads, close as a negative (recorded in `large-moe-expert-parallelism.md`). Passing opens the CPU15-REVAL candidate with the EPLB planner as dispatch policy (CPU20 matrix, 3 reps, PPL gate).
+- **RT-7: DS41 hot-expert residency curve h(k) on the MI210.** Offline from RT-1 traces, k in {39, 53, 63} experts per layer with greedy cross-layer allocation: share of top-6 selections covered by a static ranking learned on domain A and scored on domain B, plus top-set overlap between consecutive 1k-step windows. Opens the HIP MXFP4 expert-cache work (CAFE-7) only if h(53) >= 0.30 on 2 or more workloads and the HIP resident MXFP4 MoE kernel check passes; h < 0.23 closes it. This is a stricter, second gate beside RT-5's top-10%-share >= 60%.
+- **Why two different instruments.** EPLB-style balancing is the right reference for NUMA-bin balancing (RT-6) and the wrong shape for CPU-versus-MI210 residency, which is a top-k coverage curve (RT-7). Per-step dynamic prefetch is excluded: the recorded fetch-versus-read break-even is about 5.7x a CPU read. UltraEP-style per-step planning is not a decode candidate (its authors exclude it; quota floor and byte-neutral replication at T = 1-4); revisit only if the oracle arm shows at least 1.10 headroom at T in {1, 3}.
+- **Dormant triggers.** A MoE role with MI210-resident experts where MMQ_MMID tops the HIP route log (compare against a masked-layout kernel); a model with `n_group > 1` and `topk_group` routing entering the lineup; DS41-T7 delivering `t_cpu`/`t_gpu` per token-expert together with RT-7 passing (then CAFE-7 design with MoonEP's slot-pool layout as reference). No expert-parallelism reopen without a new bottleneck proof.
+- **Hazard unchanged:** a broken flat read of a strided router tensor manufactures a plausible negative (every expert appearing exactly k times, sub-chance reuse). Check the chance baselines (3.13% for qwen35moe, 1.95% for qwen4exp) before reading any locality number.
+
+Open questions: does `qwen4exp`/`glm5next` need graph-side work for the tap? How many 512-token samples per domain stabilise SRP/SCH on our fleet (the 2,048 figure is the source's)? Cross-refs: [KV Cache](kv-cache.md), [Hardware Optimization](hardware-optimization.md).
+
+#### Source References (2026-10-20 sweep 2)
+
+- [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-1..RT-7, RT-2.1, dormant triggers.
+
+### Compiled Update — 2026-09-26 (research-intake orch-prior-art): Fiddler and HybriMoE are now indexed as lineage only
+
+Update 2026-09-26: Fiddler and HybriMoE are now in the index as lineage anchors only (intake-1811#record, intake-1813#record; stage1-unverified, knowledge_only). The inoculation still applies. The one Fiddler fact with dive-verified provenance comes via KTransformers' measurements of it: >7,000 CUDA kernel launches per decoded token and a 16% one-to-two-socket gain (intake-1808#00, intake-1808#02).
+
+This amends the `T*(q*)` inoculation in the 2026-09-07 update below, which says none of Fiddler, HybriMoE, SMoE and FluxMoE were ingested. SMoE and FluxMoE remain un-ingested.
+
+#### Source References (2026-09-26)
+
+- [Fable5 window-2 findings 02 — OD-A rider](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) — R-A10, the KTransformers decision package.
+- `research/intake_index.yaml` — intake-1808 (dive-verified), intake-1811 and intake-1813 (stage1-unverified).
+
+**Confidence:** verified for the index state; the two Fiddler numbers are KTransformers' measurements, not ours.
+
+### Compiled Update — 2026-09-17 (evening): the §5 pre-registration is on research main; its driver is not
+
+**Confidence: verified**: byte comparison recorded by the landing audit.
+
+#### Key findings
+
+- **The §5 #1 pre-registration and evidence resolve on research main.** The run's pre-registration commit
+  `18d1d7c8` is on main as `6cbdd856`, as `data/s5-moe-batched-np-20260916/PREREGISTRATION.json`,
+  byte-identical to the run's scratch copy. The top-up is `f5179054`. The Q-A GO / Q-B bounded-null result
+  compiled below is unchanged.
+  [sub-land-evidence](../progress/2026-09/2026-09-17-sub-land-evidence.md),
+  [fable5-window2-findings-05-intake-sweep-and-roofline](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md)
+- **The driver was declined.** `s5_moe_batched_np_sweep.py` and its tmp `APPROVED` gate file hard-code
+  scratch paths. It is preserved on research origin, not merged.
+  [sub-gpuprep-port](../progress/2026-09/2026-09-16-sub-gpuprep-port.md),
+  [sub-gpu-runner](../progress/2026-09/2026-09-16-sub-gpu-runner.md)
+
+#### Source References (2026-09-17 evening)
+
+- [sub-land-evidence](../progress/2026-09/2026-09-17-sub-land-evidence.md)
+- [fable5-window2-findings-05-intake-sweep-and-roofline](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md): annotated runner line.
+- [sub-gpuprep-port](../progress/2026-09/2026-09-16-sub-gpuprep-port.md)
+- [sub-gpu-runner](../progress/2026-09/2026-09-16-sub-gpu-runner.md)
+
+### Compiled Update — 2026-09-17 (afternoon): the MoE-Spec confirm moves to qwen4exp on the champion
+
+**Confidence: verified** for the ruling and the gating arithmetic; nothing has been measured.
+
+#### Key findings
+
+- **OP-INF40: operator Option A, then retargeted.** The confirm run was first queued on the 122B
+  `architect_critic` after the AutoKernel quiet window (`d3449013`). It was then retargeted (`6f346ea3`) to
+  Qwen3.8-Flash-Next (qwen4exp) served by champion `ef81196d5`. This follows the operator's *plan* to promote
+  the champion to production and qwen4exp to `architect_critic`; nothing has been done on that plan yet.
+  [moe-spec-cpu-spec-dec-integration](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration)
+- **The mechanism only fires when verification batches reach `moe_spec_min_batch` = 4.** That means MTP on
+  with `--spec-draft-n-max` ≥ 3. The budget grid has to be sized for 512 experts × 10 used (e.g.
+  {0, 64, 128, 256}) and pre-registered, with 5-rep alternating A/B/A/B per arm, the noise floor in t/s and %,
+  a re-measured α, and the gate-skip control. `registry_patch_proposal.yaml` is applied or retired on the
+  result. Two first-draft reasons about qwen4exp were wrong and were corrected before recording.
+  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **The row is operator-gated twice**: by the end of the AutoKernel window and by an explicit go. It sits in
+  the inference index as INF-40. [inference-research-index](../handoffs/active/inference-research-index.md)
+
+#### Source References (2026-09-17 afternoon)
+
+- [moe-spec-cpu-spec-dec-integration](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- [inference-research-index](../handoffs/active/inference-research-index.md)
+
+### Compiled Update — 2026-09-17: under batch, quantized MoE keeps Q4_K's lead but only ~62–66% of its dense sibling's scaling — a pre-registered bounded null, and no dequant-kernel pivot
+
+**Confidence: verified** for the fable5 §5 #1 MoE-half sweep: it was pre-registered and frozen before the first launch, admissible on every launch, and its table is final under the stopping rule. It is a **proxy** measurement (`llama-batched-bench`, spec off, category BASELINE), never a headline. The distinct-expert counts are **arithmetic**, not measurements.
+
+The question behind the sweep was: *does batching close GAP-A for a quantized MoE?* If it did not, a gfx90a Q4_K dequant kernel would become a throughput lever and not only a latency lever (the fable5 §8 pivot). The zero-inference threshold work split that question in two, because the earlier "proposed reading" merged them.
+
+- **Q-A** holds the model and the token stream fixed and varies only the quant format. Its statistic is the erosion E = F(32)/F(1) of the Q4_K/Q8_0 speed ratio F. Q-A is the **only kernel trigger**.
+- **Q-B** compares MoE batch scaling with the dense sibling's, via M2 = K_moe(32)/K_dense(32). It can trigger profiling only. The reason is arithmetic: under uniform routing, the distinct experts read per step grow from 8 at B=1 to ≈112 at B=32 for gemma-26B-A4B (128/8, ≈14×) and to ≈163 for Qwen3.6-35B-A3B (256/8, ≈20×). Dense weight traffic stays flat, so M2 < 1 is expected even with perfect kernels.
+
+#### Key findings
+
+- **The target list had to be corrected first: both originally named "MoE" targets are dense.** The GGUF headers of `gemma-4-31B-it-Q4_K_M` (arch gemma4) and `Qwen_Qwen3.6-27B-Q8_0` (arch qwen35; the MoE arch is `qwen35moe`) carry no expert keys, so the two files became the dense controls. `gemma-4-26B-A4B-it-Q4_K_M-current` is actually Q4_0 (header ftype=2) and should be avoided. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md), [sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
+- **The pre-registration (Option A, operator-approved, frozen 2026-09-16T09:57Z).** Arms: G4 `gemma-4-26B-A4B-it-ORIG-Q4_K_M`, G8 `-ORIG-Q8_0`, Q8m `Qwen3.6-35B-A3B-MTP-Q8_0`, and the dense controls Dg4 `gemma-4-31B-it-Q4_K_M` and Dq8 `Qwen3.6-27B-MTP-Q8_0`. Dq8 is the MTP twin, so both Qwen arms carry the same unused head. n = 5 launches per arm, with one pre-committed top-up allowed. The noise band is δ_eff = max(8%, measured p95_dev), where the 8% is borrowed from the n=24 launch-unit serving floor (7.897%, CI [5.520, 11.322]%). Q-A: **GO** if E ≥ 0.92; **NO-GO** if E < 0.84 **and** F(32) < 1.0. Q-B: **PASS** if M2 ≥ 0.80, **FAIL** if M2 < 0.50. Anything with p95_dev > 16% is INVALID. The option the thresholds replaced (n=3, no noise band) could only ever have produced an observation. ([sub-s5-thresholds](../progress/2026-09/2026-09-16-sub-s5-thresholds.md))
+- **Q-A: GO. Q4_K does not erode against Q8_0 under batch on gemma-4-26B-A4B.** E median **1.021** (n=5 pairs, range 0.993–1.063, p95_dev 4.06%). F(1) median 1.028, F(32) median 1.064, secondary E(16) 0.991. All 25 first-pass launches were admissible, with residency proven on each and peak KFD count 1. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
+- **Q-B: a bounded null after the top-up.** Pooled n=10 per arm gives G4:Dg4 M2(32) = **0.619** (K32 7.98 vs 12.89) and Q8m:Dq8 M2(32) = **0.655** (K32 3.47 vs 5.30). The first-pass values were 0.602 and 0.648. Both sit mid-band, not within δ_eff of either edge. **Quantized MoE on the MI210 keeps about 62–66% of its dense sibling's B=32 decode scaling.** The top-up linkage receipt was taken before the first launch (rc 0). The first pass had none; a post-run `ldd` check PASSed. The table is final, and the sweep is not to be re-run without a new hypothesis. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
+- **Consequences.** The §8 pivot does not fire. The status-quo ranking stands: "serve batched" (§6.1) ranks above the gfx90a Q4_K dequant kernel (§6.3). No serving recipe or `np` value changes. The MoE-half box stays **unticked**, because the pre-registered tick condition was GO + PASS and the result is GO + bounded null. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
+- **Proxy speeds, median tok/s at B=1 → B=32 (never a headline):** G4 88.7 → 690.2, G8 84.0 → 647.9, Dg4 29.9 → 385.9, Q8m 100.0 → 340.0, Dq8 30.3 → 158.8. sclk dipped below 1700 MHz on 19/25 first-pass launches and 16/20 top-up launches, mostly on the dense arms. ([fable5 §5](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md))
+- **Relation to the 09-08 evening claim that "batching amortises the expert fetches".** That claim rests on **serving** K with MTP on: the 35B reached K(16) = 310.96/112.68 = 2.76 and was still climbing. The new result is a **spec-off proxy** K, and it must never be compared with serving K. Batched-bench also uses unseeded synthetic `std::rand()` tokens, which probably route less skewed than real text and bias Q-B toward FAIL. The two findings are consistent: an MoE keeps gaining throughput under batch, just less steeply than a dense model in this proxy. ([sub-s5-thresholds](../progress/2026-09/2026-09-16-sub-s5-thresholds.md))
+- **GLM CPU AutoKernel: the first full candidate path completed, and it produced a regression.** v16 ran `akm-moe-fused-global-slab-balance` through the whole path: profile → planner → critic → patch → build/correctness → five-pair `matched_process_v2` CPU A/B. It measured **−0.953%** against retained anchor `34a8b446` with a 0.708% acceptance floor, so it was not kept, and the 27 retained keeps are unchanged. The reporting now labels a decisive negative as `regression` rather than `measured_null` (research `be6bbad9`). The CPU lifecycle census overran its diagnostic bounds during that A/B, so the A/B cannot support a clean-contention claim. ([codex-autokernel](../progress/2026-09/2026-09-16-codex-autokernel.md))
+- **The architect_critic `moe_spec_budget: 128` proposal's gate is resolved** by operator ruling `ruling_op19_e8_chain_20260827`, which binds only at promotion. The registry integration itself is still not done. ([moe-spec handoff](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration))
+
+#### Open questions
+
+- GO + bounded null leaves the routing-side levers (expert-grouped dispatch, occupancy) unprofiled. Profiling was pre-registered to fire only on FAIL, so any profiling now needs a new hypothesis.
+- Does real-text routing skew change M2 enough to cross 0.80? The synthetic-token bias cannot be quantified from this sweep.
+
+#### Sources
+
+- [fable5-window2-findings-05-intake-sweep-and-roofline.md](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md): the dense-target correction, the frozen pre-registration, and the first-pass and top-up results.
+- [2026-09-16-sub-s5-thresholds.md](../progress/2026-09/2026-09-16-sub-s5-thresholds.md): the Q-A/Q-B split, the distinct-expert arithmetic, the noise-floor derivation and the proxy limits.
+- [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the GGUF header scan showing the named targets are dense.
+- [2026-09-16-codex-autokernel.md](../progress/2026-09/2026-09-16-codex-autokernel.md): the GLM v16 candidate regression and the reporting fix.
+- [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration): the OP-19 ruling note.
+
+### Compiled Update — 2026-09-08 (evening): the MoE decodes FASTER than the smaller dense model on the same binary — and that is architecture, not a kernel result
+
+**Confidence: verified.** Both numbers came out of the *same* champion binary (`ef81196d5`) on the *same* MI210 within hours of each other, residency proven on every launch. The architecture facts are exact GGUF-metadata and tensor-name reads of the two model files.
+
+| | Qwen3.8-27B-Q8_0 | Qwen3.6-35B-A3B-MTP-Q8_0 |
+|---|---:|---:|
+| `general.architecture` | `qwen35` — **dense** | `qwen35moe` — **MoE** |
+| blocks · `embedding_length` | 65 · 5120 | 41 · **2048** |
+| FFN | `feed_forward_length` 17408, **all of it per token** | `expert_feed_forward_length` 512 × **8 of 256 experts routed**, plus one shared expert of 512 |
+| attention heads q/kv | 24 / 4 | 16 / 2 |
+| GGUF on disk | 27.05 GiB (+1.92 GiB drafter) | **35.21 GiB**, no drafter file |
+| single user (`np=1`) | 79.245 tok/s | **112.676 tok/s (+42.2%)** |
+| best aggregate measured | 179.122 (np=8) | **310.958 (np=16, +73.6%)** |
+
+#### The bigger file is the faster model, and the mechanism is bytes-read-per-token
+
+Decode is **weight-bandwidth-bound**: the rate is set by how many bytes of weights must be read to emit one token, not by how many bytes the file occupies. The dense 27B reads essentially all of itself every token. The MoE routes **8 of 256 experts** (3.1% of the routed expert pool) plus one shared expert, so the great majority of its 35 GiB stays resident in VRAM and *untouched* on any given token — and it is smaller in every other dimension too: half the embedding width, roughly two-thirds the depth, half the KV heads.
+
+> **Record this wherever the two numbers appear together: the 35B is faster because it is an MoE, not because the kernel is better on it.** A reader who takes "35B > 27B" as a kernel result concludes the champion scales with model size, which is the opposite of true.
+
+#### The same mechanism sets the shape of the concurrency curve
+
+The dense 27B's aggregate throughput turns over between 4 and 8 slots (+6.8% for ~half the per-user rate) — it saturates the memory system early. The MoE 35B was **still climbing at 16 slots** (+15.98% on its last measured step, 41.4 of 64 GiB VRAM) and its ceiling is unmeasured. At low batch an MoE is not bandwidth-saturated, so additional concurrent tokens route into expert reads already being paid for and **batching amortises the expert fetches**. This is the serving-side counterpart of the routing-locality work above: the same 256/8 geometry that makes a residency budget interesting is what makes the concurrency curve keep climbing.
+
+**Consequence for operating points:** dense and MoE models in the same fleet do not share an `np` recommendation, and the difference is structural rather than a tuning artifact.
+
+#### Source References (2026-09-08, evening — the 35B sweep)
+
+- [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
+- [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
+
+### Compiled Update — 2026-09-08: the routing-locality instrument (INF-72) — SRP/SCH/EOR scope, chance baselines, and the bounded payoff of a reopen
+
+**Confidence: verified** (intake dive-verifications; the chance baselines are arithmetic); the program is compute-gated FILE-ONLY — nothing has run and no throughput claim is licensed by the instrument.
+
+#### The instrument, and why this box needs its own number
+
+INF-72 stands up a per-token MoE routing tap on our own fleet so that any offload, expert-cache or residency argument rests on a measured local number instead of a foreign paper's. The deliverable per MoE layer: a top-k expert-index tensor `[samples, tokens, top_k]` (SCH) plus per-expert rank/mask (SRP), with an **EOR/IR_t rider** — `|E_t ∩ E_{t-1}| / K` over the same top-k tensor SRP already consumes, free once the tap exists. The port of `llama-moe-trace` (MIT, `cacheable-by-design` @ `03366ef1`) supersedes the from-scratch build (`intake-1328#record` → `intake-1336#00`) with four verified adjustments: (1) **int16, not int8** — our 256/512-expert fleet overflows int8; (2) `-b 512` with the existing per-chunk `llama_memory_clear` yields the `[samples, 512, top_k]` geometry by reshape; (3) SRP additionally needs `ffn_moe_argsort` (cb-named at `src/llama-graph.cpp:1985`) while SCH needs only what the tap emits; (4) v9 covers `qwen35moe` and `qwen3next` but **not** `qwen4exp` / `glm5next` — an open question whether that gap closes on a newer experimental base.
+
+**Chance baselines, mandatory so a locality number is interpretable**: 8/256 = **3.13%** (qwen35moe) and 10/512 = **1.95%** (qwen4exp), against DeepSeek-V2-Lite's 9.38% where ReMoE's baseline was already 2.91× chance. An EOR/IR_t result at or below 3.13%/1.95% is a negative and must be reported as one. `intake-1338#01`.
+
+**The stride hazard** (cross-referenced in the 09-07 section above; substance here): a flat read of a strided router tensor manufactures a plausible-looking negative — every expert appearing exactly k times with sub-chance reuse. Fix: row-by-row `ggml_backend_tensor_get` at offset `i * t->nb[1]`, anchored in our own tree at `ggml/src/ggml.c:5373` / `src/llama-graph.cpp:1987` (`intake-1336#00`). This is a measurement-integrity item: the broken read produces exactly the failure "rule out the test method first" exists to catch. **Scope-out written so the numbers are never re-cited (RT-4)**: the source's bandwidth-wall and PMS-ceiling findings do not transfer (every systems number is an 8 GB VRAM card behind a 2.4 GB/s SSD; the speed projections are modelled, not deployed), and a good SCH does not license a throughput claim (`intake-1336#05`).
+
+#### What a positive would be worth: the reopen payoff is bounded
+
+The GLM hot-expert offload/REAP kill stands, and its reopen trigger was rewritten 2026-09-07: an **SRP/SCH measurement on per-token routing traces**, not "a cacheable Zipfian hot set" — the 2026-07-17 artifact is a cumulative per-expert histogram with no time axis, so it cannot observe segment-level locality (`intake-1328#00`), and corpus-mixing alone collapses the signal (per-domain entropy 0.79–0.85 → 0.9453 mixed; Gini 0.62–0.71 → 0.3889; top-10% share 0.42–0.58 → 0.252, recomputed from released traces, `intake-1336#01`). And a positive signal is not by itself a reopen: trained routing locality is worth **+1.58% to +2.03% end-to-end on this host** — ReMoE's best simulated µMiss reductions (7.34% @C=6 / 9.41% @C=12) applied to the intake-1318 expert path (20.96 ms of a 99.1 ms token), perfect-hit ceiling +27% = 10.09 → 12.80 t/s on qwen4exp (`intake-1338#03`) — and that is an UPPER bound assuming a fill-bound expert path, which ours is not. A ρ=2 residency budget against 64 GB was costed 2026-09-07 and deprioritised until SCH(ρ) has a measured knee: Qwen3.6-35B-A3B 256×8 → 16 resident routed experts/layer = 6.25% of the routed pool (not 12.5%); Qwen3.8-Flash-Next 512×10 → 20 = 3.9%; plus the shared expert, resident by definition. `intake-1328#04`.
+
+#### The shared-expert census: nothing in the Qwen fleet is architecturally favourable
+
+The census that makes the offload/caching question OPEN rather than settled: all three Qwen MoE families carry a **gated shared expert** — Qwen3.6-35B-A3B (qwen35moe, 256/8 + 1, 40 blocks), Qwen3.8-Flash-Next (qwen4exp, 512/10 + 1, 48 blocks), Qwen3-Next-80B (qwen3next, 512/10 + 1) — metadata keys and tensor patterns recorded in `intake-1328#record`. Consequences: the shared expert is resident by definition and enters no ρ budget, and the offload/caching question is open because nothing in this fleet has been measured on the axis — NOT because the architecture is favourable. The tap closes the axis with a local number; its output wires into the belief kernel on the write side (SC66).
+
+#### Source References (2026-09-08, routing tap)
+
+- [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-1..RT-4 with the four port adjustments, the EOR rider, the chance baselines, the stride hazard, and the open questions.
+- [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the rewritten reopen trigger, the ρ=2 budget, the OD-A evidence rider (FreeToken vs KTransformers), and the intake-1318/1328/1336/1338 dispositions.
+- [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/completed/qwen38-flash-next-fp8-evaluation.md) — the qwen4exp census half (`intake-1328#record`, `intake-1328#03`).
+
+### Compiled Update — 2026-09-07: llama.cpp has NO expert cache, and closed-form CPU/GPU miss-splitting is worth zero latency
+
+**Confidence: `verified` / `design_prior`** — the absence facts are exact greps of two named trees at exact commits (`verified`); the `T*(q*) = mS/B_H` latency-neutrality identity is a closed-form result, unmeasured on this host (`design_prior`). Both entries are **source-class inoculations**: they exist so the same derivation is not repeated on every MoE-offload paper that arrives.
+
+#### There is no expert cache in llama.cpp — so a "llama.cpp expert-cache hit rate" is a page-cache measurement
+
+Zero occurrences of `expert_cache` or "expert cache" in production-consolidated-v9 `@0db32c06e` across `src/`, `common/`, `ggml/src/` and `tools/`, and zero in upstream b8185's `common/arg.cpp`. The two flags that look like the feature are not it: `-cmoe` / `-ncmoe` (`common/arg.cpp:2530-2545`) are **load-time `tensor_buft_overrides`** — they decide, once, which expert tensors are placed on which backend. There is no capacity, no admission, no eviction, and nothing that can hit or miss at run time.
+
+The consequence generalises to a whole class of papers. **Any paper reporting a "llama.cpp expert-cache hit rate", or an mmap-based MoE offload speedup, is measuring the Linux page cache at 4 KB granularity** — and only on a machine where the model does not fit in RAM. It is never a per-layer expert cache of capacity C, so its hit rate is not a routing-locality measurement and does not transfer to a host where the model is resident. Named consumers already in this wave's reference lists: **MoE-Infinity, HOBBIT, ProMoE, fMoE, FreeToken**. Read any of their llama.cpp baselines as a page-cache result before reading them as a routing result.
+
+Pair this with the existing `-ncmoe` sweep at the 2026-08-14 section below — that is the same fact measured from our own side: pushing expert layers to CPU declines monotonically with N, because the placement is static and there is nothing adaptive to win. `intake-1338#00`, `intake-1338#04`.
+
+#### `T*(q*) = mS/B_H` — a closed-form miss-split is worth zero latency by construction
+
+The identity is general over **all** closed-form CPU/GPU miss-splitting schemes, not one paper's: any scheme that balances two concurrent branches under a linear residual-bandwidth model is worth **zero latency** versus simply running everything on the faster-per-byte branch. The optimum equalises the two branch times, and at that point the total is exactly what the fast branch alone would have taken — the split moves work, not time. **Its only payoff is whatever residency the slower branch leaves behind**, i.e. the freed capacity, which must then be valued on its own.
+
+This is the cheapest available inoculation against **Fiddler, HybriMoE, SMoE and FluxMoE** — none of them ingested, and none of them needing to be, unless a paper's claim rests on something other than the split itself. When one of them reports a speedup, the question is not "is the arithmetic right" but "what is the non-split difference" — a different quantisation, a different residency set, a prefetch that changes the bandwidth model's linearity. `intake-1318#00`.
+
+#### Cross-reference: reading MoE routing state wrongly manufactures a plausible negative
+
+Both items above are about *not being fooled by someone else's measurement*. The mirror-image hazard on our own side — a flat read of a strided router tensor, whose tell-tale signature is **every expert appearing exactly k times with sub-chance reuse** — is recorded with its fix and its in-tree anchors in [`handoffs/active/cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) § stride hazard. Same failure family: MoE routing/expert state read wrongly yields a negative that looks entirely plausible.
+
+### Compiled Update — 2026-08-16: the MoE decode kernel is a DIFFERENT kernel from the one synthetic probes measure — and on gfx90a that difference is 2 waves/SIMD
+
+**Confidence: observation / `design_prior`** — the register figures are static reads of the shipped code object (exact, model-independent); the throughput figures are non-governed single captures. None of this is an AutoKernel `evaluation_event`.
+
+#### `mul_mat_vec_q<_,1,true,false>` is the production MoE decode instantiation, and the template arguments decide the occupancy
+
+llama.cpp's batch-1 quantized GEMV has four instantiations of the same source. MoE decode goes through the `mm_ids` variant (`<TYPE,1,true,false>`); a synthetic single-op smoke goes through `<TYPE,1,false,false>`. On gfx90a they are **not the same kernel**, and for IQ2_XXS they differ by exactly the boundary that matters:
+
+| variant | VGPR | waves/SIMD | LDS | spill |
+|---|---:|---:|---:|---:|
+| `<IQ2_XXS,1,false,false>` (synthetic op path) | 63 | **8 — max** | 256 B | 0 |
+| `<IQ2_XXS,1,true,false>` (**production MoE decode**) | 78 | **6** | 512 B | 0 |
+| `<IQ2_XXS,1,false,true>` | 125 | 4 | 512 B | 0 |
+| `<IQ2_XXS,1,true,true>` | 90 | 5 | 1024 B | 0 |
+
+This **corrected an earlier reading in this project**: "IQ2_XXS MMVQ is not occupancy-limited" was concluded from the synthetic smoke's 8 waves. Production MoE decode runs at **6 of 8 waves, 75% of max**, with zero register spill in both. The generalisable rule: **a synthetic op capture is a different kernel from the production one until the template arguments are compared.**
+
+**But the MoE indirection itself is not the cost.** On the identical `<_,1,true,false>` wrapper, Q8_0 fits in **25 VGPR**. The 78 is IQ2_XXS's own dequant state machine, not the `mm_ids` gather — so an "MoE overhead" framing of the low-bit deficit is wrong. What the MoE wrapper does is *select* the expensive instantiation. Full per-quant table and the mechanism (sign unpacking, not the codebook gather) are on [Hardware Optimization](hardware-optimization.md); the throughput consequence across the quant ladder is on [Quantization](quantization.md).
+
+#### Attribution on the real 122B UD-IQ2_M, and a governed-runner defect it exposed
+
+Two captures on the production `Qwen3.5-122B-A10B UD-IQ2_M`, clean frozen-v9 `0db32c06e` (build 10125), residency proven during (VRAM 57→58%, GPU 99–100%):
+
+- **Prefill (governed, receipt `passed`)** — 25,888 dispatches, 5,586 ms kernel time, 732.8 t/s. Top kernels: `mul_mat_q<IQ2_XXS,64,false>` **40.01%** (752 dispatches, the MMQ batched path), `mul_mat_q<IQ3_XXS,…>` 18.85%, `gated_delta_net_cuda<128,…>` 11.04%, rocBLAS/Tensile MFMA `Cijk_…MT64x32x64_MI16x16x16x1` 8.85%.
+- **Decode (NON-governed, no receipt, no durable identity)** — 245,246 dispatches, 3,158 ms, 39.40 t/s. `mul_mat_vec_q<IQ2_XXS,1,true,false>` is **16.42%** of decode kernel time across **6,063 dispatches at a 85.60 µs median**; IQ3_XXS 15.40%, Q5_K 13.52%, Q6_K 6.32%, `quantize_q8_1` 6.31%.
+
+**The defect the pair exposed matters more than either number**: the governed attribution runner hardcodes `-n 0` in `bench_command()` (line 69), so **every governed rocprof-v1 attribution to date is prefill-only** — including the K28 attribution the path was validated on. A batch-1 decode question cannot be answered through it as written; the decode figures above therefore come from a non-governed companion run and carry no durable identity.
+
+**The timing distribution is the most informative part**: per-dispatch duration is median 85,601 ns, min 83,520, max 88,801 — a **6% spread across 6,063 dispatches** at a single grid size. That is the signature of a throughput-limited kernel at a hard resource ceiling, not one with variable stalls.
+
+A bandwidth figure exists but **rests on a stated assumption, not a measurement**: at 39.40 t/s with ~10B active params of a 124.6B-param model at 2.7 bpw, per-token active-weight traffic is ~3.4 GB → ~133 GB/s against the 1638 GB/s datasheet peak, **~8%**, consistent with the ~10.3% figure carried elsewhere. The assumption is the active-expert byte count; it is not derived from the trace and should be confirmed before it gates anything.
+
+#### What this changes for low-bit MoE serving
+
+MoE-IQ2 remains our worst roofline rung by roughly 2× (10.3% of spec / 11.8% of achievable bandwidth). Three consequences:
+
+- **Routed-expert low-bit quantization is a CAPACITY play whose decode cost is now attributable.** The asymmetric-MoE recipes recorded on [Quantization](quantization.md) (routed experts at IQ2/IQ3, shared experts and attention held at Q8_0/Q5_K/Q6_K) buy HBM footprint. On this device, below the 64-VGPR boundary they do **not** buy decode speed — a single-model dense ladder measured decode getting *absolutely slower* as the format shrank past IQ4_XS. Direction agrees between the 8B dense ladder and this 122B MoE attribution; **magnitude does not transfer** — one model, non-governed, n=1.
+- **The `v_perm_b32` sign-expansion lever is an occupancy lever with a hard threshold.** IQ2_XXS is 14 registers over 64. A reduction landing at 70 buys nothing, and spill is 0 everywhere so there is no slack — any attempt must report `vgpr_spill_count` beside occupancy or it is not evidence.
+- **The exposure is LATENT, not absent.** No IQ-format role is GPU-resident today (since the 2026-07-31 cutover the resident architect is the 27B and the 122B is retained as a CPU critic), so the 6-vs-8-wave loss costs the live stack nothing right now. It flips the day any `IQ1_*`/`IQ2_*`/`IQ3_*`/`IQ4_*` GGUF becomes resident on ROCm0 in a serving role. Do not record this as "not a problem" in the meantime — that is how a latent exposure gets closed by mistake. The existing 122B IQ2 residency ladder numbers (43.7 t/s single / 148.7 agg@B32, PPL 5.02) stand as measured, but they were taken **with** this occupancy tax already priced in.
+
+#### Source References (2026-08-16)
+
+- [`artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) — both 122B captures, the four-variant occupancy correction, the `-n 0` governed-runner defect, and the timing distribution.
+- [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the four IQ2_XXS instantiations, the Q8_0-on-the-same-wrapper control at 25 VGPR, and the zero-spill constraint.
+- [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the dense-model ladder whose direction the MoE attribution agrees with, and its caveat list.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the MoE-IQ2 10.3%/11.8% rung, the latent-exposure tripwire, and the open kill-criterion probe on whether ~10% is an architectural floor.
+
+### Compiled Update — 2026-08-14: full sub-4-bit residency beats partial expert offload on the 122B, and the CPU-MoE tail is the whole cost
+
+**Confidence: observation** — frozen v9 `0db32c06e` / build `10125`, `llama-bench` on an idle MI210, single runs. **No P-GPU-1, so neither result is decision-gating**; the 12.19 t/s CPU comparison point is itself an observation.
+
+#### The `-ncmoe` sweep: decode falls monotonically with every layer of experts pushed to CPU
+
+`Qwen3.5-122B-A10B-UD-Q4_K_M` (72.88 GiB, does not fit 64 GB HBM) at `-ngl 99 -ncmoe N`, keeping attention, shared experts and hot layers in HBM while N layers' routed experts run on CPU:
+
+| `-ncmoe N` | decode tg128 (t/s) | prefill pp512 (t/s) |
+|---:|---:|---:|
+| 8 | **35.63 ± 0.75** (2.92× vs 12.19) | **555.43 ± 6.01** |
+| 16 | 25.18 | 395.81 |
+| 24 | 19.28 | 315.89 |
+| 32 | not captured (script exited) | 265.80 |
+
+Op coverage was HIP-clean — no fallback warnings. **The monotone decline in N is the finding**: every additional layer of CPU-resident experts costs throughput proportionally, which identifies the **CPU-MoE tail** as the cost rather than any GPU-side inefficiency. A hybrid MoE placement is a capacity compromise that you pay for linearly.
+
+#### And full IQ2 residency beats the best hybrid config outright
+
+`Qwen3.5-122B-A10B-UD-IQ2_M` is **37.59 GiB — it fits entirely** — so at `-ngl 999` with no `-ncmoe` at all: **decode 44.35 ± 0.54 t/s (3.64× the CPU observation), prefill 735.08 ± 0.99 t/s**. That is **+24.5% decode and +32.4% prefill over Q4_K_M at `-ncmoe 8`**, and the mechanism is simply that full residency eliminates the CPU tail rather than shrinking it.
+
+**The consequence for large-MoE serving is a preference order, not a throughput number**: if a sub-4-bit quantization gets the whole model into HBM, that beats a higher-precision quant with partial expert offload — on speed. **The open question is quality, and it is the only open question.** IQ2 vs Q4_K_M precision on this model has never been gated for the architect role, and the speed result creates exactly the pressure to skip that gate. Do not adopt on these numbers alone; see [Quantization](quantization.md) for why a low-bit rung's throughput ranking says nothing about its usability, and note that the same page's occupancy finding means sub-4-bit is **not** monotonically faster as it shrinks — IQ2 wins here because it *fits*, not because it is small.
+
+#### Source References (2026-08-14)
+
+- [fable5 window-2 findings-02 — heterogeneous GPU](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) §5 — the M2 `-ncmoe` sweep, the M2b full-IQ2-residency comparison, and the explicit "quality, not speed" open question.
+- [fable5 window-2 findings-05c — lever × category matrix](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix) — the L15 sub-4-bit lever this confirms, and the MoE-category framing it sits in.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the MoE-IQ2 roofline rung the residency argument runs against.
+
+### Compiled Update — 2026-08-12: the expert-count fork patch is unnecessary — stock v9 already does it, and does it cheaper
+
+**Confidence: verified** for the equivalence argument and the code archaeology; **stale** for the throughput numbers, which are v4/v5-era and have not been re-run on v9.
+
+#### `--moe-n-expert` resolves to DROP, via an equivalence rather than a measurement
+
+The fork's `--moe-n-expert` hard-mask commit (`86901388a`) was held for review as a capability the production kernel might be missing. It is not missing. Stock v9 provides it natively through `--override-kv <arch>.expert_used_count=int:N`, and the two are **numerically identical**: `ggml_argsort_top_k` sorts descending, so taking the top-N of a top-M selection is the same set either way. The fork version is strictly worse on cost — it pays extra `ggml_cont` copies per layer.
+
+This is the second fork patch this week to resolve to DROP for a reason other than "already merged" (see [KV Cache](kv-cache.md) for the SWA one, which resolves to DROP because it *removes* a check). The pattern worth carrying: **before porting a fork's flag, ask what the stock kernel's generic override mechanism already reaches** — a config-level equivalent is cheaper than a code-level one and does not need re-validating at every promotion.
+
+#### The expert-pruning throughput numbers are v4/v5-era and need re-running
+
+The measurements that motivated the flag are retained but must be read with their era attached — **none has been re-run on v9**: Qwen3-Coder-480B-A35B 2.5 → 3.7 t/s (+48%), GLM-4.6-355B-A32B 2.2 → 3.0 (+36%), Qwen3-Coder-30B-A3B 26.6 → 33.6 (+26%), Qwen3-VL-30B-A3B 32.2 → 38.9 (+21%). The quality reading alongside them is the operative constraint and is coarse by design: **excellent at 50% of experts, degraded at 25%, gibberish at 12.5%**. That places the usable band well above the point where the speedups get interesting, which is consistent with the near-uniform GLM-5.2 routing skew recorded in the pass below.
+
+#### A roadmap-vs-deployment drift correction
+
+A roadmap line describing the 122B UD-IQ2_M as "measured viable, fully GPU-resident" is true as a *viability measurement* and **false as a description of the deployed stack**: since the 2026-07-31 cutover the GPU-resident architect is the 27B, and the 122B is retained as a CPU critic. The correction was routed to the owning document rather than self-edited. Read any large-MoE residency claim against the live lineup, not against the probe that established feasibility.
+
+#### Source References (2026-08-12)
+
+- [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the `--moe-n-expert` DROP verdict, the `--override-kv` equivalence, and the retained era-stamped throughput table.
+- [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism) — the CPU15 expert-parallelism disposition this sits inside.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the argsort equivalence derivation and the AXA-1 roadmap-drift correction.
+
+### Compiled Update — 2026-07-20
+
+New evidence pins down the MoE reasoning-vs-knowledge law and settles the offload/REAP viability gate for GLM-5.2 with a measured routing-skew profile. Confidence: `external` for the sparsity literature, `verified` for the routing-skew measurement, `observation` for all MI210 residency throughput.
+
+#### Key Findings (2026-07-20)
+
+- **Reasoning ∝ ACTIVE FLOPs; knowledge/memorization ∝ TOTAL params; reasoning is non-monotonic in sparsity** (intake-859 `2508.18672`, cred 5). Denser overtakes once active-param counts grow; raising total experts at fixed top-k degrades reasoning while raising top-k mitigates it; neither test-time compute nor GRPO rescues over-sparsity — it is architectural. This makes a **large-total / moderate-active MoE (122B-A10B)** the literature-default architect (active⇒reasoning, total⇒knowledge) and the 35B-A3B (3B active) the reasoning floor; on a bandwidth-bound CPU, an MoE reaching dense-level quality at ~1/10 active FLOPs is exactly why MoE wins. A mid-size MoE can Pareto-dominate a larger one at 1/3 the memory (Gemma-4-E4B ≈ Gemma-4-26B-A4B — intake-862 `2604.07035`, cred 2). ([architect-model-selection-2026-07-20](../docs/reference/architect-model-selection-2026-07-20.md))
+- **The expert-routing-skew profile (the cheap gate for offload/REAP) came back near-uniform on GLM-5.2.** Production-representative run: 19.1M selections, **global `top_32=15.19%`, entropy 0.9987, Gini 0.066**, with only weak layer-local skew (median layer `top_32=39.19%`; all 256 experts used every layer). → generic GLM hot-expert GPU residency / REAP is **NOT justified** by current workload evidence (near-uniform ⇒ PCIe-streaming-latency-bound if attempted); reopen only with a narrower role-specific corpus. REAP and offload are the *same* skew analysis, different action (permanently prune cold experts vs stream them). ([mi210-big-model-and-acceleration-roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap))
+- **IQ2 big-MoE GPU residency ladder is two-for-two viable** (observation-grade): 122B UD-IQ2_M = 43.7 t/s single / 148.7 agg@B32 (2.2× / ~8–9× over ~20 t/s CPU-Q4, PPL 5.02); Qwen3-Next-80B-A3B i1-IQ2_M = ~55.8 single / 265 agg@B32, and because it is a GDN-hybrid with O(1) KV, 32K context fits comfortably and it is compute-bound at B≈96–128. IQ2 residency **caps at ~122B**; GLM-5.2 (~238 GB even at IQ2) never fits GPU-only → offload/REAP is the only GLM path. AirLLM-style per-token weight streaming is the anti-pattern (PCIe 7–14× slower than DDR5); the HBM win exists only when weights *reside* in HBM. ([mi210-big-model-and-acceleration-roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap))
+  - **Re-measured 2026-08-14 on frozen v9 (`0db32c06e`/`10125`): 44.35 ± 0.54 t/s single, prefill 735.08 ± 0.99, file size 37.59 GiB** — consistent with the 43.7 above, so the ladder reproduces across eras. **Do not reconcile these against the 39.40 / 37.06 t/s figures reported elsewhere**: those are decode runs taken *under a profiler* (`rocprof` attribution captures), which is a different instrument and a different number by construction. Quote the `llama-bench` figure for throughput and the profiled figure only for share attribution.
+- **The slot-fabric residency model treats GPU MoE residency as a slot operation.** VRAM (64 GB) is the only scarce resource; CPU+RAM dual-residency is free (1.1 TB), so every teleport-eligible model stays hot in RAM permanently. A realistic 2-resident set is one big GDN (122B-IQ2 ~40 GB) + one small (35B-A3B IQ4) ≈ 58 GB — two big IQ2 don't co-fit. A Layer-2 residency actuator is the only VRAM-touching op (allowlist + N-dwell hysteresis + kill-switch), and every GPU MoE has a designated CPU fallback (GPU accelerates, CPU guarantees). ([heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency))
+
+#### Open Questions (2026-07-20)
+
+- Does a narrower *role-specific* corpus reveal a cacheable GLM hot-expert set that the production-representative profile averaged away?
+- The GLM-5.2 endgame (expert-offload / REAP + IQ2-resident-experts + offload-cold-tail) remains operator-gated and unbuilt.
+- Does dynamic IQ2 preserve the 122B-A10B's *reasoning* (not just knowledge)? The architect bench decides, and it re-gates the whole IQ2-residency-for-the-architect program.
+
+#### Source References (2026-07-20)
+
+- [architect-model-selection-2026-07-20.md](../docs/reference/architect-model-selection-2026-07-20.md) — reasoning∝active / knowledge∝total MoE law + ranking implication.
+- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — GLM routing-skew result, IQ2 residency ladder, AirLLM anti-pattern.
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — GPU MoE residency as a slot operation + CPU-fallback guarantee.
+- [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — CPU+GPU hybrid MoE expert-offload (`-ot exps=CPU` / `--n-cpu-moe`) machinery.
+- intake-859 `2508.18672` (cred 5), intake-862 `2604.07035` (cred 2) — MoE sparsity/reasoning + deployment-aware Pareto-dominance.
+
+### Compiled Update — 2026-09-26: OD-A Decided — KTransformers Runtime Declined for Now, MI210 Port Question Open
 
 **Confidence: verified** for the source-level premises (dive-verified at kvcache-ai/ktransformers@c40722bf and sgl-project/sglang@c73f7077); building and running on Zen 5 or gfx90a is **untested**.
 
@@ -864,18 +868,18 @@ The second MI210 (~Oct 2026) is the test bed for anything beyond a build. Expert
 
 The only third-party numbers for KT on EPYC compare different precisions and different lengths, so they are not a like-for-like verdict (intake-1810#05).
 
-### Source References
+#### Source References
 - [Fable5 window-2 findings 02 — OD-A rider](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) — R-A10 (corrected premises, options, the operator decision), F7 and F6.
 - [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — P3-4 and the P3-OD-A-ROCm fill.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the OD-A outcome.
 
-## Compiled Update — 2026-10-06 (evening): the cafe-llama CUDA MoE expert cache is unbuilt on HIP and unmeasured for skew
+### Compiled Update — 2026-10-06 (evening): the cafe-llama CUDA MoE expert cache is unbuilt on HIP and unmeasured for skew
 
 **Confidence: source-read only (cafe-llama.cpp `0ae77ef49`, intake-1925 dive); nothing built or run.** The fork's hook-based MoE expert cache registers for HIP in source although its document says CUDA only; six CUDA symbols have no HIP mapping; the only comparable number is +18.3% on a single GPU on an unstated host, and no expert-skew statistic is published. It is therefore a conditional rebuild (CAFE-7, trigger: measured routing skew of at least 60%, RT-5) rather than a candidate, and `moe-direct` CPU-fraction knobs are a hypothesis with no data (CAFE-8, only after CAFE-7). MoE-Spec expert budgeting was declined (lossy, GPU trees, ceiling already in-house).
 
 Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [MI210 roadmap handoff](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap), [MoE routing tap handoff](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement), [speculative-decoding wiki update](speculative-decoding.md).
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **Routing tap ported and captured on two production MoE models.** `llama-moe-trace` on v10 (`42a0514db`): Qwen3.8-Flash-Next (48 layers, 512 experts, top-10) gave 794,623 token rows over 3 workloads. Adjacent-token reuse IR_t is 0.359/0.389/0.329 (code/prose/reasoning), 16.8-19.9x the 1.95% chance. Frontdoor Qwen3.6-35B-A3B (40 layers, 256 experts, top-8) was traced as RT-9.
 - **Static hot-set premise is weak, so CAFE-7 does not trigger.** Top-10% expert share on the frontdoor is 0.503/0.419/0.463 prefill and 0.470/0.410/0.461 decode, 0 of 40 layers at the 0.60 gate (uniform 0.104). Flash-Next is 0.576/0.464/0.477 prefill and 0.604/0.475/0.481 decode (18 of 48 layers at 0.60 on code prefill); gate not met on either. DS41 is not covered (RT-10 needs a tap hook for the hash-routed layers).
@@ -887,7 +891,7 @@ Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-
 
 Sources: [MoE routing tap and locality](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
-## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** (microbench ratio, uncalibrated).
 
@@ -896,7 +900,7 @@ Sources: [MoE routing tap and locality](../handoffs/active/cpu-decode-roofline-p
 
 Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [arm-P2 recipe](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for filed decision and native correctness counts; no MoE speed result; no throughput claim.
 
@@ -906,12 +910,12 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 
 Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) · [C6 CPU ops R3](../progress/2026-10/2026-10-31-codex3-c6-r3-correctness.md) · [LB4.9 FU06](../progress/2026-10/2026-10-31-codex-ni-lb49-fu06-closeout.md)
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
 **Confidence: verified** — 8 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+#### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2123#record (DeepGEMM): Citable as a design reference for the Mega MoE dataflow (interleaved gate/up layout, in-epilogue SwiGLU with the topk weight folded before the down projection, static-shape masked grouping). Verdict adopt_patterns, integrated; linked to autokernel-champion-aggregate.
 - intake-2134#record (EPLB): Citable for the algorithm (greedy hottest-per-replica replication, LPT equal-cardinality packing, divisibility switch between hierarchical and global) and as the reference arm of RT-6, not for balance or speed numbers. Verdict worth_investigating, integrated; linked to moe-routing-tap-and-locality-measurement.
@@ -922,28 +926,41 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - intake-2141#record (UltraEP repository): The planner is a single-block GPU kernel with no CPU build of the quota algorithm; host code is only an EPLB-style legacy greedy. MIT-licensed and readable, so RT-6a can port the oracle to numpy. Verdict adopt_patterns, integrated.
 - intake-2142#record (LPLB): Citable for the min-max replica-edge LP formulation, the at-most-one-replica-per-expert constraint, the authors stated limitations, and a fixed-5-iteration on-device IPM costing about 100 us. No throughput claim is carried. Verdict adopt_patterns, integrated.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2551#record (Looped MoE scaling laws): confirms the filing and supplies the numbers stage 1 omitted; the paper says nothing on deployment efficiency or bandwidth, and no checkpoint or code was found. Citable for the scaling-law form and the sparsity-recurrence interaction. Integrated via cpu-decode-roofline-program.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+#### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
 
 - intake-2195#record (ID Balancing paper): Full text checked the relay numbers individually: the ">50%" and ">12%" Top-3 claims are confirmed, while "8.4 -> 7.8" and "89.6%" are abstract/figure-only and MinVio is a training average. Worth investigating; linked to the moe-routing-tap-and-locality-measurement handoff.
 
-### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+#### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
 
 - intake-2449#record (ik fused softmax+topk PR): the PR is not flash attention; it implements MoE-router fusion only, overturning the Stage-1 framing as part of ik CPU FA work. Verdict worth_investigating; linked to autokernel-all-devices-all-dimensions.md.
 
-### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
+#### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
 
 - intake-2487#record (MxMoE mixed-precision MoE quantization): Accuracy headline uses r=1 (no hardware term) and the hardware term is RTX-4090 CUDA tile profiles; arXiv id resolved from the repo README. Adopt-patterns; monitor; handoff iqk-iquant-enablement.
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): A3B MoE decode levers, V5I limits and the CPU row cliff
+
+- **V5I does not accelerate A3B routed experts.** On A3B (Qwen3.6-35B-A3B-MTP Q8_0, 256 experts, 8 used) V5I only takes dense Q8_0 matmuls; routed experts run MUL_MAT_ID (MMVQ at n <= 8, split16 at 9-16). With about 1 token per touched expert (U(3)=23, U(12)=83 experts), the op is bound by unique-expert bytes (about 134 MB per expert across 40 layers), so an MFMA MUL_MAT_ID is about 0% for decode. The headline 0.988 was acceptance noise and a 3-pair early stop (round cost ratio 0.996). The target for the MoE op is >= 1000 GB/s at n >= 4 (about 780 GB/s at n=3 today; 1.4-1.6 ms per round recoverable). Sources: `docs/design/v5i-a3b-0988-diagnosis-20261122.md`, `docs/design/mi210-served-kernel-bandwidth-census-20261122.md`.
+- **GPU row-cliff fix and topk fast path.** SPLIT16 replicated on C18 (A3B-MTP np4 round ratio 0.8366 [0.8269, 0.8462], about 1.20x) and `GGML_HIP_TOPK_FAST` KEEP (A3B-MTP e2e 1.138, TOP_K op 1297 to 26 us); the MMVF CDNA cap flip (`GGML_HIP_MMVF_CDNA_MAX_NE11=8`, A3B D=4 +13.6% earlier) is a C19 default-ON candidate. Draft length: D2 beats D4 per round at np4/8/16 by roughly 10-14% but the D2 knob gain stays under +3% (DROP_MULTI). Sources: `handoffs/active/kernel-champion-and-promotion.md`, `handoffs/active/autokernel-loop.md`, `handoffs/active/rocm-kernel-authoring.md`.
+- **CPU analogue.** The A3B CPU gap census shows MUL_MAT_ID at 27.6% of plain decode wall and 36.0% with MTP, with row-cost jumps above 2x at 1 to 2, 2 to 4 and 4 to 8 rows. For Q38FN CPU verify, MoE rows sharing an expert already read it once; the marginal row (about 12 ms, about 1.12 GB of distinct experts) is at about 85% of the byte floor, so a weight-once verify kernel is closed with no box. Sources: `handoffs/active/cpu-decode-roofline-program.md`, `docs/design/q38fn-cpu-verify-weight-reuse-20261122.md`.
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [v5i-a3b-0988-diagnosis-20261122](../docs/design/v5i-a3b-0988-diagnosis-20261122.md)
+- [mi210-served-kernel-bandwidth-census-20261122](../docs/design/mi210-served-kernel-bandwidth-census-20261122.md)
+- [q38fn-cpu-verify-weight-reuse-20261122](../docs/design/q38fn-cpu-verify-weight-reuse-20261122.md)
+- [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)
+- [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md)

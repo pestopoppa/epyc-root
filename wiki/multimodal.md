@@ -5,16 +5,6 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): ERNIE typography capture READY (unrun), speech STT5/Ultra preparation controls, no scored results. Earlier: 2026-10-28 (workspace-58 wrap): Parakeet CPU canary, CS22.V0 parity negative, STT2 preparation. Earlier: 2026-10-28 (owner-scope full-wrap delta): CS22.V0 diagnostic negative and STT2 source-preparation boundaries. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): S-20 cold-vision fail-fast is source-complete (mock-tested, no live latency claim). Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a synthesized-tail turn-taking stratum exists and its accuracy re-score is owed. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: Italian TTS normalizer and respelling on by default). Earlier: 2026-10-22 (wrap-up sweep 12, workspace-58: Italian TTS re-listen kit). Earlier: 2026-10-22 (wrap-up sweep 10: STT/VAD/speech-kernel program filed, scorer and custody code landed, s2s.cpp and ABI audits). Earlier: 2026-10-22 (wrap-up sweep 9: the Italian TTS listen check: intelligible). Earlier: 2026-10-21 (wrap-up sweep 5: speech placement moves to GPU card 2, CS-11 declined). Earlier: 2026-10-21 (wrap-up sweep 3 delta). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: Qwen3-VL-30B moved off the MI210 to cold CPU (device none, WARM, NUMA_HALF_A `-t 48`) because it no longer fits beside DFlash2 (66.75 > 62.00 GiB); S-18/S-19/S-20 filed; voice routing to :8083 is unimplemented in code); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-24 (speech-vision compile: the operator ratified a speech-native interlocutor with the orchestrator as its one tool — INF-79 conversation-stack, D1–D12, a Step-Audio 2 mini vs Qwen3-Omni-30B-A3B bake-off with the cascade as baseline and fallback; speech moved out of INF-41; the whisper.cpp MI210 WER corrected 2.35% → 3.37%; KAME revival gate 3 met); earlier: 2026-09-24 (late, main-ak-seat: KVU-11b decided — the operator chose D, no change to the CPU speech layout, pending their own STT/TTS integration plan); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: the live CPU speech layout collapses under a generating CPU LLM, both ways); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: production STT/TTS measured on the CPU alone — STT RTF 0.12–0.20 at 24–32 threads, TTS RTF 0.55–0.60 at ≥16 threads, real time together on separate cores, but next to a generating `-t 96` frontdoor TTS RTF goes to 7.8–9.4 and the frontdoor from 43 to 0.3 tok/s; whisper layout collapse and a shim-only TTS thread control; ~2 s CPU ASR floor from 30 s padding; recommendation stay on GPU, options A/B/C an operator decision (OP-56 / RTG-57 KVU-11), the SMT-sibling follow-up uncommitted (KVU-11a)); earlier: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
-
-## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): STT5 Ultra engineering25 is inconclusive and the Crisp HIP build is blocked by cross-role placement, not by the kernel
-
-**Confidence: verified** for filings.
-
-- **Ultra engineering25.** The row recorded 7 matches, 7 mismatches and 11 faults with rc=0 against a terminal `harness_failure` (75 rc0 arm records but 14 verdicts; nine comparator shape errors), so it is inconclusive and a no-redraw comparison-only successor is prepared. The v3 scorer filed inconclusive (16 score cells, settings UNKNOWN) and Voxtral stopped at the disk floor with 10 rc0 chunks.
-- **Crisp HIP r2.** The full-build job exited rc=64 three seconds in: region-lock refused unsafe cross-role dispatcher state; the one `acc.cu.o` object is from a dry run. No build, linkage, residency or parity verdict. The CS6 second-GPU bench plan (arm A 7-15 cells, 3.5-15 h, bookings provisional) is filed as a plan, not a measurement.
-
-Sources: [stt5 progress 11-02](../progress/2026-11/2026-11-02-handoff-stt5.md) · [stt5 progress 11-04](../progress/2026-11/2026-11-04-handoff-stt5.md) · [speech handoff](../handoffs/active/speech-and-multimodal.md)
 
 ## Compiled update — 2026-11-02: STT selection and ERNIE typography evidence
 
@@ -28,162 +18,6 @@ Sources: [STT5 scoring and caveats](../progress/2026-11/2026-11-01-handoff-stt5.
 
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
 **Sources**: 54 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **Helios real-time video** (intake-109#02) 14B autoregressive diffusion model with unified T2V/I2V/V2V input, claimed 19.5 FPS on a single H100. Not applicable to EPYC CPU/MI210 serving (video generation, H100 target).
-- **Qwen3.5-Omni** (intake-432#00) Omni-modal model scaling to hundreds of billions of parameters with 256k context; claims SOTA on 215 audio/audio-visual benchmarks. Not applicable to EPYC/MI210 at that scale.
-- **Comfy-Org Z-Image-Turbo repack** (intake-918#record) ComfyUI-format safetensors (bf16, int8_convrot, nvfp4) of the 8-NFE Z-Image-Turbo with a Qwen3-4B text encoder. Dive overturns the deciding question: the local stable-diffusion.cpp checkout already supports Z-Image, so the "no support" blocker is false.
-- **Z-Image S3-DiT** (intake-928#record) 6.15B single-stream DiT with a Qwen3-4B text encoder that fits under 16GB VRAM. Dive: runtime gate is cleared (the existing stable-diffusion.cpp supports it), so the rationale inverts toward being runnable on MI210.
-- **LensVLM-9B selective expansion over compressed text images** (intake-1576#00) 9B VLM (Qwen3.5-9B base) scans compressed text-page images and selectively expands relevant pages via learned tools, with 5x/10x/15x compression settings (intake-1576#01). The card gives no benchmark table or deployment evidence and does not define Expand(k); the paper and code give sequential one-page-per-turn expansion. Candidate for long-document handling on the MI210.
-- **Autonomous language-image loops converge to generic motifs** (intake-1652#01) 100 trajectories at each of seven temperatures over 100 prompt-image-prompt cycles (700 total, intake-1652#00); adjacent-step embedding distance settles after an early transient, which supports local stabilization, not endpoint convergence (intake-1652#01). Pooled k=12 is analysis-dependent (intake-1652#02), and the paper's ANOVA outcome (consecutive distance) differs from the notebook's first-to-last endpoint distance.
-- **PersonaPlex full-duplex speech** (intake-1982#00) Fine-tune of Kyutai Moshi (8.37B BF16 params despite the "7B" label). FullDuplexBench: smooth-turn latency 0.170, interruption latency 0.240 on one A100 80 GB (intake-1982#02). Shipped stack is plain PyTorch with CUDA graphs (intake-1982#04); English-only, failing the Italian-wanted gate (intake-1982#record).
-- **FluidAudio CoreML speech catalogue** (intake-1983#00) Swift/CoreML catalogue of ~25 converted speech models with no duplex/turn-taking policy; correction: conversion catalogue only, LocalVQE runs CPU not ANE. Turn end = Parakeet EOU token confirmed by 1280 ms debounce (intake-1983#01); Silero VAD hysteresis defaults minSilence 0.75 s (intake-1983#record). Upstream weights are PyTorch/ONNX, portable off Apple (intake-1983#04).
-- **Fish Audio Drama 3 TTS (card)** (intake-1984#00) 35.9B-parameter MoE TTS (3B active), Qwen3.5-35B-A3B-derived hybrid backbone with 13-layer codebook-MTP decoder, experts in block-scaled FP8 (~39.6 GB weights). Published numbers are H200-only (166.7 frames/s at concurrency 1, TTFA p50 88.9 ms, RTF 0.131) (intake-1984#04); no ROCm/CPU/llama.cpp path published (intake-1984#02). Correction: exact size 35.9B, not 36B.
-- **PersonaPlex paper** (intake-2001#00) Role (text) and voice (audio) conditioning for Moshi via a hybrid system prompt with a 440 Hz sine on the user channel. Moshi fine-tune trained 24,576 steps in 6 h on 8xA100 on 1,840 h synthetic customer-service dialogs (intake-2001#01). Superiority partial: Gemini Live wins role adherence (4.73 vs 4.48) (intake-2001#record); no size/VRAM figures in paper (intake-2001#record).
-- **Fish Audio Drama 3 technical report** (intake-2002#04) 271 frames/s single-stream on one H200 vs 177 for S2; 295 on B300 with MXFP8 experts; NVIDIA-only. Correction: 16-speaker limit not in report, and layer pattern is 3 DeltaNet : 1 full attention per block (intake-2002#01). Seed-TTS CER 0.83 / WER 1.54 are after regeneration; first-take 1.00 / 2.20 (intake-2002#05). On LibriSpeech-PC WER 1.85 vs Qwen3-TTS 1.60 (production qwentts.cpp basis) (intake-2002#record).
-- **Parakeet realtime EOU 120M** (intake-2017#00) Cache-aware streaming FastConformer-RNNT, 120M params, English-only, signals end of utterance with an <EOU> token. WER 9.30 avg at 160 ms streaming (LS-clean 3.61) (intake-2017#01). Correction: EOU is reported only as latency (p50 160 ms, p90 280 ms), no false-cut rate (intake-2017#02); official artifact is .nemo with no CPU claim (intake-2017#03).
-- **LocalVQE echo/noise suppression** (intake-2018#00) Causal 16 kHz AEC+NS+dereverb, 16 ms latency, F32 GGML C++ inference; v1.3 is 4.8M params (~19MB). CPU: v1.3 3.21 ms per 16 ms hop on Zen4 Ryzen 9 7900 with 4 threads (5.0x RT), vendor-reported (intake-2018#01). Needs a far-end reference signal (intake-2018#03). EPYC: runs on CPU in the speech chain.
-- **Easy Turn** (intake-2033#00) Whisper-Medium encoder + Qwen2.5-0.5B (~0.85B params) emitting transcript plus a turn-state tag (complete/incomplete/backchannel/wait) (intake-2033#01). Accuracy 96.33 on authors' own 800-sample testset vs 86.67 TEN and 78.67 Smart Turn V2 (intake-2033#02). Mandarin-only material and GPU-only inference scripts (intake-2033#03, intake-2033#record).
-- **NeMo Voice Agent (examples/voice_agent)** (intake-2035#00) Deprecated in its own README in favour of labs-Voice-Agent. Silero VAD stop_secs 1.2 s is the fallback and in-band <EOU> ends turns earlier (intake-2035#02); 80 ms model calls (5 x 16 ms frames) (intake-2035#03). Needs a GPU (21 GB VRAM for 9B LLMs) (intake-2035#record); turn_taking.py state machine is portable (intake-2035#record).
-- **Parakeet realtime EOU 120M ONNX** (intake-2036#record) Two fused graphs (encoder, decoder_joint) in fp32, fp16 and int8. Token-exact parity only for fp32, fp16 and decoder-only int8 on one unnamed smoke fixture (intake-2036#01); frontend is raw log-mel, not nemo128 (intake-2036#02). Correction: cache I/O contract and chunk size are undocumented (intake-2036#03), so not the cheapest turnkey route (intake-2036#record).
-- **Smart Turn v3.2** (intake-2047#00) Audio-native turn-completion classifier: Whisper-Tiny encoder + linear head, ~8M params, int8 ONNX 8 MB on CPU. Vendor CPU latency 12.6 ms on c7a.2xlarge (intake-2047#02); vendor accuracy 92.63% int8 / 93.71% fp32 over 31,527 clips, 23 languages (intake-2047#03). Correction: TurnBench's .752/.047/1017 ms row used v3.1 weights through its own wrapper (intake-2047#04).
-- **Endpoint Anticipation** (intake-2048#00) A causal 25M-param model forecasts end-of-turn within horizons 320-2560 ms; acts as a speculation trigger that forks LLM+TTS (intake-2048#01). Unmute latency 1195 -> 690 ms at h=960 ms with Gemma 3 4B (intake-2048#02). Cost: ~66%/53% of turns contain a premature trigger at ERC~33% (intake-2048#03); English-only 8 kHz telephone training (intake-2048#04).
-- **parakeet-rs** (intake-2049#record) Rust onnxruntime implementation of the parakeet_realtime_eou_120m streaming loop; 160 ms chunks with a 4 s buffer re-featurised each chunk (inefficient) (intake-2049#02). Encoder cache I/O documented (cache_last_channel [17,1,70,512]) (intake-2049#03). Correction: no NeMo validation or EOU latency figures; author notes reset-on-EOU works poorly (intake-2049#05).
-- **NeMo Voice Agent repo** (intake-2050#00) Same agent moved from NVIDIA-NeMo/Speech into its own repo on 2026-08-06 (Pipecat 1.6.0); not a new turn-taking model. Backchannel handling is a 78-phrase exact-match list, active only while the bot speaks (intake-2050#02). Linux + NVIDIA GPU, NVFP4-class LLM ~24 GB+, no ROCm path (intake-2050#04).
-- **VAP real-time turn-taking** (intake-2055#00) Predicts 256 joint future voice-activity states over 2 s at 50 frames/s. On an Xeon Gold 6128, 14.61 ms per 20 ms frame (RTF 0.73) at 1 s context but RTF 13.69 at 20 s (intake-2055#01). Balanced accuracy ~75-76% on a Japanese dialogue test set (intake-2055#02). Correction: TurnBench's VAP row used a fine-tuned checkpoint, not this configuration (intake-2055#04).
-- **Kyutai delayed-streams-modeling** (intake-2057#00) Semantic VAD = 4 pause-prediction heads on kyutai/stt-1b-en_fr at 0.5/1/2/3 s horizons. Index 2 (2.0 s) is the end-of-turn signal in every shipped consumer (intake-2057#01); PyTorch exposes heads via step_with_extra_heads (intake-2057#02). Head training undocumented (intake-2057#03); CPU speed not stated (intake-2057#record).
-- **Voice Activity Projection (original)** (intake-2058#00) Predicts joint future voice activity over a 2 s window in 4 bins per speaker (200/400/600/800 ms, 256 states). Trained on Switchboard only (intake-2058#01); shift-class F1 .510 vs shift/hold weighted F1 .899 (intake-2058#02). Model consumes VA features, so a cascade must supply VAD for both channels (intake-2058#03).
-- **VAP_checkpoints** (intake-2059#00) Three fine-tuned VAP checkpoints (oto, swbd, swbd_oto), 54.76 MB each, no model card; a TurnBench delivery bucket. TurnBench default loads "oto" (intake-2059#01); leaderboard row does not name its checkpoint, and "oto" meaning is inferred (intake-2059#02).
-
-## Compiled Update — 2026-10-28 (workspace-58 wrap): Parakeet CPU canary accepted for one clip; CS22.V0 exact parity is negative
-
-- **CS-8.STT0 Parakeet CPU canary (one clip, bounded)**: rc=0, native verifier replay emitted `verified canary`; 23 same-PID samples covered 4.47 s of 4.67 s on affinity 24-25; CPU weight buffer 1,255,643,680 bytes; per-PID VRAM stayed zero. Not a quality or throughput claim. The CPU v2 patch proposal stays pending install; GPU v2 has no inference result (preflight refused as expected).
-- **Parakeet reference weights acquired** (`ggml-org/parakeet-GGUF`, 1,255,897,319 bytes, SHA-256 `833bffc9...`); receipt and size checked, no fresh full-file hash.
-- **CS22.V0 parity NEGATIVE (diagnostic only)**: exact stop/segment parity false for all 3 candidates: GGUF/JIT 946/1118 and whisper 956/1113 mismatching cells of 1344; 2688/2688 native hashes, 0 mismatches or execution errors. Enrollment published 14m25s after completion, so no retroactive warrant.
-- **INF-79 FLEURS selection** rc0: 40 records (first ten test records for en_us, de_de, fr_fr, it_it) with hashes and a 16 kHz mono s16le conversion policy; selection only, no STT inference.
-- **STT2 converted-asset acquisition and 40-clip smoke launchers are source-prepared only** (no acquisition, no inference); all STT qualification parents remain open.
-
-### Source References (2026-10-28 workspace-58 wrap)
-
-- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.STT0, CS22.V0, STT2 preparation
-- [progress/2026-10/2026-10-28-codex-refactor-01a16fc3.md](../progress/2026-10/2026-10-28-codex-refactor-01a16fc3.md) — launcher preparation
-- [progress/2026-10/2026-10-28-workspace-58.md](../progress/2026-10/2026-10-28-workspace-58.md) — session record
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): S-20 cold-vision requests now fail fast in source
-
-**Confidence: verified** for the source and mocked tests; the live latency effect is **unmeasured**.
-
-- **Root cause.** `_handle_vision_request` awaited optional OCR before trying the selected VL server, so in explicit server-only mode a cold endpoint failed only after OCR (the original live observation was 27.9 s); the two vision roles can also resolve to one server URL.
-- **Fix.** A 250 ms shared-deadline TCP-connect preflight, only for `ORCHESTRATOR_VISION_VL_BACKEND=server`, over the selected endpoints (respecting `force_server`, aliases deduplicated), refuses through the existing `All vision paths failed` error before OCR, structured analysis or legacy HTTP fallback when none connects. Healthy server-only requests keep OCR and VL; other backends do not preflight.
-- **Evidence.** Orchestrator source 846783d10, promoted to main 84f6f6f1 (two files only); focused suite 16 passed, 40 deselected, 1.31 s, JUnit gate with all seven new test IDs. Mock endpoints only. The 84f6f6f1 API-only reload served S-20 at 18:48Z, but no live cold-path request was timed.
-
-Sources: [multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) (S-20) · [cold_vision_failfast](../progress/2026-10/2026-10-24-cold_vision_failfast.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a synthesized-tail turn-taking stratum exists and its accuracy re-score is owed
-
-**Confidence: verified** for the build (hash-exact verify); no ASR or accuracy number exists yet.
-
-- **Tail stratum `turn-taking-cs45-1-tail-v1`:** 82 CUT_IC/CUT_WAIT parent pairs x tails {0.3, 0.6, 1.0, 3.0, 4.0} s = 410 pairs / 820 clips, each bound to its PCM-SHA-256 and its v2 parent's passing gate; `verify` re-assembles all 820 hash-exact and v2 `tt_verify.py` still passes. The room tone is synthesized pink noise at -55 dBFS (no recorded room tone exists), so the stratum is marked synthesized and ranking-only with `advance_eligible_strata = ["human_recorded"]`. The natural-speech control is DECLARED-EMPTY (CS-4 set 5 unrecorded, 0 rows). Landed on research main; audio (386 MB) stays outside git.
-- **Not done:** the CS-47 accuracy re-score (820 clips x 6 arms; scripts hardcode CS-47 paths), so the box stays open.
-
-Sources: [conversation-stack](../handoffs/active/speech-and-multimodal.md).
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a tail-latency stratum for turn-taking
-
-- **CS-4.5 tail stratum built.** 82 CUT_IC/CUT_WAIT parent pairs x tails {0.3, 0.6, 1.0, 3.0, 4.0} s give 410 pairs / 820 clips, each bound to its PCM SHA-256 and its v2 parent's passing gate; reassembly is hash-exact and the v2 verifier still passes. The stratum is synthesized and ranking-only: `advance_eligible_strata` stays `human_recorded`, so it cannot advance a gate.
-- **Still owed:** the re-score leg and the natural control; audio (386 MB) lives outside git.
-
-Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md)
-
-## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the Italian TTS normalizer and respelling are on by default
-
-**Confidence: locally-measured** for the operator re-listen (15 clips, human ear); no live consumer exists yet.
-
-- **CS-8.L4 decision.** After re-listening 15 `s5-cs8l-retts` clips (11 better, 2 same, 2 worse than the originals, all intelligible; respelling 5/5 better, normalizer 6/2/2), the operator enabled both. Orchestrator `99d00198` turns on feature flags `tts_it_normalize` and `tts_it_respell` for Italian only, with kill switches `ORCHESTRATOR_TTS_IT_NORMALIZE=0` / `ORCHESTRATOR_TTS_IT_RESPELL=0` ([conversation-stack](../handoffs/active/speech-and-multimodal.md)).
-- **Scope.** "Live" means the default of `CascadeBackend`, the only speech path, which no production process constructs yet. Users first hear it when CS-21 wires the cascade, and CS-21 must pass a turn language, or the normalizer is a no-op. The respell table is a 5-word lexicon, not a stress model.
-- **Follow-ups.** CS-8.L4a: a spelled-out year ("duemilasei") was heard as "zei"; test over 5+ seeds and narrow the year rule if needed. CS-8.L4b: pauses after accent-marked respellings and inside "pi acca". CS-8.L4c: two prosody notes, monitored and not filed as tasks.
-
-### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
-
-- [conversation-stack](../handoffs/active/speech-and-multimodal.md) (CS-8.L4, L4a-c)
-- [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
-- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
-
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): the STT, VAD and speech-kernel program is filed, its scorer and custody code exist, and two audits found conflicts and corrections before any run
-
-**Confidence: verified** for the code that landed, the documents filed and the operator decisions; **inferred** for every STT, VAD, turn-taking and lexicon claim (no model was run, no arm has a number). The two operator-side decisions and the listen result are verified; nothing in the program has advanced an arm.
-
-- **The Bark intake became a 27-task program with durable triggers.** Stage 4 of `intake-underdog-bark-20261021` filed (plan sha256 recorded in `.research-session.json`) five phases in `handoffs/active/speech-and-multimodal.md`: P1 STT runner gate and bake-off (CS-8.STT0..STT6), P2 scoring integrity (CS-2.STT1, CS-4.STT1/STT2, CS-8.STT7), P3 VAD/turn-taking/LID/CPU degraded STT (CS-22.V0/V1/A1/L1/T1/D1, CS-45.2, CS-26.LID1/F1), P4 lexicon boosting (CS-8.LEX0..LEX2), P5 speech-kernel verification (CS-43.1..43.3, CS-8.G1B). Twelve durable triggers (M12-M23) and four knowledge rows (K4-K7) hold what is not a task. Rule that governs all of it: vendor cards, leaderboards, hosted boards, author timings and third-party ports are literature-class and rank nothing; every arm is measured by our own harness on our own clips. The frozen `production-speech-v1` trees, the speech champions and v10 are never edited by these tasks. The v11 speech pull-list task was renamed CH-18.d after an ID collision with a different CH-18.c.
-- **Five ggml generations now coexist on paper.** Candidate runners add ggml 0.13.0 (parakeet.cpp), 0.25.1 (NeMo-Speech.cpp), 0.26.0 (transcribe.cpp, CrispASR fork) and 0.27.0 (s2s.cpp, upstream qwentts) beside v10 0.16.0, qwentts 0.17.0 and whisper 0.18.0, so every launcher sets its own `LD_LIBRARY_PATH` and proves linkage. CS-8.STT0 is the zero-build entry: the frozen whisper tree already ships upstream Parakeet support (`parakeet-cli`, built with `GGML_HIP=ON`, gfx90a), used read-only. s2s.cpp serialises Parakeet behind one mutex and runs VAD on one CPU thread, so the controller must not assume batched STT.
-- **The STT scorer exists and its WER is still only an observation.** Research `d2e3283be` (`scripts/speech/stt_bakeoff/`; 203 tests, file-scoped) implements `stt_norm/v1` exactly as P-STT-1 section 1.3, a labelled `v2` CANDIDATE column (it/de/fr numerals, elision, a counted `de_compound_split_join` class), a secondary filler scorer, sealed-split custody, a manifest validator, a fitting screen (accept-ref with a Wilson 95% interval, label strictly above 0.10), a boosting guard (a TDT model with `speech_contexts` is refused as `NO_RUNNER_PATH`, because NeMo-Speech.cpp drops them silently) and a lexicon builder/scorer. Because `MEASUREMENT.md` says P-STT-1 WER is not a claim without its owning release protocol, every STT row projects Judged/Located until CS-2 ratifies an amendment. `corpus_id` binds the corpus manifest (identical across arms), not an arm's raw manifest; an unsealed confirmation record is refused by the belief writer.
-- **CS-2 amendment candidates are text, not authority.** `docs/reference/speech/cs2-stt-amendment-candidates.md` holds seven candidate items with the current text, proposed wording and rationale: `stt_norm/v2` (closed per-language numeral tables; apostrophe kept; German compound split/join not forgiven but counted), two new properties (REFERENCE-BLIND normaliser, PINNED DEPENDENCIES: an unpinned numeral library makes the instrument a function of host state), a filler policy (DP-B; default option b: fillers are ordinary tokens, a counted list only in a labelled secondary scorer), and a longer WER record-field list (language mode, segmentation, unk policy). Nothing edits `MEASUREMENT.md` or `measurement/protocols/`.
-- **Operator decisions that unblock the confirmation stratum.** DP-A: private STT confirmation strata live in a separate private repo (public repos keep hash manifests only; custody wired in research `eb916e168`; 191 tests pass in `stt_bakeoff`, 7 new). DP-C: a single labelled rater for now, extendable through a `reference_version` bump plus an `edit_log` entry. The CS-4 `human_recorded` stratum is still empty, so CS-8.STT6 cannot run.
-- **s2s.cpp turn-state diff (CS-22.D1, zero compute).** Pinned s2s.cpp `e620fab214cb` (MIT) has a 3-state turn machine with revision counter, an 800 ms `reopen_grace_ms`, turn_threshold 0.5 on Smart Turn v3.2 and a recognizer/responder thread split; its defaults become named starting rows for the CS-22.V1 and CS-47 sweeps, not adopted values. Conflicts with our CS-18/CS-23 semantics: one unordered atomic cancel flag versus ordered cancel hooks, silent drop of an unheard revision versus explicit cancel, unconditional barge-in cancel versus the CS-18 retain choice, and a 384 ms barge-in default calibrated against its own echo canceller (re-sweep, do not adopt).
-- **CS-43.3 launcher/ABI audit corrected its own task text.** The frozen qwentts is `QT_ABI_VERSION 4`; upstream `01b6127` (which removes `GGML_BACKEND` in favour of `--device`) bumps the ABI from 5 to 6, not "to 5", so an upstream-based build jumps 4 to 6. Thirteen hit groups across the three repos; the live ones are the orchestrator `launch_manifest.yaml` :9002 CPU service env and its test, and a research render pipeline, all correct for the frozen v1 binary and to be changed only with an upstream-based candidate. The whisper tree has no such reference. `speech-v2-manifest.md` now points at the audit.
-- **Italian TTS follow-ups.** The 60-clip listen kit shipped at 16 kHz (the 24 kHz originals exceed the 20 MB budget and no audio encoder exists on the host); the second-ASR cross-check was NOT delivered, because a whisper-cli large-v3 CPU run started without a calendar grant was stopped by the coordinator and its partial output deleted. The Italian number/unit and "pH" normalizer is built (orchestrator `df9d2eca`, research `95550d294`), live path default-off pending the operator, with a re-synthesis filler armed to re-listen using a respelling probe; stress, proper-noun and accent notes are filed as monitor-only.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — the filed STT/VAD/lexicon/kernel program, DP-A/DP-C, triggers M12-M23, knowledge K4-K7
-- [docs/reference/speech/cs2-stt-amendment-candidates.md](../docs/reference/speech/cs2-stt-amendment-candidates.md) — seven CANDIDATE Annex S items
-- [docs/reference/speech/s2s-cpp-turn-state-diff.md](../docs/reference/speech/s2s-cpp-turn-state-diff.md) — turn-machine defaults and conflicts
-- [docs/reference/speech/cs43-3-ggml-backend-audit.md](../docs/reference/speech/cs43-3-ggml-backend-audit.md) — GGML_BACKEND/ABI audit and corrections
-- [docs/reference/kernel-manifests/speech-v2-manifest.md](../docs/reference/kernel-manifests/speech-v2-manifest.md) — pointer to the audit
-- [progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md](../progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md) — scorer, custody and adapter code, findings
-- [progress/2026-10/2026-10-22-bark-stage4.md](../progress/2026-10/2026-10-22-bark-stage4.md) — Stage-4 filing and the CH-18.d ID collision
-- [progress/2026-10/2026-10-22-speech-dpa-dpc-listenkit.md](../progress/2026-10/2026-10-22-speech-dpa-dpc-listenkit.md) — listen kit, private custody repo
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 11): the Italian normalizer is eval-only until the operator enables it live
-
-**Confidence: verified** for the default-off state and the task filing; the re-listen has not run.
-
-- **Ticked is not live.** CS-8.L1/L2 (numbers, units, "pH") are done in code, but the normalizer runs only on the eval/test path; the live speech path keeps it default-off pending the operator, so live conversations still mispronounce these. CS-8.L4 (conversation-stack) carries the enable step, gated on the operator's re-listen of the `s5-cs8l-retts` clips and an explicit on/off decision.
-
-### Source References (2026-10-22 wrap-up sweep 11)
-
-- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.L4
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 9): the Italian TTS listen check: intelligible, with number, unit and pH errors a normalizer can fix
-
-**Confidence: verified** for the ratings and the counts; **inferred** for the benefit of the normalizer, because the re-synthesis (`s5-cs8l-retts`, slotted about 22:00Z) has not run.
-
-- **Listen check (CS-8.L).** The operator rated all 60 cascade G1 Italian clips: 60/60 intelligible, naturalness mean 4.62 (median 5; 47 fives, 5 fours, 6 threes, 2 twos), 11 clips with notes. Errors by category: numbers and units 3 clips, pH read as "hache" 2, lexical stress 3, proper nouns 2, accent 1. Italian is not rejected, so the M17 trigger does not fire.
-- **ASR cannot replace the ear.** Forced WER of the low-naturalness clips (n=8) is 0.039 against 0.024 for the rest (n=52); Spearman -0.14, permutation p=0.21; 5 of the 8 low clips have WER 0.
-- **Text path.** No normalization existed between the cascade or LLM text and qwentts, which only strips the BOM and validates UTF-8 before BPE. The new Italian-only normalizer (orchestrator `df9d2eca`; 126 tests, voice suites 183/183) changes 10 of the 60 sentences, including all 5 operator-flagged normalizable clips, and is default-off and byte-identical when off. The cardinals agree with the STT-side table on all 101 values.
-- **No stress hook.** qwentts has no lexicon or stress control; `instructions` is rejected for the Base model and `--lang` is one codec token. Orthographic respelling is the only lever, so the re-synthesis carries it as an opt-in probe (the operator's choice).
-- **Belief kernel.** A `speech-listen-rating` adapter projects the aggregate; the WER cross-check is not projected because it is not independent of the same clips.
-
-### Source References (2026-10-22 wrap-up sweep 9)
-
-- [progress/2026-10/2026-10-22-cs8l-ratings.md](../progress/2026-10/2026-10-22-cs8l-ratings.md)
-- [progress/2026-10/2026-10-22-it-tts-normalizer.md](../progress/2026-10/2026-10-22-it-tts-normalizer.md)
-- [docs/reference/speech/tts-italian-text-prep.md](../docs/reference/speech/tts-italian-text-prep.md)
-- [progress/2026-10/2026-10-22-vb-speech-listen.md](../progress/2026-10/2026-10-22-vb-speech-listen.md)
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): multimodal — the turn-taking instruments exist, and the qwen-tts "thread collapse" is a core-sharing effect
-
-**Confidence: verified** for harness conformance, parity and the thread-scaling measurements (each scoped below); no turn-taking policy result exists, and CS-45's human-recorded stratum is empty, so no arm can yet advance.
-
-**Measurement contract (frozen 2026-10-20).** The turn-taking measurand note names every quantity with its direction and denominator. Rules that prevent misreadings: direction is part of the name; the denominator is every manifest item (crash, timeout, never-fire = miss); synthesized evidence may reject or rank an arm but only human-recorded evidence may advance one; patched scorers mark a measurement-era boundary and are not comparable to published numbers; published rows are reference rows only; no cloud judge. Scenario flips matter: turn-over rate is better high for smooth turn-taking and interruption but better low for pauses and backchannel, and a HIGH stop time is correct for backchannel, off-talk and background speech. The note does not amend Annex S, whose amendment boundary stays human-only.
-
-**Status of the program (see [conversation-stack](../handoffs/active/speech-and-multimodal.md)).**
-- *CS-45 (corpus, labels, pins):* built; 105 synthesized pairs (62 incomplete-cut, 13 wait, 30 backchannel-context), each from ONE spliced recording so pairs are acoustically matched, plus 25 reserve pairs that count only via a recorded review backfill. Verification passes (12 checks; 60 tests incl. mutation refusals). The checkbox stays open for the human review of a 20-pair sample, and the later CS-46 close-out notes v1 is being rebuilt for label and splice defects, so downstream work must use the rebuilt corpus. The pinned instrument set is one Silero VAD, Full-Duplex-Bench and TurnBench commits, and the production whisper.cpp as the word-timestamp ASR; five scorer substitutions are recorded as era changes.
-- *CS-46 (Parakeet EOU arm, ticked):* the community ONNX encoder is stateless and cannot run the cache-aware loop, so cache-aware encoders were self-exported. Parity versus the NeMo CPU streaming run is step-exact on 20/20 clips (80 and 160 ms chunks, reset none/full). Binding consequences: the int8 decoder_joint is excluded from CS-47 unless re-validated (it emits a false end-of-utterance on a backchannel clip); the Rust port's mel filterbank differs from NeMo's (max diff 14.3 versus 2.3e-4 for the Slaney reimplementation).
-- *CS-48 (barge-in harness, ticked):* a deterministic stimulus player and scorers over the unmodified voice controller; scripted-agent stop/resume instants recovered exactly on a virtual clock, mutations refused with named reasons, replays bit-identical (30 tests). Both merge-gap readings of Full-Duplex-Bench are reported because its code and comments disagree.
-- *CS-47 and CS-49 (the actual bake-offs)* remain open; CS-49 also needs live services and an inference-owning window.
-
-**qwen-tts thread scaling (frozen speech kernel, nothing changed).** On a quiet CPU region 8 threads is about 4x FASTER than 1 (38 versus 94 ms/frame pinned; 24 versus 96 free), so the earlier 13x slowdown at 8 threads is NOT a thread-count property. Its trigger is core sharing: the ggml barrier is a pure pause-spin with no yield, qwen-tts builds a disposable pool per graph, so one descheduled thread stalls all (8 threads plus 8 spinners: ~9.8 s/frame; perf shows nearly all samples spinning). OpenMP knobs are inapplicable (no OpenMP in the library). Guidance: N threads only on cores nothing else runs on; otherwise one thread per process; do not pin tightly. A persistent pool with poll 0 would be the real fix and needs a new kernel version. Not tested: the exact original background load.
-
-**Vision and fallback.** Speech work lives in the conversation stack; the vision handoff keeps vision only. The server-only vision policy now refuses without POSTing the legacy endpoint (synthetic controls; the cold-server timing diagnosis in S-20 stays open). The vision embedder screens (EmbeddingGemma 2, CLIP) still have nothing to screen: the collections were empty on 2026-10-20.
-
-### Source References (2026-10-20 sweep 2, multimodal)
-
-- [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — the frozen quantity definitions and reading rules.
-- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-45/46/47/48/49 notes, qwen-tts thread follow-up, durable triggers M8-M11.
-- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — speech moved out; server-only fallback; embedder trigger.
 
 ## Latest source review — 2026-10-07
 
@@ -294,460 +128,6 @@ paralinguistic perception the interlocutor was chosen for.
 - External, not yet ingested (CS-1, intake pending): Step-Audio 2 (arXiv 2507.16632,
   <https://huggingface.co/stepfun-ai/Step-Audio-2-mini>), Qwen3-Omni (arXiv 2509.17765,
   <https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct>), STITCH (arXiv 2507.15375), SHANKS (arXiv 2510.06917).
-
-## Compiled Update — 2026-09-24 (late): the CPU speech contention is decided — D, no change
-
-**Confidence: verified** — an operator decision, recorded first-hand (KVU-11b, root `54772ad7`).
-
-- **The operator chose option D on 2026-09-24 (~20:00Z): no change to the CPU speech layout.** STT stays on
-  cores 0-23 and TTS on 24-39, both at 0 VRAM, next to the `-t 96` CPU LLM roles on 0-95.
-- **Why:** the operator is drafting a larger STT/TTS integration plan that supersedes options A-C (partition the CPU
-  LLM roles and return TTS to the GPU; partition only; a decode throttle). Those options and their measurements are
-  input to that plan, not pending work. Do not re-propose partitioning or a throttle as standalone work.
-  *(Later the same day the plan landed as INF-79; see the section above.)*
-- **The hazard is known and accepted:** a speech request that arrives while :8070 or :8074 generates wrecks both the
-  speech and the LLM (numbers in the section below).
-- The A/B acceptance criterion (STT RTF < 0.5 and TTS first packet < 1 s with a CPU LLM generating, LLM decode loss
-  recorded) is kept for the operator's plan.
-- Numbers, options and GPU-side constraints: [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
-
-### Source References (2026-09-24 late)
-
-- [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md) — header decision line, §5.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11b (decision record), *Reporting*.
-- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a cross-reference.
-- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the accepted-hazard line.
-
-## Compiled Update — 2026-09-24 (wrap-up #4): speech is on the CPU now, and a generating `-t 96` LLM role breaks it — and is broken by it
-
-**Claim class: `locally-measured`** (research `artifacts/speech_cpu_realtime_20260924/README.md` addendum 3,
-`6afc7eed`; n = 1–2 per cell). Durable reference for any STT/TTS or voice-turn plan: [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
-
-- **Live layout (OP-54/OP-56, orch `0a564a1f`):** STT :9000 whisper.cpp `production-speech-v1` on CPU `-t 24
-  -ng`, cores 0-23; TTS :9002 qwentts.cpp `production-speech-v1` on cores 24-39 with 16 threads via the
-  `nprocs` `LD_PRELOAD` shim (qwentts has no thread flag). Both 0 VRAM. Quiet: STT RTF 0.20–0.39, TTS first
-  packet 0.09–0.17 s, RTF 0.55–0.63.
-- **Under a generating CPU LLM (`-t 96` on 0-95):** STT RTF ≥ 58, TTS first packet 13.4–13.6 s then a stall —
-  and the LLM collapses too (:8074 31.2 → 0.59 tok/s, :8070 36.8 → 1.05). Speech threads sit inside the LLMs'
-  active-wait core masks, so each side's barriers wait on the other.
-- **Partition test (`-t 56` on 40-95):** STT back to quiet (0.22–0.44), TTS marginal (first packet 0.24–1.0 s,
-  RTF 0.93–1.40), LLM decode −22..26%. SMT siblings (option C, earlier) were not real time either (TTS 20–37×
-  slower than real time).
-- **No priority-pause mechanism exists,** and a pause could not act mid-token.
-- **Decided 2026-09-24: D, no change** (see the section above).
-- Voice turns route their reasoning step to architect_general (:8083, the 27B on the GPU), not the CPU frontdoor.
-- S-11a (speech VRAM in the capacity gate) was closed as superseded and OP-48 withdrawn (root `baa0d036`): speech
-  holds no VRAM now. If TTS ever returns to the GPU (0.92 GB of weights), re-cut that fold for TTS only.
-- Correction: the addendum's first claim that `HIP_VISIBLE_DEVICES` was unset was wrong — it is `-1` on both
-  services; the HIP runtime opens `/dev/kfd` regardless (research `afbc6bea`).
-
-### Source References (2026-09-24, wrap-up #4)
-
-- [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11, KVU-11a, KVU-11b, KVU-11c.
-- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a superseded, cross-reference.
-- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) and [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (2)*.
-
-## Compiled Update — 2026-09-24: production STT/TTS are real time on the CPU alone, but collapse next to the CPU frontdoor
-
-**Claim class: `locally-measured`.** The source is research `artifacts/speech_cpu_realtime_20260924/` on research
-main `21cf444c`, the 17:14Z snapshot.
-- The frozen production binaries were run in CPU mode. No build was needed, and nothing was written inside either
-  kernel tree.
-- Every run was pinned inside cores 0-79.
-- Values are medians with (min-max). Several rows are single repetitions.
-- **An SMT-sibling (`smtC`) follow-up run was still writing to the shared research clone at 17:53Z and is not
-  committed.** Nothing below comes from it (RTG-57 KVU-11a).
-
-The question was whether STT (whisper.cpp) and TTS (qwentts.cpp) could move off the MI210 and still work for an
-STT → frontdoor → TTS conversation loop. The move would free about 3+ GiB of VRAM: whisper `:9000` held 2.23 GB per
-`rocm-smi --showpids`, and TTS `:9002` is declared but was not running. The S-12 record in the section below carries
-2.06 GiB, measured 2026-09-22. To pass, speech had to stay real time, run concurrently, and run alongside the CPU
-frontdoor.
-
-### Key findings
-
-- **Each one alone is real time.**
-  - **STT** (whisper large-v3-turbo, `whisper-server` defaults): RTF 0.12–0.20 at 24–32 threads, 5–8× headroom.
-
-    | Threads@cores | 11 s clip | 86.5 s clip |
-    |---|---|---|
-    | 24@0-23 | 2.17 s / RTF 0.197 | 14.4 s / 0.167 |
-    | 32@0-39 | 1.53 s / 0.140 | 10.5 s / 0.122 |
-
-  - **TTS** (Qwen3-TTS 0.6B, Q8_0 talker + 12 Hz tokenizer): pcm RTF 0.55–0.60 at 16 or more threads, about 1.7×
-    headroom.
-
-    | Threads@cores | Sentence (4.24 s audio): first packet / RTF | Paragraph (35.7 s audio): first packet / RTF |
-    |---|---|---|
-    | 16@0-15 | 0.084 s / 0.547 | 0.238 s / 0.595 |
-    | 24@0-23 | 0.075 s / 0.609 | 0.185 s / 0.589 |
-
-    TTS stops improving at about 16 threads, because frame-by-frame autoregressive decoding of a 0.6B model is bound
-    by latency. For comparison, GPU TTS RTF at freeze was 0.169.
-- **The two together, on separate cores, stay real time.** Layout `main40` puts STT on 24@0-23 and TTS on 16@24-39:
-
-  | Metric | Each alone | Together |
-  |---|---|---|
-  | STT RTF, 11 s clip | 0.206 | 0.199 |
-  | STT RTF, 86.5 s clip | 0.187 | 0.243 |
-  | TTS RTF, sentence | 0.692 | 0.593 |
-  | TTS RTF, paragraph | 0.600 | 0.606 |
-
-  - Prebuffer is at most 0.47 s, so a 0.5 s jitter buffer covers every run outside the frontdoor case.
-  - Idle residency costs the frontdoor nothing: it ran 41–46 tok/s with both speech servers resident but idle.
-- **Next to a generating frontdoor, both collapse, and so does the frontdoor.**
-  - **`main40` plus a 300-token frontdoor generation:**
-    - STT RTF 1.54 (1.13-1.87) on the 11 s clip and 2.91 on 86.5 s.
-    - TTS RTF 9.11 on the sentence (prebuffer 32.8 s) and 7.84 on the paragraph (prebuffer 243 s).
-    - The frontdoor took **906 s for 300 tokens, 0.3 tok/s**, with a TTFT of 29 s for 4 prompt tokens. Solo it ran
-      43.3 tok/s.
-    - This phase was stopped after 1 of its 2 planned repetitions, because it was holding production at 0.3 tok/s.
-  - **Even `lean16`** (STT 8@64-71, TTS 8@72-79, frontdoor capped at 120 s): STT RTF 0.799, TTS RTF 7.90, and the
-    frontdoor at **7.4 tok/s vs 43.1**.
-  - **The cause:** the frontdoor runs `-t 96` across physical cores 0-95, so no core in the allowed 0-79 set is free
-    of it. Both sides use spin-barrier threadpools, so whenever one thread is time-sliced, every other thread waits.
-    That mechanism is inferred; the effect is measured.
-- **Hazard: whisper's layout collapse is deterministic.** A single 30 s encode hangs for more than 60–300 s at
-  `20@0-19`, `28@0-27`, `24@0-31`, `32@0-31` and `32@24-55`. It is healthy at `16@0-15`, `16@0-23`, `24@0-23`,
-  `32@0-39` and `32@0-47` (3 repetitions each, `raw/whisper_bench_encoder_matrix.txt`).
-  - On the server, 32@0-31 took the 11 s clip to 20.5 s (RTF 1.86), and the 86.5 s clip was aborted after more than
-    8 min.
-  - Per-core sampling showed threads stacked two to three per core while cores in the mask sat idle.
-  - Both builds have `GGML_OPENMP_ENABLED=OFF`, so ggml rebuilds its own spin-polling pool for every graph. The
-    inferred cause is that per-graph thread spawn meets the scheduler's placement, and the spin barriers amplify it.
-  - **Any CPU speech launcher must use a measured layout, or a build with a persistent, pinned threadpool.**
-- **Hazard: the TTS thread count can only be controlled through a `get_nprocs` shim.** qwentts.cpp has no CLI flag.
-  `src/backend.h` hardcodes `hardware_concurrency()/2`, which ignores affinity and gives 96 here. An LD_PRELOAD shim
-  (`nprocs_shim.c`) sets `get_nprocs()` = `SHIM_NPROCS` = 2N, and each server log confirms `CPU threads: N`. Without
-  it, the server starts 96 spinning threads.
-- **CPU ASR has a latency floor that counts against the move, co-tenancy aside.** Whisper pads every input to a 30 s
-  window, so an utterance of any length costs about 2 s at 24 threads. The 3.5 s clip took 1.97 s (1.92–2.03), RTF
-  0.56. The GPU does the 11 s clip in 0.21 s (freeze record, whisper `b3073792` commit message).
-- **Superseded:** OP-56 was decided the same day (whisper STT moved to the CPU), and the resulting contention
-  (KVU-11b) was decided D, no change — see the 2026-09-24 (late) section at the top.
-- **Recommendation: keep speech on the GPU while the host is partitioned as it is today. Where it lives is an operator
-  decision (OP-56 / RTG-57 KVU-11).**
-  - **(A) Stay on GPU (recommended).** Costs about 2.2 GB of VRAM for whisper, plus TTS when it runs. The TTS figure,
-    about 1–2 GB, is inferred from 0.92 GB of weights and a 0.9 GB KV cache on CPU. This option avoids the frontdoor
-    collision entirely.
-  - **(B) Give speech its own cores.** Shrink the `-t 96` frontdoor and `:8074` to free 24–40 physical cores (STT
-    16–24, TTS 16). The cost to the frontdoor is **unmeasured**; measuring it needs a frontdoor relaunch.
-  - **(C) Run speech on the SMT siblings 96–175.** This removes the time-slicing but still shares execution ports.
-    **It is untested in the committed snapshot.** The `smtC` run was in flight and uncommitted at 17:53Z. KVU-11a
-    commits that delta, regenerates SHA256SUMS and updates option C. It then removes the shared clone's untracked
-    copies, so DS41-C10a's fast-forward is not blocked.
-
-  Either CPU option needs a measured layout and the shim. The decision is coupled to OP-48 (the capacity gate seeing
-  speech VRAM, S-11a below) and to package N-5 (TTS does not fit next to `-kvu` today). Before any CPU speech is
-  re-measured, `speech_cpu_bench.py` needs a write side (VB-SPEECH-CPU-1).
-- **Scope limits:** transcripts were sanity-checked only (jfk comes back verbatim). No WER was measured, and no
-  GPU-side accuracy comparison was made. The CPU binaries predate their freeze commits by about 5 h, and those commits
-  carry only GPU patches. That the CPU path is identical is **inferred**.
-
-### Source References (2026-09-24 CPU speech)
-
-- Research `artifacts/speech_cpu_realtime_20260924/README.md` (research main `21cf444c`, the 17:14Z snapshot), with
-  `raw/summary_tables.md` and `raw/whisper_bench_encoder_matrix.txt`.
-- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-11 (options A/B/C,
-  OP-56), KVU-11a (follow-up commit).
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-SPEECH-CPU-1.
-- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10a (the untracked
-  speech copies block the shared clone's fast-forward).
-- [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"CPU: C1 speech done, C2 skipped".
-
-## Compiled Update — 2026-09-24 (wrap-up compile): the speech stack is finally registered, and the pins in the task text were wrong in two ways
-
-**Confidence: verified** — registry rows, MRG-1 gate results and the guard scripts are landed
-(research `53418b84`..`e485008a`, orch `f323fa01`). The capacity-gate fold is **PREPARED, not landed**.
-
-### Key findings
-
-- **The speech stack is no longer discoverable only from progress logs.** `server_mode.tts_server`
-  (qwentts.cpp) and `server_mode.voice_server` (GPU whisper.cpp) are now records in the research master,
-  with `data/model_registration/20260924-qwentts-cpp-12hz-0.6b/` carrying the MRG-1 gate: identity,
-  capacity, recipe and co-residency **PASS**; anchor, placement, shape, context and slot **N/A with written
-  reasons** (a single-instance GPU aux service). Writing the N/A reasons down is what makes the gate
-  auditable rather than a partially-skipped checklist. Orchestrator descriptors were recompiled
-  (`f323fa01`, provenance hash only — **no active-role change**).
-  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11, S-12)
-- **The registration corrected its own task text in two places, which is the point of registering.**
-  (1) The qwentts.cpp pin is **`2c1b5182e`** (ggml 0.17.0, the ratified `production-speech-v1`, live binary
-  sha256 matching the ratification) — the `abab6b3b` the task named is its direct **parent**, a
-  pre-ratification snapshot, and the md5 `5b858d75…` in the task matches **no current binary**. (2) The
-  GGUF pair named in the task is a Path-A leftover; qwentts.cpp actually serves
-  `Qwen3-TTS-qwentts/{qwen-talker-0.6b-base-Q8_0,qwen-tokenizer-12hz-Q8_0}.gguf` per `launch_manifest.yaml`.
-  A pin carried in prose for two months drifted from the thing running; the registry row is now the
-  answer. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11)
-- **The STT registration changed nothing about what runs.** `voice_server` records the GPU whisper.cpp
-  service that has backed `:9000` since the 2026-08-02 W4 swap (VRAM 2.06 GiB, measured 2026-09-22); the
-  CPU faster-whisper record is retained under `retired_cpu_path`. `launch_manifest.yaml` already ran the
-  GPU path — the gap was purely one of record.
-  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-12)
-- **The fork stays a pinned dependency, and two guards now enforce it.** S-13 closes with the S-11 registry
-  row as the pin record plus `scripts/session/verify_speech_kernels.sh` (runs at every session init:
-  distinct git toplevels, and no qwentts-specific source inside the production llama.cpp tree) and research
-  `scripts/utils/verify_qwentts_pin_isolation.sh` (fuller: ggml submodule pin + history grep, 4 tests). A
-  main-thread correction made the root guard cheaper — it had been walking the whole llama.cpp tree at
-  every session init and now uses direct existence tests.
-  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-13;
-  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
-- **The capacity gate has never seen 4.68 GiB of speech VRAM, and making it see them costs most of the
-  margin.** PREPARED as `artifacts/operator/inf41-capacity-gate-aux-vram-20260924.patch` (orch branch
-  `noninf/inf41-speech`, staged): `AuxService.vram_gib` (whisper 2.06, tts 2.62) folded into GPU headroom
-  via `stack_manifest.aux_gpu_reserved_gib()`, 19 tests pass. On the 2026-09-22 lineup the fit stays OK but
-  the margin goes **5.85 → 1.17 GiB**. Two gates hold it: (a) it changes capacity-gate arithmetic, so it is
-  a stack-change package needing the operator's signature; (b) the pre-commit hook refuses any commit
-  touching `stack_manifest.py` while `orchestration/contention_matrix.yaml` is stale (topology hash
-  `171f86f9` ≠ live `1c548fce`, last refreshed 2026-08-23), and refreshing it is a live bench sweep — i.e.
-  inference. Tracked as OP-48.
-  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11a;
-  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
-- **S-15 is confirmed LIVE, not merely committed.** `default_vl_max_tokens` 512→1024 (orch `8a8e391c`) is
-  now in a running process: the API was reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`) and the
-  config reads 1024. That closes the "deployed vs committed" gap that the earlier entry left open, and it
-  unblocks S-16.
-  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15)
-- **A subagent's fork wrote unrequested registry work, and the registry comments overstated the state.**
-  Recorded from the main-thread review: a nested `fork` of the INF-41 subagent committed registry work
-  nobody asked for, and the registry comments claimed the capacity-gate fix was "CLOSED"/live when it was
-  only prepared — corrected in `e485008a`. A prepared patch described as closed is the exact failure the
-  prepared/landed distinction exists to prevent.
-  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
-  main-thread review")
-
-### Open questions
-
-- S-11a needs an operator signature **and** a fresh contention matrix; the matrix refresh is a live bench
-  sweep, so it cannot be done by a non-inference session (OP-48).
-- S-14 (upstream the gfx90a argsort fix to the qwentts.cpp / ggml fork) is still open.
-- S-16 (promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role) is now unblocked by S-15 being live, but S-17
-  still asks for a GPU resident-set audit before a fifth resident model lands — and the S-11a numbers make
-  that audit tighter, not looser.
-
-### Source References (2026-09-24 wrap-up compile)
-
-- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11, S-11a, S-12, S-13, S-15.
-- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the INF-41 row, the
-  capacity-gate gating, and the main-thread corrections (rogue fork, overstated registry comments, the
-  session-init guard cost).
-
-## Compiled Update — 2026-09-23 (evening wrap-up compile): the vision role's token cap is lifted, which unblocks the Qwen3-VL promotion
-
-**Confidence: locally-measured** for the parse-failure counts that motivated the change (they come from our own vision evaluation); the config change is landed and **now live** (API reloaded 2026-09-23 20:31Z — see Open questions).
-
-### Key findings
-
-- **S-15 landed: `default_vl_max_tokens` 512 → 1024** (epyc-orchestrator `8a8e391c`). The chat vision routes already request 2048. This is a **production config change**, not an evaluation-harness change, and it is live only after the next orchestrator API reload. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15, [2026-09-23 progress](../progress/2026-09/2026-09-23.md))
-- **The cap was a scoring artifact, not a model result.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation: **3 parse failures for the incumbent against 41 and 50 for the Qwen3-VL arms**, which were truncated mid-reasoning and then scored wrong. Even at 2048 the Qwen3-VL models emit no letter on ~9% of hard questions, so 1024 is a floor rather than a target. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15)
-- **Order matters for the promotion.** S-16 (promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role, retiring `Qwen2.5-VL-7B`) was deliberately sequenced behind S-15, because promoting first would have carried the truncation defect into production. That dependency is now satisfied. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-16)
-
-### Open questions
-
-- ~~The change is not live until the API reload~~ — **UPDATE, later 2026-09-23: LIVE.** The orchestrator API (uvicorn `:8000`) was reloaded at 20:31Z (pid `2815541`, on orch `3c6721ef`); health checked OK and the config reads 1024. The ~9% no-letter rate at 2048 has still not been re-measured under the new 1024 cap — that remains open.
-
-### Source References (2026-09-23 evening wrap-up compile)
-
-- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-15 (landed) and the S-16 dependency; the "LIVE" reload note.
-- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the operator item and the commit.
-- [2026-09-23-noninf-roi.md](../progress/2026-09/2026-09-23-noninf-roi.md) — the round-2 API reload for S-15 (pid, timestamp, health check).
-- epyc-orchestrator commit `8a8e391c` — `default_vl_max_tokens` 512 to 1024, confirmed live after the 20:31Z reload.
-
-## Compiled Update — 2026-09-24: Qwen-Image-2.1 is the production image-generation backend
-
-### Verified update
-
-- **The orchestrator now serves Qwen-Image-2.1 on CPU at port 8190** through an isolated Diffusers service that preserves the existing `image_generate` API and sdapi-compatible endpoints. The Qwen weights were already downloaded locally; the production cutover adds a CPU-only environment and launcher.
-- **ERNIE-Image-Turbo remains on disk as a rollback option, not the active production backend.** The production switch is operationally verified, but it is not a matched quality or speed comparison. No generation was run during the cutover; Qwen-vs-ERNIE comparison remains open.
-- The PhotoMaker V2 stack and its test output were removed, reclaiming about 27 GB. That cleanup is separate from model-quality evidence.
-
-### Sources (2026-09-24 wrap-up)
-
-- [Qwen image production cutover progress](../progress/2026-09/2026-09-24-qwen-image-production-cutover.md) — implementation, runtime verification, cleanup and test results.
-- [ERNIE image evaluation handoff](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — current production decision and the still-open matched comparison.
-- [Pipeline chapter](../repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md) — current service architecture and compatibility contract.
-
-## Compiled Update — 2026-09-23: Qwen-Image-2.1 weights were staged for an ERNIE comparison, and the vision role was clarified
-
-### Key findings
-
-- **The complete public `Qwen/Qwen-Image-2.1` Diffusers repository is local** at `/mnt/raid0/llm/models/diffusion/qwen-image-2.1/`: four text-encoder shards, two diffusion-transformer shards, VAE, configs, tokenizer and license. Weight files total **33,115,613,408 bytes**, with no `.incomplete` shards (re-verified on disk 2026-09-23). It is staged for a future local comparison against ERNIE-Image-Turbo. **No generation benchmark or quality comparison has been run**, so nothing about its quality is locally measured.
-- **Qwen-Image's Qwen3-VL 8B encoder is a conditioning component, not a vision-chat model.** The served `worker_vision` reader is Qwen3-VL-30B-A3B-Instruct on `:8086`, and Qwen2.5-VL-7B is retired. Downloading Qwen-Image does not add a chat-capable vision role.
-
-### Open questions
-
-- Does Qwen-Image-2.1 avoid the MI210 ≥1024² white-image defect that ERNIE-Image-Turbo still shows? That needs a run under the ERNIE evaluation's admissibility rules.
-
-### Sources
-- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the download record and the vision-role clarification.
-- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — the comparison target and its MI210 defect record.
-- `epyc-orchestrator` `orchestration/stack_topology.yaml` (`worker_vision`, `:8086`) — the served vision reader.
-
-## Compiled Update — 2026-09-17: the ROCm f32 fix does not clear the MI210 ≥1024² white-image defect, and the local vision-reader inventory
-
-**Confidence**: verified (`locally-measured`: two MI210 runs with residency proven and results committed; the
-reader inventory comes from a zero-inference scoping pass over code, binaries and weights on disk).
-
-The *Candidate FIX for the MI210 1024² blank-PNG defect* (the 2026-07-29 section below) has now been built and
-run twice, and it **is refuted**. A ROCm-guarded f32 force on ERNIE-Image-Turbo's `to_out.0`/`linear_fc2`
-does not stop 1024² and 832×1248 outputs coming back uniform white. Neither does a wider f32 set, a 1/16
-out-projection scale, or both together. The only effect that can be attributed is on the default code path:
-the narrow patch moved the blank threshold from 960² up to 1024². This **supersedes the older inference
-that the evidence "points away from the VAE"**. With every precision change on the DiT linears ruled out, the
-next hypotheses are the VAE decode and the attention/FA path at the longer sequence length. Testing either one
-needs a new build and prep, not a re-run. The handoff box stays unticked because there is still no valid
-1024² GPU number. Separately, scoping for OCC-1 (see [context-management](context-management.md)) listed
-which vision readers can actually run locally.
-
-### Key findings
-- **Run 1 (2026-09-16, 14:21–14:30Z)** used the sd.cpp worktree build `build-rocm-gpuprep-20260916` (shared
-  ggml, HIP gfx90a, ROCm 6.2, carrying the ggml FP8 guard). The run was admissible: 23/23 requests returned
-  HTTP 200, the server pid was in KFD in every sample, peak VRAM was 25.5 GiB with the patch on and
-  19.0 GiB with it off, and the linkage receipt passed. At 8 steps and n=3, every cell was bit-identical
-  across its reps. Generation times with the patch ON: 768² 16.3 s, 896² 23.0 s, 960² 26.9 s (good),
-  1024² 30.2 s (white), 832×1248 30.4 s (white). 1024² with the patch OFF took 26.5 s and was also white.
-  At 896² the patch costs about 13% (23.0 vs 20.3 s). Evidence: research `cf05eefc`.
-  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
-- **Run 2, the recipe §5 variants (2026-09-17, 02:30–02:55Z, build `build-rocm-variants-20260916`)**: 55/55
-  requests returned HTTP 200 with the same prompt and seed. None of the variants passed the pre-registered
-  FIX rule (1024² and 832×1248 non-blank on every rep, and 768–960² good). Results for 1024² plus
-  832×1248: 0/6 non-blank for off, narrow f32, wide, outscale and wide+outscale alike. Patch-OFF was blank
-  at 960² in all 3 reps. Cost at 896² against off (19.44 s): wide 1.42×, outscale 1.01×. Evidence: research
-  `ca8c63d6` (`verdict.json`). [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
-- **Recipe §5 is used up.** Neither the wide set nor outscale keeps the narrow patch's 960² gain: both are
-  blank at 960² again. Per the recipe, no headline GPU speedup is computed. Neither run has a belief-kernel
-  write hook; VB-GPU-RUNNER covers both.
-  **ERNIE-ROCM-NEXT filed 2026-09-17:** with every DiT-linear variant exhausted, the next ≥1024² white-output
-  hypothesis must lie outside that family (VAE decode, or the attention/FA path at the larger sequence length),
-  and it needs a new sd.cpp build plus a pre-registered A/B after zero-inference prep. The run waits for the
-  operator to lift the 2026-09-17 GPU hold.
-  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
-- **Local vision-reader inventory (2026-09-16, zero inference).**
-  - Qwen3-VL-30B-A3B Q4_K_M + F16 `qwen3vl_merger` mmproj is the served `worker_vision` reader. It runs on
-    champion `ef81196d5` (`PROJECTOR_TYPE_QWEN3VL`, `tools/mtmd/models/qwen3vl.cpp`), and the libmtmd
-    binary is newer than that commit.
-  - `clip.cpp` has no backend gate, and the GPU flag is `--device ROCm0`.
-  - Qwen2.5-VL-7B (6.0 GB) is kept as a rollback only. Qwopus3.8-27B-Flash Q8_0 fits (29.7 GB) but is not
-    served as a vision reader.
-  - **Qwen3.8-Flash-Next + F16 mmproj (88–92 GB) does not fit the 64 GB MI210.**
-  - **The gemma-4 models have no mmproj on disk**, so they cannot do vision locally.
-  - Qwen3-VL-2B and 1B-Merged have an empty directory or no mmproj.
-  - LightOnOCR-2-1B, PaddleOCR-VL-1.6 and Unlimited-OCR are transcribers only, not QA readers.
-
-  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md)
-- **Vision token cost.** Qwen3-VL uses a 32 px cell (patch 16 × merge 2) with token bounds (8, 4096).
-  Production passes `--image-min-tokens 1024`, so a 1568×1568 frame costs 2,401 tokens.
-  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md)
-- **Link fix.** The ERNIE deep dive now links the Hermes outer-shell handoff under `completed/`, where
-  `image_generate (FAL)` is still disabled and ERNIE is its self-hosted replacement.
-  [ernie deep dive](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md)
-
-### Open questions
-- Is the ≥1024² white output caused by the VAE decode, or by the attention/FA path at the larger sequence
-  length? Either test needs a new build plus prep.
-- The 960² change is attributed only across builds, because the Run 1 build never ran patch-OFF at 960².
-
-### Sources
-- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — both MI210 run blocks: build, admissibility, result tables and reading.
-- [2026-09-16-sub-occ1.md](../progress/2026-09/2026-09-16-sub-occ1.md) — the local vision-reader candidate table and the Qwen3-VL token-cost arithmetic.
-- [ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the re-pointed Hermes link (link change only).
-- [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — confirms the served Qwen3-VL reader's GPU fit (about 21 GB) on the champion.
-
-## Compiled Update — 2026-08-12: the TTS wiring task was already done ten days earlier, and the box was the only thing missing
-
-**Confidence: verified** for the static and test evidence; **explicitly unverified** for live runtime — no process was launched, so this records that the wiring exists, not that the service answers.
-
-The open task to wire TTS into the stack lifecycle was closed by **discovering it had already landed** on 2026-08-02; only the checkbox had never been flipped. Independent verification found `start_tts` present in the launcher, port 9002 declared in the launch manifest, and reload dispatch driven off the auxiliary-services table rather than a special case — plus six parametrised tests passing, including a real linkage check. What was **not** done is a socket-level startup or a `/v1/audio/speech` smoke test, and this page does not claim either.
-
-Two governance points come out of it, and they are the durable part:
-
-- **A completed task with an open box is a live cost.** This one sat for ten days, and the same session found a sibling case where a note about the speech-kernel verification had to be corrected because the script it described did not actually run its check. The pattern — an announcement landing while the thing it announces does not, or the reverse — recurred repeatedly across the fleet this week.
-- **Verify before building.** The correct output of this task was zero lines of new code. A task that begins by re-deriving whether its premise still holds costs one check; a task that begins by implementing costs a duplicate implementation and a merge.
-
-Related speech-kernel context unchanged: both speech kernels remain frozen at `production-speech-v1`, and the three-tree ggml generation split means every launcher still has to prove its own `LD_LIBRARY_PATH` — see [Local Inference](local-inference.md) for the linkage landmine that makes this non-optional.
-
-### Source References (2026-08-12)
-
-- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the S-9 closure, the independent verification, and the explicit unverified-runtime boundary.
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the same-session speech-kernel verification correction.
-- [`capability-registry-and-promotion.md`](../handoffs/active/stack-lifecycle-program.md#track-capability-registry-and-promotion) — the parallel "the applicator already existed" premise correction, same shape.
-
-## Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
-
-The first live paired MiniCPM-o observation is deliberately not a deployment
-decision: it observed `6/8` versus Qwen2.5-VL `5/8` on `worker_vision` and
-`7/10` versus `6/10` on `vision_escalation`, with exact two-sided McNemar
-`p=1.0` for both. The sample is observation-only and does not alter the
-lineup. In parallel, the pinned llama.cpp-omni Path-B CLI feasibility probe is
-terminally blocked: the exact pin accepts numbered audio fixtures only and
-cannot meet the required text-input/output-WAV contract without source changes.
-The actual TTS adapter decision and any M-3 role swap remain open behind E8.
-
-### Source References (2026-07-26 bounded MiniCPM-o evidence)
-
-- [Multimodal pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — M-1 observation, M-2 feasibility closure, and remaining M-2/M-3 gates.
-- [Post-v8 master handoff index](../handoffs/active/master-handoff-index.md) — campaign sequencing and no-lineup-change boundary.
-- [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — exact paired counts and pinned-interface evidence.
-
-## Compiled Update — 2026-08-25: document-specialist VLM arms — instruments fixed, evidence corrected, both runs still operator-gated
-
-**Confidence: verified** for the code/harness/disk facts (shipped tests, on-disk artifacts,
-in-place record corrections); **no new model run** was made or is claimed.
-
-### PaddleOCR-VL: the 0.0 / 0.058 TEDS figures in the 2026-07-17 finding above are VOID, and the real pipeline is the gate
-
-The 2026-07-17 finding's "prompt-only HTML-table recovery stayed negative (TEDS=0.0 … rescore only
-lifted table TEDS to 0.058333)" figures are retracted by the document-parser-table-bench
-reassessment: PaddleOCR-VL-1.6 is a **three-stage pipeline** (PP-DocLayoutV3 layout analysis →
-0.9B VLM recognizing *cropped regions* under the six official element prompts (`OCR:`, `Table
-Recognition:`, `Formula Recognition:`, `Chart Recognition:`, `Spotting:`, `Seal Recognition:`) →
-markdown/table assembler), with **no page-level markdown prompt on the card** — whole-page feeding
-is off-label and the numbers describe the harness, not the model. The instrument is now competent:
-full OmniDocBench (1,651 pages / 665 table regions, English-only view scoreable) is local, and
-Phase A is landed — `paddleocr==3.7.0` + `paddlepaddle==3.2.2` in a dedicated venv, with
-**`--vl_rec_backend llama-cpp-server` verified as an explicitly supported backend** (the
-`paddleocr --help` omission is an argparse registration gap, not a missing subcommand). Phase B
-(binary gate: does the documented pipeline emit HTML `<table>` markup?) and Phase C (n=665,
-English-only split) require per-run operator approval; `llama-server` remains the compute engine,
-and the "Python pipeline = disqualifier" framing is superseded by the operator's 2026-07-20
-direction that the orchestrator *should* avoid inference when unnecessary — layout decides what
-needs the VLM. Do not re-cite the voided figures.
-
-### Unlimited-OCR: a second instance of the harness-vs-model pattern, corrected to prompt/profile mismatch
-
-Unlimited-OCR (3B-A0.5B, Baidu, intake-864) ran a mechanically real 18-page OmniDocBench demo on
-2026-08-13 (18/18 pages, 0 errors; median **5,857 ms/page**; median decode **392 t/s**; text-block
-edit distance 0.3624, table TEDS 0.0117, reading-order 0.2165) — but all 18 pages emitted
-**coordinate-tagged layout dumps, not markdown**, which is a sufficient explanation for the
-near-zero TEDS. The record correction (2026-08-25) downgrades the claim to **demonstrated
-prompt/profile mismatch**: the GGUF's bare-passthrough chat template is verified, but llama.cpp's
-own `tools/mtmd/tests/test-deepseek-ocr.py` records prompt-dependent behaviour (`Free OCR.` emits
-EOS immediately while the HF-reference `document parsing.` grounds), so "coordinate output
-regardless of prompt" is not established. Same shape as the PaddleOCR-VL retraction: an off-label
-invocation profile producing numbers that describe the harness. The default artifact is now the
-requantized `Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB, `output.weight` q8_0, 154 tensors
-byte-copied — no double-quant loss), and the canonical-profile A/B (`document parsing.`,
-`n_predict=4096`, `n_ctx=16384`, DRY, grounding-strip per `test-deepseek-ocr.py`) is gated on the
-operator's all-inference-stop order being lifted. Full record, including the mutex-receipt
-correction and the now-confirmed disappearance of the run artifact:
-[Document Processing](document-processing.md).
-
-### Source References (2026-08-25 document-specialist arms)
-
-- [`document-parser-table-bench.md`](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) — the
-  three-stage architecture and six official prompts, the void note on the 0.0/0.058333 figures,
-  the full OmniDocBench instrument, the Phase A environment landing and the `llama-cpp-server`
-  backend verification, and the Phase B/C operator gates.
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
-  — the Unlimited-OCR observation row with the corrected causal claim, the requantized
-  `DEFAULT_MODEL` repoint, and the canonical A/B contract.
-- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the demo run
-  record (measurements, the output-format finding, the `held_s` defect) with its 2026-08-25
-  supersession blockquote.
-- [`progress/2026-08/2026-08-25-mainA-pip05.md`](../progress/2026-08/2026-08-25-mainA-pip05.md) —
-  the record-correction execution and the verified loss of the demo run directory.
-- [Document Processing](document-processing.md) — the compiled full record of both arms, the
-  harness hardening, and the dataset-path resolution.
 
 ## Summary
 
@@ -1006,7 +386,636 @@ Sources: intake-703 (Kimi-K2.7-Code-GGUF, MoonViT fork-unsupported — verified)
 
 **A quantitative demand/capability trigger gate now governs the long-open "should `worker_vision` recollect to 4 quarters" question, replacing an unmeasured "in principle."** Baseline measurement (7.9-day tap window, 2026-07-15→23): 399 `worker_vision` requests, **all** eval-tower-driven (`batch_id` non-null); **zero** organic traffic; `vision_escalation` saw zero events of any kind in the same window. The gate has two independent trigger conditions (either fires it): **Trigger A (demand)** — sustained organic arrival ≥2 req/min over any 30-min window on ≥3 distinct days within 14 days, AND in-flight depth >2 (saturating the current single quarter's 2 slots) for >10% of samples; **Trigger B (capability)** — a new candidate VL model passes the K35 quality gate at parity-or-better *and* a certified-affinity quarter-pair co-run bench shows aggregate ≥1.2× with no pair <1.0× (n≥8, CV≤5% — tightening the prior J5 vision re-bench, which was direction-robust but diagnostic-grade at 5/8 pairs CV>5%), plus a demand floor of ≥0.5 req/min. **Whichever trigger fires, the gate is SUSPENDED if a persistent-live MI210 vision lane goes into production** — one GPU vision stream (110–127 t/s) is 4–10× a CPU quarter stream, so any GPU cutover makes CPU-side quartering moot except as a GPU-retirement fallback. Consequence flagged: the routing modality fence only went live 2026-07-23 (vision was previously routing-dead, 0/376), so **all demand data at or before that date — including the 7.9-day baseline above — undercounts true organic demand**; the first valid post-fence reading is 2026-08-06. [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) §Trigger Gate
 
-## Compiled Update — 2026-07-29: ERNIE keeps the quality axis, Z-Image is a latency question, and the blank-PNG defect has a candidate fix
+## NeMo validation rescore — 2026-11-01
+
+The offline English validation rescore covered 1,580 retained chunks, with 394 utterances in each of four settings. R13 had the lowest reported pooled WER: 8.3576% under `stt_norm/v1` and 8.3121% under the v2 candidate. R6 retained a decode-error failure, scored with deletions. This is selection-only evidence; the original scorer catalog binding is UNKNOWN and the broader test-set advancement gate remains open. ([handoff](../handoffs/active/speech-and-multimodal.md); [result summary](../artifacts/compute/codex3-stt5-v3-complete-20261101/SUMMARY.json); [progress](../progress/2026-11/2026-11-01-codex3.md))
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): ERNIE typography capture READY (unrun), speech STT5/Ultra preparation controls, no scored results. Earlier: 2026-10-28 (workspace-58 wrap): Parakeet CPU canary, CS22.V0 parity negative, STT2 preparation. Earlier: 2026-10-28 (owner-scope full-wrap delta): CS22.V0 diagnostic negative and STT2 source-preparation boundaries. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): S-20 cold-vision fail-fast is source-complete (mock-tested, no live latency claim). Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a synthesized-tail turn-taking stratum exists and its accuracy re-score is owed. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: Italian TTS normalizer and respelling on by default). Earlier: 2026-10-22 (wrap-up sweep 12, workspace-58: Italian TTS re-listen kit). Earlier: 2026-10-22 (wrap-up sweep 10: STT/VAD/speech-kernel program filed, scorer and custody code landed, s2s.cpp and ABI audits). Earlier: 2026-10-22 (wrap-up sweep 9: the Italian TTS listen check: intelligible). Earlier: 2026-10-21 (wrap-up sweep 5: speech placement moves to GPU card 2, CS-11 declined). Earlier: 2026-10-21 (wrap-up sweep 3 delta). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: Qwen3-VL-30B moved off the MI210 to cold CPU (device none, WARM, NUMA_HALF_A `-t 48`) because it no longer fits beside DFlash2 (66.75 > 62.00 GiB); S-18/S-19/S-20 filed; voice routing to :8083 is unimplemented in code); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-24 (speech-vision compile: the operator ratified a speech-native interlocutor with the orchestrator as its one tool — INF-79 conversation-stack, D1–D12, a Step-Audio 2 mini vs Qwen3-Omni-30B-A3B bake-off with the cascade as baseline and fallback; speech moved out of INF-41; the whisper.cpp MI210 WER corrected 2.35% → 3.37%; KAME revival gate 3 met); earlier: 2026-09-24 (late, main-ak-seat: KVU-11b decided — the operator chose D, no change to the CPU speech layout, pending their own STT/TTS integration plan); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: the live CPU speech layout collapses under a generating CPU LLM, both ways); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: production STT/TTS measured on the CPU alone — STT RTF 0.12–0.20 at 24–32 threads, TTS RTF 0.55–0.60 at ≥16 threads, real time together on separate cores, but next to a generating `-t 96` frontdoor TTS RTF goes to 7.8–9.4 and the frontdoor from 43 to 0.3 tok/s; whisper layout collapse and a shim-only TTS thread control; ~2 s CPU ASR floor from 30 s padding; recommendation stay on GPU, options A/B/C an operator decision (OP-56 / RTG-57 KVU-11), the SMT-sibling follow-up uncommitted (KVU-11a)); earlier: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+
+### Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): STT5 Ultra engineering25 is inconclusive and the Crisp HIP build is blocked by cross-role placement, not by the kernel
+
+**Confidence: verified** for filings.
+
+- **Ultra engineering25.** The row recorded 7 matches, 7 mismatches and 11 faults with rc=0 against a terminal `harness_failure` (75 rc0 arm records but 14 verdicts; nine comparator shape errors), so it is inconclusive and a no-redraw comparison-only successor is prepared. The v3 scorer filed inconclusive (16 score cells, settings UNKNOWN) and Voxtral stopped at the disk floor with 10 rc0 chunks.
+- **Crisp HIP r2.** The full-build job exited rc=64 three seconds in: region-lock refused unsafe cross-role dispatcher state; the one `acc.cu.o` object is from a dry run. No build, linkage, residency or parity verdict. The CS6 second-GPU bench plan (arm A 7-15 cells, 3.5-15 h, bookings provisional) is filed as a plan, not a measurement.
+
+Sources: [stt5 progress 11-02](../progress/2026-11/2026-11-02-handoff-stt5.md) · [stt5 progress 11-04](../progress/2026-11/2026-11-04-handoff-stt5.md) · [speech handoff](../handoffs/active/speech-and-multimodal.md)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **Helios real-time video** (intake-109#02) 14B autoregressive diffusion model with unified T2V/I2V/V2V input, claimed 19.5 FPS on a single H100. Not applicable to EPYC CPU/MI210 serving (video generation, H100 target).
+- **Qwen3.5-Omni** (intake-432#00) Omni-modal model scaling to hundreds of billions of parameters with 256k context; claims SOTA on 215 audio/audio-visual benchmarks. Not applicable to EPYC/MI210 at that scale.
+- **Comfy-Org Z-Image-Turbo repack** (intake-918#record) ComfyUI-format safetensors (bf16, int8_convrot, nvfp4) of the 8-NFE Z-Image-Turbo with a Qwen3-4B text encoder. Dive overturns the deciding question: the local stable-diffusion.cpp checkout already supports Z-Image, so the "no support" blocker is false.
+- **Z-Image S3-DiT** (intake-928#record) 6.15B single-stream DiT with a Qwen3-4B text encoder that fits under 16GB VRAM. Dive: runtime gate is cleared (the existing stable-diffusion.cpp supports it), so the rationale inverts toward being runnable on MI210.
+- **LensVLM-9B selective expansion over compressed text images** (intake-1576#00) 9B VLM (Qwen3.5-9B base) scans compressed text-page images and selectively expands relevant pages via learned tools, with 5x/10x/15x compression settings (intake-1576#01). The card gives no benchmark table or deployment evidence and does not define Expand(k); the paper and code give sequential one-page-per-turn expansion. Candidate for long-document handling on the MI210.
+- **Autonomous language-image loops converge to generic motifs** (intake-1652#01) 100 trajectories at each of seven temperatures over 100 prompt-image-prompt cycles (700 total, intake-1652#00); adjacent-step embedding distance settles after an early transient, which supports local stabilization, not endpoint convergence (intake-1652#01). Pooled k=12 is analysis-dependent (intake-1652#02), and the paper's ANOVA outcome (consecutive distance) differs from the notebook's first-to-last endpoint distance.
+- **PersonaPlex full-duplex speech** (intake-1982#00) Fine-tune of Kyutai Moshi (8.37B BF16 params despite the "7B" label). FullDuplexBench: smooth-turn latency 0.170, interruption latency 0.240 on one A100 80 GB (intake-1982#02). Shipped stack is plain PyTorch with CUDA graphs (intake-1982#04); English-only, failing the Italian-wanted gate (intake-1982#record).
+- **FluidAudio CoreML speech catalogue** (intake-1983#00) Swift/CoreML catalogue of ~25 converted speech models with no duplex/turn-taking policy; correction: conversion catalogue only, LocalVQE runs CPU not ANE. Turn end = Parakeet EOU token confirmed by 1280 ms debounce (intake-1983#01); Silero VAD hysteresis defaults minSilence 0.75 s (intake-1983#record). Upstream weights are PyTorch/ONNX, portable off Apple (intake-1983#04).
+- **Fish Audio Drama 3 TTS (card)** (intake-1984#00) 35.9B-parameter MoE TTS (3B active), Qwen3.5-35B-A3B-derived hybrid backbone with 13-layer codebook-MTP decoder, experts in block-scaled FP8 (~39.6 GB weights). Published numbers are H200-only (166.7 frames/s at concurrency 1, TTFA p50 88.9 ms, RTF 0.131) (intake-1984#04); no ROCm/CPU/llama.cpp path published (intake-1984#02). Correction: exact size 35.9B, not 36B.
+- **PersonaPlex paper** (intake-2001#00) Role (text) and voice (audio) conditioning for Moshi via a hybrid system prompt with a 440 Hz sine on the user channel. Moshi fine-tune trained 24,576 steps in 6 h on 8xA100 on 1,840 h synthetic customer-service dialogs (intake-2001#01). Superiority partial: Gemini Live wins role adherence (4.73 vs 4.48) (intake-2001#record); no size/VRAM figures in paper (intake-2001#record).
+- **Fish Audio Drama 3 technical report** (intake-2002#04) 271 frames/s single-stream on one H200 vs 177 for S2; 295 on B300 with MXFP8 experts; NVIDIA-only. Correction: 16-speaker limit not in report, and layer pattern is 3 DeltaNet : 1 full attention per block (intake-2002#01). Seed-TTS CER 0.83 / WER 1.54 are after regeneration; first-take 1.00 / 2.20 (intake-2002#05). On LibriSpeech-PC WER 1.85 vs Qwen3-TTS 1.60 (production qwentts.cpp basis) (intake-2002#record).
+- **Parakeet realtime EOU 120M** (intake-2017#00) Cache-aware streaming FastConformer-RNNT, 120M params, English-only, signals end of utterance with an <EOU> token. WER 9.30 avg at 160 ms streaming (LS-clean 3.61) (intake-2017#01). Correction: EOU is reported only as latency (p50 160 ms, p90 280 ms), no false-cut rate (intake-2017#02); official artifact is .nemo with no CPU claim (intake-2017#03).
+- **LocalVQE echo/noise suppression** (intake-2018#00) Causal 16 kHz AEC+NS+dereverb, 16 ms latency, F32 GGML C++ inference; v1.3 is 4.8M params (~19MB). CPU: v1.3 3.21 ms per 16 ms hop on Zen4 Ryzen 9 7900 with 4 threads (5.0x RT), vendor-reported (intake-2018#01). Needs a far-end reference signal (intake-2018#03). EPYC: runs on CPU in the speech chain.
+- **Easy Turn** (intake-2033#00) Whisper-Medium encoder + Qwen2.5-0.5B (~0.85B params) emitting transcript plus a turn-state tag (complete/incomplete/backchannel/wait) (intake-2033#01). Accuracy 96.33 on authors' own 800-sample testset vs 86.67 TEN and 78.67 Smart Turn V2 (intake-2033#02). Mandarin-only material and GPU-only inference scripts (intake-2033#03, intake-2033#record).
+- **NeMo Voice Agent (examples/voice_agent)** (intake-2035#00) Deprecated in its own README in favour of labs-Voice-Agent. Silero VAD stop_secs 1.2 s is the fallback and in-band <EOU> ends turns earlier (intake-2035#02); 80 ms model calls (5 x 16 ms frames) (intake-2035#03). Needs a GPU (21 GB VRAM for 9B LLMs) (intake-2035#record); turn_taking.py state machine is portable (intake-2035#record).
+- **Parakeet realtime EOU 120M ONNX** (intake-2036#record) Two fused graphs (encoder, decoder_joint) in fp32, fp16 and int8. Token-exact parity only for fp32, fp16 and decoder-only int8 on one unnamed smoke fixture (intake-2036#01); frontend is raw log-mel, not nemo128 (intake-2036#02). Correction: cache I/O contract and chunk size are undocumented (intake-2036#03), so not the cheapest turnkey route (intake-2036#record).
+- **Smart Turn v3.2** (intake-2047#00) Audio-native turn-completion classifier: Whisper-Tiny encoder + linear head, ~8M params, int8 ONNX 8 MB on CPU. Vendor CPU latency 12.6 ms on c7a.2xlarge (intake-2047#02); vendor accuracy 92.63% int8 / 93.71% fp32 over 31,527 clips, 23 languages (intake-2047#03). Correction: TurnBench's .752/.047/1017 ms row used v3.1 weights through its own wrapper (intake-2047#04).
+- **Endpoint Anticipation** (intake-2048#00) A causal 25M-param model forecasts end-of-turn within horizons 320-2560 ms; acts as a speculation trigger that forks LLM+TTS (intake-2048#01). Unmute latency 1195 -> 690 ms at h=960 ms with Gemma 3 4B (intake-2048#02). Cost: ~66%/53% of turns contain a premature trigger at ERC~33% (intake-2048#03); English-only 8 kHz telephone training (intake-2048#04).
+- **parakeet-rs** (intake-2049#record) Rust onnxruntime implementation of the parakeet_realtime_eou_120m streaming loop; 160 ms chunks with a 4 s buffer re-featurised each chunk (inefficient) (intake-2049#02). Encoder cache I/O documented (cache_last_channel [17,1,70,512]) (intake-2049#03). Correction: no NeMo validation or EOU latency figures; author notes reset-on-EOU works poorly (intake-2049#05).
+- **NeMo Voice Agent repo** (intake-2050#00) Same agent moved from NVIDIA-NeMo/Speech into its own repo on 2026-08-06 (Pipecat 1.6.0); not a new turn-taking model. Backchannel handling is a 78-phrase exact-match list, active only while the bot speaks (intake-2050#02). Linux + NVIDIA GPU, NVFP4-class LLM ~24 GB+, no ROCm path (intake-2050#04).
+- **VAP real-time turn-taking** (intake-2055#00) Predicts 256 joint future voice-activity states over 2 s at 50 frames/s. On an Xeon Gold 6128, 14.61 ms per 20 ms frame (RTF 0.73) at 1 s context but RTF 13.69 at 20 s (intake-2055#01). Balanced accuracy ~75-76% on a Japanese dialogue test set (intake-2055#02). Correction: TurnBench's VAP row used a fine-tuned checkpoint, not this configuration (intake-2055#04).
+- **Kyutai delayed-streams-modeling** (intake-2057#00) Semantic VAD = 4 pause-prediction heads on kyutai/stt-1b-en_fr at 0.5/1/2/3 s horizons. Index 2 (2.0 s) is the end-of-turn signal in every shipped consumer (intake-2057#01); PyTorch exposes heads via step_with_extra_heads (intake-2057#02). Head training undocumented (intake-2057#03); CPU speed not stated (intake-2057#record).
+- **Voice Activity Projection (original)** (intake-2058#00) Predicts joint future voice activity over a 2 s window in 4 bins per speaker (200/400/600/800 ms, 256 states). Trained on Switchboard only (intake-2058#01); shift-class F1 .510 vs shift/hold weighted F1 .899 (intake-2058#02). Model consumes VA features, so a cascade must supply VAD for both channels (intake-2058#03).
+- **VAP_checkpoints** (intake-2059#00) Three fine-tuned VAP checkpoints (oto, swbd, swbd_oto), 54.76 MB each, no model card; a TurnBench delivery bucket. TurnBench default loads "oto" (intake-2059#01); leaderboard row does not name its checkpoint, and "oto" meaning is inferred (intake-2059#02).
+
+### Compiled Update — 2026-10-28 (workspace-58 wrap): Parakeet CPU canary accepted for one clip; CS22.V0 exact parity is negative
+
+- **CS-8.STT0 Parakeet CPU canary (one clip, bounded)**: rc=0, native verifier replay emitted `verified canary`; 23 same-PID samples covered 4.47 s of 4.67 s on affinity 24-25; CPU weight buffer 1,255,643,680 bytes; per-PID VRAM stayed zero. Not a quality or throughput claim. The CPU v2 patch proposal stays pending install; GPU v2 has no inference result (preflight refused as expected).
+- **Parakeet reference weights acquired** (`ggml-org/parakeet-GGUF`, 1,255,897,319 bytes, SHA-256 `833bffc9...`); receipt and size checked, no fresh full-file hash.
+- **CS22.V0 parity NEGATIVE (diagnostic only)**: exact stop/segment parity false for all 3 candidates: GGUF/JIT 946/1118 and whisper 956/1113 mismatching cells of 1344; 2688/2688 native hashes, 0 mismatches or execution errors. Enrollment published 14m25s after completion, so no retroactive warrant.
+- **INF-79 FLEURS selection** rc0: 40 records (first ten test records for en_us, de_de, fr_fr, it_it) with hashes and a 16 kHz mono s16le conversion policy; selection only, no STT inference.
+- **STT2 converted-asset acquisition and 40-clip smoke launchers are source-prepared only** (no acquisition, no inference); all STT qualification parents remain open.
+
+#### Source References (2026-10-28 workspace-58 wrap)
+
+- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.STT0, CS22.V0, STT2 preparation
+- [progress/2026-10/2026-10-28-codex-refactor-01a16fc3.md](../progress/2026-10/2026-10-28-codex-refactor-01a16fc3.md) — launcher preparation
+- [progress/2026-10/2026-10-28-workspace-58.md](../progress/2026-10/2026-10-28-workspace-58.md) — session record
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): S-20 cold-vision requests now fail fast in source
+
+**Confidence: verified** for the source and mocked tests; the live latency effect is **unmeasured**.
+
+- **Root cause.** `_handle_vision_request` awaited optional OCR before trying the selected VL server, so in explicit server-only mode a cold endpoint failed only after OCR (the original live observation was 27.9 s); the two vision roles can also resolve to one server URL.
+- **Fix.** A 250 ms shared-deadline TCP-connect preflight, only for `ORCHESTRATOR_VISION_VL_BACKEND=server`, over the selected endpoints (respecting `force_server`, aliases deduplicated), refuses through the existing `All vision paths failed` error before OCR, structured analysis or legacy HTTP fallback when none connects. Healthy server-only requests keep OCR and VL; other backends do not preflight.
+- **Evidence.** Orchestrator source 846783d10, promoted to main 84f6f6f1 (two files only); focused suite 16 passed, 40 deselected, 1.31 s, JUnit gate with all seven new test IDs. Mock endpoints only. The 84f6f6f1 API-only reload served S-20 at 18:48Z, but no live cold-path request was timed.
+
+Sources: [multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) (S-20) · [cold_vision_failfast](../progress/2026-10/2026-10-24-cold_vision_failfast.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a synthesized-tail turn-taking stratum exists and its accuracy re-score is owed
+
+**Confidence: verified** for the build (hash-exact verify); no ASR or accuracy number exists yet.
+
+- **Tail stratum `turn-taking-cs45-1-tail-v1`:** 82 CUT_IC/CUT_WAIT parent pairs x tails {0.3, 0.6, 1.0, 3.0, 4.0} s = 410 pairs / 820 clips, each bound to its PCM-SHA-256 and its v2 parent's passing gate; `verify` re-assembles all 820 hash-exact and v2 `tt_verify.py` still passes. The room tone is synthesized pink noise at -55 dBFS (no recorded room tone exists), so the stratum is marked synthesized and ranking-only with `advance_eligible_strata = ["human_recorded"]`. The natural-speech control is DECLARED-EMPTY (CS-4 set 5 unrecorded, 0 rows). Landed on research main; audio (386 MB) stays outside git.
+- **Not done:** the CS-47 accuracy re-score (820 clips x 6 arms; scripts hardcode CS-47 paths), so the box stays open.
+
+Sources: [conversation-stack](../handoffs/active/speech-and-multimodal.md).
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a tail-latency stratum for turn-taking
+
+- **CS-4.5 tail stratum built.** 82 CUT_IC/CUT_WAIT parent pairs x tails {0.3, 0.6, 1.0, 3.0, 4.0} s give 410 pairs / 820 clips, each bound to its PCM SHA-256 and its v2 parent's passing gate; reassembly is hash-exact and the v2 verifier still passes. The stratum is synthesized and ranking-only: `advance_eligible_strata` stays `human_recorded`, so it cannot advance a gate.
+- **Still owed:** the re-score leg and the natural control; audio (386 MB) lives outside git.
+
+Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md)
+
+### Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the Italian TTS normalizer and respelling are on by default
+
+**Confidence: locally-measured** for the operator re-listen (15 clips, human ear); no live consumer exists yet.
+
+- **CS-8.L4 decision.** After re-listening 15 `s5-cs8l-retts` clips (11 better, 2 same, 2 worse than the originals, all intelligible; respelling 5/5 better, normalizer 6/2/2), the operator enabled both. Orchestrator `99d00198` turns on feature flags `tts_it_normalize` and `tts_it_respell` for Italian only, with kill switches `ORCHESTRATOR_TTS_IT_NORMALIZE=0` / `ORCHESTRATOR_TTS_IT_RESPELL=0` ([conversation-stack](../handoffs/active/speech-and-multimodal.md)).
+- **Scope.** "Live" means the default of `CascadeBackend`, the only speech path, which no production process constructs yet. Users first hear it when CS-21 wires the cascade, and CS-21 must pass a turn language, or the normalizer is a no-op. The respell table is a 5-word lexicon, not a stress model.
+- **Follow-ups.** CS-8.L4a: a spelled-out year ("duemilasei") was heard as "zei"; test over 5+ seeds and narrow the year rule if needed. CS-8.L4b: pauses after accent-marked respellings and inside "pi acca". CS-8.L4c: two prosody notes, monitored and not filed as tasks.
+
+#### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
+
+- [conversation-stack](../handoffs/active/speech-and-multimodal.md) (CS-8.L4, L4a-c)
+- [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
+- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): the STT, VAD and speech-kernel program is filed, its scorer and custody code exist, and two audits found conflicts and corrections before any run
+
+**Confidence: verified** for the code that landed, the documents filed and the operator decisions; **inferred** for every STT, VAD, turn-taking and lexicon claim (no model was run, no arm has a number). The two operator-side decisions and the listen result are verified; nothing in the program has advanced an arm.
+
+- **The Bark intake became a 27-task program with durable triggers.** Stage 4 of `intake-underdog-bark-20261021` filed (plan sha256 recorded in `.research-session.json`) five phases in `handoffs/active/speech-and-multimodal.md`: P1 STT runner gate and bake-off (CS-8.STT0..STT6), P2 scoring integrity (CS-2.STT1, CS-4.STT1/STT2, CS-8.STT7), P3 VAD/turn-taking/LID/CPU degraded STT (CS-22.V0/V1/A1/L1/T1/D1, CS-45.2, CS-26.LID1/F1), P4 lexicon boosting (CS-8.LEX0..LEX2), P5 speech-kernel verification (CS-43.1..43.3, CS-8.G1B). Twelve durable triggers (M12-M23) and four knowledge rows (K4-K7) hold what is not a task. Rule that governs all of it: vendor cards, leaderboards, hosted boards, author timings and third-party ports are literature-class and rank nothing; every arm is measured by our own harness on our own clips. The frozen `production-speech-v1` trees, the speech champions and v10 are never edited by these tasks. The v11 speech pull-list task was renamed CH-18.d after an ID collision with a different CH-18.c.
+- **Five ggml generations now coexist on paper.** Candidate runners add ggml 0.13.0 (parakeet.cpp), 0.25.1 (NeMo-Speech.cpp), 0.26.0 (transcribe.cpp, CrispASR fork) and 0.27.0 (s2s.cpp, upstream qwentts) beside v10 0.16.0, qwentts 0.17.0 and whisper 0.18.0, so every launcher sets its own `LD_LIBRARY_PATH` and proves linkage. CS-8.STT0 is the zero-build entry: the frozen whisper tree already ships upstream Parakeet support (`parakeet-cli`, built with `GGML_HIP=ON`, gfx90a), used read-only. s2s.cpp serialises Parakeet behind one mutex and runs VAD on one CPU thread, so the controller must not assume batched STT.
+- **The STT scorer exists and its WER is still only an observation.** Research `d2e3283be` (`scripts/speech/stt_bakeoff/`; 203 tests, file-scoped) implements `stt_norm/v1` exactly as P-STT-1 section 1.3, a labelled `v2` CANDIDATE column (it/de/fr numerals, elision, a counted `de_compound_split_join` class), a secondary filler scorer, sealed-split custody, a manifest validator, a fitting screen (accept-ref with a Wilson 95% interval, label strictly above 0.10), a boosting guard (a TDT model with `speech_contexts` is refused as `NO_RUNNER_PATH`, because NeMo-Speech.cpp drops them silently) and a lexicon builder/scorer. Because `MEASUREMENT.md` says P-STT-1 WER is not a claim without its owning release protocol, every STT row projects Judged/Located until CS-2 ratifies an amendment. `corpus_id` binds the corpus manifest (identical across arms), not an arm's raw manifest; an unsealed confirmation record is refused by the belief writer.
+- **CS-2 amendment candidates are text, not authority.** `docs/reference/speech/cs2-stt-amendment-candidates.md` holds seven candidate items with the current text, proposed wording and rationale: `stt_norm/v2` (closed per-language numeral tables; apostrophe kept; German compound split/join not forgiven but counted), two new properties (REFERENCE-BLIND normaliser, PINNED DEPENDENCIES: an unpinned numeral library makes the instrument a function of host state), a filler policy (DP-B; default option b: fillers are ordinary tokens, a counted list only in a labelled secondary scorer), and a longer WER record-field list (language mode, segmentation, unk policy). Nothing edits `MEASUREMENT.md` or `measurement/protocols/`.
+- **Operator decisions that unblock the confirmation stratum.** DP-A: private STT confirmation strata live in a separate private repo (public repos keep hash manifests only; custody wired in research `eb916e168`; 191 tests pass in `stt_bakeoff`, 7 new). DP-C: a single labelled rater for now, extendable through a `reference_version` bump plus an `edit_log` entry. The CS-4 `human_recorded` stratum is still empty, so CS-8.STT6 cannot run.
+- **s2s.cpp turn-state diff (CS-22.D1, zero compute).** Pinned s2s.cpp `e620fab214cb` (MIT) has a 3-state turn machine with revision counter, an 800 ms `reopen_grace_ms`, turn_threshold 0.5 on Smart Turn v3.2 and a recognizer/responder thread split; its defaults become named starting rows for the CS-22.V1 and CS-47 sweeps, not adopted values. Conflicts with our CS-18/CS-23 semantics: one unordered atomic cancel flag versus ordered cancel hooks, silent drop of an unheard revision versus explicit cancel, unconditional barge-in cancel versus the CS-18 retain choice, and a 384 ms barge-in default calibrated against its own echo canceller (re-sweep, do not adopt).
+- **CS-43.3 launcher/ABI audit corrected its own task text.** The frozen qwentts is `QT_ABI_VERSION 4`; upstream `01b6127` (which removes `GGML_BACKEND` in favour of `--device`) bumps the ABI from 5 to 6, not "to 5", so an upstream-based build jumps 4 to 6. Thirteen hit groups across the three repos; the live ones are the orchestrator `launch_manifest.yaml` :9002 CPU service env and its test, and a research render pipeline, all correct for the frozen v1 binary and to be changed only with an upstream-based candidate. The whisper tree has no such reference. `speech-v2-manifest.md` now points at the audit.
+- **Italian TTS follow-ups.** The 60-clip listen kit shipped at 16 kHz (the 24 kHz originals exceed the 20 MB budget and no audio encoder exists on the host); the second-ASR cross-check was NOT delivered, because a whisper-cli large-v3 CPU run started without a calendar grant was stopped by the coordinator and its partial output deleted. The Italian number/unit and "pH" normalizer is built (orchestrator `df9d2eca`, research `95550d294`), live path default-off pending the operator, with a re-synthesis filler armed to re-listen using a respelling probe; stress, proper-noun and accent notes are filed as monitor-only.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — the filed STT/VAD/lexicon/kernel program, DP-A/DP-C, triggers M12-M23, knowledge K4-K7
+- [docs/reference/speech/cs2-stt-amendment-candidates.md](../docs/reference/speech/cs2-stt-amendment-candidates.md) — seven CANDIDATE Annex S items
+- [docs/reference/speech/s2s-cpp-turn-state-diff.md](../docs/reference/speech/s2s-cpp-turn-state-diff.md) — turn-machine defaults and conflicts
+- [docs/reference/speech/cs43-3-ggml-backend-audit.md](../docs/reference/speech/cs43-3-ggml-backend-audit.md) — GGML_BACKEND/ABI audit and corrections
+- [docs/reference/kernel-manifests/speech-v2-manifest.md](../docs/reference/kernel-manifests/speech-v2-manifest.md) — pointer to the audit
+- [progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md](../progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md) — scorer, custody and adapter code, findings
+- [progress/2026-10/2026-10-22-bark-stage4.md](../progress/2026-10/2026-10-22-bark-stage4.md) — Stage-4 filing and the CH-18.d ID collision
+- [progress/2026-10/2026-10-22-speech-dpa-dpc-listenkit.md](../progress/2026-10/2026-10-22-speech-dpa-dpc-listenkit.md) — listen kit, private custody repo
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 11): the Italian normalizer is eval-only until the operator enables it live
+
+**Confidence: verified** for the default-off state and the task filing; the re-listen has not run.
+
+- **Ticked is not live.** CS-8.L1/L2 (numbers, units, "pH") are done in code, but the normalizer runs only on the eval/test path; the live speech path keeps it default-off pending the operator, so live conversations still mispronounce these. CS-8.L4 (conversation-stack) carries the enable step, gated on the operator's re-listen of the `s5-cs8l-retts` clips and an explicit on/off decision.
+
+#### Source References (2026-10-22 wrap-up sweep 11)
+
+- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.L4
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 9): the Italian TTS listen check: intelligible, with number, unit and pH errors a normalizer can fix
+
+**Confidence: verified** for the ratings and the counts; **inferred** for the benefit of the normalizer, because the re-synthesis (`s5-cs8l-retts`, slotted about 22:00Z) has not run.
+
+- **Listen check (CS-8.L).** The operator rated all 60 cascade G1 Italian clips: 60/60 intelligible, naturalness mean 4.62 (median 5; 47 fives, 5 fours, 6 threes, 2 twos), 11 clips with notes. Errors by category: numbers and units 3 clips, pH read as "hache" 2, lexical stress 3, proper nouns 2, accent 1. Italian is not rejected, so the M17 trigger does not fire.
+- **ASR cannot replace the ear.** Forced WER of the low-naturalness clips (n=8) is 0.039 against 0.024 for the rest (n=52); Spearman -0.14, permutation p=0.21; 5 of the 8 low clips have WER 0.
+- **Text path.** No normalization existed between the cascade or LLM text and qwentts, which only strips the BOM and validates UTF-8 before BPE. The new Italian-only normalizer (orchestrator `df9d2eca`; 126 tests, voice suites 183/183) changes 10 of the 60 sentences, including all 5 operator-flagged normalizable clips, and is default-off and byte-identical when off. The cardinals agree with the STT-side table on all 101 values.
+- **No stress hook.** qwentts has no lexicon or stress control; `instructions` is rejected for the Base model and `--lang` is one codec token. Orthographic respelling is the only lever, so the re-synthesis carries it as an opt-in probe (the operator's choice).
+- **Belief kernel.** A `speech-listen-rating` adapter projects the aggregate; the WER cross-check is not projected because it is not independent of the same clips.
+
+#### Source References (2026-10-22 wrap-up sweep 9)
+
+- [progress/2026-10/2026-10-22-cs8l-ratings.md](../progress/2026-10/2026-10-22-cs8l-ratings.md)
+- [progress/2026-10/2026-10-22-it-tts-normalizer.md](../progress/2026-10/2026-10-22-it-tts-normalizer.md)
+- [docs/reference/speech/tts-italian-text-prep.md](../docs/reference/speech/tts-italian-text-prep.md)
+- [progress/2026-10/2026-10-22-vb-speech-listen.md](../progress/2026-10/2026-10-22-vb-speech-listen.md)
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): multimodal — the turn-taking instruments exist, and the qwen-tts "thread collapse" is a core-sharing effect
+
+**Confidence: verified** for harness conformance, parity and the thread-scaling measurements (each scoped below); no turn-taking policy result exists, and CS-45's human-recorded stratum is empty, so no arm can yet advance.
+
+**Measurement contract (frozen 2026-10-20).** The turn-taking measurand note names every quantity with its direction and denominator. Rules that prevent misreadings: direction is part of the name; the denominator is every manifest item (crash, timeout, never-fire = miss); synthesized evidence may reject or rank an arm but only human-recorded evidence may advance one; patched scorers mark a measurement-era boundary and are not comparable to published numbers; published rows are reference rows only; no cloud judge. Scenario flips matter: turn-over rate is better high for smooth turn-taking and interruption but better low for pauses and backchannel, and a HIGH stop time is correct for backchannel, off-talk and background speech. The note does not amend Annex S, whose amendment boundary stays human-only.
+
+**Status of the program (see [conversation-stack](../handoffs/active/speech-and-multimodal.md)).**
+- *CS-45 (corpus, labels, pins):* built; 105 synthesized pairs (62 incomplete-cut, 13 wait, 30 backchannel-context), each from ONE spliced recording so pairs are acoustically matched, plus 25 reserve pairs that count only via a recorded review backfill. Verification passes (12 checks; 60 tests incl. mutation refusals). The checkbox stays open for the human review of a 20-pair sample, and the later CS-46 close-out notes v1 is being rebuilt for label and splice defects, so downstream work must use the rebuilt corpus. The pinned instrument set is one Silero VAD, Full-Duplex-Bench and TurnBench commits, and the production whisper.cpp as the word-timestamp ASR; five scorer substitutions are recorded as era changes.
+- *CS-46 (Parakeet EOU arm, ticked):* the community ONNX encoder is stateless and cannot run the cache-aware loop, so cache-aware encoders were self-exported. Parity versus the NeMo CPU streaming run is step-exact on 20/20 clips (80 and 160 ms chunks, reset none/full). Binding consequences: the int8 decoder_joint is excluded from CS-47 unless re-validated (it emits a false end-of-utterance on a backchannel clip); the Rust port's mel filterbank differs from NeMo's (max diff 14.3 versus 2.3e-4 for the Slaney reimplementation).
+- *CS-48 (barge-in harness, ticked):* a deterministic stimulus player and scorers over the unmodified voice controller; scripted-agent stop/resume instants recovered exactly on a virtual clock, mutations refused with named reasons, replays bit-identical (30 tests). Both merge-gap readings of Full-Duplex-Bench are reported because its code and comments disagree.
+- *CS-47 and CS-49 (the actual bake-offs)* remain open; CS-49 also needs live services and an inference-owning window.
+
+**qwen-tts thread scaling (frozen speech kernel, nothing changed).** On a quiet CPU region 8 threads is about 4x FASTER than 1 (38 versus 94 ms/frame pinned; 24 versus 96 free), so the earlier 13x slowdown at 8 threads is NOT a thread-count property. Its trigger is core sharing: the ggml barrier is a pure pause-spin with no yield, qwen-tts builds a disposable pool per graph, so one descheduled thread stalls all (8 threads plus 8 spinners: ~9.8 s/frame; perf shows nearly all samples spinning). OpenMP knobs are inapplicable (no OpenMP in the library). Guidance: N threads only on cores nothing else runs on; otherwise one thread per process; do not pin tightly. A persistent pool with poll 0 would be the real fix and needs a new kernel version. Not tested: the exact original background load.
+
+**Vision and fallback.** Speech work lives in the conversation stack; the vision handoff keeps vision only. The server-only vision policy now refuses without POSTing the legacy endpoint (synthetic controls; the cold-server timing diagnosis in S-20 stays open). The vision embedder screens (EmbeddingGemma 2, CLIP) still have nothing to screen: the collections were empty on 2026-10-20.
+
+#### Source References (2026-10-20 sweep 2, multimodal)
+
+- [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — the frozen quantity definitions and reading rules.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-45/46/47/48/49 notes, qwen-tts thread follow-up, durable triggers M8-M11.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — speech moved out; server-only fallback; embedder trigger.
+
+### Compiled Update — 2026-09-24 (late): the CPU speech contention is decided — D, no change
+
+**Confidence: verified** — an operator decision, recorded first-hand (KVU-11b, root `54772ad7`).
+
+- **The operator chose option D on 2026-09-24 (~20:00Z): no change to the CPU speech layout.** STT stays on
+  cores 0-23 and TTS on 24-39, both at 0 VRAM, next to the `-t 96` CPU LLM roles on 0-95.
+- **Why:** the operator is drafting a larger STT/TTS integration plan that supersedes options A-C (partition the CPU
+  LLM roles and return TTS to the GPU; partition only; a decode throttle). Those options and their measurements are
+  input to that plan, not pending work. Do not re-propose partitioning or a throttle as standalone work.
+  *(Later the same day the plan landed as INF-79; see the section above.)*
+- **The hazard is known and accepted:** a speech request that arrives while :8070 or :8074 generates wrecks both the
+  speech and the LLM (numbers in the section below).
+- The A/B acceptance criterion (STT RTF < 0.5 and TTS first packet < 1 s with a CPU LLM generating, LLM decode loss
+  recorded) is kept for the operator's plan.
+- Numbers, options and GPU-side constraints: [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
+
+#### Source References (2026-09-24 late)
+
+- [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md) — header decision line, §5.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11b (decision record), *Reporting*.
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a cross-reference.
+- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the accepted-hazard line.
+
+### Compiled Update — 2026-09-24 (wrap-up #4): speech is on the CPU now, and a generating `-t 96` LLM role breaks it — and is broken by it
+
+**Claim class: `locally-measured`** (research `artifacts/speech_cpu_realtime_20260924/README.md` addendum 3,
+`6afc7eed`; n = 1–2 per cell). Durable reference for any STT/TTS or voice-turn plan: [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
+
+- **Live layout (OP-54/OP-56, orch `0a564a1f`):** STT :9000 whisper.cpp `production-speech-v1` on CPU `-t 24
+  -ng`, cores 0-23; TTS :9002 qwentts.cpp `production-speech-v1` on cores 24-39 with 16 threads via the
+  `nprocs` `LD_PRELOAD` shim (qwentts has no thread flag). Both 0 VRAM. Quiet: STT RTF 0.20–0.39, TTS first
+  packet 0.09–0.17 s, RTF 0.55–0.63.
+- **Under a generating CPU LLM (`-t 96` on 0-95):** STT RTF ≥ 58, TTS first packet 13.4–13.6 s then a stall —
+  and the LLM collapses too (:8074 31.2 → 0.59 tok/s, :8070 36.8 → 1.05). Speech threads sit inside the LLMs'
+  active-wait core masks, so each side's barriers wait on the other.
+- **Partition test (`-t 56` on 40-95):** STT back to quiet (0.22–0.44), TTS marginal (first packet 0.24–1.0 s,
+  RTF 0.93–1.40), LLM decode −22..26%. SMT siblings (option C, earlier) were not real time either (TTS 20–37×
+  slower than real time).
+- **No priority-pause mechanism exists,** and a pause could not act mid-token.
+- **Decided 2026-09-24: D, no change** (see the section above).
+- Voice turns route their reasoning step to architect_general (:8083, the 27B on the GPU), not the CPU frontdoor.
+- S-11a (speech VRAM in the capacity gate) was closed as superseded and OP-48 withdrawn (root `baa0d036`): speech
+  holds no VRAM now. If TTS ever returns to the GPU (0.92 GB of weights), re-cut that fold for TTS only.
+- Correction: the addendum's first claim that `HIP_VISIBLE_DEVICES` was unset was wrong — it is `-1` on both
+  services; the HIP runtime opens `/dev/kfd` regardless (research `afbc6bea`).
+
+#### Source References (2026-09-24, wrap-up #4)
+
+- [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11, KVU-11a, KVU-11b, KVU-11c.
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a superseded, cross-reference.
+- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) and [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (2)*.
+
+### Compiled Update — 2026-09-24: production STT/TTS are real time on the CPU alone, but collapse next to the CPU frontdoor
+
+**Claim class: `locally-measured`.** The source is research `artifacts/speech_cpu_realtime_20260924/` on research
+main `21cf444c`, the 17:14Z snapshot.
+- The frozen production binaries were run in CPU mode. No build was needed, and nothing was written inside either
+  kernel tree.
+- Every run was pinned inside cores 0-79.
+- Values are medians with (min-max). Several rows are single repetitions.
+- **An SMT-sibling (`smtC`) follow-up run was still writing to the shared research clone at 17:53Z and is not
+  committed.** Nothing below comes from it (RTG-57 KVU-11a).
+
+The question was whether STT (whisper.cpp) and TTS (qwentts.cpp) could move off the MI210 and still work for an
+STT → frontdoor → TTS conversation loop. The move would free about 3+ GiB of VRAM: whisper `:9000` held 2.23 GB per
+`rocm-smi --showpids`, and TTS `:9002` is declared but was not running. The S-12 record in the section below carries
+2.06 GiB, measured 2026-09-22. To pass, speech had to stay real time, run concurrently, and run alongside the CPU
+frontdoor.
+
+#### Key findings
+
+- **Each one alone is real time.**
+  - **STT** (whisper large-v3-turbo, `whisper-server` defaults): RTF 0.12–0.20 at 24–32 threads, 5–8× headroom.
+
+    | Threads@cores | 11 s clip | 86.5 s clip |
+    |---|---|---|
+    | 24@0-23 | 2.17 s / RTF 0.197 | 14.4 s / 0.167 |
+    | 32@0-39 | 1.53 s / 0.140 | 10.5 s / 0.122 |
+
+  - **TTS** (Qwen3-TTS 0.6B, Q8_0 talker + 12 Hz tokenizer): pcm RTF 0.55–0.60 at 16 or more threads, about 1.7×
+    headroom.
+
+    | Threads@cores | Sentence (4.24 s audio): first packet / RTF | Paragraph (35.7 s audio): first packet / RTF |
+    |---|---|---|
+    | 16@0-15 | 0.084 s / 0.547 | 0.238 s / 0.595 |
+    | 24@0-23 | 0.075 s / 0.609 | 0.185 s / 0.589 |
+
+    TTS stops improving at about 16 threads, because frame-by-frame autoregressive decoding of a 0.6B model is bound
+    by latency. For comparison, GPU TTS RTF at freeze was 0.169.
+- **The two together, on separate cores, stay real time.** Layout `main40` puts STT on 24@0-23 and TTS on 16@24-39:
+
+  | Metric | Each alone | Together |
+  |---|---|---|
+  | STT RTF, 11 s clip | 0.206 | 0.199 |
+  | STT RTF, 86.5 s clip | 0.187 | 0.243 |
+  | TTS RTF, sentence | 0.692 | 0.593 |
+  | TTS RTF, paragraph | 0.600 | 0.606 |
+
+  - Prebuffer is at most 0.47 s, so a 0.5 s jitter buffer covers every run outside the frontdoor case.
+  - Idle residency costs the frontdoor nothing: it ran 41–46 tok/s with both speech servers resident but idle.
+- **Next to a generating frontdoor, both collapse, and so does the frontdoor.**
+  - **`main40` plus a 300-token frontdoor generation:**
+    - STT RTF 1.54 (1.13-1.87) on the 11 s clip and 2.91 on 86.5 s.
+    - TTS RTF 9.11 on the sentence (prebuffer 32.8 s) and 7.84 on the paragraph (prebuffer 243 s).
+    - The frontdoor took **906 s for 300 tokens, 0.3 tok/s**, with a TTFT of 29 s for 4 prompt tokens. Solo it ran
+      43.3 tok/s.
+    - This phase was stopped after 1 of its 2 planned repetitions, because it was holding production at 0.3 tok/s.
+  - **Even `lean16`** (STT 8@64-71, TTS 8@72-79, frontdoor capped at 120 s): STT RTF 0.799, TTS RTF 7.90, and the
+    frontdoor at **7.4 tok/s vs 43.1**.
+  - **The cause:** the frontdoor runs `-t 96` across physical cores 0-95, so no core in the allowed 0-79 set is free
+    of it. Both sides use spin-barrier threadpools, so whenever one thread is time-sliced, every other thread waits.
+    That mechanism is inferred; the effect is measured.
+- **Hazard: whisper's layout collapse is deterministic.** A single 30 s encode hangs for more than 60–300 s at
+  `20@0-19`, `28@0-27`, `24@0-31`, `32@0-31` and `32@24-55`. It is healthy at `16@0-15`, `16@0-23`, `24@0-23`,
+  `32@0-39` and `32@0-47` (3 repetitions each, `raw/whisper_bench_encoder_matrix.txt`).
+  - On the server, 32@0-31 took the 11 s clip to 20.5 s (RTF 1.86), and the 86.5 s clip was aborted after more than
+    8 min.
+  - Per-core sampling showed threads stacked two to three per core while cores in the mask sat idle.
+  - Both builds have `GGML_OPENMP_ENABLED=OFF`, so ggml rebuilds its own spin-polling pool for every graph. The
+    inferred cause is that per-graph thread spawn meets the scheduler's placement, and the spin barriers amplify it.
+  - **Any CPU speech launcher must use a measured layout, or a build with a persistent, pinned threadpool.**
+- **Hazard: the TTS thread count can only be controlled through a `get_nprocs` shim.** qwentts.cpp has no CLI flag.
+  `src/backend.h` hardcodes `hardware_concurrency()/2`, which ignores affinity and gives 96 here. An LD_PRELOAD shim
+  (`nprocs_shim.c`) sets `get_nprocs()` = `SHIM_NPROCS` = 2N, and each server log confirms `CPU threads: N`. Without
+  it, the server starts 96 spinning threads.
+- **CPU ASR has a latency floor that counts against the move, co-tenancy aside.** Whisper pads every input to a 30 s
+  window, so an utterance of any length costs about 2 s at 24 threads. The 3.5 s clip took 1.97 s (1.92–2.03), RTF
+  0.56. The GPU does the 11 s clip in 0.21 s (freeze record, whisper `b3073792` commit message).
+- **Superseded:** OP-56 was decided the same day (whisper STT moved to the CPU), and the resulting contention
+  (KVU-11b) was decided D, no change — see the 2026-09-24 (late) section at the top.
+- **Recommendation: keep speech on the GPU while the host is partitioned as it is today. Where it lives is an operator
+  decision (OP-56 / RTG-57 KVU-11).**
+  - **(A) Stay on GPU (recommended).** Costs about 2.2 GB of VRAM for whisper, plus TTS when it runs. The TTS figure,
+    about 1–2 GB, is inferred from 0.92 GB of weights and a 0.9 GB KV cache on CPU. This option avoids the frontdoor
+    collision entirely.
+  - **(B) Give speech its own cores.** Shrink the `-t 96` frontdoor and `:8074` to free 24–40 physical cores (STT
+    16–24, TTS 16). The cost to the frontdoor is **unmeasured**; measuring it needs a frontdoor relaunch.
+  - **(C) Run speech on the SMT siblings 96–175.** This removes the time-slicing but still shares execution ports.
+    **It is untested in the committed snapshot.** The `smtC` run was in flight and uncommitted at 17:53Z. KVU-11a
+    commits that delta, regenerates SHA256SUMS and updates option C. It then removes the shared clone's untracked
+    copies, so DS41-C10a's fast-forward is not blocked.
+
+  Either CPU option needs a measured layout and the shim. The decision is coupled to OP-48 (the capacity gate seeing
+  speech VRAM, S-11a below) and to package N-5 (TTS does not fit next to `-kvu` today). Before any CPU speech is
+  re-measured, `speech_cpu_bench.py` needs a write side (VB-SPEECH-CPU-1).
+- **Scope limits:** transcripts were sanity-checked only (jfk comes back verbatim). No WER was measured, and no
+  GPU-side accuracy comparison was made. The CPU binaries predate their freeze commits by about 5 h, and those commits
+  carry only GPU patches. That the CPU path is identical is **inferred**.
+
+#### Source References (2026-09-24 CPU speech)
+
+- Research `artifacts/speech_cpu_realtime_20260924/README.md` (research main `21cf444c`, the 17:14Z snapshot), with
+  `raw/summary_tables.md` and `raw/whisper_bench_encoder_matrix.txt`.
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-11 (options A/B/C,
+  OP-56), KVU-11a (follow-up commit).
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-SPEECH-CPU-1.
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10a (the untracked
+  speech copies block the shared clone's fast-forward).
+- [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"CPU: C1 speech done, C2 skipped".
+
+### Compiled Update — 2026-09-24 (wrap-up compile): the speech stack is finally registered, and the pins in the task text were wrong in two ways
+
+**Confidence: verified** — registry rows, MRG-1 gate results and the guard scripts are landed
+(research `53418b84`..`e485008a`, orch `f323fa01`). The capacity-gate fold is **PREPARED, not landed**.
+
+#### Key findings
+
+- **The speech stack is no longer discoverable only from progress logs.** `server_mode.tts_server`
+  (qwentts.cpp) and `server_mode.voice_server` (GPU whisper.cpp) are now records in the research master,
+  with `data/model_registration/20260924-qwentts-cpp-12hz-0.6b/` carrying the MRG-1 gate: identity,
+  capacity, recipe and co-residency **PASS**; anchor, placement, shape, context and slot **N/A with written
+  reasons** (a single-instance GPU aux service). Writing the N/A reasons down is what makes the gate
+  auditable rather than a partially-skipped checklist. Orchestrator descriptors were recompiled
+  (`f323fa01`, provenance hash only — **no active-role change**).
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11, S-12)
+- **The registration corrected its own task text in two places, which is the point of registering.**
+  (1) The qwentts.cpp pin is **`2c1b5182e`** (ggml 0.17.0, the ratified `production-speech-v1`, live binary
+  sha256 matching the ratification) — the `abab6b3b` the task named is its direct **parent**, a
+  pre-ratification snapshot, and the md5 `5b858d75…` in the task matches **no current binary**. (2) The
+  GGUF pair named in the task is a Path-A leftover; qwentts.cpp actually serves
+  `Qwen3-TTS-qwentts/{qwen-talker-0.6b-base-Q8_0,qwen-tokenizer-12hz-Q8_0}.gguf` per `launch_manifest.yaml`.
+  A pin carried in prose for two months drifted from the thing running; the registry row is now the
+  answer. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11)
+- **The STT registration changed nothing about what runs.** `voice_server` records the GPU whisper.cpp
+  service that has backed `:9000` since the 2026-08-02 W4 swap (VRAM 2.06 GiB, measured 2026-09-22); the
+  CPU faster-whisper record is retained under `retired_cpu_path`. `launch_manifest.yaml` already ran the
+  GPU path — the gap was purely one of record.
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-12)
+- **The fork stays a pinned dependency, and two guards now enforce it.** S-13 closes with the S-11 registry
+  row as the pin record plus `scripts/session/verify_speech_kernels.sh` (runs at every session init:
+  distinct git toplevels, and no qwentts-specific source inside the production llama.cpp tree) and research
+  `scripts/utils/verify_qwentts_pin_isolation.sh` (fuller: ggml submodule pin + history grep, 4 tests). A
+  main-thread correction made the root guard cheaper — it had been walking the whole llama.cpp tree at
+  every session init and now uses direct existence tests.
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-13;
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **The capacity gate has never seen 4.68 GiB of speech VRAM, and making it see them costs most of the
+  margin.** PREPARED as `artifacts/operator/inf41-capacity-gate-aux-vram-20260924.patch` (orch branch
+  `noninf/inf41-speech`, staged): `AuxService.vram_gib` (whisper 2.06, tts 2.62) folded into GPU headroom
+  via `stack_manifest.aux_gpu_reserved_gib()`, 19 tests pass. On the 2026-09-22 lineup the fit stays OK but
+  the margin goes **5.85 → 1.17 GiB**. Two gates hold it: (a) it changes capacity-gate arithmetic, so it is
+  a stack-change package needing the operator's signature; (b) the pre-commit hook refuses any commit
+  touching `stack_manifest.py` while `orchestration/contention_matrix.yaml` is stale (topology hash
+  `171f86f9` ≠ live `1c548fce`, last refreshed 2026-08-23), and refreshing it is a live bench sweep — i.e.
+  inference. Tracked as OP-48.
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11a;
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **S-15 is confirmed LIVE, not merely committed.** `default_vl_max_tokens` 512→1024 (orch `8a8e391c`) is
+  now in a running process: the API was reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`) and the
+  config reads 1024. That closes the "deployed vs committed" gap that the earlier entry left open, and it
+  unblocks S-16.
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15)
+- **A subagent's fork wrote unrequested registry work, and the registry comments overstated the state.**
+  Recorded from the main-thread review: a nested `fork` of the INF-41 subagent committed registry work
+  nobody asked for, and the registry comments claimed the capacity-gate fix was "CLOSED"/live when it was
+  only prepared — corrected in `e485008a`. A prepared patch described as closed is the exact failure the
+  prepared/landed distinction exists to prevent.
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
+  main-thread review")
+
+#### Open questions
+
+- S-11a needs an operator signature **and** a fresh contention matrix; the matrix refresh is a live bench
+  sweep, so it cannot be done by a non-inference session (OP-48).
+- S-14 (upstream the gfx90a argsort fix to the qwentts.cpp / ggml fork) is still open.
+- S-16 (promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role) is now unblocked by S-15 being live, but S-17
+  still asks for a GPU resident-set audit before a fifth resident model lands — and the S-11a numbers make
+  that audit tighter, not looser.
+
+#### Source References (2026-09-24 wrap-up compile)
+
+- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11, S-11a, S-12, S-13, S-15.
+- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the INF-41 row, the
+  capacity-gate gating, and the main-thread corrections (rogue fork, overstated registry comments, the
+  session-init guard cost).
+
+### Compiled Update — 2026-09-23 (evening wrap-up compile): the vision role's token cap is lifted, which unblocks the Qwen3-VL promotion
+
+**Confidence: locally-measured** for the parse-failure counts that motivated the change (they come from our own vision evaluation); the config change is landed and **now live** (API reloaded 2026-09-23 20:31Z — see Open questions).
+
+#### Key findings
+
+- **S-15 landed: `default_vl_max_tokens` 512 → 1024** (epyc-orchestrator `8a8e391c`). The chat vision routes already request 2048. This is a **production config change**, not an evaluation-harness change, and it is live only after the next orchestrator API reload. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15, [2026-09-23 progress](../progress/2026-09/2026-09-23.md))
+- **The cap was a scoring artifact, not a model result.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation: **3 parse failures for the incumbent against 41 and 50 for the Qwen3-VL arms**, which were truncated mid-reasoning and then scored wrong. Even at 2048 the Qwen3-VL models emit no letter on ~9% of hard questions, so 1024 is a floor rather than a target. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15)
+- **Order matters for the promotion.** S-16 (promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role, retiring `Qwen2.5-VL-7B`) was deliberately sequenced behind S-15, because promoting first would have carried the truncation defect into production. That dependency is now satisfied. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-16)
+
+#### Open questions
+
+- ~~The change is not live until the API reload~~ — **UPDATE, later 2026-09-23: LIVE.** The orchestrator API (uvicorn `:8000`) was reloaded at 20:31Z (pid `2815541`, on orch `3c6721ef`); health checked OK and the config reads 1024. The ~9% no-letter rate at 2048 has still not been re-measured under the new 1024 cap — that remains open.
+
+#### Source References (2026-09-23 evening wrap-up compile)
+
+- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-15 (landed) and the S-16 dependency; the "LIVE" reload note.
+- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the operator item and the commit.
+- [2026-09-23-noninf-roi.md](../progress/2026-09/2026-09-23-noninf-roi.md) — the round-2 API reload for S-15 (pid, timestamp, health check).
+- epyc-orchestrator commit `8a8e391c` — `default_vl_max_tokens` 512 to 1024, confirmed live after the 20:31Z reload.
+
+### Compiled Update — 2026-09-24: Qwen-Image-2.1 is the production image-generation backend
+
+#### Verified update
+
+- **The orchestrator now serves Qwen-Image-2.1 on CPU at port 8190** through an isolated Diffusers service that preserves the existing `image_generate` API and sdapi-compatible endpoints. The Qwen weights were already downloaded locally; the production cutover adds a CPU-only environment and launcher.
+- **ERNIE-Image-Turbo remains on disk as a rollback option, not the active production backend.** The production switch is operationally verified, but it is not a matched quality or speed comparison. No generation was run during the cutover; Qwen-vs-ERNIE comparison remains open.
+- The PhotoMaker V2 stack and its test output were removed, reclaiming about 27 GB. That cleanup is separate from model-quality evidence.
+
+#### Sources (2026-09-24 wrap-up)
+
+- [Qwen image production cutover progress](../progress/2026-09/2026-09-24-qwen-image-production-cutover.md) — implementation, runtime verification, cleanup and test results.
+- [ERNIE image evaluation handoff](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — current production decision and the still-open matched comparison.
+- [Pipeline chapter](../repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md) — current service architecture and compatibility contract.
+
+### Compiled Update — 2026-09-23: Qwen-Image-2.1 weights were staged for an ERNIE comparison, and the vision role was clarified
+
+#### Key findings
+
+- **The complete public `Qwen/Qwen-Image-2.1` Diffusers repository is local** at `/mnt/raid0/llm/models/diffusion/qwen-image-2.1/`: four text-encoder shards, two diffusion-transformer shards, VAE, configs, tokenizer and license. Weight files total **33,115,613,408 bytes**, with no `.incomplete` shards (re-verified on disk 2026-09-23). It is staged for a future local comparison against ERNIE-Image-Turbo. **No generation benchmark or quality comparison has been run**, so nothing about its quality is locally measured.
+- **Qwen-Image's Qwen3-VL 8B encoder is a conditioning component, not a vision-chat model.** The served `worker_vision` reader is Qwen3-VL-30B-A3B-Instruct on `:8086`, and Qwen2.5-VL-7B is retired. Downloading Qwen-Image does not add a chat-capable vision role.
+
+#### Open questions
+
+- Does Qwen-Image-2.1 avoid the MI210 ≥1024² white-image defect that ERNIE-Image-Turbo still shows? That needs a run under the ERNIE evaluation's admissibility rules.
+
+#### Sources
+- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the download record and the vision-role clarification.
+- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — the comparison target and its MI210 defect record.
+- `epyc-orchestrator` `orchestration/stack_topology.yaml` (`worker_vision`, `:8086`) — the served vision reader.
+
+### Compiled Update — 2026-09-17: the ROCm f32 fix does not clear the MI210 ≥1024² white-image defect, and the local vision-reader inventory
+
+**Confidence**: verified (`locally-measured`: two MI210 runs with residency proven and results committed; the
+reader inventory comes from a zero-inference scoping pass over code, binaries and weights on disk).
+
+The *Candidate FIX for the MI210 1024² blank-PNG defect* (the 2026-07-29 section below) has now been built and
+run twice, and it **is refuted**. A ROCm-guarded f32 force on ERNIE-Image-Turbo's `to_out.0`/`linear_fc2`
+does not stop 1024² and 832×1248 outputs coming back uniform white. Neither does a wider f32 set, a 1/16
+out-projection scale, or both together. The only effect that can be attributed is on the default code path:
+the narrow patch moved the blank threshold from 960² up to 1024². This **supersedes the older inference
+that the evidence "points away from the VAE"**. With every precision change on the DiT linears ruled out, the
+next hypotheses are the VAE decode and the attention/FA path at the longer sequence length. Testing either one
+needs a new build and prep, not a re-run. The handoff box stays unticked because there is still no valid
+1024² GPU number. Separately, scoping for OCC-1 (see [context-management](context-management.md)) listed
+which vision readers can actually run locally.
+
+#### Key findings
+- **Run 1 (2026-09-16, 14:21–14:30Z)** used the sd.cpp worktree build `build-rocm-gpuprep-20260916` (shared
+  ggml, HIP gfx90a, ROCm 6.2, carrying the ggml FP8 guard). The run was admissible: 23/23 requests returned
+  HTTP 200, the server pid was in KFD in every sample, peak VRAM was 25.5 GiB with the patch on and
+  19.0 GiB with it off, and the linkage receipt passed. At 8 steps and n=3, every cell was bit-identical
+  across its reps. Generation times with the patch ON: 768² 16.3 s, 896² 23.0 s, 960² 26.9 s (good),
+  1024² 30.2 s (white), 832×1248 30.4 s (white). 1024² with the patch OFF took 26.5 s and was also white.
+  At 896² the patch costs about 13% (23.0 vs 20.3 s). Evidence: research `cf05eefc`.
+  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
+- **Run 2, the recipe §5 variants (2026-09-17, 02:30–02:55Z, build `build-rocm-variants-20260916`)**: 55/55
+  requests returned HTTP 200 with the same prompt and seed. None of the variants passed the pre-registered
+  FIX rule (1024² and 832×1248 non-blank on every rep, and 768–960² good). Results for 1024² plus
+  832×1248: 0/6 non-blank for off, narrow f32, wide, outscale and wide+outscale alike. Patch-OFF was blank
+  at 960² in all 3 reps. Cost at 896² against off (19.44 s): wide 1.42×, outscale 1.01×. Evidence: research
+  `ca8c63d6` (`verdict.json`). [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
+- **Recipe §5 is used up.** Neither the wide set nor outscale keeps the narrow patch's 960² gain: both are
+  blank at 960² again. Per the recipe, no headline GPU speedup is computed. Neither run has a belief-kernel
+  write hook; VB-GPU-RUNNER covers both.
+  **ERNIE-ROCM-NEXT filed 2026-09-17:** with every DiT-linear variant exhausted, the next ≥1024² white-output
+  hypothesis must lie outside that family (VAE decode, or the attention/FA path at the larger sequence length),
+  and it needs a new sd.cpp build plus a pre-registered A/B after zero-inference prep. The run waits for the
+  operator to lift the 2026-09-17 GPU hold.
+  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
+- **Local vision-reader inventory (2026-09-16, zero inference).**
+  - Qwen3-VL-30B-A3B Q4_K_M + F16 `qwen3vl_merger` mmproj is the served `worker_vision` reader. It runs on
+    champion `ef81196d5` (`PROJECTOR_TYPE_QWEN3VL`, `tools/mtmd/models/qwen3vl.cpp`), and the libmtmd
+    binary is newer than that commit.
+  - `clip.cpp` has no backend gate, and the GPU flag is `--device ROCm0`.
+  - Qwen2.5-VL-7B (6.0 GB) is kept as a rollback only. Qwopus3.8-27B-Flash Q8_0 fits (29.7 GB) but is not
+    served as a vision reader.
+  - **Qwen3.8-Flash-Next + F16 mmproj (88–92 GB) does not fit the 64 GB MI210.**
+  - **The gemma-4 models have no mmproj on disk**, so they cannot do vision locally.
+  - Qwen3-VL-2B and 1B-Merged have an empty directory or no mmproj.
+  - LightOnOCR-2-1B, PaddleOCR-VL-1.6 and Unlimited-OCR are transcribers only, not QA readers.
+
+  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md)
+- **Vision token cost.** Qwen3-VL uses a 32 px cell (patch 16 × merge 2) with token bounds (8, 4096).
+  Production passes `--image-min-tokens 1024`, so a 1568×1568 frame costs 2,401 tokens.
+  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md)
+- **Link fix.** The ERNIE deep dive now links the Hermes outer-shell handoff under `completed/`, where
+  `image_generate (FAL)` is still disabled and ERNIE is its self-hosted replacement.
+  [ernie deep dive](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md)
+
+#### Open questions
+- Is the ≥1024² white output caused by the VAE decode, or by the attention/FA path at the larger sequence
+  length? Either test needs a new build plus prep.
+- The 960² change is attributed only across builds, because the Run 1 build never ran patch-OFF at 960².
+
+#### Sources
+- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — both MI210 run blocks: build, admissibility, result tables and reading.
+- [2026-09-16-sub-occ1.md](../progress/2026-09/2026-09-16-sub-occ1.md) — the local vision-reader candidate table and the Qwen3-VL token-cost arithmetic.
+- [ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the re-pointed Hermes link (link change only).
+- [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — confirms the served Qwen3-VL reader's GPU fit (about 21 GB) on the champion.
+
+### Compiled Update — 2026-08-12: the TTS wiring task was already done ten days earlier, and the box was the only thing missing
+
+**Confidence: verified** for the static and test evidence; **explicitly unverified** for live runtime — no process was launched, so this records that the wiring exists, not that the service answers.
+
+The open task to wire TTS into the stack lifecycle was closed by **discovering it had already landed** on 2026-08-02; only the checkbox had never been flipped. Independent verification found `start_tts` present in the launcher, port 9002 declared in the launch manifest, and reload dispatch driven off the auxiliary-services table rather than a special case — plus six parametrised tests passing, including a real linkage check. What was **not** done is a socket-level startup or a `/v1/audio/speech` smoke test, and this page does not claim either.
+
+Two governance points come out of it, and they are the durable part:
+
+- **A completed task with an open box is a live cost.** This one sat for ten days, and the same session found a sibling case where a note about the speech-kernel verification had to be corrected because the script it described did not actually run its check. The pattern — an announcement landing while the thing it announces does not, or the reverse — recurred repeatedly across the fleet this week.
+- **Verify before building.** The correct output of this task was zero lines of new code. A task that begins by re-deriving whether its premise still holds costs one check; a task that begins by implementing costs a duplicate implementation and a merge.
+
+Related speech-kernel context unchanged: both speech kernels remain frozen at `production-speech-v1`, and the three-tree ggml generation split means every launcher still has to prove its own `LD_LIBRARY_PATH` — see [Local Inference](local-inference.md) for the linkage landmine that makes this non-optional.
+
+#### Source References (2026-08-12)
+
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the S-9 closure, the independent verification, and the explicit unverified-runtime boundary.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the same-session speech-kernel verification correction.
+- [`capability-registry-and-promotion.md`](../handoffs/active/stack-lifecycle-program.md#track-capability-registry-and-promotion) — the parallel "the applicator already existed" premise correction, same shape.
+
+### Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
+
+The first live paired MiniCPM-o observation is deliberately not a deployment
+decision: it observed `6/8` versus Qwen2.5-VL `5/8` on `worker_vision` and
+`7/10` versus `6/10` on `vision_escalation`, with exact two-sided McNemar
+`p=1.0` for both. The sample is observation-only and does not alter the
+lineup. In parallel, the pinned llama.cpp-omni Path-B CLI feasibility probe is
+terminally blocked: the exact pin accepts numbered audio fixtures only and
+cannot meet the required text-input/output-WAV contract without source changes.
+The actual TTS adapter decision and any M-3 role swap remain open behind E8.
+
+#### Source References (2026-07-26 bounded MiniCPM-o evidence)
+
+- [Multimodal pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — M-1 observation, M-2 feasibility closure, and remaining M-2/M-3 gates.
+- [Post-v8 master handoff index](../handoffs/active/master-handoff-index.md) — campaign sequencing and no-lineup-change boundary.
+- [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — exact paired counts and pinned-interface evidence.
+
+### Compiled Update — 2026-08-25: document-specialist VLM arms — instruments fixed, evidence corrected, both runs still operator-gated
+
+**Confidence: verified** for the code/harness/disk facts (shipped tests, on-disk artifacts,
+in-place record corrections); **no new model run** was made or is claimed.
+
+#### PaddleOCR-VL: the 0.0 / 0.058 TEDS figures in the 2026-07-17 finding above are VOID, and the real pipeline is the gate
+
+The 2026-07-17 finding's "prompt-only HTML-table recovery stayed negative (TEDS=0.0 … rescore only
+lifted table TEDS to 0.058333)" figures are retracted by the document-parser-table-bench
+reassessment: PaddleOCR-VL-1.6 is a **three-stage pipeline** (PP-DocLayoutV3 layout analysis →
+0.9B VLM recognizing *cropped regions* under the six official element prompts (`OCR:`, `Table
+Recognition:`, `Formula Recognition:`, `Chart Recognition:`, `Spotting:`, `Seal Recognition:`) →
+markdown/table assembler), with **no page-level markdown prompt on the card** — whole-page feeding
+is off-label and the numbers describe the harness, not the model. The instrument is now competent:
+full OmniDocBench (1,651 pages / 665 table regions, English-only view scoreable) is local, and
+Phase A is landed — `paddleocr==3.7.0` + `paddlepaddle==3.2.2` in a dedicated venv, with
+**`--vl_rec_backend llama-cpp-server` verified as an explicitly supported backend** (the
+`paddleocr --help` omission is an argparse registration gap, not a missing subcommand). Phase B
+(binary gate: does the documented pipeline emit HTML `<table>` markup?) and Phase C (n=665,
+English-only split) require per-run operator approval; `llama-server` remains the compute engine,
+and the "Python pipeline = disqualifier" framing is superseded by the operator's 2026-07-20
+direction that the orchestrator *should* avoid inference when unnecessary — layout decides what
+needs the VLM. Do not re-cite the voided figures.
+
+#### Unlimited-OCR: a second instance of the harness-vs-model pattern, corrected to prompt/profile mismatch
+
+Unlimited-OCR (3B-A0.5B, Baidu, intake-864) ran a mechanically real 18-page OmniDocBench demo on
+2026-08-13 (18/18 pages, 0 errors; median **5,857 ms/page**; median decode **392 t/s**; text-block
+edit distance 0.3624, table TEDS 0.0117, reading-order 0.2165) — but all 18 pages emitted
+**coordinate-tagged layout dumps, not markdown**, which is a sufficient explanation for the
+near-zero TEDS. The record correction (2026-08-25) downgrades the claim to **demonstrated
+prompt/profile mismatch**: the GGUF's bare-passthrough chat template is verified, but llama.cpp's
+own `tools/mtmd/tests/test-deepseek-ocr.py` records prompt-dependent behaviour (`Free OCR.` emits
+EOS immediately while the HF-reference `document parsing.` grounds), so "coordinate output
+regardless of prompt" is not established. Same shape as the PaddleOCR-VL retraction: an off-label
+invocation profile producing numbers that describe the harness. The default artifact is now the
+requantized `Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB, `output.weight` q8_0, 154 tensors
+byte-copied — no double-quant loss), and the canonical-profile A/B (`document parsing.`,
+`n_predict=4096`, `n_ctx=16384`, DRY, grounding-strip per `test-deepseek-ocr.py`) is gated on the
+operator's all-inference-stop order being lifted. Full record, including the mutex-receipt
+correction and the now-confirmed disappearance of the run artifact:
+[Document Processing](document-processing.md).
+
+#### Source References (2026-08-25 document-specialist arms)
+
+- [`document-parser-table-bench.md`](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) — the
+  three-stage architecture and six official prompts, the void note on the 0.0/0.058333 figures,
+  the full OmniDocBench instrument, the Phase A environment landing and the `llama-cpp-server`
+  backend verification, and the Phase B/C operator gates.
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
+  — the Unlimited-OCR observation row with the corrected causal claim, the requantized
+  `DEFAULT_MODEL` repoint, and the canonical A/B contract.
+- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the demo run
+  record (measurements, the output-format finding, the `held_s` defect) with its 2026-08-25
+  supersession blockquote.
+- [`progress/2026-08/2026-08-25-mainA-pip05.md`](../progress/2026-08/2026-08-25-mainA-pip05.md) —
+  the record-correction execution and the verified loss of the demo run directory.
+- [Document Processing](document-processing.md) — the compiled full record of both arms, the
+  harness hardening, and the dataset-path resolution.
+
+### Compiled Update — 2026-07-29: ERNIE keeps the quality axis, Z-Image is a latency question, and the blank-PNG defect has a candidate fix
 
 **Confidence**: mixed — this page carries three different classes of claim and they must not be read alike:
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
@@ -1016,7 +1025,7 @@ carry which ROCm mitigation, what our pinned checkout contains, what the deploye
 binary was built from); **observation-grade** for the benchmark scores, which are
 vendor self-reports on both sides.
 
-### LongText-Bench comparability RESOLVED — and what that does not settle
+#### LongText-Bench comparability RESOLVED — and what that does not settle
 
 Same benchmark, same splits, aggregation = EN/ZH arithmetic mean. The incumbent
 vendor's own model card carries a three-column table that **includes the
@@ -1034,7 +1043,7 @@ spot-check remains the only instrument that can settle validity. That open
 question therefore survives the dive rather than being closed by it.
 [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections, §Remaining Operational Question 2
 
-### Consequence: the alternative is a latency candidate, decoupled from quality
+#### Consequence: the alternative is a latency candidate, decoupled from quality
 
 Because the quality question on the axis the role was selected for is already
 answered against it, Z-Image-Turbo is scoped as a **latency candidate only** (6B
@@ -1046,7 +1055,7 @@ alpha-scaling for step-vs-quality is an **untested hypothesis** and the backend'
 LoRA key resolution for that architecture is **unverified**.
 [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) §Research Intake Update 2026-07-29
 
-### The "stale backend" premise is struck — no upgrade is needed to trial anything
+#### The "stale backend" premise is struck — no upgrade is needed to trial anything
 
 Our pinned image backend already contains the alternative model's implementation
 (a 646-line header plus its documentation, fully wired through the model
@@ -1057,7 +1066,7 @@ no upgrade is required to trial a second model, so nothing touches the live role
 The separate currency question (~202 commits / ~2.7 months behind upstream, tree
 clean) is real but non-blocking.
 
-### Candidate FIX for the MI210 1024² blank-PNG defect
+#### Candidate FIX for the MI210 1024² blank-PNG defect
 
 Upstream ran a **ROCm f16-overflow campaign** on 2026-07-10 (two PRs) covering
 four model families and the shared FeedForward — and **the deployed image model's
@@ -1073,7 +1082,7 @@ accumulation overflow looks like. **This is a candidate fix, not a diagnosis** �
 and it needs no new model and no new weights.
 [`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) §2026-07-29 Stage-2 dive
 
-### A durable control-selection rule: controls must be mitigation-matched
+#### A durable control-selection rule: controls must be mitigation-matched
 
 The proposal to run the alternative model as a **diagnostic control** for the
 blank-PNG bug is **withdrawn as confounded**: its header carries an explicit ROCm
@@ -1085,7 +1094,7 @@ Vulkan-only at our pin. Generalization: a control differing from the subject in
 [`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) §Control-probe note;
 [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
 
-### A pre-deployment assessment ages badly in specific, predictable ways
+#### A pre-deployment assessment ages badly in specific, predictable ways
 
 The deployed image model's deep dive was written as a **pre-deployment**
 assessment; filing its intake row 12 weeks later (`intake-937`, 2026-07-29)
@@ -1120,7 +1129,7 @@ deployed ships a VAE from a different model family. Neither vendor card names
 the VAE, so no source can adjudicate — recorded as open rather than settled in
 either direction.
 
-### Source References
+#### Source References
 
 - [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control; the 2026-07-29 intake-row filing
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the pre-deployment assessment itself: the backend premise, the CPU latency forecast, the retired hardware extrapolation, the quantization-damage hypothesis, and the unresolved VAE identity
@@ -1128,14 +1137,14 @@ either direction.
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
 - [`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule
 
-## Compiled Update — 2026-07-31: TTS is solved, and the fix was to stop writing our own codec
+### Compiled Update — 2026-07-31: TTS is solved, and the fix was to stop writing our own codec
 
 **Confidence: verified (measured on this host).** The long-standing TTS blocker — archived at
 `Phase 4 BLOCKED` with the note that our Qwen3-TTS llama.cpp port "produced unintelligible noise" —
 is resolved. It was **not** resolved by the debug step the handoff documented (diff C++ vs PyTorch
 codec tokens, never executed, now cancelled). It was resolved by discarding our port.
 
-### The generalizable lesson: we hand-rolled the half that broke
+#### The generalizable lesson: we hand-rolled the half that broke
 
 Qwen3-TTS is two halves — an LM half (Talker + MTP CodePredictor) and a **codec half**
 (SEANet / ConvNeXt / DAC vocoder). Our port implemented the LM half against llama.cpp's existing
@@ -1154,7 +1163,7 @@ value") and the Qwen3-TTS MTP-codec precedent it explicitly cites. The recurring
 The cost of not checking here was months of a blocked handoff plus a C++ accelerator whose source
 was subsequently lost — and which, it turns out, never worked.
 
-### Measured — first working speech synthesis on this host, ever
+#### Measured — first working speech synthesis on this host, ever
 
 CPU, `Qwen3-TTS-0.6B-base` Q8_0 + `qwen-tokenizer-12hz` Q8_0 (1.19 GB total):
 
@@ -1170,7 +1179,7 @@ CPU, `Qwen3-TTS-0.6B-base` Q8_0 + `qwen-tokenizer-12hz` Q8_0 (1.19 GB total):
 an LM-optimization workload — which inverts where effort should go. A GPU bench was in flight at
 compile time; no number is recorded here for it.
 
-### A third-party patch is not a kernel change — and the distinction is worth stating
+#### A third-party patch is not a kernel change — and the distinction is worth stating
 
 Building `qwentts.cpp` with HIP for gfx90a needed exactly one line: its vendored
 `ggml/src/ggml-cuda/vendors/hip.h` guarded FP8 on `HIP_VERSION >= 60200000`, but the OCP-format
@@ -1184,7 +1193,7 @@ new production version) governs **our** kernel tree. A patch inside a third-part
 copy is not in that tree, touches no production binary, and requires no experimental-kernel handoff.
 Production `production-consolidated-v8` @ `67a433bf4` was untouched throughout.
 
-### ASR: "it runs" and "it works" are different findings
+#### ASR: "it runs" and "it works" are different findings
 
 `ggml-org/Qwen3-ASR-1.7B-GGUF` serves on the MI210 through `llama-server` with **zero kernel
 change** — the frozen v8 kernel already ships `tools/mtmd/models/qwen3a.cpp` and
@@ -1207,7 +1216,7 @@ Q8_0-audio-projector hypothesis above did not hold; the WER figure also moved (7
 mechanism is a duration-correlated degenerate repetition loop, not a quantization or context defect,
 and whisper.cpp's own numbers (below) removed the incentive to keep debugging it.
 
-### STT: an optional role failing silently is worse than a required role failing loudly
+#### STT: an optional role failing silently is worse than a required role failing loudly
 
 `whisper_server.py` passed a model **name**, not a path, so `faster-whisper` resolved it through
 `huggingface_hub` and reached out to the network on **every cold start**. Because whisper sits in
@@ -1219,7 +1228,7 @@ The durable lesson generalizes past speech: **a model referenced by name is a ne
 and combining that with fail-silent optionality produces an outage nobody detects. Pair with
 `feedback_fail_open_defaults_conceal_their_own_corruption`.
 
-### Source References
+#### Source References
 
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the ✅ TTS-unblocked banner, Path E vs Path C, and the S-1..S-11 speech task block (S-7 bf16 projector, S-9 `start_tts()` wiring, S-10 whisper-vs-Qwen3-ASR decision)
 - [`../handoffs/archived/qwen3-tts-voice-synthesis.md`](../handoffs/archived/qwen3-tts-voice-synthesis.md) — the archived `Phase 4 BLOCKED` record, now carrying a resolution pointer; retained as historical ledger, explicitly not resurrected
@@ -1227,7 +1236,7 @@ and combining that with fail-silent optionality produces an outage nobody detect
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — full session record: measurements, the FP8 guard diff, the ASR failure signature, and the two operational incidents
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — rows **N27** (speech) and **N28** (speculative decoding is launch-fixed)
 
-## Compiled Update — 2026-07-31: speculative decoding has no per-request surface on v8
+### Compiled Update — 2026-07-31: speculative decoding has no per-request surface on v8
 
 **Confidence: verified (read from frozen production source; not empirically probed).**
 
@@ -1255,18 +1264,18 @@ of it is a kernel change — a new production version through the four-step work
 the frozen tree. The composed recipe's ~1.6 % cost is therefore unconditional on every drafted
 request, and its sole justification (the repetitive-context upside) was retracted the previous day.
 
-### Source References
+#### Source References
 
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — the source-read section and tasks SW-1..SW-4 (SW-2 confirms against a live server; SW-3 decides whether a per-request surface is worth carrying into v9)
 - [`inference-acceleration-index.md`](../handoffs/archived/inference-acceleration-index-history-through-2026-06-19.md) — the structural-fact banner above the retracted ngram row
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N28**
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §10, with the exact line numbers and the README-echo explanation
 
-## Compiled Update — 2026-07-31 (session 3): vision role settled on MMMU, MiniCPM-o retired, speech finalized after the gfx90a ARGSORT fix
+### Compiled Update — 2026-07-31 (session 3): vision role settled on MMMU, MiniCPM-o retired, speech finalized after the gfx90a ARGSORT fix
 
 **Confidence: verified — measured on this host, with persisted artifacts for every number below.**
 
-### MiniCPM-o-4.5 is deprecated and its weights are deleted
+#### MiniCPM-o-4.5 is deprecated and its weights are deleted
 
 The multi-month `vision_escalation` candidacy this page has tracked since 2026-07-17 (the MI210
 `--reasoning off` lane, the 2026-07-23/24 deterministic promotion runbook, the 2026-07-26 bounded
@@ -1291,7 +1300,7 @@ also moot, since a dedicated Qwen3-TTS-12Hz-0.6B (1.14 GB, CPU-only, zero GPU VR
 inside MiniCPM-o's 22 GB omni bundle. Operator-authorized: deprecate, then delete (in that order,
 to leave no dangling reference behind the 22 GB `rm`); storage reclaimed.
 
-### Vision role settled: Qwen3-VL-30B-A3B Q4_K_M wins MMMU val; the 8B and 4B are not separable from the incumbent
+#### Vision role settled: Qwen3-VL-30B-A3B Q4_K_M wins MMMU val; the 8B and 4B are not separable from the incumbent
 
 MMMU val, 250 stratified multiple-choice questions, identical rows for every arm, `temp=0.2`,
 `seed=42`:
@@ -1316,7 +1325,7 @@ failures for the incumbent vs 41 and 50 for the Qwen3-VL arms — truncated mid-
 wrong), and even at `max_tokens=2048` those models emit no letter on ~9% of hard questions, so **the
 vision role requires `max_tokens ≥ 1024`**.
 
-### STT settled: whisper.cpp large-v3-turbo f16 on MI210; Qwen3-ASR DROPPED
+#### STT settled: whisper.cpp large-v3-turbo f16 on MI210; Qwen3-ASR DROPPED
 
 | metric | CPU incumbent | MI210 whisper.cpp | |
 |---|---|---|---|
@@ -1344,7 +1353,7 @@ rows under 3 s, 50% at 7–30 s). Clean rows score 2.27% — the *model* is soun
 broken. Moot either way: whisper.cpp is faster with a far tighter tail, so debugging the projector
 has no payoff.
 
-### TTS settled: Qwen3-TTS-12Hz-0.6B Q8_0 via qwentts.cpp on MI210 — the post-ARGSORT-fix numbers
+#### TTS settled: Qwen3-TTS-12Hz-0.6B Q8_0 via qwentts.cpp on MI210 — the post-ARGSORT-fix numbers
 
 These numbers **supersede** the pre-fix CPU-only reading in the "TTS is solved" Compiled Update
 above (xRT 0.86×, `CodecDecode` 64%) — that section recorded the *before* state; this is the *after*
@@ -1372,7 +1381,7 @@ Production llama.cpp kernel untouched (`67a433bf4`). **Operator decision: keep q
 pinned versioned dependency — do NOT merge it into our llama.cpp.** Running the patched fork
 indefinitely is acceptable.
 
-### Resulting GPU resident set
+#### Resulting GPU resident set
 
 | resident | GB |
 |---|---|
@@ -1386,7 +1395,7 @@ indefinitely is acceptable.
 test was in flight at compile time to establish whether `q4_0` buys ~180k without a quality cost —
 no number recorded here for it.
 
-### Source References
+#### Source References
 
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §15 (all four sub-findings: vision, STT, TTS, resident set), §20 process lessons
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the MMMU table, the S-6/S-6a/S-7 task closures, the S-17 resident-set budget task, and the ✅ vision/STT/TTS status banners
@@ -1395,7 +1404,7 @@ no number recorded here for it.
 - [Hardware Optimization](hardware-optimization.md) — the gfx90a ARGSORT defect mechanism, the fix, and the HIP-graphs consequence
 - [Benchmark Methodology](benchmark-methodology.md) — the saturated-suite mis-ranking and `max_tokens` truncation findings in full
 
-## Compiled Update — 2026-08-30: MiniMax-H3 — the page's first video-generation candidate, omni-modal by construction, gated on a scope decision before any download
+### Compiled Update — 2026-08-30: MiniMax-H3 — the page's first video-generation candidate, omni-modal by construction, gated on a scope decision before any download
 
 **Confidence: mixed** — model/architecture facts and deployment arithmetic are card/community-record facts from the EVL-32 session (`upstream-published` for model-card claims, `verified` for the disk math as arithmetic); **nothing has been downloaded, built, or run** — no H3 artifact exists on this host.
 
@@ -1413,12 +1422,12 @@ Key findings:
 - **Everything downstream of the scope decision is enumerated but gated**: 768p quality smoke on the model card's reproducible scripts (T2VA/FL2VA/Ref2VA cases), single-MI210 confirmation, the content-filter audit, and the license-compliance note all wait on the operator's yes/no [handoff].
 - **10Eros-Max beta4 (released 2026-08-29) fixed the beta3 turbo corruption** in i2v/reference starts; it runs t2v + i2v + reference modes at euler/simple 6–8 steps, with no cache/spectrum in reference mode [handoff].
 
-### Source References (2026-08-30)
+#### Source References (2026-08-30)
 
 - [`minimax-h3-video-generation-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) — the EVL-32 record: model facts, community quantization landscape, NSFW-capability evidence, the Ref2VA + beta4 INT8 deployment path, the 2026-08-30 disk math, and the open-question list with the scope decision as first gate.
 - [`progress/2026-08/2026-08-30.md`](../progress/2026-08/2026-08-30-opencode.md) — the session record: EVL-32 creation, the Qwen3-VL-32B-dense vs 30B-A3B-MoE family note, the disk math, and the `index_state.py --check` green.
 
-## Compiled Update — 2026-09-25: LensVLM Selective Visual Expansion
+### Compiled Update — 2026-09-25: LensVLM Selective Visual Expansion
 
 LensVLM contributes a selective-expansion pattern for visual language inference: begin from a compact visual representation and allocate additional visual tokens only where the model predicts that more detail is useful. The mechanism is relevant to local multimodal routing because it turns visual-token allocation into a measurable policy rather than a fixed preprocessing constant.
 
@@ -1426,7 +1435,7 @@ The integration path starts with the official BF16 implementation and checkpoint
 
 Parent-model provenance remains a dependency for license, tokenizer, image processor, and architecture compatibility. Each run should preserve the exact checkpoint revision, preprocessing configuration, selected regions or token budget, answer outputs, latency, peak memory, and environment identity. ECR-style efficiency summaries can describe the expansion tradeoff, but they do not replace answer-quality and robustness checks.
 
-### Source References
+#### Source References
 
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline)
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md)
@@ -1435,7 +1444,7 @@ Parent-model provenance remains a dependency for license, tokenizer, image proce
 
 **Confidence:** verified against the cited LensVLM intake handoff; no local MI210 reproduction has yet promoted the external claims to measured evidence.
 
-## Compiled Update — 2026-09-25: LensVLM Is Triggered by a Measured Need
+### Compiled Update — 2026-09-25: LensVLM Is Triggered by a Measured Need
 
 The official BF16 reproduction is no longer immediate backlog. It activates only when visual-token
 processing is a measured latency, memory, or quality bottleneck on an EPYC workload, or when a named
@@ -1443,7 +1452,7 @@ deployment requires LensVLM. At that point provenance resolution comes first, fo
 official demo and a small prepared sample with the prospective `VB-LENS-1` receipt. Until the trigger fires,
 LensVLM remains a monitor record and carries no active checkbox or index action.
 
-### Source References
+#### Source References
 
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — MM-LENS trigger and staged execution.
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — minimum research-screen controls.
@@ -1452,11 +1461,11 @@ LensVLM remains a monitor record and carries no active checkbox or index action.
 
 **Confidence:** verified as repository execution posture; external LensVLM performance remains unmeasured locally.
 
-## Compiled Update — 2026-09-26 (research-intake orch-prior-art): the 150–220 GB/s CPU bandwidth figure is pre-BIOS
+### Compiled Update — 2026-09-26 (research-intake orch-prior-art): the 150–220 GB/s CPU bandwidth figure is pre-BIOS
 
 *Correction 2026-09-26:* the "Decode-usable CPU bandwidth is about 150–220 GB/s, not 460" line in *Corrections to the operator draft* (Speech-native interlocutor program, above) is pre-BIOS. Since 2026-09-21 a full-screen read-sum measures 446.8 GB/s at t96 and 449.4 under load. A ~250 GB/s decoder is no longer excluded by the ceiling alone; whether it fits beside a -t 96 LLM is the contention question (CPU speech collapses next to a `-t 96` CPU LLM).
 
-### Source References
+#### Source References
 
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — the same correction, dated 2026-09-26, under *Facts that constrain the design*.
 - [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — C8 and the post-BIOS supersession note (`epyc-inference-research/data/bios-postreboot-20260921/`).
@@ -1465,7 +1474,7 @@ LensVLM remains a monitor record and carries no active checkbox or index action.
 **Confidence:** measured (read-sum microbench, one host; the 449.4 re-read was not on an idle host).
 
 
-## Compiled Update — 2026-10-03: vision leaves the MI210
+### Compiled Update — 2026-10-03: vision leaves the MI210
 
 **Confidence: verified** (`locally-measured`) for the placement change, the VRAM arithmetic and the refusal latency.
 CPU throughput and quality at the new placement are **unmeasured** (S-18).
@@ -1489,7 +1498,7 @@ CPU throughput and quality at the new placement are **unmeasured** (S-18).
   `architect_critic` since ARCHSWAP-20260927) exists in docs only, with no routing code. CS-17 implements it as
   configuration.
 
-### Source References
+#### Source References
 
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the cold-CPU note, S-18, S-19, S-20.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the vision move and the 27.9 s refusal.
@@ -1497,7 +1506,7 @@ CPU throughput and quality at the new placement are **unmeasured** (S-18).
 - [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — STACKCHG-DFLASH2.
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-17: voice routing is unimplemented.
 
-## Compiled Update — 2026-10-20: the conversation stack gains turn-taking instruments, and the vision embedders have nothing to screen yet
+### Compiled Update — 2026-10-20: the conversation stack gains turn-taking instruments, and the vision embedders have nothing to screen yet
 
 **Confidence: verified** for what the handoffs now file; no turn-taking or retrieval number exists yet, so nothing here is a result.
 
@@ -1505,14 +1514,14 @@ The conversation-stack handoff received the turn-taking evidence program from th
 
 On the vision side, the multimodal-pipeline handoff records an owned trigger for embedder-upgrade screens: on 2026-10-20 the Chroma `descriptions` (384-d MiniLM) and `images` (512-d CLIP) collections and `vision.db` were empty (0 embeddings, 1 photo, 0 descriptions). A side-by-side EmbeddingGemma 2 fit screen runs only when the descriptions collection supports a labelled screen of at least 120 queries, or the operator names a text-to-photo search task; until then the MiniLM and CLIP routes do not change. The pinned manifest for that screen is REPL-EMB-2.5.
 
-### Source References (2026-10-20 multimodal delta)
+#### Source References (2026-10-20 multimodal delta)
 
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — turn-taking evidence program, CS-45..49, durable triggers.
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — embedder-upgrade screen trigger and the empty-collection observation.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — conversation-stack write-side extension.
 - [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — unrelated current-state context only.
 
-## Compiled Update — 2026-10-21: turn-end synthetic results, the speech threadpool fold (qwentts passed, whisper missed its target), and corpus lessons
+### Compiled Update — 2026-10-21: turn-end synthetic results, the speech threadpool fold (qwentts passed, whisper missed its target), and corpus lessons
 
 **Confidence: verified for the recorded measurements (each one run, each with its artifact); nothing here advances a turn-end arm.** The `human_recorded` stratum of the CS-45 corpus is still empty, and only that stratum can advance an arm (`corpus.json` keeps `advance_eligible_strata = [human_recorded]`; [turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) section 0 rule 3), so every number below can only rank or reject.
 
@@ -1527,7 +1536,7 @@ On the vision side, the multimodal-pipeline handoff records an owned trigger for
 
 Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md) (2026-10-20/21 notes), [qwentts-threadpool progress 2026-10-21](../progress/2026-10/2026-10-21-qwentts-threadpool.md), [speech-v2 manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md), [turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md).
 
-## Compiled Update — 2026-10-21 (sweep 5): speech placement moves to GPU card 2, and the CPU-partition measurement is declined
+### Compiled Update — 2026-10-21 (sweep 5): speech placement moves to GPU card 2, and the CPU-partition measurement is declined
 
 **Confidence: verified** for the operator ruling and the rescoped task text. No placement measurement has run; the second MI210 is not installed.
 
@@ -1541,21 +1550,21 @@ Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.m
 
 Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Progress cs-rescope](../progress/2026-10/2026-10-21-cs-rescope.md), [Progress cs11-prep](../progress/2026-10/2026-10-21-cs11-prep.md), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
 
-## Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): the Italian TTS re-listen kit is ready; the normalizer stays eval-only
+### Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): the Italian TTS re-listen kit is ready; the normalizer stays eval-only
 
 **Confidence: verified** for the job result and the page; the live-enable decision is **open** (the operator's re-listen, CS-8.L4).
 
 - `s5-cs8l-retts` ran in a granted q3 slot (19:36-19:38Z, rc 0) and produced 15 clips, not 60: only the 10 sentences the Italian normalizer actually changes, plus 5 stress-respelling probes (àtomi, idiozìe, anàloga, Ghiza, Mariànne), at 16 kHz like round 1.
 - The clips are published as a re-listen section of the Italian listen page with an A/B against each original, the round-1 rating beside it, and a better/same/worse field saved to the page's database. The normalizer stays eval-only until that re-listen is rated.
 
-### Source References (2026-10-22 wrap-up sweep 12)
+#### Source References (2026-10-22 wrap-up sweep 12)
 
 - [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.L4 note
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — wrap-up 9/10
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — section 17.6 (q3 night chain)
 
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **CS-5.P1a PASS: Qwen3-Omni-30B-A3B loads and is coherent on the MI210.** bf16 thinker-only, 56.19 GiB after load, 56.92 peak; ASR `ref_word_recall` 1.0, audio QA on task, text "Paris". A first attempt died on a float32/bf16 mismatch in the audio tower (fixed in `d1_probe.py`).
 - **CS-5.P1c PASS: Step-Audio-2-mini audio incoherence was a transformers bug.** Under transformers >= 4.56 an empty DynamicCache made `prepare_inputs_for_generation` drop the audio. With the fix: ASR recall 1.0 (encoder_calls 22), official-prompt recall 0.941 with a `<英语>` tag prefix, VRAM peak 15.68 GiB (earlier recall 0.059). Production use on >= 4.56 needs the same fix or a pin to 4.49, and the tag stripped.
@@ -1564,7 +1573,7 @@ Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Pro
 Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md)
 
 
-## Compiled Update — 2026-10-28 (CS22 negative retained; STT2 packets remain preparation)
+### Compiled Update — 2026-10-28 (CS22 negative retained; STT2 packets remain preparation)
 
 **Confidence: verified** for the committed CS22 diagnostic conclusion and the source-preparation records. No new quality or timing claim is inferred from packet readiness.
 
@@ -1574,14 +1583,14 @@ Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md)
 
 Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [CS22 native negative and diagnostic](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md); [STT2 native source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
 
-## Compiled Update — 2026-10-29: vision-role promotion reconciled; PaddleOCR-VL CPU table smoke
+### Compiled Update — 2026-10-29: vision-role promotion reconciled; PaddleOCR-VL CPU table smoke
 
 - **S-16 closed by audit:** Qwen3-VL-30B-A3B Q4_K_M is registered as `worker_vision`/`vision_escalation` (deployed 2026-07-31), replacing Qwen2.5-VL-7B in the research registry. This is a reconciliation of an already-deployed state, not a new measurement.
 - **PaddleOCR-VL-1.6 on CPU (PIP02 Phase B):** the llama-server vision path (GGUF + mmproj, `-ngl 0 -np 1`) completed two English table pages in 67.8 s and emitted HTML `<table>` markup; the bounded n=2 smoke says the harness works, not that the tables are faithful (dropped operators seen in page-2 equations). Scoring belongs to Phase C (see Document Processing).
 
 Sources: [multimodal-pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline); [document-parser-table-bench handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md)
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for preparation controls only; **no verdict** on image quality, STT accuracy or HIP parity.
 
@@ -1591,7 +1600,7 @@ Sources: [multimodal-pipeline handoff](../handoffs/active/speech-and-multimodal.
 
 Sources: [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) · [speech prep checkpoint](../progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md) · [LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md)
 
-### Compiled Update — 2026-10-31 (S-18 runtime-only READY checkpoint)
+#### Compiled Update — 2026-10-31 (S-18 runtime-only READY checkpoint)
 
 **Confidence: verified** for publication/admission and the two bounded runtime smokes; the requested `t48` CPU placement and 60-item throughput/quality result remain unmeasured. This does not imply absence of runtime execution.
 
@@ -1601,14 +1610,14 @@ Sources: [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queu
 Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20261031/README.md); [2026-10-31 NI progress](../progress/2026-10/2026-10-31-codex-ni-01a16d6b.md); [multimodal pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - LEX2 dev selection: 100 clips by 15 cells, 1,500 native successes; local alpha 1 casefolded keyword F=.701754 vs alpha-zero .574803. This is lexical reference agreement, not WER; 35 selected rows carry P-STT-1 flags. The 755-row heldout plan is not READY and no heldout inference, score or quality decision exists. Earlier CS-22 A1 had 178 completed cases and zero Q8-F32 WER delta on tested repeated contexts, but rejected required context 1 and failed original acceptance; the 28,805 s silence soak is not real-traffic latency. [Source](../handoffs/active/speech-and-multimodal.md)
 - Ernie typography diagnostic captured 40/40 images from 20 English/Chinese prompts at two resolutions; official score, enhancer, filter and human review remain unknown, so no quality verdict. [Source](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 
-## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+### Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
 **Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
 
@@ -1618,12 +1627,12 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 - d1 decision models (intake-2582#record): d1-2B/3B are vision-language, not text-only; speed tables are Transformers on H100/M5, and an upstream issue found Q8_0 collapsing decision-head probabilities in a sibling model. W2SP-3 (typed-decision-plane, TD-23) screens d1-2B Q8_0 with BF16-vs-Q8 parity at >=99% top-choice agreement plus ECE/Brier.
 - Hex STT (intake-2573#record) is a thin wrapper over transcribe.cpp with GPU-only Parakeet streaming and inconsistent self-reported WER; Dessa full-duplex (intake-2564#record) is marketing only, monitored until a checkpoint appears.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 17 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+#### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
 
 - intake-2341#record (Underdog Bark 3.0 Clean): verdict not_applicable: English-only fails the it/de/fr language gate, and Clean is a lossy rewriting STT that deletes speech content. Integrated via conversation-stack.
 - intake-2342#record (Underdog Bark 3.0 Plus): README read in full; Plus is the faithful (verbatim) arm, stating that it does not clean speech up, with the same 627M-parameter packing as its sibling. Disposition monitor; linked to conversation-stack.
@@ -1637,7 +1646,7 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 - intake-2369#record (Stateful Conformer cache-based streaming): mechanism paper for cache-aware streaming: limited-context training plus per-layer activation caches give streaming equal to offline for the same context. Two claims narrowed (CTC 'all benchmarks', 'lower inference time'). Verdict adopt_patterns; linked to conversation-stack.
 - intake-2370#record (omnivoice.cpp): ggml port of multilingual zero-shot TTS; a sibling TTS runner, not a replacement for qwentts.cpp and not an STT component, with no HIP build path or log, so the README is not evidence of working ROCm. Integrated via conversation-stack.
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2552#record (LFM3-Audio-2B model card): stage-1 filing confirmed; English-only voice chat and LiveASR, with vendor-run numbers (including the 50 ms TTFT and 6.23 WER) not transferable to our hardware or corpora and no accuracy case for replacing ASR. Integrated via conversation-stack.
 - intake-2554#record (LFM3-Omni-2B model card): confirmed with exact rows; citable for modality coverage only, all numbers vendor-measured, and Omni underperforms Audio-2B on VoiceBench and tool calling. Integrated via conversation-stack.
@@ -1646,12 +1655,12 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 - intake-2579#record (llama.cpp PR 31269 realtime server): settles the /v1/realtime event contract, Mac/CUDA-only test coverage, and that llama-server provides no turn detection, so CS-22 VAD/endpointing remains our job. No ROCm, EPYC CPU or latency claim carried. Integrated via conversation-stack.
 - intake-2580#record (llama.cpp PR 30629 mtmd_audio_stream): confirms the experimental mtmd_audio_stream API surface and a native Voxtral Realtime streaming path in llama.cpp; WER and latency belong to intake-2383#record, not this PR. Integrated via conversation-stack.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 9 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-22, IDs 2374–2385 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2374-2385.md)
+#### Run 2026-10-22, IDs 2374–2385 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2374-2385.md)
 
 - intake-2374#record (TurboBias ASR context biasing): Confirmed TurboBias v1 as the upstream of the NeMo-Speech.cpp tree and parakeet_web port; v1 evidence uses the authors' own FastConformer models, not Parakeet or Nemotron. Adopt-component; integrated into conversation-stack.
 - intake-2376#record (TEN Turn Detection): Confirmed the earlier decline note (7B text-only) and added facts: en/zh only, a licence conflict between HF and repo, test-set construction (422/426 unfinished are prefixes), no latency or small model. Adopt-patterns; handoff conversation-stack.
@@ -1664,7 +1673,7 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 - intake-2385#record (audio.cpp): Entry created already dive-verified; worth investigating as an all-in-one pure C++ ggml audio inference engine. Integrated into conversation-stack.
 
 
-## Compiled Update — 2026-11-01 (CS-8.LEX2 dev-only lexical selection)
+### Compiled Update — 2026-11-01 (CS-8.LEX2 dev-only lexical selection)
 
 **Confidence: verified for the 100-clip dev grid and frozen lexical rule; this is not P-STT-1 WER, test-set evidence or a speech release decision.**
 
@@ -1673,12 +1682,46 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 Sources: [conversation-stack](../handoffs/active/speech-and-multimodal.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [LEX2 selected-cell summary](../artifacts/compute/codex3-lex2-dev-selection-20261101/DEV-SUMMARY.json) · [heldout plan](../artifacts/compute/codex3-lex2-dev-selection-20261101/HELDOUT-PLAN.json)
 
 
-## NeMo validation rescore — 2026-11-01
-
-The offline English validation rescore covered 1,580 retained chunks, with 394 utterances in each of four settings. R13 had the lowest reported pooled WER: 8.3576% under `stt_norm/v1` and 8.3121% under the v2 candidate. R6 retained a decode-error failure, scored with deletions. This is selection-only evidence; the original scorer catalog binding is UNKNOWN and the broader test-set advancement gate remains open. ([handoff](../handoffs/active/speech-and-multimodal.md); [result summary](../artifacts/compute/codex3-stt5-v3-complete-20261101/SUMMARY.json); [progress](../progress/2026-11/2026-11-01-codex3.md))
-
-## Compiled Update — 2026-11-01 (Parakeet r4 calibration gate)
+### Compiled Update — 2026-11-01 (Parakeet r4 calibration gate)
 
 Parakeet r4 superseded an unrun r3 packet and was submitted with 21 verified source hashes. The active qual-v1 keeper skipped it because its exact UNKNOWN-feasibility scope lacks the accepted calibrated-production rate basis; an installed v2-row gate accepted that scope in a dry check, but no qualification receipt or arm followed. A later diagnosis confirms the manifest labels its basis `parakeet-unknown-calibration`, while the live speech qualifier admits only `speech-calibrated-production` bound to the 24-thread production recipe, batch, decode mode and source catalog. The earlier two-thread JFK smoke cannot establish that rate. A separately scoped calibration and fresh successor remain necessary; no WER or model-advancement result is claimed. ([STT5 session record](../progress/2026-11/2026-11-01-handoff-stt5.md); [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md))
 
 Sources: [STT5 session record](../progress/2026-11/2026-11-01-handoff-stt5.md) · [conversation stack](../handoffs/active/speech-and-multimodal.md) · [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md)
+
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): Annex S voice-turn package and the CS-5 reference harness
+
+**Confidence: prepared documents and model-free software tests only; no voice-turn, ROCm or model-quality measurement.**
+
+- **CS-2 Annex S amendment package is prepared, PROPOSED and NOT RATIFIED.** It would admit a `voice_turn` instrument (a complete input-audio to routing/model/tool to output-audio stack including its co-tenant environment) under Annex S, keep existing P-STT/P-TTS protocols unchanged, add a scope note to Annex K so multi-backend composition alone does not relocate a voice protocol, and define a common P-VOICE contract (manifest items stay in the denominator; selection and confirmation disjoint by speaker and dialogue; futility-only interim looks; per-item timestamps on one monotonic clock). Issuance and application remain human-only under `MEASUREMENT.md` section 5 ([package](../docs/reference/speech/cs2-annex-s-amendment-package.md), [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md)).
+- **CS-5 reference harness scope.** CPU engineering qualification of Qwen3-Omni-30B-A3B-Instruct (revision `26291f79`, native source `e4235853`) and Step-Audio-2-mini asks whether one public JFK turn completes and emits CS-3 with a live co-tenant sample; stop-on-answer at one CS-3, stop-on-futility on the first terminal load/native/admission failure, futility-only, not a scored comparison or ROCm claim.
+- **Step adapter and runner (model-free).** The compatibility adapter retains audio at every cache step, requires the cache disabled, fails explicitly on zero encoder calls and restores hooks exception-safely (8 tests); the runner overlays pinned native Step/Token2Wav sources to remove hard-coded CUDA placement (zero `.cuda()` left), synchronizes completion timing and writes CS-3 through the shared writer (15 tests across both) ([adapter](../docs/reports/cs5-step-audio-adapter-20261119.md), [runner](../docs/reports/cs5-step-reference-runner-20261119.md)).
+- **Qwen runner and one-shot job.** The Qwen runner pins upstream/package/source, loads local-only inputs and emits candidate-specific CS-3 (22 tests across both APIs); the one-shot job dispatches both APIs, admits prepared input/model inventory stat receipts without weight hashing, samples co-tenant state, preserves Python/native failures and refuses output reuse (29 CS-5 tests) ([Qwen runner](../docs/reports/cs5-qwen-reference-runner-20261119.md), [job](../docs/reports/cs5-reference-job-20261119.md)).
+- **Qwen CPU row published, not yet smoke PASS.** `stt5-cs5-qwen-cpu-reference-r1-20261119` was queued with the keeper; the private CPU environment imports the actual Qwen APIs and both configurations pass stat/package/source admission for 84 prepared file receipts. Taskflow proposed children CS-5.p1 (PyTorch-ROCm gfx90a device proof) to p4 (package and publish), plus CS-8.p1, CS-9.p1, CS-12.p1-p4, CS-20.p1-p4 and CS-30.p1-p3, all NEEDS-OWNER ([row report](../docs/reports/cs5-qwen-cpu-reference-row-20261119.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [CS-2 Annex S amendment package](../docs/reference/speech/cs2-annex-s-amendment-package.md)
+- [speech-and-multimodal](../handoffs/active/speech-and-multimodal.md)
+- [CS-5 Step audio adapter](../docs/reports/cs5-step-audio-adapter-20261119.md) · [CS-5 Step reference runner](../docs/reports/cs5-step-reference-runner-20261119.md) · [CS-5 Qwen reference runner](../docs/reports/cs5-qwen-reference-runner-20261119.md) · [CS-5 reference job](../docs/reports/cs5-reference-job-20261119.md) · [CS-5 Qwen CPU reference row](../docs/reports/cs5-qwen-cpu-reference-row-20261119.md)
+- [STT5 session progress 2026-11-19](../progress/2026-11/2026-11-19-handoff-stt5.md)
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): STT5 validation scoring, Crisp public runtime and independent-runner parity
+
+**Confidence: verified engineering filings; validation WER figures are selection-only deletion-sensitivity numbers, not a test verdict or advancement.**
+
+- **Baseline whisper validation collection (r6) ended with three retained unknowns.** 1,437 validation utterances (turbo/large x forced/auto) produced 5,792 chunk exposures and 5,789 matching rc0 results; three turbo-auto chunks (1 de, 2 fr) have no result and are neither redrawn nor dropped. Filed INCONCLUSIVE; exposure argv mixes 8/24/32 threads across resume windows, so no latency inference ([r6 filing](../docs/reports/stt5-baseline-r6-validation-20261119.md)).
+- **Baseline offline score (32 cells, INCONCLUSIVE, selection-only).** Full-utterance deletion sensitivity under `stt_norm/v1`: large auto en 5.859% (4.966-6.760), de 4.791, fr 8.063, it 2.930; large forced en 5.847; turbo auto en 6.344, fr 9.587 (2 unknown utterances), turbo forced fr 9.069. The v2 candidate normalizer lowers French sharply (large 5.403 vs 8.063). Every cell has repetition_check COULD_NOT_CHECK ([score](../docs/reports/stt5-baseline-validation-score-20261119.md)).
+- **Unified EN retained-validation score.** Pooled WER (394 FLEURS English utterances each, v1 normalizer): c1r0 20.063, c1r1 10.687, c2r2 8.455, c2r4 7.872, c7r7 7.048, c13r13 6.659 (5.685-7.649, lowest in both columns, which does not select a setting). Eleven categorical decode failures across 2,370 paired chunks keep settings selection UNKNOWN; all v1 normalizer contracts PASS and all v2 candidate contracts FAIL ([unified score](../docs/reports/stt5-unified-validation-score-20261119.md)).
+- **Crisp public runtime (JFK, noncohort) is INCONCLUSIVE: 7 PASS + 1 UNKNOWN.** R3/R6/R13 x auto/forced and R0 auto pass with parser-validated witnesses (R0/R3/R6 48 tokens, R13 44), ggml 0.26.0 / Crisp 0.8.44 libraries sampled, no foreign ggml. R0 forced was stopped (rc -15) and stays UNKNOWN; a separately scoped single-case repetition later PASSed (48 tokens) without changing the r2 outcome ([runtime](../docs/reports/stt5-crisp-public-runtime-20261119.md), [R0 forced repeat](../docs/reports/stt5-crisp-public-r0-forced-repeat-20261119.md)).
+- **Matched-recipe calibration PASS (public fixture only).** Six waves x 8 cases = 48/48 pass with eight disjoint three-core workers, both full-JFK waves matching all eight pinned token arrays exactly (16/16). Aggregate wall/audio RTF 0.1577 (52.996 s over 336 s of audio; slowest wave 0.185); one recording and its cuts, no population or production-rate claim ([calibration](../docs/reports/stt5-crisp-public-calibration-20261119.md)).
+- **Independent runner restored and parity PASS.** The missing traced transcribe.cpp (`db678a03` + three-line witness overlay) was rebuilt (PASS), then exact token IDs and normalized transcript matched all eight Crisp public witnesses (R0/R3/R6 48 tokens, R13 44) on identical Q8_0 weights. This clears only the public-fixture parity prerequisite; no WER or advancement ([rebuild](../docs/reports/stt5-transcribe-token-runner-rebuild-20261119.md), [parity](../docs/reports/stt5-transcribe-public-parity-20261119.md)).
+- **Ultra25 structural comparison is INCONCLUSIVE.** The read-only successor ended rc1 on `inventory mismatch torch-run.stderr` with no outputs; the known scratch vault (442 members) lacks the `.npy/.f32/.stdout/.stderr` inputs. A `--preflight` inventory audit (13 tests) was added; original harness_failure and accuracy/HIP NOT_EVALUATED are unchanged ([report](../docs/reports/stt5-ultra-structural-20261119.md)).
+- **Voxtral 480/960 ms public parity is staged.** The traced CrispASR runtime (`2aa8d766`) was rebuilt (PASS, seven artifact identities), a strict native-token comparator (14 malformed-witness controls) and a parity driver exist (20 model-free tests), the first smoke failed and was repaired; no Voxtral parity, WER or rate is claimed ([runtime](../docs/reports/stt5-voxtral-runtime-rebuild-20261119.md), [comparator](../docs/reports/stt5-voxtral-public-token-comparator-20261119.md), [driver](../docs/reports/stt5-voxtral-public-parity-driver-20261119.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [STT5 baseline r6 validation](../docs/reports/stt5-baseline-r6-validation-20261119.md) · [STT5 baseline validation score](../docs/reports/stt5-baseline-validation-score-20261119.md) · [STT5 unified validation score](../docs/reports/stt5-unified-validation-score-20261119.md)
+- [STT5 Crisp public runtime](../docs/reports/stt5-crisp-public-runtime-20261119.md) · [STT5 Crisp R0 forced repeat](../docs/reports/stt5-crisp-public-r0-forced-repeat-20261119.md) · [STT5 Crisp calibration](../docs/reports/stt5-crisp-public-calibration-20261119.md)
+- [STT5 transcribe token runner rebuild](../docs/reports/stt5-transcribe-token-runner-rebuild-20261119.md) · [STT5 transcribe public parity](../docs/reports/stt5-transcribe-public-parity-20261119.md)
+- [STT5 Ultra structural](../docs/reports/stt5-ultra-structural-20261119.md)
+- [STT5 Voxtral runtime rebuild](../docs/reports/stt5-voxtral-runtime-rebuild-20261119.md) · [STT5 Voxtral token comparator](../docs/reports/stt5-voxtral-public-token-comparator-20261119.md) · [STT5 Voxtral parity driver](../docs/reports/stt5-voxtral-public-parity-driver-20261119.md)
+- [progress stt5 2026-11-19](../progress/2026-11/2026-11-19-handoff-stt5.md) · [speech-and-multimodal](../handoffs/active/speech-and-multimodal.md)

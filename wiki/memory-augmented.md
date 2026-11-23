@@ -2,127 +2,9 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-11-19 (wrap-up: MCP session contract, UTM-B1, CAS v3 default, dripreview12 futility). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (Tulving CAS scoring validity). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): bounded graph-snapshot retention, CF monitor checkpoint persistence, pointer-only resume monitor. Earlier: 2026-10-28 (owner-scope full-wrap delta): CME7T-v2 native diagnostic denominator and artifact-seal limits. Earlier: 2026-10-27 (operator wiki sweep, workspace-58): M-27(d) live episodic recall is dominated by seed rows and cannot separate interactive from autopilot writes. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): distill_skillbank escalation counts come from native memory metadata. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: HS-PROF-1 BEAM profile admission arm: no measurable difference). Earlier: 2026-10-22 (wrap-up sweep 10: HS-PROF-1 BEAM reader repaired, CME-7 cache gate accounting). Earlier: 2026-10-22 (wrap-up sweep 7: CME-7 smoke runnable, live-recall job built). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-26 (D-d shared-notes acceptance: verbatim grounding gate first, ≤1 extra call per note, prefix-stable notes block); previous: 2026-09-19 (M-12a RUN: retrieval 0.6069 vs full-book ceiling 0.6086 five-bin Simple Recall, memory-OFF 0.1893; bin 0 abstention inverts the ranking if split out; three run defects); earlier 2026-09-17 (research-intake delta: M-19 files typed decision records with a calibration-sourced confidence gate, blocked on TD-2; evening: D-f3 graph snapshots persist in their own fenced table; OP-KUZU ruled A; v10 episodic re-pin RATIFIED); earlier 2026-09-17 (afternoon: the live episodic store lost exactly the 4 leaked memories; the graph retriever has never been live because kuzu is missing; a fenced cross-process session lease; cross-harness trace pairing keys); earlier 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 **Sources**: 72 (68 + 4 added 2026-11-19) native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
 
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **Cognee agent-memory engine** (intake-135#00) Open-source knowledge engine combining vector search and graph DBs (add/cognify/memify/search pipeline). Not applicable: EPYC's KB is ColBERT retrieval over markdown, not a KG.
-- **KG-LLM interface tuning** (intake-136#01) Hyperparameter tuning of chunking/graph construction/retrieval/prompting inside Cognee on HotPotQA, TwoWikiMultiHop, MuSiQue. Dive re-read (2026-07-25) confirms correctly filed: no architecture novelty and no transferable result.
-- **Omi wearable AI** (intake-400#record) Capture/transcription product with backend hard-bound to Firebase and no local-model path. Dive: correctly filed not_applicable.
-- **PersonaVLM** (intake-435#00) Turns a general MLLM into a personalized assistant via proactive memory extraction, multi-turn reasoning and personality-aligned generation across long interaction. Worth investigating for persistent-user-memory patterns.
-- **Letta trajectory-v1** (intake-887#record) Versioned JSON-schema, deliberately lossy transcript format with eight harness adapters, meant for agent memory formation. Dive: adopt_component has no artifact; the package is not on PyPI and shims a vendored Node 20 CLI.
-- **PRO-LONG programmatic memory** (intake-919#record) Agent searches a lossless append-only interaction log programmatically, with gains on tasks needing history that summarization discards. Dive withdrew two Stage-1 flags (the WorldModeler "mis-cite" is explained by footnote 1); adopt patterns.
-- **ReasoningBank** (intake-930#record) Distills reasoning strategies from both successful and failed trajectories, with MaTTS test-time scaling. Dive: verdict stands but four of eight claims were overturned because Stage 1 read the v1 HTML; current v2 (16 Mar 2026) adds a code release.
-- **SkillOS skill curation** (intake-935#record) An RL-trained Qwen3-8B curator beats a Gemini-2.5-Pro prompt-only curator; prompt-only SkillOS-base reaches only 63.6% on ALFWorld. Dive: reachability confirmed on ALFWorld but overturned on WebShop.
-- **MemHarness** (intake-938#record) Memory must be reconstructed, not replayed; Mem0+GRPO scores 52.0 and SimpleMem+GRPO 54.5 versus plain RL. Dive overturned load-bearing points: the correct comparator for generic reconstruction is "w/o memory"; mechanism description survives.
-- **PRO-LONG repository** (intake-1011#record) Append-only local log plus a search skill so the agent inspects history via shell/Python rather than an embedding index. Dive (2026-10-21) overturned the no-license finding: the dived SHA has a root MIT LICENSE.
-- **Cognitive Workspace PoC** (intake-1015#record) Tiered active-memory sketch whose 8K/64K/256K buffers are item-count deques and default embeddings are padded MD5 vectors. Superseded; usable only as a negative measurement fixture, headline efficiency results are artifacts.
-- **ActiveMem** (intake-1017#record) Planner with a ten-step history plus sixteen parallel 4B Memorizers and a central Operator for gist reuse. Verified as a task-local parallel gist design; direct runtime adoption unsupported, and it is centrally orchestrated rather than decentralized.
-- **Verifiable Memory (VerMem)** (intake-1018#record) One learned policy controls long-term, short-term and episodic memory with frozen DeepSeek-V3.2 local/global verifiers; 32,000 HotpotQA SFT states then three GRPO phases. Strong evaluation design; overturned as a reproducible semantic-verifier release.
-- **Mem0** (intake-1022#record) Asynchronous-summary plus last-ten-message fact extraction with top-ten conflict retrieval, Mem0g graph variant, and an Apache-2.0 self-hostable repo supporting Ollama and OpenAI-compatible endpoints. Practical local comparator; accuracy and cost gains narrower than the headline.
-- **Kumiho AGM belief revision** (intake-1033#record) Proves AGM postulates (rejecting Recovery) for a Redis+Neo4j versioned agent memory with immutable revisions and mutable tag pointers. Dive: all claims confirmed except AnalyzeImpact, downgraded to a depth-bounded advisory over-approximation.
-- **Eywa provenance-grounded memory** (intake-1055#record) Immutable tier-0 evidence rows before LLM processing, deterministic LLM-free read path (weighted RRF k=20, 148-200 ms on a 6,320-fact store), and 90.19% LoCoMo on C1-C4 with adversarial C5 excluded; the comparison is literature context, not head-to-head.
-- **NeuSymMS TMS anti-pattern** (intake-1057#record) Genuine TMS usage but retraction destroys history (in-place soft-delete, no replay or as-of) and no quantitative evaluation on a 7-page paper. Kept as an anti-pattern to avoid; verdict not_applicable.
-- **Hindsight four epistemic networks** (intake-1058#record) Memory partitioned by stance (World, Experience, Opinion, Observation) with tri-temporal fields. Correction: confidence scoring is Opinion-network-only, and affiliation is Vectorize.io + Washington Post + Virginia Tech.
-- **esper append-only belief ledger** (intake-1059#record) ~440-line SQLite ledger with no UPDATE/DELETE path where belief is a pure function of (event set, query time) via logit-weighted, decayed contributions. Dive overturned the Stage-1 sibling-repo attribution (three unrelated authors); closest model for the as-of Bayesian fold.
-- **AgentMemoryRepo spec** (intake-1965#00) Format is a short MEMORY.md entry point, topic files and root-relative links, with optional bullet metadata. Correction: source/date are recommended, not required keys (intake-1965#00 narrowed). Opt-in two-session local trial excludes automatic startup and scheduled Dreaming (intake-1965#record).
-- **VibeMemBench** (intake-1968#00) 111 executable repo coding targets from 90 repositories and 3,634 trajectories. Frozen-experience transfer on five held-out solvers gives +0.0, +2.4, +4.5, +3.6, +1.1 pp with every bootstrap interval crossing zero (intake-1968#02); 11 of 12 memory-system/solver pairings are at or below memory-off (intake-1968#03). Cautionary evidence for memory-augmented coding agents.
-- **ReHarness recurrent harness** (intake-1999#record) Adds a backward revision step: after each instance, retrieved reflections are rewritten using the new trajectory, strictly online with top-5 retrieval (intake-1999#record). Reports the highest overall normalized gain of 0.2400 against Mem0, RBank, DoT, ACE, GEPA-Online (intake-1999#02); weak on noisy-reward tasks (poker).
-- **COUNT standard-transformer checkpoints** (intake-2020#00) Baseline released: seven OLMo-core ladder sizes 60M-1B at 10/20/40 tokens per parameter (1B steps 8134/16268/32537, batch 1,572,864) on Dolma 3. Matched on tokens and batch with the COUNT repo table (intake-2020#01). Checkpoint and n-gram tables exist, so the Engram Track B COUNT arm needs no pretraining to start (intake-2020#03).
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): distill_skillbank escalation counts come from native memory metadata
-
-**Confidence: verified** (run records and predeclared rules in the cited sources).
-
-- **M-26 closed at source scope.** The counter was always zero because `structural_lab.distill_skillbank` built every trajectory with `"escalations": []`; orch commit `96dc99c9` emits an escalation marker only when the native `MemoryEntry.action_type` indicates one. Verified on fake memory records and mocked store/pipeline only (3 focused tests, q1 13:11Z, rc 0); no real database read, teacher call or pool census. The follow-on VB-M26-DISTILL-POOL-WRITE (an immutable receipt of selected memory ids before the teacher call) is open.
-
-Sources: [episodic-memory-integrity](../handoffs/active/memory-program.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md)
-
-## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the ProfileStore admission schema made no measurable difference on BEAM
-
-**Confidence: verified** for the run (80 items per arm, 0 errors, cloud judge); **inferred** for any memory-quality reading, since no threshold was predeclared.
-
-- **HS-PROF-1 result.** Admission schema vs the current `PREF [category]` format: instruction_following +0.0125 (3 wins / 2 losses / 35 ties, sign p=1.00), preference_following -0.0104 (4/7/29, sign p=0.55). With no predeclared threshold, the reading is "no measurable difference" and nothing stronger ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
-- **What comes next.** HS-PROF-1-RULE records an explicit adoption rule (a minimum paired delta and sign bound, or "keep opt-in") before HS-4 P2 wires profile injection. The rule decides whether a larger or longer-context BEAM arm is worth a window. The harness scope bug (all 64 registry roles read instead of one) is fixed, and preflight now requires exactly 1 role x 1 suite. The research branch is merged and the table's claims are in the belief ledger.
-
-### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
-
-- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) (HS-PROF-1, -MERGE, -RULE, -SCOPE, -BELIEF)
-- [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
-- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
-
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): the BEAM profile-arm reader produced nothing for two runs, and the CME-7 cache gate missed on layout and accounting
-
-**Confidence: verified** for the defects and fixes (logs and recorded artifacts); **inferred** for every memory-quality claim: HS-PROF-1 and CME-7S have no valid score yet.
-
-- **HS-PROF-1 (BEAM profile arms) failed twice before producing a score, for four distinct reasons.** Run 1: the arm script defaulted to an interpreter without pyarrow, and a shared library reassigned `RESEARCH` after the pin check so the shared (older) clone ran. Run 2: the Qwen3.6-35B-A3B reader derived preferences with thinking on, spent its whole 1024-token budget reasoning (`n_decoded` 854-919 per request) and returned empty content for 20/20 conversations, and the benchmark runner's CPU llama-bench tripwire fired inside a GPU-only grant. The BEAM answering path was already correct (thinking off via the chat path); only the derive step was wrong. Fix at research `b513efb36`: derive uses `enable_thinking=false`, refuses all-empty derivations and all-empty snapshots, and a preflight phase checks BEAM extraction (400 questions over 20 conversations), module resolution and the real chat payload.
-- **The judge is now the Claude CLI cloud judge.** The previous pinned local judge was retired and deleted, and the operator chose the subscription cloud judge (not the API): `judge_beam_run.py --judge-backend cloud --cloud-judge sonnet-low`, with a one-call preflight that blocks if the CLI is missing or unauthenticated; the registry is a frozen copy so the job's judge pin cannot drift. 24 tests (file-scoped).
-- **CME-7 (CL-Bench poker smoke) is complete and valid on its second run, and the prefix-cache gate missed.** Run 1 failed on a pydantic `json_invalid` because thinking consumed the token budget. Run 2 gave `hit_ratio_reusable` 0.7948 (103,933 of 130,762) against a 0.95 gate, raw cached/input 0.7346, 26,829 reusable tokens re-prefilled. Causes: the schema instruction was attached only to the outgoing last user message, so the previous user message changed at its tail (14,058 tokens, 52.4%; client layout, fixed so the instruction is appended once to the stored message and each request extends the last byte for byte); previous generated tokens counted reusable by the CME-5 rule though a hybrid server never reuses them (11,028, 41.1%); a parse-retry rollback (1,743, 6.5%); slot misrouting 0.
-- **Mechanism for a recurrent-model slot.** It can resume only from a context checkpoint (made at the last user-message start and at prompt end minus 4), so when the next prompt's longest common prefix ends inside the previous user message the end-minus-4 checkpoint is rejected and the user-start one is used, re-prefilling one user message (380-460 tokens in all 38 steady-state calls). This step is inferred from arithmetic and source; the run logged at INFO, so CME-7S reruns at `-lv 4` to read it directly. The 0.95 bar stays; the gated basis moved to prompt-prefix (recorded smoke 0.868, projected about 0.99 after the layout fix, unconfirmed).
-- **Instrument-validity read-through for memory evals.** All three local serving roles are recurrent hybrids, so any prefix-reuse claim for them is checkpoint-bound, not plain-LCP-bound.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [progress/2026-10/2026-10-22-hsprof1-reader-fix.md](../progress/2026-10/2026-10-22-hsprof1-reader-fix.md) — run-1 defects
-- [progress/2026-10/2026-10-22-hsprof1-reader-fix2.md](../progress/2026-10/2026-10-22-hsprof1-reader-fix2.md) — empty derivation and the preflight tripwire
-- [progress/2026-10/2026-10-22-hsprof1-claude-judge.md](../progress/2026-10/2026-10-22-hsprof1-claude-judge.md) — cloud judge backend
-- [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — CME-7 outcome and judge-pin decisions
-- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — hybrid-role finding (RTE-PFX-LB1)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): CME-7 smoke, live recall
-
-**Confidence: verified** for the CME-7 smoke harness fix (research `76f5143d9`, `2e479ee01`; clbench quick_test against a FAKE endpoint only); **inferred** for the live runs (not armed).
-
-- **CME-7 smoke is runnable but has produced no memory score.** Env `/mnt/raid0/llm/tmp/clbench-venv` (python 3.13.7, `clbench doctor` passes); the runner passed underscore flags (`--system.base_url`, `--system.max_context_tokens`) that clbench's argparse rejects (hyphens required), fixed; the poker quick_test ran against a fake endpoint only. Still needs the M-12 server on :8199 and the CME-5 sizing decision.
-- **Episodic recall (M27 live-recall) is a window-ready job** (`m27_job.sh`: subprocess embedder, no ports, real-embedding proof), bundled in `s5-stackup-bundle` and not armed.
-- **Memory-lesson mining caveat:** observation masking remains the default compaction; LLM-mediated memory consolidation must show a paired accuracy-per-cost win over a BM25 baseline before adoption.
-
-### Source References (2026-10-22 sweep 7)
-
-- [handoffs/active/conversational-memory-eval-instrument.md](../handoffs/completed/conversational-memory-eval-instrument.md)
-- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md)
-- [progress/2026-10/2026-10-21-queue-builders-3.md](../progress/2026-10/2026-10-21-queue-builders-3.md)
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): memory-augmented — where Engram stands, and what an embedder swap does to the memory stores
-
-**Confidence: verified** for the recorded gate outcomes and the prepared-not-applied migration; **inferred** for the MemHarness/EvolveR-cluster reading, which rests on intake records.
-
-- **Engram is a single open path.** Track A (LongCat-Flash-Lite CPU probe) closed negative on 2026-05-25 and stays closed: the model ran at production-relevant CPU rates (Q4_K_M decode 37 t/s, verified in the handoff's decision log) but scored 21/39 on the sentinel set against 26/39 for the deployed gemma4-MTP worker, and is slower than that worker. The family verdict is that n-gram-augmented MoE inference on CPU is technically viable; the checkpoint simply loses to what is already tuned here. The only live item is Track B Phase 0b (frozen-vs-cotrained proxy, roughly $50-150 of GPU time, gate B0 = 30% recovery ratio). Phase 0a (identity-at-step-zero, 36/36 CPU unit tests) is done. An agent asked to "make progress on Engram" should not restart Track A.
-- **COUNT is parked behind that same gate.** The non-learned n-gram table family (already summarised below) is a monitor with a trigger, not a checkbox: it starts only when Phase 0b is authorized, and its pairing (paper-recipe table versus the cheaper off-recipe one) must be labelled.
-- **The 2026-08 memory-cluster reading is a design lead, not a result** (`inferred`). The highest-value zero-training leads are a gradient-free principle-distillation-plus-retrieval arm, post-hoc reflection-redundancy (computable over traces that already exist) and programmatic feedback extraction. The 2026-10-06 source qualification stands: the memory-wipe comparison used unequal trial budgets and does not isolate write-side from read-side failure, so the "fourth mechanism" framing is not established. See `intake-989#record`.
-- **Retrieval-side consequence for the episodic, skill and session stores.** The 2026-10-20 operator decision to adopt EmbeddingGemma 2 for REPL retrieval (see [search-retrieval](search-retrieval.md)) is gated to ship with the next production kernel, and it changes embedding dimension relative to the 1024-d stores in `faiss_store.py`, `memrl.py` and `sqlite_store.py`. A mismatched `session_embeddings.npy` is currently unlinked on load, so the prepared work is a refuse-and-keep fix plus a copy-then-swap re-embedding tool with rollback (dry-run only; never run on live stores). Rule for memory work: an index belongs to ONE embedding model, and any dimension change is an explicit migration, never a silent reload.
-- **Voice-session memory has a fixed contract.** The accepted conversation-store source keeps every unseen message behind a monotonic summary frontier, refuses overflow rather than dropping history, preserves the prior summary on summarizer failure and respects session lease fences (synthetic SQLite controls only; no live store). See [multimodal](multimodal.md).
-
-Open: Phase 0b authorization (operator/budget); real-trace re-check of the retrieval verdict (REPL-EMB-2.8) before any embedding-dimension change in a store.
-
-### Source References (2026-10-20 sweep 2, memory-augmented)
-
-- [Engram conditional memory](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — Track A closure, Track B Phase 0b, COUNT arm trigger, 2026-08-03 cluster.
-- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — store-migration follow-ons and the one-model-per-index invariant.
-- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — session-keyed store and summary frontier source acceptance.
-
 ## Latest source review — 2026-10-07
-
-## Compiled Update — 2026-10-07: transporting state and characterizing storage do not validate memory meaning
-
-**Confidence: verified** for bounded source contracts; semantic memory evaluation remains unassessed.
-
-Signed non-JSON globals now pass through both checkpoint constructors into SQLite and restore under the existing restricted pickle boundary. Persister caps count JSON and signed envelopes together, and oldest-first eviction removes both representations. This repairs transport of already-supported values; it adds neither a broader pickle allowlist nor an aggregate chat cap. The separate sticky-timeout repair prevents reuse and persistence of a late-mutating environment, without claiming that its worker or host effects were terminated. ([Checkpoint transport](../docs/reference/signed-checkpoint-payload-transport.md), [REPL maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity))
-
-UTM fixtures characterize eight store categories and five typed-parser batches with their own denominators. Accepted retention labels, unresolved source IDs and overwrite behavior are implementation facts, not semantic safety. Gold accuracy remains null and all six semantic axes unassessed. The existing Tulving chapter-Event/SQLite/FTS/navigation path now has accepted full synthetic coverage, while read-only MCP registration remains prospective source work. BEAM ingest provenance is now accepted after original 21/21 synthetic controls: future artifacts expose all-role source order, indexed range and pair-chunk granularity, without a real BEAM/model result. No new live memory-quality comparison follows. ([UTM conformance](../docs/reference/utm-synthetic-conformance-contract.md), [trace owner](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
-
-### Source References (2026-10-07 memory boundaries)
-
-- [Signed checkpoint transport](../docs/reference/signed-checkpoint-payload-transport.md) — original state round-trip and cap scope.
-- [REPL maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — terminal timeout versus worker cancellation.
-- [UTM conformance](../docs/reference/utm-synthetic-conformance-contract.md) — structural/parser counts versus semantic gold.
-- [Trace/memory owner](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — accepted Tulving backend and prospective consumers.
-
-M19 now has an accepted diagnostic record specification carrying per-question confidence, honest typed/untyped provenance, unresolved states and immutable opaque value receipts. That completed specification implements no writer, calibrated threshold or enforcement; the writer is separately filed and its confidence gate still needs catalogue/model-specific calibration. [Episodic memory integrity](../handoffs/active/memory-program.md).
 
 ## Source References
 
@@ -135,649 +17,12 @@ M19 now has an accepted diagnostic record specification carrying per-question co
 - [trace owner](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
 - [Episodic memory integrity](../handoffs/active/memory-program.md)
 
-## Compiled Update — 2026-09-19: M-12a has run, and retrieval reaches the full-book ceiling
-
-**Confidence: verified**: three scored arms, 686 questions each, ingested into the belief kernel. All figures are from [episodic-memory-integrity](../handoffs/active/memory-program.md) (M-12a, 2026-09-18).
-
-### Key findings
-
-- **M-12a ran on 2026-09-18, the first memory-on vs memory-off A/B.** The operator waived the recipe's "the operator runs everything" rule for this window and freed the GPU. The handoff records this so a later reader sees the rule was waived on purpose, not skipped. Reader: `qwen3.6-35b-a3b-q8-gpu-mtp-longctx196k-np4` on the champion build, linkage PASS, 4 slots × 196,608 ctx. Variant `Udefault_Sdefault_seed0`, `book_sha16 afa5379c27e83459`, 196 chapters, 0 missing ground truth. Each arm's `context_mode_by_prompt` confirms that it ran the arm it claims.
-- **Prefix reuse fired, which answers an open question below.** `SMOKE_PREFIX_REUSE: PASS`. The 104,698-token book costs 89.6 s cold. A follow-up reuses 102,650 tokens in 3.2 s. The book keeps its prefix **after an intervening 191,447-token BEAM conversation**, which is what the four slots are for. They are not there for throughput.
-- **Headline: five-bin Simple Recall, bin 0 included.** memory-OFF **0.1893** (avg F1 0.2487, 7 truncated). memory-ON (`retrieved`) **0.6069** (F1 0.6432, 5 truncated). CEILING (`full` book) **0.6086** (F1 0.6189, 13 truncated). Retrieval is **within 0.3% of the ceiling** and ahead of it on avg F1. FTS5 chapter retrieval over the trace store buys essentially everything that putting the whole book in context buys.
-- **The per-bin results carry the finding, and averaging hides it.** Per-bin avg F1 (OFF / ON / CEILING):
-  - bin 0: 0.927 / 0.853 / 0.760
-  - bin 1: 0.001 / 0.623 / 0.685
-  - bin 2: 0.002 / 0.664 / 0.531
-  - bin 3-5: 0.007 / 0.534 / 0.509
-  - bin 6+: 0.010 / 0.360 / 0.558
-
-  Bin 0 is the unanswerable set, where the correct answer is `"None"`. memory-OFF is excellent at declining and knows nothing else. The handoff treats that plain "I don't know" as a property worth keeping. The **full book is the worst arm at declining**: more context makes fabrication more likely there, but it helps most on the hardest 6+ bin. Reporting bin 0 separately would invert the ranking, which is why the headline keeps it.
-- **Chronological Awareness (diagnostic only, pending the M-12d tau fix):** 0.109 OFF / **0.344** ON / 0.290 CEILING.
-- **Caveat.** CEILING truncated 13 rows against memory-ON's 5, so the ceiling is slightly understated. 13/686 truncations could cover the 0.3% gap. **"Retrieval matches the ceiling" is established. "Retrieval beats the ceiling" is NOT.** Raising the `full` arm's answer budget would settle it.
-- **Belief-kernel write side is wired.** Each arm's scorer emits `belief_measurements.jsonl` beside its artifact, ingested via `cli.py ingest tulving`: 3 units matched, 3 projected, 0 declined, 0 refused, 6 rows, 18 frames. The rows carry `metric_direction=higher_better`, `reps` (548 recall / 138 chronological) and `protocol_id epyc.vidya.tulving_episodic_capture.v1`. Artifacts: `artifacts/m12/run_20260918/`.
-- **Three defects found during the run:**
-  1. The recipe's §7 command omits `--model`, so `run_benchmark.py` enumerates all 71 models / 80 roles. It sent Tulving questions to the resident 35B reader **labelled as the embedder role**, a silent mis-attribution. Fix: add `--model qwen36_35b_a3b_mtp_q8_local` to the documented line.
-  2. The belief sidecar path follows `--out-json`. Scoring every arm into one directory makes each arm overwrite the previous sidecar and silently lose rows. Fix: score each arm into its own run directory and check the row count per arm.
-  3. Every result row has `prompt_tokens: null`, so per-question context cost (no-book vs 104K-token arm) cannot be recovered from the results file. This is adjacent to RTG-47.
-
-### Open questions
-
-- Does "retrieval beats the ceiling" on avg F1 survive a `full` arm with a larger answer budget?
-- Does the bin-0 abstention gap (retrieval 0.853 vs full book 0.760) carry to BEAM (M-12b), where abstention is excluded from the headline?
-
-### Source References (2026-09-19)
-
-- [episodic-memory-integrity.md](../handoffs/active/memory-program.md): M-12a run, per-bin results, truncation caveat, belief-kernel ingest, and the three run defects.
-
-## Compiled Update — 2026-09-17 (research-intake delta: typed decision records and a calibration-sourced confidence gate)
-
-**Confidence: verified** for the filing and the measured calibration hazard; the record-design rationale below is analysis (**inferred**). The intake measurement is external (dive-verified, not this host).
-
-### Key findings
-
-- **M-19 — typed decision records + confidence gate design: record spec dispatchable now; the live gate needs a calibration record.** TD-2 landed 2026-09-17 and was never the unlock (handoff corrected 2026-09-26): the gate threshold needs a calibration record for the memory-write catalogue on its model pin, with TD-2 as the method. Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from that calibration record, **never from candidate softmax** — the intake measured 65% of a 7B's wrong fields above 0.90 confidence (intake-1474). Owner stub `typed-decision-plane.md` (RTG-56). ([episodic-memory-integrity](../handoffs/active/memory-program.md))
-- **Why the record needs per-question probabilities at all** (inferred): the public typed-decision contract calls confidence an undisclosed statistic (intake-1472) and the local candidate-softmax readout is uncalibrated (intake-1474). A record that stores only the chosen value cannot be re-graded when a later calibration changes which answers were trustworthy.
-- **Order effects are part of the record's truth conditions.** The independent rerank reproduction shows **24.7% order sensitivity** (intake-1486) — the same batching that makes the write cheap is the contamination axis TD-2 must measure, so the record should carry enough context (question order / batch shape) to audit it.
-- **Write-side wiring precedes the first measurement run.** VB-TDP-1 requires one self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the vidya source table — a tuple invented on read cannot gate a decision. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **Operator steering names episodic-memory writes as a first-class target** for the one-pass call ("may also be relevant for fast routing and episodic memory writing"), which is why the memory record — not just the routing path — is in scope. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-
-### Open questions
-
-- Which confidence statistic survives local calibration well enough to gate a memory write, and is it per (model, schema) or per question class?
-- Does the record need to carry question order explicitly, or is batch-shape provenance enough to reproduce the contamination check?
-
-### Source References (2026-09-17 research-intake delta)
-
-- [episodic-memory-integrity.md](../handoffs/active/memory-program.md) — M-19 (record spec open; the live gate waits on a calibration record).
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the typed-decision contract and the calibration constraint.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side rule covering RTG-56.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record.
-
-## Compiled Update — 2026-09-17 (evening): graph snapshots finally persist, kuzu stays uninstalled, and the v10 re-pin is ratified
-
-**Confidence: verified**: orchestrator commits, focused tests and the root ratification commit. No
-inference ran, and the production `kuzu_db` files were only copied, never opened in place.
-
-### Key findings
-
-- **D-f3 is fixed (orchestrator `f853764f`).**
-  - **The defect.** Both graph snapshot writers had been losing every snapshot. They called
-    `save_checkpoint` with keyword arguments the store never accepted, and the `TypeError` was swallowed
-    at DEBUG.
-  - **Why the snapshots do not go into `checkpoints`.** `get_latest_checkpoint()` is the REPL restore
-    source, so a snapshot row would shadow the real globals checkpoint.
-  - **The fix.**
-    - A new append-only `graph_snapshots` table is written by `save_graph_snapshot(run_id, data,
-      snapshot_type, *, session_id, fencing_token)`.
-    - A session-scoped write runs D-f's `check_fence` inside the insert transaction.
-    - `_execute_repl` sets the session id and token only while the turn holds the lease. Otherwise the
-      snapshot is run-scoped.
-    - Both error paths now log at WARNING.
-  - **Tests.** 9 cases, 8 of which fail on the old code. They include an AST guard over every
-    `save_checkpoint` call in `src/`.
-  - **Follow-up (D-f3a).** Nothing reads the table, and with `STATE_HISTORY_SNAPSHOTS` on it grows by one
-    row per turn.
-  - [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md),
-    [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity)
-- **The graph layer stays dormant: the operator ruled OP-KUZU = A.**
-  - **Code changes (orchestrator `61793b38`).** A missing kuzu is now one WARNING line with no traceback,
-    and so is lock contention from another process. The `[graph]` extra pins `kuzu==0.11.3`.
-  - **A pre-existing bug.** Every graph class's `close()` was `pass`, so the file lock was never released
-    in-process.
-  - **What the on-disk graphs hold** (read from copies). The failure and hypothesis graphs have the schema
-    and 0 rows. The routing graph has 7 LLMRole, 17 QueryCluster and 17 TaskType nodes.
-  - **Why A was recommended.**
-    - Kuzu takes an exclusive per-file lock even for `read_only=True`. Of 6 uvicorn workers, only the first
-      would get graph scoring, so routing would depend on the worker.
-    - Upstream kuzu was archived on 2025-10-10.
-  - **What remains.** NIB2-78c, a single-owner graph process, applies only if the layer is revived.
-  - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md),
-    [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
-- **The v10 episodic re-pin is RATIFIED (root `810a6a82`), which closes MHS-3d.**
-  `multitier_v10_20260810/checkpoint_meta.json` now pins the purged files. `memory_count` went from 63925 to
-  63921, and `checkpoint_sha256` from `a604276f` to `3b457d98`. The eval-leak cleanup is therefore complete on
-  the live, offline and pinned production_best stores.
-  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-
-### Source References (2026-09-17 evening)
-
-- [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md): D-f3 defect, design and tests.
-- [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity): D-f3 tick and D-f3a.
-- [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md): kuzu dependents, lock behaviour, decision package.
-- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78/78a/78b/78c.
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the v10 ratification and OP-KUZU ruling.
-- [ratify_v10_episodic_repin_20260917.json](../artifacts/operator/ratify_v10_episodic_repin_20260917.json): the ratification record.
-
-## Compiled Update — 2026-09-17 (afternoon): four memories out, and a retriever layer that was never on
-
-**Confidence: verified**: purge receipt, `--verify` integrity output, and the API log.
-
-### Key findings
-
-- **The eval-leak purge removed exactly 4 HumanEval/55 task memories from every store that held them.**
-  - The signature was 190 leak shingles plus anchors. It flagged 4 ids and nothing else: 0 false positives
-    across about 5.7k generic Fibonacci rows.
-  - The live store went from 64,208 to 64,204 entries. The post-purge integrity check is HEALTHY:
-    `id_map` in sync, 500/500 round-trips, and a vector diversity ratio of 1.187.
-  - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md), [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
-- **The pinned production_best (v10) store is purged too**, but its manifest still pins the old digests
-  until the MHS-3d re-pin is ratified. A v10 rewind no longer restores the memories.
-  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- **`GraphEnhancedRetriever` has not been running in the production API.** `kuzu` is neither installed nor
-  declared, so every start falls back to `TwoPhaseRetriever`, and the failure-graph and hypothesis-graph
-  stores (`model_registry.yaml:212-217`) are inert. Any past reading that credits graph-enhanced retrieval
-  describes code that did not run. The decision is filed as NIB2-78.
-  [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
-
-- **Session state needed a cross-process lease with fencing, not a mutex (D-f, orchestrator `0d6d1dd2`).**
-  uvicorn runs 6 API workers. Two `/chat` turns for one session on different workers restored the same
-  checkpoint, and the later save erased the earlier turn.
-  - A `session_leases` row carries holder, host, boot id, PID and `/proc` start ticks, plus a monotonic
-    fencing token. It is acquired under `BEGIN IMMEDIATE`.
-  - The lease can be taken over only on expiry or when the owner is proven dead. Session, checkpoint and
-    delete writes check the token inside their own transaction. A refused write returns 409.
-  - Measured in real forked processes: 6 × 8 leased read-modify-writes kept 48 of 48 updates. The
-    **negative control without the lease kept 8 of 48**.
-  - Found on the way (D-f3): the graph snapshot writers call `save_checkpoint` with a signature it never had,
-    and the `TypeError` is swallowed at debug level, so those snapshots are silently dropped.
-  - [sub-lease-etr4](../progress/2026-09/2026-09-17-sub-lease-etr4.md),
-    [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity)
-- **Trace events can now pair runs across harnesses (UTM-P1, `dd24ed10`).** Schema v2 adds nullable
-  `harness`, `seed`, `turn_ordinal` and `task_key`, plus a per-row `schema_version`, via an additive migration
-  with no back-fill. A NULL version means the keys were never captured. `paired_runs()` groups by turn and
-  harness, and pre-v2 content keys stay byte-identical. No live producer stamps the keys yet (UTM-P1a).
-  [sub-utm-epd](../progress/2026-09/2026-09-17-sub-utm-epd.md),
-  [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
-- **One embedding-segment assembler (EPD-3-R8, `d3f6062c`).** It is byte-identical to the old serializers
-  over 3,000 randomized cases, except that texts over 2,000 chars are now capped and a None-valued failure key
-  no longer embeds `None`. No re-embed is needed. `seed_memory` now raises after flushing a partial load (R6).
-  [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller)
-
-### Source References (2026-09-17 afternoon)
-
-- [sub-lease-etr4](../progress/2026-09/2026-09-17-sub-lease-etr4.md)
-- [sub-utm-epd](../progress/2026-09/2026-09-17-sub-utm-epd.md)
-- [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md)
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
-- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
-
-## Compiled Update — 2026-09-17: M-12 is run-ready except for the GPU window, Hermes memory is complementary in data but competing in mechanism, and a budget primitive ticked in July never existed
-
-**Confidence: verified** for the instrument code, tests, blocker closures and source-read Hermes
-facts (pinned `hermes-agent@532a49f1`, orchestrator `0329ab10`); **inferred** for the GPU fit and
-wall-clock estimates, which come from planning fits (the prefill figures are bench-class, and
-anything beyond 32K is extrapolated). The memory-on/off A/B **still has not run**: the operator
-deferred the M-12 GPU window on 2026-09-16.
-
-Every zero-compute blocker in front of M-12 was closed on 2026-09-16, and both instruments now
-express their arms. A token-level readiness pass then changed one premise of the 2026-09-08 section:
-**BEAM's "100K" split does not fit a 128K context on our tokenizers.** Its median prompt is about
-128K tokens and its longest about 191K. The package therefore sizes the run at 196,608 tokens per
-slot with no truncation. Separately, a source-only audit of Hermes found no data overlap with the
-orchestrator's episodic memory, but it did find extra un-overridden LLM traffic generated by Hermes'
-memory machinery. And a July tick for the budget-conditional retrieval primitive turned out to
-describe code that was never committed.
-
-### Key findings
-
-- **Prompt lengths, measured with each model's own GGUF tokenizer (no forward pass).**
-  - BEAM 100K vanilla (400 prompts), Qwen3.x tokenizer: p50 128,526, max **191,456**, with 160
-    (40 %) above 131,072. On gemma-4, 200 (50 %) exceed 131,072.
-  - Tulving 200ch full arm: 686 prompts, all about **104.7K**, sharing one book prefix. The memory-off
-    arm is ≤ 72 tokens; the retrieved arm (top-5 chapters) is about ≤ 4.1K.
-  - Every candidate's trained context is 262,144, so the binding limit is the configured server
-    context ([OP-42 readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md)).
-- **Recommended reader and run plan (option A, an estimate).**
-  - Reader: Qwen3.6-35B-A3B-MTP-Q8_0 at np=4 × 196,608. It fits in about 54–55 GiB and prefills
-    about 2.5× faster than the 27B proxy.
-  - Budget: about 10 h of MI210 time plus a 10-minute checkpoint-reuse smoke.
-  - **Prefix reuse decides whether the run fits.** Without it, the Tulving CEILING arm needs about
-    18 h (35B), and 27B cold prefill of the full arm alone is about 45 h. Reuse works only through
-    context checkpoints; that comes from reading the code and has not been observed.
-  - The M-12 claim is a within-reader delta, so no CPU role is required. It will not be comparable
-    to the June CPU `ingest_long_context` SRS, which used a different model and a 20ch book
-    ([OP-42 readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md),
-    [episodic-memory-integrity](../handoffs/active/memory-program.md)).
-- **B1 was a silent wrong-ground-truth defect, now closed.** The 200ch set could not be selected
-  (`get_adapter` builds `cls()` with the 20-chapter default), and question ids collided: **all 456
-  20ch ids also appear among the 686 200ch ids, with different prompts.** A 200ch run scored before
-  the fix would have graded 456 answers against the wrong questions. After the fix:
-  - `TULVING_CHAPTERS` drives both the producer and the scorer;
-  - the stored June run re-scores identically with `--chapters 20` (456/456 rows
-    `legacy_prompt_verified`);
-  - `--chapters 200` refuses all 456 rows.
-
-  B2 (BEAM `rag` and `trace` arms), B3 (explicit budgets: Tulving max_tokens 1024, BEAM 2048, with
-  temperature 0, `enable_thinking=false` and `cache_prompt: true`) and B5 (eval recipes plus
-  `smoke_prefix_reuse`) also landed, merged to research `main` at `cfbfa448`. B3 also exposed a
-  latent defect: `/completion` hard-coded `cache_prompt:false`, which would have defeated prefix reuse.
-  B4: the judge is gemma-4-26B-A4B-it-ORIG-Q8_0 (operator 2026-09-16). B7: the research `.venv`
-  still lacks pandas ([m12-blockers](../progress/2026-09/2026-09-16-sub-m12-blockers.md)).
-- **CME-1 and CME-4 closed.**
-  - The BEAM judge now calls the model once per nugget (`judge_beam_run.py`). Unjudged questions are
-    listed rather than scored 0.0, and the fold refuses to run while any remain. A resume bug that
-    exited 3 forever was fixed in `194a83a9`.
-  - BEAM data is staged at HF rev `3205395e`.
-  - The Tulving adapter gained `context_mode` ∈ {none, retrieved, full}. `full` reproduces all 456
-    stored June prompts byte for byte. `retrieved` searches a private trace store, and on the 19ch
-    book with top_k=3 its prompts average 8.2k chars against 50.9k for full.
-  - Both scorers refuse an `--arm` that contradicts the recorded prompt headers or
-    `context_mode_by_row`
-    ([CME instrument](../handoffs/completed/conversational-memory-eval-instrument.md),
-    [sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md)).
-- **M-12e re-verified.** The June Tulving run re-scores to SRS 0.5530 under the pre-fix scorer and
-  0.5684 (366 questions) under v2. Historical CAS v1/v2 is 0.1593; approved EPYC
-  **CAS v3 is 0.0704** (15 eligible, 7 eligible partials at zero, 30 short-gold
-  exclusions; [definition and evidence](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md)). The fresh v2 summary is
-  byte-identical to the committed rescore, and three leftover unannotated 0.5530 quotes in
-  bulk-inference-campaign were corrected. One finding weakens the SC67 doctrine: all 456 stored
-  prompts carry the `Book narrative:` header, so the arm *is* recoverable from producer-authored
-  data, even though the run still emits zero belief rows ([sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md)).
-- **Hermes vs orchestrator memory (HS-4 input): MIXED.**
-  - **Complementary in data.** Hermes remembers the *user*: MEMORY.md and USER.md, capped at 2,200
-    and 1,375 chars and frozen into the system prompt at session start. The orchestrator's episodic
-    store holds *routing* Q-tuples. The two share no store, and the `/v1` endpoint reads and writes no
-    orchestrator memory.
-  - **Competing in mechanism.** Four Hermes memory paths send LLM calls that reach `:8000` without
-    the session's overrides: `flush_memories`, compaction, and two paths HS-1g missed. One is
-    `session_search` summarisation. The other is the background review agent, which runs every 10
-    turns with a fresh session id and re-sends the whole conversation.
-  - **Compaction re-keys the session id**, so any trace ingest must follow `parent_session_id`.
-  - **Recommendation.** Partition option (c) if Hermes is chosen; reject routing Hermes memory into
-    the orchestrator store (b) or adopting Hermes memory instead (d). Every measured run uses option
-    (a), with all Hermes memory disabled. M-12 is fenced today because its trace arms build private
-    per-run stores ([Hermes memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md)).
-- **Two latent defects found in that audit.** `/v1` builds its REPL without a retriever, so
-  `recall()` falls back to `EpisodicStore().search_similar(...)`. That method does not exist, and the
-  exception is swallowed, so **`recall()` is silently dead for every `/v1` client.** Also,
-  `hermes-config.yaml` declares a `mempalace:` block that Hermes never reads, so the claimed "H-8
-  MemPalace memory" is not wired ([Hermes memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md)).
-  **Both are fixed (orchestrator `83c7ed2f`, root `91d56181`):** `/v1` REPLs now receive the shared
-  retriever and `hybrid_router`, and the legacy fallback calls the real `embed_exploration` +
-  `retrieve_by_similarity` instead of the non-existent methods; a failure logs at ERROR and returns
-  `status:"unavailable"`, so an empty result is distinguishable from a broken one, and `STUCK()` skips
-  unavailable payloads. The inert `mempalace:` block is commented out, because MCP servers are read
-  only from `mcp_servers:`. The `/v1`-should-have-recall decision is **yes** — `recall()` is a tool of
-  the orchestrator's own REPL, not client access to the store
-  ([sub-recall](../progress/2026-09/2026-09-16-sub-recall.md)).
-- **UTM-M7/M8 were a phantom tick, now fixed.** The 2026-07-29 ✅ said `select_budgeted_records()`
-  existed in `src/trace/navigation.py`. `git log --all -S` finds it on no orchestrator or research
-  ref. The text arrived as a staged-file ride-along in an unrelated commit. The function was
-  re-implemented to spec (orchestrator `74418b3c`, merged `d748b4c7`; 44 trace tests pass). It is
-  still pure, default-off and has no callers. No wiki or belief claim relied on it, but the KB-RAG
-  manifest indexed the false text until the next rebuild. **This corrects** any earlier statement on
-  this page that the primitive landed in July
-  ([UTM handoff](../handoffs/active/memory-program.md#track-unified-trace-memory-service),
-  [sub-utm-m78](../progress/2026-09/2026-09-16-sub-utm-m78.md)).
-- **Trace text search ranked by recency, not relevance.** `query(text=...)` said bm25 but ordered by
-  `ts_utc DESC`, so a limited search kept the newest matches, and RRF fused a recency rank. Fixed in
-  `6302b381` (merged `21172688`): bm25 is now applied before LIMIT, and `order="recency"` is
-  available explicitly. No recorded result was affected
-  ([sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md)).
-
-### Open questions
-
-- Does context-checkpoint prefix reuse actually fire on the champion for single-message M-12
-  prompts? The smoke test is ready (`a6491b9e`) but waits on the deferred GPU window.
-- M-12f and M-12i retain CAS construction and prospective offline replay work. M-12g now gates explicit SRS comparisons by source/gold/bin compatibility; matching bins alone do not establish equal book difficulty.
-- UTM-M9, the no-memory control arm in the eval tower, remains an operator-gated trust-boundary ask.
-- The precedence rule is still undecided: does an explicit `x_*` override beat Hermes profile prose?
-  (The dead `/v1` `recall()` half of this item is closed — see above.)
-
-### Sources
-
-- [episodic-memory-integrity](../handoffs/active/memory-program.md): the M-12 blocker status, M-12a/b command changes, M-12e re-verification, M-12j progress
-- [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md): the CME-1 and CME-4 closures and the BEAM arm gate
-- [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service): the UTM-M7/M8 re-implementation and the bm25 note
-- [2026-09-16-sub-recall.md](../progress/2026-09/2026-09-16-sub-recall.md): the `/v1` recall fix, its tests and the inert `mempalace:` block
-- [2026-09-16-sub-op42-readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md): token statistics, KV/GPU fit, prefill estimates, blockers B1–B7, OP-42 options A–D
-- [2026-09-16-sub-m12-blockers](../progress/2026-09/2026-09-16-sub-m12-blockers.md): the B1/B2/B3/B5 fixes, B1 verification, review fixes
-- [2026-09-16-sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md): M-12e re-score, the SC67 recoverability finding, CME-1/4 detail
-- [2026-09-16-sub-hermes-memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md): the Hermes and orchestrator memory inventories, interaction analysis, options and verdict
-- [2026-09-16-sub-utm-m78](../progress/2026-09/2026-09-16-sub-utm-m78.md): the phantom-tick forensics
-- [2026-09-16-sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md): the trace ordering bug and its callers
-
-## Compiled Update — 2026-09-08: the memory A/B that never existed now has instruments, an operator gate, and a do-not-copy checklist
-
-**Confidence: verified for every filed/landed state below** (rows read from the handoffs, commits
-`945c8820`-era landings referenced where closed). **The A/B runs themselves remain compute-gated and
-have not run**; the instrument admission is an operator decision currently queued, not a ratified
-one. External reference numbers are quoted as floors/sanity checks only, per the rows that filed
-them.
-
-### M-12 — the protocol is written; the instruments sit behind OP-42 in the operator queue
-
-M-12 ("run the memory-on vs memory-off A/B that has never existed in either repo") is the only thing
-that will answer "does episodic retrieval help" with evidence. Filed 2026-09-07 via research-intake,
-the protocol is **two instruments, in order, judge/scorer held fixed across every arm**, and the
-admission itself is an **operator decision (OP-42, queued)**: admit BEAM 128K and Tulving 200ch/100K
-and grant one inference window — M-12a (Tulving) first, M-12b (BEAM) second; eval-pool registration
-is a separate decision from adoption as an instrument (CJ-GATE precedent; MEASUREMENT.md is
-human-amendment-only). Rows are compute-gated: filed, never run.
-
-- **M-12a — Tulving 200ch/100K first.** Variant `Udefault_Sdefault_seed0`, chapters=200 (the
-  adapter already resolves this to the 196ch parquet on disk). Three prompt-matched arms:
-  memory-OFF (question + answer contract, no book), memory-ON (`src/trace` retrieval fills the
-  context), CEILING (full book — what the adapter does today). **Headline on the five-bin Simple
-  Recall Score WITH bin 0 included** — the hallucination bin is the point. Chronological Awareness
-  is reported separately as a diagnostic until the tau fix (M-12d/M-12e) lands; Entities/Times/
-  Spaces are reported separately from Event-contents/Full-details; identical list-only + "If none,
-  say 'None'" contract on every arm; deterministic scorer, no LLM judge.
-- **M-12b — BEAM 128K second, abstention EXCLUDED from the headline.** BEAM's Vanilla column =
-  memory-off, its `pair_chunk` RAG column = the naive-memory control, our trace/navigation surface =
-  the only new arm. Headline on the five-ability discriminating core; instruction-following,
-  preference-following and event-ordering reported separately. Prompt-match all arms — do NOT give
-  the memory arm a closed-book instruction the memory-off arm lacks.
-- **M-12c — the pre-run do-not-copy checklist, seven items**, each traceable to a site in MemPalace
-  issue #125: (1) report BEAM's own fold, never a binarised micro-average; (2) ingest BOTH roles,
-  never user turns only; (3) no synthesis `max_tokens` below what the highest-nugget ability needs;
-  (4) judge model != reader model, held FIXED across arms; (5) no SSL bypass — stage under
-  `/mnt/raid0/llm/data/eval/` with a verified digest; (6) identical retrieval budget AND chunking
-  for control and arm; (7) prompt-match all arms, closed-book instruction included.
-- **M-12d — external reference curves are floors and sanity checks, never targets.** Tulving: the
-  authors' shipped 12-arm results (548 rows × 12 arms on disk) — chapter-chunk RAG beats full 100K
-  in-context for all four published models. BEAM: issue #125's Raw ChromaDB arm (49.0% author fold /
-  55.7% BEAM fold at 100K) is a **sanity floor** — far below it means a configuration bug, not a
-  finding; it is NOT a target (that run discarded assistant turns and capped answers at 512 tokens).
-  Harness caveat: upstream BEAM's published evaluator passes `probing_question` to all ten
-  evaluators but omits it from the judge prompt; in its 100K split, all 40 abstention prompts use a
-  one-item refusal rubric. This reference therefore does not measure question-conditioned
-  responsiveness or multi-criterion abstention ([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
-  [100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
-
-### M-12e — DONE 2026-09-14: THREE scorer defects, fixed, and this page's quoted numbers refreshed
-
-**Done 2026-09-14** (research `dcb769c1`). There were **three** defects, not two, and all three were
-settled by counting against the benchmark authors' own shipped artifacts rather than by reading prose.
-In `score_tulving_run.py`: (i) the unconditional `simple_inputs.append(scored)` (at `:121`) now fires
-only when `get_style == "all"`, so Simple Recall is computed over the 366 recall questions as the paper
-defines it — the subset is settled by counting (`result_lenient_all_book_200.csv` has 548 rows; the
-196-chapter `df_qa.parquet` has 548 `get=="all"` rows of 686); (ii) `chronological_tau` (def at `:51`)
-now returns 0.0 unless the matched set covers the FULL ground truth, with
-`chronological_tau_detail()` reporting coverage, the uncovered `tau_raw` as a diagnostic, and a
-per-question status. (iii) **Found in the same scope**: the five Simple Recall bins keyed on
-ground-truth ITEM count, but the paper bins on matching EVENTS — reproducing the authors'
-`bins_items_correct_answer` column matches 686/686 on `n_chapters_correct_answer` and only 629/686 on
-`n_items_correct_answer`; `nb_events` now rides in the prompt metadata and the `nb_gt` fallback is
-reported, never silent. The scorer reads stored responses — no model loads — so run `20260619_141212`
-was **re-scored offline** to
-`benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`, leaving the original
-`tulving_score.json` untouched. **SRS 0.5530 → 0.5684** (subset fix alone 0.5755, bin fix alone
-0.5402); **CAS 0.1593 → 0.1593**, unchanged only because no partial-coverage question on this run
-matched ≥2 items — so the tau defect is real and **latent**, not harmless. The paragraphs on this page
-and in [benchmark-methodology.md](benchmark-methodology.md) / [context-management.md](context-management.md)
-that quoted SRS 0.5530 have been refreshed accordingly, and `SCORER_VERSION = 2` now rides in every
-scored artifact so a v1 and a v2 figure cannot be compared by accident.
-
-### M-12e rider — the scorer version is a write-hook gate, and CAS stays a diagnostic (2026-09-14, noninf sweep)
-
-**Confidence: verified** — offline re-score of stored responses plus the benchmark authors' shipped
-artifacts; the scorer loads no model and opens no socket, so nothing here consumed an inference
-window. Three durable consequences of M-12e that the numbers above do not carry on their own:
-
-- **`SCORER_VERSION` is enforced, not advisory.** A v1 and a v2 Tulving figure are different
-  quantities under one name, so the belief-kernel write hook (`tulving_episodic_capture.py`, SC67)
-  **refuses** any row with `scorer_version < 2`. Re-scoring an old run does not promote it either:
-  run `20260619_141212` never recorded which arm it was (memory-off / retrieved / full book), so it
-  stays pre-hook and emits zero claim rows. The corrected numbers are compiled knowledge on this
-  page; they are deliberately *not* belief-kernel claims.
-- **EPYC Chronological Awareness v3 remains diagnostic on the 20ch set.** OP-M12F
-  (2026-11-11) selects gold≥2 and zero credit for eligible partial retrieval.
-  CAS v3 is **0.0704**: latest F1 0.4075, order -0.2667 over 15 eligible questions
-  (7 partial at zero, 8 fully scored), excluding 15 empty and 15 singleton gold
-  lists. Historical v2 CAS 0.1593 included all 45 ordering questions and is
-  superseded for prospective EPYC reporting. Paper equivalence is unverified.
-  The ROOT scorer payload defaults to v3; research deployment and SC67 admission
-  remain separate. [Scoring note and reproducible diagnostic](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md).
-- **Why the attribution split above is load-bearing rather than bookkeeping**: the two fixes move the
-  headline in *opposite* directions on run `20260619_141212` (20 chapters / 456 QA) — the subset fix
-  raises SRS, the bin-basis fix lowers it — so quoting either one in isolation, or reporting only the
-  net, misstates the correction. avg F1 stays a diagnostic over all 456 questions and is unaffected by
-  either.
-
-The underlying **defect class** — a composite metric folded over the wrong population, invisible in
-every per-question artifact because each row's `f1` was correct — is compiled on
-[benchmark-methodology.md](benchmark-methodology.md); it is not restated here.
-
-Sources: [`episodic-memory-integrity.md`](../handoffs/active/memory-program.md) — EVL-10
-M-12e, the three scorer defects and the SC67 write-hook refusal;
-[`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) —
-the re-score entry with the attribution split and the CAS-validity count;
-`epyc-inference-research` `dcb769c1` — `SCORER_VERSION = 2`, `chronological_tau_detail()` and the
-`20260619_141212` rescored artifact; [intake-408#record](../research/intake_index.yaml) — the Tulving
-benchmark record whose shipped per-question results settled the subset by counting.
-
-### CME-1..4 (EVL-50) — the two adapters M-12 needs are filed with their harness defects attached
-
-The EVL-50 stub owns the instrument work: a BEAM 128K/100K adapter and a `context_mode` axis on the
-existing Tulving adapter — the two pieces our five-suite long-context roster lacked. Adapter
-authoring is pure code; compute-gated work is filed, never run.
-
-- **CME-1** — `BEAMAdapter` registered at the five enumerated points of the intake-1330#record dive
-  (`_get_long_context_adapter`, `ADAPTER_SUITES`, the `get_adapter` dispatch, `ROLE_SUITE_MAP`);
-  loads `Mohammadta/BEAM` 100K (20 rows; `probing_questions` is a STRING needing
-  `ast.literal_eval`); emits `scoring_method: "llm_judge"` with the nugget list in `scoring_config`
-  so the served-judge path scores per-nugget, not per-answer.
-- **CME-2** — the FOLD as an explicit tested contract: per-question mean of three-valued nugget
-  verdicts, per-ability mean, unweighted headline mean; rubric micro-average and binarised counts
-  only as labelled secondary diagnostics; the unit test a synthetic all-0.5 run scores **0.500, not
-  1.000** — the exact mutation that catches a `>= 0.5` binarisation regression.
-- **CME-3** — the **BEAM harness-defect note must ride wherever a BEAM number is quoted, ours or
-  anyone's**: the judge never sees the probing question (all ten `evaluate_*` functions accept
-  `probing_question` and discard it, against a prompt that mandates a responsiveness check), and
-  all forty reviewed 100K abstention rubrics are single-item refusal templates. Both are properties of the PUBLISHED
-  artifact and apply retroactively to Table 1 and every third-party quote.
-- **CME-4** — `context_mode {none, retrieved, full}` on the Tulving adapter's `_row_to_prompt`
-  (:582), `retrieved` routed through the FTS5 + `navigation.py` surface. Load-bearing detail: the
-  `"context"` key the adapter already emits at :637 is **INERT** — `run_benchmark.py` never reads it
-  — so each arm must be expressed in the prompt itself.
-
-### UTM-B1..B4 — the trace/memory read surface is the retrieval backend for both arms — and it was mis-described before
-
-The 2026-09-07 update corrects the bearing text's "zero consumers": the `src/trace` read surface
-(`navigation.py`: `search_records`, `search_conversation`, `get_records`, `get_conversation`,
-allowlisted `read_file`, pure RRF k=60 — no ingest, no schema mutation, no embedding call) has
-**exactly one non-test consumer, `src/trace/cli.py:22`** — the gap is registration (UTM-B1:
-`ms.search`/`ms.expand` model-facing tools), not construction. UTM-B2 exposes that surface as the
-BEAM memory backend — embarrassingly parallel by construction (one retriever/prefix reused across
-all 20 questions, no cross-question accumulation); UTM-B3 makes the ingest FILTER a first-class
-experimental parameter (a silent role filter or chunking choice moves the score more than the
-retrieval algorithm); UTM-B4 routes the Tulving `retrieved` arm through the same surface — the
-backend half of CME-4. UTM-M9's mandatory no-memory control arm stays an operator-gated
-MEASUREMENT.md trust-boundary ask; M-12a/M-12b satisfy its intent and **UTM-M9 must not be ticked**.
-
-### Riders from the same wave: the memento correction, the REPL digest boundary, and BEAM as CF-3c corroboration
-
-- **Memento (2026-09-07) — the sawtooth/duplicate-processing argument is banked for the summarize
-  family WITH the correction that inverts the naive reading**: the axis on which prefix+sliding
-  beats a summarize/last-k family is **accuracy-per-second and GPU utilisation, NOT raw
-  throughput** — last-k is 1.54× FASTER in tok/s at 32K. Filing it without the correction would
-  propagate an error into a GPU-gated decision. Relevant to Memento Failure Mode 1 (excessive
-  generation) and the reasoning-compression Tier-3+ comparison.
-- **REPL session memory (D-h/D-i) — the namespace digest is NOT a rendering job**: `variable_lineage`
-  records name, type, provenance and tier but never **shape** (`state.py:450-462`, re-verified
-  2026-09-07), so a digest built from lineage alone would silently lie about shape — and lineage is
-  written only for checkpoint-surviving variables, omitting exactly the un-picklable ones most worth
-  naming. Companion row D-i: enumerate and BOUND every kernel-to-context channel and make
-  auto-rendering of the cell final expression opt-IN — do NOT adopt "make `print` the sole egress"
-  (the source has seven channels and auto-prints the final expression; the model must opt OUT).
-- **BEAM Table 8 corroborates the CF-3c masking anchor from a different group**: removing working
-  memory BEATS the full system at 100K–1M (0.327 vs 0.311 at 100K) — a self-published negative
-  result (the paper's own abstract contradicts it) that independently supports the masking anchor
-  context-folding already mandates. Full context-folding compilation lives on [Context
-  Management](context-management.md), not here. Harness caveat: the published judge omits the probing question; the 100K abstention fixtures use one refusal criterion. These figures remain harness-limited observations. [MAIN source review](../artifacts/ni08/beam-caveat-source-20261007/README.md).
-
-### Source References (2026-09-08 memory-instruments compile)
-
-- [`episodic-memory-integrity.md`](../handoffs/active/memory-program.md) — the M-12
-  protocol block (M-12a/b/c/d/e) filed 2026-09-07 with its intake anchors and the OP-42 pointer.
-- [`conversational-memory-eval-instrument.md`](../handoffs/completed/conversational-memory-eval-instrument.md)
-  — the EVL-50 stub: CME-1..4, the fold contract test, and the BEAM harness-defect note.
-- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — the
-  2026-09-07 update: UTM-B1..B4, the one-consumer correction, and the UTM-M9 operator-gate note.
-- [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — OP-42 (queued):
-  instrument admission and the single inference window, M-12a before M-12b.
-- [`memento-block-reasoning-compression.md`](../handoffs/active/context-and-token-economy.md#track-memento-block-reasoning-compression)
-  — the 2026-09-07 sawtooth correction (`intake-1315#04`).
-- [`repl-session-memory-maturity.md`](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — D-h/D-i:
-  the shape-capture-before-digest boundary and the kernel-to-context channel enumeration.
-- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — the BEAM
-  Table 8 CF-3c corroboration row.
-
-## Compiled Update — 2026-08-08: memory operations need provenance, calibrated verification, and a no-memory control
-
-**Confidence: verified for artifact scope and local design routing; external for reported benchmark gains.**
-
-The new memory sources agree on a useful operation vocabulary but not on evidence quality. VerMem's
-paper defines versioned `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` actions and
-reports a material semantic-verifier ablation, while its released repository supplies only structural
-and lexical rules—not the load-bearing DeepSeek semantic judges or a complete durable runtime. Mem0
-adds practical local scoping, conflict retrieval, mutation history, and manual update/delete, but its
-current default extraction path has drifted to ADD-only and the paper's efficiency figures omit memory
-construction/write cost. Memory-R1 usefully separates a manager from an answer-time distiller and
-applies downstream outcome credit, but releases no training implementation and shows non-uniform gains.
-
-Two negative controls bound the design. Cognitive Workspace's apparent reuse advantage is structurally
-forced by a zeroed RAG control, a truthy match predicate, cumulative counter leakage, and dependent
-statistics; it is a regression fixture, not evidence for a memory system. ActiveMem's parallel gist
-workers are worth comparing, but its memory is task-local, the runtime is unreleased, and raw content
-can become unrecoverable unless every gist retains a resolvable evidence pointer.
-
-The EPYC design consequence is a default-inert shadow layer over immutable raw events: append-only
-operation envelopes, source references, actor/scope, before/after versions, rollback links, tombstones
-that are explicitly distinct from physical erasure, separately calibrated structural and semantic
-verification, and independent answer-time distillation. Evaluation must include no-memory/full-context,
-raw append-log retrieval, Context-Folding, shadow mutation proposals, and gist extraction under
-restart, cross-session, conflict, staleness, poisoning, deletion, rollback, and raw-source recovery.
-
-## Compiled Update — 2026-08-25: the episodic store gains a decision-labelling axis (landed, unpopulated) and a rollout-accounting design (scoped, not landed)
-
-**Confidence: verified** for the schema/landing facts (test counts, column/index/backfill
-state read from the RAO/ReDel spike and the 2026-08-03 episodic-store audit) and for the
-"scoped, not implemented" status of the rollout accounting (2026-07-29). The cluster-level
-depth evidence (`max_depth` direction-of-effect, the escalation-prediction surface) is
-compiled on [Agent Architecture](agent-architecture.md) and [Routing Intelligence](routing-intelligence.md)
-(N17) and is pointed to, not restated.
-
-### The 5-sub-decision labelling axis: the schema landed, no producer ever wrote it
-
-The orchestration-trace survey (intake-548) identified the **stopping-decision gap** — no
-published RL method trains the *stopping* decision — and proposed the five-class taxonomy
-`{when-to-spawn, whom-to-delegate, how-to-communicate, how-to-aggregate, when-to-stop}` as a
-labelling axis over stored events. That axis was wired into the episodic store on 2026-05-19 as
-step-3 pre-work of the RAO/ReDel substrate spike (`rao-redel-subdecision-taxonomy` branch,
-commit `8bf985c`, never pushed): an `OrchestrationSubDecision` enum with
-`DEFAULT_SUBDECISION = None` — deliberately the **opposite polarity** to `assigned_role`'s
-worker-default — so unknown input normalises to None and never coerces; a `sub_decision`
-column plus index on `MemoryEntry` with idempotent `ALTER TABLE` migration; a
-substring-heuristic backfill script (`backfill_sub_decision.py`, dry-run-safe); and 29 tests
-(9 taxonomy / 3 migration / 6 writer-round-trip / 7 classification-heuristic / 4 backfill),
-all passing alongside the pre-existing episodic-store suites (79 total).
-
-**The load-bearing follow-up is that nothing ever populates it.** The 2026-08-03 episodic-store
-audit (compiled on [Agent Architecture](agent-architecture.md)) found `sub_decision` with a
-column, an index, a dataclass field, a `store()` parameter, an INSERT binding, a passing test,
-and a **written-but-never-run backfill script — and zero producers**. The earlier rationalisation
-that "NULL *means* not a sub-decision" was **retracted** in that audit: like `assigned_role`
-(0/59,337 rows), a column that is 100% NULL across the store is a capability that does not
-exist. The writer wire-in was always deferred to the ReDel step-3 phase A (behind
-`RLM_USE_REDEL=1`), which never ran. **Rule carried from the audit: the store's decision axes
-are dead until a producer writes them; count rows, not columns.**
-
-### Rollout-tree accounting: the SkyRL design is scoped, requires review, and is NOT the sub_decision label
-
-SkyRL's `examples/train/rlm` (intake-868, Apache-2.0, dive-verified 2026-07-21) contributes a
-training formulation whose parent/child **rollout-tree bookkeeping** — `parent_rid` / `depth` /
-`child_index` with reward propagation — is reusable as an *accounting model* for nested
-sub-agents without adopting any RL. Scoped 2026-07-29 onto the episodic store as an **additive
-SQLite migration, deliberately making no code change**:
-
-- **Minimal data contract:** nullable `rollout_id` (one root-to-leaf execution), immediate
-  `parent_memory_id` (the direct parent — never a model/task id), non-negative `depth`,
-  non-negative `child_index`; roots carry NULL parent and depth 0; existing rows stay NULL on
-  all four fields.
-- **Reward semantics:** retain each event's observed `q_value`; any parent/child credit
-  aggregation is computed read-only or in a separately named derived report — never written
-  back over parent or child rewards.
-- **Compatibility surface:** extend `MemoryEntry`, the `store()`/`store_immediate()` keyword-only
-  inputs, and every projection used by `retrieve_by_similarity`, `get_by_id`,
-  `get_all_memories`; idempotent DDL; index only `(rollout_id, depth, child_index)` after a
-  query-plan justification.
-- **Required independent review before implementation** (graph index classifies
-  `EpisodicStore` HIGH blast radius: 77 upstream, 27 direct): verify DDL, writer/read
-  projections, FAISS/SQLite consistency and concurrent migration; add
-  fresh/migrated/legacy/round-trip tests.
-
-Do not conflate the two axes: `sub_decision` labels *what kind of decision an event was*;
-the rollout fields link *which tree the event belongs to*. The 2026-07-29 scoping note is
-explicit that the existing label is not rollout accounting.
-
-### The depth evidence that motivates both axes — carried by pointer
-
-The direction-of-effect caveat is the reason a decision axis exists at all: RLM depth-1 *lost*
-on Kimi K2 OOLONG (86.6 → 60.0) but *rescued* a total failure on DeepSeek OOLONG (0.0 → 42.1),
-so depth must be gated on predicted base-attempt failure rather than pinned (compiled as
-Routing Intelligence N17, whose training data — the "will frontdoor fail?" surface, 10,528 pos /
-56,457 neg, status Ready — is exactly what the store's labels were meant to feed). The missing
-local instrument — OOLONG, absent from every suite — is recorded as the blocker for a
-first-party depth-0-vs-depth-1 A/B on the spike. All three belong to the routing/eval planes;
-this page's ownership is the store schema they depend on.
-
-### Source References (2026-08-25)
-
-- [`rao-redel-substrate-spike.md`](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) — the 5-sub-decision taxonomy step-3 pre-work (files, LoC, 29 tests, polarity caveat), the Step 1/2 substrate results (depth-0 on every natural sample; forced-delegation arm-A truncation finding), the SkyRL rollout-tree accounting scope with its minimal data contract and review requirement, and the OOLONG adoption consideration.
-- [`2026-05-19-rao-rlm-cluster.md`](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) — the cluster source: intake-548's 5-sub-decision taxonomy and stopping-decision gap, intake-547#01's model-dependent depth direction, and the RAO/ReDel substrate framing.
-- [`meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) — the RLM-pattern coverage baseline (≈80%, R1–R6) that the taxonomy work extends and the Tier-3 in-house fallback the spike arbitrates.
-- [intake-868](https://github.com/volcengine/verl) in [`research/intake_index.yaml`](../research/intake_index.yaml) — SkyRL `examples/train/rlm`: the parent/child rollout-tree accounting model (rollout_id / parent / depth / child_index) adopted as the accounting shape; `intake-547#01` for the depth direction-of-effect.
-- [Agent Architecture](agent-architecture.md) — the RAO + RLM substrate cluster and the 2026-08-03 episodic-store audit that retracted the "NULL is correct" framing and counted the zero producers.
-
 ## Source References
 
 - [Unified Trace / Memory Service](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-V1…V6 shadow schema, verifier, distiller, credit, and lifecycle matrix
 - [Context-Folding](../handoffs/active/context-and-token-economy.md) — CF-AM-1 matched parallel-gist versus folding/raw-evidence comparison
 - [REPL Session Memory](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — durable session ownership and uncertain-side-effect recovery requirements
 - Intakes 1008/1015, 1017/1018, and 1022/1023 in [the research index](../research/intake_index.yaml) — Cognitive Workspace, ActiveMem, VerMem, Mem0, and Memory-R1 claim ledgers
-
-## Compiled Update — 2026-08-03: the useful half of the memory literature does not need gradients
-
-**Confidence: inferred — single-ablation results on small models, no CIs, no seed variance reported.
-Recorded as a strong lead, not a settled result.**
-
-The most stack-relevant number in this cluster sits in an ablation table that the paper citing it never
-reports: on a 3B model, **principle distillation + retrieval with RL DISABLED scores 0.357, beating the
-same system's RL-only arm at 0.325**, and reaching **93.5% of the full system's 0.382**. The citing
-paper presents that work as its exhibit for "memory + RL is harmful"; the work's own ablation shows its
-memory machinery *without gradients* outperforming pure RL.
-
-**Why this matters here specifically**: we cannot train. A literature whose headline results all require
-RL is one we can read but not use. This result says most of the value is on our side of the line.
-
-Two further portables, both zero-training and both computable over traces we already have:
-
-- **A redundancy metric over stored reflections** (`SequenceMatcher ≥ 0.85`) — pure log post-processing,
-  no inference cost, and **computable retroactively** rather than needing new capture.
-- **Programmatic feedback extraction**: parse tool output for the concrete failure fact instead of asking
-  the model to self-diagnose. Measured effect on entity grounding: **0/121 → 134/156 (86%)** correct
-  target-object mentions. The *mechanism* and the *metric* transfer; the rates are largely a weak-model
-  artifact at n=2 environments and do not.
-
-### Three methodological traps this cluster illustrates
-
-1. **A "(reproduced)" baseline can reproduce nothing.** One paper's reported baseline for a cited system
-   is labelled reproduced — but that system **never evaluates on those benchmarks at all**; the metric
-   name appears zero times in it. There was no original to diverge from, and the label asserted fidelity
-   to something that does not exist. *Check that the original number exists before treating a delta from
-   it as a finding.*
-2. **Reported decimals can rule out the stated denominator.** No common per-category denominator ≤200
-   reproduces one paper's six reported cells; the minimum consistent denominators imply ~2,045 episode
-   outcomes. **Recomputing the implied denominator from published decimals is a cheap integrity check**
-   that needs no access to anything.
-3. **The arm you want to port may be the weakest effect in the paper.** The test-time memory effect —
-   exactly the gradient-free piece a port would target — is **+2.2 pp at z ≈ 1.94 on one seed with no
-   CI**, while the effects that survive sampling noise are the training-time ones we cannot use. *Check
-   the significance of the specific arm you intend to adopt, not the paper's headline.*
-
 
 ## Summary
 
@@ -1178,133 +423,6 @@ inference-gated); [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/
 — the sweep entry with the per-writer drift table; `epyc-orchestrator` `9096a600` — the canonical
 builder's enforcement layers as landed.
 
-## Compiled Update — 2026-07-29: agent-experience memory — store shape, budget-conditional retrieval, and the curve nobody has measured
-
-**Confidence**: the design conclusions are **verified** in the sense of resting on
-convergent independent evidence plus a first-party falsification precedent; every
-external number is **observation-grade** under MEASUREMENT.md and gates nothing.
-Note that these items were filed by a single session across four handoffs — the
-corroboration is between the *external sources*, not between our own records.
-
-### Store shape: append-only, raw trajectory retained alongside the derived item
-
-The strongest design signal in the batch is a convergence from opposite
-directions: one external system arrives at "keep the raw trajectory alongside the
-derived `{title, description, content}` item" **by construction**, and our own
-prior work arrives at it **by falsification**. This settles a previously open
-question in the autopilot distiller: **promotion must NOT remove raw
-trajectories from L1.** The dual-layer experience bank is therefore scoped as an
-**additive upper layer** over the existing per-case store (SQLite + FTS5); what
-is missing is pattern distillation and similarity retrieval, and since FTS5 is
-lexical this needs an embedding column (BGE servers already resident on
-`:8090-8095`). The reference design leaves its own retrieval parameters and
-eviction policy undefined — those are our decisions, and an unbounded bank is a
-real hazard for a long-running autopilot.
-[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M1, §UTM-M2
-
-**Auditable `delete` is the structural differentiator.** A three-verb write API
-(`insert` / `update` / `delete`) plus a mandatory "When NOT to Use" section on
-every stored record maps onto the existing `APPEND`/`CREATE`/`UPSERT` surface;
-the missing verb is the **auditable delete**, and first-class deletion rather
-than implicit decay is what separates the systems that worked in these
-comparisons from the heuristic-management systems that underperformed.
-[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M3
-
-### Retrieval: k is a measured parameter, and it must be budget-conditional
-
-Do not port cosine-top-1. Two convergent facts: the k-ablation **loses half the
-benefit by k=4** (49.7 / 46.0 / 45.5 / 44.4), and the one independent 35B
-replication **failed specifically at the retriever** after an embedder swap —
-which is exactly the substitution we would make with local BGE. Any sweep needs
-**k=1** and **episodic-only** control arms.
-[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §Research Intake Update 2026-07-29
-
-More consequentially, **k must be a fraction of remaining window budget, not a
-fixed integer**. An independent third-party benchmark on a different backbone
-finds **six of fifteen memory methods scoring BELOW the no-memory baseline at a
-128K budget** (worst: −7.0pp), with the count of sub-baseline methods running
-3 / 4 / 3 at 16K / 32K / 64K and **doubling at 128K**. The mechanism is
-**context-budget competition** — injected memory displacing live history — and it
-**must not be conflated** with our own recorded late-decay-from-store-growth
-failure. Two different diseases; conflating them produces the wrong fix. Design
-consequences: inject retrieved items only while live history occupies more than a
-fraction of the window and **inject nothing once the untruncated history fits**;
-cap injection as a fraction of remaining budget; and add a **no-memory control
-arm** to every memory A/B — six published methods lose to no-memory at 128K and
-**would have shipped undetected without one**.
-[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M6–M9;
-[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §budget-conditional rider
-
-### Budget the write gate DOWN, not up
-
-The admission judge in one system measures at **72.7% accuracy** and the paper's
-own simulation shows ground-truth labels buy only **+4.8pp of a 13.4pp effect**,
-with judge accuracy in the **70–90% band forming a plateau**. Therefore the
-distiller's write gate should use the **cheapest adequate local judge** — not an
-eval-tower call, not a frontier model. A second system reinforces this: its
-advantage comes from the auditable three-verb write API, not from an expensive
-admission judge. **Contrast**: in a third system the admission test *is*
-load-bearing. The two gate different things, so do not generalize one budget to
-the other.
-[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) §AP-29a
-
-### Correction — do not carry "best overall" forward
-
-An independent benchmark places the memory system whose **schema** we are
-adopting **LAST of 13** on Cross-Episode Knowledge (Easy split); the earlier
-"second behind ACE" reading recorded in this repo was **wrong**. It *is* best
-among memory methods on In-Episode Execution at 16K/32K/128K — but even there a
-**plain long-context baseline beats all fifteen methods**. Keep the store-shape
-adoption; drop the ranking claim wherever it appears. (The same source carries an
-unflagged defect of its own: one table's 64K column duplicates a different
-table's progress-score column, invalidating that paper's 64K conclusions — so
-even the corrected ranking is quoted only at the budgets that survive.)
-[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M10;
-[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §dive table
-
-### The measurement that does not exist — an EPYC-original deliverable
-
-**No paper in this set reports a per-window (non-cumulative) success-rate versus
-store-size curve** — and one of them concedes the gap in its own Future Work. The
-published figures are **cumulative**, and a cumulative curve is *structurally
-incapable* of showing late decay: the per-window curve can fall while the
-cumulative curve still rises. Building that instrument is blocked on no external
-dependency and is required in any memory A/B before an adoption decision.
-[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M5
-
-### Retrieval alongside grep, not instead of it
-
-A widely-relayed reading of an agent-retrieval paper — "14.92 / 9.84 / 8.33"
-treated as retrieval scores — is wrong: those are **counts of grep/rg/find shell
-invocations**, and the same paper's Table 2 has the **dense retriever winning**
-(90.0/86.0 vs 89.0/83.0). The transferable finding is **behavioural
-substitution**: it argues for retrieval *alongside* grep, not against an
-embedding index.
-[`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) §2026-07-29 dive corrections
-
-### Source References
-
-- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-M1..M10: store shape, additive layering over `src/trace/`, three-verb write API, the missing per-window instrument, 128K context-budget competition, and the ranking correction
-- [`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — utility-aware retrieval over the adopted schema; k-ablation and the replication that failed at the retriever; budget-conditional k
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-29a write-gate budget and the judge-accuracy plateau; the CORE contrast
-- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — corrected retriever reading (call counts, not scores)
-- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — dive-outcome table incl. the duplicated-column defect in the ranking source
-
-
-## Compiled Update — 2026-09-26: Shared Notes Need a Grounding Gate and a Prefix-Stable Block Before They Exist
-
-**Confidence: verified** for the source readings (DeLM, Proxifield and EvoHarnessBench were dived); no shared-notes block exists in the lane yet, so none of this is measured here.
-
-The curation-layer row (D-d in the REPL session-memory handoff) gained two acceptance criteria. Both are for whatever first creates a notes block shared across delegated or REPL workers.
-- **Admission is gated deterministically first.** A note's cited span must appear verbatim in its source, and a note that claims a result must reference an execution present in the session record. An optional worker-tier semantic check may follow; admission is never routed to the architect. The only component DeLM ablates is admission verification (60.1 → 55.2 on LongBench-v2 without it, one model), and its cheapest form is a verbatim reference check (intake-1803#6, intake-1803#4).
-- **Cost bound.** Notes are written on events, not on every step. The verbatim check runs against the writer's own tool output at 0 LLM calls, and each admitted note may cost at most one extra model call. Compression and LLM faithfulness stages stay off unless an A/B on a fact-pooling workload shows they pay. The one independent cost curve for a synchronous every-agent-every-step board runs 10.8–12.6× the no-communication cost at every N, and its only win is fact pooling (intake-1820#1, intake-1820#3, intake-1820#4).
-- **The notes block is a prefix by construction.** It is rendered append-only, byte-identical across viewers, and placed before any per-worker, per-step or tool content. The check is a static test plus a reuse reading from `/slots` `n_prompt_tokens_cache`. DeLM argues for prefix reuse but never measures it, and its released prompts break the prefix conditions; this criterion guards against exactly that failure (intake-1803#2).
-
-### Source References
-- [REPL session memory maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — the D-d acceptance (added 2026-09-26).
-- [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — P1-F and P4-12.
-
-
 ## 2026-10-06 synthetic structural conformance
 
 The [UTM conformance contract](../docs/reference/utm-synthetic-conformance-contract.md) characterizes eight native store categories and separates five typed-parser batches/six attempts. [Original off-host CI37444684189](../artifacts/ni07/run-37444684189/README.md) passes2/2 with generated readout captured at execution and custody reopened by MAIN. Existing store acceptance of a record does not establish privacy, source resolution or semantic correctness; all six axes remain unassessed and gold accuracy is null. Human semantic calibration and UTM-M9 remain open.
@@ -1383,7 +501,894 @@ The [M12f versioned EPYC composite proposal](../artifacts/operator/decisions/M12
 
 [Current local BEAM judge source](../artifacts/ni08/cme-judge-current-source-20261008/README.md) records malformed replies as typed, unjudged failures. It does not turn an unusable reply into a zero score. The historical upstream prompt/provenance question and live output-schema reliability remain separate from this source-only clarification.
 
-## Compiled Update — 2026-10-20: COUNT is a non-learned memory family, held as an Engram Track B arm behind Phase 0b
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-19 (wrap-up: MCP session contract, UTM-B1, CAS v3 default, dripreview12 futility). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (Tulving CAS scoring validity). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): bounded graph-snapshot retention, CF monitor checkpoint persistence, pointer-only resume monitor. Earlier: 2026-10-28 (owner-scope full-wrap delta): CME7T-v2 native diagnostic denominator and artifact-seal limits. Earlier: 2026-10-27 (operator wiki sweep, workspace-58): M-27(d) live episodic recall is dominated by seed rows and cannot separate interactive from autopilot writes. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): distill_skillbank escalation counts come from native memory metadata. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: HS-PROF-1 BEAM profile admission arm: no measurable difference). Earlier: 2026-10-22 (wrap-up sweep 10: HS-PROF-1 BEAM reader repaired, CME-7 cache gate accounting). Earlier: 2026-10-22 (wrap-up sweep 7: CME-7 smoke runnable, live-recall job built). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-26 (D-d shared-notes acceptance: verbatim grounding gate first, ≤1 extra call per note, prefix-stable notes block); previous: 2026-09-19 (M-12a RUN: retrieval 0.6069 vs full-book ceiling 0.6086 five-bin Simple Recall, memory-OFF 0.1893; bin 0 abstention inverts the ranking if split out; three run defects); earlier 2026-09-17 (research-intake delta: M-19 files typed decision records with a calibration-sourced confidence gate, blocked on TD-2; evening: D-f3 graph snapshots persist in their own fenced table; OP-KUZU ruled A; v10 episodic re-pin RATIFIED); earlier 2026-09-17 (afternoon: the live episodic store lost exactly the 4 leaked memories; the graph retriever has never been live because kuzu is missing; a fenced cross-process session lease; cross-harness trace pairing keys); earlier 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **Cognee agent-memory engine** (intake-135#00) Open-source knowledge engine combining vector search and graph DBs (add/cognify/memify/search pipeline). Not applicable: EPYC's KB is ColBERT retrieval over markdown, not a KG.
+- **KG-LLM interface tuning** (intake-136#01) Hyperparameter tuning of chunking/graph construction/retrieval/prompting inside Cognee on HotPotQA, TwoWikiMultiHop, MuSiQue. Dive re-read (2026-07-25) confirms correctly filed: no architecture novelty and no transferable result.
+- **Omi wearable AI** (intake-400#record) Capture/transcription product with backend hard-bound to Firebase and no local-model path. Dive: correctly filed not_applicable.
+- **PersonaVLM** (intake-435#00) Turns a general MLLM into a personalized assistant via proactive memory extraction, multi-turn reasoning and personality-aligned generation across long interaction. Worth investigating for persistent-user-memory patterns.
+- **Letta trajectory-v1** (intake-887#record) Versioned JSON-schema, deliberately lossy transcript format with eight harness adapters, meant for agent memory formation. Dive: adopt_component has no artifact; the package is not on PyPI and shims a vendored Node 20 CLI.
+- **PRO-LONG programmatic memory** (intake-919#record) Agent searches a lossless append-only interaction log programmatically, with gains on tasks needing history that summarization discards. Dive withdrew two Stage-1 flags (the WorldModeler "mis-cite" is explained by footnote 1); adopt patterns.
+- **ReasoningBank** (intake-930#record) Distills reasoning strategies from both successful and failed trajectories, with MaTTS test-time scaling. Dive: verdict stands but four of eight claims were overturned because Stage 1 read the v1 HTML; current v2 (16 Mar 2026) adds a code release.
+- **SkillOS skill curation** (intake-935#record) An RL-trained Qwen3-8B curator beats a Gemini-2.5-Pro prompt-only curator; prompt-only SkillOS-base reaches only 63.6% on ALFWorld. Dive: reachability confirmed on ALFWorld but overturned on WebShop.
+- **MemHarness** (intake-938#record) Memory must be reconstructed, not replayed; Mem0+GRPO scores 52.0 and SimpleMem+GRPO 54.5 versus plain RL. Dive overturned load-bearing points: the correct comparator for generic reconstruction is "w/o memory"; mechanism description survives.
+- **PRO-LONG repository** (intake-1011#record) Append-only local log plus a search skill so the agent inspects history via shell/Python rather than an embedding index. Dive (2026-10-21) overturned the no-license finding: the dived SHA has a root MIT LICENSE.
+- **Cognitive Workspace PoC** (intake-1015#record) Tiered active-memory sketch whose 8K/64K/256K buffers are item-count deques and default embeddings are padded MD5 vectors. Superseded; usable only as a negative measurement fixture, headline efficiency results are artifacts.
+- **ActiveMem** (intake-1017#record) Planner with a ten-step history plus sixteen parallel 4B Memorizers and a central Operator for gist reuse. Verified as a task-local parallel gist design; direct runtime adoption unsupported, and it is centrally orchestrated rather than decentralized.
+- **Verifiable Memory (VerMem)** (intake-1018#record) One learned policy controls long-term, short-term and episodic memory with frozen DeepSeek-V3.2 local/global verifiers; 32,000 HotpotQA SFT states then three GRPO phases. Strong evaluation design; overturned as a reproducible semantic-verifier release.
+- **Mem0** (intake-1022#record) Asynchronous-summary plus last-ten-message fact extraction with top-ten conflict retrieval, Mem0g graph variant, and an Apache-2.0 self-hostable repo supporting Ollama and OpenAI-compatible endpoints. Practical local comparator; accuracy and cost gains narrower than the headline.
+- **Kumiho AGM belief revision** (intake-1033#record) Proves AGM postulates (rejecting Recovery) for a Redis+Neo4j versioned agent memory with immutable revisions and mutable tag pointers. Dive: all claims confirmed except AnalyzeImpact, downgraded to a depth-bounded advisory over-approximation.
+- **Eywa provenance-grounded memory** (intake-1055#record) Immutable tier-0 evidence rows before LLM processing, deterministic LLM-free read path (weighted RRF k=20, 148-200 ms on a 6,320-fact store), and 90.19% LoCoMo on C1-C4 with adversarial C5 excluded; the comparison is literature context, not head-to-head.
+- **NeuSymMS TMS anti-pattern** (intake-1057#record) Genuine TMS usage but retraction destroys history (in-place soft-delete, no replay or as-of) and no quantitative evaluation on a 7-page paper. Kept as an anti-pattern to avoid; verdict not_applicable.
+- **Hindsight four epistemic networks** (intake-1058#record) Memory partitioned by stance (World, Experience, Opinion, Observation) with tri-temporal fields. Correction: confidence scoring is Opinion-network-only, and affiliation is Vectorize.io + Washington Post + Virginia Tech.
+- **esper append-only belief ledger** (intake-1059#record) ~440-line SQLite ledger with no UPDATE/DELETE path where belief is a pure function of (event set, query time) via logit-weighted, decayed contributions. Dive overturned the Stage-1 sibling-repo attribution (three unrelated authors); closest model for the as-of Bayesian fold.
+- **AgentMemoryRepo spec** (intake-1965#00) Format is a short MEMORY.md entry point, topic files and root-relative links, with optional bullet metadata. Correction: source/date are recommended, not required keys (intake-1965#00 narrowed). Opt-in two-session local trial excludes automatic startup and scheduled Dreaming (intake-1965#record).
+- **VibeMemBench** (intake-1968#00) 111 executable repo coding targets from 90 repositories and 3,634 trajectories. Frozen-experience transfer on five held-out solvers gives +0.0, +2.4, +4.5, +3.6, +1.1 pp with every bootstrap interval crossing zero (intake-1968#02); 11 of 12 memory-system/solver pairings are at or below memory-off (intake-1968#03). Cautionary evidence for memory-augmented coding agents.
+- **ReHarness recurrent harness** (intake-1999#record) Adds a backward revision step: after each instance, retrieved reflections are rewritten using the new trajectory, strictly online with top-5 retrieval (intake-1999#record). Reports the highest overall normalized gain of 0.2400 against Mem0, RBank, DoT, ACE, GEPA-Online (intake-1999#02); weak on noisy-reward tasks (poker).
+- **COUNT standard-transformer checkpoints** (intake-2020#00) Baseline released: seven OLMo-core ladder sizes 60M-1B at 10/20/40 tokens per parameter (1B steps 8134/16268/32537, batch 1,572,864) on Dolma 3. Matched on tokens and batch with the COUNT repo table (intake-2020#01). Checkpoint and n-gram tables exist, so the Engram Track B COUNT arm needs no pretraining to start (intake-2020#03).
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): distill_skillbank escalation counts come from native memory metadata
+
+**Confidence: verified** (run records and predeclared rules in the cited sources).
+
+- **M-26 closed at source scope.** The counter was always zero because `structural_lab.distill_skillbank` built every trajectory with `"escalations": []`; orch commit `96dc99c9` emits an escalation marker only when the native `MemoryEntry.action_type` indicates one. Verified on fake memory records and mocked store/pipeline only (3 focused tests, q1 13:11Z, rc 0); no real database read, teacher call or pool census. The follow-on VB-M26-DISTILL-POOL-WRITE (an immutable receipt of selected memory ids before the teacher call) is open.
+
+Sources: [episodic-memory-integrity](../handoffs/active/memory-program.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md)
+
+### Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the ProfileStore admission schema made no measurable difference on BEAM
+
+**Confidence: verified** for the run (80 items per arm, 0 errors, cloud judge); **inferred** for any memory-quality reading, since no threshold was predeclared.
+
+- **HS-PROF-1 result.** Admission schema vs the current `PREF [category]` format: instruction_following +0.0125 (3 wins / 2 losses / 35 ties, sign p=1.00), preference_following -0.0104 (4/7/29, sign p=0.55). With no predeclared threshold, the reading is "no measurable difference" and nothing stronger ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
+- **What comes next.** HS-PROF-1-RULE records an explicit adoption rule (a minimum paired delta and sign bound, or "keep opt-in") before HS-4 P2 wires profile injection. The rule decides whether a larger or longer-context BEAM arm is worth a window. The harness scope bug (all 64 registry roles read instead of one) is fixed, and preflight now requires exactly 1 role x 1 suite. The research branch is merged and the table's claims are in the belief ledger.
+
+#### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
+
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) (HS-PROF-1, -MERGE, -RULE, -SCOPE, -BELIEF)
+- [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
+- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): the BEAM profile-arm reader produced nothing for two runs, and the CME-7 cache gate missed on layout and accounting
+
+**Confidence: verified** for the defects and fixes (logs and recorded artifacts); **inferred** for every memory-quality claim: HS-PROF-1 and CME-7S have no valid score yet.
+
+- **HS-PROF-1 (BEAM profile arms) failed twice before producing a score, for four distinct reasons.** Run 1: the arm script defaulted to an interpreter without pyarrow, and a shared library reassigned `RESEARCH` after the pin check so the shared (older) clone ran. Run 2: the Qwen3.6-35B-A3B reader derived preferences with thinking on, spent its whole 1024-token budget reasoning (`n_decoded` 854-919 per request) and returned empty content for 20/20 conversations, and the benchmark runner's CPU llama-bench tripwire fired inside a GPU-only grant. The BEAM answering path was already correct (thinking off via the chat path); only the derive step was wrong. Fix at research `b513efb36`: derive uses `enable_thinking=false`, refuses all-empty derivations and all-empty snapshots, and a preflight phase checks BEAM extraction (400 questions over 20 conversations), module resolution and the real chat payload.
+- **The judge is now the Claude CLI cloud judge.** The previous pinned local judge was retired and deleted, and the operator chose the subscription cloud judge (not the API): `judge_beam_run.py --judge-backend cloud --cloud-judge sonnet-low`, with a one-call preflight that blocks if the CLI is missing or unauthenticated; the registry is a frozen copy so the job's judge pin cannot drift. 24 tests (file-scoped).
+- **CME-7 (CL-Bench poker smoke) is complete and valid on its second run, and the prefix-cache gate missed.** Run 1 failed on a pydantic `json_invalid` because thinking consumed the token budget. Run 2 gave `hit_ratio_reusable` 0.7948 (103,933 of 130,762) against a 0.95 gate, raw cached/input 0.7346, 26,829 reusable tokens re-prefilled. Causes: the schema instruction was attached only to the outgoing last user message, so the previous user message changed at its tail (14,058 tokens, 52.4%; client layout, fixed so the instruction is appended once to the stored message and each request extends the last byte for byte); previous generated tokens counted reusable by the CME-5 rule though a hybrid server never reuses them (11,028, 41.1%); a parse-retry rollback (1,743, 6.5%); slot misrouting 0.
+- **Mechanism for a recurrent-model slot.** It can resume only from a context checkpoint (made at the last user-message start and at prompt end minus 4), so when the next prompt's longest common prefix ends inside the previous user message the end-minus-4 checkpoint is rejected and the user-start one is used, re-prefilling one user message (380-460 tokens in all 38 steady-state calls). This step is inferred from arithmetic and source; the run logged at INFO, so CME-7S reruns at `-lv 4` to read it directly. The 0.95 bar stays; the gated basis moved to prompt-prefix (recorded smoke 0.868, projected about 0.99 after the layout fix, unconfirmed).
+- **Instrument-validity read-through for memory evals.** All three local serving roles are recurrent hybrids, so any prefix-reuse claim for them is checkpoint-bound, not plain-LCP-bound.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [progress/2026-10/2026-10-22-hsprof1-reader-fix.md](../progress/2026-10/2026-10-22-hsprof1-reader-fix.md) — run-1 defects
+- [progress/2026-10/2026-10-22-hsprof1-reader-fix2.md](../progress/2026-10/2026-10-22-hsprof1-reader-fix2.md) — empty derivation and the preflight tripwire
+- [progress/2026-10/2026-10-22-hsprof1-claude-judge.md](../progress/2026-10/2026-10-22-hsprof1-claude-judge.md) — cloud judge backend
+- [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — CME-7 outcome and judge-pin decisions
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — hybrid-role finding (RTE-PFX-LB1)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): CME-7 smoke, live recall
+
+**Confidence: verified** for the CME-7 smoke harness fix (research `76f5143d9`, `2e479ee01`; clbench quick_test against a FAKE endpoint only); **inferred** for the live runs (not armed).
+
+- **CME-7 smoke is runnable but has produced no memory score.** Env `/mnt/raid0/llm/tmp/clbench-venv` (python 3.13.7, `clbench doctor` passes); the runner passed underscore flags (`--system.base_url`, `--system.max_context_tokens`) that clbench's argparse rejects (hyphens required), fixed; the poker quick_test ran against a fake endpoint only. Still needs the M-12 server on :8199 and the CME-5 sizing decision.
+- **Episodic recall (M27 live-recall) is a window-ready job** (`m27_job.sh`: subprocess embedder, no ports, real-embedding proof), bundled in `s5-stackup-bundle` and not armed.
+- **Memory-lesson mining caveat:** observation masking remains the default compaction; LLM-mediated memory consolidation must show a paired accuracy-per-cost win over a BM25 baseline before adoption.
+
+#### Source References (2026-10-22 sweep 7)
+
+- [handoffs/active/conversational-memory-eval-instrument.md](../handoffs/completed/conversational-memory-eval-instrument.md)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md)
+- [progress/2026-10/2026-10-21-queue-builders-3.md](../progress/2026-10/2026-10-21-queue-builders-3.md)
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): memory-augmented — where Engram stands, and what an embedder swap does to the memory stores
+
+**Confidence: verified** for the recorded gate outcomes and the prepared-not-applied migration; **inferred** for the MemHarness/EvolveR-cluster reading, which rests on intake records.
+
+- **Engram is a single open path.** Track A (LongCat-Flash-Lite CPU probe) closed negative on 2026-05-25 and stays closed: the model ran at production-relevant CPU rates (Q4_K_M decode 37 t/s, verified in the handoff's decision log) but scored 21/39 on the sentinel set against 26/39 for the deployed gemma4-MTP worker, and is slower than that worker. The family verdict is that n-gram-augmented MoE inference on CPU is technically viable; the checkpoint simply loses to what is already tuned here. The only live item is Track B Phase 0b (frozen-vs-cotrained proxy, roughly $50-150 of GPU time, gate B0 = 30% recovery ratio). Phase 0a (identity-at-step-zero, 36/36 CPU unit tests) is done. An agent asked to "make progress on Engram" should not restart Track A.
+- **COUNT is parked behind that same gate.** The non-learned n-gram table family (already summarised below) is a monitor with a trigger, not a checkbox: it starts only when Phase 0b is authorized, and its pairing (paper-recipe table versus the cheaper off-recipe one) must be labelled.
+- **The 2026-08 memory-cluster reading is a design lead, not a result** (`inferred`). The highest-value zero-training leads are a gradient-free principle-distillation-plus-retrieval arm, post-hoc reflection-redundancy (computable over traces that already exist) and programmatic feedback extraction. The 2026-10-06 source qualification stands: the memory-wipe comparison used unequal trial budgets and does not isolate write-side from read-side failure, so the "fourth mechanism" framing is not established. See `intake-989#record`.
+- **Retrieval-side consequence for the episodic, skill and session stores.** The 2026-10-20 operator decision to adopt EmbeddingGemma 2 for REPL retrieval (see [search-retrieval](search-retrieval.md)) is gated to ship with the next production kernel, and it changes embedding dimension relative to the 1024-d stores in `faiss_store.py`, `memrl.py` and `sqlite_store.py`. A mismatched `session_embeddings.npy` is currently unlinked on load, so the prepared work is a refuse-and-keep fix plus a copy-then-swap re-embedding tool with rollback (dry-run only; never run on live stores). Rule for memory work: an index belongs to ONE embedding model, and any dimension change is an explicit migration, never a silent reload.
+- **Voice-session memory has a fixed contract.** The accepted conversation-store source keeps every unseen message behind a monotonic summary frontier, refuses overflow rather than dropping history, preserves the prior summary on summarizer failure and respects session lease fences (synthetic SQLite controls only; no live store). See [multimodal](multimodal.md).
+
+Open: Phase 0b authorization (operator/budget); real-trace re-check of the retrieval verdict (REPL-EMB-2.8) before any embedding-dimension change in a store.
+
+#### Source References (2026-10-20 sweep 2, memory-augmented)
+
+- [Engram conditional memory](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — Track A closure, Track B Phase 0b, COUNT arm trigger, 2026-08-03 cluster.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — store-migration follow-ons and the one-model-per-index invariant.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — session-keyed store and summary frontier source acceptance.
+
+### Compiled Update — 2026-10-07: transporting state and characterizing storage do not validate memory meaning
+
+**Confidence: verified** for bounded source contracts; semantic memory evaluation remains unassessed.
+
+Signed non-JSON globals now pass through both checkpoint constructors into SQLite and restore under the existing restricted pickle boundary. Persister caps count JSON and signed envelopes together, and oldest-first eviction removes both representations. This repairs transport of already-supported values; it adds neither a broader pickle allowlist nor an aggregate chat cap. The separate sticky-timeout repair prevents reuse and persistence of a late-mutating environment, without claiming that its worker or host effects were terminated. ([Checkpoint transport](../docs/reference/signed-checkpoint-payload-transport.md), [REPL maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity))
+
+UTM fixtures characterize eight store categories and five typed-parser batches with their own denominators. Accepted retention labels, unresolved source IDs and overwrite behavior are implementation facts, not semantic safety. Gold accuracy remains null and all six semantic axes unassessed. The existing Tulving chapter-Event/SQLite/FTS/navigation path now has accepted full synthetic coverage, while read-only MCP registration remains prospective source work. BEAM ingest provenance is now accepted after original 21/21 synthetic controls: future artifacts expose all-role source order, indexed range and pair-chunk granularity, without a real BEAM/model result. No new live memory-quality comparison follows. ([UTM conformance](../docs/reference/utm-synthetic-conformance-contract.md), [trace owner](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
+
+#### Source References (2026-10-07 memory boundaries)
+
+- [Signed checkpoint transport](../docs/reference/signed-checkpoint-payload-transport.md) — original state round-trip and cap scope.
+- [REPL maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — terminal timeout versus worker cancellation.
+- [UTM conformance](../docs/reference/utm-synthetic-conformance-contract.md) — structural/parser counts versus semantic gold.
+- [Trace/memory owner](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — accepted Tulving backend and prospective consumers.
+
+M19 now has an accepted diagnostic record specification carrying per-question confidence, honest typed/untyped provenance, unresolved states and immutable opaque value receipts. That completed specification implements no writer, calibrated threshold or enforcement; the writer is separately filed and its confidence gate still needs catalogue/model-specific calibration. [Episodic memory integrity](../handoffs/active/memory-program.md).
+
+### Compiled Update — 2026-09-19: M-12a has run, and retrieval reaches the full-book ceiling
+
+**Confidence: verified**: three scored arms, 686 questions each, ingested into the belief kernel. All figures are from [episodic-memory-integrity](../handoffs/active/memory-program.md) (M-12a, 2026-09-18).
+
+#### Key findings
+
+- **M-12a ran on 2026-09-18, the first memory-on vs memory-off A/B.** The operator waived the recipe's "the operator runs everything" rule for this window and freed the GPU. The handoff records this so a later reader sees the rule was waived on purpose, not skipped. Reader: `qwen3.6-35b-a3b-q8-gpu-mtp-longctx196k-np4` on the champion build, linkage PASS, 4 slots × 196,608 ctx. Variant `Udefault_Sdefault_seed0`, `book_sha16 afa5379c27e83459`, 196 chapters, 0 missing ground truth. Each arm's `context_mode_by_prompt` confirms that it ran the arm it claims.
+- **Prefix reuse fired, which answers an open question below.** `SMOKE_PREFIX_REUSE: PASS`. The 104,698-token book costs 89.6 s cold. A follow-up reuses 102,650 tokens in 3.2 s. The book keeps its prefix **after an intervening 191,447-token BEAM conversation**, which is what the four slots are for. They are not there for throughput.
+- **Headline: five-bin Simple Recall, bin 0 included.** memory-OFF **0.1893** (avg F1 0.2487, 7 truncated). memory-ON (`retrieved`) **0.6069** (F1 0.6432, 5 truncated). CEILING (`full` book) **0.6086** (F1 0.6189, 13 truncated). Retrieval is **within 0.3% of the ceiling** and ahead of it on avg F1. FTS5 chapter retrieval over the trace store buys essentially everything that putting the whole book in context buys.
+- **The per-bin results carry the finding, and averaging hides it.** Per-bin avg F1 (OFF / ON / CEILING):
+  - bin 0: 0.927 / 0.853 / 0.760
+  - bin 1: 0.001 / 0.623 / 0.685
+  - bin 2: 0.002 / 0.664 / 0.531
+  - bin 3-5: 0.007 / 0.534 / 0.509
+  - bin 6+: 0.010 / 0.360 / 0.558
+
+  Bin 0 is the unanswerable set, where the correct answer is `"None"`. memory-OFF is excellent at declining and knows nothing else. The handoff treats that plain "I don't know" as a property worth keeping. The **full book is the worst arm at declining**: more context makes fabrication more likely there, but it helps most on the hardest 6+ bin. Reporting bin 0 separately would invert the ranking, which is why the headline keeps it.
+- **Chronological Awareness (diagnostic only, pending the M-12d tau fix):** 0.109 OFF / **0.344** ON / 0.290 CEILING.
+- **Caveat.** CEILING truncated 13 rows against memory-ON's 5, so the ceiling is slightly understated. 13/686 truncations could cover the 0.3% gap. **"Retrieval matches the ceiling" is established. "Retrieval beats the ceiling" is NOT.** Raising the `full` arm's answer budget would settle it.
+- **Belief-kernel write side is wired.** Each arm's scorer emits `belief_measurements.jsonl` beside its artifact, ingested via `cli.py ingest tulving`: 3 units matched, 3 projected, 0 declined, 0 refused, 6 rows, 18 frames. The rows carry `metric_direction=higher_better`, `reps` (548 recall / 138 chronological) and `protocol_id epyc.vidya.tulving_episodic_capture.v1`. Artifacts: `artifacts/m12/run_20260918/`.
+- **Three defects found during the run:**
+  1. The recipe's §7 command omits `--model`, so `run_benchmark.py` enumerates all 71 models / 80 roles. It sent Tulving questions to the resident 35B reader **labelled as the embedder role**, a silent mis-attribution. Fix: add `--model qwen36_35b_a3b_mtp_q8_local` to the documented line.
+  2. The belief sidecar path follows `--out-json`. Scoring every arm into one directory makes each arm overwrite the previous sidecar and silently lose rows. Fix: score each arm into its own run directory and check the row count per arm.
+  3. Every result row has `prompt_tokens: null`, so per-question context cost (no-book vs 104K-token arm) cannot be recovered from the results file. This is adjacent to RTG-47.
+
+#### Open questions
+
+- Does "retrieval beats the ceiling" on avg F1 survive a `full` arm with a larger answer budget?
+- Does the bin-0 abstention gap (retrieval 0.853 vs full book 0.760) carry to BEAM (M-12b), where abstention is excluded from the headline?
+
+#### Source References (2026-09-19)
+
+- [episodic-memory-integrity.md](../handoffs/active/memory-program.md): M-12a run, per-bin results, truncation caveat, belief-kernel ingest, and the three run defects.
+
+### Compiled Update — 2026-09-17 (research-intake delta: typed decision records and a calibration-sourced confidence gate)
+
+**Confidence: verified** for the filing and the measured calibration hazard; the record-design rationale below is analysis (**inferred**). The intake measurement is external (dive-verified, not this host).
+
+#### Key findings
+
+- **M-19 — typed decision records + confidence gate design: record spec dispatchable now; the live gate needs a calibration record.** TD-2 landed 2026-09-17 and was never the unlock (handoff corrected 2026-09-26): the gate threshold needs a calibration record for the memory-write catalogue on its model pin, with TD-2 as the method. Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from that calibration record, **never from candidate softmax** — the intake measured 65% of a 7B's wrong fields above 0.90 confidence (intake-1474). Owner stub `typed-decision-plane.md` (RTG-56). ([episodic-memory-integrity](../handoffs/active/memory-program.md))
+- **Why the record needs per-question probabilities at all** (inferred): the public typed-decision contract calls confidence an undisclosed statistic (intake-1472) and the local candidate-softmax readout is uncalibrated (intake-1474). A record that stores only the chosen value cannot be re-graded when a later calibration changes which answers were trustworthy.
+- **Order effects are part of the record's truth conditions.** The independent rerank reproduction shows **24.7% order sensitivity** (intake-1486) — the same batching that makes the write cheap is the contamination axis TD-2 must measure, so the record should carry enough context (question order / batch shape) to audit it.
+- **Write-side wiring precedes the first measurement run.** VB-TDP-1 requires one self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the vidya source table — a tuple invented on read cannot gate a decision. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **Operator steering names episodic-memory writes as a first-class target** for the one-pass call ("may also be relevant for fast routing and episodic memory writing"), which is why the memory record — not just the routing path — is in scope. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+
+#### Open questions
+
+- Which confidence statistic survives local calibration well enough to gate a memory write, and is it per (model, schema) or per question class?
+- Does the record need to carry question order explicitly, or is batch-shape provenance enough to reproduce the contamination check?
+
+#### Source References (2026-09-17 research-intake delta)
+
+- [episodic-memory-integrity.md](../handoffs/active/memory-program.md) — M-19 (record spec open; the live gate waits on a calibration record).
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the typed-decision contract and the calibration constraint.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side rule covering RTG-56.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record.
+
+### Compiled Update — 2026-09-17 (evening): graph snapshots finally persist, kuzu stays uninstalled, and the v10 re-pin is ratified
+
+**Confidence: verified**: orchestrator commits, focused tests and the root ratification commit. No
+inference ran, and the production `kuzu_db` files were only copied, never opened in place.
+
+#### Key findings
+
+- **D-f3 is fixed (orchestrator `f853764f`).**
+  - **The defect.** Both graph snapshot writers had been losing every snapshot. They called
+    `save_checkpoint` with keyword arguments the store never accepted, and the `TypeError` was swallowed
+    at DEBUG.
+  - **Why the snapshots do not go into `checkpoints`.** `get_latest_checkpoint()` is the REPL restore
+    source, so a snapshot row would shadow the real globals checkpoint.
+  - **The fix.**
+    - A new append-only `graph_snapshots` table is written by `save_graph_snapshot(run_id, data,
+      snapshot_type, *, session_id, fencing_token)`.
+    - A session-scoped write runs D-f's `check_fence` inside the insert transaction.
+    - `_execute_repl` sets the session id and token only while the turn holds the lease. Otherwise the
+      snapshot is run-scoped.
+    - Both error paths now log at WARNING.
+  - **Tests.** 9 cases, 8 of which fail on the old code. They include an AST guard over every
+    `save_checkpoint` call in `src/`.
+  - **Follow-up (D-f3a).** Nothing reads the table, and with `STATE_HISTORY_SNAPSHOTS` on it grows by one
+    row per turn.
+  - [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md),
+    [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity)
+- **The graph layer stays dormant: the operator ruled OP-KUZU = A.**
+  - **Code changes (orchestrator `61793b38`).** A missing kuzu is now one WARNING line with no traceback,
+    and so is lock contention from another process. The `[graph]` extra pins `kuzu==0.11.3`.
+  - **A pre-existing bug.** Every graph class's `close()` was `pass`, so the file lock was never released
+    in-process.
+  - **What the on-disk graphs hold** (read from copies). The failure and hypothesis graphs have the schema
+    and 0 rows. The routing graph has 7 LLMRole, 17 QueryCluster and 17 TaskType nodes.
+  - **Why A was recommended.**
+    - Kuzu takes an exclusive per-file lock even for `read_only=True`. Of 6 uvicorn workers, only the first
+      would get graph scoring, so routing would depend on the worker.
+    - Upstream kuzu was archived on 2025-10-10.
+  - **What remains.** NIB2-78c, a single-owner graph process, applies only if the layer is revived.
+  - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md),
+    [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
+- **The v10 episodic re-pin is RATIFIED (root `810a6a82`), which closes MHS-3d.**
+  `multitier_v10_20260810/checkpoint_meta.json` now pins the purged files. `memory_count` went from 63925 to
+  63921, and `checkpoint_sha256` from `a604276f` to `3b457d98`. The eval-leak cleanup is therefore complete on
+  the live, offline and pinned production_best stores.
+  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+
+#### Source References (2026-09-17 evening)
+
+- [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md): D-f3 defect, design and tests.
+- [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity): D-f3 tick and D-f3a.
+- [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md): kuzu dependents, lock behaviour, decision package.
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78/78a/78b/78c.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the v10 ratification and OP-KUZU ruling.
+- [ratify_v10_episodic_repin_20260917.json](../artifacts/operator/ratify_v10_episodic_repin_20260917.json): the ratification record.
+
+### Compiled Update — 2026-09-17 (afternoon): four memories out, and a retriever layer that was never on
+
+**Confidence: verified**: purge receipt, `--verify` integrity output, and the API log.
+
+#### Key findings
+
+- **The eval-leak purge removed exactly 4 HumanEval/55 task memories from every store that held them.**
+  - The signature was 190 leak shingles plus anchors. It flagged 4 ids and nothing else: 0 false positives
+    across about 5.7k generic Fibonacci rows.
+  - The live store went from 64,208 to 64,204 entries. The post-purge integrity check is HEALTHY:
+    `id_map` in sync, 500/500 round-trips, and a vector diversity ratio of 1.187.
+  - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md), [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
+- **The pinned production_best (v10) store is purged too**, but its manifest still pins the old digests
+  until the MHS-3d re-pin is ratified. A v10 rewind no longer restores the memories.
+  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **`GraphEnhancedRetriever` has not been running in the production API.** `kuzu` is neither installed nor
+  declared, so every start falls back to `TwoPhaseRetriever`, and the failure-graph and hypothesis-graph
+  stores (`model_registry.yaml:212-217`) are inert. Any past reading that credits graph-enhanced retrieval
+  describes code that did not run. The decision is filed as NIB2-78.
+  [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
+
+- **Session state needed a cross-process lease with fencing, not a mutex (D-f, orchestrator `0d6d1dd2`).**
+  uvicorn runs 6 API workers. Two `/chat` turns for one session on different workers restored the same
+  checkpoint, and the later save erased the earlier turn.
+  - A `session_leases` row carries holder, host, boot id, PID and `/proc` start ticks, plus a monotonic
+    fencing token. It is acquired under `BEGIN IMMEDIATE`.
+  - The lease can be taken over only on expiry or when the owner is proven dead. Session, checkpoint and
+    delete writes check the token inside their own transaction. A refused write returns 409.
+  - Measured in real forked processes: 6 × 8 leased read-modify-writes kept 48 of 48 updates. The
+    **negative control without the lease kept 8 of 48**.
+  - Found on the way (D-f3): the graph snapshot writers call `save_checkpoint` with a signature it never had,
+    and the `TypeError` is swallowed at debug level, so those snapshots are silently dropped.
+  - [sub-lease-etr4](../progress/2026-09/2026-09-17-sub-lease-etr4.md),
+    [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity)
+- **Trace events can now pair runs across harnesses (UTM-P1, `dd24ed10`).** Schema v2 adds nullable
+  `harness`, `seed`, `turn_ordinal` and `task_key`, plus a per-row `schema_version`, via an additive migration
+  with no back-fill. A NULL version means the keys were never captured. `paired_runs()` groups by turn and
+  harness, and pre-v2 content keys stay byte-identical. No live producer stamps the keys yet (UTM-P1a).
+  [sub-utm-epd](../progress/2026-09/2026-09-17-sub-utm-epd.md),
+  [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
+- **One embedding-segment assembler (EPD-3-R8, `d3f6062c`).** It is byte-identical to the old serializers
+  over 3,000 randomized cases, except that texts over 2,000 chars are now capped and a None-valued failure key
+  no longer embeds `None`. No re-embed is needed. `seed_memory` now raises after flushing a partial load (R6).
+  [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller)
+
+#### Source References (2026-09-17 afternoon)
+
+- [sub-lease-etr4](../progress/2026-09/2026-09-17-sub-lease-etr4.md)
+- [sub-utm-epd](../progress/2026-09/2026-09-17-sub-utm-epd.md)
+- [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
+
+### Compiled Update — 2026-09-17: M-12 is run-ready except for the GPU window, Hermes memory is complementary in data but competing in mechanism, and a budget primitive ticked in July never existed
+
+**Confidence: verified** for the instrument code, tests, blocker closures and source-read Hermes
+facts (pinned `hermes-agent@532a49f1`, orchestrator `0329ab10`); **inferred** for the GPU fit and
+wall-clock estimates, which come from planning fits (the prefill figures are bench-class, and
+anything beyond 32K is extrapolated). The memory-on/off A/B **still has not run**: the operator
+deferred the M-12 GPU window on 2026-09-16.
+
+Every zero-compute blocker in front of M-12 was closed on 2026-09-16, and both instruments now
+express their arms. A token-level readiness pass then changed one premise of the 2026-09-08 section:
+**BEAM's "100K" split does not fit a 128K context on our tokenizers.** Its median prompt is about
+128K tokens and its longest about 191K. The package therefore sizes the run at 196,608 tokens per
+slot with no truncation. Separately, a source-only audit of Hermes found no data overlap with the
+orchestrator's episodic memory, but it did find extra un-overridden LLM traffic generated by Hermes'
+memory machinery. And a July tick for the budget-conditional retrieval primitive turned out to
+describe code that was never committed.
+
+#### Key findings
+
+- **Prompt lengths, measured with each model's own GGUF tokenizer (no forward pass).**
+  - BEAM 100K vanilla (400 prompts), Qwen3.x tokenizer: p50 128,526, max **191,456**, with 160
+    (40 %) above 131,072. On gemma-4, 200 (50 %) exceed 131,072.
+  - Tulving 200ch full arm: 686 prompts, all about **104.7K**, sharing one book prefix. The memory-off
+    arm is ≤ 72 tokens; the retrieved arm (top-5 chapters) is about ≤ 4.1K.
+  - Every candidate's trained context is 262,144, so the binding limit is the configured server
+    context ([OP-42 readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md)).
+- **Recommended reader and run plan (option A, an estimate).**
+  - Reader: Qwen3.6-35B-A3B-MTP-Q8_0 at np=4 × 196,608. It fits in about 54–55 GiB and prefills
+    about 2.5× faster than the 27B proxy.
+  - Budget: about 10 h of MI210 time plus a 10-minute checkpoint-reuse smoke.
+  - **Prefix reuse decides whether the run fits.** Without it, the Tulving CEILING arm needs about
+    18 h (35B), and 27B cold prefill of the full arm alone is about 45 h. Reuse works only through
+    context checkpoints; that comes from reading the code and has not been observed.
+  - The M-12 claim is a within-reader delta, so no CPU role is required. It will not be comparable
+    to the June CPU `ingest_long_context` SRS, which used a different model and a 20ch book
+    ([OP-42 readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md),
+    [episodic-memory-integrity](../handoffs/active/memory-program.md)).
+- **B1 was a silent wrong-ground-truth defect, now closed.** The 200ch set could not be selected
+  (`get_adapter` builds `cls()` with the 20-chapter default), and question ids collided: **all 456
+  20ch ids also appear among the 686 200ch ids, with different prompts.** A 200ch run scored before
+  the fix would have graded 456 answers against the wrong questions. After the fix:
+  - `TULVING_CHAPTERS` drives both the producer and the scorer;
+  - the stored June run re-scores identically with `--chapters 20` (456/456 rows
+    `legacy_prompt_verified`);
+  - `--chapters 200` refuses all 456 rows.
+
+  B2 (BEAM `rag` and `trace` arms), B3 (explicit budgets: Tulving max_tokens 1024, BEAM 2048, with
+  temperature 0, `enable_thinking=false` and `cache_prompt: true`) and B5 (eval recipes plus
+  `smoke_prefix_reuse`) also landed, merged to research `main` at `cfbfa448`. B3 also exposed a
+  latent defect: `/completion` hard-coded `cache_prompt:false`, which would have defeated prefix reuse.
+  B4: the judge is gemma-4-26B-A4B-it-ORIG-Q8_0 (operator 2026-09-16). B7: the research `.venv`
+  still lacks pandas ([m12-blockers](../progress/2026-09/2026-09-16-sub-m12-blockers.md)).
+- **CME-1 and CME-4 closed.**
+  - The BEAM judge now calls the model once per nugget (`judge_beam_run.py`). Unjudged questions are
+    listed rather than scored 0.0, and the fold refuses to run while any remain. A resume bug that
+    exited 3 forever was fixed in `194a83a9`.
+  - BEAM data is staged at HF rev `3205395e`.
+  - The Tulving adapter gained `context_mode` ∈ {none, retrieved, full}. `full` reproduces all 456
+    stored June prompts byte for byte. `retrieved` searches a private trace store, and on the 19ch
+    book with top_k=3 its prompts average 8.2k chars against 50.9k for full.
+  - Both scorers refuse an `--arm` that contradicts the recorded prompt headers or
+    `context_mode_by_row`
+    ([CME instrument](../handoffs/completed/conversational-memory-eval-instrument.md),
+    [sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md)).
+- **M-12e re-verified.** The June Tulving run re-scores to SRS 0.5530 under the pre-fix scorer and
+  0.5684 (366 questions) under v2. Historical CAS v1/v2 is 0.1593; approved EPYC
+  **CAS v3 is 0.0704** (15 eligible, 7 eligible partials at zero, 30 short-gold
+  exclusions; [definition and evidence](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md)). The fresh v2 summary is
+  byte-identical to the committed rescore, and three leftover unannotated 0.5530 quotes in
+  bulk-inference-campaign were corrected. One finding weakens the SC67 doctrine: all 456 stored
+  prompts carry the `Book narrative:` header, so the arm *is* recoverable from producer-authored
+  data, even though the run still emits zero belief rows ([sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md)).
+- **Hermes vs orchestrator memory (HS-4 input): MIXED.**
+  - **Complementary in data.** Hermes remembers the *user*: MEMORY.md and USER.md, capped at 2,200
+    and 1,375 chars and frozen into the system prompt at session start. The orchestrator's episodic
+    store holds *routing* Q-tuples. The two share no store, and the `/v1` endpoint reads and writes no
+    orchestrator memory.
+  - **Competing in mechanism.** Four Hermes memory paths send LLM calls that reach `:8000` without
+    the session's overrides: `flush_memories`, compaction, and two paths HS-1g missed. One is
+    `session_search` summarisation. The other is the background review agent, which runs every 10
+    turns with a fresh session id and re-sends the whole conversation.
+  - **Compaction re-keys the session id**, so any trace ingest must follow `parent_session_id`.
+  - **Recommendation.** Partition option (c) if Hermes is chosen; reject routing Hermes memory into
+    the orchestrator store (b) or adopting Hermes memory instead (d). Every measured run uses option
+    (a), with all Hermes memory disabled. M-12 is fenced today because its trace arms build private
+    per-run stores ([Hermes memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md)).
+- **Two latent defects found in that audit.** `/v1` builds its REPL without a retriever, so
+  `recall()` falls back to `EpisodicStore().search_similar(...)`. That method does not exist, and the
+  exception is swallowed, so **`recall()` is silently dead for every `/v1` client.** Also,
+  `hermes-config.yaml` declares a `mempalace:` block that Hermes never reads, so the claimed "H-8
+  MemPalace memory" is not wired ([Hermes memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md)).
+  **Both are fixed (orchestrator `83c7ed2f`, root `91d56181`):** `/v1` REPLs now receive the shared
+  retriever and `hybrid_router`, and the legacy fallback calls the real `embed_exploration` +
+  `retrieve_by_similarity` instead of the non-existent methods; a failure logs at ERROR and returns
+  `status:"unavailable"`, so an empty result is distinguishable from a broken one, and `STUCK()` skips
+  unavailable payloads. The inert `mempalace:` block is commented out, because MCP servers are read
+  only from `mcp_servers:`. The `/v1`-should-have-recall decision is **yes** — `recall()` is a tool of
+  the orchestrator's own REPL, not client access to the store
+  ([sub-recall](../progress/2026-09/2026-09-16-sub-recall.md)).
+- **UTM-M7/M8 were a phantom tick, now fixed.** The 2026-07-29 ✅ said `select_budgeted_records()`
+  existed in `src/trace/navigation.py`. `git log --all -S` finds it on no orchestrator or research
+  ref. The text arrived as a staged-file ride-along in an unrelated commit. The function was
+  re-implemented to spec (orchestrator `74418b3c`, merged `d748b4c7`; 44 trace tests pass). It is
+  still pure, default-off and has no callers. No wiki or belief claim relied on it, but the KB-RAG
+  manifest indexed the false text until the next rebuild. **This corrects** any earlier statement on
+  this page that the primitive landed in July
+  ([UTM handoff](../handoffs/active/memory-program.md#track-unified-trace-memory-service),
+  [sub-utm-m78](../progress/2026-09/2026-09-16-sub-utm-m78.md)).
+- **Trace text search ranked by recency, not relevance.** `query(text=...)` said bm25 but ordered by
+  `ts_utc DESC`, so a limited search kept the newest matches, and RRF fused a recency rank. Fixed in
+  `6302b381` (merged `21172688`): bm25 is now applied before LIMIT, and `order="recency"` is
+  available explicitly. No recorded result was affected
+  ([sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md)).
+
+#### Open questions
+
+- Does context-checkpoint prefix reuse actually fire on the champion for single-message M-12
+  prompts? The smoke test is ready (`a6491b9e`) but waits on the deferred GPU window.
+- M-12f and M-12i retain CAS construction and prospective offline replay work. M-12g now gates explicit SRS comparisons by source/gold/bin compatibility; matching bins alone do not establish equal book difficulty.
+- UTM-M9, the no-memory control arm in the eval tower, remains an operator-gated trust-boundary ask.
+- The precedence rule is still undecided: does an explicit `x_*` override beat Hermes profile prose?
+  (The dead `/v1` `recall()` half of this item is closed — see above.)
+
+#### Sources
+
+- [episodic-memory-integrity](../handoffs/active/memory-program.md): the M-12 blocker status, M-12a/b command changes, M-12e re-verification, M-12j progress
+- [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md): the CME-1 and CME-4 closures and the BEAM arm gate
+- [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service): the UTM-M7/M8 re-implementation and the bm25 note
+- [2026-09-16-sub-recall.md](../progress/2026-09/2026-09-16-sub-recall.md): the `/v1` recall fix, its tests and the inert `mempalace:` block
+- [2026-09-16-sub-op42-readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md): token statistics, KV/GPU fit, prefill estimates, blockers B1–B7, OP-42 options A–D
+- [2026-09-16-sub-m12-blockers](../progress/2026-09/2026-09-16-sub-m12-blockers.md): the B1/B2/B3/B5 fixes, B1 verification, review fixes
+- [2026-09-16-sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md): M-12e re-score, the SC67 recoverability finding, CME-1/4 detail
+- [2026-09-16-sub-hermes-memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md): the Hermes and orchestrator memory inventories, interaction analysis, options and verdict
+- [2026-09-16-sub-utm-m78](../progress/2026-09/2026-09-16-sub-utm-m78.md): the phantom-tick forensics
+- [2026-09-16-sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md): the trace ordering bug and its callers
+
+### Compiled Update — 2026-09-08: the memory A/B that never existed now has instruments, an operator gate, and a do-not-copy checklist
+
+**Confidence: verified for every filed/landed state below** (rows read from the handoffs, commits
+`945c8820`-era landings referenced where closed). **The A/B runs themselves remain compute-gated and
+have not run**; the instrument admission is an operator decision currently queued, not a ratified
+one. External reference numbers are quoted as floors/sanity checks only, per the rows that filed
+them.
+
+#### M-12 — the protocol is written; the instruments sit behind OP-42 in the operator queue
+
+M-12 ("run the memory-on vs memory-off A/B that has never existed in either repo") is the only thing
+that will answer "does episodic retrieval help" with evidence. Filed 2026-09-07 via research-intake,
+the protocol is **two instruments, in order, judge/scorer held fixed across every arm**, and the
+admission itself is an **operator decision (OP-42, queued)**: admit BEAM 128K and Tulving 200ch/100K
+and grant one inference window — M-12a (Tulving) first, M-12b (BEAM) second; eval-pool registration
+is a separate decision from adoption as an instrument (CJ-GATE precedent; MEASUREMENT.md is
+human-amendment-only). Rows are compute-gated: filed, never run.
+
+- **M-12a — Tulving 200ch/100K first.** Variant `Udefault_Sdefault_seed0`, chapters=200 (the
+  adapter already resolves this to the 196ch parquet on disk). Three prompt-matched arms:
+  memory-OFF (question + answer contract, no book), memory-ON (`src/trace` retrieval fills the
+  context), CEILING (full book — what the adapter does today). **Headline on the five-bin Simple
+  Recall Score WITH bin 0 included** — the hallucination bin is the point. Chronological Awareness
+  is reported separately as a diagnostic until the tau fix (M-12d/M-12e) lands; Entities/Times/
+  Spaces are reported separately from Event-contents/Full-details; identical list-only + "If none,
+  say 'None'" contract on every arm; deterministic scorer, no LLM judge.
+- **M-12b — BEAM 128K second, abstention EXCLUDED from the headline.** BEAM's Vanilla column =
+  memory-off, its `pair_chunk` RAG column = the naive-memory control, our trace/navigation surface =
+  the only new arm. Headline on the five-ability discriminating core; instruction-following,
+  preference-following and event-ordering reported separately. Prompt-match all arms — do NOT give
+  the memory arm a closed-book instruction the memory-off arm lacks.
+- **M-12c — the pre-run do-not-copy checklist, seven items**, each traceable to a site in MemPalace
+  issue #125: (1) report BEAM's own fold, never a binarised micro-average; (2) ingest BOTH roles,
+  never user turns only; (3) no synthesis `max_tokens` below what the highest-nugget ability needs;
+  (4) judge model != reader model, held FIXED across arms; (5) no SSL bypass — stage under
+  `/mnt/raid0/llm/data/eval/` with a verified digest; (6) identical retrieval budget AND chunking
+  for control and arm; (7) prompt-match all arms, closed-book instruction included.
+- **M-12d — external reference curves are floors and sanity checks, never targets.** Tulving: the
+  authors' shipped 12-arm results (548 rows × 12 arms on disk) — chapter-chunk RAG beats full 100K
+  in-context for all four published models. BEAM: issue #125's Raw ChromaDB arm (49.0% author fold /
+  55.7% BEAM fold at 100K) is a **sanity floor** — far below it means a configuration bug, not a
+  finding; it is NOT a target (that run discarded assistant turns and capped answers at 512 tokens).
+  Harness caveat: upstream BEAM's published evaluator passes `probing_question` to all ten
+  evaluators but omits it from the judge prompt; in its 100K split, all 40 abstention prompts use a
+  one-item refusal rubric. This reference therefore does not measure question-conditioned
+  responsiveness or multi-criterion abstention ([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
+  [100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
+
+#### M-12e — DONE 2026-09-14: THREE scorer defects, fixed, and this page's quoted numbers refreshed
+
+**Done 2026-09-14** (research `dcb769c1`). There were **three** defects, not two, and all three were
+settled by counting against the benchmark authors' own shipped artifacts rather than by reading prose.
+In `score_tulving_run.py`: (i) the unconditional `simple_inputs.append(scored)` (at `:121`) now fires
+only when `get_style == "all"`, so Simple Recall is computed over the 366 recall questions as the paper
+defines it — the subset is settled by counting (`result_lenient_all_book_200.csv` has 548 rows; the
+196-chapter `df_qa.parquet` has 548 `get=="all"` rows of 686); (ii) `chronological_tau` (def at `:51`)
+now returns 0.0 unless the matched set covers the FULL ground truth, with
+`chronological_tau_detail()` reporting coverage, the uncovered `tau_raw` as a diagnostic, and a
+per-question status. (iii) **Found in the same scope**: the five Simple Recall bins keyed on
+ground-truth ITEM count, but the paper bins on matching EVENTS — reproducing the authors'
+`bins_items_correct_answer` column matches 686/686 on `n_chapters_correct_answer` and only 629/686 on
+`n_items_correct_answer`; `nb_events` now rides in the prompt metadata and the `nb_gt` fallback is
+reported, never silent. The scorer reads stored responses — no model loads — so run `20260619_141212`
+was **re-scored offline** to
+`benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`, leaving the original
+`tulving_score.json` untouched. **SRS 0.5530 → 0.5684** (subset fix alone 0.5755, bin fix alone
+0.5402); **CAS 0.1593 → 0.1593**, unchanged only because no partial-coverage question on this run
+matched ≥2 items — so the tau defect is real and **latent**, not harmless. The paragraphs on this page
+and in [benchmark-methodology.md](benchmark-methodology.md) / [context-management.md](context-management.md)
+that quoted SRS 0.5530 have been refreshed accordingly, and `SCORER_VERSION = 2` now rides in every
+scored artifact so a v1 and a v2 figure cannot be compared by accident.
+
+#### M-12e rider — the scorer version is a write-hook gate, and CAS stays a diagnostic (2026-09-14, noninf sweep)
+
+**Confidence: verified** — offline re-score of stored responses plus the benchmark authors' shipped
+artifacts; the scorer loads no model and opens no socket, so nothing here consumed an inference
+window. Three durable consequences of M-12e that the numbers above do not carry on their own:
+
+- **`SCORER_VERSION` is enforced, not advisory.** A v1 and a v2 Tulving figure are different
+  quantities under one name, so the belief-kernel write hook (`tulving_episodic_capture.py`, SC67)
+  **refuses** any row with `scorer_version < 2`. Re-scoring an old run does not promote it either:
+  run `20260619_141212` never recorded which arm it was (memory-off / retrieved / full book), so it
+  stays pre-hook and emits zero claim rows. The corrected numbers are compiled knowledge on this
+  page; they are deliberately *not* belief-kernel claims.
+- **EPYC Chronological Awareness v3 remains diagnostic on the 20ch set.** OP-M12F
+  (2026-11-11) selects gold≥2 and zero credit for eligible partial retrieval.
+  CAS v3 is **0.0704**: latest F1 0.4075, order -0.2667 over 15 eligible questions
+  (7 partial at zero, 8 fully scored), excluding 15 empty and 15 singleton gold
+  lists. Historical v2 CAS 0.1593 included all 45 ordering questions and is
+  superseded for prospective EPYC reporting. Paper equivalence is unverified.
+  The ROOT scorer payload defaults to v3; research deployment and SC67 admission
+  remain separate. [Scoring note and reproducible diagnostic](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md).
+- **Why the attribution split above is load-bearing rather than bookkeeping**: the two fixes move the
+  headline in *opposite* directions on run `20260619_141212` (20 chapters / 456 QA) — the subset fix
+  raises SRS, the bin-basis fix lowers it — so quoting either one in isolation, or reporting only the
+  net, misstates the correction. avg F1 stays a diagnostic over all 456 questions and is unaffected by
+  either.
+
+The underlying **defect class** — a composite metric folded over the wrong population, invisible in
+every per-question artifact because each row's `f1` was correct — is compiled on
+[benchmark-methodology.md](benchmark-methodology.md); it is not restated here.
+
+Sources: [`episodic-memory-integrity.md`](../handoffs/active/memory-program.md) — EVL-10
+M-12e, the three scorer defects and the SC67 write-hook refusal;
+[`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) —
+the re-score entry with the attribution split and the CAS-validity count;
+`epyc-inference-research` `dcb769c1` — `SCORER_VERSION = 2`, `chronological_tau_detail()` and the
+`20260619_141212` rescored artifact; [intake-408#record](../research/intake_index.yaml) — the Tulving
+benchmark record whose shipped per-question results settled the subset by counting.
+
+#### CME-1..4 (EVL-50) — the two adapters M-12 needs are filed with their harness defects attached
+
+The EVL-50 stub owns the instrument work: a BEAM 128K/100K adapter and a `context_mode` axis on the
+existing Tulving adapter — the two pieces our five-suite long-context roster lacked. Adapter
+authoring is pure code; compute-gated work is filed, never run.
+
+- **CME-1** — `BEAMAdapter` registered at the five enumerated points of the intake-1330#record dive
+  (`_get_long_context_adapter`, `ADAPTER_SUITES`, the `get_adapter` dispatch, `ROLE_SUITE_MAP`);
+  loads `Mohammadta/BEAM` 100K (20 rows; `probing_questions` is a STRING needing
+  `ast.literal_eval`); emits `scoring_method: "llm_judge"` with the nugget list in `scoring_config`
+  so the served-judge path scores per-nugget, not per-answer.
+- **CME-2** — the FOLD as an explicit tested contract: per-question mean of three-valued nugget
+  verdicts, per-ability mean, unweighted headline mean; rubric micro-average and binarised counts
+  only as labelled secondary diagnostics; the unit test a synthetic all-0.5 run scores **0.500, not
+  1.000** — the exact mutation that catches a `>= 0.5` binarisation regression.
+- **CME-3** — the **BEAM harness-defect note must ride wherever a BEAM number is quoted, ours or
+  anyone's**: the judge never sees the probing question (all ten `evaluate_*` functions accept
+  `probing_question` and discard it, against a prompt that mandates a responsiveness check), and
+  all forty reviewed 100K abstention rubrics are single-item refusal templates. Both are properties of the PUBLISHED
+  artifact and apply retroactively to Table 1 and every third-party quote.
+- **CME-4** — `context_mode {none, retrieved, full}` on the Tulving adapter's `_row_to_prompt`
+  (:582), `retrieved` routed through the FTS5 + `navigation.py` surface. Load-bearing detail: the
+  `"context"` key the adapter already emits at :637 is **INERT** — `run_benchmark.py` never reads it
+  — so each arm must be expressed in the prompt itself.
+
+#### UTM-B1..B4 — the trace/memory read surface is the retrieval backend for both arms — and it was mis-described before
+
+The 2026-09-07 update corrects the bearing text's "zero consumers": the `src/trace` read surface
+(`navigation.py`: `search_records`, `search_conversation`, `get_records`, `get_conversation`,
+allowlisted `read_file`, pure RRF k=60 — no ingest, no schema mutation, no embedding call) has
+**exactly one non-test consumer, `src/trace/cli.py:22`** — the gap is registration (UTM-B1:
+`ms.search`/`ms.expand` model-facing tools), not construction. UTM-B2 exposes that surface as the
+BEAM memory backend — embarrassingly parallel by construction (one retriever/prefix reused across
+all 20 questions, no cross-question accumulation); UTM-B3 makes the ingest FILTER a first-class
+experimental parameter (a silent role filter or chunking choice moves the score more than the
+retrieval algorithm); UTM-B4 routes the Tulving `retrieved` arm through the same surface — the
+backend half of CME-4. UTM-M9's mandatory no-memory control arm stays an operator-gated
+MEASUREMENT.md trust-boundary ask; M-12a/M-12b satisfy its intent and **UTM-M9 must not be ticked**.
+
+#### Riders from the same wave: the memento correction, the REPL digest boundary, and BEAM as CF-3c corroboration
+
+- **Memento (2026-09-07) — the sawtooth/duplicate-processing argument is banked for the summarize
+  family WITH the correction that inverts the naive reading**: the axis on which prefix+sliding
+  beats a summarize/last-k family is **accuracy-per-second and GPU utilisation, NOT raw
+  throughput** — last-k is 1.54× FASTER in tok/s at 32K. Filing it without the correction would
+  propagate an error into a GPU-gated decision. Relevant to Memento Failure Mode 1 (excessive
+  generation) and the reasoning-compression Tier-3+ comparison.
+- **REPL session memory (D-h/D-i) — the namespace digest is NOT a rendering job**: `variable_lineage`
+  records name, type, provenance and tier but never **shape** (`state.py:450-462`, re-verified
+  2026-09-07), so a digest built from lineage alone would silently lie about shape — and lineage is
+  written only for checkpoint-surviving variables, omitting exactly the un-picklable ones most worth
+  naming. Companion row D-i: enumerate and BOUND every kernel-to-context channel and make
+  auto-rendering of the cell final expression opt-IN — do NOT adopt "make `print` the sole egress"
+  (the source has seven channels and auto-prints the final expression; the model must opt OUT).
+- **BEAM Table 8 corroborates the CF-3c masking anchor from a different group**: removing working
+  memory BEATS the full system at 100K–1M (0.327 vs 0.311 at 100K) — a self-published negative
+  result (the paper's own abstract contradicts it) that independently supports the masking anchor
+  context-folding already mandates. Full context-folding compilation lives on [Context
+  Management](context-management.md), not here. Harness caveat: the published judge omits the probing question; the 100K abstention fixtures use one refusal criterion. These figures remain harness-limited observations. [MAIN source review](../artifacts/ni08/beam-caveat-source-20261007/README.md).
+
+#### Source References (2026-09-08 memory-instruments compile)
+
+- [`episodic-memory-integrity.md`](../handoffs/active/memory-program.md) — the M-12
+  protocol block (M-12a/b/c/d/e) filed 2026-09-07 with its intake anchors and the OP-42 pointer.
+- [`conversational-memory-eval-instrument.md`](../handoffs/completed/conversational-memory-eval-instrument.md)
+  — the EVL-50 stub: CME-1..4, the fold contract test, and the BEAM harness-defect note.
+- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — the
+  2026-09-07 update: UTM-B1..B4, the one-consumer correction, and the UTM-M9 operator-gate note.
+- [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — OP-42 (queued):
+  instrument admission and the single inference window, M-12a before M-12b.
+- [`memento-block-reasoning-compression.md`](../handoffs/active/context-and-token-economy.md#track-memento-block-reasoning-compression)
+  — the 2026-09-07 sawtooth correction (`intake-1315#04`).
+- [`repl-session-memory-maturity.md`](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — D-h/D-i:
+  the shape-capture-before-digest boundary and the kernel-to-context channel enumeration.
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — the BEAM
+  Table 8 CF-3c corroboration row.
+
+### Compiled Update — 2026-08-08: memory operations need provenance, calibrated verification, and a no-memory control
+
+**Confidence: verified for artifact scope and local design routing; external for reported benchmark gains.**
+
+The new memory sources agree on a useful operation vocabulary but not on evidence quality. VerMem's
+paper defines versioned `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` actions and
+reports a material semantic-verifier ablation, while its released repository supplies only structural
+and lexical rules—not the load-bearing DeepSeek semantic judges or a complete durable runtime. Mem0
+adds practical local scoping, conflict retrieval, mutation history, and manual update/delete, but its
+current default extraction path has drifted to ADD-only and the paper's efficiency figures omit memory
+construction/write cost. Memory-R1 usefully separates a manager from an answer-time distiller and
+applies downstream outcome credit, but releases no training implementation and shows non-uniform gains.
+
+Two negative controls bound the design. Cognitive Workspace's apparent reuse advantage is structurally
+forced by a zeroed RAG control, a truthy match predicate, cumulative counter leakage, and dependent
+statistics; it is a regression fixture, not evidence for a memory system. ActiveMem's parallel gist
+workers are worth comparing, but its memory is task-local, the runtime is unreleased, and raw content
+can become unrecoverable unless every gist retains a resolvable evidence pointer.
+
+The EPYC design consequence is a default-inert shadow layer over immutable raw events: append-only
+operation envelopes, source references, actor/scope, before/after versions, rollback links, tombstones
+that are explicitly distinct from physical erasure, separately calibrated structural and semantic
+verification, and independent answer-time distillation. Evaluation must include no-memory/full-context,
+raw append-log retrieval, Context-Folding, shadow mutation proposals, and gist extraction under
+restart, cross-session, conflict, staleness, poisoning, deletion, rollback, and raw-source recovery.
+
+### Compiled Update — 2026-08-25: the episodic store gains a decision-labelling axis (landed, unpopulated) and a rollout-accounting design (scoped, not landed)
+
+**Confidence: verified** for the schema/landing facts (test counts, column/index/backfill
+state read from the RAO/ReDel spike and the 2026-08-03 episodic-store audit) and for the
+"scoped, not implemented" status of the rollout accounting (2026-07-29). The cluster-level
+depth evidence (`max_depth` direction-of-effect, the escalation-prediction surface) is
+compiled on [Agent Architecture](agent-architecture.md) and [Routing Intelligence](routing-intelligence.md)
+(N17) and is pointed to, not restated.
+
+#### The 5-sub-decision labelling axis: the schema landed, no producer ever wrote it
+
+The orchestration-trace survey (intake-548) identified the **stopping-decision gap** — no
+published RL method trains the *stopping* decision — and proposed the five-class taxonomy
+`{when-to-spawn, whom-to-delegate, how-to-communicate, how-to-aggregate, when-to-stop}` as a
+labelling axis over stored events. That axis was wired into the episodic store on 2026-05-19 as
+step-3 pre-work of the RAO/ReDel substrate spike (`rao-redel-subdecision-taxonomy` branch,
+commit `8bf985c`, never pushed): an `OrchestrationSubDecision` enum with
+`DEFAULT_SUBDECISION = None` — deliberately the **opposite polarity** to `assigned_role`'s
+worker-default — so unknown input normalises to None and never coerces; a `sub_decision`
+column plus index on `MemoryEntry` with idempotent `ALTER TABLE` migration; a
+substring-heuristic backfill script (`backfill_sub_decision.py`, dry-run-safe); and 29 tests
+(9 taxonomy / 3 migration / 6 writer-round-trip / 7 classification-heuristic / 4 backfill),
+all passing alongside the pre-existing episodic-store suites (79 total).
+
+**The load-bearing follow-up is that nothing ever populates it.** The 2026-08-03 episodic-store
+audit (compiled on [Agent Architecture](agent-architecture.md)) found `sub_decision` with a
+column, an index, a dataclass field, a `store()` parameter, an INSERT binding, a passing test,
+and a **written-but-never-run backfill script — and zero producers**. The earlier rationalisation
+that "NULL *means* not a sub-decision" was **retracted** in that audit: like `assigned_role`
+(0/59,337 rows), a column that is 100% NULL across the store is a capability that does not
+exist. The writer wire-in was always deferred to the ReDel step-3 phase A (behind
+`RLM_USE_REDEL=1`), which never ran. **Rule carried from the audit: the store's decision axes
+are dead until a producer writes them; count rows, not columns.**
+
+#### Rollout-tree accounting: the SkyRL design is scoped, requires review, and is NOT the sub_decision label
+
+SkyRL's `examples/train/rlm` (intake-868, Apache-2.0, dive-verified 2026-07-21) contributes a
+training formulation whose parent/child **rollout-tree bookkeeping** — `parent_rid` / `depth` /
+`child_index` with reward propagation — is reusable as an *accounting model* for nested
+sub-agents without adopting any RL. Scoped 2026-07-29 onto the episodic store as an **additive
+SQLite migration, deliberately making no code change**:
+
+- **Minimal data contract:** nullable `rollout_id` (one root-to-leaf execution), immediate
+  `parent_memory_id` (the direct parent — never a model/task id), non-negative `depth`,
+  non-negative `child_index`; roots carry NULL parent and depth 0; existing rows stay NULL on
+  all four fields.
+- **Reward semantics:** retain each event's observed `q_value`; any parent/child credit
+  aggregation is computed read-only or in a separately named derived report — never written
+  back over parent or child rewards.
+- **Compatibility surface:** extend `MemoryEntry`, the `store()`/`store_immediate()` keyword-only
+  inputs, and every projection used by `retrieve_by_similarity`, `get_by_id`,
+  `get_all_memories`; idempotent DDL; index only `(rollout_id, depth, child_index)` after a
+  query-plan justification.
+- **Required independent review before implementation** (graph index classifies
+  `EpisodicStore` HIGH blast radius: 77 upstream, 27 direct): verify DDL, writer/read
+  projections, FAISS/SQLite consistency and concurrent migration; add
+  fresh/migrated/legacy/round-trip tests.
+
+Do not conflate the two axes: `sub_decision` labels *what kind of decision an event was*;
+the rollout fields link *which tree the event belongs to*. The 2026-07-29 scoping note is
+explicit that the existing label is not rollout accounting.
+
+#### The depth evidence that motivates both axes — carried by pointer
+
+The direction-of-effect caveat is the reason a decision axis exists at all: RLM depth-1 *lost*
+on Kimi K2 OOLONG (86.6 → 60.0) but *rescued* a total failure on DeepSeek OOLONG (0.0 → 42.1),
+so depth must be gated on predicted base-attempt failure rather than pinned (compiled as
+Routing Intelligence N17, whose training data — the "will frontdoor fail?" surface, 10,528 pos /
+56,457 neg, status Ready — is exactly what the store's labels were meant to feed). The missing
+local instrument — OOLONG, absent from every suite — is recorded as the blocker for a
+first-party depth-0-vs-depth-1 A/B on the spike. All three belong to the routing/eval planes;
+this page's ownership is the store schema they depend on.
+
+#### Source References (2026-08-25)
+
+- [`rao-redel-substrate-spike.md`](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) — the 5-sub-decision taxonomy step-3 pre-work (files, LoC, 29 tests, polarity caveat), the Step 1/2 substrate results (depth-0 on every natural sample; forced-delegation arm-A truncation finding), the SkyRL rollout-tree accounting scope with its minimal data contract and review requirement, and the OOLONG adoption consideration.
+- [`2026-05-19-rao-rlm-cluster.md`](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) — the cluster source: intake-548's 5-sub-decision taxonomy and stopping-decision gap, intake-547#01's model-dependent depth direction, and the RAO/ReDel substrate framing.
+- [`meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) — the RLM-pattern coverage baseline (≈80%, R1–R6) that the taxonomy work extends and the Tier-3 in-house fallback the spike arbitrates.
+- [intake-868](https://github.com/volcengine/verl) in [`research/intake_index.yaml`](../research/intake_index.yaml) — SkyRL `examples/train/rlm`: the parent/child rollout-tree accounting model (rollout_id / parent / depth / child_index) adopted as the accounting shape; `intake-547#01` for the depth direction-of-effect.
+- [Agent Architecture](agent-architecture.md) — the RAO + RLM substrate cluster and the 2026-08-03 episodic-store audit that retracted the "NULL is correct" framing and counted the zero producers.
+
+### Compiled Update — 2026-08-03: the useful half of the memory literature does not need gradients
+
+**Confidence: inferred — single-ablation results on small models, no CIs, no seed variance reported.
+Recorded as a strong lead, not a settled result.**
+
+The most stack-relevant number in this cluster sits in an ablation table that the paper citing it never
+reports: on a 3B model, **principle distillation + retrieval with RL DISABLED scores 0.357, beating the
+same system's RL-only arm at 0.325**, and reaching **93.5% of the full system's 0.382**. The citing
+paper presents that work as its exhibit for "memory + RL is harmful"; the work's own ablation shows its
+memory machinery *without gradients* outperforming pure RL.
+
+**Why this matters here specifically**: we cannot train. A literature whose headline results all require
+RL is one we can read but not use. This result says most of the value is on our side of the line.
+
+Two further portables, both zero-training and both computable over traces we already have:
+
+- **A redundancy metric over stored reflections** (`SequenceMatcher ≥ 0.85`) — pure log post-processing,
+  no inference cost, and **computable retroactively** rather than needing new capture.
+- **Programmatic feedback extraction**: parse tool output for the concrete failure fact instead of asking
+  the model to self-diagnose. Measured effect on entity grounding: **0/121 → 134/156 (86%)** correct
+  target-object mentions. The *mechanism* and the *metric* transfer; the rates are largely a weak-model
+  artifact at n=2 environments and do not.
+
+#### Three methodological traps this cluster illustrates
+
+1. **A "(reproduced)" baseline can reproduce nothing.** One paper's reported baseline for a cited system
+   is labelled reproduced — but that system **never evaluates on those benchmarks at all**; the metric
+   name appears zero times in it. There was no original to diverge from, and the label asserted fidelity
+   to something that does not exist. *Check that the original number exists before treating a delta from
+   it as a finding.*
+2. **Reported decimals can rule out the stated denominator.** No common per-category denominator ≤200
+   reproduces one paper's six reported cells; the minimum consistent denominators imply ~2,045 episode
+   outcomes. **Recomputing the implied denominator from published decimals is a cheap integrity check**
+   that needs no access to anything.
+3. **The arm you want to port may be the weakest effect in the paper.** The test-time memory effect —
+   exactly the gradient-free piece a port would target — is **+2.2 pp at z ≈ 1.94 on one seed with no
+   CI**, while the effects that survive sampling noise are the training-time ones we cannot use. *Check
+   the significance of the specific arm you intend to adopt, not the paper's headline.*
+
+
+### Compiled Update — 2026-07-29: agent-experience memory — store shape, budget-conditional retrieval, and the curve nobody has measured
+
+**Confidence**: the design conclusions are **verified** in the sense of resting on
+convergent independent evidence plus a first-party falsification precedent; every
+external number is **observation-grade** under MEASUREMENT.md and gates nothing.
+Note that these items were filed by a single session across four handoffs — the
+corroboration is between the *external sources*, not between our own records.
+
+#### Store shape: append-only, raw trajectory retained alongside the derived item
+
+The strongest design signal in the batch is a convergence from opposite
+directions: one external system arrives at "keep the raw trajectory alongside the
+derived `{title, description, content}` item" **by construction**, and our own
+prior work arrives at it **by falsification**. This settles a previously open
+question in the autopilot distiller: **promotion must NOT remove raw
+trajectories from L1.** The dual-layer experience bank is therefore scoped as an
+**additive upper layer** over the existing per-case store (SQLite + FTS5); what
+is missing is pattern distillation and similarity retrieval, and since FTS5 is
+lexical this needs an embedding column (BGE servers already resident on
+`:8090-8095`). The reference design leaves its own retrieval parameters and
+eviction policy undefined — those are our decisions, and an unbounded bank is a
+real hazard for a long-running autopilot.
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M1, §UTM-M2
+
+**Auditable `delete` is the structural differentiator.** A three-verb write API
+(`insert` / `update` / `delete`) plus a mandatory "When NOT to Use" section on
+every stored record maps onto the existing `APPEND`/`CREATE`/`UPSERT` surface;
+the missing verb is the **auditable delete**, and first-class deletion rather
+than implicit decay is what separates the systems that worked in these
+comparisons from the heuristic-management systems that underperformed.
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M3
+
+#### Retrieval: k is a measured parameter, and it must be budget-conditional
+
+Do not port cosine-top-1. Two convergent facts: the k-ablation **loses half the
+benefit by k=4** (49.7 / 46.0 / 45.5 / 44.4), and the one independent 35B
+replication **failed specifically at the retriever** after an embedder swap —
+which is exactly the substitution we would make with local BGE. Any sweep needs
+**k=1** and **episodic-only** control arms.
+[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §Research Intake Update 2026-07-29
+
+More consequentially, **k must be a fraction of remaining window budget, not a
+fixed integer**. An independent third-party benchmark on a different backbone
+finds **six of fifteen memory methods scoring BELOW the no-memory baseline at a
+128K budget** (worst: −7.0pp), with the count of sub-baseline methods running
+3 / 4 / 3 at 16K / 32K / 64K and **doubling at 128K**. The mechanism is
+**context-budget competition** — injected memory displacing live history — and it
+**must not be conflated** with our own recorded late-decay-from-store-growth
+failure. Two different diseases; conflating them produces the wrong fix. Design
+consequences: inject retrieved items only while live history occupies more than a
+fraction of the window and **inject nothing once the untruncated history fits**;
+cap injection as a fraction of remaining budget; and add a **no-memory control
+arm** to every memory A/B — six published methods lose to no-memory at 128K and
+**would have shipped undetected without one**.
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M6–M9;
+[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §budget-conditional rider
+
+#### Budget the write gate DOWN, not up
+
+The admission judge in one system measures at **72.7% accuracy** and the paper's
+own simulation shows ground-truth labels buy only **+4.8pp of a 13.4pp effect**,
+with judge accuracy in the **70–90% band forming a plateau**. Therefore the
+distiller's write gate should use the **cheapest adequate local judge** — not an
+eval-tower call, not a frontier model. A second system reinforces this: its
+advantage comes from the auditable three-verb write API, not from an expensive
+admission judge. **Contrast**: in a third system the admission test *is*
+load-bearing. The two gate different things, so do not generalize one budget to
+the other.
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) §AP-29a
+
+#### Correction — do not carry "best overall" forward
+
+An independent benchmark places the memory system whose **schema** we are
+adopting **LAST of 13** on Cross-Episode Knowledge (Easy split); the earlier
+"second behind ACE" reading recorded in this repo was **wrong**. It *is* best
+among memory methods on In-Episode Execution at 16K/32K/128K — but even there a
+**plain long-context baseline beats all fifteen methods**. Keep the store-shape
+adoption; drop the ranking claim wherever it appears. (The same source carries an
+unflagged defect of its own: one table's 64K column duplicates a different
+table's progress-score column, invalidating that paper's 64K conclusions — so
+even the corrected ranking is quoted only at the budgets that survive.)
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M10;
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §dive table
+
+#### The measurement that does not exist — an EPYC-original deliverable
+
+**No paper in this set reports a per-window (non-cumulative) success-rate versus
+store-size curve** — and one of them concedes the gap in its own Future Work. The
+published figures are **cumulative**, and a cumulative curve is *structurally
+incapable* of showing late decay: the per-window curve can fall while the
+cumulative curve still rises. Building that instrument is blocked on no external
+dependency and is required in any memory A/B before an adoption decision.
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M5
+
+#### Retrieval alongside grep, not instead of it
+
+A widely-relayed reading of an agent-retrieval paper — "14.92 / 9.84 / 8.33"
+treated as retrieval scores — is wrong: those are **counts of grep/rg/find shell
+invocations**, and the same paper's Table 2 has the **dense retriever winning**
+(90.0/86.0 vs 89.0/83.0). The transferable finding is **behavioural
+substitution**: it argues for retrieval *alongside* grep, not against an
+embedding index.
+[`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) §2026-07-29 dive corrections
+
+#### Source References
+
+- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-M1..M10: store shape, additive layering over `src/trace/`, three-verb write API, the missing per-window instrument, 128K context-budget competition, and the ranking correction
+- [`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — utility-aware retrieval over the adopted schema; k-ablation and the replication that failed at the retriever; budget-conditional k
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-29a write-gate budget and the judge-accuracy plateau; the CORE contrast
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — corrected retriever reading (call counts, not scores)
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — dive-outcome table incl. the duplicated-column defect in the ranking source
+
+
+### Compiled Update — 2026-09-26: Shared Notes Need a Grounding Gate and a Prefix-Stable Block Before They Exist
+
+**Confidence: verified** for the source readings (DeLM, Proxifield and EvoHarnessBench were dived); no shared-notes block exists in the lane yet, so none of this is measured here.
+
+The curation-layer row (D-d in the REPL session-memory handoff) gained two acceptance criteria. Both are for whatever first creates a notes block shared across delegated or REPL workers.
+- **Admission is gated deterministically first.** A note's cited span must appear verbatim in its source, and a note that claims a result must reference an execution present in the session record. An optional worker-tier semantic check may follow; admission is never routed to the architect. The only component DeLM ablates is admission verification (60.1 → 55.2 on LongBench-v2 without it, one model), and its cheapest form is a verbatim reference check (intake-1803#6, intake-1803#4).
+- **Cost bound.** Notes are written on events, not on every step. The verbatim check runs against the writer's own tool output at 0 LLM calls, and each admitted note may cost at most one extra model call. Compression and LLM faithfulness stages stay off unless an A/B on a fact-pooling workload shows they pay. The one independent cost curve for a synchronous every-agent-every-step board runs 10.8–12.6× the no-communication cost at every N, and its only win is fact pooling (intake-1820#1, intake-1820#3, intake-1820#4).
+- **The notes block is a prefix by construction.** It is rendered append-only, byte-identical across viewers, and placed before any per-worker, per-step or tool content. The check is a static test plus a reuse reading from `/slots` `n_prompt_tokens_cache`. DeLM argues for prefix reuse but never measures it, and its released prompts break the prefix conditions; this criterion guards against exactly that failure (intake-1803#2).
+
+#### Source References
+- [REPL session memory maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — the D-d acceptance (added 2026-09-26).
+- [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — P1-F and P4-12.
+
+
+### Compiled Update — 2026-10-20: COUNT is a non-learned memory family, held as an Engram Track B arm behind Phase 0b
 
 **Confidence: verified** for what the Engram handoff files; the paper claims (`intake-1988#record`, `intake-1989#record`) are external and are restated only as the handoff reports them.
 
@@ -1391,13 +1396,13 @@ COUNT is a parameter-free corpus-statistics memory: a frozen host-RAM table maps
 
 The filed consequence is a monitor, not a checkbox. Trigger: Track B Phase 0b is authorized to start. Then add one proxy arm: the released standard 1B plus a COUNT table, the COUNT input behind a zero-init scalar gate, train the gate only, and compare the recovered fraction of the COUNT-pretrained gain with the hashed-Engram frozen retrofit at the same 30% recovery gate. The pairing must be stated exactly: the paper recipe uses the COUNT-trained 1B with the 797.5 GB table, so the 17 GB table with the standard 1B is an off-recipe cheaper variant and must be labelled so. The gate-only retrofit is an untested design, the released examples are CUDA/H200 OLMo-core code, and an MI210 port is not assessed. Track A (LongCat-Flash-Lite CPU probe) stays closed negative and Phase 0b remains gated on a cloud or GPU budget decision.
 
-### Source References (2026-10-20 memory delta)
+#### Source References (2026-10-20 memory delta)
 
 - [Engram conditional memory](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — COUNT intake update and the Track B arm trigger.
 - [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — VibeMemBench note: dive the released harness before adopting a coding-agent memory comparison.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — write-side rules any future memory measurement must follow.
 
-## Compiled Update — 2026-10-21 (sweep 3): memory-lesson revision, SkillBank readout and CL-Bench instrument specs
+### Compiled Update — 2026-10-21 (sweep 3): memory-lesson revision, SkillBank readout and CL-Bench instrument specs
 
 - UTM-R1 specifies (design only, no run) a lesson-revision A/B: arm B revises retrieved lessons after a labelled outcome using only the lesson's source trajectory plus the outcome, as append-only supersession on the existing `superseded` retention state and `previous_event_id`; arm A is forward-only reflection; both keep a raw-trace baseline and a no-memory control, run under P-AB-1 with N >= 100 per arm. UTM-M9 stays operator-gated. ([UTM handoff](../handoffs/active/memory-program.md#track-unified-trace-memory-service), 2026-10-20)
 - M-23 supersedes the pooled-mean go/no-go for SkillBank: the readout is per cell (role plus model pin as served), skill-on minus skill-off with a task-level bootstrap 95% CI and the share of negative role-domain cells, never one pooled delta. It is gated on M-11a populating a bank (the bank is empty today). M-24 is an advisory-only literal-constant lint for distilled skills; M-25 makes the first re-distil an arm-labelled, composition-reported pool. K3 records the sign prior (SkillsBench -1.3, SkillGenBench about 0, SkillLearnBench +20.3; 37 of 150 cells negative). ([episodic-memory-integrity](../handoffs/active/memory-program.md), 2026-10-20)
@@ -1405,7 +1410,7 @@ The filed consequence is a monitor, not a checkbox. Trigger: Track B Phase 0b is
 
 Sources: [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service); [episodic-memory-integrity](../handoffs/active/memory-program.md); [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md); [harness-improvement-loop design](../docs/design/harness-improvement-loop-design-20261006.md).
 
-## Compiled Update — 2026-10-21 (sweep 4): cache-friendly injection and the conversational-memory eval results
+### Compiled Update — 2026-10-21 (sweep 4): cache-friendly injection and the conversational-memory eval results
 
 **Confidence: verified for code and recorded results; the payoff of block packing is unmeasured until RTE-LOG-1 and B7-LOG-1 produce real chunk logs.**
 
@@ -1416,7 +1421,7 @@ Sources: [unified-trace-memory-service](../handoffs/active/memory-program.md#tra
 
 Sources: [Episodic memory integrity](../handoffs/active/memory-program.md), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [Progress cachefriendly-inject](../progress/2026-10/2026-10-21-cachefriendly-inject.md), [Progress noninf-memeval](../progress/2026-10/2026-10-21-noninf-memeval.md)
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **HS-PROF-1-RULE proposed: keep admission-schema profile writes opt-in.** Adopt as default only if mean paired delta >= +0.03 on the target ability and >= -0.01 on the other, with an exact one-sided sign test p <= 0.025. Applied to BEAM 100K (80 items/arm, n = 40 per ability): IF +0.0125 (3/2/35, sign p 1.00), PF -0.0104 (4/7/29, p 0.55), so the outcome is KEEP OPT-IN; `PREF [category]` stays the default.
 - **The null is uninformative about small effects.** Sign-test power at n = 40 is 0.06-0.15 (15% non-ties) or 0.19-0.46 (30% non-ties); n = 160 reaches 0.42-0.99 and n = 320 0.77-1.0.
@@ -1425,7 +1430,7 @@ Sources: [Episodic memory integrity](../handoffs/active/memory-program.md), [REP
 
 Sources: [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
 
-## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** (descriptive composition, no predeclared threshold).
 
@@ -1437,7 +1442,7 @@ Sources: [Harness selection and integration](../handoffs/active/harness-program.
 Sources: [episodic-memory-integrity](../handoffs/active/memory-program.md), [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
 
 
-## Compiled Update — 2026-10-28 (CME7T-v2 records the diagnostic denominator; efficacy remains unanswered)
+### Compiled Update — 2026-10-28 (CME7T-v2 records the diagnostic denominator; efficacy remains unanswered)
 
 **Confidence: verified for the native record fields directly inspected; the closed-run digest seal remains pending.** No measurement warrant is reconstructed from the readout.
 
@@ -1446,7 +1451,7 @@ Sources: [episodic-memory-integrity](../handoffs/active/memory-program.md), [con
 
 Sources: [conversational-memory instrument handoff](../handoffs/completed/conversational-memory-eval-instrument.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [launcher repair and enrollment progress](../progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md). Native read-only audit: `/mnt/raid0/llm/tmp/refactor-01a16fc3/cme7t-native-readout/READOUT.md`.
 
-## Compiled Update — 2026-10-29 (wrap-up sweep)
+### Compiled Update — 2026-10-29 (wrap-up sweep)
 
 **Confidence: verified descriptive composition; no predeclared threshold.**
 
@@ -1457,7 +1462,7 @@ Sources: [conversational-memory instrument handoff](../handoffs/completed/conver
 
 Sources: [episodic-memory-integrity](../handoffs/active/memory-program.md); [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service); [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md).
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for unit-level source behavior (focused suites pass); **unmeasured** for live-service volume and any recall-quality effect.
 
@@ -1469,14 +1474,14 @@ Sources: [episodic-memory-integrity](../handoffs/active/memory-program.md); [uni
 Sources: [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) · [delta-mem-reproduction](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction) · [episodic-memory-integrity](../handoffs/active/memory-program.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - A renewed 75-second GPU native smoke exercised one retrieval question and writer with cleanup; it is launcher qualification only, not the full INF-12 quality outcome. [Source](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction)
 - Explicit probe tags suppress immediate and replay episodic scoring; one literal matching row had 8,641 updates but historical request provenance is unknown. External rewards are outside this filter. Recall is seed/import/explicit-write scoped, not automatic live exploration learning; M-20 efficacy remains open. [Source](../handoffs/active/memory-program.md)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
@@ -1484,7 +1489,7 @@ Sources: [repl-session-memory-maturity](../handoffs/active/memory-program.md#tra
 - REPL-EMB-5.1: a SEARCH primitive for OAB-8 scouts delegates to the existing `ContextSearchIndex`, preserves pointer provenance and builds no index (48 tests). INF-78 owns wiring; no retrieval-quality claim. [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval)
 - `query_memory` maps ACM-style recall onto existing spill pointers: default off, session-scoped, exact-quote only, refuses artifacts over 12,000 characters (APP `233338749`, 79 passed). No efficacy claim. [progress](../progress/2026-11/2026-11-01-query-memory.md)
 
-## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+### Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
 **Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
 
@@ -1494,23 +1499,23 @@ Sources: [repl-session-memory-maturity](../handoffs/active/memory-program.md#tra
 - Derived: MEM-1 (cheap screen, autokernel champion) adds a one-hot RAM oracle to GATED_DELTA_NET tests on an experimental branch, bit-exact for power-of-2 cases; MEM-2 (cheap screen, KPF) hashes recurrent state before/after checkpoint restore or fork, targeting KPF-18.0b item 2 (1 of 12 CPU pairs not bit-exact); MEM-3 declines an in-weights calculator for serving (~1.6-2x weight bytes per token for accuracy a tool already matches), flagged for operator review.
 - Open-ontologies certificate pattern (intake-2558#record): an untrusted Rust reasoner emits a per-triple certificate and an independent Lean-4 checker sharing no code re-checks it. Derived MEM-4/MEM-6 (vidya): a standalone `scripts/vidya/cert_check.py` verifier of the gate certificate, binding to frontier and as_of, non-hard until a month of zero false refusals.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
 **Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+#### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2178#record (Evo-Harness): Independent-ish evidence that LLM self-judged outcomes poison harness evolution (Table 4) and that small/open solvers gain little from evolved skill libraries; Table 1 effect sizes are not cited. Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
 - intake-2182#record (AutoSkill): Design reference only for SkillBank maintenance (query-only extraction, add/merge/discard against the nearest existing skill, versioned merge, abstain-below-threshold retrieval); it carries no evidence of benefit. Verdict adopt_patterns, integrated.
 - intake-2190#record (Raw Experience to Skill Consumption study): A fourth, structurally different datapoint making skill benefit a distribution over (domain, consumer, extractor) cells: mean about +2 pp, a quarter of cells negative, local Qwen consumers worse. Verdict adopt_patterns, integrated; linked to episodic-memory-integrity.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 18 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+#### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
 
 - intake-2237#record (Honcho memory infrastructure): Usable as a source of prompt and schema wording for HS-4 section 3.1 profile memory, not as evidence of memory quality since its performance claims are vendor-only. Adopt-patterns; linked to unified-trace-memory-service.
 - intake-2249#record (SkillClaw): Aggregates session trajectories across users, groups them by referenced skill and runs an LLM evolver to update skills; dive was PARTIAL (sections 1-5, tables). Worth-investigating, monitor; linked to episodic-memory-integrity.md.
@@ -1523,7 +1528,7 @@ Sources: [repl-session-memory-maturity](../handoffs/active/memory-program.md#tra
 - intake-2333#record (Managing Procedural Memory in LLM Agents): Static skills raise full-pass accuracy by +2.8 points on average across 13 models, measured as best of handcrafted or LLM-generated skill minus no skill. Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
 - intake-2337#record (SWE-Skills-Bench): Across 49 public SWE skills (~565 tasks, Claude Code with Haiku 4.5), 39 skills change the pass rate by zero and the mean gain is +1.2 points (89.8 to 91.0 percent). Adopt-patterns, integrated; linked to episodic-memory-integrity.md.
 
-### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+#### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
 
 - intake-2395#record (Measure Before You Manage): paper concerns task-local working memory, not cross-session lessons; protocol history read from Appendix F. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
 - intake-2396#record (Agent Memory Distillation): headline gains use same-benchmark memory; the paper own disjoint re-run retains most but not all (BFCL about two-thirds), one student, single run. Verdict adopt_patterns; linked to dev-harness-trace-mining.md.
@@ -1532,37 +1537,37 @@ Sources: [repl-session-memory-maturity](../handoffs/active/memory-program.md#tra
 - intake-2431#record (Self-generated in-context examples): exemplar injection helps on held-out tasks (+4 to +16 pts) under strict split, with GPT-4o-mini on 3 benchmarks and no token-cost measurement. Verdict adopt_patterns; linked to unified-trace-memory-service.md.
 - intake-2432#record (Environment test-time adaptation): exploration-time environment knowledge rather than lessons from the agent own trajectories; closer to a pre-task probe than ERL. Verdict worth_investigating.
 
-### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
+#### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
 
 - intake-2530#record (MemGPT): Confirmed that summary, searchable full history and agent-initiated recall shipped in 2023 with a summary-vs-search evaluation, setting the novelty of intake-2522#record to LOW. Adopt-patterns; handoff tool-output-compression.
 
-### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+#### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2542#record (SWE Context Bench): The abstract's "reduce runtime and token cost" was overturned for the controlled setting. Worth investigating; memory-infrastructure repos (Mem0, OpenViking, LangMem, Supermemory) declined at the two-wave cap.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
 
 **Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-08-03-ids-938-990 — [digest](../research/deep-dives/intake-digests/2026-08-03-ids-938-990.md)
+#### Run 2026-08-03-ids-938-990 — [digest](../research/deep-dives/intake-digests/2026-08-03-ids-938-990.md)
 
 - intake-988#record (EvolveR): The dive found a gradient-free ablation (principle distillation plus retrieval) that beats the paper's own RL-only arm, portable to an inference-only host and similar in shape to the adopted ReasoningBank baseline. Correction: it never evaluates on ALFWorld or WebShop; it is a multi-hop QA paper. Verdict adopt_patterns, dive-verified; handoff engram-conditional-memory.
 
-### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+#### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1228#record (KernelBlaster): The dive found a persistent CUDA knowledge base of state/optimization/score entries queried on unseen tasks, with reported geomean speedups of 1.43x/2.50x/1.50x; the Level 3 subset size is never stated, the repository was never shipped, and the system is CUDA/Nsight-bound. Verdict adopt_patterns, dive-verified; handoff autokernel-research-loop.
 - intake-1229#record (KernelSkill): The dive's load-bearing correction: the long-term memory is hand-curated by the authors before any run and never written to by the system. Code is a CUDA/NCU pipeline with no license; the typed skill-record schema (bottleneck-to-method mapping) is the narrow takeaway. Verdict adopt_patterns, dive-verified; handoff autokernel-research-loop.
 - intake-1230#record (EvoKernel): The dive found value-driven, stage-conditioned memory retrieval (Q-values per memory item) lifting correctness from 11.0% to 83.0%, with the 3.60x median speedup measured over initial drafts, not PyTorch. No code is released and the toolchain is Ascend C. Verdict adopt_patterns, dive-verified; handoff autokernel-research-loop.
 - intake-1231#record (KernelEvolve (Meta)): The dive found the most reusable idea in the family is a knowledge base partitioned by epistemic type (constraints, guidance, and more), but the paper provides no ablation of its memory components. Verdict worth_investigating, deliberately weaker than its siblings for evidential reasons; dive-verified; handoff autokernel-research-loop.
 
-## Compiled Update — 2026-11-09 (Tulving CAS scoring validity, M-12f)
+### Compiled Update — 2026-11-09 (Tulving CAS scoring validity, M-12f)
 
 - On run 20260619_141212 (scorer v2, 456 rows) 30 of 45 chronological questions are structurally tau 0.0 (`nb_gt` < 2), 7 are `partial`, 8 fully scored. CAS as committed 0.1593 (tau -0.0889); excluding `nb_gt` < 2: 0.0704 (tau -0.2667); fully scored only: -0.0462 (tau -0.5000). Latest-State F1 is 0.4075 throughout. The headline is inflated by the zero-fill because defined tau values are negative (0.0 x7, -1.0 x6, +1.0 x2). Do not publish CAS from the 20ch set; report defined/partial counts or the legs separately. Paper convention unverified; code unchanged. Offline re-score protocol (M-12i) is a protocol result, never a back-filled claim tuple ([tulving-scoring-validity](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md)).
 
 Sources: [tulving-scoring-validity](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md)
 
-## Compiled Update — 2026-11-18 (REPL state lanes: containment, Monty, handles)
+### Compiled Update — 2026-11-18 (REPL state lanes: containment, Monty, handles)
 
 - **Containment became the default for REPL session state.** `exec_containment` defaults ON after 8 flag-on test failures proved to be test assumptions (unwrapped launch shape; a scratch HF_HOME is intended); containment and fence suites 194 passed with the flag on and off. The opt-in child lane keeps SQLite, signing and fenced persistence in the parent, validates typed JSON state and carried defs/classes in the parent, and revalidates the session lease so a mid-cell loss kills the child (D-RI-CONTAIN-T2, orchestrator e66ac1a9..072d1583). The parent box stays open on T3: the host does not delegate cgroup memory and pids controllers, so RLIMIT_AS is the only memory cap.
 - **Monty slice (D-RI-MONTY-SLICE): GO as opt-in, NO-GO as default.** 12 of 12 cases kept their assertions, 11 byte-identical to CPython (syntax-error wording differs); the adapter adds about 0.1 ms per warm cell; JSON checkpoint resume, worker kill and memory trips were verified. Evidence is 12 unit-test snippets, not a corpus.
@@ -1576,17 +1581,54 @@ Source References:
 - [harness-program](../handoffs/active/harness-program.md)
 - [autopilot-backlog-session 2026-11-18](../progress/2026-11/2026-11-18-autopilot-backlog-session.md)
 
-## Compiled Update — 2026-11-19 (MCP session contract, trace-navigation tools, CAS v3 default, REPL rendering fixture futility)
+### Compiled Update — 2026-11-19 (MCP session contract, trace-navigation tools, CAS v3 default, REPL rendering fixture futility)
 
 - **Memory MCP session contract (HS-4 P2).** No separate memory MCP server exists in the orchestrator config; the default server exposes 11 tools, none `memory_`-named, and candidate `ms.search`/`ms.expand` accept `session_id` but are not in the default catalog. A reusable check requires an optional string `session_id` plus `additionalProperties: false` on each selected tool and proves an unknown argument is refused; the current catalog passed (FastMCP 3.3.1). It does not validate session isolation, writes, retrieval quality or deployment, and an absent server is not a pass ([HS-4 P2](../docs/reports/hs4-p2-mcp-session-contract-20261119.md)).
 - **Trace-navigation tools landed (UTM-B1), default off.** `ms.search`/`ms.expand` exist for MCP and REPL behind `trace_navigation_tools`; MCP `ms.*` take their session from the server (`ORCHESTRATOR_MCP_SESSION_ID`), refuse a foreign client `session_id` and fail closed when unbound. No launcher sets the id yet (open box UTM-B1-MCP-SESSION). The M-12k memory-off switch (`episodic_routing_lookups`, `episodic_lookups`) and the M-27d.1 `episodic_source_label` flag also landed ([autopilot-backlog-session 2026-11-19](../progress/2026-11/2026-11-19-autopilot-backlog-session.md)).
 - **Tulving CAS v3 is now the scorer default; v2 is historical-only.** Stored-row diagnostic of run 20260619_141212: CAS v3 0.0704, latest F1 0.4075 over 45, order -0.2667 over 15 eligible; SRS unchanged at 0.5684 over 366. No inference or historical tuple emitted; SC67 admission remains gated ([episodic-memory-integrity progress](../progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md), [scoring validity](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md)).
 - **Composite REPL rendering fixture stopped for futility.** At 20 paired episodes, all-seven-fields-correct was current 0/20, bounded_k3 2/20, half_first25 2/20 (`FUTILITY_NO_GAP`); no equivalence claim. Early FINAL dictionaries can use Q1/Q2 keys rather than oracle field names, a diagnostic lead only ([dripreview12](../docs/reports/dripreview12-futility-20261119.md)).
 
-## Compiled Update - 2026-11-19 (M-12k GPU smoke FAIL: routing past the frontdoor, plan-review probe write)
+### Compiled Update - 2026-11-19 (M-12k GPU smoke FAIL: routing past the frontdoor, plan-review probe write)
 **Confidence: verified** (smoke FAIL artifact and the custody report read; no answer-quality result exists).
 Sources: [memory-program M-12k](../handoffs/active/memory-program.md), [custody report](../docs/reports/m12k-plan-review-custody-20261119.md), [autopilot-backlog-session progress](../progress/2026-11/2026-11-19-autopilot-backlog-session.md).
 
 - **A frontdoor-only row cannot measure M-12k.** Row `m12k-gpu-frontdoor-memory-ab-20261119` failed smoke (rc 3): all 4 requests returned 502/504/429 in both arms because the API routed the MC items to architect_general, architect_critic and coder_escalation, which were not served. The memory A/B needs those roles up (STACK-UP-RELOAD-QUEUE).
 - **The UNSERVED detector missed it.** It matched only HTTP 200 with an in-band `[ERROR`; non-200 failures were not voided (new box M-12k-UNSERVED-DETECT).
 - **Probe requests still wrote one episodic row (64,514 to 64,515).** The writer is `_store_plan_review_episode` via `score_external_result`, which bypasses the task-outcome probe exclusion; identification closed M-12k-CUSTODY, the guard and a passing unchanged-store smoke remain before republishing.
+### Compiled Update — 2026-11-23 (operator wiki sweep): CAS v3, BEAM receipts, M-12k custody, UTM envelope, REPL rendering fixtures
+
+- **M-12f: chronology scoring excludes ground truths with fewer than 2 items.**
+  - **Sources:** paper v1 Appendix B.3.3 (p. 34) and the upstream `evaluation_wrapper.py`.
+  - **M-12f-V3-APPLY:** the ROOT scorer now defaults to v3, and 65 tests pass, including the SC67 refusal.
+  - **Offline diagnostic on stored rows:** CAS v3 0.0704, with 15 eligible ordering questions (7 partials at zero) and 30 short-gold exclusions.
+  - CAS headlines are re-labelled v3. Earlier unlabelled headlines are historical.
+  
+  ([memory-program](../handoffs/active/memory-program.md); [episodic-memory-integrity progress 2026-11-19](../progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md); [repl-session-memory-maturity progress](../progress/2026-11/2026-11-19-handoff-repl-session-memory-maturity.md)).
+- **BEAM receipts (M-12c).**
+  - The receipt writer `run_beam_reader.py` landed on 2026-11-19.
+  - Completed-run admission `admit_beam_runs.py` landed on 2026-11-20 and rejects incomplete or inconsistent artifacts before the eight-item checklist. 41 offline tests pass, 27 of them artifact-defect cases.
+  
+  ([memory-program](../handoffs/active/memory-program.md); [episodic-memory-integrity progress 2026-11-20](../progress/2026-11/2026-11-20-handoff-episodic-memory-integrity.md)).
+- **M-12k frontdoor memory A/B: the GPU smoke FAILED, and three repairs followed.**
+  - The memory-off switch landed (`f644f5f7`, `episodic_lookups`). A strict paired reducer has 24 fixture tests.
+  - The GPU smoke `m12k-gpu-frontdoor-memory-ab-20261119` ended rc 3: all 4 /chat requests got 502/504/429 in both arms, and episodic rows went from 64514 to 64515.
+  - **Custody:** the write came from `_store_plan_review_episode` → `score_external_result`, which bypassed the probe exclusion.
+  - **Fixes:** a source-bound plan-review write guard (6 offline tests, 80 diagnostic exclusions, 24 unchanged ordinary payloads), and an UNSERVED detector that now voids non-200 pairs.
+  - The rerun waits on the stack-up reload.
+  
+  ([memory-program](../handoffs/active/memory-program.md)).
+- **UTM-V1 memory-operation envelope is source-complete.** `memory_operations.py` (orchestrator 446c1e0b) covers 8 operation types, versioned UPDATE, tombstone DELETE, rollback, fencing and erasure state, with 29 tests. UTM-V1-STORE replay is gated on M-12k showing memory-on >= memory-off.
+- **UTM-B1 `ms.search`/`ms.expand`.** The MCP tools now take their session from the server (`ORCHESTRATOR_MCP_SESSION_ID`, orchestrator `c1df9962`), refuse a foreign `session_id`, and fail closed when no session is bound. No launcher sets that variable yet (UTM-B1-MCP-SESSION); the REPL path works today. The `episodic_source_label` flag is default off ([memory-program](../handoffs/active/memory-program.md)).
+- **REPL rendering fixtures.**
+  - **D-RI-PREVIEW-1.2:** the composite fixture pilot scored 30/30 with the full rendering vs 0-2/30 history-only.
+  - **D-RI-PREVIEW-1.3 diagnosis:** 48/60 episodes ended on a noncanonical FINAL before Q7 revealed the schema.
+  - **D-RI-PREVIEW-1.4:** repaired the progressive FINAL contract and published a distinct predeclared variant.
+  - **M-27:** lint classes and probes are on main (5a92ea4c).
+  
+  ([memory-program](../handoffs/active/memory-program.md); [episodic-memory-integrity progress 2026-11-19](../progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md)).
+- **Audit finding:** `memories.sub_decision` is 0 / 59,337 and has no producer anywhere (W-25) ([autopilot-program](../handoffs/active/autopilot-program.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md)
+- [handoffs/active/autopilot-program.md](../handoffs/active/autopilot-program.md)
+- [progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md](../progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md), [2026-11-20-handoff-episodic-memory-integrity.md](../progress/2026-11/2026-11-20-handoff-episodic-memory-integrity.md), [2026-11-19-handoff-repl-session-memory-maturity.md](../progress/2026-11/2026-11-19-handoff-repl-session-memory-maturity.md)

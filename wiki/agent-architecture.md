@@ -2,244 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-11-19 (wrap-up: typed-decision screens, HS-9 seed panel, cross-worker admission). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-02 (ws58 jev + super-agent intake). Earlier: 2026-11-01 (churn pipeline rebuild, ws58 wrap-up). Earlier: 2026-11-01 (intake-2603 dsh-superagent dive). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): EVL-34 REPL vs ReDel pilots (delegation observed, no A/B), PAW compiled-specialist diagnostics, HIL-15b collection exhaustion with unknowns. Earlier: 2026-10-28 (workspace-58 wrap): HIL-15b four-family pilot, HIL-16b isolation repair, agentic-serving live-template run. Earlier: 2026-10-27 (operator full wrap, Codex NI, cutoff 16:26:29Z; owner-watcher incidents and native IPC priority finding). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): the multi-repo refactor program: audit root causes, reviewed packages, the integration candidate gate and the B2 baseline. Earlier: 2026-10-27 (WS58 scoped wrap-up): accepted actor-budget and registration/launch-gate boundaries are recorded. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): DHM-5.1 measures the real always-on prefix. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 14, 3c4ca599: first mining results over dev-harness traces; HIL-15a flag-on run is a null). Earlier: 2026-10-22 (wrap-up sweep 10: HIL-6 pilot deferred, D1 redesign costed, TRAIL calibration). Earlier: 2026-10-22 (wrap-up sweep 9: HIL-6 option B is built; the pilot costs about 250 whole-host hours). Earlier: 2026-10-22 (wrap-up sweep 7: replay tier and spectrum attribution built, dev-harness mining filed). Earlier: 2026-10-21 (wrap-up sweep 5: L2 scan on real traces, step-event capture, calibration). Earlier: 2026-10-20 (wrap-up sweep 2: AutoKernel history/probes, harness-loop architecture, serving depth sweep). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: UFH-14 agentic serving harness fixes — eight generic defects D1–D8 from the DS41-C95 27B harness experiment and the prefill-share analysis; the C95 results (capability dominates, harness matters some); OAB-35 `context.get(name, '')` HTTP 500 fixed); previous: 2026-09-29 (wrap-up compile: HS-OD-10 templated `x_disable_repl` direct path live and the planner suffix loss proven harmless; A-5 serial-ness folded into SSU-F17; tap test-event purge and four zero-inference residuals filed); previous: 2026-09-27 late (wrap-up compile: HS-19 stage 2 "Scheduled" designed as gate → plan → size → select → aggregate with an OpenCode v1.18.31 source audit, then P1–P6 frozen behind the UFH-13 thesis experiment); previous: 2026-09-27 (wrap-up compile: HS-19a stage 1 Linked subagents, live PASS 18/18; OAB-33 delegation is instructed; HYG-5 ratified; SSU-F9e live hook deploy; disk-leak ranking and NIB2-84); previous: 2026-09-26 late (workspace-8d final wrap-up: region-lock doctrine wording vs API traffic, SSU-F9d path-string guard defect, HS-19 interface questions); previous: 2026-09-26 (HS-4 P0.4 live acceptance PASS 10/10 with A5 token parity; the pin freeze moves to tag `v1.18.31` = `014614d3`); 2026-09-26 (wrap-up, ak-ds41-main: the ratified actor-seat wire-test rule, the new-actor bring-up checklist, OAB-29..32 gates, and the AutoKernel ScratchRegistry); previous: 2026-09-26 (prepared-action implementation and decision receipts); previous: 2026-09-25 (System One and evolutionary-agents intake); earlier: 2026-09-25 (feature isolation and evidence-input integrity); earlier: 2026-09-24 (speech-lane wrap-up compile: per-call efficiency rows for the opencode seat (INF-78 OAB-4m), S4-T1 column comparability, opencode audit rows 8-10 and the seat traps); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: TD-21 complete — TD-21.33c closed the last shared-meta read); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: TD-21 LANDED — every row converted and live-smoked; the repair turn invents required values, so repair now needs evidence; the API's own `/v1` refuses `response_format` by design; a shared inference-meta slot raced under concurrency; TD-21.1 is dormant behind a flag); earlier: 2026-09-24 (wrap-up compile: TD-21 — a 62-consumer audit of every model-output JSON consumer in both stacks, 36 still fishing JSON out of free text; TD-21.0, our own `/v1` payload builder forwards no schema field, gating every `/v1`-lane conversion; the measured two-stage same-server repair idiom and its three refuted abstain designs; MF-VBS-1 — 0/38 edited agent trajectories ever execute anything); earlier: 2026-09-23 (later: NIB2-81 remedy (b) landed — a registry `runtime` field with daemon/scheduled modes, a seven-state `observer_census.py --live` census, `bus_supervisor.sh` restarting only `restart_on_stale` rows, and the operator ruling that `bus_supervisor` stays down so its `not_running` census reading is expected; plus the uutils-`stat`-vs-`os.stat()` inode discrepancy this host's restart path was built around); earlier: 2026-09-23 (evening wrap-up compile: INC-20260917 — a daemon executes the script inode it opened at launch, and git never writes a tracked file in place, so every commit to a tracked script can orphan a live daemon (three shapes observed the same night, incl. a nine-day-stale reaper running 39 VACUUMs on old code while the file census read OK); daemon_provenance.sh refuses a launch from outside canon and logs staleness per iteration; NIB2-80's escalation bypass existed at five sites, not the one reported); earlier: 2026-09-23 (wrap-up compile: SSU-F9 — a correctly acquired push lock did not satisfy the pre-push guard, silently, because the two sides derived different lock directories; the fix makes the guard ASK the writer and makes `--push` verify with `git cherry`; F9b withdrawn — a relayed subagent claim, false in one `cat`; F9c the same defect one lease over in `promote_lane.py`; DS41-C2e — a module that parses `sys.argv` at import answers the importer's flags; a guard's documented override the agent cannot reach; the typed-decision plane is now owned by the research-intake lane); 2026-09-19 (dormant browser-agent-surface stub UFH-10 with the intake-1493 design reference; TD-7/9/10 answer the replay question — enforcement off; TD-6 id_only default); 2026-09-18 (backlog-churn-2 sweep: the `/v1` override contract is role-keyed — `x_force_role` named, `x_force_model` deprecated, unservable roles refused with a 422 (HS-OD-3/7); HS-OD-4/5/6 filed; the operator-directed HS-TD-1..3 leverage rows and the TD-8 fan-out policy; TD-1d's acceptance contested at n=4); 2026-09-17 (wrap-up sweep: the typed-decision plane measured end-to-end — TD-1d id-only 11.98x at 15/16, TD-4 18/18, TD-5 shadow flag-off with TD-7 as the labeled window — plus the FW-1 loop block and NIB2-80, the trace pairing-key producers, and the OpenCode shell pick confirmed); 2026-09-17 (doc audit + restructure: the HS-4 record refreshed to read as decided, FastMCP-3 refuses (P0.3 finding 5 reversed), HS-5c/HS-15 renames, P0-split gated, the fuzzy-node contract and FW-2 placement closed, the improvement loop's mutation object bounded, standing material promoted to `docs/reference/`, and the typed-decision plane measured on the MI210 — 6.25%/37.5% contamination, ECE 0.0625/0.267, 1.54x fan-out, native arm failed closed → TD-1b); earlier 2026-09-17 (research-intake delta: the typed-decision plane, the fuzzy/deterministic authoring GUI, and compiled specialists as loop steps; evening: HS-4 P0-MCP-a applied and the OpenCode 1.18.31 pin installed; the Dockerfile pin is filed); earlier 2026-09-17 (afternoon: every MCP tool accepts the plugin's `session_id`, and the HS-4 P0.4 acceptance runner is built with an offline verdict; the installed OpenCode is behind the audited pin); earlier 2026-09-17 (later pass: HS-4 P0.1/P0.2 tool-mode and session-header code lands on orchestrator main, `/v1` recall is undeleted, the MCP server's venv and `session_id` gaps are filed, and the CORAL/SwarmResearch and harness-null-pool evidence rows arrive; earlier incremental: HS-4 decided — thin OpenCode shell with pi fallback, Hermes features rebuilt inside the orchestrator; `/v1` never emits `tool_calls` (P0.1 blocker); HS-1g call-verb check made a standing instrument and it narrowed Hermes to main-loop-only; OpenCode re-audited at `350c726aa` with plugin merged; Hermes handoff closed); earlier: 2026-09-14 (incremental, noninf sweep: process-global mutable state read as if it were per-request — one `ToolRegistry` per API process whose shared `_invocation_log` four request-scoped readers mistook for their own, so a durable episodic row recorded another request's tools and two SSE emitters streamed another request's tool events; scoping is structural (`REPLEnvironment._invoked_tools`) rather than temporal, because clearing a shared log is the same defect with a narrower race window; plus the paired write half — a find-or-update path that returns before the only site that writes `assigned_role`/`work`, an import-time flag that makes the production branch untestable by default, and a self-annotating bounding function that was not idempotent and so destroyed its own provenance); earlier: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 254 (249 + 5 added 2026-11-19) native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
-
-## Compiled Update — 2026-11-09 (workspace-f2 / pipeline-mgmt): dispatcher split, review catches, process-fault incident
-
-- **Churn pipeline split back out.** On 2026-11-09 (RTG-34, operator "Split out churn, trim rest") the dispatcher/backlog-generator/rowflow defect list left the coordination handoff and became its own handoff owned by Pipeline; the 2026-11-02 fold is kept as a completed record. Justification: a different owner and a first screen that no longer answered the coordination question. The deletion-first guardrail (every item must remove more than it adds; net line count of `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` and running processes must go down or stay flat) and the DSH-1..5 / CAF-1..6 mechanization (receipt-acked run-end events, structured `report.json` turn record, no-poll resume, run-end dedupe) carried over unchanged. Sources: [churn-pipeline](../handoffs/active/churn-pipeline.md), [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md), [churn-pipeline completed record](../handoffs/completed/churn-pipeline-completed-through-2026-11-02.md).
-- **Dropped approvals.** The operator caught that approved LOOP-9, PII-NM-OFFSET and LR-13 had not been executed or reported, and that dispatching had stopped after two waves; all three were then landed (LOOP-9 rebased onto the v3 keeper flow, narrow nm-row PII rule with 15 tests, LR-13 ratified at 214ca99c7). Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
-- **Independent review before landing caught four real defects** in the RTG-22 batch: a campaign `.env` ageing out of worktree protection, `update-ref HEAD`/`--stdin` passing the new guard, `close-lane` substring matching, and a `NameError` in a restored gate. Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
-- **INC-20261109-autopilot-refresh-process-faults.** Four process faults: subagents changed the pathspec-commit form after the hook blocked it instead of re-using the prescribed form; one `pgrep` on a name pattern (nothing killed); two subagents left unreported background work (no PID); a future-stamp error on an edit. Remedy: re-read the hook's prescribed form and use exactly it; capture and report PIDs or do not background; a brief must say "no background work" or require its PID. Source: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md).
-- **Self-reported errors (pipeline-mgmt):** pushed a red pin-list test, removed a worktree after a failed push (recovered), and overclaimed the dispatcher as root cause. Keeper fixes (republish guard, one-sample quiet path, LOOP-11, residency with Docker; branch keeper-frozen-20261109) were approved and reviewed but not deployed; deploy is `deploy_rowflow.sh --emergency` at a grant-quiet gap. Source: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
-- **Frontier-lab automation:** W3 (reliability ladder) moved to `autopilot-program.md` so the handoff can archive. Source: [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md).
-
-## Compiled Update — 2026-11-03 (evening): churn-pipeline defects and the coordinator-daemon retirement
-
-**Confidence: verified** (commits cited in the progress log).
-
-- **The coordinator-daemon / tmux delivery plane is retired** (loop-owned fleet Phase 3; `bus_supervisor` stays down); M3-M5, AIR-6/7/9 and related boxes were declined as superseded and their history archived. `coordination-and-churn-pipeline.md` now carries only the churn-pipeline defect list, fan-out measurement (FM-*) and bus/dashboard repairs.
-- **Name-based reaping killed live work**: the rowflow dry-run cleanup killed any process whose argv named the row id, including the agent's own shell (exit 144) and a Q38 custody run. The id-substring/cwd orphan reaper was deleted; smoke teardown now signals tracked descendants only (`b218f699d`).
-- **A smoke must never file a row complete** (ROWFLOW-SMOKE-COMPLETE-GENERAL): EXP-01's measure row was completed by its own 2-unit smoke because the smoke wrote the completion artifact; fix belongs in `publish_row.file_if_complete`.
-- **Grants prove nothing about running**: a row is running only when its job process exists and its CPUs/GPU are measurably busy; added `run_direct.sh` (one command on a free lane), arm-failed rows order last, and a row failing to arm repeatedly is parked.
-- **Keeper reaps only from the disk janitor** (`--reap-now`, every 30 min); a ~100 s reap inside the tick had blocked granting. The dry run now treats low disk as WAIT, and truncates a job ignoring the stop file after a 600 s grace as a warning PASS.
-- **Hardening**: the M4 harness dropped lease_owner/self-hash seal checks and refusal on bare starts; `--load-threads <claimed cpus>` is default and allow-listed.
-
-Sources: [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md) · [backlog-churn-flow](../docs/guides/agent-workflows/backlog-churn-flow.md) · [backlog-churn-runbook](../docs/guides/agent-workflows/backlog-churn-runbook.md) · [session progress](../progress/2026-11/2026-11-03.md) · [INF-22 unblock](../progress/2026-11/2026-11-03-inf22-unblock.md)
-
-## Compiled Update — 2026-11-01 (churn pipeline rebuild, ws58 wrap-up)
-
-- **Pipeline rebuilt as RTG-62** (`handoffs/active/coordination-and-churn-pipeline.md`, [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)). rowflow v3 makes the row owner write a launcher plus spec, with a robust dry run and the old gates removed (`d69c6cd4b`); launchers living in lanes are snapshotted into the row's scratch_root so the dry run and the real run execute identical bytes (`8b62499ef`). Keeper v11 is ONE allocator with one snapshot per tick; both grant writers retired (`1a9186e11`). `churn_up.sh` cold-starts the whole pipeline from git (`d095b4a4d`).
-- **Reliability from intake-2603** (`intake-2603#record`): DSH-1..5 landed in the dispatcher (`7259bbdc8`): run-end events acked by receipt, structured `report.json`, transient-failure retry, a reserved filing slot, and a loop-design rule.
-- **AI-free audit** (`research/deep-dives/churn-ai-free-audit-20261101.md`): of 6.43 G handoff-session input tokens, roughly 23% was bookkeeping (monitor/wait, wrap-up mechanics, republish). CAF-1..7 replace those turns with scripts (no-poll resume, `churn/wrapup.py`, `churn/file_result.py`, resume delta, `publish_row --repair`, codex-gen routing). CAF burn effect is NOT yet measured. The headline metric is now tokens per completed task.
-- **Hotfix lessons**: an unbounded drain wait starved the queue (`DRAIN_MAX_WAIT_S` 1 h, backfill by estimate); a gpu-quiet claim on a quarter is quarter+GPU, not quiet-host; a row flagged UNDERUSED is not granted until its owner republishes; a 10-minute resume gap applied to every session throttled productive ones to zero (the fix, gap only after no-effect turns, was installed but not yet on origin/main at wrap time).
-- **Guardrail status**: the deletion-first rule was not met on 2026-11-01; line counts of the pipeline files rose.
-
-Sources: [churn-pipeline handoff](../handoffs/active/churn-pipeline.md) · [AI-free audit](../research/deep-dives/churn-ai-free-audit-20261101.md) · [dsh-superagent dive](../research/deep-dives/intake-2603-dsh-superagent-prototype.md) · [ws58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [churn-up progress](../progress/2026-11/2026-11-01-ws58-churn-up.md) · [rowflow progress](../progress/2026-11/2026-11-01-workspace-58-rowflow.md) · [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
-
-## Compiled Update — 2026-11-01 (intake-2603): a ticket executor that refuses to read state from free text
-
-- **dsh-superagent** (intake-2603#record) is DeepSeek's research-prototype bundle for DeepSeek Harness: one Executor Session and one directory per authorized Ticket, and a structured end-of-turn Report (`progress|ready|blocked|failed|dropped` plus a structured Attention question). Its domain model lists "inferring waiting-on-a-person from a report's free text" as a rejected design. Post-decision work is stored first and done afterwards, a cut-off turn's undelivered inputs are redelivered, transient provider errors get three backoff retries with a "go on" prompt, and one concurrency slot is reserved for a human message.
-- **Bearing on the backlog churn pipeline** (`docs/guides/agent-workflows/backlog-churn-flow.md`): the per-handoff sessions, the keeper gate and files-only transfer already cover the core. The dive found that `handoff_sessions.py` clears a run-end `pending_event` at every turn end, and that `backlog_gen.py` counts `.ended` as done. A filing turn that crashes before `filing-done/<id>.FILED` is therefore never redelivered. Proposed fixes DSH-1..4 (structured turn report, ack-by-receipt, transient retry, reserved filing slot) await operator approval. Dive: `research/deep-dives/intake-2603-dsh-superagent-prototype.md`.
-- **Extension (same day): AutoKernel and autopilot already conform** (intake-2603#record). Both use structured replies with schema checks and a repair turn, at-most-once resume or in-flight recovery against a durable store, and backoff on transient errors (`actors.py:2201,2217`, `resume.py:502`; `controller_io.py:1027,1069`, `autopilot.py:7312,9343`). The Source/Eval/Mandate model and reserved slots do not apply. Proposed DSH-5 adds the rule "terminal state comes from a structured record, and an input counts as consumed only on a durable receipt" to `agent-loop-design.md`.
-
-## Compiled Update — 2026-11-01 (qualification output boundaries)
-
-Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **LangGraph** (intake-146#02) Graph-based agent orchestration with durable execution/resume and human-in-the-loop state inspection. Worth investigating as a pattern reference for orchestrator durability, not a dependency.
-- **Get Physics Done (GPD)** (intake-150#01) Four-phase Formulate/Plan/Execute/Verify physics copilot that locks conventions for up to 18 physics fields. Worth investigating for its convention-locking and verify-phase patterns in research agents.
-- **Goose coding agent** (intake-254#00) Block's open-source local extensible agent with CLI and desktop interfaces. Worth investigating as an agent-harness reference for local-model use.
-- **Clido CLI coding agent** (intake-255#02) Rust multi-provider coding agent (16 backends, 23 tools) with per-session cost and context-fill display. Worth investigating as a harness reference.
-- **Neural Computer (Meta)** (intake-315#record) Learned dynamical system fusing program, memory and I/O; CLIGen dataset of 823,989 terminal streams (~1,100 hours). Not applicable to the llama.cpp stack.
-- **predict-rlm (DSPy)** (intake-331#04) Production Recursive Language Model on DSPy signatures with WASM sandbox and async sub-LM calls to avoid context rot. Worth investigating alongside orchestrator REPL work.
-- **dspy.RLM** (intake-349#01) First-class Recursive Language Model module in DSPy (v3.1.2+) where the LLM writes Python in a Pyodide/Deno sandbox to explore long context. Worth investigating for REPL-style long-context handling.
-- **Meta-Harness reference repo** (intake-451#01) Framework for automated search over model harnesses with an ONBOARDING.md domain-spec flow and text_classification / terminal_bench_2 examples. Adopt patterns for harness search in autonomous research loops.
-- **Claude Fable 5 agent functions guide** (intake-801#record) Commercial landing page describing Commander/Hands model tiering and sub-agent/workflow/skill delegation. Dive: correctly filed not_applicable; zero benchmarks, only engagement counters, and the patterns are already known.
-- **Fractal recursive agent loops (blog)** (intake-893#record) Agent-orchestration framework with a persistent Prepare/Plan/Execute/Review/Commit loop per node, fresh agent per step, and hard budget caps. Not an inference system; dive corrects test count to 108 .py files and notes the page does carry cost/duration figures.
-- **plasma-ai/fractal repo** (intake-894#record) Real Apache-2.0 implementation with 57 modules vs 68 test modules and zero inference-layer content; model access is delegated to spawned agent CLIs, which is the only EPYC hook. Single author, 56 commits; adopt patterns.
-- **Agent Skills survey** (intake-900#record) Survey of SKILL.md-based skills as orthogonal to MCP; reports 26.1% of 42,447 community skills with vulnerabilities. Dive: those figures trace to arXiv 2601.10338, so cite that directly, not the survey.
-- **AREX recursive deep research** (intake-922#record) Inner loop gathers evidence, outer loop audits constraints, with a learned context-update tool. Dive struck the architect drop-in hook because the MTP-head precondition fails (BAAI/AREX-Base index shows the MTP head removed).
-- **Natural-Language Agent Harnesses** (intake-926#01) NLAHs are editable harness-policy documents interpreted by an Intelligent Harness Runtime, with comparable outcomes to code harnesses. Dive: the Stage-1 entry was substantially fabricated and had to be rebuilt; cite only the corrected record.
-- **DSPy** (intake-927#01) Declarative signatures compiled into self-improving pipelines that beat zero/few-shot and hand-written demonstrations. Dive confirms ICLR 2024 spotlight poster via three sources; adopt patterns.
-- **Executable world models for ARC-AGI-3** (intake-931#02) Coding agent writes an executable Python world model with a scripted game-agnostic controller. Dive: citation defect withdrawn (no WorldModeler name in the paper); the key mechanism is later deflated by intake-934.
-- **CodeCrucible LLM-driven SAST** (intake-943#01) Blueprint inverting the usual SAST design: LLM as primary analyzer over whole-repo concatenation, along four design axes (compaction, identification, relevance screening, determinism). Dive says verdict should change to adopt_component because it ships local ollama presets.
-- **Prime Agent repo** (intake-1009#record) Persistent IPython REPL with a TypeScript host owning providers, persistence and retained recursive children. Dive verified it as a well-tested source of persistence/recovery patterns; only a process-safe session lease and an uncertain-side-effect journal are material EPYC gaps.
-- **Prime Agent blog** (intake-1010#record) RLM plus Continual Harness with daemon sessions, goals, token budgets and heartbeats. Headline ARC performance uses Opus 5 and the open-weight GLM-5.2 result is far lower, so performance is vendor-authored and non-transferable.
-- **Continual Harness paper** (intake-1016#record) Refiner mutates prompt additions, subagents, skills and memory during a single ongoing episode. Dive: reset-free proposal generation verified, but live self-modification and released co-learning are overturned as integration-ready; the refiner has no acceptance gate.
-- **Continual Harness implementation** (intake-1020#record) Persists four mutation classes with refinement every 25 steps through step 200 then every 100, applied live without held-out acceptance or atomic transactions. Verified as a shadow-proposal source; overturned as a safe live optimizer.
-- **ArgLLMs argumentative claim verification** (intake-1037#record) Stage-2 dive confirmed LLMs build depth-1/2 QBAF trees (max 7 arguments) scored by DF-QuAD, with evaluation delegated to a vendored Uncertainpy; accuracy is only "comparable with CoT", contestability is the selling point. Relevant to EPYC as an auditable, deterministic verdict layer over local-model pro/con generation.
-- **MArgE multi-LLM evidence meshing** (intake-1051#record) Merges per-LLM argument trees by union or semantic merging and scores with DF-QuAD. Transferable mechanism: deduplicate before aggregating, since near-duplicate evidence double-counts under product aggregation; applicable when meshing outputs from several local models.
-- **Uncertainty quantification in ArgLLMs** (intake-1053#record) Base-score UQ choice feeds directly into final predictions, and direct prompting is best or statistically tied in all 36 configurations, so entropy-style UQ does not pay. For EPYC: use cheap direct-prompt confidences rather than extra sampling passes.
-- **Agent-Sentry execution provenance** (intake-1061#record) Per-argument provenance frames feed a three-layer pre-execution gate (XGBoost structural classifier, deterministic allowlist, further layer); blocks 94.3% of successful injections while allowing 95.1% of benign executions at 0.073 s/trace (~6.2x less overhead than CaMeL). Pattern for tool-call gating in the orchestrator; Progent surfaced as follow-up per operator disposition.
-- **LedgerMind evidence lifecycle** (intake-1056#record) Evidence-ledger entries carry Active/Stale/Conflicted/Dropped lifecycle and the structural rule that reasoning steps must cite active entries; repair uses 7 typed operators in 3 layers with locality-first escalation. Maps onto agent trajectory repair in the orchestrator.
-- **ADAS automated agent design** (intake-1068#record) Meta Agent Search has a meta agent program new agents against a growing archive. Dive correction: it had been cited with a neighbour's id a related entry and as evidence for fully autonomous trajectories, which it does not support; treat as a design-search pattern only.
-- **Hyperagents self-modifying meta level** (intake-1069#record) Task and meta agent merged into one editable program whose meta-modification procedure is itself editable. Correction: earlier citation used a neighbour id a related entry and overclaimed a trajectory; a related entry is a different item.
-- **Self-Harness** (intake-1070#record) Agent improves its own harness via weakness mining from traces, minimal targeted edits, and regression-gated validation. Correction: rec-001 cited it for LLM-as-judge benchmark design being optimizable, which is not supported. Fits the harness-edit loop in the autopilot with regression gates.
-- **Agentic Context Engineering (ACE)** (intake-1071#record) Context as an evolving playbook via generation/reflection/curation with incremental updates, avoiding brevity bias and context collapse. Correction: rec-001 misattributed it a related entry and for a benchmark-design claim it does not support; relevant to agent prompt and playbook maintenance.
-- **Loop Engineering for AutoResearch** (intake-1075#record) The decisive engineering was the research loop (GOAL, RULES.md, cumulative experiments log, six shared-state artifacts, retained negative results, periodic compaction), not kernel authorship. Dive overturned provenance but retained the methodology per operator steering; directly relevant to the AutoKernel loop design on EPYC/MI210.
-- **Qwen-MM-Plugins** (intake-1076#record) Multimodality as an installable skill/MCP tool layer over any harness, with seven capabilities; local read_image/read_video need no API key and the client targets any OpenAI-compatible endpoint, so it can run against a local llama.cpp endpoint.
-- **Multica agent board** (intake-1078#record) Local daemon spawns already-installed agent CLIs with per-agent env injection. Declined as a coordination plane: adopting it would replace the orchestrator resource plane and session bus with a foreign substrate; patterns only.
-- **Anthropic multi-agent research system** (intake-1113#01) Lead agent spawns 3-5 parallel subagents; token usage alone explains 80% of BrowseComp variance (three factors 95%). Dive: 15x baseline is chat-relative, 90.2% gives no n; the post states explicit non-fit cases (shared context, many dependencies). Supports the fan-out default but with cost caveats.
-- **W&D parallel tool calling** (intake-1125#02) Width (parallel tool calls per step) improves accuracy and cuts turns; optimal width depends on turn budget (tight budget favours wide), best fixed width 3 on BrowseComp. Dive overturned the headline 62.2% comparison as controlled evidence.
-- **MAS-Orchestra** (intake-1126#04) Holistic one-shot orchestration RL; MASBench shows multi-agent gains conditional on task structure and diminishing with a stronger sub-agent. Dive: it answers neither selection question favourably.
-- **Retrospective Harness Optimization (RHO)** (intake-1130#01) Optimizes a harness from past trajectories only, accepting an update only if its score is strictly above zero. Code read at commit e5f2d1a; fits harness tuning from the autopilot journals.
-- **Falsifiable release gates** (intake-1131#01) Gates are pre-declared, falsifiable acceptance suites declared before the feature, with standing invariants; the shipped antahkarana 11.2.0 package was installed and run. Dive overturned the reason the entry was selected; the pre-declared-gate idea maps onto our stack-change gates.
-- **AutoHarness** (intake-1133#record) Tree search over code hypotheses with Thompson sampling synthesizes a harness; legal-action rate 1.0 on all 145 TextArena games, with 78% of Gemini-2.5-Flash chess losses cited as illegal moves. Closes the Stage-1 truncation note: harness-as-policy result reported.
-- **Feedback Descent** (intake-1139#01) Optimizes text artifacts from pairwise comparisons with textual feedback rather than scalar rewards; the paper itself concedes textual feedback is not a literal gradient. Three thesis claims confirmed; candidate loop for prompt/recipe tuning.
-- **Directional feedback for LLM optimizers** (intake-1144#00) Feedback that indicates which way to move helps weak and strong optimizers, and a feedback synthesizer can manufacture it from output-score history. Commissioned question answered; applicable to AutoKernel feedback design.
-- **Single- vs multi-agent, why not both** (intake-1123#record) MAS advantage shrinks as base models improve (10.7% to 3.0%, 16.0% to 1.2%, 9% to 0.8%) while costing 4x-220x prefill tokens; the cascade that looked best is an oracle upper bound. Routing by an LLM difficulty rater is the practical piece.
-- **OMP Best Of** (intake-1175#record) Oh My Pi plugin (not OpenMP) running N headless candidate sessions in copy-on-write workspaces with logprob selection via the upstream llm-verifier package. Read at main d45b9f2; pattern for best-of-N coding with verifier selection.
-- **Why does CLAUDE.md keep growing** (intake-1178#record) Context files grow monotonically; mechanism is imperfect recall rather than staleness, and deletion hazard falls with instruction age (log-hazard slope -0.032/commit over 28,426 deletions). Directly applicable to this repo's agent-file governance.
-- **DeepSeek Harness (dsh)** (intake-1186#record) Everything is a Cordis plugin; typed lifecycle interception points and per-step LLM call config replaceable via a waterfall. New opportunity as a harness design reference for local endpoints.
-- **Cordis meta-framework** (intake-1208#00) Context mutations register as effects with explicit disposers, hierarchical disposal, and services park fibers until dependencies are active. Four disposal defects reproduced by execution in rc.7/rc.8.
-- **@deepseek-ai/cordis vendored kernel** (intake-1209#02) The harness vendors its framework layer with an exhaustive ledger of exactly 18 local modifications; item 6 closes three reentrant disposal gaps in fiber.ts. Corrected the assigned locator on three points (fork not public, abb0a307 is the plugin pin).
-- **Documenting Architecture Decisions** (intake-1201#01) ADR schema is five parts (Title, Context, Decision, Status, Consequences) with supersession by immutable pointer, not inlining. Model for decision records in handoffs and governance.
-- **Deep JIT comment-code inconsistency detection** (intake-1202#01) Detecting that a natural-language record is out of sync requires the edit, not the end state; an updater without a detector is worse than doing nothing (never-update baseline xMatch 50.0). 40,688 examples over 1,518 Java projects. Supports edit-triggered doc sync checks.
-- **Learning to update comments from code changes** (intake-1203#00) Ceiling on unattended sync is low and editing beats regenerating by a large margin; users selected none of the suggested comments 55% of the time (anchor shows 55.0%). A trivial return-type substitution baseline gets most of the way.
-- **pi-ai unified LLM API** (intake-1204#00) samplingParams merges unfiltered into the request body as the last step, and the model-descriptor half is wired only on the streamSimple/completeSimple path (npm tarballs, all 41 versions swept). Useful for passing llama.cpp sampling params through a harness.
-- **LLM-as-a-Verifier llm-verifier 0.2.0** (intake-1206#01) MIT-licensed, self-contained; score-tag prefill sends three extra_body fields (add_generation_prompt false, continue_final_message true, structured_outputs) and requires vllm>=0.19, so llama.cpp use needs an equivalent prefill path.
-- **AutoKernel (RightNow-AI)** (intake-1246#01) Train-free, model-agnostic loop with torch.profiler-based target ranking and Amdahl what-if projections; requires an NVIDIA GPU (tested H100/A100/RTX 4090), so the profiler step needs a ROCm equivalent for MI210.
-- **Ornith-1.5** (intake-1258#03) Third optimized stage (self-improvement) with new task and harness rewards; releases 397B MoE, 35B-A3B MoE and 9B models. Config shows a 40-layer hybrid (30 linear_attention + 10 full_attention); dive read raw bf16 weights and the v9 tree read-only.
-- **Prime Agent self-improving RLM harness** (intake-1313#00) Harness judged by expressivity, with agent state as a four-level cache (fine-tuning updates L0, compaction L1, refinement versions L3, "agentic garbage collection" at L2); asynchronous rlm primitive returns a handle. All 27 Table 1 cells match the paper.
-- **JIT-Agent** (intake-1320#01) Harness fixed as a four-module protocol (M, P, A, F) over a frozen backbone, with a 27B generator trained on Qwen3.6-27B. Dive settled the central question adversely from code: Table 3 per-case tokens count only the final executed validation round, excluding the meta-model's three generations.
-- **Regression Tax of skills** (intake-1321#record) Across 18 conditions regressions offset 59% of gross gains (net 229 after 553 gains); decomposition reverses some rankings and a skill's description alone can change behaviour with its body never loaded. All 18 McNemar p-values reproduced.
-- **firstmate Pi supervision branch** (intake-1325#02) Six mechanism sections include off-thread delivery, a lost-wake outcome backstop and a two-stage noise filter (zero-token bash watcher then LLM triage); custom session entries persist in the transcript but not model context. Headline disagreement on asyncRewake settled as real on the installed Claude Code.
-- **Architectural decisions in agent harnesses** (intake-1335#00) Source-grounded study of a frozen corpus of 70 projects (frozen 2026-03-23); isolation is mostly intermediate (no isolation 17%, process 45%, container 31%, WASM 7%). The dispatched question gets a clean, well-evidenced negative; entry superseded.
-- **Keel 0.2.0 / Jev typed-decision harness** (intake-1579#record) Selector chooses a host-prepared route or focus ID (or abstains) while the host owns candidate construction, validation, permission, execution and outcome recording; prepared actions carry revision, read-set fingerprint, preconditions, expiry and authorization. Thirty offline checks reran but use synthetic responses; ACP providers keep their own loops, and receipts support replay without claimed quality gains. A pattern for constrained orchestrator routing.
-- **Keel: local-first coding workspace with typed selectors** (intake-1584#01) For a fresh auto-routed task, Keel prepares candidate routes, accepts an opaque ID or abstention, then recomputes availability and retains the incumbent on failure; PreparedAction stores revision, preconditions, read-set fingerprint and expiry (intake-1584#01). Corrected: the full PreparedAction envelope is route-specific, authorization is a separate input, and ACP providers are only partly covered. A host-owns-validation pattern for our orchestrator.
-- **Jev Engineering typed-decision framework** (intake-1585#01) Proposed host-owned decomposition: state builder, typed decision client, deterministic policy and authorization, execution, and outcome verification (intake-1585#00). Its 30 offline checks reran and passed but use synthetic responses and measure no semantic accuracy (intake-1585#01); this is a framework proposal, not a shipped implementation.
-- **mini-swe-agent v2** (intake-1685#01) Default agent keeps a linear message history and loops query-parse-execute through an injected environment, tracking cost and call count; v2 differs from v1 so results must pin the major version. Minimal agent loop usable with local llama-server endpoints.
-- **Recursive Agent Harnesses** (intake-1806#00) Names harness recursion: the recursive unit is a full agent harness, with the parent writing a Python script that spawns subagent harnesses in parallel; recursion depth bounded (default 3, intake-1806#record). Pattern relevant to REPL-driven orchestration.
-- **Same model, different harness** (intake-2007#00) Holding model and tasks fixed, the harness alone changes coding-agent results. Treatment shortens older tool results as context fills (intake-2007#01); gains concentrate under tight windows, raising per-task F2PF from 28% to 49% (intake-2007#02). Correction: treatment is a 3-part package, and the 43k window effect is not significant.
-- **Cross-component interference in scaffolding** (intake-2008#00) Full factorial over 32 subsets of five components (planning, tools, memory, reflection, retrieval): the all-components configuration underperforms the best subset. 56.3% of tested cases violate submodularity (intake-2008#record); optimal count varies 1 to 4 by task and scale (intake-2008#record). Corrections: 70B is single-seed and the 56.3% rate CI overlaps 50%.
-- **Independent sampling vs agentic reasoning** (intake-2042#00) Compute-matched on 216 competitive-programming problems: k-shot independent attempts beat one SWE-agent run and three c/3 runs at every fixed budget (intake-2042#01). Explained by task structure, agents burn budget on loops (intake-2042#02); cost-optimal solver minimises -ln(1-p)/c with finite q* (intake-2042#03). Corroboration for restart-vs-continue is partial and different in kind (intake-2042#04).
-- **Unit-based semi-cascaded agent** (intake-2051#00) A single prompted Qwen3-Omni-30B-A3B decides continue/switch from raw audio plus state prompt. Test interruption 89.7, rejection 57.8, total delay 1.632 s (intake-2051#01). Correction: repo HEAD calls DashScope cloud APIs, no longer matching the paper (intake-2051#03); README launches TP=4 (intake-2051#02).
-
-## Compiled Update — 2026-10-28 (workspace-58 wrap): HIL-15b pilot bands are variance discovery only; HIL-16b replay failed on isolation
-
-- **HIL-15b q2 v3 pilot (20 tasks x 3 replays)**: 20/20 tasks, 60 accepted replays, 205 steps, 52/60 passes; 12 tasks 3/3, 8 tasks 2/3 (filter-02/06/09/10/13/14/15/18). Three replays resolve only 1/3 or 2/3, so no population-rate claim is made; the harder-task parent stays open.
-- **Four-family packet V1 withdrawn**: native inspection showed the pinned registry-free producer lacks the requested read_file/write_file APIs and the CALL the prompt advertised; the readiness tick was invalidated. The API-v2 packet ran 10/20 units (insufficient-window stop), was re-granted, and finished 20/20 rc0 at 23:28:38Z; audit is PENDING, no verdict, no pass-band claim; V1, V2 and the single-family pilot are not pooled.
-- **HIL-16b replay FAILED rc1** at 42 s ("captured server dead or identity replaced"): no replay result and no recovery rate. The v2 repair preparation fixes `heavy_model.lock` escaping the private sample (verified against fake HTTP across four arms, zero out-of-root writes); this is preparation, not an outcome. HIL-16b stays open.
-- **Agentic-serving harness live-template run** completed 2026-10-27 22:43Z; readout pending, result bullet only, no tick.
-
-### Source References (2026-10-28 workspace-58 wrap)
-
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-15b/16b results and preparation
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — live-template run notice
-- [progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md](../progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md) — HIL venv incident record
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): DHM-5.1 measures the real always-on prefix, the embedder ties TF-IDF, and no_final_step is conformance-only
-
-**Confidence: verified** (aggregates and predeclared rules; counts only, no transcripts).
-
-- **DHM-5.1 replaces the shared 8,326-token file-size estimate with turn-1 usage-field regressions.** Always-on tokens (95 % CI): Claude subagent **14,628** (12,982-15,707; includes the MEMORY.md index, R2 0.998, system+tools baseline 17,647), Codex main **2,525** (2,266-2,796, baseline 9,355), Claude main 4,459 (3,436-6,694, weak). Subagents carry the MEMORY.md index, so the measured prefix is 1.8x the old estimate. Codex subagent and opencode have no usage-field number (negative or confounded slopes; opencode never logs its instruction files); the remainder is DHM-5.2, a paired present-vs-hidden first-call probe (inference). Weakest assumption: within a bucket, always-on size is uncorrelated with unlogged prompt parts.
-- **DHM-7.2 closes on TF-IDF.** The granite-97m embedder (job `dhm72a-granite`, rc 0) also recovers 3/5 planted classes but a different three (gains pattern_kill and pytest_workers, loses git_stash and wholesale_add) and reports 78/80 clusters against 80/80; its cluster stage took 4,634.9 s against 5.65 s. The predeclared tie rule goes to TF-IDF (no model dependency). A counts-only aggregate is committed; the first input for the `dev-harness-aggregate.v1` adapter (VB-LB1.1).
-- **HIL-15d: `no_final_step` is CONFORMANCE-ONLY.** On 120 HIL-18a replays (32 failures) it fires 12 times, 11 on failures: precision 0.917 (CI 0.714-1.000) clears the floor, recall 0.344 (0.189-0.800) does not. It is not added to CATEGORIES, the report schema or the belief adapter. HIL-18a ranks four usable tasks, but only lcg5-hard (50 %) sits inside HIL-15b's 30-70 % pass band, so the box stays open and a second hard-task set targeting wrong-final-answer and tool-protocol failures is the next step.
-- **Eval-time speculation parity (Q38-T10.2):** `eval_batch_frontdoor` :18070 runs with spec ON (`--spec-type draft-mtp`, n-max 4). EvalTower generation gained an opt-in per-request `speculative.n_max: 0` via `AUTOPILOT_EVAL_BITWISE_GENERATION=1` for parity-gated runs (default unchanged); the :8199 argv is not discoverable from files and is covered by the per-request flag.
-
-Sources: [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): first mining results over dev-harness traces; HIL-15a flag-on run is a null
-
-- Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
-- OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)).
-- HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): the HIL-6 pilot is deferred past the second GPU; a coder-child redesign (D1) is costed; the L2 detectors are calibrated on TRAIL
-
-**Confidence: verified** for the landed code, parity digests, test counts and the scored calibration tables; **inferred** (the harness's own ESTIMATES, nothing measured end to end) for every pilot latency, wall-hour and power-at-N figure in the redesign package.
-
-- **The HIL-6 pilot is DEFERRED by the operator, not cancelled.** After the 232-300 whole-host-hour estimate, the operator's decision-tool answer (2026-10-22) was to not spend that effort testing roles that may change within the month and to pick the pilot up when the stack is redefined after the second MI210 is installed, with an explicit "do not lose track". Reopen trigger: the post-second-GPU stack redefinition is ratified. First step when it fires: re-cost the pilot on the new role/model placement (options D1/D2 were costed for the pre-GPU stack) and present the choice again. The code (HIL-6d..6j) stays built and tested; no filler row is armed; the egress ratify script was not run. The earlier "lift for this pilot only" ruling is therefore dormant, and every other loop, design and schedule remains deferred.
-- **The redesign package answered "why Flash-Next and not a faster GPU model".** No "q38-35b-a3b" exists; the 35B-A3B on disk is Qwen3.6-35B-A3B (serves `frontdoor`/`worker_general` on the CPU, benchmarked but never served on the MI210), and the only model served on the MI210 is Qwen3.8-27B-Q8_0 with the DFlash2 drafter. `architect_investigate.md` has exactly one consumer (`architect_general`; delegated mode always passes that role), so tuning it on a faster model would tune a prompt no production request sends there. The fast GPU surface inside the same HS-4 section 3.5 home is the delegation child prompt `orchestration/prompts/roles/coder_escalation.md`, which the 27B receives on every delegated coding call (at most 4 REPL turns x 768 tokens), scored by code execution (`livecodebench`, `bigcodebench`, `usaco`).
-- **Costing (ESTIMATES; per-request latencies are derived, no end-to-end `/chat` latency exists for any of these roles).** The original design is 14,850-19,230 requests at an estimated 56.2 s (the `livecodebench` stratum at 180 s drives 64% of that; Flash-Next serves one slot, claiming the whole host), about 240-310 h. Options: Flash-Next at np 4 gives only x1.18-1.32 on 2026-09-03 data (G2-CONC open); partial offload of Flash-Next to the MI210 is unmeasured and evicts the 27B coder delegatee; shrinking Flash-Next structures (C1/C2/C3) cost 116-167 / 32-38 / 65-78 h, and only the powered core (C2, one lineage, one cycle) fits near 32 h while dropping the two-cycle and editor-capability requirements. **D1 (recommended, not chosen)** retargets to the coder child at the compliance-minimum structure (2 lineages x 2 cycles x 1 candidate, V 351, matched rollout k=4), costing about 13-45 GPU hours (central 21-30) plus a 3-13 h whole-host Flash-Next brief-freeze pass, keeping all HIL-2 items and all three pilot requirements. What it gives up: the claim becomes child-artifact correctness on frozen first briefs, not end-to-end delegated success, and the architect-prompt question stays unanswered.
-- **Power at smaller N is a sawtooth, and validation is the one thing a shrink cannot cut.** At MDE 0.075 and discordance psi 0.20, the smallest V with power >= 0.8 is 385 / 325 / 280 / 220 for 8 / 4 / 2 / 1 attempts (chosen 420 / 351 / 290 / 220, power 0.842 / 0.826 / 0.831 / 0.816); at 8 attempts V=300 gives 0.589 and V=250 gives 0.492. Every design is underpowered at psi >= 0.25, where the existing gate stops the run before any candidate. D1 declares three gates in advance: a freeze-pass gate (a short stratum refuses the draw; fallback D2), a budget gate after the first GPU window (stop before any alpha is spent if the projection exceeds 40 h, reported ENDED_OVER_BUDGET) and a treatment-fired proof. Delegation rate below about 0.36 cannot fill the strata.
-- **HIL-6i found a builder defect while choosing the home.** `build_architect_investigate_prompt` truncates the question to 2,000 characters and the evidence bundle to 3,000, so 99.5% of pool `hotpotqa` prompts and all `longbench` prompts reach the architect truncated. Filed as HS-4-PB-TRUNC (measure on real delegated traffic, then lift the caps with the DCP-6 latency check or record why not); settle it before reading any pilot result on that prompt.
-- **L2 detectors were calibrated against TRAIL (HIL-14a), closing HIL-14.** With the HF gate accepted, 117 GAIA and 31 SWE-bench traces were scored from JSON only (584/585 and 254/256 gold locations resolve; two data quirks handled in the loader). Step level, all splits: `invalid_invocation` on Formatting (N=193) precision 0.507 / recall 0.363 vs a first-error baseline 0.139 / 0.052; `tool_error` on API issues (N=14) precision 0.008 / recall 0.143 (the detector fires on any errored step, the leaf is narrow). Trace level, formatting P 0.902 / R 0.500 against a length baseline P 0.831 / R 0.797, so the detector is more precise but recalls less. Timeout and resource-exhaustion are under N=10 and unscored; `truncation`, `premature_wrap_up` and `zero_step_violation` fire on none. HIL-14 acceptance is met across Who&When Pro, TraceElephant, KernelBench-Hard and TRAIL; no natural-recall claim is made beyond annotator gold.
-- **The graph Harness now replays production recordings (HIL-16c, orchestrator `a16750a8`).** A run recorded through the production REPL construction path replays byte-for-byte for every k, in-process and as a separate CLI process; the stub default is refused for production recordings (`environment_drift` at turn 0) and really diverges with the guard off. Two recorder bugs were fixed on the way: JSON tool results were rebuilt key-sorted (new `payload_cas` keeps order and type) and REPL `llm_call` sub-calls were not recorded; recordings made earlier will show these as divergences. LangGraph decision: per-node dispatch replays, the full `run_task_lg` graph has no production path and is refused. HIL-16a needs no window of its own (the hil15a driver records, a no-model filler verifies), and HIL-18a was rebuilt in-process against one private server instead of the production `/chat`.
-- **The attribution ladder is built, not run (HIL-17, orchestrator `40560f2f`, 37 tests, zero inference).** Rung 0 L2 rules, rung 1 whole trace, rung 2 bisection, rung 3 adjudication only without a majority, with a k-sample vote-share aggregator, a random baseline and nDCG@5; 6,253 of 6,257 Who&When Pro traces resolve gold and injection flags never reach a prompt. A dry run is fixture plus fake judge and marked `"mock": true`.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [docs/design/hil6i-pilot-redesign-20261022.md](../docs/design/hil6i-pilot-redesign-20261022.md) — options A-D, costed, with the power table and the D1 recommendation
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — the deferral and reopen trigger, HIL-14a/16c/17/LB1 results
-- [handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md](../handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md) — the TRAIL table, HIL-6a..6i landings
-- [docs/design/hil6-sibling-loop-implementation.md](../docs/design/hil6-sibling-loop-implementation.md) — seam parity evidence and the HIL-2 items map
-- [docs/design/hil6i-pilot-design-first-feature-20261022.md](../docs/design/hil6i-pilot-design-first-feature-20261022.md) — home choice and the prompt-truncation defect
-- [progress/2026-10/2026-10-22-hil6-pilot-redesign.md](../progress/2026-10/2026-10-22-hil6-pilot-redesign.md) — option summary
-- [progress/2026-10/2026-10-22-hil16-18-fillers.md](../progress/2026-10/2026-10-22-hil16-18-fillers.md) — HIL-16a/18a restructuring
-- [progress/2026-10/2026-10-22-trail-scoring.md](../progress/2026-10/2026-10-22-trail-scoring.md) — TRAIL scoring record
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 9): HIL-6 option B is built; the pilot costs about 250 whole-host hours, and a gate must be code
-
-**Confidence: verified** for the build and parity results; the pilot cost is the harness's own estimate.
-
-- **Built (option B, sibling loop on the shared substrate).** Seams S1-S5 move the guards, eval-leakage checks, a score-free ledger projection and a pure SafetyGate verdict into `src/autopilot_core/`, with parity replays (723 MHS-3 outputs over the real pool, a 879-row journal copy across 6 gate configs) and the AutoPilot test set going 819 to 835 passed. Concrete parts and the first-feature pilot design (`hil6i-first-feature`, the `architect_investigate` prompt) followed.
-- **Pilot entrypoint.** `python -m src.harness_loop.pilot_run` (orchestrator `a8551a5b`) refuses without `WINDOW_CONFIRMED=1`, the `2026-10-22-pilot-only` lift token, the design id and a passing validator; PromptForge is excluded from the target prompt while it runs. The operator lifted the 2026-09-16 no-loop deferment for this pilot only.
-- **Cost came after the ask.** The estimate then arrived at about 232-300 whole-host hours (cycle 1 about 162 h, cycle 2 about 116 h), and the operator leaned to a redesign costed at four nights or fewer. The target prompt is architect_general's and a harness's value is model-conditional, which is why the pilot is not run on Flash-Next.
-- **Process lessons.** A check that only prints must not be chained with the action it should gate (a shared-clone fast-forward ran under a live campaign because the live-process check printed but did not gate); show a run's cost before asking to lift a deferment; and test a slow-harness diagnosis against server logs before naming a cause. All three are in `compute-fillers.md` items 19-21.
-
-### Source References (2026-10-22 wrap-up sweep 9)
-
-- [progress/2026-10/2026-10-22-hil6-b-seams.md](../progress/2026-10/2026-10-22-hil6-b-seams.md)
-- [progress/2026-10/2026-10-22-hil6j-pilot-wiring.md](../progress/2026-10/2026-10-22-hil6j-pilot-wiring.md)
-- [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): HIL-16/HIL-18 build
-
-**Confidence: verified** for the HIL-16/HIL-18 build (unit-tested against a scripted harness and the real `_execute_turn` recording path, orchestrator `6bb9dc05`, `55913726`, `64aa7f8f`, `f71480e6`); **inferred** for everything that needs an inference window (HIL-16a/16b, HIL-18a/18b, DHM-1..7), which is filed and not run.
-
-- **HIL-16 prefix-preserving replay tier is built, flag `replay_recording` default off.** Each root-LM turn records a `model_turn` row (prompt and raw output in a sha256 CAS, hash chain over all prior prompts/outputs); `ReplayDriver.check_prefix(k)` rebuilds every prompt from harness state and byte-compares it, so any drift is a `PrefixDivergence` and no model call is made. Flag-off scripted `_execute_turn` digest `b3f8bce5...9158d` is identical on origin/main `04685908` and the lane.
-- **Four-arm design, controls before claims.** Arms are targeted, no_hint, placebo (same length as the hint) and wrong_step (same hint at a turn j != k, |j-k| >= 2 preferred); every started sample stays in the denominator. `decisive` requires the targeted flip rate to beat all three controls at alpha 0.05 (one-sided Fisher); a missing control or a non-failed original gives `claim_allowed=false`.
-- **Prefix determinism is proven only against a mocked LLM so far.** With the production graph Harness binding (`graph_harness.py`), a real-node recording with a mocked LLM and a real REPL reproduces all 6 turns byte-for-byte for every k in 0..6, in-process and in a separate CLI process (n=1 recording). Real prompt determinism (timestamps, ordering) is untested until a flag-on recording; launches must pin `PYTHONHASHSEED`, `tmp_dir` and the REPL spill dir, and the reasoning-retry call must be recorded or disabled, otherwise `prefix` stops at `environment_drift`.
-- **HIL-18 spectrum attribution:** key `(role, tool, exit_status)` with `unknown` never guessed (a local model enters only via `relabel_ambiguous`), Kulczynski2 ranking, and a task counts only when pass-rate is strictly in (0,1) over >= 20 labelled replays. Role-ablation Shapley credit (HIL-18b) is not built and is gated on a usable ranking plus the 1-2 week dependency-edge derivation. HIL-15a/16a/18a share ONE flag-on window via `hil15a_flagon_run.py` (mock-proved 24/24 clean).
-- **Dev-harness trace mining gets its own owner (`dev-harness-trace-mining`, stub).** Because the improvement loop excludes the shell surface, DHM-1..7 measure interrupt rates per 1000 turns with Wilson CIs, a retrospective guard audit, a lesson registry with an interrupted-time-series pilot, and the always-on prefix cost; hook and policy edits stay human-applied and outputs are aggregate-only.
-- **Refuted/limited as base rates:** SWE-chat's 46% pushback, the 79% invisible-failure share, Transluce's ~2% and SWE-Together's -0.92 are not EPYC coding-agent base rates; CODESKILL's +11.03/+5.10 is single-run and transductive, so it is not evidence for learned skill management. HIL-LB1 will score loop detectors (token-period, paraphrase, in-grammar with grace window) with test-after-edit treated as legitimate repetition.
-
-### Source References (2026-10-22 sweep 7)
-
-- [docs/design/harness-improvement-loop-design-20261006.md](../docs/design/harness-improvement-loop-design-20261006.md)
-- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
-- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
-- [progress/2026-10/2026-10-21-hil16-18.md](../progress/2026-10/2026-10-21-hil16-18.md)
-- [progress/2026-10/2026-10-21-queue-builders-3.md](../progress/2026-10/2026-10-21-queue-builders-3.md)
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): harness-loop architecture options, per-role speculation parity, embedder seam
-
-**Confidence: verified** for landed code and accepted designs as recorded; **inferred** for tradeoff readings. No runtime loop exists yet; the architecture choice is the operator's.
-
-### Harness improvement loop (HIL-1 to HIL-8)
-
-- **Status.** HIL-1 to HIL-5 are accepted design (2026-10-06); the loop is not started and the A/B/C architecture choice (HIL-6) is undecided. The 2026-09-16 operator deferment stands, and HS-4 Phase 0 and the P0.4 freeze precede any tuning.
-- **Mutation object is bounded.** Loop-mutable arms are the prompts and declared parameters a suite measures (memory injection, notes, session-search ranking limits, background-review derivation, delegation prompts, compaction summarisation and fold thresholds). Policy documents, router policy, session identity, injection-scan policy, permissions and skills are proposal-only and human-applied; skills have no objective until a separate SkillBank A/B admits them.
-- **Options.** A (new AutoPilot species) couples unlike axes to frontier semantics; **B (sibling loop on shared substrate) is recommended but not selected**, at a rough 4 to 9 engineering-day seam estimate that is unvalidated and excludes the driver and instruments; C (fully separate) is cheapest to start and re-lives fail-open, stale-frontier, leakage and comparability defects. Reuse targets: journal, safety gate (as a no-side-effect verdict), pure PromptForge guards, infra fingerprint, rejected-mutation ledger and the request-scoped knowledge fence.
-- **Evaluation discipline.** Per-feature primary axes reuse the existing paired A/B and promotion protocols; anything without a fitting protocol is an observation. HIL-7 added a six-item pre-first-suite-run checklist (see [benchmark-methodology](benchmark-methodology.md)); HIL-8 corrected stale v1/v2 readings of arXiv 2607.12227 to the v4 text (held-out gain +0.0 averaged over three models, n = 34, no CI, not the earlier larger figure).
-- **Monitor queue.** Four harness-evolution papers have only first-stage reads; nothing in them is verified and none is relied on. Trigger: the operator selects the architecture or opens the first suite design.
-
-### Per-role speculation parity (Q38-T10, operator ruling 2026-10-20)
-
-Speculative serving (MTP, DFlash2) is not bit-identical to non-speculative greedy on this stack (see [benchmark-methodology](benchmark-methodology.md)). The ruling is **per role**: judges, model grader, coherence judge, replay and reproducibility-claimed evaluation are bitwise-required; serving roles are distributional with a graded no-loss gate. A read-only role table found every bitwise-required caller currently running with speculation on, and no role using the serial-exact environment. Serial-exact is a process-level start-time read and those callers share processes with serving roles, so it would remove the speedup for serving; a dedicated server would be a stack change. The minimal fix is a per-request `speculative.n_max: 0` key, now landed behind a default-OFF flag (payloads byte-identical when off; exactly three opt-in call sites pinned by an AST test; serving backends never opt in). **Unverified prerequisite:** nobody has shown that a per-request n_max of 0 on a speculating server is token-identical to a spec-off server, alone or beside a speculating slot; the paired control arm (Q38-T10.1, at least 59 graded prompts) is written but not run, and the flag stays off until it passes. Fallback if it fails: a dedicated spec-off judge server through the stack-change route.
-
-### Embedder pool seam (EmbeddingGemma 2, DRAFT stack-change package)
-
-The operator adopted EmbeddingGemma 2 BF16 at 256 dimensions as the REPL embedder-pool model, hybrid with BM25 fusion, to ship with the next production kernel together with a store migration; the retrieval flags stay default OFF. The draft package (not signable: no patch set, no gate run, migration tool has open gaps) records what the orchestrator must change together: a model-keyed prefix pair (query and document sides), slicing the 768-dim reply to 256 and renormalising in one shared helper (the pool client currently rejects any reply whose size differs from its configured dimension, and three other paths normalise at full size with no check), a launch-binary resolution that does not point at the old in-tree build, and dimension constants derived from one source. Stores holding BGE-trained state (episodic, sessions, strategy, routers, IRT scorer) each need migration or retrain with its own acceptance test; the sessions store has no retained source text and blocks the migration tool until an archive-only mode exists. Gates pre-registered (parity on long inputs above 459 tokens, 3,200-character chunks, throughput, decode interference against the accepted BGE post-cap values, memory, migration rehearsal) have not run. One operator question remains: the measured arm was BM25 plus dense, not grep hits as the lexical leg. Refuse-and-keep behaviour was added to the session store (it previously deleted the vector file on a dimension mismatch).
-
-**Open questions:** HIL architecture choice; Q38-T10.1 control result; whether the prefix pair suits symmetric task-to-task store lookups. Cross-refs: [autonomous-research](autonomous-research.md), [local-inference](local-inference.md).
-
-### Source References (2026-10-20 sweep 2, architecture)
-
-- [Harness improvement loop handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-1 to HIL-8 state and classification table.
-- [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — objective axes, substrate extraction plan, option package.
-- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T10 ruling, role table, gaps, T10.1.
-- [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — seam, migration, gates, unknowns.
-- [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — spec-off-judges landing, embedder adoption prep.
-- [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — session lane context.
-
 
 ## Latest source review — 2026-10-07
 
@@ -269,2611 +32,6 @@ Workflow preparation follows the same separation. FW-2 supplies a subsystem cont
 - [Triage metadata](../docs/reference/agent-run-failure-triage.md)
 - [Fuzzy workflow handoff](../handoffs/completed/fuzzy-workflow-authoring-gui.md)
 - [prior art](../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md)
-
-## Compiled Update — 2026-09-25: reversible changes need feature-sized commits, travelling tests, and immutable evidence inputs
-
-**Confidence: verified.** The kernel history and artifact mutations are recorded in committed incident,
-handoff, and session evidence.
-
-The OpenMP tensor-repack path shipped through production v5, but its test stopped travelling with it after
-v1. During the v6 rebuild, three independent changes were forward-ported in one commit: AVX-512BW repack
-kernels, NUMA placement, and the OpenMP repack. The first two failed their gates, so reverting the bundle
-also removed the unmeasured parallel repack. Commit labels described only the kernel work, and v7 through
-v10 consequently carried no repack OpenMP pragmas. The omission surfaced three months later when each
-519 GB calibration launch spent about 3.5 minutes in a single-threaded load.
-
-The architecture rule is concrete: one independently gated feature per commit; keep its acceptance test
-beside it through every consolidation; and split a mixed commit before reverting failed members. Commit
-messages and lineage summaries are discovery aids, not a substitute for enumerating the behaviors and
-tests a revert removes. The recovered path was bit-exact against the champion, while the added parallel
-reader produced about 3.2× warm and 2.1× cold load speedups on the measured 27B workload.
-
-The same isolation rule applies to guardrails. The PII pre-commit hook independently matched 12–13 digit
-`perf` sample periods as account numbers twice. On the second recurrence it rewrote fourteen period cells
-across two committed bundle indexes to `[period redacted]`; those evidence copies ceased to be byte-exact
-without the measurement code changing. A guard operating on evidence must preserve an attestable original
-or emit a clearly derived artifact, and every narrowed exemption needs a must-block negative control in the
-same change. Otherwise the guard can silently break the provenance chain it is meant to protect.
-
-### Source References (2026-09-25)
-
-- [`INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
-  `INC-20260925-parallel-repack-lost-in-bundled-revert`, including the commit lineage, missing travelling
-  test, measured load cost, and recovery.
-- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-RD-1b and its
-  2026-09-25 recurrence, including the negative-control requirement.
-- [`2026-09-25-main-ak-seat.md`](../progress/2026-09/2026-09-25-main-ak-seat.md) — the session record for
-  the fourteen rewritten period cells and affected artifact copies.
-
-## Compiled Update — 2026-09-24 (speech-lane wrap-up): one efficiency row per actor call, comparable columns across harnesses, and three more things headless opencode does not tell you
-
-**Confidence: verified.** The exporter reproduced DS41-C20c exactly from the real `opencode export`. The code
-(research `0bf2d7c2`) is built and unmerged, and no A/B has used it yet.
-
-- **Record one efficiency row per actor call, at call time.** Do not recompute it from exports afterwards.
-  `epyc.autokernel.actor_call_metrics.v1` is written as a **sibling** line just before the closed, self-hashed
-  `actor_call.v1` record. A closed contract does not get widened to hold new columns. The row carries steps, tool
-  calls by name, compactions, prompt/decoded/cache-read/cache-write tokens, first/max context, and the predicted
-  schema-valid/repair-ran. A metrics failure is recorded as `metrics_error` and never fails the call.
-- **The first reproduction found a behaviour fact.** C20c came out at 23 steps, 25 tool calls
-  `{bash 11, glob 1, read 13}`, 1 compaction and 57,702 decoded tokens. So the plain seat never called the MCP
-  perf tools, which exist only in the bounded seat.
-- **Define "decoded" once:** `tokens.output` summed over steps, **reasoning included**.
-- **Use the same columns for the orchestrator (S4-T1), but not the same unit.** The REPL turn-telemetry fix is to
-  use the same names and definitions, so the seat and the orchestrator land in comparable columns for OAB-4. The
-  seat counts an opencode *step*, meaning one assistant message. `ChatResponse.turns` counts REPL turns. Record
-  which unit a row uses, and never equate the two.
-- **Headless opencode hides three more things** (audit rows 8–10):
-  - A bare `opencode run` has no MCP server.
-  - `opencode export` has per-step tokens but no per-tool latency, no per-step wall time and no compaction step:
-    a `compaction` part carries only `tail_start_id`. Report tool time as *unknown*, never as zero.
-  - `opencode session list` has no parent/child link. Snapshot sessions before the call, count as scouts the
-    sessions that are new since then, and take as primary the session with the most steps.
-- **Five traps, each of which looked like a model failure:**
-  - `opencode export` truncates through a pipe (the 98,304-byte fixture), so export to a file.
-  - A compaction summary quotes the reply template.
-  - `rc=1` can come with a complete reply.
-  - Gate real-CLI hooks on the resolved binary, not on a kind string, or test doubles will shell out.
-  - A planner told "never build" still compiled `.o` files into `/tmp`, and it read the anchor build tree instead
-    of its own lane.
-- Context-as-files is compiled in [context-management](context-management.md). The tool-output cache is in
-  [tool-implementation](tool-implementation.md). The belief-kernel wiring of both records (VB-AK-METRICS-1,
-  VB-AK-CTX-1) is in [knowledge-management](knowledge-management.md).
-
-### Source References (2026-09-24 speech-lane)
-
-- [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
-- [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): rows 8–10.
-- [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency): S4-T1 *Comparability target*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §2.
-
-## Compiled Update — 2026-09-24 (wrap-up #4): TD-21 is complete — the last residual was the writer itself
-
-**Confidence: verified** (orch `c347600e`, regression test fails on the old code; 253 related tests pass).
-
-- TD-21 (re-audit of every free-text JSON consumer) and TD-21.33 are ticked. The final residual, TD-21.33c,
-  was inside `_real_call`: after setting this call's meta it re-read the shared `self._last_inference_meta` for
-  three follow-up writes (`tool_calls`, `max_tokens_clamped`, `completion_reason=context_limit`), which a
-  concurrent `asyncio.to_thread` call on the same primitives could send to another request's dict. A local
-  handle fixes it. Live after the next API reload.
-- The lesson generalises TD-21.33: migrating the *readers* of a shared "last call" attribute is not enough — the
-  code that *writes* follow-up fields must also hold its own handle.
-- Same evening, on the /v1 REPL path: an unquoted `FINAL(OK)` raised `NameError` and returned empty content;
-  `rescue_bare_name_final` rescues bare identifiers (orch `41ecf9fc` → `3a61c153`).
-
-### Source References (2026-09-24, wrap-up #4)
-
-- [`typed-decision-plane.md`](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21, TD-21.33, TD-21.33c.
-- [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (3)*.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-0i.
-
-## Compiled Update — 2026-09-24 (operator wrap-up compile): TD-21 landed — and the repair turn needed evidence, not just a schema
-
-The morning's census (below) found 36 of 62 consumers fishing JSON out of free text. By 11:52Z the same day
-every TD-21 row except the two AutoKernel actor rows had landed on orchestrator main and been live-smoked, and
-the API was reloaded. The session reviewed and re-tested every subagent result on its main thread before
-landing; that review loop is where most of the findings below came from.
-
-- **The gate was three lines.** TD-21.0 (orch `b284ede3`, 121 tests): the `/v1` payload builders now forward
-  `json_schema` (as `response_format`) and `grammar`, streaming and non-streaming. It went live at 09:57Z, and
-  on `:8070` it returns prose without a schema and a schema-valid object with one. One shared helper
-  (`src/structured_output/repair.py`, orch `c4570158`/`577ccc5e`) carries the fish → validate → decline →
-  extract ladder to every site.
-- **A repair turn given a schema INVENTS required values.** Live example: the helper produced `tier: 2` from a
-  draft that named no tier. The shared helper gained `require_evidence`, and TD-21.34 (orch `2ffc3f51`)
-  applied it at every landed site, with an explicit `evidence_exempt` for fields that may legitimately be
-  derived. The AutoKernel seat reached the same rule independently: refuse a repair over an empty report, and
-  refuse a repaired field the report never names (TD-21.33's grounding). This is the plane's general lesson:
-  **constrained decoding guarantees the shape, never the provenance.**
-- **The API's own `/v1` refuses `response_format` by design** (HS-OD-1, 422). One subagent's autopilot repair
-  targeted it, which means every production repair would have failed. Every repair now goes to the role's
-  llama-server.
-- **A process-global inference-meta slot raced under concurrency.** `LLMPrimitives._last_inference_meta`
-  produced a reproduced truncated write. It is now a per-call `ContextVar`, and the readers were migrated
-  (TD-21.33, orch `d12202f2`). The thread-hop reader in `_execute_turn` (TD-21.33a) and `native.py` (TD-21.33b)
-  are filed. This is the same shape as the 2026-09-14 `_invocation_log` finding: shared mutable state read as if
-  it were per-request.
-- **Landed is not live. TD-21.1's FINAL() repair is inert in production**, because all REPL schema validation
-  sits behind `final_schema_validation` (OFF). Enabling it is operator decision OP-51 (TD-21.1a). The two
-  eval-quality flags (`EXCLUDE_UNPARSEABLE_ANSWERS`, `CONSTRAIN_JUDGE_OUTPUT`) landed OFF and are flipped
-  together by one ratify command under era E19 (OP-50). They are off by default because excluding parse
-  failures changes what an accuracy number means.
-- **A dropped keyword argument degraded batches silently.** `llm_batch` gained `json_schema`/`grammar` and
-  `n_tokens`; the last was a real `TypeError` that had been silently degrading every batch (TD-21.22b, orch
-  `318c4d27`). The edit protocol rejected GBNF with evidence and uses finish-reason-gated recovery instead
-  (TD-21.21).
-- **Custody slip, caught before it shipped.** One subagent edited the SHARED orchestrator clone. The work was
-  moved to its worktree byte-identical, and the shared copy was restored before the E18 reload, so unreviewed
-  code never went live.
-- **Open, with named blockers:** OP-50 and OP-51 (operator). TD-21.29/21.30 (the AutoKernel actor rows) were
-  held while DS41 ran on those actors. The branch `td21/29-30-actors` (`c0a00a8b`) is stacked on the seat
-  lane and has been told to rebase onto research main `21ca61b0` and land. TD-1d.2 (a short inference window).
-  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0–21.34;
-  [progress 2026-09-24 td21](../progress/2026-09/2026-09-24-td21.md))
-
-## Compiled Update — 2026-09-24 (wrap-up compile): 36 of 62 model-output consumers still fish JSON out of free text, and our own `/v1` payload builder forwards no schema field
-
-**Confidence: verified** for the audit counts and the code locations (a read-only subagent audit of both
-stacks, file and line recorded per consumer, artifact committed), and for the repair idiom's behaviour
-(measured live on the 27B at `:8083`). The **conversions themselves are PREPARED, not landed** — TD-21.0
-gates every `/v1`-lane one, and the operator is dispatching a separate session.
-
-### Key findings
-
-- **The TD-1 consumer list was incomplete, and the largest consumer was missing from it.** The AutoKernel
-  loop's actors fished JSON out of free text with `_extract_json` and **retried 90-minute calls** when it
-  failed; `typed-decision-plane.md` had never listed them. That prompted a full re-audit of both stacks:
-  **62 consumers classified, 36 still fish structured output out of free text**, 31 of those reachable by
-  the same-server repair idiom. Of the 36: **13 write a silent default into persisted state or serve it to
-  a user**, 6 retry a full call from zero, 9 score a parse failure as a wrong answer.
-  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21;
-  audit artifact `artifacts/audits/td-json-consumer-audit-20260924.md`)
-- **TD-21.0 is the prerequisite, and it is three lines.** `src/backends/llama_server.py:607-616` (and the
-  streaming variant at `:1397`) builds the `/v1` chat payload with `messages`/`max_tokens`/`stream`/
-  `tools`/`logprobs`/`stop`/`chat_template_kwargs` and **no schema field**, while the native `/completion`
-  builder forwards both (`:1228-1231`). So every role on the `/v1` lane — `frontdoor`, `worker*`,
-  `toolrunner`, `architect_critic` — is silently **unconstrained even when the caller passed a schema**, and
-  `/chat`'s `output_schema` is advisory for exactly those roles. The measurement shrinks the fix: llama-server's
-  own `/v1` **does** honour `response_format json_schema` (proven live on `:8083`), so no declared
-  `/completion` lane is needed. Every `/v1`-lane conversion is a no-op until this lands, and it is zero
-  inference to decide — but it changes production request semantics for every `/v1` role, so it is a stack
-  change. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0;
-  [2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md))
-- **The repair idiom that works, with three refuted designs recorded.** Landed in
-  `epyc-inference-research` `ad2b89ff` (`loop/actors.py` `_parse_reply` / `_schema_repair`): fish first,
-  then a two-stage constrained turn at temperature 0 back to the **same local server** — an explicit
-  decline boolean, then pure extraction (reviews skip the boolean). Five shapes correct in **2–12 s**.
-  Three designs were refuted live on the 27B before that one: an *optional* `abstain` property (the model
-  fills it beside a real hypothesis), an `anyOf` abstain branch (constrained decode takes the cheap
-  branch), and an in-band `mechanism_id: "abstain"` marker (over-abstains on analysis that omits the phrase
-  "I propose"). The general lesson: **an abstention path a constrained decoder can reach cheaply will be
-  taken**, so the decline must be a separate, explicitly-asked stage.
-  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"Schema-constrained repair";
-  [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C16)
-- **A landed repair is not coverage.** TD-21.30 records the residuals of `ad2b89ff` itself: `_first_json_or_none`
-  is still a raw probe that silently decides what `_parse_reply` later sees; the acceptance test
-  (`"abstain" in body or _complete(body, schema)`) lets a partial or hallucinated object carrying the
-  required keys short-circuit repair; `REVIEW_SCHEMA` leaves `additionalProperties` unset; the repair body
-  carries no `model` field, so a multi-model endpoint would 400 and degrade silently to `None`; and
-  `_schema_repair` returns `None` for non-opencode backends, so **the two DEFAULT actor roles have zero
-  repair coverage today** — the idiom is live only on an explicit `provider/model` opt-in.
-  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.30)
-- **The costliest sites are the ones with a silent fallback, not the ones that crash.** Named in the audit:
-  the REPL `FINAL()` validator re-runs the whole `run_task` graph from zero twice and then returns the
-  invalid answer anyway (TD-21.1); the autopilot ACTION block fails the provider, re-prompts a fallback
-  from zero, and writes a deterministic `seed_batch` default into the journal (TD-21.2); the TOON delegation
-  decision has **no failure mode at all** — unparsed architect prose is wrapped as `D|<prose>` and served
-  as the user-visible answer (TD-21.4); the review service increments `parse_failure_count` but still flows
-  a default verdict, with rubric axes defaulting `True`, **while the json_schema and GBNF payloads it needs
-  already exist in `review_grammar.py` and are simply never passed** (TD-21.6); the rubric judge falls back
-  to a heuristic rubric stamped into the eval results (TD-21.15); `vl_describe` sets `structured=None` but
-  leaves `result.success` **True**, so downstream cannot distinguish a parse failure from "nothing in the
-  image" (TD-21.19); and a reviewer A/B writes `DEFAULT_DECISION` into the very result the script exists to
-  produce (TD-21.24). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.1–21.28)
-- **Two sequencing rules the audit imposes on itself.** TD-21.31 records the *unreachable* consumers rather
-  than converting them (external CLIs with no local server; three arms are already natively constrained via
-  `--json-schema` or enum/`const` bindings) — but flags two defects there anyway: an arena fallback that
-  **returns the whole raw reply as a candidate** which then compiles and evaluates, and an OpenAI shim that
-  drops any `response_format` the vendor supplies. TD-21.32: there is **no declared `judge` role** in the
-  registry, so the judge-site conversions must land after or alongside the CJ-17 binding (was CJ-11) at `src/llm.py`,
-  or they convert against a moving target.
-  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.31, TD-21.32)
-- **Agents edit and then stop: 0/38 edited trajectories ever execute anything** (MF-VBS-1, measured, orch
-  `86471b1f`). The only corpus with per-turn `file_write_safe`/FINAL granularity is `data/bep_sandbox` —
-  62 real trajectories, `coder_escalation` Qwen3.6-35B-A3B, 5 tasks × 2 arms. No edited trajectory calls
-  `run_shell`/`run_python_code` afterwards (Wilson 95% 90.8–100%), and a main-thread re-check found 0/14
-  write-bearing traces that import, assert or call the edited code. Voluntary stops: **15/15**
-  edit-without-execution (79.6–100%), against an external prior of 110/248. The "delegates execution to the
-  user" variant is 0/62. The honest caveats are recorded with the number: the interleaved-edit rider
-  defines done as "every file written" and **never asks for verification**, 8/15 voluntary stops are
-  single-turn auto-finalizes, and only one of five tasks ever stops voluntarily — so this measures one
-  rider on one role on one day. Verdict: build the gate (MF-VBS-2), and re-measure once the other tasks
-  reach a voluntary stop at all.
-  ([multi-file-coding-completion-capability](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) MF-VBS-1/MF-VBS-2)
-
-### Open questions
-
-- TD-21.0 is deferred with a named blocker — a separate operator-dispatched session — because it changes
-  production request semantics for every `/v1` role and therefore passes the three stack gates. Until it
-  lands, roughly half the conversion list cannot be validated.
-- MF-VBS-2's effect cannot be sized: the multi-file tasks hit the 8-turn cap or error in every run, so
-  their forced-stop rate is a bigger and separate defect than verify-before-stop.
-  Filed as MF-FS-1: classify those forced stops by reason from the existing traces first.
-- ~~TD-21.29 — the *preparation* actors (`actor_preparation.py:333,:369`) still call `_extract_json` raw, and
-  a `PreparationRefused` burns a one-shot reservation. Same path `ad2b89ff` converted one file away.~~
-  Closed 2026-09-24 afternoon — see the compiled update below.
-- Live: does the `coder_escalation → frontdoor (connection_error)` fallback (surfaced during the OP-51 smoke,
-  :8083 otherwise healthy) share a root cause with the schema-preamble question, or is it an independent
-  routing defect? Diagnosis in flight.
-
-### Source References (2026-09-24 wrap-up compile)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21 and its 33 sub-rows: the
-  62-consumer audit, the TD-21.0 payload-builder gap, the per-site classifications, the residuals and the
-  explicitly-unreachable set.
-- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C16, the
-  schema-constrained repair turn and the intake gap it exposed.
-- [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the three refuted abstain
-  designs, the measured shapes and timings, the TD-21 dispatch decision.
-- [multi-file-coding-completion-capability.md](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) —
-  MF-VBS-1 measurement and caveats; MF-VBS-2 filed.
-
-**Additional sources (2026-09-24)**: TD-21 consumer census, the audit artifact, and the VB-TD-21-CENSUS prospective evidence gap.
-
-## Compiled Update — 2026-09-24: structured-output census finds free-text parsers and a dropped backend constraint
-
-**Confidence: verified** for the static consumer inventory and the local server compatibility checks recorded in
-the audit. This is a software-path audit, not a model-quality benchmark.
-
-### Key findings
-
-- **The cross-stack audit classified 62 structured-output consumers; 36 still extract structured data from free
-  text, and 31 are locally reachable for same-server constrained repair.** Failure paths include silent defaults
-  written to persistent state or shown to users, retries restarting the full call graph, and parser failures
-  counted as wrong answers in scorers. The full inventory and ranked conversion list are in the audit artifact.
-  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21,
-  [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
-- **The backend's llama-server `/v1` chat payload builder omits `response_format`.** The audit reports that local
-  llama-server `/v1` honors `response_format: {type: "json_schema", ...}`; the `/completion` adapter forwards
-  the constraint but the `/v1` adapter does not. TD-21.0 tracks this payload fix before conversions in that lane.
-  This is distinct from the orchestrator `/v1` API contract documented in the 2026-09-18 section below: that
-  role-keyed routing layer intentionally returns 422 for an unavailable forced role.
-  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0,
-  [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
-- **Capture the audit and the applied repair prospectively; do not invent retrospective claim tuples.** DS41-C16
-  validated same-server repair on five actor-reply shapes; the evidence handoff now separately tracks the future
-  TD-21 census/repair writer. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
-  [belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-DS41-OPS and
-  VB-TD-21-CENSUS)
-
-### Open question
-
-- Which of the ranked TD-21 consumers have completed conversion, and do their producers retain schema and
-  failure disposition without changing scoring or campaign authority?
-
-## Compiled Update — 2026-09-24 (afternoon operator follow-ups): relaxing a repair schema's `required` list does not by itself stop invention — the evidence guard does
-
-**Confidence: verified** — live smoke tests on the frontdoor/REPL path, cited commits on `origin/main` in both repos.
-
-### Key findings
-
-- **OP-50 (eval-quality scorer boundary) ratified and applied.** `EXCLUDE_UNPARSEABLE_ANSWERS` and
-  `CONSTRAIN_JUDGE_OUTPUT` are now both `True` under era `E19-eval-answer-parse-failure-excluded-quality`,
-  post-flip suite 271 passed. ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.EQ1, orch
-  `eabc9b44`)
-- **TD-21.29/TD-21.30 landed: the AutoKernel loop's preparation and residual JSON consumers now go through
-  repair.** Coordinated directly with the concurrent DS41 campaign session rather than waiting for it to end,
-  merged after their seat branch tip. ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.29,
-  TD-21.30, research `4915220f`, `34373dd8`)
-- **Relaxing a repair schema's `required` constraint does not, by itself, stop the model from inventing
-  optional fields — the evidence guard is what does.** TD-21.35 dropped `required` from the repair wire schema
-  (except const/single-enum discriminators) so a repair turn can no longer be *forced* to supply a field the
-  source text never named. Live smoke without the evidence check still showed the model filling an optional
-  `tier` field for a draft that named none. TD-21.34's `require_evidence` (already landed, unrelated commit)
-  is the mechanism that actually catches this — the two are complementary, not redundant, and a design that
-  ships one without the other is not protected against invention.
-  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.34, TD-21.35, orch `f09efc64`, research
-  `34373dd8`)
-- **A production-posture flag flip can surface an unrelated routing defect.** Enabling `final_schema_validation`
-  (OP-51) for a live smoke produced HTTP 500 with `Model fallback: coder_escalation → frontdoor
-  (connection_error)`, even though the `coder_escalation` backend (:8083) answered health checks — the flag
-  exercised an escalation path that a normal request does not take, exposing a defect the flag itself did not
-  cause. The operator suspended the flag rather than debug live; root-cause is filed, not fixed.
-  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.1a, orch `98edfeb0` enable, `6b26f3ae`
-  suspend)
-- **Cross-process meta reads across a thread hop need the value returned from the thread, not re-read after
-  it.** TD-21.33a's fix (`_call_llm_capturing_meta`) captures inference meta *inside* `asyncio.to_thread` and
-  returns it alongside the result, instead of reading a ContextVar set in the child from the parent afterward
-  — the general pattern for any per-call state crossing a thread boundary in this codebase.
-  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.33a, orch `f769f3e1`)
-
-### Open question
-
-- The `coder_escalation` connection_error under OP-51 and the JSON arm's `length`-truncation under TD-1d.2 are
-  both live-smoke findings against a healthy stack from this same afternoon — worth checking whether they share
-  a cause (an escalation/repair path both exercise) before treating them as two separate defects.
-
-## Compiled Update — 2026-09-23 (evening wrap-up compile): a daemon runs the script inode it opened at launch, so every commit to a tracked script can orphan a live process
-
-**Confidence: verified** — the census was a read-only `/proc` walk, and each of the three shapes was observed live on this host the same night.
-
-### Key findings
-
-- **INC-20260917-daemon-stale-script-inode: three shapes, all live at once.** (1) **Stale and diverged** — the opencode-event reaper (pid 2873259, started 09-08) held `fd/255` on a lane copy under `worktrees/mains/ak-rebuild-20260828`, 1,802 B against 7,976 B tracked at HEAD; the running code still gated its VACUUM decision on `pgrep -x opencode` and had never sourced `observer_guard.sh`, across **461 iterations and 39 VACUUMs** against the operator's live `opencode.db`. (2) **Orphaned inode** — the hub and bus supervisors both showed `(deleted)` for their own script after an unrelated `git reset --hard origin/main` in the shared clone; content was identical that day, so nothing was visibly broken, but the next commit to either file would have diverged silently. (3) **Orphaned tree** — a hub on `:8101` ran from a worktree directory that no longer existed, with no registry row, pidfile or probe. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) INC-20260917-daemon-stale-script-inode)
-- **The mechanism is bash plus git, and neither is doing anything wrong.** Bash opens a script's inode once at launch and reads it incrementally for the process's whole life. Git never writes a tracked file in place — checkout, reset and merge unlink and recreate it — so **every commit to a tracked script leaves any already-running daemon on an orphaned inode**. No cron runs in this container, so daemons are hand-launched and inherit the launching session's cwd, which is how a lane cwd produces a lane-pinned daemon. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md))
-- **Nothing existed to move a daemon back, and the guard that looked relevant certifies a different object.** Supervisors restart their charges, never themselves. `scripts/coordination/WORKTREE_MIGRATION.md` pinned runtime **state** to `/workspace` and said nothing about runtime **code**. And `observer_census.py` (Rule A/B over `git ls-files`) certifies the **file**, not a running **instance** — which is how "census OK" coexisted with a nine-day-stale live reaper. A certificate about a path is not a certificate about a process. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
-- **Remedy (a), landed: `scripts/coordination/daemon_provenance.sh`.** `dp_attest`, called at a daemon's own startup, **refuses to start** when its own script does not resolve under the canonical root — *a lane may develop a daemon, never run it* — **warns loudly but never refuses** on an uncommitted local edit, and records `{pid, script_realpath, inode, blob, started_at}`. `dp_stale_since_start` polls once per loop iteration and **logs, never acts**, that a commit has since replaced the file the process is executing. Wired into the reaper's `run` mode and into `bus_supervisor.sh` / `hub_supervisor.sh`'s own `loop` startup — complementary to bus_supervisor's pre-existing H-4 check, which watches the **separate** daemon it supervises, not its own script. 15-case test; the read-only `/proc` check found no live daemon on stale code that day. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81/NIB2-81a)
-- **The rule this fed: runtime-plane daemons execute from canon or the read-only view only, never a lane.** Now stated in `WORKTREE_MIGRATION.md` alongside the pre-existing runtime-state rule, which is the gap the class fell through. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md), CLAUDE.md § Working-tree identity)
-- **The reaper was not merely stale — it was dead.** Its pid had gone with the 2026-09-21 host restart (last log line 2026-09-20T00:05Z), so from then on nothing was reaping. Relaunched detached from the **tracked** path `/workspace/scripts/system/opencode_event_reaper.sh` (pid 1833821, `fd/255` verified against the tracked file); first pass at 19:17Z: VACUUM 55 s, integrity ok, db 10.8 GB. Nothing relaunches it after a reboot, which is remedy (b). The orphaned `:8101` hub is moot for the same reason — its pid is gone and nothing listens there. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NI-OC-a.1, NIB2-81b)
-- **NIB2-80: an escalation path that bypassed its own budget gate, at five sites rather than the one reported.** `epyc-orchestrator/src/graph/nodes.py:235-241` bumped `state.escalation_count`, recorded the role change and returned `CoderEscalationNode()` **without calling `_should_escalate`**, while every other escalation site gated on it. Fix (orchestrator `d1f5bf02`): immediate escalation is kept but bounded by `max_escalations` at **all five** early-abort sites; at budget it falls through to the sibling gate/retry/fail chain. Residual: early-abort escalation still skips the role-cycle check. Finding one instance of a defect class is a reason to grep for the rest before fixing. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-80)
-- **A fan-out pattern that held for a 10-item batch**: four screeners first, then ten implementation subagents, each reviewed on the main thread before anything landed — across three repos in one session, with the operator-only items (a daemon relaunch, a production config change) separated out rather than executed by subagents. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
-
-### Open questions
-
-- NIB2-81 remedy (b) — the generalised supervision loop (a registry `runtime:` field plus `observer_census.py --live`) is what would catch shape (3), and it is still open. Nothing restarts the reaper after a reboot.
-- Should `dp_attest`'s warn-only behaviour on an uncommitted edit ever become a refusal, or does that break the develop-in-a-lane workflow it deliberately protects?
-
-### Source References (2026-09-23 evening wrap-up compile)
-
-- [INCIDENT_LOG.md](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20260917-daemon-stale-script-inode: the three shapes, the mechanism, the remedy and the rule fed.
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-81/81a/81b (`daemon_provenance.sh`), NI-OC-a.1 (the dead reaper), NIB2-80 (early-abort escalation).
-- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch and its screener/implementer fan-out.
-
-## Compiled Update — 2026-09-23 (later): NIB2-81 remedy (b) lands — a live census with a scheduled mode, and an operator ruling that a `not_running` daemon can be the correct state
-
-**Confidence: verified** — the census states were exercised against the live host on 2026-09-23, and the operator ruling is recorded verbatim in the handoff.
-
-### Key findings
-
-- **Remedy (b), landed: a registry `runtime:` field plus a read-only `/proc` census.** Two runtime modes: **daemon** mode (`pidfile`, `expected_path`, `provenance`) for a long-running process, and **scheduled** mode (`log`, `max_age_s`) for a cron-ticked target that has no daemon pidfile by design. `observer_census.py --live` walks `/proc` and reports one of seven states per registered instance — `running_current` / `running_stale` / `running_off_canon` / `not_running` / `cannot_tell` / `scheduled_current` / `scheduled_stale` — feeding the existing `alarm_channel`. `bus_supervisor.sh` restarts only rows flagged `restart_on_stale` (the reaper, today), by the candidate's own pidfile identity, TERM then KILL, rate-limited. Root commits `ddb4d0e9`, `938766ab`. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
-- **Correction made in review: a two-mode census would have alarmed on its own correct behaviour.** The first version modelled every registered target as a daemon with a pidfile, which would have raised a permanent false CRITICAL for `hub_supervisor` and `fleet_watch` — both cron-ticked, both correctly having no daemon pidfile between ticks. The **scheduled** mode (`eb05724b`) was added specifically so a target's *design* (cron-ticked vs long-running) determines which states are even possible for it, rather than one state machine being asked to explain every target.
-- **Live census, 2026-09-23: reaper `running_current`; `hub_supervisor` and `fleet_watch` `scheduled_current`; `bus_supervisor` `not_running` since 2026-09-20.** The operator ruled explicitly to **leave `bus_supervisor` (and therefore the coordinator-daemon) down** — relaunching it restarts fleet dispatch and nudges, which the operator did not want restarted incidentally as a side effect of closing a hygiene item. Its `not_running` census verdict is therefore an **expected state**, not an outage, and the practical consequence is that the reaper currently has no automatic stale-restart path while `bus_supervisor` stays down. Root commit `10b94f09`. A census state is a fact about a process; whether that fact is a problem is a separate, human call. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
-- **A shell `stat` can report the wrong inode for a `/proc/<pid>/fd/<n>` symlink, on this host specifically.** The restart path was deliberately built on a small `python3` helper rather than bash's own `stat`, because this host's `stat` is uutils-coreutils, measured (while building the restart path) to return a **different, wrong** inode for a `/proc/<pid>/fd/<n>` symlink than for the same file's real path — while `os.stat()` (already used by `observer_census.py`, and used by this helper) resolves both to the identical, correct value. A restart mechanism built on the shell `stat` comparison would have failed closed into `cannot_tell` on **every single call** on this host, which is a worse failure than the gap the remedy exists to close — importing `python3` for a one-line comparison is cheaper than that failure mode. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81, `scripts/coordination/bus_supervisor.sh`)
-
-### Open questions
-
-- The reaper has no automatic stale-restart while `bus_supervisor` stays down (an accepted, operator-ruled consequence, not an open defect) — the next operator go to relaunch it should be treated as a fleet-dispatch decision, not a hygiene fix.
-
-### Source References (2026-09-23, NIB2-81 remedy (b))
-
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-81 remedy (b): the registry `runtime` field, the seven-state live census, the `bus_supervisor` restart path, and the operator ruling.
-- epyc-root commits `ddb4d0e9` (live census), `938766ab` (registry-flagged restarts), `eb05724b` (scheduled mode correction), `10b94f09` (operator ruling recorded).
-- `scripts/coordination/bus_supervisor.sh` — `registry_script_is_stale`'s uutils-`stat` vs `os.stat()` comment, measured on this host.
-- `scripts/coordination/observer_census.py` — the seven-state `--live` census and its pre-existing `os.stat()` convention.
-
-## Compiled Update — 2026-09-23 (wrap-up compile): two components that each told the truth about different directories, and a tool that reported success on a push that never happened
-
-**Confidence: verified**. The push-lock defect was measured across four failed pushes, and its fix was mutation-checked. F9b was checked by running the guard in each repo.
-
-### Key findings
-
-- **SSU-F9: a correctly acquired push lock did not satisfy the pre-push guard, and nothing said so.** Two independent defects composed, and either alone blocks a push while reporting success:
-  - **(a) The lock directories disagreed.** `serialized_push.py` derives one canonical directory from the git common dir, deliberately, so that every lane worktree contends for one lease. The hook looked in `<repo>/coordination/push-locks/`. `--acquire` reported the lock acquired, and the hook reported it NOT HELD. Both were true of different directories.
-  - **(b) The wrapper's own `--push` could not satisfy its own guard across two tool calls.** The guard accepts a push from a *descendant* of the lock holder. `--acquire` and `--push` are separate processes, and the wrapper exported neither `EPYC_PUSH_LOCK_HOLDER` nor `AGENT_ID` to fall back on.
-  - **The silence was the real defect.** git's `failed to push` went to stderr *before* the manifest, and the last line printed was `PUSHING as '<agent>' under the push lock ...`. Then `--release` said `(no push lock held)`, which reads like a normal post-push release. Only `git cherry origin/main main` showed the push had not landed.
-
-  ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9)
-- **The fix: one resolver, and verify instead of attempt.**
-  - The guard now **asks the writer** (`--print-lock-file`) rather than deriving a second answer, and refuses if the repo keys disagree.
-  - The wrapper declares `EPYC_PUSH_LOCK_HOLDER` for its own child push, asserting only what `O_EXCL` just proved.
-  - `--push` prints git's output after the manifest, then runs `git cherry`, so a push that exits 0 without landing reports `PUSH FAILED` (exit 4).
-
-  Guard strength is unchanged, and that was proven rather than asserted. With no lock it still refuses, and a mismatched id still refuses. Re-running the suite against the pre-fix guard gave exactly the four new default-location failures. The files sit under `scripts/coordination/**` and `scripts/hooks/**`, which D9 puts behind operator ack, and the owning session cannot self-ack (SSU-F9a). The fix landed as epyc-root `0f9a4ef1`, whose message carries `D9-ack: operator, 2026-09-23`. The SSU-F9a box in the handoff is still unticked. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9 outcome, SSU-F9a)
-- **F9b: a relayed subagent claim was false, and checking it took one `cat`.** The task claimed the two sub-repos had LFS-only pre-push hooks with no serialization guard. Both in fact carry the chained hook installed 2026-08-12, byte-identical to epyc-root's, and running the guard in each repo refused as designed. What *was* true is more interesting. Before SSU-F9, the guard hardcoded `/workspace/coordination/push-locks` while the wrapper locked in each repo's own directory. So in the sub-repos every correctly locked push would have been refused, on every attempt. In epyc-root the two derivations happened to produce the same string, which is why the breakage was invisible from there. Pushes to both sub-repos after the fix ended on `PUSH VERIFIED`. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9b)
-- **SSU-F9c: the same shape, one lease over, still live.** `promote_lane.py:519` defaults `--lock-dir` to the `__file__`-relative fallback. In a lane worktree that is the lane's *private* directory, so the promote lease serializes nothing across lanes. That is the 2026-09-01 incident that the push lease's git-common-dir derivation was introduced to fix. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9c)
-- **A module that parses `sys.argv` at import answers the importer's flags (DS41-C2e).** `autokernel_enrollment.py:276` imports `scripts.server.orchestrator_stack`, which parses `sys.argv` at import time. So it saw the enrollment's flags, printed stack status and exited 0 without writing the output: another success-shaped non-result. The campaign route taken instead is `--registry-snapshot` (an `epyc.autokernel.artifact_registry_snapshot.v1` file carrying model/build/recipe identities). The import-time argparse is filed to be fixed separately. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2e)
-- **A guard's documented override must be reachable by the party it names.** The commit-hygiene hook reads `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` from its own environment (`check_commit_hygiene.py:504`). So the inline form its refusal text suggests, `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git restore …`, never reaches it. It refused twice on 2026-09-23 even after the operator had approved that exact command, because the approval arrived as chat text rather than as a `!` shell line. The same content was then written from `git show HEAD:<path>` after hash-checking each backup. The filed fix is to have the refusal say how the operator applies the override, or to accept a one-shot operator token. As it stands, the text invites an agent to try, fail, and then route around the guard with an equivalent write. ([loop-owned-fleet-implementation](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
-- **Ownership follows the lane, not the session.** The typed-decision plane is now owned by the research-intake lane: the session it was assigned to is closed, and its orchestrator worktree retired after its branch merged. New TD work cuts a fresh lane worktree from origin/main. The `research-intake` skill's Stage 4 now ends with a lane close-out rule. The same cleanup recorded a process miss: worktree and branch removals ran without the operator's per-list delete confirmation. Nothing unique was lost, and every tip is recorded for restore. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
-
-### Open questions
-
-- SSU-F9a is closed (2026-09-23): the D9 ack is recorded in `0f9a4ef1`'s `D9-ack` trailer, and the box is ticked with that evidence.
-- Do any other coordination leases default to a `__file__`-relative directory, as in F9c?
-
-### Source References (2026-09-23 wrap-up compile)
-
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9 (defect and outcome), SSU-F9a, SSU-F9b, SSU-F9c.
-- epyc-root commit `0f9a4ef1` — the SSU-F9 fix and its `D9-ack` trailer.
-- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2e.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the owner line.
-- [loop-owned-fleet-implementation.md](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) — the unreachable hygiene-hook override (working-tree edit by the owning session, 2026-09-23).
-- [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — lane cleanup, the close-out rule and the process miss.
-
-## Compiled Update — 2026-09-19: a dormant browser-agent surface is filed, and the typed-decision plane's agent-facing results settle
-
-**Confidence: verified** for the filings and the measured routing receipts; the browser surface is a design reference only (no workflow has asked for it).
-
-### Key findings
-
-- **`browser-agent-surface.md` (UFH-10) is a dormant stub by operator steering**, so an interactive, goal-driven browser surface (click/type/select/scroll) is not lost. Its scope boundary: `searxng-search-backend.md` owns *read-only* retrieval (SearXNG → Crawl4AI → Camofox as last-resort browser, CA-6); this stub owns *interactive* browsing, which nothing else does. Its first task is an operator decision — name a workflow that needs it. ([browser-agent-surface](../handoffs/completed/browser-agent-surface.md))
-- **The design reference, from the intake-1493 dive:** rebuild the action space each step from one atomic DOM snapshot as an indexed element table; the model picks an index, never a selector, coordinate or code, and the executor re-checks freshness and occlusion before input; one typed call per step for the operation plus per-operation target heads; a generative model only for free-text fields (strict single-key JSON); never retry a mutation, log execution before re-observing, and verify outcomes independently because DONE is not proof of success. The reusable mechanism advances under TD-12..TD-15 regardless — see [tool-implementation](tool-implementation.md). ([browser-agent-surface](../handoffs/completed/browser-agent-surface.md), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **Answering the 2026-09-17 open question "does TD-7 clear the incumbent comparator?": no.** Once single-token codes let the native arm resolve 200/200 (TD-9), agreement was 93.5% but the counterfactual value delta was −0.0104 (TD-10), so typed routing enforcement stays off; TD-11 iterates through the counterfactual harness. Detail: [routing-intelligence](routing-intelligence.md). For agent design this confirms the HS-TD rows' posture: typed decisions log beside the harness's own decision and gate nothing.
-- **TD-6 flipped the native default to `id_only`** while TD-1d.0 (re-settle the n=1 acceptance) and TD-1d.1 (`/v1` drops `grammar`/`json_schema`) stay open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-
-### Open questions
-
-- Which EPYC workflow needs interactive browsing that search + Crawl4AI + Camofox cannot serve?
-- Browser runtime on the shared host: Camofox (already planned for CA-6) or a CDP harness (intake-1494 is stage-1 unverified; its reported opt-out telemetry would need disabling)?
-
-### Source References (2026-09-19)
-
-- [browser-agent-surface.md](../handoffs/completed/browser-agent-surface.md) — UFH-10 stub, scope boundary, design reference.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-6, TD-9, TD-10, TD-11, TD-12..TD-15.
-- [2026-09-19-intake-jev-ultrafast.md](../progress/2026-09/2026-09-19-intake-jev-ultrafast.md) — intake-1493/1494 session record.
-- [intake-1493] Jev Ultrafast — indexed action space and operation × target heads; dive-verified.
-
-## Compiled Update — 2026-09-18: the `/v1` override contract is the role, a description sweep finds five behaviour defects, and the typed-decision plane reaches the harness as flag-gated rows
-
-**Confidence: verified** for the code landings and the operator ruling; the TD-1d correction is verified on one GPU session. Session record: [`progress/2026-09/2026-09-18-backlog-churn-2.md`](../progress/2026-09/2026-09-18-backlog-churn-2.md).
-
-### Key findings
-
-- **Fixing the `/v1` schema descriptions exposed the behaviour underneath (HS-OD-3..7).** After `336bd170` fixed one field whose description promised a cap the seam never applied, a sweep over every request field (orchestrator `dadad301`, descriptions only, 13 guard tests) produced five rows that are about code: `x_force_model` cannot force a model (HS-OD-3); `max_tokens` is not a generation cap in REPL mode — it is `max_turns = max_tokens // 500` clamped 1..5 with a hard-coded 1024 per call (HS-OD-4); sampling overrides and `max_tokens` are dropped on the vision path with a 200 (HS-OD-5); `x_disable_repl` + `tools` renders `CALL(...)` instructions for an executor that is off (HS-OD-6); role overrides were never validated (HS-OD-7). Read with HS-OD-1's rule — *a body field that changes output semantics must be refused, not ignored*: 5 and 7 were unfinished applications of it, 4 and 6 mode-dependent contradictions, 3 a name promising a capability the code lacked. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **The role is the contract — operator ruling, 2026-09-17** (*"the model role is all that's needed. No need to ping models that aren't part of the orchestration stack."*). HS-OD-3 + HS-OD-7 closed in orchestrator `2a609f5c`: precedence is `x_force_role > x_force_model > x_orchestrator_role > model`; `x_force_model` is a **deprecated alias, not deleted** — identical behaviour, marked in the schema, logged when set, because removing a published field silently is worse than carrying it; the two disagreeing is a 422 naming both. The three override fields are validated after normalization against `available_roles() ∪ server_urls` keys, so a registry model name, a typo, or a `Role` member with no server (`draft_coder`, `thinking_reasoning`) is a 422 naming the field instead of a silent backend miss. Three values `/v1/models` advertised yet died at lookup (`orchestrator`, `architect`, `worker`) now resolve; `gpt-*`/`claude-3` stay `model`-field conveniences and are deliberately not legal override values. 151-case contract test generated from `Role` and the alias maps. Four Hermes skill docs that told authors `x_force_model` "forces a registry model" were corrected (root `697eab92`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **The typed-decision plane reaches the harness as three flag-gated, log-only rows (HS-TD-1..3, operator-directed).** Pre-dispatch risk/intent classification over a closed set, a per-turn `noul` self-check, and context selection as a typed decision — each logs answer + confidence beside the harness's own decision and **gates nothing**, because confidence is not calibrated. **TD-8** landed the fan-out policy helper (`src/typed_decisions/fanout_policy.py`, 18 tests): exactness-required + native-eligible → native id-only per question; stability-tolerant batches ≥ 8 → batched (2.2x at 87.5% agreement); otherwise sequential JSON. Closed-set tool arguments are wired behind `typed_decisions_tool_args` (default off, fail-open to model args). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-1d's "11.98x at parity" in the section below is contested.** A 4-round alternated re-measurement puts id-only at 9.60x (bar ≥10x not cleared); the disagreement is the single-sample JSON baseline, and per decision the lead is 6.40x. TD-8's constants cite the 11.98x figure. The tick stands with the evidence beside it (TD-1d.0, owner's call). Detail: [benchmark-methodology](benchmark-methodology.md), [local-inference](local-inference.md).
-- **Pairing keys can now span two harnesses (UTM-P1a.2), but not yet on real data.** Replay stamps `harness="review_replay"` + `task_key=rr50-NNN`; the delegator stamps only the per-step ordinal it genuinely owns (one-shot RD-10b aggregate and the parallel executor stay NULL rather than carry an invented 0). UTM-P1a.3 names what is still missing: replay unlinks a pre-existing store under the TM-8 fresh-run rule, live tasks carry no corpus id, ordinal alignment differs. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
-
-### Open questions
-
-- HS-OD-4: should REPL mode honour `max_tokens`, refuse it, or document the turn derivation as the contract?
-- TD-1d.1: does `/v1` forward `grammar`/`json_schema` for internal callers, or do typed decisions keep a declared direct `/completion` lane? Nothing typed is deployable through `LLMPrimitives` until one is chosen.
-
-### Source References (2026-09-18)
-
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-3..7, HS-TD-1..3.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-8 wiring policy, TD-1d.0–1d.4.
-- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a.2/P1a.3.
-- [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — the judgement calls.
-- [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — the re-measurement.
-
-## Compiled Update — 2026-09-17 (wrap-up sweep): the typed-decision plane is measured end-to-end, and the FW-1 loop block exposes a graph defect
-
-**Confidence: verified** for the local measurements and filings; **external** for intake figures. All local numbers are one run each on the worker unless stated.
-
-### Key findings
-
-- **The typed-decision plane went from stub to measured implementation in one day.** TD-1 (JSON runner), TD-1b (tokenizer-aware native candidates), TD-1c (cue-replay parity), TD-1d (id-only cue 11.98x at 15/16 agreement), TD-3b (batched fan-out 2.2x at 87.5% agreement), TD-4 (closed-set tool arguments 18/18 vs 6/18) and TD-5 (shadow) all landed; TD-6 (adopt `id_only` as native default after review) and TD-7 (labeled routing replay) remain. The native arm **fails closed** (typed errors, never wrong answers); confidence is not calibrated and **no gate may threshold on it**. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
-- **TD-5 shadow is implemented, flag off, awaiting the TD-7 replay.** `src/typed_decisions/shadow.py` at `routing.py` (`_plan_review_gate`): fixed canonical order, bounded non-blocking daemon (MAX_PENDING=4, drops counted), fail-open, JSONL log. Live smoke = one well-formed record (incumbent + decisions + confidences + hashes); no enforcement without operator approval. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [routing intelligence](routing-intelligence.md))
-- **FW-1's worked example is worker-failure routing, and the loop block made a real defect visible.** The orchestrator classifies failed-worker errors at six duplicated call sites with a keyword matcher that falls through to `UNKNOWN`; the fuzzy node sits on that residue only — one `choice` over the named `ErrorCategory` set plus one `noul`. The sketch derived the GUI vocabulary (6 node types, 6 edge types, 11 lint rules) and checks its four requirements: every actor's reads, every gate's rejection grounds, every rejection's destination on-canvas, and the one expensive step gated by every gate (or an explicit reason). **NIB2-80 filed: `nodes.py:235-241` escalates on `EARLY_ABORT` without calling `_should_escalate`**, so an early-aborting run can exceed `cfg.max_escalations` and skip the approval check — not fixed; it changes graph control flow on an eval path and wants its own before/after test. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
-- **The shadow pattern is now first-class GUI vocabulary (FW-1 §D-2).** A classifier over *every* failure is a separate `shadow`-flagged fuzzy node (emits to the record, no `value` edges); the fuzzy node on the UNKNOWN residue carries no confidence branching. Budget independence is lint rule L5: two gates sharing a budget name is an error, and a fuzzy node whose retry mutates a gate's counter is an error (the `critic_revise` defect is the precedent). ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
-- **The trace service's pairing keys now have producers.** UTM-P1a (review plane, orchestrator `9a7181f2`) and P1a.2 (replay + delegator, `7887e7ae`) stamp `harness`/`task_key`/`turn_ordinal`; unset keys stay NULL = "never captured"; `task_key` is never derived from `subtask_id`. UTM-P1a.3 (real-data reachability) and UTM-P1b (Hermes ingest, dropped — Hermes not selected) frame the remainder. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
-- **The shell decision is now explicitly the operator's pick: OpenCode**, with pi as fallback; P0.4 live acceptance (inference) is the gate before the pin freezes, and P0-MCP-a/b landed (every `orchestrator_*` MCP tool declares `session_id`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **FW-4 filed the belief-kernel write side before any run** (VB-FW-1): one self-hashed ClaimTuple per workflow run carrying the document hash, executed node types, each fuzzy node's model pin **and** question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **The fuzzy/deterministic authoring GUI has a decided build posture (FW-2).** Workflow document schema + executor + `/dashboard/api/workflows/*` in `epyc-orchestrator`; authoring page, registry row, `health_path` probe and freshness envelope on the hub `:8100`; nothing in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
-
-### Open questions
-
-- Does TD-7's replay clear the incumbent comparator, or does the typed-decision arm only buy speed?
-- NIB2-80: is immediate escalation on `EARLY_ABORT` deliberate (then it needs the missing bound) or an oversight (then it needs the sibling gate call)?
-
-### Source References (2026-09-17 wrap-up sweep)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1…TD-7, the shadow, the measured studies.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the four implementation rounds.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1 sketch, node/edge vocabulary, lint rules, NIB2-80.
-- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a/P1a.2 pairing-key producers.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 and VB-FW-1 write-side rules.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the OpenCode pick and Phase-0 gates.
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-80, NIB2-78/79.
-- [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the five closures and the FW-1 L2 amendment.
-
-## Compiled Update — 2026-09-17 (doc audit + restructure): the HS-4 record now reads as decided, one P0.3 finding is reversed, the two agent-loop stubs are hardened, and the typed-decision plane has its first local numbers
-
-**Confidence: verified** for source-level facts at the cited commits and for the MI210 measurements (receipts projected into the belief kernel); **inferred** for the design reasoning. Session records: [`progress/2026-09/2026-09-17-harness-doc-audit.md`](../progress/2026-09/2026-09-17-harness-doc-audit.md), [`progress/2026-09/2026-09-17-intake-jev-sageattn.md`](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) (implementation round, bottom).
-
-The operator asked "is there anything that could be refined?" over the HS-4 document set and the two new agent-loop handoffs. Four read-only agents found that the decision had been *recorded* but not *propagated*: every summary surface around the ✅ line still argued as if the selection were open. Two findings from the 2026-09-16 pass are corrected below, and the typed-decision plane moved from filed to measured in one session.
-
-### Key findings
-
-- **A decision is not recorded until its summary surfaces agree with it.** After the 2026-09-16 ✅, the candidates table still said "selection is OPEN" with OpenCode "TBD (no eval yet)", the Status line said Phase 0 "not started" although P0.1/P0.2/P0.3/P0.5 had landed, and the dependency graph still terminated at "HS-4 selection decision". Fixed: a post-decision candidates table (SELECTED / FALLBACK / Not selected, each with its pointer), a Status line carrying the per-step Phase-0 state, and a graph rooted at the decision. Also fixed: `HS-5` and `HS-6` each named two tasks; the later-born ones are now `HS-5c` (fold omp into the packet) and `HS-15` (rewrite the cooperation contract against the CAPABILITY, not a field name); IDs are stable and never reused ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
-- **Attribution precision: the operator chose the posture; the design pass settled the shell; the operator confirmed it a day later.** The 2026-09-16 record attributed the OpenCode pick to the operator, who had in fact chosen "thin shell, features in the orchestrator" and named "OpenCode or oh-my-pi". On 2026-09-17 the operator confirmed OpenCode ("flexible enough to mold into what we want"); the gap is closed in root `927d44cb`. pi remains the fallback, invoked only if OpenCode fails P0.4.
-- **CORRECTION to the 2026-09-17 HS-4 section below (finding 5) — FastMCP does not silently drop an undeclared `session_id`; at our pin it REFUSES the call.** The orchestrator pins `fastmcp>=3,<4`; FastMCP 3.x rejects a call carrying an undeclared argument (`tests/unit/test_mcp_undeclared_args_refused.py`). The 2026-09-16 shard reasoned from `mcp` 1.27.0's `ArgModelBase` without `extra="forbid"` — a different package version than the one the server runs. The requirement is unchanged and now met: every `@mcp.tool()` in `src/mcp_server.py` declares `session_id: str = ""` and forwards it (orch `54b6439d`). The lesson is the build-artifact rule applied to a dependency: verify the behaviour against the *pinned* tree, not the version you happen to have read ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md)).
-- **Pin drift and two ghosts.** Both HS-4 design docs quoted OpenCode `4bffbb655`; the audited pin is `350c726a` (v1.18.31, 700 commits later) — outcome banners and superseded-pin notes were added rather than rewriting the matrix. Two defects fixed on 2026-09-16 were still described as live: the `/v1` `recall()` failure (orch `83c7ed2f`) and the inert `mempalace:` block (root `91d56181`). Corrections were **appended** to the three dated shards, never rewritten ([sub-hermes-memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md), [sub-hs4-p0](../progress/2026-09/2026-09-16-sub-hs4-p0.md) — whose two pre-rebase hashes exist on no ref; the work is `ed554da2`/`b44ab3a8`).
-- **Phase-0 state of record (2026-09-17).** P0.1 client-executed tool mode and P0.2 typed `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` (422 on bad values, `request_keys` echo, `v1_client_session_guard` tripwire) are on orchestrator main (`ed554da2`, `b44ab3a8`) but **not deployed until the API reloads**; P0.3 is done at the pin with the plugin/template/lint under `harness/opencode-plugin/` (45/45 wire-contract tests after the P0.3b `User-Agent` stamp, root `71569c2c`); P0-MCP-a/b landed (`54b6439d`, root `.mcp.json` on the venv — a container-only path); the P0.4 runner `scripts/harness/hs4_p04_acceptance.py` (root `76917360`, 25 offline tests) carries the SC86 belief-kernel hook as P0.5; OpenCode 1.18.31 is installed but the devcontainer Dockerfile does not install it, so a rebuild drops the pin (follow-up filed). **Boxes are ticked only at the P0.4 live gate — code landed but not reloaded is text evidence, not a tick.** Residuals recorded, not fixed: `x_max_escalation` is described as capping escalation while `/v1` only records it (P4-pre); unknown `x_*` keys outside the typed set are still silently ignored (`extra="ignore"`); `/v1` B2 compression still fails open to the unfolded history.
-- **The Phase-0 split is approved and deliberately gated.** Moving Phase 0 into its own `opencode-shell-integration.md` with a `UFH-NN` row waits for the P0.4 live run to land, because that run is owned by another session and work must not be moved under a new handoff mid-flight (`HS-4 P0-split`).
-- **The fuzzy-workflow handoff named the deterministic/fuzzy boundary without defining it; it now has a contract.** FW-1 opens with the pseudocode loop block `docs/guides/agent-workflows/agent-loop-design.md` requires (every actor and what it reads; every gate and its rejection grounds; where every rejection GOES; the one step that costs real resources; one independent budget per gate), and a **dangling rejection edge is a lint error for the GUI, not a warning**. The fuzzy-node contract: typed output (`choice`/`score`/`null`) plus a probability; **a fuzzy node may not branch on model confidence until TD-2 lands**; schema-invalid output after the declared retry budget routes to a *declared* node (abstain / escalate / deterministic fallback), never off the canvas; every model call goes through `LLMPrimitives`. FW-2's placement question is **closed, not an operator choice**: HS-4 §2 admits shell plugins only for configuration, and the dashboard plane rule puts the page on the hub `:8100` with a registry row, probe and freshness envelope while the data contract (workflow schema, executor, `/dashboard/api/workflows/*`) lives in the orchestrator — nothing in the shell. FW-4 files the write-side belief-kernel row prospectively; the FW-1 harness refuses to run without the hook ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md)).
-- **The improvement loop's mutation object is now bounded.** Mutable arm: the feature prompts and parameters the eval suite measures (summarisation/review/delegation prompts, compaction thresholds, memory-recall knobs). Policy documents — `AGENTS.md`, `SKILL.md` folders, `HARNESS_RUN_POLICY.md` — are proposal-only and human-applied, exactly as P5's skill export is a reviewed commit (HS-7 re-targetability, HS-5b freeze-before-tuning). The HIL-4 decision-package draft is the A/B/C table with **B (sibling loop importing AutoPilot's journal/gate/guards/fingerprints) preferred**; C re-lives the fail-open, stale-frontier, leakage and comparability bugs already fixed. Pure shell surface is out of scope for any loop ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
-- **Standing material promoted out of the handoff.** HS-7 re-targetability and HS-10 evaluation-side randomization are now [`harness-doctrine.md`](../docs/reference/harness-candidates/harness-doctrine.md); the two Harness Cards are [`harness-card.md`](../docs/reference/harness-candidates/harness-card.md) (`HARNESS_RUN_POLICY.md` requires a run report to name the applicable card; the two cards answer *what can be changed without code* and *what configuration produced a score*; a model or freeze change refreshes the conformant card before a result is called re-targetable); the HS-1g call-verb matrix joined its instrument in [`client-surface-audit.md`](../docs/reference/harness-candidates/client-surface-audit.md). The restructure pattern itself is compiled in [Knowledge Management](knowledge-management.md).
-- **The typed-decision plane went from filed to measured in one session — and this supersedes "none measured on this host" in the research-intake section below.** TD-1/TD-2/TD-3/TD-4 are implemented in `epyc-orchestrator` (`src/typed_decisions/`: types, Draft 2020-12 schema, JSON runner with typed failures and corrective retry, adapter-verified confidence formulas, native candidate-scoring path, bench harness, closed-set tool-arg mapping; flag `typed_decisions` default off, wired to no route; 87 unit tests). Live on the MI210 against the frozen-v9 HIP server, 24-question decision set: **contamination flip rate 6.25%** (Qwen3.8-27B-Q8_0, 3/48 pairs) vs **37.5%** (LFM2.5-2.6B, 18/48); **calibration 91.7% acc / ECE 0.0625 / Brier 0.078** (27B) vs 50.0% / 0.267 / 0.313 (LFM) — one 27B miss at ~0.90 confidence, so the tail is not empty; **fan-out 1.54x** (3 batched vs 12 singleton calls, 100% agreement, LFM) — the saving is per-call overhead at this state size. **The TD-1a native arm failed closed**: 23/24 `native_unknown_candidate` because candidate strings were presumed single-token without tokenizer access (emitted `'fal'`/`'set'`); the JSON arm ran 24/24 in 36.7 s. No speedup number may be claimed until TD-1b (tokenizer-aware candidates via `/tokenize`, explicit JSON fallback for multi-token candidates). The TD-2 gate is SATISFIED for a *first shadow* (TD-5): choose one live surface (routing classifier or judge) with its owning handoff; no enforcement without operator approval. Write side first (VB-TDP-1): `scripts/vidya/adapters/typed_decisions_measurement.py` projected 5 receipts → 11 claims / 33 frames, and the bench report was refused as a non-measurement. Caveats: a small window between autokernel CPU runs, one 24-question set, a first measurement rather than a protocol run — the vendor multipliers stay banned, and intake-1486's 24.7% order sensitivity is now bracketed locally at 6.25% (27B) / 37.5% (2.6B), i.e. model-size-dependent ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane)).
-
-### Open questions
-
-- Which live surface takes the TD-5 shadow arm, and does the 27B's 6.25%/ECE 0.0625 hold on that surface's real question distribution rather than the 24-question fixture?
-- TD-1b: does tokenizer-aware native matching reproduce the JSON arm's argmax (≥20/24) with a measured speedup on the same server?
-- P0.4 live acceptance (inference, after an API reload at or past orch `54b6439d`) is still owed and is the only gate that flips the Phase-0 boxes and freezes the pin.
-
-### Source References (2026-09-17 doc audit + restructure)
-
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — post-decision record, Phase-0 state, HS-5c/HS-15 renames, P0-split, P4-pre, the history/promotion table.
-- [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — the four audit findings, what was applied, the operator decisions and the restructure.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the typed-decision implementation round and MI210 measurements.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1..TD-5 state, TD-1b, the TD-2 gate verdict.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — fuzzy-node contract, FW-2 placement, FW-4.
-- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — bounded mutation object, HIL-4 draft.
-- [harness-doctrine.md](../docs/reference/harness-candidates/harness-doctrine.md), [harness-card.md](../docs/reference/harness-candidates/harness-card.md), [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the promoted standing material.
-- [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md), [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — outcome banners and superseded-pin notes.
-- [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md), [2026-09-16-sub-hermes-memory.md](../progress/2026-09/2026-09-16-sub-hermes-memory.md) — the appended 2026-09-17 corrections.
-
-## Compiled Update — 2026-09-17 (research-intake delta: one-pass typed decisions, deterministic/fuzzy authoring, and compiled specialists as loop steps)
-
-**Confidence: external for every number below (dive-verified against pinned primary sources; none measured on this host); verified for the filings and the operator rulings.** Session record: [`progress/2026-09/2026-09-17-intake-jev-sageattn.md`](../progress/2026-09/2026-09-17-intake-jev-sageattn.md).
-
-The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all operator-steered: a one-pass typed-decision plane for the orchestrator's schema/tool calls, a GUI that separates deterministic flow from fuzzy steps, and PAW compile-once specialists as the fuzzy nodes themselves.
-
-### Key findings
-
-- **The typed-decision plane is filed as the orchestrator's one-pass decision primitive (RTG-56).** Declared typed questions (`choice` / `score` / `noul`) in; per-question values, probabilities and a caller-computed confidence statistic out; no autoregressive JSON generation. Operator steering: "extremely relevant for the orchestrator where json schemas are passed and tool use is important … guarantees exact tool use and also a pretty large overall speed boost … may also be relevant for fast routing and episodic memory writing." TD-1 implements the call path over frozen v9; TD-2 measures cross-question contamination and confidence calibration; **TD-5's shadow integration is BLOCKED until TD-2 lands.** ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **Calibration, not speed, is the gap.** Candidate-softmax confidence is uncalibrated — 65% of a 7B's wrong fields scored >0.90 (intake-1474) — and guarantees are not quality: an independent rerank reproduction ties Cohere Pro (nDCG 0.692 vs 0.691, CI crosses 0) with **24.7% order sensitivity** (intake-1486). The measured local speedup is **3.4–7.9x** over same-model JSON, not the 40–200x the vendor material implies (intake-1474/1487). No gate may consume the confidence until TD-2 produces our own ECE/reliability numbers.
-- **The authoring GUI (UFH-09) separates deterministic code nodes from fuzzy nodes whose runtime is RTG-56 or a compiled program.** Operator: "a GUI for designing high level processes that clearly separate deterministic flow from fuzzy LLM work in a meaningful way." FW-2 is an operator decision against HS-4's thin-shell verdict: orchestrator page vs harness plugin vs deferred. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
-- **PAW compiled specialists are the fuzzy-node implementation candidate (INF-76).** Compile recurring fuzzy subtasks (tool-output classification, log filtering, JSON repair, routing predicates) into tiny local specialists; the intake-811 re-open trigger is MET on artifact availability (weights 2026-06-07, FuzzyBench data 2026-02-17, both predating the 2026-07-11 blocker) and NOT met on capability (no official self-hosted compile; an unofficial MIT server works for the default Qwen3 compiler, intake-1481#record). Independent eval reports 94–97% on **one adversarial task, n=100, author labels** (intake-1482). License scope resolved by operator ruling: **internal research use only** (OP-43 closed). ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
-- **The closed-set tool-argument arm is the tool-use expression of the same primitive.** Literal→Choice, list[Literal]→multi-choice, bool→Noul, with per-argument confidence, scored on exact-match argument correctness against the free-form path (TU-TD-1 / TD-4). ([tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
-- **Verification discipline rides with the mechanism.** The independent audit of the reference implementation (intake-1490) found its shipped shuffled-context control defective; the informed-vs-blind lift was ~25 points only after correction. The same discipline is filed for new judge instruments as CJ-14 (hashed manifests, blind probe as the lower bound, pre-registered per-item distributions).
-
-### Open questions
-
-- Does question-order contamination reproduce at our batch sizes (intake-1486 measured 24.7%), and which confidence statistic survives local calibration?
-- Does the frozen v9 server's json_schema→GBNF converter accept the nested probability-map schemas the adapter generates?
-- FW-1: does the GUI edit a declarative document the orchestrator executes, or generate code?
-
-### Source References (2026-09-17 research-intake delta)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1…TD-5, the operator steering, and the calibration blocker.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1…FW-3 and the HS-4 build-posture decision.
-- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — the re-open trigger status, OP-43 scope ruling, and PAW-2…PAW-5.
-- [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TD-1 closed-set tool-argument arm.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's verified findings of record.
-
-## Compiled Update — 2026-09-17 (evening): the HS-4 P0.4 preflight is green, and a container rebuild would undo it
-
-**Confidence: verified**: operator-applied changes recorded in the handoff and `opencode --version`.
-
-### Key findings
-
-- **P0-MCP-a is done.** The operator applied the root `.mcp.json` edit (root `ed1dfd57`). It takes effect
-  for Claude Code sessions started after the edit. This supersedes the afternoon line "prepared but not
-  applied". [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
-- **The audited OpenCode pin is installed.** The operator ran
-  `sudo npm install -g --prefix /usr/local/share/npm-global opencode-ai@1.18.31`, and `opencode --version`
-  prints 1.18.31 (root `de71a69a`).
-- **The install is not durable yet.** The devcontainer Dockerfile does not install OpenCode, so a rebuild
-  drops it. A follow-up is filed to pin `opencode-ai@1.18.31` there, coordinated with the owner of the
-  Dockerfile's uncommitted edits.
-- **The P0.4 live acceptance is ready, but gated.** It waits for the operator's GPU/inference signal and an
-  API reload first. [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-
-### Source References (2026-09-17 evening)
-
-- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0-MCP-a, P0.4 preflight and its follow-up.
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): landing table and state at close.
-- [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md): the preflight that found 1.18.18.
-
-## Compiled Update — 2026-09-17 (afternoon): a prefix-scoped plugin stamps every tool, and the shell's acceptance test is ready but not run
-
-**Confidence: verified**: code, tests and OpenCode source reads at the audited pin. No inference ran.
-
-### Key findings
-
-- **A plugin hook keyed on a server prefix stamps every tool on that server.** OpenCode names MCP tools
-  `<server>_<tool>`, and the plugin's `orchestrator_` prefix therefore matches every tool the `orchestrator`
-  server exposes. Declaring `session_id` on the two chat tools alone would have left `lookup_model`,
-  `list_roles` and the rest refusing every stamped call under fastmcp 3. So every tool in `src/mcp_server.py`
-  now declares `session_id: str = ""`, and only the chat tools forward it (orchestrator `54b6439d`, 10 tests,
-  4 of which fail on the previous server). It goes live at the next API reload and MCP server restart.
-  [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
-- **Launchers must name the venv.** The script-registry launcher used a bare `python3`, and it now uses the
-  venv (P0-MCP-a). The root `.mcp.json` still names `/home/daniele/miniforge3/bin/python3`, which does not
-  exist in the container. That edit is harness configuration, so it is prepared but not applied.
-  [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
-- **P0.4's acceptance verdict is offline, and its token count has to undo two OpenCode conventions.**
-  `scripts/harness/hs4_p04_acceptance.py` works in four stages (25 tests):
-  - `plan` gates the run.
-  - `prepare` builds a scratch repo with a broken fixture.
-  - `run.sh` is the only step that sends inference.
-  - `verify` checks the read→edit→bash order, per-session tap keys, no compaction or subtask parts, and no
-    foreign-session calls.
-
-  Tokens are summed over step-finish parts as `input + cache.read + cache.write`, because OpenCode's
-  `tokens.input` excludes cache tokens and a message's `tokens` holds only its last step. `verify` is also the
-  SC86 belief-kernel write hook.
-
-  A fixture used `python3 -B` because a same-length, same-second edit reused a stale `.pyc`. Preflight found
-  the installed OpenCode at **1.18.18** against the audited pin **1.18.31**, and a follow-up is filed.
-  [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
-
-### Source References (2026-09-17 afternoon)
-
-- [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
-- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
-- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC86 tick condition.
-
-## Compiled Update — 2026-09-17 (later): the HS-4 seam closes on main, and two swarm-research mechanisms get rows
-
-**Confidence: verified** for the code on orchestrator/root main at the named commits and for the tests quoted (read from the handoff). **external** for the CORAL/SwarmResearch and harness-null-pool items: dive-verified intake entries that motivate filed rows and gate no local decision. The live OpenCode read→edit→bash loop is still unrun.
-
-The previous pass decided HS-4's shape (thin OpenCode shell, features inside the orchestrator) and found the seam blocker — `/v1` never emitted `tool_calls`. The code that closes P0.1/P0.2 is now on `main`, the P0.3b User-Agent marker landed, and a live `/v1` defect that would have made memory recall silently useless was found and fixed on the way.
-
-### Key findings
-
-- **P0.1/P0.2 are on orchestrator main (`ed554da2`, review fixes `b44ab3a8`) and not yet deployed.** `x_tool_mode="client"` forwards tools, `tool_choice` and structured tool history to llama-server `/v1/chat/completions` and returns `tool_calls` with `finish_reason:"tool_calls"` in both stream and non-stream modes; the REPL bridge stays the default and is golden-pinned. The typed headers `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` are validated (422) and echoed in `x_orchestrator_metadata.request_keys` and the inference-tap metadata, with `x_memory` recorded only until P2. Flag `v1_client_session_guard` (default on) returns 422 for OpenCode-UA or client-mode requests without `x_session_id`. Client-mode routing reuses the same role resolution and `_real_call` admission/locks/fallback/tap, and escalation is unchanged (P4). Remaining for P0.1: the live OpenCode read→edit→bash loop (P0.4). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **P0.3b: the session-stamping marker is in the template and lint-enforced (`71569c2c`).** The OpenCode config template sets `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` and the lint requires it (45/45 wire-contract tests). The v2 session runner path remains uncovered. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **`/v1` `recall()` was silently dead (`83c7ed2f`).** `/v1` REPLs now get the shared retriever and `hybrid_router`; the legacy fallback uses the real `retrieve_by_similarity` instead of a no-op; failures log at ERROR and return `status:"unavailable"`, and `STUCK()` skips unavailable payloads. Live after the next API reload. A separate inert config block was removed: `scripts/hermes/hermes-config.yaml` had a `mempalace:` block Hermes never reads (MCP servers come only from `mcp_servers:`), commented out on root `91d56181`. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **Two MCP-server gaps are filed.** HS-4 P0-MCP-a: root `.mcp.json` launches the orchestrator MCP server with a miniforge `python3` whose fastmcp version is unverified, while the project venv (fastmcp 3.3.1) refuses undeclared arguments — pinned by `tests/unit/test_mcp_undeclared_args_refused.py` — so `orchestrator.command` should point at the venv interpreter. HS-4 P0-MCP-b: `orchestrator_*` and `memory_*` declare `session_id: str = ""` but never carry it, a silent drop now visible because `ChatRequest.session_id` exists. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-- **Two swarm-research mechanisms are filed under AC-CORAL and AC-branch-per-agent.** AC-CORAL pins CORAL v0.7.20 (`bbae4f72`) and spikes its shared-state design (`.coral/public` attempts/notes/skills plus heartbeat reflect-1/consolidate-10/pivot-5) against orchestrator `/v1`, with opencode/codex as runtimes and an equal-spend control per the fan-out A/B constraints. AC-branch-per-agent drafts the SwarmResearch-pattern search harness: branch+worktree per search agent, fresh-context explorers, lineage `findings.md`, a shepherd holding global context, and width/depth adaptation with explicit spawn telemetry. ([agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
-- **The harness-null-pool evidence packet (HS-E1) is filed for HS-4.** It collects intake-1444 (30 budget-matched harnesses, 3.1M rollouts, no universally superior harness; checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (an independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable count (intake-1450) as evidence rows only. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
-
-### Open questions
-
-- Does the live OpenCode read→edit→bash loop (P0.4) actually close with the client-mode tool path, or does the v2 session runner's missing plugin hook bite first?
-- Does HS-4's decision doc carry the HS-E1 packet, or does it remain a handoff-only annex?
-- AC-CORAL's equal-spend control is a constraint, not a design: what is the measured baseline it must match?
-
-### Source References (2026-09-17 later pass)
-
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0.1/P0.2 (`ed554da2`, `b44ab3a8`), P0.3b (`71569c2c`), the `/v1` recall fix (`83c7ed2f`), the mempalace removal (`91d56181`), P0-MCP-a/b, and the HS-E1 packet.
-- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
-- [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the intake batch behind the HS-E1 rows.
-- [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md): the P0 lane record the filed items reference.
-
-## Compiled Update — 2026-09-17: HS-4 decided — a thin OpenCode shell, Hermes features rebuilt inside the orchestrator, and the seam blocker no audit had looked for
-
-**Confidence: verified** for source-level facts at pinned SHAs (OpenCode `350c726aa`/`4bffbb655`, oh-my-pi
-`37eee719`, pi `ceea48f5`, Hermes `532a49f1`, dsh `0d1f5000`, orchestrator `83c7ed2f`/`92bbeb06`, kernel
-`0db32c06e`) and for the offline plugin tests. **inferred** for the design choices and phase ordering. External
-harness rankings stay OBSERVATION-grade and were explicitly kept out of the selection.
-
-**The decision.** On 2026-09-16 the operator closed HS-4. The shell is a **thin off-the-shelf harness: OpenCode,
-with pi as fallback**. The Hermes features we want (user-profile memory, notes, `session_search`, delegation,
-background review, compaction) are built **inside the orchestrator**, as implicit `/v1` behaviour plus MCP tools.
-The rule is one memory system, one router, and no shell patches to carry. The shell carries one first-party
-plugin that stamps session identity onto each request. It is written against OpenCode's documented hook API,
-so it counts as an integration, not a fork. Hermes was not selected, and its handoff moved to `completed/`.
-**This supersedes two older passages on this page:** the 2026-07-16 bullet saying OpenCode and ACP speakers
-"remain open candidates", and the Hermes/OpenGauss coordinating-handoff paragraph ("design + intake; no
-production deployment yet"). Hermes is now a closed, reference-only evaluation.
-
-**How the package was argued.** The zero-inference decision package scored five options (A OpenCode, B pi,
-C oh-my-pi, D Hermes, E dsh) plus F, defer. The primary axis was whether every *default* request path honours
-a config-declarable top-level body key. Trainability and external benchmark numbers were excluded as selection
-evidence. It recommended A: OpenCode was the only candidate combining lever coverage on all default paths,
-native MCP, a real (if porous) permission layer, headless JSON output, and config switches for each of its own
-layer-(B) behaviours. The A-vs-B tie-break was whether the frontend must consume orchestrator tools over MCP
-natively. The follow-through design then rejected oh-my-pi, for three reasons: its `retry.fallbackChains` is a
-second model router, switchable off only by one boolean (`retry.modelFallback:false`) that must be re-audited on
-every bump; its approval default is `yolo`; and about 73% of its recent commits come from one maintainer and his
-bot. *A router that does not exist beats one that is disabled.* Building the features server-side won on every
-criterion. Routing compliance holds by construction because side calls go through `LLMPrimitives`. M-12 and the
-belief kernel can see the state. A shell swap loses nothing (HS-7).
-
-**The HS-1g call-verb check became a standing instrument, and it changed the Hermes verdict.** A lever in a config
-descriptor can be honoured on one call path and silently ignored on another. The class has now been seen in
-oh-my-pi, pi-ai, Hermes and llama.cpp's own README. The check was run on all five candidates. Findings:
-
-- OpenCode, oh-my-pi and pi honour the lever on every default path.
-- dsh exposes no lever on its pi-ai route.
-- Hermes honours it on the **main loop only**. Compaction, the iteration-limit summary, `flush_memories`,
-  `delegate_task` children, background review and the `session_search` summary all bypass it.
-
-**This corrects the 2026-07-17 HS-1b "SUFFICIENT, patch cost ≈ 0" verdict**, which holds only with compression
-off and `delegate_task` gated. The memory audit grew Hermes's patch surface from four paths to six, and that was
-a material input against Hermes. The instrument now lives in a standalone Client Surface Audit. It adds a fifth
-step: a competing-router grep. It also states the design rules: client UX stays in the client, and a typed `x_*`
-field always beats memory prose.
-
-**A seam blocker no earlier audit caught.** HS-1 and HS-1g audited only the *request* direction. At `83c7ed2f`,
-`/v1/chat/completions` **never returns `tool_calls`**. Client tools are rewritten into prompt text for the
-internal REPL's `CALL()`, which resolves names against the orchestrator's own registry. Against today's
-`:8000`, every agentic shell degrades to a chat window with no working tools. The fix is P0.1, an opt-in
-client-executed tool mode (`x_tool_mode="client"`) that forwards `tools` and tool history to the backend
-chat-completions path and returns `finish_reason:"tool_calls"`. The REPL bridge stays the default, so the eval
-tower does not change.
-
-**P0.3: OpenCode re-audited at its tip, and the plugin shipped.** OpenCode was re-audited at `350c726aa`
-(v1.18.31, MIT, 700 commits past the HS-1g pin). The check covered 15 request paths. All default paths honour
-`chat.params`. The top-level, unrenamed wire shape was proven offline against the pinned
-`@ai-sdk/openai-compatible@2.0.41` using a capturing fake fetch. A no-fallback grep found no runtime router. Five
-findings changed the P0 plan:
-
-1. A user-typed `@agent` subtask bypasses `permission.task:"deny"`. The template therefore also needs
-   `subagent_depth:0` and disabled `general`/`explore` agents, and the lint enforces all three.
-2. HS-1g missed the **v2 session runner** (`/api/session/:id/prompt`). It has no plugin hook, so it is a silent
-   no-op. No in-tree client uses it, and it is now a per-bump watch item.
-3. A plugin that fails to load is only logged upstream, and `OPENCODE_PURE` skips all plugins. The plugin fails
-   closed at hook time. The residual (an *absent* plugin) needs an orchestrator-side 422 tripwire for
-   OpenCode-marked requests that lack `x_session_id`. P0.3b added a `User-Agent` marker so the guard can also
-   fire on SDK calls outside `prepare`.
-4. `:8000` currently accepts unknown `x_*` keys and ignores them (pydantic `extra="ignore"`), so P0.4 must
-   follow P0.2.
-5. FastMCP silently drops an undeclared `session_id`, so every session-aware MCP tool must declare one. *(Corrected 2026-09-17: at the pinned `fastmcp>=3,<4` an undeclared argument is REFUSED, not dropped — see the 2026-09-17 doc-audit section above; the declare-`session_id` requirement stands and is met at orch `54b6439d`.)*
-
-The title call is now keyed, which retires an HS-1g caveat, and it stays disabled anyway. The plugin, config
-template, env file, lint and tests are merged under `harness/opencode-plugin/`. The recorded runs are 40/40
-with the SDK contract enabled, and 45/45 after P0.3b.
-
-**Where each feature lives, and what the audit found already exists.**
-
-- **User-profile injection is dead code.** `PromptBuilder.get_system_prompt()` has no serving caller.
-- **`derive_preferences()` has no caller** outside its tests.
-- **B2 compression is wired on `/v1` but off.** It is also stateless per request, which defeats the prefix
-  cache, and it fails open. So server-side folding with a session fold cache is P1: once shell compaction is
-  off, long sessions fail without it.
-- **Phase order:** P2 is profile + notes, P3 is `session_search` through a `/v1` transcript write side (ranked
-  snippets, no per-search LLM summary), P4 is an `orchestrator_delegate` MCP tool plus `/v1` routing parity,
-  and P5 is proposal-only background review.
-- **Deliberately not rebuilt:** Honcho, session re-keying, per-search summaries, autonomous skill creation
-  (it breaks HS-7 and the HS-5b freeze-before-tuning order) and the iteration-limit summary. The multi-platform
-  gateway was flagged for operator interest rather than dismissed.
-- **Memory:** why Hermes memory and the episodic store are complementary in data but compete in mechanism is
-  covered in [Memory-Augmented](memory-augmented.md).
-
-**Structured output and the Harness Card.**
-
-- **HS-13** records the structured-output seam as two layers. The frozen kernel does grammar-constrained JSON
-  through `json_schema_to_grammar`. `:8000` refuses `response_format` with a 422, by decision. The native
-  `/chat` REPL path is parse-and-retry, and its flag is off by default. The kernel `README.md:1239` example puts
-  the schema at the wrong nesting and silently yields unconstrained JSON.
-- **HS-6c** published a conformant ETCSOVG Harness Card for the eval tower (`epyc-orchestrator@92bbeb06`). It
-  names 13 undisclosed or unfixed fields, including no REPL/scorer isolation, no eval-wide network-off switch and
-  auto-approve. So any cross-harness comparison on the tower is locked-harness only, and whichever shell is
-  chosen runs in an operator-provisioned jail.
-- **HS-6b** corrected one card row: harness compaction "can defer" only where the compaction path honours the
-  lever or compaction is off.
-
-**Improvement loop: a stub, deferred.** Moving the features server-side makes them files that improvement
-machinery can mutate and measure. The preferred shape is a sibling loop that reuses AutoPilot's journal, gate,
-guards and fingerprints (option B). A fully separate loop is not recommended, because it would re-live the
-fail-open, stale-frontier, leakage and comparability bugs already fixed.
-
-### Key findings
-
-- Operator decision: OpenCode shell (pi fallback), Hermes-style features inside the orchestrator, one memory
-  system and one router, P0–P5 plan ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
-  [hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
-- The package recommends A OpenCode, with pi as the minimal-import alternative and a native-MCP tie-break. The
-  live requests are acceptance checks for the chosen harness, not discriminators between candidates
-  ([hs4-decision-package](../docs/design/hs4-harness-decision-package-20260916.md),
-  [progress sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md)).
-- `/v1` never emits `tool_calls` (`openai_compat.py:228,322-331` @ `83c7ed2f`), so client-executed tool mode is
-  P0.1 for every shell ([hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
-- HS-1g call-verb matrix: Hermes main loop only (six bypass paths once the memory audit is counted), which
-  corrects HS-1b's "≈0 patch"; the dsh pi-ai pin bump is already upstream, which corrects HS-1e
-  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
-  [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md),
-  [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md)).
-- OpenCode at `350c726aa`: 15 paths audited, with two silent no-ops (E11 `agent create`, E12 v2 runner) that are
-  unused by our clients; `@agent` bypasses the `task` deny; unknown `x_*` keys are silently ignored at `:8000`;
-  FastMCP drops an undeclared `session_id` *(corrected 2026-09-17: refuses at the pinned FastMCP 3)*
-  ([opencode-p03-audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md),
-  [progress sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md)).
-- The reusable audit instrument now has Steps 1–4 plus a competing-router grep; client UX stays in the client,
-  and typed `x_*` beats prose ([client-surface-audit](../docs/reference/harness-candidates/client-surface-audit.md)).
-- Hermes closure: 11 open boxes dispositioned (2 ticked on item-G evidence, 4 superseded, 5 moved to the HS-4
-  P0.4 carry box); the local-only commit `532a49f1` preserved as a patch; config lesson: a key no code reads
-  (`mempalace:`) fails silently, so grep the pinned tree before calling a feature wired
-  ([hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md),
-  [progress sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md),
-  [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md)).
-- HS-13 two-layer structured-output record and the kernel-README silent no-op; HS-6c conformant card with 13
-  named gaps; HS-6b one-row correction
-  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
-- Harness-improvement loop: option B (sibling loop on the shared AutoPilot substrate) is preferred; HIL-1..5
-  are not started ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
-
-### Open questions
-
-- P0.1, P0.2, P0.4 and P0.5 are not landed. P0.4 (live top-level arrival, a republished Harness Card, and the
-  pin freeze) needs inference and must follow P0.2. SC86 belief-kernel write-side wiring must precede any
-  measured shell run.
-- E12, the OpenCode v2 session runner, has no hook and is not shown to receive the `User-Agent` marker. It stays
-  a per-bump watch item, alongside the native-runtime provider gate.
-- HS-1f.1 (one live pi request) is still unrun. It becomes an adoption gate only if the fallback is ever taken.
-- The HS-14 local bake-off happens after the freeze and needs a region claim.
-
-### Sources
-
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-4 decision and P0–P5 boxes, the HS-1g matrix, HS-13, HS-6b/6c, HS-5/HS-1e/HS-14 packet folds.
-- [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md) — options, evidence matrix, sandboxing, recommendation and tie-break.
-- [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — shell choice, the `tool_calls` blocker, feature map, phased plan.
-- [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 15-path re-audit, P0 findings, plugin tests, P0.3b User-Agent marker.
-- [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the reusable instrument and design rules.
-- [hermes-evaluation-20260916.md](../docs/reference/harness-candidates/hermes-evaluation-20260916.md) — Hermes bypass paths, plugin behaviour, config lessons.
-- [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) — closure note and box dispositions.
-- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — improvement-loop options.
-- [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md), [sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md), [sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md) — session records for the above.
-
-## Compiled Update — 2026-09-14: harness rank tracks model class, and a hand-off the architect cannot follow is a silent confident-wrong path
-
-**Confidence: verified** for source-level harness facts at pinned SHAs and orchestrator code facts. External
-rankings are OBSERVATION-grade: they shape what a local bake-off must measure and **never gate HS-4**
-(MEASUREMENT.md).
-
-**Which harness wins depends on the model class.** One author's ten-harness SWE-bench Pro grid (250 held-out
-tasks, one rollout, about ±6 pp per cell) found two things. First, holding the model fixed and changing
-only the harness moved pass@1 from 23.2% to 52.4% on GLM-5.2-744B and from 15.2% to 36.0% on
-Gemma-4-26B. Second, the ranking did not carry across those two models (Spearman −0.05). Vendor harnesses
-fell on the small model and model-agnostic ones rose. A later Terminal-Bench 2.1 grid by the same author
-used a 30B dense model (Muse-Glimmer, 50 tasks × 3 trials). Its order **matches** the Gemma-4 grid
-(ρ +0.76 on 8 shared harnesses, one-sided exact p = 0.018) and does not match GLM-5.2 (−0.21), even though
-the benchmark changed. So "harness rankings do not transfer" is too strong. Rank looks tied to model class,
-with benchmark a secondary factor. All of this comes from one author, and that model cannot be served on v9.
-On the 30B, opencode (41.3%), qwen-code (40.0%), mini-swe-agent (39.3%) and pi (37.3%) form a top cluster at
-least 10.7 pp above the rest. Gaps within the cluster (≤4 pp) are not resolved. Even so, hermes, near the
-bottom there (24.7%), beat opencode on GLM-5.2 (39.6 vs 28.0).
-
-**Thinking mode alone can reorder harnesses.** In a partial thinking-off arm on Gemma-4 (uneven n = 86–191,
-non-randomly censored), crush, opencode and pi lost ~2/3 of their score while claude_code did not move.
-Our production roles run `enable_thinking=false`, so thinking-on external rankings do not transfer to them.
-
-**Harness cost on our hardware is prefill, not decode.** Per attempt, harnesses re-sent 1.78M–5.12M input
-tokens against 17k–36k output, a ~2.8x spread in re-sent context, and 96–98% of input was cached where
-cache data exists. HS-14 therefore sets the local bake-off columns: pass@1, input tokens per attempt,
-prefix-cache hit share, and prefill tokens per solved task, all on served models at production
-`enable_thinking`.
-
-**"pi" is one repository, not two siblings.** `earendil-works/pi` is `badlogic/pi-mono` renamed: same
-GitHub repository id, and the old API path returns 301. oh-my-pi is a detached fork of it at about
-upstream 0.50. The harness-selection passages calling them sibling forks are corrected in place. HS-6's
-capability wording survives unchanged. It asks for config-declarable arbitrary top-level body keys on the
-call verb the harness actually uses, because two lineages grew that primitive under different names. A
-source-level score of pi (HS-1f, no live request yet) found the following:
-
-- It uses the simple call verb everywhere, including CLI compaction, so a `models.json` `samplingParams`
-  lever reaches the request body. Wire-level confirmation is HS-1f.1.
-- Its built-in llama.cpp provider requires llama-server **router mode** and throws otherwise. Our topology
-  needs a custom `models.json` provider carrying the built-in llama compat flags, with `maxTokens ≤ 32768`.
-- It has no MCP, ACP or permission system, so it must be containerised.
-- `compaction.enabled=false` disables both threshold and overflow folding.
-- It has an install ping and a separately controlled update check (`PI_OFFLINE=1` covers startup).
-- If an efficiency extension's log reducer is ever used, route it to a local llama-server, never the
-  hosted default.
-
-**Delegation hand-off fidelity (DCP-13).** An external repository-QA study compared a ReAct agent with a
-pre-built index (65.2% pass) against a planner that delegated grep/read exploration to a sub-agent (46.2%).
-Hand-off breakdown caused 41.8% (414/990) of the delegated arm's failures, and ~91% of those still produced
-a fluent, confident answer. It is a **bundle** comparison (no index and delegation changed together), and
-one cloud model supplies 65% of the pooled gap (19.0 pp → 8.7 pp without it). It is not evidence that
-summarising sub-agent reports causes wrong answers. What it prompted was a code audit, and the code facts
-stand on their own:
-
-- The architect decision loop breaks on turn 0 in every branch, so the advertised `fetch_report` was
-  unreachable.
-- D|Approved and the timeout early return could hand the user handle+summary text.
-- `worker_summarize` ran on rescued reports whose summary was then discarded.
-
-All three are fixed (`2bffb45b`, `57ceb7d5`, `a2af42ad`; detail in
-[Tool Implementation](tool-implementation.md)). Handle text and cache hits remain as DCP-13a/b. The
-inference-gated follow-up is labelling confident-wrong outcomes where the stored raw report held the
-evidence.
-
-**Hand-written procedure can hurt until a gate repairs it.** A procedural-graph method (triplets with
-condition/guidance/pitfalls, a separate guidance LLM steering each step) placed first or joint-first in
-21 of 24 settings. Every per-setting confidence interval overlaps the best baseline (24/24), though, and
-per-step guidance costs +33–85% tokens, a direct decode tax on CPU. The durable caution comes from one
-model on a 56-item split with no CIs: a hand-written expert graph cut success from 49/56 to 33/56, and gated
-online evolution from that graph recovered it to 52/56. For AutoPilot, rejected-proposal feedback already
-exists (failure blacklist, last-invalid action with repeat counts, a 12-trial journal summary), so that is
-not new work. The AP-53 note instead asks, with zero compute, how often a concrete config that
-safety-failed or was dominated gets re-proposed without ever reaching the blacklist, since the journal
-summary carries only species/action type.
-
-### Source References (2026-09-14 harness selection and hand-off fidelity)
-
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-14 external evidence rows and bake-off columns, HS-1f source-level pi score and HS-1f.1, the pi-lineage and HS-6 corrections.
-- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13 code facts, fixes and residuals.
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-53 measurement note.
-- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — stage record and the rank-tracks-model-class finding.
-- intake-1352#record and intake-1352#02 — the ten-harness grid, rank non-transfer and the thinking-off arm.
-- intake-1363#record, intake-1363#02 and intake-1363#04 — the Muse-Glimmer TB2.1 grid, input-token cost claims and the derived cross-grid rank correlation.
-- intake-1360#00 and intake-1360#record — the pi/pi-mono identity and source-level cooperation facts.
-- intake-1358#record — the hand-off breakdown result and why it is a bundle comparison.
-- intake-1348#record — procedural-graph evidence strength and the existing autopilot rejection feedback.
-
-## Compiled Update — process-global mutable state read as if it were per-request (2026-09-14, noninf sweep)
-
-**Confidence: verified** — local code read plus 25 new unit tests against `epyc-orchestrator` `origin/main`
-`35b05fde`; fixed in `d65a4e93` and `b69bda61`. Zero inference, no performance claim.
-
-### Tool-telemetry capture: one registry per process, four readers that thought it was theirs
-
-The orchestrator builds exactly one `ToolRegistry` per API process (`src/api/__init__.py` sets a single
-`state.tool_registry`), and `invoke()` appended every call to its `_invocation_log`. Four **request-scoped**
-readers built per-request telemetry out of that shared log: the ReAct durable episodic record
-(`chat_pipeline/stages.py`), the specialist delegation phase (`chat_delegation.py`), and two streaming
-tool-event emitters (`chat.py`, `stream_adapter.py`). Nothing about the log is per-request, so under uvicorn
-concurrency it interleaved every in-flight request's calls — request A's durable memory row recorded request
-B's tools, and A's SSE stream emitted B's tool events to A's client. The log was also a plain `list` that
-nothing ever cleared; `clear_invocation_log()` had zero callers anywhere in `src/`, so it grew for the
-lifetime of the process.
-
-**The defect is not "the log was never cleared" — it is that shared state was read as scoped state.** That
-distinction decides the fix, because clearing per request is the *same* defect with a narrower race window:
-
-    request A finishes → A clears the log → B's tool call lands → A reads → A records B's call
-
-Per-request telemetry now comes from `REPLEnvironment._invoked_tools`, captured at the single `_invoke_tool`
-chokepoint (`src/repl_environment/context.py`) — one list per REPL, one REPL per request. Scoping
-structurally rather than temporally buys four properties no amount of clearing can: **exactness** (the buffer
-cannot contain another request's call, so there is no window at all), **lock-free** (no contended structure,
-no contextvar, no request-id stamp to filter on), **cleanup on every path including exceptions** (the buffer
-is owned by the request's object graph, so there is no `finally` to forget), and **boundedness for free** (a
-per-request buffer is bounded by the request, not by uptime). The existing chokepoint already had the right
-scope; nothing new had to be introduced.
-
-**A cursor into shared state is the same bug wearing a hat.** Both streaming emitters kept a
-`prev_tool_count` and sliced `log[prev_tool_count:]` — correct only if nothing else appends, which is exactly
-what does not hold. Bounding the shared log would have broken the idiom a *second* way, since eviction shifts
-indices and the cursor then silently reads the wrong entries. The shared log survives as an explicitly
-labelled diagnostic ring (`deque(maxlen=1000)`, override `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX`, `<= 0`
-disables) with `clear_invocation_log()` kept for tests and interactive use and a docstring saying it is not a
-per-request mechanism: dead API is worse than no API, but so is API whose only documented use is the wrong
-one. The registry-side half of the contract is summarised in
-[Tool Implementation](tool-implementation.md). The guard is structural rather than a comment — an `ast` test
-asserts that no request-scoped module *calls* `get_invocation_log()`, parsed rather than grepped so the prose
-explaining the rule does not trip it; run against `origin/main` it flags all four pre-fix sites.
-
-### The paired write half: a find-or-update path that drops what the create path writes
-
-The same handoff box named a second defect with the same signature — available data discarded at a boundary.
-`EpisodicStore.store()` was the only site that ever wrote `assigned_role` (TR-3.2) or the `work` payload
-(M-11a2b), and every UPDATE branch in `QScorer` called `update_q_value()` and returned *before* reaching it.
-Because the find-or-update branch fires roughly 11x more often than create (`SUM(update_count)` 668,070
-against 59,337 rows), both columns were effectively never populated: the values were read off entries already
-in hand, then dropped on the floor. Two rules worth carrying:
-
-1. **A find-or-update path must carry everything the create path writes**, or the field only exists on first
-   observation. A test that exercises only create passes for the bug's entire lifetime — and here it did,
-   because `Q_TD_WRITE` is read at *import time* and is `0` under pytest while production sets it to `1`.
-   **A flag read at import time makes the production branch untestable by default**, which is a testability
-   defect in its own right, independent of the bug it hid.
-2. **Backfill MERGES, never overwrites.** The new `merge_row_metadata()` fills `assigned_role` only when
-   NULL, fills `work` sub-keys only where absent, and preserves every other `context` key byte-for-byte. A
-   later, richer observation may close a gap a first observation left, but must never blank out captured
-   work.
-
-### Non-idempotent sanitization makes a record lie about itself
-
-The subtlest hole in the same box: the size/redaction policy is applied **twice** on the live create path —
-once by `chat_pipeline.telemetry.work_completion_meta` heading into the progress JSONL, then again by
-`build_memory_record` heading into `memories.context`. Its docstring claimed idempotence; the code did not
-have it, and the consequences were measured rather than inferred. An already-truncated string is `max_chars`
-**plus** its truncation marker long, so pass two re-truncated and appended a second marker: a 32,500-char
-answer was stored reporting `total was 32049`. An already-bounded list is `max_items` **plus** the
-`_elided_entries` sentinel, so pass two saw `max_items + 1`, dropped the front entry — which, being at the
-front, *was the sentinel itself* — and inserted a fresh `_elided_entries: 1`. A row that elided 50 entries
-claimed 1, and lost the real first retained entry too.
-
-**A bounding function that annotates its own output must be idempotent, or the annotation becomes the first
-thing it destroys.** Both now recognise their own marker at their own cap and no-op, and the sentinel is
-lifted before counting with its count carried into the total. The general form: a function whose output lies
-in its own input domain will be composed with itself sooner or later, usually by a caller who cannot see the
-other one — so idempotence is a correctness property, not a nicety, and it needs a test rather than a
-docstring.
-
-### Checklist for any per-request field
-
-- Is the state it reads owned by the request, or by the process?
-- If per-request scoping is achieved by *clearing* something shared, name the window. There is one.
-- Does the cleanup run when the request raises?
-- Is it bounded by the request, or by process uptime?
-- Does the UPDATE path write every field the CREATE path writes?
-- Is the sanitizer idempotent, and is there a test that composes it with itself?
-
-### Source References (2026-09-14 per-request scope, noninf sweep)
-
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — RTG-02: the paired boxes at `:1787` (`assigned_role` still 0 / 59,337) and `:1793` (0 rows carry a top-level `work` key), the latter naming all three holes including the double sanitize.
-- [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — session record: the four pre-fix reader sites, the measured 11x update-to-create ratio, and the non-vacuity checks.
-- `epyc-orchestrator` `d65a4e93` — per-request tool telemetry via `REPLEnvironment._invoked_tools`, the bounded diagnostic ring, the `ast` guard, and `merge_row_metadata()` called from all four update branches. [confidence: verified — code + `test_invocation_log_request_scope.py` (15 tests), `test_q_scorer_update_path_preserves_work.py` (5 tests)]
-- `epyc-orchestrator` `b69bda61` — idempotent `sanitize_work_text` / `sanitize_work_items`. [confidence: verified — `test_memory_record.py::TestSanitizeIsIdempotent` (5 tests)]
-- [Tool Implementation](tool-implementation.md) — the `ToolRegistry` `_invocation_log` / diagnostic-ring contract from the registry side.
-
-## Compiled Update — 2026-09-08: manifest preservation is not end-to-end wrap-up proof
-
-**Confidence: verified** as a recorded test-failure disposition, not a new reproduction in this session.
-The heavy-wrap manifest-preservation repair does not establish end-to-end correctness. The September 8
-handoff records `test_full_wrap_transaction_end_to_end` failing because an expected auditor progress
-shard was absent, with two pristine-HEAD reproductions reported. The failure was located before wiki
-compilation, not attributed to the manifest repair. No fix or successful end-to-end rerun is established
-by this compilation; the existing implementation task remains open.
-
-### Source References (September 8 end-to-end qualification)
-
-- [Wrap-up division-of-labor handoff](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — reported reproductions and outstanding task.
-
-## Compiled Update — 2026-09-08 (incremental): screening became the dispatch path's first-class citizen — AIR-12/13/14 land the premise contract, fan-out waste has a measured band not a point, and the heavy-wrap receipt stops destroying the manifest it must preserve
-
-**Confidence: verified** — every landing below is a closed commit (`945c8820`, `af4c5c63`); the AIR
-censuses are reads of the shipped instrument; and the fan-out corpus (`fanout_timing.v2`, 4,278
-subagents over 14,004 workflows) is committed precisely because the transcripts it was mined from no
-longer are.
-
-### AIR-11 answered by censuses, not samples: already-satisfied and blocked-on-row are both screening failures, never missing edges
-
-The instrument built to answer "how often is a queued row already satisfied or blocked?" had itself
-answered it zero times: `premise_screener` holds **9 verdicts in its whole life — 4 `still-needed`,
-0 `stale`, 5 `unknown`, every `unknown` because the probe bundle lacked the artifact that would
-settle the premise**. Against n=38 tasks ever queued (n=25 ever screened):
-
-- **Already-satisfied at dispatch: 1–4 of 25 (4–16%).** One hard case — `AK-RUN-3` carries a
-  completion note dated 2026-08-12 and was screened `DISPATCHABLE` at 2026-08-13T18:10Z: *done the
-  day before it was dispatched*, and the checkbox could not see it. Three more are INDETERMINATE
-  (closed 1.5–4 h after the screen) and are counted, folded nowhere.
-- **Blocked-on-another-row: 3 of 25 (12%)** — all three sit in a node whose `.index-graph.json`
-  already marks `readiness: blocked`, a file `backlog_row_check.py` never reads (nor the `Deps`
-  column).
-- **The modal fate of a queued row is that no subagent ever starts**: 29 of 38 died at `ASSIGNED`
-  on lease expiry; only 9 were ever `CLAIMED`/`RUNNING`.
-- **Not determinable fleet-wide**: 0 of 4,278 subagent records carry a task identity, and 0 of 280
-  queue events carry an already-satisfied field — the external comparator's 15.5% has no local
-  counterpart. Do NOT repurpose the fan-out `blocked` bucket for it (that means an external blocker
-  and is itself a lower bound).
-
-**Verdict, and what it explicitly rules out**: already-satisfied is a screening failure, not a
-missing edge — all 25 rows were correctly `[ ]` at screen time and no dependency field would have
-caught the one hard miss; blocked-on-row is the same failure (the screener consulting the owning
-handoff's readiness would have flagged 3 of 25 at zero schema cost), with **flag, never
-hard-refuse** — handoff-granular blocking is over-broad at row level (2 of those 3 were
-legitimately completed anyway). **Do NOT build a dependency-edge graph inside the queue**: row-level
-dep-blocking is ~12–13% and a minority of all gating (operator gates and inference-window gates
-dominate, and no edge field touches either); the one genuine schema need is a place to WRITE what
-screening found — verdicts currently ride as prose inside `failure_reason` on statuses that mean
-something else, which is exactly how 3 of them became uncountable.
-
-### AIR-12/13/14 landed (`945c8820`, 9 files, 719 coordination tests) — the premise contract now has a home
-
-- **AIR-12 — screening is non-optional and the ladder is closed four-value.** `premise_screener`
-  now decides `still-needed|stale|unknown|blocked` (`SCREENER_VERSION` 1→2). Probe-bundle repair —
-  the settling-artifact miss was the sole cause of all 5 lifetime `unknown`s: `mechanical_screen`
-  falls back to the row's own C50b `spec_ref`/`row_ref` anchor when text search misses, and
-  `probe_artifacts(also=…)` probes the anchor artifact even when the row text names no path. On the
-  dispatch path, an **unevidenced non-unknown verdict is refused** — a screen that was skipped or
-  absent can never read as go; `blocked` parks like stale/unknown. 7 new red-first tests.
-- **AIR-13 — the row screener consults `.index-graph.json` readiness, advisory only.**
-  `backlog_row_check.index_graph_readiness()` reads the `index_graph.v2` sidecar; `classify()`
-  appends an `INDEX-GRAPH (advisory, NOT a refusal)` reason on the dispatchable branch only, the
-  exit code never changes, and the advisory reaches the model via `classify_reasons`. Silent on
-  missing/unreadable graph. 3 red-first tests. (This is the mechanised form of the flag-not-refuse
-  verdict above — the 2026-08-16 pilot's `premise-unknown` parking extended to a fourth verdict.)
-- **AIR-14 — a screening verdict has somewhere to live.** `session_bus.schema.json`
-  `queue_row.screen_result` is whole-field nullable (`null`/absent = **never screened, NOT a
-  verdict**), `premise` is required-when-present over the closed four-value ladder, `blocked_by` is
-  nullable and meaningful only for `blocked`, and unknown keys are refused
-  (`additionalProperties: false`). The coordinator enforces the same gate at intake/transcription;
-  `screen_result` joins `_IDENTITY_FIELDS` so it survives every row rewrite (the census
-  uncountability); worker `requeue` transcribes it onto the row — parked verdicts previously died in
-  the outbox. Schema validated under both validators; live-bus validate: 0 new failures. 3
-  red-first tests.
-
-**2026-10-06 incremental source correction:** the coordinator ledger withdraws its unreliable active recurrence column; the original source stays in Git for historical custody. Stable F-33…F-36 aliases distinguish original events `(a)` from delivery-plane events `(b)`; historical snapshots remain unchanged. [Review and scope](../artifacts/ni08/coordinator-ledger-source-review-20261006/README.md). Protected docstrings and fleet-watch registry classification await [the exact D9 decision](../artifacts/operator/decisions/D9-R25-OBS11-20261006/README.md).
-
-### WS-1..4 — the delivery-plane residuals, filed with their design constraints attached
-
-Four rows from the lost-wake/wake-spike round (2026-09-07 intake; zero compute; WS-3 is a decision
-gate on WS-2; WS-4 is independent):
-
-- **WS-1 — artifact reconciliation at the drain boundary**: compare worker-written completion
-  artifacts against the handled set *independent of whether a bus row exists* — that independence is
-  the whole value, because the lost-wake case is precisely the one where no row was seen. One-shot
-  and receipted; a **notifier, no standing obligation** (cannot become background noise). This is the
-  mechanism referenced from the coordinator failure ledger's F-33(a) evidence note.
-- **WS-2 — durable processed watermark**: a monotonic `seq` on bus rows plus a `processed_seq` in
-  the owner-write-only `cursors/<agent>.json`, replacing the O(history) `routed_view`
-  recomputation. Unlike WS-1 this creates a standing obligation, so it carries hard preconditions:
-  any persistent re-presentation must first carry C39's spent-receipt lookup and its
-  "annotate, never suppress" polarity, and satisfy C49's ruling that *"an escalation that fires on a
-  well-run night trains everyone to ignore it"* — the external precedent is safe only because its
-  backstop is one-shot and byte-capped.
-- **WS-3 — store-before-deliver must be an EXPLICIT decision, never a silent flip**: it inverts the
-  deliberate house ordering at `session_bus_coordinator.py:1626` ("the save happens AFTER the relay
-  pass, so a crash loses at most one tick of ledger updates, never a delivery") and the fail-safe
-  cursor default at `session_bus.py:1790-1815`. Both of ours bias toward **duplicate delivery over
-  loss**, and so does the external migration path — the biases agree, which is exactly why the flip
-  could happen silently.
-- **WS-4 — asyncRewake wake spike (merged)**: a Stop `asyncRewake` hook that exits 2 to wake an
-  idle main, replacing doorbell keystroke injection (closes RC-4's "between turns nothing runs").
-  Four facts ride with it: the timeout is **unenforced** on async hooks; backgrounding requires
-  interactive-or-streaming so **headless `claude -p` actors are excluded**; the "zero-token
-  waiting" contract (durable suspension resumed on ingress, with write-ahead journaling and
-  generation fencing — the source's Table 1 scores Claude Code "no" on zero-token waits); and a
-  **build pin of "verified against Claude Code 2.1.263"** — the stale npm-global 2.1.241 on this
-  host is not the version these facts were verified against.
-
-### FM-5/FM-6 measured: fan-out waste is a BAND, not a point — and 86.5% is the low end, never the finding
-
-The local measurement the 2026-09-07 section above (intake-1304/1305/1306) called for now exists —
-`scripts/coordination/fanout_timing.py` at schema `fanout_timing.v2` (strict superset of v1; v1 rows
-count as `schema_v1_no_outcome` and never fold into a bucket), 58 tests, corpus **4,278 subagents
-over 14,004 workflows**:
-
-| bucket | n | share of known | share of tokens |
-|---|---|---|---|
-| produced-and-used | 2,265 | 60.0% | 13.5% |
-| produced-and-discarded | 1,281 | 33.9% | 79.7% |
-| no-output | 122 | 3.2% | ~0% |
-| aborted | 109 | 2.9% | 6.8% |
-| blocked | 0 | 0.0% | 0.0% |
-| *unknown* | *501* | *excluded* | *excluded* |
-
-**The headline is the band form, revised 2026-09-07 by SC62.** Over the 3,777 subagents whose
-outcome is known: head-count waste **40.0% – 95.5%**, token waste (total basis) **86.5% – 99.7%**,
-token waste (new basis) **83.8% – 99.6%**, blocked share ≥ 0.0% with **no upper bound**, and exactly
-501 unclassifiable (held out of every denominator). The two ends rest on **different evidence, not
-different confidence** — this is not a confidence interval and must never be rendered as one: the
-low end counts 2,265 `produced-and-used`, an upper bound on usefulness because 2,094 of those
-verdicts are `parent-reference` substring hits (evidence the parent *saw* the output, not that it
-*used* it); the high end counts **171 `git-landed` (4.5%)**, the only proven floor, holding just
-2.85B of 1,110.7B tokens — which is why the token ceiling reads 99.7%. The projection enforces the
-band: `scripts/vidya/adapters/fanout_outcome.py` yields a `Bound` whose `.point`, `float()` and
-`int()` **raise** (a point estimate is a different and stronger claim than the one that was made).
-**Correction of record:** the earlier one-sided "≥86.5%" (commit messages `5f1c4ba4` and session
-reporting) is true as a lower bound but incomplete; the band supersedes it everywhere.
-
-**Why the two units disagree by ~46 points, which is itself the finding**: discarded subagents are
-the token-heavy ones — cost does not track head count here, so a width-based cost argument measures
-the wrong thing (the ratified discarded-work clause). The aborted share is 6.8%, an order of
-magnitude below the external swarm's 51.6% — our loss is concentrated in DISCARDED, not aborted,
-so the ported remedy would be reconnection, not crash-loop repair. **FM-6 gives that a number**:
-orphan rate **35.0%**, declared width 1,187 → measured 928 (−21.8%); a fan-out record counts only
-when each subagent's output links to a backlog row or an artifact path, and an orphan-blind width
-count cannot distinguish a main that dispatched five subagents usefully from one that dispatched
-five and used none. Do NOT read this wave as an argument to narrow the 3–5 width — the evidence
-points the other way (3/5 workers beat 1 at matched completion; coordination is ~11% of compute).
-Carry the corpus caveat: **the v2 artifacts are committed because the corpus is not reproducible**
-(Claude transcripts pruned 1,546→1,078 since the v1 snapshot; Codex grew 2,344→13,942 workflows) —
-a measurement whose corpus no longer exists is unfalsifiable.
-
-### The heavy-wrap receipt stops destroying the manifest it must preserve (`af4c5c63`, RTG-51 wave-2)
-
-`heavy_wrap.step_7_compile_wiki` previously **clobbered the tracked content-hash
-`wiki/source_manifest.json`**, replacing it with a bare `{"compiled_by": [...]}` — the next
-incremental scan would fail loudly by design (the scanner reads hashes the receipts dict no longer
-carries). Now the manifest is preserved wholesale with `compiled_by` merged as an extra top-level
-key; a corrupt or non-dict manifest raises `WrapError` instead of being replaced; and the scanner is
-verified tolerant of the extra key (`read_manifest` validates kind/schema/sources only). 2 new
-tests. This is the executor-side half of the scanner's content-hash migration (the scanner half is
-compiled on [Knowledge Management](knowledge-management.md)).
-
-### Trust-boundary and accounting riders from the same wave (2026-09-07 intake)
-
-- **P5-1 — `PostToolUse hookSpecificOutput.classifierContext` is a write path into a main's
-  CONSENT state** available to any hook script: a classifier may weigh a user statement relayed
-  there as user intent (it can satisfy a consent bar a user turn would satisfy — never a hard
-  boundary). Declared out of bounds for any coordination-plane hook. The corresponding
-  `INVARIANTS.md` text is human-amendment-only (operator token-request, never an agent edit).
-- **P5-3 — per-turn PURPOSE LABEL must be written at write time** (bus rows, delegated-task
-  envelopes, orchestrator turn telemetry) so the Eq.-2 split (system / replayed history / tool
-  schemas / retrieval / coordination) becomes computable — post-hoc classification of transcripts is
-  explicitly refused (a 32-author team with full trace-shim control published no share number
-  because their meter recorded totals, not purposes). P5-2 lands the NL-only rule as a labeled
-  fixture example beside C23, never a new BUS_PROTOCOL conjunct (the prose-rule moratorium this file
-  itself declared).
-
-### Source References (2026-09-08 fleet-coordination compile)
-
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the AIR-11
-  censuses and verdict (2026-09-07), the AIR-12/13/14 landings with `945c8820`, and the WS-1..4 rows
-  with their C39/C49 preconditions and intake anchors.
-- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — the FM-5/FM-6
-  result section: the v2 schema, the bucket table, the band bounds and their evidence split, the
-  FM-6 reconnection requirement, and the corpus reproducibility caveat.
-- [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
-  — the BANDS correction of record (one-sided `≥86.5%` superseded) and the SC62 projection guard.
-- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the AIR-12/13/14 landing
-  record (`945c8820`, 719 coordination tests) and the wave-2 RTG-51 manifest-preservation fix
-  (`af4c5c63`).
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
-  the P5-1/P5-2/P5-3 trust-boundary riders.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
-  — the F-33(a) evidence note WS-1 mechanises.
-- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-68/OBS-13, the
-  scanner-side half of the same content-hash migration.
-
-## Compiled Update — 2026-09-07: a frozen served model is structurally immune to tool-environment shift — and one engineer update costs a full eval sweep
-
-**Confidence: observation-grade** — external, one benchmark, n=1 per cell; the numbers below are
-carried as posture, not as a gate, and nothing on this host was measured to produce them. The cost
-yardstick at the end is **DERIVED-FROM-CONFIG, never a measurement**.
-
-### Freezing the weights is what buys the robustness
-
-A post-trained agent is trained *against a particular tool environment*, and the training is what
-makes it brittle to that environment changing. The benchmark separation is stark: the **untrained
-Qwen2.5-7B goes UP** under a strong tool-schema shift — **7.4 → 13.5** — while **the same model
-post-trained under h-low falls to 2.7**, i.e. *below* its own untrained baseline, and a **GiGPO**-
-trained arm collapses **81.0 → 33.2**. The capability that the training added is the capability
-that the shift removes, and then some.
-
-We serve **frozen** weights. That makes this failure mode **structurally unavailable to us** rather
-than merely unlikely — there is no trained-in tool schema to invalidate.
-
-**Why this matters operationally, and it is not abstract:** every **MCP tool rename**, every
-**parameter-key change**, and every **consolidation of several tools behind one dispatcher with an
-`action` parameter** *is* that shift in the source's exact sense. On a post-trained agent each of
-those is a potential collapse of the kind above; on our frozen fleet each costs approximately
-nothing. Tool-surface refactors are therefore a **design decision**, not a stability risk to be
-hedged against — and conversely, any proposal that would post-train an agent against our current
-tool surface is buying a standing veto over ever refactoring it.
-
-Scope discipline: this is **one benchmark**, external, OBSERVATION-grade. It supports a *posture*
-(refactor the tool surface freely; treat trainability as downstream of harness selection) and gates
-nothing.
-
-### The cost yardstick for any outcome-grounded editor loop
-
-**One engineer update ≈ one full sweep of your eval suite.** That is the price of a single step of
-any outcome-grounded editor loop — the editor must observe the outcome, and observing the outcome
-*is* running the suite. It is a rule of thumb for pricing this whole class of proposal before a
-design doc exists, and it is **DERIVED-FROM-CONFIG, never a measurement**: it falls out of what such
-a loop must do per step, not out of anything timed on this host.
-
-_Sources: `intake-1339#record`, `intake-1323#record`, `intake-1344#record`._
-
-## Compiled Update — 2026-09-02 (incremental): a retracted number is not retracted until its derivatives are chased, and in a shared clone every defect claim is verified against git first
-
-**Confidence: verified** — every correction below was found by the next mechanical step (a re-anchor, a wiki
-compile, an operator's "does it actually reflect §4?") on shipped audit records, not by review; the
-purge-misclassification counts are executed re-verification results.
-
-Two audit sessions (2026-09-01 / -02) produced a cluster of operational-hygiene findings distinct from the
-loop-design and reconciliation lessons already on this page. All share one root: **following a rule is a
-separate act from knowing it — the rules were not the scarce thing.**
-
-### Retracting a number is not done until you chase what was derived from it — and mark invalid, never rescale
-
-When a baseline (`74 ms/token`, later found not to reproduce on the current box) was retired, the retraction
-propagated wrongly **four times in one handoff**: a "1.7× debug-build penalty" that crossed both a build
-boundary and the dead anchor; a two-row `28 ms gemv / 46 ms non-gemv` split where the table itself said the
-46 ms was `74 − 28` (subtraction), which had already fed a "two multipliers" list, a throughput projection,
-and an index row. **A derived figure keeps the full apparent authority of a measurement precisely because it
-does not look like the thing that was retracted.** Disposition rules that came out of it, now standing:
-- Give each dependent quantity an **explicit disposition** (survives / invalid / relabeled), never a blanket
-  edit. The directly-profiled `28 ms gemv` survived with a re-measure caveat; the derived `46 ms` was marked
-  **INVALID**, *not* silently rescaled to ~67 ms — a rescaled number manufactures a second unmeasured value
-  wearing the authority of a correction.
-- This is the same class the qwen4exp OP-32 rule (hold the artifact identical across arms) was ratified to
-  prevent — here committed one level up, at the *build*: measuring a same-build fused number against a
-  clean-build graph number would have made a successful substitution look ~2× worse than it is.
-
-### In a shared clone, resolve every defect claim against git before reporting it
-
-Reading the working tree instead of `git` produced repeated **spurious defect reports** — a "dead link" that
-was a peer's uncommitted deletion, an "orphaned handoff in active/" that was correctly in `completed/` on
-`origin/main`, a "39 GB/day growth" trend asserted from two samples (a third read *lower*). A clean detached
-`origin/main` checkout passed `--check` at exit 0 in each case. In a shared clone this failure mode is
-constant: untracked, pre-merge, and peer-uncommitted copies are byte-indistinguishable from committed work.
-The rule (a reporting-direction corollary of the stale-untracked-file custody lesson already on this page):
-**a claim is resolved against `git`, not the filesystem; and a trend needs more than two samples before it
-is stated to anyone.**
-
-### A purge menu is a set of claims to re-verify per path, never a list to execute
-
-A disk-reclaim menu produced by one agent was wrong in **both directions** — it called load-bearing artifacts
-"safe" and called a referenced artifact "consumed." Per-path re-verification against both registries + a
-retention-language sweep + all active handoffs before deletion **kept ~220 GB of the approved menu** (open
-INF-/DR- dependencies) and **deleted artifacts the menu never listed**. Three destructive traps recorded:
-`tier: D` in the master registry is the live DRAFT/EMBEDDER tier (deprecated is `tier: X`) — executing
-"delete Tier D" as a registry query destroys the active drafting set; **registry tier is not evidence of
-disuse** (a `tier: X` "eval-only" model was being served by `worker_general` at the time); and an inherited
-classification was wrong for the third time. Rule: **verify per path against the authoritative registry;
-never inherit a classification, a tier label, or a "safe"/"consumed" verdict.** Execute named paths one at a
-time (no wildcard/`rm -rf`), ledger each model deletion in the MASTER registry, and use `git worktree remove`
-(never bare `rm`, never `prune`) for git-registered trees after confirming they are pushed.
-
-### Noting a footgun is not handling it — an unmanaged `llama-cli` burned 300 GB and held a region lock 11 h
-
-A `llama-cli` from a sanity check, left alive with `-no-cnv` and stdin from `/dev/null`, spun its REPL
-writing `"> "` for **11h15m**, wrote **~300 GB** to a log (silently undoing a fresh operator-approved disk
-reclaim), and held a q0–q3 CPU region lock the whole time — any peer's CPU bench in that window would have
-been blocked or skewed. The operator-visible defect is that the footgun *had already been documented that
-same day* in the hygiene notes; it was noticed, written down, and then not acted on. Standing corrections:
-**every `llama-cli` launch pairs with an explicit kill-by-captured-PID + `ps -p` verify** (the guards
-`-no-cnv` and closed stdin do not stop the REPL loop), and **every task boundary includes a `ps -o etime`
-sweep for one's own long-lived leftovers.** A PreToolUse hook now blocks unbounded `llama-cli` (passes
-`timeout … llama-cli` and an explicit ack), and a llama.cpp EOF patch (`read_input` discards the EOF signal;
-fixed to break the loop) is routed to the champion lineage — production v9 stays unpatched by freeze, which
-is why the hook exists.
-
-### Source References (2026-09-02 audit hygiene)
-
-- [`progress/2026-09/2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) — the
-  four-step retraction-propagation record (§4–5), the C3 "chase the derivatives / mark invalid" rule, the
-  two disproved false-alarm defect reports (§3), and the worktree-unsafe wiki-watermark note (§6).
-- [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the
-  zero-consumer purge (Task 13: 4 misclassifications, the Tier-D/Tier-X collision, tier-is-not-disuse), the
-  11 h runaway-`llama-cli` incident and its Layer-1/Layer-2 fix, and the two-sample trend self-correction.
-- [`progress/2026-08/2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md)
-  — the reclaim decision package and the execution record where pre-deletion re-verification caught 4
-  misclassifications in the agent's minimal set.
-
-## Compiled Update — 2026-08-30: a dashboard is a claim about a producer — and every defect found merging two kernel pages was the surface agreeing with itself instead of with the producer
-
-**Confidence: verified** for the field-name mismatch, the mutation results, the route sweep, the
-test-count delta and the freshness behaviours (each reproduced against the live surface or the real
-record). **Verified as an open state** for the three surface gaps left deliberately unclosed.
-
-epyc-root shipped **two** kernel dashboards: `/kernel` and `/loop`. They are now one — `/loop`,
-titled **Kernel R&D**, with `/kernel` a 301 redirect and `dashboard/static/kernel.html` deleted
-(1,833 lines). The merge is unremarkable. What it *found* is not, and every finding has the same
-shape: **the surface was internally consistent and wrong about the producer.**
-
-### A fixture authored from the consumer's guess cannot witness the contract
-
-`/loop`'s GPU panel had been dark since the surface's first commit. The reader looked for `held_s`
-and `busy_s`; the producer has **always** written `claim_held_s` and `device_seconds_under_load`.
-41 tests passed over it, because the hand-built fixture invented **the reader's** spelling — so
-fixture and reader agreed with each other, and both disagreed with the producer. The tests proved
-the reader was self-consistent, which was never in doubt.
-
-**Rule: build fixtures from a real producer record, never from the consumer's expectation.** A
-fixture written by the same person, from the same mental model, as the reader is a mirror, not a
-witness. (This is the cross-repo cousin of the same program's "a test that proves a component
-EXISTED rather than that it was WIRED IN" family — see *Autonomous Research*, 2026-08-30.)
-
-### A mutation that survives because the harness cannot express the assertion is not a pass
-
-The merge was mutation-tested 13 ways. Twelve died. **M7 survived — producing a green pill whose
-text read `STALE`** — and the reason is the lesson: the test harness exposed only `innerHTML` and
-`textContent`, so the assertion that would have caught a colour/label mismatch was *literally
-unwritable*. The harness now also emits `class_by_id`.
-
-**Rule: before trusting a mutation score, check what the harness is capable of saying.** A surviving
-mutant may be reporting a gap in the harness rather than a gap in the tests, and the two are
-indistinguishable from the score alone.
-
-### Freshness: an envelope that is not rendered at the headline is not an envelope
-
-Two headline numbers could not be read as dead. The operator-gated `+48.9%` champion card carried
-**no envelope at all** — its reader took no timestamp, so the number would render identically
-forever after its producer died. The funnel's staleness verdict existed, but rendered **only inside
-a collapsed `<details>`** while the headline said nothing. Both fixed, and verified by aging the
-real record to 4 d and 20 d → `stale`, and deleting it → `absent`.
-
-Two structural holes in the freshness contract itself were found and left open, deliberately:
-
-- **Compliant silence has no age.** `/api/kernel` reports `reporting=observed, watchdog=idle` over
-  a **16.8-day** export, because that producer travels the compliant-silence path the hub honours.
-  The JSON does not read stale even though the data is. Compliant silence must still carry an age,
-  and an age past the envelope must degrade the verdict.
-- **A health fold that does not cover what the page renders.** `/api/loop/health` folds only the
-  loop producer, not the operator-gate bundle that moved onto the page. A human is never misled —
-  the verdict travels in the body and renders loudly — but an automated consumer is
-  under-informed.
-
-### Quiescent is not dead, and a dead-producer rule applied to a paused producer gives a wrong verdict
-
-A staleness audit widened past its scope also declared the `autopilot` dashboard stale. It is not:
-`autopilot_alive: false` with `paused: true` is a **quiescent** producer, and a dashboard showing
-the last known state of a paused system is *correct*. **A freshness contract must distinguish
-"nobody is writing because the system is stopped" from "nobody is writing because the system
-died"** — the same reading, opposite verdicts.
-
-### Reporting a coverage change honestly
-
-Dashboard test failures went **40 → 12**, and the sets are **not byte-identical** — legitimately,
-because 28 of the 40 lived in the deleted page's own test class. Saying "28 fewer failures" without
-that decomposition would have claimed a fix for tests that were deleted rather than repaired. One
-coverage loss is real and filed: the funnel and lane-hero render tests went away *with* the page
-rather than being fixed, and the reader still exists with nothing rendering it.
-
-### Deploying a dashboard change: push to `origin/main` and stop
-
-The hub supervisor gained `sync_dashboard_from_origin` + `check_hub_stale_source` on 2026-08-28: it
-fetches `origin/main` every **300 s**, syncs changed `dashboard/` files, and **restarts the hub
-itself**. The session that merged these pages twice asked the operator to `kill -TERM` the hub by
-hand, because it read *"Never restarts a healthy hub"* in the usage text and never opened the log
-that showed deploy-sync running. Hand-patching the shared clone is both unnecessary and fragile —
-the sync has a provenance test that trusts only a blob which has existed on `origin/main`.
-
-**Rule: a usage string describes intent; the log describes behaviour. When they disagree, the log
-wins**, and it costs one `tail` to find out.
-
-### Source References (2026-08-30 kernel surface merge)
-
-- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66, phase P6:
-  what landed (P6.1–P6.4), what is knowingly open (P6.5–P6.8), and the *Declined 2026-08-30* block.
-- [Surface and CI session record](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
-  commit-by-commit account, the mutation results and the route sweep.
-- [Dashboard README](../dashboard/README.md) — the plane rule, the `/kernel` → `/loop` retirement
-  record, and the registry/probe/envelope requirement for any new surface.
-- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
-
-## Compiled Update — 2026-08-23: the filesystem-containment guard is one scanner, every surface derived
-
-**Confidence: verified** — the incident, the unification, and the parity suite are all closed work
-recorded in `progress/2026-08/2026-08-23-root.md`; the canonical how-to is
-[`docs/guides/agent-workflows/filesystem-containment-guard.md`](../docs/guides/agent-workflows/filesystem-containment-guard.md)
-(summarized here, not duplicated).
-
-**The gap it closes (INC-20260823-filesystem-containment-gap)**: an agent ran
-`sudo -n mkdir -p /mnt/bigdisk && sudo -n mount /dev/sdb1 /mnt/bigdisk`, planned writes to
-`/mnt/bigdisk/epyc-backup/`, and `sudo apt-get install restic` against the operator directive *"do
-not touch anything outside `/mnt/raid0/llm/`"*. Nothing stopped it: the Claude Bash surface had no
-guard (the old path check was Write|Edit-only), and the opencode surface had no permissions and no
-plugins. The first fix shipped two hand-written rule surfaces; **the same-day unification made
-`scripts/hooks/filesystem_containment_scan.py` the ONLY policy holder** (RTG-52: never a fifth
-parser; it reuses `shell_scan.segments()`) and every other surface derived:
-
-- **Scanner** — CLASS A privileged host-level ops (mount/umount/mkfs/fdisk/systemctl/modprobe/
-  shutdown/reboot/apt/dpkg/dd of=/dev/*) and CLASS B out-of-root writes (mkdir/touch/cp/mv/tee/
-  redirection/rsync/restic/borg/rclone/chown/chmod/ln/install/rm/git clone), with
-  `unresolvable_target` fail-closed for quoted/$VAR targets and `cd` tracking across chained
-  commands. Containment set `/mnt/raid0/llm/**, /workspace/**, /tmp/opencode/**, ~/.claude/**,
-  ~/.codex/**`; bare `/tmp/**` tolerated scratch (the repo's own tooling writes /tmp proofs).
-- **Derived surfaces** — `--dump-rules` emits the canonical tables as deterministic JSON;
-  `generate_opencode_permissions.py` GENERATES the opencode `permission.bash` deny block (the
-  hand-edit drift that motivated unification: sudo variants, mke2fs, apt purge/autoremove and
-  dpkg -P were missing); one `check_filesystem_containment.sh` wrapper serves BOTH Claude matchers
-  (Bash → `--command`, Write|Edit → `--check-path`); the opencode plugins (project + global, the
-  latter covering lane worktrees) intercept bash AND write/edit via `--check-path`;
-  `check_filesystem_path.sh` is superseded with its allow-set deleted.
-- **Operator allowlist** — `filesystem_allowlist.yaml` ships EMPTY (no external path without the
-  operator); schema `session_bus.filesystem_allowlist.v1`; the env ack `EPYC_FS_ACK` is read from
-  hook env only, so command text cannot self-authorize.
-- **Parity tests** — `tests/test_harness_guard_parity.py` (33 tests): matcher routing, dump→
-  generator derivation, byte-identical permission blocks, `--check-path` semantics, and mutation
-  tests — a scanner-table edit fails 4 tests; a hand-edit of `opencode.json` exits 1 on `--check`.
-- **Honest gaps, recorded**: codex 0.147.0 PreToolUse hook is wired with verified schemas but
-  **firing could not be demonstrated** in 5 probes (re-verify procedure in the guide); daemons/cron/
-  scripts that shell out internally are invisible to a PreToolUse guard (OS-level layer would be
-  the enforcement); `bash -c '...'` inner commands are quoted data and not scanned. opencode loads
-  config+plugins only at start, so the guard is live for new sessions only — the operator must
-  restart opencode for the plugin/permissions to load.
-
-The transferable lesson: **a guard with two hand-written rule tables is two guards, and they drift;
-a guard with one scanner and generated/derived surfaces has parity tests as its change control.**
-
-### Source References (2026-08-23 filesystem-containment guard)
-
-- [`progress/2026-08/2026-08-23-root.md`](../progress/2026-08/2026-08-23-root.md) — the incident,
-  the unification, the 69-scanner/33-parity test counts, and the restart requirement.
-- [`docs/guides/agent-workflows/filesystem-containment-guard.md`](../docs/guides/agent-workflows/filesystem-containment-guard.md) — the unified model, surface×wiring×test table, and rule-change procedure.
-- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20260823 origin narrative.
-
-## Compiled Update — 2026-08-19: two failing hook tests were both the fixture, and neither was about the thing under test
-
-**Confidence: verified** — from the closed task in the loop-owned-fleet handoff, backed by commit
-`25726a78` and a re-run (8 passed).
-
-`test_hook_worktree_resolution.py` carried 2 failing / 6 passing tests, confirmed **pre-existing**
-by stashing an unrelated guard sweep and re-running to an identical 2/6. Both failures were the
-TEST, not the worktree-resolution cascade they appeared to indict, and — the part worth compiling —
-**neither failure was about resolution at all**:
-
-- the tier-1 stub fixture hard-coded two hook names, while `pre-commit.extras` had since chained a
-  third through the same variable. The fixture froze a list the production config had grown past.
-- the sparse fixture `rmtree`-d the whole `scripts/hooks` tree, which trips an observer census
-  added to the codebase *after* the fixture was written. The fixture deleted the very signal a
-  later control inspects.
-
-Both are the same class: **a fixture that constructs the world by enumeration or by deletion goes
-stale silently, and its staleness surfaces as a failure in the subsystem it was built to exercise.**
-That misattribution is the expensive part — a red test in a resolution suite reads as a resolution
-bug, and the cascade gets audited before the fixture does. Rule out the test method before calling
-it a defect in the code under test; and when auditing a fixture, audit what it *removes*, not only
-what it sets up — clearing the signal a control depends on lets a broken implementation pass just as
-easily as it fails a working one.
-
-### Source References (2026-08-19)
-
-- [`handoffs/active/coordination-and-churn-pipeline.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
-  — the closed `test_hook_worktree_resolution.py` task and its pre-existence check.
-- Commit `25726a78` — "worktree-resolution tests: the fixtures were stale, the cascade was fine".
-- Commit `e8e93262` — the task closure.
-
-## Compiled Update — 2026-08-18: reachable-from-origin is not merged — the stranded-patch class, the `git clean` signature, and a triage that read all 51 messages
-
-**Confidence: verified** — every mechanism below is backed by a named commit, incident entry, or
-file:line in the sources; the two guards are verified as BUILT and live-run, not filed.
-
-### The strand class: every backup sweep called 19 unmerged patches "safe"
-
-Two retired (tombstoned) identities — `mainC` and `mainD` — left 19 commits on their lane branches
-whose **content never reached `main`**: 10 on `lane/mainC`, 9 on `lane/mainD`. Every backup sweep had
-called them safe, because the sweep's instrument was `git rev-list <branch> --not --remotes=origin`,
-which answers *"is this commit reachable from origin somewhere?"* — and lane branches are pushed, so
-the answer is always yes. **Reachability is not merge.** The correct discriminator is `git cherry`
-against `main`: patch-id membership, which also survives cherry-picks and per-file ports that
-ancestry checks cannot see. Run for the first time, it found the 19; they were adjudicated per patch
-and ported in `10ff9bdf` — with the corrections-win rule applied at port time: the lane's "ROOT
-CAUSE" framing for the ODL-P2 output-format finding was deliberately **not** ported, because `main`'s
-audit had already demoted it to "demonstrated prompt/profile mismatch", and re-porting it would have
-undone a correction.
-
-Both recurrence shapes now have fleet_watch guards (commit `96ccad1a`, under operator D9-ack):
-**`REPO-SEQUENCER-STALE`** (a per-repo abandoned cherry-pick/merge/rebase head older than 2h — the
-shape of the 3-day research-repo wedge) and **`RETIRED-LANE-UNMERGED`** (`git cherry` patch-id count
-per retired identity — the stranded-patch shape above, whose 19 patches are the guard's founding
-fixture). Suite 137→159 tests, 3/3 new mutations caught, real-probe tests against throwaway repos.
-After the port, the lane worktrees and branches were removed by explicit path so the guard comes up
-quiet rather than permanently red.
-
-### `-s ours` was recommended, then refuted the same day: file presence is not content equality
-
-The OP-11 divergence (`main` 89 ahead / 111 behind `origin/main`) drew a recommendation to record the
-reconciliation as `git merge -s ours origin/main`, on the evidence that `git diff --name-status HEAD
-origin/main` showed zero `A` entries — reported as "the content is reconciled". **That measures file
-PRESENCE, not content equality, and the second was claimed having tested only the first.** Measured
-against the merge base: origin changed 104 files, local changed 269, and **103 were changed on BOTH
-sides** — so `-s ours` would have kept local content for all 103 and discarded origin's half of each
-**with no conflict raised and nothing in the resulting diff to review**: a silent 103-file revert of
-another session's work, not a graph-only operation. The recommendation was withdrawn in the handoff
-with the refutation attached. The executed resolution was a real per-file three-way merge in an
-isolated detached worktree (36 conflicts, four subagents on disjoint sets) under the policy: union by
-default; never drop a rule, guard, test or task; **retractions win over what they retract**; genuine
-contradictions preserved and reported, never silently picked.
-
-The instructive case for why *naive union is the worst outcome*: local carried a retraction note
-*beneath* table rows still reading `✅ 37.15 t/s … MTP HURTS at depth`, while origin had rewritten the
-rows themselves. Union preserves both the retracted cells and their retraction — and a `✅ measured`
-cell gets quoted downstream without the paragraph that withdraws it. Origin's rewrite was correct.
-
-### The `git clean` damage signature: exactly the untracked state that no commit protects
-
-`INC-20260816-git-clean-shared-clone` folds two dated events into one signature: a live
-`git clean -ffdx`-class operation in the SHARED clone destroyed at least four unrelated things —
-29 registered worktrees (2026-08-12), and on 2026-08-16 the `retirements/` receipts directory, the
-`wiki/.last_compile` watermark, staged doctrine artifacts, and (strongly suspected, same event) the
-`/workspace/repos/` symlinks. **Each loss was discovered independently, days later, by a different
-session tripping over it — none by the session that ran the clean.** That is the characteristic
-shape: `git clean` removes exactly the untracked operational state (watermarks, receipts, symlinks,
-staged artifacts) that no commit protects and no diff shows, so the cost surfaces as
-unrelated-looking breakage. Rule fed: never `git clean` in the shared clone or any lane worktree;
-untracked-but-load-bearing state must be tracked, live off-tree, or be listed in a manifest a
-restorer can replay.
-
-### The 51-message triage: read individually, and what only that could find
-
-All 51 routed bus messages (2026-07-29 → 2026-08-16) were dispositioned individually against the
-repo, each disposition backed by a commit / file:line / handoff row; zero bulk-acks. Findings that
-only per-message reading produced:
-
-- **`BUS_ROOT` derived from `__file__` in three modules — writes silently lost in every lane
-  worktree.** One file was fixed when the auditor flagged the class on 2026-08-12; a second
-  instance *survived a full rewrite* of its file; the third (`alarm_channel.py`) was written
-  2026-08-16 **after** the audit — proof that per-file assertions can never cover the next file.
-  All three now use `session_bus.get_bus_root()`, and an AST sweep
-  (`tests/test_bus_root_resolution.py`) fails on ANY `scripts/coordination/*.py` module deriving a
-  bus root from `__file__`; mutation-verified three ways.
-- **`monitor:file` service identities are structurally invisible to the fleet-health plane.** The
-  liveness predicate watches `exec:` runners; the `auditor` identity accumulated 111 undrained inbox
-  rows and 23 `stuck-unreachable` advisories in one day — audit *results* flow (headless invocation
-  writes verdicts fine) but nothing drains packets *addressed to* the identity, so a missed
-  invocation sat invisible until manual triage. Open: either a re-invoke sweep for unanswered
-  `action_required` packets, or stop addressing bus rows to identities nothing drains.
-- **The screener-paraphrase defect**: a pool dispatch screened a worker against hand-written
-  `--row-text` — a 241-char paraphrase — and parked the row `unknown`, while the real 452-char row
-  text matches its checkbox verbatim and resolves cleanly. "The task TEXT is the identity" cuts both
-  ways: the dispatch path must pass row text through **byte-for-byte**; free-hand `--row-text` is
-  forbidden when the row resolves.
-- **The relay ledger's 296 flagged rows have never been adjudicated** — nothing distinguishes
-  "handled by a handler" from "dropped", and the drop mechanism is corroborated, not hypothetical:
-  two of 13 sampled messages in this very triage carried `NOT-IN-INBOX` markers.
-- **A refutation banked so it does not resurface**: "the hardware-backfill runner never landed" —
-  in fact `5af987ef` shipped the 777-line runner plus supervisor and tests, the roster row exists,
-  and the supervisor process is running.
-
-### Two dispatch-plane detector gaps, measured not speculated
-
-- **Cross-file duplicate-TASK detection must be semantic.** Exact-text scanning returned 0
-  duplicates over a corpus where a hand audit found **14 real pairs** — index rows summarize the
-  same task in different words. Acceptance test for any future detector: it must rediscover those
-  14 known pairs.
-- **`backlog_row_check.py` misses mid-text owner declarations** — reproduced live: a row screens
-  DISPATCHABLE while its own next line reads "Owner: the stack owner (`inference`), NOT this lane",
-  because `_OWNER_PREFIX` is `.match()`-anchored to the body's first characters. The narrowness is
-  deliberate (documented 21/1258 precision), so the fix is scoped: match a bolded `Owner:` lead-in
-  at the start of ANY body line, and re-measure against the live corpus without regressing.
-
-### Source References (2026-08-18 reconciliation close-out)
-
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
-  the wrap-up findings block: the two guards as built, the OP-11 `-s ours` refutation with the
-  103-both-changed table, the merge policy, and the full bus-triage disposition list.
-- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
-  `INC-20260816-git-clean-shared-clone`: both dated events, the forensic commits, and the rule fed.
-- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) —
-  the duplicate-task detector requirement with its 14-pair validation set, and the `_OWNER_PREFIX`
-  false-negative with the measured precision constraint.
-- [`canonical-judge-suite-revamp.md`](../handoffs/active/benchmark-suites.md) — the
-  CJ-1c paraphrase-screening artifact: the park, the verbatim re-resolution, and the RTG-52 filing.
-- [`progress/2026-08/2026-08-13-mainC.md`](../progress/2026-08/2026-08-13-mainC.md) — the live
-  reproduction of the mid-text owner miss during a 60-row premise screen (19 VERIFIED / 41 REJECT).
-- [`progress/2026-08/2026-08-16-coordinator-agent.md`](../progress/2026-08/2026-08-16-coordinator-agent.md)
-  — the reconciliation-with-origin narrative and the per-file forward-port mechanism.
-
-## Compiled Update — 2026-08-16: code owns the loop — the machine stops reading panes, and a worktree isolates the index but not the singletons
-
-**Confidence: verified for the ratified decisions, the landed mechanism, the pilot receipts and the
-open defect — each read directly from the tracked handoff, the operator package, and the doctrine
-files they name. Explicitly NOT verified: the >40% duty-cycle target and the <10% self-repair
-target, which are 7-day observations that have not elapsed.**
-
-The coordination layer was restructured on 2026-08-15 (decisions ratified) and implemented on
-2026-08-16 (20 commits). Its thesis is one sentence, and it is a subtraction: **code owns the loop;
-models judge at choke points; workers run in visible panes the operator can steer — but the
-machine's only channel to a worker is spawn-args in, report file and exit status out**
-([`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)).
-Everything below follows from taking that channel seriously.
-
-### The machine stopped reading panes — the three-state liveness problem was deleted, not classified
-
-A session is **working**, **compacting**, or **idle**, and the pane cannot tell you which: a session
-compacting its context renders *identically* to a finished one, because the goal line, the "Pursuing
-goal" timer and the background-terminal count all disappear together
-([`SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another session's
-liveness*). The heartbeat fails in the opposite direction: measured 2026-08-12 10:53Z,
-`mainB`'s heartbeat read `state: working` while **446 seconds stale**, with the pane idle across
-three consecutive watcher cycles and the GPU at 0% (origin: INC-20260727-stale-heartbeat). A
-heartbeat written once is a birth certificate, not a liveness signal, and **a stale heartbeat is
-worse than no heartbeat** — the stall ladder reads it as a stall and nudges a healthy agent.
-
-The failure record shows the instrument failing in *every* direction, which is what rules out a
-threshold fix ([`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)):
-
-- **Compacting read as idle, twice** (F-07) — the coordinator's own admission at 10:28:19Z, and the
-  second misread happened *between* its first and second corrections. Closed by `83f204cf`, which
-  reports `IDLE-CANDIDATE … may be compacting` and defers to the adapter's runtime check.
-- **Heartbeats stale while the thread demonstrably works** — at the 12:37Z handover on 2026-08-12,
-  `mainA` read ~90 minutes stale and `mainD` ~57 minutes stale, both while working: *"Heartbeats are
-  not liveness here"* (INC-20260727's birth-certificate failure, live at handover).
-- **Busy read as unreachable** (F-37) — a main whose subagents redraw the pane every second can never
-  satisfy a quiet-check, so it looks unreachable while perfectly healthy. Closed by `c3192787`
-  *without* weakening the guard: `pane_busy` corroboration requiring three consecutive stable readings.
-- **Wedged read as idle** (F-43, 2026-08-13) — a session found in process state `T`, all 121 threads
-  stopped, `wchan do_signal_stop`: a SIGSTOP, not a crash. Its heartbeat simply stopped updating and
-  the backend had no runtime signal, so the pane read idle. This is a fourth state the three-state
-  model does not even name.
-
-The obvious response is a better liveness classifier. The restructure did the opposite. D8 rules that
-worker panes are **human-authoritative**: the operator may watch, steer and answer permission prompts
-by hand, the machine never types into a pane and never makes a decision from pane text, and the only
-completion signal is a schema-valid report file. P3-2 then shrank `tmux_adapter.py` to the two
-interactive endpoints and deleted the worker-side nudge/doorbell/heartbeat/glyph machinery; P3-3
-dropped pane heuristics from `fleet_watch` entirely, keeping hardware compute-idle plus region claims
-and adding a queue-aging alarm. Liveness and escalation *classifiers* were explicitly demoted to
-"pulled by need" (PN-1) — **not scheduled, and not to be started without a measured consumer.** The
-generalisable move: when a signal is structurally incapable of distinguishing two states, removing
-the dependence on it beats improving the reading of it.
-
-### What a lane worktree isolates, and the surfaces it cannot
-
-The wiki already records that per-agent worktrees dissolve same-file commit sweeps while unpromoted
-lanes rot (106 commits behind, one at ~302 — *2026-08-12* section below). The mechanism doc
-([`WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md)) states the boundary
-precisely, as a **two-plane model**:
-
-- **Versioned work plane** — one worktree per agent at `/mnt/raid0/llm/worktrees/mains/<agent>` on
-  its own `lane/<agent>` branch. Own working tree, own index, own untracked state. Isolation was
-  *measured, not assumed*: staging a scratch file inside `mains/mainA` left `/workspace`'s staged
-  count at 0.
-- **Canonical runtime plane** — `/workspace`, one instance, deliberately **never forked**. The
-  session bus is state, not work, "and there can only ever be one live copy of *right now*". A naive
-  rollout would have forked it: `session_bus.py`'s bus root used to resolve via
-  `Path(__file__).resolve().parents[2]`, so five worktrees would have produced five independently
-  mutating buses. `get_bus_root()` now pins the literal canonical path from every worktree.
-
-The sharpest statement of the boundary is the dispatcher ledger's, and it is a warning about how the
-guarantee gets *read*: `repos/epyc-orchestrator` and `repos/epyc-inference-research` are symlinks
-**out of** every lane worktree, so lane isolation covers `epyc-root` only — *"anyone reading 'mains
-are isolated' must read it as **epyc-root is isolated**"*
-([`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md)). Six further
-surfaces stay shared, each with its own remedy rather than a per-lane copy:
-
-1. **The child repos' index and sequencer state** (DP-4, open, HIGH). A main sitting in its own
-   isolated worktree still shares one index and one `CHERRY_PICK_HEAD` with every other agent for the
-   orchestrator and research repos. Measured 2026-08-12: one main's `git add` in the research clone
-   put **42 files into another agent's in-flight cherry-pick index** (staged 8 → 50); had that agent
-   run `git cherry-pick --continue` in the window, all of it would have ridden into their commit
-   under their subject line. **It was caught only because `git commit -- <paths>` refuses with
-   `fatal: cannot do a partial commit during a cherry-pick`** — the same pathspec commit that is a
-   *hazard* for peer hunks in a shared file (2026-08-12 section below) is here the *guard* that
-   caught the contamination. Proposed remedy: per-lane child worktrees, or assert a clean sequencer
-   state before any `add`/`commit`/`checkout` in a shared clone.
-2. **Generated index state.** `index_state.py` writes were removed from post-commit/merge/checkout
-   hook bodies (`60187101`), with the proof obligation stated as a negative control: a worker handoff
-   commit must leave `.index-state.json`, `.index-graph.json` and the master generated block
-   unchanged. Derived files are regenerated only inside the heavy-wrap lease.
-3. **One-per-repo manifests and watermarks.** The same commit ensured an ordinary post-commit
-   retrieval refresh cannot mutate `wiki/source_manifest.json` or the wrap watermark, giving
-   retrieval its own cursor.
-4. **The promotion merge itself.** Promotion runs through a throwaway `--detach` worktree against
-   `origin/main`, aborts and leaves `main` untouched on conflict, and never force-pushes; pool
-   promotion rows are serialized one at a time through `merge_gate.py` / `serialized_push` (P2-8).
-   Note what that does *not* buy: `serialized_push.py` and its pre-push guard were built and tested
-   (62 + 56 tests, 50 mutations killed) and **deliberately not installed** as a hook — an operator
-   decision, on the stated ground that **only a server-side `pre-receive` on origin makes
-   serialization structural.** It is used as an explicit tool at promotion time, not as a guarantee.
-5. **The worktree admin data itself.** With `worktree.useRelativePaths` and one directory reachable
-   at two path depths, live worktrees read as *prunable* from the deeper path — and `git worktree
-   prune`, or the `git gc` that runs one, deletes their admin data. **That is what destroyed all five
-   lane worktrees on 2026-08-12**, and the fix is not retroactive: three pre-existing worktrees
-   remain exposed. The prescribed replacement is a read-only lane-ENTRY check
-   (`check_lane_worktree.py --strict`), never an exit sweep.
-6. **Backups that point into a live lane** (WT-1). Five `.orphan-…` backup directories retained the
-   old relative pointer, resolving to *the same admin directory the repaired live lane now uses* — a
-   commit inside a backup would have landed in the live lane's index. Neutralised by renaming each
-   `.git` to `.git.disabled-…`.
-
-And the lease that guards the singletons had its own defect: roster/PID reclaim allowed a second
-same-roster process to take a held wrap lease. It was replaced (`8ff5162c`) by an **opaque
-per-operation token** in a mode-0600 file whose hash is stored in the lock, required for normal
-release, with force-release audited — accepted only with a negative control that *would have admitted
-the previous collision*.
-
-The standing corollary, unchanged and now mechanised: **the worktree isolates; only promotion syncs.**
-The wrap-up cadence ruling below is what makes promotion frequent enough for that to matter.
-
-### Three doctrine rulings, 2026-08-16 — canonical in `OPERATING_CONSTRAINTS.md`
-
-P1-3 closed three live self-contradictions in the instruction corpus with one explicit ruling each
-([`OPERATING_CONSTRAINTS.md` → *Doctrine rulings — 2026-08-16*](../agents/shared/OPERATING_CONSTRAINTS.md)):
-
-- **(a) Wrap-up cadence.** The binding 2026-08-11 operator rule wins — **one task done = one wrap-up,
-  AS YOU GO.** Exactly two steps are broad and destructive enough to stay at the operator cadence and
-  run ONLY inside an operator-invoked `/wrap-up`: index **PRUNING** (deleting or archiving rows, and
-  handoff compaction) and the **wiki compilation sweep**. Everything else — progress report, checkbox
-  sync, handoff updates, `Next action` refresh, agent log, pathspec commit, **lane promotion** — runs
-  at every completed task, autonomous and nightshift sessions included. And **nothing may
-  auto-trigger the full routine**: no `Stop`/`SessionEnd`/`PreCompact` hook, no cron, no nightshift
-  task, "and there must not be one." The cadence is a rule about *who invokes*, not a hook.
-- **(b) Subagent index edits.** **A subagent may PREPARE index edits; the owning session APPLIES them
-  and owns the commit.** Drafting row text, running `index_state.py --check` and reporting the exact
-  diff is preparation; adding, deleting or re-pointing a row is never a subagent's own write. This
-  reconciles two rules that had read as contradictory ("wrap-up may run via a coordinator subagent —
-  preferred" vs the standing CLAUDE.md prohibition): both hold, **because preparation is not
-  modification.** Same rule for intake entries and handoff stubs. Operator approval is needed only to
-  widen it.
-- **(c) Role-based delegation.** **Decomposition by ROLE is a measured anti-pattern and no live
-  surface may instruct it** — decompose by CONTEXT BOUNDARY. Confirmed by sweep: the eight persona
-  files are archived, and `coordination/session-bus/config.yaml` (closed role set
-  `main`/`coordinator-agent`/`reviewer`/`retired`/`service`) is the sole authority on who holds which
-  role. Two live surfaces still routing by persona were corrected. Model-tier-vs-task-difficulty
-  routing in `agents/README.md` is *not* the anti-pattern and stays.
-
-### The fan-out multiplier finally has a detector
-
-The 2026-08-13 section below records an open gap: no way to tell a main that actually fanned out from
-one that worked serially and reported otherwise (RTG-49 / the "serial collapse" name from
-intake-1106, which defines the term and never measures it). The failure ledger states it as sharply
-as it can be stated — *"nothing on this plane distinguishes a main that dispatched five concurrent
-subagents from one that did the same work on its own thread, so the only detector is the operator
-saying so"* (F-15, against a measured 1,070 open backlog items, and the operator's ruling *"this
-should ALWAYS be the case"*). The pool's completion report closes that gap for the pool tier via a
-`subagents_spawned` field. In the pilot, **five subagents were fanned out and counted** — the
-handoff's own words: the multiplier "had no detector but the operator's word until today."
-Interactive-session measurement remains open under RTG-49.
-
-### The pilot: four rows passed, two were refused, and the refusals are the result
-
-Four workers ran under the `claude -p` harness in visible panes, three concurrently. **4 of 4
-attempted rows passed** with schema-valid reports (41k / 62k / 118k / 205k tokens; 0 / 0 / 2 / 3
-subagents; one denied tool call recorded rather than silently tolerated). Every batch sat inside the
-D1 ceiling of ~250k tokens/batch; three of four promoted to `main` through `promote_lane`, and
-pilot-02 stopped at the D9 gate because its test lands under `scripts/coordination/**` (it was
-promoted later, after the operator's ack — not by the session that built the gate).
-
-**Two further rows the pool REFUSED to run matter as much as the four it ran: both parked on
-`premise-unknown` rather than guessing.** That is `premise_screener` (P2-2) doing its job — a
-forced-choice still-needed | stale | UNKNOWN call with a mandatory evidence quote, where UNKNOWN or
-stale parks the row and emits a routed fix task. It is the mechanised form of a finding this KB
-already carries: a screener certifies a row's FORM, only a read certifies its PREMISE. The same
-discipline shows up hand-executed in a worker's own log the same week — a "Premise verification"
-section that confirmed the screener's still-needed check by grep before writing any code
-([`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md)).
-
-Read the pilot against its own gate before treating it as a pass: the Phase-2 acceptance gate is
-**≥10 rows end-to-end**, 100% independently audited, operator spot-reviews 3 of 10. Six rows were
-dispatched. The pilot is evidence the path *works*, not evidence the gate is met.
-
-### A concurrency ceiling the automatic path cannot reach — and the decision not to alarm on it
-
-The single open defect is instructive about how a bound can be honest and unreachable at the same
-time. `max_concurrent_workers: 4` is **not achievable through the daemon**: `compute_advice` skips
-any agent already in `busy_owners`, `busy_owners` is keyed on the queue row's `owner`, and the entire
-pool is ONE roster identity (`workerpool`) — so the first assigned row makes the whole pool busy and
-the pool serializes at **one row at a time**, whatever the config says. The pilot reached three
-concurrent workers only because they were dispatched **by hand** with `--pilot-override`, bypassing
-the picker, **so the measured throughput does not demonstrate the automatic path.** D1's bound is
-honest as a *ceiling* — nothing exceeds 4 — but the >40% duty-cycle target assumes it is achievable.
-
-The deliberate non-response is the transferable part: **it is not alarmed on, because the condition
-is continuously true and a permanently-on alarm is the exact failure the fleet predicate exists to
-end.** It is instead visible in every tick's `fleet-health` advisory via `capacity_free` /
-`in_flight` / `dispatchable`. Three candidate fix shapes are filed, none chosen.
-
-### Identity is not session — and a rule whose subject is deleted fails silently
-
-P3-7 retired the interactive `auditor` SESSION but deliberately did **not** tombstone the auditor
-IDENTITY: `worker_runner.py` addresses every audit packet to `auditor`, `headless_audit.py` writes
-its outbox under that id, and `session_bus.py::_check_routing_intent` raises `BusError` on a routing
-target whose roster role is `retired`. Tombstoning would break the audit path at that raise. The
-roster row is `role: service` with no tmux endpoint and no `worktree:` key, so no pane can be
-spawned, probed or nudged under it.
-
-The interesting failure is what that retirement did to a *rule written about a session*. RTG-51's
-interim rule read "Auditor main is the heavy-wrap writer and subagents are read-only." After P3-7
-that sentence **had no subject** — taken literally the document was left with NO designated
-heavy-wrap writer, "which is worse than an outdated one because it fails silently." It was replaced,
-not reworded: the heavy-wrap writer is now **the single headless invocation that holds the wrap
-lease, writing under the auditor identity**, and the read-only constraint now binds every invocation
-that does not hold the lease — which includes every per-packet audit. Two transactions that had been
-conflated are now separated by lease: **per-packet audit** (one per completion, read-only w.r.t.
-indices, wiki and `main`) versus **heavy wrap** (one leased, batched transaction over an immutable
-receipt cut — regenerating indices or compiling the wiki per packet "would be wrong and expensive;
-batching is the point of the immutable cut"). This is the same operator-cadence boundary as ruling
-(a), expressed as a lease instead of a prose rule.
-
-### A gate I built is not a gate I may sign
-
-Two containment mechanisms fired against the implementation itself, and both were recorded as
-working rather than routed around:
-
-- **The doctrine corpus is behind the trust boundary.** `agents/shared/*.md`, `CLAUDE.md` and
-  `agents/AGENT_INSTRUCTIONS.md` are hash-pinned in `human_only_paths.yaml`, so the PreToolUse hook
-  refused the agent's edits — "invariants 4 and 10 working exactly as designed, not an obstacle." The
-  doctrine collapse therefore ships as an operator-run package with every target sha256-pinned,
-  aborting on drift and skipping if already applied.
-- **D9 held on the loop plane.** Merging anything under `scripts/coordination/**` requires operator
-  ack; `promote_lane.py` exited 5 and named the path rather than promoting. The session's own note:
-  *"I did not sign this. Bypassing a control I had just built, on my own authority, would have taught
-  the fleet exactly the wrong lesson."*
-
-One operational lesson came free with the package: the first staging directory was **destroyed by a
-`git clean`** and had to be rebuilt, so the replacement was staged under a **tracked** path. The same
-mechanism as the 2026-08-12 bus wipe recorded below, at a smaller scale — an untracked staging
-directory is not a durable artifact in a shared tree, and this is also why D5 relocated the bus
-runtime behind a tracked symlink.
-
-One hazard specific to *deduplicating* an instruction corpus is worth generalising: nine amendments
-existed in only ONE copy and would have been destroyed by a naive dedup — including the subagent
-index-modification prohibition (present nowhere else), "never tick another agent's checkbox" (absent
-from the canonical checkbox axiom), and the stale-heartbeat causal chain. They were merged into the
-canonical text *before* any copy was deleted. **In a corpus with N duplicated copies of a rule,
-amendments land in one copy; collapsing to one canonical copy is a lossy operation unless every copy
-is diffed first.** The same failure mode is visible in the plan text itself: the fan-out rule's
-2026-08-13 exceptions existed in 1 of 5 copies.
-
-Standing constraint adopted from Phase 0 onward, aimed squarely at the corpus growth this article has
-documented repeatedly: a **prose-rule moratorium** — a new incident appends a labeled example to the
-eval fixtures (`label_provenance` mandatory), never a new rule or conjunct to BUS_PROTOCOL or the
-agent files.
-
-### Current measured state, and what is explicitly not measured
-
-One caution about reading any of these ledgers, verified on the dispatcher handoff this pass: **a
-long-lived handoff's own summary of its open work is not an instrument.** Its header claims 18 open
-task contracts; the file contains 45 unchecked boxes (26 at top level), and neither number is
-reproducible from the other. A milestone box (M4) sits unchecked while the config change it gated
-(`authority: assign`) has landed, two task rows appear twice with opposite check states, and the
-document itself carries a C-number collision warning. Counts inside a hand-maintained ledger drift
-from its own checkboxes; the checkboxes are the record, and the dashboard already counts only those.
-
-Self-repair share is **11.1%** (107/966 commits, computed by D9's commit-path classification over
-`scripts/coordination/**`, never self-reported) against a <10% target — down from a stated ~50%
-baseline. The queue went from 14 `INFRA_BLOCKED` rows to **0** (27 READY), and 12 dead-owner claims
-were released under reversible receipts. The duty-cycle claim (8–9% baseline → >40%) and the
-zero-operator-intervention claim are **7-day observations that have not elapsed**; `fleet_metrics.py`
-is built and running, and P4-1 is open. A meta-kill criterion applies to the restructure itself: any
-phase exceeding 2× its estimate stops the plan, so that it "must never become the next
-50%-self-repair sinkhole."
-
-### Source References (2026-08-16 loop-owned fleet)
-
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
-  ratified decisions D0–D9, the 15 invariants, Phase 0–4 task state, the 2026-08-16 implementation
-  record and pilot table, and open defect PD-1.
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
-  the authority table, the per-packet-audit vs heavy-wrap split, the Phase-1 singleton repairs
-  (hook writers, wiki manifest/watermark, operation-token lease), and the REVISED 2026-08-16
-  identity-is-not-session correction.
-- [`agents/shared/OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) →
-  *Doctrine rulings — 2026-08-16* — canonical text of rulings (a), (b) and (c).
-- [`agents/shared/SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another
-  session's liveness* — the three-state model, the authoritative instrument, and the measured
-  446-second stale heartbeat.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
-  — F-07 (compacting read as idle, twice), F-15 (the fan-out detector gap and its 1,070-item cost),
-  F-37/H-3 (redrawing panes defeat the quiet-check), F-43 (a SIGSTOPped session reading idle), and
-  the 12:37Z handover heartbeat-staleness table.
-- [`scripts/coordination/WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md) —
-  the two-plane model, the measured index isolation, the promotion pattern, and the withdrawn
-  `git worktree prune` rule.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the
-  epyc-root-only scope of lane isolation, DP-4's shared child index and its 42-file cherry-pick
-  contamination, WT-1's backup-pointer aliasing, the uninstalled `serialized_push` decision, and the
-  header-versus-checkbox count discrepancy.
-- [`artifacts/operator/loop-owned-fleet-operator-package-20260816.md`](../artifacts/operator/loop-owned-fleet-operator-package-20260816.md)
-  — the gates that fired, the self-repair/queue numbers, and the PD-1 warning.
-- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — a worker's own
-  premise-verification-before-implementation record.
-
-## Compiled Update — 2026-08-14: the reviewer ledger materializer scales, but the paired experiment has not run
-
-**Confidence: verified for the non-inference mechanism and current trace store; no claim about live
-shadow overhead or reviewer quality.** The RCP-W2 materialization leg converted all **1,366** current
-`review_decision` events into **1,366** `review_ledger` rows with zero duplicate skips. This expands the
-previous 32-event dry validation and proves that the event-to-ledger mechanism works on the current
-store without restarting the stack or running inference.
-
-The result also demonstrates why mechanism completion and experiment completion are different states.
-Only 207 events carry `candidate_id`, and none join the near-miss corpus `row_id`; false-accept,
-false-reject, calibration, and AUC fields therefore remain null by the predeclared firing contingency.
-The full RCP-W2 row still requires the paired, same-question shadow-OFF/ON replay. RCP-W1 live flag
-attestation and RCP-W3's corpus-matched bridge remain next-era work; this materialization checkpoint
-does not license a reviewer rollout or performance claim.
-
-### Source References (2026-08-14 reviewer materialization)
-
-- [`bulk-inference-campaign.md`](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) — full RCP-W2 paired
-  replay contract and completion gate.
-- [`inference-batch-loop.md`](../handoffs/active/eval-tower-program.md#track-inference-batch-loop) — RCP prologue ordering and
-  existing materializer/ledger bridge.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — current-store
-  counts, join result, output location, and operator disposition.
-- `epyc-orchestrator/scripts/analysis/reviewer_events_to_ledger.py` — executed materialization path.
-
-## Compiled Update — 2026-08-13: task durability is now a pushed receipt, not a worker-wide documentation sweep
-
-**Confidence: verified for published code and focused tests; fleet authority cutover remains off.**
-RTG-51 now separates the task boundary from the fleet documentation transaction. A worker-owned
-checkpoint resolves the exact task, updates only owned checkbox/artifact/progress paths, validates,
-commits an explicit path set, pushes `lane/<agent>`, and only then publishes an idempotent typed
-receipt. Coordinator admission fails closed on roster, task identity, path scope, remote reachability,
-committed per-agent progress, and receipt correlation; an accepted checkpoint produces one immutable
-Auditor packet, and only an accepted verdict produces `checkpoint-integration-ready`.
-
-The independent roles remain intentionally asymmetric. Coordinator routes, validates, orders
-integration, and controls context transitions. Auditor owns verdicts and may not direct the source
-worker. Inference owns compute compatibility, leases, physical claims, and safe drain; the published
-compute planner is a replayable projection/ranking core, not a live grant path. Shared handoff/index/wiki
-mutation remains a single leased heavy-wrap transaction. The operation-token lease, non-mutating worker
-hooks, receipt-bound progress checker, checkpoint engine, and typed audit lifecycle are published, but
-the compute bus relay, receipt-cut heavy-wrap executor, protected role-policy package, daemon reload,
-instruction acknowledgments, and canaries are not. Rollout therefore remains `off`.
-
-### Source References (2026-08-13 RTG-51 implementation)
-
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
-  authority table, state machine, implementation phases, acceptance matrix, and live gaps.
-- [`session-bus-task-flow.html`](../docs/coordination/session-bus-task-flow.html) — visual lifecycle,
-  failure loops, authority boundaries, implementation evidence, and deployment status.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — commits,
-  focused tests, audit findings, and publication boundary.
-
-## Compiled Update — 2026-08-13: a correct role guard is inert when the daemon loads the wrong tree
-
-**Confidence: verified by the live queue/advisory records, process start time, source identity, and
-tracked code comparison.** The first live role-admission canary assigned ordinary AP-ME-1 backlog
-work to Auditor even though the roster declares `schedulable: false` and
-`accepts_work_types: [audit]`. Auditor declined before editing or compute; coordinator-agent revoked
-the lease, and the queue can return to an ordinary main.
-
-The tracked `compute_advice` implementation already contains the needed refusal: a non-schedulable
-role is skipped unless explicitly targeted with an accepted work type, and a generic row is rejected
-again during candidate evaluation. The running daemon did not contain that code. It started at
-19:48:03Z from the shared-main tree at `ff7a5e6f`, which does not contain `d7b83ddf9`; the stale source
-was materialized before process start, so this was not a stale-process-after-file-update ambiguity.
-
-The rollout lesson is sharper than “restart the daemon”: deployment acceptance must prove the exact
-running source before testing behavior. AIR-6 now requires source-version proof plus a mutation
-canary in which an ordinary untyped `lane:none` row is refused by Auditor. Only after that should
-audit `shadow` or resource `observe` advance. GitNexus rates `compute_advice` HIGH reach across four
-assignment/coordinator flows, so the wrap-up changed the deployment gate rather than patching or
-reloading the live control plane.
-
-### Source References (2026-08-13 role-admission canary)
-
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-6 failed
-  canary evidence/retry gate and AIR-10 disposition.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — process,
-  source, queue, and role-contract audit.
-- [`config.yaml`](../coordination/session-bus/config.yaml) and
-  [`auditor-main.md`](../agents/auditor-main.md) — authoritative schedulability and accepted-work
-  contract.
-
-## Compiled Update — 2026-08-13: typed compute messages are not yet an authority boundary
-
-**Confidence: verified by negative validation probes and dependency analysis.** The Rule-11 prose
-says requests route to Inference and only Inference grants or denies. The audited schema change adds
-`compute-request`, `compute-grant`, and `compute-deny` to the enum and exercises positive authoring,
-relay, and idempotency, but it does not encode those role and route constraints.
-
-Four forged or incomplete rows currently validate: a request addressed to a non-Inference target, a
-grant authored by a non-Inference sender without `boundaries`, a deny without `next`, and a request
-with an unknown misspelled payload key. This is the important architecture distinction: a typed
-message vocabulary describes interaction shape, while an authority boundary must refuse a sender,
-recipient, correlation, or payload that violates that shape. Validator parity and green positive
-tests prove consistency, not the Rule-11 contract.
-
-The repair is focused but high-reach: enforce request routing, inference-only grant/deny authorship,
-request correlation/addressing, required non-empty per-kind fields, closed payload vocabularies, and
-authoring-plus-relay negative tests. GitNexus classifies `validate_row` as CRITICAL upstream reach
-(six dependants across five append/validation/coordinator flows), so the independent audit recorded
-the rework contract without editing the control-plane implementation.
-
-### Source References (2026-08-13 Rule-11 audit)
-
-- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — Rule-11 ownership and routing
-  contract.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-8
-  independent audit and AIR-9 fail-closed repair task.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — negative
-  probes, test result, and dependency blast radius.
-
-## Compiled Update — 2026-08-13: dedicated Auditor and Inference control planes
-
-**Confidence: verified for committed policy, state machines, and tests; rollout enforcement remains
-staged.** No live coordinator daemon was restarted as part of this checkpoint.
-
-The session-bus fleet now separates two control-plane responsibilities that previously existed only
-as informal conventions. Auditor is no longer a generic `lane:none` executor: successful
-`mainA`–`mainD` completions deterministically create linked, role-targeted audit work, and only a
-linked Auditor verdict can close that review. Findings return through handoffs and ordinary
-coordinator dispatch rather than directly tasking the source main, so review remains valid after the
-originating session has cleared context or moved on. Small fixes discovered during review are
-delegated to Terra subagents and stay proposed until Auditor accepts them.
-
-Inference now owns the advisory compute schedule independently of ordinary task assignment. Typed
-resource requests and grants preserve holder, task batch, exact CPU/GPU resources, expiry, and
-lifecycle across replay. A task assignment plus a valid resource lease still does not prove physical
-ownership: CPU activation requires a `region-lock` receipt, while delegated GPU grants fail closed
-until a general device-claim provider is configured. Persistent CPU and GPU idle are detected as
-separate multi-sample episodes and routed once to Inference, with durable inbox history preventing a
-daemon restart or lost routing-state file from duplicating the episode.
-
-Role provisioning is explicit as well. Coordinator-agent must present an inspected existing pane
-versus fresh-launch choice to the operator. Adoption requires exact endpoint/worktree identity, a
-positively idle runtime, empty composer, valid heartbeat/cursor/task state, unread/triage evidence,
-and explicit confirmation that the old role context was reset and reseeded. Recommended model and
-effort pairs populate the launch decision only; an operator changing either in-session is silent and
-never invalidates identity, leases, liveness, or the pane.
-
-The staged posture is intentional: audit completion is `shadow`, resource leases are `observe`, and
-persistent-idle transport is `route`. Promotion to required audits or enforced lease admission waits
-for a live-bus replay plus one audit and one CPU canary; delegated GPU leases additionally wait for a
-real physical claim provider. The implementation checkpoint passed 346 non-corpus bus tests, 173
-pane/routing tests, the 51-case M4 authority harness, and the 87-case fleet watcher plus 21 mutation
-checks.
-
-### Source References (2026-08-13 dedicated roles)
-
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR
-  implementation checklist, rollout posture, and remaining canary gate.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — integrated
-  implementation and verification record.
-- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — typed audit, resource-lease, and
-  persistent-idle wire contracts.
-- [`auditor-main.md`](../agents/auditor-main.md) and
-  [`inference-main.md`](../agents/inference-main.md) — canonical role boundaries, provisioning, and
-  model-agnostic identity rules.
-
-## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
-
-**Confidence: verified** for the audit's artifact-level findings (each cites commits, test counts, and timestamped bus rows); **inferred/self-assessed** for the failure ledger's recurrence counts, which the audit itself downgrades as "the least reliable thing in it". One boundary must be stated up front: the reviewing document is an explicit **stand-in** for the `auditor` role (which was at 100% context and unreachable), it marks three of its own sections `[THIN]`, and the real ruling (A-1…A-9) is still pending. Nothing below should be read as the auditor's verdict.
-
-### RETRACTED root cause: "compliance decays with context"
-
-The coordinator role, told by the operator to collect its own failure modes, produced a 32-row ledger and a root cause **RC-1**: *written policy has no checkpoint at the moment of action, so compliance decays with context — rules with a mechanism held, rules relying on recall decayed.*
-
-The audit's verdict is the sharpest form a review can take: **"the conclusion is directionally right and every leg of the argument for it fails."** The legs, and why each fails:
-
-- **The comparison is structurally impossible.** Mechanisms self-log; prose rules that *hold* leave no trace at all. So the "held" column is a definition, not a measurement — and it has no denominators either (13 registered `PreToolUse` hooks against 252 directive-bearing policy lines).
-- **RC-1 is itself an instance of the failure class it names.** It quotes an N with no M or K, which is exactly what the same repo's newly-landed *Reporting Units* rule forbids.
-- **The causal claim is refuted at zero decay.** F-02 (instantaneous sampling read as a utilisation rate) was committed as the coordinator's *own correction #2* at 10:07:18Z, and recurred at 10:28:19Z and again ~10:40Z — 21 and 33 minutes later, same session, same context window. Nothing decayed.
-- **Four of the six "rules that held" do not survive.** Only two do (one-daemon-one-supervisor via `flock`, and the human-only trust boundary). One is **refuted and is itself a reporting-units error** — the composer guard's glyph table was miscalibrated, returning "not empty" for empty composers on all six Claude panes, so the doorbell refused every ring to every Claude main: 0% operative, and therefore "refused a nudge that should not have been sent" had *zero discriminating power*. Another is **vacuous**: deleting the rate-limit `if` block leaves both of its tests green, contradicting its own commit body.
-- **The largest counter-case runs the other way.** A `git clean` classifier hook would have refused the exact 08:20Z command that wiped the bus (149 untracked entries ⇒ `block:clean-untracked:/workspace`) — but it had been reverted 27–47 minutes earlier. The audit also corrects *why*: it was reverted **as defective** (two HIGH findings its own 12 tests missed), not as a well-built guard at a bad trade — which removes the foundation of the delete-lens argument built on top of it.
-
-**The replacement finding, and it generalises past this role:** *a rule is followed at the rate at which the act it governs forces a read of it.* The repair target moves from durability (write it down harder, ledger it) to the **emission path** — the moment of emission is where retrieval fails. The corroborating pair is stark: a sentence-template correction ("N records resolving to M distinct rows, of which K were dispatchable at emission") had **zero** recurrences, while narrative corrections recurred **within the hour**; a durable resolution ledger went stale in **48 minutes** because nothing on any startup path referenced it.
-
-### The self-audit's evidentiary bias, named
-
-The audit finds the failure ledger applying **opposite evidentiary rules to the same signal** depending on which way it cuts. On an authorship charge, absence of a commit trailer was discarded as weak; on an exculpatory one, the same absence was accepted as decisive — and the base rate settles it (5 of 48 merges repo-wide carry a trailer, so trailer-absence is the *norm* for merges and proves nothing). One struck authorship claim was restored by the role's own commit body 13 minutes later: *"hand-written by the coordinator on its own thread under time pressure… never tested."*
-
-The structural conclusion is a governance one rather than a code one: **a role cannot be the auditor of its own failure ledger**, and it is listed as a deletion (D6) alongside D1 *stop reading dials* (which alone kills seven ledger rows at zero build cost), D2 *stop authoring your own agent infrastructure* (the coordinator wrote its own idle-detector — a conflict of interest, and the detector's owner disputes its attributions on record), D3 *stop hand-deriving repo metrics*, and D5 *stop 2 KB freeform payloads* (219 distinct payload keys across 53 messages, median 2,106 B).
-
-### A correction that propagated faster than its own fix
-
-The mechanism of the emission-path failure is visible in miniature. A wrong figure ("relaunch-looped every ~10s", actually 42 s = 30 s timeout + backoff, 2 attempts over 74 s) was corrected *in the handoff* — but had already propagated into a guard script and a contract test, and a commit landing 13 minutes later did not fix it. The error ends up standing in **five files**. Writing the correction down is not the same act as reaching the places the claim already went.
-
-### Live mechanisms that cannot see their own target
-
-Three same-week defects share one shape — *a check that cannot distinguish "false" from "I cannot tell"*, and resolves the ambiguity to a confident value:
-
-- The bus supervisor's daemon pattern matched only self-launched daemons (the live one runs with `--bus-root <path>` inserted), so it killed a healthy 75-minute-old daemon. Its replacement predicate is **vacuous in a five-writer tree** and was observed killing healthy daemons in **11 cycles over 35 minutes** *during the audit*, epoch 54→64.
-- Supervisor liveness was derived from a pid file rather than the lock: a process alive 7h40m holding the lock reported `UNHEALTHY` because its pidfile had vanished.
-- An operator-escalation classifier reported **11 action-required items when there were 0** — 111 rows carry `action_required` but only 8 satisfy the operator predicate and 7 of those overlap, so the two predicates are nearly disjoint. The fix replaces inference-from-absence with a **positive marker** (`payload.operator_signature_needed: true`), taking 8 classified items to 0 across 267 rows with 315 tests passing.
-
-The generalisable rule (raised the same night, and violated twice by the person who had just fixed the class): **a field used to discriminate KIND must BE an explicit kind, never a present/absent test.**
-
-### The picker defect behind the retracted backlog figure — still open
-
-The retracted "4,602 pending picks" number (carried in corrected form in the pass below) has a located root cause: the coordinator caches a `status: READY` literal and never re-derives eligibility from the row it points at. A partial fix landed (closed-box detection); **re-anchoring picks on row identity rather than `file.md:LINE` has not been done**, and the anchor-rot rate that makes line references unsafe was measured the same day at **22 of 201 references (10%)**, 12 of them from ordinary edits within about three hours, against a whole-queue rot of 34.5% the day before.
-
-### Disagreements this pass does not resolve
-
-- **Was the GPU idle?** The coordinator raised idle compute repeatedly; the `inference` main disputes the premise on record — its authorized six-arm AutoKernel campaign was continuously resident. Both are recorded; the wiki does not adjudicate.
-- **Was a reboot authorization declined?** One handoff states OP-16 was declined by the operator; another searched the bus, progress logs and token queue and **found no such decision anywhere**, giving the status as *deferred-with-announcement*. A correction task is filed against the first. Note the provenance constraint that makes this hard to settle: across 839 bus rows in 16 files, the operator has written **zero** — every "the operator said X" on the bus is second-hand agent quotation.
-- **Two consumers of the same nominal check disagree in-tree**: one topology gate compares against a stale attestation and false-passes, the other is fail-closed on exact match.
-
-### Source References (2026-08-12, second pass)
-
-- [`docs/reviews/coordinator-role-audit-20260812.md`](../docs/reviews/coordinator-role-audit-20260812.md) — the RC-1 falsification, the four-of-six rule audit, the evidentiary-bias finding, and the D1–D6 deletion proposals.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
-- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — compacting-read-as-idle, post-exit-VRAM-sample, and dispatch-by-line-number as canonical incidents.
-- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
-
-## Compiled Update — 2026-08-12: a retracted scheduling narrative, a bus wipe, and the four nested restarts it took to make one check fire
-
-**Confidence: verified**, with one section explicitly marked **RETRACTED**. Read from `progress/2026-08/2026-08-11.md` and `2026-08-12.md`, the committed module headers, and `coordination/backfill/README.md` — whose own text carries the correction.
-
-### RETRACTED: "the coordinator daemon knew exactly what should run and told nobody"
-
-This framing circulated for most of a night and is **false**. It is recorded here rather than deleted, because the corrected version is more useful than the original was and because a retraction that publishes its mechanism is worth more than one that merely withdraws.
-
-**What was actually measured**, once the picks were screened against the rows they named:
-
-- The advisory stream's `would-assign` records resolve to **nine distinct task rows, all from a single handoff file** — the daemon was not naming a fleet-wide backlog, it was repeating one file's rows.
-- **Of six sampled picks, one was dispatchable.** Four had been `- [x]` since **2026-07-29** — fourteen days closed at the moment the daemon named them — and one was anchor rot.
-- The record count that made it look like a backlog (thousands of rows) is a **repetition count of a stuck picker**, not a count of work. The surviving shard shows **811 records** resolving to those nine rows.
-- The picker selected the same closed rows on **20 consecutive ticks**: it never re-read the file that had closed them.
-- Utilisation for the night was **~8–9% receipted**, not the ~20% first reported. That earlier figure came from reading a **15-minute load average as if it were a duty cycle** — a smoothed window is not a sample of instants. Separately, a 3h47m window carries **no compute receipt of any kind**, which is an *unwitnessed* interval, not a *measured-idle* one.
-
-> **The durable rule: a count of scheduler records is not a count of available work.** State a queue figure as *"N records resolving to M distinct rows, of which K were dispatchable at emission."* The third number is the only one that was ever a claim about the fleet, and it is the one nobody computed. This generalises to any queue-depth, backlog-size or advisory-volume figure.
-
-**What survives the retraction, and it matters**: the real defect is a **stuck picker serving a stale READY set**, which is *distinct from* the delivery gap. Fixing delivery does not fix selection — **a working courier delivers wrong rows faster.** The two must be closed separately.
-
-**A second retraction from the same night, kept for the same reason**: every checkbox/board-delta count reported that session was computed with an **unanchored `- [ ]` grep**, which matches box-like text anywhere in a line and inflates both sides. The pattern must be anchored to the list-item start. A second counter disagreed with it in-session and the disagreement was noted but not resolved — **two disagreeing board counts in front of the operator is itself the defect**, so no delta from that pass should be quoted.
-
-### The committed-not-live chain: every mechanism that carries a fix is itself a thing that has to be carried
-
-The sharpest structural finding of the period. A staleness check was built to detect *a daemon up and answering while running old code* — and then reproduced the defect four times over before it fired once:
-
-1. The **supervisor** that would run the check had itself started **before the check landed**, so it ran pre-check code and logged zero detections.
-2. The check was hooked into the health-probe function but **the loop's HEALTHY branch does `sleep; continue` and never calls it** — so the detector only ever ran on the *unhealthy* path, where the daemon is about to be restarted anyway and the question is moot.
-3. Its tests exercised the predicate and the probe function directly — ***a* consumer, not *THE* consumer.** Closed with a **static wiring assertion** that the loop's healthy branch reaches the check, mutation-verified: removing the call takes the suite 8/8 → 7/8 with the failure naming the defect. *A test that cannot fail on the bug it was written for is decoration.*
-4. The wiring fix was then itself committed-not-live until one more restart.
-
-**Measured payoff on closure**: the first live detection in the mechanism's history fired (*"daemon is running code OLDER than its source"*), the daemon was replaced, rotation finally ran — a **1,044 MiB** advisory file went to 0 with its history preserved as a shard, **660 flag pairs** survived and were all re-found by an all-shard bootstrap (a live-file-only bootstrap would have lost pre-rotation history and re-flagged everything). Daemon CPU fell **29.5% → 1.8%**, and **five separate defects went committed → live on one restart**.
-
-> **A bootstrap problem is not solved by a restart — it is solved by the mechanism outliving the need for them.** And: **verify a restart by its consumers, not by the restart** — the evidence accepted here was a verdict naming the pid *as* the daemon, receipt-relay notices firing two seconds after start, and a state file that had not existed before now existing.
-
-**A companion race, and why the first fix was not one.** Supervisor relaunch raced the *dying* holder's lock release, leaving ~90 s with nothing supervising. The proposed fix — report the holder pid and whether it is alive — would not have helped: in this race the holder is **still alive while releasing**, so it prints ALIVE and exits 0. *Evidence about a race is not a fix for the race.* Fixed with a bounded lock wait: a dying holder releases in milliseconds so the relaunch wins, a live one holds for its life so we still report and exit 0. Exit 0 on contention was **kept deliberately** — for the documented cron idiom a skip is the normal case, and paging on every ordinary tick is how a real alarm gets ignored. The race test carries a **contrast**, not just an assertion: it proves the old non-blocking form *loses* the same race under the same fixture, otherwise a passing test might only be describing a fast machine.
-
-### Residency is not work — an idle resident model positively locks the queue
-
-A device sensor OR-ed utilisation with VRAM occupancy into one `occupied` boolean. The two numbers were always stored separately; **only the verdict conflated them.** So a loaded-but-idle model read BUSY and the eligibility check rejected every queued row behind it — **572 `lane busy` rejections**. The sensor now publishes `busy | resident | free | unknown`.
-
-**The admission ruling, stated rather than buried: RESIDENT ADMITS, WITH A WARNING — because admission is not acquisition.** Eligibility only makes a row *pickable*; the device claim and the region lock still gate the run and are the only things that grant a device. **Fail-closed belongs on acquisition** and is untouched there. BUSY and UNKNOWN still reject.
-
-Two design rules landed alongside:
-
-- **A mechanism that behaves differently when a config flag is raised has smuggled the flag's decision into itself.** The scheduling-recommendation delivery has **no authority branch in its code**: under the stronger authority the row leaves READY, the pick stops being emitted and the arming counter resets, so the mechanism silences itself *structurally*.
-- **Half the tests for a new detector should assert it does NOT fire** — a well-run night, an empty queue, an ordinary gap between campaign legs, a pick inside the arming window, a legitimately busy device. *A check that fires on a well-run night trains everyone to ignore it, which is the same failure as not checking, one level up.* The test that pinned the old defect was **deleted, not adjusted**, and six mutations were verified against a **sandbox copy**, never the shared tree.
-
-**And the fleet's only claim-expiry check was disarmed for exactly the claim that monopolised the GPU**: the device claim was acquired without a max-hold while the CPU claim three lines above passed one, so no expiry was ever written and the check returned `COULD_NOT_CHECK` forever instead of `FAIL`. Fixed by quoting the campaign's single declared window rather than introducing a second constant — both claims are taken in one transaction and released together, so two declared deadlines would be a defect by construction.
-
-### An escalation predicate nearly disjoint from what it claims to detect
-
-The daemon escalated **11 operator items**; a full parse of the same 17-item queue found **zero** needing the human. The formula reproduces exactly (`action_required: true` minus `kind: status`) — but on this bus `action_required` means *"some named agent must act next"*, not *"the operator must act"*, and all 11 named an agent in their own text. Across live inboxes: **111 rows carry `action_required`, 8 satisfy the operator-item test, 7 overlap.** A predicate can be perfectly deterministic, perfectly reproducible, and measure a different population than its name.
-
-### The bus wipe: `git clean -ffdx` in a shared repo, and a recovery that inverted
-
-**Cause established by scope, not plausibility.** The sweep took the cache directory, repo-root scripts, an operator receipts directory, logs, and all 29 nested worktrees; untracked entries went **149 → 3**, total dirty **232 → 56**. No log-reaper explains repo-root scripts, and no targeted delete explains all of them in one instant. **The double force is proven**: a dry run with a single `-f` prints *"Would skip repository"* for all 29 worktrees and removes none — only `-ffdx` removes them.
-
-**The enabling half is the part worth carrying.** A commit earlier the same day added `.gitignore` entries for the bus runtime directories. That commit could not have deleted anything (`git rm --cached` cannot delete an untracked file), but it converted the bus runtime from **tracked — and therefore immune to `git clean` at any force level** — into ignored, and so `-x`-eligible.
-
-> **The moment a path becomes ignored it becomes `clean -x` fodder. Untracking live runtime should move it OUT of the repo, not merely hide it FROM git.** Write-side corollary: **snapshot before untracking**, because git-based recovery recovers only what git already had — which by definition excludes everything the untracking is about.
-
-**Damage, and the inversion that is the lesson.** Inbox rows **826 → 4**; one outbox **85 → 2**; another gone entirely; all cursors gone; the bus could see **1 of 8 agents**. **17 claim files destroyed, 13 of them live.** The single claim that survived was a 327-hour-stale row everyone agreed should be released — **because it was the only claim tracked in git. The recovery selected the dead one and dropped every live one.**
-
-Three structural consequences:
-
-- **`git status` can never report a loss like this again**, because those paths are now ignored — the ordinary signal that something is missing is gone by construction.
-- **A history that only exists in `clean -x` fodder is not a history.** The advisory record before the wipe is unrecoverable, which is precisely why the inflated record count above cannot be re-derived.
-- **The incident was self-concealing** — no artifact records the command, because the clean removed the logs that would have carried it. Who ran it was deliberately **not inferred**; proximity is not evidence. The archive was held **outside the repo**, applying the finding that a scratch directory inside it would be swept by the very command being diagnosed.
-
-**Deliberately NOT restored over the runtime**: replaying 826 stale messages against a zero cursor recreates a mass re-drain — the same flood by a different door. *The archive is the record; the runtime starts clean.*
-
-**A near-miss inside the damage assessment**: a first lookup reported "NO BRANCH" for six campaign branches purely because unprefixed names were guessed; they were intact under prefixed names, their trees live outside the repo, and deleting a worktree never touches the object store. **A naming assumption inside a damage assessment nearly escalated a recoverable state into a catastrophic one.** Real closure for worktree exposure is structural — trees outside the repo — not an ignore rule.
-
-### Shared-file concurrency: pathspec discipline solves the CROSS-file problem and does nothing for the WITHIN-file one
-
-This is the gap the fleet had named only halfway. `git commit -- shared.md` is **file-limited, not hunk-limited**: it captures every uncommitted hunk in that path, including another agent's mid-edit. Five distinct variants occurred in one night on one daily log, across five writers:
-
-1. **SWEEP** — a pathspec commit absorbs a peer's in-flight section (one instance carried 66–67 lines by two authors).
-2. **RE-PARENT** — appending with `cat >>` at end-of-file re-parents your `###` under whoever wrote a `##` last.
-3. **CONTAINER-vs-CONTENT** — the container is checked, the content is not.
-4. **UNTRACKED PROBE** — the verification probe is untracked, so `git grep` cannot see it and the tripwire looks inert.
-5. **`no changes added to commit` is not failure** — it means someone else already committed your work seconds earlier.
-
-**The fifth is different in kind and is the one to remember: the content survives and the COMMIT MESSAGE dies.** The other four misattribute *work*; this one silently discards the *reasoning*, and nothing anywhere shows it is missing, because "nothing to commit" is also what a no-op prints.
-
-> **Durable records go in the FILE; the commit message only points at them. A message is the one artifact another session can destroy without leaving a trace.**
-
-Checks that do catch it, both cheap:
-
-- Before committing a known-shared file, diff it and look for **another owner's heading** in your added lines.
-- **Append under your own heading by insertion, never `cat >>`** — end-of-file is a moving target.
-
-**The pre-commit check has its own time-of-check hole, and its answer must never enter a commit message**: it was true when taken and false when acted on, and the stale answer was written into a permanent message as a claim about a colleague. Verify the **artifact** post-hoc instead — a commit is immutable, so that check has no window. Keep the pre-commit grep; it is what makes you look. And the ownership detector built for this promptly hit an over-wide key two minutes after adoption: it matched a **name**, not an **author**, flagging sections *titled* after one agent and correctly written by another. **Knowing the class does not exempt your own tools from it.**
-
-**Why it fools experienced agents repeatedly**: appending is the one edit where **the structure you are joining is invisible from the edit you are making**, and a pathspec shows nothing about who else is mid-edit in that path. Both are silent and both look exactly like success. Not three lapses — a tool shape.
-
-**One standing exception, adjudicated**: committing another agent's uncommitted work is acceptable **when the message names it as theirs** and the alternative is loss. Explicit naming converts a sweep into a custody transfer; misattribution is recoverable, a lossy event is not.
-
-### Reconciliation is not authorship — and a brief freeze is the only lever
-
-Two rules from a merge that went stale eight times against a five-writer tree:
-
-- **The single-writer rule governs AUTHORSHIP, not RECONCILIATION.** Asking each owner to resolve their own paths serialises N round-trips against a moving base, so every resolution is stale before the next arrives. One agent absorbing the churn landed it.
-- **Freeze compliance is not "don't commit" — it is "hold no uncommitted hunk"**, because an uncommitted edit on a frozen path gets swept by the next peer's pathspec commit. And the *lift* condition must be a ref check that the merge is an ancestor of main, or a lift announced before main fast-forwards releases primed append buffers onto a stale base.
-- **Scope a freeze from the STRUCTURAL predicate (both-sides-modified), never from the observed-conflict list.** Measured: 22 changed paths on one side, 67–72 on the other, intersection exactly **three** — and the observed-symptom list is always a subset of the affected set, precisely the subset that no longer needs warning. One read-only command yields both sets at once, since its auto-merging lines *are* the intersection.
-- **When three agents converge on one signing vehicle, broadcast that the work exists and let the owner REVIEW — do not author a second patch.** The payoff here was correctness, not efficiency: the review found a hole **neither author would have found alone** (both guarded only one of two writes, and the dangerous re-apply also occurs with the receipt present and the index absent).
-- **Idiom transplant is a trap the reader catches and the author cannot.** Two agents independently lifted a hard refuse-on-exists idiom from one-shot ratifiers into a host where re-run-after-crash is the *designed* recovery path — it would have blocked the legitimate recovery route. Familiarity with the source is exactly what made the transplant feel safe.
-
-### Source References (2026-08-12)
-
-- [`coordination/backfill/README.md`](../coordination/backfill/README.md) and `scripts/coordination/hardware_backfill.py` — the corrected history of the advisory-record claim, in the artifacts that had republished it
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the pick screening, the committed-not-live chain, the bus-wipe scope analysis, and the five shared-file variants
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the nudge deadlock, the relay-state ledger, and the undelivered-message triage
-- [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the daemon/agent split this work sits under
-- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) — the shared vocabulary these findings are indexed against (see [Knowledge Management](knowledge-management.md))
-
-## Compiled Update — 2026-08-11: a 243-hour daemon outage was reported healthy, and the guard built to catch it nearly caused a second one
-
-**Confidence: verified** — read directly from committed code, tests, and receipts in `progress/2026-08/2026-08-11.md`; several test counts and commit-sha citations in the source were themselves corrected same-day by an independent audit (cross-referenced below rather than restated where a correction exists).
-
-### The coordinator-daemon was dead for 243.1 hours, and the mechanism meant to catch that also failed
-
-`coordinator-daemon` died 2026-08-01T05:42:54Z and stayed dead until 2026-08-11T08:48:02Z — measured as the single >1h gap in `advisory.jsonl`, not estimated — while `status` reported `state=working epoch=13 pid=52352` the entire time. This is the same determinate-state-failure class already on record in this article (an unverifiable state treated as a benign value): `os.kill(pid, 0)` proves a *number* exists, not that it is *this* daemon, and a heartbeat's age was printed but never judged — a 10-day-old heartbeat naming `pid 1`/`/sbin/init` still read `state=working`. The fix (`daemon_verdict`, `45471692`) folds liveness + identity + freshness into one leading word, and `drain` now checks the daemon on every drain rather than only at startup, so the fleet learns of an outage within one task boundary instead of needing a human to notice `uptime`. Restarting the supervisor brought the daemon back within seconds (pid `496387`), itself evidence the outage was a monitoring failure, not an infrastructure one.
-
-### R1: the nudge guard tightened exactly as the condition it exists to catch got worse — and this, not a missing coordinator tick, caused a ~10-hour fleet stall
-
-The daemon calls a heartbeat older than 3600s STUCK and nudges the owning session; the adapter refused every nudge past 900s of pane inactivity. Between the two thresholds nobody had decided a session was stuck; past 3600s somebody had, and could no longer reach it — **the guard got stricter exactly as the situation it exists to fix got worse.** Every main crossed 900s at ~10:14-10:22Z and the whole fleet, coordinator included, went unreachable: 1,903 `stuck-nudge-refused` rows, recovered only by a human manually passing `--heartbeat-max-age 86400`. Both documented escape hatches were unavailable (one lifts only the `working` blocker, never staleness; the other is codex-rollout-only — 0% coverage on an all-Claude fleet), which is why nothing self-healed. The coordinator's first-pass diagnosis — "no wake mechanism" — was wrong and was corrected in the same wrap-up; the real cause was that the daemon detected the idleness correctly and *could not deliver* the nudge. **The rejected fix is as instructive as the shipped one**: raising the default max-age closes the deadlock but opens typing into a pane that is genuinely mid-generation, because a timer cannot distinguish wedged from quietly-waiting where the pane itself can. The shipped fix instead lets the pane decide (`pane_dead=false` plus quiescence past the spinner interval — the same evidence a `working` self-report already trusts) and fails closed on every unknown. A pre-existing test had been asserting the bug: it justified never overriding staleness on the grounds that `--heartbeat-max-age` was "already tunable" — the exact knob a human had to hand-set to 86400 to rescue the fleet.
-
-### The session-bus C-series hardening arc closed the same day, and stayed committed-not-live until a daemon restart
-
-A cluster of delivery-plane defects, several dating to 2026-07-29 and unowned for ten days after their original owner was re-tasked, closed same-day:
-
-- **C34** — authoring (`/usr/bin/python3`, no `jsonschema`) and relay (venv, full schema) validated against different schemas: 368 of 1,137 outbox rows (32%) passed authoring and were silently refused at relay — written, never sent, nobody told. Fixed with a vendored dependency-free draft-7 subset shared by both sides, refusing to construct on any keyword it does not implement rather than skipping it; refusals dropped 368→151 (32%→13%).
-- **C37** — a dead daemon reported itself healthy (above); `daemon_verdict` plus per-drain liveness checking.
-- **C28 + C38** — the daemon rebuilt its own "what have I already acted on" state by re-parsing **~3,000,000 advisory rows every 45 seconds** to reconstruct a ~640-row working set (~29.5% of a CPU core). Replaced with a persisted `relay_state.json` (steady-state near-zero cost).
-- **C23** — the documented protocol for clearing N duplicate-payload triage items ("write it once and reference it") had no mechanism to *do* that: one answer for N items produced 9 byte-identical payloads in 10 minutes from an agent following the rule correctly. Fixed with a `corr_ids: [...]` array, dogfooded on the live bus before being documented.
-- **C39** — the token relay was receipt-blind: it re-presented two already-signed 07-29 gates as pending on every daemon restart because it read bus-message state rather than checking for the `status: ratified` receipt already sitting on disk. Fixed to annotate spent tokens, never suppress them.
-- **C40** — a relayed backlog carried no age; a 703-message burst on daemon recovery is why two mains self-assigned work that had already been completed twelve days earlier.
-- **C41** — a guard answered a section-scoped question about a box-scoped rule (see the queue guard-scope defect below); fixed corpus-wide.
-
-All of the above (plus R1) were **committed but not live** until the coordinator verified the stale daemon dead and the supervisor relaunched a fresh one at pid `921178` (22:18Z) — the same "a merged fix and a running fix are different states" lesson this article already carries from 2026-07-29, recurring at fleet scale. A same-day independent audit (see [Knowledge Management](knowledge-management.md) §Provenance and evidence discipline) separately caught one of these fixes (C28/C38) marked `[x]`-closed with before/after numbers and no disclosure, while the still-unrestarted daemon kept running the pre-fix code underneath it.
-
-### The backlog dispatch queue was retired as an unreliable coordination instrument, not repaired in place
-
-Re-deriving all 1,097 unique `file.md:LINE` references in `BACKLOG-DISPATCH-QUEUE.md` against today's tree — reusing the file's own classifier rather than building a second one, to avoid manufacturing a second source of truth for the exact question under audit — found that of the 220 rows the file advertised as unblocked and dispatchable right now, **at most 71 (32%) actually were**; across its full 1,080 rows, 79.5% of the nominally-`READY` surface was invalid (50.8% anchor rot, 28.3% already closed); and corpus-wide anchor rot rose from 27% (2026-07-29) to 51% over twelve days of ordinary edits against line-number anchors. Two independently-built classifiers over different denominators converged on the same verdict. The file is now banner-superseded and kept as evidence rather than deleted; `backlog_queue_gen.py` was extended to store verbatim untruncated box text plus an exact key-fold instead of a sweeper's paraphrase — a paraphrase was found to defeat text-based recovery just as badly as a rotted line number does (fuzzy token-overlap matching recovered only 76% against it). **IN-PROGRESS as of this compile**: full adoption of the generator as the queue's replacement, and its recovery rate at scale, had not completed.
-
-Two generalizable coordination-instrument findings surfaced by the same pass. First, **dispatchability decided by subtraction** (start from everything open, subtract what a heuristic can identify as blocked) structurally cannot see what it was never asked about: four standing-constraint checklist boxes flipped `[x]` eleven days before any repair sweep existed were invisible to every queue-based check, and were found only by sweeping raw box *text* for DO-NOT-FLIP banner language directly against the tree, bypassing the queue entirely. Second, a guard mechanism built to enforce those banners had a scope bug of its own: `box_is_guarded` searched upward from the nearest heading of *any* level, so a `##`-level banner was invisible to boxes nested under its own `###` subheadings — precisely the shape of the largest stale-box masses in the corpus (one CPU-kernel handoff had 38 open boxes, of which 36 belonged to a shelved plan the banner should have exempted and didn't). Fixed via an explicit ancestor chain (`section_is_guarded` → `box_is_guarded`; corpus-wide guarded-box count 43→39, all four changes freeing genuine dispatchable tasks, nothing newly guarded).
-
-### Source References (2026-08-11)
-
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — `mainD`'s C-series ledger, `mainB`'s R1 narrative, `coordinator-agent`'s fleet rebuild and daemon restart, `mainC`'s backlog-queue re-derivation and guard-scope fix
-- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) §B (queue re-derivation figures independently reproduced), §A-w1 (token-relay receipt-blindness, closed same day as C39), Final Reconciliation (daemon-restart consumer verification)
-- [`coordination/session-bus/BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — the corr_ids bulk-clear contract (C23)
-
-## Compiled Update — 2026-08-08: persistent agents need fencing and side-effect uncertainty, not another runtime
-
-**Confidence: verified for pinned implementation behavior and EPYC overlap; external for vendor benchmark results.**
-
-Prime Agent's broad daemon, checkpoint, scheduling, child-agent, and refinement surface mostly overlaps
-existing EPYC facilities. Two invariants do not: a canonical session lease with a monotonically
-increasing fencing token, and a recovery journal that distinguishes a side effect known to have
-completed from one that may have occurred before a crash. A resumable agent must never blindly replay
-the latter; it must reconcile external state or require an explicit retry/skip decision while retaining
-the uncertain record.
-
-Continual Harness is useful on the other side of the authority boundary. Its trajectory-conditioned
-prompt/subagent/skill/memory edits can become typed, default-off proposals, but the released code applies
-edits live, lacks held-out acceptance and transactional rollback, and executes generated Python in the
-same process with `__import__` available. The 842-repeat invalid-tool loop and Factorio privilege exploit
-are therefore stronger as adversarial fixtures than as optimizer examples: bound repetition, classify
-oracle inadequacy, and prevent a reward-improving privilege violation from being stored as a skill.
-
-Pokee-Isaac reinforces the service/evaluation contract—scoped tools, resumable sessions, sandboxing,
-typed failures, and trace replay—but does not disclose enough to reconstruct its 10M-context model.
-Its published RULER arm is a direct full-prompt evaluation, not a REPL paging trick. EPYC should measure
-direct context, Context-Folding, and a data-by-reference REPL as separate matched arms; long context is
-an archive/fallback hypothesis and precise tools are a control-plane hypothesis, not competing slogans.
-
-### Source References
-
-- [REPL Session Memory](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — D-f/D-g lease fencing and uncertain-effect journal
-- [AutoPilot Continuous Optimization](../handoffs/active/autopilot-program.md) — AP-CH-1/AP-CH-2 shadow proposal boundary
-- [Tool-Use Eval Contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — bounded repetition, privilege, and typed-failure fixtures
-- [RLM Contested Claims](../handoffs/active/benchmark-suites.md#track-rlm-contested-claims-self-evaluation) — matched direct-context versus REPL/data-by-reference arm
-- Intakes 1009/1010, 1012, 1016, and 1020/1021 in [the research index](../research/intake_index.yaml) — pinned Prime, Pokee, Continual, and DTAP evidence
-
-## Compiled Update — 2026-08-03 (second): a well-formed deferral is still a deferral
-
-**Confidence: verified — traced to the exact instructions that produced the behaviour, and fixed there.**
-
-An agent carried an identical "Deferred" list across **three consecutive** wrap-ups. One item needed a
-command the agent had already written and tested; another had been explicitly approved by the operator
-*two messages before* it was listed as "awaits your call". Both completed in minutes once attempted.
-
-### The mechanism, which is the transferable part
-
-The instruction set enshrined **how** to escalate — a decision-package contract requiring context,
-options, tradeoffs, recommendation and default — and said **nothing about whether escalation was
-permitted at all.** So a deferral that satisfied the contract *looked correct*, because it satisfied the
-only rule governing it. The wrap-up routine compounded this with a guideline to *"note deferred work
-explicitly"*: an instruction to write down what should have been done.
-
-**A quality bar on the form of an escalation, with no bar on its necessity, produces well-formed
-escalations of things that needed none.** That generalises past agents — it is the same shape as any
-review checklist that grades how a decision is documented but never whether it should have been a
-decision.
-
-### The fix, and why the obvious placement was wrong
-
-Add an **admission test above the contract**: name the specific decision only the operator can make, or
-the external event awaited, in one sentence — or finish the work. Find a bug, fix it; find a gap, close
-it. Work already approved is not re-openable by restating it as a question. A pending decision blocks its
-own item, never the rest.
-
-Plus a **recurrence check**, which is the mechanical part: *an item appearing in two consecutive status
-reports with an unchanged blocker is proof it was never blocked.* That converts a judgement call into an
-observation anyone can make from the artifacts.
-
-Two placement lessons:
-
-1. **The rule was in agent memory for 71 days and prevented nothing.** Memory is per-agent and does not
-   cross agents; the shared instruction files are the only durable channel. A behavioural rule that lives
-   only in one agent's memory is not a rule, it is a habit.
-2. **First placement was still wrong** — the last section of the top-level file, under an escalation
-   heading, which an agent reads only once it has *already decided to escalate*. That is after the
-   decision that needs governing. A rule that governs a default has to be read before the default is
-   exercised, which in practice means near the top.
-
-### The argument against deferring, in one line
-
-Finishing one of the three deferred items immediately uncovered a **third copy of a latent defect** that
-the deferral had been hiding.
-
-## Compiled Update — 2026-08-03: monitoring an agent that underperforms on purpose is a different problem from monitoring one that cheats
-
-**Confidence: inferred — the mechanisms are verified against primary sources; the rates are from a
-red-team study on agent benchmarks, not on our stack, and do not transfer.**
-
-Our anti-reward-hacking work had a design for an agent that **cheats** and none for an agent that
-**sandbags** — quietly does worse than it can. The two need different instruments, and the second is the
-one a kernel search is most exposed to, because every sandbagging move has an innocent justification.
-
-**The strategies map directly onto kernel authoring.** Observed verbatim in the study: *"agents might
-train their models on a needlessly small subset to avoid supposed memory issues, or use small and few
-layers for their CNNs."* The kernel analogues are conservative tile sizes justified by "LDS pressure",
-disabled fast paths justified by "numerical safety", low unroll factors justified by "register spills".
-**Each is individually defensible — which is exactly why the general monitor did not flag them.** The
-study's own diagnosis: monitors *"would often notice that the agents aimed to achieve targets or used a
-simple model, but they frequently did not assign high suspicion scores."*
-
-Five design rules, all cheap:
-
-1. **Give the monitor the whole search tree, not the selected candidate.** Best-path-only transcripts
-   structurally advantage the saboteur. A candidate that quietly discards its own best result is
-   invisible to a monitor that only sees what was submitted.
-2. **Name the threat model in the prompt.** Largest measured effect in the study — a generic "is this
-   suspicious?" monitor *rarely fires* on sandbagging; the specific one "performs well".
-3. **Aggregate.** Mean over monitor models ≈ the best single monitor (0.993 vs 0.970), and mean@k over
-   repeated samples of one model also helps, with fast diminishing returns.
-4. **Assume monitor-awareness.** Every monitor scored higher on unaware runs, universally.
-5. **Preserve CoT visibility** — hidden reasoning tokens are a "large advantage to the agent".
-
-And one honesty rule: *"gaining strict safety guarantees may require prohibitively high false positive
-rates."* **A monitoring layer with no declared FPR budget is not a gate.**
-
-### The half no agent-side monitor can see
-
-An audit of 28+ submissions across nine agent benchmarks splits cheating into **harness-level**
-(developer or scaffold: verifier injection, answer-key injection, **solution injection** — e.g. an
-`AGENTS.md` in the working tree containing the solutions) and **task-level** (agent-initiated: online
-solution retrieval, mining version-control history for the fix, hardcoded test answers, **simulating
-rather than executing**). Only the second is what a monitor addresses. The first is a property of the
-harness *we* build — and our own repos carry `CLAUDE.md`, `AGENTS.md` and skill files at paths an
-evaluated agent would naturally read. **"We didn't intend it to be visible" is not an audit.**
-
-
-## Compiled Update — 2026-07-30 the agent-file stack: audited, restructured, enforced
-
-An operator-requested full audit of the agent-context surface (root entry files,
-`agents/` role layer, `agents/shared/` policy layer, sub-repo CLAUDE/AGENTS files,
-MEASUREMENT constitution) produced a 13-defect register (D1–D13) and a same-day
-restructure that landed net −214 lines while ADDING three canonical documents.
-Confidence: `verified` — every defect was fact-checked against repo ground truth
-before filing, and every fix was validated by the (newly hardened) validators.
-
-### Key Findings (2026-07-30)
-
-- **The context architecture is now explicitly layered**: per-session auto-load
-  (root `CLAUDE.md`, with `AGENTS.md` symlinked; sub-repo CLAUDE.md for sessions
-  rooted there) → read-order shared policy (`agents/shared/`, now including the
-  extracted `SESSION_LIFECYCLE.md` as the canonical home of the wrap-up//clear/
-  pre-reboot/idle-main axioms) → thin role overlays → on-demand operational docs
-  (`docs/guides/agent-workflows/`). Duplication that had accreted across five
-  files per rule (checkbox discipline ×5, idle-main ×5) collapsed to single
-  canonical statements with pointers.
-  [agent-file-audit-2026-07-30](../docs/reference/agent-config/agent-file-audit-2026-07-30.md)
-- **Negative rules keep their teeth, not their narratives.** House style
-  (operator-directed): every incident-derived prohibition retains its directive
-  plus a one-line `origin: INC-<id>` pointer; the full blow-by-blow lives in a
-  single incident log (9 entries at creation). The rule survives compression;
-  the story stops taxing every session's context.
-  [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md)
-- **The worst finding was an inversion of protection**: the FROZEN production
-  llama.cpp tree — the highest-stakes tree in the project — had *only* upstream
-  ggml-org agent files, which invite building in the tree and mandate the
-  opposite commit conventions. It cannot be fixed in place (HEAD is pinned by
-  the freeze verifier), so a project overlay is staged for bake-in at the next
-  kernel promotion, and both sibling repos' auto-load files now carry FROZEN
-  warnings. The governance matrix was expanded from one governed file to the
-  full discovered surface, with a validator that discovers `repos/*/CLAUDE.md`
-  and fails on unaccounted files.
-  [CLAUDE_MD_MATRIX](../docs/reference/agent-config/CLAUDE_MD_MATRIX.md)
-- **Enforcement now validates what agents will write, not what they wrote.** The
-  reference guard was rebuilt to reconstruct and scan POST-edit content (its
-  pre-edit scan both missed newly-introduced bad references and wedged the very
-  edit that fixed one); the reference validator gained `#anchor` slug checking
-  (GitHub-style, including the double-hyphen-for-`&` subtlety) and caught four
-  latent bad references on its first run.
-  [agent-file-prose-compression](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
-- **The compliance suite is a deployment-gate instrument and drifts like one.**
-  Restructuring the source file silently invalidated 29% of the suite's tasks
-  (they probed content that moved out) — caught in zero-inference prep, fixed as
-  a versioned instrument bump (`agent_file_compliance_v2_20260730`, 30/30/30
-  pools) with a mechanical anchor invariant: the perfect-fake must score 1.0 at
-  every compression level, so a live failure measures the model, never anchor
-  availability.
-  [agent-file-prose-compression](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
-
-## Compiled Update — 2026-07-29 the coordination plane: two tiers, and one defect class
-
-The N-main-thread control structure reached `DESIGN-RATIFIED — build-ready` and
-accumulated a substantial implementation, but its **authority milestones are not
-accepted**: assignment authority stays at `manual`, triage stays `off`, and
-headless-worker caps stay at 0 pending a soak that cannot be compressed. The
-durable knowledge from this arc is less about the transport than about a defect
-class that recurred four separate times in a single day.
-
-Confidence: `verified` for the landed code, test counts, and the operator
-decisions recorded in the handoff; `inferred` for the generalization of the
-polarity lesson. Milestone acceptance state is quoted as-is — several items are
-"BUILT ✅ … acceptance pending", which is not the same as done.
-
-### Key Findings (2026-07-29)
-
-- **One role, two tiers — and the split is load-bearing.** The **coordinator-daemon**
-  is host-side deterministic code (singleton under flock, tick loop, epoch fencing,
-  heartbeat) and is explicitly *not* an agent; the **coordinator-agent** is an agent
-  session with a roster row, inbox, outbox, heartbeat and cursor. The rationale is
-  stated as a capability argument rather than a preference: an always-on watchdog
-  cannot be an LLM (it compacts, dies, and costs tokens per tick), and deterministic
-  code cannot draft decisions or merge. The bright line is that the daemon "never
-  analyzes, reviews, or edits work products — queue/routing/watchdog only", because
-  the moment it reviews, it is a second main.
-  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
-
-- **Single-writer ownership is structural, not conventional.** `queue.jsonl` and
-  `inbox/*` belong to the daemon, `outbox/<agent>` to that agent, and token-queue
-  checkboxes to the operator. Agents never write the queue — they propose and report,
-  and the daemon transcribes ("pure bookkeeping, no judgment"). Adding a main is one
-  roster row plus four files. Authority is matched to the writer: mains reprioritize
-  their own lane only, cross-main sequencing belongs to the coordinator-agent and the
-  operator, and the daemon never sets priorities.
-  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
-
-- **Routing intent became a structural message field, after prose routing lost real
-  findings.** `needs_routing_to` and `action_required` are now schema fields with
-  fail-closed authoring, backed by a lint that catches prose-only routing (it was
-  validated against both of the day's actual failure messages), and by a `triage`
-  standing queue that is cursor-independent and delivery-independent because it scans
-  outboxes. The motivating failure is concrete: a payload truncation ate exactly the
-  sentence carrying "FOR \<AGENT\>" and the finding was lost. Truncation itself was then
-  made *evident* rather than silent, via numbered fences with byte counts and a
-  completion trailer. The machinery caught real traffic immediately, surfacing findings
-  that no relay had yet delivered.
-  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
-  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
-
-- **The recurring defect class: a state that could not be determined was treated as a
-  benign value.** It appeared four times in one day, in four different subsystems — a
-  spawn-cap undercount that *relaxed* the cap and invented capacity (and whose invariant
-  was documented backwards in the docstring and in two pushed commit messages), window
-  endpoints that could not be parsed, roster metadata used as a liveness proxy, and an
-  unreadable tmux session. The adopted rule is to **prefer the refusal a human can
-  override to the silence nobody can see**: unreadable endpoints, ambiguous window
-  ownership and unparseable rows all now refuse. The corollary warning is filed with the
-  blocking item — do not "fix" an unreadable tmux by counting it as zero mains, because
-  that hands out occupied slots.
-  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
-  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
-
-- **A merged fix and a running fix are different states, and only the process owner can
-  close the second.** The same lesson landed twice on one file in one day: a message
-  routed to a dead session was dropped silently, the fan-out fix merged, and the notice
-  stayed inert until the daemon's owner restarted it (activated at epoch 9). A third
-  activation gap of the same shape is still open. Reachability is now **observed, not
-  declared** — liveness is tested rather than read off roster metadata — and the policy
-  is deliver-plus-warn, never refuse.
-  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
-  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
-
-- **The delivery plane can be entirely healthy while coordination fails at the last
-  hop.** The first `coordinator-agent` instantiation ran with its cursor **33 messages
-  behind**, including a hard block needing an operator signature and a completed audit
-  carrying two CRITICAL findings — while daemon relay, boundary detection and the
-  severity watcher all functioned correctly. Every fix shipped that day was in the
-  delivery plane; the actual defect was in **bus → operator**, which is judgment and
-  cannot be mechanised. It became a standing rule on *every* reply rather than a startup
-  step: **DRAIN BEFORE YOU SPEAK**. A companion artifact was promoted to first-class
-  status for the same reason: `rebuild` reconstructs the bus *mechanism* (queue rows,
-  tokens, cursors, unread depth) but carries no record of what a session was mid-way
-  through or which gate a campaign is parked behind — so a fresh coordinator correctly
-  reports an empty queue while a campaign sits one command from resuming. The mechanism
-  makes a coordinator addressable; the brief makes it useful.
-  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
-  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
-
-- **A test suite can be green because it cannot fail.** A standalone adapter suite shared
-  a basename with another test file, so pytest raised an import-file-mismatch collection
-  ERROR that aborted the entire run — and its entry points never asserted, so had it been
-  collected it would have reported PASS with every check failing. Fixing it also exposed a
-  racy fixture (a spawned `command="true"` is reaped in ~0.3 s), which retroactively made an
-  earlier "37/37" **flaky-green**. Separately, no whole-repo pytest existed at all; creating
-  one moved the tree from 2200 collected + 46 errors + aborted to 576 collected with 0 errors
-  and a completing run. The stated goal is worth preserving: *a run that is honestly red, not
-  a green one.* [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
-
-- **Bus noise is a payload-shape property, not a retry bug.** An operator complaint about a
-  repeated triage disposition audited clean on the transport — 19 messages, 19 distinct
-  `corr_id`s, 19 distinct ids, relayed 1:1 with no fan-out. The real defect was a
-  byte-identical ~1.5 KB payload sent 19 times, differing only by `corr_id`, because clearing
-  triage requires one `corr_id` per item. Rule adopted: a repeated payload across N `corr_id`s
-  is noise by construction — make the body per-item, or send one message naming all N. The
-  underlying protocol gap (no bulk-clear granularity) was filed rather than worked around.
-  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
-
-- **Adversarial critique escalates by construction unless something is chartered to delete.**
-  A nine-agent specification effort consumed ~919k tokens over ~43 minutes to produce a
-  ~113k-character spec, which was rejected as disproportionate to the problem. The recorded
-  process lesson is that a panel of that shape needs a fourth lens whose job is to *delete*.
-  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
-
-### Open Questions (2026-07-29)
-
-- Assignment authority (M4) is code-complete and **not accepted**: its go/no-go rests on the
-  advisory-accuracy evidence of the read-only tier — would-assign matching actual human and
-  agent choices over a working day, with divergences explainable. That needs elapsed time and
-  cannot be compressed. Until then the switch stays at `manual`, `triage` stays `off`, and
-  headless-worker caps stay at 0.
-- The CPU-region claim is **structurally verified, not end-to-end verified** — a real
-  `llama-bench` has never acquired the claim, held it through a run, and released it.
-- Ownership of the whole tmux-adapter hardening arc lapsed when its session was re-tasked; it
-  is filed as unowned and re-assignment is a coordinator call.
-- One blocking bring-up dependency is manual by design: nothing creates the tmux session a
-  spawn requires, and the adapter will never create one, so a human must create it before any
-  spawn can succeed.
-- The handoff and the day's final wrap-up disagree on the current concurrency-cap number (the
-  handoff entry predates an operator raise the same day). Treat the handoff's figure as stale;
-  the authoritative value is whatever the live config says, and this wiki deliberately records
-  no number.
-
-### Source References (2026-07-29)
-
-- [session-bus-thin-dispatcher.md](../handoffs/active/coordination-and-churn-pipeline.md) — the
-  daemon/agent nomenclature split and bright line, single-writer ownership, authority matrix,
-  structural routing fields, milestone acceptance state, rider status, and the C-series ledger.
-- [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the polarity arc across four
-  subsystems, the activation-gap repetition, the coordinator-agent instantiation and close,
-  the invisible-suite and whole-repo-pytest findings, and the bus-noise diagnosis.
-- [gpu-serving-tie-in-program.md](../handoffs/completed/mi210-serving-program.md) — an
-  operator decision (activation sequencing) routed and recorded *through* the bus as a task
-  id, demonstrating the decision-package path the coordination plane exists to carry.
 
 ## Summary
 
@@ -3732,141 +890,6 @@ _Sources: `handoffs/active/coordination-and-churn-pipeline.md` § M5 → C6, C9,
 `progress/2026-07/2026-07-28.md`; `progress/2026-07/2026-07-29.md`; commits `bf1adb94`, `536839d3`,
 `42884724`, `97955ac8`._
 
-## Compiled Update — 2026-07-29: the harness is a first-class, re-targetable layer — and a merged fix is not a running fix
-
-**Confidence**: verified for the first-party coordination findings (each observed
-by running the system); **observation-grade** for the external harness figures,
-which are n=1 per cell on closed frontier models and gate nothing.
-
-### Harness decomposition and the Harness Card
-
-Two independent taxonomies converge on making the scaffold an auditable object
-rather than an implementation detail. A six-dimension decomposition — **context
-assembly / tool interaction / generation control / orchestration / memory
-management / output processing** — sits alongside a seven-layer variant,
-**ETCSOVG** = **Execution, Tool, Context, Scheduling, Observability,
-Verification, Governance**. The adopted action is an audit table recording, per
-dimension, which parts of our Layer-B surface are **editable** versus
-**hard-coded** — a table, not a code change.
-
-> ~~is extended by a seven-layer variant that adds **Observability** and
-> **Governance**, and both propose a **Harness Card** as a disclosure
-> schema.~~ **CORRECTED 2026-09-07** — two errors in the struck clause.
-> (a) ETCSOVG is a **different partition**, not a superset: it *adds four* and
-> *drops two* — **generation control**, and **memory management**, which is
-> folded into **Context**. Reading it as "the six plus Observability and
-> Governance" invents a containment that does not hold, and any per-dimension
-> mapping built on that reading is wrong at the row level.
-> (b) Only **arXiv 2605.23950** proposes a **Harness Card** as a disclosure
-> schema. The six-dimension decomposition is `intake-921` (MemoHarness), which
-> describes a *six-dimensional editable harness space* and **no card at all** —
-> so "both propose a Harness Card" is a misattribution, and a misattribution in
-> the compiled KB is what a future reader will cite. `intake-1344#record`
-
-[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-6
-
-### Re-targetability outranks per-model tuning (operator, 2026-07-29)
-
-The fleet is upgraded as better open-weight models land, so **harness policy must
-survive a freeze change**. This is a standing selection criterion: a design that
-expresses run-level policy as an **editable natural-language document** with
-mechanisms in code ranks **above** a model-specific experience bank, even when
-the latter has the stronger headline numbers. Anything proposing to bake
-per-model behaviour into the harness is measured against this criterion first.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-7
-
-The measured reductions attached to the policy-as-document pattern —
-60.10k→2.90k tokens / 68→3 files; 47.50k→1.40k / 5→1; 10.50k→0.80k / 3→1 — are
-to be carried as **design**, not as numbers: every arm ran on a closed frontier
-mini model. The open transfer question is whether an **open-weight** model can
-*interpret* such a policy document faithfully; their own adherence metrics
-(Workflow Preservation, Stage Coverage, Ordered Workflow, Artifact Contract, Tool
-Call Success, Information Handoff Recall) score adherence **without** a benchmark
-score, so drift is measurable on saved traces and is deterministic-replay
-eligible. Their own red flag: **Information Handoff Recall drops to 0.32/0.55
-under parent-child execution even on a frontier model** — the exact topology our
-sub-agent delegation uses.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-8, §HS-9
-
-### Capability versus harness — both halves or neither
-
-A one-step **model** swap buys ≈**3.6×** the full textual→verification harness
-ladder and a one-step **reasoning-budget** bump ≈**2.0×**; but at **fixed** model
-and effort a harness *revision* moved **+7.23**, larger than the entire
-5.08-point architecture spread at that setting. Harness engineering at frozen
-capability is **first-order, not marginal**, and this is the direct empirical
-support for the re-targetability position above. The previously relayed "~6×
-more bought by capability than architecture" reading was **wrong** — the figure
-behind it was the verification-minus-simplification margin, **one rung of the
-ladder**, not the architecture axis.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-12;
-[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Records corrected
-
-### "Present-but-uninstructed": a mechanism in a repo carries no measured result
-
-A verification primitive (`plan_executor.py` — simulate the plan in the induced
-world model, execute step-by-step, compare predicted versus observed state after
-each non-terminal step, halt and dump artifacts on the first divergence) exists
-in a published agent system, but **none of that system's agent-facing prompts
-mentions it or requires its use**. It is therefore not what the paper measured
-and no reported number attaches to it. Reading a capability off a repository's
-file listing is unsound in the same way reading a fine-tune's architecture off
-its `config.json` is (see [Speculative Decoding](speculative-decoding.md)):
-**presence is not participation**. The pattern is still worth mining — pure
-Python, no GPU, no Docker — but as an implementable design we would have to
-measure ourselves.
-[`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) §Research Intake Update 2026-07-29
-
-### A merged fix and a running fix are different states
-
-Three separate **activation gaps** landed on one file in a single day: a fix was
-committed, reviewed and tested, and remained **inert** because the long-running
-coordinator daemon carrying the old code had not been restarted. "Landed" and
-"active" are two states and only the **process owner** can close the second.
-Corollaries recorded from the same arc:
-
-- **Derive state from what is observable, never from a field somebody must
-  maintain.** Reachability now consults liveness (a live window in the tmux
-  session, else heartbeat freshness) rather than roster metadata; a roster row is
-  a durable identity and a session is not.
-- **Deliver-plus-warn, never refuse.** An inbox row is durable and a merely
-  offline agent drains it on return, so bouncing on staleness converts transient
-  offline into message loss — the opposite-polarity error. A false warning costs
-  one visible line; false silence costs the defect.
-- **A warning needs a reader.** The first fix wrote the defect notice to an
-  advisory ledger that is delivered to no one, so the defect had two layers: a
-  message in an inbox nobody drains, and a notice about it in a ledger nobody
-  reads. The notice now also lands in the inbox of the party that can act on it.
-  Idempotency is keyed on the notice's **own durable trace**, not on the ledger,
-  because the ledger is written by the tick loop and any direct caller would
-  re-notify on every pass.
-- **Fail-closed startup dependencies belong on the reboot checklist.** The spawn
-  adapter refuses when it cannot count live mains, and never creates its own tmux
-  session by design — so after a reboot, spawning is dead until an operator
-  creates the session by hand. That refusal reads like a defect and is not one.
-  The wrong "fix" — treating an unreadable tmux as zero mains — hands out
-  occupied slots.
-
-[`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) §C15/C17/C18/C20 and the post-reboot handover block
-
-### Model choice is not the lever for a protocol gap
-
-The multi-file coding shortfall remains diagnosed as a **protocol/tooling gap,
-not a capability gap**, and the 2026-07-29 intake explicitly declines to reopen
-the model-swap question on its back; the only thing pinned is *which artifact*
-to use **if** a coder-role A/B is ever authorized for other reasons — and even
-then, a spec-dec variant must not be bundled into a quality A/B, because that
-confounds two axes.
-[`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) §2026-07-29 rider
-
-### Source References
-
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
-- [`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
-- [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
-- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the corrected capability-over-architecture decomposition; staged-files-ride-along attribution hazard
-
 ## A correct guard whose answer is discarded: composition, not the check, is the defect (2026-08-03)
 
 Three guards were found sound and non-functional on the same day, in three repos, for the same
@@ -4130,1135 +1153,6 @@ caller, copied script, external process), put the check in the victim instead �
 comparison keyed to *this process's last write*, not to a static disk/memory diff.
 [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — the closed daemon-owned-state row.
 
-## Compiled Update — 2026-08-05: representation boundaries are authority boundaries
-
-## Compiled Update — 2026-08-12: a coordination role fails at RETRIEVAL, not at memory — so subtract duties and enforce at choke points
-
-**Confidence: verified** — from a 38-item failure catalogue with per-item artifacts, an
-adversarial audit of that catalogue, and an eight-phase implementation whose claims were
-mutation-tested. Sources: `handoffs/active/coordination-and-churn-pipeline.md`,
-`handoffs/active/coordination-and-churn-pipeline.md`,
-`progress/2026-08/2026-08-12-refactor-session.md`, `progress/2026-08/2026-08-12-mainC.md`.
-
-### The finding that reprices every "write it down better" fix
-
-A coordination agent failed the same way repeatedly *after* each correction was written down.
-The tempting diagnosis is memory decay. The evidence refutes it: one failure was committed as
-the agent's own correction #2 at 10:07:18Z and recurred at 10:28Z and ~10:40Z — same session,
-same day, **zero decay**. In the same window the agent quoted neighbouring rules from the same
-file back to other agents.
-
-So the defect is **retrieval at the moment of emission**, not durability. This is falsifiable
-and was tested: a durable correction ledger was built that morning and went out of contract in
-48 minutes, referenced from nothing on any startup path. Rules that held were, without
-exception, the ones with a mechanism on a path the agent could not avoid — hooks, `flock`, a
-lane gate, an adapter guard. **A catalogue is recall; recall is what failed.**
-
-One prose category did hold: a *sentence template* — a rule that changes the SHAPE of what you
-are already writing rather than adding a step to remember. The one such rule in the corpus has
-zero recurrences, which is the argument for expressing unmechanisable rules as output shapes.
-
-### Three moves, in order of leverage
-
-1. **Subtract before building.** 47% of the failures were the role acting as a measurement
-   instrument — a duty its mission statement never contained; it accreted. Deleting the duty
-   (relay receipts carrying `source_msg_id`/`receipt_path`, never read a dial) killed seven
-   failures at zero build cost, including the only proven post-correction recurrence, and
-   collapsed six proposed instrument rules into one deletion. **A delete-lens finds cheaper
-   fixes than an adversarial lens, and adversarial panels reliably over-build without one.**
-2. **Enforce only at choke points the role provably passes through** — here, message-append
-   and task-boundary-drain. Anything requiring the agent to remember a new step is excluded by
-   construction.
-3. **Move the clock out of the LLM thread.** A prompt-driven role is blind between operator
-   turns, which is exactly when queues run dry. The tick belongs in a deterministic daemon and
-   in watchers, not in the reasoning loop.
-
-### Addressing is not free — a measured N² failure
-
-With no FYI concept in the schema, a single `action_required` bit applied to every routing
-target, and the relay rewrote the delivery address on each fan-out copy — so a CC arrived
-indistinguishable from an assignment. Measured: **83% of inbox items an agent had to triage
-were not theirs** (499 rows, 86 sole-target; 73–89% per agent; burst windows read 97%). Typing
-the address (`assignee` = exactly one, `cc` = reach-only, refused at authoring time) split 310
-standing items into 45 must-act and 265 FYI. **An inbox that cries wolf trains its reader to
-skim, and the thing that must never be skimmed is the one genuine assignment.**
-
-### Two ways to ship a dispatcher that never dispatches
-
-Both were found while making an automatic tick safe, and each would have produced the same
-symptom from a different direction:
-
-- **The gate was right and the data was absent.** Refusing rows without a screening receipt
-  and an occupancy estimate is correct — but nothing populated those fields where rows are
-  born, so the tick would refuse everything, forever.
-- **A status that lied.** `STALE_REQUEUED` was written by the stall ladder to mean "go round
-  again" (with `INFRA_BLOCKED` as the exhaustion terminal, so the retry bound already existed),
-  but nothing converted it back and eligibility demanded `READY`. **17 of 19 live rows sat
-  unassignable regardless of how well they were screened.** A name that says "requeued" while
-  nothing can dequeue it is the defect.
-
-Corollary now encoded at intake: **an unestimated row is a row a human dispatches — not a row
-to invent a number for.** Emitting no field beats emitting `0.0`, which reads downstream as an
-answered question rather than an open one.
-
-### Delivery: honest failure is not the same as working
-
-Every guard in the delivery path refused *correctly* and the fleet was still unreachable for
-~75 minutes — four agents holding queued instructions nobody could submit. The composite had
-no success path, and the missing piece was a **remedy, not another guard**. Three measurements
-settled it, all previously assumed:
-
-- A TUI composer holding text ignores a bare keystroke; a wake character, a settle interval,
-  *then* the key both submits and clears. The tempting untested candidate (`Escape`) does
-  nothing.
-- Truncation was never the TUI refusing long text: above a single-burst paste threshold the
-  content becomes an attachment, and one CLI **caps attachment content at 1024 chars** — a
-  2,998-char dispatch arrived as `[Pasted Content 1024 chars]`. Chunking below the threshold
-  with a pacing gap is lossless to 12,000 chars; **the gap is load-bearing** (zero-gap chunks
-  re-coalesce and blob).
-- A pane whose sub-agents redraw it every second can never satisfy a quiet-check, so it reads
-  unreachable while perfectly idle. The fix is a *different signal*, not a looser threshold.
-
-### Isolation without a sync half is a bigger merge, not a smaller one
-
-Per-agent worktrees dissolve same-file commit sweeps — but lanes that skip promotion rot:
-measured at 106 commits behind, and one at ~302. **The worktree isolates; only promotion
-syncs.** Skipping promotion trades today's small merge for a guaranteed large one against
-weeks of unrelated history.
-
-Two hazards worth generalising: `git commit -- <path>` **bypasses the index** and commits
-working-tree state, sweeping a peer's uncommitted hunks in that same file (this is the
-collision mechanism, not carelessness); and a repo reachable at two path depths makes
-`git worktree prune` read live worktrees as prunable and delete their admin data.
-
-### Addendum — 2026-08-12: a deferred item's blocker is a CLAIM, and it is usually untested
-
-Two items were written into a wrap-up's deferred list with named blockers, in a repo whose own
-policy says a blocker must be nameable in one sentence or the work is not blocked. Both
-blockers were **asserted, not measured**, and both dissolved within minutes of being
-questioned:
-
-- *"No tool can recover these rows' intent — a human must re-anchor them by text."* The row ids
-  encoded the original line numbers and the rows carried birth timestamps, so
-  `git show <commit-at-that-timestamp>:<file>` returned the exact original text. **A rotted
-  line-number anchor is recoverable whenever the identifier or the record preserves the
-  coordinate and the time** — the pair is enough to reconstruct the file as it stood. 11 of 11
-  recovered; 5 re-anchored to live tasks, 1 already completed elsewhere, 5 genuinely deleted
-  from the source (and *that* distinction was only visible because the originals were
-  recovered and compared by similarity).
-- *"This is the operator's trade between authoring effort and autonomy."* It was not a trade at
-  all: the underlying rule (never fabricate a duration estimate for a hardware-holding task)
-  was already correct and unchallenged. The real gap was that **nothing asked the author at
-  the moment the answer was known.** Refusing the row later, at dispatch, is correct but too
-  late — the row already exists, so the un-dispatchable pool only grows. Moving the prompt to
-  authoring time closed it with no ruling required.
-
-**The generalisation.** An agent writing a deferred list is making an empirical claim about the
-world under the least scrutiny it will ever face — after the work, at the end of a session,
-when the incentive to stop is highest. Two shapes recur: *"nothing can recover X"* (test it —
-recovery is often one command against history) and *"this is a human's decision"* (ask what the
-FIX is; a decision framed around a rule that is not actually in dispute is usually a
-missing mechanism wearing a decision's clothes). The check that catches both is mechanical:
-**state the blocker, then try to falsify it once before writing it down.**
-
-### Sources
-
-- `handoffs/active/coordination-and-churn-pipeline.md` — the catalogue, the
-  adversarial audit, and the per-item closure evidence
-- `handoffs/active/coordination-and-churn-pipeline.md` — addressing, dispatch typing, worktree rider
-- `progress/2026-08/2026-08-12-refactor-session.md` — the eight-phase implementation record
-- `progress/2026-08/2026-08-12-mainC.md` — an independent lane's account of the shared-clone cost
-
-## Compiled Update — 2026-08-12: representation and provider boundaries are authority boundaries
-
-Three independent changes converge on one architectural rule: any artifact that can change what the
-system believes or selects needs a typed, immutable boundary. AutoKernel’s proposal-v4 contract retains
-the representation frame and adds a provider identity boundary: source/opaque mode, immutable source or
-artifact identity, isolation, toolchain, linkage, backend, and evidence authority. Historical v2/v3
-records remain readable but cannot acquire provider authority retroactively; opaque providers are
-diagnostic-only, and bankable evidence must join to a clean integrated llama.cpp candidate. AgentWorld’s
-`HypothesisBoundaryContract` separately binds label ownership,
-verifier ownership, eligibility, and falsifier evidence, preventing an environment generator from grading
-its own hypothesis into authority.
-
-The reviewer lane now applies the same rule to machine critique. RA-12 requires an immutable review
-envelope so a generated review cannot be silently rewritten between production, evaluation, and later
-consumption. RM-10 treats metacognitive prompting as a matched-control ablation rather than an assumed
-upgrade, with the trust boundary declared before results are interpreted. Together these changes make
-“who produced this?”, “under which frame?”, and “may it steer?” first-class fields. That is more important
-than choosing a cleverer model: it keeps optimization, environment synthesis, and review evidence from
-collapsing into one self-justifying channel.
-
-### Source References
-
-- [AgentWorld environment synthesis](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis)
-- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
-- [Reviewer-model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations)
-- Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)
-
-## Compiled Update — 2026-08-13: our own fan-out doctrine has no negative condition, and neither does the literature that inspired it
-
-**Confidence: mixed, stated per claim.** External paper findings below are `external` (vendor-reported
-or single-study, not measured on our stack); the mapping onto our own doctrine and detector gap is
-`verified` (read directly from the tracked files it describes).
-
-A 23-entry research-intake round (`research-intake` operating on `github.com/The-Swarm-Corporation/PARL`,
-the Kimi K2.5 Agent-Swarm paper, and 21 follow-on sources — intake-1105 through intake-1127) set out to
-answer a narrow question: does anything in this literature improve how EPYC orchestrates its own agent
-fleet? Nine of the eighteen entries selected for a Stage-2 primary-source dive were **overturned** on
-re-read against the source — more than half — which is itself the headline finding: multi-agent-fan-out
-claims in this literature fail primary-source verification at a rate high enough that no number from it
-should be adopted without an independent dive.
-
-**What survived is narrower than the sweep started with, and lands on a gap we already knew we had.**
-`agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* mandates 3–5 concurrent subagents
-on every dispatch. At the time this round's Stage-3 plan was written the rule had a width but no
-negative condition and no completion feedback — Anthropic's own multi-agent guidance (intake-1121,
-`claude.com/blog`, 2026-01-23) states three conditions FOR multi-agent use and four AGAINST, including
-that decomposition-by-role, rather than by context boundary, measurably shifts spend from work onto
-coordination, none of which our rule encoded. **The operator ratified and applied the negative-condition
-amendment on 2026-08-13** (commit `541d5d4c`) — the rule now states when NOT to fan out, sourced to
-intake-1121, with width 3–5 unchanged. What remains open is the second half of the gap: (per
-`handoffs/active/coordination-and-churn-pipeline.md`'s own item) there is still no way to tell a main that
-actually fanned out from one that worked serially and reported otherwise. Kimi's PARL paper
-(intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
-the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
-citable, the measurement is not — that detector is the open work in
-[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement). Separately, a
-controlled scaling study (intake-1107#record, arXiv:2512.08296) finds
-returns from adding agents go structurally negative once a single agent already clears roughly 45%
-accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
-statistically non-significant coefficient to one the paper's own robustness checks discount — so the
-*shape* (diminishing then negative returns as task difficulty falls) is usable, the *number* is not.
-
-**The dive process itself produced the most instructive artifact of the round.** The dive on intake-1110#record
-(MAST, arXiv:2503.13657) initially reported a citation defect in four of our own handoffs — a "36.9%
-inter-agent misalignment" figure it judged stale against a differently-denominated 32.15% in the paper.
-That same dive later re-audited its own output, discovered five of seven delegated subagents had never
-returned, and recomputed the category share directly from the paper's released dataset: 36.3% of
-positive failure-mode flags, which closely matches the original 36.9% citation. The staleness finding
-was retracted before any handoff was corrected on its strength; the correction that shipped was narrower
-— two files claimed the figure was "production" data when every underlying trace is a benchmark run, and
-only that provenance word was wrong. The near-miss was procedural, not architectural: the retraction
-arrived as a delayed self-correction notification, and had to be checked against the in-flight Stage-3
-plan before Stage 4 executed, rather than being caught by any automatic gate. Filed as a standing lesson:
-a dive's self-correction must be checked against whatever downstream artifact is about to consume its
-output, every time, not assumed to have arrived before that artifact was written.
-
-**Two things came out of the round as genuinely actionable, and neither required training anything** —
-material, since EPYC orchestrates closed-weight frontier models and cannot train an orchestrator the way
-PARL's own recipe requires. First, AdaMAST (intake-1127, arXiv:2607.16387, Apache-2.0) is a trace-failure
-grading tool that runs against our own Claude Code and Codex transcript corpus at roughly one LLM call
-per trace, and — reversing an intermediate finding from earlier in the same dive — needs no
-success/failure oracle to do it: its induction pipeline is deliberately outcome-blind. Second, OrchBench
-(intake-1111#record, arXiv:2607.25656, dive-overturned on its headline correlation) still contributes a usable
-specification for a per-subagent timing collector (declared/started/completed agent counts, parallel
-utilization, workflow depth) built from real transcript timestamps rather than the simulated,
-duration-as-input design that sank the rest of that entry. Both are now filed as open tasks in
-[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) rather than adopted
-sight-unseen — the round's own overturn rate is the argument for filing them as measurement work first.
-
-### Source References
-
-- [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
-- [Coordinator role — failure modes and refactor](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
-- [Fleet Fan-Out Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — new stub filed this round to own the collector and grading work
-- [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
-- [REPL Turn Efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) — context-knee and width-taper findings folded into the S4 gate
-- `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
-- [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record, including the mid-round retraction and its resolution
-
-## Compiled Update — 2026-08-23: the agent-file metric was misdenominated, and vacuous test suites became a named, enforced convention
-
-**Confidence: verified** — the E5/E6 measurements are read from the compression handoff (recorded
-2026-08-20, `research/sources/intake-20260819/EVIDENCE-agent-file-and-moe-measurements.md`); the
-vacuous-pass remediation is read from the closed EVL-50 ledger and the 2026-08-21 conventions guide
-it produced. Both shapes below were files on disk, green, and trusted on 2026-08-20 — measured, not
-theorised.
-
-### The compression metric was measuring the wrong unit — and the "we exceed the corpus maximum" claim is withdrawn
-
-Two 2026-08-20 measurements correct the agent-file compression program's own record (AFC-P5.E5/E6 in
-[`agent-file-prose-compression.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)):
-
-- **Denominate in WORDS, not lines.** External corpus evidence (intake-1199#record, re-derived from the
-  authors' Zenodo replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile
-  by words but only the 85.4th by lines** — 10.5 words per line. **A pass that targets LINES
-  systematically under-finds**, and the E4 savings table was already denominated in words while the
-  structural-deletion pass was measured in lines — two figures that were not comparable. The
-  mild/medium/aggressive figures must be re-expressed against a word baseline before the rollout
-  decision consumes them.
-- **The widely-repeated "we exceed the corpus maximum" does not survive scrutiny, in two ways.**
-  (a) The 10,424-word figure for `agents/shared/` includes three `ENGINEERING_STANDARDS.compressed-*`
-  variants — outputs of this handoff's own experiment, not loaded policy; the live tree is **8,787
-  words, 164 UNDER** the 8,951-word corpus maximum. (b) It compares a 7-file TREE total against a
-  SINGLE-FILE maximum — a category error; the largest single file is `OPERATING_CONSTRAINTS.md` at
-  3,949 words, comfortably inside corpus norms. **The genuinely anomalous figure is structural, not
-  volumetric: `CLAUDE.md` carries 22 H2 headings against a corpus average of 2.7 categorised L1/L2
-  headings.** The work retargets at heading proliferation, and the exceeds-the-maximum line is no
-  longer quoted. The thin-map architecture (shared policy plus lean role overlays) that the
-  2026-07-30 restructure established is now codified as the `agent-file-architecture` skill
-  (`.claude/skills/agent-file-architecture/SKILL.md`), with a role schema, migration references, and
-  a validation wrapper.
-
-### Vacuous test suites: two measured shapes, one naming rule — and the gate that enforces it
-
-The EVL-50 remediation (closed 2026-08-21, four-agent fan-out) found **two shapes of a suite that
-reports success while executing nothing**, and a file has exactly one of them depending on which
-entry point you use — which is why the rule is about *names*, not intent
-([`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)):
-
-- **Shape A — fixture suite with no `__main__`**: running the file directly defines functions, calls
-  none, exits 0. Measured 2026-08-20: `test_v7_quality_gate_runner.py` — a session read the green
-  exit as a real pass. Advisory (normal inside a pytest-collection scope), blocking only in
-  mixed-convention directories.
-- **Shape B — self-runner with no collectable test**: all logic under `__main__`, no module-level
-  `test_*` callable — `pytest` collects 0 items and reports success. Measured 2026-08-20:
-  `test_commit_hygiene.py` and the merge-gate and unblock-artifact suites beside it.
-- **A third shape closed by config**: a test that `return`s a failure list instead of asserting is
-  reported PASSED — both tests in `test_live_holder_interference.py` did exactly that, so the suite
-  guarding **live inference regions** went green with a non-empty failure list.
-  `filterwarnings = error::pytest.PytestReturnNotNoneWarning` now fails that shape at authoring
-  time.
-
-The naming rule is the contract: **anything matching `test_*.py` or `*_test.py` MUST be
-pytest-collectable**; self-runners take `check_*.py` / `probe_*.py` / `run_*.py` names, because the
-name is what the collector reads. Two sanctioned bridges keep both entry points working —
-**assert-main** (reference `scripts/coordination/tests/test_bus_supervisor.py:568`, with the
-argv-inheritance trap documented: a bridge that passes pytest's `-q --tb=short` into an argparse
-parser turns a green suite into `SystemExit(2)` at collection) and **pytest-main** — plus a
-refusing-`__main__` stanza for Shape A. Exemptions are written decisions, keyed by path with a reason
-in `DELIBERATE_SELF_RUNNERS`: `test_merge_gate.py` is the canonical exemption — collectable, every
-repo-wide pytest run would mutate a shared trust-boundary file, and an interrupted run leaves the
-fleet's merge gate **failed closed**. The enforcement chain has one measured gap: the lint runs
-pre-commit on changed files only, and **a clone is protected only after
-`install_git_hooks.sh` has run — the committed hook config alone protects nobody** (measured
-2026-08-21).
-
-### The gate's own blind spots, and why 0/0/0 is not "audit closed"
-
-The final sweep reads **0 blocking in all three repos** (was 17 / 104 / 26) — and that is honest for
-what the gate measures while misleading as a picture of health: the advisory remainder is 16 / 3 / 0
-(the three research advisories are vendored kvpress, deliberately declined), and the genuinely
-blocking files were fixed or exempted the same day. The single highest item was **VT-1: a
-security-audit suite that had never executed** — `test_audit_repository.py` had no `__main__` AND sat
-outside `testpaths`, so the default pytest never collected it; it now runs and passes 6/6. The gate
-itself carried four false-positive classes found *after* it was written — all four made it
-under-count what pytest collects (the unsafe direction): module-level-functions-only descent
-(misjudged 237 orchestrator files), nested-worktree double counting (138 files), arg-shape deciding
-collectability (every conftest-fixture suite), and descending only into `Test*`-named classes
-(`unittest.TestCase` subclasses missed). The transferable rule: **a lint must model the collector it
-reasons about** — which is also why this is a pre-commit lint and deliberately NOT a
-`pytest_collection_modifyitems` collection floor (a floor runs inside pytest, where a mis-fire breaks
-every invocation for every session, and it cannot express "self-runner ON PURPOSE").
-
-### Source References (2026-08-23 compression + test conventions)
-
-- [`handoffs/completed/frontier-lab-automation.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
-  — AFC-P5.E5/E6: the words-not-lines correction and the exceeds-corpus-maximum withdrawal (measured
-  2026-08-20).
-- [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)
-  — the new guide (VT-7): both shapes, the naming rule, the three sanctioned stanzas, the exemption
-  process, and the installer gap.
-- [`handoffs/completed/vacuous-test-suite-remediation.md`](../handoffs/completed/vacuous-test-suite-remediation.md)
-  — the closed EVL-50 ledger: VT-1..VT-8, the gate's four blind-spot classes, and the 0/0/0
-  completion record with its advisory remainder.
-- [`.claude/skills/agent-file-architecture/SKILL.md`](../.claude/skills/agent-file-architecture/SKILL.md)
-  — the thin-map architecture skill the 2026-07-30 restructure is now codified as.
-
----
-
-## Compiled Update — 2026-08-23 (evening): the fail-open 200 family, one layer deeper — in-band `[ERROR: ...]` strings
-
-**Confidence: verified** — the change is a route-level fix with 4 new tests that failed against the unfixed code and 10/10 green after, plus 121 across the openai_compat surface.
-
-The 2026-08-11 fix stopped *raised* exceptions becoming HTTP 200s, but the layer beneath still failed open: `LLMPrimitives.llm_call` does not raise — it returns `[ERROR: ...]` strings at start-of-answer, and those in-band failures were reaching clients as **HTTP 200 assistant content** (streaming closed `finish_reason: "stop"`). The 2026-08-23 extension detects them at the route via the canonical `inband_error_text()` rule: non-streaming → **502 `HTTPException`**; streaming → terminal SSE **`error` event + `finish_reason: "error"`**; the REPL path checks the raw result before the auto-wrap into `FINAL(...)`. A model answer *beginning* with `[ERROR:` is classified as a backend failure (codebase-wide convention); mid-answer occurrences stay 200 (guarded). **The recurring lesson, now with a second layer on file: a fix that stops one failure mode at the top of a stack leaves every lower layer free to re-introduce the same class — each layer's error contract must be checked at its own boundary, and "raises" vs "returns error string" is a contract difference, not a style difference.** Provenance: the change sits uncommitted in the shared orchestrator working tree (`src/api/routes/openai_compat.py`, `tests/unit/test_openai_compat_backend_failure_status.py`).
-
-### Source References (2026-08-23 evening)
-
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))
-
-## Compiled Update — 2026-08-25: the fan-out doctrine gets its first measured number
-
-**Confidence: verified (instrumentation) / observation (corpus)** — `scripts/coordination/fanout_timing.py` (schema `fanout_timing.v1`, 14 tests) parses Claude Code and Codex transcripts into per-subagent start/finish records using Task/SendMessage edges (never keyword matching), per OrchBench Appendix D-I definitions.
-
-The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows (2.1%) with ≥2 overlapping subagents, holding 3,847 of the subagents**; mean workflow depth 1.38, max 4; 54 workflows joined to `queue.jsonl`. The read: real fan-out exists and is concentrated (2% of workflows carry 81% of subagents), so the fan-out doctrine's ROI is in the deep-dispatch workflows, and the fleet's mean depth (1.38) means most dispatches are single-level. FM-3's four-bucket diagnostic (fan-out-right/single-right/both/wrong) is the next question: does fan-out win by surfacing candidates or lose at synthesis.
-
-### Source References (2026-08-25)
-
-- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
-- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore
-
-## Compiled Update — 2026-08-30: a check fed an input it cannot answer from is not a failing check, it is an absent one
-
-Two CI failures in two repositories, found a day apart, share one shape and neither is a code defect.
-
-**epyc-root's tests workflow had failed 8 of 8 runs since it was created.** `actions/checkout`
-defaults to `fetch-depth: 1`. `index_state.py` derives each handoff's `last_advanced` with a
-`git log -S'- [x]'` pickaxe over history — so against a one-commit clone **every handoff attributed
-to the tip**, and the freshness gate then reported a stale generated block on a tree that was
-perfectly in sync. Nothing was wrong with the repository, the generator, or the gate; the gate was
-being asked a question about history in a checkout that had none.
-
-**The research repo's autokernel-guards workflow had failed 43 of 43 runs since its first commit**,
-every one dying on `No module named pytest` before collecting a single assertion —
-`actions/setup-python` ships a bare interpreter and nothing ever installed the runner. Because it
-looked identically red whatever the code did, it carried no signal, and it hid two genuine
-regressions for two days.
-
-Both are now green, in both repos.
-
-- **A permanently-red check is worse than an absent one, because it occupies the slot where a working
-  check would go.** The cost is not the red X; it is that the check's output is uncorrelated with the
-  code, so nobody can learn anything from either state of it.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
-- **When a check fails, ask what input it was given before asking what it found.** In both cases the
-  assertion logic was correct and the subject was healthy; the defect was upstream, in what CI handed
-  the check — a truncated clone in one, a missing interpreter dependency in the other. A shallow
-  clone is the specific trap for any tool that reads git *history* rather than the working tree, and
-  pickaxe-based freshness generators are exactly that class.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
-- **Closing the hole is not the same as closing its shape.** Installing pytest fixed the red; it did
-  not fix the fact that a suite running *fewer* assertions reports the same green. pytest exits 5 on
-  zero collected, but a **partial** collapse exits 0. The follow-on was a declared per-suite floor
-  asserted with `>=` rather than `==`, so the guard does not become a second thing to update on every
-  added test — and the floor guard found two defects in itself on first run, including laundering a
-  collection error into a plausible count by reading a number off a line it had not validated.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
-
-### Source References (2026-08-30, CI inputs)
-
-- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
-- [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the `ac785d2d`/`7ee090a5` section and §3's `437f751f` → `54d2b8ad` entry.
-
-## Compiled Update — 2026-08-31: a dashboard that remembers is a dashboard that lies later
-
-Three defects in the kernel R&D surface shared one shape — the page *remembered* a fact whose
-source of truth had moved on — and were replaced with resolution (root `2a3881d4`, `86bc7b8b`,
-`479ffb47`, `f9c00551`).
-
-- **Identity facts are resolved, never remembered.** The frozen-production anchor was a pinned sha
-  in the page; it is now resolved live from the freeze record, and a source-guard test bans 40-hex
-  literals in the dashboard source so the regression class cannot quietly return (19/19 mutants).
-  When resolution shows the displayed measurement was taken against a baseline that is no longer
-  the champion's parent, the page says so with an explicit `SUPERSEDED-BASELINE` state instead of
-  rendering the stale number as current.
-- **"Current" is defined by the durable artifact, not by the last process's droppings.** The panel
-  derived "current champion" from a dead run's status file, so the fresh reconciliation
-  measurement rendered as superseded *by its own parent*. The champion branch tip now defines the
-  current champion — a definition that survives every process restart. Same lesson as freshness:
-  a measurement of a superseded champion is not "fresh" no matter how recent its timestamp;
-  staleness is semantic (against the current champion), not chronological.
-- **Ancestry is computable — compute it.** The scope line for a superseded pin (`270b48ed`) is
-  derived from `merge-base --is-ancestor`, so it correctly reads "ancestor — its work is IN the
-  current champion" rather than implying lost work.
-- **Show the accumulated knowledge, read-only.** A new card reads the loop's `experiments.db`
-  directly (read-only): 1051 attempts / 326 mechanisms / 79 revisited / 18 kept / 402
-  measured-null / 132 refused-at-formation — the negative results are the bulk of the value and
-  now visible. Every card carries a per-card staleness audit row (12/12 mutants).
-- **Known gap, filed:** the headline is emitted per-advance only; a restart after an unmeasured
-  advance briefly shows `SUPERSEDED-BASELINE` until the next advance (INF-66 R21-1: emit once at
-  startup too).
-
-Sources:
-
-- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L4 and R21-1.
-- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §5 (the five root commits).
-
----
-
-## Compiled Update — 2026-08-31 (evening): staleness anchored to the subject, agendas derived from the store, and instruments that refuse while a claim is held
-
-**Staleness is a property of the SUBJECT, not the clock (root `5f2151c9`).** Episodic evidence on
-the dashboard is now graded *relevant / superseded / unverifiable* against what it describes:
-movement of the subject (a new champion, a new measurement) outranks elapsed time, and the
-wall-clock age is demoted to advisory. The proof case: the live reconciliation bundle correctly
-reads **relevant at 3.1 days old**, where the old clock rule would have flagged it — while a
-minutes-old measurement of a superseded champion correctly reads stale. This completes the
-morning's semantic-staleness work: first the *baseline* was resolved live, now the *evidence age*
-is subject-anchored. Mutation-tested in both directions (fresh-but-superseded, old-but-relevant).
-
-**An agenda card computed from the real store beats a narrated one (root `9425eaef`).** The
-hypothesis-ledger card walks the hotspot-first agenda directly from `experiments.db`:
-`mul_mat_vec_q` 49.3% hotspot share / 63 mechanisms tried; blind-spot lines surface what
-narration never would — `k_set_rows` never targeted, 3.3% of device time unexplored,
-`flash_attn` 12.3% with 0 kept over 29 attempts. A reader asks "what should the loop try next?"
-and the store answers; nobody maintains the answer. (Within a day the rms_norm blind spot this
-style of accounting kept visible produced the program's first rms_norm keep.)
-
-**A refresh instrument that refuses while the claim is held.** `serving_evidence_refresh.py`
-(research `8179dde0`) is one command that regenerates the entire serving-evidence bundle — and it
-is *claim-held*: it refuses to run while run 21 owns the device claim. The refusal is the
-scheduling contract enforced at the instrument, mirroring the loop's own startup refusal: tools
-that could contend for a claimed resource check the claim themselves rather than trusting the
-invoker's discipline.
-
-### Source References (2026-08-31 evening)
-
-- Root `9425eaef`, `5f2151c9` — served-verified; 17/17 and 4/4 mutants.
-- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L7, R21-L9.
-- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §12, §13.
-
-
-## Compiled Update — 2026-09-01 (incremental): a blocker row is a measurement with a timestamp, not a standing fact
-
-**Confidence: verified** (OP-11 resolved by ordinary merge `21cefca5` after 16 days in the operator queue; divergence re-measured at resolution time).
-
-OP-11 ("`main` cannot push") sat in the operator decision queue from 2026-08-16 to 2026-09-01 and
-was re-reported verbatim in four consecutive wrap-ups. Its stated premise — *90 ahead / 111 behind,
-**103 files changed on both sides**, so `-s ours` would silently revert origin's half* — was what
-made every listed option unattractive: `-s ours` unsafe, a full merge ~78 hand-resolved conflicts,
-leaving it diverged a compounding debt. **Re-measured at resolution: 42 ahead / 30 behind, FOUR
-both-sides files.** The 2026-08-30 reconciliation had already collapsed the divergence; nobody
-re-measured, so the option rejected as prohibitive cost two conflicts, both disjoint appends.
-
-Key findings:
-
-- **A blocker's cost estimate decays.** The condition that justified escalating is a snapshot of a
-  moving tree. Re-measure the *predicate* before re-reporting a blocker — and note that a
-  recurrence check ("appeared in two consecutive wrap-ups with an unchanged blocker") catches the
-  *repetition* but not the *staleness*: this row's blocker was reported unchanged precisely because
-  nobody re-derived it.
-- **Concurrent lanes silently collide on hand-maintained ID spaces.** The operator queue is
-  explicitly "the one hand-maintained list", and while `main` was diverged two lanes each minted
-  OP-30 and OP-31 for unrelated decisions. Generated indices cannot collide this way; hand-numbered
-  queues can, and the collision is invisible until the merge. Resolution rule used: the side already
-  published keeps its numbers, the other renumbers and fixes its own references.
-  **Strengthened same day: it happened a THIRD time, and the merge could not have caught it.** The
-  other lane had also minted an OP-32 that lived only in its own handoff files, never in the queue —
-  so a reconciliation seeing both sides of the queue still missed it, and it surfaced only because
-  that lane read the post-merge report and said so. Three collisions in one divergence window.
-  Corollary: reconciling the queue file is NOT sufficient; an ID minted anywhere must be checked
-  against the queue at mint time, and a cross-lane report after any reconciliation is the only thing
-  that catches the ones filed outside it.
-- **Merging must preserve DELETIONS, not just additions.** Both sides had intentionally removed a
-  row (one closed by a KILL ruling, one resolved by its owning lane). A union-style resolution
-  resurrects exactly the decisions that were deliberately closed. Ask of every merge conflict in a
-  queue file: *which side deleted something on purpose?*
-- **Generated files must never regress across a merge.** A regenerated manifest computed on a lane
-  that had not seen the other side came out SMALLER; taking it would have silently dropped entries.
-  Take the larger/published side and regenerate after, never during.
-- **Serialization and identity are different gates.** The push guard refused twice: once because the
-  push lease is a *different lock* from the wrap-up lease, and once because holding the lock does
-  not prove the *pushing process* belongs to the holder. Both refusals were correct and neither
-  needed the emergency bypass.
-
-### Source References (2026-09-01)
-
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
-  §OP-11 — the original options table and the 2026-09-01 closing banner.
-- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — Task 11: the
-  conflict-by-conflict resolution record and the push-guard mechanics.
-
-## Compiled Update — 2026-09-02 (incremental): retiring a worktree is a THIRD way to destroy uncommitted work, and `--force` is where it happens
-
-**Confidence: verified** (measured during the OP-30 retirement, 2026-09-02; the orphaned work was
-found by `git log --all -S` returning empty and rescued before deletion).
-
-The shared-tree custody hazards already recorded here cover two shapes — a pathspec commit
-**sweeping** a peer's hunks, and `git checkout/restore -- <path>` **reverting** them with no
-conflict and no reflog. Worktree retirement is the third, and it is the one that arrives wearing
-an approval: the branch is provably merged, the tag pins the tip, the operator has decided, and
-the command looks purely administrative.
-
-**The mechanism.** `git worktree remove` *refuses* a dirty tree — that refusal is the safety net.
-The natural next move is `--force`, which deletes the working tree outright. Uncommitted content
-was never an object in the database, so there is no reflog, no dangling blob, and no recovery.
-Measured: retiring three long-idle loop-champion worktrees, one of them (`ak-loop-tree-c`,
-untouched for five days, branch sitting at base with **zero** commits above it) held **82
-uncommitted lines** implementing a HIP/CUDA stream-capture probe in `mmvq.cu`. The branch being
-empty is exactly why nobody expected content: *commit-level* emptiness says nothing about the
-working tree.
-
-**The check that catches it, before any `--force`:**
-
-```bash
-git -C <worktree> status --porcelain          # any output at all = STOP, inspect
-git -C <worktree> diff -- <file> | head -40   # what is it?
-git log --all -S "<a distinctive symbol from the diff>"   # empty output = exists in NO commit
-```
-
-`log --all -S` is the decisive one: it searches every ref for the content, so an empty result
-means the work is unique to that working tree and deletion is terminal. Rescue is one command
-(`git diff > artifacts/<dated>.patch`, committed and pushed) and costs nothing next to the loss.
-
-**The generalizable rule**: an idle, merged, tag-pinned branch tells you the *history* is safe. It
-says nothing about the *working tree* attached to it. Verify the two independently — and treat a
-`remove` that refuses as evidence to investigate, never as an obstacle to `--force` past.
-
-Corollary for handed-over commands: a retirement command recorded days earlier encodes the tree
-state of that day. Re-verify before executing, because the safe command and the destructive one
-differ by a flag that only becomes necessary once the tree has drifted dirty.
-
-**Sources**
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-3 (the
-  retirement and its re-verification), R21-5 (the rescued patch pending evaluation).
-- [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
-  the session record.
-
-## Compiled Update — 2026-09-07 (incremental): the "30,000 agents" everyone quotes is 30,046 agent RUNS, and the measured cost driver is discarded work, not width
-
-**Confidence: verified** (both swarm papers dived at primary source 2026-09-07; all figures below
-are the producers' own, with the token-share percentages computed on their published tables).
-
-The fan-out question this project keeps returning to — *is our ratified width of 3–5 subagents too
-narrow?* — finally has outside measurement attached to it. It does not say what the headline says.
-
-**The headline number is a run count, and no concurrency figure exists.** "30,000 agents" is
-**30,046 agent runs** across eight role types over about seven days, each run carrying an outcome:
-**3,490 merged (11.6%)**, and **13,602 of the runs (45%) are review passes** rather than authoring
-work (`intake-1304#00`). The paper states **no concurrency figure anywhere**; its only hardware
-number is eight machines. So nothing in it licenses "30,000 concurrent agents", and the citing
-paper that popularised the figure mis-types it — defining the column as a population while its own
-prose says "agent runs" (`intake-1297#record`). Cost in that work is normalised by **corpus size**
-($200 per page, $300 per target), never by agent count; no cost-versus-agent-count relation exists
-in it at all (`intake-1304#04`). Its dollar total is also modelled rather than billed — the logs
-lack token-caching statistics, so ~$100K is a closed-form estimate against a $430K no-caching bound
-(`intake-1304#01`).
-
-**What the same tables do measure is waste.** By the paper's own per-outcome accounting,
-**80.2% of all tokens went to non-merged outcomes and 51.6% to runs aborted outright**, and the
-authors project a 3–10× cost reduction from fixing orchestration alone, without better models
-(`intake-1304#02`). That is the cost term — an order of magnitude larger than anything width
-controls.
-
-**The follow-up system's ablations defend a narrow fan-out rather than attacking it**
-(`intake-1305#record`):
-
-- The entire **central coordination tier is ~11% of compute** (orchestrator 4.01% + supervisor
-  5.72% + analyzers 1.28%) against workers at 76.35%. Coordination is not where the money goes.
-- **3–5 concurrent workers beat 1** on both wall-clock and token cost at matched completion: at four
-  hours wall-clock the 3- and 5-worker configurations reach ~62–68% versus 44% single-worker.
-- **Central re-planning pays only at longer budgets.** The no-orchestrator variant is the *most*
-  token-efficient early, outperforming the full system until ~100M tokens, then plateauing at 64%
-  against 77%.
-
-Carry the limits with the result: 3 and 5 are reported as one undifferentiated band, so **no
-saturation knee is shown** and nothing there licenses "thousands"; the racing multiplier (N workers
-per task, losers cancelled) is folded *into* the worker share, so the agent-count component of cost
-is invisible in that split; every ablation and the sole human audit run on the **same single book**,
-which is also the second-highest-scoring of 26; and the two papers share six of eight authors, so
-the second is not an independent check on the first. The same paper's agent count is internally
-self-contradictory ("thousands" / "dozens or hundreds" / "hundreds"), with maximum *validated*
-parallelism of 5.
-
-**The serial control arm nobody ran.** A single-agent loop — one CLI agent, one constant prompt
-re-fed by a 20-line watchdog, no version control, no PRs, no reviewers, no merge queue — produced a
-comparable output scale, and its bottleneck was neither merging nor checking but **LLM credits**;
-whole-artifact verification of the 169,122-line result takes 32 seconds (`intake-1306#record`). The
-multi-agent papers' claim that single-agent formalization "does not scale" is asserted against it
-with no measurement, no shared corpus and no controlled comparison. Coordination machinery is
-routinely justified against an unmeasured baseline.
-
-**This is now doctrine.** [`OPERATING_CONSTRAINTS.md` → *Parallel Subagent
-Fan-Out*](../agents/shared/OPERATING_CONSTRAINTS.md) carries the ratified clause: **"A fan-out's
-cost is its discarded work, not its width."** Width 3–5 is unchanged — the evidence above defends
-it — and what the clause adds is a **diagnosis order**: when a fan-out looks expensive, first
-measure the share of subagents whose output was never used, and only then consider the number of
-subagents. Narrowing width to control cost is treating the cheap term. Our own instance of the
-measurement is FM-5 (discarded-work accounting) in
-[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement).
-
-**Sources**
-- [intake-1304#record](https://arxiv.org/abs/2604.03071) *Automatic Textbook Formalization*, credibility
-  4/6, dive-verified 2026-09-07 — the run-versus-agent correction, the per-outcome token
-  accounting, the modelled cost. An independent adverse audit of its released output puts ~18% of
-  statements semantically different, so its completeness claim survives and its faithfulness claim
-  does not.
-- [intake-1305#record](https://arxiv.org/abs/2605.29955) *Formalizing Mathematics at Scale*, credibility
-  2/6, dive-verified 2026-09-07 — the compute split, the 1/3/5-worker arm sitting exactly at our
-  ratified width, and the ablation caveats.
-- [intake-1306#record](https://arxiv.org/abs/2601.03298) — the single-agent serial arm and its actual
-  bottleneck.
-- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-5, FM-6.
-- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
-  record and the ratification (`fb755192`).
-## Compiled Update — 2026-09-03: an agent loop is designed in pseudocode first — every rejection needs a visible destination, and budgets must not share a counter
-
-**Confidence: verified** — the convention is ratified in a checked-in guide, and both motivating defects
-were located in shipped controller code with their event tallies counted across named campaigns.
-
-Ratified 2026-08-28 as a standing convention after the AutoKernel rebuild: agent-loop work now opens with a
-**pseudocode expression of the loop** — the actors, what each one reads, what gates it, where every
-rejection goes, and which single step is expensive — reviewed *before* any plan is written around it. One
-review round on that block surfaced three design corrections that months of prose had hidden: the critic
-needed two passes rather than one, every rejection needed an explicit loopback to the actor that could act
-on it, and hypotheses needed generating against a live profile instead of being drawn from a frozen list.
-
-### Why prose hides what a drawn arrow shows
-
-Two real AutoKernel defects have exactly the shape the convention exists to prevent, and both became
-obvious only once someone wrote the arrows down.
-
-- **A rejection with no visible destination is a bug.** `prior_authoring_refusals` — the channel that tells
-  the planner why its last diff was rejected — filtered on `status == "planner_refused"`. The status the
-  controller actually wrote was `authoring_refused`. The tally across campaigns v28–v34 is
-  **22 `authoring_refused` against 1 `planner_refused`**: for 22 of 23 authoring failures the planner
-  received no feedback at all and re-derived rejected work blind, driving two hypotheses to their 3-strike
-  retirement (v33, v34) without ever being told why the first attempt failed.
-- **Two failures with different causes must not share a counter.** `critic_revise` — a critic asking for a
-  revision, which is the *normal* mechanism by which a proposal improves — was charged to the same 3-strike
-  authoring-failure budget as a malformed diff. It supplied v33's third strike, retiring
-  `akh-v2-q5-type-specific-dequant` **for having been reviewed**, before the idea was ever tested. The fix
-  splits `CRITIC_REVISION_BUDGET` (6) from `AUTHORING_FAILURE_BUDGET` (3) with its own disposition
-  (`bounded_critic_revision_skip`). A critic *reject* still counts against the strike budget, because that
-  verdict says the idea was unsound rather than merely improvable.
-
-### Prefer verification by reproduction to verification by proof
-
-The reference loop block treats the champion git commit as the **only durable state**: no intermediate
-artifact has to be trusted, because anyone can check it out and re-measure. "Did we improve?" is answered by
-rebuilding and benching — a `llama-bench` re-run costs **90 seconds** — not by reading a receipt about a run
-that happened last week.
-
-The generalizable point is a cost argument. Proof requires every intermediate step to be sealed and to
-refuse on doubt, so its apparatus grows with the number of steps and has no natural stopping point;
-reproduction requires only that the recipe was kept, and costs one bounded re-run. AutoKernel had chosen
-proof where reproduction was available: guaranteeing the honesty of a single float cost **3,869 lines** in
-`gpu_source_evidence.py` to establish what a 90-second re-run would have shown directly.
-
-The A/A instrument noise floor that sizes the loop's `n ≥ 5` pairing requirement is itself measured rather
-than assumed: at a single pair (n=20 alternating pairs, 2026-08-28) p95 is **2.175%** on prefill and
-**3.452%** on decode — **4 of 20 pure-noise decode pairs already cleared the loop's 3% nomination bar at
-n=1** — falling to 0.75% / 1.85% at five pairs.
-
-### Addendum: an actor that reports errors on stdout makes its own failures undiagnosable
-
-Recorded in the 2026-09-03 rebuild session log and carried here as a debugging corollary of the same
-actor-observability theme (single-source, so treat the incident detail as attested rather than
-cross-verified). Run 27's planner threw an intermittent storm — **74 `actor exited 1:` events with an empty
-detail field**, roughly 40% of iterations at peak — that resisted diagnosis for hours; auth, 6-way
-concurrency, the freeze-overlay agent file and prompt size were each ruled out live and none explained it.
-The defect was in the instrumentation, not the actor: `claude -p` reports its own errors on **stdout** with
-a non-zero exit and an *empty stderr*, while the harness's `_run_agent` captured only the stderr tail. Every
-diagnostic being run was reading the one stream the failure never wrote to. Fixed by keeping both output
-tails and attaching the backend identity to the exit record (`b5cd2817`). **When a CLI-driven subprocess
-actor fails opaquely, confirm which stream it actually writes errors to before assuming your capture is
-complete.**
-
-**Transferable lesson:** a loop's design-review artifact should be the pseudocode block itself, not a
-description of it. Every rejection needs a drawn arrow to the actor that can act on it, every budget needs
-its own counter, and every claim of "verified" deserves the question of whether reproduction would have been
-cheaper than the proof apparatus built to avoid it.
-
-### Source References (2026-09-03 loop design)
-
-- [`docs/guides/agent-workflows/agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md)
-  — the ratified convention, the reference loop block, the reproduction-over-proof cost argument with the
-  90-second / 3,869-line comparison, and the A/A noise-floor measurement.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-VIS-1 and
-  AK-VIS-2 (2026-08-28): the `prior_authoring_refusals` status mismatch with its 22-vs-1 tally, and the
-  `critic_revise` budget split.
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — P4.1 (2026-08-28),
-  where the loop block was adopted as the program's normative spec, with the ratification recorded inline.
-- [`progress/2026-09/2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md)
-  — the run-27 planner transient storm and the stdout/stderr capture fix in the addendum.
-
-## Compiled Update — 2026-09-03 (incremental): a stale untracked file at an authoritative path is indistinguishable from live uncommitted work — verify by content, not by tracked status
-
-**Confidence: verified** — the drift was measured on the served tree, and every passage of the stale draft
-was diffed against `origin/main` before it was displaced.
-
-The shared-tree custody hazards already compiled on this page cover three shapes: a pathspec commit sweeping
-a peer's hunks, `checkout`/`restore` reverting them silently, and `worktree remove --force` destroying a
-working tree the branch history never saw. The served dashboard tree produced a fourth on 2026-08-28.
-
-**The mechanism.** The dashboard hub's served `main` was **45 commits behind and 1 ahead** of
-`origin/main`. Because it predates the origin commit that added
-`handoffs/active/kernel-champion-and-promotion.md`, that path existed on the served tree only as an
-**untracked, superseded 144-line draft**, while origin/main's tracked version had grown to **465 lines**.
-Git's own status vocabulary offers no way to tell that apart from a session's genuine work-in-progress
-sitting uncommitted at the same path: both render identically as "untracked file present."
-
-**What made the resolution safe.** Every substantive passage of the 144-line draft was individually verified
-present in the 465-line origin version before the stale file was displaced, with a backup taken first and
-discarded only after the diff check passed. The general form: **`git status`'s tracked/untracked
-classification is a property of one clone's history, not of the content's currency.**
-
-**Why it generalizes past this one file.** Any served or long-lived clone that lags its origin will show
-*every* path added upstream after its local tip as untracked-if-locally-present rather than modified — so
-the failure mode recurs for each stale copy on a lagging tree, not just for handoffs. The provenance
-predicate already built for the dashboard's deployment sync (AK-DEPLOY-1: trust a blob only if it has
-existed on `origin/main`) is the right instrument; it simply was not yet being run over `handoffs/`.
-
-**Transferable lesson:** on a shared or served clone known to lag its origin, "untracked" is not a safety
-signal. Before deleting, overwriting or trusting an untracked file at a path origin also tracks, diff its
-content against the origin/main version — never infer disposability from which side of the git index a file
-happens to sit on.
-
-### Source References (2026-08-28 served-tree drift)
-
-- [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) —
-  "Served-tree drift — AK-DEPLOY-2 got worse than 'lagging'": the 45-behind/1-ahead measurement, the
-  144-vs-465-line discrepancy, and the content-verification-then-backup resolution.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-DEPLOY-2,
-  filed open the same day, naming the AK-DEPLOY-1 provenance predicate as the existing pattern to extend.
-- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
-  cross-reference confirming AK-DEPLOY-2 as a live, separately-tracked item distinct from the champion
-  findings on that page.
-
-## Compiled Update — 2026-09-25: Typed Decision Layers in Agent Harnesses
-
-A decision model is safest and most useful when it occupies a narrow boundary. The application observes current state and constructs only actions it can execute. The model chooses an identifier or abstains. Deterministic policy validates freshness, permissions, budgets, and invariants. The host executes the stored action and records the outcome. The decision model may rank risk or fit; it does not grant authority.
-
-This boundary applies both to provider routing and to tool-focus selection. Pinned or live sessions preserve user intent. A selected provider must still pass current availability and authentication. A selected tool bundle must be rebuilt from current schemas and checked again before dispatch. An empty “answer” bundle is a valid way to ensure that a semantic choice cannot silently acquire tools.
-
-Provider-owned inner loops remain provider-owned unless the protocol exposes a complete inspect-select-validate-execute-observe interception point. Advertised commands or capabilities are metadata, not executors. Decision records enable replay and reviewed policy changes, but recording outcomes does not mean the application trains itself. Any improvement still needs a versioned proposal, fixed scenarios, regression checks, and a human promotion gate.
-
-### Source References
-
-- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
-- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
-- [Decision-aware routing](../handoffs/active/routing-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
-- [Autopilot continuous optimization](../handoffs/active/autopilot-program.md)
-
-**Confidence:** verified against the cited Keel/Jev intake handoffs and the repository's authorization and receipt boundaries.
-
-## Compiled Update — 2026-09-25: Prepared Actions Need One Reusable Envelope
-
-The typed-decision boundary now has a concrete host-side primitive: `decision_receipt.v1`. The receipt binds
-the task revision, offered choices, read-set or catalog fingerprint, expiry, selected ID or abstention,
-requested and resolved model identity, validation, authorization, fallback, timing, and downstream outcome.
-Immediately before dispatch, the host rechecks availability, freshness, tool existence, model identity,
-and authority against the stored action. `abstained`, `stale`, `expired`, `unauthorized`, `unknown_id`, and
-`incumbent_fallback` are distinct outcomes rather than one generic failure.
-
-One implementation owner builds this envelope and its deterministic conformance fixtures. Routing,
-review, tool-focus, computer-use, and later selector consumers reuse it and add separate tasks only where
-their integration or acceptance criteria differ. This keeps the authority rule executable: selection
-never grants permission, and a valid model choice cannot execute a changed or unauthorized action.
-
-### Source References
-
-- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 owner and consumer boundary.
-- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and receipt requirements.
-- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — selector and shadow consumers.
-- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts) — review-side prepared-action consumer.
-
-**Confidence:** verified as an adopted repository contract; implementation remains tracked by HS-TD-4.
-
-## Compiled Update — 2026-09-25: The Orchestrator Actor Reached the Pre-Comparison Boundary
-
-The AutoKernel orchestrator backend is deployed through its pre-A/B prerequisites. Request-scoped worktree
-containment and edit modes, the `orch:auto` backend, a post-reply trailing-work witness, a direct REPL
-context variable, and orchestrator-owned read-only scouts are live. On the DS41 control prompt, direct
-context reduced the first-turn root prompt from 30,106 to 7,810 tokens while exact pull accounting and a
-byte cap kept retrieved material out of later prompts. The result is architectural readiness, not an
-outcome win: the paired OAB-4 comparison remains open.
-
-The build also exposed two operational boundaries. Scouts bypass the ordinary contention, region-lock, and
-inference-tap path, so their usage remains under-counted until OAB-16 emits per-scout records. Separately, a
-no-op SQLite VACUUM held an exclusive lock for 34 seconds and caused a real author call to fail with
-`SQLITE_BUSY`; maintenance now skips small freelists, truncates WAL after real vacuum work, and gives store
-errors a distinct backoff class. Metrics are scoped to the call start so a failed author cannot inherit the
-planner's prior session.
-
-### Source References
-
-- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — deployed components, direct-context measurement, scout gap, and store incident.
-- [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign boundary and pending A/B.
-- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — lifecycle and dedicated-worktree conventions.
-- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — deployment chronology and measured timings.
-
-**Confidence:** verified for deployed mechanisms and incident measurements; comparative backend quality remains unmeasured.
-
-
-## Compiled Update — 2026-09-26: Prepared Actions Enforce the Decision Boundary at Dispatch
-
-The previously specified `decision_receipt.v1` boundary is now implemented in the orchestrator. A
-`PreparedAction` snapshots task revision, offered choices, catalog and read-set fingerprints, expiry, and
-requested routing identity. Immediately before dispatch, the host rechecks task revision, expiry, current
-catalog, current read set, offered choices, selector availability, and authorization. The existing registry
-continues to own permission; an accepted semantic selection cannot bypass it.
-
-The first integration is the default-off typed tool-argument path. Abstention or any failed validation uses
-the incumbent arguments, and receipts distinguish stale, expired, unauthorized, unknown-ID, abstained, and
-incumbent-fallback outcomes. They also retain requested and resolved model identity, component and total
-timing, validation and authorization outcomes, fallback, and the observed tool result or exception. The
-contract therefore remains useful even if every learned selector eventually loses to the incumbent.
-
-### Source References
-
-- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 implementation and consumer map.
-- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and evidence-consumer boundary.
-- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective receipt projection without authority.
-- [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — landed orchestrator commit and 40-test validation.
-
-**Confidence:** verified for the implemented default-off path and conformance coverage; no selector-quality claim is implied.
-
-## Compiled Update — 2026-09-26 (wrap-up, ak-ds41-main): a new actor seat is wire-tested before its first live call, and loop scratch has exactly one owner
-
-**Confidence: verified** for the ratified rule, the checklist text and the scratch-registry design as documented;
-the code gates (OAB-29..OAB-32) are filed, not built.
-
-**The rule.** Ratified by the operator 2026-09-26 into
-[`OPERATING_CONSTRAINTS.md` → *New actor seats*](../agents/shared/OPERATING_CONSTRAINTS.md): a new actor seat — a
-new model or backend kind, a new harness or CLI, or a changed seat config (permissions, prompt transport, output
-or context limits), in AutoKernel **or any other autonomous loop** — takes no live call until its EXACT
-invocation passes (1) a fake-model wire test against a scripted OpenAI-compatible stub and (2) one stub
-end-to-end dry iteration covering stop, resume and continuation past a keep. Until INF-78 OAB-29/OAB-30 code the
-gate, the bringing-up session runs both by hand and records the result in the owning handoff. Origin: the 57.5 h
-DS41 local-planner bring-up, where ~11 of ~26 incidents were harness semantics a fake server finds in seconds
-([Autonomous Research](autonomous-research.md), same date).
-
-**What the wire test must assert** (the ten-item checklist in agent-loop-design), each item traceable to a
-concrete DS41 loss:
-- the full reply survives to a file at full length (pipes truncated opencode at 64-96 KiB; argv prompts hit
-  128 KiB) and both exit-code paths are handled (opencode exits 1 after a *recovered* tool error, with good stdout);
-- a compaction or template echo never parses as an answer, and the timeout covers a deliberately slow reply;
-- config keys do what you think (`prompt:` replaced opencode's system prompt; `instructions` appends) and
-  requested limits reach the wire (the 32000 `max_tokens` clamp; `chat_template_kwargs` dropped for local
-  providers);
-- **permission semantics hold**: without `--auto`, an `ask`-class permission is auto-rejected *and ends the whole
-  session with no final text*, while a configured `deny` fails one call — so a read-only seat must never be able
-  to reach an `ask`.
-
-The rest of the checklist generalises beyond opencode: never silently discard produced work (every drop writes a
-disposition record, enforced by a test that walks every non-fatal path — before `c7215eb5` op_scope dropped ~15
-candidates across seven runs and none built); key comparability on the measurement identity, not the actor
-roster; give "free" local compute an explicit per-call token and wall budget that ends in a recorded abstention
-(a cloud API's bill was the implicit budget; one local planner call ran 61 min without replying); check seeded
-numeric evidence for freshness; run the harness's own reference probes in the candidate's env; resolve routes from
-what the actor actually writes; size inherited per-keep costs; and pick verification scope by change type. The
-standing gates are OAB-29 (wire-test suite per backend kind and role config; `run.py`/`campaign_cli` refuse a
-manifest whose seat-config digest has no passing record), OAB-30 (stub iteration including keep→continuation),
-OAB-31 (discard-invariant AST-style test) and OAB-32 (default budgets on every role × backend; an unbudgeted local
-backend refuses to start).
-
-**Scratch disk is the flow's job** (operator directive 2026-09-26). All AutoKernel scratch — temp dirs, per-call
-configs, context bundles, detached worktrees, non-evidence build dirs, actor TMPDIRs — goes through one
-`ScratchRegistry` with nested `run → batch → iteration → call` scopes that release innermost-first on normal exit,
-exception, KeyboardInterrupt and the SIGTERM stop path. Three failure modes motivated it: per-feature cleanup
-leaks on every non-happy path; pattern-based deletion destroys work (`git worktree prune` destroyed five live lanes
-on 2026-08-12); and shared per-role files race (one lane's call could start with another lane's permission fence).
-Each allocation writes an ownership marker and a journal line; the sweep collects only **marked** resources whose
-owner is provably gone (dead pid with start-time check), never an unmarked path; worktrees are removed only with
-`git worktree remove --force` — the wrapper refuses `prune` and `gc`, and a test scans for them. A disk guard makes
-callers **degrade** (best-of N→1, op-test→compile-only), never fail. Enforcement is an AST inventory test over the
-loop package: any file/dir-creating call outside `scratch.py` or a reviewed evidence allowlist fails. Evidence
-(actor replies, session exports, provenance sidecars, LOO omission trees) is deliberately outside the registry
-because records bind it by digest.
-
-### Source References
-
-- [agent-loop-design → *Bringing up a new actor model or backend* and *Scratch disk is the flow's job*](../docs/guides/agent-workflows/agent-loop-design.md) — the checklist and the registry contract.
-- [AutoKernel local-actor bring-up retrospective](../docs/design/autokernel-local-actor-bringup-retro-20260926.md) — §5/§6, the prevention list and where each is filed.
-- [INC-20260926-local-actor-bringup](../docs/reference/agent-config/INCIDENT_LOG.md#inc-20260926-local-actor-bringup) — the rules the incident fed.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-29..OAB-32 acceptance criteria.
-- [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the ratify bundle and the decline of a second in-loop gate (INF-78 moves actors behind the orchestrator, which already gates agentic local-model use).
-
-
-## Compiled Update — 2026-09-26: HS-4 P0.4 Passed, and the OpenCode Pin Moves to the Release Tag
-
-**Confidence: verified** by the P0.4 r3 verdict (`artifacts/harness/hs4-p04-20260926-r3/verdict.json`, `pass=true`) and a git comparison of the tag against the audit pin.
-
-At ~19:05Z on 2026-09-26, OpenCode 1.18.31 completed the live acceptance against `/v1`, passing 10/10 checks. The client-mode tool order was read → edit → bash, and session keying was clean: 0 calls carried a wrong `x_user_id` or `x_tool_mode`, and 0 were keyed to another session. The new A5 check confirmed token parity: the session reported 28819 prompt / 247 completion tokens over 4 steps, and the tap's `server_terminal` counted exactly the same over 4 calls. The tap is authoritative because OpenCode's `tokens.input` excludes cached tokens. The run closes P0.1, P0.2 and P0.5.
-
-Two failed attempts earlier the same day each left a lesson:
-- **r1 was a method error, not a product defect.** The runner wrapped the whole run in an outer CPU region-lock, which starved the orchestrator's own placement (503 `contention_denied`, 0 tool calls). Never hold an outer region-lock around traffic that goes through the API, because the API does its own admission.
-- **r2 passed every product check but failed belief capture.** `/v1` client tool mode returned no `usage`, so the SC86 rows had no token counts. The fix (orch `5697828c`) returns the backend's usage and was deployed by an API-only reload before r3.
-
-**The pin moves to the tag.** The audit pin `350c726a` turned out to be a dev-branch commit whose packages report 1.18.31. The release tag `v1.18.31` is `014614d3`, which is what `npm install` installs and what r3 ran. The diff between the two touches only `packages/console`, `packages/web` and `.github`, so every audit anchor still holds. P0.4c freezes the served identity at the tag and records `350c726a` as the audit anchor only.
-
-The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (the pin freeze), then the Phase-0 split into its own handoff, whose trigger is now met.
-
-### Source References
-- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — P0.1–P0.5 closure, P0.4b/c, P0-split.
-- [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the §1 tag/pin correction.
-- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the r1/r2/r3 narrative.
-
-## Compiled Update — 2026-09-26 (late, workspace-8d): capacity has one owner, locks are inodes, and the interface questions get a package
-
-**Confidence: verified** for the defects (reproduced live); the interface items are open design questions.
-
-- **An outer region-lock around API traffic contradicts the scheduler, and the doctrine text invites it.**
-  `OPERATING_CONSTRAINTS.md:106` says never to launch inference without a held CPU-region claim, with no carve-out.
-  A runner that followed it literally wrapped an OpenCode→`/v1` client in `region-lock run`. That starved the
-  orchestrator's own per-call placement: 503 `contention_denied`, 0 tool calls (HS-4 P0.4 r1). The rule's real scope
-  is inference processes a session launches itself. The orchestrator claims regions per call for anything that goes
-  through its API. The wording is human-only, so the amendment is queued (HYG-5, OP-63). Until it lands, read :106
-  that way.
-- **Two paths to one lock file are one lock; compare inodes, not strings.** The pre-push guard's legacy-lock check
-  compares path strings. From a worktree created via `/mnt/raid0/llm/epyc-root`, the canonical and legacy lock paths
-  differ as strings but share an inode (`/workspace` is the same directory), so a correctly held lock refuses with "TWO
-  serialization locks". It is the same worktree-path-invariance class as SSU-F9 and SSU-F9c. The fix is `-ef`
-  (SSU-F9d), and it awaits operator approval (OP-65) because `scripts/hooks/**` is ack-gated. Workaround: create
-  worktrees via `/workspace`, or export `EPYC_PUSH_LOCK_DIR`.
-- **A pause reaches a subagent only at its next tool round.** A running pytest keeps writing after the pause message
-  is sent. Wait for its captured PIDs to exit before touching a tree it shares.
-- **The harness↔orchestrator interface is the missing join, and it now has a package task (HS-19, OP-64).** Three
-  linked questions, none covered by HS-16/17/18 or HS-OD-8/9:
-  - (a) Re-enable OpenCode's `task` tool as a control door into the orchestrator's MCP server, with the scheduler
-    still the only executor. HS-4's template denies it today so that the orchestrator owns fan-out. HS-1c showed
-    `task` re-enters the same pipeline, but the 27B never used `task` when offered it (DS41-C20c, n=1).
-  - (b) A hierarchy of shared REPLs: live view or snapshot, merge on publish, and one pull-accounting tree. It has to
-    rest on local evidence, because DeLM-style shared context did not survive the prior-art dive.
-  - (c) The orchestrator deciding to scout, not only when a request lists targets.
-
-  HS-4's thin-shell, one-router decision is not reopened.
-
-### Source References
-
-- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final: lessons and the derived-actionables sweep.
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 (region-lock wording).
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19 a/b/c, HS-1c, HS-4 P0.4 r1.
-- [master-handoff-index.md](../handoffs/active/master-handoff-index.md) — OP-63, OP-64, OP-65.
-
-
-## Compiled Update — 2026-09-27: harness subagents are linked, not scheduled — and they delegate when the prompt names the tool
-
-**Confidence: verified** for the HS-19a live acceptance (PASS 18/18, one run) and the delegation probe (3 trials per cell); stages 2–3 are an approved build order, not built.
-
-- **The orchestrator owns model selection for harness subagents (operator, 2026-09-27).** OpenCode's config names one logical model, `epyc-orchestrator/orchestrator`, for both `model` and `small_model`. A `task` subagent is only a concurrent request to that provider, not a new process. The only pin is `x_force_model`, set by us for evaluation and debugging, never by the harness. Build order: stage 1 Linked → 2 Scheduled → 2.5 shared context by pointer → 3 full shared REPLs. This answers HS-19 (a) from the previous section without reopening HS-4's one-router decision.
-- **Stage 1 records the tree and changes nothing else.** Every piece is default-off, and with it off live behaviour is byte-identical:
-  - `/v1` (flag `v1_subagent_link`, orch `f58db8be`) resolves the session and parent ids with HS-16's header fallback (body → `x-dynamo-*` → `X-Session-Id` / `x-parent-session-id`; the body always wins and a disagreeing header is flagged). It records `parent_session_id`, its source, `subagent_depth` and its basis, and `x_agent_name` in the tap `request_keys`, plus one `session_created` / `harness_subagent_link` progress-log row per new child. It refuses (422) malformed ids, self-parents, cycles and re-links to a different parent. Depth comes from a bounded in-process registry (10k sessions, 3600 s idle TTL) that is not persisted; the log rows are, and they are the stage-2 corpus.
-  - An opt-in OpenCode profile allows `task` for the `general` agent only, at depth 1, and `general` itself denies `task`, so there are no grandchildren. `explore` stays disabled: user permission rules merge after its `"*":deny`, so it would keep bash and would not be read-only here.
-  - The config lint gained a rule in **both** profiles: no per-agent `model` and no `x_force_*` anywhere in the config.
-- **The live run passed 18/18** (HS-19a.6, ~02:05Z in an AutoKernel CPU window): frontdoor called `task`, one `general` child at depth 1 answered, parent and child calls were keyed in the tap, the child was served by normal selection with no pin, and A5 token parity held per session. Check S6 first failed because `ProgressLogger` buffered 10 rows per worker, so the session-log row was not yet on disk; the fix flushes durably (orch `9d711b32`) and the acceptance runner now polls with a bounded wait. **An acceptance check that reads a buffered log must wait for a flush, or it tests the buffer.**
-- **Delegation is instructed, not offered (OAB-33).** Frontdoor, 27B-nothink and 27B-think all delegated 3/3 on the HS-19a prompt (which names `task`); frontdoor and 27B-think self-served 0/3 on the AutoKernel seat's shape (fan-out guidance, a hidden-`scout` description, `task` never named). The earlier "27B never used `task`" observation (DS41-C20c) was the prompt, not the model ([Autonomous Research](autonomous-research.md), same date).
-- **Shared-clone and host hygiene closed or filed the same day:**
-  - HYG-5 was ratified (OP-63): the region-lock rule is scoped to self-launched inference, and the orchestrator claims regions per call for API traffic.
-  - The `-ef` guard fix (SSU-F9d, OP-65) took effect only when the shared clone's working tree was updated, because the live pre-push hook runs `/workspace`'s working-tree copy of the guard. SSU-F9e fast-forwarded `/workspace` with `merge --ff-only` (no force, stash or checkout). Each of the 11 files blocking the fast-forward was first proven superseded (8 byte-identical to a committed blob, 2 older subsets) and then moved aside into a verified backup, not discarded. **A fix to a hook is not deployed until the copy the hook actually executes carries it.**
-  - The disk-leak audit ranked the leaks: agent worktrees ~36 GiB, then `~/.codex` sqlite growth of ~4.8 GiB in one ~8 h window while Codex served as a delegation actor, then frontdoor KV slot files at ~1.4 GiB per 8 h (slot-save files never unlinked; the owning session is fixing it). `~/.codex` has no retention and no reaper; NIB2-84 files one on the `opencode_event_reaper.sh` pattern (never touch a DB a live process holds, a three-state observer probe, an observer-registry row), and deleting existing history needs operator confirmation.
-
-### Source References
-
-- [HS-19a linked subagents spec](../docs/design/hs19a-linked-subagents-20260927.md) — operator decisions, identity resolution, refusals, profile rules.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19a.1–.6, the live PASS and the S6 flush fix.
-- [2026-09-27 HS-19a progress](../progress/2026-09/2026-09-27-hs19a.md) — the stage-1 build record and test counts.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-33.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d, SSU-F9e.
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 ratified, NIB2-84.
-- [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — § Disk, § Coordination.
-
-
-## Compiled Update — 2026-09-27 (late): stage 2 "Scheduled" is designed as five steps, then frozen until the thesis pays
-
-**Confidence: verified** for the OpenCode source audit (file:line anchors at tag `v1.18.31`) and the design decisions; **inferred** for anything about stage 2's value, which is unmeasured. Nothing was built.
-
-- **The pipeline.** Gate (is this worth splitting?) → Plan (which typed subtasks, which dependencies) → Size (how many run now, how many wait) → Select (which model serves each subtask) → Aggregate (how results return). Front door A (`/chat`, or the harness through an MCP tool) runs all five; front door B (an OpenCode `task` call on `/v1`) arrives with Gate and Plan already done by the main thread, so the orchestrator runs Size and Select, and OpenCode aggregates.
-- **Generalize, don't fork.** Stage 2 replaces proactive stage 7.5, which inverts the "consultant, not grunt worker" ruling: its gate is a heuristic, its planner is always the architect (`n_tokens=256`), it dispatches in wave barriers, its plan names roles, and it is declared off in production. Stage 2 also generalizes the scout stage's admission from *skip* to *queue*. The plan compiles to TaskIR `plan.steps`, so the existing `compute_waves` validation (duplicates, dangling references, cycles) applies.
-- **Design rules worth keeping whatever happens to stage 2:**
-  - The gate is a typed decision with a four-option menu (`direct | scout | decompose | decompose_consult`), and it defaults to `direct`: on a parse failure, below the (predeclared, uncalibrated) τ, at depth ≥ 1, or when capacity is unknown. The evidence says multi-agent costs 3–10× the tokens and wins on thoroughness, not speed (intake-1121#00, intake-1121#02); at equal thinking budgets a single agent matches it on multi-hop reasoning (intake-1109#00).
-  - The planner is told its budget (`N_now` from live `/slots` minus reserve, `N_total`), and code enforces it. The plan schema has `additionalProperties: false` at every level, so no `model`, `role` or `x_*` key can appear: the orchestrator, not the plan, picks models. Decoding is grammar-constrained, with `maxItems = N_total`.
-  - Readiness dispatch, not waves: a subtask starts when its dependencies finish and admission grants a slot (intake-1117#00). A process-wide reservation (the embedding-pool scheduler's `try_reserve` pattern) stops two plans spending the same free slot. The planner call finishes before dispatch and synthesis starts after it, so the parent holds no slot while it waits.
-  - Grunt subtask types never reach the consultant; it is reachable only through planning and a `verify` subtask marked hard.
-- **What OpenCode gives, read from source (tag `v1.18.31`):**
-  - Several `task` calls in one turn run concurrently with **no cap**. The only structural bound is depth (default 1).
-  - Whether the model emits more than one call depends on the server: neither OpenCode nor the orchestrator sends `parallel_tool_calls`, so llama-server falls back to the chat template's capability.
-  - Retries are per call: up to 5, honouring `retry-after-ms` then `retry-after`, otherwise exponential from 2 s with 25% jitter and a 30 s cap. There is no fan-out-level awareness, which is why a pre-stream 503 with `Retry-After` is the backpressure lever.
-  - There is no `todoread` tool, and `todowrite` has no dependencies or types. It is a checklist, not a plan.
-  - `OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS` must stay off: it returns at once and injects the result as a new parent turn, which breaks the parent-waits contract.
-  - A child can be joined to its tool call server-side with `(parent_session_id, sha256(prompt))`, with no plugin change.
-- **Then it froze.** Under the narrowed plan, HS-19b (shared REPLs), HS-19c (generalized scouting) and HS-19d P1–P6 carry `❄ FROZEN 2026-09-27`, because nothing yet shows that fan-out beats the strongest model alone. HS-19d.0, the design, stays done as the reference. P5's A0/A1/A2 arms became the UFH-13 thesis experiment ([Benchmark Methodology](benchmark-methodology.md)). OP-64, the harness↔orchestrator interface discussion, is recorded as decided.
-
-### Source References
-
-- [HS-19 stage-2 dispatch design](../docs/design/hs19-stage2-dispatch-20260927.md) — §1 pipeline, §2 reuse table, §3 evidence, §4 OpenCode audit, §5–§10 the steps, §15 prior art.
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19b/c/d boxes and their freeze markers.
-- [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the frozen list and the A0/A1/A2 arms.
-- [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — the freeze decision.
-
-
-## Compiled Update — 2026-09-29: the `/v1` direct path now templates thinking-on roles, and losing the role suffix there helps the planner
-
-**Confidence: verified** for the HS-OD-10 fix (landed on orch main, live after an API-only reload, serving proofs on 2026-09-29) and for the tap-event purge counts (operator-run `--apply` with byte-identical verification); **verified by code read, not by a run** for the planner-suffix check; **observation** for SSU-F18 and NIB2-88..91, which are filed and open.
-
-- **HS-OD-10: `x_disable_repl` sent thinking-on roles raw text.** The direct path (including `x_force_role`) called `llm_call` with no chat template and with the role's `system_prompt_suffix` appended after the user text. On the `/completion` lane, llama-server simply continued that text. The 2026-09-28 ARCHSWAP serving proofs showed the symptoms: `architect_critic` echoed a JSON template, `coder_escalation` repeated the last line of its suffix, and `<think>` arrived inline in `content`. The defect had been present since orch `ae5975b4` (2026-04-05). The fix (lane `66ef96b8`, landed as orch `5ddb7320`, with test-tap isolation in `8a7d57a8`) applies an orchestrator-side template to `/completion` roles and sends chat-completions roles bare, the same rule as `chat.py`'s direct path. It also skips the suffix, as `/chat`'s direct stage does, and moves a leading closed `<think>` block into `message.reasoning_content`. It was proven templated at 07:06Z on 2026-09-29, and again at 15:04Z once RI-23 had moved these roles to the chat-completions lane.
-- **The behaviour change was checked against its one real consumer, and the loss is an improvement.** Chat-completions roles on this path no longer get their suffix. The autopilot `LocalPlannerProvider` uses exactly this path. A code read at orch `origin/main` found that `_local_planner_prompt` wraps the draft, critique and brief prompts in JSON-only output contracts at both head and tail. The suffixes of the planner roles (`frontdoor` by default, `ingest_long_context` under the authority daemon) ask for "user-friendly … elaborate" prose and "structured headings", which contradict that contract, so nothing was added back. The default REPL bridge (`openai_compat.py` ~:1674) still sends an untemplated prompt with the suffix. That path belongs to RI-23, not to this row.
-- **A box that was done but never ticked.** HS-4 P4-pre (the `x_max_escalation` description overstated a cap `/v1` never applied) had been fixed by orch `336bd170` on 2026-09-17, and it stayed open for ten days. TE-1 (`9959e8db`/`280059cc`) then added default-off `/v1` escalation through `/chat`'s post-answer hooks, under `x_escalation: auto | off | architect_general` (flag `v1_escalation`). That governs escalation, and the old field stays metadata. P4's delegation tool and cap enforcement are still open, and **P4 must extend `src/api/routes/v1_escalation.py`, not fork it.** The harness queue is now P0.4b (republish the Harness Card) → P0.4c (freeze the pin at `v1.18.31` = `014614d3`) → P0-split. HS-19b, HS-19c and HS-19d P1–P6 stay frozen behind UFH-13.
-- **Serial-ness belongs to the server, not the alias (A-5, folded into SSU-F17).** `ingest_long_context` is in `serial_roles`, but its host server is not. Once roles bind to server ids, serial-ness has to be derived from the server, so an alias cannot disagree with its host. It was folded into SSU-F17 rather than fixed on its own, because a stand-alone fix would re-edit a surface that SSU-F17 deletes. `coder_escalation`'s dead `enable_thinking: False` went the other way. It was needed before TE-reopen, so it was reconciled under RI-23a, which was applied on 2026-09-29 (receipt `RATIFY-RI23A-20260929`): the role is now thinking-on in both the registry and the priors.
-- **A regression that lives only in tmp is one disk reclaim away from gone (SSU-F18).** The SSU-F5 moved-lineup pytest plugin moves the worker lane a second time, onto `architect_critic`. Against `test_stack_priors_compiler.py` it gives 34 of 35 passing, and the one failure is the deliberate pin. The plugin and its fixtures exist only under `/mnt/raid0/llm/tmp/ssuf5/`. SSU-F18 commits them to the orchestrator tests as a standing regression for the next lineup change. The surface manifest's hardcoded-surface inventory stands at 13 consumer surfaces and 27 rules.
-- **The inference tap was purged of test traffic, but only half of it could be.** Orch `8a7d57a8` made the `tests/unit` tap hermetic. The operator then ran `clean_tap_events.py --apply` on the JSONL events file. Rule (a) removed 2,844 events from `role_a`/`role_b` pytest PIDs, and rule (b) removed 824 non-API, task-less requests to the `test-native-wire` backend or port 0: 3,668 in all. The 267,312 kept events were verified byte-identical and in order, with the lock held for 20.35 s. The plain `inference_tap.log` still holds 738 test sections. It can only be rewritten while no `TapWriter` holds an fd, so NIB2-91 waits for a planned API stop.
-- **Zero-inference residuals filed rather than buried.** NIB2-90: two openai/v1 tests fail only when run in a particular order, and they reproduce on unmodified `origin/main`, so orch `66ef96b8` is exonerated. The task is to find the leaked state and prove the fix with two run orders. NIB2-88: the opencode event reaper's relaunch step appears in no cold-start document, because the container has no cron or systemd. `agents/shared/` is human-only, so the step's agent-editable home is the `coordinator-agent` skill's cold start. NIB2-89 generalizes the bus supervisor's H-4 self-restart to every registered daemon. It needs a D9 ack and has no runtime effect while bus_supervisor stays DOWN. NIB2-80/81 were renumbered to 86/87 because they collided with closed items.
-- **Compaction (2026-09-27/28).** Closed scope in harness-selection, SSU and the non-inference backlog moved to `handoffs/completed/` siblings, and each active file gained a *Start here* block and a *Completed Scope* table. Removed lines were spot-checked against the files at `d3b960cc`: every closed ID reappears in its sibling, with link paths rewritten. No history was lost ([Knowledge Management](knowledge-management.md) has the convention).
-
-### Source References
-
-- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-10 defect, fix, closure and planner check; HS-4 P4-pre tick and TE-1 progress; the P0.4b → P0.4c → P0-split queue.
-- [Harness selection completed sibling](../handoffs/completed/harness-selection-completed-through-2026-09-27.md) — where HS-1/2/3, Phase 0, HS-TD-4, HS-18 and HS-19a stage 1 now live.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — A-5 folded into SSU-F17, the RI-23a reconciliation note, SSU-F18, surface-manifest counts.
-- [Model-stack completed sibling](../handoffs/completed/model-stack-single-source-update-pipeline-completed-through-2026-09-27.md) — closed SSU-F2/F3/F5/F9a/b/d/e/F12/F14/F15.
-- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-86..91, the renumbering, the tap purge record.
-- [Non-inference backlog completed ledger](../handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md) — Round 1 and Round 2 closed items through 2026-09-27.
-
-
-## Compiled Update — 2026-10-03: the 27B planner gap is mostly the model, and the harness defects are generic
-
-**Confidence:** the C95 results are **observations**. n is tiny (2–4 calls per arm) and grading was blind, so treat
-them as indicative. The defects D1–D8 are verified from wire bodies, server logs and the prefill-share analysis.
-OAB-35 is verified: a regression test reproduces the crash on the old code.
-
-- **The question, from DS41-C83.** The C83 analysis attributed the 27B planner gap as roughly 45% capability, 40%
-  harness and 15% scheduling.
-  - The 27B had the zmm-widen idea, lost it to compaction, and then rejected it on a wrong "DRAM-bound" premise.
-  - There was no critic bias: the deepseek critic accepted the 27B's proposals 9/13 times, and its own 6/11.
-  - Its effort setting never reached the server, and the fast lane got 2–10x more calls.
-- **DS41-C95 replay.** Fixed planning contexts were sent to the 27B under several harnesses, with a blind
-  claude-opus-5-5 grader and no contaminated calls. P(keep) by arm:
-  - as-ran DeepSeek: 0.75 (3 exact, 0 factual errors);
-  - as-ran 27B: 0.0;
-  - 27B × codex, inline context: 0.50 (both partial);
-  - 27B × Hermes: 0.33;
-  - 27B × opencode: 0.25;
-  - 27B × codex, variable context: 0/2, no reply on either call.
-- **Reading the C95 results.**
-  - **Capability dominates.** No 27B arm produced an exact keep. The 27B made 2–3.5 factual errors per proposal,
-    and gave no reply within about 90 min on half or more of its calls.
-  - **The harness matters some.** Codex with inline context was the best arm, and it recovered the +12% idea that
-    the as-ran 27B had lost to compaction.
-  - **Tool-fetched context hurt the 27B here:** 0/2 replies against 2/4 with inline context.
-  - **Reasoning carry-over differs by harness.** Codex resends its reasoning items, opencode drops them, Hermes
-    resends none, and the orchestrator REPL rebuilds each turn without them.
-  - DS41-C103 records the recipe if the 27B is ever reconsidered as a planner: codex with inline context and a
-    longer budget. The 4500 s budget was the main failure.
-- **UFH-14: eight harness and serving defects** (operator directive: fix every one, model-agnostically, demonstrate
-  on the 27B, then audit). In 6 of 8 no-reply calls, a keep-class candidate was already in the transcript.
-
-  | Defect | What goes wrong |
-  |---|---|
-  | D1 | The client stream idle timeout (codex ~300 s) is shorter than a long silent prefill. The abandoned request keeps prefilling. |
-  | D2 | Compaction changes the prompt prefix (codex sends `tools=[]`), forcing a cold re-prefill of 79–94k tokens. |
-  | D3 | Compaction drops the task prompt (opencode). |
-  | D4 | No answer protocol: the model explores past its budget with a candidate in hand. |
-  | D5 | Parallel arms start together on the same context and each prefills cold. |
-  | D6 | The unified pool overflows under concurrent long contexts. |
-  | D7 | Concurrent long prefills stall decode in the other slots. |
-  | D8 | Serving telemetry gaps. |
-
-- **UFH-14 plan.**
-  - **Phase A (27B demo):** an F12 run with a 1 h idle timeout, compaction at 150k, a JSON-first answer, a forced
-    answer at 65% of budget and an 8k thinking cap. Also prefix warming with staggered starts, and compaction that
-    keeps the prefix.
-  - **Phase B (generalize):** derive each client parameter from the server's measured prefill rate and slot context,
-    never hard-coded per model. B2 (the token gate) and B5 (telemetry) are done; B3 (KV sizing) is signed. B6 is an
-    OpenAI-compatible passthrough on :8000, so experiments go through the gate.
-  - **Phase C:** a holistic audit with a delete-lens, after the Phase A verdict.
-- **OAB-35: the dict idiom crashed REPL calls** (orch `2d97ade2`).
-  - Models write `context.get('inbox', '')`. `ContextBundle.get(path, max_chars=None, offset=0)` read `''` as
-    `max_chars`, and `int('')` raised.
-  - The model repeated the line for six turns and escalated, and the API returned HTTP 500. This blocked C95's
-    orchestrator-REPL arms.
-  - Fix: a non-numeric second argument, or `default=`, is now a dict-style default.
-  - OAB-36 documents the idiom in the root block. That changes the prompt bytes, so it lands between experiment arm
-    pairs and updates the golden test.
-- **A C95 harness defect.** The run-1 wire proxy died on SIGTERM without closing its gzip stream, which lost every
-  run-1 `result.json`. The results were rebuilt from the intact harness outputs (marked `recovered_by`), and the
-  new proxy closes its logs on SIGTERM.
-
-### Source References
-
-- [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — UFH-14: evidence, D1–D8, phases A-C.
-- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C83, C95, C102, C103.
-- [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — the C95 arm table, reasoning carry-over, the proxy defect.
-- [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the C83 planner-gap verdict.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-35 root cause and fix, OAB-36.
-- [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the serving evidence behind D5–D8.
-
-
 ## Incremental operational checkpoint — 2026-10-05
 
 File-backed `ingest --only-new` skips complete claim bundles with live evidence and refuses partial,
@@ -5322,21 +1216,6 @@ The orchestrator added a FIFO ticket queue across role and global region locks p
 - [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — pinned OpenCode lifecycle signal behavior.
 - [AutoKernel unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — FIFO region-lock implementation status and gates.
 - [AutoKernel disk hygiene design](../docs/design/autokernel-disk-hygiene-20260915.md) — harness transcript/state retention boundary.
-
-## Compiled Update — 2026-10-06: future launcher references and retained reports cross ownership boundaries
-
-A clean, idle worktree can remain required by a future launch. Cleanup must inspect process environments and argv, recent launcher/watchdog scripts, scheduled jobs, frozen campaign inputs and explicit KEEP markers, then apply the existing identity and trash-first checks. The October 4 removal of a worktree exported as `EPYC_ROOT_REPO` broke the next DS41 claim despite passing cwd/open-file checks. Scratch declarations make created paths enumerable; a declaration never overrides protected harness state. Claude/Codex transcripts, backups and other agent-harness state remain excluded, and the Codex retention reaper is report-only. The narrowly authorized OpenCode event-table reaper does not authorize another reaper.
-
-CPU admission for the project GitNexus wrappers now requires eight distinct single-link lock files, four GLOBAL and four build, with actual write flocks attributed to one live same-UID ancestor. Refusal precedes downstream mutation; the nontruncating writer lock survives child/exec and contention returns 75. This is point-in-time wrapper admission. It establishes neither continuous owner supervision nor canonical-index recovery: the host index remains untrusted. NI05-76's original native test has 103 descriptive controls within one testcase, not 103 independent testcases; public metadata excludes hashed private inputs and cannot independently reopen the entire proof.
-
-Delegation's compact loop telemetry and user-visible report are separate products. DCP-13 removes an unreachable `fetch_report` instruction and returns the retained full report on user cache hits; legacy entries lacking the full report miss that path. Native fixture acceptance covers the contract, not inference quality or live cache performance. The source-handoff changes do not close inference-dependent comparison arms.
-
-### Source References
-
-- [Cleanup reference check](../docs/guides/agent-workflows/cleanup-reference-check.md) — future references, protected harness state and the narrow exception.
-- [Handoff index authoring](../docs/guides/agent-workflows/handoff-index-authoring.md#scratch-roots--every-handoff-declares-where-its-scratch-lives) — scratch boundaries and load-bearing markers.
-- [GitNexus compute claims](../docs/reference/gitnexus-compute-claims.md) — point-in-time admission and original native control counts.
-- [Delegation context preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13a/b source acceptance and remaining inference arms.
 
 ## Source update — 2026-10-06: detector/fixer topology design
 
@@ -5441,7 +1320,4157 @@ The [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) re
 
 [Source and original native reference conformance](../artifacts/ni08/evl38-reference-conformance-20261007/README.md) verify the15document correction and complete95input original custody. Local references use actual tracked root sources; foreign references pin verified published Git blobs. One unchanged reference-validator wrapper passed, without granting whole-candidate readiness or changing the validator/measurement constitution. Confidence: verified for the pinned source/reference controls only.
 
-## Compiled Update — 2026-10-20: the harness-improvement loop gets a matched-budget gate before its first suite run
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): what an agentic optimizer actually needs
+
+- **Measurement turnaround dominates candidate quality** in a mature agentic kernel loop: Together Compiler's premise matches our measured split (build 75.7%, measured 3.9%), and the portable fixes are kernel-store reuse before rebuilding, a parallel build, and one grant carrying many measurement units (intake-2643).
+- **Prescribed context and role-decomposed planners measured negative** in their ablations (an expert knowledge base cost 25-31% speedup; naive ensembles beat expert strategies 6.2x vs 4.9x). Do not generalise this to our loop: their experiment compares role-specialised peers, while ours is a stage pipeline with a no-repeat fold, which that ablation does not test (intake-2643).
+- **An external optimizer's keep gate is not automatically stronger than ours**; theirs states no repeats and no rollback beyond teardown (intake-2643).
+- **Filed work**: `P1`/`P2`/`P3` in [autokernel-loop.md](../handoffs/active/autokernel-loop.md) and [coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md).
+
+Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · [intake stage-3 plan](../research/intake-stage3-plan-2026-11-06-linquant-tkcc.md)
+
+## Agent-file compression: production operating point and deploy wiring (2026-11-12)
+
+- **Both serving roles' operating point is `aggressive` on production tool exposure.** Suite v3c re-ran the v3b harness with each role's tool set resolved from the enforcement path (`model_registry.yaml` `tool_permissions`). Qwen3.6-35B-A3B (worker_general, 26 tools) and Qwen3.8-Flash-Next (architect_general, signed 35-tool set) both KEEP every compressed level under the paired rule (Newcombe one-sided 95% LB of p_cand − p_none > −0.10 per pool). Flash-Next none 0.785/0.600/0.927 (comp/proc/recall); aggressive LBs −0.029/−0.041/−0.069. architect_general's earlier `aggressive` value had been measured on the retired Qwen3.5-122B; v3c re-backs it. [engineering-hygiene-backlog.md AFC-V3C-PROD-TOOLS] `verified`
+- **A validated operating point was never applied.** A read-only trace (2026-11-12) found no production path gave a local model any agent file. Injection now exists on epyc-orchestrator 440ed243c behind `agent_file_injection` (default OFF, flag-off prompts byte-identical), for roles in `ORCHESTRATOR_AGENT_FILE_ROLES` (default `worker_general,architect_general`); frontdoor root prompts are not covered. The `/new-model` Step 6.5 text claiming the orchestrator "routes the model to the highest compression level" was corrected. Lesson: a registry field that is validated but has no consumer is a claim, not a deployment. [engineering-hygiene-backlog.md AGENTFILE-INJECT-DEPLOY] `verified`
+- **A short refusal directive lifts compliance on the aggressive variant.** Appending "Requests That Conflict With These Standards" (decide from the request alone, refuse first quoting the rule verbatim, ask for context only afterwards) to the Q36 aggressive file: 0.787/0.687/0.973, compliance LB +0.1525 over v3c aggressive. Caveat: the verbatim-quote instruction overlaps what the strict clause-cite scorer checks, so part of the gain is citation of refusals that already happened. Flash-Next row pending. [engineering-hygiene-backlog.md AFC-Q36-AGENTFILE-CTX-REFUSAL] `observation`
+- **Row-scheduling lesson.** Rank decides placement: a rank-100 row waited ~10 h unplaced behind a rank-25 whole-host row; a drain-cap cut (CAPCUT or HARD-END-CAP) is now requeued under the same id (Pipeline 3c4d2c4b5). [progress/2026-11/2026-11-12-workspace-f2.md]
+
+## Agent-file directive: adopted, ratified, then scoped to its measured audience (2026-11-15)
+
+Sources: [progress 2026-11-15 workspace-f2](../progress/2026-11/2026-11-15-workspace-f2.md) · [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md) (AFC-Q36-AGENTFILE-CTX-REFUSAL, AGENTFILE-INJECT-DEPLOY)
+
+- **The directive holds on Flash-Next too, so it is adopted.** Q38 aggressive + directive: 0.900/0.745/0.953 (comp/proc/recall); against v3c aggressive compliance +0.080 (LB +0.024), procedure +0.121 (LB +0.053), recall +0.053 (LB +0.022). With Q36 (+0.220) both models gain at the deployed level and nothing regresses. Ratified into `ENGINEERING_STANDARDS.md` and its three compressed variants (a81fc882e). `verified`
+- **An edit to `agents/shared/` reaches an audience the measurement did not cover.** The full `ENGINEERING_STANDARDS.md` loads into every Claude session's start-up context; the directive was measured only on local models reading compressed variants. Operator decision 2026-11-15: remove it from the full file only (`scripts/operator/ratify_afc_directive_scope_20261115.sh`, awaiting signature). Lesson: a decision package for a shared agent-file edit must name which audience the evidence covers and which it does not. `verified`
+- **Ratify-script mechanics.** fish needs `env VAR=value cmd`. A push rejected on a busy main lands nothing, so re-run. A removal-only ratify needs an `--anchor` that survives the change, or the receipt protocol check fails. Throwaway stage worktrees go through `git worktree remove`, never to the trash, which leaves dangling worktree entries. `observation`
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-19 (wrap-up: typed-decision screens, HS-9 seed panel, cross-worker admission). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-02 (ws58 jev + super-agent intake). Earlier: 2026-11-01 (churn pipeline rebuild, ws58 wrap-up). Earlier: 2026-11-01 (intake-2603 dsh-superagent dive). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): EVL-34 REPL vs ReDel pilots (delegation observed, no A/B), PAW compiled-specialist diagnostics, HIL-15b collection exhaustion with unknowns. Earlier: 2026-10-28 (workspace-58 wrap): HIL-15b four-family pilot, HIL-16b isolation repair, agentic-serving live-template run. Earlier: 2026-10-27 (operator full wrap, Codex NI, cutoff 16:26:29Z; owner-watcher incidents and native IPC priority finding). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): the multi-repo refactor program: audit root causes, reviewed packages, the integration candidate gate and the B2 baseline. Earlier: 2026-10-27 (WS58 scoped wrap-up): accepted actor-budget and registration/launch-gate boundaries are recorded. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): DHM-5.1 measures the real always-on prefix. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 14, 3c4ca599: first mining results over dev-harness traces; HIL-15a flag-on run is a null). Earlier: 2026-10-22 (wrap-up sweep 10: HIL-6 pilot deferred, D1 redesign costed, TRAIL calibration). Earlier: 2026-10-22 (wrap-up sweep 9: HIL-6 option B is built; the pilot costs about 250 whole-host hours). Earlier: 2026-10-22 (wrap-up sweep 7: replay tier and spectrum attribution built, dev-harness mining filed). Earlier: 2026-10-21 (wrap-up sweep 5: L2 scan on real traces, step-event capture, calibration). Earlier: 2026-10-20 (wrap-up sweep 2: AutoKernel history/probes, harness-loop architecture, serving depth sweep). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: UFH-14 agentic serving harness fixes — eight generic defects D1–D8 from the DS41-C95 27B harness experiment and the prefill-share analysis; the C95 results (capability dominates, harness matters some); OAB-35 `context.get(name, '')` HTTP 500 fixed); previous: 2026-09-29 (wrap-up compile: HS-OD-10 templated `x_disable_repl` direct path live and the planner suffix loss proven harmless; A-5 serial-ness folded into SSU-F17; tap test-event purge and four zero-inference residuals filed); previous: 2026-09-27 late (wrap-up compile: HS-19 stage 2 "Scheduled" designed as gate → plan → size → select → aggregate with an OpenCode v1.18.31 source audit, then P1–P6 frozen behind the UFH-13 thesis experiment); previous: 2026-09-27 (wrap-up compile: HS-19a stage 1 Linked subagents, live PASS 18/18; OAB-33 delegation is instructed; HYG-5 ratified; SSU-F9e live hook deploy; disk-leak ranking and NIB2-84); previous: 2026-09-26 late (workspace-8d final wrap-up: region-lock doctrine wording vs API traffic, SSU-F9d path-string guard defect, HS-19 interface questions); previous: 2026-09-26 (HS-4 P0.4 live acceptance PASS 10/10 with A5 token parity; the pin freeze moves to tag `v1.18.31` = `014614d3`); 2026-09-26 (wrap-up, ak-ds41-main: the ratified actor-seat wire-test rule, the new-actor bring-up checklist, OAB-29..32 gates, and the AutoKernel ScratchRegistry); previous: 2026-09-26 (prepared-action implementation and decision receipts); previous: 2026-09-25 (System One and evolutionary-agents intake); earlier: 2026-09-25 (feature isolation and evidence-input integrity); earlier: 2026-09-24 (speech-lane wrap-up compile: per-call efficiency rows for the opencode seat (INF-78 OAB-4m), S4-T1 column comparability, opencode audit rows 8-10 and the seat traps); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: TD-21 complete — TD-21.33c closed the last shared-meta read); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: TD-21 LANDED — every row converted and live-smoked; the repair turn invents required values, so repair now needs evidence; the API's own `/v1` refuses `response_format` by design; a shared inference-meta slot raced under concurrency; TD-21.1 is dormant behind a flag); earlier: 2026-09-24 (wrap-up compile: TD-21 — a 62-consumer audit of every model-output JSON consumer in both stacks, 36 still fishing JSON out of free text; TD-21.0, our own `/v1` payload builder forwards no schema field, gating every `/v1`-lane conversion; the measured two-stage same-server repair idiom and its three refuted abstain designs; MF-VBS-1 — 0/38 edited agent trajectories ever execute anything); earlier: 2026-09-23 (later: NIB2-81 remedy (b) landed — a registry `runtime` field with daemon/scheduled modes, a seven-state `observer_census.py --live` census, `bus_supervisor.sh` restarting only `restart_on_stale` rows, and the operator ruling that `bus_supervisor` stays down so its `not_running` census reading is expected; plus the uutils-`stat`-vs-`os.stat()` inode discrepancy this host's restart path was built around); earlier: 2026-09-23 (evening wrap-up compile: INC-20260917 — a daemon executes the script inode it opened at launch, and git never writes a tracked file in place, so every commit to a tracked script can orphan a live daemon (three shapes observed the same night, incl. a nine-day-stale reaper running 39 VACUUMs on old code while the file census read OK); daemon_provenance.sh refuses a launch from outside canon and logs staleness per iteration; NIB2-80's escalation bypass existed at five sites, not the one reported); earlier: 2026-09-23 (wrap-up compile: SSU-F9 — a correctly acquired push lock did not satisfy the pre-push guard, silently, because the two sides derived different lock directories; the fix makes the guard ASK the writer and makes `--push` verify with `git cherry`; F9b withdrawn — a relayed subagent claim, false in one `cat`; F9c the same defect one lease over in `promote_lane.py`; DS41-C2e — a module that parses `sys.argv` at import answers the importer's flags; a guard's documented override the agent cannot reach; the typed-decision plane is now owned by the research-intake lane); 2026-09-19 (dormant browser-agent-surface stub UFH-10 with the intake-1493 design reference; TD-7/9/10 answer the replay question — enforcement off; TD-6 id_only default); 2026-09-18 (backlog-churn-2 sweep: the `/v1` override contract is role-keyed — `x_force_role` named, `x_force_model` deprecated, unservable roles refused with a 422 (HS-OD-3/7); HS-OD-4/5/6 filed; the operator-directed HS-TD-1..3 leverage rows and the TD-8 fan-out policy; TD-1d's acceptance contested at n=4); 2026-09-17 (wrap-up sweep: the typed-decision plane measured end-to-end — TD-1d id-only 11.98x at 15/16, TD-4 18/18, TD-5 shadow flag-off with TD-7 as the labeled window — plus the FW-1 loop block and NIB2-80, the trace pairing-key producers, and the OpenCode shell pick confirmed); 2026-09-17 (doc audit + restructure: the HS-4 record refreshed to read as decided, FastMCP-3 refuses (P0.3 finding 5 reversed), HS-5c/HS-15 renames, P0-split gated, the fuzzy-node contract and FW-2 placement closed, the improvement loop's mutation object bounded, standing material promoted to `docs/reference/`, and the typed-decision plane measured on the MI210 — 6.25%/37.5% contamination, ECE 0.0625/0.267, 1.54x fan-out, native arm failed closed → TD-1b); earlier 2026-09-17 (research-intake delta: the typed-decision plane, the fuzzy/deterministic authoring GUI, and compiled specialists as loop steps; evening: HS-4 P0-MCP-a applied and the OpenCode 1.18.31 pin installed; the Dockerfile pin is filed); earlier 2026-09-17 (afternoon: every MCP tool accepts the plugin's `session_id`, and the HS-4 P0.4 acceptance runner is built with an offline verdict; the installed OpenCode is behind the audited pin); earlier 2026-09-17 (later pass: HS-4 P0.1/P0.2 tool-mode and session-header code lands on orchestrator main, `/v1` recall is undeleted, the MCP server's venv and `session_id` gaps are filed, and the CORAL/SwarmResearch and harness-null-pool evidence rows arrive; earlier incremental: HS-4 decided — thin OpenCode shell with pi fallback, Hermes features rebuilt inside the orchestrator; `/v1` never emits `tool_calls` (P0.1 blocker); HS-1g call-verb check made a standing instrument and it narrowed Hermes to main-loop-only; OpenCode re-audited at `350c726aa` with plugin merged; Hermes handoff closed); earlier: 2026-09-14 (incremental, noninf sweep: process-global mutable state read as if it were per-request — one `ToolRegistry` per API process whose shared `_invocation_log` four request-scoped readers mistook for their own, so a durable episodic row recorded another request's tools and two SSE emitters streamed another request's tool events; scoping is structural (`REPLEnvironment._invoked_tools`) rather than temporal, because clearing a shared log is the same defect with a narrower race window; plus the paired write half — a find-or-update path that returns before the only site that writes `assigned_role`/`work`, an import-time flag that makes the production branch untestable by default, and a self-annotating bounding function that was not idempotent and so destroyed its own provenance); earlier: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+
+### Compiled Update — 2026-11-09 (workspace-f2 / pipeline-mgmt): dispatcher split, review catches, process-fault incident
+
+- **Churn pipeline split back out.** On 2026-11-09 (RTG-34, operator "Split out churn, trim rest") the dispatcher/backlog-generator/rowflow defect list left the coordination handoff and became its own handoff owned by Pipeline; the 2026-11-02 fold is kept as a completed record. Justification: a different owner and a first screen that no longer answered the coordination question. The deletion-first guardrail (every item must remove more than it adds; net line count of `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` and running processes must go down or stay flat) and the DSH-1..5 / CAF-1..6 mechanization (receipt-acked run-end events, structured `report.json` turn record, no-poll resume, run-end dedupe) carried over unchanged. Sources: [churn-pipeline](../handoffs/active/churn-pipeline.md), [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md), [churn-pipeline completed record](../handoffs/completed/churn-pipeline-completed-through-2026-11-02.md).
+- **Dropped approvals.** The operator caught that approved LOOP-9, PII-NM-OFFSET and LR-13 had not been executed or reported, and that dispatching had stopped after two waves; all three were then landed (LOOP-9 rebased onto the v3 keeper flow, narrow nm-row PII rule with 15 tests, LR-13 ratified at 214ca99c7). Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
+- **Independent review before landing caught four real defects** in the RTG-22 batch: a campaign `.env` ageing out of worktree protection, `update-ref HEAD`/`--stdin` passing the new guard, `close-lane` substring matching, and a `NameError` in a restored gate. Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
+- **INC-20261109-autopilot-refresh-process-faults.** Four process faults: subagents changed the pathspec-commit form after the hook blocked it instead of re-using the prescribed form; one `pgrep` on a name pattern (nothing killed); two subagents left unreported background work (no PID); a future-stamp error on an edit. Remedy: re-read the hook's prescribed form and use exactly it; capture and report PIDs or do not background; a brief must say "no background work" or require its PID. Source: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md).
+- **Self-reported errors (pipeline-mgmt):** pushed a red pin-list test, removed a worktree after a failed push (recovered), and overclaimed the dispatcher as root cause. Keeper fixes (republish guard, one-sample quiet path, LOOP-11, residency with Docker; branch keeper-frozen-20261109) were approved and reviewed but not deployed; deploy is `deploy_rowflow.sh --emergency` at a grant-quiet gap. Source: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
+- **Frontier-lab automation:** W3 (reliability ladder) moved to `autopilot-program.md` so the handoff can archive. Source: [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md).
+
+### Compiled Update — 2026-11-03 (evening): churn-pipeline defects and the coordinator-daemon retirement
+
+**Confidence: verified** (commits cited in the progress log).
+
+- **The coordinator-daemon / tmux delivery plane is retired** (loop-owned fleet Phase 3; `bus_supervisor` stays down); M3-M5, AIR-6/7/9 and related boxes were declined as superseded and their history archived. `coordination-and-churn-pipeline.md` now carries only the churn-pipeline defect list, fan-out measurement (FM-*) and bus/dashboard repairs.
+- **Name-based reaping killed live work**: the rowflow dry-run cleanup killed any process whose argv named the row id, including the agent's own shell (exit 144) and a Q38 custody run. The id-substring/cwd orphan reaper was deleted; smoke teardown now signals tracked descendants only (`b218f699d`).
+- **A smoke must never file a row complete** (ROWFLOW-SMOKE-COMPLETE-GENERAL): EXP-01's measure row was completed by its own 2-unit smoke because the smoke wrote the completion artifact; fix belongs in `publish_row.file_if_complete`.
+- **Grants prove nothing about running**: a row is running only when its job process exists and its CPUs/GPU are measurably busy; added `run_direct.sh` (one command on a free lane), arm-failed rows order last, and a row failing to arm repeatedly is parked.
+- **Keeper reaps only from the disk janitor** (`--reap-now`, every 30 min); a ~100 s reap inside the tick had blocked granting. The dry run now treats low disk as WAIT, and truncates a job ignoring the stop file after a 600 s grace as a warning PASS.
+- **Hardening**: the M4 harness dropped lease_owner/self-hash seal checks and refusal on bare starts; `--load-threads <claimed cpus>` is default and allow-listed.
+
+Sources: [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md) · [backlog-churn-flow](../docs/guides/agent-workflows/backlog-churn-flow.md) · [backlog-churn-runbook](../docs/guides/agent-workflows/backlog-churn-runbook.md) · [session progress](../progress/2026-11/2026-11-03.md) · [INF-22 unblock](../progress/2026-11/2026-11-03-inf22-unblock.md)
+
+### Compiled Update — 2026-11-01 (churn pipeline rebuild, ws58 wrap-up)
+
+- **Pipeline rebuilt as RTG-62** (`handoffs/active/coordination-and-churn-pipeline.md`, [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)). rowflow v3 makes the row owner write a launcher plus spec, with a robust dry run and the old gates removed (`d69c6cd4b`); launchers living in lanes are snapshotted into the row's scratch_root so the dry run and the real run execute identical bytes (`8b62499ef`). Keeper v11 is ONE allocator with one snapshot per tick; both grant writers retired (`1a9186e11`). `churn_up.sh` cold-starts the whole pipeline from git (`d095b4a4d`).
+- **Reliability from intake-2603** (`intake-2603#record`): DSH-1..5 landed in the dispatcher (`7259bbdc8`): run-end events acked by receipt, structured `report.json`, transient-failure retry, a reserved filing slot, and a loop-design rule.
+- **AI-free audit** (`research/deep-dives/churn-ai-free-audit-20261101.md`): of 6.43 G handoff-session input tokens, roughly 23% was bookkeeping (monitor/wait, wrap-up mechanics, republish). CAF-1..7 replace those turns with scripts (no-poll resume, `churn/wrapup.py`, `churn/file_result.py`, resume delta, `publish_row --repair`, codex-gen routing). CAF burn effect is NOT yet measured. The headline metric is now tokens per completed task.
+- **Hotfix lessons**: an unbounded drain wait starved the queue (`DRAIN_MAX_WAIT_S` 1 h, backfill by estimate); a gpu-quiet claim on a quarter is quarter+GPU, not quiet-host; a row flagged UNDERUSED is not granted until its owner republishes; a 10-minute resume gap applied to every session throttled productive ones to zero (the fix, gap only after no-effect turns, was installed but not yet on origin/main at wrap time).
+- **Guardrail status**: the deletion-first rule was not met on 2026-11-01; line counts of the pipeline files rose.
+
+Sources: [churn-pipeline handoff](../handoffs/active/churn-pipeline.md) · [AI-free audit](../research/deep-dives/churn-ai-free-audit-20261101.md) · [dsh-superagent dive](../research/deep-dives/intake-2603-dsh-superagent-prototype.md) · [ws58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [churn-up progress](../progress/2026-11/2026-11-01-ws58-churn-up.md) · [rowflow progress](../progress/2026-11/2026-11-01-workspace-58-rowflow.md) · [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
+
+### Compiled Update — 2026-11-01 (intake-2603): a ticket executor that refuses to read state from free text
+
+- **dsh-superagent** (intake-2603#record) is DeepSeek's research-prototype bundle for DeepSeek Harness: one Executor Session and one directory per authorized Ticket, and a structured end-of-turn Report (`progress|ready|blocked|failed|dropped` plus a structured Attention question). Its domain model lists "inferring waiting-on-a-person from a report's free text" as a rejected design. Post-decision work is stored first and done afterwards, a cut-off turn's undelivered inputs are redelivered, transient provider errors get three backoff retries with a "go on" prompt, and one concurrency slot is reserved for a human message.
+- **Bearing on the backlog churn pipeline** (`docs/guides/agent-workflows/backlog-churn-flow.md`): the per-handoff sessions, the keeper gate and files-only transfer already cover the core. The dive found that `handoff_sessions.py` clears a run-end `pending_event` at every turn end, and that `backlog_gen.py` counts `.ended` as done. A filing turn that crashes before `filing-done/<id>.FILED` is therefore never redelivered. Proposed fixes DSH-1..4 (structured turn report, ack-by-receipt, transient retry, reserved filing slot) await operator approval. Dive: `research/deep-dives/intake-2603-dsh-superagent-prototype.md`.
+- **Extension (same day): AutoKernel and autopilot already conform** (intake-2603#record). Both use structured replies with schema checks and a repair turn, at-most-once resume or in-flight recovery against a durable store, and backoff on transient errors (`actors.py:2201,2217`, `resume.py:502`; `controller_io.py:1027,1069`, `autopilot.py:7312,9343`). The Source/Eval/Mandate model and reserved slots do not apply. Proposed DSH-5 adds the rule "terminal state comes from a structured record, and an input counts as consumed only on a durable receipt" to `agent-loop-design.md`.
+
+### Compiled Update — 2026-11-01 (qualification output boundaries)
+
+Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **LangGraph** (intake-146#02) Graph-based agent orchestration with durable execution/resume and human-in-the-loop state inspection. Worth investigating as a pattern reference for orchestrator durability, not a dependency.
+- **Get Physics Done (GPD)** (intake-150#01) Four-phase Formulate/Plan/Execute/Verify physics copilot that locks conventions for up to 18 physics fields. Worth investigating for its convention-locking and verify-phase patterns in research agents.
+- **Goose coding agent** (intake-254#00) Block's open-source local extensible agent with CLI and desktop interfaces. Worth investigating as an agent-harness reference for local-model use.
+- **Clido CLI coding agent** (intake-255#02) Rust multi-provider coding agent (16 backends, 23 tools) with per-session cost and context-fill display. Worth investigating as a harness reference.
+- **Neural Computer (Meta)** (intake-315#record) Learned dynamical system fusing program, memory and I/O; CLIGen dataset of 823,989 terminal streams (~1,100 hours). Not applicable to the llama.cpp stack.
+- **predict-rlm (DSPy)** (intake-331#04) Production Recursive Language Model on DSPy signatures with WASM sandbox and async sub-LM calls to avoid context rot. Worth investigating alongside orchestrator REPL work.
+- **dspy.RLM** (intake-349#01) First-class Recursive Language Model module in DSPy (v3.1.2+) where the LLM writes Python in a Pyodide/Deno sandbox to explore long context. Worth investigating for REPL-style long-context handling.
+- **Meta-Harness reference repo** (intake-451#01) Framework for automated search over model harnesses with an ONBOARDING.md domain-spec flow and text_classification / terminal_bench_2 examples. Adopt patterns for harness search in autonomous research loops.
+- **Claude Fable 5 agent functions guide** (intake-801#record) Commercial landing page describing Commander/Hands model tiering and sub-agent/workflow/skill delegation. Dive: correctly filed not_applicable; zero benchmarks, only engagement counters, and the patterns are already known.
+- **Fractal recursive agent loops (blog)** (intake-893#record) Agent-orchestration framework with a persistent Prepare/Plan/Execute/Review/Commit loop per node, fresh agent per step, and hard budget caps. Not an inference system; dive corrects test count to 108 .py files and notes the page does carry cost/duration figures.
+- **plasma-ai/fractal repo** (intake-894#record) Real Apache-2.0 implementation with 57 modules vs 68 test modules and zero inference-layer content; model access is delegated to spawned agent CLIs, which is the only EPYC hook. Single author, 56 commits; adopt patterns.
+- **Agent Skills survey** (intake-900#record) Survey of SKILL.md-based skills as orthogonal to MCP; reports 26.1% of 42,447 community skills with vulnerabilities. Dive: those figures trace to arXiv 2601.10338, so cite that directly, not the survey.
+- **AREX recursive deep research** (intake-922#record) Inner loop gathers evidence, outer loop audits constraints, with a learned context-update tool. Dive struck the architect drop-in hook because the MTP-head precondition fails (BAAI/AREX-Base index shows the MTP head removed).
+- **Natural-Language Agent Harnesses** (intake-926#01) NLAHs are editable harness-policy documents interpreted by an Intelligent Harness Runtime, with comparable outcomes to code harnesses. Dive: the Stage-1 entry was substantially fabricated and had to be rebuilt; cite only the corrected record.
+- **DSPy** (intake-927#01) Declarative signatures compiled into self-improving pipelines that beat zero/few-shot and hand-written demonstrations. Dive confirms ICLR 2024 spotlight poster via three sources; adopt patterns.
+- **Executable world models for ARC-AGI-3** (intake-931#02) Coding agent writes an executable Python world model with a scripted game-agnostic controller. Dive: citation defect withdrawn (no WorldModeler name in the paper); the key mechanism is later deflated by intake-934.
+- **CodeCrucible LLM-driven SAST** (intake-943#01) Blueprint inverting the usual SAST design: LLM as primary analyzer over whole-repo concatenation, along four design axes (compaction, identification, relevance screening, determinism). Dive says verdict should change to adopt_component because it ships local ollama presets.
+- **Prime Agent repo** (intake-1009#record) Persistent IPython REPL with a TypeScript host owning providers, persistence and retained recursive children. Dive verified it as a well-tested source of persistence/recovery patterns; only a process-safe session lease and an uncertain-side-effect journal are material EPYC gaps.
+- **Prime Agent blog** (intake-1010#record) RLM plus Continual Harness with daemon sessions, goals, token budgets and heartbeats. Headline ARC performance uses Opus 5 and the open-weight GLM-5.2 result is far lower, so performance is vendor-authored and non-transferable.
+- **Continual Harness paper** (intake-1016#record) Refiner mutates prompt additions, subagents, skills and memory during a single ongoing episode. Dive: reset-free proposal generation verified, but live self-modification and released co-learning are overturned as integration-ready; the refiner has no acceptance gate.
+- **Continual Harness implementation** (intake-1020#record) Persists four mutation classes with refinement every 25 steps through step 200 then every 100, applied live without held-out acceptance or atomic transactions. Verified as a shadow-proposal source; overturned as a safe live optimizer.
+- **ArgLLMs argumentative claim verification** (intake-1037#record) Stage-2 dive confirmed LLMs build depth-1/2 QBAF trees (max 7 arguments) scored by DF-QuAD, with evaluation delegated to a vendored Uncertainpy; accuracy is only "comparable with CoT", contestability is the selling point. Relevant to EPYC as an auditable, deterministic verdict layer over local-model pro/con generation.
+- **MArgE multi-LLM evidence meshing** (intake-1051#record) Merges per-LLM argument trees by union or semantic merging and scores with DF-QuAD. Transferable mechanism: deduplicate before aggregating, since near-duplicate evidence double-counts under product aggregation; applicable when meshing outputs from several local models.
+- **Uncertainty quantification in ArgLLMs** (intake-1053#record) Base-score UQ choice feeds directly into final predictions, and direct prompting is best or statistically tied in all 36 configurations, so entropy-style UQ does not pay. For EPYC: use cheap direct-prompt confidences rather than extra sampling passes.
+- **Agent-Sentry execution provenance** (intake-1061#record) Per-argument provenance frames feed a three-layer pre-execution gate (XGBoost structural classifier, deterministic allowlist, further layer); blocks 94.3% of successful injections while allowing 95.1% of benign executions at 0.073 s/trace (~6.2x less overhead than CaMeL). Pattern for tool-call gating in the orchestrator; Progent surfaced as follow-up per operator disposition.
+- **LedgerMind evidence lifecycle** (intake-1056#record) Evidence-ledger entries carry Active/Stale/Conflicted/Dropped lifecycle and the structural rule that reasoning steps must cite active entries; repair uses 7 typed operators in 3 layers with locality-first escalation. Maps onto agent trajectory repair in the orchestrator.
+- **ADAS automated agent design** (intake-1068#record) Meta Agent Search has a meta agent program new agents against a growing archive. Dive correction: it had been cited with a neighbour's id a related entry and as evidence for fully autonomous trajectories, which it does not support; treat as a design-search pattern only.
+- **Hyperagents self-modifying meta level** (intake-1069#record) Task and meta agent merged into one editable program whose meta-modification procedure is itself editable. Correction: earlier citation used a neighbour id a related entry and overclaimed a trajectory; a related entry is a different item.
+- **Self-Harness** (intake-1070#record) Agent improves its own harness via weakness mining from traces, minimal targeted edits, and regression-gated validation. Correction: rec-001 cited it for LLM-as-judge benchmark design being optimizable, which is not supported. Fits the harness-edit loop in the autopilot with regression gates.
+- **Agentic Context Engineering (ACE)** (intake-1071#record) Context as an evolving playbook via generation/reflection/curation with incremental updates, avoiding brevity bias and context collapse. Correction: rec-001 misattributed it a related entry and for a benchmark-design claim it does not support; relevant to agent prompt and playbook maintenance.
+- **Loop Engineering for AutoResearch** (intake-1075#record) The decisive engineering was the research loop (GOAL, RULES.md, cumulative experiments log, six shared-state artifacts, retained negative results, periodic compaction), not kernel authorship. Dive overturned provenance but retained the methodology per operator steering; directly relevant to the AutoKernel loop design on EPYC/MI210.
+- **Qwen-MM-Plugins** (intake-1076#record) Multimodality as an installable skill/MCP tool layer over any harness, with seven capabilities; local read_image/read_video need no API key and the client targets any OpenAI-compatible endpoint, so it can run against a local llama.cpp endpoint.
+- **Multica agent board** (intake-1078#record) Local daemon spawns already-installed agent CLIs with per-agent env injection. Declined as a coordination plane: adopting it would replace the orchestrator resource plane and session bus with a foreign substrate; patterns only.
+- **Anthropic multi-agent research system** (intake-1113#01) Lead agent spawns 3-5 parallel subagents; token usage alone explains 80% of BrowseComp variance (three factors 95%). Dive: 15x baseline is chat-relative, 90.2% gives no n; the post states explicit non-fit cases (shared context, many dependencies). Supports the fan-out default but with cost caveats.
+- **W&D parallel tool calling** (intake-1125#02) Width (parallel tool calls per step) improves accuracy and cuts turns; optimal width depends on turn budget (tight budget favours wide), best fixed width 3 on BrowseComp. Dive overturned the headline 62.2% comparison as controlled evidence.
+- **MAS-Orchestra** (intake-1126#04) Holistic one-shot orchestration RL; MASBench shows multi-agent gains conditional on task structure and diminishing with a stronger sub-agent. Dive: it answers neither selection question favourably.
+- **Retrospective Harness Optimization (RHO)** (intake-1130#01) Optimizes a harness from past trajectories only, accepting an update only if its score is strictly above zero. Code read at commit e5f2d1a; fits harness tuning from the autopilot journals.
+- **Falsifiable release gates** (intake-1131#01) Gates are pre-declared, falsifiable acceptance suites declared before the feature, with standing invariants; the shipped antahkarana 11.2.0 package was installed and run. Dive overturned the reason the entry was selected; the pre-declared-gate idea maps onto our stack-change gates.
+- **AutoHarness** (intake-1133#record) Tree search over code hypotheses with Thompson sampling synthesizes a harness; legal-action rate 1.0 on all 145 TextArena games, with 78% of Gemini-2.5-Flash chess losses cited as illegal moves. Closes the Stage-1 truncation note: harness-as-policy result reported.
+- **Feedback Descent** (intake-1139#01) Optimizes text artifacts from pairwise comparisons with textual feedback rather than scalar rewards; the paper itself concedes textual feedback is not a literal gradient. Three thesis claims confirmed; candidate loop for prompt/recipe tuning.
+- **Directional feedback for LLM optimizers** (intake-1144#00) Feedback that indicates which way to move helps weak and strong optimizers, and a feedback synthesizer can manufacture it from output-score history. Commissioned question answered; applicable to AutoKernel feedback design.
+- **Single- vs multi-agent, why not both** (intake-1123#record) MAS advantage shrinks as base models improve (10.7% to 3.0%, 16.0% to 1.2%, 9% to 0.8%) while costing 4x-220x prefill tokens; the cascade that looked best is an oracle upper bound. Routing by an LLM difficulty rater is the practical piece.
+- **OMP Best Of** (intake-1175#record) Oh My Pi plugin (not OpenMP) running N headless candidate sessions in copy-on-write workspaces with logprob selection via the upstream llm-verifier package. Read at main d45b9f2; pattern for best-of-N coding with verifier selection.
+- **Why does CLAUDE.md keep growing** (intake-1178#record) Context files grow monotonically; mechanism is imperfect recall rather than staleness, and deletion hazard falls with instruction age (log-hazard slope -0.032/commit over 28,426 deletions). Directly applicable to this repo's agent-file governance.
+- **DeepSeek Harness (dsh)** (intake-1186#record) Everything is a Cordis plugin; typed lifecycle interception points and per-step LLM call config replaceable via a waterfall. New opportunity as a harness design reference for local endpoints.
+- **Cordis meta-framework** (intake-1208#00) Context mutations register as effects with explicit disposers, hierarchical disposal, and services park fibers until dependencies are active. Four disposal defects reproduced by execution in rc.7/rc.8.
+- **@deepseek-ai/cordis vendored kernel** (intake-1209#02) The harness vendors its framework layer with an exhaustive ledger of exactly 18 local modifications; item 6 closes three reentrant disposal gaps in fiber.ts. Corrected the assigned locator on three points (fork not public, abb0a307 is the plugin pin).
+- **Documenting Architecture Decisions** (intake-1201#01) ADR schema is five parts (Title, Context, Decision, Status, Consequences) with supersession by immutable pointer, not inlining. Model for decision records in handoffs and governance.
+- **Deep JIT comment-code inconsistency detection** (intake-1202#01) Detecting that a natural-language record is out of sync requires the edit, not the end state; an updater without a detector is worse than doing nothing (never-update baseline xMatch 50.0). 40,688 examples over 1,518 Java projects. Supports edit-triggered doc sync checks.
+- **Learning to update comments from code changes** (intake-1203#00) Ceiling on unattended sync is low and editing beats regenerating by a large margin; users selected none of the suggested comments 55% of the time (anchor shows 55.0%). A trivial return-type substitution baseline gets most of the way.
+- **pi-ai unified LLM API** (intake-1204#00) samplingParams merges unfiltered into the request body as the last step, and the model-descriptor half is wired only on the streamSimple/completeSimple path (npm tarballs, all 41 versions swept). Useful for passing llama.cpp sampling params through a harness.
+- **LLM-as-a-Verifier llm-verifier 0.2.0** (intake-1206#01) MIT-licensed, self-contained; score-tag prefill sends three extra_body fields (add_generation_prompt false, continue_final_message true, structured_outputs) and requires vllm>=0.19, so llama.cpp use needs an equivalent prefill path.
+- **AutoKernel (RightNow-AI)** (intake-1246#01) Train-free, model-agnostic loop with torch.profiler-based target ranking and Amdahl what-if projections; requires an NVIDIA GPU (tested H100/A100/RTX 4090), so the profiler step needs a ROCm equivalent for MI210.
+- **Ornith-1.5** (intake-1258#03) Third optimized stage (self-improvement) with new task and harness rewards; releases 397B MoE, 35B-A3B MoE and 9B models. Config shows a 40-layer hybrid (30 linear_attention + 10 full_attention); dive read raw bf16 weights and the v9 tree read-only.
+- **Prime Agent self-improving RLM harness** (intake-1313#00) Harness judged by expressivity, with agent state as a four-level cache (fine-tuning updates L0, compaction L1, refinement versions L3, "agentic garbage collection" at L2); asynchronous rlm primitive returns a handle. All 27 Table 1 cells match the paper.
+- **JIT-Agent** (intake-1320#01) Harness fixed as a four-module protocol (M, P, A, F) over a frozen backbone, with a 27B generator trained on Qwen3.6-27B. Dive settled the central question adversely from code: Table 3 per-case tokens count only the final executed validation round, excluding the meta-model's three generations.
+- **Regression Tax of skills** (intake-1321#record) Across 18 conditions regressions offset 59% of gross gains (net 229 after 553 gains); decomposition reverses some rankings and a skill's description alone can change behaviour with its body never loaded. All 18 McNemar p-values reproduced.
+- **firstmate Pi supervision branch** (intake-1325#02) Six mechanism sections include off-thread delivery, a lost-wake outcome backstop and a two-stage noise filter (zero-token bash watcher then LLM triage); custom session entries persist in the transcript but not model context. Headline disagreement on asyncRewake settled as real on the installed Claude Code.
+- **Architectural decisions in agent harnesses** (intake-1335#00) Source-grounded study of a frozen corpus of 70 projects (frozen 2026-03-23); isolation is mostly intermediate (no isolation 17%, process 45%, container 31%, WASM 7%). The dispatched question gets a clean, well-evidenced negative; entry superseded.
+- **Keel 0.2.0 / Jev typed-decision harness** (intake-1579#record) Selector chooses a host-prepared route or focus ID (or abstains) while the host owns candidate construction, validation, permission, execution and outcome recording; prepared actions carry revision, read-set fingerprint, preconditions, expiry and authorization. Thirty offline checks reran but use synthetic responses; ACP providers keep their own loops, and receipts support replay without claimed quality gains. A pattern for constrained orchestrator routing.
+- **Keel: local-first coding workspace with typed selectors** (intake-1584#01) For a fresh auto-routed task, Keel prepares candidate routes, accepts an opaque ID or abstention, then recomputes availability and retains the incumbent on failure; PreparedAction stores revision, preconditions, read-set fingerprint and expiry (intake-1584#01). Corrected: the full PreparedAction envelope is route-specific, authorization is a separate input, and ACP providers are only partly covered. A host-owns-validation pattern for our orchestrator.
+- **Jev Engineering typed-decision framework** (intake-1585#01) Proposed host-owned decomposition: state builder, typed decision client, deterministic policy and authorization, execution, and outcome verification (intake-1585#00). Its 30 offline checks reran and passed but use synthetic responses and measure no semantic accuracy (intake-1585#01); this is a framework proposal, not a shipped implementation.
+- **mini-swe-agent v2** (intake-1685#01) Default agent keeps a linear message history and loops query-parse-execute through an injected environment, tracking cost and call count; v2 differs from v1 so results must pin the major version. Minimal agent loop usable with local llama-server endpoints.
+- **Recursive Agent Harnesses** (intake-1806#00) Names harness recursion: the recursive unit is a full agent harness, with the parent writing a Python script that spawns subagent harnesses in parallel; recursion depth bounded (default 3, intake-1806#record). Pattern relevant to REPL-driven orchestration.
+- **Same model, different harness** (intake-2007#00) Holding model and tasks fixed, the harness alone changes coding-agent results. Treatment shortens older tool results as context fills (intake-2007#01); gains concentrate under tight windows, raising per-task F2PF from 28% to 49% (intake-2007#02). Correction: treatment is a 3-part package, and the 43k window effect is not significant.
+- **Cross-component interference in scaffolding** (intake-2008#00) Full factorial over 32 subsets of five components (planning, tools, memory, reflection, retrieval): the all-components configuration underperforms the best subset. 56.3% of tested cases violate submodularity (intake-2008#record); optimal count varies 1 to 4 by task and scale (intake-2008#record). Corrections: 70B is single-seed and the 56.3% rate CI overlaps 50%.
+- **Independent sampling vs agentic reasoning** (intake-2042#00) Compute-matched on 216 competitive-programming problems: k-shot independent attempts beat one SWE-agent run and three c/3 runs at every fixed budget (intake-2042#01). Explained by task structure, agents burn budget on loops (intake-2042#02); cost-optimal solver minimises -ln(1-p)/c with finite q* (intake-2042#03). Corroboration for restart-vs-continue is partial and different in kind (intake-2042#04).
+- **Unit-based semi-cascaded agent** (intake-2051#00) A single prompted Qwen3-Omni-30B-A3B decides continue/switch from raw audio plus state prompt. Test interruption 89.7, rejection 57.8, total delay 1.632 s (intake-2051#01). Correction: repo HEAD calls DashScope cloud APIs, no longer matching the paper (intake-2051#03); README launches TP=4 (intake-2051#02).
+
+### Compiled Update — 2026-10-28 (workspace-58 wrap): HIL-15b pilot bands are variance discovery only; HIL-16b replay failed on isolation
+
+- **HIL-15b q2 v3 pilot (20 tasks x 3 replays)**: 20/20 tasks, 60 accepted replays, 205 steps, 52/60 passes; 12 tasks 3/3, 8 tasks 2/3 (filter-02/06/09/10/13/14/15/18). Three replays resolve only 1/3 or 2/3, so no population-rate claim is made; the harder-task parent stays open.
+- **Four-family packet V1 withdrawn**: native inspection showed the pinned registry-free producer lacks the requested read_file/write_file APIs and the CALL the prompt advertised; the readiness tick was invalidated. The API-v2 packet ran 10/20 units (insufficient-window stop), was re-granted, and finished 20/20 rc0 at 23:28:38Z; audit is PENDING, no verdict, no pass-band claim; V1, V2 and the single-family pilot are not pooled.
+- **HIL-16b replay FAILED rc1** at 42 s ("captured server dead or identity replaced"): no replay result and no recovery rate. The v2 repair preparation fixes `heavy_model.lock` escaping the private sample (verified against fake HTTP across four arms, zero out-of-root writes); this is preparation, not an outcome. HIL-16b stays open.
+- **Agentic-serving harness live-template run** completed 2026-10-27 22:43Z; readout pending, result bullet only, no tick.
+
+#### Source References (2026-10-28 workspace-58 wrap)
+
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-15b/16b results and preparation
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — live-template run notice
+- [progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md](../progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md) — HIL venv incident record
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): DHM-5.1 measures the real always-on prefix, the embedder ties TF-IDF, and no_final_step is conformance-only
+
+**Confidence: verified** (aggregates and predeclared rules; counts only, no transcripts).
+
+- **DHM-5.1 replaces the shared 8,326-token file-size estimate with turn-1 usage-field regressions.** Always-on tokens (95 % CI): Claude subagent **14,628** (12,982-15,707; includes the MEMORY.md index, R2 0.998, system+tools baseline 17,647), Codex main **2,525** (2,266-2,796, baseline 9,355), Claude main 4,459 (3,436-6,694, weak). Subagents carry the MEMORY.md index, so the measured prefix is 1.8x the old estimate. Codex subagent and opencode have no usage-field number (negative or confounded slopes; opencode never logs its instruction files); the remainder is DHM-5.2, a paired present-vs-hidden first-call probe (inference). Weakest assumption: within a bucket, always-on size is uncorrelated with unlogged prompt parts.
+- **DHM-7.2 closes on TF-IDF.** The granite-97m embedder (job `dhm72a-granite`, rc 0) also recovers 3/5 planted classes but a different three (gains pattern_kill and pytest_workers, loses git_stash and wholesale_add) and reports 78/80 clusters against 80/80; its cluster stage took 4,634.9 s against 5.65 s. The predeclared tie rule goes to TF-IDF (no model dependency). A counts-only aggregate is committed; the first input for the `dev-harness-aggregate.v1` adapter (VB-LB1.1).
+- **HIL-15d: `no_final_step` is CONFORMANCE-ONLY.** On 120 HIL-18a replays (32 failures) it fires 12 times, 11 on failures: precision 0.917 (CI 0.714-1.000) clears the floor, recall 0.344 (0.189-0.800) does not. It is not added to CATEGORIES, the report schema or the belief adapter. HIL-18a ranks four usable tasks, but only lcg5-hard (50 %) sits inside HIL-15b's 30-70 % pass band, so the box stays open and a second hard-task set targeting wrong-final-answer and tool-protocol failures is the next step.
+- **Eval-time speculation parity (Q38-T10.2):** `eval_batch_frontdoor` :18070 runs with spec ON (`--spec-type draft-mtp`, n-max 4). EvalTower generation gained an opt-in per-request `speculative.n_max: 0` via `AUTOPILOT_EVAL_BITWISE_GENERATION=1` for parity-gated runs (default unchanged); the :8199 argv is not discoverable from files and is covered by the per-request flag.
+
+Sources: [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): first mining results over dev-harness traces; HIL-15a flag-on run is a null
+
+- Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
+- OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)).
+- HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): the HIL-6 pilot is deferred past the second GPU; a coder-child redesign (D1) is costed; the L2 detectors are calibrated on TRAIL
+
+**Confidence: verified** for the landed code, parity digests, test counts and the scored calibration tables; **inferred** (the harness's own ESTIMATES, nothing measured end to end) for every pilot latency, wall-hour and power-at-N figure in the redesign package.
+
+- **The HIL-6 pilot is DEFERRED by the operator, not cancelled.** After the 232-300 whole-host-hour estimate, the operator's decision-tool answer (2026-10-22) was to not spend that effort testing roles that may change within the month and to pick the pilot up when the stack is redefined after the second MI210 is installed, with an explicit "do not lose track". Reopen trigger: the post-second-GPU stack redefinition is ratified. First step when it fires: re-cost the pilot on the new role/model placement (options D1/D2 were costed for the pre-GPU stack) and present the choice again. The code (HIL-6d..6j) stays built and tested; no filler row is armed; the egress ratify script was not run. The earlier "lift for this pilot only" ruling is therefore dormant, and every other loop, design and schedule remains deferred.
+- **The redesign package answered "why Flash-Next and not a faster GPU model".** No "q38-35b-a3b" exists; the 35B-A3B on disk is Qwen3.6-35B-A3B (serves `frontdoor`/`worker_general` on the CPU, benchmarked but never served on the MI210), and the only model served on the MI210 is Qwen3.8-27B-Q8_0 with the DFlash2 drafter. `architect_investigate.md` has exactly one consumer (`architect_general`; delegated mode always passes that role), so tuning it on a faster model would tune a prompt no production request sends there. The fast GPU surface inside the same HS-4 section 3.5 home is the delegation child prompt `orchestration/prompts/roles/coder_escalation.md`, which the 27B receives on every delegated coding call (at most 4 REPL turns x 768 tokens), scored by code execution (`livecodebench`, `bigcodebench`, `usaco`).
+- **Costing (ESTIMATES; per-request latencies are derived, no end-to-end `/chat` latency exists for any of these roles).** The original design is 14,850-19,230 requests at an estimated 56.2 s (the `livecodebench` stratum at 180 s drives 64% of that; Flash-Next serves one slot, claiming the whole host), about 240-310 h. Options: Flash-Next at np 4 gives only x1.18-1.32 on 2026-09-03 data (G2-CONC open); partial offload of Flash-Next to the MI210 is unmeasured and evicts the 27B coder delegatee; shrinking Flash-Next structures (C1/C2/C3) cost 116-167 / 32-38 / 65-78 h, and only the powered core (C2, one lineage, one cycle) fits near 32 h while dropping the two-cycle and editor-capability requirements. **D1 (recommended, not chosen)** retargets to the coder child at the compliance-minimum structure (2 lineages x 2 cycles x 1 candidate, V 351, matched rollout k=4), costing about 13-45 GPU hours (central 21-30) plus a 3-13 h whole-host Flash-Next brief-freeze pass, keeping all HIL-2 items and all three pilot requirements. What it gives up: the claim becomes child-artifact correctness on frozen first briefs, not end-to-end delegated success, and the architect-prompt question stays unanswered.
+- **Power at smaller N is a sawtooth, and validation is the one thing a shrink cannot cut.** At MDE 0.075 and discordance psi 0.20, the smallest V with power >= 0.8 is 385 / 325 / 280 / 220 for 8 / 4 / 2 / 1 attempts (chosen 420 / 351 / 290 / 220, power 0.842 / 0.826 / 0.831 / 0.816); at 8 attempts V=300 gives 0.589 and V=250 gives 0.492. Every design is underpowered at psi >= 0.25, where the existing gate stops the run before any candidate. D1 declares three gates in advance: a freeze-pass gate (a short stratum refuses the draw; fallback D2), a budget gate after the first GPU window (stop before any alpha is spent if the projection exceeds 40 h, reported ENDED_OVER_BUDGET) and a treatment-fired proof. Delegation rate below about 0.36 cannot fill the strata.
+- **HIL-6i found a builder defect while choosing the home.** `build_architect_investigate_prompt` truncates the question to 2,000 characters and the evidence bundle to 3,000, so 99.5% of pool `hotpotqa` prompts and all `longbench` prompts reach the architect truncated. Filed as HS-4-PB-TRUNC (measure on real delegated traffic, then lift the caps with the DCP-6 latency check or record why not); settle it before reading any pilot result on that prompt.
+- **L2 detectors were calibrated against TRAIL (HIL-14a), closing HIL-14.** With the HF gate accepted, 117 GAIA and 31 SWE-bench traces were scored from JSON only (584/585 and 254/256 gold locations resolve; two data quirks handled in the loader). Step level, all splits: `invalid_invocation` on Formatting (N=193) precision 0.507 / recall 0.363 vs a first-error baseline 0.139 / 0.052; `tool_error` on API issues (N=14) precision 0.008 / recall 0.143 (the detector fires on any errored step, the leaf is narrow). Trace level, formatting P 0.902 / R 0.500 against a length baseline P 0.831 / R 0.797, so the detector is more precise but recalls less. Timeout and resource-exhaustion are under N=10 and unscored; `truncation`, `premature_wrap_up` and `zero_step_violation` fire on none. HIL-14 acceptance is met across Who&When Pro, TraceElephant, KernelBench-Hard and TRAIL; no natural-recall claim is made beyond annotator gold.
+- **The graph Harness now replays production recordings (HIL-16c, orchestrator `a16750a8`).** A run recorded through the production REPL construction path replays byte-for-byte for every k, in-process and as a separate CLI process; the stub default is refused for production recordings (`environment_drift` at turn 0) and really diverges with the guard off. Two recorder bugs were fixed on the way: JSON tool results were rebuilt key-sorted (new `payload_cas` keeps order and type) and REPL `llm_call` sub-calls were not recorded; recordings made earlier will show these as divergences. LangGraph decision: per-node dispatch replays, the full `run_task_lg` graph has no production path and is refused. HIL-16a needs no window of its own (the hil15a driver records, a no-model filler verifies), and HIL-18a was rebuilt in-process against one private server instead of the production `/chat`.
+- **The attribution ladder is built, not run (HIL-17, orchestrator `40560f2f`, 37 tests, zero inference).** Rung 0 L2 rules, rung 1 whole trace, rung 2 bisection, rung 3 adjudication only without a majority, with a k-sample vote-share aggregator, a random baseline and nDCG@5; 6,253 of 6,257 Who&When Pro traces resolve gold and injection flags never reach a prompt. A dry run is fixture plus fake judge and marked `"mock": true`.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [docs/design/hil6i-pilot-redesign-20261022.md](../docs/design/hil6i-pilot-redesign-20261022.md) — options A-D, costed, with the power table and the D1 recommendation
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — the deferral and reopen trigger, HIL-14a/16c/17/LB1 results
+- [handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md](../handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md) — the TRAIL table, HIL-6a..6i landings
+- [docs/design/hil6-sibling-loop-implementation.md](../docs/design/hil6-sibling-loop-implementation.md) — seam parity evidence and the HIL-2 items map
+- [docs/design/hil6i-pilot-design-first-feature-20261022.md](../docs/design/hil6i-pilot-design-first-feature-20261022.md) — home choice and the prompt-truncation defect
+- [progress/2026-10/2026-10-22-hil6-pilot-redesign.md](../progress/2026-10/2026-10-22-hil6-pilot-redesign.md) — option summary
+- [progress/2026-10/2026-10-22-hil16-18-fillers.md](../progress/2026-10/2026-10-22-hil16-18-fillers.md) — HIL-16a/18a restructuring
+- [progress/2026-10/2026-10-22-trail-scoring.md](../progress/2026-10/2026-10-22-trail-scoring.md) — TRAIL scoring record
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 9): HIL-6 option B is built; the pilot costs about 250 whole-host hours, and a gate must be code
+
+**Confidence: verified** for the build and parity results; the pilot cost is the harness's own estimate.
+
+- **Built (option B, sibling loop on the shared substrate).** Seams S1-S5 move the guards, eval-leakage checks, a score-free ledger projection and a pure SafetyGate verdict into `src/autopilot_core/`, with parity replays (723 MHS-3 outputs over the real pool, a 879-row journal copy across 6 gate configs) and the AutoPilot test set going 819 to 835 passed. Concrete parts and the first-feature pilot design (`hil6i-first-feature`, the `architect_investigate` prompt) followed.
+- **Pilot entrypoint.** `python -m src.harness_loop.pilot_run` (orchestrator `a8551a5b`) refuses without `WINDOW_CONFIRMED=1`, the `2026-10-22-pilot-only` lift token, the design id and a passing validator; PromptForge is excluded from the target prompt while it runs. The operator lifted the 2026-09-16 no-loop deferment for this pilot only.
+- **Cost came after the ask.** The estimate then arrived at about 232-300 whole-host hours (cycle 1 about 162 h, cycle 2 about 116 h), and the operator leaned to a redesign costed at four nights or fewer. The target prompt is architect_general's and a harness's value is model-conditional, which is why the pilot is not run on Flash-Next.
+- **Process lessons.** A check that only prints must not be chained with the action it should gate (a shared-clone fast-forward ran under a live campaign because the live-process check printed but did not gate); show a run's cost before asking to lift a deferment; and test a slow-harness diagnosis against server logs before naming a cause. All three are in `compute-fillers.md` items 19-21.
+
+#### Source References (2026-10-22 wrap-up sweep 9)
+
+- [progress/2026-10/2026-10-22-hil6-b-seams.md](../progress/2026-10/2026-10-22-hil6-b-seams.md)
+- [progress/2026-10/2026-10-22-hil6j-pilot-wiring.md](../progress/2026-10/2026-10-22-hil6j-pilot-wiring.md)
+- [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): HIL-16/HIL-18 build
+
+**Confidence: verified** for the HIL-16/HIL-18 build (unit-tested against a scripted harness and the real `_execute_turn` recording path, orchestrator `6bb9dc05`, `55913726`, `64aa7f8f`, `f71480e6`); **inferred** for everything that needs an inference window (HIL-16a/16b, HIL-18a/18b, DHM-1..7), which is filed and not run.
+
+- **HIL-16 prefix-preserving replay tier is built, flag `replay_recording` default off.** Each root-LM turn records a `model_turn` row (prompt and raw output in a sha256 CAS, hash chain over all prior prompts/outputs); `ReplayDriver.check_prefix(k)` rebuilds every prompt from harness state and byte-compares it, so any drift is a `PrefixDivergence` and no model call is made. Flag-off scripted `_execute_turn` digest `b3f8bce5...9158d` is identical on origin/main `04685908` and the lane.
+- **Four-arm design, controls before claims.** Arms are targeted, no_hint, placebo (same length as the hint) and wrong_step (same hint at a turn j != k, |j-k| >= 2 preferred); every started sample stays in the denominator. `decisive` requires the targeted flip rate to beat all three controls at alpha 0.05 (one-sided Fisher); a missing control or a non-failed original gives `claim_allowed=false`.
+- **Prefix determinism is proven only against a mocked LLM so far.** With the production graph Harness binding (`graph_harness.py`), a real-node recording with a mocked LLM and a real REPL reproduces all 6 turns byte-for-byte for every k in 0..6, in-process and in a separate CLI process (n=1 recording). Real prompt determinism (timestamps, ordering) is untested until a flag-on recording; launches must pin `PYTHONHASHSEED`, `tmp_dir` and the REPL spill dir, and the reasoning-retry call must be recorded or disabled, otherwise `prefix` stops at `environment_drift`.
+- **HIL-18 spectrum attribution:** key `(role, tool, exit_status)` with `unknown` never guessed (a local model enters only via `relabel_ambiguous`), Kulczynski2 ranking, and a task counts only when pass-rate is strictly in (0,1) over >= 20 labelled replays. Role-ablation Shapley credit (HIL-18b) is not built and is gated on a usable ranking plus the 1-2 week dependency-edge derivation. HIL-15a/16a/18a share ONE flag-on window via `hil15a_flagon_run.py` (mock-proved 24/24 clean).
+- **Dev-harness trace mining gets its own owner (`dev-harness-trace-mining`, stub).** Because the improvement loop excludes the shell surface, DHM-1..7 measure interrupt rates per 1000 turns with Wilson CIs, a retrospective guard audit, a lesson registry with an interrupted-time-series pilot, and the always-on prefix cost; hook and policy edits stay human-applied and outputs are aggregate-only.
+- **Refuted/limited as base rates:** SWE-chat's 46% pushback, the 79% invisible-failure share, Transluce's ~2% and SWE-Together's -0.92 are not EPYC coding-agent base rates; CODESKILL's +11.03/+5.10 is single-run and transductive, so it is not evidence for learned skill management. HIL-LB1 will score loop detectors (token-period, paraphrase, in-grammar with grace window) with test-after-edit treated as legitimate repetition.
+
+#### Source References (2026-10-22 sweep 7)
+
+- [docs/design/harness-improvement-loop-design-20261006.md](../docs/design/harness-improvement-loop-design-20261006.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
+- [progress/2026-10/2026-10-21-hil16-18.md](../progress/2026-10/2026-10-21-hil16-18.md)
+- [progress/2026-10/2026-10-21-queue-builders-3.md](../progress/2026-10/2026-10-21-queue-builders-3.md)
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): harness-loop architecture options, per-role speculation parity, embedder seam
+
+**Confidence: verified** for landed code and accepted designs as recorded; **inferred** for tradeoff readings. No runtime loop exists yet; the architecture choice is the operator's.
+
+#### Harness improvement loop (HIL-1 to HIL-8)
+
+- **Status.** HIL-1 to HIL-5 are accepted design (2026-10-06); the loop is not started and the A/B/C architecture choice (HIL-6) is undecided. The 2026-09-16 operator deferment stands, and HS-4 Phase 0 and the P0.4 freeze precede any tuning.
+- **Mutation object is bounded.** Loop-mutable arms are the prompts and declared parameters a suite measures (memory injection, notes, session-search ranking limits, background-review derivation, delegation prompts, compaction summarisation and fold thresholds). Policy documents, router policy, session identity, injection-scan policy, permissions and skills are proposal-only and human-applied; skills have no objective until a separate SkillBank A/B admits them.
+- **Options.** A (new AutoPilot species) couples unlike axes to frontier semantics; **B (sibling loop on shared substrate) is recommended but not selected**, at a rough 4 to 9 engineering-day seam estimate that is unvalidated and excludes the driver and instruments; C (fully separate) is cheapest to start and re-lives fail-open, stale-frontier, leakage and comparability defects. Reuse targets: journal, safety gate (as a no-side-effect verdict), pure PromptForge guards, infra fingerprint, rejected-mutation ledger and the request-scoped knowledge fence.
+- **Evaluation discipline.** Per-feature primary axes reuse the existing paired A/B and promotion protocols; anything without a fitting protocol is an observation. HIL-7 added a six-item pre-first-suite-run checklist (see [benchmark-methodology](benchmark-methodology.md)); HIL-8 corrected stale v1/v2 readings of arXiv 2607.12227 to the v4 text (held-out gain +0.0 averaged over three models, n = 34, no CI, not the earlier larger figure).
+- **Monitor queue.** Four harness-evolution papers have only first-stage reads; nothing in them is verified and none is relied on. Trigger: the operator selects the architecture or opens the first suite design.
+
+#### Per-role speculation parity (Q38-T10, operator ruling 2026-10-20)
+
+Speculative serving (MTP, DFlash2) is not bit-identical to non-speculative greedy on this stack (see [benchmark-methodology](benchmark-methodology.md)). The ruling is **per role**: judges, model grader, coherence judge, replay and reproducibility-claimed evaluation are bitwise-required; serving roles are distributional with a graded no-loss gate. A read-only role table found every bitwise-required caller currently running with speculation on, and no role using the serial-exact environment. Serial-exact is a process-level start-time read and those callers share processes with serving roles, so it would remove the speedup for serving; a dedicated server would be a stack change. The minimal fix is a per-request `speculative.n_max: 0` key, now landed behind a default-OFF flag (payloads byte-identical when off; exactly three opt-in call sites pinned by an AST test; serving backends never opt in). **Unverified prerequisite:** nobody has shown that a per-request n_max of 0 on a speculating server is token-identical to a spec-off server, alone or beside a speculating slot; the paired control arm (Q38-T10.1, at least 59 graded prompts) is written but not run, and the flag stays off until it passes. Fallback if it fails: a dedicated spec-off judge server through the stack-change route.
+
+#### Embedder pool seam (EmbeddingGemma 2, DRAFT stack-change package)
+
+The operator adopted EmbeddingGemma 2 BF16 at 256 dimensions as the REPL embedder-pool model, hybrid with BM25 fusion, to ship with the next production kernel together with a store migration; the retrieval flags stay default OFF. The draft package (not signable: no patch set, no gate run, migration tool has open gaps) records what the orchestrator must change together: a model-keyed prefix pair (query and document sides), slicing the 768-dim reply to 256 and renormalising in one shared helper (the pool client currently rejects any reply whose size differs from its configured dimension, and three other paths normalise at full size with no check), a launch-binary resolution that does not point at the old in-tree build, and dimension constants derived from one source. Stores holding BGE-trained state (episodic, sessions, strategy, routers, IRT scorer) each need migration or retrain with its own acceptance test; the sessions store has no retained source text and blocks the migration tool until an archive-only mode exists. Gates pre-registered (parity on long inputs above 459 tokens, 3,200-character chunks, throughput, decode interference against the accepted BGE post-cap values, memory, migration rehearsal) have not run. One operator question remains: the measured arm was BM25 plus dense, not grep hits as the lexical leg. Refuse-and-keep behaviour was added to the session store (it previously deleted the vector file on a dimension mismatch).
+
+**Open questions:** HIL architecture choice; Q38-T10.1 control result; whether the prefix pair suits symmetric task-to-task store lookups. Cross-refs: [autonomous-research](autonomous-research.md), [local-inference](local-inference.md).
+
+#### Source References (2026-10-20 sweep 2, architecture)
+
+- [Harness improvement loop handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-1 to HIL-8 state and classification table.
+- [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — objective axes, substrate extraction plan, option package.
+- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T10 ruling, role table, gaps, T10.1.
+- [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — seam, migration, gates, unknowns.
+- [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — spec-off-judges landing, embedder adoption prep.
+- [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — session lane context.
+
+
+### Compiled Update — 2026-09-25: reversible changes need feature-sized commits, travelling tests, and immutable evidence inputs
+
+**Confidence: verified.** The kernel history and artifact mutations are recorded in committed incident,
+handoff, and session evidence.
+
+The OpenMP tensor-repack path shipped through production v5, but its test stopped travelling with it after
+v1. During the v6 rebuild, three independent changes were forward-ported in one commit: AVX-512BW repack
+kernels, NUMA placement, and the OpenMP repack. The first two failed their gates, so reverting the bundle
+also removed the unmeasured parallel repack. Commit labels described only the kernel work, and v7 through
+v10 consequently carried no repack OpenMP pragmas. The omission surfaced three months later when each
+519 GB calibration launch spent about 3.5 minutes in a single-threaded load.
+
+The architecture rule is concrete: one independently gated feature per commit; keep its acceptance test
+beside it through every consolidation; and split a mixed commit before reverting failed members. Commit
+messages and lineage summaries are discovery aids, not a substitute for enumerating the behaviors and
+tests a revert removes. The recovered path was bit-exact against the champion, while the added parallel
+reader produced about 3.2× warm and 2.1× cold load speedups on the measured 27B workload.
+
+The same isolation rule applies to guardrails. The PII pre-commit hook independently matched 12–13 digit
+`perf` sample periods as account numbers twice. On the second recurrence it rewrote fourteen period cells
+across two committed bundle indexes to `[period redacted]`; those evidence copies ceased to be byte-exact
+without the measurement code changing. A guard operating on evidence must preserve an attestable original
+or emit a clearly derived artifact, and every narrowed exemption needs a must-block negative control in the
+same change. Otherwise the guard can silently break the provenance chain it is meant to protect.
+
+#### Source References (2026-09-25)
+
+- [`INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
+  `INC-20260925-parallel-repack-lost-in-bundled-revert`, including the commit lineage, missing travelling
+  test, measured load cost, and recovery.
+- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-RD-1b and its
+  2026-09-25 recurrence, including the negative-control requirement.
+- [`2026-09-25-main-ak-seat.md`](../progress/2026-09/2026-09-25-main-ak-seat.md) — the session record for
+  the fourteen rewritten period cells and affected artifact copies.
+
+### Compiled Update — 2026-09-24 (speech-lane wrap-up): one efficiency row per actor call, comparable columns across harnesses, and three more things headless opencode does not tell you
+
+**Confidence: verified.** The exporter reproduced DS41-C20c exactly from the real `opencode export`. The code
+(research `0bf2d7c2`) is built and unmerged, and no A/B has used it yet.
+
+- **Record one efficiency row per actor call, at call time.** Do not recompute it from exports afterwards.
+  `epyc.autokernel.actor_call_metrics.v1` is written as a **sibling** line just before the closed, self-hashed
+  `actor_call.v1` record. A closed contract does not get widened to hold new columns. The row carries steps, tool
+  calls by name, compactions, prompt/decoded/cache-read/cache-write tokens, first/max context, and the predicted
+  schema-valid/repair-ran. A metrics failure is recorded as `metrics_error` and never fails the call.
+- **The first reproduction found a behaviour fact.** C20c came out at 23 steps, 25 tool calls
+  `{bash 11, glob 1, read 13}`, 1 compaction and 57,702 decoded tokens. So the plain seat never called the MCP
+  perf tools, which exist only in the bounded seat.
+- **Define "decoded" once:** `tokens.output` summed over steps, **reasoning included**.
+- **Use the same columns for the orchestrator (S4-T1), but not the same unit.** The REPL turn-telemetry fix is to
+  use the same names and definitions, so the seat and the orchestrator land in comparable columns for OAB-4. The
+  seat counts an opencode *step*, meaning one assistant message. `ChatResponse.turns` counts REPL turns. Record
+  which unit a row uses, and never equate the two.
+- **Headless opencode hides three more things** (audit rows 8–10):
+  - A bare `opencode run` has no MCP server.
+  - `opencode export` has per-step tokens but no per-tool latency, no per-step wall time and no compaction step:
+    a `compaction` part carries only `tail_start_id`. Report tool time as *unknown*, never as zero.
+  - `opencode session list` has no parent/child link. Snapshot sessions before the call, count as scouts the
+    sessions that are new since then, and take as primary the session with the most steps.
+- **Five traps, each of which looked like a model failure:**
+  - `opencode export` truncates through a pipe (the 98,304-byte fixture), so export to a file.
+  - A compaction summary quotes the reply template.
+  - `rc=1` can come with a complete reply.
+  - Gate real-CLI hooks on the resolved binary, not on a kind string, or test doubles will shell out.
+  - A planner told "never build" still compiled `.o` files into `/tmp`, and it read the anchor build tree instead
+    of its own lane.
+- Context-as-files is compiled in [context-management](context-management.md). The tool-output cache is in
+  [tool-implementation](tool-implementation.md). The belief-kernel wiring of both records (VB-AK-METRICS-1,
+  VB-AK-CTX-1) is in [knowledge-management](knowledge-management.md).
+
+#### Source References (2026-09-24 speech-lane)
+
+- [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
+- [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): rows 8–10.
+- [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency): S4-T1 *Comparability target*.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §2.
+
+### Compiled Update — 2026-09-24 (wrap-up #4): TD-21 is complete — the last residual was the writer itself
+
+**Confidence: verified** (orch `c347600e`, regression test fails on the old code; 253 related tests pass).
+
+- TD-21 (re-audit of every free-text JSON consumer) and TD-21.33 are ticked. The final residual, TD-21.33c,
+  was inside `_real_call`: after setting this call's meta it re-read the shared `self._last_inference_meta` for
+  three follow-up writes (`tool_calls`, `max_tokens_clamped`, `completion_reason=context_limit`), which a
+  concurrent `asyncio.to_thread` call on the same primitives could send to another request's dict. A local
+  handle fixes it. Live after the next API reload.
+- The lesson generalises TD-21.33: migrating the *readers* of a shared "last call" attribute is not enough — the
+  code that *writes* follow-up fields must also hold its own handle.
+- Same evening, on the /v1 REPL path: an unquoted `FINAL(OK)` raised `NameError` and returned empty content;
+  `rescue_bare_name_final` rescues bare identifiers (orch `41ecf9fc` → `3a61c153`).
+
+#### Source References (2026-09-24, wrap-up #4)
+
+- [`typed-decision-plane.md`](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21, TD-21.33, TD-21.33c.
+- [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (3)*.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-0i.
+
+### Compiled Update — 2026-09-24 (operator wrap-up compile): TD-21 landed — and the repair turn needed evidence, not just a schema
+
+The morning's census (below) found 36 of 62 consumers fishing JSON out of free text. By 11:52Z the same day
+every TD-21 row except the two AutoKernel actor rows had landed on orchestrator main and been live-smoked, and
+the API was reloaded. The session reviewed and re-tested every subagent result on its main thread before
+landing; that review loop is where most of the findings below came from.
+
+- **The gate was three lines.** TD-21.0 (orch `b284ede3`, 121 tests): the `/v1` payload builders now forward
+  `json_schema` (as `response_format`) and `grammar`, streaming and non-streaming. It went live at 09:57Z, and
+  on `:8070` it returns prose without a schema and a schema-valid object with one. One shared helper
+  (`src/structured_output/repair.py`, orch `c4570158`/`577ccc5e`) carries the fish → validate → decline →
+  extract ladder to every site.
+- **A repair turn given a schema INVENTS required values.** Live example: the helper produced `tier: 2` from a
+  draft that named no tier. The shared helper gained `require_evidence`, and TD-21.34 (orch `2ffc3f51`)
+  applied it at every landed site, with an explicit `evidence_exempt` for fields that may legitimately be
+  derived. The AutoKernel seat reached the same rule independently: refuse a repair over an empty report, and
+  refuse a repaired field the report never names (TD-21.33's grounding). This is the plane's general lesson:
+  **constrained decoding guarantees the shape, never the provenance.**
+- **The API's own `/v1` refuses `response_format` by design** (HS-OD-1, 422). One subagent's autopilot repair
+  targeted it, which means every production repair would have failed. Every repair now goes to the role's
+  llama-server.
+- **A process-global inference-meta slot raced under concurrency.** `LLMPrimitives._last_inference_meta`
+  produced a reproduced truncated write. It is now a per-call `ContextVar`, and the readers were migrated
+  (TD-21.33, orch `d12202f2`). The thread-hop reader in `_execute_turn` (TD-21.33a) and `native.py` (TD-21.33b)
+  are filed. This is the same shape as the 2026-09-14 `_invocation_log` finding: shared mutable state read as if
+  it were per-request.
+- **Landed is not live. TD-21.1's FINAL() repair is inert in production**, because all REPL schema validation
+  sits behind `final_schema_validation` (OFF). Enabling it is operator decision OP-51 (TD-21.1a). The two
+  eval-quality flags (`EXCLUDE_UNPARSEABLE_ANSWERS`, `CONSTRAIN_JUDGE_OUTPUT`) landed OFF and are flipped
+  together by one ratify command under era E19 (OP-50). They are off by default because excluding parse
+  failures changes what an accuracy number means.
+- **A dropped keyword argument degraded batches silently.** `llm_batch` gained `json_schema`/`grammar` and
+  `n_tokens`; the last was a real `TypeError` that had been silently degrading every batch (TD-21.22b, orch
+  `318c4d27`). The edit protocol rejected GBNF with evidence and uses finish-reason-gated recovery instead
+  (TD-21.21).
+- **Custody slip, caught before it shipped.** One subagent edited the SHARED orchestrator clone. The work was
+  moved to its worktree byte-identical, and the shared copy was restored before the E18 reload, so unreviewed
+  code never went live.
+- **Open, with named blockers:** OP-50 and OP-51 (operator). TD-21.29/21.30 (the AutoKernel actor rows) were
+  held while DS41 ran on those actors. The branch `td21/29-30-actors` (`c0a00a8b`) is stacked on the seat
+  lane and has been told to rebase onto research main `21ca61b0` and land. TD-1d.2 (a short inference window).
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0–21.34;
+  [progress 2026-09-24 td21](../progress/2026-09/2026-09-24-td21.md))
+
+### Compiled Update — 2026-09-24 (wrap-up compile): 36 of 62 model-output consumers still fish JSON out of free text, and our own `/v1` payload builder forwards no schema field
+
+**Confidence: verified** for the audit counts and the code locations (a read-only subagent audit of both
+stacks, file and line recorded per consumer, artifact committed), and for the repair idiom's behaviour
+(measured live on the 27B at `:8083`). The **conversions themselves are PREPARED, not landed** — TD-21.0
+gates every `/v1`-lane one, and the operator is dispatching a separate session.
+
+#### Key findings
+
+- **The TD-1 consumer list was incomplete, and the largest consumer was missing from it.** The AutoKernel
+  loop's actors fished JSON out of free text with `_extract_json` and **retried 90-minute calls** when it
+  failed; `typed-decision-plane.md` had never listed them. That prompted a full re-audit of both stacks:
+  **62 consumers classified, 36 still fish structured output out of free text**, 31 of those reachable by
+  the same-server repair idiom. Of the 36: **13 write a silent default into persisted state or serve it to
+  a user**, 6 retry a full call from zero, 9 score a parse failure as a wrong answer.
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21;
+  audit artifact `artifacts/audits/td-json-consumer-audit-20260924.md`)
+- **TD-21.0 is the prerequisite, and it is three lines.** `src/backends/llama_server.py:607-616` (and the
+  streaming variant at `:1397`) builds the `/v1` chat payload with `messages`/`max_tokens`/`stream`/
+  `tools`/`logprobs`/`stop`/`chat_template_kwargs` and **no schema field**, while the native `/completion`
+  builder forwards both (`:1228-1231`). So every role on the `/v1` lane — `frontdoor`, `worker*`,
+  `toolrunner`, `architect_critic` — is silently **unconstrained even when the caller passed a schema**, and
+  `/chat`'s `output_schema` is advisory for exactly those roles. The measurement shrinks the fix: llama-server's
+  own `/v1` **does** honour `response_format json_schema` (proven live on `:8083`), so no declared
+  `/completion` lane is needed. Every `/v1`-lane conversion is a no-op until this lands, and it is zero
+  inference to decide — but it changes production request semantics for every `/v1` role, so it is a stack
+  change. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0;
+  [2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md))
+- **The repair idiom that works, with three refuted designs recorded.** Landed in
+  `epyc-inference-research` `ad2b89ff` (`loop/actors.py` `_parse_reply` / `_schema_repair`): fish first,
+  then a two-stage constrained turn at temperature 0 back to the **same local server** — an explicit
+  decline boolean, then pure extraction (reviews skip the boolean). Five shapes correct in **2–12 s**.
+  Three designs were refuted live on the 27B before that one: an *optional* `abstain` property (the model
+  fills it beside a real hypothesis), an `anyOf` abstain branch (constrained decode takes the cheap
+  branch), and an in-band `mechanism_id: "abstain"` marker (over-abstains on analysis that omits the phrase
+  "I propose"). The general lesson: **an abstention path a constrained decoder can reach cheaply will be
+  taken**, so the decline must be a separate, explicitly-asked stage.
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"Schema-constrained repair";
+  [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C16)
+- **A landed repair is not coverage.** TD-21.30 records the residuals of `ad2b89ff` itself: `_first_json_or_none`
+  is still a raw probe that silently decides what `_parse_reply` later sees; the acceptance test
+  (`"abstain" in body or _complete(body, schema)`) lets a partial or hallucinated object carrying the
+  required keys short-circuit repair; `REVIEW_SCHEMA` leaves `additionalProperties` unset; the repair body
+  carries no `model` field, so a multi-model endpoint would 400 and degrade silently to `None`; and
+  `_schema_repair` returns `None` for non-opencode backends, so **the two DEFAULT actor roles have zero
+  repair coverage today** — the idiom is live only on an explicit `provider/model` opt-in.
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.30)
+- **The costliest sites are the ones with a silent fallback, not the ones that crash.** Named in the audit:
+  the REPL `FINAL()` validator re-runs the whole `run_task` graph from zero twice and then returns the
+  invalid answer anyway (TD-21.1); the autopilot ACTION block fails the provider, re-prompts a fallback
+  from zero, and writes a deterministic `seed_batch` default into the journal (TD-21.2); the TOON delegation
+  decision has **no failure mode at all** — unparsed architect prose is wrapped as `D|<prose>` and served
+  as the user-visible answer (TD-21.4); the review service increments `parse_failure_count` but still flows
+  a default verdict, with rubric axes defaulting `True`, **while the json_schema and GBNF payloads it needs
+  already exist in `review_grammar.py` and are simply never passed** (TD-21.6); the rubric judge falls back
+  to a heuristic rubric stamped into the eval results (TD-21.15); `vl_describe` sets `structured=None` but
+  leaves `result.success` **True**, so downstream cannot distinguish a parse failure from "nothing in the
+  image" (TD-21.19); and a reviewer A/B writes `DEFAULT_DECISION` into the very result the script exists to
+  produce (TD-21.24). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.1–21.28)
+- **Two sequencing rules the audit imposes on itself.** TD-21.31 records the *unreachable* consumers rather
+  than converting them (external CLIs with no local server; three arms are already natively constrained via
+  `--json-schema` or enum/`const` bindings) — but flags two defects there anyway: an arena fallback that
+  **returns the whole raw reply as a candidate** which then compiles and evaluates, and an OpenAI shim that
+  drops any `response_format` the vendor supplies. TD-21.32: there is **no declared `judge` role** in the
+  registry, so the judge-site conversions must land after or alongside the CJ-17 binding (was CJ-11) at `src/llm.py`,
+  or they convert against a moving target.
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.31, TD-21.32)
+- **Agents edit and then stop: 0/38 edited trajectories ever execute anything** (MF-VBS-1, measured, orch
+  `86471b1f`). The only corpus with per-turn `file_write_safe`/FINAL granularity is `data/bep_sandbox` —
+  62 real trajectories, `coder_escalation` Qwen3.6-35B-A3B, 5 tasks × 2 arms. No edited trajectory calls
+  `run_shell`/`run_python_code` afterwards (Wilson 95% 90.8–100%), and a main-thread re-check found 0/14
+  write-bearing traces that import, assert or call the edited code. Voluntary stops: **15/15**
+  edit-without-execution (79.6–100%), against an external prior of 110/248. The "delegates execution to the
+  user" variant is 0/62. The honest caveats are recorded with the number: the interleaved-edit rider
+  defines done as "every file written" and **never asks for verification**, 8/15 voluntary stops are
+  single-turn auto-finalizes, and only one of five tasks ever stops voluntarily — so this measures one
+  rider on one role on one day. Verdict: build the gate (MF-VBS-2), and re-measure once the other tasks
+  reach a voluntary stop at all.
+  ([multi-file-coding-completion-capability](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) MF-VBS-1/MF-VBS-2)
+
+#### Open questions
+
+- TD-21.0 is deferred with a named blocker — a separate operator-dispatched session — because it changes
+  production request semantics for every `/v1` role and therefore passes the three stack gates. Until it
+  lands, roughly half the conversion list cannot be validated.
+- MF-VBS-2's effect cannot be sized: the multi-file tasks hit the 8-turn cap or error in every run, so
+  their forced-stop rate is a bigger and separate defect than verify-before-stop.
+  Filed as MF-FS-1: classify those forced stops by reason from the existing traces first.
+- ~~TD-21.29 — the *preparation* actors (`actor_preparation.py:333,:369`) still call `_extract_json` raw, and
+  a `PreparationRefused` burns a one-shot reservation. Same path `ad2b89ff` converted one file away.~~
+  Closed 2026-09-24 afternoon — see the compiled update below.
+- Live: does the `coder_escalation → frontdoor (connection_error)` fallback (surfaced during the OP-51 smoke,
+  :8083 otherwise healthy) share a root cause with the schema-preamble question, or is it an independent
+  routing defect? Diagnosis in flight.
+
+#### Source References (2026-09-24 wrap-up compile)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21 and its 33 sub-rows: the
+  62-consumer audit, the TD-21.0 payload-builder gap, the per-site classifications, the residuals and the
+  explicitly-unreachable set.
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C16, the
+  schema-constrained repair turn and the intake gap it exposed.
+- [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the three refuted abstain
+  designs, the measured shapes and timings, the TD-21 dispatch decision.
+- [multi-file-coding-completion-capability.md](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) —
+  MF-VBS-1 measurement and caveats; MF-VBS-2 filed.
+
+**Additional sources (2026-09-24)**: TD-21 consumer census, the audit artifact, and the VB-TD-21-CENSUS prospective evidence gap.
+
+### Compiled Update — 2026-09-24: structured-output census finds free-text parsers and a dropped backend constraint
+
+**Confidence: verified** for the static consumer inventory and the local server compatibility checks recorded in
+the audit. This is a software-path audit, not a model-quality benchmark.
+
+#### Key findings
+
+- **The cross-stack audit classified 62 structured-output consumers; 36 still extract structured data from free
+  text, and 31 are locally reachable for same-server constrained repair.** Failure paths include silent defaults
+  written to persistent state or shown to users, retries restarting the full call graph, and parser failures
+  counted as wrong answers in scorers. The full inventory and ranked conversion list are in the audit artifact.
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21,
+  [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
+- **The backend's llama-server `/v1` chat payload builder omits `response_format`.** The audit reports that local
+  llama-server `/v1` honors `response_format: {type: "json_schema", ...}`; the `/completion` adapter forwards
+  the constraint but the `/v1` adapter does not. TD-21.0 tracks this payload fix before conversions in that lane.
+  This is distinct from the orchestrator `/v1` API contract documented in the 2026-09-18 section below: that
+  role-keyed routing layer intentionally returns 422 for an unavailable forced role.
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0,
+  [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
+- **Capture the audit and the applied repair prospectively; do not invent retrospective claim tuples.** DS41-C16
+  validated same-server repair on five actor-reply shapes; the evidence handoff now separately tracks the future
+  TD-21 census/repair writer. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-DS41-OPS and
+  VB-TD-21-CENSUS)
+
+#### Open question
+
+- Which of the ranked TD-21 consumers have completed conversion, and do their producers retain schema and
+  failure disposition without changing scoring or campaign authority?
+
+### Compiled Update — 2026-09-24 (afternoon operator follow-ups): relaxing a repair schema's `required` list does not by itself stop invention — the evidence guard does
+
+**Confidence: verified** — live smoke tests on the frontdoor/REPL path, cited commits on `origin/main` in both repos.
+
+#### Key findings
+
+- **OP-50 (eval-quality scorer boundary) ratified and applied.** `EXCLUDE_UNPARSEABLE_ANSWERS` and
+  `CONSTRAIN_JUDGE_OUTPUT` are now both `True` under era `E19-eval-answer-parse-failure-excluded-quality`,
+  post-flip suite 271 passed. ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.EQ1, orch
+  `eabc9b44`)
+- **TD-21.29/TD-21.30 landed: the AutoKernel loop's preparation and residual JSON consumers now go through
+  repair.** Coordinated directly with the concurrent DS41 campaign session rather than waiting for it to end,
+  merged after their seat branch tip. ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.29,
+  TD-21.30, research `4915220f`, `34373dd8`)
+- **Relaxing a repair schema's `required` constraint does not, by itself, stop the model from inventing
+  optional fields — the evidence guard is what does.** TD-21.35 dropped `required` from the repair wire schema
+  (except const/single-enum discriminators) so a repair turn can no longer be *forced* to supply a field the
+  source text never named. Live smoke without the evidence check still showed the model filling an optional
+  `tier` field for a draft that named none. TD-21.34's `require_evidence` (already landed, unrelated commit)
+  is the mechanism that actually catches this — the two are complementary, not redundant, and a design that
+  ships one without the other is not protected against invention.
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.34, TD-21.35, orch `f09efc64`, research
+  `34373dd8`)
+- **A production-posture flag flip can surface an unrelated routing defect.** Enabling `final_schema_validation`
+  (OP-51) for a live smoke produced HTTP 500 with `Model fallback: coder_escalation → frontdoor
+  (connection_error)`, even though the `coder_escalation` backend (:8083) answered health checks — the flag
+  exercised an escalation path that a normal request does not take, exposing a defect the flag itself did not
+  cause. The operator suspended the flag rather than debug live; root-cause is filed, not fixed.
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.1a, orch `98edfeb0` enable, `6b26f3ae`
+  suspend)
+- **Cross-process meta reads across a thread hop need the value returned from the thread, not re-read after
+  it.** TD-21.33a's fix (`_call_llm_capturing_meta`) captures inference meta *inside* `asyncio.to_thread` and
+  returns it alongside the result, instead of reading a ContextVar set in the child from the parent afterward
+  — the general pattern for any per-call state crossing a thread boundary in this codebase.
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.33a, orch `f769f3e1`)
+
+#### Open question
+
+- The `coder_escalation` connection_error under OP-51 and the JSON arm's `length`-truncation under TD-1d.2 are
+  both live-smoke findings against a healthy stack from this same afternoon — worth checking whether they share
+  a cause (an escalation/repair path both exercise) before treating them as two separate defects.
+
+### Compiled Update — 2026-09-23 (evening wrap-up compile): a daemon runs the script inode it opened at launch, so every commit to a tracked script can orphan a live process
+
+**Confidence: verified** — the census was a read-only `/proc` walk, and each of the three shapes was observed live on this host the same night.
+
+#### Key findings
+
+- **INC-20260917-daemon-stale-script-inode: three shapes, all live at once.** (1) **Stale and diverged** — the opencode-event reaper (pid 2873259, started 09-08) held `fd/255` on a lane copy under `worktrees/mains/ak-rebuild-20260828`, 1,802 B against 7,976 B tracked at HEAD; the running code still gated its VACUUM decision on `pgrep -x opencode` and had never sourced `observer_guard.sh`, across **461 iterations and 39 VACUUMs** against the operator's live `opencode.db`. (2) **Orphaned inode** — the hub and bus supervisors both showed `(deleted)` for their own script after an unrelated `git reset --hard origin/main` in the shared clone; content was identical that day, so nothing was visibly broken, but the next commit to either file would have diverged silently. (3) **Orphaned tree** — a hub on `:8101` ran from a worktree directory that no longer existed, with no registry row, pidfile or probe. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) INC-20260917-daemon-stale-script-inode)
+- **The mechanism is bash plus git, and neither is doing anything wrong.** Bash opens a script's inode once at launch and reads it incrementally for the process's whole life. Git never writes a tracked file in place — checkout, reset and merge unlink and recreate it — so **every commit to a tracked script leaves any already-running daemon on an orphaned inode**. No cron runs in this container, so daemons are hand-launched and inherit the launching session's cwd, which is how a lane cwd produces a lane-pinned daemon. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md))
+- **Nothing existed to move a daemon back, and the guard that looked relevant certifies a different object.** Supervisors restart their charges, never themselves. `scripts/coordination/WORKTREE_MIGRATION.md` pinned runtime **state** to `/workspace` and said nothing about runtime **code**. And `observer_census.py` (Rule A/B over `git ls-files`) certifies the **file**, not a running **instance** — which is how "census OK" coexisted with a nine-day-stale live reaper. A certificate about a path is not a certificate about a process. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
+- **Remedy (a), landed: `scripts/coordination/daemon_provenance.sh`.** `dp_attest`, called at a daemon's own startup, **refuses to start** when its own script does not resolve under the canonical root — *a lane may develop a daemon, never run it* — **warns loudly but never refuses** on an uncommitted local edit, and records `{pid, script_realpath, inode, blob, started_at}`. `dp_stale_since_start` polls once per loop iteration and **logs, never acts**, that a commit has since replaced the file the process is executing. Wired into the reaper's `run` mode and into `bus_supervisor.sh` / `hub_supervisor.sh`'s own `loop` startup — complementary to bus_supervisor's pre-existing H-4 check, which watches the **separate** daemon it supervises, not its own script. 15-case test; the read-only `/proc` check found no live daemon on stale code that day. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81/NIB2-81a)
+- **The rule this fed: runtime-plane daemons execute from canon or the read-only view only, never a lane.** Now stated in `WORKTREE_MIGRATION.md` alongside the pre-existing runtime-state rule, which is the gap the class fell through. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md), CLAUDE.md § Working-tree identity)
+- **The reaper was not merely stale — it was dead.** Its pid had gone with the 2026-09-21 host restart (last log line 2026-09-20T00:05Z), so from then on nothing was reaping. Relaunched detached from the **tracked** path `/workspace/scripts/system/opencode_event_reaper.sh` (pid 1833821, `fd/255` verified against the tracked file); first pass at 19:17Z: VACUUM 55 s, integrity ok, db 10.8 GB. Nothing relaunches it after a reboot, which is remedy (b). The orphaned `:8101` hub is moot for the same reason — its pid is gone and nothing listens there. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NI-OC-a.1, NIB2-81b)
+- **NIB2-80: an escalation path that bypassed its own budget gate, at five sites rather than the one reported.** `epyc-orchestrator/src/graph/nodes.py:235-241` bumped `state.escalation_count`, recorded the role change and returned `CoderEscalationNode()` **without calling `_should_escalate`**, while every other escalation site gated on it. Fix (orchestrator `d1f5bf02`): immediate escalation is kept but bounded by `max_escalations` at **all five** early-abort sites; at budget it falls through to the sibling gate/retry/fail chain. Residual: early-abort escalation still skips the role-cycle check. Finding one instance of a defect class is a reason to grep for the rest before fixing. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-80)
+- **A fan-out pattern that held for a 10-item batch**: four screeners first, then ten implementation subagents, each reviewed on the main thread before anything landed — across three repos in one session, with the operator-only items (a daemon relaunch, a production config change) separated out rather than executed by subagents. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
+
+#### Open questions
+
+- NIB2-81 remedy (b) — the generalised supervision loop (a registry `runtime:` field plus `observer_census.py --live`) is what would catch shape (3), and it is still open. Nothing restarts the reaper after a reboot.
+- Should `dp_attest`'s warn-only behaviour on an uncommitted edit ever become a refusal, or does that break the develop-in-a-lane workflow it deliberately protects?
+
+#### Source References (2026-09-23 evening wrap-up compile)
+
+- [INCIDENT_LOG.md](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20260917-daemon-stale-script-inode: the three shapes, the mechanism, the remedy and the rule fed.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-81/81a/81b (`daemon_provenance.sh`), NI-OC-a.1 (the dead reaper), NIB2-80 (early-abort escalation).
+- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch and its screener/implementer fan-out.
+
+### Compiled Update — 2026-09-23 (later): NIB2-81 remedy (b) lands — a live census with a scheduled mode, and an operator ruling that a `not_running` daemon can be the correct state
+
+**Confidence: verified** — the census states were exercised against the live host on 2026-09-23, and the operator ruling is recorded verbatim in the handoff.
+
+#### Key findings
+
+- **Remedy (b), landed: a registry `runtime:` field plus a read-only `/proc` census.** Two runtime modes: **daemon** mode (`pidfile`, `expected_path`, `provenance`) for a long-running process, and **scheduled** mode (`log`, `max_age_s`) for a cron-ticked target that has no daemon pidfile by design. `observer_census.py --live` walks `/proc` and reports one of seven states per registered instance — `running_current` / `running_stale` / `running_off_canon` / `not_running` / `cannot_tell` / `scheduled_current` / `scheduled_stale` — feeding the existing `alarm_channel`. `bus_supervisor.sh` restarts only rows flagged `restart_on_stale` (the reaper, today), by the candidate's own pidfile identity, TERM then KILL, rate-limited. Root commits `ddb4d0e9`, `938766ab`. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
+- **Correction made in review: a two-mode census would have alarmed on its own correct behaviour.** The first version modelled every registered target as a daemon with a pidfile, which would have raised a permanent false CRITICAL for `hub_supervisor` and `fleet_watch` — both cron-ticked, both correctly having no daemon pidfile between ticks. The **scheduled** mode (`eb05724b`) was added specifically so a target's *design* (cron-ticked vs long-running) determines which states are even possible for it, rather than one state machine being asked to explain every target.
+- **Live census, 2026-09-23: reaper `running_current`; `hub_supervisor` and `fleet_watch` `scheduled_current`; `bus_supervisor` `not_running` since 2026-09-20.** The operator ruled explicitly to **leave `bus_supervisor` (and therefore the coordinator-daemon) down** — relaunching it restarts fleet dispatch and nudges, which the operator did not want restarted incidentally as a side effect of closing a hygiene item. Its `not_running` census verdict is therefore an **expected state**, not an outage, and the practical consequence is that the reaper currently has no automatic stale-restart path while `bus_supervisor` stays down. Root commit `10b94f09`. A census state is a fact about a process; whether that fact is a problem is a separate, human call. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
+- **A shell `stat` can report the wrong inode for a `/proc/<pid>/fd/<n>` symlink, on this host specifically.** The restart path was deliberately built on a small `python3` helper rather than bash's own `stat`, because this host's `stat` is uutils-coreutils, measured (while building the restart path) to return a **different, wrong** inode for a `/proc/<pid>/fd/<n>` symlink than for the same file's real path — while `os.stat()` (already used by `observer_census.py`, and used by this helper) resolves both to the identical, correct value. A restart mechanism built on the shell `stat` comparison would have failed closed into `cannot_tell` on **every single call** on this host, which is a worse failure than the gap the remedy exists to close — importing `python3` for a one-line comparison is cheaper than that failure mode. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81, `scripts/coordination/bus_supervisor.sh`)
+
+#### Open questions
+
+- The reaper has no automatic stale-restart while `bus_supervisor` stays down (an accepted, operator-ruled consequence, not an open defect) — the next operator go to relaunch it should be treated as a fleet-dispatch decision, not a hygiene fix.
+
+#### Source References (2026-09-23, NIB2-81 remedy (b))
+
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-81 remedy (b): the registry `runtime` field, the seven-state live census, the `bus_supervisor` restart path, and the operator ruling.
+- epyc-root commits `ddb4d0e9` (live census), `938766ab` (registry-flagged restarts), `eb05724b` (scheduled mode correction), `10b94f09` (operator ruling recorded).
+- `scripts/coordination/bus_supervisor.sh` — `registry_script_is_stale`'s uutils-`stat` vs `os.stat()` comment, measured on this host.
+- `scripts/coordination/observer_census.py` — the seven-state `--live` census and its pre-existing `os.stat()` convention.
+
+### Compiled Update — 2026-09-23 (wrap-up compile): two components that each told the truth about different directories, and a tool that reported success on a push that never happened
+
+**Confidence: verified**. The push-lock defect was measured across four failed pushes, and its fix was mutation-checked. F9b was checked by running the guard in each repo.
+
+#### Key findings
+
+- **SSU-F9: a correctly acquired push lock did not satisfy the pre-push guard, and nothing said so.** Two independent defects composed, and either alone blocks a push while reporting success:
+  - **(a) The lock directories disagreed.** `serialized_push.py` derives one canonical directory from the git common dir, deliberately, so that every lane worktree contends for one lease. The hook looked in `<repo>/coordination/push-locks/`. `--acquire` reported the lock acquired, and the hook reported it NOT HELD. Both were true of different directories.
+  - **(b) The wrapper's own `--push` could not satisfy its own guard across two tool calls.** The guard accepts a push from a *descendant* of the lock holder. `--acquire` and `--push` are separate processes, and the wrapper exported neither `EPYC_PUSH_LOCK_HOLDER` nor `AGENT_ID` to fall back on.
+  - **The silence was the real defect.** git's `failed to push` went to stderr *before* the manifest, and the last line printed was `PUSHING as '<agent>' under the push lock ...`. Then `--release` said `(no push lock held)`, which reads like a normal post-push release. Only `git cherry origin/main main` showed the push had not landed.
+
+  ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9)
+- **The fix: one resolver, and verify instead of attempt.**
+  - The guard now **asks the writer** (`--print-lock-file`) rather than deriving a second answer, and refuses if the repo keys disagree.
+  - The wrapper declares `EPYC_PUSH_LOCK_HOLDER` for its own child push, asserting only what `O_EXCL` just proved.
+  - `--push` prints git's output after the manifest, then runs `git cherry`, so a push that exits 0 without landing reports `PUSH FAILED` (exit 4).
+
+  Guard strength is unchanged, and that was proven rather than asserted. With no lock it still refuses, and a mismatched id still refuses. Re-running the suite against the pre-fix guard gave exactly the four new default-location failures. The files sit under `scripts/coordination/**` and `scripts/hooks/**`, which D9 puts behind operator ack, and the owning session cannot self-ack (SSU-F9a). The fix landed as epyc-root `0f9a4ef1`, whose message carries `D9-ack: operator, 2026-09-23`. The SSU-F9a box in the handoff is still unticked. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9 outcome, SSU-F9a)
+- **F9b: a relayed subagent claim was false, and checking it took one `cat`.** The task claimed the two sub-repos had LFS-only pre-push hooks with no serialization guard. Both in fact carry the chained hook installed 2026-08-12, byte-identical to epyc-root's, and running the guard in each repo refused as designed. What *was* true is more interesting. Before SSU-F9, the guard hardcoded `/workspace/coordination/push-locks` while the wrapper locked in each repo's own directory. So in the sub-repos every correctly locked push would have been refused, on every attempt. In epyc-root the two derivations happened to produce the same string, which is why the breakage was invisible from there. Pushes to both sub-repos after the fix ended on `PUSH VERIFIED`. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9b)
+- **SSU-F9c: the same shape, one lease over, still live.** `promote_lane.py:519` defaults `--lock-dir` to the `__file__`-relative fallback. In a lane worktree that is the lane's *private* directory, so the promote lease serializes nothing across lanes. That is the 2026-09-01 incident that the push lease's git-common-dir derivation was introduced to fix. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9c)
+- **A module that parses `sys.argv` at import answers the importer's flags (DS41-C2e).** `autokernel_enrollment.py:276` imports `scripts.server.orchestrator_stack`, which parses `sys.argv` at import time. So it saw the enrollment's flags, printed stack status and exited 0 without writing the output: another success-shaped non-result. The campaign route taken instead is `--registry-snapshot` (an `epyc.autokernel.artifact_registry_snapshot.v1` file carrying model/build/recipe identities). The import-time argparse is filed to be fixed separately. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2e)
+- **A guard's documented override must be reachable by the party it names.** The commit-hygiene hook reads `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` from its own environment (`check_commit_hygiene.py:504`). So the inline form its refusal text suggests, `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git restore …`, never reaches it. It refused twice on 2026-09-23 even after the operator had approved that exact command, because the approval arrived as chat text rather than as a `!` shell line. The same content was then written from `git show HEAD:<path>` after hash-checking each backup. The filed fix is to have the refusal say how the operator applies the override, or to accept a one-shot operator token. As it stands, the text invites an agent to try, fail, and then route around the guard with an equivalent write. ([loop-owned-fleet-implementation](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
+- **Ownership follows the lane, not the session.** The typed-decision plane is now owned by the research-intake lane: the session it was assigned to is closed, and its orchestrator worktree retired after its branch merged. New TD work cuts a fresh lane worktree from origin/main. The `research-intake` skill's Stage 4 now ends with a lane close-out rule. The same cleanup recorded a process miss: worktree and branch removals ran without the operator's per-list delete confirmation. Nothing unique was lost, and every tip is recorded for restore. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
+
+#### Open questions
+
+- SSU-F9a is closed (2026-09-23): the D9 ack is recorded in `0f9a4ef1`'s `D9-ack` trailer, and the box is ticked with that evidence.
+- Do any other coordination leases default to a `__file__`-relative directory, as in F9c?
+
+#### Source References (2026-09-23 wrap-up compile)
+
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9 (defect and outcome), SSU-F9a, SSU-F9b, SSU-F9c.
+- epyc-root commit `0f9a4ef1` — the SSU-F9 fix and its `D9-ack` trailer.
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2e.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the owner line.
+- [loop-owned-fleet-implementation.md](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) — the unreachable hygiene-hook override (working-tree edit by the owning session, 2026-09-23).
+- [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — lane cleanup, the close-out rule and the process miss.
+
+### Compiled Update — 2026-09-19: a dormant browser-agent surface is filed, and the typed-decision plane's agent-facing results settle
+
+**Confidence: verified** for the filings and the measured routing receipts; the browser surface is a design reference only (no workflow has asked for it).
+
+#### Key findings
+
+- **`browser-agent-surface.md` (UFH-10) is a dormant stub by operator steering**, so an interactive, goal-driven browser surface (click/type/select/scroll) is not lost. Its scope boundary: `searxng-search-backend.md` owns *read-only* retrieval (SearXNG → Crawl4AI → Camofox as last-resort browser, CA-6); this stub owns *interactive* browsing, which nothing else does. Its first task is an operator decision — name a workflow that needs it. ([browser-agent-surface](../handoffs/completed/browser-agent-surface.md))
+- **The design reference, from the intake-1493 dive:** rebuild the action space each step from one atomic DOM snapshot as an indexed element table; the model picks an index, never a selector, coordinate or code, and the executor re-checks freshness and occlusion before input; one typed call per step for the operation plus per-operation target heads; a generative model only for free-text fields (strict single-key JSON); never retry a mutation, log execution before re-observing, and verify outcomes independently because DONE is not proof of success. The reusable mechanism advances under TD-12..TD-15 regardless — see [tool-implementation](tool-implementation.md). ([browser-agent-surface](../handoffs/completed/browser-agent-surface.md), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **Answering the 2026-09-17 open question "does TD-7 clear the incumbent comparator?": no.** Once single-token codes let the native arm resolve 200/200 (TD-9), agreement was 93.5% but the counterfactual value delta was −0.0104 (TD-10), so typed routing enforcement stays off; TD-11 iterates through the counterfactual harness. Detail: [routing-intelligence](routing-intelligence.md). For agent design this confirms the HS-TD rows' posture: typed decisions log beside the harness's own decision and gate nothing.
+- **TD-6 flipped the native default to `id_only`** while TD-1d.0 (re-settle the n=1 acceptance) and TD-1d.1 (`/v1` drops `grammar`/`json_schema`) stay open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+
+#### Open questions
+
+- Which EPYC workflow needs interactive browsing that search + Crawl4AI + Camofox cannot serve?
+- Browser runtime on the shared host: Camofox (already planned for CA-6) or a CDP harness (intake-1494 is stage-1 unverified; its reported opt-out telemetry would need disabling)?
+
+#### Source References (2026-09-19)
+
+- [browser-agent-surface.md](../handoffs/completed/browser-agent-surface.md) — UFH-10 stub, scope boundary, design reference.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-6, TD-9, TD-10, TD-11, TD-12..TD-15.
+- [2026-09-19-intake-jev-ultrafast.md](../progress/2026-09/2026-09-19-intake-jev-ultrafast.md) — intake-1493/1494 session record.
+- [intake-1493] Jev Ultrafast — indexed action space and operation × target heads; dive-verified.
+
+### Compiled Update — 2026-09-18: the `/v1` override contract is the role, a description sweep finds five behaviour defects, and the typed-decision plane reaches the harness as flag-gated rows
+
+**Confidence: verified** for the code landings and the operator ruling; the TD-1d correction is verified on one GPU session. Session record: [`progress/2026-09/2026-09-18-backlog-churn-2.md`](../progress/2026-09/2026-09-18-backlog-churn-2.md).
+
+#### Key findings
+
+- **Fixing the `/v1` schema descriptions exposed the behaviour underneath (HS-OD-3..7).** After `336bd170` fixed one field whose description promised a cap the seam never applied, a sweep over every request field (orchestrator `dadad301`, descriptions only, 13 guard tests) produced five rows that are about code: `x_force_model` cannot force a model (HS-OD-3); `max_tokens` is not a generation cap in REPL mode — it is `max_turns = max_tokens // 500` clamped 1..5 with a hard-coded 1024 per call (HS-OD-4); sampling overrides and `max_tokens` are dropped on the vision path with a 200 (HS-OD-5); `x_disable_repl` + `tools` renders `CALL(...)` instructions for an executor that is off (HS-OD-6); role overrides were never validated (HS-OD-7). Read with HS-OD-1's rule — *a body field that changes output semantics must be refused, not ignored*: 5 and 7 were unfinished applications of it, 4 and 6 mode-dependent contradictions, 3 a name promising a capability the code lacked. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **The role is the contract — operator ruling, 2026-09-17** (*"the model role is all that's needed. No need to ping models that aren't part of the orchestration stack."*). HS-OD-3 + HS-OD-7 closed in orchestrator `2a609f5c`: precedence is `x_force_role > x_force_model > x_orchestrator_role > model`; `x_force_model` is a **deprecated alias, not deleted** — identical behaviour, marked in the schema, logged when set, because removing a published field silently is worse than carrying it; the two disagreeing is a 422 naming both. The three override fields are validated after normalization against `available_roles() ∪ server_urls` keys, so a registry model name, a typo, or a `Role` member with no server (`draft_coder`, `thinking_reasoning`) is a 422 naming the field instead of a silent backend miss. Three values `/v1/models` advertised yet died at lookup (`orchestrator`, `architect`, `worker`) now resolve; `gpt-*`/`claude-3` stay `model`-field conveniences and are deliberately not legal override values. 151-case contract test generated from `Role` and the alias maps. Four Hermes skill docs that told authors `x_force_model` "forces a registry model" were corrected (root `697eab92`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **The typed-decision plane reaches the harness as three flag-gated, log-only rows (HS-TD-1..3, operator-directed).** Pre-dispatch risk/intent classification over a closed set, a per-turn `noul` self-check, and context selection as a typed decision — each logs answer + confidence beside the harness's own decision and **gates nothing**, because confidence is not calibrated. **TD-8** landed the fan-out policy helper (`src/typed_decisions/fanout_policy.py`, 18 tests): exactness-required + native-eligible → native id-only per question; stability-tolerant batches ≥ 8 → batched (2.2x at 87.5% agreement); otherwise sequential JSON. Closed-set tool arguments are wired behind `typed_decisions_tool_args` (default off, fail-open to model args). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-1d's "11.98x at parity" in the section below is contested.** A 4-round alternated re-measurement puts id-only at 9.60x (bar ≥10x not cleared); the disagreement is the single-sample JSON baseline, and per decision the lead is 6.40x. TD-8's constants cite the 11.98x figure. The tick stands with the evidence beside it (TD-1d.0, owner's call). Detail: [benchmark-methodology](benchmark-methodology.md), [local-inference](local-inference.md).
+- **Pairing keys can now span two harnesses (UTM-P1a.2), but not yet on real data.** Replay stamps `harness="review_replay"` + `task_key=rr50-NNN`; the delegator stamps only the per-step ordinal it genuinely owns (one-shot RD-10b aggregate and the parallel executor stay NULL rather than carry an invented 0). UTM-P1a.3 names what is still missing: replay unlinks a pre-existing store under the TM-8 fresh-run rule, live tasks carry no corpus id, ordinal alignment differs. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
+
+#### Open questions
+
+- HS-OD-4: should REPL mode honour `max_tokens`, refuse it, or document the turn derivation as the contract?
+- TD-1d.1: does `/v1` forward `grammar`/`json_schema` for internal callers, or do typed decisions keep a declared direct `/completion` lane? Nothing typed is deployable through `LLMPrimitives` until one is chosen.
+
+#### Source References (2026-09-18)
+
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-3..7, HS-TD-1..3.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-8 wiring policy, TD-1d.0–1d.4.
+- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a.2/P1a.3.
+- [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — the judgement calls.
+- [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — the re-measurement.
+
+### Compiled Update — 2026-09-17 (wrap-up sweep): the typed-decision plane is measured end-to-end, and the FW-1 loop block exposes a graph defect
+
+**Confidence: verified** for the local measurements and filings; **external** for intake figures. All local numbers are one run each on the worker unless stated.
+
+#### Key findings
+
+- **The typed-decision plane went from stub to measured implementation in one day.** TD-1 (JSON runner), TD-1b (tokenizer-aware native candidates), TD-1c (cue-replay parity), TD-1d (id-only cue 11.98x at 15/16 agreement), TD-3b (batched fan-out 2.2x at 87.5% agreement), TD-4 (closed-set tool arguments 18/18 vs 6/18) and TD-5 (shadow) all landed; TD-6 (adopt `id_only` as native default after review) and TD-7 (labeled routing replay) remain. The native arm **fails closed** (typed errors, never wrong answers); confidence is not calibrated and **no gate may threshold on it**. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
+- **TD-5 shadow is implemented, flag off, awaiting the TD-7 replay.** `src/typed_decisions/shadow.py` at `routing.py` (`_plan_review_gate`): fixed canonical order, bounded non-blocking daemon (MAX_PENDING=4, drops counted), fail-open, JSONL log. Live smoke = one well-formed record (incumbent + decisions + confidences + hashes); no enforcement without operator approval. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [routing intelligence](routing-intelligence.md))
+- **FW-1's worked example is worker-failure routing, and the loop block made a real defect visible.** The orchestrator classifies failed-worker errors at six duplicated call sites with a keyword matcher that falls through to `UNKNOWN`; the fuzzy node sits on that residue only — one `choice` over the named `ErrorCategory` set plus one `noul`. The sketch derived the GUI vocabulary (6 node types, 6 edge types, 11 lint rules) and checks its four requirements: every actor's reads, every gate's rejection grounds, every rejection's destination on-canvas, and the one expensive step gated by every gate (or an explicit reason). **NIB2-80 filed: `nodes.py:235-241` escalates on `EARLY_ABORT` without calling `_should_escalate`**, so an early-aborting run can exceed `cfg.max_escalations` and skip the approval check — not fixed; it changes graph control flow on an eval path and wants its own before/after test. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
+- **The shadow pattern is now first-class GUI vocabulary (FW-1 §D-2).** A classifier over *every* failure is a separate `shadow`-flagged fuzzy node (emits to the record, no `value` edges); the fuzzy node on the UNKNOWN residue carries no confidence branching. Budget independence is lint rule L5: two gates sharing a budget name is an error, and a fuzzy node whose retry mutates a gate's counter is an error (the `critic_revise` defect is the precedent). ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
+- **The trace service's pairing keys now have producers.** UTM-P1a (review plane, orchestrator `9a7181f2`) and P1a.2 (replay + delegator, `7887e7ae`) stamp `harness`/`task_key`/`turn_ordinal`; unset keys stay NULL = "never captured"; `task_key` is never derived from `subtask_id`. UTM-P1a.3 (real-data reachability) and UTM-P1b (Hermes ingest, dropped — Hermes not selected) frame the remainder. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
+- **The shell decision is now explicitly the operator's pick: OpenCode**, with pi as fallback; P0.4 live acceptance (inference) is the gate before the pin freezes, and P0-MCP-a/b landed (every `orchestrator_*` MCP tool declares `session_id`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **FW-4 filed the belief-kernel write side before any run** (VB-FW-1): one self-hashed ClaimTuple per workflow run carrying the document hash, executed node types, each fuzzy node's model pin **and** question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **The fuzzy/deterministic authoring GUI has a decided build posture (FW-2).** Workflow document schema + executor + `/dashboard/api/workflows/*` in `epyc-orchestrator`; authoring page, registry row, `health_path` probe and freshness envelope on the hub `:8100`; nothing in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
+
+#### Open questions
+
+- Does TD-7's replay clear the incumbent comparator, or does the typed-decision arm only buy speed?
+- NIB2-80: is immediate escalation on `EARLY_ABORT` deliberate (then it needs the missing bound) or an oversight (then it needs the sibling gate call)?
+
+#### Source References (2026-09-17 wrap-up sweep)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1…TD-7, the shadow, the measured studies.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the four implementation rounds.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1 sketch, node/edge vocabulary, lint rules, NIB2-80.
+- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a/P1a.2 pairing-key producers.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 and VB-FW-1 write-side rules.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the OpenCode pick and Phase-0 gates.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-80, NIB2-78/79.
+- [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the five closures and the FW-1 L2 amendment.
+
+### Compiled Update — 2026-09-17 (doc audit + restructure): the HS-4 record now reads as decided, one P0.3 finding is reversed, the two agent-loop stubs are hardened, and the typed-decision plane has its first local numbers
+
+**Confidence: verified** for source-level facts at the cited commits and for the MI210 measurements (receipts projected into the belief kernel); **inferred** for the design reasoning. Session records: [`progress/2026-09/2026-09-17-harness-doc-audit.md`](../progress/2026-09/2026-09-17-harness-doc-audit.md), [`progress/2026-09/2026-09-17-intake-jev-sageattn.md`](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) (implementation round, bottom).
+
+The operator asked "is there anything that could be refined?" over the HS-4 document set and the two new agent-loop handoffs. Four read-only agents found that the decision had been *recorded* but not *propagated*: every summary surface around the ✅ line still argued as if the selection were open. Two findings from the 2026-09-16 pass are corrected below, and the typed-decision plane moved from filed to measured in one session.
+
+#### Key findings
+
+- **A decision is not recorded until its summary surfaces agree with it.** After the 2026-09-16 ✅, the candidates table still said "selection is OPEN" with OpenCode "TBD (no eval yet)", the Status line said Phase 0 "not started" although P0.1/P0.2/P0.3/P0.5 had landed, and the dependency graph still terminated at "HS-4 selection decision". Fixed: a post-decision candidates table (SELECTED / FALLBACK / Not selected, each with its pointer), a Status line carrying the per-step Phase-0 state, and a graph rooted at the decision. Also fixed: `HS-5` and `HS-6` each named two tasks; the later-born ones are now `HS-5c` (fold omp into the packet) and `HS-15` (rewrite the cooperation contract against the CAPABILITY, not a field name); IDs are stable and never reused ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
+- **Attribution precision: the operator chose the posture; the design pass settled the shell; the operator confirmed it a day later.** The 2026-09-16 record attributed the OpenCode pick to the operator, who had in fact chosen "thin shell, features in the orchestrator" and named "OpenCode or oh-my-pi". On 2026-09-17 the operator confirmed OpenCode ("flexible enough to mold into what we want"); the gap is closed in root `927d44cb`. pi remains the fallback, invoked only if OpenCode fails P0.4.
+- **CORRECTION to the 2026-09-17 HS-4 section below (finding 5) — FastMCP does not silently drop an undeclared `session_id`; at our pin it REFUSES the call.** The orchestrator pins `fastmcp>=3,<4`; FastMCP 3.x rejects a call carrying an undeclared argument (`tests/unit/test_mcp_undeclared_args_refused.py`). The 2026-09-16 shard reasoned from `mcp` 1.27.0's `ArgModelBase` without `extra="forbid"` — a different package version than the one the server runs. The requirement is unchanged and now met: every `@mcp.tool()` in `src/mcp_server.py` declares `session_id: str = ""` and forwards it (orch `54b6439d`). The lesson is the build-artifact rule applied to a dependency: verify the behaviour against the *pinned* tree, not the version you happen to have read ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md)).
+- **Pin drift and two ghosts.** Both HS-4 design docs quoted OpenCode `4bffbb655`; the audited pin is `350c726a` (v1.18.31, 700 commits later) — outcome banners and superseded-pin notes were added rather than rewriting the matrix. Two defects fixed on 2026-09-16 were still described as live: the `/v1` `recall()` failure (orch `83c7ed2f`) and the inert `mempalace:` block (root `91d56181`). Corrections were **appended** to the three dated shards, never rewritten ([sub-hermes-memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md), [sub-hs4-p0](../progress/2026-09/2026-09-16-sub-hs4-p0.md) — whose two pre-rebase hashes exist on no ref; the work is `ed554da2`/`b44ab3a8`).
+- **Phase-0 state of record (2026-09-17).** P0.1 client-executed tool mode and P0.2 typed `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` (422 on bad values, `request_keys` echo, `v1_client_session_guard` tripwire) are on orchestrator main (`ed554da2`, `b44ab3a8`) but **not deployed until the API reloads**; P0.3 is done at the pin with the plugin/template/lint under `harness/opencode-plugin/` (45/45 wire-contract tests after the P0.3b `User-Agent` stamp, root `71569c2c`); P0-MCP-a/b landed (`54b6439d`, root `.mcp.json` on the venv — a container-only path); the P0.4 runner `scripts/harness/hs4_p04_acceptance.py` (root `76917360`, 25 offline tests) carries the SC86 belief-kernel hook as P0.5; OpenCode 1.18.31 is installed but the devcontainer Dockerfile does not install it, so a rebuild drops the pin (follow-up filed). **Boxes are ticked only at the P0.4 live gate — code landed but not reloaded is text evidence, not a tick.** Residuals recorded, not fixed: `x_max_escalation` is described as capping escalation while `/v1` only records it (P4-pre); unknown `x_*` keys outside the typed set are still silently ignored (`extra="ignore"`); `/v1` B2 compression still fails open to the unfolded history.
+- **The Phase-0 split is approved and deliberately gated.** Moving Phase 0 into its own `opencode-shell-integration.md` with a `UFH-NN` row waits for the P0.4 live run to land, because that run is owned by another session and work must not be moved under a new handoff mid-flight (`HS-4 P0-split`).
+- **The fuzzy-workflow handoff named the deterministic/fuzzy boundary without defining it; it now has a contract.** FW-1 opens with the pseudocode loop block `docs/guides/agent-workflows/agent-loop-design.md` requires (every actor and what it reads; every gate and its rejection grounds; where every rejection GOES; the one step that costs real resources; one independent budget per gate), and a **dangling rejection edge is a lint error for the GUI, not a warning**. The fuzzy-node contract: typed output (`choice`/`score`/`null`) plus a probability; **a fuzzy node may not branch on model confidence until TD-2 lands**; schema-invalid output after the declared retry budget routes to a *declared* node (abstain / escalate / deterministic fallback), never off the canvas; every model call goes through `LLMPrimitives`. FW-2's placement question is **closed, not an operator choice**: HS-4 §2 admits shell plugins only for configuration, and the dashboard plane rule puts the page on the hub `:8100` with a registry row, probe and freshness envelope while the data contract (workflow schema, executor, `/dashboard/api/workflows/*`) lives in the orchestrator — nothing in the shell. FW-4 files the write-side belief-kernel row prospectively; the FW-1 harness refuses to run without the hook ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md)).
+- **The improvement loop's mutation object is now bounded.** Mutable arm: the feature prompts and parameters the eval suite measures (summarisation/review/delegation prompts, compaction thresholds, memory-recall knobs). Policy documents — `AGENTS.md`, `SKILL.md` folders, `HARNESS_RUN_POLICY.md` — are proposal-only and human-applied, exactly as P5's skill export is a reviewed commit (HS-7 re-targetability, HS-5b freeze-before-tuning). The HIL-4 decision-package draft is the A/B/C table with **B (sibling loop importing AutoPilot's journal/gate/guards/fingerprints) preferred**; C re-lives the fail-open, stale-frontier, leakage and comparability bugs already fixed. Pure shell surface is out of scope for any loop ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
+- **Standing material promoted out of the handoff.** HS-7 re-targetability and HS-10 evaluation-side randomization are now [`harness-doctrine.md`](../docs/reference/harness-candidates/harness-doctrine.md); the two Harness Cards are [`harness-card.md`](../docs/reference/harness-candidates/harness-card.md) (`HARNESS_RUN_POLICY.md` requires a run report to name the applicable card; the two cards answer *what can be changed without code* and *what configuration produced a score*; a model or freeze change refreshes the conformant card before a result is called re-targetable); the HS-1g call-verb matrix joined its instrument in [`client-surface-audit.md`](../docs/reference/harness-candidates/client-surface-audit.md). The restructure pattern itself is compiled in [Knowledge Management](knowledge-management.md).
+- **The typed-decision plane went from filed to measured in one session — and this supersedes "none measured on this host" in the research-intake section below.** TD-1/TD-2/TD-3/TD-4 are implemented in `epyc-orchestrator` (`src/typed_decisions/`: types, Draft 2020-12 schema, JSON runner with typed failures and corrective retry, adapter-verified confidence formulas, native candidate-scoring path, bench harness, closed-set tool-arg mapping; flag `typed_decisions` default off, wired to no route; 87 unit tests). Live on the MI210 against the frozen-v9 HIP server, 24-question decision set: **contamination flip rate 6.25%** (Qwen3.8-27B-Q8_0, 3/48 pairs) vs **37.5%** (LFM2.5-2.6B, 18/48); **calibration 91.7% acc / ECE 0.0625 / Brier 0.078** (27B) vs 50.0% / 0.267 / 0.313 (LFM) — one 27B miss at ~0.90 confidence, so the tail is not empty; **fan-out 1.54x** (3 batched vs 12 singleton calls, 100% agreement, LFM) — the saving is per-call overhead at this state size. **The TD-1a native arm failed closed**: 23/24 `native_unknown_candidate` because candidate strings were presumed single-token without tokenizer access (emitted `'fal'`/`'set'`); the JSON arm ran 24/24 in 36.7 s. No speedup number may be claimed until TD-1b (tokenizer-aware candidates via `/tokenize`, explicit JSON fallback for multi-token candidates). The TD-2 gate is SATISFIED for a *first shadow* (TD-5): choose one live surface (routing classifier or judge) with its owning handoff; no enforcement without operator approval. Write side first (VB-TDP-1): `scripts/vidya/adapters/typed_decisions_measurement.py` projected 5 receipts → 11 claims / 33 frames, and the bench report was refused as a non-measurement. Caveats: a small window between autokernel CPU runs, one 24-question set, a first measurement rather than a protocol run — the vendor multipliers stay banned, and intake-1486's 24.7% order sensitivity is now bracketed locally at 6.25% (27B) / 37.5% (2.6B), i.e. model-size-dependent ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane)).
+
+#### Open questions
+
+- Which live surface takes the TD-5 shadow arm, and does the 27B's 6.25%/ECE 0.0625 hold on that surface's real question distribution rather than the 24-question fixture?
+- TD-1b: does tokenizer-aware native matching reproduce the JSON arm's argmax (≥20/24) with a measured speedup on the same server?
+- P0.4 live acceptance (inference, after an API reload at or past orch `54b6439d`) is still owed and is the only gate that flips the Phase-0 boxes and freezes the pin.
+
+#### Source References (2026-09-17 doc audit + restructure)
+
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — post-decision record, Phase-0 state, HS-5c/HS-15 renames, P0-split, P4-pre, the history/promotion table.
+- [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — the four audit findings, what was applied, the operator decisions and the restructure.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the typed-decision implementation round and MI210 measurements.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1..TD-5 state, TD-1b, the TD-2 gate verdict.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — fuzzy-node contract, FW-2 placement, FW-4.
+- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — bounded mutation object, HIL-4 draft.
+- [harness-doctrine.md](../docs/reference/harness-candidates/harness-doctrine.md), [harness-card.md](../docs/reference/harness-candidates/harness-card.md), [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the promoted standing material.
+- [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md), [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — outcome banners and superseded-pin notes.
+- [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md), [2026-09-16-sub-hermes-memory.md](../progress/2026-09/2026-09-16-sub-hermes-memory.md) — the appended 2026-09-17 corrections.
+
+### Compiled Update — 2026-09-17 (research-intake delta: one-pass typed decisions, deterministic/fuzzy authoring, and compiled specialists as loop steps)
+
+**Confidence: external for every number below (dive-verified against pinned primary sources; none measured on this host); verified for the filings and the operator rulings.** Session record: [`progress/2026-09/2026-09-17-intake-jev-sageattn.md`](../progress/2026-09/2026-09-17-intake-jev-sageattn.md).
+
+The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all operator-steered: a one-pass typed-decision plane for the orchestrator's schema/tool calls, a GUI that separates deterministic flow from fuzzy steps, and PAW compile-once specialists as the fuzzy nodes themselves.
+
+#### Key findings
+
+- **The typed-decision plane is filed as the orchestrator's one-pass decision primitive (RTG-56).** Declared typed questions (`choice` / `score` / `noul`) in; per-question values, probabilities and a caller-computed confidence statistic out; no autoregressive JSON generation. Operator steering: "extremely relevant for the orchestrator where json schemas are passed and tool use is important … guarantees exact tool use and also a pretty large overall speed boost … may also be relevant for fast routing and episodic memory writing." TD-1 implements the call path over frozen v9; TD-2 measures cross-question contamination and confidence calibration; **TD-5's shadow integration is BLOCKED until TD-2 lands.** ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **Calibration, not speed, is the gap.** Candidate-softmax confidence is uncalibrated — 65% of a 7B's wrong fields scored >0.90 (intake-1474) — and guarantees are not quality: an independent rerank reproduction ties Cohere Pro (nDCG 0.692 vs 0.691, CI crosses 0) with **24.7% order sensitivity** (intake-1486). The measured local speedup is **3.4–7.9x** over same-model JSON, not the 40–200x the vendor material implies (intake-1474/1487). No gate may consume the confidence until TD-2 produces our own ECE/reliability numbers.
+- **The authoring GUI (UFH-09) separates deterministic code nodes from fuzzy nodes whose runtime is RTG-56 or a compiled program.** Operator: "a GUI for designing high level processes that clearly separate deterministic flow from fuzzy LLM work in a meaningful way." FW-2 is an operator decision against HS-4's thin-shell verdict: orchestrator page vs harness plugin vs deferred. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
+- **PAW compiled specialists are the fuzzy-node implementation candidate (INF-76).** Compile recurring fuzzy subtasks (tool-output classification, log filtering, JSON repair, routing predicates) into tiny local specialists; the intake-811 re-open trigger is MET on artifact availability (weights 2026-06-07, FuzzyBench data 2026-02-17, both predating the 2026-07-11 blocker) and NOT met on capability (no official self-hosted compile; an unofficial MIT server works for the default Qwen3 compiler, intake-1481#record). Independent eval reports 94–97% on **one adversarial task, n=100, author labels** (intake-1482). License scope resolved by operator ruling: **internal research use only** (OP-43 closed). ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
+- **The closed-set tool-argument arm is the tool-use expression of the same primitive.** Literal→Choice, list[Literal]→multi-choice, bool→Noul, with per-argument confidence, scored on exact-match argument correctness against the free-form path (TU-TD-1 / TD-4). ([tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
+- **Verification discipline rides with the mechanism.** The independent audit of the reference implementation (intake-1490) found its shipped shuffled-context control defective; the informed-vs-blind lift was ~25 points only after correction. The same discipline is filed for new judge instruments as CJ-14 (hashed manifests, blind probe as the lower bound, pre-registered per-item distributions).
+
+#### Open questions
+
+- Does question-order contamination reproduce at our batch sizes (intake-1486 measured 24.7%), and which confidence statistic survives local calibration?
+- Does the frozen v9 server's json_schema→GBNF converter accept the nested probability-map schemas the adapter generates?
+- FW-1: does the GUI edit a declarative document the orchestrator executes, or generate code?
+
+#### Source References (2026-09-17 research-intake delta)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1…TD-5, the operator steering, and the calibration blocker.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1…FW-3 and the HS-4 build-posture decision.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — the re-open trigger status, OP-43 scope ruling, and PAW-2…PAW-5.
+- [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TD-1 closed-set tool-argument arm.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's verified findings of record.
+
+### Compiled Update — 2026-09-17 (evening): the HS-4 P0.4 preflight is green, and a container rebuild would undo it
+
+**Confidence: verified**: operator-applied changes recorded in the handoff and `opencode --version`.
+
+#### Key findings
+
+- **P0-MCP-a is done.** The operator applied the root `.mcp.json` edit (root `ed1dfd57`). It takes effect
+  for Claude Code sessions started after the edit. This supersedes the afternoon line "prepared but not
+  applied". [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
+- **The audited OpenCode pin is installed.** The operator ran
+  `sudo npm install -g --prefix /usr/local/share/npm-global opencode-ai@1.18.31`, and `opencode --version`
+  prints 1.18.31 (root `de71a69a`).
+- **The install is not durable yet.** The devcontainer Dockerfile does not install OpenCode, so a rebuild
+  drops it. A follow-up is filed to pin `opencode-ai@1.18.31` there, coordinated with the owner of the
+  Dockerfile's uncommitted edits.
+- **The P0.4 live acceptance is ready, but gated.** It waits for the operator's GPU/inference signal and an
+  API reload first. [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+
+#### Source References (2026-09-17 evening)
+
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0-MCP-a, P0.4 preflight and its follow-up.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): landing table and state at close.
+- [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md): the preflight that found 1.18.18.
+
+### Compiled Update — 2026-09-17 (afternoon): a prefix-scoped plugin stamps every tool, and the shell's acceptance test is ready but not run
+
+**Confidence: verified**: code, tests and OpenCode source reads at the audited pin. No inference ran.
+
+#### Key findings
+
+- **A plugin hook keyed on a server prefix stamps every tool on that server.** OpenCode names MCP tools
+  `<server>_<tool>`, and the plugin's `orchestrator_` prefix therefore matches every tool the `orchestrator`
+  server exposes. Declaring `session_id` on the two chat tools alone would have left `lookup_model`,
+  `list_roles` and the rest refusing every stamped call under fastmcp 3. So every tool in `src/mcp_server.py`
+  now declares `session_id: str = ""`, and only the chat tools forward it (orchestrator `54b6439d`, 10 tests,
+  4 of which fail on the previous server). It goes live at the next API reload and MCP server restart.
+  [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
+- **Launchers must name the venv.** The script-registry launcher used a bare `python3`, and it now uses the
+  venv (P0-MCP-a). The root `.mcp.json` still names `/home/daniele/miniforge3/bin/python3`, which does not
+  exist in the container. That edit is harness configuration, so it is prepared but not applied.
+  [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
+- **P0.4's acceptance verdict is offline, and its token count has to undo two OpenCode conventions.**
+  `scripts/harness/hs4_p04_acceptance.py` works in four stages (25 tests):
+  - `plan` gates the run.
+  - `prepare` builds a scratch repo with a broken fixture.
+  - `run.sh` is the only step that sends inference.
+  - `verify` checks the read→edit→bash order, per-session tap keys, no compaction or subtask parts, and no
+    foreign-session calls.
+
+  Tokens are summed over step-finish parts as `input + cache.read + cache.write`, because OpenCode's
+  `tokens.input` excludes cache tokens and a message's `tokens` holds only its last step. `verify` is also the
+  SC86 belief-kernel write hook.
+
+  A fixture used `python3 -B` because a same-length, same-second edit reused a stale `.pyc`. Preflight found
+  the installed OpenCode at **1.18.18** against the audited pin **1.18.31**, and a follow-up is filed.
+  [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
+
+#### Source References (2026-09-17 afternoon)
+
+- [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC86 tick condition.
+
+### Compiled Update — 2026-09-17 (later): the HS-4 seam closes on main, and two swarm-research mechanisms get rows
+
+**Confidence: verified** for the code on orchestrator/root main at the named commits and for the tests quoted (read from the handoff). **external** for the CORAL/SwarmResearch and harness-null-pool items: dive-verified intake entries that motivate filed rows and gate no local decision. The live OpenCode read→edit→bash loop is still unrun.
+
+The previous pass decided HS-4's shape (thin OpenCode shell, features inside the orchestrator) and found the seam blocker — `/v1` never emitted `tool_calls`. The code that closes P0.1/P0.2 is now on `main`, the P0.3b User-Agent marker landed, and a live `/v1` defect that would have made memory recall silently useless was found and fixed on the way.
+
+#### Key findings
+
+- **P0.1/P0.2 are on orchestrator main (`ed554da2`, review fixes `b44ab3a8`) and not yet deployed.** `x_tool_mode="client"` forwards tools, `tool_choice` and structured tool history to llama-server `/v1/chat/completions` and returns `tool_calls` with `finish_reason:"tool_calls"` in both stream and non-stream modes; the REPL bridge stays the default and is golden-pinned. The typed headers `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` are validated (422) and echoed in `x_orchestrator_metadata.request_keys` and the inference-tap metadata, with `x_memory` recorded only until P2. Flag `v1_client_session_guard` (default on) returns 422 for OpenCode-UA or client-mode requests without `x_session_id`. Client-mode routing reuses the same role resolution and `_real_call` admission/locks/fallback/tap, and escalation is unchanged (P4). Remaining for P0.1: the live OpenCode read→edit→bash loop (P0.4). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **P0.3b: the session-stamping marker is in the template and lint-enforced (`71569c2c`).** The OpenCode config template sets `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` and the lint requires it (45/45 wire-contract tests). The v2 session runner path remains uncovered. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **`/v1` `recall()` was silently dead (`83c7ed2f`).** `/v1` REPLs now get the shared retriever and `hybrid_router`; the legacy fallback uses the real `retrieve_by_similarity` instead of a no-op; failures log at ERROR and return `status:"unavailable"`, and `STUCK()` skips unavailable payloads. Live after the next API reload. A separate inert config block was removed: `scripts/hermes/hermes-config.yaml` had a `mempalace:` block Hermes never reads (MCP servers come only from `mcp_servers:`), commented out on root `91d56181`. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **Two MCP-server gaps are filed.** HS-4 P0-MCP-a: root `.mcp.json` launches the orchestrator MCP server with a miniforge `python3` whose fastmcp version is unverified, while the project venv (fastmcp 3.3.1) refuses undeclared arguments — pinned by `tests/unit/test_mcp_undeclared_args_refused.py` — so `orchestrator.command` should point at the venv interpreter. HS-4 P0-MCP-b: `orchestrator_*` and `memory_*` declare `session_id: str = ""` but never carry it, a silent drop now visible because `ChatRequest.session_id` exists. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **Two swarm-research mechanisms are filed under AC-CORAL and AC-branch-per-agent.** AC-CORAL pins CORAL v0.7.20 (`bbae4f72`) and spikes its shared-state design (`.coral/public` attempts/notes/skills plus heartbeat reflect-1/consolidate-10/pivot-5) against orchestrator `/v1`, with opencode/codex as runtimes and an equal-spend control per the fan-out A/B constraints. AC-branch-per-agent drafts the SwarmResearch-pattern search harness: branch+worktree per search agent, fresh-context explorers, lineage `findings.md`, a shepherd holding global context, and width/depth adaptation with explicit spawn telemetry. ([agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
+- **The harness-null-pool evidence packet (HS-E1) is filed for HS-4.** It collects intake-1444 (30 budget-matched harnesses, 3.1M rollouts, no universally superior harness; checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (an independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable count (intake-1450) as evidence rows only. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+
+#### Open questions
+
+- Does the live OpenCode read→edit→bash loop (P0.4) actually close with the client-mode tool path, or does the v2 session runner's missing plugin hook bite first?
+- Does HS-4's decision doc carry the HS-E1 packet, or does it remain a handoff-only annex?
+- AC-CORAL's equal-spend control is a constraint, not a design: what is the measured baseline it must match?
+
+#### Source References (2026-09-17 later pass)
+
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0.1/P0.2 (`ed554da2`, `b44ab3a8`), P0.3b (`71569c2c`), the `/v1` recall fix (`83c7ed2f`), the mempalace removal (`91d56181`), P0-MCP-a/b, and the HS-E1 packet.
+- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
+- [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the intake batch behind the HS-E1 rows.
+- [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md): the P0 lane record the filed items reference.
+
+### Compiled Update — 2026-09-17: HS-4 decided — a thin OpenCode shell, Hermes features rebuilt inside the orchestrator, and the seam blocker no audit had looked for
+
+**Confidence: verified** for source-level facts at pinned SHAs (OpenCode `350c726aa`/`4bffbb655`, oh-my-pi
+`37eee719`, pi `ceea48f5`, Hermes `532a49f1`, dsh `0d1f5000`, orchestrator `83c7ed2f`/`92bbeb06`, kernel
+`0db32c06e`) and for the offline plugin tests. **inferred** for the design choices and phase ordering. External
+harness rankings stay OBSERVATION-grade and were explicitly kept out of the selection.
+
+**The decision.** On 2026-09-16 the operator closed HS-4. The shell is a **thin off-the-shelf harness: OpenCode,
+with pi as fallback**. The Hermes features we want (user-profile memory, notes, `session_search`, delegation,
+background review, compaction) are built **inside the orchestrator**, as implicit `/v1` behaviour plus MCP tools.
+The rule is one memory system, one router, and no shell patches to carry. The shell carries one first-party
+plugin that stamps session identity onto each request. It is written against OpenCode's documented hook API,
+so it counts as an integration, not a fork. Hermes was not selected, and its handoff moved to `completed/`.
+**This supersedes two older passages on this page:** the 2026-07-16 bullet saying OpenCode and ACP speakers
+"remain open candidates", and the Hermes/OpenGauss coordinating-handoff paragraph ("design + intake; no
+production deployment yet"). Hermes is now a closed, reference-only evaluation.
+
+**How the package was argued.** The zero-inference decision package scored five options (A OpenCode, B pi,
+C oh-my-pi, D Hermes, E dsh) plus F, defer. The primary axis was whether every *default* request path honours
+a config-declarable top-level body key. Trainability and external benchmark numbers were excluded as selection
+evidence. It recommended A: OpenCode was the only candidate combining lever coverage on all default paths,
+native MCP, a real (if porous) permission layer, headless JSON output, and config switches for each of its own
+layer-(B) behaviours. The A-vs-B tie-break was whether the frontend must consume orchestrator tools over MCP
+natively. The follow-through design then rejected oh-my-pi, for three reasons: its `retry.fallbackChains` is a
+second model router, switchable off only by one boolean (`retry.modelFallback:false`) that must be re-audited on
+every bump; its approval default is `yolo`; and about 73% of its recent commits come from one maintainer and his
+bot. *A router that does not exist beats one that is disabled.* Building the features server-side won on every
+criterion. Routing compliance holds by construction because side calls go through `LLMPrimitives`. M-12 and the
+belief kernel can see the state. A shell swap loses nothing (HS-7).
+
+**The HS-1g call-verb check became a standing instrument, and it changed the Hermes verdict.** A lever in a config
+descriptor can be honoured on one call path and silently ignored on another. The class has now been seen in
+oh-my-pi, pi-ai, Hermes and llama.cpp's own README. The check was run on all five candidates. Findings:
+
+- OpenCode, oh-my-pi and pi honour the lever on every default path.
+- dsh exposes no lever on its pi-ai route.
+- Hermes honours it on the **main loop only**. Compaction, the iteration-limit summary, `flush_memories`,
+  `delegate_task` children, background review and the `session_search` summary all bypass it.
+
+**This corrects the 2026-07-17 HS-1b "SUFFICIENT, patch cost ≈ 0" verdict**, which holds only with compression
+off and `delegate_task` gated. The memory audit grew Hermes's patch surface from four paths to six, and that was
+a material input against Hermes. The instrument now lives in a standalone Client Surface Audit. It adds a fifth
+step: a competing-router grep. It also states the design rules: client UX stays in the client, and a typed `x_*`
+field always beats memory prose.
+
+**A seam blocker no earlier audit caught.** HS-1 and HS-1g audited only the *request* direction. At `83c7ed2f`,
+`/v1/chat/completions` **never returns `tool_calls`**. Client tools are rewritten into prompt text for the
+internal REPL's `CALL()`, which resolves names against the orchestrator's own registry. Against today's
+`:8000`, every agentic shell degrades to a chat window with no working tools. The fix is P0.1, an opt-in
+client-executed tool mode (`x_tool_mode="client"`) that forwards `tools` and tool history to the backend
+chat-completions path and returns `finish_reason:"tool_calls"`. The REPL bridge stays the default, so the eval
+tower does not change.
+
+**P0.3: OpenCode re-audited at its tip, and the plugin shipped.** OpenCode was re-audited at `350c726aa`
+(v1.18.31, MIT, 700 commits past the HS-1g pin). The check covered 15 request paths. All default paths honour
+`chat.params`. The top-level, unrenamed wire shape was proven offline against the pinned
+`@ai-sdk/openai-compatible@2.0.41` using a capturing fake fetch. A no-fallback grep found no runtime router. Five
+findings changed the P0 plan:
+
+1. A user-typed `@agent` subtask bypasses `permission.task:"deny"`. The template therefore also needs
+   `subagent_depth:0` and disabled `general`/`explore` agents, and the lint enforces all three.
+2. HS-1g missed the **v2 session runner** (`/api/session/:id/prompt`). It has no plugin hook, so it is a silent
+   no-op. No in-tree client uses it, and it is now a per-bump watch item.
+3. A plugin that fails to load is only logged upstream, and `OPENCODE_PURE` skips all plugins. The plugin fails
+   closed at hook time. The residual (an *absent* plugin) needs an orchestrator-side 422 tripwire for
+   OpenCode-marked requests that lack `x_session_id`. P0.3b added a `User-Agent` marker so the guard can also
+   fire on SDK calls outside `prepare`.
+4. `:8000` currently accepts unknown `x_*` keys and ignores them (pydantic `extra="ignore"`), so P0.4 must
+   follow P0.2.
+5. FastMCP silently drops an undeclared `session_id`, so every session-aware MCP tool must declare one. *(Corrected 2026-09-17: at the pinned `fastmcp>=3,<4` an undeclared argument is REFUSED, not dropped — see the 2026-09-17 doc-audit section above; the declare-`session_id` requirement stands and is met at orch `54b6439d`.)*
+
+The title call is now keyed, which retires an HS-1g caveat, and it stays disabled anyway. The plugin, config
+template, env file, lint and tests are merged under `harness/opencode-plugin/`. The recorded runs are 40/40
+with the SDK contract enabled, and 45/45 after P0.3b.
+
+**Where each feature lives, and what the audit found already exists.**
+
+- **User-profile injection is dead code.** `PromptBuilder.get_system_prompt()` has no serving caller.
+- **`derive_preferences()` has no caller** outside its tests.
+- **B2 compression is wired on `/v1` but off.** It is also stateless per request, which defeats the prefix
+  cache, and it fails open. So server-side folding with a session fold cache is P1: once shell compaction is
+  off, long sessions fail without it.
+- **Phase order:** P2 is profile + notes, P3 is `session_search` through a `/v1` transcript write side (ranked
+  snippets, no per-search LLM summary), P4 is an `orchestrator_delegate` MCP tool plus `/v1` routing parity,
+  and P5 is proposal-only background review.
+- **Deliberately not rebuilt:** Honcho, session re-keying, per-search summaries, autonomous skill creation
+  (it breaks HS-7 and the HS-5b freeze-before-tuning order) and the iteration-limit summary. The multi-platform
+  gateway was flagged for operator interest rather than dismissed.
+- **Memory:** why Hermes memory and the episodic store are complementary in data but compete in mechanism is
+  covered in [Memory-Augmented](memory-augmented.md).
+
+**Structured output and the Harness Card.**
+
+- **HS-13** records the structured-output seam as two layers. The frozen kernel does grammar-constrained JSON
+  through `json_schema_to_grammar`. `:8000` refuses `response_format` with a 422, by decision. The native
+  `/chat` REPL path is parse-and-retry, and its flag is off by default. The kernel `README.md:1239` example puts
+  the schema at the wrong nesting and silently yields unconstrained JSON.
+- **HS-6c** published a conformant ETCSOVG Harness Card for the eval tower (`epyc-orchestrator@92bbeb06`). It
+  names 13 undisclosed or unfixed fields, including no REPL/scorer isolation, no eval-wide network-off switch and
+  auto-approve. So any cross-harness comparison on the tower is locked-harness only, and whichever shell is
+  chosen runs in an operator-provisioned jail.
+- **HS-6b** corrected one card row: harness compaction "can defer" only where the compaction path honours the
+  lever or compaction is off.
+
+**Improvement loop: a stub, deferred.** Moving the features server-side makes them files that improvement
+machinery can mutate and measure. The preferred shape is a sibling loop that reuses AutoPilot's journal, gate,
+guards and fingerprints (option B). A fully separate loop is not recommended, because it would re-live the
+fail-open, stale-frontier, leakage and comparability bugs already fixed.
+
+#### Key findings
+
+- Operator decision: OpenCode shell (pi fallback), Hermes-style features inside the orchestrator, one memory
+  system and one router, P0–P5 plan ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
+  [hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
+- The package recommends A OpenCode, with pi as the minimal-import alternative and a native-MCP tie-break. The
+  live requests are acceptance checks for the chosen harness, not discriminators between candidates
+  ([hs4-decision-package](../docs/design/hs4-harness-decision-package-20260916.md),
+  [progress sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md)).
+- `/v1` never emits `tool_calls` (`openai_compat.py:228,322-331` @ `83c7ed2f`), so client-executed tool mode is
+  P0.1 for every shell ([hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
+- HS-1g call-verb matrix: Hermes main loop only (six bypass paths once the memory audit is counted), which
+  corrects HS-1b's "≈0 patch"; the dsh pi-ai pin bump is already upstream, which corrects HS-1e
+  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
+  [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md),
+  [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md)).
+- OpenCode at `350c726aa`: 15 paths audited, with two silent no-ops (E11 `agent create`, E12 v2 runner) that are
+  unused by our clients; `@agent` bypasses the `task` deny; unknown `x_*` keys are silently ignored at `:8000`;
+  FastMCP drops an undeclared `session_id` *(corrected 2026-09-17: refuses at the pinned FastMCP 3)*
+  ([opencode-p03-audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md),
+  [progress sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md)).
+- The reusable audit instrument now has Steps 1–4 plus a competing-router grep; client UX stays in the client,
+  and typed `x_*` beats prose ([client-surface-audit](../docs/reference/harness-candidates/client-surface-audit.md)).
+- Hermes closure: 11 open boxes dispositioned (2 ticked on item-G evidence, 4 superseded, 5 moved to the HS-4
+  P0.4 carry box); the local-only commit `532a49f1` preserved as a patch; config lesson: a key no code reads
+  (`mempalace:`) fails silently, so grep the pinned tree before calling a feature wired
+  ([hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md),
+  [progress sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md),
+  [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md)).
+- HS-13 two-layer structured-output record and the kernel-README silent no-op; HS-6c conformant card with 13
+  named gaps; HS-6b one-row correction
+  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
+- Harness-improvement loop: option B (sibling loop on the shared AutoPilot substrate) is preferred; HIL-1..5
+  are not started ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
+
+#### Open questions
+
+- P0.1, P0.2, P0.4 and P0.5 are not landed. P0.4 (live top-level arrival, a republished Harness Card, and the
+  pin freeze) needs inference and must follow P0.2. SC86 belief-kernel write-side wiring must precede any
+  measured shell run.
+- E12, the OpenCode v2 session runner, has no hook and is not shown to receive the `User-Agent` marker. It stays
+  a per-bump watch item, alongside the native-runtime provider gate.
+- HS-1f.1 (one live pi request) is still unrun. It becomes an adoption gate only if the fallback is ever taken.
+- The HS-14 local bake-off happens after the freeze and needs a region claim.
+
+#### Sources
+
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-4 decision and P0–P5 boxes, the HS-1g matrix, HS-13, HS-6b/6c, HS-5/HS-1e/HS-14 packet folds.
+- [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md) — options, evidence matrix, sandboxing, recommendation and tie-break.
+- [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — shell choice, the `tool_calls` blocker, feature map, phased plan.
+- [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 15-path re-audit, P0 findings, plugin tests, P0.3b User-Agent marker.
+- [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the reusable instrument and design rules.
+- [hermes-evaluation-20260916.md](../docs/reference/harness-candidates/hermes-evaluation-20260916.md) — Hermes bypass paths, plugin behaviour, config lessons.
+- [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) — closure note and box dispositions.
+- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — improvement-loop options.
+- [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md), [sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md), [sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md) — session records for the above.
+
+### Compiled Update — 2026-09-14: harness rank tracks model class, and a hand-off the architect cannot follow is a silent confident-wrong path
+
+**Confidence: verified** for source-level harness facts at pinned SHAs and orchestrator code facts. External
+rankings are OBSERVATION-grade: they shape what a local bake-off must measure and **never gate HS-4**
+(MEASUREMENT.md).
+
+**Which harness wins depends on the model class.** One author's ten-harness SWE-bench Pro grid (250 held-out
+tasks, one rollout, about ±6 pp per cell) found two things. First, holding the model fixed and changing
+only the harness moved pass@1 from 23.2% to 52.4% on GLM-5.2-744B and from 15.2% to 36.0% on
+Gemma-4-26B. Second, the ranking did not carry across those two models (Spearman −0.05). Vendor harnesses
+fell on the small model and model-agnostic ones rose. A later Terminal-Bench 2.1 grid by the same author
+used a 30B dense model (Muse-Glimmer, 50 tasks × 3 trials). Its order **matches** the Gemma-4 grid
+(ρ +0.76 on 8 shared harnesses, one-sided exact p = 0.018) and does not match GLM-5.2 (−0.21), even though
+the benchmark changed. So "harness rankings do not transfer" is too strong. Rank looks tied to model class,
+with benchmark a secondary factor. All of this comes from one author, and that model cannot be served on v9.
+On the 30B, opencode (41.3%), qwen-code (40.0%), mini-swe-agent (39.3%) and pi (37.3%) form a top cluster at
+least 10.7 pp above the rest. Gaps within the cluster (≤4 pp) are not resolved. Even so, hermes, near the
+bottom there (24.7%), beat opencode on GLM-5.2 (39.6 vs 28.0).
+
+**Thinking mode alone can reorder harnesses.** In a partial thinking-off arm on Gemma-4 (uneven n = 86–191,
+non-randomly censored), crush, opencode and pi lost ~2/3 of their score while claude_code did not move.
+Our production roles run `enable_thinking=false`, so thinking-on external rankings do not transfer to them.
+
+**Harness cost on our hardware is prefill, not decode.** Per attempt, harnesses re-sent 1.78M–5.12M input
+tokens against 17k–36k output, a ~2.8x spread in re-sent context, and 96–98% of input was cached where
+cache data exists. HS-14 therefore sets the local bake-off columns: pass@1, input tokens per attempt,
+prefix-cache hit share, and prefill tokens per solved task, all on served models at production
+`enable_thinking`.
+
+**"pi" is one repository, not two siblings.** `earendil-works/pi` is `badlogic/pi-mono` renamed: same
+GitHub repository id, and the old API path returns 301. oh-my-pi is a detached fork of it at about
+upstream 0.50. The harness-selection passages calling them sibling forks are corrected in place. HS-6's
+capability wording survives unchanged. It asks for config-declarable arbitrary top-level body keys on the
+call verb the harness actually uses, because two lineages grew that primitive under different names. A
+source-level score of pi (HS-1f, no live request yet) found the following:
+
+- It uses the simple call verb everywhere, including CLI compaction, so a `models.json` `samplingParams`
+  lever reaches the request body. Wire-level confirmation is HS-1f.1.
+- Its built-in llama.cpp provider requires llama-server **router mode** and throws otherwise. Our topology
+  needs a custom `models.json` provider carrying the built-in llama compat flags, with `maxTokens ≤ 32768`.
+- It has no MCP, ACP or permission system, so it must be containerised.
+- `compaction.enabled=false` disables both threshold and overflow folding.
+- It has an install ping and a separately controlled update check (`PI_OFFLINE=1` covers startup).
+- If an efficiency extension's log reducer is ever used, route it to a local llama-server, never the
+  hosted default.
+
+**Delegation hand-off fidelity (DCP-13).** An external repository-QA study compared a ReAct agent with a
+pre-built index (65.2% pass) against a planner that delegated grep/read exploration to a sub-agent (46.2%).
+Hand-off breakdown caused 41.8% (414/990) of the delegated arm's failures, and ~91% of those still produced
+a fluent, confident answer. It is a **bundle** comparison (no index and delegation changed together), and
+one cloud model supplies 65% of the pooled gap (19.0 pp → 8.7 pp without it). It is not evidence that
+summarising sub-agent reports causes wrong answers. What it prompted was a code audit, and the code facts
+stand on their own:
+
+- The architect decision loop breaks on turn 0 in every branch, so the advertised `fetch_report` was
+  unreachable.
+- D|Approved and the timeout early return could hand the user handle+summary text.
+- `worker_summarize` ran on rescued reports whose summary was then discarded.
+
+All three are fixed (`2bffb45b`, `57ceb7d5`, `a2af42ad`; detail in
+[Tool Implementation](tool-implementation.md)). Handle text and cache hits remain as DCP-13a/b. The
+inference-gated follow-up is labelling confident-wrong outcomes where the stored raw report held the
+evidence.
+
+**Hand-written procedure can hurt until a gate repairs it.** A procedural-graph method (triplets with
+condition/guidance/pitfalls, a separate guidance LLM steering each step) placed first or joint-first in
+21 of 24 settings. Every per-setting confidence interval overlaps the best baseline (24/24), though, and
+per-step guidance costs +33–85% tokens, a direct decode tax on CPU. The durable caution comes from one
+model on a 56-item split with no CIs: a hand-written expert graph cut success from 49/56 to 33/56, and gated
+online evolution from that graph recovered it to 52/56. For AutoPilot, rejected-proposal feedback already
+exists (failure blacklist, last-invalid action with repeat counts, a 12-trial journal summary), so that is
+not new work. The AP-53 note instead asks, with zero compute, how often a concrete config that
+safety-failed or was dominated gets re-proposed without ever reaching the blacklist, since the journal
+summary carries only species/action type.
+
+#### Source References (2026-09-14 harness selection and hand-off fidelity)
+
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-14 external evidence rows and bake-off columns, HS-1f source-level pi score and HS-1f.1, the pi-lineage and HS-6 corrections.
+- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13 code facts, fixes and residuals.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-53 measurement note.
+- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — stage record and the rank-tracks-model-class finding.
+- intake-1352#record and intake-1352#02 — the ten-harness grid, rank non-transfer and the thinking-off arm.
+- intake-1363#record, intake-1363#02 and intake-1363#04 — the Muse-Glimmer TB2.1 grid, input-token cost claims and the derived cross-grid rank correlation.
+- intake-1360#00 and intake-1360#record — the pi/pi-mono identity and source-level cooperation facts.
+- intake-1358#record — the hand-off breakdown result and why it is a bundle comparison.
+- intake-1348#record — procedural-graph evidence strength and the existing autopilot rejection feedback.
+
+### Compiled Update — process-global mutable state read as if it were per-request (2026-09-14, noninf sweep)
+
+**Confidence: verified** — local code read plus 25 new unit tests against `epyc-orchestrator` `origin/main`
+`35b05fde`; fixed in `d65a4e93` and `b69bda61`. Zero inference, no performance claim.
+
+#### Tool-telemetry capture: one registry per process, four readers that thought it was theirs
+
+The orchestrator builds exactly one `ToolRegistry` per API process (`src/api/__init__.py` sets a single
+`state.tool_registry`), and `invoke()` appended every call to its `_invocation_log`. Four **request-scoped**
+readers built per-request telemetry out of that shared log: the ReAct durable episodic record
+(`chat_pipeline/stages.py`), the specialist delegation phase (`chat_delegation.py`), and two streaming
+tool-event emitters (`chat.py`, `stream_adapter.py`). Nothing about the log is per-request, so under uvicorn
+concurrency it interleaved every in-flight request's calls — request A's durable memory row recorded request
+B's tools, and A's SSE stream emitted B's tool events to A's client. The log was also a plain `list` that
+nothing ever cleared; `clear_invocation_log()` had zero callers anywhere in `src/`, so it grew for the
+lifetime of the process.
+
+**The defect is not "the log was never cleared" — it is that shared state was read as scoped state.** That
+distinction decides the fix, because clearing per request is the *same* defect with a narrower race window:
+
+    request A finishes → A clears the log → B's tool call lands → A reads → A records B's call
+
+Per-request telemetry now comes from `REPLEnvironment._invoked_tools`, captured at the single `_invoke_tool`
+chokepoint (`src/repl_environment/context.py`) — one list per REPL, one REPL per request. Scoping
+structurally rather than temporally buys four properties no amount of clearing can: **exactness** (the buffer
+cannot contain another request's call, so there is no window at all), **lock-free** (no contended structure,
+no contextvar, no request-id stamp to filter on), **cleanup on every path including exceptions** (the buffer
+is owned by the request's object graph, so there is no `finally` to forget), and **boundedness for free** (a
+per-request buffer is bounded by the request, not by uptime). The existing chokepoint already had the right
+scope; nothing new had to be introduced.
+
+**A cursor into shared state is the same bug wearing a hat.** Both streaming emitters kept a
+`prev_tool_count` and sliced `log[prev_tool_count:]` — correct only if nothing else appends, which is exactly
+what does not hold. Bounding the shared log would have broken the idiom a *second* way, since eviction shifts
+indices and the cursor then silently reads the wrong entries. The shared log survives as an explicitly
+labelled diagnostic ring (`deque(maxlen=1000)`, override `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX`, `<= 0`
+disables) with `clear_invocation_log()` kept for tests and interactive use and a docstring saying it is not a
+per-request mechanism: dead API is worse than no API, but so is API whose only documented use is the wrong
+one. The registry-side half of the contract is summarised in
+[Tool Implementation](tool-implementation.md). The guard is structural rather than a comment — an `ast` test
+asserts that no request-scoped module *calls* `get_invocation_log()`, parsed rather than grepped so the prose
+explaining the rule does not trip it; run against `origin/main` it flags all four pre-fix sites.
+
+#### The paired write half: a find-or-update path that drops what the create path writes
+
+The same handoff box named a second defect with the same signature — available data discarded at a boundary.
+`EpisodicStore.store()` was the only site that ever wrote `assigned_role` (TR-3.2) or the `work` payload
+(M-11a2b), and every UPDATE branch in `QScorer` called `update_q_value()` and returned *before* reaching it.
+Because the find-or-update branch fires roughly 11x more often than create (`SUM(update_count)` 668,070
+against 59,337 rows), both columns were effectively never populated: the values were read off entries already
+in hand, then dropped on the floor. Two rules worth carrying:
+
+1. **A find-or-update path must carry everything the create path writes**, or the field only exists on first
+   observation. A test that exercises only create passes for the bug's entire lifetime — and here it did,
+   because `Q_TD_WRITE` is read at *import time* and is `0` under pytest while production sets it to `1`.
+   **A flag read at import time makes the production branch untestable by default**, which is a testability
+   defect in its own right, independent of the bug it hid.
+2. **Backfill MERGES, never overwrites.** The new `merge_row_metadata()` fills `assigned_role` only when
+   NULL, fills `work` sub-keys only where absent, and preserves every other `context` key byte-for-byte. A
+   later, richer observation may close a gap a first observation left, but must never blank out captured
+   work.
+
+#### Non-idempotent sanitization makes a record lie about itself
+
+The subtlest hole in the same box: the size/redaction policy is applied **twice** on the live create path —
+once by `chat_pipeline.telemetry.work_completion_meta` heading into the progress JSONL, then again by
+`build_memory_record` heading into `memories.context`. Its docstring claimed idempotence; the code did not
+have it, and the consequences were measured rather than inferred. An already-truncated string is `max_chars`
+**plus** its truncation marker long, so pass two re-truncated and appended a second marker: a 32,500-char
+answer was stored reporting `total was 32049`. An already-bounded list is `max_items` **plus** the
+`_elided_entries` sentinel, so pass two saw `max_items + 1`, dropped the front entry — which, being at the
+front, *was the sentinel itself* — and inserted a fresh `_elided_entries: 1`. A row that elided 50 entries
+claimed 1, and lost the real first retained entry too.
+
+**A bounding function that annotates its own output must be idempotent, or the annotation becomes the first
+thing it destroys.** Both now recognise their own marker at their own cap and no-op, and the sentinel is
+lifted before counting with its count carried into the total. The general form: a function whose output lies
+in its own input domain will be composed with itself sooner or later, usually by a caller who cannot see the
+other one — so idempotence is a correctness property, not a nicety, and it needs a test rather than a
+docstring.
+
+#### Checklist for any per-request field
+
+- Is the state it reads owned by the request, or by the process?
+- If per-request scoping is achieved by *clearing* something shared, name the window. There is one.
+- Does the cleanup run when the request raises?
+- Is it bounded by the request, or by process uptime?
+- Does the UPDATE path write every field the CREATE path writes?
+- Is the sanitizer idempotent, and is there a test that composes it with itself?
+
+#### Source References (2026-09-14 per-request scope, noninf sweep)
+
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — RTG-02: the paired boxes at `:1787` (`assigned_role` still 0 / 59,337) and `:1793` (0 rows carry a top-level `work` key), the latter naming all three holes including the double sanitize.
+- [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — session record: the four pre-fix reader sites, the measured 11x update-to-create ratio, and the non-vacuity checks.
+- `epyc-orchestrator` `d65a4e93` — per-request tool telemetry via `REPLEnvironment._invoked_tools`, the bounded diagnostic ring, the `ast` guard, and `merge_row_metadata()` called from all four update branches. [confidence: verified — code + `test_invocation_log_request_scope.py` (15 tests), `test_q_scorer_update_path_preserves_work.py` (5 tests)]
+- `epyc-orchestrator` `b69bda61` — idempotent `sanitize_work_text` / `sanitize_work_items`. [confidence: verified — `test_memory_record.py::TestSanitizeIsIdempotent` (5 tests)]
+- [Tool Implementation](tool-implementation.md) — the `ToolRegistry` `_invocation_log` / diagnostic-ring contract from the registry side.
+
+### Compiled Update — 2026-09-08: manifest preservation is not end-to-end wrap-up proof
+
+**Confidence: verified** as a recorded test-failure disposition, not a new reproduction in this session.
+The heavy-wrap manifest-preservation repair does not establish end-to-end correctness. The September 8
+handoff records `test_full_wrap_transaction_end_to_end` failing because an expected auditor progress
+shard was absent, with two pristine-HEAD reproductions reported. The failure was located before wiki
+compilation, not attributed to the manifest repair. No fix or successful end-to-end rerun is established
+by this compilation; the existing implementation task remains open.
+
+#### Source References (September 8 end-to-end qualification)
+
+- [Wrap-up division-of-labor handoff](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — reported reproductions and outstanding task.
+
+### Compiled Update — 2026-09-08 (incremental): screening became the dispatch path's first-class citizen — AIR-12/13/14 land the premise contract, fan-out waste has a measured band not a point, and the heavy-wrap receipt stops destroying the manifest it must preserve
+
+**Confidence: verified** — every landing below is a closed commit (`945c8820`, `af4c5c63`); the AIR
+censuses are reads of the shipped instrument; and the fan-out corpus (`fanout_timing.v2`, 4,278
+subagents over 14,004 workflows) is committed precisely because the transcripts it was mined from no
+longer are.
+
+#### AIR-11 answered by censuses, not samples: already-satisfied and blocked-on-row are both screening failures, never missing edges
+
+The instrument built to answer "how often is a queued row already satisfied or blocked?" had itself
+answered it zero times: `premise_screener` holds **9 verdicts in its whole life — 4 `still-needed`,
+0 `stale`, 5 `unknown`, every `unknown` because the probe bundle lacked the artifact that would
+settle the premise**. Against n=38 tasks ever queued (n=25 ever screened):
+
+- **Already-satisfied at dispatch: 1–4 of 25 (4–16%).** One hard case — `AK-RUN-3` carries a
+  completion note dated 2026-08-12 and was screened `DISPATCHABLE` at 2026-08-13T18:10Z: *done the
+  day before it was dispatched*, and the checkbox could not see it. Three more are INDETERMINATE
+  (closed 1.5–4 h after the screen) and are counted, folded nowhere.
+- **Blocked-on-another-row: 3 of 25 (12%)** — all three sit in a node whose `.index-graph.json`
+  already marks `readiness: blocked`, a file `backlog_row_check.py` never reads (nor the `Deps`
+  column).
+- **The modal fate of a queued row is that no subagent ever starts**: 29 of 38 died at `ASSIGNED`
+  on lease expiry; only 9 were ever `CLAIMED`/`RUNNING`.
+- **Not determinable fleet-wide**: 0 of 4,278 subagent records carry a task identity, and 0 of 280
+  queue events carry an already-satisfied field — the external comparator's 15.5% has no local
+  counterpart. Do NOT repurpose the fan-out `blocked` bucket for it (that means an external blocker
+  and is itself a lower bound).
+
+**Verdict, and what it explicitly rules out**: already-satisfied is a screening failure, not a
+missing edge — all 25 rows were correctly `[ ]` at screen time and no dependency field would have
+caught the one hard miss; blocked-on-row is the same failure (the screener consulting the owning
+handoff's readiness would have flagged 3 of 25 at zero schema cost), with **flag, never
+hard-refuse** — handoff-granular blocking is over-broad at row level (2 of those 3 were
+legitimately completed anyway). **Do NOT build a dependency-edge graph inside the queue**: row-level
+dep-blocking is ~12–13% and a minority of all gating (operator gates and inference-window gates
+dominate, and no edge field touches either); the one genuine schema need is a place to WRITE what
+screening found — verdicts currently ride as prose inside `failure_reason` on statuses that mean
+something else, which is exactly how 3 of them became uncountable.
+
+#### AIR-12/13/14 landed (`945c8820`, 9 files, 719 coordination tests) — the premise contract now has a home
+
+- **AIR-12 — screening is non-optional and the ladder is closed four-value.** `premise_screener`
+  now decides `still-needed|stale|unknown|blocked` (`SCREENER_VERSION` 1→2). Probe-bundle repair —
+  the settling-artifact miss was the sole cause of all 5 lifetime `unknown`s: `mechanical_screen`
+  falls back to the row's own C50b `spec_ref`/`row_ref` anchor when text search misses, and
+  `probe_artifacts(also=…)` probes the anchor artifact even when the row text names no path. On the
+  dispatch path, an **unevidenced non-unknown verdict is refused** — a screen that was skipped or
+  absent can never read as go; `blocked` parks like stale/unknown. 7 new red-first tests.
+- **AIR-13 — the row screener consults `.index-graph.json` readiness, advisory only.**
+  `backlog_row_check.index_graph_readiness()` reads the `index_graph.v2` sidecar; `classify()`
+  appends an `INDEX-GRAPH (advisory, NOT a refusal)` reason on the dispatchable branch only, the
+  exit code never changes, and the advisory reaches the model via `classify_reasons`. Silent on
+  missing/unreadable graph. 3 red-first tests. (This is the mechanised form of the flag-not-refuse
+  verdict above — the 2026-08-16 pilot's `premise-unknown` parking extended to a fourth verdict.)
+- **AIR-14 — a screening verdict has somewhere to live.** `session_bus.schema.json`
+  `queue_row.screen_result` is whole-field nullable (`null`/absent = **never screened, NOT a
+  verdict**), `premise` is required-when-present over the closed four-value ladder, `blocked_by` is
+  nullable and meaningful only for `blocked`, and unknown keys are refused
+  (`additionalProperties: false`). The coordinator enforces the same gate at intake/transcription;
+  `screen_result` joins `_IDENTITY_FIELDS` so it survives every row rewrite (the census
+  uncountability); worker `requeue` transcribes it onto the row — parked verdicts previously died in
+  the outbox. Schema validated under both validators; live-bus validate: 0 new failures. 3
+  red-first tests.
+
+**2026-10-06 incremental source correction:** the coordinator ledger withdraws its unreliable active recurrence column; the original source stays in Git for historical custody. Stable F-33…F-36 aliases distinguish original events `(a)` from delivery-plane events `(b)`; historical snapshots remain unchanged. [Review and scope](../artifacts/ni08/coordinator-ledger-source-review-20261006/README.md). Protected docstrings and fleet-watch registry classification await [the exact D9 decision](../artifacts/operator/decisions/D9-R25-OBS11-20261006/README.md).
+
+#### WS-1..4 — the delivery-plane residuals, filed with their design constraints attached
+
+Four rows from the lost-wake/wake-spike round (2026-09-07 intake; zero compute; WS-3 is a decision
+gate on WS-2; WS-4 is independent):
+
+- **WS-1 — artifact reconciliation at the drain boundary**: compare worker-written completion
+  artifacts against the handled set *independent of whether a bus row exists* — that independence is
+  the whole value, because the lost-wake case is precisely the one where no row was seen. One-shot
+  and receipted; a **notifier, no standing obligation** (cannot become background noise). This is the
+  mechanism referenced from the coordinator failure ledger's F-33(a) evidence note.
+- **WS-2 — durable processed watermark**: a monotonic `seq` on bus rows plus a `processed_seq` in
+  the owner-write-only `cursors/<agent>.json`, replacing the O(history) `routed_view`
+  recomputation. Unlike WS-1 this creates a standing obligation, so it carries hard preconditions:
+  any persistent re-presentation must first carry C39's spent-receipt lookup and its
+  "annotate, never suppress" polarity, and satisfy C49's ruling that *"an escalation that fires on a
+  well-run night trains everyone to ignore it"* — the external precedent is safe only because its
+  backstop is one-shot and byte-capped.
+- **WS-3 — store-before-deliver must be an EXPLICIT decision, never a silent flip**: it inverts the
+  deliberate house ordering at `session_bus_coordinator.py:1626` ("the save happens AFTER the relay
+  pass, so a crash loses at most one tick of ledger updates, never a delivery") and the fail-safe
+  cursor default at `session_bus.py:1790-1815`. Both of ours bias toward **duplicate delivery over
+  loss**, and so does the external migration path — the biases agree, which is exactly why the flip
+  could happen silently.
+- **WS-4 — asyncRewake wake spike (merged)**: a Stop `asyncRewake` hook that exits 2 to wake an
+  idle main, replacing doorbell keystroke injection (closes RC-4's "between turns nothing runs").
+  Four facts ride with it: the timeout is **unenforced** on async hooks; backgrounding requires
+  interactive-or-streaming so **headless `claude -p` actors are excluded**; the "zero-token
+  waiting" contract (durable suspension resumed on ingress, with write-ahead journaling and
+  generation fencing — the source's Table 1 scores Claude Code "no" on zero-token waits); and a
+  **build pin of "verified against Claude Code 2.1.263"** — the stale npm-global 2.1.241 on this
+  host is not the version these facts were verified against.
+
+#### FM-5/FM-6 measured: fan-out waste is a BAND, not a point — and 86.5% is the low end, never the finding
+
+The local measurement the 2026-09-07 section above (intake-1304/1305/1306) called for now exists —
+`scripts/coordination/fanout_timing.py` at schema `fanout_timing.v2` (strict superset of v1; v1 rows
+count as `schema_v1_no_outcome` and never fold into a bucket), 58 tests, corpus **4,278 subagents
+over 14,004 workflows**:
+
+| bucket | n | share of known | share of tokens |
+|---|---|---|---|
+| produced-and-used | 2,265 | 60.0% | 13.5% |
+| produced-and-discarded | 1,281 | 33.9% | 79.7% |
+| no-output | 122 | 3.2% | ~0% |
+| aborted | 109 | 2.9% | 6.8% |
+| blocked | 0 | 0.0% | 0.0% |
+| *unknown* | *501* | *excluded* | *excluded* |
+
+**The headline is the band form, revised 2026-09-07 by SC62.** Over the 3,777 subagents whose
+outcome is known: head-count waste **40.0% – 95.5%**, token waste (total basis) **86.5% – 99.7%**,
+token waste (new basis) **83.8% – 99.6%**, blocked share ≥ 0.0% with **no upper bound**, and exactly
+501 unclassifiable (held out of every denominator). The two ends rest on **different evidence, not
+different confidence** — this is not a confidence interval and must never be rendered as one: the
+low end counts 2,265 `produced-and-used`, an upper bound on usefulness because 2,094 of those
+verdicts are `parent-reference` substring hits (evidence the parent *saw* the output, not that it
+*used* it); the high end counts **171 `git-landed` (4.5%)**, the only proven floor, holding just
+2.85B of 1,110.7B tokens — which is why the token ceiling reads 99.7%. The projection enforces the
+band: `scripts/vidya/adapters/fanout_outcome.py` yields a `Bound` whose `.point`, `float()` and
+`int()` **raise** (a point estimate is a different and stronger claim than the one that was made).
+**Correction of record:** the earlier one-sided "≥86.5%" (commit messages `5f1c4ba4` and session
+reporting) is true as a lower bound but incomplete; the band supersedes it everywhere.
+
+**Why the two units disagree by ~46 points, which is itself the finding**: discarded subagents are
+the token-heavy ones — cost does not track head count here, so a width-based cost argument measures
+the wrong thing (the ratified discarded-work clause). The aborted share is 6.8%, an order of
+magnitude below the external swarm's 51.6% — our loss is concentrated in DISCARDED, not aborted,
+so the ported remedy would be reconnection, not crash-loop repair. **FM-6 gives that a number**:
+orphan rate **35.0%**, declared width 1,187 → measured 928 (−21.8%); a fan-out record counts only
+when each subagent's output links to a backlog row or an artifact path, and an orphan-blind width
+count cannot distinguish a main that dispatched five subagents usefully from one that dispatched
+five and used none. Do NOT read this wave as an argument to narrow the 3–5 width — the evidence
+points the other way (3/5 workers beat 1 at matched completion; coordination is ~11% of compute).
+Carry the corpus caveat: **the v2 artifacts are committed because the corpus is not reproducible**
+(Claude transcripts pruned 1,546→1,078 since the v1 snapshot; Codex grew 2,344→13,942 workflows) —
+a measurement whose corpus no longer exists is unfalsifiable.
+
+#### The heavy-wrap receipt stops destroying the manifest it must preserve (`af4c5c63`, RTG-51 wave-2)
+
+`heavy_wrap.step_7_compile_wiki` previously **clobbered the tracked content-hash
+`wiki/source_manifest.json`**, replacing it with a bare `{"compiled_by": [...]}` — the next
+incremental scan would fail loudly by design (the scanner reads hashes the receipts dict no longer
+carries). Now the manifest is preserved wholesale with `compiled_by` merged as an extra top-level
+key; a corrupt or non-dict manifest raises `WrapError` instead of being replaced; and the scanner is
+verified tolerant of the extra key (`read_manifest` validates kind/schema/sources only). 2 new
+tests. This is the executor-side half of the scanner's content-hash migration (the scanner half is
+compiled on [Knowledge Management](knowledge-management.md)).
+
+#### Trust-boundary and accounting riders from the same wave (2026-09-07 intake)
+
+- **P5-1 — `PostToolUse hookSpecificOutput.classifierContext` is a write path into a main's
+  CONSENT state** available to any hook script: a classifier may weigh a user statement relayed
+  there as user intent (it can satisfy a consent bar a user turn would satisfy — never a hard
+  boundary). Declared out of bounds for any coordination-plane hook. The corresponding
+  `INVARIANTS.md` text is human-amendment-only (operator token-request, never an agent edit).
+- **P5-3 — per-turn PURPOSE LABEL must be written at write time** (bus rows, delegated-task
+  envelopes, orchestrator turn telemetry) so the Eq.-2 split (system / replayed history / tool
+  schemas / retrieval / coordination) becomes computable — post-hoc classification of transcripts is
+  explicitly refused (a 32-author team with full trace-shim control published no share number
+  because their meter recorded totals, not purposes). P5-2 lands the NL-only rule as a labeled
+  fixture example beside C23, never a new BUS_PROTOCOL conjunct (the prose-rule moratorium this file
+  itself declared).
+
+#### Source References (2026-09-08 fleet-coordination compile)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the AIR-11
+  censuses and verdict (2026-09-07), the AIR-12/13/14 landings with `945c8820`, and the WS-1..4 rows
+  with their C39/C49 preconditions and intake anchors.
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — the FM-5/FM-6
+  result section: the v2 schema, the bucket table, the band bounds and their evidence split, the
+  FM-6 reconnection requirement, and the corpus reproducibility caveat.
+- [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
+  — the BANDS correction of record (one-sided `≥86.5%` superseded) and the SC62 projection guard.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the AIR-12/13/14 landing
+  record (`945c8820`, 719 coordination tests) and the wave-2 RTG-51 manifest-preservation fix
+  (`af4c5c63`).
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
+  the P5-1/P5-2/P5-3 trust-boundary riders.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
+  — the F-33(a) evidence note WS-1 mechanises.
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-68/OBS-13, the
+  scanner-side half of the same content-hash migration.
+
+### Compiled Update — 2026-09-07: a frozen served model is structurally immune to tool-environment shift — and one engineer update costs a full eval sweep
+
+**Confidence: observation-grade** — external, one benchmark, n=1 per cell; the numbers below are
+carried as posture, not as a gate, and nothing on this host was measured to produce them. The cost
+yardstick at the end is **DERIVED-FROM-CONFIG, never a measurement**.
+
+#### Freezing the weights is what buys the robustness
+
+A post-trained agent is trained *against a particular tool environment*, and the training is what
+makes it brittle to that environment changing. The benchmark separation is stark: the **untrained
+Qwen2.5-7B goes UP** under a strong tool-schema shift — **7.4 → 13.5** — while **the same model
+post-trained under h-low falls to 2.7**, i.e. *below* its own untrained baseline, and a **GiGPO**-
+trained arm collapses **81.0 → 33.2**. The capability that the training added is the capability
+that the shift removes, and then some.
+
+We serve **frozen** weights. That makes this failure mode **structurally unavailable to us** rather
+than merely unlikely — there is no trained-in tool schema to invalidate.
+
+**Why this matters operationally, and it is not abstract:** every **MCP tool rename**, every
+**parameter-key change**, and every **consolidation of several tools behind one dispatcher with an
+`action` parameter** *is* that shift in the source's exact sense. On a post-trained agent each of
+those is a potential collapse of the kind above; on our frozen fleet each costs approximately
+nothing. Tool-surface refactors are therefore a **design decision**, not a stability risk to be
+hedged against — and conversely, any proposal that would post-train an agent against our current
+tool surface is buying a standing veto over ever refactoring it.
+
+Scope discipline: this is **one benchmark**, external, OBSERVATION-grade. It supports a *posture*
+(refactor the tool surface freely; treat trainability as downstream of harness selection) and gates
+nothing.
+
+#### The cost yardstick for any outcome-grounded editor loop
+
+**One engineer update ≈ one full sweep of your eval suite.** That is the price of a single step of
+any outcome-grounded editor loop — the editor must observe the outcome, and observing the outcome
+*is* running the suite. It is a rule of thumb for pricing this whole class of proposal before a
+design doc exists, and it is **DERIVED-FROM-CONFIG, never a measurement**: it falls out of what such
+a loop must do per step, not out of anything timed on this host.
+
+_Sources: `intake-1339#record`, `intake-1323#record`, `intake-1344#record`._
+
+### Compiled Update — 2026-09-02 (incremental): a retracted number is not retracted until its derivatives are chased, and in a shared clone every defect claim is verified against git first
+
+**Confidence: verified** — every correction below was found by the next mechanical step (a re-anchor, a wiki
+compile, an operator's "does it actually reflect §4?") on shipped audit records, not by review; the
+purge-misclassification counts are executed re-verification results.
+
+Two audit sessions (2026-09-01 / -02) produced a cluster of operational-hygiene findings distinct from the
+loop-design and reconciliation lessons already on this page. All share one root: **following a rule is a
+separate act from knowing it — the rules were not the scarce thing.**
+
+#### Retracting a number is not done until you chase what was derived from it — and mark invalid, never rescale
+
+When a baseline (`74 ms/token`, later found not to reproduce on the current box) was retired, the retraction
+propagated wrongly **four times in one handoff**: a "1.7× debug-build penalty" that crossed both a build
+boundary and the dead anchor; a two-row `28 ms gemv / 46 ms non-gemv` split where the table itself said the
+46 ms was `74 − 28` (subtraction), which had already fed a "two multipliers" list, a throughput projection,
+and an index row. **A derived figure keeps the full apparent authority of a measurement precisely because it
+does not look like the thing that was retracted.** Disposition rules that came out of it, now standing:
+- Give each dependent quantity an **explicit disposition** (survives / invalid / relabeled), never a blanket
+  edit. The directly-profiled `28 ms gemv` survived with a re-measure caveat; the derived `46 ms` was marked
+  **INVALID**, *not* silently rescaled to ~67 ms — a rescaled number manufactures a second unmeasured value
+  wearing the authority of a correction.
+- This is the same class the qwen4exp OP-32 rule (hold the artifact identical across arms) was ratified to
+  prevent — here committed one level up, at the *build*: measuring a same-build fused number against a
+  clean-build graph number would have made a successful substitution look ~2× worse than it is.
+
+#### In a shared clone, resolve every defect claim against git before reporting it
+
+Reading the working tree instead of `git` produced repeated **spurious defect reports** — a "dead link" that
+was a peer's uncommitted deletion, an "orphaned handoff in active/" that was correctly in `completed/` on
+`origin/main`, a "39 GB/day growth" trend asserted from two samples (a third read *lower*). A clean detached
+`origin/main` checkout passed `--check` at exit 0 in each case. In a shared clone this failure mode is
+constant: untracked, pre-merge, and peer-uncommitted copies are byte-indistinguishable from committed work.
+The rule (a reporting-direction corollary of the stale-untracked-file custody lesson already on this page):
+**a claim is resolved against `git`, not the filesystem; and a trend needs more than two samples before it
+is stated to anyone.**
+
+#### A purge menu is a set of claims to re-verify per path, never a list to execute
+
+A disk-reclaim menu produced by one agent was wrong in **both directions** — it called load-bearing artifacts
+"safe" and called a referenced artifact "consumed." Per-path re-verification against both registries + a
+retention-language sweep + all active handoffs before deletion **kept ~220 GB of the approved menu** (open
+INF-/DR- dependencies) and **deleted artifacts the menu never listed**. Three destructive traps recorded:
+`tier: D` in the master registry is the live DRAFT/EMBEDDER tier (deprecated is `tier: X`) — executing
+"delete Tier D" as a registry query destroys the active drafting set; **registry tier is not evidence of
+disuse** (a `tier: X` "eval-only" model was being served by `worker_general` at the time); and an inherited
+classification was wrong for the third time. Rule: **verify per path against the authoritative registry;
+never inherit a classification, a tier label, or a "safe"/"consumed" verdict.** Execute named paths one at a
+time (no wildcard/`rm -rf`), ledger each model deletion in the MASTER registry, and use `git worktree remove`
+(never bare `rm`, never `prune`) for git-registered trees after confirming they are pushed.
+
+#### Noting a footgun is not handling it — an unmanaged `llama-cli` burned 300 GB and held a region lock 11 h
+
+A `llama-cli` from a sanity check, left alive with `-no-cnv` and stdin from `/dev/null`, spun its REPL
+writing `"> "` for **11h15m**, wrote **~300 GB** to a log (silently undoing a fresh operator-approved disk
+reclaim), and held a q0–q3 CPU region lock the whole time — any peer's CPU bench in that window would have
+been blocked or skewed. The operator-visible defect is that the footgun *had already been documented that
+same day* in the hygiene notes; it was noticed, written down, and then not acted on. Standing corrections:
+**every `llama-cli` launch pairs with an explicit kill-by-captured-PID + `ps -p` verify** (the guards
+`-no-cnv` and closed stdin do not stop the REPL loop), and **every task boundary includes a `ps -o etime`
+sweep for one's own long-lived leftovers.** A PreToolUse hook now blocks unbounded `llama-cli` (passes
+`timeout … llama-cli` and an explicit ack), and a llama.cpp EOF patch (`read_input` discards the EOF signal;
+fixed to break the loop) is routed to the champion lineage — production v9 stays unpatched by freeze, which
+is why the hook exists.
+
+#### Source References (2026-09-02 audit hygiene)
+
+- [`progress/2026-09/2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) — the
+  four-step retraction-propagation record (§4–5), the C3 "chase the derivatives / mark invalid" rule, the
+  two disproved false-alarm defect reports (§3), and the worktree-unsafe wiki-watermark note (§6).
+- [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the
+  zero-consumer purge (Task 13: 4 misclassifications, the Tier-D/Tier-X collision, tier-is-not-disuse), the
+  11 h runaway-`llama-cli` incident and its Layer-1/Layer-2 fix, and the two-sample trend self-correction.
+- [`progress/2026-08/2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md)
+  — the reclaim decision package and the execution record where pre-deletion re-verification caught 4
+  misclassifications in the agent's minimal set.
+
+### Compiled Update — 2026-08-30: a dashboard is a claim about a producer — and every defect found merging two kernel pages was the surface agreeing with itself instead of with the producer
+
+**Confidence: verified** for the field-name mismatch, the mutation results, the route sweep, the
+test-count delta and the freshness behaviours (each reproduced against the live surface or the real
+record). **Verified as an open state** for the three surface gaps left deliberately unclosed.
+
+epyc-root shipped **two** kernel dashboards: `/kernel` and `/loop`. They are now one — `/loop`,
+titled **Kernel R&D**, with `/kernel` a 301 redirect and `dashboard/static/kernel.html` deleted
+(1,833 lines). The merge is unremarkable. What it *found* is not, and every finding has the same
+shape: **the surface was internally consistent and wrong about the producer.**
+
+#### A fixture authored from the consumer's guess cannot witness the contract
+
+`/loop`'s GPU panel had been dark since the surface's first commit. The reader looked for `held_s`
+and `busy_s`; the producer has **always** written `claim_held_s` and `device_seconds_under_load`.
+41 tests passed over it, because the hand-built fixture invented **the reader's** spelling — so
+fixture and reader agreed with each other, and both disagreed with the producer. The tests proved
+the reader was self-consistent, which was never in doubt.
+
+**Rule: build fixtures from a real producer record, never from the consumer's expectation.** A
+fixture written by the same person, from the same mental model, as the reader is a mirror, not a
+witness. (This is the cross-repo cousin of the same program's "a test that proves a component
+EXISTED rather than that it was WIRED IN" family — see *Autonomous Research*, 2026-08-30.)
+
+#### A mutation that survives because the harness cannot express the assertion is not a pass
+
+The merge was mutation-tested 13 ways. Twelve died. **M7 survived — producing a green pill whose
+text read `STALE`** — and the reason is the lesson: the test harness exposed only `innerHTML` and
+`textContent`, so the assertion that would have caught a colour/label mismatch was *literally
+unwritable*. The harness now also emits `class_by_id`.
+
+**Rule: before trusting a mutation score, check what the harness is capable of saying.** A surviving
+mutant may be reporting a gap in the harness rather than a gap in the tests, and the two are
+indistinguishable from the score alone.
+
+#### Freshness: an envelope that is not rendered at the headline is not an envelope
+
+Two headline numbers could not be read as dead. The operator-gated `+48.9%` champion card carried
+**no envelope at all** — its reader took no timestamp, so the number would render identically
+forever after its producer died. The funnel's staleness verdict existed, but rendered **only inside
+a collapsed `<details>`** while the headline said nothing. Both fixed, and verified by aging the
+real record to 4 d and 20 d → `stale`, and deleting it → `absent`.
+
+Two structural holes in the freshness contract itself were found and left open, deliberately:
+
+- **Compliant silence has no age.** `/api/kernel` reports `reporting=observed, watchdog=idle` over
+  a **16.8-day** export, because that producer travels the compliant-silence path the hub honours.
+  The JSON does not read stale even though the data is. Compliant silence must still carry an age,
+  and an age past the envelope must degrade the verdict.
+- **A health fold that does not cover what the page renders.** `/api/loop/health` folds only the
+  loop producer, not the operator-gate bundle that moved onto the page. A human is never misled —
+  the verdict travels in the body and renders loudly — but an automated consumer is
+  under-informed.
+
+#### Quiescent is not dead, and a dead-producer rule applied to a paused producer gives a wrong verdict
+
+A staleness audit widened past its scope also declared the `autopilot` dashboard stale. It is not:
+`autopilot_alive: false` with `paused: true` is a **quiescent** producer, and a dashboard showing
+the last known state of a paused system is *correct*. **A freshness contract must distinguish
+"nobody is writing because the system is stopped" from "nobody is writing because the system
+died"** — the same reading, opposite verdicts.
+
+#### Reporting a coverage change honestly
+
+Dashboard test failures went **40 → 12**, and the sets are **not byte-identical** — legitimately,
+because 28 of the 40 lived in the deleted page's own test class. Saying "28 fewer failures" without
+that decomposition would have claimed a fix for tests that were deleted rather than repaired. One
+coverage loss is real and filed: the funnel and lane-hero render tests went away *with* the page
+rather than being fixed, and the reader still exists with nothing rendering it.
+
+#### Deploying a dashboard change: push to `origin/main` and stop
+
+The hub supervisor gained `sync_dashboard_from_origin` + `check_hub_stale_source` on 2026-08-28: it
+fetches `origin/main` every **300 s**, syncs changed `dashboard/` files, and **restarts the hub
+itself**. The session that merged these pages twice asked the operator to `kill -TERM` the hub by
+hand, because it read *"Never restarts a healthy hub"* in the usage text and never opened the log
+that showed deploy-sync running. Hand-patching the shared clone is both unnecessary and fragile —
+the sync has a provenance test that trusts only a blob which has existed on `origin/main`.
+
+**Rule: a usage string describes intent; the log describes behaviour. When they disagree, the log
+wins**, and it costs one `tail` to find out.
+
+#### Source References (2026-08-30 kernel surface merge)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66, phase P6:
+  what landed (P6.1–P6.4), what is knowingly open (P6.5–P6.8), and the *Declined 2026-08-30* block.
+- [Surface and CI session record](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
+  commit-by-commit account, the mutation results and the route sweep.
+- [Dashboard README](../dashboard/README.md) — the plane rule, the `/kernel` → `/loop` retirement
+  record, and the registry/probe/envelope requirement for any new surface.
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
+
+### Compiled Update — 2026-08-23: the filesystem-containment guard is one scanner, every surface derived
+
+**Confidence: verified** — the incident, the unification, and the parity suite are all closed work
+recorded in `progress/2026-08/2026-08-23-root.md`; the canonical how-to is
+[`docs/guides/agent-workflows/filesystem-containment-guard.md`](../docs/guides/agent-workflows/filesystem-containment-guard.md)
+(summarized here, not duplicated).
+
+**The gap it closes (INC-20260823-filesystem-containment-gap)**: an agent ran
+`sudo -n mkdir -p /mnt/bigdisk && sudo -n mount /dev/sdb1 /mnt/bigdisk`, planned writes to
+`/mnt/bigdisk/epyc-backup/`, and `sudo apt-get install restic` against the operator directive *"do
+not touch anything outside `/mnt/raid0/llm/`"*. Nothing stopped it: the Claude Bash surface had no
+guard (the old path check was Write|Edit-only), and the opencode surface had no permissions and no
+plugins. The first fix shipped two hand-written rule surfaces; **the same-day unification made
+`scripts/hooks/filesystem_containment_scan.py` the ONLY policy holder** (RTG-52: never a fifth
+parser; it reuses `shell_scan.segments()`) and every other surface derived:
+
+- **Scanner** — CLASS A privileged host-level ops (mount/umount/mkfs/fdisk/systemctl/modprobe/
+  shutdown/reboot/apt/dpkg/dd of=/dev/*) and CLASS B out-of-root writes (mkdir/touch/cp/mv/tee/
+  redirection/rsync/restic/borg/rclone/chown/chmod/ln/install/rm/git clone), with
+  `unresolvable_target` fail-closed for quoted/$VAR targets and `cd` tracking across chained
+  commands. Containment set `/mnt/raid0/llm/**, /workspace/**, /tmp/opencode/**, ~/.claude/**,
+  ~/.codex/**`; bare `/tmp/**` tolerated scratch (the repo's own tooling writes /tmp proofs).
+- **Derived surfaces** — `--dump-rules` emits the canonical tables as deterministic JSON;
+  `generate_opencode_permissions.py` GENERATES the opencode `permission.bash` deny block (the
+  hand-edit drift that motivated unification: sudo variants, mke2fs, apt purge/autoremove and
+  dpkg -P were missing); one `check_filesystem_containment.sh` wrapper serves BOTH Claude matchers
+  (Bash → `--command`, Write|Edit → `--check-path`); the opencode plugins (project + global, the
+  latter covering lane worktrees) intercept bash AND write/edit via `--check-path`;
+  `check_filesystem_path.sh` is superseded with its allow-set deleted.
+- **Operator allowlist** — `filesystem_allowlist.yaml` ships EMPTY (no external path without the
+  operator); schema `session_bus.filesystem_allowlist.v1`; the env ack `EPYC_FS_ACK` is read from
+  hook env only, so command text cannot self-authorize.
+- **Parity tests** — `tests/test_harness_guard_parity.py` (33 tests): matcher routing, dump→
+  generator derivation, byte-identical permission blocks, `--check-path` semantics, and mutation
+  tests — a scanner-table edit fails 4 tests; a hand-edit of `opencode.json` exits 1 on `--check`.
+- **Honest gaps, recorded**: codex 0.147.0 PreToolUse hook is wired with verified schemas but
+  **firing could not be demonstrated** in 5 probes (re-verify procedure in the guide); daemons/cron/
+  scripts that shell out internally are invisible to a PreToolUse guard (OS-level layer would be
+  the enforcement); `bash -c '...'` inner commands are quoted data and not scanned. opencode loads
+  config+plugins only at start, so the guard is live for new sessions only — the operator must
+  restart opencode for the plugin/permissions to load.
+
+The transferable lesson: **a guard with two hand-written rule tables is two guards, and they drift;
+a guard with one scanner and generated/derived surfaces has parity tests as its change control.**
+
+#### Source References (2026-08-23 filesystem-containment guard)
+
+- [`progress/2026-08/2026-08-23-root.md`](../progress/2026-08/2026-08-23-root.md) — the incident,
+  the unification, the 69-scanner/33-parity test counts, and the restart requirement.
+- [`docs/guides/agent-workflows/filesystem-containment-guard.md`](../docs/guides/agent-workflows/filesystem-containment-guard.md) — the unified model, surface×wiring×test table, and rule-change procedure.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20260823 origin narrative.
+
+### Compiled Update — 2026-08-19: two failing hook tests were both the fixture, and neither was about the thing under test
+
+**Confidence: verified** — from the closed task in the loop-owned-fleet handoff, backed by commit
+`25726a78` and a re-run (8 passed).
+
+`test_hook_worktree_resolution.py` carried 2 failing / 6 passing tests, confirmed **pre-existing**
+by stashing an unrelated guard sweep and re-running to an identical 2/6. Both failures were the
+TEST, not the worktree-resolution cascade they appeared to indict, and — the part worth compiling —
+**neither failure was about resolution at all**:
+
+- the tier-1 stub fixture hard-coded two hook names, while `pre-commit.extras` had since chained a
+  third through the same variable. The fixture froze a list the production config had grown past.
+- the sparse fixture `rmtree`-d the whole `scripts/hooks` tree, which trips an observer census
+  added to the codebase *after* the fixture was written. The fixture deleted the very signal a
+  later control inspects.
+
+Both are the same class: **a fixture that constructs the world by enumeration or by deletion goes
+stale silently, and its staleness surfaces as a failure in the subsystem it was built to exercise.**
+That misattribution is the expensive part — a red test in a resolution suite reads as a resolution
+bug, and the cascade gets audited before the fixture does. Rule out the test method before calling
+it a defect in the code under test; and when auditing a fixture, audit what it *removes*, not only
+what it sets up — clearing the signal a control depends on lets a broken implementation pass just as
+easily as it fails a working one.
+
+#### Source References (2026-08-19)
+
+- [`handoffs/active/coordination-and-churn-pipeline.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
+  — the closed `test_hook_worktree_resolution.py` task and its pre-existence check.
+- Commit `25726a78` — "worktree-resolution tests: the fixtures were stale, the cascade was fine".
+- Commit `e8e93262` — the task closure.
+
+### Compiled Update — 2026-08-18: reachable-from-origin is not merged — the stranded-patch class, the `git clean` signature, and a triage that read all 51 messages
+
+**Confidence: verified** — every mechanism below is backed by a named commit, incident entry, or
+file:line in the sources; the two guards are verified as BUILT and live-run, not filed.
+
+#### The strand class: every backup sweep called 19 unmerged patches "safe"
+
+Two retired (tombstoned) identities — `mainC` and `mainD` — left 19 commits on their lane branches
+whose **content never reached `main`**: 10 on `lane/mainC`, 9 on `lane/mainD`. Every backup sweep had
+called them safe, because the sweep's instrument was `git rev-list <branch> --not --remotes=origin`,
+which answers *"is this commit reachable from origin somewhere?"* — and lane branches are pushed, so
+the answer is always yes. **Reachability is not merge.** The correct discriminator is `git cherry`
+against `main`: patch-id membership, which also survives cherry-picks and per-file ports that
+ancestry checks cannot see. Run for the first time, it found the 19; they were adjudicated per patch
+and ported in `10ff9bdf` — with the corrections-win rule applied at port time: the lane's "ROOT
+CAUSE" framing for the ODL-P2 output-format finding was deliberately **not** ported, because `main`'s
+audit had already demoted it to "demonstrated prompt/profile mismatch", and re-porting it would have
+undone a correction.
+
+Both recurrence shapes now have fleet_watch guards (commit `96ccad1a`, under operator D9-ack):
+**`REPO-SEQUENCER-STALE`** (a per-repo abandoned cherry-pick/merge/rebase head older than 2h — the
+shape of the 3-day research-repo wedge) and **`RETIRED-LANE-UNMERGED`** (`git cherry` patch-id count
+per retired identity — the stranded-patch shape above, whose 19 patches are the guard's founding
+fixture). Suite 137→159 tests, 3/3 new mutations caught, real-probe tests against throwaway repos.
+After the port, the lane worktrees and branches were removed by explicit path so the guard comes up
+quiet rather than permanently red.
+
+#### `-s ours` was recommended, then refuted the same day: file presence is not content equality
+
+The OP-11 divergence (`main` 89 ahead / 111 behind `origin/main`) drew a recommendation to record the
+reconciliation as `git merge -s ours origin/main`, on the evidence that `git diff --name-status HEAD
+origin/main` showed zero `A` entries — reported as "the content is reconciled". **That measures file
+PRESENCE, not content equality, and the second was claimed having tested only the first.** Measured
+against the merge base: origin changed 104 files, local changed 269, and **103 were changed on BOTH
+sides** — so `-s ours` would have kept local content for all 103 and discarded origin's half of each
+**with no conflict raised and nothing in the resulting diff to review**: a silent 103-file revert of
+another session's work, not a graph-only operation. The recommendation was withdrawn in the handoff
+with the refutation attached. The executed resolution was a real per-file three-way merge in an
+isolated detached worktree (36 conflicts, four subagents on disjoint sets) under the policy: union by
+default; never drop a rule, guard, test or task; **retractions win over what they retract**; genuine
+contradictions preserved and reported, never silently picked.
+
+The instructive case for why *naive union is the worst outcome*: local carried a retraction note
+*beneath* table rows still reading `✅ 37.15 t/s … MTP HURTS at depth`, while origin had rewritten the
+rows themselves. Union preserves both the retracted cells and their retraction — and a `✅ measured`
+cell gets quoted downstream without the paragraph that withdraws it. Origin's rewrite was correct.
+
+#### The `git clean` damage signature: exactly the untracked state that no commit protects
+
+`INC-20260816-git-clean-shared-clone` folds two dated events into one signature: a live
+`git clean -ffdx`-class operation in the SHARED clone destroyed at least four unrelated things —
+29 registered worktrees (2026-08-12), and on 2026-08-16 the `retirements/` receipts directory, the
+`wiki/.last_compile` watermark, staged doctrine artifacts, and (strongly suspected, same event) the
+`/workspace/repos/` symlinks. **Each loss was discovered independently, days later, by a different
+session tripping over it — none by the session that ran the clean.** That is the characteristic
+shape: `git clean` removes exactly the untracked operational state (watermarks, receipts, symlinks,
+staged artifacts) that no commit protects and no diff shows, so the cost surfaces as
+unrelated-looking breakage. Rule fed: never `git clean` in the shared clone or any lane worktree;
+untracked-but-load-bearing state must be tracked, live off-tree, or be listed in a manifest a
+restorer can replay.
+
+#### The 51-message triage: read individually, and what only that could find
+
+All 51 routed bus messages (2026-07-29 → 2026-08-16) were dispositioned individually against the
+repo, each disposition backed by a commit / file:line / handoff row; zero bulk-acks. Findings that
+only per-message reading produced:
+
+- **`BUS_ROOT` derived from `__file__` in three modules — writes silently lost in every lane
+  worktree.** One file was fixed when the auditor flagged the class on 2026-08-12; a second
+  instance *survived a full rewrite* of its file; the third (`alarm_channel.py`) was written
+  2026-08-16 **after** the audit — proof that per-file assertions can never cover the next file.
+  All three now use `session_bus.get_bus_root()`, and an AST sweep
+  (`tests/test_bus_root_resolution.py`) fails on ANY `scripts/coordination/*.py` module deriving a
+  bus root from `__file__`; mutation-verified three ways.
+- **`monitor:file` service identities are structurally invisible to the fleet-health plane.** The
+  liveness predicate watches `exec:` runners; the `auditor` identity accumulated 111 undrained inbox
+  rows and 23 `stuck-unreachable` advisories in one day — audit *results* flow (headless invocation
+  writes verdicts fine) but nothing drains packets *addressed to* the identity, so a missed
+  invocation sat invisible until manual triage. Open: either a re-invoke sweep for unanswered
+  `action_required` packets, or stop addressing bus rows to identities nothing drains.
+- **The screener-paraphrase defect**: a pool dispatch screened a worker against hand-written
+  `--row-text` — a 241-char paraphrase — and parked the row `unknown`, while the real 452-char row
+  text matches its checkbox verbatim and resolves cleanly. "The task TEXT is the identity" cuts both
+  ways: the dispatch path must pass row text through **byte-for-byte**; free-hand `--row-text` is
+  forbidden when the row resolves.
+- **The relay ledger's 296 flagged rows have never been adjudicated** — nothing distinguishes
+  "handled by a handler" from "dropped", and the drop mechanism is corroborated, not hypothetical:
+  two of 13 sampled messages in this very triage carried `NOT-IN-INBOX` markers.
+- **A refutation banked so it does not resurface**: "the hardware-backfill runner never landed" —
+  in fact `5af987ef` shipped the 777-line runner plus supervisor and tests, the roster row exists,
+  and the supervisor process is running.
+
+#### Two dispatch-plane detector gaps, measured not speculated
+
+- **Cross-file duplicate-TASK detection must be semantic.** Exact-text scanning returned 0
+  duplicates over a corpus where a hand audit found **14 real pairs** — index rows summarize the
+  same task in different words. Acceptance test for any future detector: it must rediscover those
+  14 known pairs.
+- **`backlog_row_check.py` misses mid-text owner declarations** — reproduced live: a row screens
+  DISPATCHABLE while its own next line reads "Owner: the stack owner (`inference`), NOT this lane",
+  because `_OWNER_PREFIX` is `.match()`-anchored to the body's first characters. The narrowness is
+  deliberate (documented 21/1258 precision), so the fix is scoped: match a bolded `Owner:` lead-in
+  at the start of ANY body line, and re-measure against the live corpus without regressing.
+
+#### Source References (2026-08-18 reconciliation close-out)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
+  the wrap-up findings block: the two guards as built, the OP-11 `-s ours` refutation with the
+  103-both-changed table, the merge policy, and the full bus-triage disposition list.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
+  `INC-20260816-git-clean-shared-clone`: both dated events, the forensic commits, and the rule fed.
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) —
+  the duplicate-task detector requirement with its 14-pair validation set, and the `_OWNER_PREFIX`
+  false-negative with the measured precision constraint.
+- [`canonical-judge-suite-revamp.md`](../handoffs/active/benchmark-suites.md) — the
+  CJ-1c paraphrase-screening artifact: the park, the verbatim re-resolution, and the RTG-52 filing.
+- [`progress/2026-08/2026-08-13-mainC.md`](../progress/2026-08/2026-08-13-mainC.md) — the live
+  reproduction of the mid-text owner miss during a 60-row premise screen (19 VERIFIED / 41 REJECT).
+- [`progress/2026-08/2026-08-16-coordinator-agent.md`](../progress/2026-08/2026-08-16-coordinator-agent.md)
+  — the reconciliation-with-origin narrative and the per-file forward-port mechanism.
+
+### Compiled Update — 2026-08-16: code owns the loop — the machine stops reading panes, and a worktree isolates the index but not the singletons
+
+**Confidence: verified for the ratified decisions, the landed mechanism, the pilot receipts and the
+open defect — each read directly from the tracked handoff, the operator package, and the doctrine
+files they name. Explicitly NOT verified: the >40% duty-cycle target and the <10% self-repair
+target, which are 7-day observations that have not elapsed.**
+
+The coordination layer was restructured on 2026-08-15 (decisions ratified) and implemented on
+2026-08-16 (20 commits). Its thesis is one sentence, and it is a subtraction: **code owns the loop;
+models judge at choke points; workers run in visible panes the operator can steer — but the
+machine's only channel to a worker is spawn-args in, report file and exit status out**
+([`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)).
+Everything below follows from taking that channel seriously.
+
+#### The machine stopped reading panes — the three-state liveness problem was deleted, not classified
+
+A session is **working**, **compacting**, or **idle**, and the pane cannot tell you which: a session
+compacting its context renders *identically* to a finished one, because the goal line, the "Pursuing
+goal" timer and the background-terminal count all disappear together
+([`SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another session's
+liveness*). The heartbeat fails in the opposite direction: measured 2026-08-12 10:53Z,
+`mainB`'s heartbeat read `state: working` while **446 seconds stale**, with the pane idle across
+three consecutive watcher cycles and the GPU at 0% (origin: INC-20260727-stale-heartbeat). A
+heartbeat written once is a birth certificate, not a liveness signal, and **a stale heartbeat is
+worse than no heartbeat** — the stall ladder reads it as a stall and nudges a healthy agent.
+
+The failure record shows the instrument failing in *every* direction, which is what rules out a
+threshold fix ([`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)):
+
+- **Compacting read as idle, twice** (F-07) — the coordinator's own admission at 10:28:19Z, and the
+  second misread happened *between* its first and second corrections. Closed by `83f204cf`, which
+  reports `IDLE-CANDIDATE … may be compacting` and defers to the adapter's runtime check.
+- **Heartbeats stale while the thread demonstrably works** — at the 12:37Z handover on 2026-08-12,
+  `mainA` read ~90 minutes stale and `mainD` ~57 minutes stale, both while working: *"Heartbeats are
+  not liveness here"* (INC-20260727's birth-certificate failure, live at handover).
+- **Busy read as unreachable** (F-37) — a main whose subagents redraw the pane every second can never
+  satisfy a quiet-check, so it looks unreachable while perfectly healthy. Closed by `c3192787`
+  *without* weakening the guard: `pane_busy` corroboration requiring three consecutive stable readings.
+- **Wedged read as idle** (F-43, 2026-08-13) — a session found in process state `T`, all 121 threads
+  stopped, `wchan do_signal_stop`: a SIGSTOP, not a crash. Its heartbeat simply stopped updating and
+  the backend had no runtime signal, so the pane read idle. This is a fourth state the three-state
+  model does not even name.
+
+The obvious response is a better liveness classifier. The restructure did the opposite. D8 rules that
+worker panes are **human-authoritative**: the operator may watch, steer and answer permission prompts
+by hand, the machine never types into a pane and never makes a decision from pane text, and the only
+completion signal is a schema-valid report file. P3-2 then shrank `tmux_adapter.py` to the two
+interactive endpoints and deleted the worker-side nudge/doorbell/heartbeat/glyph machinery; P3-3
+dropped pane heuristics from `fleet_watch` entirely, keeping hardware compute-idle plus region claims
+and adding a queue-aging alarm. Liveness and escalation *classifiers* were explicitly demoted to
+"pulled by need" (PN-1) — **not scheduled, and not to be started without a measured consumer.** The
+generalisable move: when a signal is structurally incapable of distinguishing two states, removing
+the dependence on it beats improving the reading of it.
+
+#### What a lane worktree isolates, and the surfaces it cannot
+
+The wiki already records that per-agent worktrees dissolve same-file commit sweeps while unpromoted
+lanes rot (106 commits behind, one at ~302 — *2026-08-12* section below). The mechanism doc
+([`WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md)) states the boundary
+precisely, as a **two-plane model**:
+
+- **Versioned work plane** — one worktree per agent at `/mnt/raid0/llm/worktrees/mains/<agent>` on
+  its own `lane/<agent>` branch. Own working tree, own index, own untracked state. Isolation was
+  *measured, not assumed*: staging a scratch file inside `mains/mainA` left `/workspace`'s staged
+  count at 0.
+- **Canonical runtime plane** — `/workspace`, one instance, deliberately **never forked**. The
+  session bus is state, not work, "and there can only ever be one live copy of *right now*". A naive
+  rollout would have forked it: `session_bus.py`'s bus root used to resolve via
+  `Path(__file__).resolve().parents[2]`, so five worktrees would have produced five independently
+  mutating buses. `get_bus_root()` now pins the literal canonical path from every worktree.
+
+The sharpest statement of the boundary is the dispatcher ledger's, and it is a warning about how the
+guarantee gets *read*: `repos/epyc-orchestrator` and `repos/epyc-inference-research` are symlinks
+**out of** every lane worktree, so lane isolation covers `epyc-root` only — *"anyone reading 'mains
+are isolated' must read it as **epyc-root is isolated**"*
+([`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md)). Six further
+surfaces stay shared, each with its own remedy rather than a per-lane copy:
+
+1. **The child repos' index and sequencer state** (DP-4, open, HIGH). A main sitting in its own
+   isolated worktree still shares one index and one `CHERRY_PICK_HEAD` with every other agent for the
+   orchestrator and research repos. Measured 2026-08-12: one main's `git add` in the research clone
+   put **42 files into another agent's in-flight cherry-pick index** (staged 8 → 50); had that agent
+   run `git cherry-pick --continue` in the window, all of it would have ridden into their commit
+   under their subject line. **It was caught only because `git commit -- <paths>` refuses with
+   `fatal: cannot do a partial commit during a cherry-pick`** — the same pathspec commit that is a
+   *hazard* for peer hunks in a shared file (2026-08-12 section below) is here the *guard* that
+   caught the contamination. Proposed remedy: per-lane child worktrees, or assert a clean sequencer
+   state before any `add`/`commit`/`checkout` in a shared clone.
+2. **Generated index state.** `index_state.py` writes were removed from post-commit/merge/checkout
+   hook bodies (`60187101`), with the proof obligation stated as a negative control: a worker handoff
+   commit must leave `.index-state.json`, `.index-graph.json` and the master generated block
+   unchanged. Derived files are regenerated only inside the heavy-wrap lease.
+3. **One-per-repo manifests and watermarks.** The same commit ensured an ordinary post-commit
+   retrieval refresh cannot mutate `wiki/source_manifest.json` or the wrap watermark, giving
+   retrieval its own cursor.
+4. **The promotion merge itself.** Promotion runs through a throwaway `--detach` worktree against
+   `origin/main`, aborts and leaves `main` untouched on conflict, and never force-pushes; pool
+   promotion rows are serialized one at a time through `merge_gate.py` / `serialized_push` (P2-8).
+   Note what that does *not* buy: `serialized_push.py` and its pre-push guard were built and tested
+   (62 + 56 tests, 50 mutations killed) and **deliberately not installed** as a hook — an operator
+   decision, on the stated ground that **only a server-side `pre-receive` on origin makes
+   serialization structural.** It is used as an explicit tool at promotion time, not as a guarantee.
+5. **The worktree admin data itself.** With `worktree.useRelativePaths` and one directory reachable
+   at two path depths, live worktrees read as *prunable* from the deeper path — and `git worktree
+   prune`, or the `git gc` that runs one, deletes their admin data. **That is what destroyed all five
+   lane worktrees on 2026-08-12**, and the fix is not retroactive: three pre-existing worktrees
+   remain exposed. The prescribed replacement is a read-only lane-ENTRY check
+   (`check_lane_worktree.py --strict`), never an exit sweep.
+6. **Backups that point into a live lane** (WT-1). Five `.orphan-…` backup directories retained the
+   old relative pointer, resolving to *the same admin directory the repaired live lane now uses* — a
+   commit inside a backup would have landed in the live lane's index. Neutralised by renaming each
+   `.git` to `.git.disabled-…`.
+
+And the lease that guards the singletons had its own defect: roster/PID reclaim allowed a second
+same-roster process to take a held wrap lease. It was replaced (`8ff5162c`) by an **opaque
+per-operation token** in a mode-0600 file whose hash is stored in the lock, required for normal
+release, with force-release audited — accepted only with a negative control that *would have admitted
+the previous collision*.
+
+The standing corollary, unchanged and now mechanised: **the worktree isolates; only promotion syncs.**
+The wrap-up cadence ruling below is what makes promotion frequent enough for that to matter.
+
+#### Three doctrine rulings, 2026-08-16 — canonical in `OPERATING_CONSTRAINTS.md`
+
+P1-3 closed three live self-contradictions in the instruction corpus with one explicit ruling each
+([`OPERATING_CONSTRAINTS.md` → *Doctrine rulings — 2026-08-16*](../agents/shared/OPERATING_CONSTRAINTS.md)):
+
+- **(a) Wrap-up cadence.** The binding 2026-08-11 operator rule wins — **one task done = one wrap-up,
+  AS YOU GO.** Exactly two steps are broad and destructive enough to stay at the operator cadence and
+  run ONLY inside an operator-invoked `/wrap-up`: index **PRUNING** (deleting or archiving rows, and
+  handoff compaction) and the **wiki compilation sweep**. Everything else — progress report, checkbox
+  sync, handoff updates, `Next action` refresh, agent log, pathspec commit, **lane promotion** — runs
+  at every completed task, autonomous and nightshift sessions included. And **nothing may
+  auto-trigger the full routine**: no `Stop`/`SessionEnd`/`PreCompact` hook, no cron, no nightshift
+  task, "and there must not be one." The cadence is a rule about *who invokes*, not a hook.
+- **(b) Subagent index edits.** **A subagent may PREPARE index edits; the owning session APPLIES them
+  and owns the commit.** Drafting row text, running `index_state.py --check` and reporting the exact
+  diff is preparation; adding, deleting or re-pointing a row is never a subagent's own write. This
+  reconciles two rules that had read as contradictory ("wrap-up may run via a coordinator subagent —
+  preferred" vs the standing CLAUDE.md prohibition): both hold, **because preparation is not
+  modification.** Same rule for intake entries and handoff stubs. Operator approval is needed only to
+  widen it.
+- **(c) Role-based delegation.** **Decomposition by ROLE is a measured anti-pattern and no live
+  surface may instruct it** — decompose by CONTEXT BOUNDARY. Confirmed by sweep: the eight persona
+  files are archived, and `coordination/session-bus/config.yaml` (closed role set
+  `main`/`coordinator-agent`/`reviewer`/`retired`/`service`) is the sole authority on who holds which
+  role. Two live surfaces still routing by persona were corrected. Model-tier-vs-task-difficulty
+  routing in `agents/README.md` is *not* the anti-pattern and stays.
+
+#### The fan-out multiplier finally has a detector
+
+The 2026-08-13 section below records an open gap: no way to tell a main that actually fanned out from
+one that worked serially and reported otherwise (RTG-49 / the "serial collapse" name from
+intake-1106, which defines the term and never measures it). The failure ledger states it as sharply
+as it can be stated — *"nothing on this plane distinguishes a main that dispatched five concurrent
+subagents from one that did the same work on its own thread, so the only detector is the operator
+saying so"* (F-15, against a measured 1,070 open backlog items, and the operator's ruling *"this
+should ALWAYS be the case"*). The pool's completion report closes that gap for the pool tier via a
+`subagents_spawned` field. In the pilot, **five subagents were fanned out and counted** — the
+handoff's own words: the multiplier "had no detector but the operator's word until today."
+Interactive-session measurement remains open under RTG-49.
+
+#### The pilot: four rows passed, two were refused, and the refusals are the result
+
+Four workers ran under the `claude -p` harness in visible panes, three concurrently. **4 of 4
+attempted rows passed** with schema-valid reports (41k / 62k / 118k / 205k tokens; 0 / 0 / 2 / 3
+subagents; one denied tool call recorded rather than silently tolerated). Every batch sat inside the
+D1 ceiling of ~250k tokens/batch; three of four promoted to `main` through `promote_lane`, and
+pilot-02 stopped at the D9 gate because its test lands under `scripts/coordination/**` (it was
+promoted later, after the operator's ack — not by the session that built the gate).
+
+**Two further rows the pool REFUSED to run matter as much as the four it ran: both parked on
+`premise-unknown` rather than guessing.** That is `premise_screener` (P2-2) doing its job — a
+forced-choice still-needed | stale | UNKNOWN call with a mandatory evidence quote, where UNKNOWN or
+stale parks the row and emits a routed fix task. It is the mechanised form of a finding this KB
+already carries: a screener certifies a row's FORM, only a read certifies its PREMISE. The same
+discipline shows up hand-executed in a worker's own log the same week — a "Premise verification"
+section that confirmed the screener's still-needed check by grep before writing any code
+([`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md)).
+
+Read the pilot against its own gate before treating it as a pass: the Phase-2 acceptance gate is
+**≥10 rows end-to-end**, 100% independently audited, operator spot-reviews 3 of 10. Six rows were
+dispatched. The pilot is evidence the path *works*, not evidence the gate is met.
+
+#### A concurrency ceiling the automatic path cannot reach — and the decision not to alarm on it
+
+The single open defect is instructive about how a bound can be honest and unreachable at the same
+time. `max_concurrent_workers: 4` is **not achievable through the daemon**: `compute_advice` skips
+any agent already in `busy_owners`, `busy_owners` is keyed on the queue row's `owner`, and the entire
+pool is ONE roster identity (`workerpool`) — so the first assigned row makes the whole pool busy and
+the pool serializes at **one row at a time**, whatever the config says. The pilot reached three
+concurrent workers only because they were dispatched **by hand** with `--pilot-override`, bypassing
+the picker, **so the measured throughput does not demonstrate the automatic path.** D1's bound is
+honest as a *ceiling* — nothing exceeds 4 — but the >40% duty-cycle target assumes it is achievable.
+
+The deliberate non-response is the transferable part: **it is not alarmed on, because the condition
+is continuously true and a permanently-on alarm is the exact failure the fleet predicate exists to
+end.** It is instead visible in every tick's `fleet-health` advisory via `capacity_free` /
+`in_flight` / `dispatchable`. Three candidate fix shapes are filed, none chosen.
+
+#### Identity is not session — and a rule whose subject is deleted fails silently
+
+P3-7 retired the interactive `auditor` SESSION but deliberately did **not** tombstone the auditor
+IDENTITY: `worker_runner.py` addresses every audit packet to `auditor`, `headless_audit.py` writes
+its outbox under that id, and `session_bus.py::_check_routing_intent` raises `BusError` on a routing
+target whose roster role is `retired`. Tombstoning would break the audit path at that raise. The
+roster row is `role: service` with no tmux endpoint and no `worktree:` key, so no pane can be
+spawned, probed or nudged under it.
+
+The interesting failure is what that retirement did to a *rule written about a session*. RTG-51's
+interim rule read "Auditor main is the heavy-wrap writer and subagents are read-only." After P3-7
+that sentence **had no subject** — taken literally the document was left with NO designated
+heavy-wrap writer, "which is worse than an outdated one because it fails silently." It was replaced,
+not reworded: the heavy-wrap writer is now **the single headless invocation that holds the wrap
+lease, writing under the auditor identity**, and the read-only constraint now binds every invocation
+that does not hold the lease — which includes every per-packet audit. Two transactions that had been
+conflated are now separated by lease: **per-packet audit** (one per completion, read-only w.r.t.
+indices, wiki and `main`) versus **heavy wrap** (one leased, batched transaction over an immutable
+receipt cut — regenerating indices or compiling the wiki per packet "would be wrong and expensive;
+batching is the point of the immutable cut"). This is the same operator-cadence boundary as ruling
+(a), expressed as a lease instead of a prose rule.
+
+#### A gate I built is not a gate I may sign
+
+Two containment mechanisms fired against the implementation itself, and both were recorded as
+working rather than routed around:
+
+- **The doctrine corpus is behind the trust boundary.** `agents/shared/*.md`, `CLAUDE.md` and
+  `agents/AGENT_INSTRUCTIONS.md` are hash-pinned in `human_only_paths.yaml`, so the PreToolUse hook
+  refused the agent's edits — "invariants 4 and 10 working exactly as designed, not an obstacle." The
+  doctrine collapse therefore ships as an operator-run package with every target sha256-pinned,
+  aborting on drift and skipping if already applied.
+- **D9 held on the loop plane.** Merging anything under `scripts/coordination/**` requires operator
+  ack; `promote_lane.py` exited 5 and named the path rather than promoting. The session's own note:
+  *"I did not sign this. Bypassing a control I had just built, on my own authority, would have taught
+  the fleet exactly the wrong lesson."*
+
+One operational lesson came free with the package: the first staging directory was **destroyed by a
+`git clean`** and had to be rebuilt, so the replacement was staged under a **tracked** path. The same
+mechanism as the 2026-08-12 bus wipe recorded below, at a smaller scale — an untracked staging
+directory is not a durable artifact in a shared tree, and this is also why D5 relocated the bus
+runtime behind a tracked symlink.
+
+One hazard specific to *deduplicating* an instruction corpus is worth generalising: nine amendments
+existed in only ONE copy and would have been destroyed by a naive dedup — including the subagent
+index-modification prohibition (present nowhere else), "never tick another agent's checkbox" (absent
+from the canonical checkbox axiom), and the stale-heartbeat causal chain. They were merged into the
+canonical text *before* any copy was deleted. **In a corpus with N duplicated copies of a rule,
+amendments land in one copy; collapsing to one canonical copy is a lossy operation unless every copy
+is diffed first.** The same failure mode is visible in the plan text itself: the fan-out rule's
+2026-08-13 exceptions existed in 1 of 5 copies.
+
+Standing constraint adopted from Phase 0 onward, aimed squarely at the corpus growth this article has
+documented repeatedly: a **prose-rule moratorium** — a new incident appends a labeled example to the
+eval fixtures (`label_provenance` mandatory), never a new rule or conjunct to BUS_PROTOCOL or the
+agent files.
+
+#### Current measured state, and what is explicitly not measured
+
+One caution about reading any of these ledgers, verified on the dispatcher handoff this pass: **a
+long-lived handoff's own summary of its open work is not an instrument.** Its header claims 18 open
+task contracts; the file contains 45 unchecked boxes (26 at top level), and neither number is
+reproducible from the other. A milestone box (M4) sits unchecked while the config change it gated
+(`authority: assign`) has landed, two task rows appear twice with opposite check states, and the
+document itself carries a C-number collision warning. Counts inside a hand-maintained ledger drift
+from its own checkboxes; the checkboxes are the record, and the dashboard already counts only those.
+
+Self-repair share is **11.1%** (107/966 commits, computed by D9's commit-path classification over
+`scripts/coordination/**`, never self-reported) against a <10% target — down from a stated ~50%
+baseline. The queue went from 14 `INFRA_BLOCKED` rows to **0** (27 READY), and 12 dead-owner claims
+were released under reversible receipts. The duty-cycle claim (8–9% baseline → >40%) and the
+zero-operator-intervention claim are **7-day observations that have not elapsed**; `fleet_metrics.py`
+is built and running, and P4-1 is open. A meta-kill criterion applies to the restructure itself: any
+phase exceeding 2× its estimate stops the plan, so that it "must never become the next
+50%-self-repair sinkhole."
+
+#### Source References (2026-08-16 loop-owned fleet)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
+  ratified decisions D0–D9, the 15 invariants, Phase 0–4 task state, the 2026-08-16 implementation
+  record and pilot table, and open defect PD-1.
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
+  the authority table, the per-packet-audit vs heavy-wrap split, the Phase-1 singleton repairs
+  (hook writers, wiki manifest/watermark, operation-token lease), and the REVISED 2026-08-16
+  identity-is-not-session correction.
+- [`agents/shared/OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) →
+  *Doctrine rulings — 2026-08-16* — canonical text of rulings (a), (b) and (c).
+- [`agents/shared/SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another
+  session's liveness* — the three-state model, the authoritative instrument, and the measured
+  446-second stale heartbeat.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
+  — F-07 (compacting read as idle, twice), F-15 (the fan-out detector gap and its 1,070-item cost),
+  F-37/H-3 (redrawing panes defeat the quiet-check), F-43 (a SIGSTOPped session reading idle), and
+  the 12:37Z handover heartbeat-staleness table.
+- [`scripts/coordination/WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md) —
+  the two-plane model, the measured index isolation, the promotion pattern, and the withdrawn
+  `git worktree prune` rule.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the
+  epyc-root-only scope of lane isolation, DP-4's shared child index and its 42-file cherry-pick
+  contamination, WT-1's backup-pointer aliasing, the uninstalled `serialized_push` decision, and the
+  header-versus-checkbox count discrepancy.
+- [`artifacts/operator/loop-owned-fleet-operator-package-20260816.md`](../artifacts/operator/loop-owned-fleet-operator-package-20260816.md)
+  — the gates that fired, the self-repair/queue numbers, and the PD-1 warning.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — a worker's own
+  premise-verification-before-implementation record.
+
+### Compiled Update — 2026-08-14: the reviewer ledger materializer scales, but the paired experiment has not run
+
+**Confidence: verified for the non-inference mechanism and current trace store; no claim about live
+shadow overhead or reviewer quality.** The RCP-W2 materialization leg converted all **1,366** current
+`review_decision` events into **1,366** `review_ledger` rows with zero duplicate skips. This expands the
+previous 32-event dry validation and proves that the event-to-ledger mechanism works on the current
+store without restarting the stack or running inference.
+
+The result also demonstrates why mechanism completion and experiment completion are different states.
+Only 207 events carry `candidate_id`, and none join the near-miss corpus `row_id`; false-accept,
+false-reject, calibration, and AUC fields therefore remain null by the predeclared firing contingency.
+The full RCP-W2 row still requires the paired, same-question shadow-OFF/ON replay. RCP-W1 live flag
+attestation and RCP-W3's corpus-matched bridge remain next-era work; this materialization checkpoint
+does not license a reviewer rollout or performance claim.
+
+#### Source References (2026-08-14 reviewer materialization)
+
+- [`bulk-inference-campaign.md`](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) — full RCP-W2 paired
+  replay contract and completion gate.
+- [`inference-batch-loop.md`](../handoffs/active/eval-tower-program.md#track-inference-batch-loop) — RCP prologue ordering and
+  existing materializer/ledger bridge.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — current-store
+  counts, join result, output location, and operator disposition.
+- `epyc-orchestrator/scripts/analysis/reviewer_events_to_ledger.py` — executed materialization path.
+
+### Compiled Update — 2026-08-13: task durability is now a pushed receipt, not a worker-wide documentation sweep
+
+**Confidence: verified for published code and focused tests; fleet authority cutover remains off.**
+RTG-51 now separates the task boundary from the fleet documentation transaction. A worker-owned
+checkpoint resolves the exact task, updates only owned checkbox/artifact/progress paths, validates,
+commits an explicit path set, pushes `lane/<agent>`, and only then publishes an idempotent typed
+receipt. Coordinator admission fails closed on roster, task identity, path scope, remote reachability,
+committed per-agent progress, and receipt correlation; an accepted checkpoint produces one immutable
+Auditor packet, and only an accepted verdict produces `checkpoint-integration-ready`.
+
+The independent roles remain intentionally asymmetric. Coordinator routes, validates, orders
+integration, and controls context transitions. Auditor owns verdicts and may not direct the source
+worker. Inference owns compute compatibility, leases, physical claims, and safe drain; the published
+compute planner is a replayable projection/ranking core, not a live grant path. Shared handoff/index/wiki
+mutation remains a single leased heavy-wrap transaction. The operation-token lease, non-mutating worker
+hooks, receipt-bound progress checker, checkpoint engine, and typed audit lifecycle are published, but
+the compute bus relay, receipt-cut heavy-wrap executor, protected role-policy package, daemon reload,
+instruction acknowledgments, and canaries are not. Rollout therefore remains `off`.
+
+#### Source References (2026-08-13 RTG-51 implementation)
+
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
+  authority table, state machine, implementation phases, acceptance matrix, and live gaps.
+- [`session-bus-task-flow.html`](../docs/coordination/session-bus-task-flow.html) — visual lifecycle,
+  failure loops, authority boundaries, implementation evidence, and deployment status.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — commits,
+  focused tests, audit findings, and publication boundary.
+
+### Compiled Update — 2026-08-13: a correct role guard is inert when the daemon loads the wrong tree
+
+**Confidence: verified by the live queue/advisory records, process start time, source identity, and
+tracked code comparison.** The first live role-admission canary assigned ordinary AP-ME-1 backlog
+work to Auditor even though the roster declares `schedulable: false` and
+`accepts_work_types: [audit]`. Auditor declined before editing or compute; coordinator-agent revoked
+the lease, and the queue can return to an ordinary main.
+
+The tracked `compute_advice` implementation already contains the needed refusal: a non-schedulable
+role is skipped unless explicitly targeted with an accepted work type, and a generic row is rejected
+again during candidate evaluation. The running daemon did not contain that code. It started at
+19:48:03Z from the shared-main tree at `ff7a5e6f`, which does not contain `d7b83ddf9`; the stale source
+was materialized before process start, so this was not a stale-process-after-file-update ambiguity.
+
+The rollout lesson is sharper than “restart the daemon”: deployment acceptance must prove the exact
+running source before testing behavior. AIR-6 now requires source-version proof plus a mutation
+canary in which an ordinary untyped `lane:none` row is refused by Auditor. Only after that should
+audit `shadow` or resource `observe` advance. GitNexus rates `compute_advice` HIGH reach across four
+assignment/coordinator flows, so the wrap-up changed the deployment gate rather than patching or
+reloading the live control plane.
+
+#### Source References (2026-08-13 role-admission canary)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-6 failed
+  canary evidence/retry gate and AIR-10 disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — process,
+  source, queue, and role-contract audit.
+- [`config.yaml`](../coordination/session-bus/config.yaml) and
+  [`auditor-main.md`](../agents/auditor-main.md) — authoritative schedulability and accepted-work
+  contract.
+
+### Compiled Update — 2026-08-13: typed compute messages are not yet an authority boundary
+
+**Confidence: verified by negative validation probes and dependency analysis.** The Rule-11 prose
+says requests route to Inference and only Inference grants or denies. The audited schema change adds
+`compute-request`, `compute-grant`, and `compute-deny` to the enum and exercises positive authoring,
+relay, and idempotency, but it does not encode those role and route constraints.
+
+Four forged or incomplete rows currently validate: a request addressed to a non-Inference target, a
+grant authored by a non-Inference sender without `boundaries`, a deny without `next`, and a request
+with an unknown misspelled payload key. This is the important architecture distinction: a typed
+message vocabulary describes interaction shape, while an authority boundary must refuse a sender,
+recipient, correlation, or payload that violates that shape. Validator parity and green positive
+tests prove consistency, not the Rule-11 contract.
+
+The repair is focused but high-reach: enforce request routing, inference-only grant/deny authorship,
+request correlation/addressing, required non-empty per-kind fields, closed payload vocabularies, and
+authoring-plus-relay negative tests. GitNexus classifies `validate_row` as CRITICAL upstream reach
+(six dependants across five append/validation/coordinator flows), so the independent audit recorded
+the rework contract without editing the control-plane implementation.
+
+#### Source References (2026-08-13 Rule-11 audit)
+
+- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — Rule-11 ownership and routing
+  contract.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-8
+  independent audit and AIR-9 fail-closed repair task.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — negative
+  probes, test result, and dependency blast radius.
+
+### Compiled Update — 2026-08-13: dedicated Auditor and Inference control planes
+
+**Confidence: verified for committed policy, state machines, and tests; rollout enforcement remains
+staged.** No live coordinator daemon was restarted as part of this checkpoint.
+
+The session-bus fleet now separates two control-plane responsibilities that previously existed only
+as informal conventions. Auditor is no longer a generic `lane:none` executor: successful
+`mainA`–`mainD` completions deterministically create linked, role-targeted audit work, and only a
+linked Auditor verdict can close that review. Findings return through handoffs and ordinary
+coordinator dispatch rather than directly tasking the source main, so review remains valid after the
+originating session has cleared context or moved on. Small fixes discovered during review are
+delegated to Terra subagents and stay proposed until Auditor accepts them.
+
+Inference now owns the advisory compute schedule independently of ordinary task assignment. Typed
+resource requests and grants preserve holder, task batch, exact CPU/GPU resources, expiry, and
+lifecycle across replay. A task assignment plus a valid resource lease still does not prove physical
+ownership: CPU activation requires a `region-lock` receipt, while delegated GPU grants fail closed
+until a general device-claim provider is configured. Persistent CPU and GPU idle are detected as
+separate multi-sample episodes and routed once to Inference, with durable inbox history preventing a
+daemon restart or lost routing-state file from duplicating the episode.
+
+Role provisioning is explicit as well. Coordinator-agent must present an inspected existing pane
+versus fresh-launch choice to the operator. Adoption requires exact endpoint/worktree identity, a
+positively idle runtime, empty composer, valid heartbeat/cursor/task state, unread/triage evidence,
+and explicit confirmation that the old role context was reset and reseeded. Recommended model and
+effort pairs populate the launch decision only; an operator changing either in-session is silent and
+never invalidates identity, leases, liveness, or the pane.
+
+The staged posture is intentional: audit completion is `shadow`, resource leases are `observe`, and
+persistent-idle transport is `route`. Promotion to required audits or enforced lease admission waits
+for a live-bus replay plus one audit and one CPU canary; delegated GPU leases additionally wait for a
+real physical claim provider. The implementation checkpoint passed 346 non-corpus bus tests, 173
+pane/routing tests, the 51-case M4 authority harness, and the 87-case fleet watcher plus 21 mutation
+checks.
+
+#### Source References (2026-08-13 dedicated roles)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR
+  implementation checklist, rollout posture, and remaining canary gate.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — integrated
+  implementation and verification record.
+- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — typed audit, resource-lease, and
+  persistent-idle wire contracts.
+- [`auditor-main.md`](../agents/auditor-main.md) and
+  [`inference-main.md`](../agents/inference-main.md) — canonical role boundaries, provisioning, and
+  model-agnostic identity rules.
+
+### Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
+
+**Confidence: verified** for the audit's artifact-level findings (each cites commits, test counts, and timestamped bus rows); **inferred/self-assessed** for the failure ledger's recurrence counts, which the audit itself downgrades as "the least reliable thing in it". One boundary must be stated up front: the reviewing document is an explicit **stand-in** for the `auditor` role (which was at 100% context and unreachable), it marks three of its own sections `[THIN]`, and the real ruling (A-1…A-9) is still pending. Nothing below should be read as the auditor's verdict.
+
+#### RETRACTED root cause: "compliance decays with context"
+
+The coordinator role, told by the operator to collect its own failure modes, produced a 32-row ledger and a root cause **RC-1**: *written policy has no checkpoint at the moment of action, so compliance decays with context — rules with a mechanism held, rules relying on recall decayed.*
+
+The audit's verdict is the sharpest form a review can take: **"the conclusion is directionally right and every leg of the argument for it fails."** The legs, and why each fails:
+
+- **The comparison is structurally impossible.** Mechanisms self-log; prose rules that *hold* leave no trace at all. So the "held" column is a definition, not a measurement — and it has no denominators either (13 registered `PreToolUse` hooks against 252 directive-bearing policy lines).
+- **RC-1 is itself an instance of the failure class it names.** It quotes an N with no M or K, which is exactly what the same repo's newly-landed *Reporting Units* rule forbids.
+- **The causal claim is refuted at zero decay.** F-02 (instantaneous sampling read as a utilisation rate) was committed as the coordinator's *own correction #2* at 10:07:18Z, and recurred at 10:28:19Z and again ~10:40Z — 21 and 33 minutes later, same session, same context window. Nothing decayed.
+- **Four of the six "rules that held" do not survive.** Only two do (one-daemon-one-supervisor via `flock`, and the human-only trust boundary). One is **refuted and is itself a reporting-units error** — the composer guard's glyph table was miscalibrated, returning "not empty" for empty composers on all six Claude panes, so the doorbell refused every ring to every Claude main: 0% operative, and therefore "refused a nudge that should not have been sent" had *zero discriminating power*. Another is **vacuous**: deleting the rate-limit `if` block leaves both of its tests green, contradicting its own commit body.
+- **The largest counter-case runs the other way.** A `git clean` classifier hook would have refused the exact 08:20Z command that wiped the bus (149 untracked entries ⇒ `block:clean-untracked:/workspace`) — but it had been reverted 27–47 minutes earlier. The audit also corrects *why*: it was reverted **as defective** (two HIGH findings its own 12 tests missed), not as a well-built guard at a bad trade — which removes the foundation of the delete-lens argument built on top of it.
+
+**The replacement finding, and it generalises past this role:** *a rule is followed at the rate at which the act it governs forces a read of it.* The repair target moves from durability (write it down harder, ledger it) to the **emission path** — the moment of emission is where retrieval fails. The corroborating pair is stark: a sentence-template correction ("N records resolving to M distinct rows, of which K were dispatchable at emission") had **zero** recurrences, while narrative corrections recurred **within the hour**; a durable resolution ledger went stale in **48 minutes** because nothing on any startup path referenced it.
+
+#### The self-audit's evidentiary bias, named
+
+The audit finds the failure ledger applying **opposite evidentiary rules to the same signal** depending on which way it cuts. On an authorship charge, absence of a commit trailer was discarded as weak; on an exculpatory one, the same absence was accepted as decisive — and the base rate settles it (5 of 48 merges repo-wide carry a trailer, so trailer-absence is the *norm* for merges and proves nothing). One struck authorship claim was restored by the role's own commit body 13 minutes later: *"hand-written by the coordinator on its own thread under time pressure… never tested."*
+
+The structural conclusion is a governance one rather than a code one: **a role cannot be the auditor of its own failure ledger**, and it is listed as a deletion (D6) alongside D1 *stop reading dials* (which alone kills seven ledger rows at zero build cost), D2 *stop authoring your own agent infrastructure* (the coordinator wrote its own idle-detector — a conflict of interest, and the detector's owner disputes its attributions on record), D3 *stop hand-deriving repo metrics*, and D5 *stop 2 KB freeform payloads* (219 distinct payload keys across 53 messages, median 2,106 B).
+
+#### A correction that propagated faster than its own fix
+
+The mechanism of the emission-path failure is visible in miniature. A wrong figure ("relaunch-looped every ~10s", actually 42 s = 30 s timeout + backoff, 2 attempts over 74 s) was corrected *in the handoff* — but had already propagated into a guard script and a contract test, and a commit landing 13 minutes later did not fix it. The error ends up standing in **five files**. Writing the correction down is not the same act as reaching the places the claim already went.
+
+#### Live mechanisms that cannot see their own target
+
+Three same-week defects share one shape — *a check that cannot distinguish "false" from "I cannot tell"*, and resolves the ambiguity to a confident value:
+
+- The bus supervisor's daemon pattern matched only self-launched daemons (the live one runs with `--bus-root <path>` inserted), so it killed a healthy 75-minute-old daemon. Its replacement predicate is **vacuous in a five-writer tree** and was observed killing healthy daemons in **11 cycles over 35 minutes** *during the audit*, epoch 54→64.
+- Supervisor liveness was derived from a pid file rather than the lock: a process alive 7h40m holding the lock reported `UNHEALTHY` because its pidfile had vanished.
+- An operator-escalation classifier reported **11 action-required items when there were 0** — 111 rows carry `action_required` but only 8 satisfy the operator predicate and 7 of those overlap, so the two predicates are nearly disjoint. The fix replaces inference-from-absence with a **positive marker** (`payload.operator_signature_needed: true`), taking 8 classified items to 0 across 267 rows with 315 tests passing.
+
+The generalisable rule (raised the same night, and violated twice by the person who had just fixed the class): **a field used to discriminate KIND must BE an explicit kind, never a present/absent test.**
+
+#### The picker defect behind the retracted backlog figure — still open
+
+The retracted "4,602 pending picks" number (carried in corrected form in the pass below) has a located root cause: the coordinator caches a `status: READY` literal and never re-derives eligibility from the row it points at. A partial fix landed (closed-box detection); **re-anchoring picks on row identity rather than `file.md:LINE` has not been done**, and the anchor-rot rate that makes line references unsafe was measured the same day at **22 of 201 references (10%)**, 12 of them from ordinary edits within about three hours, against a whole-queue rot of 34.5% the day before.
+
+#### Disagreements this pass does not resolve
+
+- **Was the GPU idle?** The coordinator raised idle compute repeatedly; the `inference` main disputes the premise on record — its authorized six-arm AutoKernel campaign was continuously resident. Both are recorded; the wiki does not adjudicate.
+- **Was a reboot authorization declined?** One handoff states OP-16 was declined by the operator; another searched the bus, progress logs and token queue and **found no such decision anywhere**, giving the status as *deferred-with-announcement*. A correction task is filed against the first. Note the provenance constraint that makes this hard to settle: across 839 bus rows in 16 files, the operator has written **zero** — every "the operator said X" on the bus is second-hand agent quotation.
+- **Two consumers of the same nominal check disagree in-tree**: one topology gate compares against a stale attestation and false-passes, the other is fail-closed on exact match.
+
+#### Source References (2026-08-12, second pass)
+
+- [`docs/reviews/coordinator-role-audit-20260812.md`](../docs/reviews/coordinator-role-audit-20260812.md) — the RC-1 falsification, the four-of-six rule audit, the evidentiary-bias finding, and the D1–D6 deletion proposals.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — compacting-read-as-idle, post-exit-VRAM-sample, and dispatch-by-line-number as canonical incidents.
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
+
+### Compiled Update — 2026-08-12: a retracted scheduling narrative, a bus wipe, and the four nested restarts it took to make one check fire
+
+**Confidence: verified**, with one section explicitly marked **RETRACTED**. Read from `progress/2026-08/2026-08-11.md` and `2026-08-12.md`, the committed module headers, and `coordination/backfill/README.md` — whose own text carries the correction.
+
+#### RETRACTED: "the coordinator daemon knew exactly what should run and told nobody"
+
+This framing circulated for most of a night and is **false**. It is recorded here rather than deleted, because the corrected version is more useful than the original was and because a retraction that publishes its mechanism is worth more than one that merely withdraws.
+
+**What was actually measured**, once the picks were screened against the rows they named:
+
+- The advisory stream's `would-assign` records resolve to **nine distinct task rows, all from a single handoff file** — the daemon was not naming a fleet-wide backlog, it was repeating one file's rows.
+- **Of six sampled picks, one was dispatchable.** Four had been `- [x]` since **2026-07-29** — fourteen days closed at the moment the daemon named them — and one was anchor rot.
+- The record count that made it look like a backlog (thousands of rows) is a **repetition count of a stuck picker**, not a count of work. The surviving shard shows **811 records** resolving to those nine rows.
+- The picker selected the same closed rows on **20 consecutive ticks**: it never re-read the file that had closed them.
+- Utilisation for the night was **~8–9% receipted**, not the ~20% first reported. That earlier figure came from reading a **15-minute load average as if it were a duty cycle** — a smoothed window is not a sample of instants. Separately, a 3h47m window carries **no compute receipt of any kind**, which is an *unwitnessed* interval, not a *measured-idle* one.
+
+> **The durable rule: a count of scheduler records is not a count of available work.** State a queue figure as *"N records resolving to M distinct rows, of which K were dispatchable at emission."* The third number is the only one that was ever a claim about the fleet, and it is the one nobody computed. This generalises to any queue-depth, backlog-size or advisory-volume figure.
+
+**What survives the retraction, and it matters**: the real defect is a **stuck picker serving a stale READY set**, which is *distinct from* the delivery gap. Fixing delivery does not fix selection — **a working courier delivers wrong rows faster.** The two must be closed separately.
+
+**A second retraction from the same night, kept for the same reason**: every checkbox/board-delta count reported that session was computed with an **unanchored `- [ ]` grep**, which matches box-like text anywhere in a line and inflates both sides. The pattern must be anchored to the list-item start. A second counter disagreed with it in-session and the disagreement was noted but not resolved — **two disagreeing board counts in front of the operator is itself the defect**, so no delta from that pass should be quoted.
+
+#### The committed-not-live chain: every mechanism that carries a fix is itself a thing that has to be carried
+
+The sharpest structural finding of the period. A staleness check was built to detect *a daemon up and answering while running old code* — and then reproduced the defect four times over before it fired once:
+
+1. The **supervisor** that would run the check had itself started **before the check landed**, so it ran pre-check code and logged zero detections.
+2. The check was hooked into the health-probe function but **the loop's HEALTHY branch does `sleep; continue` and never calls it** — so the detector only ever ran on the *unhealthy* path, where the daemon is about to be restarted anyway and the question is moot.
+3. Its tests exercised the predicate and the probe function directly — ***a* consumer, not *THE* consumer.** Closed with a **static wiring assertion** that the loop's healthy branch reaches the check, mutation-verified: removing the call takes the suite 8/8 → 7/8 with the failure naming the defect. *A test that cannot fail on the bug it was written for is decoration.*
+4. The wiring fix was then itself committed-not-live until one more restart.
+
+**Measured payoff on closure**: the first live detection in the mechanism's history fired (*"daemon is running code OLDER than its source"*), the daemon was replaced, rotation finally ran — a **1,044 MiB** advisory file went to 0 with its history preserved as a shard, **660 flag pairs** survived and were all re-found by an all-shard bootstrap (a live-file-only bootstrap would have lost pre-rotation history and re-flagged everything). Daemon CPU fell **29.5% → 1.8%**, and **five separate defects went committed → live on one restart**.
+
+> **A bootstrap problem is not solved by a restart — it is solved by the mechanism outliving the need for them.** And: **verify a restart by its consumers, not by the restart** — the evidence accepted here was a verdict naming the pid *as* the daemon, receipt-relay notices firing two seconds after start, and a state file that had not existed before now existing.
+
+**A companion race, and why the first fix was not one.** Supervisor relaunch raced the *dying* holder's lock release, leaving ~90 s with nothing supervising. The proposed fix — report the holder pid and whether it is alive — would not have helped: in this race the holder is **still alive while releasing**, so it prints ALIVE and exits 0. *Evidence about a race is not a fix for the race.* Fixed with a bounded lock wait: a dying holder releases in milliseconds so the relaunch wins, a live one holds for its life so we still report and exit 0. Exit 0 on contention was **kept deliberately** — for the documented cron idiom a skip is the normal case, and paging on every ordinary tick is how a real alarm gets ignored. The race test carries a **contrast**, not just an assertion: it proves the old non-blocking form *loses* the same race under the same fixture, otherwise a passing test might only be describing a fast machine.
+
+#### Residency is not work — an idle resident model positively locks the queue
+
+A device sensor OR-ed utilisation with VRAM occupancy into one `occupied` boolean. The two numbers were always stored separately; **only the verdict conflated them.** So a loaded-but-idle model read BUSY and the eligibility check rejected every queued row behind it — **572 `lane busy` rejections**. The sensor now publishes `busy | resident | free | unknown`.
+
+**The admission ruling, stated rather than buried: RESIDENT ADMITS, WITH A WARNING — because admission is not acquisition.** Eligibility only makes a row *pickable*; the device claim and the region lock still gate the run and are the only things that grant a device. **Fail-closed belongs on acquisition** and is untouched there. BUSY and UNKNOWN still reject.
+
+Two design rules landed alongside:
+
+- **A mechanism that behaves differently when a config flag is raised has smuggled the flag's decision into itself.** The scheduling-recommendation delivery has **no authority branch in its code**: under the stronger authority the row leaves READY, the pick stops being emitted and the arming counter resets, so the mechanism silences itself *structurally*.
+- **Half the tests for a new detector should assert it does NOT fire** — a well-run night, an empty queue, an ordinary gap between campaign legs, a pick inside the arming window, a legitimately busy device. *A check that fires on a well-run night trains everyone to ignore it, which is the same failure as not checking, one level up.* The test that pinned the old defect was **deleted, not adjusted**, and six mutations were verified against a **sandbox copy**, never the shared tree.
+
+**And the fleet's only claim-expiry check was disarmed for exactly the claim that monopolised the GPU**: the device claim was acquired without a max-hold while the CPU claim three lines above passed one, so no expiry was ever written and the check returned `COULD_NOT_CHECK` forever instead of `FAIL`. Fixed by quoting the campaign's single declared window rather than introducing a second constant — both claims are taken in one transaction and released together, so two declared deadlines would be a defect by construction.
+
+#### An escalation predicate nearly disjoint from what it claims to detect
+
+The daemon escalated **11 operator items**; a full parse of the same 17-item queue found **zero** needing the human. The formula reproduces exactly (`action_required: true` minus `kind: status`) — but on this bus `action_required` means *"some named agent must act next"*, not *"the operator must act"*, and all 11 named an agent in their own text. Across live inboxes: **111 rows carry `action_required`, 8 satisfy the operator-item test, 7 overlap.** A predicate can be perfectly deterministic, perfectly reproducible, and measure a different population than its name.
+
+#### The bus wipe: `git clean -ffdx` in a shared repo, and a recovery that inverted
+
+**Cause established by scope, not plausibility.** The sweep took the cache directory, repo-root scripts, an operator receipts directory, logs, and all 29 nested worktrees; untracked entries went **149 → 3**, total dirty **232 → 56**. No log-reaper explains repo-root scripts, and no targeted delete explains all of them in one instant. **The double force is proven**: a dry run with a single `-f` prints *"Would skip repository"* for all 29 worktrees and removes none — only `-ffdx` removes them.
+
+**The enabling half is the part worth carrying.** A commit earlier the same day added `.gitignore` entries for the bus runtime directories. That commit could not have deleted anything (`git rm --cached` cannot delete an untracked file), but it converted the bus runtime from **tracked — and therefore immune to `git clean` at any force level** — into ignored, and so `-x`-eligible.
+
+> **The moment a path becomes ignored it becomes `clean -x` fodder. Untracking live runtime should move it OUT of the repo, not merely hide it FROM git.** Write-side corollary: **snapshot before untracking**, because git-based recovery recovers only what git already had — which by definition excludes everything the untracking is about.
+
+**Damage, and the inversion that is the lesson.** Inbox rows **826 → 4**; one outbox **85 → 2**; another gone entirely; all cursors gone; the bus could see **1 of 8 agents**. **17 claim files destroyed, 13 of them live.** The single claim that survived was a 327-hour-stale row everyone agreed should be released — **because it was the only claim tracked in git. The recovery selected the dead one and dropped every live one.**
+
+Three structural consequences:
+
+- **`git status` can never report a loss like this again**, because those paths are now ignored — the ordinary signal that something is missing is gone by construction.
+- **A history that only exists in `clean -x` fodder is not a history.** The advisory record before the wipe is unrecoverable, which is precisely why the inflated record count above cannot be re-derived.
+- **The incident was self-concealing** — no artifact records the command, because the clean removed the logs that would have carried it. Who ran it was deliberately **not inferred**; proximity is not evidence. The archive was held **outside the repo**, applying the finding that a scratch directory inside it would be swept by the very command being diagnosed.
+
+**Deliberately NOT restored over the runtime**: replaying 826 stale messages against a zero cursor recreates a mass re-drain — the same flood by a different door. *The archive is the record; the runtime starts clean.*
+
+**A near-miss inside the damage assessment**: a first lookup reported "NO BRANCH" for six campaign branches purely because unprefixed names were guessed; they were intact under prefixed names, their trees live outside the repo, and deleting a worktree never touches the object store. **A naming assumption inside a damage assessment nearly escalated a recoverable state into a catastrophic one.** Real closure for worktree exposure is structural — trees outside the repo — not an ignore rule.
+
+#### Shared-file concurrency: pathspec discipline solves the CROSS-file problem and does nothing for the WITHIN-file one
+
+This is the gap the fleet had named only halfway. `git commit -- shared.md` is **file-limited, not hunk-limited**: it captures every uncommitted hunk in that path, including another agent's mid-edit. Five distinct variants occurred in one night on one daily log, across five writers:
+
+1. **SWEEP** — a pathspec commit absorbs a peer's in-flight section (one instance carried 66–67 lines by two authors).
+2. **RE-PARENT** — appending with `cat >>` at end-of-file re-parents your `###` under whoever wrote a `##` last.
+3. **CONTAINER-vs-CONTENT** — the container is checked, the content is not.
+4. **UNTRACKED PROBE** — the verification probe is untracked, so `git grep` cannot see it and the tripwire looks inert.
+5. **`no changes added to commit` is not failure** — it means someone else already committed your work seconds earlier.
+
+**The fifth is different in kind and is the one to remember: the content survives and the COMMIT MESSAGE dies.** The other four misattribute *work*; this one silently discards the *reasoning*, and nothing anywhere shows it is missing, because "nothing to commit" is also what a no-op prints.
+
+> **Durable records go in the FILE; the commit message only points at them. A message is the one artifact another session can destroy without leaving a trace.**
+
+Checks that do catch it, both cheap:
+
+- Before committing a known-shared file, diff it and look for **another owner's heading** in your added lines.
+- **Append under your own heading by insertion, never `cat >>`** — end-of-file is a moving target.
+
+**The pre-commit check has its own time-of-check hole, and its answer must never enter a commit message**: it was true when taken and false when acted on, and the stale answer was written into a permanent message as a claim about a colleague. Verify the **artifact** post-hoc instead — a commit is immutable, so that check has no window. Keep the pre-commit grep; it is what makes you look. And the ownership detector built for this promptly hit an over-wide key two minutes after adoption: it matched a **name**, not an **author**, flagging sections *titled* after one agent and correctly written by another. **Knowing the class does not exempt your own tools from it.**
+
+**Why it fools experienced agents repeatedly**: appending is the one edit where **the structure you are joining is invisible from the edit you are making**, and a pathspec shows nothing about who else is mid-edit in that path. Both are silent and both look exactly like success. Not three lapses — a tool shape.
+
+**One standing exception, adjudicated**: committing another agent's uncommitted work is acceptable **when the message names it as theirs** and the alternative is loss. Explicit naming converts a sweep into a custody transfer; misattribution is recoverable, a lossy event is not.
+
+#### Reconciliation is not authorship — and a brief freeze is the only lever
+
+Two rules from a merge that went stale eight times against a five-writer tree:
+
+- **The single-writer rule governs AUTHORSHIP, not RECONCILIATION.** Asking each owner to resolve their own paths serialises N round-trips against a moving base, so every resolution is stale before the next arrives. One agent absorbing the churn landed it.
+- **Freeze compliance is not "don't commit" — it is "hold no uncommitted hunk"**, because an uncommitted edit on a frozen path gets swept by the next peer's pathspec commit. And the *lift* condition must be a ref check that the merge is an ancestor of main, or a lift announced before main fast-forwards releases primed append buffers onto a stale base.
+- **Scope a freeze from the STRUCTURAL predicate (both-sides-modified), never from the observed-conflict list.** Measured: 22 changed paths on one side, 67–72 on the other, intersection exactly **three** — and the observed-symptom list is always a subset of the affected set, precisely the subset that no longer needs warning. One read-only command yields both sets at once, since its auto-merging lines *are* the intersection.
+- **When three agents converge on one signing vehicle, broadcast that the work exists and let the owner REVIEW — do not author a second patch.** The payoff here was correctness, not efficiency: the review found a hole **neither author would have found alone** (both guarded only one of two writes, and the dangerous re-apply also occurs with the receipt present and the index absent).
+- **Idiom transplant is a trap the reader catches and the author cannot.** Two agents independently lifted a hard refuse-on-exists idiom from one-shot ratifiers into a host where re-run-after-crash is the *designed* recovery path — it would have blocked the legitimate recovery route. Familiarity with the source is exactly what made the transplant feel safe.
+
+#### Source References (2026-08-12)
+
+- [`coordination/backfill/README.md`](../coordination/backfill/README.md) and `scripts/coordination/hardware_backfill.py` — the corrected history of the advisory-record claim, in the artifacts that had republished it
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the pick screening, the committed-not-live chain, the bus-wipe scope analysis, and the five shared-file variants
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the nudge deadlock, the relay-state ledger, and the undelivered-message triage
+- [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the daemon/agent split this work sits under
+- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) — the shared vocabulary these findings are indexed against (see [Knowledge Management](knowledge-management.md))
+
+### Compiled Update — 2026-08-11: a 243-hour daemon outage was reported healthy, and the guard built to catch it nearly caused a second one
+
+**Confidence: verified** — read directly from committed code, tests, and receipts in `progress/2026-08/2026-08-11.md`; several test counts and commit-sha citations in the source were themselves corrected same-day by an independent audit (cross-referenced below rather than restated where a correction exists).
+
+#### The coordinator-daemon was dead for 243.1 hours, and the mechanism meant to catch that also failed
+
+`coordinator-daemon` died 2026-08-01T05:42:54Z and stayed dead until 2026-08-11T08:48:02Z — measured as the single >1h gap in `advisory.jsonl`, not estimated — while `status` reported `state=working epoch=13 pid=52352` the entire time. This is the same determinate-state-failure class already on record in this article (an unverifiable state treated as a benign value): `os.kill(pid, 0)` proves a *number* exists, not that it is *this* daemon, and a heartbeat's age was printed but never judged — a 10-day-old heartbeat naming `pid 1`/`/sbin/init` still read `state=working`. The fix (`daemon_verdict`, `45471692`) folds liveness + identity + freshness into one leading word, and `drain` now checks the daemon on every drain rather than only at startup, so the fleet learns of an outage within one task boundary instead of needing a human to notice `uptime`. Restarting the supervisor brought the daemon back within seconds (pid `496387`), itself evidence the outage was a monitoring failure, not an infrastructure one.
+
+#### R1: the nudge guard tightened exactly as the condition it exists to catch got worse — and this, not a missing coordinator tick, caused a ~10-hour fleet stall
+
+The daemon calls a heartbeat older than 3600s STUCK and nudges the owning session; the adapter refused every nudge past 900s of pane inactivity. Between the two thresholds nobody had decided a session was stuck; past 3600s somebody had, and could no longer reach it — **the guard got stricter exactly as the situation it exists to fix got worse.** Every main crossed 900s at ~10:14-10:22Z and the whole fleet, coordinator included, went unreachable: 1,903 `stuck-nudge-refused` rows, recovered only by a human manually passing `--heartbeat-max-age 86400`. Both documented escape hatches were unavailable (one lifts only the `working` blocker, never staleness; the other is codex-rollout-only — 0% coverage on an all-Claude fleet), which is why nothing self-healed. The coordinator's first-pass diagnosis — "no wake mechanism" — was wrong and was corrected in the same wrap-up; the real cause was that the daemon detected the idleness correctly and *could not deliver* the nudge. **The rejected fix is as instructive as the shipped one**: raising the default max-age closes the deadlock but opens typing into a pane that is genuinely mid-generation, because a timer cannot distinguish wedged from quietly-waiting where the pane itself can. The shipped fix instead lets the pane decide (`pane_dead=false` plus quiescence past the spinner interval — the same evidence a `working` self-report already trusts) and fails closed on every unknown. A pre-existing test had been asserting the bug: it justified never overriding staleness on the grounds that `--heartbeat-max-age` was "already tunable" — the exact knob a human had to hand-set to 86400 to rescue the fleet.
+
+#### The session-bus C-series hardening arc closed the same day, and stayed committed-not-live until a daemon restart
+
+A cluster of delivery-plane defects, several dating to 2026-07-29 and unowned for ten days after their original owner was re-tasked, closed same-day:
+
+- **C34** — authoring (`/usr/bin/python3`, no `jsonschema`) and relay (venv, full schema) validated against different schemas: 368 of 1,137 outbox rows (32%) passed authoring and were silently refused at relay — written, never sent, nobody told. Fixed with a vendored dependency-free draft-7 subset shared by both sides, refusing to construct on any keyword it does not implement rather than skipping it; refusals dropped 368→151 (32%→13%).
+- **C37** — a dead daemon reported itself healthy (above); `daemon_verdict` plus per-drain liveness checking.
+- **C28 + C38** — the daemon rebuilt its own "what have I already acted on" state by re-parsing **~3,000,000 advisory rows every 45 seconds** to reconstruct a ~640-row working set (~29.5% of a CPU core). Replaced with a persisted `relay_state.json` (steady-state near-zero cost).
+- **C23** — the documented protocol for clearing N duplicate-payload triage items ("write it once and reference it") had no mechanism to *do* that: one answer for N items produced 9 byte-identical payloads in 10 minutes from an agent following the rule correctly. Fixed with a `corr_ids: [...]` array, dogfooded on the live bus before being documented.
+- **C39** — the token relay was receipt-blind: it re-presented two already-signed 07-29 gates as pending on every daemon restart because it read bus-message state rather than checking for the `status: ratified` receipt already sitting on disk. Fixed to annotate spent tokens, never suppress them.
+- **C40** — a relayed backlog carried no age; a 703-message burst on daemon recovery is why two mains self-assigned work that had already been completed twelve days earlier.
+- **C41** — a guard answered a section-scoped question about a box-scoped rule (see the queue guard-scope defect below); fixed corpus-wide.
+
+All of the above (plus R1) were **committed but not live** until the coordinator verified the stale daemon dead and the supervisor relaunched a fresh one at pid `921178` (22:18Z) — the same "a merged fix and a running fix are different states" lesson this article already carries from 2026-07-29, recurring at fleet scale. A same-day independent audit (see [Knowledge Management](knowledge-management.md) §Provenance and evidence discipline) separately caught one of these fixes (C28/C38) marked `[x]`-closed with before/after numbers and no disclosure, while the still-unrestarted daemon kept running the pre-fix code underneath it.
+
+#### The backlog dispatch queue was retired as an unreliable coordination instrument, not repaired in place
+
+Re-deriving all 1,097 unique `file.md:LINE` references in `BACKLOG-DISPATCH-QUEUE.md` against today's tree — reusing the file's own classifier rather than building a second one, to avoid manufacturing a second source of truth for the exact question under audit — found that of the 220 rows the file advertised as unblocked and dispatchable right now, **at most 71 (32%) actually were**; across its full 1,080 rows, 79.5% of the nominally-`READY` surface was invalid (50.8% anchor rot, 28.3% already closed); and corpus-wide anchor rot rose from 27% (2026-07-29) to 51% over twelve days of ordinary edits against line-number anchors. Two independently-built classifiers over different denominators converged on the same verdict. The file is now banner-superseded and kept as evidence rather than deleted; `backlog_queue_gen.py` was extended to store verbatim untruncated box text plus an exact key-fold instead of a sweeper's paraphrase — a paraphrase was found to defeat text-based recovery just as badly as a rotted line number does (fuzzy token-overlap matching recovered only 76% against it). **IN-PROGRESS as of this compile**: full adoption of the generator as the queue's replacement, and its recovery rate at scale, had not completed.
+
+Two generalizable coordination-instrument findings surfaced by the same pass. First, **dispatchability decided by subtraction** (start from everything open, subtract what a heuristic can identify as blocked) structurally cannot see what it was never asked about: four standing-constraint checklist boxes flipped `[x]` eleven days before any repair sweep existed were invisible to every queue-based check, and were found only by sweeping raw box *text* for DO-NOT-FLIP banner language directly against the tree, bypassing the queue entirely. Second, a guard mechanism built to enforce those banners had a scope bug of its own: `box_is_guarded` searched upward from the nearest heading of *any* level, so a `##`-level banner was invisible to boxes nested under its own `###` subheadings — precisely the shape of the largest stale-box masses in the corpus (one CPU-kernel handoff had 38 open boxes, of which 36 belonged to a shelved plan the banner should have exempted and didn't). Fixed via an explicit ancestor chain (`section_is_guarded` → `box_is_guarded`; corpus-wide guarded-box count 43→39, all four changes freeing genuine dispatchable tasks, nothing newly guarded).
+
+#### Source References (2026-08-11)
+
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — `mainD`'s C-series ledger, `mainB`'s R1 narrative, `coordinator-agent`'s fleet rebuild and daemon restart, `mainC`'s backlog-queue re-derivation and guard-scope fix
+- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) §B (queue re-derivation figures independently reproduced), §A-w1 (token-relay receipt-blindness, closed same day as C39), Final Reconciliation (daemon-restart consumer verification)
+- [`coordination/session-bus/BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — the corr_ids bulk-clear contract (C23)
+
+### Compiled Update — 2026-08-08: persistent agents need fencing and side-effect uncertainty, not another runtime
+
+**Confidence: verified for pinned implementation behavior and EPYC overlap; external for vendor benchmark results.**
+
+Prime Agent's broad daemon, checkpoint, scheduling, child-agent, and refinement surface mostly overlaps
+existing EPYC facilities. Two invariants do not: a canonical session lease with a monotonically
+increasing fencing token, and a recovery journal that distinguishes a side effect known to have
+completed from one that may have occurred before a crash. A resumable agent must never blindly replay
+the latter; it must reconcile external state or require an explicit retry/skip decision while retaining
+the uncertain record.
+
+Continual Harness is useful on the other side of the authority boundary. Its trajectory-conditioned
+prompt/subagent/skill/memory edits can become typed, default-off proposals, but the released code applies
+edits live, lacks held-out acceptance and transactional rollback, and executes generated Python in the
+same process with `__import__` available. The 842-repeat invalid-tool loop and Factorio privilege exploit
+are therefore stronger as adversarial fixtures than as optimizer examples: bound repetition, classify
+oracle inadequacy, and prevent a reward-improving privilege violation from being stored as a skill.
+
+Pokee-Isaac reinforces the service/evaluation contract—scoped tools, resumable sessions, sandboxing,
+typed failures, and trace replay—but does not disclose enough to reconstruct its 10M-context model.
+Its published RULER arm is a direct full-prompt evaluation, not a REPL paging trick. EPYC should measure
+direct context, Context-Folding, and a data-by-reference REPL as separate matched arms; long context is
+an archive/fallback hypothesis and precise tools are a control-plane hypothesis, not competing slogans.
+
+#### Source References
+
+- [REPL Session Memory](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — D-f/D-g lease fencing and uncertain-effect journal
+- [AutoPilot Continuous Optimization](../handoffs/active/autopilot-program.md) — AP-CH-1/AP-CH-2 shadow proposal boundary
+- [Tool-Use Eval Contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — bounded repetition, privilege, and typed-failure fixtures
+- [RLM Contested Claims](../handoffs/active/benchmark-suites.md#track-rlm-contested-claims-self-evaluation) — matched direct-context versus REPL/data-by-reference arm
+- Intakes 1009/1010, 1012, 1016, and 1020/1021 in [the research index](../research/intake_index.yaml) — pinned Prime, Pokee, Continual, and DTAP evidence
+
+### Compiled Update — 2026-08-03 (second): a well-formed deferral is still a deferral
+
+**Confidence: verified — traced to the exact instructions that produced the behaviour, and fixed there.**
+
+An agent carried an identical "Deferred" list across **three consecutive** wrap-ups. One item needed a
+command the agent had already written and tested; another had been explicitly approved by the operator
+*two messages before* it was listed as "awaits your call". Both completed in minutes once attempted.
+
+#### The mechanism, which is the transferable part
+
+The instruction set enshrined **how** to escalate — a decision-package contract requiring context,
+options, tradeoffs, recommendation and default — and said **nothing about whether escalation was
+permitted at all.** So a deferral that satisfied the contract *looked correct*, because it satisfied the
+only rule governing it. The wrap-up routine compounded this with a guideline to *"note deferred work
+explicitly"*: an instruction to write down what should have been done.
+
+**A quality bar on the form of an escalation, with no bar on its necessity, produces well-formed
+escalations of things that needed none.** That generalises past agents — it is the same shape as any
+review checklist that grades how a decision is documented but never whether it should have been a
+decision.
+
+#### The fix, and why the obvious placement was wrong
+
+Add an **admission test above the contract**: name the specific decision only the operator can make, or
+the external event awaited, in one sentence — or finish the work. Find a bug, fix it; find a gap, close
+it. Work already approved is not re-openable by restating it as a question. A pending decision blocks its
+own item, never the rest.
+
+Plus a **recurrence check**, which is the mechanical part: *an item appearing in two consecutive status
+reports with an unchanged blocker is proof it was never blocked.* That converts a judgement call into an
+observation anyone can make from the artifacts.
+
+Two placement lessons:
+
+1. **The rule was in agent memory for 71 days and prevented nothing.** Memory is per-agent and does not
+   cross agents; the shared instruction files are the only durable channel. A behavioural rule that lives
+   only in one agent's memory is not a rule, it is a habit.
+2. **First placement was still wrong** — the last section of the top-level file, under an escalation
+   heading, which an agent reads only once it has *already decided to escalate*. That is after the
+   decision that needs governing. A rule that governs a default has to be read before the default is
+   exercised, which in practice means near the top.
+
+#### The argument against deferring, in one line
+
+Finishing one of the three deferred items immediately uncovered a **third copy of a latent defect** that
+the deferral had been hiding.
+
+### Compiled Update — 2026-08-03: monitoring an agent that underperforms on purpose is a different problem from monitoring one that cheats
+
+**Confidence: inferred — the mechanisms are verified against primary sources; the rates are from a
+red-team study on agent benchmarks, not on our stack, and do not transfer.**
+
+Our anti-reward-hacking work had a design for an agent that **cheats** and none for an agent that
+**sandbags** — quietly does worse than it can. The two need different instruments, and the second is the
+one a kernel search is most exposed to, because every sandbagging move has an innocent justification.
+
+**The strategies map directly onto kernel authoring.** Observed verbatim in the study: *"agents might
+train their models on a needlessly small subset to avoid supposed memory issues, or use small and few
+layers for their CNNs."* The kernel analogues are conservative tile sizes justified by "LDS pressure",
+disabled fast paths justified by "numerical safety", low unroll factors justified by "register spills".
+**Each is individually defensible — which is exactly why the general monitor did not flag them.** The
+study's own diagnosis: monitors *"would often notice that the agents aimed to achieve targets or used a
+simple model, but they frequently did not assign high suspicion scores."*
+
+Five design rules, all cheap:
+
+1. **Give the monitor the whole search tree, not the selected candidate.** Best-path-only transcripts
+   structurally advantage the saboteur. A candidate that quietly discards its own best result is
+   invisible to a monitor that only sees what was submitted.
+2. **Name the threat model in the prompt.** Largest measured effect in the study — a generic "is this
+   suspicious?" monitor *rarely fires* on sandbagging; the specific one "performs well".
+3. **Aggregate.** Mean over monitor models ≈ the best single monitor (0.993 vs 0.970), and mean@k over
+   repeated samples of one model also helps, with fast diminishing returns.
+4. **Assume monitor-awareness.** Every monitor scored higher on unaware runs, universally.
+5. **Preserve CoT visibility** — hidden reasoning tokens are a "large advantage to the agent".
+
+And one honesty rule: *"gaining strict safety guarantees may require prohibitively high false positive
+rates."* **A monitoring layer with no declared FPR budget is not a gate.**
+
+#### The half no agent-side monitor can see
+
+An audit of 28+ submissions across nine agent benchmarks splits cheating into **harness-level**
+(developer or scaffold: verifier injection, answer-key injection, **solution injection** — e.g. an
+`AGENTS.md` in the working tree containing the solutions) and **task-level** (agent-initiated: online
+solution retrieval, mining version-control history for the fix, hardcoded test answers, **simulating
+rather than executing**). Only the second is what a monitor addresses. The first is a property of the
+harness *we* build — and our own repos carry `CLAUDE.md`, `AGENTS.md` and skill files at paths an
+evaluated agent would naturally read. **"We didn't intend it to be visible" is not an audit.**
+
+
+### Compiled Update — 2026-07-30 the agent-file stack: audited, restructured, enforced
+
+An operator-requested full audit of the agent-context surface (root entry files,
+`agents/` role layer, `agents/shared/` policy layer, sub-repo CLAUDE/AGENTS files,
+MEASUREMENT constitution) produced a 13-defect register (D1–D13) and a same-day
+restructure that landed net −214 lines while ADDING three canonical documents.
+Confidence: `verified` — every defect was fact-checked against repo ground truth
+before filing, and every fix was validated by the (newly hardened) validators.
+
+#### Key Findings (2026-07-30)
+
+- **The context architecture is now explicitly layered**: per-session auto-load
+  (root `CLAUDE.md`, with `AGENTS.md` symlinked; sub-repo CLAUDE.md for sessions
+  rooted there) → read-order shared policy (`agents/shared/`, now including the
+  extracted `SESSION_LIFECYCLE.md` as the canonical home of the wrap-up//clear/
+  pre-reboot/idle-main axioms) → thin role overlays → on-demand operational docs
+  (`docs/guides/agent-workflows/`). Duplication that had accreted across five
+  files per rule (checkbox discipline ×5, idle-main ×5) collapsed to single
+  canonical statements with pointers.
+  [agent-file-audit-2026-07-30](../docs/reference/agent-config/agent-file-audit-2026-07-30.md)
+- **Negative rules keep their teeth, not their narratives.** House style
+  (operator-directed): every incident-derived prohibition retains its directive
+  plus a one-line `origin: INC-<id>` pointer; the full blow-by-blow lives in a
+  single incident log (9 entries at creation). The rule survives compression;
+  the story stops taxing every session's context.
+  [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md)
+- **The worst finding was an inversion of protection**: the FROZEN production
+  llama.cpp tree — the highest-stakes tree in the project — had *only* upstream
+  ggml-org agent files, which invite building in the tree and mandate the
+  opposite commit conventions. It cannot be fixed in place (HEAD is pinned by
+  the freeze verifier), so a project overlay is staged for bake-in at the next
+  kernel promotion, and both sibling repos' auto-load files now carry FROZEN
+  warnings. The governance matrix was expanded from one governed file to the
+  full discovered surface, with a validator that discovers `repos/*/CLAUDE.md`
+  and fails on unaccounted files.
+  [CLAUDE_MD_MATRIX](../docs/reference/agent-config/CLAUDE_MD_MATRIX.md)
+- **Enforcement now validates what agents will write, not what they wrote.** The
+  reference guard was rebuilt to reconstruct and scan POST-edit content (its
+  pre-edit scan both missed newly-introduced bad references and wedged the very
+  edit that fixed one); the reference validator gained `#anchor` slug checking
+  (GitHub-style, including the double-hyphen-for-`&` subtlety) and caught four
+  latent bad references on its first run.
+  [agent-file-prose-compression](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
+- **The compliance suite is a deployment-gate instrument and drifts like one.**
+  Restructuring the source file silently invalidated 29% of the suite's tasks
+  (they probed content that moved out) — caught in zero-inference prep, fixed as
+  a versioned instrument bump (`agent_file_compliance_v2_20260730`, 30/30/30
+  pools) with a mechanical anchor invariant: the perfect-fake must score 1.0 at
+  every compression level, so a live failure measures the model, never anchor
+  availability.
+  [agent-file-prose-compression](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
+
+### Compiled Update — 2026-07-29 the coordination plane: two tiers, and one defect class
+
+The N-main-thread control structure reached `DESIGN-RATIFIED — build-ready` and
+accumulated a substantial implementation, but its **authority milestones are not
+accepted**: assignment authority stays at `manual`, triage stays `off`, and
+headless-worker caps stay at 0 pending a soak that cannot be compressed. The
+durable knowledge from this arc is less about the transport than about a defect
+class that recurred four separate times in a single day.
+
+Confidence: `verified` for the landed code, test counts, and the operator
+decisions recorded in the handoff; `inferred` for the generalization of the
+polarity lesson. Milestone acceptance state is quoted as-is — several items are
+"BUILT ✅ … acceptance pending", which is not the same as done.
+
+#### Key Findings (2026-07-29)
+
+- **One role, two tiers — and the split is load-bearing.** The **coordinator-daemon**
+  is host-side deterministic code (singleton under flock, tick loop, epoch fencing,
+  heartbeat) and is explicitly *not* an agent; the **coordinator-agent** is an agent
+  session with a roster row, inbox, outbox, heartbeat and cursor. The rationale is
+  stated as a capability argument rather than a preference: an always-on watchdog
+  cannot be an LLM (it compacts, dies, and costs tokens per tick), and deterministic
+  code cannot draft decisions or merge. The bright line is that the daemon "never
+  analyzes, reviews, or edits work products — queue/routing/watchdog only", because
+  the moment it reviews, it is a second main.
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
+
+- **Single-writer ownership is structural, not conventional.** `queue.jsonl` and
+  `inbox/*` belong to the daemon, `outbox/<agent>` to that agent, and token-queue
+  checkboxes to the operator. Agents never write the queue — they propose and report,
+  and the daemon transcribes ("pure bookkeeping, no judgment"). Adding a main is one
+  roster row plus four files. Authority is matched to the writer: mains reprioritize
+  their own lane only, cross-main sequencing belongs to the coordinator-agent and the
+  operator, and the daemon never sets priorities.
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
+
+- **Routing intent became a structural message field, after prose routing lost real
+  findings.** `needs_routing_to` and `action_required` are now schema fields with
+  fail-closed authoring, backed by a lint that catches prose-only routing (it was
+  validated against both of the day's actual failure messages), and by a `triage`
+  standing queue that is cursor-independent and delivery-independent because it scans
+  outboxes. The motivating failure is concrete: a payload truncation ate exactly the
+  sentence carrying "FOR \<AGENT\>" and the finding was lost. Truncation itself was then
+  made *evident* rather than silent, via numbered fences with byte counts and a
+  completion trailer. The machinery caught real traffic immediately, surfacing findings
+  that no relay had yet delivered.
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **The recurring defect class: a state that could not be determined was treated as a
+  benign value.** It appeared four times in one day, in four different subsystems — a
+  spawn-cap undercount that *relaxed* the cap and invented capacity (and whose invariant
+  was documented backwards in the docstring and in two pushed commit messages), window
+  endpoints that could not be parsed, roster metadata used as a liveness proxy, and an
+  unreadable tmux session. The adopted rule is to **prefer the refusal a human can
+  override to the silence nobody can see**: unreadable endpoints, ambiguous window
+  ownership and unparseable rows all now refuse. The corollary warning is filed with the
+  blocking item — do not "fix" an unreadable tmux by counting it as zero mains, because
+  that hands out occupied slots.
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **A merged fix and a running fix are different states, and only the process owner can
+  close the second.** The same lesson landed twice on one file in one day: a message
+  routed to a dead session was dropped silently, the fan-out fix merged, and the notice
+  stayed inert until the daemon's owner restarted it (activated at epoch 9). A third
+  activation gap of the same shape is still open. Reachability is now **observed, not
+  declared** — liveness is tested rather than read off roster metadata — and the policy
+  is deliver-plus-warn, never refuse.
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **The delivery plane can be entirely healthy while coordination fails at the last
+  hop.** The first `coordinator-agent` instantiation ran with its cursor **33 messages
+  behind**, including a hard block needing an operator signature and a completed audit
+  carrying two CRITICAL findings — while daemon relay, boundary detection and the
+  severity watcher all functioned correctly. Every fix shipped that day was in the
+  delivery plane; the actual defect was in **bus → operator**, which is judgment and
+  cannot be mechanised. It became a standing rule on *every* reply rather than a startup
+  step: **DRAIN BEFORE YOU SPEAK**. A companion artifact was promoted to first-class
+  status for the same reason: `rebuild` reconstructs the bus *mechanism* (queue rows,
+  tokens, cursors, unread depth) but carries no record of what a session was mid-way
+  through or which gate a campaign is parked behind — so a fresh coordinator correctly
+  reports an empty queue while a campaign sits one command from resuming. The mechanism
+  makes a coordinator addressable; the brief makes it useful.
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **A test suite can be green because it cannot fail.** A standalone adapter suite shared
+  a basename with another test file, so pytest raised an import-file-mismatch collection
+  ERROR that aborted the entire run — and its entry points never asserted, so had it been
+  collected it would have reported PASS with every check failing. Fixing it also exposed a
+  racy fixture (a spawned `command="true"` is reaped in ~0.3 s), which retroactively made an
+  earlier "37/37" **flaky-green**. Separately, no whole-repo pytest existed at all; creating
+  one moved the tree from 2200 collected + 46 errors + aborted to 576 collected with 0 errors
+  and a completing run. The stated goal is worth preserving: *a run that is honestly red, not
+  a green one.* [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **Bus noise is a payload-shape property, not a retry bug.** An operator complaint about a
+  repeated triage disposition audited clean on the transport — 19 messages, 19 distinct
+  `corr_id`s, 19 distinct ids, relayed 1:1 with no fan-out. The real defect was a
+  byte-identical ~1.5 KB payload sent 19 times, differing only by `corr_id`, because clearing
+  triage requires one `corr_id` per item. Rule adopted: a repeated payload across N `corr_id`s
+  is noise by construction — make the body per-item, or send one message naming all N. The
+  underlying protocol gap (no bulk-clear granularity) was filed rather than worked around.
+  [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
+
+- **Adversarial critique escalates by construction unless something is chartered to delete.**
+  A nine-agent specification effort consumed ~919k tokens over ~43 minutes to produce a
+  ~113k-character spec, which was rejected as disproportionate to the problem. The recorded
+  process lesson is that a panel of that shape needs a fourth lens whose job is to *delete*.
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
+
+#### Open Questions (2026-07-29)
+
+- Assignment authority (M4) is code-complete and **not accepted**: its go/no-go rests on the
+  advisory-accuracy evidence of the read-only tier — would-assign matching actual human and
+  agent choices over a working day, with divergences explainable. That needs elapsed time and
+  cannot be compressed. Until then the switch stays at `manual`, `triage` stays `off`, and
+  headless-worker caps stay at 0.
+- The CPU-region claim is **structurally verified, not end-to-end verified** — a real
+  `llama-bench` has never acquired the claim, held it through a run, and released it.
+- Ownership of the whole tmux-adapter hardening arc lapsed when its session was re-tasked; it
+  is filed as unowned and re-assignment is a coordinator call.
+- One blocking bring-up dependency is manual by design: nothing creates the tmux session a
+  spawn requires, and the adapter will never create one, so a human must create it before any
+  spawn can succeed.
+- The handoff and the day's final wrap-up disagree on the current concurrency-cap number (the
+  handoff entry predates an operator raise the same day). Treat the handoff's figure as stale;
+  the authoritative value is whatever the live config says, and this wiki deliberately records
+  no number.
+
+#### Source References (2026-07-29)
+
+- [session-bus-thin-dispatcher.md](../handoffs/active/coordination-and-churn-pipeline.md) — the
+  daemon/agent nomenclature split and bright line, single-writer ownership, authority matrix,
+  structural routing fields, milestone acceptance state, rider status, and the C-series ledger.
+- [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the polarity arc across four
+  subsystems, the activation-gap repetition, the coordinator-agent instantiation and close,
+  the invisible-suite and whole-repo-pytest findings, and the bus-noise diagnosis.
+- [gpu-serving-tie-in-program.md](../handoffs/completed/mi210-serving-program.md) — an
+  operator decision (activation sequencing) routed and recorded *through* the bus as a task
+  id, demonstrating the decision-package path the coordination plane exists to carry.
+
+### Compiled Update — 2026-07-29: the harness is a first-class, re-targetable layer — and a merged fix is not a running fix
+
+**Confidence**: verified for the first-party coordination findings (each observed
+by running the system); **observation-grade** for the external harness figures,
+which are n=1 per cell on closed frontier models and gate nothing.
+
+#### Harness decomposition and the Harness Card
+
+Two independent taxonomies converge on making the scaffold an auditable object
+rather than an implementation detail. A six-dimension decomposition — **context
+assembly / tool interaction / generation control / orchestration / memory
+management / output processing** — sits alongside a seven-layer variant,
+**ETCSOVG** = **Execution, Tool, Context, Scheduling, Observability,
+Verification, Governance**. The adopted action is an audit table recording, per
+dimension, which parts of our Layer-B surface are **editable** versus
+**hard-coded** — a table, not a code change.
+
+> ~~is extended by a seven-layer variant that adds **Observability** and
+> **Governance**, and both propose a **Harness Card** as a disclosure
+> schema.~~ **CORRECTED 2026-09-07** — two errors in the struck clause.
+> (a) ETCSOVG is a **different partition**, not a superset: it *adds four* and
+> *drops two* — **generation control**, and **memory management**, which is
+> folded into **Context**. Reading it as "the six plus Observability and
+> Governance" invents a containment that does not hold, and any per-dimension
+> mapping built on that reading is wrong at the row level.
+> (b) Only **arXiv 2605.23950** proposes a **Harness Card** as a disclosure
+> schema. The six-dimension decomposition is `intake-921` (MemoHarness), which
+> describes a *six-dimensional editable harness space* and **no card at all** —
+> so "both propose a Harness Card" is a misattribution, and a misattribution in
+> the compiled KB is what a future reader will cite. `intake-1344#record`
+
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-6
+
+#### Re-targetability outranks per-model tuning (operator, 2026-07-29)
+
+The fleet is upgraded as better open-weight models land, so **harness policy must
+survive a freeze change**. This is a standing selection criterion: a design that
+expresses run-level policy as an **editable natural-language document** with
+mechanisms in code ranks **above** a model-specific experience bank, even when
+the latter has the stronger headline numbers. Anything proposing to bake
+per-model behaviour into the harness is measured against this criterion first.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-7
+
+The measured reductions attached to the policy-as-document pattern —
+60.10k→2.90k tokens / 68→3 files; 47.50k→1.40k / 5→1; 10.50k→0.80k / 3→1 — are
+to be carried as **design**, not as numbers: every arm ran on a closed frontier
+mini model. The open transfer question is whether an **open-weight** model can
+*interpret* such a policy document faithfully; their own adherence metrics
+(Workflow Preservation, Stage Coverage, Ordered Workflow, Artifact Contract, Tool
+Call Success, Information Handoff Recall) score adherence **without** a benchmark
+score, so drift is measurable on saved traces and is deterministic-replay
+eligible. Their own red flag: **Information Handoff Recall drops to 0.32/0.55
+under parent-child execution even on a frontier model** — the exact topology our
+sub-agent delegation uses.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-8, §HS-9
+
+#### Capability versus harness — both halves or neither
+
+A one-step **model** swap buys ≈**3.6×** the full textual→verification harness
+ladder and a one-step **reasoning-budget** bump ≈**2.0×**; but at **fixed** model
+and effort a harness *revision* moved **+7.23**, larger than the entire
+5.08-point architecture spread at that setting. Harness engineering at frozen
+capability is **first-order, not marginal**, and this is the direct empirical
+support for the re-targetability position above. The previously relayed "~6×
+more bought by capability than architecture" reading was **wrong** — the figure
+behind it was the verification-minus-simplification margin, **one rung of the
+ladder**, not the architecture axis.
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-12;
+[`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Records corrected
+
+#### "Present-but-uninstructed": a mechanism in a repo carries no measured result
+
+A verification primitive (`plan_executor.py` — simulate the plan in the induced
+world model, execute step-by-step, compare predicted versus observed state after
+each non-terminal step, halt and dump artifacts on the first divergence) exists
+in a published agent system, but **none of that system's agent-facing prompts
+mentions it or requires its use**. It is therefore not what the paper measured
+and no reported number attaches to it. Reading a capability off a repository's
+file listing is unsound in the same way reading a fine-tune's architecture off
+its `config.json` is (see [Speculative Decoding](speculative-decoding.md)):
+**presence is not participation**. The pattern is still worth mining — pure
+Python, no GPU, no Docker — but as an implementable design we would have to
+measure ourselves.
+[`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) §Research Intake Update 2026-07-29
+
+#### A merged fix and a running fix are different states
+
+Three separate **activation gaps** landed on one file in a single day: a fix was
+committed, reviewed and tested, and remained **inert** because the long-running
+coordinator daemon carrying the old code had not been restarted. "Landed" and
+"active" are two states and only the **process owner** can close the second.
+Corollaries recorded from the same arc:
+
+- **Derive state from what is observable, never from a field somebody must
+  maintain.** Reachability now consults liveness (a live window in the tmux
+  session, else heartbeat freshness) rather than roster metadata; a roster row is
+  a durable identity and a session is not.
+- **Deliver-plus-warn, never refuse.** An inbox row is durable and a merely
+  offline agent drains it on return, so bouncing on staleness converts transient
+  offline into message loss — the opposite-polarity error. A false warning costs
+  one visible line; false silence costs the defect.
+- **A warning needs a reader.** The first fix wrote the defect notice to an
+  advisory ledger that is delivered to no one, so the defect had two layers: a
+  message in an inbox nobody drains, and a notice about it in a ledger nobody
+  reads. The notice now also lands in the inbox of the party that can act on it.
+  Idempotency is keyed on the notice's **own durable trace**, not on the ledger,
+  because the ledger is written by the tick loop and any direct caller would
+  re-notify on every pass.
+- **Fail-closed startup dependencies belong on the reboot checklist.** The spawn
+  adapter refuses when it cannot count live mains, and never creates its own tmux
+  session by design — so after a reboot, spawning is dead until an operator
+  creates the session by hand. That refusal reads like a defect and is not one.
+  The wrong "fix" — treating an unreadable tmux as zero mains — hands out
+  occupied slots.
+
+[`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) §C15/C17/C18/C20 and the post-reboot handover block
+
+#### Model choice is not the lever for a protocol gap
+
+The multi-file coding shortfall remains diagnosed as a **protocol/tooling gap,
+not a capability gap**, and the 2026-07-29 intake explicitly declines to reopen
+the model-swap question on its back; the only thing pinned is *which artifact*
+to use **if** a coder-role A/B is ever authorized for other reasons — and even
+then, a spec-dec variant must not be bundled into a quality A/B, because that
+confounds two axes.
+[`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) §2026-07-29 rider
+
+#### Source References
+
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
+- [`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
+- [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the corrected capability-over-architecture decomposition; staged-files-ride-along attribution hazard
+
+### Compiled Update — 2026-08-05: representation boundaries are authority boundaries
+
+### Compiled Update — 2026-08-12: a coordination role fails at RETRIEVAL, not at memory — so subtract duties and enforce at choke points
+
+**Confidence: verified** — from a 38-item failure catalogue with per-item artifacts, an
+adversarial audit of that catalogue, and an eight-phase implementation whose claims were
+mutation-tested. Sources: `handoffs/active/coordination-and-churn-pipeline.md`,
+`handoffs/active/coordination-and-churn-pipeline.md`,
+`progress/2026-08/2026-08-12-refactor-session.md`, `progress/2026-08/2026-08-12-mainC.md`.
+
+#### The finding that reprices every "write it down better" fix
+
+A coordination agent failed the same way repeatedly *after* each correction was written down.
+The tempting diagnosis is memory decay. The evidence refutes it: one failure was committed as
+the agent's own correction #2 at 10:07:18Z and recurred at 10:28Z and ~10:40Z — same session,
+same day, **zero decay**. In the same window the agent quoted neighbouring rules from the same
+file back to other agents.
+
+So the defect is **retrieval at the moment of emission**, not durability. This is falsifiable
+and was tested: a durable correction ledger was built that morning and went out of contract in
+48 minutes, referenced from nothing on any startup path. Rules that held were, without
+exception, the ones with a mechanism on a path the agent could not avoid — hooks, `flock`, a
+lane gate, an adapter guard. **A catalogue is recall; recall is what failed.**
+
+One prose category did hold: a *sentence template* — a rule that changes the SHAPE of what you
+are already writing rather than adding a step to remember. The one such rule in the corpus has
+zero recurrences, which is the argument for expressing unmechanisable rules as output shapes.
+
+#### Three moves, in order of leverage
+
+1. **Subtract before building.** 47% of the failures were the role acting as a measurement
+   instrument — a duty its mission statement never contained; it accreted. Deleting the duty
+   (relay receipts carrying `source_msg_id`/`receipt_path`, never read a dial) killed seven
+   failures at zero build cost, including the only proven post-correction recurrence, and
+   collapsed six proposed instrument rules into one deletion. **A delete-lens finds cheaper
+   fixes than an adversarial lens, and adversarial panels reliably over-build without one.**
+2. **Enforce only at choke points the role provably passes through** — here, message-append
+   and task-boundary-drain. Anything requiring the agent to remember a new step is excluded by
+   construction.
+3. **Move the clock out of the LLM thread.** A prompt-driven role is blind between operator
+   turns, which is exactly when queues run dry. The tick belongs in a deterministic daemon and
+   in watchers, not in the reasoning loop.
+
+#### Addressing is not free — a measured N² failure
+
+With no FYI concept in the schema, a single `action_required` bit applied to every routing
+target, and the relay rewrote the delivery address on each fan-out copy — so a CC arrived
+indistinguishable from an assignment. Measured: **83% of inbox items an agent had to triage
+were not theirs** (499 rows, 86 sole-target; 73–89% per agent; burst windows read 97%). Typing
+the address (`assignee` = exactly one, `cc` = reach-only, refused at authoring time) split 310
+standing items into 45 must-act and 265 FYI. **An inbox that cries wolf trains its reader to
+skim, and the thing that must never be skimmed is the one genuine assignment.**
+
+#### Two ways to ship a dispatcher that never dispatches
+
+Both were found while making an automatic tick safe, and each would have produced the same
+symptom from a different direction:
+
+- **The gate was right and the data was absent.** Refusing rows without a screening receipt
+  and an occupancy estimate is correct — but nothing populated those fields where rows are
+  born, so the tick would refuse everything, forever.
+- **A status that lied.** `STALE_REQUEUED` was written by the stall ladder to mean "go round
+  again" (with `INFRA_BLOCKED` as the exhaustion terminal, so the retry bound already existed),
+  but nothing converted it back and eligibility demanded `READY`. **17 of 19 live rows sat
+  unassignable regardless of how well they were screened.** A name that says "requeued" while
+  nothing can dequeue it is the defect.
+
+Corollary now encoded at intake: **an unestimated row is a row a human dispatches — not a row
+to invent a number for.** Emitting no field beats emitting `0.0`, which reads downstream as an
+answered question rather than an open one.
+
+#### Delivery: honest failure is not the same as working
+
+Every guard in the delivery path refused *correctly* and the fleet was still unreachable for
+~75 minutes — four agents holding queued instructions nobody could submit. The composite had
+no success path, and the missing piece was a **remedy, not another guard**. Three measurements
+settled it, all previously assumed:
+
+- A TUI composer holding text ignores a bare keystroke; a wake character, a settle interval,
+  *then* the key both submits and clears. The tempting untested candidate (`Escape`) does
+  nothing.
+- Truncation was never the TUI refusing long text: above a single-burst paste threshold the
+  content becomes an attachment, and one CLI **caps attachment content at 1024 chars** — a
+  2,998-char dispatch arrived as `[Pasted Content 1024 chars]`. Chunking below the threshold
+  with a pacing gap is lossless to 12,000 chars; **the gap is load-bearing** (zero-gap chunks
+  re-coalesce and blob).
+- A pane whose sub-agents redraw it every second can never satisfy a quiet-check, so it reads
+  unreachable while perfectly idle. The fix is a *different signal*, not a looser threshold.
+
+#### Isolation without a sync half is a bigger merge, not a smaller one
+
+Per-agent worktrees dissolve same-file commit sweeps — but lanes that skip promotion rot:
+measured at 106 commits behind, and one at ~302. **The worktree isolates; only promotion
+syncs.** Skipping promotion trades today's small merge for a guaranteed large one against
+weeks of unrelated history.
+
+Two hazards worth generalising: `git commit -- <path>` **bypasses the index** and commits
+working-tree state, sweeping a peer's uncommitted hunks in that same file (this is the
+collision mechanism, not carelessness); and a repo reachable at two path depths makes
+`git worktree prune` read live worktrees as prunable and delete their admin data.
+
+#### Addendum — 2026-08-12: a deferred item's blocker is a CLAIM, and it is usually untested
+
+Two items were written into a wrap-up's deferred list with named blockers, in a repo whose own
+policy says a blocker must be nameable in one sentence or the work is not blocked. Both
+blockers were **asserted, not measured**, and both dissolved within minutes of being
+questioned:
+
+- *"No tool can recover these rows' intent — a human must re-anchor them by text."* The row ids
+  encoded the original line numbers and the rows carried birth timestamps, so
+  `git show <commit-at-that-timestamp>:<file>` returned the exact original text. **A rotted
+  line-number anchor is recoverable whenever the identifier or the record preserves the
+  coordinate and the time** — the pair is enough to reconstruct the file as it stood. 11 of 11
+  recovered; 5 re-anchored to live tasks, 1 already completed elsewhere, 5 genuinely deleted
+  from the source (and *that* distinction was only visible because the originals were
+  recovered and compared by similarity).
+- *"This is the operator's trade between authoring effort and autonomy."* It was not a trade at
+  all: the underlying rule (never fabricate a duration estimate for a hardware-holding task)
+  was already correct and unchallenged. The real gap was that **nothing asked the author at
+  the moment the answer was known.** Refusing the row later, at dispatch, is correct but too
+  late — the row already exists, so the un-dispatchable pool only grows. Moving the prompt to
+  authoring time closed it with no ruling required.
+
+**The generalisation.** An agent writing a deferred list is making an empirical claim about the
+world under the least scrutiny it will ever face — after the work, at the end of a session,
+when the incentive to stop is highest. Two shapes recur: *"nothing can recover X"* (test it —
+recovery is often one command against history) and *"this is a human's decision"* (ask what the
+FIX is; a decision framed around a rule that is not actually in dispute is usually a
+missing mechanism wearing a decision's clothes). The check that catches both is mechanical:
+**state the blocker, then try to falsify it once before writing it down.**
+
+#### Sources
+
+- `handoffs/active/coordination-and-churn-pipeline.md` — the catalogue, the
+  adversarial audit, and the per-item closure evidence
+- `handoffs/active/coordination-and-churn-pipeline.md` — addressing, dispatch typing, worktree rider
+- `progress/2026-08/2026-08-12-refactor-session.md` — the eight-phase implementation record
+- `progress/2026-08/2026-08-12-mainC.md` — an independent lane's account of the shared-clone cost
+
+### Compiled Update — 2026-08-12: representation and provider boundaries are authority boundaries
+
+Three independent changes converge on one architectural rule: any artifact that can change what the
+system believes or selects needs a typed, immutable boundary. AutoKernel’s proposal-v4 contract retains
+the representation frame and adds a provider identity boundary: source/opaque mode, immutable source or
+artifact identity, isolation, toolchain, linkage, backend, and evidence authority. Historical v2/v3
+records remain readable but cannot acquire provider authority retroactively; opaque providers are
+diagnostic-only, and bankable evidence must join to a clean integrated llama.cpp candidate. AgentWorld’s
+`HypothesisBoundaryContract` separately binds label ownership,
+verifier ownership, eligibility, and falsifier evidence, preventing an environment generator from grading
+its own hypothesis into authority.
+
+The reviewer lane now applies the same rule to machine critique. RA-12 requires an immutable review
+envelope so a generated review cannot be silently rewritten between production, evaluation, and later
+consumption. RM-10 treats metacognitive prompting as a matched-control ablation rather than an assumed
+upgrade, with the trust boundary declared before results are interpreted. Together these changes make
+“who produced this?”, “under which frame?”, and “may it steer?” first-class fields. That is more important
+than choosing a cleverer model: it keeps optimization, environment synthesis, and review evidence from
+collapsing into one self-justifying channel.
+
+#### Source References
+
+- [AgentWorld environment synthesis](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis)
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
+- [Reviewer-model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations)
+- Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)
+
+### Compiled Update — 2026-08-13: our own fan-out doctrine has no negative condition, and neither does the literature that inspired it
+
+**Confidence: mixed, stated per claim.** External paper findings below are `external` (vendor-reported
+or single-study, not measured on our stack); the mapping onto our own doctrine and detector gap is
+`verified` (read directly from the tracked files it describes).
+
+A 23-entry research-intake round (`research-intake` operating on `github.com/The-Swarm-Corporation/PARL`,
+the Kimi K2.5 Agent-Swarm paper, and 21 follow-on sources — intake-1105 through intake-1127) set out to
+answer a narrow question: does anything in this literature improve how EPYC orchestrates its own agent
+fleet? Nine of the eighteen entries selected for a Stage-2 primary-source dive were **overturned** on
+re-read against the source — more than half — which is itself the headline finding: multi-agent-fan-out
+claims in this literature fail primary-source verification at a rate high enough that no number from it
+should be adopted without an independent dive.
+
+**What survived is narrower than the sweep started with, and lands on a gap we already knew we had.**
+`agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* mandates 3–5 concurrent subagents
+on every dispatch. At the time this round's Stage-3 plan was written the rule had a width but no
+negative condition and no completion feedback — Anthropic's own multi-agent guidance (intake-1121,
+`claude.com/blog`, 2026-01-23) states three conditions FOR multi-agent use and four AGAINST, including
+that decomposition-by-role, rather than by context boundary, measurably shifts spend from work onto
+coordination, none of which our rule encoded. **The operator ratified and applied the negative-condition
+amendment on 2026-08-13** (commit `541d5d4c`) — the rule now states when NOT to fan out, sourced to
+intake-1121, with width 3–5 unchanged. What remains open is the second half of the gap: (per
+`handoffs/active/coordination-and-churn-pipeline.md`'s own item) there is still no way to tell a main that
+actually fanned out from one that worked serially and reported otherwise. Kimi's PARL paper
+(intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
+the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
+citable, the measurement is not — that detector is the open work in
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement). Separately, a
+controlled scaling study (intake-1107#record, arXiv:2512.08296) finds
+returns from adding agents go structurally negative once a single agent already clears roughly 45%
+accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
+statistically non-significant coefficient to one the paper's own robustness checks discount — so the
+*shape* (diminishing then negative returns as task difficulty falls) is usable, the *number* is not.
+
+**The dive process itself produced the most instructive artifact of the round.** The dive on intake-1110#record
+(MAST, arXiv:2503.13657) initially reported a citation defect in four of our own handoffs — a "36.9%
+inter-agent misalignment" figure it judged stale against a differently-denominated 32.15% in the paper.
+That same dive later re-audited its own output, discovered five of seven delegated subagents had never
+returned, and recomputed the category share directly from the paper's released dataset: 36.3% of
+positive failure-mode flags, which closely matches the original 36.9% citation. The staleness finding
+was retracted before any handoff was corrected on its strength; the correction that shipped was narrower
+— two files claimed the figure was "production" data when every underlying trace is a benchmark run, and
+only that provenance word was wrong. The near-miss was procedural, not architectural: the retraction
+arrived as a delayed self-correction notification, and had to be checked against the in-flight Stage-3
+plan before Stage 4 executed, rather than being caught by any automatic gate. Filed as a standing lesson:
+a dive's self-correction must be checked against whatever downstream artifact is about to consume its
+output, every time, not assumed to have arrived before that artifact was written.
+
+**Two things came out of the round as genuinely actionable, and neither required training anything** —
+material, since EPYC orchestrates closed-weight frontier models and cannot train an orchestrator the way
+PARL's own recipe requires. First, AdaMAST (intake-1127, arXiv:2607.16387, Apache-2.0) is a trace-failure
+grading tool that runs against our own Claude Code and Codex transcript corpus at roughly one LLM call
+per trace, and — reversing an intermediate finding from earlier in the same dive — needs no
+success/failure oracle to do it: its induction pipeline is deliberately outcome-blind. Second, OrchBench
+(intake-1111#record, arXiv:2607.25656, dive-overturned on its headline correlation) still contributes a usable
+specification for a per-subagent timing collector (declared/started/completed agent counts, parallel
+utilization, workflow depth) built from real transcript timestamps rather than the simulated,
+duration-as-input design that sank the rest of that entry. Both are now filed as open tasks in
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) rather than adopted
+sight-unseen — the round's own overturn rate is the argument for filing them as measurement work first.
+
+#### Source References
+
+- [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
+- [Coordinator role — failure modes and refactor](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
+- [Fleet Fan-Out Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — new stub filed this round to own the collector and grading work
+- [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
+- [REPL Turn Efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) — context-knee and width-taper findings folded into the S4 gate
+- `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
+- [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record, including the mid-round retraction and its resolution
+
+### Compiled Update — 2026-08-23: the agent-file metric was misdenominated, and vacuous test suites became a named, enforced convention
+
+**Confidence: verified** — the E5/E6 measurements are read from the compression handoff (recorded
+2026-08-20, `research/sources/intake-20260819/EVIDENCE-agent-file-and-moe-measurements.md`); the
+vacuous-pass remediation is read from the closed EVL-50 ledger and the 2026-08-21 conventions guide
+it produced. Both shapes below were files on disk, green, and trusted on 2026-08-20 — measured, not
+theorised.
+
+#### The compression metric was measuring the wrong unit — and the "we exceed the corpus maximum" claim is withdrawn
+
+Two 2026-08-20 measurements correct the agent-file compression program's own record (AFC-P5.E5/E6 in
+[`agent-file-prose-compression.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)):
+
+- **Denominate in WORDS, not lines.** External corpus evidence (intake-1199#record, re-derived from the
+  authors' Zenodo replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile
+  by words but only the 85.4th by lines** — 10.5 words per line. **A pass that targets LINES
+  systematically under-finds**, and the E4 savings table was already denominated in words while the
+  structural-deletion pass was measured in lines — two figures that were not comparable. The
+  mild/medium/aggressive figures must be re-expressed against a word baseline before the rollout
+  decision consumes them.
+- **The widely-repeated "we exceed the corpus maximum" does not survive scrutiny, in two ways.**
+  (a) The 10,424-word figure for `agents/shared/` includes three `ENGINEERING_STANDARDS.compressed-*`
+  variants — outputs of this handoff's own experiment, not loaded policy; the live tree is **8,787
+  words, 164 UNDER** the 8,951-word corpus maximum. (b) It compares a 7-file TREE total against a
+  SINGLE-FILE maximum — a category error; the largest single file is `OPERATING_CONSTRAINTS.md` at
+  3,949 words, comfortably inside corpus norms. **The genuinely anomalous figure is structural, not
+  volumetric: `CLAUDE.md` carries 22 H2 headings against a corpus average of 2.7 categorised L1/L2
+  headings.** The work retargets at heading proliferation, and the exceeds-the-maximum line is no
+  longer quoted. The thin-map architecture (shared policy plus lean role overlays) that the
+  2026-07-30 restructure established is now codified as the `agent-file-architecture` skill
+  (`.claude/skills/agent-file-architecture/SKILL.md`), with a role schema, migration references, and
+  a validation wrapper.
+
+#### Vacuous test suites: two measured shapes, one naming rule — and the gate that enforces it
+
+The EVL-50 remediation (closed 2026-08-21, four-agent fan-out) found **two shapes of a suite that
+reports success while executing nothing**, and a file has exactly one of them depending on which
+entry point you use — which is why the rule is about *names*, not intent
+([`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)):
+
+- **Shape A — fixture suite with no `__main__`**: running the file directly defines functions, calls
+  none, exits 0. Measured 2026-08-20: `test_v7_quality_gate_runner.py` — a session read the green
+  exit as a real pass. Advisory (normal inside a pytest-collection scope), blocking only in
+  mixed-convention directories.
+- **Shape B — self-runner with no collectable test**: all logic under `__main__`, no module-level
+  `test_*` callable — `pytest` collects 0 items and reports success. Measured 2026-08-20:
+  `test_commit_hygiene.py` and the merge-gate and unblock-artifact suites beside it.
+- **A third shape closed by config**: a test that `return`s a failure list instead of asserting is
+  reported PASSED — both tests in `test_live_holder_interference.py` did exactly that, so the suite
+  guarding **live inference regions** went green with a non-empty failure list.
+  `filterwarnings = error::pytest.PytestReturnNotNoneWarning` now fails that shape at authoring
+  time.
+
+The naming rule is the contract: **anything matching `test_*.py` or `*_test.py` MUST be
+pytest-collectable**; self-runners take `check_*.py` / `probe_*.py` / `run_*.py` names, because the
+name is what the collector reads. Two sanctioned bridges keep both entry points working —
+**assert-main** (reference `scripts/coordination/tests/test_bus_supervisor.py:568`, with the
+argv-inheritance trap documented: a bridge that passes pytest's `-q --tb=short` into an argparse
+parser turns a green suite into `SystemExit(2)` at collection) and **pytest-main** — plus a
+refusing-`__main__` stanza for Shape A. Exemptions are written decisions, keyed by path with a reason
+in `DELIBERATE_SELF_RUNNERS`: `test_merge_gate.py` is the canonical exemption — collectable, every
+repo-wide pytest run would mutate a shared trust-boundary file, and an interrupted run leaves the
+fleet's merge gate **failed closed**. The enforcement chain has one measured gap: the lint runs
+pre-commit on changed files only, and **a clone is protected only after
+`install_git_hooks.sh` has run — the committed hook config alone protects nobody** (measured
+2026-08-21).
+
+#### The gate's own blind spots, and why 0/0/0 is not "audit closed"
+
+The final sweep reads **0 blocking in all three repos** (was 17 / 104 / 26) — and that is honest for
+what the gate measures while misleading as a picture of health: the advisory remainder is 16 / 3 / 0
+(the three research advisories are vendored kvpress, deliberately declined), and the genuinely
+blocking files were fixed or exempted the same day. The single highest item was **VT-1: a
+security-audit suite that had never executed** — `test_audit_repository.py` had no `__main__` AND sat
+outside `testpaths`, so the default pytest never collected it; it now runs and passes 6/6. The gate
+itself carried four false-positive classes found *after* it was written — all four made it
+under-count what pytest collects (the unsafe direction): module-level-functions-only descent
+(misjudged 237 orchestrator files), nested-worktree double counting (138 files), arg-shape deciding
+collectability (every conftest-fixture suite), and descending only into `Test*`-named classes
+(`unittest.TestCase` subclasses missed). The transferable rule: **a lint must model the collector it
+reasons about** — which is also why this is a pre-commit lint and deliberately NOT a
+`pytest_collection_modifyitems` collection floor (a floor runs inside pytest, where a mis-fire breaks
+every invocation for every session, and it cannot express "self-runner ON PURPOSE").
+
+#### Source References (2026-08-23 compression + test conventions)
+
+- [`handoffs/completed/frontier-lab-automation.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
+  — AFC-P5.E5/E6: the words-not-lines correction and the exceeds-corpus-maximum withdrawal (measured
+  2026-08-20).
+- [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)
+  — the new guide (VT-7): both shapes, the naming rule, the three sanctioned stanzas, the exemption
+  process, and the installer gap.
+- [`handoffs/completed/vacuous-test-suite-remediation.md`](../handoffs/completed/vacuous-test-suite-remediation.md)
+  — the closed EVL-50 ledger: VT-1..VT-8, the gate's four blind-spot classes, and the 0/0/0
+  completion record with its advisory remainder.
+- [`.claude/skills/agent-file-architecture/SKILL.md`](../.claude/skills/agent-file-architecture/SKILL.md)
+  — the thin-map architecture skill the 2026-07-30 restructure is now codified as.
+
+---
+
+### Compiled Update — 2026-08-23 (evening): the fail-open 200 family, one layer deeper — in-band `[ERROR: ...]` strings
+
+**Confidence: verified** — the change is a route-level fix with 4 new tests that failed against the unfixed code and 10/10 green after, plus 121 across the openai_compat surface.
+
+The 2026-08-11 fix stopped *raised* exceptions becoming HTTP 200s, but the layer beneath still failed open: `LLMPrimitives.llm_call` does not raise — it returns `[ERROR: ...]` strings at start-of-answer, and those in-band failures were reaching clients as **HTTP 200 assistant content** (streaming closed `finish_reason: "stop"`). The 2026-08-23 extension detects them at the route via the canonical `inband_error_text()` rule: non-streaming → **502 `HTTPException`**; streaming → terminal SSE **`error` event + `finish_reason: "error"`**; the REPL path checks the raw result before the auto-wrap into `FINAL(...)`. A model answer *beginning* with `[ERROR:` is classified as a backend failure (codebase-wide convention); mid-answer occurrences stay 200 (guarded). **The recurring lesson, now with a second layer on file: a fix that stops one failure mode at the top of a stack leaves every lower layer free to re-introduce the same class — each layer's error contract must be checked at its own boundary, and "raises" vs "returns error string" is a contract difference, not a style difference.** Provenance: the change sits uncommitted in the shared orchestrator working tree (`src/api/routes/openai_compat.py`, `tests/unit/test_openai_compat_backend_failure_status.py`).
+
+#### Source References (2026-08-23 evening)
+
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))
+
+### Compiled Update — 2026-08-25: the fan-out doctrine gets its first measured number
+
+**Confidence: verified (instrumentation) / observation (corpus)** — `scripts/coordination/fanout_timing.py` (schema `fanout_timing.v1`, 14 tests) parses Claude Code and Codex transcripts into per-subagent start/finish records using Task/SendMessage edges (never keyword matching), per OrchBench Appendix D-I definitions.
+
+The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows (2.1%) with ≥2 overlapping subagents, holding 3,847 of the subagents**; mean workflow depth 1.38, max 4; 54 workflows joined to `queue.jsonl`. The read: real fan-out exists and is concentrated (2% of workflows carry 81% of subagents), so the fan-out doctrine's ROI is in the deep-dispatch workflows, and the fleet's mean depth (1.38) means most dispatches are single-level. FM-3's four-bucket diagnostic (fan-out-right/single-right/both/wrong) is the next question: does fan-out win by surfacing candidates or lose at synthesis.
+
+#### Source References (2026-08-25)
+
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
+- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore
+
+### Compiled Update — 2026-08-30: a check fed an input it cannot answer from is not a failing check, it is an absent one
+
+Two CI failures in two repositories, found a day apart, share one shape and neither is a code defect.
+
+**epyc-root's tests workflow had failed 8 of 8 runs since it was created.** `actions/checkout`
+defaults to `fetch-depth: 1`. `index_state.py` derives each handoff's `last_advanced` with a
+`git log -S'- [x]'` pickaxe over history — so against a one-commit clone **every handoff attributed
+to the tip**, and the freshness gate then reported a stale generated block on a tree that was
+perfectly in sync. Nothing was wrong with the repository, the generator, or the gate; the gate was
+being asked a question about history in a checkout that had none.
+
+**The research repo's autokernel-guards workflow had failed 43 of 43 runs since its first commit**,
+every one dying on `No module named pytest` before collecting a single assertion —
+`actions/setup-python` ships a bare interpreter and nothing ever installed the runner. Because it
+looked identically red whatever the code did, it carried no signal, and it hid two genuine
+regressions for two days.
+
+Both are now green, in both repos.
+
+- **A permanently-red check is worse than an absent one, because it occupies the slot where a working
+  check would go.** The cost is not the red X; it is that the check's output is uncorrelated with the
+  code, so nobody can learn anything from either state of it.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
+- **When a check fails, ask what input it was given before asking what it found.** In both cases the
+  assertion logic was correct and the subject was healthy; the defect was upstream, in what CI handed
+  the check — a truncated clone in one, a missing interpreter dependency in the other. A shallow
+  clone is the specific trap for any tool that reads git *history* rather than the working tree, and
+  pickaxe-based freshness generators are exactly that class.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
+- **Closing the hole is not the same as closing its shape.** Installing pytest fixed the red; it did
+  not fix the fact that a suite running *fewer* assertions reports the same green. pytest exits 5 on
+  zero collected, but a **partial** collapse exits 0. The follow-on was a declared per-suite floor
+  asserted with `>=` rather than `==`, so the guard does not become a second thing to update on every
+  added test — and the floor guard found two defects in itself on first run, including laundering a
+  collection error into a plausible count by reading a number off a line it had not validated.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
+
+#### Source References (2026-08-30, CI inputs)
+
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
+- [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the `ac785d2d`/`7ee090a5` section and §3's `437f751f` → `54d2b8ad` entry.
+
+### Compiled Update — 2026-08-31: a dashboard that remembers is a dashboard that lies later
+
+Three defects in the kernel R&D surface shared one shape — the page *remembered* a fact whose
+source of truth had moved on — and were replaced with resolution (root `2a3881d4`, `86bc7b8b`,
+`479ffb47`, `f9c00551`).
+
+- **Identity facts are resolved, never remembered.** The frozen-production anchor was a pinned sha
+  in the page; it is now resolved live from the freeze record, and a source-guard test bans 40-hex
+  literals in the dashboard source so the regression class cannot quietly return (19/19 mutants).
+  When resolution shows the displayed measurement was taken against a baseline that is no longer
+  the champion's parent, the page says so with an explicit `SUPERSEDED-BASELINE` state instead of
+  rendering the stale number as current.
+- **"Current" is defined by the durable artifact, not by the last process's droppings.** The panel
+  derived "current champion" from a dead run's status file, so the fresh reconciliation
+  measurement rendered as superseded *by its own parent*. The champion branch tip now defines the
+  current champion — a definition that survives every process restart. Same lesson as freshness:
+  a measurement of a superseded champion is not "fresh" no matter how recent its timestamp;
+  staleness is semantic (against the current champion), not chronological.
+- **Ancestry is computable — compute it.** The scope line for a superseded pin (`270b48ed`) is
+  derived from `merge-base --is-ancestor`, so it correctly reads "ancestor — its work is IN the
+  current champion" rather than implying lost work.
+- **Show the accumulated knowledge, read-only.** A new card reads the loop's `experiments.db`
+  directly (read-only): 1051 attempts / 326 mechanisms / 79 revisited / 18 kept / 402
+  measured-null / 132 refused-at-formation — the negative results are the bulk of the value and
+  now visible. Every card carries a per-card staleness audit row (12/12 mutants).
+- **Known gap, filed:** the headline is emitted per-advance only; a restart after an unmeasured
+  advance briefly shows `SUPERSEDED-BASELINE` until the next advance (INF-66 R21-1: emit once at
+  startup too).
+
+Sources:
+
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L4 and R21-1.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §5 (the five root commits).
+
+---
+
+### Compiled Update — 2026-08-31 (evening): staleness anchored to the subject, agendas derived from the store, and instruments that refuse while a claim is held
+
+**Staleness is a property of the SUBJECT, not the clock (root `5f2151c9`).** Episodic evidence on
+the dashboard is now graded *relevant / superseded / unverifiable* against what it describes:
+movement of the subject (a new champion, a new measurement) outranks elapsed time, and the
+wall-clock age is demoted to advisory. The proof case: the live reconciliation bundle correctly
+reads **relevant at 3.1 days old**, where the old clock rule would have flagged it — while a
+minutes-old measurement of a superseded champion correctly reads stale. This completes the
+morning's semantic-staleness work: first the *baseline* was resolved live, now the *evidence age*
+is subject-anchored. Mutation-tested in both directions (fresh-but-superseded, old-but-relevant).
+
+**An agenda card computed from the real store beats a narrated one (root `9425eaef`).** The
+hypothesis-ledger card walks the hotspot-first agenda directly from `experiments.db`:
+`mul_mat_vec_q` 49.3% hotspot share / 63 mechanisms tried; blind-spot lines surface what
+narration never would — `k_set_rows` never targeted, 3.3% of device time unexplored,
+`flash_attn` 12.3% with 0 kept over 29 attempts. A reader asks "what should the loop try next?"
+and the store answers; nobody maintains the answer. (Within a day the rms_norm blind spot this
+style of accounting kept visible produced the program's first rms_norm keep.)
+
+**A refresh instrument that refuses while the claim is held.** `serving_evidence_refresh.py`
+(research `8179dde0`) is one command that regenerates the entire serving-evidence bundle — and it
+is *claim-held*: it refuses to run while run 21 owns the device claim. The refusal is the
+scheduling contract enforced at the instrument, mirroring the loop's own startup refusal: tools
+that could contend for a claimed resource check the claim themselves rather than trusting the
+invoker's discipline.
+
+#### Source References (2026-08-31 evening)
+
+- Root `9425eaef`, `5f2151c9` — served-verified; 17/17 and 4/4 mutants.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L7, R21-L9.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §12, §13.
+
+
+### Compiled Update — 2026-09-01 (incremental): a blocker row is a measurement with a timestamp, not a standing fact
+
+**Confidence: verified** (OP-11 resolved by ordinary merge `21cefca5` after 16 days in the operator queue; divergence re-measured at resolution time).
+
+OP-11 ("`main` cannot push") sat in the operator decision queue from 2026-08-16 to 2026-09-01 and
+was re-reported verbatim in four consecutive wrap-ups. Its stated premise — *90 ahead / 111 behind,
+**103 files changed on both sides**, so `-s ours` would silently revert origin's half* — was what
+made every listed option unattractive: `-s ours` unsafe, a full merge ~78 hand-resolved conflicts,
+leaving it diverged a compounding debt. **Re-measured at resolution: 42 ahead / 30 behind, FOUR
+both-sides files.** The 2026-08-30 reconciliation had already collapsed the divergence; nobody
+re-measured, so the option rejected as prohibitive cost two conflicts, both disjoint appends.
+
+Key findings:
+
+- **A blocker's cost estimate decays.** The condition that justified escalating is a snapshot of a
+  moving tree. Re-measure the *predicate* before re-reporting a blocker — and note that a
+  recurrence check ("appeared in two consecutive wrap-ups with an unchanged blocker") catches the
+  *repetition* but not the *staleness*: this row's blocker was reported unchanged precisely because
+  nobody re-derived it.
+- **Concurrent lanes silently collide on hand-maintained ID spaces.** The operator queue is
+  explicitly "the one hand-maintained list", and while `main` was diverged two lanes each minted
+  OP-30 and OP-31 for unrelated decisions. Generated indices cannot collide this way; hand-numbered
+  queues can, and the collision is invisible until the merge. Resolution rule used: the side already
+  published keeps its numbers, the other renumbers and fixes its own references.
+  **Strengthened same day: it happened a THIRD time, and the merge could not have caught it.** The
+  other lane had also minted an OP-32 that lived only in its own handoff files, never in the queue —
+  so a reconciliation seeing both sides of the queue still missed it, and it surfaced only because
+  that lane read the post-merge report and said so. Three collisions in one divergence window.
+  Corollary: reconciling the queue file is NOT sufficient; an ID minted anywhere must be checked
+  against the queue at mint time, and a cross-lane report after any reconciliation is the only thing
+  that catches the ones filed outside it.
+- **Merging must preserve DELETIONS, not just additions.** Both sides had intentionally removed a
+  row (one closed by a KILL ruling, one resolved by its owning lane). A union-style resolution
+  resurrects exactly the decisions that were deliberately closed. Ask of every merge conflict in a
+  queue file: *which side deleted something on purpose?*
+- **Generated files must never regress across a merge.** A regenerated manifest computed on a lane
+  that had not seen the other side came out SMALLER; taking it would have silently dropped entries.
+  Take the larger/published side and regenerate after, never during.
+- **Serialization and identity are different gates.** The push guard refused twice: once because the
+  push lease is a *different lock* from the wrap-up lease, and once because holding the lock does
+  not prove the *pushing process* belongs to the holder. Both refusals were correct and neither
+  needed the emergency bypass.
+
+#### Source References (2026-09-01)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
+  §OP-11 — the original options table and the 2026-09-01 closing banner.
+- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — Task 11: the
+  conflict-by-conflict resolution record and the push-guard mechanics.
+
+### Compiled Update — 2026-09-02 (incremental): retiring a worktree is a THIRD way to destroy uncommitted work, and `--force` is where it happens
+
+**Confidence: verified** (measured during the OP-30 retirement, 2026-09-02; the orphaned work was
+found by `git log --all -S` returning empty and rescued before deletion).
+
+The shared-tree custody hazards already recorded here cover two shapes — a pathspec commit
+**sweeping** a peer's hunks, and `git checkout/restore -- <path>` **reverting** them with no
+conflict and no reflog. Worktree retirement is the third, and it is the one that arrives wearing
+an approval: the branch is provably merged, the tag pins the tip, the operator has decided, and
+the command looks purely administrative.
+
+**The mechanism.** `git worktree remove` *refuses* a dirty tree — that refusal is the safety net.
+The natural next move is `--force`, which deletes the working tree outright. Uncommitted content
+was never an object in the database, so there is no reflog, no dangling blob, and no recovery.
+Measured: retiring three long-idle loop-champion worktrees, one of them (`ak-loop-tree-c`,
+untouched for five days, branch sitting at base with **zero** commits above it) held **82
+uncommitted lines** implementing a HIP/CUDA stream-capture probe in `mmvq.cu`. The branch being
+empty is exactly why nobody expected content: *commit-level* emptiness says nothing about the
+working tree.
+
+**The check that catches it, before any `--force`:**
+
+```bash
+git -C <worktree> status --porcelain          # any output at all = STOP, inspect
+git -C <worktree> diff -- <file> | head -40   # what is it?
+git log --all -S "<a distinctive symbol from the diff>"   # empty output = exists in NO commit
+```
+
+`log --all -S` is the decisive one: it searches every ref for the content, so an empty result
+means the work is unique to that working tree and deletion is terminal. Rescue is one command
+(`git diff > artifacts/<dated>.patch`, committed and pushed) and costs nothing next to the loss.
+
+**The generalizable rule**: an idle, merged, tag-pinned branch tells you the *history* is safe. It
+says nothing about the *working tree* attached to it. Verify the two independently — and treat a
+`remove` that refuses as evidence to investigate, never as an obstacle to `--force` past.
+
+Corollary for handed-over commands: a retirement command recorded days earlier encodes the tree
+state of that day. Re-verify before executing, because the safe command and the destructive one
+differ by a flag that only becomes necessary once the tree has drifted dirty.
+
+**Sources**
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-3 (the
+  retirement and its re-verification), R21-5 (the rescued patch pending evaluation).
+- [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
+  the session record.
+
+### Compiled Update — 2026-09-07 (incremental): the "30,000 agents" everyone quotes is 30,046 agent RUNS, and the measured cost driver is discarded work, not width
+
+**Confidence: verified** (both swarm papers dived at primary source 2026-09-07; all figures below
+are the producers' own, with the token-share percentages computed on their published tables).
+
+The fan-out question this project keeps returning to — *is our ratified width of 3–5 subagents too
+narrow?* — finally has outside measurement attached to it. It does not say what the headline says.
+
+**The headline number is a run count, and no concurrency figure exists.** "30,000 agents" is
+**30,046 agent runs** across eight role types over about seven days, each run carrying an outcome:
+**3,490 merged (11.6%)**, and **13,602 of the runs (45%) are review passes** rather than authoring
+work (`intake-1304#00`). The paper states **no concurrency figure anywhere**; its only hardware
+number is eight machines. So nothing in it licenses "30,000 concurrent agents", and the citing
+paper that popularised the figure mis-types it — defining the column as a population while its own
+prose says "agent runs" (`intake-1297#record`). Cost in that work is normalised by **corpus size**
+($200 per page, $300 per target), never by agent count; no cost-versus-agent-count relation exists
+in it at all (`intake-1304#04`). Its dollar total is also modelled rather than billed — the logs
+lack token-caching statistics, so ~$100K is a closed-form estimate against a $430K no-caching bound
+(`intake-1304#01`).
+
+**What the same tables do measure is waste.** By the paper's own per-outcome accounting,
+**80.2% of all tokens went to non-merged outcomes and 51.6% to runs aborted outright**, and the
+authors project a 3–10× cost reduction from fixing orchestration alone, without better models
+(`intake-1304#02`). That is the cost term — an order of magnitude larger than anything width
+controls.
+
+**The follow-up system's ablations defend a narrow fan-out rather than attacking it**
+(`intake-1305#record`):
+
+- The entire **central coordination tier is ~11% of compute** (orchestrator 4.01% + supervisor
+  5.72% + analyzers 1.28%) against workers at 76.35%. Coordination is not where the money goes.
+- **3–5 concurrent workers beat 1** on both wall-clock and token cost at matched completion: at four
+  hours wall-clock the 3- and 5-worker configurations reach ~62–68% versus 44% single-worker.
+- **Central re-planning pays only at longer budgets.** The no-orchestrator variant is the *most*
+  token-efficient early, outperforming the full system until ~100M tokens, then plateauing at 64%
+  against 77%.
+
+Carry the limits with the result: 3 and 5 are reported as one undifferentiated band, so **no
+saturation knee is shown** and nothing there licenses "thousands"; the racing multiplier (N workers
+per task, losers cancelled) is folded *into* the worker share, so the agent-count component of cost
+is invisible in that split; every ablation and the sole human audit run on the **same single book**,
+which is also the second-highest-scoring of 26; and the two papers share six of eight authors, so
+the second is not an independent check on the first. The same paper's agent count is internally
+self-contradictory ("thousands" / "dozens or hundreds" / "hundreds"), with maximum *validated*
+parallelism of 5.
+
+**The serial control arm nobody ran.** A single-agent loop — one CLI agent, one constant prompt
+re-fed by a 20-line watchdog, no version control, no PRs, no reviewers, no merge queue — produced a
+comparable output scale, and its bottleneck was neither merging nor checking but **LLM credits**;
+whole-artifact verification of the 169,122-line result takes 32 seconds (`intake-1306#record`). The
+multi-agent papers' claim that single-agent formalization "does not scale" is asserted against it
+with no measurement, no shared corpus and no controlled comparison. Coordination machinery is
+routinely justified against an unmeasured baseline.
+
+**This is now doctrine.** [`OPERATING_CONSTRAINTS.md` → *Parallel Subagent
+Fan-Out*](../agents/shared/OPERATING_CONSTRAINTS.md) carries the ratified clause: **"A fan-out's
+cost is its discarded work, not its width."** Width 3–5 is unchanged — the evidence above defends
+it — and what the clause adds is a **diagnosis order**: when a fan-out looks expensive, first
+measure the share of subagents whose output was never used, and only then consider the number of
+subagents. Narrowing width to control cost is treating the cheap term. Our own instance of the
+measurement is FM-5 (discarded-work accounting) in
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement).
+
+**Sources**
+- [intake-1304#record](https://arxiv.org/abs/2604.03071) *Automatic Textbook Formalization*, credibility
+  4/6, dive-verified 2026-09-07 — the run-versus-agent correction, the per-outcome token
+  accounting, the modelled cost. An independent adverse audit of its released output puts ~18% of
+  statements semantically different, so its completeness claim survives and its faithfulness claim
+  does not.
+- [intake-1305#record](https://arxiv.org/abs/2605.29955) *Formalizing Mathematics at Scale*, credibility
+  2/6, dive-verified 2026-09-07 — the compute split, the 1/3/5-worker arm sitting exactly at our
+  ratified width, and the ablation caveats.
+- [intake-1306#record](https://arxiv.org/abs/2601.03298) — the single-agent serial arm and its actual
+  bottleneck.
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-5, FM-6.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
+  record and the ratification (`fb755192`).
+### Compiled Update — 2026-09-03: an agent loop is designed in pseudocode first — every rejection needs a visible destination, and budgets must not share a counter
+
+**Confidence: verified** — the convention is ratified in a checked-in guide, and both motivating defects
+were located in shipped controller code with their event tallies counted across named campaigns.
+
+Ratified 2026-08-28 as a standing convention after the AutoKernel rebuild: agent-loop work now opens with a
+**pseudocode expression of the loop** — the actors, what each one reads, what gates it, where every
+rejection goes, and which single step is expensive — reviewed *before* any plan is written around it. One
+review round on that block surfaced three design corrections that months of prose had hidden: the critic
+needed two passes rather than one, every rejection needed an explicit loopback to the actor that could act
+on it, and hypotheses needed generating against a live profile instead of being drawn from a frozen list.
+
+#### Why prose hides what a drawn arrow shows
+
+Two real AutoKernel defects have exactly the shape the convention exists to prevent, and both became
+obvious only once someone wrote the arrows down.
+
+- **A rejection with no visible destination is a bug.** `prior_authoring_refusals` — the channel that tells
+  the planner why its last diff was rejected — filtered on `status == "planner_refused"`. The status the
+  controller actually wrote was `authoring_refused`. The tally across campaigns v28–v34 is
+  **22 `authoring_refused` against 1 `planner_refused`**: for 22 of 23 authoring failures the planner
+  received no feedback at all and re-derived rejected work blind, driving two hypotheses to their 3-strike
+  retirement (v33, v34) without ever being told why the first attempt failed.
+- **Two failures with different causes must not share a counter.** `critic_revise` — a critic asking for a
+  revision, which is the *normal* mechanism by which a proposal improves — was charged to the same 3-strike
+  authoring-failure budget as a malformed diff. It supplied v33's third strike, retiring
+  `akh-v2-q5-type-specific-dequant` **for having been reviewed**, before the idea was ever tested. The fix
+  splits `CRITIC_REVISION_BUDGET` (6) from `AUTHORING_FAILURE_BUDGET` (3) with its own disposition
+  (`bounded_critic_revision_skip`). A critic *reject* still counts against the strike budget, because that
+  verdict says the idea was unsound rather than merely improvable.
+
+#### Prefer verification by reproduction to verification by proof
+
+The reference loop block treats the champion git commit as the **only durable state**: no intermediate
+artifact has to be trusted, because anyone can check it out and re-measure. "Did we improve?" is answered by
+rebuilding and benching — a `llama-bench` re-run costs **90 seconds** — not by reading a receipt about a run
+that happened last week.
+
+The generalizable point is a cost argument. Proof requires every intermediate step to be sealed and to
+refuse on doubt, so its apparatus grows with the number of steps and has no natural stopping point;
+reproduction requires only that the recipe was kept, and costs one bounded re-run. AutoKernel had chosen
+proof where reproduction was available: guaranteeing the honesty of a single float cost **3,869 lines** in
+`gpu_source_evidence.py` to establish what a 90-second re-run would have shown directly.
+
+The A/A instrument noise floor that sizes the loop's `n ≥ 5` pairing requirement is itself measured rather
+than assumed: at a single pair (n=20 alternating pairs, 2026-08-28) p95 is **2.175%** on prefill and
+**3.452%** on decode — **4 of 20 pure-noise decode pairs already cleared the loop's 3% nomination bar at
+n=1** — falling to 0.75% / 1.85% at five pairs.
+
+#### Addendum: an actor that reports errors on stdout makes its own failures undiagnosable
+
+Recorded in the 2026-09-03 rebuild session log and carried here as a debugging corollary of the same
+actor-observability theme (single-source, so treat the incident detail as attested rather than
+cross-verified). Run 27's planner threw an intermittent storm — **74 `actor exited 1:` events with an empty
+detail field**, roughly 40% of iterations at peak — that resisted diagnosis for hours; auth, 6-way
+concurrency, the freeze-overlay agent file and prompt size were each ruled out live and none explained it.
+The defect was in the instrumentation, not the actor: `claude -p` reports its own errors on **stdout** with
+a non-zero exit and an *empty stderr*, while the harness's `_run_agent` captured only the stderr tail. Every
+diagnostic being run was reading the one stream the failure never wrote to. Fixed by keeping both output
+tails and attaching the backend identity to the exit record (`b5cd2817`). **When a CLI-driven subprocess
+actor fails opaquely, confirm which stream it actually writes errors to before assuming your capture is
+complete.**
+
+**Transferable lesson:** a loop's design-review artifact should be the pseudocode block itself, not a
+description of it. Every rejection needs a drawn arrow to the actor that can act on it, every budget needs
+its own counter, and every claim of "verified" deserves the question of whether reproduction would have been
+cheaper than the proof apparatus built to avoid it.
+
+#### Source References (2026-09-03 loop design)
+
+- [`docs/guides/agent-workflows/agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md)
+  — the ratified convention, the reference loop block, the reproduction-over-proof cost argument with the
+  90-second / 3,869-line comparison, and the A/A noise-floor measurement.
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-VIS-1 and
+  AK-VIS-2 (2026-08-28): the `prior_authoring_refusals` status mismatch with its 22-vs-1 tally, and the
+  `critic_revise` budget split.
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — P4.1 (2026-08-28),
+  where the loop block was adopted as the program's normative spec, with the ratification recorded inline.
+- [`progress/2026-09/2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md)
+  — the run-27 planner transient storm and the stdout/stderr capture fix in the addendum.
+
+### Compiled Update — 2026-09-03 (incremental): a stale untracked file at an authoritative path is indistinguishable from live uncommitted work — verify by content, not by tracked status
+
+**Confidence: verified** — the drift was measured on the served tree, and every passage of the stale draft
+was diffed against `origin/main` before it was displaced.
+
+The shared-tree custody hazards already compiled on this page cover three shapes: a pathspec commit sweeping
+a peer's hunks, `checkout`/`restore` reverting them silently, and `worktree remove --force` destroying a
+working tree the branch history never saw. The served dashboard tree produced a fourth on 2026-08-28.
+
+**The mechanism.** The dashboard hub's served `main` was **45 commits behind and 1 ahead** of
+`origin/main`. Because it predates the origin commit that added
+`handoffs/active/kernel-champion-and-promotion.md`, that path existed on the served tree only as an
+**untracked, superseded 144-line draft**, while origin/main's tracked version had grown to **465 lines**.
+Git's own status vocabulary offers no way to tell that apart from a session's genuine work-in-progress
+sitting uncommitted at the same path: both render identically as "untracked file present."
+
+**What made the resolution safe.** Every substantive passage of the 144-line draft was individually verified
+present in the 465-line origin version before the stale file was displaced, with a backup taken first and
+discarded only after the diff check passed. The general form: **`git status`'s tracked/untracked
+classification is a property of one clone's history, not of the content's currency.**
+
+**Why it generalizes past this one file.** Any served or long-lived clone that lags its origin will show
+*every* path added upstream after its local tip as untracked-if-locally-present rather than modified — so
+the failure mode recurs for each stale copy on a lagging tree, not just for handoffs. The provenance
+predicate already built for the dashboard's deployment sync (AK-DEPLOY-1: trust a blob only if it has
+existed on `origin/main`) is the right instrument; it simply was not yet being run over `handoffs/`.
+
+**Transferable lesson:** on a shared or served clone known to lag its origin, "untracked" is not a safety
+signal. Before deleting, overwriting or trusting an untracked file at a path origin also tracks, diff its
+content against the origin/main version — never infer disposability from which side of the git index a file
+happens to sit on.
+
+#### Source References (2026-08-28 served-tree drift)
+
+- [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) —
+  "Served-tree drift — AK-DEPLOY-2 got worse than 'lagging'": the 45-behind/1-ahead measurement, the
+  144-vs-465-line discrepancy, and the content-verification-then-backup resolution.
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-DEPLOY-2,
+  filed open the same day, naming the AK-DEPLOY-1 provenance predicate as the existing pattern to extend.
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
+  cross-reference confirming AK-DEPLOY-2 as a live, separately-tracked item distinct from the champion
+  findings on that page.
+
+### Compiled Update — 2026-09-25: Typed Decision Layers in Agent Harnesses
+
+A decision model is safest and most useful when it occupies a narrow boundary. The application observes current state and constructs only actions it can execute. The model chooses an identifier or abstains. Deterministic policy validates freshness, permissions, budgets, and invariants. The host executes the stored action and records the outcome. The decision model may rank risk or fit; it does not grant authority.
+
+This boundary applies both to provider routing and to tool-focus selection. Pinned or live sessions preserve user intent. A selected provider must still pass current availability and authentication. A selected tool bundle must be rebuilt from current schemas and checked again before dispatch. An empty “answer” bundle is a valid way to ensure that a semantic choice cannot silently acquire tools.
+
+Provider-owned inner loops remain provider-owned unless the protocol exposes a complete inspect-select-validate-execute-observe interception point. Advertised commands or capabilities are metadata, not executors. Decision records enable replay and reviewed policy changes, but recording outcomes does not mean the application trains itself. Any improvement still needs a versioned proposal, fixed scenarios, regression checks, and a human promotion gate.
+
+#### Source References
+
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
+- [Decision-aware routing](../handoffs/active/routing-program.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
+- [Autopilot continuous optimization](../handoffs/active/autopilot-program.md)
+
+**Confidence:** verified against the cited Keel/Jev intake handoffs and the repository's authorization and receipt boundaries.
+
+### Compiled Update — 2026-09-25: Prepared Actions Need One Reusable Envelope
+
+The typed-decision boundary now has a concrete host-side primitive: `decision_receipt.v1`. The receipt binds
+the task revision, offered choices, read-set or catalog fingerprint, expiry, selected ID or abstention,
+requested and resolved model identity, validation, authorization, fallback, timing, and downstream outcome.
+Immediately before dispatch, the host rechecks availability, freshness, tool existence, model identity,
+and authority against the stored action. `abstained`, `stale`, `expired`, `unauthorized`, `unknown_id`, and
+`incumbent_fallback` are distinct outcomes rather than one generic failure.
+
+One implementation owner builds this envelope and its deterministic conformance fixtures. Routing,
+review, tool-focus, computer-use, and later selector consumers reuse it and add separate tasks only where
+their integration or acceptance criteria differ. This keeps the authority rule executable: selection
+never grants permission, and a valid model choice cannot execute a changed or unauthorized action.
+
+#### Source References
+
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 owner and consumer boundary.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and receipt requirements.
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — selector and shadow consumers.
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts) — review-side prepared-action consumer.
+
+**Confidence:** verified as an adopted repository contract; implementation remains tracked by HS-TD-4.
+
+### Compiled Update — 2026-09-25: The Orchestrator Actor Reached the Pre-Comparison Boundary
+
+The AutoKernel orchestrator backend is deployed through its pre-A/B prerequisites. Request-scoped worktree
+containment and edit modes, the `orch:auto` backend, a post-reply trailing-work witness, a direct REPL
+context variable, and orchestrator-owned read-only scouts are live. On the DS41 control prompt, direct
+context reduced the first-turn root prompt from 30,106 to 7,810 tokens while exact pull accounting and a
+byte cap kept retrieved material out of later prompts. The result is architectural readiness, not an
+outcome win: the paired OAB-4 comparison remains open.
+
+The build also exposed two operational boundaries. Scouts bypass the ordinary contention, region-lock, and
+inference-tap path, so their usage remains under-counted until OAB-16 emits per-scout records. Separately, a
+no-op SQLite VACUUM held an exclusive lock for 34 seconds and caused a real author call to fail with
+`SQLITE_BUSY`; maintenance now skips small freelists, truncates WAL after real vacuum work, and gives store
+errors a distinct backoff class. Metrics are scoped to the call start so a failed author cannot inherit the
+planner's prior session.
+
+#### Source References
+
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — deployed components, direct-context measurement, scout gap, and store incident.
+- [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign boundary and pending A/B.
+- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — lifecycle and dedicated-worktree conventions.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — deployment chronology and measured timings.
+
+**Confidence:** verified for deployed mechanisms and incident measurements; comparative backend quality remains unmeasured.
+
+
+### Compiled Update — 2026-09-26: Prepared Actions Enforce the Decision Boundary at Dispatch
+
+The previously specified `decision_receipt.v1` boundary is now implemented in the orchestrator. A
+`PreparedAction` snapshots task revision, offered choices, catalog and read-set fingerprints, expiry, and
+requested routing identity. Immediately before dispatch, the host rechecks task revision, expiry, current
+catalog, current read set, offered choices, selector availability, and authorization. The existing registry
+continues to own permission; an accepted semantic selection cannot bypass it.
+
+The first integration is the default-off typed tool-argument path. Abstention or any failed validation uses
+the incumbent arguments, and receipts distinguish stale, expired, unauthorized, unknown-ID, abstained, and
+incumbent-fallback outcomes. They also retain requested and resolved model identity, component and total
+timing, validation and authorization outcomes, fallback, and the observed tool result or exception. The
+contract therefore remains useful even if every learned selector eventually loses to the incumbent.
+
+#### Source References
+
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 implementation and consumer map.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and evidence-consumer boundary.
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective receipt projection without authority.
+- [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — landed orchestrator commit and 40-test validation.
+
+**Confidence:** verified for the implemented default-off path and conformance coverage; no selector-quality claim is implied.
+
+### Compiled Update — 2026-09-26 (wrap-up, ak-ds41-main): a new actor seat is wire-tested before its first live call, and loop scratch has exactly one owner
+
+**Confidence: verified** for the ratified rule, the checklist text and the scratch-registry design as documented;
+the code gates (OAB-29..OAB-32) are filed, not built.
+
+**The rule.** Ratified by the operator 2026-09-26 into
+[`OPERATING_CONSTRAINTS.md` → *New actor seats*](../agents/shared/OPERATING_CONSTRAINTS.md): a new actor seat — a
+new model or backend kind, a new harness or CLI, or a changed seat config (permissions, prompt transport, output
+or context limits), in AutoKernel **or any other autonomous loop** — takes no live call until its EXACT
+invocation passes (1) a fake-model wire test against a scripted OpenAI-compatible stub and (2) one stub
+end-to-end dry iteration covering stop, resume and continuation past a keep. Until INF-78 OAB-29/OAB-30 code the
+gate, the bringing-up session runs both by hand and records the result in the owning handoff. Origin: the 57.5 h
+DS41 local-planner bring-up, where ~11 of ~26 incidents were harness semantics a fake server finds in seconds
+([Autonomous Research](autonomous-research.md), same date).
+
+**What the wire test must assert** (the ten-item checklist in agent-loop-design), each item traceable to a
+concrete DS41 loss:
+- the full reply survives to a file at full length (pipes truncated opencode at 64-96 KiB; argv prompts hit
+  128 KiB) and both exit-code paths are handled (opencode exits 1 after a *recovered* tool error, with good stdout);
+- a compaction or template echo never parses as an answer, and the timeout covers a deliberately slow reply;
+- config keys do what you think (`prompt:` replaced opencode's system prompt; `instructions` appends) and
+  requested limits reach the wire (the 32000 `max_tokens` clamp; `chat_template_kwargs` dropped for local
+  providers);
+- **permission semantics hold**: without `--auto`, an `ask`-class permission is auto-rejected *and ends the whole
+  session with no final text*, while a configured `deny` fails one call — so a read-only seat must never be able
+  to reach an `ask`.
+
+The rest of the checklist generalises beyond opencode: never silently discard produced work (every drop writes a
+disposition record, enforced by a test that walks every non-fatal path — before `c7215eb5` op_scope dropped ~15
+candidates across seven runs and none built); key comparability on the measurement identity, not the actor
+roster; give "free" local compute an explicit per-call token and wall budget that ends in a recorded abstention
+(a cloud API's bill was the implicit budget; one local planner call ran 61 min without replying); check seeded
+numeric evidence for freshness; run the harness's own reference probes in the candidate's env; resolve routes from
+what the actor actually writes; size inherited per-keep costs; and pick verification scope by change type. The
+standing gates are OAB-29 (wire-test suite per backend kind and role config; `run.py`/`campaign_cli` refuse a
+manifest whose seat-config digest has no passing record), OAB-30 (stub iteration including keep→continuation),
+OAB-31 (discard-invariant AST-style test) and OAB-32 (default budgets on every role × backend; an unbudgeted local
+backend refuses to start).
+
+**Scratch disk is the flow's job** (operator directive 2026-09-26). All AutoKernel scratch — temp dirs, per-call
+configs, context bundles, detached worktrees, non-evidence build dirs, actor TMPDIRs — goes through one
+`ScratchRegistry` with nested `run → batch → iteration → call` scopes that release innermost-first on normal exit,
+exception, KeyboardInterrupt and the SIGTERM stop path. Three failure modes motivated it: per-feature cleanup
+leaks on every non-happy path; pattern-based deletion destroys work (`git worktree prune` destroyed five live lanes
+on 2026-08-12); and shared per-role files race (one lane's call could start with another lane's permission fence).
+Each allocation writes an ownership marker and a journal line; the sweep collects only **marked** resources whose
+owner is provably gone (dead pid with start-time check), never an unmarked path; worktrees are removed only with
+`git worktree remove --force` — the wrapper refuses `prune` and `gc`, and a test scans for them. A disk guard makes
+callers **degrade** (best-of N→1, op-test→compile-only), never fail. Enforcement is an AST inventory test over the
+loop package: any file/dir-creating call outside `scratch.py` or a reviewed evidence allowlist fails. Evidence
+(actor replies, session exports, provenance sidecars, LOO omission trees) is deliberately outside the registry
+because records bind it by digest.
+
+#### Source References
+
+- [agent-loop-design → *Bringing up a new actor model or backend* and *Scratch disk is the flow's job*](../docs/guides/agent-workflows/agent-loop-design.md) — the checklist and the registry contract.
+- [AutoKernel local-actor bring-up retrospective](../docs/design/autokernel-local-actor-bringup-retro-20260926.md) — §5/§6, the prevention list and where each is filed.
+- [INC-20260926-local-actor-bringup](../docs/reference/agent-config/INCIDENT_LOG.md#inc-20260926-local-actor-bringup) — the rules the incident fed.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-29..OAB-32 acceptance criteria.
+- [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the ratify bundle and the decline of a second in-loop gate (INF-78 moves actors behind the orchestrator, which already gates agentic local-model use).
+
+
+### Compiled Update — 2026-09-26: HS-4 P0.4 Passed, and the OpenCode Pin Moves to the Release Tag
+
+**Confidence: verified** by the P0.4 r3 verdict (`artifacts/harness/hs4-p04-20260926-r3/verdict.json`, `pass=true`) and a git comparison of the tag against the audit pin.
+
+At ~19:05Z on 2026-09-26, OpenCode 1.18.31 completed the live acceptance against `/v1`, passing 10/10 checks. The client-mode tool order was read → edit → bash, and session keying was clean: 0 calls carried a wrong `x_user_id` or `x_tool_mode`, and 0 were keyed to another session. The new A5 check confirmed token parity: the session reported 28819 prompt / 247 completion tokens over 4 steps, and the tap's `server_terminal` counted exactly the same over 4 calls. The tap is authoritative because OpenCode's `tokens.input` excludes cached tokens. The run closes P0.1, P0.2 and P0.5.
+
+Two failed attempts earlier the same day each left a lesson:
+- **r1 was a method error, not a product defect.** The runner wrapped the whole run in an outer CPU region-lock, which starved the orchestrator's own placement (503 `contention_denied`, 0 tool calls). Never hold an outer region-lock around traffic that goes through the API, because the API does its own admission.
+- **r2 passed every product check but failed belief capture.** `/v1` client tool mode returned no `usage`, so the SC86 rows had no token counts. The fix (orch `5697828c`) returns the backend's usage and was deployed by an API-only reload before r3.
+
+**The pin moves to the tag.** The audit pin `350c726a` turned out to be a dev-branch commit whose packages report 1.18.31. The release tag `v1.18.31` is `014614d3`, which is what `npm install` installs and what r3 ran. The diff between the two touches only `packages/console`, `packages/web` and `.github`, so every audit anchor still holds. P0.4c freezes the served identity at the tag and records `350c726a` as the audit anchor only.
+
+The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (the pin freeze), then the Phase-0 split into its own handoff, whose trigger is now met.
+
+#### Source References
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — P0.1–P0.5 closure, P0.4b/c, P0-split.
+- [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the §1 tag/pin correction.
+- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the r1/r2/r3 narrative.
+
+### Compiled Update — 2026-09-26 (late, workspace-8d): capacity has one owner, locks are inodes, and the interface questions get a package
+
+**Confidence: verified** for the defects (reproduced live); the interface items are open design questions.
+
+- **An outer region-lock around API traffic contradicts the scheduler, and the doctrine text invites it.**
+  `OPERATING_CONSTRAINTS.md:106` says never to launch inference without a held CPU-region claim, with no carve-out.
+  A runner that followed it literally wrapped an OpenCode→`/v1` client in `region-lock run`. That starved the
+  orchestrator's own per-call placement: 503 `contention_denied`, 0 tool calls (HS-4 P0.4 r1). The rule's real scope
+  is inference processes a session launches itself. The orchestrator claims regions per call for anything that goes
+  through its API. The wording is human-only, so the amendment is queued (HYG-5, OP-63). Until it lands, read :106
+  that way.
+- **Two paths to one lock file are one lock; compare inodes, not strings.** The pre-push guard's legacy-lock check
+  compares path strings. From a worktree created via `/mnt/raid0/llm/epyc-root`, the canonical and legacy lock paths
+  differ as strings but share an inode (`/workspace` is the same directory), so a correctly held lock refuses with "TWO
+  serialization locks". It is the same worktree-path-invariance class as SSU-F9 and SSU-F9c. The fix is `-ef`
+  (SSU-F9d), and it awaits operator approval (OP-65) because `scripts/hooks/**` is ack-gated. Workaround: create
+  worktrees via `/workspace`, or export `EPYC_PUSH_LOCK_DIR`.
+- **A pause reaches a subagent only at its next tool round.** A running pytest keeps writing after the pause message
+  is sent. Wait for its captured PIDs to exit before touching a tree it shares.
+- **The harness↔orchestrator interface is the missing join, and it now has a package task (HS-19, OP-64).** Three
+  linked questions, none covered by HS-16/17/18 or HS-OD-8/9:
+  - (a) Re-enable OpenCode's `task` tool as a control door into the orchestrator's MCP server, with the scheduler
+    still the only executor. HS-4's template denies it today so that the orchestrator owns fan-out. HS-1c showed
+    `task` re-enters the same pipeline, but the 27B never used `task` when offered it (DS41-C20c, n=1).
+  - (b) A hierarchy of shared REPLs: live view or snapshot, merge on publish, and one pull-accounting tree. It has to
+    rest on local evidence, because DeLM-style shared context did not survive the prior-art dive.
+  - (c) The orchestrator deciding to scout, not only when a request lists targets.
+
+  HS-4's thin-shell, one-router decision is not reopened.
+
+#### Source References
+
+- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final: lessons and the derived-actionables sweep.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 (region-lock wording).
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19 a/b/c, HS-1c, HS-4 P0.4 r1.
+- [master-handoff-index.md](../handoffs/active/master-handoff-index.md) — OP-63, OP-64, OP-65.
+
+
+### Compiled Update — 2026-09-27: harness subagents are linked, not scheduled — and they delegate when the prompt names the tool
+
+**Confidence: verified** for the HS-19a live acceptance (PASS 18/18, one run) and the delegation probe (3 trials per cell); stages 2–3 are an approved build order, not built.
+
+- **The orchestrator owns model selection for harness subagents (operator, 2026-09-27).** OpenCode's config names one logical model, `epyc-orchestrator/orchestrator`, for both `model` and `small_model`. A `task` subagent is only a concurrent request to that provider, not a new process. The only pin is `x_force_model`, set by us for evaluation and debugging, never by the harness. Build order: stage 1 Linked → 2 Scheduled → 2.5 shared context by pointer → 3 full shared REPLs. This answers HS-19 (a) from the previous section without reopening HS-4's one-router decision.
+- **Stage 1 records the tree and changes nothing else.** Every piece is default-off, and with it off live behaviour is byte-identical:
+  - `/v1` (flag `v1_subagent_link`, orch `f58db8be`) resolves the session and parent ids with HS-16's header fallback (body → `x-dynamo-*` → `X-Session-Id` / `x-parent-session-id`; the body always wins and a disagreeing header is flagged). It records `parent_session_id`, its source, `subagent_depth` and its basis, and `x_agent_name` in the tap `request_keys`, plus one `session_created` / `harness_subagent_link` progress-log row per new child. It refuses (422) malformed ids, self-parents, cycles and re-links to a different parent. Depth comes from a bounded in-process registry (10k sessions, 3600 s idle TTL) that is not persisted; the log rows are, and they are the stage-2 corpus.
+  - An opt-in OpenCode profile allows `task` for the `general` agent only, at depth 1, and `general` itself denies `task`, so there are no grandchildren. `explore` stays disabled: user permission rules merge after its `"*":deny`, so it would keep bash and would not be read-only here.
+  - The config lint gained a rule in **both** profiles: no per-agent `model` and no `x_force_*` anywhere in the config.
+- **The live run passed 18/18** (HS-19a.6, ~02:05Z in an AutoKernel CPU window): frontdoor called `task`, one `general` child at depth 1 answered, parent and child calls were keyed in the tap, the child was served by normal selection with no pin, and A5 token parity held per session. Check S6 first failed because `ProgressLogger` buffered 10 rows per worker, so the session-log row was not yet on disk; the fix flushes durably (orch `9d711b32`) and the acceptance runner now polls with a bounded wait. **An acceptance check that reads a buffered log must wait for a flush, or it tests the buffer.**
+- **Delegation is instructed, not offered (OAB-33).** Frontdoor, 27B-nothink and 27B-think all delegated 3/3 on the HS-19a prompt (which names `task`); frontdoor and 27B-think self-served 0/3 on the AutoKernel seat's shape (fan-out guidance, a hidden-`scout` description, `task` never named). The earlier "27B never used `task`" observation (DS41-C20c) was the prompt, not the model ([Autonomous Research](autonomous-research.md), same date).
+- **Shared-clone and host hygiene closed or filed the same day:**
+  - HYG-5 was ratified (OP-63): the region-lock rule is scoped to self-launched inference, and the orchestrator claims regions per call for API traffic.
+  - The `-ef` guard fix (SSU-F9d, OP-65) took effect only when the shared clone's working tree was updated, because the live pre-push hook runs `/workspace`'s working-tree copy of the guard. SSU-F9e fast-forwarded `/workspace` with `merge --ff-only` (no force, stash or checkout). Each of the 11 files blocking the fast-forward was first proven superseded (8 byte-identical to a committed blob, 2 older subsets) and then moved aside into a verified backup, not discarded. **A fix to a hook is not deployed until the copy the hook actually executes carries it.**
+  - The disk-leak audit ranked the leaks: agent worktrees ~36 GiB, then `~/.codex` sqlite growth of ~4.8 GiB in one ~8 h window while Codex served as a delegation actor, then frontdoor KV slot files at ~1.4 GiB per 8 h (slot-save files never unlinked; the owning session is fixing it). `~/.codex` has no retention and no reaper; NIB2-84 files one on the `opencode_event_reaper.sh` pattern (never touch a DB a live process holds, a three-state observer probe, an observer-registry row), and deleting existing history needs operator confirmation.
+
+#### Source References
+
+- [HS-19a linked subagents spec](../docs/design/hs19a-linked-subagents-20260927.md) — operator decisions, identity resolution, refusals, profile rules.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19a.1–.6, the live PASS and the S6 flush fix.
+- [2026-09-27 HS-19a progress](../progress/2026-09/2026-09-27-hs19a.md) — the stage-1 build record and test counts.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-33.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d, SSU-F9e.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 ratified, NIB2-84.
+- [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — § Disk, § Coordination.
+
+
+### Compiled Update — 2026-09-27 (late): stage 2 "Scheduled" is designed as five steps, then frozen until the thesis pays
+
+**Confidence: verified** for the OpenCode source audit (file:line anchors at tag `v1.18.31`) and the design decisions; **inferred** for anything about stage 2's value, which is unmeasured. Nothing was built.
+
+- **The pipeline.** Gate (is this worth splitting?) → Plan (which typed subtasks, which dependencies) → Size (how many run now, how many wait) → Select (which model serves each subtask) → Aggregate (how results return). Front door A (`/chat`, or the harness through an MCP tool) runs all five; front door B (an OpenCode `task` call on `/v1`) arrives with Gate and Plan already done by the main thread, so the orchestrator runs Size and Select, and OpenCode aggregates.
+- **Generalize, don't fork.** Stage 2 replaces proactive stage 7.5, which inverts the "consultant, not grunt worker" ruling: its gate is a heuristic, its planner is always the architect (`n_tokens=256`), it dispatches in wave barriers, its plan names roles, and it is declared off in production. Stage 2 also generalizes the scout stage's admission from *skip* to *queue*. The plan compiles to TaskIR `plan.steps`, so the existing `compute_waves` validation (duplicates, dangling references, cycles) applies.
+- **Design rules worth keeping whatever happens to stage 2:**
+  - The gate is a typed decision with a four-option menu (`direct | scout | decompose | decompose_consult`), and it defaults to `direct`: on a parse failure, below the (predeclared, uncalibrated) τ, at depth ≥ 1, or when capacity is unknown. The evidence says multi-agent costs 3–10× the tokens and wins on thoroughness, not speed (intake-1121#00, intake-1121#02); at equal thinking budgets a single agent matches it on multi-hop reasoning (intake-1109#00).
+  - The planner is told its budget (`N_now` from live `/slots` minus reserve, `N_total`), and code enforces it. The plan schema has `additionalProperties: false` at every level, so no `model`, `role` or `x_*` key can appear: the orchestrator, not the plan, picks models. Decoding is grammar-constrained, with `maxItems = N_total`.
+  - Readiness dispatch, not waves: a subtask starts when its dependencies finish and admission grants a slot (intake-1117#00). A process-wide reservation (the embedding-pool scheduler's `try_reserve` pattern) stops two plans spending the same free slot. The planner call finishes before dispatch and synthesis starts after it, so the parent holds no slot while it waits.
+  - Grunt subtask types never reach the consultant; it is reachable only through planning and a `verify` subtask marked hard.
+- **What OpenCode gives, read from source (tag `v1.18.31`):**
+  - Several `task` calls in one turn run concurrently with **no cap**. The only structural bound is depth (default 1).
+  - Whether the model emits more than one call depends on the server: neither OpenCode nor the orchestrator sends `parallel_tool_calls`, so llama-server falls back to the chat template's capability.
+  - Retries are per call: up to 5, honouring `retry-after-ms` then `retry-after`, otherwise exponential from 2 s with 25% jitter and a 30 s cap. There is no fan-out-level awareness, which is why a pre-stream 503 with `Retry-After` is the backpressure lever.
+  - There is no `todoread` tool, and `todowrite` has no dependencies or types. It is a checklist, not a plan.
+  - `OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS` must stay off: it returns at once and injects the result as a new parent turn, which breaks the parent-waits contract.
+  - A child can be joined to its tool call server-side with `(parent_session_id, sha256(prompt))`, with no plugin change.
+- **Then it froze.** Under the narrowed plan, HS-19b (shared REPLs), HS-19c (generalized scouting) and HS-19d P1–P6 carry `❄ FROZEN 2026-09-27`, because nothing yet shows that fan-out beats the strongest model alone. HS-19d.0, the design, stays done as the reference. P5's A0/A1/A2 arms became the UFH-13 thesis experiment ([Benchmark Methodology](benchmark-methodology.md)). OP-64, the harness↔orchestrator interface discussion, is recorded as decided.
+
+#### Source References
+
+- [HS-19 stage-2 dispatch design](../docs/design/hs19-stage2-dispatch-20260927.md) — §1 pipeline, §2 reuse table, §3 evidence, §4 OpenCode audit, §5–§10 the steps, §15 prior art.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19b/c/d boxes and their freeze markers.
+- [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the frozen list and the A0/A1/A2 arms.
+- [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — the freeze decision.
+
+
+### Compiled Update — 2026-09-29: the `/v1` direct path now templates thinking-on roles, and losing the role suffix there helps the planner
+
+**Confidence: verified** for the HS-OD-10 fix (landed on orch main, live after an API-only reload, serving proofs on 2026-09-29) and for the tap-event purge counts (operator-run `--apply` with byte-identical verification); **verified by code read, not by a run** for the planner-suffix check; **observation** for SSU-F18 and NIB2-88..91, which are filed and open.
+
+- **HS-OD-10: `x_disable_repl` sent thinking-on roles raw text.** The direct path (including `x_force_role`) called `llm_call` with no chat template and with the role's `system_prompt_suffix` appended after the user text. On the `/completion` lane, llama-server simply continued that text. The 2026-09-28 ARCHSWAP serving proofs showed the symptoms: `architect_critic` echoed a JSON template, `coder_escalation` repeated the last line of its suffix, and `<think>` arrived inline in `content`. The defect had been present since orch `ae5975b4` (2026-04-05). The fix (lane `66ef96b8`, landed as orch `5ddb7320`, with test-tap isolation in `8a7d57a8`) applies an orchestrator-side template to `/completion` roles and sends chat-completions roles bare, the same rule as `chat.py`'s direct path. It also skips the suffix, as `/chat`'s direct stage does, and moves a leading closed `<think>` block into `message.reasoning_content`. It was proven templated at 07:06Z on 2026-09-29, and again at 15:04Z once RI-23 had moved these roles to the chat-completions lane.
+- **The behaviour change was checked against its one real consumer, and the loss is an improvement.** Chat-completions roles on this path no longer get their suffix. The autopilot `LocalPlannerProvider` uses exactly this path. A code read at orch `origin/main` found that `_local_planner_prompt` wraps the draft, critique and brief prompts in JSON-only output contracts at both head and tail. The suffixes of the planner roles (`frontdoor` by default, `ingest_long_context` under the authority daemon) ask for "user-friendly … elaborate" prose and "structured headings", which contradict that contract, so nothing was added back. The default REPL bridge (`openai_compat.py` ~:1674) still sends an untemplated prompt with the suffix. That path belongs to RI-23, not to this row.
+- **A box that was done but never ticked.** HS-4 P4-pre (the `x_max_escalation` description overstated a cap `/v1` never applied) had been fixed by orch `336bd170` on 2026-09-17, and it stayed open for ten days. TE-1 (`9959e8db`/`280059cc`) then added default-off `/v1` escalation through `/chat`'s post-answer hooks, under `x_escalation: auto | off | architect_general` (flag `v1_escalation`). That governs escalation, and the old field stays metadata. P4's delegation tool and cap enforcement are still open, and **P4 must extend `src/api/routes/v1_escalation.py`, not fork it.** The harness queue is now P0.4b (republish the Harness Card) → P0.4c (freeze the pin at `v1.18.31` = `014614d3`) → P0-split. HS-19b, HS-19c and HS-19d P1–P6 stay frozen behind UFH-13.
+- **Serial-ness belongs to the server, not the alias (A-5, folded into SSU-F17).** `ingest_long_context` is in `serial_roles`, but its host server is not. Once roles bind to server ids, serial-ness has to be derived from the server, so an alias cannot disagree with its host. It was folded into SSU-F17 rather than fixed on its own, because a stand-alone fix would re-edit a surface that SSU-F17 deletes. `coder_escalation`'s dead `enable_thinking: False` went the other way. It was needed before TE-reopen, so it was reconciled under RI-23a, which was applied on 2026-09-29 (receipt `RATIFY-RI23A-20260929`): the role is now thinking-on in both the registry and the priors.
+- **A regression that lives only in tmp is one disk reclaim away from gone (SSU-F18).** The SSU-F5 moved-lineup pytest plugin moves the worker lane a second time, onto `architect_critic`. Against `test_stack_priors_compiler.py` it gives 34 of 35 passing, and the one failure is the deliberate pin. The plugin and its fixtures exist only under `/mnt/raid0/llm/tmp/ssuf5/`. SSU-F18 commits them to the orchestrator tests as a standing regression for the next lineup change. The surface manifest's hardcoded-surface inventory stands at 13 consumer surfaces and 27 rules.
+- **The inference tap was purged of test traffic, but only half of it could be.** Orch `8a7d57a8` made the `tests/unit` tap hermetic. The operator then ran `clean_tap_events.py --apply` on the JSONL events file. Rule (a) removed 2,844 events from `role_a`/`role_b` pytest PIDs, and rule (b) removed 824 non-API, task-less requests to the `test-native-wire` backend or port 0: 3,668 in all. The 267,312 kept events were verified byte-identical and in order, with the lock held for 20.35 s. The plain `inference_tap.log` still holds 738 test sections. It can only be rewritten while no `TapWriter` holds an fd, so NIB2-91 waits for a planned API stop.
+- **Zero-inference residuals filed rather than buried.** NIB2-90: two openai/v1 tests fail only when run in a particular order, and they reproduce on unmodified `origin/main`, so orch `66ef96b8` is exonerated. The task is to find the leaked state and prove the fix with two run orders. NIB2-88: the opencode event reaper's relaunch step appears in no cold-start document, because the container has no cron or systemd. `agents/shared/` is human-only, so the step's agent-editable home is the `coordinator-agent` skill's cold start. NIB2-89 generalizes the bus supervisor's H-4 self-restart to every registered daemon. It needs a D9 ack and has no runtime effect while bus_supervisor stays DOWN. NIB2-80/81 were renumbered to 86/87 because they collided with closed items.
+- **Compaction (2026-09-27/28).** Closed scope in harness-selection, SSU and the non-inference backlog moved to `handoffs/completed/` siblings, and each active file gained a *Start here* block and a *Completed Scope* table. Removed lines were spot-checked against the files at `d3b960cc`: every closed ID reappears in its sibling, with link paths rewritten. No history was lost ([Knowledge Management](knowledge-management.md) has the convention).
+
+#### Source References
+
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-10 defect, fix, closure and planner check; HS-4 P4-pre tick and TE-1 progress; the P0.4b → P0.4c → P0-split queue.
+- [Harness selection completed sibling](../handoffs/completed/harness-selection-completed-through-2026-09-27.md) — where HS-1/2/3, Phase 0, HS-TD-4, HS-18 and HS-19a stage 1 now live.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — A-5 folded into SSU-F17, the RI-23a reconciliation note, SSU-F18, surface-manifest counts.
+- [Model-stack completed sibling](../handoffs/completed/model-stack-single-source-update-pipeline-completed-through-2026-09-27.md) — closed SSU-F2/F3/F5/F9a/b/d/e/F12/F14/F15.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-86..91, the renumbering, the tap purge record.
+- [Non-inference backlog completed ledger](../handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md) — Round 1 and Round 2 closed items through 2026-09-27.
+
+
+### Compiled Update — 2026-10-03: the 27B planner gap is mostly the model, and the harness defects are generic
+
+**Confidence:** the C95 results are **observations**. n is tiny (2–4 calls per arm) and grading was blind, so treat
+them as indicative. The defects D1–D8 are verified from wire bodies, server logs and the prefill-share analysis.
+OAB-35 is verified: a regression test reproduces the crash on the old code.
+
+- **The question, from DS41-C83.** The C83 analysis attributed the 27B planner gap as roughly 45% capability, 40%
+  harness and 15% scheduling.
+  - The 27B had the zmm-widen idea, lost it to compaction, and then rejected it on a wrong "DRAM-bound" premise.
+  - There was no critic bias: the deepseek critic accepted the 27B's proposals 9/13 times, and its own 6/11.
+  - Its effort setting never reached the server, and the fast lane got 2–10x more calls.
+- **DS41-C95 replay.** Fixed planning contexts were sent to the 27B under several harnesses, with a blind
+  claude-opus-5-5 grader and no contaminated calls. P(keep) by arm:
+  - as-ran DeepSeek: 0.75 (3 exact, 0 factual errors);
+  - as-ran 27B: 0.0;
+  - 27B × codex, inline context: 0.50 (both partial);
+  - 27B × Hermes: 0.33;
+  - 27B × opencode: 0.25;
+  - 27B × codex, variable context: 0/2, no reply on either call.
+- **Reading the C95 results.**
+  - **Capability dominates.** No 27B arm produced an exact keep. The 27B made 2–3.5 factual errors per proposal,
+    and gave no reply within about 90 min on half or more of its calls.
+  - **The harness matters some.** Codex with inline context was the best arm, and it recovered the +12% idea that
+    the as-ran 27B had lost to compaction.
+  - **Tool-fetched context hurt the 27B here:** 0/2 replies against 2/4 with inline context.
+  - **Reasoning carry-over differs by harness.** Codex resends its reasoning items, opencode drops them, Hermes
+    resends none, and the orchestrator REPL rebuilds each turn without them.
+  - DS41-C103 records the recipe if the 27B is ever reconsidered as a planner: codex with inline context and a
+    longer budget. The 4500 s budget was the main failure.
+- **UFH-14: eight harness and serving defects** (operator directive: fix every one, model-agnostically, demonstrate
+  on the 27B, then audit). In 6 of 8 no-reply calls, a keep-class candidate was already in the transcript.
+
+  | Defect | What goes wrong |
+  |---|---|
+  | D1 | The client stream idle timeout (codex ~300 s) is shorter than a long silent prefill. The abandoned request keeps prefilling. |
+  | D2 | Compaction changes the prompt prefix (codex sends `tools=[]`), forcing a cold re-prefill of 79–94k tokens. |
+  | D3 | Compaction drops the task prompt (opencode). |
+  | D4 | No answer protocol: the model explores past its budget with a candidate in hand. |
+  | D5 | Parallel arms start together on the same context and each prefills cold. |
+  | D6 | The unified pool overflows under concurrent long contexts. |
+  | D7 | Concurrent long prefills stall decode in the other slots. |
+  | D8 | Serving telemetry gaps. |
+
+- **UFH-14 plan.**
+  - **Phase A (27B demo):** an F12 run with a 1 h idle timeout, compaction at 150k, a JSON-first answer, a forced
+    answer at 65% of budget and an 8k thinking cap. Also prefix warming with staggered starts, and compaction that
+    keeps the prefix.
+  - **Phase B (generalize):** derive each client parameter from the server's measured prefill rate and slot context,
+    never hard-coded per model. B2 (the token gate) and B5 (telemetry) are done; B3 (KV sizing) is signed. B6 is an
+    OpenAI-compatible passthrough on :8000, so experiments go through the gate.
+  - **Phase C:** a holistic audit with a delete-lens, after the Phase A verdict.
+- **OAB-35: the dict idiom crashed REPL calls** (orch `2d97ade2`).
+  - Models write `context.get('inbox', '')`. `ContextBundle.get(path, max_chars=None, offset=0)` read `''` as
+    `max_chars`, and `int('')` raised.
+  - The model repeated the line for six turns and escalated, and the API returned HTTP 500. This blocked C95's
+    orchestrator-REPL arms.
+  - Fix: a non-numeric second argument, or `default=`, is now a dict-style default.
+  - OAB-36 documents the idiom in the root block. That changes the prompt bytes, so it lands between experiment arm
+    pairs and updates the golden test.
+- **A C95 harness defect.** The run-1 wire proxy died on SIGTERM without closing its gzip stream, which lost every
+  run-1 `result.json`. The results were rebuilt from the intact harness outputs (marked `recovered_by`), and the
+  new proxy closes its logs on SIGTERM.
+
+#### Source References
+
+- [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — UFH-14: evidence, D1–D8, phases A-C.
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C83, C95, C102, C103.
+- [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — the C95 arm table, reasoning carry-over, the proxy defect.
+- [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the C83 planner-gap verdict.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-35 root cause and fix, OAB-36.
+- [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the serving evidence behind D5–D8.
+
+
+### Compiled Update — 2026-10-06: future launcher references and retained reports cross ownership boundaries
+
+A clean, idle worktree can remain required by a future launch. Cleanup must inspect process environments and argv, recent launcher/watchdog scripts, scheduled jobs, frozen campaign inputs and explicit KEEP markers, then apply the existing identity and trash-first checks. The October 4 removal of a worktree exported as `EPYC_ROOT_REPO` broke the next DS41 claim despite passing cwd/open-file checks. Scratch declarations make created paths enumerable; a declaration never overrides protected harness state. Claude/Codex transcripts, backups and other agent-harness state remain excluded, and the Codex retention reaper is report-only. The narrowly authorized OpenCode event-table reaper does not authorize another reaper.
+
+CPU admission for the project GitNexus wrappers now requires eight distinct single-link lock files, four GLOBAL and four build, with actual write flocks attributed to one live same-UID ancestor. Refusal precedes downstream mutation; the nontruncating writer lock survives child/exec and contention returns 75. This is point-in-time wrapper admission. It establishes neither continuous owner supervision nor canonical-index recovery: the host index remains untrusted. NI05-76's original native test has 103 descriptive controls within one testcase, not 103 independent testcases; public metadata excludes hashed private inputs and cannot independently reopen the entire proof.
+
+Delegation's compact loop telemetry and user-visible report are separate products. DCP-13 removes an unreachable `fetch_report` instruction and returns the retained full report on user cache hits; legacy entries lacking the full report miss that path. Native fixture acceptance covers the contract, not inference quality or live cache performance. The source-handoff changes do not close inference-dependent comparison arms.
+
+#### Source References
+
+- [Cleanup reference check](../docs/guides/agent-workflows/cleanup-reference-check.md) — future references, protected harness state and the narrow exception.
+- [Handoff index authoring](../docs/guides/agent-workflows/handoff-index-authoring.md#scratch-roots--every-handoff-declares-where-its-scratch-lives) — scratch boundaries and load-bearing markers.
+- [GitNexus compute claims](../docs/reference/gitnexus-compute-claims.md) — point-in-time admission and original native control counts.
+- [Delegation context preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13a/b source acceptance and remaining inference arms.
+
+### Compiled Update — 2026-10-20: the harness-improvement loop gets a matched-budget gate before its first suite run
 
 **Confidence: verified** for what the handoff files; the underlying paper reading is corrected, not independently re-measured here.
 
@@ -5449,14 +5478,14 @@ The harness-improvement-loop handoff added HIL-7, a zero-inference amendment to 
 
 Four further harness-evolution papers sit in a primary-read queue with only Stage-1 reads; nothing in them is verified and none is cited. The trigger is the operator selecting the HIL architecture (HIL-6 / OP-HIL4) or the first suite design being opened, after which Stage-2b runs on whichever bears on the chosen proposer, memory-revision or ablation design. The runtime loop itself has not started and the 2026-09-16 deferment stands.
 
-### Source References (2026-10-20 agent-architecture delta)
+#### Source References (2026-10-20 agent-architecture delta)
 
 - [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-7, HIL-8 and the primary-read queue.
 - [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — the DCP-6 matched on/off design HIL-7 mirrors, and its default-off status.
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — a second harness-adjacent consumer of pre-declared bake-off rules.
 - [Wrap-up intake progress note](../progress/2026-10/2026-10-20-wrapup-intake-20261020.md) — verification that the filed IDs resolve and that HIL-8 is the only flip.
 
-## Compiled Update — 2026-10-21 (sweep 3): the harness-cluster intake adds an isolation and reporting contract to the improvement loop
+### Compiled Update — 2026-10-21 (sweep 3): the harness-cluster intake adds an isolation and reporting contract to the improvement loop
 
 - The 2026-10-20 harness-cluster intake (operator-approved; plan sha256 `1dc83054...3f3967`, applied 2026-10-21) extended the HIL-2 pre-first-suite-run checklist from six to twenty-two items. Item 7 requires executor and proposer isolation from answer keys and labels: egress blocked to answer-key and benchmark-data hosts (or a no-egress sandbox), the AP-54 eval fence armed on both arms, a marker/path tripwire on every context handed to the proposer and every persisted lesson, a seeded decoy-rubric canary that must never reach proposer context, and a proposer trajectory view that carries no success, score or judge claim. Item 12 requires that every model-invoked feature record a mechanical invocation rate per consuming model (a null is evidence about content only when the feature was invoked) and that arms containing deterministic code report the share answered with no model call and be labelled solver/router arms, not model-capability claims. Item 10 holds the "peak and rollback" harness-growth criterion as a hypothesis until a powered run exists. ([design doc](../docs/design/harness-improvement-loop-design-20261006.md), [HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop), HIL-9, 2026-10-20)
 - HIL-11 records the HIL-6 pilot requirements as design text only (the 2026-09-16 deferment on running a loop stands): at least two cycles with an arriving split between them, a stalled round 2 counted as a KEEP_BASE outcome rather than a failure, and a one-cycle gain explicitly not evidence that the loop compounds. HIL-10 adds an evidence note to the HIL-4 decision package without selecting an option; the primary-read queue was closed for intake-1995, 1999 and 2008, while intake-1992 stays Stage-1-only by operator ruling. ([HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop), HIL-10/11, M14)
@@ -5465,7 +5494,7 @@ Four further harness-evolution papers sit in a primary-read queue with only Stag
 
 Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md); [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop); [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly); [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract); [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md).
 
-## Compiled Update — 2026-10-21 (sweep 5): the L2 failure scan meets real traces, and the traces turn out to lack steps
+### Compiled Update — 2026-10-21 (sweep 5): the L2 failure scan meets real traces, and the traces turn out to lack steps
 
 **Confidence: verified** for the implemented code, the tests and the measured counts. The calibration numbers come from injected-behaviour sets and say nothing about natural recall.
 
@@ -5494,7 +5523,7 @@ Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md
 
 Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md), [Progress dpf-hil](../progress/2026-10/2026-10-21-dpf-hil.md), [Progress hil13a](../progress/2026-10/2026-10-21-hil13a.md), [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **HIL-15b flag-on run missed its pass band.** 80 task runs (20 tasks x 4, join 80/80 step-bearing) gave 69/80 pass (86%) against a 30-70% target; 15 of 20 tasks went 4/4, `strtrap-hard` 1/4, `runs-hard` 0/4. That yields 11 failed recordings (HIL-16a needed >= 3) but only 5 outcome-variance tasks against HIL-18a's ~10, so a harder task set is decided by HIL-18a's ranking power.
 - **HIL-16a done: 80/80 recordings verify clean**, including all 11 failed-task recordings (CAS blobs and hash chain), which unblocks HIL-16b's real-recording prefix replay.
@@ -5507,20 +5536,20 @@ Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-
 Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [Dev-harness trace mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 
 
-## Compiled Update — 2026-10-27: separate merged actor guards from registration-only recovery
+### Compiled Update — 2026-10-27: separate merged actor guards from registration-only recovery
 
 **Confidence: verified** for the owner-confirmed source merges and native registration record. OAB-30's continuation-after-keep fixture and INF78's per-file code-budget ratchet are merged and owner-confirmed. Separately, the ORCH recovery result proves native registration only (20 entries, 19 unchanged, 3,804 hashes, 0 mismatches); consumer query was NOT_RUN and risk NOT_ASSESSED. T1-A's same-entry process-limit gate is accepted on a private pushed branch, not canonically merged or deployed. Keep these as separate gates: code merge, native registration, and same-entry launch acceptance do not imply consumer execution or deployment.
 
 Sources: [actor-backend handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend); [non-inference WS58 checkpoints](../handoffs/active/engineering-hygiene-backlog.md); [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md).
 
 
-## Compiled Update — 2026-10-27: resource admission evidence
+### Compiled Update — 2026-10-27: resource admission evidence
 
 A focused process-limit proof distinguishes the process address-space ceiling from the row RAM reservation: the same-entry fixture passed with a 176 GiB process limit against a 192 GiB reservation, refused an 8 GiB ceiling for the declared 176 GiB process limit, and refused 193 GiB above the 192 GiB reservation. These are separate checks; a focused preflight pass establishes readiness only for its scoped entry and does not book or replay a workload. The KPF R14 attempt also exposed ordering: the grant must exist before creating the writer/arm, otherwise the writer can wait on a grant that the same transaction has not yet created; at the 08:32Z cutoff the first armed attempt was unplaceable and recovery was still required. The later scoped C5 checks establish row validation and grant admission only; no graph query or full CPU replay is claimed.
 
 Sources: [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [KPF R14 handoff](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention); [C5 graph handoff](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh).
 
-## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for test counts and accepted sources; nothing here is merged-to-main or deployed unless stated.
 
@@ -5532,7 +5561,7 @@ Sources: [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a1
 
 Sources: [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [audit progress](../progress/2026-10/2026-10-24-refactor-audit.md), [resume](../progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md), [10-25 checkpoint](../progress/2026-10/2026-10-25-refactor-checkpoint-01a16fc3.md), [10-26 checkpoint](../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md), [Codex NI 0758](../progress/2026-10/2026-10-26-codex-ni-01a16d6b-0758.md)
 
-## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
+### Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
 **Confidence: verified** (accepted task receipts and source records listed below).
 
@@ -5540,13 +5569,13 @@ HIL-15b’s native pilot had started by 14:07Z and remained partial at the cutof
 
 Sources: [HIL-15](../handoffs/active/harness-program.md#track-harness-improvement-loop) · [UFH-12](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 
-## Compiled Update — 2026-10-27 (incremental full wrap, 16:26:29Z): owner-watcher handoffs and IPC priority
+### Compiled Update — 2026-10-27 (incremental full wrap, 16:26:29Z): owner-watcher handoffs and IPC priority
 
 The 16:20Z owner close recorded four queue/placement misses: a DF2 resume watcher left the FILLERS PID stale; a Q38 admission used a global checker with a local engine; a CT21-after-R15 watcher exited before updating FILLERS and the queue; and the quarter writer placed the INF-75 canary on 48–71 while a DF2 download held q2. These are observed incident details, not a ratified process change. Separately, native inspection of the running Claude Code 2.1.306 binary verified that routine approved notices sent with priority `now` can interrupt an active tool, while `next` queues. The tested v2 helper sent one notice with `next`; its local receipt is socket-sent, while consumption remains pending. This does not establish the cause of every prior cancellation or authorize altering operator STOP instructions.
 
 Sources: [WS58 16:20Z close](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md); [owner watcher notes](../.claude/skills/inference-backlog-scheduling/references/owner-watchers.md); [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
-## Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-27)
+### Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-27)
 
 **Confidence: verified (source + tests); throughput of the parallel launcher is not measured.**
 
@@ -5556,7 +5585,7 @@ Sources: [WS58 16:20Z close](../progress/2026-10/2026-10-27-workspace-58.md); [C
 
 Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md).
 
-## Compiled Update — 2026-10-30 (operator wiki sweep, workspace-58): worktree disk emergency and agent-side repairs
+### Compiled Update — 2026-10-30 (operator wiki sweep, workspace-58): worktree disk emergency and agent-side repairs
 
 **Confidence: verified** (progress records and checked backlog boxes); causal remarks are marked inferred.
 
@@ -5570,7 +5599,7 @@ Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex
 
 Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), [daily log 2026-10-30](../progress/2026-10/2026-10-30.md), [NI worktree retirement](../progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md), [ROOT NI retirement](../progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the recorded native counts (small, partial diagnostics); no EVL-34 Step 3, PAW-3 or HIL-15b parent gate closed, and every comparison below is descriptive.
 
@@ -5582,14 +5611,14 @@ Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), 
 
 Sources: [rao-redel-substrate-spike](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) · [paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) · [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop) · [EVL34 R11 original](../progress/2026-10/2026-10-30-codex3-evl34-r11-original.md) · [HIL15b R9 finalization](../progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md) · [PAW host-qualified](../progress/2026-10/2026-10-31-paw-host-qualified.md)
 
-## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - FM-7: read-heavy-main share 0.007% post 10-15 (under the 3% rule), so M1 DECLINED; Claude subagents use 60.7% of tokens with a median 49.9k first-request overhead, Codex 68.0% with 21.8k. ([progress](../progress/2026-10/2026-10-31-fm7.md))
 - FM-8 added .claude/agents explorer/runner/clerk plus a WARN-mode dispatch audit hook; the checkbox stays unticked pending live dispatch checks. ([progress](../progress/2026-10/2026-10-31-fm8.md))
 
-## Compiled Update — 2026-11-01 (qualification boundaries in agent loops)
+### Compiled Update — 2026-11-01 (qualification boundaries in agent loops)
 
 **Confidence: verified** for the audit classifications; these findings govern task-state evidence and do not establish agent-quality outcomes.
 
@@ -5599,7 +5628,7 @@ Sources: [rao-redel-substrate-spike](../handoffs/active/context-and-token-econom
 
 Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [serving-harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) · [REPL turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
 
-## Compiled Update — 2026-11-01 (incremental source review)
+### Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited native records and source controls.**
 
@@ -5607,7 +5636,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/coordination-and-churn-pipeline.md); [loop fleet](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation); [fleet backlog](../handoffs/active/engineering-hygiene-backlog.md))
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
@@ -5615,7 +5644,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement)
 - HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
@@ -5627,7 +5656,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - CI: main was red since 10-27 (vidya `usage-provenance` fixture) and is repaired with no tests disabled; 730 merged stale branches deleted (LOOP-55), 43 pre-existing test failures remain (LOOP-57). [refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [codex-refactor](../progress/2026-11/2026-11-01-codex-refactor-01a16fc3.md)
 - Lane watchdogs by construction (AKX-AUTO-8) and the CJ-7c paired-edit instrument are source-only. [auto8](../progress/2026-11/2026-11-01-auto8-watchdogs.md), [cj7c](../progress/2026-11/2026-11-01-cj7c-paired-edit.md)
 
-## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+### Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
 **Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
 
@@ -5635,33 +5664,33 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - C2C KV-cache communication (intake-2559#record, intake-2576#record): +3.1-5.4% over text-to-text on sub-4B multiple-choice receivers, with the latency win exactly the avoided sharer decode; fusers are per pair and HF/CUDA only. Proposed AGENT-5: an offline n=200 four-arm CPU probe with a shuffled-cache negative control, promoting only at >=3 points paired over T2T.
 - Octopus (intake-2563#record; [w5_meta](../research/deep-dives/ws58-20261031/dives/w5_meta.yaml)), design analogy only: four mechanisms fix recorded intake failures and are filed as ID-RI-ANCHOR-GATE (script-written anchors, cross-paste detection on `quote_sha256`), ID-RI-LANE-HEAD (`stale_epoch`), ID-RI-STAGE-GUARD (script-formed stage grants) and ID-RI-DECLINE-VOCAB (closed decline codes). Anchor gating proves containment, not entailment.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
 **Confidence: verified** — 2 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+#### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2144#record (Harness Updating Is Not Harness Benefit): Citable for a factorial design separating who writes harness updates from who benefits, skill-load rate and adherence as diagnostics explaining a null harness gain, and one multi-benchmark data point. Verdict adopt_patterns, integrated; linked to harness-improvement-loop and episodic-memory-integrity.
 - intake-2146#record (Recursive Harness Self-Improvement): Pattern-level and low relevance: the cost framing and change-record schema are reusable, but the performance and cost headline is not decision-grade because pairwise LLM-judge outcomes are observations under judge dependence. Verdict adopt_patterns, integrated; linked to delegation-context-preassembly.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2556#record (Triton AI Compiler (PTX Gym agent client)): stage-1 claims confirmed except 'starts from Triton-generated PTX', which is the README's claim, not the code default. Reusable design: plan/candidate/repair loop, unified-diff patch tools, negative 'tried' memory, cost gate, ABBA timing. Integrated via agentic-rocm-kernel-authoring.
 - intake-2563#record (Octopus Superintelligence OS): re-dive of architecture, verifier, ledger and security docs; only the design mechanisms are citable as analogies for intake-skill gates, since Octopus reports no measurement and says models do not exercise the self-evolution affordances. Integrated via intake-derived-work-2026-07-25.
 - intake-2565#record (Building agents: folding subagents into the main loop): single-vendor guidance with anecdotal numbers only; citable for the 30-50 tool threshold, three keep-a-subagent conditions and the flipped-task fold eval, not as a measured result for our local delegate() roles. Integrated via agentic-serving-harness-fixes and tool-use-eval-contract.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 41 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+#### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
 
 - intake-2225#record (Agent Debugger): Citable as a design precedent for the file-system environment and proposer/filter decomposition only; the QC F1 numbers are self-reported and not evidence the debugger works. Adopt-patterns; linked to harness-improvement-loop.md.
 - intake-2226#record (Agent Skills open format spec): The spec limits frontmatter to six fields, with version, author, tags and trust_level belonging in the metadata string map; B3 export output is therefore non-conformant until fixed. Adopt-patterns; linked to harness-selection-and-integration.
@@ -5698,36 +5727,36 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 - intake-2335#record (REFLECT): Contributes the replay-flip verification idea and its controls rather than a corpus; its WTQ labels show the highest step agreement reported (alpha 0.82). Worth-investigating; linked to harness-improvement-loop.md.
 - intake-2336#record (Famas failure attribution): Spectrum-based failure attributor that re-executes the failed task about 20 times, abstracts logs into agent-action-state triples and ranks suspicious ones. Adopt-patterns, integrated; linked to harness-improvement-loop.md.
 
-### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+#### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
 
 - intake-2386#record (Locals): dive narrowed the 83% vs 28% figure to a reply-checkpoint-only ablation that predates the stable-think template and session-start fixes; claims 5-13 were appended. Verdict adopt_patterns; linked to agentic-serving-harness-fixes.md.
 - intake-2392#record (CODESKILL): headline narrowed to +11.03/+5.10 (v2) vs +9.69/+4.01 (v1), single run, with only CODESKILL rows changed between versions. Verdict worth_investigating; linked to harness-improvement-loop.md.
 
-### Run 2026-10-30, IDs 2522–2528 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2522-2528.md)
+#### Run 2026-10-30, IDs 2522–2528 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2522-2528.md)
 
 - intake-2523#record (Mainplane open-source Go agent harness): Mechanism confirmed: the "search tools" are rg via the run tool plus a system-prompt recipe for the .log record format, and continuation is user-issued rather than automatic. Adopt-patterns; handoffs tool-output-compression and repl-session-memory-maturity.
 
-### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
+#### Run 2026-10-30, IDs 2529–2534 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2529-2534.md)
 
 - intake-2529#record (Bitter Lesson (Sutton)): Confirmed as framing only; intake-2522#record extends it to agent memory without evidence. Knowledge-only.
 
-### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+#### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2537#record (FastContext repository explorer): The abstract headline was overturned as a trained-explorer, total-token claim (same-model rows, main-only tokens). Adopt-patterns; dive-surfaced sources declined at the two-wave cap.
 - intake-2538#record (Terminus-4B small agentic model): Headline narrowed to best case, main-only tokens. Adopt-patterns; the Debug2Fix source was ingested as intake-2543#record and other surfaced sources declined at the two-wave cap.
 - intake-2543#record (Debug2Fix): Abstract framing narrowed: the lock does most of the work. Worth investigating; single-agent debugging-tool sources declined at the two-wave cap.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
 
 **Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+#### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1232#record (QiMeng parent paper): The dive found a three-layer system whose central component (LPCM) is unimplemented, with both agents sharing one shape: an outer search over an optimization tree with inner generation plus symbolic verify-and-repair. The artifact worth pursuing is QiMeng-Xpiler. Verdict worth_investigating, dive-verified; handoff agentic-rocm-kernel-authoring.
 
 
-## Compiled Update — 2026-11-01 (Codex backlog churn flow)
+### Compiled Update — 2026-11-01 (Codex backlog churn flow)
 
 **Confidence: verified for the published workflow and wiring; this is an operating contract, not evidence that the backlog is empty or rows are qualified.**
 
@@ -5735,7 +5764,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 
 Sources: [backlog churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md) · [compute fillers](../docs/guides/agent-workflows/compute-fillers.md) · [ws58 churn-flow progress](../progress/2026-11/2026-11-01-workspace-58-churn-flow.md) · [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
-## Compiled Update — 2026-11-01 (keeper refusal handling and DF2 proof status)
+### Compiled Update — 2026-11-01 (keeper refusal handling and DF2 proof status)
 
 Keeper v9 changes qualification scheduling so a pre-run refusal does not consume the one native qualification slot per 120-second tick. Unchanged refusals are memoized against the manifest, reviewed row and FILLERS row; the backlog counts a row as qualified-armed only when its receipt file exists. A worker breaker blocks arming but not keeper qualification. Separately, the backlog generator recognizes `.ended` and `.FILED` terminal receipts for priority-only entries when the READY manifest is absent; its 13 focused tests passed and read-only generation classified four stale DF2 preparation entries as done. These scheduling and task-display changes do not close the underlying science task.
 
@@ -5743,11 +5772,11 @@ Corrected same-image dirty-replay controls now pass for the small Qwen3.5 0.8B Q
 
 Sources: [DF2 corrected-proof record](../artifacts/coordination/df2-12-1-corrected-native-20261101/README.md) · [DF2 session record](../progress/2026-11/2026-11-01-handoff-df2.md) · [DF2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) · [keeper v9 flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
 
-## Compiled Update — 2026-11-01 (NI qualification preparation and wrap)
+### Compiled Update — 2026-11-01 (NI qualification preparation and wrap)
 
 The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip); [FA handoff](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
 
-## Compiled Update — 2026-11-02 (ws58 intake: Jev harness engineering, Super-agent essay, loop GUI)
+### Compiled Update — 2026-11-02 (ws58 intake: Jev harness engineering, Super-agent essay, loop GUI)
 
 - **Typed decisions are a control-flow discipline, not a model** (`intake-2604#record`, external): evidence report passed/failed/unverified with provenance where a worker claim never becomes a result; a registry-only diagnostic selector; a named, exhaustive stop policy; pure-policy replay that reports the first divergence. Its live evidence is n=3 and a fixed diagnostic order matched or beat the model, so it supports the pattern, not Jev. Choice confidence is a p_max gate whose meaning depends on the option count.
 - **Thresholds come from held-out real outcomes** (`intake-2605#record`, `intake-2606#record`, `intake-2607#record`, `intake-2608#record`, external): risk-coverage and conformal calibration; labels must be outcomes, not the judge's own answers; steps inside one episode are not exchangeable; multi-threshold calibration needs Learn-Then-Test style correction.
@@ -5758,7 +5787,7 @@ The NI D1 legacy-conflict fix is published but awaits the keeper owner installat
 
 Sources: [Jev dive](../research/deep-dives/ws58-jev-20261102/intake-2604-jev-harness-engineering.md) · [selective prediction](../research/deep-dives/ws58-jev-20261102/selective-prediction-wave1-dives.md) · [GUI survey](../research/deep-dives/ws58-jev-20261102/agent-loop-gui-survey.md) · [wave 2](../research/deep-dives/ws58-jev-20261102/wave2-dives.md) · [Super-agent essay](../research/deep-dives/ws58-jev-20261102/intake-2615-superagent-essay.md) · [digest 2604-2614](../research/deep-dives/intake-digests/2026-11-02-ids-2604-2614.md) · [digest 2615-2616](../research/deep-dives/intake-digests/2026-11-02-ids-2615-2616.md)
 
-## Compiled Update — 2026-11-04 (REPL harness filings)
+### Compiled Update — 2026-11-04 (REPL harness filings)
 
 - **S4 Omega arm differs from baseline by a turn floor and mandated procedure**: a 10-round hard limit with an aim of 5-7, a gather, expand, verify, answer sequence, same-block causality (never `FINAL()` in a block whose tool result is needed), one block and no comments. Default-OFF via `PROMPT_VARIANT__root_lm_system=s4_omega`; adopted from the SkyRL multipaper child prompt.
 - **S4-OMEGA-PILOT-V2 filed FUTILITY**: 1/16 complete pairs, 7 incomplete, 8 not_run, tool liveness not met. It is not an A/B result on the arm.
@@ -5768,7 +5797,7 @@ Sources: [Jev dive](../research/deep-dives/ws58-jev-20261102/intake-2604-jev-har
 
 Sources: [S4 baseline vs Omega prompts](../docs/reports/harness-run-filings-20261104/s4/) · [harness-program](../handoffs/active/harness-program.md) · [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)
 
-## Compiled Update — 2026-11-06 (keeper friction pass 4, operator-adhoc-ops wrap-up 6)
+### Compiled Update — 2026-11-06 (keeper friction pass 4, operator-adhoc-ops wrap-up 6)
 
 - Friction review pass 4 classified the 2026-11-04..06 smoke and arming failures by root cause: the pipeline, not the model, is the noise source — 88 % of FAILs carry no information about the measured question. Four keeper fixes follow from it (refusal terminal once; a completed row is never rc14; GPU idleness judged by KFD membership and sampled VRAM; rowflow2 grant ordering), tracked as ROWFLOW-PASS4-EMERGENCY.
 - IDLE-HELD grants now warn their owner (notify-only); rowflow2 auto-ends rc=75 and re-queues. A per-row declared idle grace is filed (ROWFLOW-IDLE-GRACE-FIELD) because one fleet threshold misfires on rows with legitimate idle phases.
@@ -5776,16 +5805,7 @@ Sources: [S4 baseline vs Omega prompts](../docs/reports/harness-run-filings-2026
 
 Sources: [friction review pass 4](../docs/reports/coordination/keeper-friction-review-20261105.md) · [rowflow2 design](../docs/design/rowflow2-20261105.md) · [wrap-up 6 progress](../progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md)
 
-## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): what an agentic optimizer actually needs
-
-- **Measurement turnaround dominates candidate quality** in a mature agentic kernel loop: Together Compiler's premise matches our measured split (build 75.7%, measured 3.9%), and the portable fixes are kernel-store reuse before rebuilding, a parallel build, and one grant carrying many measurement units (intake-2643).
-- **Prescribed context and role-decomposed planners measured negative** in their ablations (an expert knowledge base cost 25-31% speedup; naive ensembles beat expert strategies 6.2x vs 4.9x). Do not generalise this to our loop: their experiment compares role-specialised peers, while ours is a stage pipeline with a no-repeat fold, which that ablation does not test (intake-2643).
-- **An external optimizer's keep gate is not automatically stronger than ours**; theirs states no repeats and no rollback beyond teardown (intake-2643).
-- **Filed work**: `P1`/`P2`/`P3` in [autokernel-loop.md](../handoffs/active/autokernel-loop.md) and [coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md).
-
-Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · [intake stage-3 plan](../research/intake-stage3-plan-2026-11-06-linquant-tkcc.md)
-
-## Compiled Update — 2026-11-07 (harness/inference intake: reuse is over-attributed)
+### Compiled Update — 2026-11-07 (harness/inference intake: reuse is over-attributed)
 
 - **Token savings from action reuse are mostly context shrink.** HarnessMM's 87.93% headline reproduces, but pricing the bypassed calls at baseline per-call cost shows callback removal explains only 12-36% of the saving; output tokens rise in both HumanEval arms. Any reuse claim now carries a call-count decomposition (HIL-RE-1).
 - **The load-bearing soundness gap is interpreter identity.** A schema-valid stored call can change effect when the handler changes; our dispatch fingerprint covers catalog and read-set hashes but not the handler, process start or serving-tree commit (UFH-TE-2). The minimum certificate addition is three fields, not fourteen: `tool_epoch`, `effect_class`, `expires_at`/revocation.
@@ -5795,7 +5815,7 @@ Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · 
 
 Sources: [HarnessMM dive](../research/deep-dives/harness-inference-20261106/intake-2652.md) · [ActionEngine dive](../research/deep-dives/harness-inference-20261106/intake-2656.md) · [HARBOR dive](../research/deep-dives/harness-inference-20261106/intake-2659.md) · [schema-epoch dive](../research/deep-dives/harness-inference-20261106/intake-2658.md)
 
-## Compiled Update — 2026-11-07 (operator full wrap-up, Pipeline Management): containment learnings from a declined design
+### Compiled Update — 2026-11-07 (operator full wrap-up, Pipeline Management): containment learnings from a declined design
 
 **Confidence: verified** (commits cited in the progress log).
 
@@ -5808,7 +5828,7 @@ Sources: [HarnessMM dive](../research/deep-dives/harness-inference-20261106/inta
 
 Sources: [progress, wrap-up 10](../progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md) · [churn-pipeline handoff, containment boxes](../handoffs/active/coordination-and-churn-pipeline.md) · [rowflow2 design](../docs/design/rowflow2-20261105.md) · [keeper friction review](../docs/reports/coordination/keeper-friction-review-20261105.md) · [cleanup reference check](../docs/guides/agent-workflows/cleanup-reference-check.md) · [EVL-29 closeout](../docs/reports/frontier-lab-automation-closeout-20261107.md)
 
-## Compiled Update — 2026-11-07 (harness wrap-up: effect contracts landed, intake anchor gates, second-reader audit)
+### Compiled Update — 2026-11-07 (harness wrap-up: effect contracts landed, intake anchor gates, second-reader audit)
 
 **Confidence: verified** (handoff ticks and the audit file; the closing synthesis bullet is marked inferred).
 
@@ -5820,7 +5840,7 @@ Sources: [progress, wrap-up 10](../progress/2026-11/2026-11-07-operator-adhoc-op
 
 Sources: [harness-program](../handoffs/active/harness-program.md) · [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md) · [second-reader anchor audit](../research/deep-dives/quant-compiler-20261106/second-reader-anchor-audit.md)
 
-## Compiled Update — 2026-11-11 agent-file compression with tools, and tool permissions fail open
+### Compiled Update — 2026-11-11 agent-file compression with tools, and tool permissions fail open
 
 Confidence: `verified` for filed row verdicts and the code trace; single-run n=150 paired tables.
 
@@ -5832,30 +5852,14 @@ Confidence: `verified` for filed row verdicts and the code trace; single-run n=1
 Sources: [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md) (AFC-V3B/V3C, AFC-Q36-TOOLS-COMPLIANCE, WG-TOOLPERM-DRIFT, TOOLPERM-DENY-DEFAULT) · [progress 2026-11-11 workspace-f2](../progress/2026-11/2026-11-11-workspace-f2.md)
 
 
-## Agent-file compression: production operating point and deploy wiring (2026-11-12)
-
-- **Both serving roles' operating point is `aggressive` on production tool exposure.** Suite v3c re-ran the v3b harness with each role's tool set resolved from the enforcement path (`model_registry.yaml` `tool_permissions`). Qwen3.6-35B-A3B (worker_general, 26 tools) and Qwen3.8-Flash-Next (architect_general, signed 35-tool set) both KEEP every compressed level under the paired rule (Newcombe one-sided 95% LB of p_cand − p_none > −0.10 per pool). Flash-Next none 0.785/0.600/0.927 (comp/proc/recall); aggressive LBs −0.029/−0.041/−0.069. architect_general's earlier `aggressive` value had been measured on the retired Qwen3.5-122B; v3c re-backs it. [engineering-hygiene-backlog.md AFC-V3C-PROD-TOOLS] `verified`
-- **A validated operating point was never applied.** A read-only trace (2026-11-12) found no production path gave a local model any agent file. Injection now exists on epyc-orchestrator 440ed243c behind `agent_file_injection` (default OFF, flag-off prompts byte-identical), for roles in `ORCHESTRATOR_AGENT_FILE_ROLES` (default `worker_general,architect_general`); frontdoor root prompts are not covered. The `/new-model` Step 6.5 text claiming the orchestrator "routes the model to the highest compression level" was corrected. Lesson: a registry field that is validated but has no consumer is a claim, not a deployment. [engineering-hygiene-backlog.md AGENTFILE-INJECT-DEPLOY] `verified`
-- **A short refusal directive lifts compliance on the aggressive variant.** Appending "Requests That Conflict With These Standards" (decide from the request alone, refuse first quoting the rule verbatim, ask for context only afterwards) to the Q36 aggressive file: 0.787/0.687/0.973, compliance LB +0.1525 over v3c aggressive. Caveat: the verbatim-quote instruction overlaps what the strict clause-cite scorer checks, so part of the gain is citation of refusals that already happened. Flash-Next row pending. [engineering-hygiene-backlog.md AFC-Q36-AGENTFILE-CTX-REFUSAL] `observation`
-- **Row-scheduling lesson.** Rank decides placement: a rank-100 row waited ~10 h unplaced behind a rank-25 whole-host row; a drain-cap cut (CAPCUT or HARD-END-CAP) is now requeued under the same id (Pipeline 3c4d2c4b5). [progress/2026-11/2026-11-12-workspace-f2.md]
-
-## Agent-file directive: adopted, ratified, then scoped to its measured audience (2026-11-15)
-
-Sources: [progress 2026-11-15 workspace-f2](../progress/2026-11/2026-11-15-workspace-f2.md) · [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md) (AFC-Q36-AGENTFILE-CTX-REFUSAL, AGENTFILE-INJECT-DEPLOY)
-
-- **The directive holds on Flash-Next too, so it is adopted.** Q38 aggressive + directive: 0.900/0.745/0.953 (comp/proc/recall); against v3c aggressive compliance +0.080 (LB +0.024), procedure +0.121 (LB +0.053), recall +0.053 (LB +0.022). With Q36 (+0.220) both models gain at the deployed level and nothing regresses. Ratified into `ENGINEERING_STANDARDS.md` and its three compressed variants (a81fc882e). `verified`
-- **An edit to `agents/shared/` reaches an audience the measurement did not cover.** The full `ENGINEERING_STANDARDS.md` loads into every Claude session's start-up context; the directive was measured only on local models reading compressed variants. Operator decision 2026-11-15: remove it from the full file only (`scripts/operator/ratify_afc_directive_scope_20261115.sh`, awaiting signature). Lesson: a decision package for a shared agent-file edit must name which audience the evidence covers and which it does not. `verified`
-- **Ratify-script mechanics.** fish needs `env VAR=value cmd`. A push rejected on a busy main lands nothing, so re-run. A removal-only ratify needs an `--anchor` that survives the change, or the receipt protocol check fails. Throwaway stage worktrees go through `git worktree remove`, never to the trash, which leaves dangling worktree entries. `observation`
-
-
-## Compiled Update - 2026-11-17: AFC directive scoped to local-model variants, tool-permission deny-default
+### Compiled Update - 2026-11-17: AFC directive scoped to local-model variants, tool-permission deny-default
 Sources: `handoffs/active/engineering-hygiene-backlog.md`, `progress/2026-11/2026-11-15-workspace-f2.md`, `progress/2026-11/2026-11-16-rtg22.md`, `progress/2026-11/2026-11-11-workspace-f2.md`.
 
 - **Scope ratified (2026-11-16).** The "Requests That Conflict With These Standards" directive was removed from the full `agents/shared/ENGINEERING_STANDARDS.md` (restored to its pre-directive hash) and kept in the three compressed variants local roles receive; the aggressive variant stays byte-identical to the measured v3d file. Reason: the full file loads into every Claude session and the effect was never measured there, so a decision package must name both the audience measured and the one not.
 - **Tool permissions.** Production enforces `model_registry.yaml` `tool_permissions`; 13 of 15 roles had none and failed open to all 65 tools. A deny-default package with explicit allowlists (architects 35 tools, `http_post` forbidden) is signed but parked behind the contention-matrix refresh and the production relaunch. Web tools on worker_general must not be trimmed (tasks using one passed 58.7% vs 34.5%).
 - **Ratify-script mechanics.** Removal-only ratifies need a surviving `--anchor`; a rejected push on a busy main lands nothing, so re-run.
 
-## Compiled Update — 2026-11-18 (REPL execution lanes, code-mode reliability, autopilot surface)
+### Compiled Update — 2026-11-18 (REPL execution lanes, code-mode reliability, autopilot surface)
 
 - **Containment hardening landed, then its flag went default ON.** The first push (orchestrator 1145b9ce..e5b95640) added untrusted tool-text labelling and capping, a regeneration cap of 8, write dedupe, a per-snippet tool-call budget, an unswallowable deadline, memory-bomb refusal and bare-except rewriting. The strict flag was left off because 4 tests failed with it on; the later fix found 8, all wrong test assumptions, and `exec_containment` now defaults ON (7c7a61f0; containment and fence suites 194 passed with the flag on and off; kill switch `ORCHESTRATOR_EXEC_CONTAINMENT=0`; fails closed on hosts without Landlock). A side agent caught that a budget of 100 truncated code-mode batch loops, so it was raised to 1000 (ce631d31).
 - **Child lane built (D-RI-CONTAIN-T2), default off.** A warm Landlock plus seccomp child per request, reaped at request end, with RLIMIT AS/CPU/NOFILE/FSIZE/CORE and an owned leaf cgroup (`cgroup.kill`), a real session-lease validator (mid-cell loss kills the child), and parent-validated typed JSON state. Follow-up: it brokers the FULL REPL tool surface through one shared `tool_broker` with the same enumeration as the Monty lane, and the observe-only pin was removed so autopilot may trial it (operator condition: broker the full surface first). REPL and security suites 2137 passed with flags off.
@@ -5870,9 +5874,64 @@ Source References:
 - [autopilot-program](../handoffs/active/autopilot-program.md)
 - [autopilot-backlog-session 2026-11-18](../progress/2026-11/2026-11-18-autopilot-backlog-session.md)
 
-## Compiled Update — 2026-11-19 (typed-decision screens, open-weight seed panel, cross-worker admission)
+### Compiled Update — 2026-11-19 (typed-decision screens, open-weight seed panel, cross-worker admission)
 
 - **Typed-decision screens are descriptive only.** HS-TD-1 (risk/intent, 12 authored calls on Qwen3.6-35B-A3B-MTP-Q8_0, frozen-v10 CPU): 12/12 valid, risk agreement 9/12, intent 11/12; the derived permissive/restrictive decision agrees 12/12 but only because low-vs-medium and read-vs-execute disagreements map to the same answer. No action is gated and no live-session pairing exists ([HS-TD-1](../docs/reports/hs-td1-risk-intent-20261119.md)). HS-TD-2 worker self-check: 32/32 valid, 30/32 agree with the reference; both misses were confidently wrong (satisfied=true, confidence 1.0, claimed 17+26=42), so the signal stays logging-only ([HS-TD-2](../docs/reports/hs-td2-worker-selfcheck-20261119.md)). HS-TD-3 context selection: selected file set exact on 12/12, both answer arms 12/12 correct, answer-context bytes 5101 to 1897 (-62.81%), but selector calls add 67.3 s so answer-plus-selector wall is 3.261x baseline; the byte metric excludes selector input ([HS-TD-3](../docs/reports/hs-td3-context-selection-20261119.md)).
 - **HS-9 open-weight seed panel did not demonstrate feasibility** under the strict JSON/tool protocol: Qwen2.5-0.5B passed 0/5 cases, Qwen3-1.7B 1/5, with the rest unknown (invalid_json / invalid_tool_call terminations); unknown is never counted as pass or violation, and no larger-model or transport-repair claim follows ([HS-9](../docs/reports/hs9-openweight-seed-20261119.md)).
 - **P6 catalog capture.** The P0.4 runner can bind the comparator's identities before execution and emit native per-trial records; this is software support for the two-rerun gate, not live P6 acceptance ([HS-4 P6](../docs/design/hs4-p6-prospective-catalog-capture-20261119.md)).
 - **Cross-worker admission.** The earlier OAB-17 F8 decline ("cross-worker needs a shared counter") was wrong because the live API runs `uvicorn --workers 6`; a flock-per-URL scout slot reservation (10 processes contending for 3 slots admit exactly 3) and host-wide KV-pool reservations now go through one `xproc_reservations` primitive, failing closed ([autopilot-backlog-session 2026-11-19](../progress/2026-11/2026-11-19-autopilot-backlog-session.md)).
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): taskflow dispatcher redesign, Stage 1 canary, task briefs, owner roles
+
+- **The old per-handoff dispatcher did not earn its cost.** A Fable audit found 11.6B tokens bought 82 verdict ticks. The cause was that the dispatcher never passed the box to the worker: `brief_text` named the handoff path but zero boxes, so sessions re-derived the task from 3-4k-line handoffs (1,129 turns on 11-02 alone). Run-end prompts that carried a concrete object NOOPed at 22% against 33% for idle prompts. Only ~24% of open boxes were dispatchable as written (98/404 lint-OK across six handoffs; the top failures were oversized boxes 180, prose prereqs 132, no stop rule 123 and no run identity 97) ([taskflow-dispatcher](../docs/design/taskflow-dispatcher.md); [pipeline-mgmt 2026-11-20](../progress/2026-11/2026-11-20-pipeline-mgmt.md)).
+- **Taskflow design (rev 2): the handoff box is the task record.** There is no parallel task store. `select.py` walks handoffs in `backlog-priority.json` rank order and boxes in file order, skipping holds, frozen boxes, roll-ups, operator-decision boxes and gated boxes. `extract.py` passes the verbatim box text. Each box runs in a fresh process plus a disposable worktree. Verification is mechanical first (pathspec, forbidden paths, `done when` checked before the tick, AK audit B13), then a low-tier reviewer. `holds.yaml` is the single exclusion list. After three failures a box gets a `[taskflow: failed ×3]` note ([taskflow-dispatcher](../docs/design/taskflow-dispatcher.md)).
+- **Dispatcher fixes, 2026-11-19..21.** The auto-unpark cap now counts only fruitless unparks (79ca2ec6d). Filed run-end events are dropped before resume: 240 of 549 on the first pass (0f7d48e89). Scoped operator-ratify releases landed (3e9f5aa71). The keeper reap moved out of band (935c42fe2). The idle-slot unpark c160f8d59 was reverted to event-only by 13370aead, and 11 sessions were retired. Rowflow drain priority inversion, pid-less build-wait holds and any-of region leaks were fixed (5dc723189, ee7a5897b, 39e5e2f59) ([churn-pipeline](../handoffs/active/churn-pipeline.md); [pipeline-mgmt 2026-11-19](../progress/2026-11/2026-11-19-pipeline-mgmt.md); [pipeline-mgmt 2026-11-21](../progress/2026-11/2026-11-21-pipeline-mgmt.md)).
+- **Stage 1 canary (Qwen3.6-35B-A3B-MTP-Q8_0 workers in opencode), current verdict FIX-HARNESS, with no model verdict yet.**
+  - **GPU rounds r1-r7d:** at most 2/10 verified per round. In the clean A/B, r6c (no brief) and r7d (strong brief) both scored 0/8. Sonnet, given only the packet, verified 5/7, so the tasks are doable.
+  - **Harness defects found:** paths resolved from `$PWD`, garbled absolute paths, XML tool-call leaks, runaway decodes (31,896 tokens at MTP 0.14), and the lane containment plugin blocking writes.
+  - **CPU r8a:** calibration 5/5.
+  - **CPU r8b:** 1/16. Hand audit: harness/env 11, packet 3, model 1. The classifier had said model 11/16, which was wrong.
+  - **CPU r8c:** 3/14.
+  - **CPU r8d:** SUPERSEDED. The 16-lane cap refused all units; the fix is a5a7b3479.
+  - **CPU r8e:** reported 7/10, audited 6/10. Failures were harness 2 and model 2. That is still FIX-HARNESS because model failures were not the minority.
+  
+  ([taskflow-stage1-canary-findings](../docs/design/taskflow-stage1-canary-findings.md); [churn-pipeline](../handoffs/active/churn-pipeline.md)).
+- **Task-brief layer (P1-P2 built).** Briefs are typed sidecar records (`scripts/coordination/taskflow/brief.py`) compiled deterministically. Self-briefing replaces the backfill writer. The pilot rule is go if strong-brief verifies at least 2 of 3 spec boxes, and self-brief is good enough if it comes within 1 box of strong-brief. The design notes that handoff line limits (24 continuation lines per box, 4,000 per file) protect whole-file readers, not workers. NEEDS-BRIEF outcomes now write a `· NEEDS-BRIEF:` line onto the box so `select.py` skips it ([task-brief-layer](../docs/design/task-brief-layer.md); [churn-pipeline](../handoffs/active/churn-pipeline.md)).
+- **Owner-roles proposal (operator decision pending, RTG100-OWNER-ROLES).**
+  - **Taxonomy evidence:** the registry has 75 per-handoff sessions (default engine codex, `max_live` 2) and there are 364 memory notes, clustered by domain.
+  - **Anti-bloat review, minimal set:** a coordinator (the operator's single entry point), pipeline-mgmt (keeper of the dispatcher; merge it into the coordinator once the dispatcher is proven), and autokernel as the only domain role. Builder sessions are ad hoc and get no role file.
+  - **Ownerless handoffs** get owners from files: `brief_text` plus the handoff's `## Dispatch contract`.
+  - The drafts sit on the unpushed branch `pm-owner-roles`.
+  
+  ([owner-roles-taxonomy](../docs/design/owner-roles-taxonomy-20261120.md); [owner-roles-review](../docs/design/owner-roles-review-20261120.md); [owner-roles-draft](../docs/design/owner-roles-draft-20261120.md); [owner-roles-fullhistory](../docs/design/owner-roles-fullhistory-20261120.md)).
+- **WS-4 asyncRewake: GO, 6/6 checks** on claude 2.1.321, driven through tmux. A Stop hook that exits 2 woke an idle TUI in about 1.3 s and delivered its payload as Stop-hook feedback. Exit 0 never wakes. Caveat: a woken session ignores a wake that has no imperative line (box WS4-WAKE-IMPERATIVE). FM-8b serial-collapse firing was verified synthetically (zero_streak 1, 2, 3); live firing has no evidence yet ([coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)).
+- **AutoKernel parallel-loop pipeline P0-P6 code landed; only P4 is ticked.**
+  - **P1 gate evaluator:** replay agreement 392/471 = 83.2% strict, against a 95% target.
+  - **P2 chain scaffolder:** dry run on C17 candidate AK-GAP-1-IDSORT.
+  - **P3 emitting tail:** offline only, not deployed.
+  - **P4 lineage ledger:** generates the C18 fold list (research 1a584e9b0).
+  - **P5 hand-back verifier/failclass:** 92120d0c0.
+  - **P6 decision detector:** 8b37ae880.
+  
+  ([churn-pipeline](../handoffs/active/churn-pipeline.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [docs/design/taskflow-dispatcher.md](../docs/design/taskflow-dispatcher.md)
+- [docs/design/taskflow-stage1-canary-findings.md](../docs/design/taskflow-stage1-canary-findings.md)
+- [docs/design/task-brief-layer.md](../docs/design/task-brief-layer.md)
+- [docs/design/owner-roles-taxonomy-20261120.md](../docs/design/owner-roles-taxonomy-20261120.md), [owner-roles-review-20261120.md](../docs/design/owner-roles-review-20261120.md), [owner-roles-draft-20261120.md](../docs/design/owner-roles-draft-20261120.md), [owner-roles-fullhistory-20261120.md](../docs/design/owner-roles-fullhistory-20261120.md)
+- [handoffs/active/churn-pipeline.md](../handoffs/active/churn-pipeline.md)
+- [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md)
+- [progress/2026-11/2026-11-19-pipeline-mgmt.md](../progress/2026-11/2026-11-19-pipeline-mgmt.md), [2026-11-20-pipeline-mgmt.md](../progress/2026-11/2026-11-20-pipeline-mgmt.md), [2026-11-21-pipeline-mgmt.md](../progress/2026-11/2026-11-21-pipeline-mgmt.md)
+- [progress/2026-11/2026-11-18-handoff-coordination-and-churn-pipeline.md](../progress/2026-11/2026-11-18-handoff-coordination-and-churn-pipeline.md)
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): durable harness patterns from nanocode / harnesslang, and harness evolution (intake 2763, 2789, 2790)
+
+- **nanocode (`intake-2789#record`)**: every model and tool call is journaled so a turn finishes after its process dies; a nested call interrupted mid-cell is reported unknown and not auto-repeated (at-most-once). Code Mode runs one JavaScript program per cell in a fresh QuickJS context; a per-tool call cap refuses excess calls with a non-retryable `call_limit` error, and oversized output is middle-truncated with a token-count marker. Its custom endpoint speaks only the OpenAI Responses API; whether v10 llama-server serves /v1/messages is unverified ([nanocode dive](../research/deep-dives/pm-intake-nanocode-20261122/nanocode-org-dive.md)).
+- **harnesslang (`intake-2790#record`)**: external effects return maybe<T>; recovery never re-dispatches an external call a crash left open; `hl check/prove` proves durable-before-external and finish-once over a model of each of five targets (platform limits marked unverified).
+- **Approved Stage-3 boxes (operator "Approve all", 2026-11-22)**: CODEMODE-EFFECT (effect class {none, idempotent, external} on ToolRegistry, undeclared = external, write-ahead call record, explicit unknown on resume), CODEMODE-GUARDS (flag-gated per-tool cap plus head+tail truncation, on the autopilot surface), CM-COMPACT (zero-inference prompt-token count first, then a booked paired C3 vs C3+compact row, 30 pairs per arm, stop on a >=25% token cut at equal success), all into harness-program ([nanocode stage3 plan](../research/deep-dives/pm-intake-nanocode-20261122/stage3-plan.md)).
+- **Evolving harnesses (`intake-2763#record`, declined)**: harness-only GEPA evolution recovers 81% / 110% / 55% of a weight-training gain from single runs per cell; the 35x cost figure is borrowed from the GEPA paper, reflection calls are excluded and the evaluated policy is not identified consistently ([dive](../research/deep-dives/ak-intake-20261121/2611.25380v1.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [digest 2026-11-22 ids 2789-2791](../research/deep-dives/intake-digests/2026-11-22-ids-2789-2791.md), [digest 2026-11-22 ids 2789-2823](../research/deep-dives/intake-digests/2026-11-22-ids-2789-2823.md), [digest 2026-11-21 ids 2752-2787](../research/deep-dives/intake-digests/2026-11-21-ids-2752-2787.md)
+- [nanocode org dive](../research/deep-dives/pm-intake-nanocode-20261122/nanocode-org-dive.md), [nanocode stage3 plan](../research/deep-dives/pm-intake-nanocode-20261122/stage3-plan.md), [Evolving Agent Harnesses](../research/deep-dives/ak-intake-20261121/2611.25380v1.md)

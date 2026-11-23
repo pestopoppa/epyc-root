@@ -2,29 +2,7 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-06 (local C6 launch matrix, operator support). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (refactor scoped wrap-up: repaired instruments, retained scientific limits). Earlier: 2026-10-24 (wrap-up sweep 24, 3c4ca599): a stack start compiles the registry from research origin/main. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-22 (wrap-up sweep 10: serving floors in master registry, AK shakedown). Earlier: 2026-10-22 (wrap-up sweep 7: DS41-1017 floor stands, other tests deferred). Earlier: 2026-10-21 (wrap-up sweep 5: DS41-1017 cutover, W5 ppl and ABA timing, W6-W8). Earlier: 2026-10-21 (wrap-up sweep 3: candidate C serving identity, CH-18/CH-19 notes, DS41 decode). Earlier: 2026-10-20 (wrap-up sweep 2: AutoKernel history/probes, harness-loop architecture, serving depth sweep). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-23 (DeepSeek-V4.1-Flash decodes on this stack: the `deepseek41` port off the v10-equal champion, the HF-key alias table, the lagged hyper-connection mix and `attn_factor`=1.0, Engram's 48 random rows/token, and the first canonical sweep — prefill 96 threads, decode 48); 2026-09-18 (TD-1d re-measured at n=4: id-only 9.60x not 11.98x, the `inference_lock` serialization and the SSM checkpoint-quantized prefix reuse behind fan-out losing, `/v1` dropping `grammar`); 2026-09-17 (wrap-up sweep: the typed-decision worker-measured readout — id-only cue 11.98x at 15/16 agreement, batched fan-out 2.2x at 87.5%, and the llama-server multi-slot readout limit; sources: typed-decision-plane final rounds, the intake session record, vidya VB-TDP-1); 2026-09-17 (research-intake delta: PAW compiled specialists on the frozen v9 stack, the license-scope ruling, and the honest local one-pass speedup; incremental: rtx6kpro steals measured: p-min no-op on DFlash2, longest block wins, A/A noise absent at temp 0, RNG lead ruled out, steps/s only estimated); earlier: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
 **Sources**: 49 native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
-
-
-## Compiled Update — 2026-11-09: v10 fused-decode zero-row logits crash, AFC-P5.E3, C10 prefill
-
-- **Flash-Next crash root cause (v10).** `afc-p5e3-n30-q38_flash-r2` was invalid: llama-server hit GGML_ASSERT (tensor read out of bounds, ggml-backend.cpp:272) after 6 min, 88 of 90 replies blank. Root cause (inferred from backtrace, disassembly and source, not reproduced): v10 fused single-token decode (qwen4exp-fused.cpp:1883-1888) reuses the previous graph's t_logits, which can have 0 rows; abort at llama-context.cpp:2221. r2's 4 cores came from the keeper's smoke because the launcher had no smoke branch. Workaround: any afc-p5e3-n30 rerun on v10 must set GGML_FUSED_DECODE_OFF=1; r1 Flash scores used the fused path and are suspect beyond the blanks. AutoKernel fix `452a93c4b` (fused dispatch checks previous logits and falls back to the graph) was cherry-picked into the C10 fold candidate `7f1bd044b`; box FUSED-DECODE-ZERO-ROW-LOGITS stays open until a negative-control decode passes under GGML_FUSED_DECODE_ON=1. Sources: [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md), [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
-- **AFC-P5.E3 results** (v10 CPU kernel 10303 ffc1bac82, suite v2, temp 0, n=30 per metric, one run per cell; compliance/procedure/recall): Qwen3.6-35B-A3B-MTP-Q8_0 none 0.800/0.600/1.000 vs aggressive 0.867/0.867/0.967 (KEEP); Qwen3.8-27B-Q8_0 none 0.733/0.633/1.000 vs aggressive 0.933/0.733/0.967 (KEEP). KEEP means no detectable loss, not equivalence. r4 Flash-Next gave none 0.167/0.333/0.833, but 25/25 compliance, 17/20 procedure and 4/5 recall failures were hallucinated tool calls, so the suite measured tool-call hallucination; operator chose a no-tools rerun r5 (not comparable to r4), r5 filed pass: none 1.000/0.767/1.000, KEEP mild/medium/aggressive (aggressive 0.967/0.800/0.967), valid only with no tools offered; a tools-present check gates any Flash rollout. Source: [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md).
-- **C10 / AITER-PORT-1.** AITER timing c9-r2: 27B M=2048 down is 2.45x slower than AITER i8. c9-gemm-tile-select TILE_CONFIRMED: down M=2048 base (forced 64x64x64) 7843.98 us, best 160x256x64 3862.97 us = 2.031x, all 9 arms correct (rel_l2 <=1.2e-6). c10-gemmdown-prefill-ab KEEP (27B pp2048@d32768 1.127x vs C9); the AITER-PORT-1 box stays open (needs real prefill >=1.05x quality gate). c9 MMQ spill audit identical v10 vs C9. Vacuous run caught: c9-q38fn-cpu-ppl lacked GGML_IQK=1 (republished -r2). Sources: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md), [pipeline-mgmt C10 progress](../progress/2026-11/2026-11-09-pipeline-mgmt-c10.md).
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **MLC LLM** (intake-500#record) TVM-compiled universal deployment engine with an OpenAI-compatible API. Dive correction (2026-08-03): the entry points at the wrong repo for ROCm; mlc-llm has zero rocm/hip/gfx90a paths, ROCm codegen lives in apache/tvm (intake-965).
-- **Liquid Foundation Models catalog** (intake-652#record) Open-weights LFM2/LFM2.5 catalog including text, VL, audio and the 8B-A1B MoE with 128K context. Worth investigating as small CPU-friendly models.
-- **KAT-Coder-V2.5-Dev 35B-A3B** (intake-917#record) Apache-2.0 35B/3B-active MoE (qwen35moe family) post-trained with 127K-example SFT then RL. Verdict new_opportunity stands, but the dive overturns the uplift evidence: the card's own footnote admits its Qwen3.6-35B-A3B baseline runs ~10pp below official.
-- **Inkling run-locally guide** (intake-941#00) Thinking Machines' Apache-2.0 multimodal family (975B/41B-active flagship and 276B/12B-active Inkling-Small) with 1M-token context. Dive correction: the "Top-1% Retained" ladder is a top-1 token-agreement figure against BF16, not a benchmark accuracy; assessed as a worker/architect candidate versus gemma4-26B-A4B.
-- **Inkling-Small BF16 base** (intake-955#00) 276B/12B-active, 42-layer decoder, 6 of 256 experts plus 2 shared; BF16 and NVFP4. Dive confirmed architecture field-by-field from config.json (no rope scaling fields) with two additions and a scope correction.
-- **LFM2.5-2.6B model card** (intake-1014#record) 2.69B checkpoint, 30 layers (22 short-conv, 8 GQA), 131,072 context, 34T-token pretraining, LFM Open License (revenue under $10M for commercial use). Verified deployable on frozen v8; role replacement unproven.
-- **LFM2.5-2.6B GGUF** (intake-1019#record) Official quants including Q4_K_M (1,674,454,848 bytes) and Q8_0 (2,874,779,456 bytes), with an embedded template preserving reasoning and Python-style tool calls (LEAP sidecars use a simpler template). Exact deployable worker candidate; quantized quality unmeasured.
-- **gojev: Go harness with in-process Kev via llama.cpp** (intake-1515#01) Go library/CLI (0BSD) whose Kev provider calls llama.cpp through yzma dlopen; GGUFs come from an fp32 LoRA merge then convert_hf_to_gguf with f16 storage and --no-mtp (intake-1515#01), with a separate head.json pointer head and calibration temperature (intake-1515#02). The parity claim ('two decimals') is self-reported and looser than worded (integration tolerance 0.03 absolute). Shows a path to run a decision-head model on our llama.cpp stack.
-- **Magnitude per-hardware tuned engine** (intake-1979#00) Tunes schedule families per (model, device) within a ~1-minute install-time deadline. Drafters are catalog pairings of upstream methods (DFlash, DFlash2, MTP) (intake-1979#01); the 2x-over-Ollama headline is vendor-run over 11 models with differing drafters/backends (intake-1979#record). CPU path is scalar only; nothing tuned for AVX-512 or gfx90a (intake-1979#record); the measure-and-validate procedure is the portable part.
 
 ## Compiled update — 2026-10-31: distinguish repaired instruments from scientific acceptance
 
@@ -33,89 +11,6 @@ The private Whisper/Silero diagnostic identified missing prior context, incorrec
 C6 has same-source CPU/GPU stores and custody, but no aggregate qualification. After repairing only a tuple-versus-JSON-list comparison in a private replay, all retained native GPU records pass custody and serialization replay: both C5 and C6 still contain 65 supported MUL_MAT failures. Matched counts do not establish matched input bytes or a candidate causal effect. The original wrapper failure remains recorded; full serving gates and CAS remain open. Separately, the verified-anchor R18-A static comparison still fails the unchanged zero-difference rule with 141 added and 141 removed HIP host symbols. No CUID filtering or tolerance change converts either result into a pass. [Champion evidence](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [verified-anchor comparison](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program).
 
 Operational repairs are scoped accordingly: qualified C6 r3, raw A2 v13, AKX floor r4, UFH12 r2 and four-target STT7 launchers are preparation results. Their full scientific tasks remain open. S0 v34 has a reproduced lock-witness defect and repaired source but remains unqualified after its final native smoke was refused before exposure. [Refactor wrap-up](../progress/2026-10/2026-10-31-codex-refactor-01a16fc3.md).
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 24, 3c4ca599): a stack start compiles its registry from research origin/main, never from the stale shared clone
-
-**Confidence: verified** (offline proofs in `/mnt/raid0/llm/tmp/nib2-102-3c4ca599/`; the real-start proof is still open as NIB2-102.b).
-
-- **The defect (NIB2-102).** `orchestrator_stack.py start` recompiled the lean registry and descriptors from the working copy of the shared research clone. That clone is deliberately left behind origin/main, so a start would have served a stale master and silently dropped ratified declarations: before this morning's fast-forward it dropped `ctx_checkpoints: 32` (3 lean lines, 10 in `stack_priors`).
-- **The fix.** Orchestrator `b4f209aa` adds `research_origin.resolve_research_registry()`. Order: the explicit flag (`start --research-registry`), then `$EPYC_RESEARCH_MASTER_REGISTRY`, then origin/main, materialized from git. A failed fetch falls back to the existing ref with a warning. If origin/main can't be read, start refuses with rc 2; it never falls back to the working copy. The registry_compiler, model_descriptors, check_shared_with_derivations and reviewer_pool_gen CLIs use the same resolver. Runtime readers are unchanged.
-- **Proofs.** The lean registry is byte-identical at the research commit the committed derived files were built from (37fe0f50f). The argv export is identical on all 19 targets. At current origin/main the only lean difference was the 4 operator-signed SEC-ART-POST-b `template_diff_reviewed` lines, so the derived files were rebuilt (`3329083d`).
-- **Code on GitHub is not what serves.** A start runs from the shared clone `/mnt/raid0/llm/epyc-orchestrator`, which was at `fd1a8941`, 27 commits behind. The fix takes effect only after the guarded fast-forward (`nib2-gnx1-reindex-2`); check with `merge-base --is-ancestor 3329083d HEAD`. A hand ff is not covered by the approval.
-- **A code change can break a derived pin.** `stack_priors.yaml` pins the hash of `orchestrator_stack.py`, so changing that file fails the guard until `stack_change_pipeline.py update` reruns. Rebuild in the same landing.
-- **Running the pipeline check from a lane worktree** reports `runtime_attestation` failed for the live :8000 API ("unmanaged listener"). A lane worktree has no state file, so this is a location artifact, not a registry fault.
-
-Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-102), [2026-10-24-3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): serving floors move into the master registry, the Q38FN long-context floor is unregistered, and the AK serving shakedown passes
-
-**Confidence: verified** for the landed registry code, the 42 tests and the shakedown result; **inferred** for any real champion re-anchor (none has occurred) and for all indicative floor numbers marked below.
-
-- **Serving noise floors live in the master model registry, and the floor-registry code is landed OFF by default.** The operator decided (2026-10-22) that floors are stored as a per-model `serving_floors` section of the master registry, not a separate store; the DS41-1017 floor (2.862%, n=24 A/A pairs, valid for `dd3d9721c` only) is registered there. The floor-registry, hardening, `champion_reanchor` and `serial_run --new-anchor-epoch` tests ran as 42 passing CPU-light unit tests on research origin/main `b93017dc9`; the root half landed as a shim, not a branch. AKX-AUTO-6 and AKX-AUTO-11 stay OPEN on their exercise criteria: one real champion advance re-anchored with exactly one recalibration (or a registered floor reused), and one non-DS41 campaign using `check_launch` with `--floor-registry`.
-- **The Q38FN long-context serving floor is UNREGISTERED and cannot be registered without inventing provenance.** The run (target `q38fn-802bf9ac6-cpu-t48-mtp-d4`, lc64k surface, anchor `dd3d9721c`, verdict DISCARD, champion unchanged) did not opt into the registry; the carried lineage floor is 2.483% on scratch COR `b0ba1d427` and the sealed 64k record (flagged suspect) is on an experimental build, neither a `dd3d9721c` store build. Candidates were null (visible-kv-lookahead decode +1.33%; query-major-row-schedule decode -1.10%, prefill -1.34%; anchor 5-pair spread CV 0.76-1.15%). INDICATIVE ONLY. Calibrating a real floor is inference, so it takes a granted window.
-- **The real-server AK shakedown passed (AKR-SG, `s5-akrsg-shakedown`, 13:09Z).** An A/A pipeline-only run, `epyc.autokernel.serving_ab.v1` OK, both arms on `cpu-20260921-ffc1bac82`, ports owned, linkage OK, teardown verified. It exercised the `/metrics` mapping against a real llama-server for the first time. The result has no belief capture yet (writer on an unmerged research branch).
-- **Post-CAS floor recalibration is deferred until AK launches on a changed anchor.** The 18:00-22:00Z DS41 AK floor was cancelled because it duplicated the morning 1017 baseline and both sit on the pre-CAS anchor.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — floor-registry tests, AKX-AUTO-6/11 exercise criteria, Q38FN longctx unregistered floor
-- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — real-server shakedown result
-- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — master-registry floor decision, DS41 floor sensitivity
-- [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — cancelled post-CAS floor, grant context
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): the DS41-1017 noise floor is the only DS41 measurement that stands; everything else waits for AutoKernel
-**Confidence: verified** for the 24-pair floor and the W8c gate (recorded runs with named artifacts); **inferred** for the deferred tasks (filed, not run, runs cancelled).
-
-- **The DS41-1017 process-level serving floor is 2.862%** (unit = process, n = 24 A/A pairs, gating k = 5-pair compares; interval 1.974-5.757%; 7394 s; instrument `matched_process_v2`). It is valid ONLY for build `cpu-20261020-dd3d9721c`; the sensitivity check found every exclusion variant lower, so it stands as decision-grade.
-- **Operator ruling 2026-10-22 08:4xZ: every DS41-1017 test except the noise floor is disregarded until AutoKernel kernel work is done** ("not meaningful until kernel research work has been performed first"). Deferred, runs cancelled, NOT done: the champion-vs-C2 DS41 compare (it was mid-run, launch 2 of 10), W6.2, W6.1, W5.1a, W5.1a-floor, W8a, T3.2, T3.3c, T5.1.1, C7.2, CONF.1, T7.1a. Reopen when AK kernel work has landed. W5.1a-floor (post-CAS floor) additionally waits for the operator to launch AK on a changed anchor.
-- **A new anchor needs its own floor.** 2.862% does not carry to the post-C2 / post-W5.1a epoch; W8a showed that adding `--longctx-surface` does not invalidate the decode floor (the long-context surface is a separate recipe with its own 24-pair floor), but `--serving-calibration-only` never calibrates that surface, so a prefill floor needs a small research patch first.
-- **DS41-W8c (CPU_REPACK correctness gate) passed 2026-10-22** on q1 (research 42daa0ac9): 8 calibrated cases / 72 rows, max anchor NMSE 2.93e-5, repack engaged on every case, both broken fixtures caught, 43 pytest pass. No DS41 keep may land without it live.
-- **Greedy output on DS41-1017 depends on thread count and load mode** (`-t 40` mmap vs `-t 48 --no-mmap` diverged from token 10, 244/256 tokens differ); gates and smokes must compare only same-config arms.
-- The Sept DSpark drafter is no longer needed once W6.2 was cancelled; its deletion (W7.2) is pending the operator.
-
-### Source References (2026-10-22 sweep 7)
-- [handoffs/active/deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md)
-- [progress/2026-10/2026-10-21-ds41-w8a.md](../progress/2026-10/2026-10-21-ds41-w8a.md)
-- [progress/2026-10/2026-10-21-ak-repack-gate.md](../progress/2026-10/2026-10-21-ak-repack-gate.md)
-
-## Compiled Update — 2026-10-21 (wrap-up sweep 3: candidate C serving identity, CH-18/CH-19 notes, DS41 decode probes, DSA oracle)
-
-**Confidence: verified** for recorded test results; the GPU gates, the bundle gate and KPF-18 had not reported and are not recorded as results.
-
-- **Candidate C serving identity.** Greedy identity on own non-production-port servers: Qwen3.6-35B-A3B-MTP-Q8_0 (MTP on, 3 prompts x 256 tokens, `-t 24`) byte-identical to champion `dd3d9721c` on 3/3 with equal draft counters (302/179, 257/190, 317/174); Q38FN identical 3/3. Unit tests on the final build: `test-repack-parallel` 150/150 bit-exact, `test-gather-rows-e4m3-e8m0` pass, `test-dca` OK (chunk > ctx logits bit-identical to plain on qwen2/qwen35/qwen35moe), `test-exl3` ALL PASS, `test-qwen4exp-fused-rope` OK. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **Held out of C by ruling, not by measurement:** kv-prefix-fork p1r2 `14d603f3a` ("NOT a keep: its KPF-18 gate is still running") and the upstream pulls #30514/#30580 (CH-18: "never a cherry-pick onto v10"). Excluded by their own sources: V11-085 KVU-19b c2 (about 14% slower on aligned 4x8 verify, breaks skip-on == skip-off exactness 6/119), V11-087 MMQ J cap (negative, p=64 -12.6%), V11-089 `inf70/sync17-fix2` (measured regression -2.136%), V11-069 iqk IQ4_NL/MXFP4 allowlist (slower, changes output). Needs measurement, not default-on: V11-050, -051 (16-column cap GPU-unvalidated), -052 (n=1, pp4 -32% on the same run). ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
-- **Rule slip recorded in the ledger:** C's greedy servers ran at `nice -n 19` on q0 inside windows another agent's timing bench later held; the owner discarded and re-ran the affected timing legs. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **CH-18 upstream status (2026-10-20):** #30514 MERGED (not in champion), #26004 MERGED (champion port `1c999e15b`), #30574 MERGED (port `deb387b8b`), #30580 MERGED (not in champion; SWA threshold still at `server-context.cpp:3759` @ `dd3d9721c`), #30141/#29480 open. The frontdoor (draft_max 4) and :8083 (draft_max 7) pass `--spec-draft-n-max` but no p-min and the registry has no `draft_p_min`. CH-18.a: `server_response::recv_with_timeout` restarts its full 1 s wait on any task's notify, so a disconnected client's non-streaming request keeps computing and holding KV under load (0/5 cancelled). ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **CH-19 fused up/gate MoE path never engaged (vacuous test).** `ggml_can_fuse` requires each node to consume the previous one, but the gate MUL_MAT_ID does not consume the up MUL_MAT_ID, so the {MUL_MAT_ID, MUL_MAT_ID, GLU} predicate was always false and the fused-vs-unfused NMSE of exactly 0 came from running the unfused path twice. It was also env-gated (`GGML_CPU_FUSED_UPGATE`); the ONE-champion rule forbids env-only gates before fold. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **DS41 decode probes.** The speculative serial path returned no logprobs/top-5 for 491/512 rows, so the zero-tolerance diff's "16/16 diverge" is a missing-logprob artefact; at token-id level serial is 16/16 identical to plain and batched 11/16 (first divergences ctx512 p6 row 10, p7 row 22; ctx2048 p0 row 14, p1 row 29, p4 row 13), n=1 per cell. The n-invariance harness only identifies the first differing op (dense matmul `qr-0`, n-variant at n=2 row 0 in both encoding eras; n=1 control 0/3395 differ); about 99% of downstream nodes differ by propagation and `max_rel_diff` of 1e30-1e32 is a +1e-30-denominator artefact. DSpark T7.1 is NOT judgeable at the 5% threshold: the 410-node drafter graph accumulated 0 in the CPU probes, leaving only an upper bound (non-verify share 6.7-9.1%, median about 8.7%). ([DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
-- **DS41 top-k renorm and engram gate.** RoPE is anchored and MATCHES; the remaining difference is the top-k renorm epsilon (official `model.py:825` adds 1e-20, ours clamps 6.1035e-5 at `src/llama-graph.cpp:2260`). The engram gate `sgn = 1 - 2*step(-dot)` passes `test-dsv41-engram-gate` 14/0 (exact at +0.0, bit-identical elsewhere) but yields +1 at -0.0 where torch copysign yields -1. ([DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
-- **DSA indexer contract.** `test-dsa-sparse-attn-oracle` pass=11 fail=0: the sparse reference equals the dense-masked oracle bit-for-bit and invalid indices are rejected (`experimental/intake-fixes-20261020` @ `6b8291de5`). ([llama.cpp DSA contribution](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution))
-
-**Sources (sweep 3):** [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md); [llama.cpp DSA contribution](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution).
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): CPU serving depth, the slotdraft champion, EmbeddingGemma 2 on the stack, host reclaim
-
-**Confidence: verified** for the dated measurements named (evidence paths are in the cited notes); **inferred** for recommendations.
-
-- **Q38FN CPU serving: threads versus context depth (verified).** The `:8074` recipe's 48 threads (one per second physical core) had only been measured at roughly 0 to 530 tokens and before a BIOS change. On UD-IQ4_XS plus shared MTP: llama-bench at depth 0 gives prefill 212 (48 threads) vs 231 (96, +9%) and decode 31.2 vs 24.8 (-21%). In this binary the batch-thread setting governs every ubatch larger than one token, i.e. prefill and MTP verification, while `-t` governs single-token steps. Served prefill of a 4k tail is +21 to 29% with 96 batch threads at shallow depth, and all arms are within the 7% session drift band from 8k depth up. Served decode shows no resolvable thread effect at 32k or deeper (identical greedy outputs; about 29 to 30 tok/s at 32k, 25 at 64k, 16 to 17 at 128k). Depth costs decode -55% and prefill -60% from shallow to 128k irrespective of thread count, so the lever is the attention kernel, not threads. Recommendation `-t 48 -tb 96`, handed to AutoKernel as a runtime arm. Greedy output with MTP differs between launches at shallow depth (known speculative non-exactness) and matches at depth; at 128k a raw-completion probe puts about 98% on end-of-sequence first, a model behaviour on that prompt, not corruption.
-- **Champion advance (verified).** `dd3d9721c` (slot-file draft state and checkpoints) is the standing champion; store images `cpu-` and `gpu-20261020-dd3d9721c` were built with linkage proof (GPU image compiled and linked only; serving validation pending). After slot restore, MTP acceptance is 0.98 to 1.02 of live instead of 0.53 to 0.85. Details in [autonomous-research](autonomous-research.md). Branches cut from the prior tip rebase onto it. Two release manifests (llama v11: 93 rows, 42 already in champion, 24 pending; speech v2: 9 rows) now track every feature and exclusion; the v11 pull-fresh list still has to carry or consciously drop the upstream flash-attention race and accumulation fixes. A corrected speech-model figure: whisper.cpp measured 3.37% WER, 2.35% belongs to the faster-whisper CPU arm.
-- **Speech kernel thread scaling (verified).** The TTS kernel runs 23.9 ms/frame at 8 threads versus 96.2 at 1 thread when quiet, but 9,754 ms/frame at 8 threads with eight core-sharing spinners. Cause: spin-only graph barrier plus a throwaway threadpool per compute; the trigger is core sharing, not thread count. Rule: more than one thread only on claimed cores, else one thread per process. The frozen speech kernel is untouched.
-- **EmbeddingGemma 2 on llama.cpp (verified parity).** Model support was cut from production onto an experimental branch with two hand-resolved API gaps, then rebased onto the new champion without conflicts. Against the sentence-transformers FP32 reference: BF16 minimum cosine 0.99999, Q8_0 0.9993, no non-finite values; CPU op tests pass; linkage proven. Not yet shown: parity above 459 tokens (sliding window 1,024), served throughput, decode interference. A CPU timing screen (contended, not a speed claim) ranked BF16 about 3x and FP32 about 1.5x BGE-large FP32 on documents. Adoption lives in the draft stack-change package ([agent-architecture](agent-architecture.md)); it must not be signed before the patch set and migration gates exist.
-- **MI210 queue (verified).** Probe runs on the champion HIP build under the device claim with residency sampled: tilelang compile failure and the HIP width-invariance table are in [autonomous-research](autonomous-research.md). Short kernels keep VRAM small, so residency rests on KFD PID, device string and results, not VRAM size.
-- **Retirement and reclaim.** The uniform IQ4_XS Q38FN file was retired in favour of UD-IQ4_XS; every CPU-decode headline measured on the uniform file starts a new measurement era. Fifteen graveyard rows were recorded, and all three GPU shadow-lane tenant weights are gone (a new first tenant is a later program decision). Disk reclaim took the array from 29 GiB to 927 GiB free by removing verified-pushed worktrees and operator-approved models. The DS41 1017 swap is a download of a 467 GiB MXFP4-experts build, to be requantised to Q4_K using the 1017 activation statistics and compared against MXFP4 (KLD, speed) before serving; no Q4_K 1017 build exists in the required layout.
-- **Magnitude comparison docs.** The IQ layout comparison found only layout and scale-placement differences (packet widths 8 or 12 bytes, not 16); iqk already has the decode-then-int8-dot form, and its repack is gated off for IQ2/IQ3 (feeds a later kernel task). Documentation only, no compute.
-
-**Open questions:** whether `-tb 96` survives AutoKernel's runtime arm; GPU serving validation of the new HIP image; the as-served embedder legs. Cross-refs: [kv-cache](kv-cache.md), [benchmark-methodology](benchmark-methodology.md).
-
-### Source References (2026-10-20 sweep 2, serving)
-
-- [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — thread/depth sweep, reclaim, EG2 parity, speech threads, manifests.
-- [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — champion fold and lane state.
-- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — fold ledger, builds; CH-18 is now in [v11-promotion-checklist.md](../handoffs/active/v11-promotion-checklist.md).
-- [All-devices program](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — GPU queue results.
-- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — throughput ratios used for serving.
-- [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — launch recipe and gates.
-
 
 ## Latest source review — 2026-10-07
 
@@ -141,249 +36,6 @@ Completed MI210 checklist detail moved into a historical ledger. That relocation
 - [Active MI210 roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)
 - [Completed MI210 ledger](../handoffs/completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md)
 
-## Compiled Update — 2026-09-23: DeepSeek-V4.1-Flash decodes on this stack — and two deltas that would have been silently wrong
-
-**Confidence: verified** for the port state, the commits and the throughput sweep (canonical CPU recipe,
-`taskset -c 0-95`, `numactl --interleave=all`, OMP stack, `GGML_IQK=1`, `-fa 1 -mmp 0`, binary
-`experimental/deepseek41-port-20260923` @ `7c18bb8c1`, build 10303, `DeepSeek-V4.1-Flash-Q4.gguf`
-482.97 GiB). The numbers are `llama-bench`, so **observation-grade**: no protocol id, np=1, no drafter.
-
-### Key findings
-
-- **The port exists and it decodes.** Branch `experimental/deepseek41-port-20260923` @ `7c18bb8c1`, cut
-  off the AutoKernel champion `ak/champion/llama-cpp-ffc1bac82eec` — which is exactly
-  production-consolidated-v10 `ffc1bac82`, so the freeze was never touched. Four commits: arch + KV
-  adapter, the engram gather op, engram hashing/state/injection, the V4.1 graph. `The capital of France
-  is` → ` Paris. In the course of history,` (greedy, seed 42).
-- **`deepseek41` is not `deepseek4` with new numbers.** Its GGUF carries **raw HF config key names**, so
-  generic `load_hparams` fails before any V4.1 code runs and a per-arch **alias table** is required;
-  `compress_ratios` are {0,1,2} where our loader admitted only {0,4,128}; compressor and indexer tensors
-  exist on the **source layers only**; `rope_scaling.rope_type` is absent, so the generic reader silently
-  defaulted to *linear* and had to be forced to YARN. No per-block name compat map was needed after all —
-  all 36 names match, only presence differs. `build_arch_graph` **deliberately aborts** rather than
-  inherit V4's graph, which would have run plain SWA with compressor/indexer/engram never built.
-- **Two silent-wrongness deltas, caught by reading DeepSeek's reference and `antirez/ds4` instead of
-  inheriting.** (a) The hyper-connection pre-mix is **lagged one sublayer** — and that is *why*
-  `output_hc_*` is absent from the weights: the head reuses the last block's leftover mix, so the missing
-  tensor is a consequence of the lag, not an unspecified collapse. (b) `attn_factor` must be **literally
-  1.0**; inheriting V4's value would have been a logit-scale error on 38 of 40 layers. Neither would have
-  raised an error — both would have produced plausible, wrong logits.
-- **Engram is the shape of the problem.** 188.83 GiB of conditional memory stored as GGML `I8`
-  (264-byte rows: 256 E4M3 + 8 E8M0), addressed by a bit-exact hash the GGUF itself ships, at
-  **48 rows per token** = ~12.4 KB of random reads on the decode critical path with zero prefetch depth
-  (the 4-gram suffix ends at the token just sampled).
-- **The artifact has no drafter.** `num_nextn_predict_layers=3` is the 3-block **DSpark** drafter, not
-  three next-token heads; antirez's converter omits every `mtp.*` tensor (1046 tensors, `blk.0-39`,
-  zero `mtp.*`), and vcruz's GGUF strips it too. The official shards 44-46 (~8 GB) carry it, and the
-  accept/verify loop **does not exist even in DeepSeek's own release**.
-
-### First canonical throughput, and the operating point
-
-| test | t=24 | t=48 | t=64 | t=96 | t=192 |
-|---|---|---|---|---|---|
-| pp512 | — | 137.03 | 137.66 | **144.03 / 145.80** | 104.09 |
-| tg128 | 12.89 | **13.18** | 12.90 | 12.74 / 12.81 | 4.99 |
-| tg512 | — | **11.70** | — | 10.59 | — |
-
-**Prefill wants 96 threads, decode wants 48** — on a server that is `--threads 48 --threads-batch 96`.
-Both phases collapse at 192 (SMT siblings; decode −61%). Placement was proven **in-window**: four samples
-on the live process, resident 47.6 → 187.8 GiB, **25.0% on each of the four NUMA nodes at every sample**.
-The t=96 columns are two independent runs in one sweep and double as a repeatability control (0.5% on
-tg128, 1.2% on pp512).
-
-### Open questions
-
-- Engram residency: v10 already auto-registers >4 GiB tensors as lazy mmap ranges with
-  `POSIX_MADV_RANDOM` — does that approximate antirez's 16-reader `pread` design for free? Measure
-  page-fault cost per decode step, **major vs minor**, before choosing (DS41-B9).
-- Sparse attention disposition (dense mask vs real gather) and the top-k / candidate-block cap semantics
-  are unmeasured here; vcruz's branch is still a mask, ours is a gather (DS41-T2).
-- Reference parity (T3) is open, including F32-vs-bf16 rounding; the official harness is a TypeScript
-  agent framework and **not** a usable parity instrument.
-
-### Source References (2026-09-23)
-
-- [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — INF-77:
-  artifact identity, the B10 KV-adapter corrections, B7/B8/B9 Engram scope, B13 DSpark, the T6 sweep.
-- [2026-09-23 — main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md) — the four port commits, the
-  decode smoke, the operator max-performance directive and the `-t 48` preliminary recipe.
-- [2026-09-23 — main-kernel](../progress/2026-09/2026-09-23-main-kernel.md) — the champion
-  fast-forward review that fixes the branch point (`ffc1bac82` → `8df1b5cf2`).
-
-## Compiled Update — 2026-09-18: the id-only readout re-measured at n=4, and two mechanisms behind fan-out losing on this GPU
-
-**Confidence: verified** for the run (frozen-v9 HIP server, Qwen3.6-35B-A3B-Q8_0, MI210, 4 slots, ctx 131072, fa on, temp 0, host threads `taskset -c 184-191`, `LD_LIBRARY_PATH` pinned to `build-hip/bin`; launched and killed by the session, VRAM 59% in all 24 in-run samples). These correct the 2026-09-17 section below, which was one run per arm.
-
-### Key findings
-
-- **Corrected readout, n=4 alternated rounds, same catalogue and state hash**: JSON 14.02 ± 1.82 s; `full` 6.52 ± 0.05 s (2.15x); `short` 3.03 ± 0.12 s (4.63x); **`id_only` 1.46 ± 0.03 s (9.60x)**; `pq1` (1 slot) 2.09 s (6.69x); `pq3` (3 slots) 5.24 ± 0.93 s (2.67x); `pq3_id_only` 2.27 ± 0.45 s (6.17x). Agreement 15/16 in every round. The native times reproduce the 09-17 numbers; the 09-17 JSON baseline (19.3 s) does not — it is above the four-sample maximum here. Per decision (16 native vs 24 JSON) the id-only lead is 6.40x. The 09-17 acceptance is under TD-1d.0. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [td1d-remeasure](../progress/2026-09/2026-09-18-td1d-remeasure.md))
-- **Concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`** (TD-1d.2b; filed as TD-1d.2, renamed 2026-09-26 after the id was reused): parallel wall == serial wall, max 1 slot busy. This is the primitives-layer counterpart of the `heavy_model` lock observation and constrains every fan-out design on this stack, not just typed decisions.
-- **`qwen35moe` is hybrid-recurrent (SSM layers), so prefix reuse is checkpoint-quantized** (TD-1d.3). Back-to-back per-question reads on one slot reuse **0** tokens (~450 ms each) unless a prefix-only request first leaves a checkpoint at the prefix end (then `cache_n` 1105, ~128 ms/read); under 3-way concurrency they stretch to 585–900 ms. Any prefix-cache reasoning about this model class has to include the checkpoint boundary.
-- **`/v1/chat/completions` forwards neither `grammar` nor `json_schema`** (TD-1d.1): through `frontdoor` the native arm produced 515 free-form tokens and 0/24 decisions. Every measured arm used a direct `/completion` adapter. No typed-decision arm is deployable through `LLMPrimitives` until `/v1` forwards the fields for internal callers or a declared direct lane exists.
-
-### Open questions
-
-- Is the checkpoint-quantized prefix reuse specific to `qwen35moe`, or does every hybrid-recurrent GGUF on this server behave the same way?
-- Does a prefix-only warm request per slot make option (b) viable, or does the `inference_lock` make the question moot?
-
-### Source References (2026-09-18)
-
-- [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — server recipe, residency proof, the table.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1d.0–TD-1d.4.
-
-## Compiled Update — 2026-09-17 (wrap-up sweep: the typed-decision readout measured on the worker — 11.98x native at parity, and the generation-API limit behind it)
-
-**Confidence: verified** for the worker runs (Qwen3.6-35B-A3B-Q8_0, MI210, frozen-v9 HIP server launched and killed by the session; one run per cue style on a 24-question fixture); **external** for the intake contrast figures. These are worker-throughput observations, not serving headlines.
-
-### Key findings
-
-- **The local one-pass typed readout is now measured end-to-end, not just cited.** TD-1's JSON arm ran the 24-question fixture 24/24 clean (36.7 s on the 27B). TD-1b fixed the native candidate path to tokenize candidates through the server `/tokenize` seam and build exact-token grammar terminals, so the earlier 23/24 `native_unknown_candidate` failures fell to zero; candidates that tokenize to multiple tokens are explicitly unsupported and fall back to JSON (8/24 on this fixture). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-1d cue sweep, same 35B / same fixture / one run each**: JSON 19.3 s / 1,354 tok; native `full` cue 7.3 s (2.66x) / 523 tok; `short` cue 3.2 s (6.0x) / 239 tok; **`id_only` cue 1.6 s / 112 tok = 11.98x**, all three native styles at 15/16 agreement and 15/16 accuracy on the overlap (JSON 14/16 on the same 16). The prompt catalogue carries the grounding; the id-only cue re-anchors position. TD-6 (adopt `id_only` as the native default after review) is open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
-- **The multi-slot logit readout does not exist in llama-server's generation API, so the vendor's parallel-sampler shape stays out of reach.** Parallel per-question native reads were tested and rejected on this stack: the exclusive `heavy_model` lock serializes workers (client concurrency 0.65x vs batched) and the generation API exposes no multi-slot logit readout. Batched fan-out is the available lever instead: 1.54x at small state (100% agreement), 3.22x long-context (three 40k-char states), and 2.2x at 87.5% agreement on the real 24-question catalogue (TD-3b, 17.2 s batched vs 37.9 s singleton). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **The native arm fails closed, and its speed is not a serving authority.** A failure surfaces as a typed error (`native_unknown_candidate`) rather than a wrong answer; semantic parity had to be earned separately (TD-1c: the 5/16 disagreement was prompt cueing — later positions were conditioned on prior answer tokens — fixed by replaying each question's cue as tokenized grammar terminals). Confidence is **not** calibrated (ECE 0.0625 on the 27B, 0.267 on LFM2.5-2.6B), so no gate may threshold on it. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [benchmark methodology](benchmark-methodology.md))
-- **The write side was wired before the runs.** `scripts/vidya/adapters/typed_decisions_measurement.py` projects the TD-2/TD-3/TD-4 receipts into self-hashed ClaimTuples (VB-TDP-1, write side first); a bench report is refused as a non-measurement. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-
-### Open questions
-
-- Does the id-only cue's 11.98x hold across a second run and a second model, or is it a single-run artifact?
-- Does any runtime in consideration expose a multi-slot logit readout, or is batched fan-out the ceiling for the parallel-sampler shape?
-
-### Source References (2026-09-17 wrap-up sweep)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1b/1c/1d, TD-3b, the cue sweep and the parallel-read rejection.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the four implementation rounds and the worker runs.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side rule.
-- [benchmark-methodology.md](benchmark-methodology.md) — the contamination/calibration/fan-out measurement design.
-
-## Compiled Update — 2026-09-17 (research-intake delta: compiled specialists on the frozen stack, and the honest one-pass speedup)
-
-**Confidence: verified** for the filings and the license ruling; **external** for the intake figures (dive-verified primary sources; the 5.21x was measured on a 3090, not this host). The re-opened PAW line and the local typed-decision readout both target the frozen v9 stack.
-
-### Key findings
-
-- **PAW is artifact-available but not officially self-hostable.** Compiler weights (2026-06-07) and FuzzyBench eval data (2026-02-17) both predate the 2026-07-11 "compiler is CLOSED" blocker recorded in intake-811 — the re-open trigger is MET on availability. An unofficial MIT self-hosted compile server compiles for the default Qwen3 compiler (intake-1481#record), with no ROCm proof, and the Compact GPT-2 SDK-compat claim was overturned. Independent eval on one adversarial task: standard 94 / finetuned 97 / compact 85 (n=100, author labels); semantic abstention 98.9% on decided cases while logit-confidence thresholding fails (intake-1482). ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
-- **License scope is resolved for internal work only.** Operator ruling (OP-43 closed 2026-09-17): "everything we do is internal research" — the unlicensed weights, the FuzzyBench dataset (43,128 + 7,550 rows, no train split) and the 7,226-program corpus are usable internally; no redistribution, no deployed-service use, no shipping of outputs. Distribution would re-open the question.
-- **The local target question is open on economics, not capability.** PAW-2 must prove one end-to-end compile to a GGUF-ZIP `.paw` and one local call, including whether CPU-only is workable before MI210; whether the Qwen3-0.6B interpreter (594 MB Q6_K) is fast enough per call for always-on loops versus the current cheap-first models is filed as an open question.
-- **The local one-pass readout's real numbers.** A fully local pinned implementation measures **5.21x vs same-model JSON on a 3090** and 20.03 decisions/s under parallel reuse (intake-1487); the honest pattern range is **3.4–7.9x**, not the vendor's 40–200x (intake-1474). Reuse drifts 5–6 of 777 argmaxes under BF16 — acceptable only where the consumer tolerates it.
-- **No gate before calibration.** Candidate-softmax confidence is uncalibrated: 65% of a 7B's wrong fields scored >0.90 (intake-1474), and the owner stub makes local ECE/reliability (TD-2) the prerequisite for any gated use.
-- **Write-side wiring precedes the first PAW/TD measurement run** — one self-hashed ClaimTuple per run at the vidya source table (VB-TDP-1). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-
-### Open questions
-
-- Compile-once economics without an accelerator: compile wall time vs adapter lifetime on this host.
-- Does intake-1482's abstention finding transfer to our task slices, or is it task-specific?
-
-### Source References (2026-09-17 research-intake delta)
-
-- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — availability, license scope, PAW-2/PAW-3, and the open economics.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the local one-pass mechanism (TD-1a) and the TD-2 calibration gate.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side requirement.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's verified findings of record.
-
-## Compiled Update — 2026-09-17: the rtx6kpro steals, measured — two held, one was a no-op, one was ruled out, and one external noise figure does not exist here
-
-**Confidence: verified** for our own runs on champion `ef81196d5` (unit = launch, residency proven on every launch). The external figures they answer keep their `external` grade from the 09-08 section below.
-
-Four of the five hypotheses this page took from the rtx6kpro field wiki on 2026-09-08 now have local answers. The pattern is that the external observations transfer only after they are checked against our own source tree. A knob can be clamped or ignored by our build, and a noise band measured on another stack can be zero on ours.
-
-### Key findings
-
-- **The p-min half of the n-max × p-min sweep was a no-op.** On our DFlash2 build the drafter's block size is 8, so `--spec-draft-n-max 8` is clamped to 7, and the DFlash2 draft branch never reads `p_min`. The external per-position acceptance-decay argument therefore did not apply as posed. The longest block still wins at every in-flight level: +30% vs n4 at np1, +21% at np2, +16% at np4, and +5% (inside the floor) at np8. Verifier steps/s falls 19% at np8, as the external S6 predicted, but tokens/step rises faster. ([dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
-- **The A/A losslessness control: the external identical-checkpoint noise (95.24 vs 90.69) does not exist here at temp 0.** Every arm reproduces itself 12/12 byte-for-byte across fresh processes. Pass counts are deterministic per (build, arm, prompt). ([dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
-- **The RNG-entanglement lead is ruled out.** The drafter and verify samplers are separate objects, and at temp 0 / top_k 1 no RNG is drawn. The shared failing indices come instead from the batched-verify numeric split. Under a 1-row serial verify (`LLAMA_SPEC_EXACT=serial`), both spec arms are 12/12 bit-exact. The divergent tokens had top-1/top-2 logit margins of only 0.005–0.079. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md), [dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
-- **The steps/s keep-gate metric is only partly available.** The champion server counts verify steps but does not export them, so the loop reports an estimate (`predicted_n − draft_n_accepted`) and the gate is unchanged. ([sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
-- **The long-context and sustained-C8 cell (SL-4) is still unrun**, so the external "DFlash2 −19% at sustained C8" vs our +47.8% contradiction stays open.
-- **The same caution applies to MTP.** On production v9, the Qwen3.8 MTP n-max 8 grid came out below the older n-max 4 grid at np≥2 (cross-session observation). A single-stream depth optimum is therefore not assumed to hold for batched local serving. See [Inference Serving](inference-serving.md). ([gpu-candidates](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update))
-
-### Open questions
-
-- SL-4: the ~32k context cell and the sustained-C8 cell.
-- A same-window MTP n-max 4 vs 8 ABA at np≥2.
-
-### Sources
-
-- [dflash2-block-drafter-experimental-build.md](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build): the SL-1, SL-5 and DF2-8 results.
-- [2026-09-16-sub-akfix.md](../progress/2026-09/2026-09-16-sub-akfix.md): the DF2-RNG source reading.
-- [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the SL-2 estimator.
-- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update): the MTP n-max 8 grid.
-
-## Compiled Update — 2026-09-08: the rtx6kpro intake — a same-class local-GPU field wiki, read for our hypotheses
-
-**Confidence: `external`** — third-party measurements (the intake's own credibility audit: ~35% rigorous-with-conditions, ~35% measured-but-underconditioned, ~20% attributed Discord anecdote — several retracted in-repo — ~10% config dumps). Zero llama.cpp/GGUF and zero ROCm content; every CUDA item was dispositioned with a gfx90a/HIP analog or an explicit "no analog".
-
-The intake record ([`docs/research-intake/rtx6kpro-20260907.md`](../docs/research-intake/rtx6kpro-20260907.md), source pinned at upstream `44e817b`, 739 commits / 399 pages, active to 2026-09-07) is a community field wiki for exactly the class this page covers — serving frontier open-weight models on ONE 96 GB-class workstation GPU (NVIDIA RTX PRO 6000 Blackwell: SM120, 96 GB GDDR7, PCIe, no NVLink) with vLLM/SGLang plus their own kernel library. The local-serving-relevant steals, each filed to a local row:
-
-- **`--spec-draft-n-max` × `--spec-draft-p-min` sweep under np4** — p-min has never been set on any GPU arm here; external per-position acceptance decay says draft positions 6–8 carry 10–30%, and n-max 7 makes the np1 verify batch exactly 8 (confound-free test of the MMQ-verify premise). Filed SL-1.
-- **Verifier steps/s as the serving keep-gate metric** (`tok/s = steps/s × accepted/step`; only steps/s is a kernel property). Filed SL-2.
-- **A long-context (~32k) cell + arm-order randomisation in the serving gate** (external: cc64 reads −15–20% after a 128k sweep; spec gain can collapse with context for some quants) — doubles as the sustained-C8 cell against external "DFlash2 −19% at C8" (vs our +47.8%). Filed SL-4.
-- **An A/A control on the losslessness gate** before 7/12-vs-5/12 is read as a difference. Filed SL-5.
-- **Draft RNG entangled with acceptance RNG** — the lead for why both DFlash2 AND `draft_simple` fail at identical indices (34/216/238). Filed DF2-RNG.
-
-Full dispositions: [Speculative Decoding](speculative-decoding.md) (SL-1/2/4/5, DF2-RNG, RULE-RESCOPE), [Hardware Optimization](hardware-optimization.md) (kernel candidates AK-H-*, the MMQ-M=9..36 serving-verify finding, protocol rows R23-46/47, and the INF-70 CPU-path note).
-
-**Contradictions with our record worth keeping visible** (flagged, not resolved): their spec-dec-vs-concurrency numbers contradict the "single-stream only" rule (RULE-RESCOPE filed); external "DFlash2 −19% at sustained C8" vs our +47.8% at 8 in-flight; their HIP-graph "4.3×" is vs an eager baseline while ours is +4..14%; power: they scale +30% at C64 from 300→600 W while our MI210 draws ~200 W of its 300 W — **re-check draw DURING np4 serving** (only proven under llama-bench/GEMM windows so far).
-
-**Not transferable here:** GDDR7 memory overclock (+7–10% decode there) — MI210 HBM2e has no overdrive exposed under ROCm 6.2 on Instinct, and we run at 47% of HBM bandwidth, so clock is not binding (named, declined); FP8 KV as a hardware cast; NVFP4 weights/KV; vLLM/SGLang scheduler/loader/allocator internals; DCP-replicated drafts; WSL; multi-GPU PCIe/NCCL/topology. Their Qwen3.8 TP1/TP4 absolute numbers are not comparable to a 64 GB HBM2e llama.cpp Q8_0 path, and all their kernel-level numbers are CUDA-only (no HIP analog).
-
-### Source References (2026-09-08, rtx6kpro)
-
-- [`docs/research-intake/rtx6kpro-20260907.md`](../docs/research-intake/rtx6kpro-20260907.md) — credibility breakdown, the filed-candidate destinations, contradictions 1–10, and the complete not-transferable/deferred list.
-- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — SL-1/2/4/5 and DF2-RNG filing rows.
-
-## Compiled Update — 2026-07-31: a `LD_LIBRARY_PATH` ordering landmine silently redirects fresh ggml builds to the frozen production kernel
-
-**Confidence: verified** — reproduced by a standing guard script; direct artifact read of the two
-offending config lines.
-
-### The mechanism
-
-`/etc/environment:5` and `.devcontainer/devcontainer.json:57` both place the **frozen production**
-kernel's `build/bin` early in `LD_LIBRARY_PATH`, on the reasoning that production tooling needs to
-find the production libraries there. The unintended consequence: **any freshly built ggml-based
-binary on this host** — whisper.cpp, `qwentts.cpp`, `llama.cpp-experimental` — resolves
-`libggml-base` / `libggml` / `libggml-cpu` from the **production tree first**, ahead of its own build
-directory, unless the invocation explicitly overrides the search order.
-
-This is exactly what happened building the HIP whisper leg of the 2026-07-31 speech work (see
-[Multimodal](multimodal.md)): a HIP-built `whisper-cli` loaded the production **CPU-only** ggml,
-found no GPU backend, and ran the entire job on CPU — **while printing `use gpu = 1`**, because that
-flag reports what was *requested*, not what was actually loaded. GPU backends are `dlopen`ed at
-runtime and are therefore invisible to `ldd`, which is why this survives casual review: the binary
-launches, reports a device, and produces plausible numbers.
-
-### Why this is worse than an ordinary misconfiguration
-
-The failure mode is **silent and produces plausible output**. A CPU-only fallback that crashed, or
-that logged a visible warning, would be caught immediately. This one does neither — it is the same
-"fail-open default conceals its own corruption" shape as other host-hygiene incidents on this project,
-applied to shared library resolution instead of a service flag. Had nobody checked, CPU numbers would
-have been published and labelled GPU.
-
-### The guard, and the fix
-
-`scripts/utils/verify_ggml_linkage.sh` reproduces the defect: of the five ggml-family shared
-libraries a freshly built binary needs, **3 of 5 resolve from the production tree** even in a build
-that also correctly picks up `libggml-hip.so.0` from its own directory — a mixed state that still
-initializes and still reports a device, which is precisely why it is easy to miss on casual review.
-The fix is **per-invocation** (prepend the project's own `build/bin` ahead of the production path for
-that one command), **not** editing `/etc/environment` — production tooling genuinely depends on
-finding the production libraries there by default, so the global ordering is not itself wrong, only
-unsafe to inherit unmodified into a fresh build's environment.
-
-### The generalizable rule
-
-**Every future ggml build on this host is exposed to this**, not just the ones already discovered.
-Any session building whisper.cpp, an experimental llama.cpp branch, or any other ggml-based project
-on this host must run `scripts/utils/verify_ggml_linkage.sh` (or equivalently prepend its own
-`build/bin`) before trusting a "GPU" number from that binary — `use gpu = 1` in the log is not
-evidence the GPU backend was actually loaded.
-
-### Source References
-
-- `epyc-inference-research` commit `7f310022` — commit message cites `INC-20260731-ggml-linkage-silent-cpu-fallback`; the `verify_ggml_linkage.sh` guard and its 3-of-5 reproduction (as of this compile, that incident ID is not yet a filed heading in `docs/reference/agent-config/INCIDENT_LOG.md` — the commit is the primary record)
-- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §18, the landmine summary and the "every future ggml build is exposed" scope statement
-- [Multimodal](multimodal.md) — the HIP whisper build this defect was first caught on, and the corrected STT measurement it fed into
-
 ## Current Production — 2026-07-26
 
 Production is frozen on `production-consolidated-v8` at
@@ -393,34 +45,6 @@ Qwen3.5-122B CPU Q4 architect at port 8083. The final freeze attestation is
 [`ratify_v8_final_freeze_20260725.json`](../artifacts/operator/ratify_v8_final_freeze_20260725.json);
 v7 at `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3` remains the rollback/history
 anchor.
-
-## Compiled Update — 2026-07-20
-
-v7 is promoted as `production-consolidated-v7` at frozen candidate `6ad45fa3ff` (binary `10098`). Two new reference artifacts organize the local-serving picture: a **deployed-lane throughput table** (what each role actually runs today) and a **living model-probe scoreboard** (how every candidate model/quant performs, all observation-grade). Confidence: `verified` for deployed CPU-lane facts and the OP-2 canonical control; `observation` for every MI210 throughput row that has not been rerun under `P-GPU-1`.
-
-### Key Findings (2026-07-20)
-
-- **v7 promoted; cutover complete.** Frozen-candidate gates were green: K5 quality +0.0%, OP-2 CPU-regression PASS (frontdoor Q8 tg128 canonical control `12.44 t/s`), final coherence+garbage smoke 4/4 non-vision + 3/3 vision, upstream-ahead narrow audit applied, live quarter-mode smoke `21/21`, and attestation clean except `gitnexus_stale_or_error=4`. The reviewer/control-plane route is **decoupled** from v7 (GLM failed P-REV-1, no clean replacement), so the banked production-model wins are no longer held hostage to it. ([v7-promotion](../handoffs/completed/v7-promotion.md))
-- **Deployed-lane throughput (each "CPU opt" is the fastest deployed spec-dec+OMP config, NOT a no-spec baseline):** frontdoor Qwen3.6-35B-A3B Q8 native-MTP ~34.5 CPU / 119.7 GPU-MTP; worker gemma-4-26B-A4B Q4KM `ngram-mod,draft-mtp` 126/97/83 t/s (2K/8K/14K); architect Qwen3.5-122B UD-Q4KM 23.5/20.7; ingest Qwen3-Next-80B-A3B Q4KM 20.5/15.9/9.7; GLM-5.2 UD-IQ2 CPU-only 2.49→5.33 MTP. The MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (~238 GB) — those are CPU-only. ([v7-stack-throughput-full-optimization](../docs/reference/v7-stack-throughput-full-optimization.md))
-- **Model-probe scoreboard (living, glance-able, all OBSERVATION-grade):** clear wins = Qwable-v1 IQ4_XS MI210 (91–100 t/s), MiniCPM-o-4_5 Q4KM vision (111–127, `--reasoning off`), frontdoor 35B-A3B native-MTP, gemma-4-26B CPU worker (K5 +0.0%). Fast-but-quality-blocked = Bonsai Q1_0 (fails 6-word IF gate), Ternary Q2_g64 (6/8), gemma4 MI210 *natural free-form* (K11.1 nondeterminism, GPU-backend-path specific). Broken load = Ternary Bonsai Q2_0 (498/498 tensors short, noncanonical PrismML packing). Stop-list policy: **no speed-reruns without a named quality/loader/protocol/parser fix hypothesis.** ([model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md))
-- **CPU prefill is a real local lever for large/long-context models** — compute-bound `M>1` GEMM, distinct from the BW-bound decode roofline; the first landed experimental win is a default-off CPU `CONCAT` dim0 row-partition (`pp8192` +3–9% single-seq, batched prompt +22–54%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models))
-
-### Open Questions (2026-07-20)
-
-- The frontdoor **CPU-MTP** context curve on v7 is a measured gap (only the ~34.5 prod point exists; K35 measured GPU-MTP).
-- GPU-worker eligibility for gemma-4 is unresolved (natural free-form multi-slot determinism fails, K11.1) even though the model fits.
-- At this 2026-07-20 boundary, architect ≥32K context throughput was
-  unmeasured and decision-grade reruns required the then-current
-  `production-consolidated-v7`. Current reruns use the production-named v8
-  kernel in the 2026-07-26 note above.
-
-### Source References (2026-07-20)
-
-- [v7-promotion.md](../handoffs/completed/v7-promotion.md) — promoted v7 cutover evidence, reviewer decoupling, post-promotion certification follow-ups.
-- [v7-stack-throughput-full-optimization.md](../docs/reference/v7-stack-throughput-full-optimization.md) — deployed-lane vs candidate-bench table + provenance guards.
-- [model-probe-scoreboard.md](../docs/reference/model-probe-scoreboard.md) — living per-model/quant scoreboard, verdict buckets, stop-list.
-- [cpu-prefill-compute-large-models.md](../handoffs/active/cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models) — CPU-prefill regime + CONCAT dim0 lever.
-- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) — K11 gemma4 free-form determinism status.
 
 ## Summary
 
@@ -642,7 +266,387 @@ vs modified-trunk mismatch, with the differing set matching the adapter's 256 ta
 _Sources: `handoffs/active/speculative-decoding.md` § 2026-07-25;
 `handoffs/completed/frontier-lab-automation.md` ID-15/ID-16._
 
-## Compiled Update — 2026-10-20: DeepSeek-V4.1-Flash moves to the 1017 finetune, and the disk reclaim reshapes what is servable
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-09 (workspace-f2 / pipeline-mgmt compile). Earlier: 2026-11-06 (local C6 launch matrix, operator support). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (refactor scoped wrap-up: repaired instruments, retained scientific limits). Earlier: 2026-10-24 (wrap-up sweep 24, 3c4ca599): a stack start compiles the registry from research origin/main. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-22 (wrap-up sweep 10: serving floors in master registry, AK shakedown). Earlier: 2026-10-22 (wrap-up sweep 7: DS41-1017 floor stands, other tests deferred). Earlier: 2026-10-21 (wrap-up sweep 5: DS41-1017 cutover, W5 ppl and ABA timing, W6-W8). Earlier: 2026-10-21 (wrap-up sweep 3: candidate C serving identity, CH-18/CH-19 notes, DS41 decode). Earlier: 2026-10-20 (wrap-up sweep 2: AutoKernel history/probes, harness-loop architecture, serving depth sweep). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-23 (DeepSeek-V4.1-Flash decodes on this stack: the `deepseek41` port off the v10-equal champion, the HF-key alias table, the lagged hyper-connection mix and `attn_factor`=1.0, Engram's 48 random rows/token, and the first canonical sweep — prefill 96 threads, decode 48); 2026-09-18 (TD-1d re-measured at n=4: id-only 9.60x not 11.98x, the `inference_lock` serialization and the SSM checkpoint-quantized prefix reuse behind fan-out losing, `/v1` dropping `grammar`); 2026-09-17 (wrap-up sweep: the typed-decision worker-measured readout — id-only cue 11.98x at 15/16 agreement, batched fan-out 2.2x at 87.5%, and the llama-server multi-slot readout limit; sources: typed-decision-plane final rounds, the intake session record, vidya VB-TDP-1); 2026-09-17 (research-intake delta: PAW compiled specialists on the frozen v9 stack, the license-scope ruling, and the honest local one-pass speedup; incremental: rtx6kpro steals measured: p-min no-op on DFlash2, longest block wins, A/A noise absent at temp 0, RNG lead ruled out, steps/s only estimated); earlier: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
+
+### Compiled Update — 2026-11-09: v10 fused-decode zero-row logits crash, AFC-P5.E3, C10 prefill
+
+- **Flash-Next crash root cause (v10).** `afc-p5e3-n30-q38_flash-r2` was invalid: llama-server hit GGML_ASSERT (tensor read out of bounds, ggml-backend.cpp:272) after 6 min, 88 of 90 replies blank. Root cause (inferred from backtrace, disassembly and source, not reproduced): v10 fused single-token decode (qwen4exp-fused.cpp:1883-1888) reuses the previous graph's t_logits, which can have 0 rows; abort at llama-context.cpp:2221. r2's 4 cores came from the keeper's smoke because the launcher had no smoke branch. Workaround: any afc-p5e3-n30 rerun on v10 must set GGML_FUSED_DECODE_OFF=1; r1 Flash scores used the fused path and are suspect beyond the blanks. AutoKernel fix `452a93c4b` (fused dispatch checks previous logits and falls back to the graph) was cherry-picked into the C10 fold candidate `7f1bd044b`; box FUSED-DECODE-ZERO-ROW-LOGITS stays open until a negative-control decode passes under GGML_FUSED_DECODE_ON=1. Sources: [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md), [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
+- **AFC-P5.E3 results** (v10 CPU kernel 10303 ffc1bac82, suite v2, temp 0, n=30 per metric, one run per cell; compliance/procedure/recall): Qwen3.6-35B-A3B-MTP-Q8_0 none 0.800/0.600/1.000 vs aggressive 0.867/0.867/0.967 (KEEP); Qwen3.8-27B-Q8_0 none 0.733/0.633/1.000 vs aggressive 0.933/0.733/0.967 (KEEP). KEEP means no detectable loss, not equivalence. r4 Flash-Next gave none 0.167/0.333/0.833, but 25/25 compliance, 17/20 procedure and 4/5 recall failures were hallucinated tool calls, so the suite measured tool-call hallucination; operator chose a no-tools rerun r5 (not comparable to r4), r5 filed pass: none 1.000/0.767/1.000, KEEP mild/medium/aggressive (aggressive 0.967/0.800/0.967), valid only with no tools offered; a tools-present check gates any Flash rollout. Source: [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md).
+- **C10 / AITER-PORT-1.** AITER timing c9-r2: 27B M=2048 down is 2.45x slower than AITER i8. c9-gemm-tile-select TILE_CONFIRMED: down M=2048 base (forced 64x64x64) 7843.98 us, best 160x256x64 3862.97 us = 2.031x, all 9 arms correct (rel_l2 <=1.2e-6). c10-gemmdown-prefill-ab KEEP (27B pp2048@d32768 1.127x vs C9); the AITER-PORT-1 box stays open (needs real prefill >=1.05x quality gate). c9 MMQ spill audit identical v10 vs C9. Vacuous run caught: c9-q38fn-cpu-ppl lacked GGML_IQK=1 (republished -r2). Sources: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md), [pipeline-mgmt C10 progress](../progress/2026-11/2026-11-09-pipeline-mgmt-c10.md).
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **MLC LLM** (intake-500#record) TVM-compiled universal deployment engine with an OpenAI-compatible API. Dive correction (2026-08-03): the entry points at the wrong repo for ROCm; mlc-llm has zero rocm/hip/gfx90a paths, ROCm codegen lives in apache/tvm (intake-965).
+- **Liquid Foundation Models catalog** (intake-652#record) Open-weights LFM2/LFM2.5 catalog including text, VL, audio and the 8B-A1B MoE with 128K context. Worth investigating as small CPU-friendly models.
+- **KAT-Coder-V2.5-Dev 35B-A3B** (intake-917#record) Apache-2.0 35B/3B-active MoE (qwen35moe family) post-trained with 127K-example SFT then RL. Verdict new_opportunity stands, but the dive overturns the uplift evidence: the card's own footnote admits its Qwen3.6-35B-A3B baseline runs ~10pp below official.
+- **Inkling run-locally guide** (intake-941#00) Thinking Machines' Apache-2.0 multimodal family (975B/41B-active flagship and 276B/12B-active Inkling-Small) with 1M-token context. Dive correction: the "Top-1% Retained" ladder is a top-1 token-agreement figure against BF16, not a benchmark accuracy; assessed as a worker/architect candidate versus gemma4-26B-A4B.
+- **Inkling-Small BF16 base** (intake-955#00) 276B/12B-active, 42-layer decoder, 6 of 256 experts plus 2 shared; BF16 and NVFP4. Dive confirmed architecture field-by-field from config.json (no rope scaling fields) with two additions and a scope correction.
+- **LFM2.5-2.6B model card** (intake-1014#record) 2.69B checkpoint, 30 layers (22 short-conv, 8 GQA), 131,072 context, 34T-token pretraining, LFM Open License (revenue under $10M for commercial use). Verified deployable on frozen v8; role replacement unproven.
+- **LFM2.5-2.6B GGUF** (intake-1019#record) Official quants including Q4_K_M (1,674,454,848 bytes) and Q8_0 (2,874,779,456 bytes), with an embedded template preserving reasoning and Python-style tool calls (LEAP sidecars use a simpler template). Exact deployable worker candidate; quantized quality unmeasured.
+- **gojev: Go harness with in-process Kev via llama.cpp** (intake-1515#01) Go library/CLI (0BSD) whose Kev provider calls llama.cpp through yzma dlopen; GGUFs come from an fp32 LoRA merge then convert_hf_to_gguf with f16 storage and --no-mtp (intake-1515#01), with a separate head.json pointer head and calibration temperature (intake-1515#02). The parity claim ('two decimals') is self-reported and looser than worded (integration tolerance 0.03 absolute). Shows a path to run a decision-head model on our llama.cpp stack.
+- **Magnitude per-hardware tuned engine** (intake-1979#00) Tunes schedule families per (model, device) within a ~1-minute install-time deadline. Drafters are catalog pairings of upstream methods (DFlash, DFlash2, MTP) (intake-1979#01); the 2x-over-Ollama headline is vendor-run over 11 models with differing drafters/backends (intake-1979#record). CPU path is scalar only; nothing tuned for AVX-512 or gfx90a (intake-1979#record); the measure-and-validate procedure is the portable part.
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 24, 3c4ca599): a stack start compiles its registry from research origin/main, never from the stale shared clone
+
+**Confidence: verified** (offline proofs in `/mnt/raid0/llm/tmp/nib2-102-3c4ca599/`; the real-start proof is still open as NIB2-102.b).
+
+- **The defect (NIB2-102).** `orchestrator_stack.py start` recompiled the lean registry and descriptors from the working copy of the shared research clone. That clone is deliberately left behind origin/main, so a start would have served a stale master and silently dropped ratified declarations: before this morning's fast-forward it dropped `ctx_checkpoints: 32` (3 lean lines, 10 in `stack_priors`).
+- **The fix.** Orchestrator `b4f209aa` adds `research_origin.resolve_research_registry()`. Order: the explicit flag (`start --research-registry`), then `$EPYC_RESEARCH_MASTER_REGISTRY`, then origin/main, materialized from git. A failed fetch falls back to the existing ref with a warning. If origin/main can't be read, start refuses with rc 2; it never falls back to the working copy. The registry_compiler, model_descriptors, check_shared_with_derivations and reviewer_pool_gen CLIs use the same resolver. Runtime readers are unchanged.
+- **Proofs.** The lean registry is byte-identical at the research commit the committed derived files were built from (37fe0f50f). The argv export is identical on all 19 targets. At current origin/main the only lean difference was the 4 operator-signed SEC-ART-POST-b `template_diff_reviewed` lines, so the derived files were rebuilt (`3329083d`).
+- **Code on GitHub is not what serves.** A start runs from the shared clone `/mnt/raid0/llm/epyc-orchestrator`, which was at `fd1a8941`, 27 commits behind. The fix takes effect only after the guarded fast-forward (`nib2-gnx1-reindex-2`); check with `merge-base --is-ancestor 3329083d HEAD`. A hand ff is not covered by the approval.
+- **A code change can break a derived pin.** `stack_priors.yaml` pins the hash of `orchestrator_stack.py`, so changing that file fails the guard until `stack_change_pipeline.py update` reruns. Rebuild in the same landing.
+- **Running the pipeline check from a lane worktree** reports `runtime_attestation` failed for the live :8000 API ("unmanaged listener"). A lane worktree has no state file, so this is a location artifact, not a registry fault.
+
+Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-102), [2026-10-24-3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): serving floors move into the master registry, the Q38FN long-context floor is unregistered, and the AK serving shakedown passes
+
+**Confidence: verified** for the landed registry code, the 42 tests and the shakedown result; **inferred** for any real champion re-anchor (none has occurred) and for all indicative floor numbers marked below.
+
+- **Serving noise floors live in the master model registry, and the floor-registry code is landed OFF by default.** The operator decided (2026-10-22) that floors are stored as a per-model `serving_floors` section of the master registry, not a separate store; the DS41-1017 floor (2.862%, n=24 A/A pairs, valid for `dd3d9721c` only) is registered there. The floor-registry, hardening, `champion_reanchor` and `serial_run --new-anchor-epoch` tests ran as 42 passing CPU-light unit tests on research origin/main `b93017dc9`; the root half landed as a shim, not a branch. AKX-AUTO-6 and AKX-AUTO-11 stay OPEN on their exercise criteria: one real champion advance re-anchored with exactly one recalibration (or a registered floor reused), and one non-DS41 campaign using `check_launch` with `--floor-registry`.
+- **The Q38FN long-context serving floor is UNREGISTERED and cannot be registered without inventing provenance.** The run (target `q38fn-802bf9ac6-cpu-t48-mtp-d4`, lc64k surface, anchor `dd3d9721c`, verdict DISCARD, champion unchanged) did not opt into the registry; the carried lineage floor is 2.483% on scratch COR `b0ba1d427` and the sealed 64k record (flagged suspect) is on an experimental build, neither a `dd3d9721c` store build. Candidates were null (visible-kv-lookahead decode +1.33%; query-major-row-schedule decode -1.10%, prefill -1.34%; anchor 5-pair spread CV 0.76-1.15%). INDICATIVE ONLY. Calibrating a real floor is inference, so it takes a granted window.
+- **The real-server AK shakedown passed (AKR-SG, `s5-akrsg-shakedown`, 13:09Z).** An A/A pipeline-only run, `epyc.autokernel.serving_ab.v1` OK, both arms on `cpu-20260921-ffc1bac82`, ports owned, linkage OK, teardown verified. It exercised the `/metrics` mapping against a real llama-server for the first time. The result has no belief capture yet (writer on an unmerged research branch).
+- **Post-CAS floor recalibration is deferred until AK launches on a changed anchor.** The 18:00-22:00Z DS41 AK floor was cancelled because it duplicated the morning 1017 baseline and both sit on the pre-CAS anchor.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — floor-registry tests, AKX-AUTO-6/11 exercise criteria, Q38FN longctx unregistered floor
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — real-server shakedown result
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — master-registry floor decision, DS41 floor sensitivity
+- [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — cancelled post-CAS floor, grant context
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): the DS41-1017 noise floor is the only DS41 measurement that stands; everything else waits for AutoKernel
+**Confidence: verified** for the 24-pair floor and the W8c gate (recorded runs with named artifacts); **inferred** for the deferred tasks (filed, not run, runs cancelled).
+
+- **The DS41-1017 process-level serving floor is 2.862%** (unit = process, n = 24 A/A pairs, gating k = 5-pair compares; interval 1.974-5.757%; 7394 s; instrument `matched_process_v2`). It is valid ONLY for build `cpu-20261020-dd3d9721c`; the sensitivity check found every exclusion variant lower, so it stands as decision-grade.
+- **Operator ruling 2026-10-22 08:4xZ: every DS41-1017 test except the noise floor is disregarded until AutoKernel kernel work is done** ("not meaningful until kernel research work has been performed first"). Deferred, runs cancelled, NOT done: the champion-vs-C2 DS41 compare (it was mid-run, launch 2 of 10), W6.2, W6.1, W5.1a, W5.1a-floor, W8a, T3.2, T3.3c, T5.1.1, C7.2, CONF.1, T7.1a. Reopen when AK kernel work has landed. W5.1a-floor (post-CAS floor) additionally waits for the operator to launch AK on a changed anchor.
+- **A new anchor needs its own floor.** 2.862% does not carry to the post-C2 / post-W5.1a epoch; W8a showed that adding `--longctx-surface` does not invalidate the decode floor (the long-context surface is a separate recipe with its own 24-pair floor), but `--serving-calibration-only` never calibrates that surface, so a prefill floor needs a small research patch first.
+- **DS41-W8c (CPU_REPACK correctness gate) passed 2026-10-22** on q1 (research 42daa0ac9): 8 calibrated cases / 72 rows, max anchor NMSE 2.93e-5, repack engaged on every case, both broken fixtures caught, 43 pytest pass. No DS41 keep may land without it live.
+- **Greedy output on DS41-1017 depends on thread count and load mode** (`-t 40` mmap vs `-t 48 --no-mmap` diverged from token 10, 244/256 tokens differ); gates and smokes must compare only same-config arms.
+- The Sept DSpark drafter is no longer needed once W6.2 was cancelled; its deletion (W7.2) is pending the operator.
+
+#### Source References (2026-10-22 sweep 7)
+- [handoffs/active/deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md)
+- [progress/2026-10/2026-10-21-ds41-w8a.md](../progress/2026-10/2026-10-21-ds41-w8a.md)
+- [progress/2026-10/2026-10-21-ak-repack-gate.md](../progress/2026-10/2026-10-21-ak-repack-gate.md)
+
+### Compiled Update — 2026-10-21 (wrap-up sweep 3: candidate C serving identity, CH-18/CH-19 notes, DS41 decode probes, DSA oracle)
+
+**Confidence: verified** for recorded test results; the GPU gates, the bundle gate and KPF-18 had not reported and are not recorded as results.
+
+- **Candidate C serving identity.** Greedy identity on own non-production-port servers: Qwen3.6-35B-A3B-MTP-Q8_0 (MTP on, 3 prompts x 256 tokens, `-t 24`) byte-identical to champion `dd3d9721c` on 3/3 with equal draft counters (302/179, 257/190, 317/174); Q38FN identical 3/3. Unit tests on the final build: `test-repack-parallel` 150/150 bit-exact, `test-gather-rows-e4m3-e8m0` pass, `test-dca` OK (chunk > ctx logits bit-identical to plain on qwen2/qwen35/qwen35moe), `test-exl3` ALL PASS, `test-qwen4exp-fused-rope` OK. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **Held out of C by ruling, not by measurement:** kv-prefix-fork p1r2 `14d603f3a` ("NOT a keep: its KPF-18 gate is still running") and the upstream pulls #30514/#30580 (CH-18: "never a cherry-pick onto v10"). Excluded by their own sources: V11-085 KVU-19b c2 (about 14% slower on aligned 4x8 verify, breaks skip-on == skip-off exactness 6/119), V11-087 MMQ J cap (negative, p=64 -12.6%), V11-089 `inf70/sync17-fix2` (measured regression -2.136%), V11-069 iqk IQ4_NL/MXFP4 allowlist (slower, changes output). Needs measurement, not default-on: V11-050, -051 (16-column cap GPU-unvalidated), -052 (n=1, pp4 -32% on the same run). ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
+- **Rule slip recorded in the ledger:** C's greedy servers ran at `nice -n 19` on q0 inside windows another agent's timing bench later held; the owner discarded and re-ran the affected timing legs. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **CH-18 upstream status (2026-10-20):** #30514 MERGED (not in champion), #26004 MERGED (champion port `1c999e15b`), #30574 MERGED (port `deb387b8b`), #30580 MERGED (not in champion; SWA threshold still at `server-context.cpp:3759` @ `dd3d9721c`), #30141/#29480 open. The frontdoor (draft_max 4) and :8083 (draft_max 7) pass `--spec-draft-n-max` but no p-min and the registry has no `draft_p_min`. CH-18.a: `server_response::recv_with_timeout` restarts its full 1 s wait on any task's notify, so a disconnected client's non-streaming request keeps computing and holding KV under load (0/5 cancelled). ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **CH-19 fused up/gate MoE path never engaged (vacuous test).** `ggml_can_fuse` requires each node to consume the previous one, but the gate MUL_MAT_ID does not consume the up MUL_MAT_ID, so the {MUL_MAT_ID, MUL_MAT_ID, GLU} predicate was always false and the fused-vs-unfused NMSE of exactly 0 came from running the unfused path twice. It was also env-gated (`GGML_CPU_FUSED_UPGATE`); the ONE-champion rule forbids env-only gates before fold. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **DS41 decode probes.** The speculative serial path returned no logprobs/top-5 for 491/512 rows, so the zero-tolerance diff's "16/16 diverge" is a missing-logprob artefact; at token-id level serial is 16/16 identical to plain and batched 11/16 (first divergences ctx512 p6 row 10, p7 row 22; ctx2048 p0 row 14, p1 row 29, p4 row 13), n=1 per cell. The n-invariance harness only identifies the first differing op (dense matmul `qr-0`, n-variant at n=2 row 0 in both encoding eras; n=1 control 0/3395 differ); about 99% of downstream nodes differ by propagation and `max_rel_diff` of 1e30-1e32 is a +1e-30-denominator artefact. DSpark T7.1 is NOT judgeable at the 5% threshold: the 410-node drafter graph accumulated 0 in the CPU probes, leaving only an upper bound (non-verify share 6.7-9.1%, median about 8.7%). ([DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
+- **DS41 top-k renorm and engram gate.** RoPE is anchored and MATCHES; the remaining difference is the top-k renorm epsilon (official `model.py:825` adds 1e-20, ours clamps 6.1035e-5 at `src/llama-graph.cpp:2260`). The engram gate `sgn = 1 - 2*step(-dot)` passes `test-dsv41-engram-gate` 14/0 (exact at +0.0, bit-identical elsewhere) but yields +1 at -0.0 where torch copysign yields -1. ([DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
+- **DSA indexer contract.** `test-dsa-sparse-attn-oracle` pass=11 fail=0: the sparse reference equals the dense-masked oracle bit-for-bit and invalid indices are rejected (`experimental/intake-fixes-20261020` @ `6b8291de5`). ([llama.cpp DSA contribution](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution))
+
+**Sources (sweep 3):** [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md); [llama.cpp DSA contribution](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution).
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): CPU serving depth, the slotdraft champion, EmbeddingGemma 2 on the stack, host reclaim
+
+**Confidence: verified** for the dated measurements named (evidence paths are in the cited notes); **inferred** for recommendations.
+
+- **Q38FN CPU serving: threads versus context depth (verified).** The `:8074` recipe's 48 threads (one per second physical core) had only been measured at roughly 0 to 530 tokens and before a BIOS change. On UD-IQ4_XS plus shared MTP: llama-bench at depth 0 gives prefill 212 (48 threads) vs 231 (96, +9%) and decode 31.2 vs 24.8 (-21%). In this binary the batch-thread setting governs every ubatch larger than one token, i.e. prefill and MTP verification, while `-t` governs single-token steps. Served prefill of a 4k tail is +21 to 29% with 96 batch threads at shallow depth, and all arms are within the 7% session drift band from 8k depth up. Served decode shows no resolvable thread effect at 32k or deeper (identical greedy outputs; about 29 to 30 tok/s at 32k, 25 at 64k, 16 to 17 at 128k). Depth costs decode -55% and prefill -60% from shallow to 128k irrespective of thread count, so the lever is the attention kernel, not threads. Recommendation `-t 48 -tb 96`, handed to AutoKernel as a runtime arm. Greedy output with MTP differs between launches at shallow depth (known speculative non-exactness) and matches at depth; at 128k a raw-completion probe puts about 98% on end-of-sequence first, a model behaviour on that prompt, not corruption.
+- **Champion advance (verified).** `dd3d9721c` (slot-file draft state and checkpoints) is the standing champion; store images `cpu-` and `gpu-20261020-dd3d9721c` were built with linkage proof (GPU image compiled and linked only; serving validation pending). After slot restore, MTP acceptance is 0.98 to 1.02 of live instead of 0.53 to 0.85. Details in [autonomous-research](autonomous-research.md). Branches cut from the prior tip rebase onto it. Two release manifests (llama v11: 93 rows, 42 already in champion, 24 pending; speech v2: 9 rows) now track every feature and exclusion; the v11 pull-fresh list still has to carry or consciously drop the upstream flash-attention race and accumulation fixes. A corrected speech-model figure: whisper.cpp measured 3.37% WER, 2.35% belongs to the faster-whisper CPU arm.
+- **Speech kernel thread scaling (verified).** The TTS kernel runs 23.9 ms/frame at 8 threads versus 96.2 at 1 thread when quiet, but 9,754 ms/frame at 8 threads with eight core-sharing spinners. Cause: spin-only graph barrier plus a throwaway threadpool per compute; the trigger is core sharing, not thread count. Rule: more than one thread only on claimed cores, else one thread per process. The frozen speech kernel is untouched.
+- **EmbeddingGemma 2 on llama.cpp (verified parity).** Model support was cut from production onto an experimental branch with two hand-resolved API gaps, then rebased onto the new champion without conflicts. Against the sentence-transformers FP32 reference: BF16 minimum cosine 0.99999, Q8_0 0.9993, no non-finite values; CPU op tests pass; linkage proven. Not yet shown: parity above 459 tokens (sliding window 1,024), served throughput, decode interference. A CPU timing screen (contended, not a speed claim) ranked BF16 about 3x and FP32 about 1.5x BGE-large FP32 on documents. Adoption lives in the draft stack-change package ([agent-architecture](agent-architecture.md)); it must not be signed before the patch set and migration gates exist.
+- **MI210 queue (verified).** Probe runs on the champion HIP build under the device claim with residency sampled: tilelang compile failure and the HIP width-invariance table are in [autonomous-research](autonomous-research.md). Short kernels keep VRAM small, so residency rests on KFD PID, device string and results, not VRAM size.
+- **Retirement and reclaim.** The uniform IQ4_XS Q38FN file was retired in favour of UD-IQ4_XS; every CPU-decode headline measured on the uniform file starts a new measurement era. Fifteen graveyard rows were recorded, and all three GPU shadow-lane tenant weights are gone (a new first tenant is a later program decision). Disk reclaim took the array from 29 GiB to 927 GiB free by removing verified-pushed worktrees and operator-approved models. The DS41 1017 swap is a download of a 467 GiB MXFP4-experts build, to be requantised to Q4_K using the 1017 activation statistics and compared against MXFP4 (KLD, speed) before serving; no Q4_K 1017 build exists in the required layout.
+- **Magnitude comparison docs.** The IQ layout comparison found only layout and scale-placement differences (packet widths 8 or 12 bytes, not 16); iqk already has the decode-then-int8-dot form, and its repack is gated off for IQ2/IQ3 (feeds a later kernel task). Documentation only, no compute.
+
+**Open questions:** whether `-tb 96` survives AutoKernel's runtime arm; GPU serving validation of the new HIP image; the as-served embedder legs. Cross-refs: [kv-cache](kv-cache.md), [benchmark-methodology](benchmark-methodology.md).
+
+#### Source References (2026-10-20 sweep 2, serving)
+
+- [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — thread/depth sweep, reclaim, EG2 parity, speech threads, manifests.
+- [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — champion fold and lane state.
+- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — fold ledger, builds; CH-18 is now in [v11-promotion-checklist.md](../handoffs/active/v11-promotion-checklist.md).
+- [All-devices program](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — GPU queue results.
+- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — throughput ratios used for serving.
+- [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — launch recipe and gates.
+
+
+### Compiled Update — 2026-09-23: DeepSeek-V4.1-Flash decodes on this stack — and two deltas that would have been silently wrong
+
+**Confidence: verified** for the port state, the commits and the throughput sweep (canonical CPU recipe,
+`taskset -c 0-95`, `numactl --interleave=all`, OMP stack, `GGML_IQK=1`, `-fa 1 -mmp 0`, binary
+`experimental/deepseek41-port-20260923` @ `7c18bb8c1`, build 10303, `DeepSeek-V4.1-Flash-Q4.gguf`
+482.97 GiB). The numbers are `llama-bench`, so **observation-grade**: no protocol id, np=1, no drafter.
+
+#### Key findings
+
+- **The port exists and it decodes.** Branch `experimental/deepseek41-port-20260923` @ `7c18bb8c1`, cut
+  off the AutoKernel champion `ak/champion/llama-cpp-ffc1bac82eec` — which is exactly
+  production-consolidated-v10 `ffc1bac82`, so the freeze was never touched. Four commits: arch + KV
+  adapter, the engram gather op, engram hashing/state/injection, the V4.1 graph. `The capital of France
+  is` → ` Paris. In the course of history,` (greedy, seed 42).
+- **`deepseek41` is not `deepseek4` with new numbers.** Its GGUF carries **raw HF config key names**, so
+  generic `load_hparams` fails before any V4.1 code runs and a per-arch **alias table** is required;
+  `compress_ratios` are {0,1,2} where our loader admitted only {0,4,128}; compressor and indexer tensors
+  exist on the **source layers only**; `rope_scaling.rope_type` is absent, so the generic reader silently
+  defaulted to *linear* and had to be forced to YARN. No per-block name compat map was needed after all —
+  all 36 names match, only presence differs. `build_arch_graph` **deliberately aborts** rather than
+  inherit V4's graph, which would have run plain SWA with compressor/indexer/engram never built.
+- **Two silent-wrongness deltas, caught by reading DeepSeek's reference and `antirez/ds4` instead of
+  inheriting.** (a) The hyper-connection pre-mix is **lagged one sublayer** — and that is *why*
+  `output_hc_*` is absent from the weights: the head reuses the last block's leftover mix, so the missing
+  tensor is a consequence of the lag, not an unspecified collapse. (b) `attn_factor` must be **literally
+  1.0**; inheriting V4's value would have been a logit-scale error on 38 of 40 layers. Neither would have
+  raised an error — both would have produced plausible, wrong logits.
+- **Engram is the shape of the problem.** 188.83 GiB of conditional memory stored as GGML `I8`
+  (264-byte rows: 256 E4M3 + 8 E8M0), addressed by a bit-exact hash the GGUF itself ships, at
+  **48 rows per token** = ~12.4 KB of random reads on the decode critical path with zero prefetch depth
+  (the 4-gram suffix ends at the token just sampled).
+- **The artifact has no drafter.** `num_nextn_predict_layers=3` is the 3-block **DSpark** drafter, not
+  three next-token heads; antirez's converter omits every `mtp.*` tensor (1046 tensors, `blk.0-39`,
+  zero `mtp.*`), and vcruz's GGUF strips it too. The official shards 44-46 (~8 GB) carry it, and the
+  accept/verify loop **does not exist even in DeepSeek's own release**.
+
+#### First canonical throughput, and the operating point
+
+| test | t=24 | t=48 | t=64 | t=96 | t=192 |
+|---|---|---|---|---|---|
+| pp512 | — | 137.03 | 137.66 | **144.03 / 145.80** | 104.09 |
+| tg128 | 12.89 | **13.18** | 12.90 | 12.74 / 12.81 | 4.99 |
+| tg512 | — | **11.70** | — | 10.59 | — |
+
+**Prefill wants 96 threads, decode wants 48** — on a server that is `--threads 48 --threads-batch 96`.
+Both phases collapse at 192 (SMT siblings; decode −61%). Placement was proven **in-window**: four samples
+on the live process, resident 47.6 → 187.8 GiB, **25.0% on each of the four NUMA nodes at every sample**.
+The t=96 columns are two independent runs in one sweep and double as a repeatability control (0.5% on
+tg128, 1.2% on pp512).
+
+#### Open questions
+
+- Engram residency: v10 already auto-registers >4 GiB tensors as lazy mmap ranges with
+  `POSIX_MADV_RANDOM` — does that approximate antirez's 16-reader `pread` design for free? Measure
+  page-fault cost per decode step, **major vs minor**, before choosing (DS41-B9).
+- Sparse attention disposition (dense mask vs real gather) and the top-k / candidate-block cap semantics
+  are unmeasured here; vcruz's branch is still a mask, ours is a gather (DS41-T2).
+- Reference parity (T3) is open, including F32-vs-bf16 rounding; the official harness is a TypeScript
+  agent framework and **not** a usable parity instrument.
+
+#### Source References (2026-09-23)
+
+- [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — INF-77:
+  artifact identity, the B10 KV-adapter corrections, B7/B8/B9 Engram scope, B13 DSpark, the T6 sweep.
+- [2026-09-23 — main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md) — the four port commits, the
+  decode smoke, the operator max-performance directive and the `-t 48` preliminary recipe.
+- [2026-09-23 — main-kernel](../progress/2026-09/2026-09-23-main-kernel.md) — the champion
+  fast-forward review that fixes the branch point (`ffc1bac82` → `8df1b5cf2`).
+
+### Compiled Update — 2026-09-18: the id-only readout re-measured at n=4, and two mechanisms behind fan-out losing on this GPU
+
+**Confidence: verified** for the run (frozen-v9 HIP server, Qwen3.6-35B-A3B-Q8_0, MI210, 4 slots, ctx 131072, fa on, temp 0, host threads `taskset -c 184-191`, `LD_LIBRARY_PATH` pinned to `build-hip/bin`; launched and killed by the session, VRAM 59% in all 24 in-run samples). These correct the 2026-09-17 section below, which was one run per arm.
+
+#### Key findings
+
+- **Corrected readout, n=4 alternated rounds, same catalogue and state hash**: JSON 14.02 ± 1.82 s; `full` 6.52 ± 0.05 s (2.15x); `short` 3.03 ± 0.12 s (4.63x); **`id_only` 1.46 ± 0.03 s (9.60x)**; `pq1` (1 slot) 2.09 s (6.69x); `pq3` (3 slots) 5.24 ± 0.93 s (2.67x); `pq3_id_only` 2.27 ± 0.45 s (6.17x). Agreement 15/16 in every round. The native times reproduce the 09-17 numbers; the 09-17 JSON baseline (19.3 s) does not — it is above the four-sample maximum here. Per decision (16 native vs 24 JSON) the id-only lead is 6.40x. The 09-17 acceptance is under TD-1d.0. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [td1d-remeasure](../progress/2026-09/2026-09-18-td1d-remeasure.md))
+- **Concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`** (TD-1d.2b; filed as TD-1d.2, renamed 2026-09-26 after the id was reused): parallel wall == serial wall, max 1 slot busy. This is the primitives-layer counterpart of the `heavy_model` lock observation and constrains every fan-out design on this stack, not just typed decisions.
+- **`qwen35moe` is hybrid-recurrent (SSM layers), so prefix reuse is checkpoint-quantized** (TD-1d.3). Back-to-back per-question reads on one slot reuse **0** tokens (~450 ms each) unless a prefix-only request first leaves a checkpoint at the prefix end (then `cache_n` 1105, ~128 ms/read); under 3-way concurrency they stretch to 585–900 ms. Any prefix-cache reasoning about this model class has to include the checkpoint boundary.
+- **`/v1/chat/completions` forwards neither `grammar` nor `json_schema`** (TD-1d.1): through `frontdoor` the native arm produced 515 free-form tokens and 0/24 decisions. Every measured arm used a direct `/completion` adapter. No typed-decision arm is deployable through `LLMPrimitives` until `/v1` forwards the fields for internal callers or a declared direct lane exists.
+
+#### Open questions
+
+- Is the checkpoint-quantized prefix reuse specific to `qwen35moe`, or does every hybrid-recurrent GGUF on this server behave the same way?
+- Does a prefix-only warm request per slot make option (b) viable, or does the `inference_lock` make the question moot?
+
+#### Source References (2026-09-18)
+
+- [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — server recipe, residency proof, the table.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1d.0–TD-1d.4.
+
+### Compiled Update — 2026-09-17 (wrap-up sweep: the typed-decision readout measured on the worker — 11.98x native at parity, and the generation-API limit behind it)
+
+**Confidence: verified** for the worker runs (Qwen3.6-35B-A3B-Q8_0, MI210, frozen-v9 HIP server launched and killed by the session; one run per cue style on a 24-question fixture); **external** for the intake contrast figures. These are worker-throughput observations, not serving headlines.
+
+#### Key findings
+
+- **The local one-pass typed readout is now measured end-to-end, not just cited.** TD-1's JSON arm ran the 24-question fixture 24/24 clean (36.7 s on the 27B). TD-1b fixed the native candidate path to tokenize candidates through the server `/tokenize` seam and build exact-token grammar terminals, so the earlier 23/24 `native_unknown_candidate` failures fell to zero; candidates that tokenize to multiple tokens are explicitly unsupported and fall back to JSON (8/24 on this fixture). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-1d cue sweep, same 35B / same fixture / one run each**: JSON 19.3 s / 1,354 tok; native `full` cue 7.3 s (2.66x) / 523 tok; `short` cue 3.2 s (6.0x) / 239 tok; **`id_only` cue 1.6 s / 112 tok = 11.98x**, all three native styles at 15/16 agreement and 15/16 accuracy on the overlap (JSON 14/16 on the same 16). The prompt catalogue carries the grounding; the id-only cue re-anchors position. TD-6 (adopt `id_only` as the native default after review) is open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
+- **The multi-slot logit readout does not exist in llama-server's generation API, so the vendor's parallel-sampler shape stays out of reach.** Parallel per-question native reads were tested and rejected on this stack: the exclusive `heavy_model` lock serializes workers (client concurrency 0.65x vs batched) and the generation API exposes no multi-slot logit readout. Batched fan-out is the available lever instead: 1.54x at small state (100% agreement), 3.22x long-context (three 40k-char states), and 2.2x at 87.5% agreement on the real 24-question catalogue (TD-3b, 17.2 s batched vs 37.9 s singleton). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **The native arm fails closed, and its speed is not a serving authority.** A failure surfaces as a typed error (`native_unknown_candidate`) rather than a wrong answer; semantic parity had to be earned separately (TD-1c: the 5/16 disagreement was prompt cueing — later positions were conditioned on prior answer tokens — fixed by replaying each question's cue as tokenized grammar terminals). Confidence is **not** calibrated (ECE 0.0625 on the 27B, 0.267 on LFM2.5-2.6B), so no gate may threshold on it. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [benchmark methodology](benchmark-methodology.md))
+- **The write side was wired before the runs.** `scripts/vidya/adapters/typed_decisions_measurement.py` projects the TD-2/TD-3/TD-4 receipts into self-hashed ClaimTuples (VB-TDP-1, write side first); a bench report is refused as a non-measurement. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+
+#### Open questions
+
+- Does the id-only cue's 11.98x hold across a second run and a second model, or is it a single-run artifact?
+- Does any runtime in consideration expose a multi-slot logit readout, or is batched fan-out the ceiling for the parallel-sampler shape?
+
+#### Source References (2026-09-17 wrap-up sweep)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1b/1c/1d, TD-3b, the cue sweep and the parallel-read rejection.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the four implementation rounds and the worker runs.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side rule.
+- [benchmark-methodology.md](benchmark-methodology.md) — the contamination/calibration/fan-out measurement design.
+
+### Compiled Update — 2026-09-17 (research-intake delta: compiled specialists on the frozen stack, and the honest one-pass speedup)
+
+**Confidence: verified** for the filings and the license ruling; **external** for the intake figures (dive-verified primary sources; the 5.21x was measured on a 3090, not this host). The re-opened PAW line and the local typed-decision readout both target the frozen v9 stack.
+
+#### Key findings
+
+- **PAW is artifact-available but not officially self-hostable.** Compiler weights (2026-06-07) and FuzzyBench eval data (2026-02-17) both predate the 2026-07-11 "compiler is CLOSED" blocker recorded in intake-811 — the re-open trigger is MET on availability. An unofficial MIT self-hosted compile server compiles for the default Qwen3 compiler (intake-1481#record), with no ROCm proof, and the Compact GPT-2 SDK-compat claim was overturned. Independent eval on one adversarial task: standard 94 / finetuned 97 / compact 85 (n=100, author labels); semantic abstention 98.9% on decided cases while logit-confidence thresholding fails (intake-1482). ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
+- **License scope is resolved for internal work only.** Operator ruling (OP-43 closed 2026-09-17): "everything we do is internal research" — the unlicensed weights, the FuzzyBench dataset (43,128 + 7,550 rows, no train split) and the 7,226-program corpus are usable internally; no redistribution, no deployed-service use, no shipping of outputs. Distribution would re-open the question.
+- **The local target question is open on economics, not capability.** PAW-2 must prove one end-to-end compile to a GGUF-ZIP `.paw` and one local call, including whether CPU-only is workable before MI210; whether the Qwen3-0.6B interpreter (594 MB Q6_K) is fast enough per call for always-on loops versus the current cheap-first models is filed as an open question.
+- **The local one-pass readout's real numbers.** A fully local pinned implementation measures **5.21x vs same-model JSON on a 3090** and 20.03 decisions/s under parallel reuse (intake-1487); the honest pattern range is **3.4–7.9x**, not the vendor's 40–200x (intake-1474). Reuse drifts 5–6 of 777 argmaxes under BF16 — acceptable only where the consumer tolerates it.
+- **No gate before calibration.** Candidate-softmax confidence is uncalibrated: 65% of a 7B's wrong fields scored >0.90 (intake-1474), and the owner stub makes local ECE/reliability (TD-2) the prerequisite for any gated use.
+- **Write-side wiring precedes the first PAW/TD measurement run** — one self-hashed ClaimTuple per run at the vidya source table (VB-TDP-1). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+
+#### Open questions
+
+- Compile-once economics without an accelerator: compile wall time vs adapter lifetime on this host.
+- Does intake-1482's abstention finding transfer to our task slices, or is it task-specific?
+
+#### Source References (2026-09-17 research-intake delta)
+
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — availability, license scope, PAW-2/PAW-3, and the open economics.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the local one-pass mechanism (TD-1a) and the TD-2 calibration gate.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side requirement.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's verified findings of record.
+
+### Compiled Update — 2026-09-17: the rtx6kpro steals, measured — two held, one was a no-op, one was ruled out, and one external noise figure does not exist here
+
+**Confidence: verified** for our own runs on champion `ef81196d5` (unit = launch, residency proven on every launch). The external figures they answer keep their `external` grade from the 09-08 section below.
+
+Four of the five hypotheses this page took from the rtx6kpro field wiki on 2026-09-08 now have local answers. The pattern is that the external observations transfer only after they are checked against our own source tree. A knob can be clamped or ignored by our build, and a noise band measured on another stack can be zero on ours.
+
+#### Key findings
+
+- **The p-min half of the n-max × p-min sweep was a no-op.** On our DFlash2 build the drafter's block size is 8, so `--spec-draft-n-max 8` is clamped to 7, and the DFlash2 draft branch never reads `p_min`. The external per-position acceptance-decay argument therefore did not apply as posed. The longest block still wins at every in-flight level: +30% vs n4 at np1, +21% at np2, +16% at np4, and +5% (inside the floor) at np8. Verifier steps/s falls 19% at np8, as the external S6 predicted, but tokens/step rises faster. ([dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
+- **The A/A losslessness control: the external identical-checkpoint noise (95.24 vs 90.69) does not exist here at temp 0.** Every arm reproduces itself 12/12 byte-for-byte across fresh processes. Pass counts are deterministic per (build, arm, prompt). ([dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
+- **The RNG-entanglement lead is ruled out.** The drafter and verify samplers are separate objects, and at temp 0 / top_k 1 no RNG is drawn. The shared failing indices come instead from the batched-verify numeric split. Under a 1-row serial verify (`LLAMA_SPEC_EXACT=serial`), both spec arms are 12/12 bit-exact. The divergent tokens had top-1/top-2 logit margins of only 0.005–0.079. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md), [dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
+- **The steps/s keep-gate metric is only partly available.** The champion server counts verify steps but does not export them, so the loop reports an estimate (`predicted_n − draft_n_accepted`) and the gate is unchanged. ([sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
+- **The long-context and sustained-C8 cell (SL-4) is still unrun**, so the external "DFlash2 −19% at sustained C8" vs our +47.8% contradiction stays open.
+- **The same caution applies to MTP.** On production v9, the Qwen3.8 MTP n-max 8 grid came out below the older n-max 4 grid at np≥2 (cross-session observation). A single-stream depth optimum is therefore not assumed to hold for batched local serving. See [Inference Serving](inference-serving.md). ([gpu-candidates](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update))
+
+#### Open questions
+
+- SL-4: the ~32k context cell and the sustained-C8 cell.
+- A same-window MTP n-max 4 vs 8 ABA at np≥2.
+
+#### Sources
+
+- [dflash2-block-drafter-experimental-build.md](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build): the SL-1, SL-5 and DF2-8 results.
+- [2026-09-16-sub-akfix.md](../progress/2026-09/2026-09-16-sub-akfix.md): the DF2-RNG source reading.
+- [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the SL-2 estimator.
+- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update): the MTP n-max 8 grid.
+
+### Compiled Update — 2026-09-08: the rtx6kpro intake — a same-class local-GPU field wiki, read for our hypotheses
+
+**Confidence: `external`** — third-party measurements (the intake's own credibility audit: ~35% rigorous-with-conditions, ~35% measured-but-underconditioned, ~20% attributed Discord anecdote — several retracted in-repo — ~10% config dumps). Zero llama.cpp/GGUF and zero ROCm content; every CUDA item was dispositioned with a gfx90a/HIP analog or an explicit "no analog".
+
+The intake record ([`docs/research-intake/rtx6kpro-20260907.md`](../docs/research-intake/rtx6kpro-20260907.md), source pinned at upstream `44e817b`, 739 commits / 399 pages, active to 2026-09-07) is a community field wiki for exactly the class this page covers — serving frontier open-weight models on ONE 96 GB-class workstation GPU (NVIDIA RTX PRO 6000 Blackwell: SM120, 96 GB GDDR7, PCIe, no NVLink) with vLLM/SGLang plus their own kernel library. The local-serving-relevant steals, each filed to a local row:
+
+- **`--spec-draft-n-max` × `--spec-draft-p-min` sweep under np4** — p-min has never been set on any GPU arm here; external per-position acceptance decay says draft positions 6–8 carry 10–30%, and n-max 7 makes the np1 verify batch exactly 8 (confound-free test of the MMQ-verify premise). Filed SL-1.
+- **Verifier steps/s as the serving keep-gate metric** (`tok/s = steps/s × accepted/step`; only steps/s is a kernel property). Filed SL-2.
+- **A long-context (~32k) cell + arm-order randomisation in the serving gate** (external: cc64 reads −15–20% after a 128k sweep; spec gain can collapse with context for some quants) — doubles as the sustained-C8 cell against external "DFlash2 −19% at C8" (vs our +47.8%). Filed SL-4.
+- **An A/A control on the losslessness gate** before 7/12-vs-5/12 is read as a difference. Filed SL-5.
+- **Draft RNG entangled with acceptance RNG** — the lead for why both DFlash2 AND `draft_simple` fail at identical indices (34/216/238). Filed DF2-RNG.
+
+Full dispositions: [Speculative Decoding](speculative-decoding.md) (SL-1/2/4/5, DF2-RNG, RULE-RESCOPE), [Hardware Optimization](hardware-optimization.md) (kernel candidates AK-H-*, the MMQ-M=9..36 serving-verify finding, protocol rows R23-46/47, and the INF-70 CPU-path note).
+
+**Contradictions with our record worth keeping visible** (flagged, not resolved): their spec-dec-vs-concurrency numbers contradict the "single-stream only" rule (RULE-RESCOPE filed); external "DFlash2 −19% at sustained C8" vs our +47.8% at 8 in-flight; their HIP-graph "4.3×" is vs an eager baseline while ours is +4..14%; power: they scale +30% at C64 from 300→600 W while our MI210 draws ~200 W of its 300 W — **re-check draw DURING np4 serving** (only proven under llama-bench/GEMM windows so far).
+
+**Not transferable here:** GDDR7 memory overclock (+7–10% decode there) — MI210 HBM2e has no overdrive exposed under ROCm 6.2 on Instinct, and we run at 47% of HBM bandwidth, so clock is not binding (named, declined); FP8 KV as a hardware cast; NVFP4 weights/KV; vLLM/SGLang scheduler/loader/allocator internals; DCP-replicated drafts; WSL; multi-GPU PCIe/NCCL/topology. Their Qwen3.8 TP1/TP4 absolute numbers are not comparable to a 64 GB HBM2e llama.cpp Q8_0 path, and all their kernel-level numbers are CUDA-only (no HIP analog).
+
+#### Source References (2026-09-08, rtx6kpro)
+
+- [`docs/research-intake/rtx6kpro-20260907.md`](../docs/research-intake/rtx6kpro-20260907.md) — credibility breakdown, the filed-candidate destinations, contradictions 1–10, and the complete not-transferable/deferred list.
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — SL-1/2/4/5 and DF2-RNG filing rows.
+
+### Compiled Update — 2026-07-31: a `LD_LIBRARY_PATH` ordering landmine silently redirects fresh ggml builds to the frozen production kernel
+
+**Confidence: verified** — reproduced by a standing guard script; direct artifact read of the two
+offending config lines.
+
+#### The mechanism
+
+`/etc/environment:5` and `.devcontainer/devcontainer.json:57` both place the **frozen production**
+kernel's `build/bin` early in `LD_LIBRARY_PATH`, on the reasoning that production tooling needs to
+find the production libraries there. The unintended consequence: **any freshly built ggml-based
+binary on this host** — whisper.cpp, `qwentts.cpp`, `llama.cpp-experimental` — resolves
+`libggml-base` / `libggml` / `libggml-cpu` from the **production tree first**, ahead of its own build
+directory, unless the invocation explicitly overrides the search order.
+
+This is exactly what happened building the HIP whisper leg of the 2026-07-31 speech work (see
+[Multimodal](multimodal.md)): a HIP-built `whisper-cli` loaded the production **CPU-only** ggml,
+found no GPU backend, and ran the entire job on CPU — **while printing `use gpu = 1`**, because that
+flag reports what was *requested*, not what was actually loaded. GPU backends are `dlopen`ed at
+runtime and are therefore invisible to `ldd`, which is why this survives casual review: the binary
+launches, reports a device, and produces plausible numbers.
+
+#### Why this is worse than an ordinary misconfiguration
+
+The failure mode is **silent and produces plausible output**. A CPU-only fallback that crashed, or
+that logged a visible warning, would be caught immediately. This one does neither — it is the same
+"fail-open default conceals its own corruption" shape as other host-hygiene incidents on this project,
+applied to shared library resolution instead of a service flag. Had nobody checked, CPU numbers would
+have been published and labelled GPU.
+
+#### The guard, and the fix
+
+`scripts/utils/verify_ggml_linkage.sh` reproduces the defect: of the five ggml-family shared
+libraries a freshly built binary needs, **3 of 5 resolve from the production tree** even in a build
+that also correctly picks up `libggml-hip.so.0` from its own directory — a mixed state that still
+initializes and still reports a device, which is precisely why it is easy to miss on casual review.
+The fix is **per-invocation** (prepend the project's own `build/bin` ahead of the production path for
+that one command), **not** editing `/etc/environment` — production tooling genuinely depends on
+finding the production libraries there by default, so the global ordering is not itself wrong, only
+unsafe to inherit unmodified into a fresh build's environment.
+
+#### The generalizable rule
+
+**Every future ggml build on this host is exposed to this**, not just the ones already discovered.
+Any session building whisper.cpp, an experimental llama.cpp branch, or any other ggml-based project
+on this host must run `scripts/utils/verify_ggml_linkage.sh` (or equivalently prepend its own
+`build/bin`) before trusting a "GPU" number from that binary — `use gpu = 1` in the log is not
+evidence the GPU backend was actually loaded.
+
+#### Source References
+
+- `epyc-inference-research` commit `7f310022` — commit message cites `INC-20260731-ggml-linkage-silent-cpu-fallback`; the `verify_ggml_linkage.sh` guard and its 3-of-5 reproduction (as of this compile, that incident ID is not yet a filed heading in `docs/reference/agent-config/INCIDENT_LOG.md` — the commit is the primary record)
+- [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §18, the landmine summary and the "every future ggml build is exposed" scope statement
+- [Multimodal](multimodal.md) — the HIP whisper build this defect was first caught on, and the corrected STT measurement it fed into
+
+### Compiled Update — 2026-07-20
+
+v7 is promoted as `production-consolidated-v7` at frozen candidate `6ad45fa3ff` (binary `10098`). Two new reference artifacts organize the local-serving picture: a **deployed-lane throughput table** (what each role actually runs today) and a **living model-probe scoreboard** (how every candidate model/quant performs, all observation-grade). Confidence: `verified` for deployed CPU-lane facts and the OP-2 canonical control; `observation` for every MI210 throughput row that has not been rerun under `P-GPU-1`.
+
+#### Key Findings (2026-07-20)
+
+- **v7 promoted; cutover complete.** Frozen-candidate gates were green: K5 quality +0.0%, OP-2 CPU-regression PASS (frontdoor Q8 tg128 canonical control `12.44 t/s`), final coherence+garbage smoke 4/4 non-vision + 3/3 vision, upstream-ahead narrow audit applied, live quarter-mode smoke `21/21`, and attestation clean except `gitnexus_stale_or_error=4`. The reviewer/control-plane route is **decoupled** from v7 (GLM failed P-REV-1, no clean replacement), so the banked production-model wins are no longer held hostage to it. ([v7-promotion](../handoffs/completed/v7-promotion.md))
+- **Deployed-lane throughput (each "CPU opt" is the fastest deployed spec-dec+OMP config, NOT a no-spec baseline):** frontdoor Qwen3.6-35B-A3B Q8 native-MTP ~34.5 CPU / 119.7 GPU-MTP; worker gemma-4-26B-A4B Q4KM `ngram-mod,draft-mtp` 126/97/83 t/s (2K/8K/14K); architect Qwen3.5-122B UD-Q4KM 23.5/20.7; ingest Qwen3-Next-80B-A3B Q4KM 20.5/15.9/9.7; GLM-5.2 UD-IQ2 CPU-only 2.49→5.33 MTP. The MI210 fits everything but the 122B-Q4 architect and GLM-5.2 (~238 GB) — those are CPU-only. ([v7-stack-throughput-full-optimization](../docs/reference/v7-stack-throughput-full-optimization.md))
+- **Model-probe scoreboard (living, glance-able, all OBSERVATION-grade):** clear wins = Qwable-v1 IQ4_XS MI210 (91–100 t/s), MiniCPM-o-4_5 Q4KM vision (111–127, `--reasoning off`), frontdoor 35B-A3B native-MTP, gemma-4-26B CPU worker (K5 +0.0%). Fast-but-quality-blocked = Bonsai Q1_0 (fails 6-word IF gate), Ternary Q2_g64 (6/8), gemma4 MI210 *natural free-form* (K11.1 nondeterminism, GPU-backend-path specific). Broken load = Ternary Bonsai Q2_0 (498/498 tensors short, noncanonical PrismML packing). Stop-list policy: **no speed-reruns without a named quality/loader/protocol/parser fix hypothesis.** ([model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md))
+- **CPU prefill is a real local lever for large/long-context models** — compute-bound `M>1` GEMM, distinct from the BW-bound decode roofline; the first landed experimental win is a default-off CPU `CONCAT` dim0 row-partition (`pp8192` +3–9% single-seq, batched prompt +22–54%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models))
+
+#### Open Questions (2026-07-20)
+
+- The frontdoor **CPU-MTP** context curve on v7 is a measured gap (only the ~34.5 prod point exists; K35 measured GPU-MTP).
+- GPU-worker eligibility for gemma-4 is unresolved (natural free-form multi-slot determinism fails, K11.1) even though the model fits.
+- At this 2026-07-20 boundary, architect ≥32K context throughput was
+  unmeasured and decision-grade reruns required the then-current
+  `production-consolidated-v7`. Current reruns use the production-named v8
+  kernel in the 2026-07-26 note above.
+
+#### Source References (2026-07-20)
+
+- [v7-promotion.md](../handoffs/completed/v7-promotion.md) — promoted v7 cutover evidence, reviewer decoupling, post-promotion certification follow-ups.
+- [v7-stack-throughput-full-optimization.md](../docs/reference/v7-stack-throughput-full-optimization.md) — deployed-lane vs candidate-bench table + provenance guards.
+- [model-probe-scoreboard.md](../docs/reference/model-probe-scoreboard.md) — living per-model/quant scoreboard, verdict buckets, stop-list.
+- [cpu-prefill-compute-large-models.md](../handoffs/active/cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models) — CPU-prefill regime + CONCAT dim0 lever.
+- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) — K11 gemma4 free-form determinism status.
+
+### Compiled Update — 2026-10-20: DeepSeek-V4.1-Flash moves to the 1017 finetune, and the disk reclaim reshapes what is servable
 
 **Confidence: verified** for the recorded rulings and state; the 1017 build has not yet been loaded or gated in the port.
 
@@ -652,7 +656,7 @@ The swap is a gated sequence, and its blocker is an external event: the download
 
 Disk is the other constraint. The 2026-10-20 reclaim deleted the stock and Fable-FF Qwen3.6-27B Q8 tenants and 15 models in all (graveyard rows recorded), which is why the shadow-lane bake-off arms need re-seating. Two open backlog items (NIB2-92: local claude-backups retention keeps 14 full ~7.7 GiB tarballs on the model volume; NIB2-93: about 250 GiB of the volume is invisible from the container, prime suspect the host docker root) both need operator host access or a decision.
 
-### Source References (2026-10-20 local-inference delta)
+#### Source References (2026-10-20 local-inference delta)
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — section W, DS41-W1..W8.
 - [DS41 1017 swap progress note](../progress/2026-10/2026-10-20-ds41-1017-swap.md) — rulings, the token-in-argv fix and deferrals with named blockers.
@@ -660,7 +664,7 @@ Disk is the other constraint. The 2026-10-20 reclaim deleted the stock and Fable
 - [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-92 and NIB2-93.
 - [Retire IQ4_XS-uniform progress note](../progress/2026-10/2026-10-20-retire-iq4xs-uniform.md) — the other artifact retired the same day.
 
-## Compiled Update — 2026-10-21 (sweep 5): the DS41-1017 cutover, with W5 ppl and the ABA timing table
+### Compiled Update — 2026-10-21 (sweep 5): the DS41-1017 cutover, with W5 ppl and the ABA timing table
 
 **Confidence: verified** for the recorded gates, deletions and commits. **Every timing number below is INDICATIVE** (operator ruling 2026-10-21). None of them is a baseline. The target-only baseline launches 2026-10-22 06:30Z on candidate C2.
 
@@ -689,12 +693,12 @@ DeepSeek-V4.1-Flash now serves the 1017 MXFP4-experts nine-shard build (501,602,
 - **W7 cutover.** The recipe was cut to the nine-shard trunk (research `ada2bf38a`). The Sept Q4 file (518,596,067,328 B) was deleted at 2026-10-21T19:00:05Z after `assert_not_mapped.sh` passed, and graveyard row 99 was recorded (research `7f2f7fece`). The 1017 smoke passed on both builds: the frozen request ran twice with identical 256-token outputs, the two builds are token-identical, and it served 16.8 to 17.2 tok/s. That single run makes no speed claim.
 - **W8.** The MXFP4 served-shape oracle (research `3cf5e5b0f`) is calibrated at anchor `06b169e27` with 360 + 8 routed cases. Two IQ3_XXS cases are held anchor-relative (an operator call). New flags are `--require-serving-floor` (`577f50d44`) and `--serving-calibration-only` (`c5997024e`). The new campaign `ak-ds41-1017-cpu-decode-20261021` supersedes `ak-ds41-cpu-decode-20260923`. The floor is booked 2026-10-22 18:00-22:00Z.
 
-### Open questions
+#### Open questions
 
 - Is 1017 prefill really slower than Sept Q4_K? The −29.9% pp512 is INVALID because of the protocol mix (DS41-W5-LBR). If a re-measure confirms the loss, is it a property of the `mxfp4_8x8_q8_0` repack that a kernel can recover (W8), or the price of serving vendor precision?
 - Does the 1017 drafter's alpha deficit survive more pairs (W6.2)?
 
-### Source References
+#### Source References
 
 - [DeepSeek V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — W5 to W8 items, the thread-count lesson, the W6 drafter and the W7 deletion.
 - [Progress ds41-w5](../progress/2026-10/2026-10-21-ds41-w5.md) — W5 correctness gates and the capture wiring.
@@ -702,7 +706,7 @@ DeepSeek-V4.1-Flash now serves the 1017 MXFP4-experts nine-shard build (501,602,
 - [Progress c2-regate](../progress/2026-10/2026-10-21-c2-regate.md) — the same-config control behind the determinism lesson.
 - [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md) — what two concurrent 1017 servers did to the host.
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **KPF-64 prefix-cache checkpointing is the whole effect.** Eight arms: no checkpoints and no RAM tier realised 90.2% against an ideal 93.9% (gap 3.7 pp); 32 checkpoints at cache-ram 0 / 2048 / 32768 cut the gap to 0.35 pp. Contrast -3.43 pp [-5.43, -1.92], replicated in pass 2; pooled checkpoint effect -3.87 pp [-6.42, -1.99]. B/C/D pairwise contrasts are null, so the RAM tier adds nothing measurable at 4 lineages and production frontdoor needs no change. Fan-out was not exercised (child share 0%).
 - **Speech D1: Qwen3-Omni-30B-A3B passes** (load ok, all coherent, ASR recall 1.0; 56.19 GiB VRAM after load, 56.92 peak, 5 modules on CPU). Step-Audio-2-mini loaded (15.53 GiB) with coherent text but incoherent audio (recall 0.059): with transformers 4.56 or later, an always-present empty cache makes `prepare_inputs_for_generation` drop the audio input, a cause found by code reading and not yet confirmed on GPU.
@@ -711,21 +715,21 @@ DeepSeek-V4.1-Flash now serves the 1017 MXFP4-experts nine-shard build (501,602,
 
 Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
 **Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+#### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2121#record (DeepSeek-V4.1-Flash-1017 model card): Verified the vendor sampling recommendation (T=1.0, top_p=1.0), a config/tokenizer/tensor map identical to the local September snapshot (sha256), and two reference-code deltas. Verdict already_integrated; linked to deepseek-v41-flash-evaluation.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 10 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+#### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
 
 - intake-2347#record (mudler/parakeet.cpp): narrowed the WER-vs-NeMo and Ultra/Redux validation claims without overturning any; the leading candidate runner for a Parakeet TDT v3 STT arm (CPU first, HIP gfx90a an untested build item). Its RTFx is not EPYC/MI210 data and its ggml 0.13.0 is a separate generation. Integrated via conversation-stack.
 - intake-2349#record (NVIDIA NeMo-Speech.cpp): vendor reference ggml runtime, strong for Nemotron streaming, but second choice to mudler/parakeet.cpp for our Parakeet TDT bake-off: .nemo-only converter, no HIP wiring, offline TDT only. Integrated via conversation-stack.
@@ -733,27 +737,27 @@ Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.
 - intake-2359#record (transcribe.cpp): multi-family C/C++ ggml speech-to-text library, dive-verified at creation, the runtime behind several Parakeet GGUF entries. Integrated via conversation-stack.
 - intake-2371#record (wavo Rust STT): verdict not_applicable: a young, AI-written, offline-only Rust runner for the GGUF files transcribe.cpp publishes, with Apple/NVIDIA speed claims and no accuracy, streaming or AMD Instinct evidence. Disposition knowledge_only; linked to conversation-stack.
 
-### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
+#### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
 
 - intake-2516#record (llama.cpp issue 31385 unsloth DS41 eval bug): whole thread read; independent evidence that unsloth quants with an MXFP8 table (UD-Q4_K_XL and others) cannot run correctly on current upstream llama.cpp. Does not affect our DS41 port, which rejects type 43 cleanly. Linked to deepseek-v41-flash-evaluation.
 - intake-2521#record (llama.cpp issue 31263 GSQ-RCO DS41): confirmed: pre-#31086-layout DS41 GGUFs do not load on upstream, while unsloth quants without an MXFP8 table do. Verdict already_integrated; disposition knowledge_only.
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2573#record (Hex voice dictation (transcribe.cpp)): the STT path is a thin Rust wrapper over transcribe.cpp and adds no new runner; evidence only that transcribe.cpp 0.4.1 serves Parakeet Unified streaming on Vulkan, with self-reported inconsistent WER/xRT. Disposition knowledge_only; linked to conversation-stack.
 - intake-2585#record (llama.cpp PR 298 Ouro looped LM): unmerged community port, Metal-validated, with static load-time looping (no early exit or per-token loop count), decode and KV cost about R times, and no x86 number. Integrated via gpu-acceleration-path and gpu-serving-tie-in-program.
 - intake-2586#record (llama.cpp PR 25994 Nanbeige4.2): confirms merge and mechanism: upstream has had a static looped-arch path since 2026-07-27, absent from v10; porting to an experimental branch is a cherry of about 265 lines, and each loop re-streams the full weights. Integrated via gpu-acceleration-path.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+#### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
 
 - intake-2201#record (Cudila llama.cpp cvec-hooks commit): Diff showed the commit-message figures are unbacked, and v10 qwen4exp has no build_cvec call so control vectors are ignored; a stale qwen35 no-build_cvec note in the reasoning-compression handoff was found. Worth investigating; integrated.
 
-## Compiled Update — 2026-11-06 (local C6 launch matrix, operator support)
+### Compiled Update — 2026-11-06 (local C6 launch matrix, operator support)
 
 **Confidence: verified** — same-host screening, not a formal measurement claim. One server at a time under `region-lock`; fixed wikitext2 prompts; greedy `/completion`.
 
@@ -765,9 +769,36 @@ Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.
 
 Sources: [progress](../progress/2026-11/2026-11-06-inference-serving-launch.md) · [artifact](../artifacts/compute/local-launch-optimization-20261106/) · [launcher](../scripts/session/launch_local_inference.sh) · [C6 handoff](../handoffs/active/kernel-champion-and-promotion.md)
 
-## Compiled Update — 2026-11-07 (on-device packaging patterns)
+### Compiled Update — 2026-11-07 (on-device packaging patterns)
 
 - **The reusable part of Foundry Local is lifecycle, not inference**: detect hardware, resolve the best precompiled per-device variant, cache it locally, and expose a typed item/session API with capability metadata. Port cost for the detect-to-select pattern without the downloader is 4-6 engineer-days (RTG-VAR-1/2).
 - **Its constraints are real for our workload**: no GGUF path, no AMD GPU provider shipped, no continuous batching or request queuing, and no published throughput numbers.
 
 Sources: [Foundry Local dive](../research/deep-dives/harness-inference-20261106/intake-2651.md)
+
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): Inkling 2 Mini port cost, DeepSeek-V4.1 loader and GPU host-thread pinning
+
+- **Inkling 2 Mini is a separate decision from the 2026-08-03 Inkling NO (INK2-MINI-1, arithmetic only, no compute).** Mini is Apache-2.0, 26.4B total, 3.4B active per pass and about 5.4B effective per token over 3 passes (intake-2805#record, intake-2798#record, intake-2812#record). Per-token weight bytes are about 3.2 GB (IQ4_NL experts + Q8_0 rest) or about 2.5 GB (all IQ4_NL), the same as the served 35B-A3B at the mixed quant and about 9x less than Qwen3.8-27B; bandwidth rooflines (assumed BW, not measured) are about 31-40 tok/s on a CPU quarter. The vendor-run scores tie it with Qwen3.8-27B (AA Index 20.1 each), so the case rests on vendor numbers until our own tasks measure it. KV (8 full + 40 SWA@1024 visit caches, f16) is 1.16 GiB at 32k and 4.16 GiB at 128k.
+- **Port cost onto champion C18 (`74c18e2d8`).** The CPU-runnable core (#32217 base arch, #32694 loop arch, #32704 scale-pass re-share, #32752 chunked mask, #32799 `ignore_merges`) is estimated at 6.5-9.5 agent-days; adding HIP FA (needs the per-head mask re-homed to `src[8]`/`src[9]` because `src[5]`/`src[6]` are qsa), iqk FA and the DSpark drafter brings it to 15-22. Recommendation recorded: GO for a CPU-first port with a measurement row before any HIP/iqk/DSpark work. The port (INK2-PORT-1a..1f, partial branch `llama.cpp-experimental-inkling2-20261122` @ `3d01b5e50`) and INK2-MEAS-1 are deferred by the operator until after the v11 promotion; production stays frozen ([model-evaluation-queue](../handoffs/active/model-evaluation-queue.md)).
+- **DS41-B2 loader contract PASS (metadata-only).** The native experimental loader traversed all nine 1017 MXFP4-experts GGUF shards, accepted architecture `deepseek41`, resolved 29 antirez metadata aliases, validated 1,046 tensor shapes/type layouts and rejected 1,046 deliberately incorrect shapes (experimental source `eee3da83`, `no_alloc=true`, `mmap=false`). Numerical parity, weight integrity and residency remain separate gates; B3-B5 (Engram FP8-row get_rows, hyper-connections, attention deltas) and K1 admission are still open ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [progress 2026-11-19](../progress/2026-11/2026-11-19-handoff-deepseek-v41-flash-evaluation.md)).
+- **DS41-W5d.1 qualification triage (2026-11-02).** The failed 2026-11-01 preflight of `codex3-ds41-w5d1-r1-20261031` cited a missing `verify_ggml_linkage.sh` that resolves in the checkout now; this is a historical observation, not proof a future qualification passes, and no duplicate row was published ([progress 2026-11-02](../progress/2026-11/2026-11-02-handoff-deepseek-v41-flash-evaluation.md)).
+- **GPS-PIN-1 launch-path audit.** Every orchestrator GPU/pinned spawn already applies `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (ROCr otherwise sets an all-CPU affinity attribute, leaving 1/196 threads on the pinned cores); the gap was in ROW launches (c14/c15 fold rows used `taskset -c 184-191` without `numactl --membind=3` or the knob). The owner-only remainder is the 1b reload; a pinned-vs-unpinned scatter row is prepared and unpublished ([workspace-58-champion-calibration](../handoffs/active/workspace-58-champion-calibration.md)).
+- **GPQA hybrid arm placement contract.** The Flash-Next arm uses UD-IQ4_XS (three shards, 93.68 GB) with external shared-Q8_0 MTP, target `-ngl24` and draft `-ngld99`, and the driver requires CPU and ROCm model buffers plus active-slot HIP/KFD/VRAM evidence (33 tests); the 27B DFlash2 and 35B-A3B MTP arms run on v10 build 10303. All were queued behind GPU occupancy ([model-evaluation-queue](../handoffs/active/model-evaluation-queue.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [model-evaluation-queue](../handoffs/active/model-evaluation-queue.md)
+- [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) · [progress 2026-11-02](../progress/2026-11/2026-11-02-handoff-deepseek-v41-flash-evaluation.md) · [progress 2026-11-19](../progress/2026-11/2026-11-19-handoff-deepseek-v41-flash-evaluation.md)
+- [workspace-58-champion-calibration](../handoffs/active/workspace-58-champion-calibration.md)
+- [architect-model-selection-bench progress](../progress/2026-11/2026-11-19-handoff-architect-model-selection-bench.md)
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): Inkling 2 Mini looped MoE in llama.cpp (intake 2798, 2805, 2806, 2812, 2814, 2815)
+
+- **Model facts (`intake-2805#record` supersedes parts of `intake-2798#record`)**: Apache 2.0; 26.4B total, 3.4B active for one pass, about 5.4B effective active per token because the 12-layer core runs three passes (the blog dive's "3B active counts all 48 visits" is overturned). 24 physical layers / 48 visits, 8 KV heads, head_dim 128, SWA 1024 on 20 layers and 4 full-attention layers, so long-context KV is 8 full-attention visit caches. Weights ship as ~20 GB mixed NVFP4 + MXFP8; the tensor split is not stated. A 3-layer DSpark drafter taps visits 5/23/41 and the final state at 48 ([Inkling blog](../research/deep-dives/intake-lpr-20261122/intake-2798-inkling2mini.md), [Inkling card](../research/deep-dives/intake-lpr-20261122/intake-2805-inkling2card.md)).
+- **Mainline support (PR #32694, `intake-2812#record`)**: the loader expands 24 physical layers to 48 slots (shared weights, per-visit KV and conv state), the loop is unrolled in C++, and relative position bias is a dense per-head F16 mask fed as mask+bias+sinks; compute-buffer explosion at long context is a known defect. PR #32752 (`intake-2814#record`) builds that mask in chunks (about 2.6-2.9x smaller compute buffer, e.g. 200k 19.13 -> 6.88 GiB) but does not remove the O(n_kv x ub) mask; the structural fix is gathering the bias by distance inside the FA kernel. PR #32799 (`intake-2815#record`) adds ignore_merges for token-ID correctness, no PPL number ([pr32694](../research/deep-dives/intake-lpr-20261122/intake-2812-pr32694.md), [pr32752](../research/deep-dives/intake-lpr-20261122/intake-2814-pr32752.md), [pr32799](../research/deep-dives/intake-lpr-20261122/intake-2815-pr32799.md)).
+- **Historical / superseded: PR #32695 looped-arch fork path (`intake-2806#record`)**: one GGUF block per visit; third-party GGUFs from it misload (714 vs 734 tensors) and the converter rejects variable-loop checkpoints that mainline supports ([pr32695](../research/deep-dives/intake-lpr-20261122/intake-2806-pr32695.md)).
+- For EPYC: the champion has no Inkling arch; biased FA is covered under hardware-optimization (PR #32740), and the NVFP4 scale fix (PR #32704) under quantization.
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [digest 2026-11-22 ids 2789-2823](../research/deep-dives/intake-digests/2026-11-22-ids-2789-2823.md)
+- [Inkling 2 Mini blog](../research/deep-dives/intake-lpr-20261122/intake-2798-inkling2mini.md), [Inkling 2 card](../research/deep-dives/intake-lpr-20261122/intake-2805-inkling2card.md), [pr32694](../research/deep-dives/intake-lpr-20261122/intake-2812-pr32694.md), [pr32752](../research/deep-dives/intake-lpr-20261122/intake-2814-pr32752.md), [pr32799](../research/deep-dives/intake-lpr-20261122/intake-2815-pr32799.md), [pr32695](../research/deep-dives/intake-lpr-20261122/intake-2806-pr32695.md)

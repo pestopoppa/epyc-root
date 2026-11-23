@@ -2,42 +2,7 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-11-19 (wrap-up: HS-TD-1 risk/intent screen, validate-first shadow). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (DAR-SPLIT-1 re-run, RTG-DUR-1, RTG-RETRAIN-1, EG2 boundary, regret decision). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): LRC-SDM cached screen fails coverage and gain criteria; availability-aware action scorer shipped flag-off. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the learned-routing extractor defaults to the requested DB (LRC-RI-EXTRACT-SOURCE). Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: RI-16 measured — routing costs ~0.6 s p50 / ~1.2 s p95 before generation; RI-18 review gate scored DROP under its pre-registered clause 1, net −38.3 per 100 items, the production gate never fires; RI-18c applies it; RI-24 filed); previous: 2026-09-29 (wrap-up compile: RI-22 review gate was a silent no-op on the 27B, fixed by RI-23 moving thinking-on roles to the chat lane (verdicts 2/2 vs 0/2); ARCHSWAP live; UFH-13 parked on an untrained router; frozen items get a trigger that can fire; TD-11 single typed-routing owner); previous: 2026-09-27 late (wrap-up compile: DAR-LAT-3h G1 chose T96 — 48 threads fails parity, THP shim no gain, nothing applied; DAR-LAT, LRC-1/2 and TD-28 frozen behind the UFH-13 thesis experiment; `/v1` escalation opt-in for arm A2; SSU-F17 roles bind to server ids); previous: 2026-09-27 (wrap-up compile: DAR-LAT-3h v2 signed and split, threads and THP shim as independent G1 factors; DAR-LAT-3i FA_SPLIT_KV long-context decision); previous: 2026-09-26 late (P-SERVE-SEL-1 landed `3573028b`; DAR-LAT-3h files the :8074 recipe-reconciliation package); previous: 2026-09-26 (orch prior-art intake: DAR-LAT latency prior and saturation guard at weight 0; P-SERVE-SEL-1 load-sweep A/B, blocked on the :8074 `-t 96` recipe drift); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-24 (operator wrap-up compile, main-ak-seat: OP-47 applied — the RTG-09 duration axis is LIVE as era E18); earlier: 2026-09-24 (wrap-up compile: RTG-09 — the reward's speed axis becomes wall-clock task duration against derived per-role p50/p90 baselines, landed DEFAULT-OFF and byte-identical because a reward-distribution change is a `routing_reward` era boundary, awaiting the OP-47 ratification; a host-only alias was leaking into scoring as its own role); earlier: 2026-09-23 (evening wrap-up compile: the episodic store's outcome field was written once at INSERT and never updated; update_q_value now re-derives it from the updated Q on every update, with NO backfill, so rows either side of the fix carry two different semantics); earlier: 2026-09-23 (research-intake jev-exl3: TD-9's AUROC 0.758 is not calibration evidence — the same receipt carries ECE 0.2416; Laya's fitted calibration holds in-task only (ECE 0.030 vs 0.204 held-out); the Kev pointer head is a trained readout, not a zero-shot fix; TD-16..20 filed; the DAR "≥5% regret" gate: implemented metric identically 0, single-draw oracle regret sits near noise, 8.40/8.09pp has no committed artifact, DAR-SPLIT-1 filed); 2026-09-19 (routing replay settled: TD-7 diagnostic 3.0% agreement / native 0/200 on multi-token labels; TD-9 single-token codes → 200/200 resolved, 93.5% agreement as incumbent anchoring; TD-10 counterfactual −0.0104, enforcement OFF; TD-11 filed; TD-6 id_only default); 2026-09-17 (wrap-up sweep: the typed-decision shadow implemented at the routing review gate — flag off, no enforcement; the TD-2 6.25%/37.5% contamination and 0.0625/0.267 ECE numbers; TD-7 replay is the labeled window); 2026-09-17 (research-intake delta: RI-14/LRC-TD-1 file a candidate-scoring arm for the routing classifier, gated on TD-2 calibration; incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
 **Sources**: 113 (110 + 3 added 2026-11-19) native document references (source review 2026-10-07)
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **AA-Omniscience** (intake-383#00) Omniscience Index (-100 to 100) rewards recall, penalizes hallucination, rewards abstention; 6,000 questions, 600 public. Leadership varies by domain, supporting domain-specific routing; a new_opportunity for router evals.
-- **TypeSafe Jev / System One launch post** (intake-1470#03) Vendor claims: two orders of magnitude faster, 70ms-500ms end-to-end, 40x-200x faster (intake-1470#03), and $0.042/MTok input with free output (intake-1470#02). Dive correction: the 40x-200x bracket is not derivable (endpoint ratios 6.0x/658x/42.9x/4700x; 200x unproduced). Relevant as a fast typed-decision classifier pattern against our routing controller.
-- **awesome-typesafe community index** (intake-1489#00) Unaffiliated curated index of 61 TypeSafe/Jev resources, with an Evaluations section pointing to four cluster artifacts (jev-rerank-bench, OpenJev, typesafe-ai-benchmark, warmersun); no measurements of its own and not an endorsement (intake-1489#00). Verdict not applicable beyond serving as a pointer list.
-- **Confidence-aware multi-signal routing (SmolLM2-360M)** (intake-1518#01) Three pre-generation signals combined linearly and a fixed four-band router with thresholds 0.75/0.55/0.35 (local, RAG, larger model, human) (intake-1518#01), trained on only 72 hand-labelled queries (intake-1518#record). Headline detection 0.74 vs 0.42 and cost 1.6x are self-reported against an arithmetically weak baseline; C_conv is an unbounded variance ratio. Already integrated conceptually in our learned router, so low-evidence prior art.
-- **Jev architecture unmasked from API behaviour** (intake-1577#00) API probes show access to shared state but no use of sibling question text in one narrow synthetic probe, with task-specific option-order and choice-set effects (intake-1577#00); MMLU ECE 0.031325 reproduced. The author's causal-transformer reconstruction is an inference and architecture remains non-identified (intake-1577#01); output_tokens is accounting metadata, not decode steps.
-- **GLiNER2.5-Decide release synthesis** (intake-1580#record) The released artifact is a 486,444,053-parameter DeBERTa-v3-large encoder for schema-defined single/multi-label and ordinal questions; the 340M launch figure is wrong. Constrained classification and mixed extraction are separate APIs, with no joint cross-question decoder shown. Vendor reports 60.1% held-out Fast Decisions exact match and low tens-of-ms GPU latency, but test split, predictions and latency harness are unavailable; a small encoder candidate for local routing decisions.
-- **Contrastive Language Models (CLM) for state-action decisions** (intake-1581#record) Frozen Qwen3-8B state/action encoders plus small projection heads with bidirectional InfoNCE score a closed candidate set; embeddings cache independently so repeated scoring is nearly independent of candidate count. Head corrected to 18,887,680 parameters total; serving code confirmed but original training pipelines and launch-run artifacts are absent, while the JevBench macro was reproduced. Maps onto embedding-based routing against a fixed action catalog.
-- **GLiNER2.5-Decide paper/blog** (intake-1586#01) The checkpoint is 486,444,053 parameters (the 340M figure is overturned); classify_text scores tasks independently and hard cross-task constraints live in a separate API (intake-1586#00). Fastino reports 60.1% average, leading 9 of 17 datasets (intake-1586#01), on an unavailable held-out split, so ranking and latency are unreproduced vendor claims. Locally deployable on CPU.
-- **fastino/GLiNER2.5-Decide model card and weights** (intake-1587#01) Apache-2.0 DeBERTa-v3-large lineage with AutoExtractor interfaces verified; HF metadata reports 486,444,053 F32 parameters and a 1,945,828,140-byte safetensors, while the card still says 340M and 60.2% (intake-1587#01). The bare install command omits a local dependency extra. Adoptable as a small classifier component on the EPYC CPU.
-- **CLM training and serving stack** (intake-1589#00) Implements the TypeSafe Choice/Noul/Score wire shape around frozen Qwen3-8B embeddings, two projection heads, a host embedding LRU and a bounded device cache (intake-1589#00), plus head fine-tuning and a best-of-N evaluator (intake-1589#01). Launch quality/latency charts and the original training pipelines are not present; the serving path with vector-cache namespaces is a reusable pattern for llama.cpp embedding routing.
-- **CLM-v0.1-8B projection head** (intake-1590#00) Apache-2.0 checkpoint of two 4096-1536-1536-512 projection heads totalling 18,887,680 trainable parameters (intake-1590#00), 75,557,149 bytes, encoder-locked to Qwen3-8B last-token embeddings (intake-1590#01). Contains no base weights, so deployment still needs Qwen3-8B plus the runtime.
-- **jev-measured fixtures** (intake-1658#00) Repo commits raw live Jev API output for eight cost/latency/shape fixtures, but no complete comparator call set; accuracy uses only 27 author-written labeled tickets over three passes and is aggregate-only. Weak evidence for routing-decision claims; treat as a harness pattern.
-- **Jev vs LLM phishing benchmark** (intake-1659#00) On 2,000 PhishNChips emails Jev scores 62.6% accuracy, 0.689 AUROC, 0.154 ECE versus Claude Haiku 4.5 at 81.3%, 0.837, 0.097; controls (non-AI baseline, held-out selection) were added only after review. Informs how to audit decision-model calibration claims.
-- **Text-answer vs first-token option scoring** (intake-1676#00) For four instruction-tuned decoders (Llama2, Mistral, Gemma) text-answer extraction is more robust than first-token option scoring on four-option MMLU; scoped to greedy decoding. Relevant to how local eval harnesses read answers.
-- **Structured Data Models** (intake-1852#00) Repo unifies TabICLv2, TabFM, KumoTabular and KumoRelational behind one in-context-learning interface with typed table tensors. Static verification only; possible tabular router component.
-- **Clef joint-schema decision model** (intake-1855#00) Post-trained Qwen3.8-27B multimodal backbone with a joint schema head that scores all declared options in one forward pass with per-question probabilities (intake-1855#01). Single-pass option scoring is a router/decision pattern; static verification only.
-- **Clef-Flash 9B** (intake-1865#01) Qwen3.5-9B multimodal backbone with a joint schema head scoring all declared questions/options in one forward pass; no free-form generation needed (intake-1865#02). EPYC: a single-pass typed-decision head is a cheap router/classifier candidate.
-- **Clef open decision models** (intake-1866#01) Clef is built from frozen backbones (e.g. Qwen3.8-27B), low-rank adapters and joint evidence-routing heads, with Apache-2.0 weights plus hosted Workers AI. Training combines label-smoothed cross-entropy, Brier loss and a secondary RLCD objective (intake-1866#02).
-- **TabFM non-commercial license** (intake-1881#01) Grant is non-commercial only; production use needs a separate commercial license and distribution of model or derivatives is prohibited (intake-1881#02). EPYC: cannot be used in production routing without commercial terms.
-- **TabICLv2 classifier replication** (intake-1888#00) Classifier-only, no trained regressor; same-harness comparisons come with substantial recipe deviations (intake-1888#01). Correction: NVIDIA training observations do not establish ROCm compatibility (intake-1888#02), relevant to MI210.
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): LRC-RI-EXTRACT-SOURCE: the extractor reads the requested DB by default and refuses an NPZ without captured counts
-
-**Confidence: verified** for extraction behavior only (4 focused tests); no training, live-store, or routing-enablement claim.
-
-- `extract_training_data.py` now uses the requested DB by default, takes an NPZ only when explicitly requested, rejects a positive update threshold when the NPZ lacks captured counts, and reports DB candidate/included/excluded counts; action/feature order and Q weights are preserved (the FAISS fixture uses canonical action order and normalized values).
-- Published as orchestrator merge 743bd7163 (three paths, patch IDs identical to the sources); focused run 4 passed, 9 deselected in 0.34 s at 14:35Z. An earlier one-failure run was a fixture-order error, retained in the audit.
-
-Sources: [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller) · [routing-extract-publication-wrap](../progress/2026-10/2026-10-24-routing-extract-publication-wrap.md)
 
 ## Latest source review — 2026-10-07
 
@@ -57,501 +22,6 @@ HG-9 is a design for passing a current grounded finding to a fixer recommendatio
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
 - [descriptions preparation](../docs/reference/typed-candidate-description-preparation.md)
 - [Routing intelligence](../handoffs/active/routing-program.md#track-routing-intelligence)
-
-## Compiled Update — 2026-09-24 (operator wrap-up compile): the duration axis is live as era E18
-
-- **OP-47 applied: RTG-09's wall-clock duration axis is live.** The operator ratified the reward flip
-  (0.20 / 0.05) and appended era `E18-routing-reward-duration-axis` in one orchestrator commit (orch
-  `60bfc4c4`), and the API was reloaded at 10:13Z. Both RTG-09 boxes are ticked. Any routing-reward comparison
-  that spans 10:13Z on 2026-09-24 crosses an era boundary.
-- **The ratify script failed silently once, and its gate worked.** Under `pipefail`, a `grep | wc -l` with no
-  matches killed the script without output. After that was fixed, the post-flip test gate refused to pass until
-  the 8 default-off contract tests were moved along with the flip — the refusal the gate exists for.
-  ([decision-aware-routing](../handoffs/active/routing-program.md) RTG-09;
-  [progress 2026-09-24 td21](../progress/2026-09/2026-09-24-td21.md))
-
-## Compiled Update — 2026-09-24 (wrap-up compile): the reward's speed axis becomes wall-clock duration, landed DEFAULT-OFF because a reward change is an era boundary
-
-**Confidence: verified** — landed orchestrator commits with tests, and a byte-identical live-reward check.
-The new axis is **implemented and inert**; it takes an operator signature to become live.
-
-### Key findings
-
-- **Wall-clock task duration replaces tokens/sec as the reward's speed axis** (RTG-09, orch `b8035db9` +
-  `88e24ef0`). `compute_reward` Dimension 0 is 0 at the role's p50 and reaches the full
-  `cost_lambda_duration` at p90, saturating above. `task_duration_s` is wired at **all three** call sites
-  (`QScorer._score_task`, the replay engine, `rescore_rewards_from_progress.py`). A missing duration, or a
-  role with no baseline, skips **only that dimension** and warns once — the reward degrades per-axis rather
-  than failing or silently zeroing.
-  ([decision-aware-routing](../handoffs/active/routing-program.md))
-- **The baselines are derived under a declared id, not hand-set.** `scripts/analysis/derive_duration_baselines.py`
-  → `orchestration/derived/duration_baselines_by_role.json`, protocol id `RTG09-DURATION-BASELINE-v1` —
-  explicitly an *analysis* id, not a MEASUREMENT.md protocol. 137,256 task pairs across 117 logs
-  (2026-02-27..09-23), minimum n=30 per role: frontdoor p50 27.6 s / p90 116.1 s, worker_general 16.2 /
-  55.1, coder_escalation 9.1 / 75.4. `toolrunner` and `worker_explore` fall under n=30 and therefore have
-  no baseline — which is exactly the case the skip-and-warn path exists for.
-  ([decision-aware-routing](../handoffs/active/routing-program.md))
-- **Why it ships off: a reward-distribution change is a `routing_reward` era boundary.** Rewards feed Q
-  updates continuously, so flipping the weights mid-stream would make pre- and post-change Q values
-  incomparable with nothing recording the seam. It lands with `cost_lambda_duration=0.0` and
-  `cost_penalty_lambda=0.15`, and the live reward is **byte-identical** (tested); 120 tests pass. The flip
-  to 0.20 / 0.05 and the `E18-routing-reward-duration-axis` era row are packaged as a single operator
-  ratification script (OP-47) — one command, one commit, then an API reload. This is the same discipline
-  the E9 boundary established.
-  ([decision-aware-routing](../handoffs/active/routing-program.md);
-  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
-- **A first implementation that flipped the live reward was reworked, not shipped.** Recorded in the
-  session's own review notes: the initial version changed the live reward with no era boundary and was
-  reworked into the default-off + ratification shape. The correction happened on the main thread reviewing
-  a subagent's result, which is where it is supposed to happen.
-  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
-  main-thread review")
-- **A host-only alias was leaking into scoring as its own role.** Found in passing while fixing three stale
-  q_scorer tests: the host-only alias `worker` surfaced as a scoring role via stack priors; fixed with
-  `_NON_SCORING_HOST_ALIASES` (orch `42e304ac`, `test_q_scorer.py` 78/78). A name that exists only as a
-  serving-host alias must not acquire a Q value of its own — otherwise the router accumulates statistics
-  for an entity that never receives a task.
-  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
-
-### Open questions
-
-- OP-47 is pending the operator: until `ratify_rtg09_duration_reward_20260924.sh --apply` runs, the speed
-  axis is dead code in production and DAR-5 stays blocked.
-- The optional replay-rescore of historical rows (so the 174K-row episodic store carries post-fix rewards)
-  is still open; the logs remain the source of truth and can be replayed on demand.
-
-### Source References (2026-09-24 wrap-up compile)
-
-- [decision-aware-routing.md](../handoffs/active/routing-program.md) — RTG-09 implementation, the
-  baseline derivation and its protocol id, the default-off rationale and the ratification command.
-- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the RTG-09 row, the
-  main-thread correction, and the q_scorer host-alias leak.
-
-## Compiled Update — 2026-09-23 (evening wrap-up compile): the episodic store's `outcome` is re-derived on every Q update, and the rows written before the fix keep their insert-time value
-
-**Confidence: verified** — the defect was read directly off the SQL, and the fix is a landed commit.
-
-### Key findings
-
-- **EPD-1: `outcome` was written once at INSERT and never updated.** `orchestration/repl_memory/episodic_store.py:723-725` is `UPDATE memories SET q_value = ?, updated_at = ?, update_count = ? WHERE id = ?` — `outcome` is absent from the SET clause, while the INSERT at `:435` writes it once. So a memory whose Q value had since crossed the success threshold still reported its original outcome. Fix (orchestrator `24b43990`): `update_q_value` re-derives `outcome` from the updated Q (success iff Q > 0.5) on every update, sharing the INSERT mapping. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller) EPD-1-orig)
-- **Deliberately no backfill.** The store is live, and the SQL shape for one is recorded in the commit rather than run. The consequence to carry: rows written before `24b43990` hold an insert-time `outcome` while later rows hold a Q-derived one, so any analysis spanning that boundary mixes two semantics and must say which it used.
-- **The originally-filed item and the item that mattered were siblings.** EPD-1 as filed was retained as context rather than rewritten, because `outcome` at insert time is a defensible historical record and redefining it would silently change a historical field; the genuinely broken sibling was `update_count`, which feeds a live gate. Distinguishing "stale by design" from "stale by defect" is what kept the fix narrow. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller) EPD-1)
-
-### Open questions
-
-- Should the pre-`24b43990` rows be backfilled, or should consumers filter on `updated_at` against the fix boundary?
-
-### Source References (2026-09-23 evening wrap-up compile)
-
-- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — EPD-1 / EPD-1-orig, the SQL anchors and the fix commit.
-- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch line recording EPD-1 as landed (episodic `outcome` tracks the running Q).
-- epyc-orchestrator commit `24b43990` — `update_q_value` re-derives `outcome`; the backfill SQL is recorded in the commit, not run.
-
-## Compiled Update — 2026-09-23 (research-intake jev-exl3): a discrimination number is not calibration, published calibration does not travel, and the DAR regret gate has no measurable reading yet
-
-**Confidence: verified** for our own receipts and code anchors (TD-9 receipt, `dar_decisive_subset.json`, `dar_common.py`); **external** for the Kev, Laya, Jev-OOD and oracle-regret figures, each dive-verified with a per-claim second reader. Every new task below is filed, not run. Nothing here changes an enforcement setting.
-
-### Key findings
-
-- **TD-9's AUROC 0.758 is not calibration evidence.** The same receipt carries **ECE 0.2416, Brier 0.1514 and a label base rate of 0.89**, all against the incumbent label. Read together: the arm ranks rows somewhat, but its confidences are far from calibrated probabilities, and ranking is against a label that describes the incumbent's action. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-9 receipt note, intake-1521#record)
-- **Laya's fitted calibration holds in-task only.** Its committed results give **ECE 0.030 in-task vs 0.204 on held-out families**. The headline 0.081 is a same-suite half-split refit (intake-1502#03). The shipped `choice:11+` temperature was **0.1006**, a *sharpening* temperature, and the fit was worse than raw logits on 29/49 suites. Zero-shot on routing it is near chance (tier 9/20 and 5/20 against Jev's 17/20, intake-1501#01). The rule this adds to URE-1: fit temperatures on held-out sources or suites, never on same-suite halves, and flag or refuse any fitted T < 1.0. Laya is filed only as a `monitor_only` comparator (RI-CMP-1), not as a work item. ([decision-aware-routing](../handoffs/active/routing-program.md) URE-1, [routing-intelligence handoff](../handoffs/active/routing-program.md#track-routing-intelligence) RI-CMP-1, intake-1502#record)
-- **The Kev pointer head needs training. It is not a zero-shot fix for multi-token choices.** Kev is a rank-16 LoRA plus a separate PointerHead over option hidden states (intake-1498#00). It is calibrated by one post-hoc temperature fitted on in-distribution dev rows (intake-1498#03). Its coverage gap to Jev is not statistically resolved: Kev-9B minus Jev coverage@5% has a CI of [−0.392, +0.523] (intake-1498#06). TD-1d.4 therefore gains two options. (d) is a trained option-end pointer readout, viable only as a separate small decision model. (e) scores multi-token candidates as `seq_cp` branches on llama.cpp-experimental. TD-9's single-token codes had already removed the TD-7 blocker. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1d.4)
-- **An exact per-question prefix fork exists inside one request on hybrid qwen35/qwen35moe.** Decode the state once into seq 0, then `llama_memory_seq_cp` 0→i per question. `llama-memory-hybrid.cpp:152-155` copies both the KV and the recurrent state. The 0-token reuse seen earlier came from cross-request slot caching, not from the model class. The stock server's pooling-none embeddings path has no prefix reuse. (intake-1498#record, intake-1514#00; [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1d.3 note)
-- **TD-16..20 are the calibration programme for the typed plane.** All are filed and none have run:
-  - **TD-16, label-word bias control.** Hunch's 240 look-alike pairs are run as native noul vs a neutral-key A/B choice in both orders. The reference point is that the neutral-key re-ask raised Laya's AUROC 0.757 → 0.953 (intake-1517#02, SELF-REPORTED). Constant baselines: always-no 66.7%, base-rate Brier 0.222. **No gate follows.** If C beats N, TD-1c's 15/16 parity holds only for its 8-noul set. TD-14's per-candidate descriptions must also show a non-negative delta on these pairs.
-  - **TD-17, frozen OOD calibration slice.** 300 states × {queue choice, priority score, angry noul} from `scienthoon/jev-ood-calibration` @914d87a (CC0, byte-reproducible), plus a tier-ablated variant so priority depends on a genuinely hidden input. The target is mean max-prob ≈ accuracy. Cite only the **corrected** Jev temperatures, 1.30 / 1.92, never 3.29 / 3.40 (intake-1504#03).
-  - **TD-18, receipt upgrade (zero inference).** Add a resampled perfectly-calibrated ECE noise floor, a clustered paired bootstrap, tie-aware coverage/AURC, NLL and refit-T sensitivity, endpoint rates, a search-bound flag, and the model pin.
-  - **TD-19, a `/v1/systemone` shim** so Kev's own benchmark scores our path on its committed OOD sets.
-  - **TD-20, conditional.** Serve Kev-4B on llama.cpp-experimental, only if TD-19 shows a trained decider beats our path.
-  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **The DAR "≥5% regret" reopen gate has no measurable reading yet.** Three separate problems:
-  - **The implemented metric is identically 0.** It is selector self-consistency regret, which is ~0 by definition.
-  - **A counterfactual/oracle reading from single draws sits near the noise level.** Single-draw oracle gaps can be about the size of the 5% threshold in noise alone. The paper puts the noise share at 12-36% of the router-to-oracle gap on its pools, and that share is probably underestimated (intake-1527#02, intake-1527#03). A defensible estimate cross-fits the store's repeated per-(objective, role) observations, reports G_noise, and compares 5% against the recoverable part only.
-  - **The "8.40 / 8.09 pp" counterweight has no committed run artifact.** The committed `dar_decisive_subset.json` @13112f77 reports a different estimand (14.73 / 14.64 pp vs uniform-random), and its snapshot directory no longer exists.
-  - The operator decision on what the gate means stays human-amendment-only. These are annotations for its decision package. ([decision-aware-routing](../handoffs/active/routing-program.md))
-- **DAR-SPLIT-1: `dar_decisive_subset.py` leaks its selection into scoring.** The decisive subset is chosen on all observations (L101-102) and then scored on the same data. Decisiveness is raw max-minus-min (`dar_common.py` L170-175), not a binomial-null test. The ticked DAR-3 triage number must be re-stated from the fixed script before reuse. Zero inference. ([decision-aware-routing](../handoffs/active/routing-program.md), intake-1527#record)
-- **Generation-side confidence is a candidate input, shadow-only.** The candidate is the sampled-token mean/min log-prob of the local model's own answer: post-generation, spec-OFF, placeholder tokens excluded. In distribution it only *ties* a simplified supervised router (intake-1521#03), and it is strongly model-dependent. So it enters URE-1 as a shadow input with AUROC + ECE reported, and RI-15 reports it beside `factual_risk.py` when that is assessed for enforce. ([decision-aware-routing](../handoffs/active/routing-program.md), [routing-intelligence handoff](../handoffs/active/routing-program.md#track-routing-intelligence) RI-15)
-- **The frozen LRC phases gain restated gates, as annotations only.** When P1.5.4 and P2.6 reopen, their accuracy thresholds become per-role AUROC + ECE against TF-IDF/length and BGE+MLP baselines, with a (layer, position) sweep. Accuracy thresholds hide surface-feature wins (intake-1522#record). `/hidden-states` is not in v10, so an off-stack decoupled encoder is the alternative substrate. Published encoders are 20B-122B, and their headline savings are frontier-pool-only (intake-1526#record). ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller))
-
-### Open questions
-
-- Does the neutral-key choice (TD-16 arm C) beat native noul beyond its CI on the worker model? If it does, TD-1c's parity claim narrows to its 8-noul set.
-- Does any typed arm reach mean max-prob ≈ accuracy on the TD-17 OOD slice, or does calibration fail off-distribution as Laya's did?
-- What does "≥5% regret" mean? The operator's ruling is still pending, and no reading of it is measurable until DAR-SPLIT-1 lands and G_noise is estimated.
-
-### Source References (2026-09-23)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-9 receipt note, TD-1d.3/TD-1d.4 options, TD-14 amendment, TD-16..20, evidence table rows intake-1498/1502/1504/1517.
-- [decision-aware-routing.md](../handoffs/active/routing-program.md) — URE-1 calibration split and log-prob candidate, the regret-gate decision-package input and provenance note, DAR-SPLIT-1.
-- [routing-intelligence.md (handoff)](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-CMP-1 Laya comparator, RI-14 question-shape template, RI-15.
-- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — P1.5.4 / P2.6 freeze annotations.
-- [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — the session record and the findings that change our own records.
-- intake-1498 (Kev, #00/#03/#06), intake-1501#01, intake-1502#03 and intake-1502#record (Laya), intake-1504#03 (corrected Jev temperatures), intake-1517#02 (label-word bias), intake-1521#03 (log-prob tie), intake-1527#02/#03 (oracle-regret noise share) — dive-verified external evidence.
-
-## Compiled Update — 2026-09-19: the routing replay ran — agreement was anchoring, the counterfactual says typed routing is ~1pp worse, and enforcement stays off
-
-**Confidence: verified** for the replay and counterfactual receipts (one frozen snapshot, one GPU window each). This section answers the 2026-09-17 open question below ("does typed-vs-incumbent agreement clear the comparator, or does the arm only buy speed?"): on the evidence so far it buys neither routing value nor licence to enforce.
-
-### Key findings
-
-- **TD-7: the first replay was a harness diagnostic, not a routing result.** Run on the admissible frozen pre-purge snapshot (`episodic.db.backup-20260415`, sha256 12ca8b0b…; the live DB is refused by design after the 2026-09-17 leak purge), N=200: agreement with the incumbent **3.0% (6/200, Wilson 1.4–6.4%)**; the native arm resolved **0/200** because every routing action label is multi-token (`frontdoor` = front+door), so all rows fell back to JSON; a strong SELF bias (177/200 at ~0.975 confidence); AUROC 0.50 and ECE 0.10 against the frozen success label — which describes the incumbent's action, not the chosen one (flagged in-receipt). The blocker was candidate/token design. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-18-intake-jev-sageattn.md))
-- **TD-9: single-token codes fixed resolution, and the agreement that followed is incumbent anchoring.** A deterministic code map (A..Z, 0..9; 36 symbols) with per-row incumbent-aware framing and a `/tokenize` preflight: native resolution **200/200**, agreement **93.5% (187/200, Wilson 89.2–96.2%)**, AUROC 0.758 vs the frozen label, 590 ms/row, 0 failures. *(2026-09-23: the same receipt carries ECE 0.2416, Brier 0.1514 and a label base rate of 0.89, so the AUROC is discrimination against the incumbent label, not calibration evidence — see the 2026-09-23 section.)* All 13 disagreements pick ARCHITECT at lower confidence (0.448 vs 0.662). The belief-kernel `routing_replay` study is wired and the receipts ingested. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-10: measured by value, not agreement, the typed policy is slightly worse — enforcement stays OFF.** The escalation probe's cross-fitted, embedding-grouped model-based OPE estimator over the frozen snapshot: **delta typed-minus-incumbent = −0.0104** (CI95 [−0.0246, −0.0066], all 5 folds negative; ~1pp worse). The 13 frontdoor→ARCHITECT departures are estimated harmful. Caveats: model-based estimate carrying the probe's EPD-1..3 confounds; unevaluable actions excluded. **Agreement is not skill** — a 93.5% agreement rate and a negative value delta came from the same run. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-11 is the only live routing row on this plane**: iterate framing, support-aware candidates and leave-one-out conditioning through the counterfactual harness; acceptance is a positive delta with a CI excluding zero on the frozen snapshot, or a written decision to drop typed routing. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-6: `id_only` is now the native default** (`full`/`short` stay selectable, JSON arm unchanged). The adoption cites the 11.98x n=1 figure that the 2026-09-18 re-measurement contests (9.60x at n=4, below the 10x bar; see [tool-implementation](tool-implementation.md) and [benchmark-methodology](benchmark-methodology.md)); TD-1d.0 still asks the owner to re-settle that acceptance. The default flip does not depend on clearing 10x — id-only is the fastest native arm under both measurements. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **The 36-symbol code map is now a structural limit on the typed plane**: TD-15 (conditional) would add hierarchical codes or chunked tables only if the TD-12 one-call tool arm needs more than 36 candidates or the 128 `n_probs` cap. Detail: [tool-implementation](tool-implementation.md).
-
-### Open questions
-
-- Can any framing turn the TD-10 delta positive with a CI excluding zero (TD-11), or is typed routing dropped?
-- How much of the −0.0104 is the model-based estimator's EPD-1..3 confounding rather than the policy?
-
-### Source References (2026-09-19)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-6, TD-7, TD-9, TD-10, TD-11, TD-15.
-- [2026-09-18-intake-jev-sageattn.md](../progress/2026-09/2026-09-18-intake-jev-sageattn.md) — the TD-7 GPU window and receipts.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the cue sweep behind the id_only default.
-
-## Compiled Update — 2026-09-17 (wrap-up sweep): the typed-decision shadow is implemented at the review gate — and TD-7 is the labeled window that would license anything
-
-**Confidence: verified** for the implementation and smoke record; **verified** for the local calibration figures (one run each). No enforcement anywhere: the shadow is default off.
-
-### Key findings
-
-- **TD-5 landed as a bounded, fail-open shadow, not a route.** `src/typed_decisions/shadow.py` is wired at `routing.py` (`_plan_review_gate`), flag `typed_decisions_shadow` default off; fixed canonical question order; a non-blocking bounded daemon (MAX_PENDING=4, drops counted); fail-open; one JSONL record per call via `ORCHESTRATOR_TYPED_DECISIONS_SHADOW_LOG`. A live smoke against the 35B produced one well-formed record (incumbent + typed decisions + confidences + prompt/state hashes). The smoke alone cannot license a gate. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **TD-7 is the missing evidence: replay the recorded routing corpus through the shadow.** ~54,960 recorded rows (22–33% per-role failure in the learned-routing controller) are the reference; replay N=100–200 and report typed-vs-incumbent agreement plus confidence-vs-outcome calibration. No live-stack flag changes are required for the replay. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **The TD-2 gate is satisfied for a first shadow, not for enforcement.** Contamination: 6.25% top-answer flip rate (Qwen3.8-27B, 3/48 pairs) vs 37.5% (LFM2.5-2.6B, 18/48) under question-order permutation on one batched call. Calibration: 91.7% accuracy / mean confidence 0.8875 / ECE 0.0625 / Brier 0.078 (27B) vs 50.0% / 0.567 / 0.267 / 0.313 (LFM), with one 27B miss at ~0.90 confidence — the tail is not empty. **No gate may threshold on the confidence statistic**, and a confidence-branching rule lifts per `(model pin, question catalogue)` on an operator-ratified calibration record, never globally (FW-1 L2 amendment). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
-- **The candidate arm's speed comparator is now 11.98x, and it is order-sensitive like the reference.** The id-only native cue measured 11.98x vs JSON at 15/16 agreement on the worker *(one run per arm; contested — the 2026-09-18 n=4 re-measurement gives 9.60x, 6.40x per decision, below the 10x bar, pending TD-1d.0; see [benchmark-methodology](benchmark-methodology.md))*; batched fan-out is 2.2x at 87.5% agreement (TD-3b). The 6.25%/37.5% flip rates are the local counterpart of the external 24.7% order sensitivity (intake-1486) — smaller at our batch sizes, but not zero. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
-- **The parallel-read alternative to batching was rejected on this stack** (exclusive `heavy_model` lock serializes workers; no multi-slot logit readout in the generation API), so the routing arm's fan-out shape is a batched call, not the vendor's parallel sampler. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **RI-14 and LRC-TD-1 remain the two dispatchable rows**, still gated on TD-2 reporting calibration: RI-14 (Choice-style candidate-logit call as the classifier fast path) against the current classifier, and LRC-TD-1 against the recorded routing corpus, with the staged MLP (81.0% val acc; ≥0.8 precision at 61.6% coverage) as the comparator. ([routing-intelligence](../handoffs/active/routing-program.md#track-routing-intelligence), [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller))
-
-### Open questions
-
-- Does typed-vs-incumbent agreement on the recorded corpus clear the staged MLP comparator, or does the candidate arm only buy speed?
-- Does question-order contamination scale with batch size above the 24-question set?
-
-### Source References (2026-09-17 wrap-up sweep)
-
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-5 shadow, TD-2/TD-3b numbers, TD-7 plan.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — implementation rounds and worker measurements.
-- [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the FW-1 L2 per-(model pin, catalogue) amendment.
-- [routing-intelligence.md](../handoffs/active/routing-program.md#track-routing-intelligence), [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — RI-14 and LRC-TD-1.
-
-## Compiled Update — 2026-09-17 (research-intake delta: a candidate-scoring fast path for the routing classifier, gated on calibration)
-
-**Confidence: verified** for the filings; **external** for the intake figures (dive-verified primary sources, none measured on this host).
-
-The learned-routing stack gets a second, cheaper candidate arm: a one-pass typed-decision call that scores the closed set of routes in a single readout. Both routing owners filed it, and both gate it on the same measurement — TD-2 calibration.
-
-### Key findings
-
-- **RI-14: evaluate a Choice-style candidate-logit call as the routing classifier fast path.** Once TD-2 calibration lands; never gate on uncalibrated confidence; report agreement + calibration + wall time against the current classifier. Owner stub `typed-decision-plane.md` (RTG-56). ([routing-intelligence](../handoffs/active/routing-program.md#track-routing-intelligence))
-- **LRC-TD-1: the learned controller gets the same arm against its recorded routing corpus** — per-call label-set pattern (option-as-query head intake-1462, or native token logits intake-1487) vs the current MLP. Unadopted until TD-2 reports calibration. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller))
-- **Why the gate is calibration and not latency.** Candidate-softmax confidence is uncalibrated: 65% of a 7B's wrong fields scored >0.90 (intake-1474). The local mechanism measures **5.21x vs same-model JSON** and 20.03 decisions/s under parallel reuse, with reuse drifting 5–6 of 777 argmaxes under BF16 (intake-1487) — a real speed lever with a known confidence hazard.
-- **The quality axis is not a warranty either.** An independent reproduction ties the reference reranker with Cohere Pro (0.692 vs 0.691, CI crosses 0) at **24.7% order sensitivity** (intake-1486); the vendor's own evals put it behind Sol/Opus (intake-1471#record, corrected). A one-pass reader earns its route on measured agreement, not on its guarantee language.
-- **TD-2 is the precondition, not a formality**: question-order permutation on one batched call vs singleton calls (report top-answer flips) plus ECE/reliability per model and schema. TD-5 (one shadow surface) stays blocked until it lands. The current MLP is staged, not live (81.0% val acc; thresholded ≥0.8 precision 94.4% over 61.6% coverage), so the candidate arm's comparator is a staged surface, not a production authority.
-
-### Open questions
-
-- Does the staged classifier's accuracy/coverage leave enough headroom for a candidate-scoring arm to matter?
-- Does question-order contamination reproduce the 24.7% external figure at our batch sizes?
-
-### Source References (2026-09-17 research-intake delta)
-
-- [routing-intelligence.md](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-14 and its evidence list.
-- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — LRC-TD-1 and the staged-fast-path context.
-- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-2's protocol and the TD-5 gate.
-- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session record with the verified calibration/speed figures.
-
-## Compiled Update — 2026-09-17: the DAR-6 swarm fan-out no longer exists, and the livecodebench routing stratum has no correctness signal
-
-**Confidence: verified**. Both findings are git and code facts: the ref-level closure audit, and the scorer-fix consumer map.
-
-Two routing capabilities on this page turn out to be weaker than it says. First, the swarm fan-out scaffolding is gone. The 2026-05-27 DAR-6 section below says it "landed default-off", and that was true when written. But the code was deleted as dead code three weeks later, and that section now describes a capability that does not exist. Second, the learned-routing A9 `suite:livecodebench` stratum was "repaired" on preference labels ordered by an oracle that any Python answer passes.
-
-### Key findings
-
-- **DAR-6.3/6.4 were really built, then deleted.** They were built in orchestrator `5f5fd8f6` (2026-05-27) and deleted in `771348c8` (2026-06-16, "delete dead DAR-6 swarm_fanout module", an ancestor of `main` @ `88a2902d`). `src/swarm_fanout.py`, `dispatch_swarm_fanout`, `SwarmFanoutResult`, `SwarmCompletion`, `bradley_terry_aggregate` and `length_proxy_aggregator` exist on no ref at main. The boxes stay ticked as history, but **neither is a live capability**. This supersedes the "Scaffolding landed default-off, two safety layers" bullet in the DAR-6 section below, and the "`dispatch_swarm_fanout` remains under an ownership watch" wording. `src/bradley_terry.py` survives. ([decision-aware-routing](../handoffs/active/routing-program.md))
-- **The `swarm_fanout` flag controls nothing.** The FeatureSpec is still defined (`src/features.py:211,563`, `orchestration/runtime_flags.spec.yaml:117`), but no code path reads it. Turning it on changes no behaviour, so it cannot serve as the DAR-6.5/J14 A/B arm. That gate must first rebuild a fan-out dispatcher, reusing `bradley_terry.py`, or be re-scoped. ([decision-aware-routing](../handoffs/active/routing-program.md))
-- **A9 `suite:livecodebench` labels carry no correctness signal.** They are score-ordered from livecodebench results recorded in 2026-06, when the suite's only live oracle was `substring 'def '`. The 2026-08-12 executable-oracle rebuild never reached the live pool either. So the stratum's "repair" is not routing evidence until it is re-labelled against the executable oracle. The offline reward-oracle pairwise builders are listed among the consumers of the stale pool rows. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md), [Benchmark Methodology](benchmark-methodology.md))
-
-### Open questions
-
-- Should DAR-6.5 be re-scoped, or should the dispatcher be rebuilt? The DAR-1 replay freeze on swarm expansion still holds either way.
-- Once the live pool is refreshed, re-label A9's livecodebench stratum and re-check whether the repair survives.
-
-### Sources
-
-- [decision-aware-routing.md](../handoffs/active/routing-program.md): the removal note for DAR-6.3/6.4, and the dependency note that the DAR-6.5 flag is inert.
-- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller): the A9 livecodebench-stratum caveat.
-- [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the consumer map naming the learned-routing A9 builders, and the affected-results table.
-
-## Compiled Update — 2026-08-25: the role-keyed gate's geometry blind spot is now measured, demoted, and guarded — and X-MAS runs shadow, not enforce
-
-**Confidence: verified** — OP-21 figures are from the 2026-08-23 operator-granted re-bench
-(manifest-pinned ports, per-thread affinity attested from /proc, topology hash `171f86f9188211e9`),
-with the pooled overlap figure explicitly NOT decision-grade (cv 0.125) and cited as such; config
-reads, test counts and the seam probe are from the recorded sessions.
-
-### The same role pair, two geometries — the overlap one is the one production runs, and it is now the one in the matrix
-
-- **OP-21 overlap re-bench (2026-08-23): frontdoor + ingest_long_context at the production shape.**
-  Overlap 8080+8185 (both node0 half `0-47,96-143`): pooled n=9 mean **1.121**, cv 0.125 — NOT
-  decision-grade, verdict class borderline (per-sample range 0.871–1.311). Disjoint control 8080+8285
-  (node1 half): **1.360**, cv 0.018 — decision-grade **allow**. The shipped role-keyed 1.89 allow
-  (samples=1, disjoint geometry) is **falsified for the overlap shape**: production co-run reality is
-  ~1.0–1.2, occasionally below 1.0.
-- **Disposition applied (operator-approved, 2026-08-23):** the role-keyed pair row was demoted to the
-  overlap measurement (`instance_b` 8185, ratio 1.121, cv 0.1251, samples 9, verdict `borderline`,
-  note citing the disjoint control + artifact path); `validate` + freshness check green, gate loader
-  reads 1.121/borderline, API reloaded. A second pooled pass (n=21, cv 0.118) concluded decision-grade
-  is **physically unreachable for this pair class** under live-fleet variance (MTP+SSM co-run
-  scheduling noise) — a protocol variance allowance is a measurement-constitution question, not a
-  bench question.
-- **Marker polarity fixed by REFUSE (same day).** `_select_live_pair_instances` returned a substituted
-  *disjoint* placement as `(a, b, None)` with no marker while the faithful overlapping fallback carried
-  `overlap_measured` — the marker fired on the honest measurement and was absent on the substituted
-  one, so a favourable disjoint number could enter the matrix indistinguishable from a faithful
-  overlap measurement. Now any selection carrying the substitution marker goes to `unknown_pairs`
-  with `overlap_substituted` (fail-closed by the unknown-pair policy); dry-run prints
-  `REFUSED (overlap substitution)`. Companion fixes: `run --roles` no longer truncates the matrix
-  (unmeasured rows carried forward verbatim, scoped runs stay `decision_grade=false`), and the
-  contention artifact now emits host-health provenance (host_kernel / uptime / health / blockers).
-- **Standing lesson, unchanged in form, now measured in force:** a role-keyed gate cannot tell the
-  0.37-block overlap from the 1.716-allow disjoint geometry of the same pair; the matrix row now names
-  its geometry, and `admit_set` (the shape-keyed seam) remains the resolution.
-
-### ROUTE-A1 seam: the never-co-place invariant holds at the gate
-
-- 2026-08-24 clean-window re-run (operator grant): control (no holds) → forced frontdoor probe admits
-  in **1.4s** (`decision=allow idx=0`); with q0,q1 (ingest anchor) + q2,q3 (frontdoor busy) held, all
-  three forced probes (frontdoor, worker_general, ingest_long_context) return **504 at exactly the 45s
-  queue budget** with explicit gate attribution:
-  `error_detail="[ERROR: placement timeout role=frontdoor reason=placement_topology_overlap_timeout holders=[0, 2] after 45.0s]"`.
-  The seam's fail-closed overlap exclusion is **live and correct**: the fleet layer avoids overlap by
-  re-placement when a disjoint instance exists, and refuses (queues to timeout) when none exists. The
-  standing smoke was restated with `--expectation {replacement|seam}` (default `replacement`,
-  judging the observed placement; `CO-PLACEMENT` always a failure), 53 tests green.
-- **SC19 write-side capture wired (EVL-47, 2026-08-23):** `contention_gate_capture.py` appends ONE
-  request-keyed envelope per request (`contention_gate_capture.v1`: request_id, full `gate_decisions`
-  list, admitted, waited_s, candidate_topology_idx), opt-in default OFF, never raises; strict vidya
-  adapter registered. The 2026-08-13 compiled status ("observable, but no evidence exists yet")
-  advances to **capture wired, awaiting the first record** — the first tuple is still pending
-  (orchestrator API down at wiring, capture default OFF).
-
-### X-MAS current runtime is SHADOW, not enforce — correction to the 2026-07-04 compiled text
-
-The 2026-07-04/05 compile on this page records "X-MAS is now ENFORCING in production". The
-[handoff's current-runtime correction](../handoffs/active/routing-program.md#track-x-mas-text-routing) (verified
-2026-07-29) states the current `classifier_config.yaml` has **`xmas_routing.mode: shadow`**: the
-enforce was rolled back 2026-07-16 (worker-alias recalibration; a fresh function-axis
-speed/quality revalidation is required before re-enable), the newest X-MAS A/B artifact is
-2026-07-03, and no post-enable enforcement telemetry exists to monitor. The read-only Fable5 report
-is additionally blocked by a runtime-facts circular import, so it cannot certify the live path until
-repaired. The 2026-07-04 cutover text remains historically accurate; **the live routing layer is
-shadow today**, and the enforce-monitoring checkbox stays open until a verified enforce interval has
-live records.
-
-### NIB2-57a: routing consumers stop reading fabricated throughput
-
-`bilinear_scorer` dropped its fabricated `10.0` tps default (tps_known mask, `MODEL_FEATURE_DIM`
-7→8); a shared `ResolvedTps`/`resolve_tps_prior()` now backs the MCP tools, `--list-roles` and the
-stack summary; `train_graph_router` warns on unmeasured fleet tps. Measured behavior byte-identical
-otherwise — the fix removes a route-scoring input that asserted unmeasured throughput as fact.
-
-### Source References (2026-08-25)
-
-- [shape-keyed-contention-gating.md](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — OP-21 re-bench + demotion, marker-polarity REFUSE, matrix-truncation + host-health fixes, the seam verification with its 45s/1.4s control, and the restated standing smoke.
-- [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — RTG-35 execution + disposition + reload, EVL-47 SC19 wiring, NIB2-57a surface audit.
-- [x-mas-text-routing.md](../handoffs/active/routing-program.md#track-x-mas-text-routing) — the current-runtime correction (shadow mode, no enforce telemetry, Fable5 circular import).
-- [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md) — the shadow-only rollback record (worker aliases recalibrated to 38.46 t/s; enforce disabled pending fresh table validation).
-- [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md) — RTG-35/RTG-38 re-pointed rows.
-
-## Compiled Update — 2026-08-16: the harness a request runs through is a routing dimension — and the number everyone quotes says the opposite of what it looks like
-
-**Confidence: external for every magnitude below (an unrefereed preprint, dive-verified against the
-primary source); verified for the record it was filed under and for the correction. No EPYC
-measurement exists on this axis, and none is proposed — the entry is filed record-only, no task, no
-build.**
-
-`intake-1140` (HarnessOpt-Bench, arXiv 2608.06301v1, Scale AI) was ingested and dived in one
-Stage-2b pass on 2026-08-15. It reaches this page because a plausible misreading of it would push
-routing work in the wrong direction — and the misreading was made once already, during intake.
-
-**The trap.** The paper's headline is that *model choice has a larger effect than coding-harness
-choice* — `0.142` vs `0.079` mean gain movement, about `1.8×`. That statement is confirmed as
-written and is **not a routing result**. The harness varied in that contrast is the **optimizer's own
-coding agent** (Claude Code / opencode / codex / kimi-cli), not the harness being optimized. Citing
-it as "model > harness" for routing purposes inverts it.
-
-**The target axis — the one our routing work actually cares about.** The same paper's Table 3 is a
-controlled swap in which the harness is the only variable (same dataset, partition, rounds and
-target model), and it carries the largest effects anywhere in the paper:
-
-| task | stock harness A | stock harness B |
-|---|---|---|
-| OfficeQA | 0.341 | 0.734 |
-| BrowseComp-Plus | 0.462 | 0.701 |
-| Terminal-Bench | 0.241 | 0.607 |
-| GAIA | 0.000 | 0.508 |
-
-Converting those to normalized gain and comparing them against the best of **111** frontier-optimizer
-runs is an arithmetic **our dive performed and the paper never states**: on that comparison the best
-off-the-shelf harness is *statistically unresolved* from the best optimizer run on three of four
-tasks, and beats every optimizer on Terminal-Bench by about **3.6 resolution bands**. "Bands" is the
-paper's own unit — it publishes a per-suite noise floor (score the same candidate twice on the same
-cases, carry the median discrepancy to the K=3 scale) with the reading rule that *a difference
-smaller than its own column band is not a difference*, and it uses that rule to refuse rankings it
-cannot support.
-
-**The citable implication is therefore the opposite of the headline**: harness/scaffold selection is
-worth about as much as an entire frontier-model optimization campaign, which makes *which harness a
-request runs through* a first-class routing dimension rather than a fixed substrate. Cite
-`intake-1140#record`; never cite this entry as "model > harness".
-
-**Credibility discipline for anyone reusing this.** The entry is an unrefereed nine-day-old preprint
-at credibility `3/6`; it does **not** inherit the ICML-2026 main-conference acceptance of its sibling
-`intake-1134` (VeRO, `5/6`), and it does not supersede it — it builds on VeRO's execution
-environment and calls itself complementary. The paper also pre-empts the Table 3 comparison in its
-own caption by describing the stock columns as *context rather than a reference*, which is defensible
-for its research question and evasive against the framing above; the dive records that as a disclosure,
-not as a reason to soften the finding.
-
-### The same discipline, applied to our own model-arm surface
-
-The parallel structure in our stack is the GPU candidate surface
-(`/mnt/raid0/llm/tmp/claude-artifacts/np_context_v8_decision.html`), which acquired a new "Stock 27B"
-arm — Qwen3.8-27B — on 2026-08-15. Two rules that surface enforces are worth restating here, because
-a router integration is one of its readers:
-
-- **The surface is presentation, not evidence authority.** Authority stays with the research bundles
-  (`epyc-inference-research/artifacts/np_context_study_v8_20260727/`, plus the v7 study for v7 rows);
-  the artifact re-labels the kernel era rather than silently re-collecting.
-- **A declined measurement must be labelled as declined, not left blank.** The operator declined the
-  Qwen3.8→Qwen3.6 coding comparison on 2026-08-14, so the coding-ladder cell ships as
-  `operator-declined — deferred` rather than empty — a blank cell would read as *unmeasured* to any
-  consumer choosing between arms. When that ladder is eventually run it is the same recipe already in
-  the surface (LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40) and slots into the same row.
-
-Routing consequence of the swap itself (staged, not yet applied): Qwen3.8-27B replaces
-Qwen3.6-27B-MTP-Q8_0 as the primary model for **`architect_general` + `coder_escalation`**, both
-served from the single `:8083` MI210 process. The registry swap is the one remaining unchecked step;
-serving detail is compiled in [Inference Serving](inference-serving.md).
-
-### Source References (2026-08-16 harness-as-routing-dimension)
-
-- [`routing-intelligence.md`](../handoffs/active/routing-program.md#track-routing-intelligence) — §*Research Intake Update
-  — 2026-08-15*: the record-only filing, the optimizer-agent-vs-target-harness correction, the Table 3
-  figures, and the `intake-1140#record` citation form.
-- [intake-1140](https://arxiv.org/abs/2608.06301) HarnessOpt-Bench (Scale AI) — `dive_corrections`
-  2026-08-15 Stage-2b combined ingest+dive: credibility `3/6`, the published noise-floor convention
-  and its reading rule, the 111-run normalized-gain comparison, and the explicit warning that this
-  entry does not inherit `intake-1134`'s venue credit.
-- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
-  — the presentation-vs-evidence-authority split, the era-labelling rule, and the
-  `operator-declined — deferred` cell convention.
-- [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — which roles the
-  new arm serves, and the declined quality gate that made the labelling rule load-bearing.
-
-## Compiled Update — 2026-08-13: contention decisions are now observable, but no evidence exists yet
-
-**Confidence: verified for cherry-pick identity and focused tests; prospective for measurement.** The
-A14 `ChatResponse.contention_gate` change landed locally on orchestrator `main` as `c61b8184`. An
-independent audit confirmed the cherry-pick has the same stable patch-id and six-file `+299/-0` diff
-as source `a7d7bdb6`; the merge gate classifies it autonomous, and the focused current-main
-gate/contention/chat suite passes (`118` tests).
-
-This closes the observability implementation, not the measurement. A request may produce multiple
-candidate decisions, so the evidence locator must key on the request rather than counting each
-decision as an independent witness. The orchestrator API has not served this local commit and the
-producer-written Vidya adapter has emitted no tuple. The write-side capture task therefore remains
-open until the first real record proves the path; the audit did not push orchestrator code or reload
-the service.
-
-### Source References (2026-08-13 A14 audit)
-
-- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — landed
-  bridge state and remaining routing-smoke residuals.
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
-  write-side capture contract and request-level locator rule.
-- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
-  [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — landing
-  record and independent patch/test verification.
-
-## Compiled Update — 2026-08-12 (second pass): the same defect was repairable in one subsystem and permanently unrepairable in the other, and only provenance decided which
-
-An eval scoring bug wrote infrastructure failures into the learned router as quality signal —
-`success_reward(False)` for an HTTP 400, a timeout, an unparseable body, an empty reply. A capacity
-fact was recorded as a permanent verdict about a role's competence. The write path is now fixed at
-both producers.
-
-**The durable lesson is not the bug. It is that the same bug produced two opposite answers to "can we
-undo it?", in one system, on the same day.**
-
-- **Seeding path — unrepairable, provably.** Infra-sourced `False` and wrong-answer `False` are
-  byte-identical everywhere they are stored, for three independent reasons: the injected reward context
-  carried no disposition field, `source` was discarded at write time, and the update branch rewrote
-  `q_value` without recomputing `outcome`. There is no predicate that separates them, so there is no
-  purge — and any proxy (`tokens_generated == 0`) destroys genuine negative signal to remove neutral
-  noise. **K is uncomputable. Not small — unknown.**
-- **Live-serving path — repairable.** The `work.answer` payload survived and carries a structural
-  `[ERROR: …]` banner. 260 of 11,918 failure records resolve to 580 distinct rows, of which **565 are
-  classifiable and were sitting below the retrieval floor**. A dry-run of `(memory_id, current_q,
-  proposed_q, evidence)` makes the repair executable and reversible without touching the store.
-
-Same defect, same day, same codebase. The only difference is whether anyone wrote down *why* a value
-was written at the moment it was written. **Wiring provenance on the write side is cheap and permanent;
-reconstructing it on the read side is impossible** — not expensive, impossible.
-
-Two corollaries worth carrying:
-
-- **Arithmetic can make a scary defect inert, and you have to check rather than assume.** On the seeding
-  path `initial_q = 0.5 + reward*0.5`, so a poisoned `0.0` lands at exactly **0.5 — neutral**. Those rows
-  never outrank anything; the effect is a push toward the rule-based fallback, a conservative failure.
-  On the live path the same class used `failure_reward = -0.5` → `initial_q = 0.25`, **below the 0.3
-  retrieval floor**, so a transient backend blip *evicted the memory entirely*. Identical framing,
-  opposite blast radius, decided by two constants.
-- **A substring classifier does not merely miss infra failures — it invents them.** The legacy fallback
-  flagged 23 tasks as infrastructure purely because `"1.503s"` contains `"503"`, and every one of its
-  live-journal hits was that. Classify structurally (transport reason, provenance class, HTTP status,
-  in-band banner); keep substrings as a last resort you expect to be wrong in both directions.
-
-Sources: `handoffs/active/autopilot-program.md`; epyc-orchestrator `2f41c3ad`,
-`5d494c2d`, `ba11d8b0`; `artifacts/audit/memrl_live_serving_infra_reward_dryrun_20260812.json`.
-
-## Compiled Update — 2026-08-12: the leak moved from format to field, and the gate that should have caught it was measuring the wrong string
-
-**Confidence: verified** — row counts are live store queries; the gate defect is a code-level finding with a test-count delta.
-
-### The premise was stale, and the real defect is one field
-
-The standing diagnosis of the episodic embedding-index leak — *the index mixes three or more text conventions* — is **no longer true**. A 2026-08-09 reseed had already rebuilt the store at **63,786 / 63,786 rows** under one canonical builder. The leak that remains is not a **format**, it is a **field value**: `context.priority` takes exactly two values store-wide — `interactive` on **34,938** rows and absent on **29,081** — and that split reproduces the writer paths at **99.973% purity**. The field is *unobserved*: it comes from a hardcoded default, so it carries no task signal at all while acting as a near-perfect writer fingerprint. Roughly 45% of the corpus is queried with a value most rows lack.
-
-**Decision: drop `priority` from the embedded text; keep `task_type`.** Partitioning by writer path was explicitly **rejected** on five counts — it preserves the defect, costs the 29,081-row corpus reach, has unproven de-confounding value, breaks as a post-filter under global KNN, and is structurally expensive. The generalisable form is worth carrying: **a field that is defaulted rather than observed is not a feature, it is a provenance stamp**, and embedding it teaches the index to retrieve by writer.
-
-### The integrity gate was comparing against a string nobody embedded
-
-The reason this survived a standing check is the sharper finding. `check_episodic_integrity.py` — the gate protecting a 0.90 similarity floor — built its comparison string **by hand**, and the hand-built string omitted the `priority:` segment. So on **54.6% of rows** the "decisive" check compared the stored vector against a string that was never the input to any embedding, silently burning margin against its own floor. The repair is to call the real publish function rather than reconstruct its output.
-
-This is the routing-plane instance of the verification-failure class catalogued this week: *a check can be sound in form and still be about the wrong object*. A gate that reconstructs its target instead of invoking the producer is testing its own reconstruction.
-
-Two residuals are explicitly **not fixed**: no live write site yet produces the canonical vector (reseed and drift diverge by construction, the serializer differing three ways from the canonical builder), and two live writers still hardcode foreign conventions.
-
-### A routing-adjacent scoring collapse: one branch swallowing four modes
-
-The eval fan-out's NUMA handling checked for `stack_numa_mode == "quarter"` and let **`full`, `both`, unset, and typos** all fall through one branch — so every non-quarter mode was scored as if it were the same thing. The corrected valid set is `{full, quarter, both}`; note `half` is **not** a NUMA mode at all but a `cpu_shape_class`, which is exactly the kind of adjacent-vocabulary confusion that makes a fallthrough look reasonable while writing. Fixed with 29 tests and mutation-checked.
-
-Alongside it, a related classifier repair that matters for any reward signal derived from evals: a substring-match failure classifier was **fail-open**, so HTTP-400s and unreachable endpoints — including an empty-string read timeout — were scored `WRONG` and fed `success_reward(False)` into the MemRL learned router. **An unreachable endpoint is INFRA-FAILED, never WRONG.** Failures are now classified structurally.
-
-### A metric whose name overstates what it counts
-
-A contention metric surfaced on the dashboard counts *"N-way fired, non-ALLOW"*, while its name and tooltip read as *"N-way was the binding constraint"*. Those are different populations, and the render-layer fix that made the number visible did not fix the label. Recorded here so the figure is not read as a binding-constraint count.
-
-### Source References (2026-08-12)
-
-- [`learned-routing-controller.md`](../handoffs/active/routing-program.md#track-learned-routing-controller) — the EPD-3 decision, the rejected partition-by-writer alternative, the integrity-gate defect, and the two open write-site residuals.
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — the NUMA fan-out collapse, the fail-open failure classifier, and the contention-metric label finding.
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the B5/EPD-3 premise falsification in session context.
 
 ## Summary
 
@@ -1216,9 +686,564 @@ the routing/placement decision rather than a hard filter applied before routing 
 - [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — task N25 P1-11, superseded in framing by the operator directive
 - [Benchmark Methodology](benchmark-methodology.md) — the OPTIMUM/BASELINE/CANDIDATE grammar under which `worker_general`'s retained baseline is tagged `category=BASELINE`
 
-## Compiled Update — 2026-09-25: Bounded Decision Models
+## 2026-10-06 calibration input byte bindings
 
-### Architecture boundary
+[Calibration input byte bindings](../docs/reference/calibration-input-byte-bindings.md) attach raw state, question-catalogue, and gold-label byte identities to prospective receipts: CLI reads and parses each original buffer once; direct-API metadata is explicitly caller_asserted or null. [Native evidence](../artifacts/ni07/run-37473538913/README.md) passes34/34 selected synthetic cases. This is dependency evidence, not a calibration-quality or model-validity result. TD-18's broader receipt metrics remain separate; TD-16 no-harm, TD-29 shadow/prefill counts, and TD-1d.3 isolated-question branches remain live gates.
+
+## 2026-10-06 staged ED25519 header recognition
+
+[Staged ED25519 header contract](../docs/reference/staged-ed25519-header-check.md) closes the missing staged-blob PEM header match while preserving OPENSSH/RSA handling. [Native capture](../artifacts/ni07/run-37474797195/README.md) passes 9/9 synthetic cases with one outer CI observation. This is structural fixture evidence, not a privacy or whole-repository coverage claim. The separate whole-file credential-fixture allowlist choice remains open under TOC-RD-1a; UFH-07 retains the trajectory-artifact prerequisite and TOC-SP-3 priority.
+
+## 2026-10-06 standalone guard declared NUMA mode
+
+[Standalone guard contract](../docs/reference/standalone-numa-guard.md) makes explicit mode or the running checkout’s declaration determine standalone CLI admission, with unresolved input refused before validation. [Native capture](../artifacts/ni07/run-37476312545/README.md) passes 20/20 selected cases; synthetic 1 TiB import scaffolding and empty backend directories establish no live capacity, deployment or serving warrant. The lower-level diagnostic fallback and pipeline update/compile paths retain their prior contract.
+
+## 2026-10-06 declared scratch-root retention
+
+[Declared-root KEEP contract](../docs/reference/declared-scratch-root-keep.md) protects marked roots, their marker files, overlaps and ancestor candidates, with a second marker check at apply entry. [Native synthetic capture](../artifacts/ni07/run-37482120866/README.md) passes 27/27 cases. Markers may still race after the check; fixture conformance confers no whole-host cleanup warrant. This closes the source gap uncovered during NI07 final retention review.
+
+## Compiled update — 2026-11-02: escalation predictor retraction
+
+The earlier aggregate escalation-depth signal is not a validated routing predictor. The adversarial review reported within-suite AUC 0.5521 ± 0.038 for worker_general and 0.5204 ± 0.037 for frontdoor, with defective outcome labels. Repair the labels and re-evaluate by role and model before relying on the signal. [Substrate correction](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike), [owning probe](../handoffs/active/routing-program.md#track-learned-routing-controller), [routing program](../handoffs/active/routing-program.md#track-routing-intelligence).
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-19 (wrap-up: HS-TD-1 risk/intent screen, validate-first shadow). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (DAR-SPLIT-1 re-run, RTG-DUR-1, RTG-RETRAIN-1, EG2 boundary, regret decision). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): LRC-SDM cached screen fails coverage and gain criteria; availability-aware action scorer shipped flag-off. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the learned-routing extractor defaults to the requested DB (LRC-RI-EXTRACT-SOURCE). Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: RI-16 measured — routing costs ~0.6 s p50 / ~1.2 s p95 before generation; RI-18 review gate scored DROP under its pre-registered clause 1, net −38.3 per 100 items, the production gate never fires; RI-18c applies it; RI-24 filed); previous: 2026-09-29 (wrap-up compile: RI-22 review gate was a silent no-op on the 27B, fixed by RI-23 moving thinking-on roles to the chat lane (verdicts 2/2 vs 0/2); ARCHSWAP live; UFH-13 parked on an untrained router; frozen items get a trigger that can fire; TD-11 single typed-routing owner); previous: 2026-09-27 late (wrap-up compile: DAR-LAT-3h G1 chose T96 — 48 threads fails parity, THP shim no gain, nothing applied; DAR-LAT, LRC-1/2 and TD-28 frozen behind the UFH-13 thesis experiment; `/v1` escalation opt-in for arm A2; SSU-F17 roles bind to server ids); previous: 2026-09-27 (wrap-up compile: DAR-LAT-3h v2 signed and split, threads and THP shim as independent G1 factors; DAR-LAT-3i FA_SPLIT_KV long-context decision); previous: 2026-09-26 late (P-SERVE-SEL-1 landed `3573028b`; DAR-LAT-3h files the :8074 recipe-reconciliation package); previous: 2026-09-26 (orch prior-art intake: DAR-LAT latency prior and saturation guard at weight 0; P-SERVE-SEL-1 load-sweep A/B, blocked on the :8074 `-t 96` recipe drift); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-24 (operator wrap-up compile, main-ak-seat: OP-47 applied — the RTG-09 duration axis is LIVE as era E18); earlier: 2026-09-24 (wrap-up compile: RTG-09 — the reward's speed axis becomes wall-clock task duration against derived per-role p50/p90 baselines, landed DEFAULT-OFF and byte-identical because a reward-distribution change is a `routing_reward` era boundary, awaiting the OP-47 ratification; a host-only alias was leaking into scoring as its own role); earlier: 2026-09-23 (evening wrap-up compile: the episodic store's outcome field was written once at INSERT and never updated; update_q_value now re-derives it from the updated Q on every update, with NO backfill, so rows either side of the fix carry two different semantics); earlier: 2026-09-23 (research-intake jev-exl3: TD-9's AUROC 0.758 is not calibration evidence — the same receipt carries ECE 0.2416; Laya's fitted calibration holds in-task only (ECE 0.030 vs 0.204 held-out); the Kev pointer head is a trained readout, not a zero-shot fix; TD-16..20 filed; the DAR "≥5% regret" gate: implemented metric identically 0, single-draw oracle regret sits near noise, 8.40/8.09pp has no committed artifact, DAR-SPLIT-1 filed); 2026-09-19 (routing replay settled: TD-7 diagnostic 3.0% agreement / native 0/200 on multi-token labels; TD-9 single-token codes → 200/200 resolved, 93.5% agreement as incumbent anchoring; TD-10 counterfactual −0.0104, enforcement OFF; TD-11 filed; TD-6 id_only default); 2026-09-17 (wrap-up sweep: the typed-decision shadow implemented at the routing review gate — flag off, no enforcement; the TD-2 6.25%/37.5% contamination and 0.0625/0.267 ECE numbers; TD-7 replay is the labeled window); 2026-09-17 (research-intake delta: RI-14/LRC-TD-1 file a candidate-scoring arm for the routing classifier, gated on TD-2 calibration; incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **AA-Omniscience** (intake-383#00) Omniscience Index (-100 to 100) rewards recall, penalizes hallucination, rewards abstention; 6,000 questions, 600 public. Leadership varies by domain, supporting domain-specific routing; a new_opportunity for router evals.
+- **TypeSafe Jev / System One launch post** (intake-1470#03) Vendor claims: two orders of magnitude faster, 70ms-500ms end-to-end, 40x-200x faster (intake-1470#03), and $0.042/MTok input with free output (intake-1470#02). Dive correction: the 40x-200x bracket is not derivable (endpoint ratios 6.0x/658x/42.9x/4700x; 200x unproduced). Relevant as a fast typed-decision classifier pattern against our routing controller.
+- **awesome-typesafe community index** (intake-1489#00) Unaffiliated curated index of 61 TypeSafe/Jev resources, with an Evaluations section pointing to four cluster artifacts (jev-rerank-bench, OpenJev, typesafe-ai-benchmark, warmersun); no measurements of its own and not an endorsement (intake-1489#00). Verdict not applicable beyond serving as a pointer list.
+- **Confidence-aware multi-signal routing (SmolLM2-360M)** (intake-1518#01) Three pre-generation signals combined linearly and a fixed four-band router with thresholds 0.75/0.55/0.35 (local, RAG, larger model, human) (intake-1518#01), trained on only 72 hand-labelled queries (intake-1518#record). Headline detection 0.74 vs 0.42 and cost 1.6x are self-reported against an arithmetically weak baseline; C_conv is an unbounded variance ratio. Already integrated conceptually in our learned router, so low-evidence prior art.
+- **Jev architecture unmasked from API behaviour** (intake-1577#00) API probes show access to shared state but no use of sibling question text in one narrow synthetic probe, with task-specific option-order and choice-set effects (intake-1577#00); MMLU ECE 0.031325 reproduced. The author's causal-transformer reconstruction is an inference and architecture remains non-identified (intake-1577#01); output_tokens is accounting metadata, not decode steps.
+- **GLiNER2.5-Decide release synthesis** (intake-1580#record) The released artifact is a 486,444,053-parameter DeBERTa-v3-large encoder for schema-defined single/multi-label and ordinal questions; the 340M launch figure is wrong. Constrained classification and mixed extraction are separate APIs, with no joint cross-question decoder shown. Vendor reports 60.1% held-out Fast Decisions exact match and low tens-of-ms GPU latency, but test split, predictions and latency harness are unavailable; a small encoder candidate for local routing decisions.
+- **Contrastive Language Models (CLM) for state-action decisions** (intake-1581#record) Frozen Qwen3-8B state/action encoders plus small projection heads with bidirectional InfoNCE score a closed candidate set; embeddings cache independently so repeated scoring is nearly independent of candidate count. Head corrected to 18,887,680 parameters total; serving code confirmed but original training pipelines and launch-run artifacts are absent, while the JevBench macro was reproduced. Maps onto embedding-based routing against a fixed action catalog.
+- **GLiNER2.5-Decide paper/blog** (intake-1586#01) The checkpoint is 486,444,053 parameters (the 340M figure is overturned); classify_text scores tasks independently and hard cross-task constraints live in a separate API (intake-1586#00). Fastino reports 60.1% average, leading 9 of 17 datasets (intake-1586#01), on an unavailable held-out split, so ranking and latency are unreproduced vendor claims. Locally deployable on CPU.
+- **fastino/GLiNER2.5-Decide model card and weights** (intake-1587#01) Apache-2.0 DeBERTa-v3-large lineage with AutoExtractor interfaces verified; HF metadata reports 486,444,053 F32 parameters and a 1,945,828,140-byte safetensors, while the card still says 340M and 60.2% (intake-1587#01). The bare install command omits a local dependency extra. Adoptable as a small classifier component on the EPYC CPU.
+- **CLM training and serving stack** (intake-1589#00) Implements the TypeSafe Choice/Noul/Score wire shape around frozen Qwen3-8B embeddings, two projection heads, a host embedding LRU and a bounded device cache (intake-1589#00), plus head fine-tuning and a best-of-N evaluator (intake-1589#01). Launch quality/latency charts and the original training pipelines are not present; the serving path with vector-cache namespaces is a reusable pattern for llama.cpp embedding routing.
+- **CLM-v0.1-8B projection head** (intake-1590#00) Apache-2.0 checkpoint of two 4096-1536-1536-512 projection heads totalling 18,887,680 trainable parameters (intake-1590#00), 75,557,149 bytes, encoder-locked to Qwen3-8B last-token embeddings (intake-1590#01). Contains no base weights, so deployment still needs Qwen3-8B plus the runtime.
+- **jev-measured fixtures** (intake-1658#00) Repo commits raw live Jev API output for eight cost/latency/shape fixtures, but no complete comparator call set; accuracy uses only 27 author-written labeled tickets over three passes and is aggregate-only. Weak evidence for routing-decision claims; treat as a harness pattern.
+- **Jev vs LLM phishing benchmark** (intake-1659#00) On 2,000 PhishNChips emails Jev scores 62.6% accuracy, 0.689 AUROC, 0.154 ECE versus Claude Haiku 4.5 at 81.3%, 0.837, 0.097; controls (non-AI baseline, held-out selection) were added only after review. Informs how to audit decision-model calibration claims.
+- **Text-answer vs first-token option scoring** (intake-1676#00) For four instruction-tuned decoders (Llama2, Mistral, Gemma) text-answer extraction is more robust than first-token option scoring on four-option MMLU; scoped to greedy decoding. Relevant to how local eval harnesses read answers.
+- **Structured Data Models** (intake-1852#00) Repo unifies TabICLv2, TabFM, KumoTabular and KumoRelational behind one in-context-learning interface with typed table tensors. Static verification only; possible tabular router component.
+- **Clef joint-schema decision model** (intake-1855#00) Post-trained Qwen3.8-27B multimodal backbone with a joint schema head that scores all declared options in one forward pass with per-question probabilities (intake-1855#01). Single-pass option scoring is a router/decision pattern; static verification only.
+- **Clef-Flash 9B** (intake-1865#01) Qwen3.5-9B multimodal backbone with a joint schema head scoring all declared questions/options in one forward pass; no free-form generation needed (intake-1865#02). EPYC: a single-pass typed-decision head is a cheap router/classifier candidate.
+- **Clef open decision models** (intake-1866#01) Clef is built from frozen backbones (e.g. Qwen3.8-27B), low-rank adapters and joint evidence-routing heads, with Apache-2.0 weights plus hosted Workers AI. Training combines label-smoothed cross-entropy, Brier loss and a secondary RLCD objective (intake-1866#02).
+- **TabFM non-commercial license** (intake-1881#01) Grant is non-commercial only; production use needs a separate commercial license and distribution of model or derivatives is prohibited (intake-1881#02). EPYC: cannot be used in production routing without commercial terms.
+- **TabICLv2 classifier replication** (intake-1888#00) Classifier-only, no trained regressor; same-harness comparisons come with substantial recipe deviations (intake-1888#01). Correction: NVIDIA training observations do not establish ROCm compatibility (intake-1888#02), relevant to MI210.
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): LRC-RI-EXTRACT-SOURCE: the extractor reads the requested DB by default and refuses an NPZ without captured counts
+
+**Confidence: verified** for extraction behavior only (4 focused tests); no training, live-store, or routing-enablement claim.
+
+- `extract_training_data.py` now uses the requested DB by default, takes an NPZ only when explicitly requested, rejects a positive update threshold when the NPZ lacks captured counts, and reports DB candidate/included/excluded counts; action/feature order and Q weights are preserved (the FAISS fixture uses canonical action order and normalized values).
+- Published as orchestrator merge 743bd7163 (three paths, patch IDs identical to the sources); focused run 4 passed, 9 deselected in 0.34 s at 14:35Z. An earlier one-failure run was a fixture-order error, retained in the audit.
+
+Sources: [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller) · [routing-extract-publication-wrap](../progress/2026-10/2026-10-24-routing-extract-publication-wrap.md)
+
+### Compiled Update — 2026-09-24 (operator wrap-up compile): the duration axis is live as era E18
+
+- **OP-47 applied: RTG-09's wall-clock duration axis is live.** The operator ratified the reward flip
+  (0.20 / 0.05) and appended era `E18-routing-reward-duration-axis` in one orchestrator commit (orch
+  `60bfc4c4`), and the API was reloaded at 10:13Z. Both RTG-09 boxes are ticked. Any routing-reward comparison
+  that spans 10:13Z on 2026-09-24 crosses an era boundary.
+- **The ratify script failed silently once, and its gate worked.** Under `pipefail`, a `grep | wc -l` with no
+  matches killed the script without output. After that was fixed, the post-flip test gate refused to pass until
+  the 8 default-off contract tests were moved along with the flip — the refusal the gate exists for.
+  ([decision-aware-routing](../handoffs/active/routing-program.md) RTG-09;
+  [progress 2026-09-24 td21](../progress/2026-09/2026-09-24-td21.md))
+
+### Compiled Update — 2026-09-24 (wrap-up compile): the reward's speed axis becomes wall-clock duration, landed DEFAULT-OFF because a reward change is an era boundary
+
+**Confidence: verified** — landed orchestrator commits with tests, and a byte-identical live-reward check.
+The new axis is **implemented and inert**; it takes an operator signature to become live.
+
+#### Key findings
+
+- **Wall-clock task duration replaces tokens/sec as the reward's speed axis** (RTG-09, orch `b8035db9` +
+  `88e24ef0`). `compute_reward` Dimension 0 is 0 at the role's p50 and reaches the full
+  `cost_lambda_duration` at p90, saturating above. `task_duration_s` is wired at **all three** call sites
+  (`QScorer._score_task`, the replay engine, `rescore_rewards_from_progress.py`). A missing duration, or a
+  role with no baseline, skips **only that dimension** and warns once — the reward degrades per-axis rather
+  than failing or silently zeroing.
+  ([decision-aware-routing](../handoffs/active/routing-program.md))
+- **The baselines are derived under a declared id, not hand-set.** `scripts/analysis/derive_duration_baselines.py`
+  → `orchestration/derived/duration_baselines_by_role.json`, protocol id `RTG09-DURATION-BASELINE-v1` —
+  explicitly an *analysis* id, not a MEASUREMENT.md protocol. 137,256 task pairs across 117 logs
+  (2026-02-27..09-23), minimum n=30 per role: frontdoor p50 27.6 s / p90 116.1 s, worker_general 16.2 /
+  55.1, coder_escalation 9.1 / 75.4. `toolrunner` and `worker_explore` fall under n=30 and therefore have
+  no baseline — which is exactly the case the skip-and-warn path exists for.
+  ([decision-aware-routing](../handoffs/active/routing-program.md))
+- **Why it ships off: a reward-distribution change is a `routing_reward` era boundary.** Rewards feed Q
+  updates continuously, so flipping the weights mid-stream would make pre- and post-change Q values
+  incomparable with nothing recording the seam. It lands with `cost_lambda_duration=0.0` and
+  `cost_penalty_lambda=0.15`, and the live reward is **byte-identical** (tested); 120 tests pass. The flip
+  to 0.20 / 0.05 and the `E18-routing-reward-duration-axis` era row are packaged as a single operator
+  ratification script (OP-47) — one command, one commit, then an API reload. This is the same discipline
+  the E9 boundary established.
+  ([decision-aware-routing](../handoffs/active/routing-program.md);
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **A first implementation that flipped the live reward was reworked, not shipped.** Recorded in the
+  session's own review notes: the initial version changed the live reward with no era boundary and was
+  reworked into the default-off + ratification shape. The correction happened on the main thread reviewing
+  a subagent's result, which is where it is supposed to happen.
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
+  main-thread review")
+- **A host-only alias was leaking into scoring as its own role.** Found in passing while fixing three stale
+  q_scorer tests: the host-only alias `worker` surfaced as a scoring role via stack priors; fixed with
+  `_NON_SCORING_HOST_ALIASES` (orch `42e304ac`, `test_q_scorer.py` 78/78). A name that exists only as a
+  serving-host alias must not acquire a Q value of its own — otherwise the router accumulates statistics
+  for an entity that never receives a task.
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+
+#### Open questions
+
+- OP-47 is pending the operator: until `ratify_rtg09_duration_reward_20260924.sh --apply` runs, the speed
+  axis is dead code in production and DAR-5 stays blocked.
+- The optional replay-rescore of historical rows (so the 174K-row episodic store carries post-fix rewards)
+  is still open; the logs remain the source of truth and can be replayed on demand.
+
+#### Source References (2026-09-24 wrap-up compile)
+
+- [decision-aware-routing.md](../handoffs/active/routing-program.md) — RTG-09 implementation, the
+  baseline derivation and its protocol id, the default-off rationale and the ratification command.
+- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the RTG-09 row, the
+  main-thread correction, and the q_scorer host-alias leak.
+
+### Compiled Update — 2026-09-23 (evening wrap-up compile): the episodic store's `outcome` is re-derived on every Q update, and the rows written before the fix keep their insert-time value
+
+**Confidence: verified** — the defect was read directly off the SQL, and the fix is a landed commit.
+
+#### Key findings
+
+- **EPD-1: `outcome` was written once at INSERT and never updated.** `orchestration/repl_memory/episodic_store.py:723-725` is `UPDATE memories SET q_value = ?, updated_at = ?, update_count = ? WHERE id = ?` — `outcome` is absent from the SET clause, while the INSERT at `:435` writes it once. So a memory whose Q value had since crossed the success threshold still reported its original outcome. Fix (orchestrator `24b43990`): `update_q_value` re-derives `outcome` from the updated Q (success iff Q > 0.5) on every update, sharing the INSERT mapping. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller) EPD-1-orig)
+- **Deliberately no backfill.** The store is live, and the SQL shape for one is recorded in the commit rather than run. The consequence to carry: rows written before `24b43990` hold an insert-time `outcome` while later rows hold a Q-derived one, so any analysis spanning that boundary mixes two semantics and must say which it used.
+- **The originally-filed item and the item that mattered were siblings.** EPD-1 as filed was retained as context rather than rewritten, because `outcome` at insert time is a defensible historical record and redefining it would silently change a historical field; the genuinely broken sibling was `update_count`, which feeds a live gate. Distinguishing "stale by design" from "stale by defect" is what kept the fix narrow. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller) EPD-1)
+
+#### Open questions
+
+- Should the pre-`24b43990` rows be backfilled, or should consumers filter on `updated_at` against the fix boundary?
+
+#### Source References (2026-09-23 evening wrap-up compile)
+
+- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — EPD-1 / EPD-1-orig, the SQL anchors and the fix commit.
+- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch line recording EPD-1 as landed (episodic `outcome` tracks the running Q).
+- epyc-orchestrator commit `24b43990` — `update_q_value` re-derives `outcome`; the backfill SQL is recorded in the commit, not run.
+
+### Compiled Update — 2026-09-23 (research-intake jev-exl3): a discrimination number is not calibration, published calibration does not travel, and the DAR regret gate has no measurable reading yet
+
+**Confidence: verified** for our own receipts and code anchors (TD-9 receipt, `dar_decisive_subset.json`, `dar_common.py`); **external** for the Kev, Laya, Jev-OOD and oracle-regret figures, each dive-verified with a per-claim second reader. Every new task below is filed, not run. Nothing here changes an enforcement setting.
+
+#### Key findings
+
+- **TD-9's AUROC 0.758 is not calibration evidence.** The same receipt carries **ECE 0.2416, Brier 0.1514 and a label base rate of 0.89**, all against the incumbent label. Read together: the arm ranks rows somewhat, but its confidences are far from calibrated probabilities, and ranking is against a label that describes the incumbent's action. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-9 receipt note, intake-1521#record)
+- **Laya's fitted calibration holds in-task only.** Its committed results give **ECE 0.030 in-task vs 0.204 on held-out families**. The headline 0.081 is a same-suite half-split refit (intake-1502#03). The shipped `choice:11+` temperature was **0.1006**, a *sharpening* temperature, and the fit was worse than raw logits on 29/49 suites. Zero-shot on routing it is near chance (tier 9/20 and 5/20 against Jev's 17/20, intake-1501#01). The rule this adds to URE-1: fit temperatures on held-out sources or suites, never on same-suite halves, and flag or refuse any fitted T < 1.0. Laya is filed only as a `monitor_only` comparator (RI-CMP-1), not as a work item. ([decision-aware-routing](../handoffs/active/routing-program.md) URE-1, [routing-intelligence handoff](../handoffs/active/routing-program.md#track-routing-intelligence) RI-CMP-1, intake-1502#record)
+- **The Kev pointer head needs training. It is not a zero-shot fix for multi-token choices.** Kev is a rank-16 LoRA plus a separate PointerHead over option hidden states (intake-1498#00). It is calibrated by one post-hoc temperature fitted on in-distribution dev rows (intake-1498#03). Its coverage gap to Jev is not statistically resolved: Kev-9B minus Jev coverage@5% has a CI of [−0.392, +0.523] (intake-1498#06). TD-1d.4 therefore gains two options. (d) is a trained option-end pointer readout, viable only as a separate small decision model. (e) scores multi-token candidates as `seq_cp` branches on llama.cpp-experimental. TD-9's single-token codes had already removed the TD-7 blocker. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1d.4)
+- **An exact per-question prefix fork exists inside one request on hybrid qwen35/qwen35moe.** Decode the state once into seq 0, then `llama_memory_seq_cp` 0→i per question. `llama-memory-hybrid.cpp:152-155` copies both the KV and the recurrent state. The 0-token reuse seen earlier came from cross-request slot caching, not from the model class. The stock server's pooling-none embeddings path has no prefix reuse. (intake-1498#record, intake-1514#00; [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1d.3 note)
+- **TD-16..20 are the calibration programme for the typed plane.** All are filed and none have run:
+  - **TD-16, label-word bias control.** Hunch's 240 look-alike pairs are run as native noul vs a neutral-key A/B choice in both orders. The reference point is that the neutral-key re-ask raised Laya's AUROC 0.757 → 0.953 (intake-1517#02, SELF-REPORTED). Constant baselines: always-no 66.7%, base-rate Brier 0.222. **No gate follows.** If C beats N, TD-1c's 15/16 parity holds only for its 8-noul set. TD-14's per-candidate descriptions must also show a non-negative delta on these pairs.
+  - **TD-17, frozen OOD calibration slice.** 300 states × {queue choice, priority score, angry noul} from `scienthoon/jev-ood-calibration` @914d87a (CC0, byte-reproducible), plus a tier-ablated variant so priority depends on a genuinely hidden input. The target is mean max-prob ≈ accuracy. Cite only the **corrected** Jev temperatures, 1.30 / 1.92, never 3.29 / 3.40 (intake-1504#03).
+  - **TD-18, receipt upgrade (zero inference).** Add a resampled perfectly-calibrated ECE noise floor, a clustered paired bootstrap, tie-aware coverage/AURC, NLL and refit-T sensitivity, endpoint rates, a search-bound flag, and the model pin.
+  - **TD-19, a `/v1/systemone` shim** so Kev's own benchmark scores our path on its committed OOD sets.
+  - **TD-20, conditional.** Serve Kev-4B on llama.cpp-experimental, only if TD-19 shows a trained decider beats our path.
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **The DAR "≥5% regret" reopen gate has no measurable reading yet.** Three separate problems:
+  - **The implemented metric is identically 0.** It is selector self-consistency regret, which is ~0 by definition.
+  - **A counterfactual/oracle reading from single draws sits near the noise level.** Single-draw oracle gaps can be about the size of the 5% threshold in noise alone. The paper puts the noise share at 12-36% of the router-to-oracle gap on its pools, and that share is probably underestimated (intake-1527#02, intake-1527#03). A defensible estimate cross-fits the store's repeated per-(objective, role) observations, reports G_noise, and compares 5% against the recoverable part only.
+  - **The "8.40 / 8.09 pp" counterweight has no committed run artifact.** The committed `dar_decisive_subset.json` @13112f77 reports a different estimand (14.73 / 14.64 pp vs uniform-random), and its snapshot directory no longer exists.
+  - The operator decision on what the gate means stays human-amendment-only. These are annotations for its decision package. ([decision-aware-routing](../handoffs/active/routing-program.md))
+- **DAR-SPLIT-1: `dar_decisive_subset.py` leaks its selection into scoring.** The decisive subset is chosen on all observations (L101-102) and then scored on the same data. Decisiveness is raw max-minus-min (`dar_common.py` L170-175), not a binomial-null test. The ticked DAR-3 triage number must be re-stated from the fixed script before reuse. Zero inference. ([decision-aware-routing](../handoffs/active/routing-program.md), intake-1527#record)
+- **Generation-side confidence is a candidate input, shadow-only.** The candidate is the sampled-token mean/min log-prob of the local model's own answer: post-generation, spec-OFF, placeholder tokens excluded. In distribution it only *ties* a simplified supervised router (intake-1521#03), and it is strongly model-dependent. So it enters URE-1 as a shadow input with AUROC + ECE reported, and RI-15 reports it beside `factual_risk.py` when that is assessed for enforce. ([decision-aware-routing](../handoffs/active/routing-program.md), [routing-intelligence handoff](../handoffs/active/routing-program.md#track-routing-intelligence) RI-15)
+- **The frozen LRC phases gain restated gates, as annotations only.** When P1.5.4 and P2.6 reopen, their accuracy thresholds become per-role AUROC + ECE against TF-IDF/length and BGE+MLP baselines, with a (layer, position) sweep. Accuracy thresholds hide surface-feature wins (intake-1522#record). `/hidden-states` is not in v10, so an off-stack decoupled encoder is the alternative substrate. Published encoders are 20B-122B, and their headline savings are frontier-pool-only (intake-1526#record). ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller))
+
+#### Open questions
+
+- Does the neutral-key choice (TD-16 arm C) beat native noul beyond its CI on the worker model? If it does, TD-1c's parity claim narrows to its 8-noul set.
+- Does any typed arm reach mean max-prob ≈ accuracy on the TD-17 OOD slice, or does calibration fail off-distribution as Laya's did?
+- What does "≥5% regret" mean? The operator's ruling is still pending, and no reading of it is measurable until DAR-SPLIT-1 lands and G_noise is estimated.
+
+#### Source References (2026-09-23)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-9 receipt note, TD-1d.3/TD-1d.4 options, TD-14 amendment, TD-16..20, evidence table rows intake-1498/1502/1504/1517.
+- [decision-aware-routing.md](../handoffs/active/routing-program.md) — URE-1 calibration split and log-prob candidate, the regret-gate decision-package input and provenance note, DAR-SPLIT-1.
+- [routing-intelligence.md (handoff)](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-CMP-1 Laya comparator, RI-14 question-shape template, RI-15.
+- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — P1.5.4 / P2.6 freeze annotations.
+- [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — the session record and the findings that change our own records.
+- intake-1498 (Kev, #00/#03/#06), intake-1501#01, intake-1502#03 and intake-1502#record (Laya), intake-1504#03 (corrected Jev temperatures), intake-1517#02 (label-word bias), intake-1521#03 (log-prob tie), intake-1527#02/#03 (oracle-regret noise share) — dive-verified external evidence.
+
+### Compiled Update — 2026-09-19: the routing replay ran — agreement was anchoring, the counterfactual says typed routing is ~1pp worse, and enforcement stays off
+
+**Confidence: verified** for the replay and counterfactual receipts (one frozen snapshot, one GPU window each). This section answers the 2026-09-17 open question below ("does typed-vs-incumbent agreement clear the comparator, or does the arm only buy speed?"): on the evidence so far it buys neither routing value nor licence to enforce.
+
+#### Key findings
+
+- **TD-7: the first replay was a harness diagnostic, not a routing result.** Run on the admissible frozen pre-purge snapshot (`episodic.db.backup-20260415`, sha256 12ca8b0b…; the live DB is refused by design after the 2026-09-17 leak purge), N=200: agreement with the incumbent **3.0% (6/200, Wilson 1.4–6.4%)**; the native arm resolved **0/200** because every routing action label is multi-token (`frontdoor` = front+door), so all rows fell back to JSON; a strong SELF bias (177/200 at ~0.975 confidence); AUROC 0.50 and ECE 0.10 against the frozen success label — which describes the incumbent's action, not the chosen one (flagged in-receipt). The blocker was candidate/token design. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-18-intake-jev-sageattn.md))
+- **TD-9: single-token codes fixed resolution, and the agreement that followed is incumbent anchoring.** A deterministic code map (A..Z, 0..9; 36 symbols) with per-row incumbent-aware framing and a `/tokenize` preflight: native resolution **200/200**, agreement **93.5% (187/200, Wilson 89.2–96.2%)**, AUROC 0.758 vs the frozen label, 590 ms/row, 0 failures. *(2026-09-23: the same receipt carries ECE 0.2416, Brier 0.1514 and a label base rate of 0.89, so the AUROC is discrimination against the incumbent label, not calibration evidence — see the 2026-09-23 section.)* All 13 disagreements pick ARCHITECT at lower confidence (0.448 vs 0.662). The belief-kernel `routing_replay` study is wired and the receipts ingested. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-10: measured by value, not agreement, the typed policy is slightly worse — enforcement stays OFF.** The escalation probe's cross-fitted, embedding-grouped model-based OPE estimator over the frozen snapshot: **delta typed-minus-incumbent = −0.0104** (CI95 [−0.0246, −0.0066], all 5 folds negative; ~1pp worse). The 13 frontdoor→ARCHITECT departures are estimated harmful. Caveats: model-based estimate carrying the probe's EPD-1..3 confounds; unevaluable actions excluded. **Agreement is not skill** — a 93.5% agreement rate and a negative value delta came from the same run. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-11 is the only live routing row on this plane**: iterate framing, support-aware candidates and leave-one-out conditioning through the counterfactual harness; acceptance is a positive delta with a CI excluding zero on the frozen snapshot, or a written decision to drop typed routing. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-6: `id_only` is now the native default** (`full`/`short` stay selectable, JSON arm unchanged). The adoption cites the 11.98x n=1 figure that the 2026-09-18 re-measurement contests (9.60x at n=4, below the 10x bar; see [tool-implementation](tool-implementation.md) and [benchmark-methodology](benchmark-methodology.md)); TD-1d.0 still asks the owner to re-settle that acceptance. The default flip does not depend on clearing 10x — id-only is the fastest native arm under both measurements. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **The 36-symbol code map is now a structural limit on the typed plane**: TD-15 (conditional) would add hierarchical codes or chunked tables only if the TD-12 one-call tool arm needs more than 36 candidates or the 128 `n_probs` cap. Detail: [tool-implementation](tool-implementation.md).
+
+#### Open questions
+
+- Can any framing turn the TD-10 delta positive with a CI excluding zero (TD-11), or is typed routing dropped?
+- How much of the −0.0104 is the model-based estimator's EPD-1..3 confounding rather than the policy?
+
+#### Source References (2026-09-19)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-6, TD-7, TD-9, TD-10, TD-11, TD-15.
+- [2026-09-18-intake-jev-sageattn.md](../progress/2026-09/2026-09-18-intake-jev-sageattn.md) — the TD-7 GPU window and receipts.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the cue sweep behind the id_only default.
+
+### Compiled Update — 2026-09-17 (wrap-up sweep): the typed-decision shadow is implemented at the review gate — and TD-7 is the labeled window that would license anything
+
+**Confidence: verified** for the implementation and smoke record; **verified** for the local calibration figures (one run each). No enforcement anywhere: the shadow is default off.
+
+#### Key findings
+
+- **TD-5 landed as a bounded, fail-open shadow, not a route.** `src/typed_decisions/shadow.py` is wired at `routing.py` (`_plan_review_gate`), flag `typed_decisions_shadow` default off; fixed canonical question order; a non-blocking bounded daemon (MAX_PENDING=4, drops counted); fail-open; one JSONL record per call via `ORCHESTRATOR_TYPED_DECISIONS_SHADOW_LOG`. A live smoke against the 35B produced one well-formed record (incumbent + typed decisions + confidences + prompt/state hashes). The smoke alone cannot license a gate. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **TD-7 is the missing evidence: replay the recorded routing corpus through the shadow.** ~54,960 recorded rows (22–33% per-role failure in the learned-routing controller) are the reference; replay N=100–200 and report typed-vs-incumbent agreement plus confidence-vs-outcome calibration. No live-stack flag changes are required for the replay. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **The TD-2 gate is satisfied for a first shadow, not for enforcement.** Contamination: 6.25% top-answer flip rate (Qwen3.8-27B, 3/48 pairs) vs 37.5% (LFM2.5-2.6B, 18/48) under question-order permutation on one batched call. Calibration: 91.7% accuracy / mean confidence 0.8875 / ECE 0.0625 / Brier 0.078 (27B) vs 50.0% / 0.567 / 0.267 / 0.313 (LFM), with one 27B miss at ~0.90 confidence — the tail is not empty. **No gate may threshold on the confidence statistic**, and a confidence-branching rule lifts per `(model pin, question catalogue)` on an operator-ratified calibration record, never globally (FW-1 L2 amendment). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
+- **The candidate arm's speed comparator is now 11.98x, and it is order-sensitive like the reference.** The id-only native cue measured 11.98x vs JSON at 15/16 agreement on the worker *(one run per arm; contested — the 2026-09-18 n=4 re-measurement gives 9.60x, 6.40x per decision, below the 10x bar, pending TD-1d.0; see [benchmark-methodology](benchmark-methodology.md))*; batched fan-out is 2.2x at 87.5% agreement (TD-3b). The 6.25%/37.5% flip rates are the local counterpart of the external 24.7% order sensitivity (intake-1486) — smaller at our batch sizes, but not zero. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
+- **The parallel-read alternative to batching was rejected on this stack** (exclusive `heavy_model` lock serializes workers; no multi-slot logit readout in the generation API), so the routing arm's fan-out shape is a batched call, not the vendor's parallel sampler. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **RI-14 and LRC-TD-1 remain the two dispatchable rows**, still gated on TD-2 reporting calibration: RI-14 (Choice-style candidate-logit call as the classifier fast path) against the current classifier, and LRC-TD-1 against the recorded routing corpus, with the staged MLP (81.0% val acc; ≥0.8 precision at 61.6% coverage) as the comparator. ([routing-intelligence](../handoffs/active/routing-program.md#track-routing-intelligence), [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller))
+
+#### Open questions
+
+- Does typed-vs-incumbent agreement on the recorded corpus clear the staged MLP comparator, or does the candidate arm only buy speed?
+- Does question-order contamination scale with batch size above the 24-question set?
+
+#### Source References (2026-09-17 wrap-up sweep)
+
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-5 shadow, TD-2/TD-3b numbers, TD-7 plan.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — implementation rounds and worker measurements.
+- [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the FW-1 L2 per-(model pin, catalogue) amendment.
+- [routing-intelligence.md](../handoffs/active/routing-program.md#track-routing-intelligence), [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — RI-14 and LRC-TD-1.
+
+### Compiled Update — 2026-09-17 (research-intake delta: a candidate-scoring fast path for the routing classifier, gated on calibration)
+
+**Confidence: verified** for the filings; **external** for the intake figures (dive-verified primary sources, none measured on this host).
+
+The learned-routing stack gets a second, cheaper candidate arm: a one-pass typed-decision call that scores the closed set of routes in a single readout. Both routing owners filed it, and both gate it on the same measurement — TD-2 calibration.
+
+#### Key findings
+
+- **RI-14: evaluate a Choice-style candidate-logit call as the routing classifier fast path.** Once TD-2 calibration lands; never gate on uncalibrated confidence; report agreement + calibration + wall time against the current classifier. Owner stub `typed-decision-plane.md` (RTG-56). ([routing-intelligence](../handoffs/active/routing-program.md#track-routing-intelligence))
+- **LRC-TD-1: the learned controller gets the same arm against its recorded routing corpus** — per-call label-set pattern (option-as-query head intake-1462, or native token logits intake-1487) vs the current MLP. Unadopted until TD-2 reports calibration. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller))
+- **Why the gate is calibration and not latency.** Candidate-softmax confidence is uncalibrated: 65% of a 7B's wrong fields scored >0.90 (intake-1474). The local mechanism measures **5.21x vs same-model JSON** and 20.03 decisions/s under parallel reuse, with reuse drifting 5–6 of 777 argmaxes under BF16 (intake-1487) — a real speed lever with a known confidence hazard.
+- **The quality axis is not a warranty either.** An independent reproduction ties the reference reranker with Cohere Pro (0.692 vs 0.691, CI crosses 0) at **24.7% order sensitivity** (intake-1486); the vendor's own evals put it behind Sol/Opus (intake-1471#record, corrected). A one-pass reader earns its route on measured agreement, not on its guarantee language.
+- **TD-2 is the precondition, not a formality**: question-order permutation on one batched call vs singleton calls (report top-answer flips) plus ECE/reliability per model and schema. TD-5 (one shadow surface) stays blocked until it lands. The current MLP is staged, not live (81.0% val acc; thresholded ≥0.8 precision 94.4% over 61.6% coverage), so the candidate arm's comparator is a staged surface, not a production authority.
+
+#### Open questions
+
+- Does the staged classifier's accuracy/coverage leave enough headroom for a candidate-scoring arm to matter?
+- Does question-order contamination reproduce the 24.7% external figure at our batch sizes?
+
+#### Source References (2026-09-17 research-intake delta)
+
+- [routing-intelligence.md](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-14 and its evidence list.
+- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) — LRC-TD-1 and the staged-fast-path context.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-2's protocol and the TD-5 gate.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session record with the verified calibration/speed figures.
+
+### Compiled Update — 2026-09-17: the DAR-6 swarm fan-out no longer exists, and the livecodebench routing stratum has no correctness signal
+
+**Confidence: verified**. Both findings are git and code facts: the ref-level closure audit, and the scorer-fix consumer map.
+
+Two routing capabilities on this page turn out to be weaker than it says. First, the swarm fan-out scaffolding is gone. The 2026-05-27 DAR-6 section below says it "landed default-off", and that was true when written. But the code was deleted as dead code three weeks later, and that section now describes a capability that does not exist. Second, the learned-routing A9 `suite:livecodebench` stratum was "repaired" on preference labels ordered by an oracle that any Python answer passes.
+
+#### Key findings
+
+- **DAR-6.3/6.4 were really built, then deleted.** They were built in orchestrator `5f5fd8f6` (2026-05-27) and deleted in `771348c8` (2026-06-16, "delete dead DAR-6 swarm_fanout module", an ancestor of `main` @ `88a2902d`). `src/swarm_fanout.py`, `dispatch_swarm_fanout`, `SwarmFanoutResult`, `SwarmCompletion`, `bradley_terry_aggregate` and `length_proxy_aggregator` exist on no ref at main. The boxes stay ticked as history, but **neither is a live capability**. This supersedes the "Scaffolding landed default-off, two safety layers" bullet in the DAR-6 section below, and the "`dispatch_swarm_fanout` remains under an ownership watch" wording. `src/bradley_terry.py` survives. ([decision-aware-routing](../handoffs/active/routing-program.md))
+- **The `swarm_fanout` flag controls nothing.** The FeatureSpec is still defined (`src/features.py:211,563`, `orchestration/runtime_flags.spec.yaml:117`), but no code path reads it. Turning it on changes no behaviour, so it cannot serve as the DAR-6.5/J14 A/B arm. That gate must first rebuild a fan-out dispatcher, reusing `bradley_terry.py`, or be re-scoped. ([decision-aware-routing](../handoffs/active/routing-program.md))
+- **A9 `suite:livecodebench` labels carry no correctness signal.** They are score-ordered from livecodebench results recorded in 2026-06, when the suite's only live oracle was `substring 'def '`. The 2026-08-12 executable-oracle rebuild never reached the live pool either. So the stratum's "repair" is not routing evidence until it is re-labelled against the executable oracle. The offline reward-oracle pairwise builders are listed among the consumers of the stale pool rows. ([learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md), [Benchmark Methodology](benchmark-methodology.md))
+
+#### Open questions
+
+- Should DAR-6.5 be re-scoped, or should the dispatcher be rebuilt? The DAR-1 replay freeze on swarm expansion still holds either way.
+- Once the live pool is refreshed, re-label A9's livecodebench stratum and re-check whether the repair survives.
+
+#### Sources
+
+- [decision-aware-routing.md](../handoffs/active/routing-program.md): the removal note for DAR-6.3/6.4, and the dependency note that the DAR-6.5 flag is inert.
+- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller): the A9 livecodebench-stratum caveat.
+- [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the consumer map naming the learned-routing A9 builders, and the affected-results table.
+
+### Compiled Update — 2026-08-25: the role-keyed gate's geometry blind spot is now measured, demoted, and guarded — and X-MAS runs shadow, not enforce
+
+**Confidence: verified** — OP-21 figures are from the 2026-08-23 operator-granted re-bench
+(manifest-pinned ports, per-thread affinity attested from /proc, topology hash `171f86f9188211e9`),
+with the pooled overlap figure explicitly NOT decision-grade (cv 0.125) and cited as such; config
+reads, test counts and the seam probe are from the recorded sessions.
+
+#### The same role pair, two geometries — the overlap one is the one production runs, and it is now the one in the matrix
+
+- **OP-21 overlap re-bench (2026-08-23): frontdoor + ingest_long_context at the production shape.**
+  Overlap 8080+8185 (both node0 half `0-47,96-143`): pooled n=9 mean **1.121**, cv 0.125 — NOT
+  decision-grade, verdict class borderline (per-sample range 0.871–1.311). Disjoint control 8080+8285
+  (node1 half): **1.360**, cv 0.018 — decision-grade **allow**. The shipped role-keyed 1.89 allow
+  (samples=1, disjoint geometry) is **falsified for the overlap shape**: production co-run reality is
+  ~1.0–1.2, occasionally below 1.0.
+- **Disposition applied (operator-approved, 2026-08-23):** the role-keyed pair row was demoted to the
+  overlap measurement (`instance_b` 8185, ratio 1.121, cv 0.1251, samples 9, verdict `borderline`,
+  note citing the disjoint control + artifact path); `validate` + freshness check green, gate loader
+  reads 1.121/borderline, API reloaded. A second pooled pass (n=21, cv 0.118) concluded decision-grade
+  is **physically unreachable for this pair class** under live-fleet variance (MTP+SSM co-run
+  scheduling noise) — a protocol variance allowance is a measurement-constitution question, not a
+  bench question.
+- **Marker polarity fixed by REFUSE (same day).** `_select_live_pair_instances` returned a substituted
+  *disjoint* placement as `(a, b, None)` with no marker while the faithful overlapping fallback carried
+  `overlap_measured` — the marker fired on the honest measurement and was absent on the substituted
+  one, so a favourable disjoint number could enter the matrix indistinguishable from a faithful
+  overlap measurement. Now any selection carrying the substitution marker goes to `unknown_pairs`
+  with `overlap_substituted` (fail-closed by the unknown-pair policy); dry-run prints
+  `REFUSED (overlap substitution)`. Companion fixes: `run --roles` no longer truncates the matrix
+  (unmeasured rows carried forward verbatim, scoped runs stay `decision_grade=false`), and the
+  contention artifact now emits host-health provenance (host_kernel / uptime / health / blockers).
+- **Standing lesson, unchanged in form, now measured in force:** a role-keyed gate cannot tell the
+  0.37-block overlap from the 1.716-allow disjoint geometry of the same pair; the matrix row now names
+  its geometry, and `admit_set` (the shape-keyed seam) remains the resolution.
+
+#### ROUTE-A1 seam: the never-co-place invariant holds at the gate
+
+- 2026-08-24 clean-window re-run (operator grant): control (no holds) → forced frontdoor probe admits
+  in **1.4s** (`decision=allow idx=0`); with q0,q1 (ingest anchor) + q2,q3 (frontdoor busy) held, all
+  three forced probes (frontdoor, worker_general, ingest_long_context) return **504 at exactly the 45s
+  queue budget** with explicit gate attribution:
+  `error_detail="[ERROR: placement timeout role=frontdoor reason=placement_topology_overlap_timeout holders=[0, 2] after 45.0s]"`.
+  The seam's fail-closed overlap exclusion is **live and correct**: the fleet layer avoids overlap by
+  re-placement when a disjoint instance exists, and refuses (queues to timeout) when none exists. The
+  standing smoke was restated with `--expectation {replacement|seam}` (default `replacement`,
+  judging the observed placement; `CO-PLACEMENT` always a failure), 53 tests green.
+- **SC19 write-side capture wired (EVL-47, 2026-08-23):** `contention_gate_capture.py` appends ONE
+  request-keyed envelope per request (`contention_gate_capture.v1`: request_id, full `gate_decisions`
+  list, admitted, waited_s, candidate_topology_idx), opt-in default OFF, never raises; strict vidya
+  adapter registered. The 2026-08-13 compiled status ("observable, but no evidence exists yet")
+  advances to **capture wired, awaiting the first record** — the first tuple is still pending
+  (orchestrator API down at wiring, capture default OFF).
+
+#### X-MAS current runtime is SHADOW, not enforce — correction to the 2026-07-04 compiled text
+
+The 2026-07-04/05 compile on this page records "X-MAS is now ENFORCING in production". The
+[handoff's current-runtime correction](../handoffs/active/routing-program.md#track-x-mas-text-routing) (verified
+2026-07-29) states the current `classifier_config.yaml` has **`xmas_routing.mode: shadow`**: the
+enforce was rolled back 2026-07-16 (worker-alias recalibration; a fresh function-axis
+speed/quality revalidation is required before re-enable), the newest X-MAS A/B artifact is
+2026-07-03, and no post-enable enforcement telemetry exists to monitor. The read-only Fable5 report
+is additionally blocked by a runtime-facts circular import, so it cannot certify the live path until
+repaired. The 2026-07-04 cutover text remains historically accurate; **the live routing layer is
+shadow today**, and the enforce-monitoring checkbox stays open until a verified enforce interval has
+live records.
+
+#### NIB2-57a: routing consumers stop reading fabricated throughput
+
+`bilinear_scorer` dropped its fabricated `10.0` tps default (tps_known mask, `MODEL_FEATURE_DIM`
+7→8); a shared `ResolvedTps`/`resolve_tps_prior()` now backs the MCP tools, `--list-roles` and the
+stack summary; `train_graph_router` warns on unmeasured fleet tps. Measured behavior byte-identical
+otherwise — the fix removes a route-scoring input that asserted unmeasured throughput as fact.
+
+#### Source References (2026-08-25)
+
+- [shape-keyed-contention-gating.md](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — OP-21 re-bench + demotion, marker-polarity REFUSE, matrix-truncation + host-health fixes, the seam verification with its 45s/1.4s control, and the restated standing smoke.
+- [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — RTG-35 execution + disposition + reload, EVL-47 SC19 wiring, NIB2-57a surface audit.
+- [x-mas-text-routing.md](../handoffs/active/routing-program.md#track-x-mas-text-routing) — the current-runtime correction (shadow mode, no enforce telemetry, Fable5 circular import).
+- [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md) — the shadow-only rollback record (worker aliases recalibrated to 38.46 t/s; enforce disabled pending fresh table validation).
+- [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md) — RTG-35/RTG-38 re-pointed rows.
+
+### Compiled Update — 2026-08-16: the harness a request runs through is a routing dimension — and the number everyone quotes says the opposite of what it looks like
+
+**Confidence: external for every magnitude below (an unrefereed preprint, dive-verified against the
+primary source); verified for the record it was filed under and for the correction. No EPYC
+measurement exists on this axis, and none is proposed — the entry is filed record-only, no task, no
+build.**
+
+`intake-1140` (HarnessOpt-Bench, arXiv 2608.06301v1, Scale AI) was ingested and dived in one
+Stage-2b pass on 2026-08-15. It reaches this page because a plausible misreading of it would push
+routing work in the wrong direction — and the misreading was made once already, during intake.
+
+**The trap.** The paper's headline is that *model choice has a larger effect than coding-harness
+choice* — `0.142` vs `0.079` mean gain movement, about `1.8×`. That statement is confirmed as
+written and is **not a routing result**. The harness varied in that contrast is the **optimizer's own
+coding agent** (Claude Code / opencode / codex / kimi-cli), not the harness being optimized. Citing
+it as "model > harness" for routing purposes inverts it.
+
+**The target axis — the one our routing work actually cares about.** The same paper's Table 3 is a
+controlled swap in which the harness is the only variable (same dataset, partition, rounds and
+target model), and it carries the largest effects anywhere in the paper:
+
+| task | stock harness A | stock harness B |
+|---|---|---|
+| OfficeQA | 0.341 | 0.734 |
+| BrowseComp-Plus | 0.462 | 0.701 |
+| Terminal-Bench | 0.241 | 0.607 |
+| GAIA | 0.000 | 0.508 |
+
+Converting those to normalized gain and comparing them against the best of **111** frontier-optimizer
+runs is an arithmetic **our dive performed and the paper never states**: on that comparison the best
+off-the-shelf harness is *statistically unresolved* from the best optimizer run on three of four
+tasks, and beats every optimizer on Terminal-Bench by about **3.6 resolution bands**. "Bands" is the
+paper's own unit — it publishes a per-suite noise floor (score the same candidate twice on the same
+cases, carry the median discrepancy to the K=3 scale) with the reading rule that *a difference
+smaller than its own column band is not a difference*, and it uses that rule to refuse rankings it
+cannot support.
+
+**The citable implication is therefore the opposite of the headline**: harness/scaffold selection is
+worth about as much as an entire frontier-model optimization campaign, which makes *which harness a
+request runs through* a first-class routing dimension rather than a fixed substrate. Cite
+`intake-1140#record`; never cite this entry as "model > harness".
+
+**Credibility discipline for anyone reusing this.** The entry is an unrefereed nine-day-old preprint
+at credibility `3/6`; it does **not** inherit the ICML-2026 main-conference acceptance of its sibling
+`intake-1134` (VeRO, `5/6`), and it does not supersede it — it builds on VeRO's execution
+environment and calls itself complementary. The paper also pre-empts the Table 3 comparison in its
+own caption by describing the stock columns as *context rather than a reference*, which is defensible
+for its research question and evasive against the framing above; the dive records that as a disclosure,
+not as a reason to soften the finding.
+
+#### The same discipline, applied to our own model-arm surface
+
+The parallel structure in our stack is the GPU candidate surface
+(`/mnt/raid0/llm/tmp/claude-artifacts/np_context_v8_decision.html`), which acquired a new "Stock 27B"
+arm — Qwen3.8-27B — on 2026-08-15. Two rules that surface enforces are worth restating here, because
+a router integration is one of its readers:
+
+- **The surface is presentation, not evidence authority.** Authority stays with the research bundles
+  (`epyc-inference-research/artifacts/np_context_study_v8_20260727/`, plus the v7 study for v7 rows);
+  the artifact re-labels the kernel era rather than silently re-collecting.
+- **A declined measurement must be labelled as declined, not left blank.** The operator declined the
+  Qwen3.8→Qwen3.6 coding comparison on 2026-08-14, so the coding-ladder cell ships as
+  `operator-declined — deferred` rather than empty — a blank cell would read as *unmeasured* to any
+  consumer choosing between arms. When that ladder is eventually run it is the same recipe already in
+  the surface (LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40) and slots into the same row.
+
+Routing consequence of the swap itself (staged, not yet applied): Qwen3.8-27B replaces
+Qwen3.6-27B-MTP-Q8_0 as the primary model for **`architect_general` + `coder_escalation`**, both
+served from the single `:8083` MI210 process. The registry swap is the one remaining unchecked step;
+serving detail is compiled in [Inference Serving](inference-serving.md).
+
+#### Source References (2026-08-16 harness-as-routing-dimension)
+
+- [`routing-intelligence.md`](../handoffs/active/routing-program.md#track-routing-intelligence) — §*Research Intake Update
+  — 2026-08-15*: the record-only filing, the optimizer-agent-vs-target-harness correction, the Table 3
+  figures, and the `intake-1140#record` citation form.
+- [intake-1140](https://arxiv.org/abs/2608.06301) HarnessOpt-Bench (Scale AI) — `dive_corrections`
+  2026-08-15 Stage-2b combined ingest+dive: credibility `3/6`, the published noise-floor convention
+  and its reading rule, the 111-run normalized-gain comparison, and the explicit warning that this
+  entry does not inherit `intake-1134`'s venue credit.
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
+  — the presentation-vs-evidence-authority split, the era-labelling rule, and the
+  `operator-declined — deferred` cell convention.
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — which roles the
+  new arm serves, and the declined quality gate that made the labelling rule load-bearing.
+
+### Compiled Update — 2026-08-13: contention decisions are now observable, but no evidence exists yet
+
+**Confidence: verified for cherry-pick identity and focused tests; prospective for measurement.** The
+A14 `ChatResponse.contention_gate` change landed locally on orchestrator `main` as `c61b8184`. An
+independent audit confirmed the cherry-pick has the same stable patch-id and six-file `+299/-0` diff
+as source `a7d7bdb6`; the merge gate classifies it autonomous, and the focused current-main
+gate/contention/chat suite passes (`118` tests).
+
+This closes the observability implementation, not the measurement. A request may produce multiple
+candidate decisions, so the evidence locator must key on the request rather than counting each
+decision as an independent witness. The orchestrator API has not served this local commit and the
+producer-written Vidya adapter has emitted no tuple. The write-side capture task therefore remains
+open until the first real record proves the path; the audit did not push orchestrator code or reload
+the service.
+
+#### Source References (2026-08-13 A14 audit)
+
+- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — landed
+  bridge state and remaining routing-smoke residuals.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
+  write-side capture contract and request-level locator rule.
+- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
+  [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — landing
+  record and independent patch/test verification.
+
+### Compiled Update — 2026-08-12 (second pass): the same defect was repairable in one subsystem and permanently unrepairable in the other, and only provenance decided which
+
+An eval scoring bug wrote infrastructure failures into the learned router as quality signal —
+`success_reward(False)` for an HTTP 400, a timeout, an unparseable body, an empty reply. A capacity
+fact was recorded as a permanent verdict about a role's competence. The write path is now fixed at
+both producers.
+
+**The durable lesson is not the bug. It is that the same bug produced two opposite answers to "can we
+undo it?", in one system, on the same day.**
+
+- **Seeding path — unrepairable, provably.** Infra-sourced `False` and wrong-answer `False` are
+  byte-identical everywhere they are stored, for three independent reasons: the injected reward context
+  carried no disposition field, `source` was discarded at write time, and the update branch rewrote
+  `q_value` without recomputing `outcome`. There is no predicate that separates them, so there is no
+  purge — and any proxy (`tokens_generated == 0`) destroys genuine negative signal to remove neutral
+  noise. **K is uncomputable. Not small — unknown.**
+- **Live-serving path — repairable.** The `work.answer` payload survived and carries a structural
+  `[ERROR: …]` banner. 260 of 11,918 failure records resolve to 580 distinct rows, of which **565 are
+  classifiable and were sitting below the retrieval floor**. A dry-run of `(memory_id, current_q,
+  proposed_q, evidence)` makes the repair executable and reversible without touching the store.
+
+Same defect, same day, same codebase. The only difference is whether anyone wrote down *why* a value
+was written at the moment it was written. **Wiring provenance on the write side is cheap and permanent;
+reconstructing it on the read side is impossible** — not expensive, impossible.
+
+Two corollaries worth carrying:
+
+- **Arithmetic can make a scary defect inert, and you have to check rather than assume.** On the seeding
+  path `initial_q = 0.5 + reward*0.5`, so a poisoned `0.0` lands at exactly **0.5 — neutral**. Those rows
+  never outrank anything; the effect is a push toward the rule-based fallback, a conservative failure.
+  On the live path the same class used `failure_reward = -0.5` → `initial_q = 0.25`, **below the 0.3
+  retrieval floor**, so a transient backend blip *evicted the memory entirely*. Identical framing,
+  opposite blast radius, decided by two constants.
+- **A substring classifier does not merely miss infra failures — it invents them.** The legacy fallback
+  flagged 23 tasks as infrastructure purely because `"1.503s"` contains `"503"`, and every one of its
+  live-journal hits was that. Classify structurally (transport reason, provenance class, HTTP status,
+  in-band banner); keep substrings as a last resort you expect to be wrong in both directions.
+
+Sources: `handoffs/active/autopilot-program.md`; epyc-orchestrator `2f41c3ad`,
+`5d494c2d`, `ba11d8b0`; `artifacts/audit/memrl_live_serving_infra_reward_dryrun_20260812.json`.
+
+### Compiled Update — 2026-08-12: the leak moved from format to field, and the gate that should have caught it was measuring the wrong string
+
+**Confidence: verified** — row counts are live store queries; the gate defect is a code-level finding with a test-count delta.
+
+#### The premise was stale, and the real defect is one field
+
+The standing diagnosis of the episodic embedding-index leak — *the index mixes three or more text conventions* — is **no longer true**. A 2026-08-09 reseed had already rebuilt the store at **63,786 / 63,786 rows** under one canonical builder. The leak that remains is not a **format**, it is a **field value**: `context.priority` takes exactly two values store-wide — `interactive` on **34,938** rows and absent on **29,081** — and that split reproduces the writer paths at **99.973% purity**. The field is *unobserved*: it comes from a hardcoded default, so it carries no task signal at all while acting as a near-perfect writer fingerprint. Roughly 45% of the corpus is queried with a value most rows lack.
+
+**Decision: drop `priority` from the embedded text; keep `task_type`.** Partitioning by writer path was explicitly **rejected** on five counts — it preserves the defect, costs the 29,081-row corpus reach, has unproven de-confounding value, breaks as a post-filter under global KNN, and is structurally expensive. The generalisable form is worth carrying: **a field that is defaulted rather than observed is not a feature, it is a provenance stamp**, and embedding it teaches the index to retrieve by writer.
+
+#### The integrity gate was comparing against a string nobody embedded
+
+The reason this survived a standing check is the sharper finding. `check_episodic_integrity.py` — the gate protecting a 0.90 similarity floor — built its comparison string **by hand**, and the hand-built string omitted the `priority:` segment. So on **54.6% of rows** the "decisive" check compared the stored vector against a string that was never the input to any embedding, silently burning margin against its own floor. The repair is to call the real publish function rather than reconstruct its output.
+
+This is the routing-plane instance of the verification-failure class catalogued this week: *a check can be sound in form and still be about the wrong object*. A gate that reconstructs its target instead of invoking the producer is testing its own reconstruction.
+
+Two residuals are explicitly **not fixed**: no live write site yet produces the canonical vector (reseed and drift diverge by construction, the serializer differing three ways from the canonical builder), and two live writers still hardcode foreign conventions.
+
+#### A routing-adjacent scoring collapse: one branch swallowing four modes
+
+The eval fan-out's NUMA handling checked for `stack_numa_mode == "quarter"` and let **`full`, `both`, unset, and typos** all fall through one branch — so every non-quarter mode was scored as if it were the same thing. The corrected valid set is `{full, quarter, both}`; note `half` is **not** a NUMA mode at all but a `cpu_shape_class`, which is exactly the kind of adjacent-vocabulary confusion that makes a fallthrough look reasonable while writing. Fixed with 29 tests and mutation-checked.
+
+Alongside it, a related classifier repair that matters for any reward signal derived from evals: a substring-match failure classifier was **fail-open**, so HTTP-400s and unreachable endpoints — including an empty-string read timeout — were scored `WRONG` and fed `success_reward(False)` into the MemRL learned router. **An unreachable endpoint is INFRA-FAILED, never WRONG.** Failures are now classified structurally.
+
+#### A metric whose name overstates what it counts
+
+A contention metric surfaced on the dashboard counts *"N-way fired, non-ALLOW"*, while its name and tooltip read as *"N-way was the binding constraint"*. Those are different populations, and the render-layer fix that made the number visible did not fix the label. Recorded here so the figure is not read as a binding-constraint count.
+
+#### Source References (2026-08-12)
+
+- [`learned-routing-controller.md`](../handoffs/active/routing-program.md#track-learned-routing-controller) — the EPD-3 decision, the rejected partition-by-writer alternative, the integrity-gate defect, and the two open write-site residuals.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — the NUMA fan-out collapse, the fail-open failure classifier, and the contention-metric label finding.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the B5/EPD-3 premise falsification in session context.
+
+### Compiled Update — 2026-09-25: Bounded Decision Models
+
+#### Architecture boundary
 
 When the caller already knows the answer set, token-by-token generation is optional. A model can score the closed set directly, making out-of-schema output structurally impossible and often reducing inference work. This guarantee covers the output type, not correctness: the model can still put high probability on the wrong offered option, especially after a domain, schema, vocabulary, or cardinality shift.
 
@@ -1226,11 +1251,11 @@ The host must own candidate construction, option identifiers, freshness checks, 
 
 The research set exposes several implementation families: encoder decision heads, constrained scoring with pretrained decoders, joint schema decoders, and contrastive state-action encoders with cached candidate embeddings. Their useful comparison is end-to-end task quality, calibration, abstention, robustness, latency, and total task cost on the same candidate sets. In-domain accuracy alone cannot establish a general decision engine.
 
-### Current empirical boundary
+#### Current empirical boundary
 
 The frozen 510-pair JEV-as-a-Judge replay reached 92.5% versus 93.1% for GPT-6 Astra and estimated 56.8% of its fallback fees. This was an offline simulation without live sequential latency. Promotion therefore depends on a live shadow arm and per-row receipts, followed by robustness tests for option order, distribution shift, incomplete menus, and stale candidates.
 
-### Source References
+#### Source References
 
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
 - [Decision-aware routing](../handoffs/active/routing-program.md)
@@ -1240,7 +1265,7 @@ The frozen 510-pair JEV-as-a-Judge replay reached 92.5% versus 93.1% for GPT-6 A
 
 **Confidence:** verified for the offline replay record and host-side repository contracts; inferred for vendor architecture and performance claims that lack independent live reproduction.
 
-## Compiled Update — 2026-09-25: The Smallest Typed-Decision Path to a Live Decision
+### Compiled Update — 2026-09-25: The Smallest Typed-Decision Path to a Live Decision
 
 The next comparison starts with a hosted-independent EPYC fixture built from existing judge records plus
 targeted stress cases. It freezes row provenance, labels, scorer, calibration/evaluation split, expected
@@ -1253,7 +1278,7 @@ wall-clock latency, queueing, fallback behavior, billing, invalids, abstentions,
 quality. Only then can a later-time traffic window support an enforcement decision. The unavailable
 published 510 rows and absent live latency cannot serve as EPYC's baseline.
 
-### Source References
+#### Source References
 
 - [Canonical judge-suite revamp](../handoffs/active/benchmark-suites.md) — CJ-15 local fixture and CJ-16 live shadow.
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-23 shared backend screen.
@@ -1262,7 +1287,7 @@ published 510 rows and absent live latency cannot serve as EPYC's baseline.
 
 **Confidence:** verified as the current execution plan; model quality and economics remain unmeasured locally.
 
-## Compiled Update — 2026-09-26: What the Live Routing Path Actually Does
+### Compiled Update — 2026-09-26: What the Live Routing Path Actually Does
 
 A code and live-process audit (orchestrator main `744cf697`) found that the live `/chat` path differs from
 several standing descriptions:
@@ -1290,7 +1315,7 @@ several standing descriptions:
 The follow-ups are filed as RI-16..RI-21 (RI-16, per-stage routing latency, is the priority), M-12k and
 M-20..M-22, LRC-1/LRC-2, and TD-28.
 
-### Source References
+#### Source References
 
 - [Routing intelligence handoff](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-16..RI-21.
 - [Episodic memory integrity](../handoffs/active/memory-program.md) — M-12k, M-20..M-22.
@@ -1302,7 +1327,7 @@ M-20..M-22, LRC-1/LRC-2, and TD-28.
 quality effects are unmeasured.
 
 
-## Compiled Update — 2026-09-26: Selection Gets a Latency Term Only Through a Pre-Registered Load Sweep
+### Compiled Update — 2026-09-26: Selection Gets a Latency Term Only Through a Pre-Registered Load Sweep
 
 **Confidence: verified** for the code facts and the plan structure (orch `fb7871ea`, live argv read 2026-09-26); **inferred** for any latency gain, since nothing has been measured yet.
 
@@ -1324,14 +1349,14 @@ Role selection has no latency or load term today. Its only cost input is histori
 - The MLP fast path returns before the selection score is computed. Enabling `routing_classifier` therefore requires applying the saturation guard as a post-check first.
 - Role agreement is the wrong rollout metric on its own. In EvoHarnessBench's delegation study, specialist-selection precision stayed near 90%, yet 78–86% of the trials that reached every required specialist still failed their verifier (intake-1821#7).
 
-### Source References
+#### Source References
 - [Decision-aware routing](../handoffs/active/routing-program.md) — DAR-LAT-1/2/3, the pre-registration and the gate, including the :8074 thread drift.
 - [Learned routing controller](../handoffs/active/routing-program.md#track-learned-routing-controller) — the C1-A4 declines, the fast-path precondition, the evaluation caution.
 - [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — the RouterWise decline.
 - [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — P2 and P4-1, and R2 (one estimator owner).
 
 
-## Compiled Update — 2026-09-27: the :8074 reconciliation package is signed and split; FA_SPLIT_KV becomes its own long-context decision
+### Compiled Update — 2026-09-27: the :8074 reconciliation package is signed and split; FA_SPLIT_KV becomes its own long-context decision
 
 **Confidence: verified** for the package contents and the signature receipt; **no G1 outcome is recorded yet**, so which thread count the critic serves is still open.
 
@@ -1341,14 +1366,14 @@ Role selection has no latency or load term today. Its only cost input is histori
   - The package states the reason for a gate rather than a pick: **no served 48-vs-96 comparison exists for this model on any kernel.** The recipe's "48 is the served decode optimum" rests on one pre-BIOS bare llama-bench window, and other windows favoured t64. The claim is corrected in the recipe module and the master registry.
 - **DAR-LAT-3i: `GGML_FA_SPLIT_KV=0` was split out as its own decision.** It changes numerics (a row-exact reduction order for 1-row decode vs n-row MTP verify), and it risks long-context speed because single-row decode loses KV-axis parallelism. The critic serves `n_ctx` 262144, while G1 exercises only prompts of about 4k tokens. It needs, on v10 at the served argv as launch-unit arms under a region claim: a long-context decode arm (at least 64k and 128k plus the deepest the host fits, with TTFT), a numerics check (greedy agreement, first-divergence position, MTP acceptance α), and per-suite quality non-inferiority on the DAR-LAT-3a item sets. It is adopted only if it is non-inferior at every depth, as its own `stack-change` package. It does not block DAR-LAT-3g.
 
-### Source References
+#### Source References
 
 - [Decision-aware routing](../handoffs/active/routing-program.md) — DAR-LAT-3h (the task) and DAR-LAT-3i.
 - [DAR-LAT-3h stack-change package v2](../artifacts/operator/stack-change-dar-lat-3h-20260926/PACKAGE.md) — the split, the live-vs-recipe table, the 48-vs-96 evidence grades.
 - [DAR-LAT-3h signature receipt](../artifacts/operator/receipts/RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926.json) — signed gates G1/G2/G3, outcome→lane map, scope exclusions.
 
 
-## Compiled Update — 2026-09-27 (late): G1 chose 96 threads, then selection work froze behind the thesis
+### Compiled Update — 2026-09-27 (late): G1 chose 96 threads, then selection work froze behind the thesis
 
 **Confidence: verified** for the G1 outcome (15/15 clean launches, 3 per arm, one window) and for the freeze markers; the W3 co-run numbers are n = 3 with no floor.
 
@@ -1363,7 +1388,7 @@ Role selection has no latency or load term today. Its only cost input is histori
 - **Role swap scope matters for where escalation lands.** Only `architect_general` moves to Flash-Next; `coder_escalation` and `ingest_long_context` stay on the 27B, and reviews stay on the 27B (`architect_critic`). Frontdoor's existing escalation hop is `CODER_ESCALATION`, so after the swap that hop would land on the 27B: A2 must target `architect_general` explicitly, and review calls do not count toward consultant device-seconds.
 - **SSU-F17: bind roles to server ids, not to other roles.** `server_mode.<key>` is both a role name and a process declaration, so moving one role label meant re-pointing every alias across about 8 restated surfaces (ARCHSWAP did exactly that). The fix keys servers by model instance and binds every role to a server id, so a swap is a two-line change. It is a registry-schema change, sequenced after UFH-13's verdict.
 
-### Source References
+#### Source References
 
 - [Decision-aware routing](../handoffs/active/routing-program.md) — DAR-LAT-3h ✅ outcome and the per-box freeze markers.
 - [DAR-LAT-3h RESULT](../artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md) — tables, W2 reading, the do-not-merge note.
@@ -1372,7 +1397,7 @@ Role selection has no latency or load term today. Its only cost input is histori
 - [Learned routing controller](../handoffs/active/routing-program.md#track-learned-routing-controller) and [typed-decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — LRC-1/2 and TD-28 freezes.
 - [Model-stack single-source pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F17 and the superseded 48-thread claim.
 
-## Compiled Update — 2026-09-29: the 27B's review gate never returned a verdict; moving thinking-on roles to the chat lane fixed it, and the thesis parked on an untrained router
+### Compiled Update — 2026-09-29: the 27B's review gate never returned a verdict; moving thinking-on roles to the chat lane fixed it, and the thesis parked on an untrained router
 
 **Confidence: verified** for the ARCHSWAP bring-up and serving proofs, the RI-22 mechanism (code reading plus a live A/B), RI-23/RI-23a landing and the 15:04Z proof; the RI-23b latencies and token counts are **n = 1 per probe** and give a direction only. The UFH-13 park, the replaced unfreeze trigger and the TD-11 consolidation are **operator rulings**, not measurements.
 
@@ -1389,7 +1414,7 @@ Role selection has no latency or load term today. Its only cost input is histori
 - **Frozen items got a trigger that can fire (operator ruling Q2, 2026-09-29).** The old "UFH-13 verdict" triggers could not fire while UFH-13 is parked, which would have made every freeze silently permanent. All eight DAR-LAT boxes (including 3i), LRC-1/LRC-2, VB-TD-ADVICE and VB-SEL-LOADAB now resume on "autopilot has trained on the swapped stack AND UFH-13 re-opened"; TD-28 additionally needs the v11 promotion. Since the park the freeze binds only inference-bearing steps; design and documentation work may proceed, and the 2026-09-27 "point all work at the thesis" ranking no longer orders work.
 - **TD-11 is the single typed-routing owner (operator ruling Q5).** RI-14 and LRC-TD-1 are folded into it, carrying their scope: agreement, calibration and wall time against the current classifier and against the BGE+MLP controller on the recorded corpus, never gating on uncalibrated confidence, with option-as-query as a second scoring arm beside native token logits. The "drop typed routing" clause is revisited after the swapped-stack autopilot run. RI-15's generation-side log-prob comparator is cross-linked to EV-CONF-2, which uses the same signal, so one spec-OFF capture serves both. The DAR handoff's closed scope moved verbatim to a completed sibling; nothing in it is new.
 
-### Source References
+#### Source References
 
 - [Routing intelligence handoff](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-21 closure, the RI-22 mechanism and fix, RI-23 options and landing, the RI-23a reconciliation, the RI-23b table, RI-14 fold, RI-15 cross-link, RI-18 unblock.
 - [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the PARKED status and reasons, ARCHSWAP-1..5 and TE-reload, P1–P3 proofs, TE-reopen, the `:8083` KV-headroom check.
@@ -1403,7 +1428,7 @@ Role selection has no latency or load term today. Its only cost input is histori
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-09-28 posture: UFH-13 parked, infra-and-design direction until the second MI210.
 
 
-## Compiled Update — 2026-10-03: routing costs ~0.6 s before generation, and the review gate is dropped
+### Compiled Update — 2026-10-03: routing costs ~0.6 s before generation, and the review gate is dropped
 
 **Confidence: verified.** RI-16 comes from 30 live `/chat` requests read with the per-stage timers. RI-18 is a
 pre-registered counterfactual with a frozen decision rule: 608 items, paired bootstrap CIs, a seeded tune/confirm
@@ -1478,7 +1503,7 @@ split. External-validity caveat: both of RI-18's strata are closed-form scored t
   - Before the redo, an INTERIM `score` returned VOID (clause 0) with π1 at −36.8 [−41.5, −32.3]. It was not a
     verdict.
 
-### Source References
+#### Source References
 
 - [Routing intelligence](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-16 table, RI-18 pre-registration, verdict block, RI-18a/b/c, RI-24.
 - [Thesis experiment](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the TE-reopen note: A2 loses its review-gate trigger after RI-18c.
@@ -1488,23 +1513,7 @@ split. External-validity caveat: both of RI-18's strata are closed-form scored t
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261001-shared-clone-drift-voided-ri18-revise.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-RI18 sidecar and VB-RI18a gaps.
 
-## 2026-10-06 calibration input byte bindings
-
-[Calibration input byte bindings](../docs/reference/calibration-input-byte-bindings.md) attach raw state, question-catalogue, and gold-label byte identities to prospective receipts: CLI reads and parses each original buffer once; direct-API metadata is explicitly caller_asserted or null. [Native evidence](../artifacts/ni07/run-37473538913/README.md) passes34/34 selected synthetic cases. This is dependency evidence, not a calibration-quality or model-validity result. TD-18's broader receipt metrics remain separate; TD-16 no-harm, TD-29 shadow/prefill counts, and TD-1d.3 isolated-question branches remain live gates.
-
-## 2026-10-06 staged ED25519 header recognition
-
-[Staged ED25519 header contract](../docs/reference/staged-ed25519-header-check.md) closes the missing staged-blob PEM header match while preserving OPENSSH/RSA handling. [Native capture](../artifacts/ni07/run-37474797195/README.md) passes 9/9 synthetic cases with one outer CI observation. This is structural fixture evidence, not a privacy or whole-repository coverage claim. The separate whole-file credential-fixture allowlist choice remains open under TOC-RD-1a; UFH-07 retains the trajectory-artifact prerequisite and TOC-SP-3 priority.
-
-## 2026-10-06 standalone guard declared NUMA mode
-
-[Standalone guard contract](../docs/reference/standalone-numa-guard.md) makes explicit mode or the running checkout’s declaration determine standalone CLI admission, with unresolved input refused before validation. [Native capture](../artifacts/ni07/run-37476312545/README.md) passes 20/20 selected cases; synthetic 1 TiB import scaffolding and empty backend directories establish no live capacity, deployment or serving warrant. The lower-level diagnostic fallback and pipeline update/compile paths retain their prior contract.
-
-## 2026-10-06 declared scratch-root retention
-
-[Declared-root KEEP contract](../docs/reference/declared-scratch-root-keep.md) protects marked roots, their marker files, overlaps and ancestor candidates, with a second marker check at apply entry. [Native synthetic capture](../artifacts/ni07/run-37482120866/README.md) passes 27/27 cases. Markers may still race after the check; fixture conformance confers no whole-host cleanup warrant. This closes the source gap uncovered during NI07 final retention review.
-
-## Compiled Update — 2026-10-21 (sweep 3): placement evidence gap and sequential-gate diagnostics
+### Compiled Update — 2026-10-21 (sweep 3): placement evidence gap and sequential-gate diagnostics
 
 - WP-15 (within-role placement) was NOT JUDGEABLE on 2026-10-20: no per-request arrival, queue or chosen-instance record exists for the frontdoor fleet (`serving_calls` has 19 rows total, none for the fleet). WP-15.1 was derived to log frontdoor dispatches so WP-15 can be scored. ([within-role-placement-state-machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine); [workspace-f8 progress](../progress/2026-10/2026-10-20-workspace-f8.md))
 - Gate diagnostics filed (all zero-inference, no gate change): SEQ-5 lifetime promotion-attempt ledger (the `alpha_wealth` block has no K_opened or union-bound field and cannot recover attempts interrupted before their fresh-eval row), SEQ-6 replay under one frozen null per candidate (the null is rebuilt from the 120 most recent incumbent rows each trial, so kept candidates enter later nulls), SEQ-7 paired-z false-elite replay. DP-A and DP-C (lifetime and rolling-window alpha budgets) remain operator decisions; the budget is not the binding gate today per the 2026-07-11 audit. ([autopilot-sequential-allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation), 2026-10-20)
@@ -1512,7 +1521,7 @@ split. External-validity caveat: both of RI-18's strata are closed-form scored t
 
 Sources: [within-role-placement-state-machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine); [autopilot-sequential-allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation); [eval-tower-verification](../handoffs/active/eval-tower-program.md); [workspace-f8 progress](../progress/2026-10/2026-10-20-workspace-f8.md).
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **WP-15 is still not judgeable.** dispatch.v1 now exists (481 dispatch rows, 459 joined to serving_call.v1 on request_id) but none is a frontdoor-fleet dispatch: `fleet_at_arrival` and `session.key` are null in 481/481 and 433 went to scratch gate port 18973. Arms (a)-(e) cannot be scored; nothing ticked.
 - **Chars-per-token fit (the only computable piece):** 3.576 chars/token, sd 0.135 (CV 3.8%, n = 459, one client class). The conservative estimate (mean - 1 sigma = 3.441) under-counts tokens in 20/459 (4.4%). Mis-route rate at 2K/4K/8K/16K is 0/0/0/0, which is vacuous because no prompt exceeds 3,370 tokens.
@@ -1520,7 +1529,7 @@ Sources: [within-role-placement-state-machine](../handoffs/active/numa-placement
 
 Sources: [Within-role placement state machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine), [WP-15 results](../docs/design/wp-15-results-20261023.md)
 
-## Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-24)
+### Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-24)
 
 **Confidence: verified (code landed, tests pass); the screen result is descriptive and data-limited.**
 
@@ -1530,7 +1539,7 @@ Sources: [Within-role placement state machine](../handoffs/active/numa-placement
 
 Sources: [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [decision-aware-routing](../handoffs/active/routing-program.md).
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the cached-screen counts and shipped code; the technique has not been tested prospectively, so the screen is data-limited, not evidence against it.
 
@@ -1540,13 +1549,13 @@ Sources: [learned-routing-controller](../handoffs/active/routing-program.md#trac
 
 Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md) · [scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization)
 
-## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - EV-15b readout spec (nine tokens 1-9, T=1.0, stable softmax; spec only), EV-15d retained-mass guard (70 tests), MHS-12 eval-identity screen (163 controls). ([spec](../docs/design/ev15b-readout-spec-20261031.md))
 
-## Compiled Update — 2026-11-01 (incremental source review)
+### Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited records and source controls.**
 
@@ -1554,13 +1563,13 @@ Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-
 - MoE calibration-lag reproduction and the proposed delegation fold replay retain their bounded surrogate and prospective scopes. An empty Pareto archive reflected the current-era boundary and absence of current-era rows, not proof of optimizer behavior. ([MoE](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement); [routing](../handoffs/active/routing-program.md#track-routing-intelligence); [task rate](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput))
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - The existing bilinear feature vector has six model fields plus known masks; eight source controls passed. Fallback specifications are degraded defaults, not measurements; fixed-reward retraining and DAR-4 adoption remain open. [Source](../handoffs/active/routing-program.md)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
@@ -1570,19 +1579,19 @@ Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-
 - TD-18.1: the calibration receipt pins GGUF sha256, `decision.temperature.*` metadata, build commit and `-np/-b/-ub` (76/76 controls); TD-17 is source-only partial (70/70 CI, no model calls). [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
 - TB-5: `max_tokens`/`reasoning_budget` is a per-request tunable the router can set from task complexity (55 controls), making budget a routing output. [reasoning-effort](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels)
 
-## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+### Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
 **Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
 
 - d1-Omni-2B (intake-2553#record; [w1_agent](../research/deep-dives/ws58-20261031/dives/w1_agent.yaml)), vendor card: typed calibrated answers in one forward pass. The stage-1 "no llama.cpp path" claim was overturned: a GGUF is served via `/v1/systemone` from b11960 (noul/choice/score only); our frozen tree lacks it, a build cost rather than a decline. Text d1-2B beats Omni on 7 of 9 decision rows and is the router comparator.
 - Proposed AGENT-12 (typed-decision-plane): replay frozen routed tasks on a scratch upstream server in four arms (d1-2B, d1-Omni, TD-23 incumbent, learned MLP router), promoting only if accuracy and ECE are no worse and p50 latency is lower, with permuted option keys as the negative control. AGENT-14: read the LFM Open License before any use beyond a screen.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2553#record (d1-Omni-2B model card): overturned the 'no GGUF/llama.cpp path' claim: LiquidAI publishes d1-Omni-2B-GGUF and d1-2B-GGUF. Treated as a candidate local typed-decision backend; benchmark scores are not expected accuracy. Integrated via conversation-stack and typed-decision-plane.
 - intake-2581#record (d1-Omni-2B-GGUF card): adds beyond intake-2553#record the exact serve command, batch flags, supported type subset and file sizes for llama.cpp /v1/systemone; limited to noul/choice/score-only and yields no quality, calibration or latency number. Integrated via typed-decision-plane.
@@ -1590,11 +1599,7 @@ Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-
 - intake-2601#record (llama.cpp PR 29832 generic typed decisions): open draft demonstrating model-agnostic typed decisions through next-token label readout, so any in-lineup chat model could be scored; probabilities come from a few hand-picked examples and are not accuracy evidence. Integrated via typed-decision-plane.
 - intake-2602#record (llama.cpp issue 31475 systemone prefix re-read): open, unconfirmed perf defect for hybrid decision models at np>1 with an unmerged local fix; the 0.007 shift is a single-probability observation, not a noise floor, so shifts are to be measured on our model. Verdict new_opportunity; linked to typed-decision-plane.
 
-## Compiled update — 2026-11-02: escalation predictor retraction
-
-The earlier aggregate escalation-depth signal is not a validated routing predictor. The adversarial review reported within-suite AUC 0.5521 ± 0.038 for worker_general and 0.5204 ± 0.037 for frontdoor, with defective outcome labels. Repair the labels and re-evaluate by role and model before relying on the signal. [Substrate correction](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike), [owning probe](../handoffs/active/routing-program.md#track-learned-routing-controller), [routing program](../handoffs/active/routing-program.md#track-routing-intelligence).
-
-## Compiled Update — 2026-11-09 (night: DAR-SPLIT-1 re-statement, M-15 id_map AUC, TD-16 void run)
+### Compiled Update — 2026-11-09 (night: DAR-SPLIT-1 re-statement, M-15 id_map AUC, TD-16 void run)
 
 **Confidence: verified** (granted-row result files filed this day; numbers quoted from them, not re-measured here; observations under MEASUREMENT.md, no protocol id).
 
@@ -1605,7 +1610,7 @@ The earlier aggregate escalation-depth signal is not a validated routing predict
 
 Sources: [routing-program DAR-SPLIT-1 and TD-16 boxes](../handoffs/active/routing-program.md) · [memory-program M-15 box](../handoffs/active/memory-program.md) · [filed-row evidence](../artifacts/compute/filed-rows-20261109/dar-split-1/dar_decisive_subset_split.json) · [M-15 result](../artifacts/compute/filed-rows-20261109/m15-comp-auc-idmap/RESULT.json) · [TD-16 readout](../artifacts/compute/filed-rows-20261109/td16-label-word-bias/UNOFFICIAL-READOUT.json)
 
-## Compiled Update — 2026-11-09 (RTG-09 audit: EG2 boundary, stale duration baselines, role-label retrain)
+### Compiled Update — 2026-11-09 (RTG-09 audit: EG2 boundary, stale duration baselines, role-label retrain)
 
 - **DAR-SPLIT-1 landed and the number was re-stated.** Split-half decisive subset with a binomial null (orchestrator `69168316`) on 64 matched objectives (the old triage number rested on 633): A->B +24.4pp, B->A +21.3pp decisive lift. This is a new measurement, not a correction of the old +26pp, which is not citable ([routing-program](../handoffs/active/routing-program.md)).
 - **RTG-EG2-1 (planned):** the v11 EmbeddingGemma-2 swap (EG2@256) invalidates everything trained or tuned on BGE-1024: `routing_classifier_weights.npz` (8 classes), `_kl.npz` (6 classes), `verifier_head_weights.npz`, `training_data.npz` (526,661x1031, git-ignored), the IRT projector, and every cosine threshold. Ordering rule: do not spend a training run on BGE-1024 inputs; EPD-3 is folded into the single EG2 re-embed (operator decision) ([routing-program](../handoffs/active/routing-program.md)).
@@ -1614,7 +1619,7 @@ Sources: [routing-program DAR-SPLIT-1 and TD-16 boxes](../handoffs/active/routin
 - **Regret-gate decision package:** the >=5% criterion is definitionally ~0 under selector self-consistency regret; recommendation is to retire it and unfreeze P1.5.2/TR-4/TR-5/LRC on their own merits (operator-only, via AskUserQuestion) ([routing-program](../handoffs/active/routing-program.md)).
 - Autopilot stays on operator HOLD; true last run was 2026-08-09T19:29Z (trial 1503) and a new era is planned for relaunch ([autopilot-program](../handoffs/active/autopilot-program.md)).
 
-## Compiled Update — 2026-11-18 (per-request tool picker, SELECTOR-HARDEN)
+### Compiled Update — 2026-11-18 (per-request tool picker, SELECTOR-HARDEN)
 
 - **Per-request tool selection beats a static tool list, on the 35B.** Probe v1: top-8 selection scored 0.38 against 0.10 for the static list plus `list_tools` (both the C1 embedding picker and the C2 Jev one-shot classifier); C1 and C2 were about equal on success, with C2 recall 0.65 vs 0.45. On the 27B the selector arms were floor-bound and inconclusive (descriptive interim).
 - **Hardened picker, probe v2 stage 1 (30 pairs, 35B / 27B):** direct calls with the picker (A_pick) scored 0.67 / 0.63 against 0.43 / 0.47 for direct calls alone, with recall, recovery and breaker checks clean. The picker design is C1 recall plus C2 rerank with a core pin, adaptive k, a low-confidence fallback to the full list, and recovery when a tool is missing.
@@ -1630,7 +1635,42 @@ Source References:
 
 Sources: [routing-program](../handoffs/active/routing-program.md) · [autopilot-program](../handoffs/active/autopilot-program.md)
 
-## Compiled Update — 2026-11-19 (typed risk/intent screen, validate-first shadow, picker findings)
+### Compiled Update — 2026-11-19 (typed risk/intent screen, validate-first shadow, picker findings)
 
 - **Typed risk/intent classification is not a routing or permission gate.** The 12-call authored HS-TD-1 screen reached risk agreement 9/12 and intent 11/12; the 12/12 derived policy agreement is an artifact of coarse mapping (restrictive only for high risk or external intent). Confidence (mean 0.967) is uncalibrated self-report and nothing is gated ([HS-TD-1](../docs/reports/hs-td1-risk-intent-20261119.md)). Typed context selection matched the authored file set 12/12 but at 3.261x the call wall of the all-file baseline ([HS-TD-3](../docs/reports/hs-td3-context-selection-20261119.md)).
 - **Validate-first shadow built.** TD-29.M2 `typed_decisions_validate_first` landed flagged default-off (orchestrator `b22cc796`). With the per-request picker on, `search_tools`/`describe_tool` are already installed in C3, so the CM-2 flag alone is a no-op next to C3; the CM-2/4/5 probe rows are gated on S4 Omega A/B ([autopilot-backlog-session 2026-11-19](../progress/2026-11/2026-11-19-autopilot-backlog-session.md)).
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): EG2 boundary, host capabilities, prefix-group dispatch, placement telemetry closed
+
+- **RTG-EG2-1: the routing boundary for the EmbeddingGemma-2 swap is owned.** `reembed_stores_eg2.py:140-200` (orchestrator 931ba135, 249ff242, 46f03ecc) lists everything trained or tuned on BGE-1024 that the v11 EG2@256 swap invalidates. That includes `routing_classifier_weights.npz` (8 classes), `_kl.npz` (6 classes) and the verifier head weights ([routing-program](../handoffs/active/routing-program.md); [routing-intelligence progress](../progress/2026-11/2026-11-19-handoff-routing-intelligence.md)).
+- **URE-2 live escalation writer: a tested patch, not yet applied.**
+  - `proposed/ure2-writer/implementation.patch` (SHA-256 `d8af8ba6…d38f`) is pinned to orchestrator `c1df9962` and passes 160 candidate tests, 11 of them new.
+  - Two root-only dispatches (learned-routing-controller and typed-decision-plane) correctly declined to apply it, because the edit sites are in epyc-orchestrator.
+  
+  ([routing-program](../handoffs/active/routing-program.md); [learned-routing-controller progress](../progress/2026-11/2026-11-19-handoff-learned-routing-controller.md); [typed-decision-plane progress](../progress/2026-11/2026-11-19-handoff-typed-decision-plane.md)).
+- **RTG-VAR-1 host-capability manifest landed.** `orchestration/host_capabilities.yaml` is built by `src/registry/host_capabilities.py`, a read-only probe with a reproducible builder and a golden shape test. The compiler consumes it opt-in via `compile_descriptors.py --host-capabilities`. Separately, validate-first was wired into the TD-4/TD-29 tool-argument shadow behind `typed_decisions_validate_first` (default off, shadow only). EPD-1 and EPD-2 are recorded as declined/withdrawn, which is historical ([routing-program](../handoffs/active/routing-program.md)).
+- **Open routing gaps recorded on the autopilot relaunch list:**
+  - Routing is not context-length aware (W-27).
+  - The lineup status of `worker_fast` (8102) and `eval_batch_frontdoor` (18070) is undecided (W-24).
+  - The M-12k smoke showed the API routing multiple-choice items past the frontdoor to unserved architect/coder roles, which returned HTTP 502/504/429.
+  
+  ([autopilot-program](../handoffs/active/autopilot-program.md); [memory-program](../handoffs/active/memory-program.md)).
+- **Worker dispatch follow-ups from the taskflow canary.**
+  - **WORKER-TASK-BRIEF:** carry taskflow's typed task brief in worker dispatch. Qwen3.6-35B-A3B becomes the worker.
+  - **PREFIX-GROUP-DISPATCH:** default-off `dispatch_prefix_grouping`, which puts siblings that share a prefix on one server's np slots for a Hydragen/DeFT-style kernel (AutoKernel DTREE-ATTN-NP). It is gated on PREFIX-GROUP-MEASURE showing a material shared fraction. A remeasure is needed once request bodies are logged.
+  - **WP-15** KV-length-aware instance selection stays a replay-score task (intake-2119#record, intake-2214#record).
+  
+  ([harness-program](../handoffs/active/harness-program.md)).
+- **Dispatch placement telemetry (INF-87) moved to completed (operator 2026-11-19, 324be09a6).**
+  - The core finding stands: `ConcurrencyAwareBackend` and `ContentionGate` did not model within-role full↔quarter cpuset overlap.
+  - The design keeps topology `placement_overlap` as a hard safety veto, separate from the measured throughput matrix.
+  - The WP-6/WP-7 affinity verdicts are marked SUPERSEDED and are historical.
+  - Closing notes: a spillover fallback must re-check capacity after spilling, and two tiers suffice (intake-2216#record).
+  
+  ([dispatch-placement-telemetry](../handoffs/completed/dispatch-placement-telemetry.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [handoffs/active/routing-program.md](../handoffs/active/routing-program.md)
+- [handoffs/active/autopilot-program.md](../handoffs/active/autopilot-program.md), [handoffs/active/memory-program.md](../handoffs/active/memory-program.md), [handoffs/active/harness-program.md](../handoffs/active/harness-program.md)
+- [handoffs/completed/dispatch-placement-telemetry.md](../handoffs/completed/dispatch-placement-telemetry.md)
+- [progress/2026-11/2026-11-19-handoff-routing-intelligence.md](../progress/2026-11/2026-11-19-handoff-routing-intelligence.md), [2026-11-19-handoff-learned-routing-controller.md](../progress/2026-11/2026-11-19-handoff-learned-routing-controller.md), [2026-11-19-handoff-typed-decision-plane.md](../progress/2026-11/2026-11-19-handoff-typed-decision-plane.md)

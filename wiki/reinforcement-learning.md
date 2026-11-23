@@ -2,26 +2,7 @@
 
 **Category**: `reinforcement_learning`
 **Confidence**: verified
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-06-21
 **Sources**: 17 documents
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **Self-Distilled RLVR (RLSD)** (intake-286#01) Pure privileged-teacher self-distillation leaks information and destabilizes training; RLSD uses it only for token-level update magnitudes while RLVR sets direction. Worth investigating.
-- **LLM-as-a-Verifier** (intake-363#record) Verifier reward via logprobs over criteria/verifications/granularity; Terminal-Bench 2 86.4% vs 81.8%, SWE-Bench Verified 77.8% vs 76.1%. Dive (2026-08-19) OVERTURNS the recorded Gemini-dependency blocker: the pinned MIT source builds a client for any OpenAI-compatible server returning logprobs, so a local llama.cpp server qualifies.
-- **TRL AsyncGRPO + OpenEnv** (intake-889#record) Loop-owning (black-box) RL training of an unmodified agent via HarnessRolloutWorker. Dive: decline rather than bridge; llama.cpp has none of the seven vLLM control endpoints it needs, and the multi-harness claim is not supported by the code.
-- **RLPF staged correctness-gated reward** (intake-974#00) Staged reward where every correct program receives at least 0.15 (epsilon 0.05 above the 0.10 wrong-output stage). Correction: all arms are correctness-gated and results are one-seed point estimates, so it does not show gating beats blending.
-- **Dark Room reward collapse** (intake-990#record) Dense prediction rewards collapse GRPO-trained agents, but the mechanism does not reach MemHarness whose reward shape is the paper's own non-collapsing baseline. It can still destabilize MemHarness measurement: the 32-episode binomial noise floor is about 8.8 points.
-- **Memory-R1** (intake-1023#record) RL-trained Memory Manager (ADD/UPDATE/DELETE/NOOP) and an Answer Agent distilling sixty retrieved memories, trained on only 152 LoCoMo QA pairs. Verified as a research pattern; overturned as a reproducible released RL component.
-- **RL's Razor** (intake-1083#record) Forward KL to the base model on the new task predicts forgetting, and weight sparsity is dismissed as a numerical artefact. Narrowed: a pooled correlation of r = 0.516 (n = 18) deflates the recorded R^2 = 0.71 and the caveat must travel with the datum.
-- **RL Forgets (continual policy optimization)** (intake-1084#record) Standard RL retains more than SFT but still shows clear forgetting on the MRCL benchmark; earlier contrary findings trace to benchmark age and methodology. Dive overturned the entry's claim that the distance-from-base reconciler was untested.
-- **Retaining by Doing (on-policy data)** (intake-1097#record) RL forgets less than SFT; reconciling condition is initial-policy modality (SFT can be more robust when uni-modal). Correction to our expectation: the r = 0.52 statistic is real but does not simply kill a related entry's R^2 = 0.71. Knowledge only, no post-training on EPYC.
-- **Visual continual learning via RFT** (intake-1098#record) RFT beats SFT but still forgets; measures per-rollout token-level KL drift, and equal-reward rollouts differ in drift. Reframed as a corroborator rather than an opposing tiebreaker; drift instrument is CPU-only and training-free.
-- **RFT mitigates forgetting in continual post-training** (intake-1099#01) 7-task sequence on Qwen2.5-VL-7B: GRPO AvgAcc 60.0% vs MTL upper bound 62.9% vs sequential SFT 54.0%; MMLU-Pro base 47.5 falls to 30.6 under SFT but GRPO holds 48.3. Corrected the framing of the contamination critique in a related entry.
-- **RL heals OOD forgetting in SFT** (intake-1100#01) Title overstated: recovery is partial (85.1% at 7B, 36.3% at 3B), never exceeds the pre-damage early SFT peak, and goes via a different representational route. Knowledge only for us.
-- **RiVER: RL without ground-truth solutions** (intake-1632#00) Ranks executable solvers on the same hidden instances without gold solutions: invalid maps to -1, the unique best to 1 and valid non-winners into [-0.5, 0.5] (intake-1632#00). Reports ALE rating 845 to 987 (Qwen) and 805 to 962 (GLM); the 8.9 and 9.4 gains are corrected to absolute rank-percentage points (intake-1632#01). Raw score matrices, code and total training budget are missing, limiting causal conclusions; relevant to rewarding kernels by ranking rather than gold.
 
 ## Summary
 
@@ -196,3 +177,34 @@ Four May 2026 papers significantly expanding the gradient-free post-training tie
 **EPYC disposition: `not_applicable` on CPU-only hardware.** The framework is multi-GPU only (Ray + FSDP) and training-only — there is no inference or CPU path. Of the three algorithms, **CPPO and DRPO are the LLM-targeted variants** (Flow-DPPO is diffusion-specific) and are therefore the only members that could transfer to a FUTURE DGX-based LLM-RL track once GPU access exists (per `project_dgx_spark_target`). Both are divergence-regularized trust-region policy-gradient methods operating on billion-parameter policies — the same class the AReaL 6-orders-of-magnitude compute-mismatch argument retired for routing-classifier training, and a distinct design-space point from the GRPO / sep-CMA-ES (Trinity) / BaRP / Conductor cluster cataloged in the 2026-04-28 update. **Confidence: external / DGX-gated** — no CPU, local, or quantized results, no third-party replication at intake.
 
 **Sources**: [intake-709](https://arxiv.org/abs/2606.09821) UniRL · [intake-709b](https://arxiv.org/abs/2606.11025) · [intake-709c](https://arxiv.org/abs/2606.10968)
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-06-21
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **Self-Distilled RLVR (RLSD)** (intake-286#01) Pure privileged-teacher self-distillation leaks information and destabilizes training; RLSD uses it only for token-level update magnitudes while RLVR sets direction. Worth investigating.
+- **LLM-as-a-Verifier** (intake-363#record) Verifier reward via logprobs over criteria/verifications/granularity; Terminal-Bench 2 86.4% vs 81.8%, SWE-Bench Verified 77.8% vs 76.1%. Dive (2026-08-19) OVERTURNS the recorded Gemini-dependency blocker: the pinned MIT source builds a client for any OpenAI-compatible server returning logprobs, so a local llama.cpp server qualifies.
+- **TRL AsyncGRPO + OpenEnv** (intake-889#record) Loop-owning (black-box) RL training of an unmodified agent via HarnessRolloutWorker. Dive: decline rather than bridge; llama.cpp has none of the seven vLLM control endpoints it needs, and the multi-harness claim is not supported by the code.
+- **RLPF staged correctness-gated reward** (intake-974#00) Staged reward where every correct program receives at least 0.15 (epsilon 0.05 above the 0.10 wrong-output stage). Correction: all arms are correctness-gated and results are one-seed point estimates, so it does not show gating beats blending.
+- **Dark Room reward collapse** (intake-990#record) Dense prediction rewards collapse GRPO-trained agents, but the mechanism does not reach MemHarness whose reward shape is the paper's own non-collapsing baseline. It can still destabilize MemHarness measurement: the 32-episode binomial noise floor is about 8.8 points.
+- **Memory-R1** (intake-1023#record) RL-trained Memory Manager (ADD/UPDATE/DELETE/NOOP) and an Answer Agent distilling sixty retrieved memories, trained on only 152 LoCoMo QA pairs. Verified as a research pattern; overturned as a reproducible released RL component.
+- **RL's Razor** (intake-1083#record) Forward KL to the base model on the new task predicts forgetting, and weight sparsity is dismissed as a numerical artefact. Narrowed: a pooled correlation of r = 0.516 (n = 18) deflates the recorded R^2 = 0.71 and the caveat must travel with the datum.
+- **RL Forgets (continual policy optimization)** (intake-1084#record) Standard RL retains more than SFT but still shows clear forgetting on the MRCL benchmark; earlier contrary findings trace to benchmark age and methodology. Dive overturned the entry's claim that the distance-from-base reconciler was untested.
+- **Retaining by Doing (on-policy data)** (intake-1097#record) RL forgets less than SFT; reconciling condition is initial-policy modality (SFT can be more robust when uni-modal). Correction to our expectation: the r = 0.52 statistic is real but does not simply kill a related entry's R^2 = 0.71. Knowledge only, no post-training on EPYC.
+- **Visual continual learning via RFT** (intake-1098#record) RFT beats SFT but still forgets; measures per-rollout token-level KL drift, and equal-reward rollouts differ in drift. Reframed as a corroborator rather than an opposing tiebreaker; drift instrument is CPU-only and training-free.
+- **RFT mitigates forgetting in continual post-training** (intake-1099#01) 7-task sequence on Qwen2.5-VL-7B: GRPO AvgAcc 60.0% vs MTL upper bound 62.9% vs sequential SFT 54.0%; MMLU-Pro base 47.5 falls to 30.6 under SFT but GRPO holds 48.3. Corrected the framing of the contamination critique in a related entry.
+- **RL heals OOD forgetting in SFT** (intake-1100#01) Title overstated: recovery is partial (85.1% at 7B, 36.3% at 3B), never exceeds the pre-damage early SFT peak, and goes via a different representational route. Knowledge only for us.
+- **RiVER: RL without ground-truth solutions** (intake-1632#00) Ranks executable solvers on the same hidden instances without gold solutions: invalid maps to -1, the unique best to 1 and valid non-winners into [-0.5, 0.5] (intake-1632#00). Reports ALE rating 845 to 987 (Qwen) and 805 to 962 (GLM); the 8.9 and 9.4 gains are corrected to absolute rank-percentage points (intake-1632#01). Raw score matrices, code and total training budget are missing, limiting causal conclusions; relevant to rewarding kernels by ranking rather than gold.
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): ROAM-GRPO reasoning-diversity claim (intake 2764)
+
+- **ROAM-GRPO (`intake-2764#record`, monitor)**: the "+4.7%" headline is +4.7 absolute pp pass@16 (41.3 -> 46.0) for the delayed variant at its single best checkpoint, chosen on the same 400 Omni-MATH test problems; undelayed ROAM gains +1.9 pp. It trades pass@1 for dispersion (MATH pass@1 55.5% vs GRPO 69.7% at step 6000), training is admitted unstable, and diversity is measured with the same kind of LLM-judge signal it optimises (Qwen3.5-2B LoRA, 1,000 MATH-L5 problems) ([dive](../research/deep-dives/ak-intake-20261121/2611.25926v1.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [digest 2026-11-21 ids 2752-2787](../research/deep-dives/intake-digests/2026-11-21-ids-2752-2787.md), [ROAM-GRPO dive](../research/deep-dives/ak-intake-20261121/2611.25926v1.md)

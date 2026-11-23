@@ -2,81 +2,7 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified (CPU/arch findings) · observation (2026-07-06 MI210 bf16-GDN-state numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): G16a native chunked gated-DeltaNet dispatch on MI210, INF-33 CPU seam, Bolt SSM-scan profile. Earlier: 2026-10-21 (wrap-up sweep 3 delta). Earlier: 2026-09-17 (addendum: Z12-COMMIT filed — the untracked GDN-2 low-rank static-analysis doc that informs B9 must be committed, with a verbatim backup held); earlier 2026-09-07 (incremental: **arXiv 2608.28444 is NOT evidence against our ρ = 4 topology** — it excludes hybrids with full-attention layers by construction (Section 4), lists them as future work (Section 5), concedes from-scratch training is out of scope (abstract), and its only Gated DeltaNet arms sit at MMLU chance after a 0.1B-token Alpaca conversion (Table 5); it points the SAME way as arXiv 2606.15378, its title invites exactly the citation it refutes, and three declines ride with it (reproduce SWA(64,4); a runtime `n_swa` override; treating the paper as evidence about the GDN hybrid topology) for the one reason that our instrument cannot apply a prefill mask; earlier: 2026-09-03: G1 closes the #27442 cross-backend question — 10/10 greedy cold-prefill trials across five prompt lengths and two prompt classes, first sampled token `248068` every time, so the empty-completion defect does NOT reproduce on our frozen v9 CPU path; the "live unknown" framing below is superseded, and the HIP GDN kernel remains a distinct untested implementation; earlier: 2026-08-23 wave-2 addendum: **the hybridization ratio is ρ = L/L_FA and production 10-of-40 is ρ = 4 — cite §2/Table 4, never the paper's own self-contradicting Appendix C.1; our production architecture is the LEAST massive-activation-exposed hybrid in that paper's entire dataset, with a ratio-matched Kimi Linear contrast that pins the cause on output gating rather than ratio — a DEPRIORITISATION record whose value is preventing work; and our GDN op-test length coverage and geometry coverage are DISJOINT sets, so neither implies the other**; earlier same-day evening wave-2 compile: MiniCPM-SALA — the paper is wrong about its own linear half (Simple GLA, not Lightning Attention) and a correctness-first port needs ZERO new ggml operators; the Gates 4/5 portability addendum (a device-agnostic oracle, a ggml primitive per mixer); GDN-2 at 1.0× state for +375.5M always-active params; #27018 `LLM_ARCH_MINIMAX_01` merged four days post-freeze and absent from our tree; the CoT-SFT amnesia hazard (arXiv 2606.11052) — a recall failure invisible to PPL+NIAH on our exact frontdoor architecture — and the strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones (arXiv 2606.15378, seven of nine authors SALA co-authors); see bottom sections; earlier same-day: **K28 fused chunked GDN kernel closed as a measured no-go on the full-model ceiling — GDN is only ~12–15% of MI210 prefill device time, and the verdict survived the later discovery that a working CDNA2 kernel already existed upstream**; earlier 2026-08-12 note: **the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
 **Sources**: 20 documents
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **OpenMythos** (intake-420#01) Theoretical reconstruction hypothesizing a Recurrent-Depth Transformer where each loop is a latent chain-of-thought step. Worth investigating as a looped-depth idea; speculative, not a verified architecture.
-- **LFM2 technical report** (intake-653#record) Hardware-in-the-loop search selects a minimal hybrid of gated short convolutions plus few GQA layers; LFM2-8B-A1B MoE (1.5B active) gets 64.84% MMLU and up to 2-3x faster CPU prefill/decode. Worth investigating for CPU decode on EPYC.
-- **LFM2.5-2.6B launch** (intake-1006#record) 2.69B dense hybrid with 22 short-conv and 8 GQA blocks, 128K vocab and 131,072-token context, trained with multi-domain on-policy distillation and harness-randomized agentic RL. Dive verified it as an immediately testable worker_general challenger to gemma4; replacement not yet shown.
-- **Native Hybrid Attention (NHA)** (intake-1275#03) Long-term context in m=64 KV slots updated by a gated linear RNN plus a w=32 sliding window under one softmax, one full-attention layer per 8-layer block. Released code includes qwen3_moe_nha, our production architecture family; v1 and v3 diffed numerically (340M averages, 2K context on SlimPajama).
-- **kachua-mlsys: 1st place GDN track (MLSys 2026 FlashInfer)** (intake-1430#00) Organizer-confirmed 1st place in the Track C GDN Agent-Assisted category (upgraded from self-reported, narrowed to that category), human-led with an agent loop driving v4-v5 on B200 (intake-1430#00). Prefill uses Triton with 16/32-token chunks in UT/WY form and a Neumann-doubling triangular inverse via tensor-core matmuls; decode is a CUDA kernel tiled over V rows (2/4/8 by batch). Reference design for GDN kernels in the Qwen3.5/3.6 hybrids on the llama.cpp stack.
-- **Qwen3.8 forced-reject GDN state drift** (intake-1745#01) With spec_accept_rate=0 divergence from base appears at token 13; beta alignment moves first divergence 13 to 23, localizing cumulative numerical drift but not proving one root cause. Hybrid GDN state needs bit-level parity checks under speculation.
-- **SGLang PR 36014 verify-to-BF16 beta alignment (superseded)** (intake-1762#00) Made verification mimic BF16-rounded packed-decode beta; newer evidence shows the packed-decode round trip is the defect, so this direction would recreate the mismatch after FP32 decode.
-- **SGLang issue 38975 packed GDN beta rounding** (intake-1763#00) Packed decode rounds an FP32 sigmoid through BF16 before the persistent state update, once per token; the reporter's 1,000-step recurrence shows removing it cuts relative error about four orders of magnitude (intake-1763#01, A100 direct kernel). Directly relevant to GDN-based hybrid models (Qwen3.5/3.8) where state precision matters.
-- **SGLang PR 38977 FP32-beta repair** (intake-1764#00) Open PR removes the input-dtype round trip from GDN packed decode and KDA replay decode and tests against an FP32 oracle; no speed benchmark was run. Same finding as 38975.
-- **SGLang PR 35725 ReplaySSM GDN commit** (intake-1768#00) DFlash and DSpark bypass the generic speculative commit function; the PR routes their direct GDN commit through the ReplaySSM fold. Author reports 194/200 in both H20 arms with 200/200 exact paired outputs, no speed result.
-- **Qwen3.8-27B model card** (intake-1841#00) 64 layers as 16 x (3 x (Gated DeltaNet -> FFN) -> 1 x (Gated Attention -> FFN)), 24 Q / 4 KV heads, head dim 256; checkpoint 55,562,855,904 bytes including vision encoder and MTP. Architecture reference for the 27B hybrid; BF16 size narrowed to 55.6 GB.
-- **Bole tree speculation for hybrid GDN** (intake-1847#00) Growing the verify tree from 8 to 64 nodes raises linear layers' share of the target forward from 4% to 27% (Qwen3.5-9B, A100), and engines materialize a full GDN state per node (Qwen3.5-27B ~144 MB per request). Warns that tree spec on hybrid models is state-memory bound.
-- **RecoverSSM rollback for GDN spec-dec** (intake-1942#00) Verifies from a read-only checkpoint and keeps a small fp32 replay record instead of per-draft state snapshots. GB10 K=3: c=1 55.71-56.65 -> 54.37-54.38 ms per verify cycle, agent loop 1.31 -> 1.10 s/turn (-16%) (intake-1942#02). Caveat: at K=2 with PIECEWISE graphs c=1 decode was 1.9-4% slower (intake-1942#01); PR is open and unmerged (intake-1942#record). EPYC: relevant to hybrid SSM spec-dec state handling.
-
-## Compiled Update — 2026-08-12: the state-size argument runs backwards, and the monitoring that should have caught it never ran
-
-**Confidence: verified** for the artifact facts (tensor dims, config, license, gate dates, HuggingFace publication date) — these were read off the released checkpoint. **Inferred/undecided** for whether to port: that decision is explicitly the operator's and is gated on an oracle that does not exist yet.
-
-### RETRACTED: "Log-Linear GDN gives a 4–10× state-size reduction"
-
-This page and its index entry have carried the 4–10× state reduction as the reason Log-Linear Gated DeltaNet could unblock hybrid-SSM speculation. **Measured against the actual released checkpoint, the comparison runs the other way.** Log-linear GDN replicates state across a 15-level set, so per layer its state is **≈15× larger** than standard GDN — **≈557 MB vs ≈37 MB** over 21 layers at f32.
-
-The reduction claim is not fabricated, it is *mis-anchored*: it holds against a **softmax-attention KV cache**, which grows linearly in sequence length, and never against standard GDN, which is already O(1). The original bullet did not name its baseline, and that omission is what let the number face the wrong direction for months. Any planning that assumed log-linear GDN reduces *our* residents' state must be re-derived.
-
-### The checkpoint had been public for six months, and three reviews said it wasn't
-
-`hanguo/log-linear-attention` has been public since **2026-02-13**. The handoff recorded "no pretrained checkpoint" from 2026-04-14, and **two later staleness reviews restated it** — under a standing monthly-cadence monitoring commitment. All three activation gates fired on 2026-08-12 when someone finally queried the API. The gate was not late upstream; **the monitoring never executed**, and a review that restates a prior status without re-deriving it is indistinguishable from one that checked.
-
-Artifact facts as released: **795.690 M params, F32, ≈3.2 GB, 21 layers, hidden 1536, 6 heads, head_dim 192**. Licensing has a wrinkle worth recording — MIT ships *inside the model folder*, while the GitHub repository itself carries no LICENSE and reports `license: null`.
-
-### What is genuinely undecided
-
-Neither the numerical oracle (`hattention_recurrent()` wired into the forward pass) nor the GGUF converter tensor map exists, and the operator decision on whether to port is explicitly gated behind the oracle. The sources do **not** settle whether log-linear GDN is worth porting; they settle that the reason previously given for wanting it was wrong.
-
-### Related: the verification wall this was supposed to relieve
-
-Nothing in this pass changes the standing finding that sequential Delta Net verification, not draft availability, is the CPU blocker for hybrid-SSM speculation. What changes is that the state-size lever cannot be the argument for relieving it.
-
-### Source References (2026-08-12)
-
-- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the three fired gates, checkpoint identity and license, and the inverted state-size derivation.
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the retraction in its session context and the "three gates fired and were never checked" framing.
-- [`qwen36-27b-cpu-feasibility.md`](../handoffs/archived/qwen36-27b-cpu-feasibility.md) — CPU-side feasibility context for hybrid residents on this host.
-
-## Compiled Update — 2026-08-08: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement
-
-**Confidence: verified for artifact identity, template behavior, and static runtime support; external for vendor benchmark numbers.**
-
-LFM2.5-2.6B is a 2.69B dense hybrid with 22 short-convolution blocks, eight GQA blocks, a 128K
-vocabulary, and 131,072-token context. The official repository publishes both Q4_K_M and Q8_0 GGUFs,
-and frozen production-consolidated-v8 already contains LFM2 loading plus the specialized LFM2.5 Pythonic
-tool parser. The official template always opens a reasoning section; separate LEAP sidecars omit that
-reasoning prefill and tool rendering, so they are not interchangeable without a behavioral parity test.
-
-The small footprint makes the model a credible `worker_general` challenger under EPYC's noncommercial
-use, but neither vendor tables nor community anecdotes compare it with the actual Gemma4 26B-A4B
-incumbent under one harness. The decision gate is therefore a matched three-arm run—official Q4_K_M,
-official Q8_0, and unchanged Gemma4—with identical prompts, tool schema, seeds, limits, template, and
-scorer era. Promotion depends on strict task success and tool compliance together with reasoning-token
-overhead, retries, TTFT, prompt/decode throughput, peak memory, and complete wall time. No role alias,
-registry, stack, or production process changes on architectural promise alone.
-
-### Source References
-
-- [Architect Model Comparison Benchmark](../handoffs/active/model-evaluation-queue.md) — WG-LFM-1 matched Q4/Q8/Gemma decision contract
-- Intake 1006 in [the research index](../research/intake_index.yaml) — launch article, mandatory reasoning, and benchmark caveats
-- Intake 1014 in [the research index](../research/intake_index.yaml) — base model/config/license and frozen-v8 static support
-- Intake 1019 in [the research index](../research/intake_index.yaml) — pinned official GGUF revision and artifact/template inspection
 
 ## Summary
 
@@ -380,11 +306,99 @@ The sub-quadratic / sparse-attention family this page tracks (Multiscreen, IHA/M
 
 Sources: [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) "Research Intake Update — 2026-06-20", [`handoffs/active/glm51-reap-cpu-evaluation.md`](../handoffs/completed/glm51-reap-cpu-evaluation.md), intake-699, [deepseek-v32-dsa deep-dive](../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md).
 
-## Compiled Update — 2026-08-22: a fused chunked GDN kernel is a measured no-go on ceiling, not feasibility — and the ceiling survived the discovery that the kernel already existed upstream
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): chunked GDN prefill and its oracle
+
+- **A chunked GDN graph already exists in the frozen tree**; what the GDN/Mamba-2 readiness line lacks is the fused kernel, the quantization boundaries, INT8 stored state and the rho/tau/eta knobs — not the algorithm (intake-2642).
+- **The invariance algebra now has an executable spec.** `linquant/reference.py` is torch-only, float64, and maps exactly onto `chunk_core(family=delta, rho=1, tau=1, eta=0, read_post=False, qz=none)`, so it can serve as a CPU conformance oracle without weights (intake-2642).
+- **State-precision asymmetry**: an INT8 carry costs linear attention ~8% perplexity but only ~0.2-0.8% for decaying mixers, because decay damps accumulated error; state traffic is about 0.17% of per-token bytes today, so this is a prior, not a task (intake-2641#record, intake-2645).
+- **Filed work**: `GDN-ORACLE-1` (fp64 oracle) and `GDN-SHARE-1` (core-share profile that closes the LinQuant line below 5% of wall) in [model-architecture-readiness.md](../handoffs/completed/model-architecture-readiness-completed-20261107.md).
+
+Sources: [repo dive](../research/deep-dives/quant-compiler-20261106/linquant-repo.md) · [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [SSDi8 dive](../research/deep-dives/quant-compiler-20261106/ssdi8.md)
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): G16a native chunked gated-DeltaNet dispatch on MI210, INF-33 CPU seam, Bolt SSM-scan profile. Earlier: 2026-10-21 (wrap-up sweep 3 delta). Earlier: 2026-09-17 (addendum: Z12-COMMIT filed — the untracked GDN-2 low-rank static-analysis doc that informs B9 must be committed, with a verbatim backup held); earlier 2026-09-07 (incremental: **arXiv 2608.28444 is NOT evidence against our ρ = 4 topology** — it excludes hybrids with full-attention layers by construction (Section 4), lists them as future work (Section 5), concedes from-scratch training is out of scope (abstract), and its only Gated DeltaNet arms sit at MMLU chance after a 0.1B-token Alpaca conversion (Table 5); it points the SAME way as arXiv 2606.15378, its title invites exactly the citation it refutes, and three declines ride with it (reproduce SWA(64,4); a runtime `n_swa` override; treating the paper as evidence about the GDN hybrid topology) for the one reason that our instrument cannot apply a prefill mask; earlier: 2026-09-03: G1 closes the #27442 cross-backend question — 10/10 greedy cold-prefill trials across five prompt lengths and two prompt classes, first sampled token `248068` every time, so the empty-completion defect does NOT reproduce on our frozen v9 CPU path; the "live unknown" framing below is superseded, and the HIP GDN kernel remains a distinct untested implementation; earlier: 2026-08-23 wave-2 addendum: **the hybridization ratio is ρ = L/L_FA and production 10-of-40 is ρ = 4 — cite §2/Table 4, never the paper's own self-contradicting Appendix C.1; our production architecture is the LEAST massive-activation-exposed hybrid in that paper's entire dataset, with a ratio-matched Kimi Linear contrast that pins the cause on output gating rather than ratio — a DEPRIORITISATION record whose value is preventing work; and our GDN op-test length coverage and geometry coverage are DISJOINT sets, so neither implies the other**; earlier same-day evening wave-2 compile: MiniCPM-SALA — the paper is wrong about its own linear half (Simple GLA, not Lightning Attention) and a correctness-first port needs ZERO new ggml operators; the Gates 4/5 portability addendum (a device-agnostic oracle, a ggml primitive per mixer); GDN-2 at 1.0× state for +375.5M always-active params; #27018 `LLM_ARCH_MINIMAX_01` merged four days post-freeze and absent from our tree; the CoT-SFT amnesia hazard (arXiv 2606.11052) — a recall failure invisible to PPL+NIAH on our exact frontdoor architecture — and the strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones (arXiv 2606.15378, seven of nine authors SALA co-authors); see bottom sections; earlier same-day: **K28 fused chunked GDN kernel closed as a measured no-go on the full-model ceiling — GDN is only ~12–15% of MI210 prefill device time, and the verdict survived the later discovery that a working CDNA2 kernel already existed upstream**; earlier 2026-08-12 note: **the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **OpenMythos** (intake-420#01) Theoretical reconstruction hypothesizing a Recurrent-Depth Transformer where each loop is a latent chain-of-thought step. Worth investigating as a looped-depth idea; speculative, not a verified architecture.
+- **LFM2 technical report** (intake-653#record) Hardware-in-the-loop search selects a minimal hybrid of gated short convolutions plus few GQA layers; LFM2-8B-A1B MoE (1.5B active) gets 64.84% MMLU and up to 2-3x faster CPU prefill/decode. Worth investigating for CPU decode on EPYC.
+- **LFM2.5-2.6B launch** (intake-1006#record) 2.69B dense hybrid with 22 short-conv and 8 GQA blocks, 128K vocab and 131,072-token context, trained with multi-domain on-policy distillation and harness-randomized agentic RL. Dive verified it as an immediately testable worker_general challenger to gemma4; replacement not yet shown.
+- **Native Hybrid Attention (NHA)** (intake-1275#03) Long-term context in m=64 KV slots updated by a gated linear RNN plus a w=32 sliding window under one softmax, one full-attention layer per 8-layer block. Released code includes qwen3_moe_nha, our production architecture family; v1 and v3 diffed numerically (340M averages, 2K context on SlimPajama).
+- **kachua-mlsys: 1st place GDN track (MLSys 2026 FlashInfer)** (intake-1430#00) Organizer-confirmed 1st place in the Track C GDN Agent-Assisted category (upgraded from self-reported, narrowed to that category), human-led with an agent loop driving v4-v5 on B200 (intake-1430#00). Prefill uses Triton with 16/32-token chunks in UT/WY form and a Neumann-doubling triangular inverse via tensor-core matmuls; decode is a CUDA kernel tiled over V rows (2/4/8 by batch). Reference design for GDN kernels in the Qwen3.5/3.6 hybrids on the llama.cpp stack.
+- **Qwen3.8 forced-reject GDN state drift** (intake-1745#01) With spec_accept_rate=0 divergence from base appears at token 13; beta alignment moves first divergence 13 to 23, localizing cumulative numerical drift but not proving one root cause. Hybrid GDN state needs bit-level parity checks under speculation.
+- **SGLang PR 36014 verify-to-BF16 beta alignment (superseded)** (intake-1762#00) Made verification mimic BF16-rounded packed-decode beta; newer evidence shows the packed-decode round trip is the defect, so this direction would recreate the mismatch after FP32 decode.
+- **SGLang issue 38975 packed GDN beta rounding** (intake-1763#00) Packed decode rounds an FP32 sigmoid through BF16 before the persistent state update, once per token; the reporter's 1,000-step recurrence shows removing it cuts relative error about four orders of magnitude (intake-1763#01, A100 direct kernel). Directly relevant to GDN-based hybrid models (Qwen3.5/3.8) where state precision matters.
+- **SGLang PR 38977 FP32-beta repair** (intake-1764#00) Open PR removes the input-dtype round trip from GDN packed decode and KDA replay decode and tests against an FP32 oracle; no speed benchmark was run. Same finding as 38975.
+- **SGLang PR 35725 ReplaySSM GDN commit** (intake-1768#00) DFlash and DSpark bypass the generic speculative commit function; the PR routes their direct GDN commit through the ReplaySSM fold. Author reports 194/200 in both H20 arms with 200/200 exact paired outputs, no speed result.
+- **Qwen3.8-27B model card** (intake-1841#00) 64 layers as 16 x (3 x (Gated DeltaNet -> FFN) -> 1 x (Gated Attention -> FFN)), 24 Q / 4 KV heads, head dim 256; checkpoint 55,562,855,904 bytes including vision encoder and MTP. Architecture reference for the 27B hybrid; BF16 size narrowed to 55.6 GB.
+- **Bole tree speculation for hybrid GDN** (intake-1847#00) Growing the verify tree from 8 to 64 nodes raises linear layers' share of the target forward from 4% to 27% (Qwen3.5-9B, A100), and engines materialize a full GDN state per node (Qwen3.5-27B ~144 MB per request). Warns that tree spec on hybrid models is state-memory bound.
+- **RecoverSSM rollback for GDN spec-dec** (intake-1942#00) Verifies from a read-only checkpoint and keeps a small fp32 replay record instead of per-draft state snapshots. GB10 K=3: c=1 55.71-56.65 -> 54.37-54.38 ms per verify cycle, agent loop 1.31 -> 1.10 s/turn (-16%) (intake-1942#02). Caveat: at K=2 with PIECEWISE graphs c=1 decode was 1.9-4% slower (intake-1942#01); PR is open and unmerged (intake-1942#record). EPYC: relevant to hybrid SSM spec-dec state handling.
+
+### Compiled Update — 2026-08-12: the state-size argument runs backwards, and the monitoring that should have caught it never ran
+
+**Confidence: verified** for the artifact facts (tensor dims, config, license, gate dates, HuggingFace publication date) — these were read off the released checkpoint. **Inferred/undecided** for whether to port: that decision is explicitly the operator's and is gated on an oracle that does not exist yet.
+
+#### RETRACTED: "Log-Linear GDN gives a 4–10× state-size reduction"
+
+This page and its index entry have carried the 4–10× state reduction as the reason Log-Linear Gated DeltaNet could unblock hybrid-SSM speculation. **Measured against the actual released checkpoint, the comparison runs the other way.** Log-linear GDN replicates state across a 15-level set, so per layer its state is **≈15× larger** than standard GDN — **≈557 MB vs ≈37 MB** over 21 layers at f32.
+
+The reduction claim is not fabricated, it is *mis-anchored*: it holds against a **softmax-attention KV cache**, which grows linearly in sequence length, and never against standard GDN, which is already O(1). The original bullet did not name its baseline, and that omission is what let the number face the wrong direction for months. Any planning that assumed log-linear GDN reduces *our* residents' state must be re-derived.
+
+#### The checkpoint had been public for six months, and three reviews said it wasn't
+
+`hanguo/log-linear-attention` has been public since **2026-02-13**. The handoff recorded "no pretrained checkpoint" from 2026-04-14, and **two later staleness reviews restated it** — under a standing monthly-cadence monitoring commitment. All three activation gates fired on 2026-08-12 when someone finally queried the API. The gate was not late upstream; **the monitoring never executed**, and a review that restates a prior status without re-deriving it is indistinguishable from one that checked.
+
+Artifact facts as released: **795.690 M params, F32, ≈3.2 GB, 21 layers, hidden 1536, 6 heads, head_dim 192**. Licensing has a wrinkle worth recording — MIT ships *inside the model folder*, while the GitHub repository itself carries no LICENSE and reports `license: null`.
+
+#### What is genuinely undecided
+
+Neither the numerical oracle (`hattention_recurrent()` wired into the forward pass) nor the GGUF converter tensor map exists, and the operator decision on whether to port is explicitly gated behind the oracle. The sources do **not** settle whether log-linear GDN is worth porting; they settle that the reason previously given for wanting it was wrong.
+
+#### Related: the verification wall this was supposed to relieve
+
+Nothing in this pass changes the standing finding that sequential Delta Net verification, not draft availability, is the CPU blocker for hybrid-SSM speculation. What changes is that the state-size lever cannot be the argument for relieving it.
+
+#### Source References (2026-08-12)
+
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the three fired gates, checkpoint identity and license, and the inverted state-size derivation.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the retraction in its session context and the "three gates fired and were never checked" framing.
+- [`qwen36-27b-cpu-feasibility.md`](../handoffs/archived/qwen36-27b-cpu-feasibility.md) — CPU-side feasibility context for hybrid residents on this host.
+
+### Compiled Update — 2026-08-08: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement
+
+**Confidence: verified for artifact identity, template behavior, and static runtime support; external for vendor benchmark numbers.**
+
+LFM2.5-2.6B is a 2.69B dense hybrid with 22 short-convolution blocks, eight GQA blocks, a 128K
+vocabulary, and 131,072-token context. The official repository publishes both Q4_K_M and Q8_0 GGUFs,
+and frozen production-consolidated-v8 already contains LFM2 loading plus the specialized LFM2.5 Pythonic
+tool parser. The official template always opens a reasoning section; separate LEAP sidecars omit that
+reasoning prefill and tool rendering, so they are not interchangeable without a behavioral parity test.
+
+The small footprint makes the model a credible `worker_general` challenger under EPYC's noncommercial
+use, but neither vendor tables nor community anecdotes compare it with the actual Gemma4 26B-A4B
+incumbent under one harness. The decision gate is therefore a matched three-arm run—official Q4_K_M,
+official Q8_0, and unchanged Gemma4—with identical prompts, tool schema, seeds, limits, template, and
+scorer era. Promotion depends on strict task success and tool compliance together with reasoning-token
+overhead, retries, TTFT, prompt/decode throughput, peak memory, and complete wall time. No role alias,
+registry, stack, or production process changes on architectural promise alone.
+
+#### Source References
+
+- [Architect Model Comparison Benchmark](../handoffs/active/model-evaluation-queue.md) — WG-LFM-1 matched Q4/Q8/Gemma decision contract
+- Intake 1006 in [the research index](../research/intake_index.yaml) — launch article, mandatory reasoning, and benchmark caveats
+- Intake 1014 in [the research index](../research/intake_index.yaml) — base model/config/license and frozen-v8 static support
+- Intake 1019 in [the research index](../research/intake_index.yaml) — pinned official GGUF revision and artifact/template inspection
+
+### Compiled Update — 2026-08-22: a fused chunked GDN kernel is a measured no-go on ceiling, not feasibility — and the ceiling survived the discovery that the kernel already existed upstream
 
 **Confidence: verified** for the attribution numbers, the falsified-lever ledger, the upstream-PR facts and the checkpoint/reference-code readings (all measured on frozen binaries or read from primary source). All MI210 speed numbers remain **observation-grade** per `P-GPU-1` — no production-named rerun exists, and none is proposed; **v9 is FROZEN and no v9 change is proposed by any of this.**
 
-### K28 closed as a measured no-go: GDN is only ~12–15% of MI210 prefill device time, so no op speedup clears the bar
+#### K28 closed as a measured no-go: GDN is only ~12–15% of MI210 prefill device time, so no op speedup clears the bar
 
 **The K28 fused-chunked-GDN-recurrence project (the `//TODO: Add chunked kernel` at `gated_delta_net.cu:191`) is COMPLETE with a no-go verdict, and no fused recurrence kernel was ever authored.** The accepted Phase-0 gate ran direct profiler attribution (schema `epyc.autokernel.rocprofv1_attribution.v1`) on the clean frozen-v9 HIP binary, Qwen3.6-35B-A3B Q8, physical gfx90a, graphs disabled:
 
@@ -402,11 +416,11 @@ The ceiling **declines with context** and reproduces the 2026-07-20 default-off 
 
 **Reconciliation with this page's findings-05c row ("the one win is bf16 recurrent-state, +21.5% agg @B32"):** both numbers are the *same* `GGML_CUDA_GDN_STATE_BF16` mechanism in two regimes. State bandwidth only dominates at **batch**; single-stream is dependency-bound and the mechanism is neutral there. "BF16-for-speed is dead" is true single-stream only — **batched-decode state bandwidth remains the live GDN lever** across the family (35B frontdoor +17.7%, 122B architect +16.4%).
 
-### The SOTA bar is four autotuned Triton stages, not a megakernel — and kernel names drift under you
+#### The SOTA bar is four autotuned Triton stages, not a megakernel — and kernel names drift under you
 
 **SGLang does not run one monolithic fused GDN kernel** (intake-1030#record, dive-verified against `sgl-project/sglang` main): it runs four separately-autotuned Triton stages behind one autograd wrapper — `chunk_local_cumsum` → `recompute_w_u_fwd` (WY/UT transform) → `chunk_gated_delta_rule_fwd_h` (state scan) → `chunk_fwd_o` — keeping chunk-local tensors on-chip between them. All four stage files are pure Triton with no `is_cuda` guard (necessary but not sufficient for gfx90a). A citation-hygiene lesson rode along: two intake sources name a `chunk_gated_delta_rule_fwd_kkt_solve_kernel` that **no longer exists in current source** (the stage is now `recompute_w_u_fwd_kernel`); neither was wrong when written, both are wrong now, and neither recorded the commit it was true at — **cite kernels by role and commit, and verify absence in the kernels tree, not the model tree.**
 
-### Post-closeout correction: the no-go's premise was already false when written — the measurement stands, the cost side collapsed
+#### Post-closeout correction: the no-go's premise was already false when written — the measurement stands, the cost side collapsed
 
 **K28's claim that "no CDNA2/ROCm-tuned GDN kernel exists … genuinely open territory" was false ten days before it was written.** llama.cpp **PR #24561** — a chunked MFMA prefill kernel for `GATED_DELTA_NET`, scoped explicitly to CDNA/gfx90a — was opened 2026-06-13 and closed *unmerged* 2026-07-10 on **maintenance/authorship grounds, not merit**: the ggml CUDA/HIP maintainer declined it as apparently machine-generated with no volunteer maintainer while confirming *"a 5-10% E2E improvement … on my NVIDIA/AMD hardware."* A third party independently measured **+11.8% / +12.1% prefill on 2× MI210** after four fixes. Applying Amdahl to the *measured* gfx90a op speedups (1.63–2.44×) gives a realistic **~6–9% full-model prefill** for our geometry — *below* the ceiling K28 already judged insufficient, so **the no-go verdict is unchanged; only the cost side changed** (two complete implementations exist versus the "weeks of authoring" the gate was framed against). Decode is unaffected by construction — both kernels gate off below 128/512 tokens per call.
 
@@ -418,13 +432,13 @@ Three non-obvious selection constraints, all read from frozen v9, for anyone who
 
 **A numerics caveat now attaches to any chunked adoption:** the chunked formulation is algebraically equivalent but **not floating-point equivalent** — error grows with chunk count and hence prompt length. Upstream widened its op-test NMSE gate from 1e-7 to 2e-7 and it **still fails on MI210 at T=2048** (2.97e-7 / 3.70e-7 at 128 chunks), while our own GDN correctness cases top out at 256 tokens. Today's fp32 sequential kernel is the most conservative option in the tree; adopting a chunked kernel means giving that up, and any adoption is `llama.cpp-experimental` work under the four-step promotion workflow.
 
-### Log-Linear GDN: the reference is not runnable as shipped — port from the pure-PyTorch recurrent form, which needs no lookup table
+#### Log-Linear GDN: the reference is not runnable as shipped — port from the pure-PyTorch recurrent form, which needs no lookup table
 
 Extending this page's 2026-08-12 update (gates fired, state-size claim inverted): **gate 2 is satisfied as code but an executor who clones the repo and calls `.generate()` gets nothing.** Two concrete blockers, both read from source: (1) the only wired compute path is Triton/GPU (`mode == 'chunk'`, else `raise NotImplementedError`) — the pure-PyTorch `hattention/recurrent.py` is reachable only by editing the model; (2) `hattention/base.py` hard-codes an author-cluster absolute path for the cached L×L level-lookup matrix, and the in-repo fallback is an O(L²) Python double loop (≈2.7·10⁸ iterations at L=16384).
 
 **The settled port consequence: port from `hattention/recurrent.py`, not the chunkwise kernels.** The recurrent form needs **no L×L LUT at all** — `HState.cascade_weak()` derives the level from per-level counters (`counts[level] == base**level` → carry), a ggml-friendly integer state machine; the LUT exists only to materialize the parallel/chunk-form mask. Two further checkpoint facts bound any deployment reading: the level count is a **fixed 15** (`attn.L [6, 15]`, = ceil(log2 16384)+1) with `max_position_embeddings` 16384 — a 262K-context claim needs 19 levels and therefore a **different checkpoint** — and the level set is constant in L. The port-or-wait decision itself remains the operator's, gated on a numerical oracle that does not yet exist (unchanged from 2026-08-12).
 
-### The GDN forgetting-fix design space now has four structurally distinct branches — easy to conflate, and the distinction is load-bearing
+#### The GDN forgetting-fix design space now has four structurally distinct branches — easy to conflate, and the distinction is load-bearing
 
 Recorded from the 2026-08-21 Stage-2b intake wave (dive-verified; no action attached):
 
@@ -441,7 +455,7 @@ Recorded from the 2026-08-21 Stage-2b intake wave (dive-verified; no action atta
 
 (The readiness tracker's 2026-08-21 measurement tasks — the #27442 first-token boundary sweep, the HOLA frozen-backbone retrofit and its hybrid-transfer A/B — are open, compute-gated work, not knowledge, and are deliberately not compiled here. The one settled fact from that cluster: whether the #27442 hybrid-cache defect reaches non-Metal backends is a **live unknown** — nobody anywhere has tested any backend but Metal, and the upstream reporter's own log refutes their cache-corruption diagnosis (intake-1279#record). **Superseded 2026-09-03**: the #27442 sweep is no longer open, and it is no longer a live unknown for our CPU path — G1 executed 2026-08-27 and returned a scoped negative (10/10 greedy trials, five prompt lengths, both prompt classes). See the 2026-09-03 entry at the foot of this page; the HIP path remains untested.)
 
-### Source References
+#### Source References
 
 - [K28 fused chunked GDN kernel research (COMPLETED)](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the rocprofv1 attribution no-go, the serial-dependency diagnosis, the falsified-lever ledger, the SGLang four-stage finding, and the 2026-08-22 PR #24561/#26001 correction with the fp-numerics caveat.
 - [Log-Linear Gated DeltaNet readiness tracker](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the two runnability blockers, the port-from-`recurrent.py` consequence, the fixed-15-level/16K position bound, and the 2026-08-21 GDN branch map.
@@ -452,33 +466,33 @@ Recorded from the 2026-08-21 Stage-2b intake wave (dive-verified; no action atta
 
 ---
 
-## Compiled Update — 2026-08-23 (evening): MiniCPM-SALA, the portability gates 4/5, and the two literature results that bound the hybrid architecture choice
+### Compiled Update — 2026-08-23 (evening): MiniCPM-SALA, the portability gates 4/5, and the two literature results that bound the hybrid architecture choice
 
 **Confidence: verified** — the SALA reattribution reads the released checkpoint and code (`modeling_minicpm_sala.py`), corroborated by three independent implementers (vllm #44095/#48999, sglang #30360); the zero-new-operators table is a static read of frozen v9; the hazard and counter-argument rows are abstract-verified at the primary source through intake-1287#record.
 
-### MiniCPM-SALA: the paper is wrong about its own linear half, and a correctness-first port needs ZERO new ggml operators
+#### MiniCPM-SALA: the paper is wrong about its own linear half, and a correctness-first port needs ZERO new ggml operators
 
 MiniCPM-SALA (9B hybrid, 8 of 32 layers InfLLM-V2 block-sparse exact attention at 2 KV heads, the rest linear; Apache-2.0, rev `9180fe1d`) landed on the GLA path 2026-08-22 (intake-1287#record). **Read the artifact, not the prose**: the paper says "Lightning Attention" and cites Qin et al. 2024, but the released code calls `fla.ops.simple_gla` with a parameter-free ALiBi power-of-2 slope schedule — **constant-decay Simple GLA without the layer-scaled decay that distinguishes MiniMax's Lightning Attention**. Three independent implementers read it the same way. Reattribute to Simple GLA when citing the *mechanism*; keep "Lightning Attention" only when quoting the paper. **This helps us**: constant-decay GLA is exactly what `GGML_OP_GATED_LINEAR_ATTN` already implements (`ggml/include/ggml.h:569`; SIMD CPU f32 forward at `ops.cpp:10556`; CUDA `gla.cu` hipifies for gfx90a via the glob). The paper is also contradicted by its own checkpoint on QK-Norm (§2.1 claims it on all attention layers; the checkpoint has q_norm/k_norm on the 24 linear layers only).
 
 **The correctness-first port table** (read from frozen `0db32c06e3e5`, 2026-08-23): constant-decay gated linear attention — already shipped; per-layer recurrent/attention hybrid memory — `llama-memory-hybrid.cpp` with `hparams.is_recr_impl` (`llama-hparams.h:153`), precedents `kimi-linear.cpp` and `qwen3next.cpp`; NoPE/QK-norm/attention output gates — all expressible today; InfLLM-V2 block-sparse top-k — **the only missing primitive, and the reference does not need it either** (the vendor instantiates ordinary dense attention for the sparse layers whenever CUDA is unavailable — a dense-fallback GGUF port is numerically correct and gives up only the sparse-prefill speedup, exactly as the vendor's own CPU path does). Closest template for the linear half: upstream PR **#27018** (`LLM_ARCH_MINIMAX_01`, lightning-attention decay slopes on hybrid recurrent memory), **merged 2026-08-14 — four days after our v9 freeze** — therefore absent from our tree, which carries `LLM_ARCH_MINIMAX_M2` but not `_01`; read it before writing any new arch handler. Tasks: **Z9** (write the ~30-line pure-PyTorch constant-decay simple-GLA recurrence so an HF CPU numerical oracle exists at all — today there is none: `fla.ops.simple_gla` is Triton and Triton needs a GPU stack this host does not have for gfx90a); **G18** (SALA port + CPU parity smoke on `llama.cpp-experimental` branched from the current production tip — never v9; 3 prompts × 32 tokens, all under `sparse_config.dense_len` = 8192 so both sides run dense; gate: token-identical output; filed, not run — both compute planes held); **B8** (blocked on G18: throughput, the NoLiMa 40.9-vs-23.86 adjudication, and an InfLLM-V2 block-sparse ggml op justified only if dense fallback makes prefill binding above ~32K — with the standing declines recorded: no port of `infllmv2_cuda_impl` to HIP (sm80-only), and no SALA adoption as a production model (9B dense vs our 35B-A3B, no reproduced number from anyone in six months)).
 
-### The portability gates: Gates 4 and 5, added 2026-08-22 to every GDN-branch candidate
+#### The portability gates: Gates 4 and 5, added 2026-08-22 to every GDN-branch candidate
 
 Two further gates apply to every candidate on the GDN branch map because the original three **cannot tell apart three cases the wave put side by side** — they do not retract the 2026-08-12 activation. **Gate 4 — a device-agnostic (non-Triton) numerical oracle exists** (not just "reference code exists"): log-linear GDN has the code (`hattention/recurrent.py`, pure PyTorch) but it is not wired into the model — gate OPEN for log-linear too; Gated DeltaNet-2 (intake-1281) is the inverse (better decode path, no non-Triton path at all). **Gate 5 — a ggml primitive exists for every mixer type, or a numerically-correct fallback is identified**: SALA fires all three original gates yet needs the fallback clause (its block-sparse selection has no ggml op); log-linear GDN fails today (`ggml_log_linear_state_update()` and `ggml_log_linear_attention()` do not exist). **Why this is not bookkeeping:** gates 2 and 4 came apart in *opposite directions* on two candidates in a single wave — a gate list that scores both as "reference implementation available" cannot tell you which port has something to check its output against, and that is the distinction that decides whether a port is startable at all.
 
-### GDN-2 is the other end of the state-size axis: 1.0× state, +375.5M always-active parameters
+#### GDN-2 is the other end of the state-size axis: 1.0× state, +375.5M always-active parameters
 
 The branch map had one data point on the state-size axis (log-linear's 15×). GDN-2 (intake-1281) replaces GDN's scalar delta gate with channel-wise erase/write gates; its recurrent state is **byte-identical in size** to GDN's and KDA's (Appendix E.1 matches all three at `H · d_k · d_v` = 262,144 floats per layer per batch element) — it changes *how the state is edited*, not how large it is. The cost moves elsewhere: two full-rank per-layer projections no pretrained GDN checkpoint contains, ≈ **+375.5M always-active dense parameters** ≈ **+12.5%** active parameters for **zero** state saving. **Quote the state-size axis and the active-parameter axis together or the comparison is meaningless**: log-linear buys context scaling with 15× state; GDN-2 buys update expressiveness with +12.5% active weights; PGDN buys it with ~0.8%. Z12 (Z, executable now) asks whether GDN-2's `b_proj`/`w_proj` can be low-rank factorized — the precedent is in our own tree (Kimi Linear already factorizes its decay projection; `LLM_TENSOR_SSM_F_A`/`F_B` at `llama-arch.h:473-474`).
 
-### The CoT-SFT amnesia hazard — a recall failure invisible to every instrument we routinely run
+#### The CoT-SFT amnesia hazard — a recall failure invisible to every instrument we routinely run
 
 **`arXiv:2606.11052` (intake-1287#record, abstract verified at the primary source):** CoT-SFT *"systematically degrades long-context recall in hybrid linear-attention models… HypeNet-9B on NIAH-S2@256K decreases from 67.2% to 9.4%"*; the proposed fix, **QK-Restore** (restore `W_Q`/`W_K` from the pre-SFT checkpoint), is training-free. **Why it is a hazard for us and not a curiosity:** the damage is invisible to PPL and short-context evals, our standing quality case, and **the production frontdoor is exactly this architecture** — Qwen3.6-35B-A3B, 30 GDN + 10 full attention, a 256K-context serving role. Nothing in the repo has ever measured it. **G1** (highest-value compute row of the wave — no port, no new model, no training): RULER **S-NIAH-2** (essay haystack, numeric magic value) on the production artifact at 4K control / 32K / 64K / 128K, 50 trials per length, exact-match, per-question persisted; harness already on disk (`long_context_adapters.py`: `NeedleAdapter`'s essay haystack + `RULERAdapter`'s numeric needle = S-NIAH-2, a composition not a new harness); three mandatory server deviations (dedicated `-np 1 -c 262144` instance — the :8070 frontdoor is `-np 4` = 65,536 tokens/slot, so the 128K arm cannot run there; `--spec-type none`; `cache_prompt=false` greedy seed 42) and a mandatory **f16-KV control** (production is q8_0/q8_0 and "quantized KV damaged recall" predicts the same sign). **Gate: ≥ 10 pp below the 4K control at any of 32K/64K/128K with the paired 95% bootstrap CI excluding zero, surviving the f16-KV control** (≈ 2.4 SE at 50 trials; the published effect is 5.8× the threshold). **If the gate opens this is a PRODUCTION DEFECT — escalate to the operator, do not file it to a research backlog.** The probe measures the symptom; attribution (and the QK-Restore remedy) needs the Base weights — no Base `Qwen3.6-35B-A3B` GGUF is on disk, deliberately not a prerequisite for the probe. Scope note: the 67.2→9.4 figure is HypeNet-9B, not our model — it is a reason to *measure*, and the measurement is cheap.
 
-### The strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones
+#### The strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones
 
 **`arXiv:2606.15378`** (abstract-verified): *"long-range retrieval is mainly carried by full attention, whereas efficient attention shapes its optimization trajectory"*; different hybrids converge under sufficient training; and a named **"Large-Window Laziness"** effect (larger SWA windows *delay* retrieval-head formation in full-attention layers). Three things make it unusually strong as a counter-argument to the SALA-direction swap: **(1)** seven of nine authors are SALA co-authors — same-lab, and adversarial to SALA's own premise (SALA has no full attention above 8,192 tokens); **(2)** it directly contradicts the move the SALA branch proposes — our 10 full-attention layers are, on this account, *where the long-range retrieval lives*, and replacing them with sparse ones spends exactly the resource the paper says does the work; **(3)** if hybrids converge under sufficient training, SALA's 1:3 ratio is not what produces the result, and SALA ablates that ratio nowhere. Weakening it: abstract-level reading, same-lab provenance cuts both ways. **Consequence, recorded so it is not re-derived: the "swap the dense minority for a sparse minority" direction is argued against by the closest available literature, including its own proponents' lab — before any throughput question is even reached** (that ordering matters: B8 in the SALA handoff is gated on numerical correctness; even a clean correctness result does not make the architectural swap attractive).
 
-### Source References (2026-08-23 evening)
+#### Source References (2026-08-23 evening)
 
 - [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — the SALA reattribution (Simple GLA, constant-decay), the zero-new-operators table, Z9/G18/B8, the #27018 pointer and the standing declines
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — Gates 4/5 addendum, the GDN-2 1.0×-state axis (with log-linear 15× and PGDN ~0.8% beside it), the B9 decline cross-reference
@@ -486,11 +500,11 @@ The branch map had one data point on the state-size axis (log-linear's 15×). GD
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the one-assert GDN-2 ggml delta and #26001's K==1 constraint (cross-listed with [Hardware Optimization](hardware-optimization.md))
 - [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the #24561/#26001 correction: the no-go's MEASUREMENT stands, its premise about the state of the art did not
 
-## Compiled Update — 2026-08-23 (wave-2 addendum): ρ = 4, the least MA-exposed hybrid measured, and an op-test suite that covers our length or our geometry but never both
+### Compiled Update — 2026-08-23 (wave-2 addendum): ρ = 4, the least MA-exposed hybrid measured, and an op-test suite that covers our length or our geometry but never both
 
 **Confidence: verified** for every artifact fact — paper text, released checkpoints and our own FROZEN tree at `0db32c06e3e5` were read firsthand at Stage-2b. **Third-party for every performance and quality number**; nothing below was measured by us, none of it may gate a stack change under `MEASUREMENT.md`, and **no v9 change is proposed by any of it**. Figures that are *derived* rather than measured are labelled at the point of use. This section is an **addendum**: it carries only what the 2026-08-23 (evening) and 2026-08-22 sections above do not state, and points at them rather than restating them.
 
-### The hybridization ratio is ρ = L/L_FA, production is ρ = 4, and the defining paper contradicts itself in one sentence
+#### The hybridization ratio is ρ = L/L_FA, production is ρ = 4, and the defining paper contradicts itself in one sentence
 
 `arXiv:2608.12149` §2 Preliminaries, p.3, defines it verbatim: *"Letting L_FA = |I_FA|, we define the hybridization ratio as rho = L/L_FA; thus, a rho:1 configuration contains one full attention layer per rho sequence-mixing layers."* Table 4 confirms the reading (Hybrid-3:1 = 16 linear + 8 full of 24). **Production Qwen3.6-35B-A3B is 10 full-attention layers of 40, therefore ρ = 4** — corroborated from our own code and not only from the paper: `src/models/qwen35moe.cpp:25-30` defaults `full_attn_interval = 4` and marks layer *i* recurrent iff `(i+1) % 4 != 0`, putting attention at {3, 7, …, 39}; `:33-36` switches n_layer 40 / 48 / 60 to 35B_A3B / 122B_A10B / 397B_A17B, the same three-row table the paper prints.
 
@@ -498,7 +512,7 @@ The branch map had one data point on the state-size axis (log-linear's 15×). GD
 
 The systematic ratio sweep behind those checkpoints (`arXiv:2507.06457`; 60 matched m-a-p arms + 2 transformer baselines, one corpus, one budget, one library) recommends a linear-to-full ratio between 3:1 and 6:1, and production sits inside that band under every reading — including its own gloss, "roughly one quarter of the layers to full attention". **That is a reason not to revisit our topology; it is not evidence that 1/4 is optimal.** No 4:1 arm was ever trained; the grid is token-matched rather than FLOP-matched, in the direction that flatters denser attention; the GDN 3:1 and 6:1 cells differ by 0.011 from single runs with no seeds or error bars; and that comparison additionally varies attention head count (16 vs 32) alongside ratio. What genuinely transfers is an **evaluation posture, not a number**: LM accuracy is insensitive to the ratio (Table 6 spread 0.008 across five ratios, six families, both scales) while **recall is the sensitive axis** — so any future topology change is gated on a recall measurement, never on a loss delta. Do not cite that paper's "72 models" (60 + 2 are released), its "nearly doubles RULER recall" (+17.5% by its own Table 7), or its vs-transformer margin (the baseline cell is internally inconsistent and the transformer baselines carry 4096 positions against GatedDeltaNet's 2048 on a long-context benchmark). One structural fact does license the comparison at all: their arms are generated by the same `(i+1) % N == 0` rule as our stack, so ours is placement-comparable to theirs. `intake-1280#record`, `intake-1285#record`.
 
-### Our production architecture is the least massive-activation-exposed hybrid in that paper's own data — a DEPRIORITISATION record
+#### Our production architecture is the least massive-activation-exposed hybrid in that paper's own data — a DEPRIORITISATION record
 
 `arXiv:2608.12149` measures Qwen/Qwen3.5-35B-A3B base and instruct directly — our architecture one checkpoint generation back, confirmed identical from our own kernel. Peak first-token magnitudes:
 
@@ -516,22 +530,22 @@ The systematic ratio sweep behind those checkpoints (`arXiv:2507.06457`; 60 matc
 
 **The value of this record is that it prevents future work, and it should be cited to close a line rather than open one.** The paper contains **no quantization experiment of any kind**: one related-work paragraph, four reference titles, no bit width, and critically **no median or typical-activation baseline anywhere**, so the max/median dynamic-range ratio — the one number a quantization argument needs — cannot be computed from it at any effort; the official repo independently confirms zero quantization code. Do not use it to move our KV-quantization posture in either direction. Two further cautions for anyone tempted: the phenomenon is measured in the **residual stream**, and in our architecture two RMSNorms sit between it and K (`qwen35moe.cpp:187` pre-attention RMSNorm, `:314` per-head QK-RMSNorm on K), so the honest prediction inverts the naive one — if anything leaks into a quantized KV cache it is **V**, which has neither norm nor RoPE, and the paper measures neither. And the gating-costs-retrieval result (NIAH-2 97.00 → 16.80, NIAH-3 63.60 → 5.00, perplexity flat at 13.78/13.80) is **single-run, single-seed 340M pretraining — an unbounded grep for "seed" returns zero and the bootstrap CIs resample inputs, not training runs**. Treat it as a strong hypothesis, not a result. `intake-1280#record`.
 
-### Why GDN-2 is declined, not merely unscheduled — the evidence half the state-size row above does not carry
+#### Why GDN-2 is declined, not merely unscheduled — the evidence half the state-size row above does not carry
 
 The 2026-08-23 (evening) section states the cost shape correctly (1.0× state, ≈ +375.5 M always-active dense parameters ≈ +12.5%, derived from our GGUF header rather than measured). What it does not carry is **why the rule is declined on evidence rather than parked on compute**. The only independent matched comparison in existence — `arXiv:2607.07953`, ETH/CSCS, no shared authors, institution, harness or hardware, 350M/15B — puts **GDN-2 behind plain Gated DeltaNet in all four matched optimizer × stack pairs** (2.379 vs 2.356; 2.452 vs 2.433; 2.345 vs 2.321; 2.415 vs 2.397, every delta above that paper's own 1e-2 significance floor) and **~18% slower**, with KDA winning its sweep outright. The GDN-2 paper's own Table 3 has plain GDN beating it by **28.8 points at RULER S-NIAH-3 @4K** (60.6 vs 31.8) — the best recurrent model in that cell — a result its prose skips and its README drops by omitting the @4K column. And **it never runs the one control that would settle the margin**: it tests the Grazzi β ∈ [0,2] negative-eigenvalue variant *on itself* (Table 5, "no consistent gain at this scale") and never on its own plain-GDN baseline, so nobody knows whether a one-line change to GDN closes the whole gap. Counter-caveats, recorded so the decline is honest: the ETH study is a smaller-scale independent Megatron reimplementation with single runs, no seeds, and **no retrieval benchmark — precisely where GDN-2 claims its gain**. The disposition is *contested*, not refuted: **track, do not build**; the adoption signal to watch is `fla.models` gaining a `GatedDeltaNet2ForCausalLM`, not another paper. Its ggml delta is genuinely one relaxed assert (`GGML_ASSERT(src_beta->ne[0] == 1);`, `ggml/src/ggml-cpu/ops.cpp:10852`) plus ~4 lines, because channel-wise decay already ships for KDA and the HIP build globs `../ggml-cuda/*.cu` — **that documents an existing capability and must not be read as a proposal to open a port branch**. `intake-1281#record`.
 
-### SALA is O(N) memory at 8 KiB/token — it is not a bounded exact side-cache, and must not be filed as one
+#### SALA is O(N) memory at 8 KiB/token — it is not a bounded exact side-cache, and must not be filed as one
 
 Extending the SALA row above with the fact most likely to be lost in a one-line summary: **SALA is not constant-memory.** Its 8 sparse layers retain the **full** KV cache — the paper names this the "sparse computation, dense storage" limitation and shrinks rather than solves it. Derived from the pinned config (8 layers × 2 KV heads × 128 head_dim × 2 for K+V × 2 bytes) that is **8,192 B/token = 8 KiB/token**, so 8 GiB at 1M and 16 GiB at 2048K, plus a constant ~48 MiB fp32 recurrent state. Against Qwen3-8B's verified 144 KiB/token that is an 18× KV reduction, which is what explains its OOM comparisons — but it is **O(N) with a small constant, not O(1)**. It therefore must **not** be filed under "bounded exact side-cache" alongside LTE and HOLA, whose entire claim is a *bounded* cache; conflating them imports a guarantee SALA does not make. Two supporting facts from the artifact: the sparse layers are **clustered, not interleaved** (indices 0, 9, 16, 17, 22, 29, 30, 31 — an adjacent pair at 16-17, an adjacent triple at 29-31, chosen by an algorithm and with the first and last layers deliberately unconverted), and below `sparse_config.dense_len` = 8192 SALA is a conventional dense-attention hybrid, so **every standard-benchmark number it reports was produced with the sparse layers running as full softmax**. `intake-1287#record`.
 
-### Two chunked-GDN traps that survive the 2026-08-22 correction
+#### Two chunked-GDN traps that survive the 2026-08-22 correction
 
 The `#24561` / `#26001` correction above stands unchanged and is not restated. Two things it does not say, both read firsthand from the frozen tree:
 
 - **The log line `fused Gated Delta Net (chunked) enabled` is not evidence that a chunked kernel ran.** It is a **backend-agnostic graph-level probe message** (`src/llama-context.cpp:52-56`, defaulted on at `:250-251`), present in our own frozen v9, and our orchestrator logs carry it 14 times across ports on CPU builds — including on a port whose model is `general.architecture = qwen2` with **no GDN layers at all**. It means "this fused-op probe was not disabled". No chunked GDN kernel exists in **any** backend of v9 (ggml-cuda has only `gated_delta_net.cu/.cuh`, Metal only `kernel_gated_delta_net_impl`, Vulkan only `gated_delta_net.comp`, SYCL carries the same TODO, CPU is sequential). A second naming trap sits next to it: `ggml_compute_forward_gated_delta_net_one_chunk` (`ops.cpp:10995`) is a **thread work-partition** chunk over heads × seqs, not an algorithmic chunk over tokens.
 - **`GGML_CUDA_GDN_STATE_BF16` narrows more than its own comment claims.** The file comment at `gated_delta_net.cu:4-8` says "only the HBM load/store of the state is narrowed". `dst` is typed `state_t` (`:23`), `attn_data = dst` (`:51`), and the attention output is written through `gdn_store<state_t>(attn_col * scale)` (`:121`, `:150`) — so **the lever narrows the attention OUTPUT to bf16 as well as the state**. It is default-off and byte-identical when off, so nothing is broken today; but this widens the blast radius of the standing rule that its 512-token coherence gate cannot see a long-prefill precision defect, and it is why stacking a chunked f16/bf16 kernel on top of it (two independent precision reductions on one op) is blocked rather than merely discouraged. `intake-1290#record`.
 
-### Our GDN op-test length coverage and geometry coverage are disjoint sets
+#### Our GDN op-test length coverage and geometry coverage are disjoint sets
 
 The 2026-08-22 section records that "our own GDN correctness cases top out at 256 tokens". Read from the frozen tree at `0db32c06e3e5`, that understates the gap in the way that matters:
 
@@ -541,7 +555,7 @@ The 2026-08-22 section records that "our own GDN correctness cases top out at 25
 
 Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8–32× above where our assertions stop**. This is why the numerics row (`G16` in [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness)) leads with **new eval cases at 2048 / 4096 / 8192 at H = 32, d = 128** rather than with a benchmark: importing a chunked kernel and running the shipped shapes tests nothing, and would be a vacuous verification of exactly the kind this gap describes. Its gate is NMSE under the **unrelaxed** 1e-7 at every shape *or* byte-identical greedy output at every length — **a relaxed threshold is not a pass**, because relaxing it deletes the only signal the row carries. Any adoption is `llama.cpp-experimental` work under the four-step promotion workflow; **v9 is FROZEN and nothing above proposes touching it**. `intake-1290#record`.
 
-### Source References (2026-08-23 addendum)
+#### Source References (2026-08-23 addendum)
 
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the ρ = L/L_FA record with the Appendix C.1 warning, the m-a-p `hybrid-4-1` correction, the GDN-2 state-vs-active-parameter rider, the `B9` decline, and the op-test coverage gap that shapes `G16`.
 - [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — the CoT-SFT amnesia hazard and `G1` probe contract (compiled in the 2026-08-23 evening section above, not restated here), and `Z12`, the zero-compute question of whether GDN-2's `b_proj`/`w_proj` can be low-rank factorized on the Kimi Linear `SSM_F_A`/`F_B` precedent already in our tree. **Z12-COMMIT is filed (2026-09-17):** the document that informs B9 (`epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`) is untracked on the research shared clone and on no ref, and must be committed; a verbatim copy (sha256 `5c3f5a42…d792`) is held in `/mnt/raid0/llm/backups/preserve-20260916/`.
@@ -558,19 +572,19 @@ Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8�
 - The page's own 2026-08-12 `### RETRACTED` section — the live sections above are reconciled to it, not to the original claim
 - [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — the GLA-path context (Ring-mini / SALA) that the corrected Summary's "matmul-rich parallel form" claims must be read against
 
-## Compiled Update — 2026-09-03: G1 closes the #27442 cross-backend question — NOT reproducible on our frozen v9 CPU path
+### Compiled Update — 2026-09-03: G1 closes the #27442 cross-backend question — NOT reproducible on our frozen v9 CPU path
 
 **Confidence: verified** — greedy, fixed-seed, cold-prefill trials with a self-hashed manifest; 10 of 10
 trials agree.
 
-### Correction to the 2026-08-23 wave-2 entry
+#### Correction to the 2026-08-23 wave-2 entry
 
 That entry called the #27442 empty-completion / hybrid-cache exposure a **live unknown** — "nobody anywhere
 has tested any backend but Metal" — and deliberately left G1 uncompiled as open, compute-gated work. G1
 executed on 2026-08-27 and the unknown is now a scoped negative result for our path. The earlier framing is
 **superseded, not merely extended**.
 
-### The sweep and its result
+#### The sweep and its result
 
 Frozen v9 (`llama-completion` 10125 @ `0db32c06e`), frontdoor Qwen3.6-35B-A3B-MTP-Q8_0, greedy (`temp 0`,
 fixed seed 27442), `cache_prompt=false` so every trial cold-prefills (v9 has no client-side
@@ -587,7 +601,7 @@ path** at these lengths, on either prompt class. This is also the only *greedy* 
 against this defect; the upstream report and every prior discussion of it were sampler-`temp 0.3`,
 uninstrumented, or Metal-only.
 
-### What it does not settle
+#### What it does not settle
 
 The HIP GDN kernel is a **distinct implementation** still carrying a chunked-prefill TODO, so this CPU
 result does not transfer to the MI210 serving path. B1 (repeat on HIP) is unblocked by this, but it remains
@@ -599,7 +613,7 @@ prompt classes, several lengths bracketing the reported onset, greedy and fixed-
 enough compute to convert a cross-backend correctness "live unknown" into a scoped, falsifiable verdict,
 cheaply, before it silently gates every downstream hybrid/GDN decision.
 
-### Source References (2026-08-27 G1 boundary sweep)
+#### Source References (2026-08-27 G1 boundary sweep)
 
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) —
   the G1 task result, trial design and manifest pointer (2026-08-27).
@@ -611,14 +625,14 @@ cheaply, before it silently gates every downstream hybrid/GDN decision.
 
 ---
 
-## Compiled Update — 2026-09-07: arXiv 2608.28444 is not evidence against ρ = 4 — it excludes our topology by construction
+### Compiled Update — 2026-09-07: arXiv 2608.28444 is not evidence against ρ = 4 — it excludes our topology by construction
 
 **Confidence: verified** for what the paper does and does not cover — its scope, exclusions, future-work
 list and arms were read firsthand at Stage 2. **Third-party** for every number it reports; nothing here was
 measured by us and none of it may gate a stack change under `MEASUREMENT.md`. **No v9 change is proposed.**
 This is a **non-applicability record**: its whole value is preventing work.
 
-### The record
+#### The record
 
 **arXiv 2608.28444 is NOT evidence against our ρ = 4 topology.** Four independent reasons, each sufficient
 on its own:
@@ -643,7 +657,7 @@ title will cite it as "SWA beats linear, so the GDN hybrid topology is wrong." I
 topology it declined to evaluate. Anyone about to cite 2608.28444 against ρ = 4 should stop here.
 `intake-1340#04`.
 
-### Three declines, one reason
+#### Three declines, one reason
 
 Our instrument **cannot apply a prefill mask** — frozen v9 evicts only inside the context-shift branch and
 has no runtime window override — so none of the following can be made to bear on the question, and all three
@@ -657,7 +671,7 @@ are **declined**, not parked on compute:
 
 The correct output of this paper is this record, not an investigation.
 
-### Source References (2026-09-07)
+#### Source References (2026-09-07)
 
 - `research/intake_index.yaml` `intake-1340#04` — the instrument-mismatch finding this record rests on, and
   the source of the four scope facts above.
@@ -666,7 +680,7 @@ The correct output of this paper is this record, not an investigation.
 - The 2026-08-23 (wave-2 addendum) section above — where ρ = L/L_FA and production ρ = 4 are established;
   not restated here.
 
-## Compiled Update — 2026-10-06 (evening): on a hybrid model a context checkpoint is reusable only at or before the common prefix, and under Jet-Long it has never been seen to be reused
+### Compiled Update — 2026-10-06 (evening): on a hybrid model a context checkpoint is reusable only at or before the common prefix, and under Jet-Long it has never been seen to be reused
 
 **Confidence: verified as observed in server logs (Qwen3.6-35B-A3B-MTP, CPU); the rule is read from the log lines, not from source; Jet-Long checkpoint reuse is a never-observed state, not a negative result.**
 
@@ -676,7 +690,7 @@ The correct output of this paper is this record, not an investigation.
 
 Sources: [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE_TEST.md), [GATE_A](../artifacts/yarn-ctx-20261006/jetlong/GATE_A.md), [NO_DIVERGENCE](../artifacts/copyspec-20261006/NO_DIVERGENCE.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).
 
-## Compiled Update — 2026-10-07: prefill-only boundary checkpoints give the first observed hybrid prefix reuse
+### Compiled Update — 2026-10-07: prefill-only boundary checkpoints give the first observed hybrid prefix reuse
 
 - v10 context checkpoints on a hybrid (GDN/recurrent) model land only at n-4 and n-16 of each prompt, so a follow-on turn that extends the prompt cannot restore one and does a full re-prefill (check (2) of the save/restore pre-test failed for this reason).
 - A **prefill-only boundary request** closes the gap. On CPU 27B (fixed Jet-Long build, `-ub 16`, `--ctx-checkpoints 8`, `--cache-ram 8192`, DFlash2): a 3556-token prefix, then Q1 prompt_n 58 and Q1b prompt_n 74 (restored checkpoint 3539), then an extension prompt_n 2219.
@@ -685,7 +699,7 @@ Sources: [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE
 
 Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
 
-## Compiled Update — 2026-10-20: recurrent-state prefix caching in vLLM and llama.cpp, checkpoint-position lessons
+### Compiled Update — 2026-10-20: recurrent-state prefix caching in vLLM and llama.cpp, checkpoint-position lessons
 
 **Confidence: external** (vendor PR and issue text, author-reported numbers, none reproduced here); the full synthesis is in [kv-cache](kv-cache.md#compiled-update--2026-10-20-hybrid-prefix-cache-survey-vllm-and-llamacpp-and-the-prefix-fork-recut).
 
@@ -696,13 +710,13 @@ Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [
 
 Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [research intake index](../research/intake_index.yaml).
 
-## Compiled Update — 2026-10-21: where the recurrent and hybrid `seq_cp` actually stand in our trees
+### Compiled Update — 2026-10-21: where the recurrent and hybrid `seq_cp` actually stand in our trees
 
 **Confidence: verified (code read at four tagged revisions on 2026-10-20); no new measurement.** `llama_memory_recurrent::seq_cp` (`src/llama-memory-recurrent.cpp` 246-281, identical in v10 `ffc1bac82`, champion `dd3d9721c` and both KPF branches) ignores p0/p1 and makes the destination share the source's current tail cell, so a recurrent fork can only start at the source's current tail, not at an earlier junction. `llama_memory_hybrid::seq_cp` (152-155) calls both halves; the KPF branches add an attention-only share as a separate entry point and leave this one unchanged. `--cache-reuse` is force-disabled for recurrent memory. Checkpoints (pinned ones added only on the KPF branches) are therefore the only way to resume a hybrid model at an earlier boundary, consistent with the 2026-10-06 and 2026-10-07 findings above. The hybrid ubatch split is `split_equal(n_ubatch, !unified, n_rs_seq + 1)`. Always cite these lines with a tree tag (see the kv-cache page, 2026-10-21).
 
 Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) ("What already exists in our tree", KPF-DOC-1), [KV cache page](kv-cache.md), [Progress 2026-10-20](../progress/2026-10/2026-10-20.md).
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for native correctness at the source gate (G16a) and diagnostic traces; G16 greedy A/B and keep-rs are open; no speed or promotion claim.
 
@@ -712,23 +726,23 @@ Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-progra
 
 Sources: [log-linear-gated-deltanet-readiness](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) · [G16a native](../progress/2026-10/2026-10-31-g16a-native.md) · [INF-33 CPU seam](../progress/2026-10/2026-10-28-inf33-cpu-seam.md) · [NEMO reseg](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md) · [AK-PM-16](../progress/2026-10/2026-10-30-codex-ni-ak-pm16-closeout.md)
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 3 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2550#record (Qwenputer blog): DeepMind accuracy rows verified against the repo, but the claims that Qwen GDN layers act as RAM, NUPA 100% for the RISC-V model, and in-weights execution beating a tool are not carried (the tool arm matches or beats it, n=40). Integrated via autokernel-all-devices-all-dimensions.
 - intake-2574#record (Qwenputer repo): stage-1 claims confirmed, with the exact write/read construction located in code; the GDN-as-RAM property is a statement about the gated delta rule structure with saturated alpha/beta, not a Qwen-specific finding. Integrated via autokernel-all-devices-all-dimensions and kv-prefix-fork-and-paged-attention.
 - intake-2587#record (Hybrid models hide reasoning in RNN state): single-author, unreviewed blog with a single-task, small-seed result that beta<=1 GDN hybrids failed to generalise hidden state tracking; a CoT-monitorability note with no serving lever. Disposition knowledge_only; linked to cpu-decode-roofline-program.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 26 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
+#### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
 
 - intake-2071#record (vLLM hybrid partial-hit RFC): partial hits plus tail checkpoint shipped; the spec-decode/async question is answered only by assertion in the RFC and resolved structurally in code. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
 - intake-2072#record (vLLM Mamba junction-stop PR): junction-stop and prompt-bounded-publish mechanics usable for KPF-15/17 review; 0-of-84 figures are author-reported simulation only. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
@@ -755,16 +769,23 @@ Sources: [log-linear-gated-deltanet-readiness](../handoffs/completed/model-archi
 - intake-2112#record (vLLM Mamba cache group block size fix): invariant: checkpoint cadence belongs to the recurrent state; DFlash never writes target blocks; the 0 to 100 percent reuse and -95 percent TTFT are not reproduced. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
 - intake-2114#record (vLLM prefix_cache_retention_interval default PR): records the default change and its semantics (0 = latest replayable boundary only); the zero-reuse consequence is third-party single-setup. Verdict adopt_patterns; linked to kv-prefix-fork-and-paged-attention.md.
 
-### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+#### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
 
 - intake-2205#record (Qwen3.8-Next architecture design report): Dive harvested the inference-relevant mechanism set (QSA parameters, 4-branch Gated Residual read/write rule, n-gram placement, MTP acceptance) and confirmed the indexer-budget claim from intake-1945#record. Worth investigating; disposition monitor; handoffs cpu-decode-roofline-program and reasoning-compression.
 - intake-2213#record (FlashQLA): Settled ops (chunked fwd/bwd only, no decode), algorithm (chunk 64, WY/UT, fused state carry, fp32 acc), vendor speedups with conditions and MIT licence; our v10 prefill is sequential on CPU and HIP. Monitor; handoffs mi210-big-model-and-acceleration-roadmap and cpu-prefill-compute-large-models.
 
-## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): chunked GDN prefill and its oracle
+### Compiled Update — 2026-11-23 (operator wiki sweep): hybrid-model prefix caching and position-independent caching (intakes 2758 to 2788)
 
-- **A chunked GDN graph already exists in the frozen tree**; what the GDN/Mamba-2 readiness line lacks is the fused kernel, the quantization boundaries, INT8 stored state and the rho/tau/eta knobs — not the algorithm (intake-2642).
-- **The invariance algebra now has an executable spec.** `linquant/reference.py` is torch-only, float64, and maps exactly onto `chunk_core(family=delta, rho=1, tau=1, eta=0, read_post=False, qz=none)`, so it can serve as a CPU conformance oracle without weights (intake-2642).
-- **State-precision asymmetry**: an INT8 carry costs linear attention ~8% perplexity but only ~0.2-0.8% for decaying mixers, because decay damps accumulated error; state traffic is about 0.17% of per-token bytes today, so this is a prior, not a task (intake-2641#record, intake-2645).
-- **Filed work**: `GDN-ORACLE-1` (fp64 oracle) and `GDN-SHARE-1` (core-share profile that closes the LinQuant line below 5% of wall) in [model-architecture-readiness.md](../handoffs/completed/model-architecture-readiness-completed-20261107.md).
+- **Common principle across the replay family: log recurrent-layer inputs, recompute state, do not store state copies.** FrontierReplay (`intake-2758#record`, adopt-level relevance, integrated) shows that cutting prefill to obtain mid-prompt recurrent states inflates prefill scheduler steps 1.44-1.86x (1.05-1.09x on LongBench); 79-100% of reusable tokens end at an earlier turn boundary, so checkpoint positions are predictable at admission. Its split-free path logs inputs over a <=1024-token window and runs a state-only replay kernel that writes a bit-identical checkpoint; vs vLLM align mode it reports 1.11-4.26x goodput on one A800. The digest ties it to PR31669 and ReplaySSM ([digest 2026-11-21](../research/deep-dives/intake-digests/2026-11-21-ids-2752-2787.md), [FrontierReplay dive](../research/deep-dives/ak-intake-20261121/2611.26020v1.md)).
+- **Approximate suffix replay wins only against a coarse checkpoint grid.** SuffixReplay (`intake-2765#record`, knowledge_only) replaces SGLang checkpoints with sparse anchors and replays the last k tokens; Qwen3.5-4B / Qwen3.6-27B-FP8 hold >=99% average task-score ratio at k=128 (single cells 88-95%), OLMo-Hybrid-7B needs k=512; in the SGLang-favourable case it is slower (174 vs 121 ms at 35K). Tail-Replay (`intake-2766#record`) replays the last 5% of cached FA-output hiddens from a zero state: 92.8-98.9% LongBench retained but OLMo cells drop to 78%; TTFT gains (9.1-14.3x at ~32K) are vs full prefill, not vs a checkpoint cache; a 4-page workshop note with no engine integration ([SuffixReplay dive](../research/deep-dives/ak-intake-20261121/2609.33477v1.md), [Tail-Replay dive](../research/deep-dives/ak-intake-20261121/2608.30310v2.md)).
+- **Sparse Prefix Caching (`intake-2767#record`)** is exact checkpoint + exact suffix recompute, i.e. what llama.cpp's server already does (n_ctx_checkpoints=32 per slot) and what KPF-18 `checkpoint_at=[len(trunk)]` implements at one placement; its contribution is an O(NM) DP for checkpoint placement under a non-uniform overlap distribution. Evidence is thin (one layer group of Qwen-3.5-0.8B on an RTX 2080 Super) ([dive](../research/deep-dives/ak-intake-20261121/2605.05219v1.md)).
+- **FlashStates (`intake-2772#record`, `intake-2787#record`, PDF entry `intake-2788#record`)** keeps a finished request's exact end state as a frontier checkpoint and lets a prefill chunk export one state per request per step (bit-identity contract: output and final state equal the no-export call; each exported state equals the cut-at-offset state). Export kernels are SM100-only; README numbers (2x B200, GLM-5.3-Flash NVFP4) are up to 3.02x decode / 3.14x prefill throughput. The PDF dive found in-chunk export was enabled only for the KDA backend in serving, so every GDN-model gain comes from end-of-request capture plus admission/eviction. For llama.cpp, whose checkpoint targets are known before the batch, export is structurally cheaper than input replay, but the route stays behind KPF-64-CUTS ([FlashStates repo dive](../research/deep-dives/ak-intake-20261121/flashstates-repo.md), [design doc dive](../research/deep-dives/ak-intake-20261121/flashstates-designdoc.md), [PDF dive](../research/deep-dives/ak-intake-20261121/flashstates-pdf.md)).
+- **Position-independent caching (PIC) on GDN hybrids is approximate.** HYPIC (`intake-2774#record`, `intake-2783#record`): state composition is exact given identical layer inputs but drifts 8.92% rel L2 at depth on Qwen3.5-35B-A3B; GDN models land within +0.47/-0.56 points of full recompute at 8-token seams, TTFT 2.9-4.7x on 8xH20 SGLang; conv1d warm-up and seam exclusion match the in-house affine design (DESIGN.md sec 2.2/2.5). The code (SGLang v0.5.14 fork, Triton-only GDN, no ROCm, no numerical-exactness test) is released. LinearKV (`intake-2773#record`) finds a single cached last-chunk state ties exact composition on GDN models (gap <=0.013 Avg-F1); its headline collapse of exact composition is on Mamba-2 Granite, not Qwen. The NeurIPS "Bridging the Gap" HyPIC (`intake-2785#record`, monitor) is a different, abstract-only namesake (2x TTFT, no numbers) ([HYPIC dive](../research/deep-dives/ak-intake-20261121/2607.01299v3.md), [HYPIC repo dive](../research/deep-dives/ak-intake-20261121/hypic-repo.md), [LinearKV dive](../research/deep-dives/ak-intake-20261121/2608.11231v1.md), [neurips-152513 dive](../research/deep-dives/ak-intake-20261121/neurips-152513.md)).
+- **Attention-only context-independent reuse does not transfer to hybrids.** KV Packet (`intake-2782#record`, monitor) recovers a mean 77.4% of full-recompute quality with trained header/trailer soft tokens, pure-attention models only; KVShareArena (`intake-2784#record`, declined) shows repair results do not transfer across receiver models and a cache from a different pretraining run costs up to 0.32 F1 ([KV Packet dive](../research/deep-dives/ak-intake-20261121/2604.13226v3.md), [KVShareArena dive](../research/deep-dives/ak-intake-20261121/2609.10266v2.md)).
+- Quality evidence across all of these is task score (F1/ROUGE) only; none reports logits/KLD or token identity.
 
-Sources: [repo dive](../research/deep-dives/quant-compiler-20261106/linquant-repo.md) · [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [SSDi8 dive](../research/deep-dives/quant-compiler-20261106/ssdi8.md)
+#### Source References (2026-11-23, operator wiki sweep)
+- [digest 2026-11-21 ids 2752-2787](../research/deep-dives/intake-digests/2026-11-21-ids-2752-2787.md)
+- [FrontierReplay](../research/deep-dives/ak-intake-20261121/2611.26020v1.md), [SuffixReplay](../research/deep-dives/ak-intake-20261121/2609.33477v1.md), [Tail-Replay](../research/deep-dives/ak-intake-20261121/2608.30310v2.md), [Sparse Prefix Caching](../research/deep-dives/ak-intake-20261121/2605.05219v1.md)
+- [FlashStates repo](../research/deep-dives/ak-intake-20261121/flashstates-repo.md), [FlashStates design doc](../research/deep-dives/ak-intake-20261121/flashstates-designdoc.md), [FlashStates PDF](../research/deep-dives/ak-intake-20261121/flashstates-pdf.md)
+- [HYPIC paper](../research/deep-dives/ak-intake-20261121/2607.01299v3.md), [HYPIC repo](../research/deep-dives/ak-intake-20261121/hypic-repo.md), [LinearKV](../research/deep-dives/ak-intake-20261121/2608.11231v1.md), [Bridging the Gap](../research/deep-dives/ak-intake-20261121/neurips-152513.md), [KV Packet](../research/deep-dives/ak-intake-20261121/2604.13226v3.md), [KVShareArena](../research/deep-dives/ak-intake-20261121/2609.10266v2.md)

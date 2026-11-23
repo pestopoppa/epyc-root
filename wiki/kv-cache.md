@@ -2,69 +2,6 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-11-20 (autokernel operator wrap-up sweep). Earlier: 2026-11-19 (wrap-up sweep: KPF-41 GPU backend qualification r2/r3, KPF-62.3 tokenizer observation, K-shift model test). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-18 (wrap-up sweep: INF-86 slot checkpoint restore on C13). Earlier: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): KPF-18.x fork-vs-fresh native records, FA4 exact-set R17 outcome, KPF-18.2/18.3 trace builds. Earlier: 2026-10-28 (KPF-62.3 selector port scoped, tiny-model controls; V11-FA-4b scorer diagnostic; KPF-64 EB contrast). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): KVU-16b concurrent residency PASSes on C5, unified KV loses to split at np8 L64k on CPU, and the CME-7S prompt-prefix cache gate passes. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): KVU-19b P3 B is within 5% on the champion, KVU-16f was already serving, KPF-64.3 F/FB run and EB is re-booked on 48 cores, and the ctx-checkpoints receipt lands. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the KPF-18 R4 fork deviation is fork-path-specific, HPR-B INVALID (the simulator omits retained generation), KPF-64.3 EB is infeasible at quarter scale, and HSF-5.P G4 needs a log-capture amendment. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): KPF-17.4c finds no reproducible restore defect, 13.1b is a near-tie artifact, KPF-18.0b closes, and the HSF-5.P build gate holds. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): the DFlash2 restore defect is target-side, the 60k fork deviation is fork-specific, chunk-KV G0 is bit-identical, and the host KV mirror trigger fires. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the KPF-18 CPU re-runs and graphs-ON step 7 land. Earlier: 2026-10-24 (wrap-up sweep 20, 3c4ca599 delta). Earlier: 2026-10-24 (wrap-up sweep 9: KPF-13.1 rules v3 verdicts, KPF-64 hybrid checkpoint rule, v11 fold decisions). Earlier: 2026-10-23 (wrap-up sweep 19, workspace-f8: KPF-13.1 rules v3 and the DFlash2 arm; on the 27B the SWA cache is the drafter's; idle-slot restore semantics from code reading). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: always-F32 VKQ accumulation costs nothing on architect CPU decode). Earlier: 2026-10-23 (wrap-up sweep 17, workspace-f8: coarse checkpoints REPLACE_DENSE at 32k on a wide spread; KPF-26 outcome clause keeps). Earlier: 2026-10-22 (wrap-up sweep 14, 3c4ca599: upstream #28576 is carried by the pull; the GPU VKQ half-staging question is open (V11-FA-8)). Earlier: 2026-10-22 (wrap-up sweep 10: KVU-12.1 DENSE_STAYS, fork flip is numerics, CME-7 cache miss). Earlier: 2026-10-22 (wrap-up sweep 9: KPF-64 is slow because of decode contention). Earlier: 2026-10-22 (wrap-up sweep 8; wrap-up sweep 7: fork cleared, G1 reference, KVU-12.4). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 5: KPF-62 slices filed). Earlier: 2026-10-21 (wrap-up sweep 3 delta). Earlier: 2026-10-20 (wrap-up sweep 2: unified-KV and prefix-fork DeepInfer probes). Earlier: 2026-10-20 (hybrid prefix-cache survey, index entries 2061 through 2115, plus the prefix-fork recut; prior: 2026-10-06 incremental root-wrap synthesis; prior compilation history: 2026-10-03 (wrap-up compile: the 27B's hybrid KV math — 16 of 64 layers hold growing KV, 34,816 B/token q8_0, 42 KiB/token measured marginal; step 1 of the :8083 pool fix is live (token gate, one long prefill per server); step 2 (`-c 393216` unified, per-slot clamp to n_ctx_train 262144) is signed, not yet live); previous: 2026-09-24 (late, main-ak-seat: KVU-11b decided D, no change to the CPU speech layout); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: production is now unified — OP-54 applied np 4 at 196k; the throughput verdict confirmed); earlier: 2026-09-24 (production was never unified: llama-server v10 auto-enables unified KV only when `-np` is absent, the launcher always passes `-np`, so :8083 capped every request at 98,304 tokens; the 27B GPU study (n = 1/cell) finds unified per-request decode equal within 1.1% at np 1 and +0.3..+5.7% at np 2/4, a 124,174-token prompt accepted unified vs HTTP 400 split, two pool-full shapes (unified: one request fails with the MTP sub-batch exception 4/4; split: silent truncation), idle-slot clear under unified against an 8192 MiB RAM tier too small for one full-pool prompt (inferred), and unified-vs-split output divergence at np 2/4 — see the top section); earlier 2026-09-08 note: (the KV-reduction cluster's 09-07 wave — selection-class KV methods hold the FULL cache and buy zero KV memory (1.04 MB vs 8.38 MB on-device at 2K/16K), the streaming-LLM 4-axis sweep gained power and eviction-regime constraints but still has no cells, PS-2 closed as Reset-PE-insignificant, and SWA-window-floor/query-aware-selection coverage pointers filed; earlier 2026-08-23 note: **wave-2 research intake — the KIVI "primary quality gap" recorded for months at `kv-cache-quantization.md:320` never existed**: per-token V is structurally guaranteed once V is quantized (quantized V forces flash attention, which sets `v_trans=false`, making V channel-contiguous), the per-channel-K half is a **2-bit-only** prescription by KIVI's own OB 1, and key outliers are handled instead by the in-tree Hadamard rotation — the only residual is symmetric-vs-asymmetric, which is a flag (`q4_1`/`q5_1`), not a code change; **the granularity reading rule**: with `-fa 1` we quantize K and V per token in 32-element blocks along CHANNELS, finer than the Group-64 *mitigation* published in the alignment-collapse study and on the OPPOSITE axis from KIVI, so third-party KV-quant damage numbers are a pessimistic bound for us and must never be transferred unqualified; **VeriCache's algorithmic core is already expressible in frozen v9 with no code change** (`-ctkd`/`-ctvd` set the draft context's KV type independently of the target's and a model can be its own drafter) while its systems contribution depends on an interconnect we do not have; the dual-cache post-mortem is reframed as **a capacity argument applied to a bandwidth problem**; the PCIe "KV streaming is an anti-pattern" line is scoped to *per token*; R9's spec-decode verdict stands on NIAH+PPL while its throughput warrant is void; and llama.cpp slot-restore reuse loss is **conditional, not blanket** — zero only for a DIVERGENT or EXACT-REPEAT prompt, full for a strict continuation, with upstream PR #25592 (live in-memory checkpoint path) outranking #26004 (dormant disk path) for us — see the end of the page; earlier 2026-08-23 note: evening wave-2 compile: the KIVI "no gap" correction + the REAL instrument gap, the dual-cache reframing (capacity vs bandwidth), the group-32/axis granularity correction, and the KV-quant monitoring gates G2-G5 with the massive-activations deprioritisation — see bottom sections; earlier same-day: the orchestrator prefix-cache path now has an owner and a measurement plan: KV-5 closed in the wiki, the three latent defect fixes KV-0a/b/c landed 2026-08-20 — every KV slot save was failing, roles sharing one server silently clobbered each other's slots, and `radix_cache.py` was dead code — and the KV-1/KV-2/KV-3/KV-4/KV-6 rows filed — see the end of the page; earlier 2026-08-22 note: closure fine-structure of the COMPLETED KV-quant handoff — **V-dequant, not K, is the entire CPU flash-attention prefill cost** (q4_0/f16 −1% vs q8_0/q4_0 +71%; q8_0/q8_0 is the worst prefill config measured at 3.3× slower, reconciling the 2026-08-03 memory-optimal reading as a different axis); Hadamard's isolated contribution priced at 70% gap closure (+0.055 → +0.017); TQ3 abandoned on a *fair* 32B retest after its first gate was flagged as failure-zone-unfair; QJL's SNR≈1.13 arithmetic death; spec-decode +3.3% with q8_0/q4_0; the 4-KV-head q4_0-K hazard; and PR #21089 (TurboQuant CPU KV) verified CLOSED UNMERGED upstream 2026-06-02, retiring the 2026-07-20 monitor row — see the end of the page; earlier 2026-08-12 note: a fork SWA slot-reuse patch previously held for review is **DROPped as a correctness regression, not merely redundant** — it deleted upstream's per-sequence check; KV quantization gets its first decision package with an exact parity result; and lazy KV faulting is re-read as *relocating* provisioning cost rather than removing it; earlier 2026-07-20 note: adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained))
-
-## Compiled Update — 2026-11-19 (wrap-up sweep): KPF-41 GPU backend qualification is INCONCLUSIVE at r2 and repaired for r3, KPF-62.3 tokenizer census observed, K-shift model test inconclusive
-
-**Confidence: observation** (single rows; none is a policy comparison).
-
-- **KPF-41 backend GPU qualification r2 is INCONCLUSIVE, not a kernel failure.** The backend process exited 0 and its log ends `2978/2978 tests passed`, `Backend ROCm0: OK`, but `parse_corpus` expected one line per case and HIP graph diagnostics ("CUDA graph warmup complete") interleave with case output, so the parser threw before the post-run source, five-artifact-hash and loader custody checks. Residency during execution is supported (5723 of 5726 live samples show positive KFD VRAM and the HIP mapping). See [r2 result](../docs/reports/kv-cache/kpf41-backend-gpu-r2-result-20261119.md).
-- **Parser repaired offline (six tests PASS).** The retained r2 replay reconciles 5,207 selected cases (2,978 supported OK, 2,229 unsupported, 25 required shared-trunk cases OK) and accepts exactly 212 graph warmup complete/reset diagnostics. A check run now cannot supply the missing historical custody warrant, so the corrected row is the successor `kpf41-backend-gpu-qualification-r3-20261119` (same pinned kernel and five digests, strict interleaved parsing, custody checked even when parsing fails). Publisher outcome was "GPU busy; smoke queued"; no fresh GPU verdict is claimed. See [parser repair](../docs/reports/kv-cache/kpf41-backend-gpu-parser-repair-20261119.md).
-- **The r2 source precondition vanished because the keeper reaped it.** The keeper journal records `REAP-FREED-INPUT ... /source` on 2026-11-05 followed by 137 launch failures; the original `kpf41-gpu-parity-r4-20261105` PASS filing (D64) is unchanged. The r2 successor uses a detached worktree of experimental commit `15caecbba` with its own `source/` and passes FILLER_ID to child environments. See [custody recovery](../docs/reports/kv-cache/kpf41-backend-gpu-custody-recovery-20261119.md).
-- **KPF-62.3 auxiliary tokenizer census: OBSERVED (128 EXACT, 128 DIFFERENT_BYTES of 256).** Qwen2.5-0.5B Q8_0, vocabulary only, `add_special=false`, `parse_special=false`; ID sequences are 128 equal and 128 differing. The zero DIFFERENT_IDS count is conditional on matching bytes and says nothing about ID agreement for the 128 differing-byte cases. It does not establish general tokenizer compatibility, selector quality, budget re-admission or G3 acceptance. See [result](../docs/reports/kv-cache/kpf623-tokenizer-roundtrip-20261105/result.md).
-- **K-shift model test: native verdict FUTILITY_INSENSITIVE, filed inconclusive** (2 of 10 planned runs; Qwen3-1.7B Q8_0, f16 K, 448 prefix tokens, 64 probe positions; champion C10 `7f1bd044b` plus H2/H3 patches). The half-shift negative control reached only 0.003770928 KLD against a required 0.03, so the harness is not sensitive. The `seq_div` scenario does detect the H2 sign defect in this arm (candidate 0 KLD, baseline 3.025076 with 48 top-1 mismatches), but the translate x1 mismatch is identical in both libraries and does not isolate a regression. YaRN, quantized-K and Llama arms did not run; no production change. See [report](../docs/reports/kshift-model-r1-20261119.md).
-
-### Source References (2026-11-19)
-- [KPF-41 r2 result](../docs/reports/kv-cache/kpf41-backend-gpu-r2-result-20261119.md)
-- [KPF-41 parser repair](../docs/reports/kv-cache/kpf41-backend-gpu-parser-repair-20261119.md)
-- [KPF-41 custody recovery](../docs/reports/kv-cache/kpf41-backend-gpu-custody-recovery-20261119.md)
-- [KPF-62.3 tokenizer round trip](../docs/reports/kv-cache/kpf623-tokenizer-roundtrip-20261105/result.md)
-- [K-shift model test r1](../docs/reports/kshift-model-r1-20261119.md)
-
-## Compiled Update — 2026-11-18 (wrap-up sweep, INF-86 closeout): where hybrid prefix reuse does and does not break, no cross-session eviction, chunk-KV decision
-
-**Confidence: observation** (single-fixture CPU rows on the frontdoor recipe, bounded nulls; no protocol-id).
-
-- **Slot restore on v10 reuses the prefix only for a strict extension (G4, EXPOSED_NOT_HIT).** After a restore, the production migration shape (E1) reuses 100% of the saved slot: 16K cache_n 15722/15722, prompt_n 1186, 19.2 s against 181 s cold; 64K 63300/63300, prompt_n 1139, 70.7 s against 1962 s cold. The erase-only control reuses 0 (n_restored equals n_saved), and an exact repeat (E0), a 50% divergence (E2) and a moved tools block (E3) all re-prefill fully at both sizes. The upstream defect is real, but our migration shape avoids it.
-- **The moved-tools full re-prefill is a checkpoint cause, not a template defect (E3, NO_FIX).** An offline render of the frontdoor template put the first divergence at character 54946 of 55306 (99.35% depth), at the end of the user turn where the tools text begins; the top is byte-identical. Pinning the tools into the system message did not help on v10: MOVED and PINNED both reused 0, while MOVED_LIVE (no restore, the live slot's checkpoints) reused 86.9%. The restore path carried no hybrid checkpoints, which is what the C13 validation in the section below then fixes (restored slot 13,754 reused tokens, 86.88% of the saved prefix).
-- **No cross-session eviction up to 8 sessions (G5, BOUNDED_NULL_1).** On the v10 frontdoor recipe (`-np 4 -c 262144 --kv-unified --cache-ram 32768`), N in {1,4,8} at 16K and 56K, every cell wasted 0 re-prefill tokens and logged no forced re-prefill, so KVU14 does not open. Caveat: the harness-class gap distribution was unavailable, so tool gaps were modelled as the other sessions' turns.
-- **Template and upstream-PR checks close with nothing to fix.** The production template renders prior turns byte-stable (NO_DEFECT). Upstream PR #25592 gives NO_GAIN on our waste, which is the older-turn suffix, so it is not a fold candidate. Forced re-prefills were NONE_OBSERVED: 0/21 at 16K and 0/14 at 64K (Wilson95 upper bounds 15.46% and 21.53%).
-- **Checkpoint spacing is a partial fix that did not pay live.** cms8192 to cms512 cut about 30% of wasted tokens in the A/B (means 6636.5 vs 4714.5 at 16K, 11015 vs 7688.7 at 64K, below the 50% bar). The live probe on the three roles (`inf86-cms512-live-probe`) gave ALL_HOLD: 0% re-prefill reduction for each role at extra checkpoint memory of 5.845 / 1.278 / 6.520 GiB (critic / general / frontdoor), so the values were reverted and the plumbing kept.
-- **Chunk-KV decision (operator, 2026-11-11).** Option 1 plus a phase-3 skeleton: phase 1 continues as running, the skeleton is built in parallel, the hybrid affine-state phase is decided at the phase-0 drift-curve gate, and KPF-64 runs beside it.
-- **Correction to KVU-16g-3.** Arm 4 did not stop on futility; it aborted on an invalid launch (a foreign KFD process was present) and produced no measurement. "No operating point passes" therefore holds for arms 1-3 only, and the 900/512 point is untested. DS-F1 (a standalone q8_0 KVCOMM prototype) still waits on the unpublished AM-DECISIVE-1 verdict; the handoff asked the operator whether to keep that prerequisite.
-
-### Source References (2026-11-18, INF-86 closeout)
-- [hybrid-checkpoint-prompt-reuse handoff](../handoffs/active/hybrid-checkpoint-prompt-reuse.md) - G4, G5, E3, template and #25592 records
-- [INF-86 progress 2026-11-17](../progress/2026-11/2026-11-17-handoff-hybrid-checkpoint-prompt-reuse.md) - result recap and C13 validation
-- [INF-86 progress 2026-11-18](../progress/2026-11/2026-11-18-handoff-hybrid-checkpoint-prompt-reuse.md) - DS-F1 operator question
-- [kv-cache program](../handoffs/active/kv-cache-program.md) - OP-CHUNKKV decision and KVU-16g-3 correction
-- [autokernel progress 2026-11-17](../progress/2026-11/2026-11-17-autokernel.md) - G5 and #25592 verdicts
-
-## Compiled Update — 2026-11-18 (wrap-up sweep): INF-86 slot save/restore preserves prefix reuse on C13
-
-**Confidence: verified** (single 16K CPU fixture).
-
-- On C13 `bda43aa17` (includes slot checkpoint serialization from upstream #26004 via `1c999e15b`) a restored slot reused all 13,754 tokens the live slot reused (`prompt_n=3260`), the restored greedy reply matched a fresh full prefill, and save and restore both reported 15,831 tokens. The erase-only control reused zero. Production v10 `ffc1bac82` reused zero on MOVED in the prior G4 E3 run, so the checkpoint serialization is the enabling change. Gate: MOVED `cache_n` >= 80% of MOVED_LIVE, CTRL <= 5% of save, `fresh_reply_match` true. [INF-86](../docs/reference/inf86-slot-checkpoint-validation-20261117.md)
-- Scope is one 16K CPU fixture, frontdoor Qwen3.6-35B-A3B-MTP Q8_0, q8_0 KV, 32 checkpoints, np1.
-
-### Source References (2026-11-18)
-- [INF-86 validation](../docs/reference/inf86-slot-checkpoint-validation-20261117.md)
-- [hybrid checkpoint handoff](../handoffs/active/hybrid-checkpoint-prompt-reuse.md) - prior run and recipe
-- [kv-cache program](../handoffs/active/kv-cache-program.md) - parent program
-
-## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): unified-KV decode cost grows to -58% at 91% pool fill, KPF-17/17a close on exactness, and the KPF-30 phase reader needs a position field
-
-**Confidence: verified** (filed native results; every row below is scoped to what its rule covers).
-
-- **P3 unified-KV decode cost (MI210, v10, Qwen3.8-27B Q8_0 + DFlash2).** `handoff-kvu16h-p3-lifecycle-r3` PASS: against an idle parked-neighbour fill, decode loses -30.4% / -46.9% / -58.0% (drafted, 0.40 / 0.66 / 0.91 of the pool) and -34.4% / -51.2% / -61.3% (no-draft, which isolates attention). Baseline drift across L0 before/after is ~0.1%. Both declared triggers are MET (P5 at >=5%, split-per-slot at >=15% at >=300k). The sampled own-PID VRAM maximum (51.7 GiB) is not a lifetime peak, and the native no-draft `draft_n` is UNKNOWN rather than zero. The r2 attempt stopped INCONCLUSIVE (neighbour occupancy read zero after a restore). The champion P5 A1 20-row protocol stopped twice on the 150 GiB disk floor (10 drafted + 9 no-draft rows retained, no result).
-- **KPF-17 / KPF-17a.** Shared-cell exactness is complete: CPU 86/111 PASS and the full ROCm run bitwise-equal on 89/111 supported cases (22 declared unsupported, all 25 shared cases passing); original-versus-extended preservation 64/86 supported. KPF-17.CUSTODY PASS (`n_rs_seq=0/8`, six in-test mapping samples bound to the pinned build manifest, mutation detected). An earlier partial-v2 was INVALID (rc64, region-lock refused a live dispatcher) and proves nothing about the fork. A test-only matched-valid-destination control separates generic copy failure from stale-specific detection (nine model-free checks). KPF-17.4d custody builds stopped on the disk floor three times (r1, r3, r4; r5 is unpublished while disk is under the floor): a first-object smoke is never a full-build acceptance.
-- **KPF-13.1 external observer.** Feasibility only: an own-child hardware breakpoint hit one known libllama export, pinned five mapped DSOs and exited cleanly; the cache allocator breakpoint was not hit, so no physical-cache ABI, allocator layout or historical DSO custody is established.
-- **KPF-30 phase reader.** The integrated observer (`8952a0f69`) emits `KPF30 row= seq=` without `pos`, while the strict phase reader requires `pos` and explicit BEGIN/PHASE/END brackets, so a raw observer stream cannot satisfy it. A position-field patch (unapplied) and a per-token phase-provenance contract (replay provenance fails closed as UNKNOWN) are prepared; three candidate-bound impact attempts ended rc75 disk-floor, so there is no edit clearance. KVFORK31 P3 impact at `c72ec82f`: `find_slot` LOW, `apply_ubatch` LOW, `llama_kv_cells` LOW, no HIGH/CRITICAL, but 25 files over 512 KB were skipped.
-- **KPF-26 CODE diagnostics.** The off/on three-scout code runs completed (fork tokens 0/0/0 vs 3547/5498/0; keyword outcomes true/true/true vs false/true/true) but the top-level flag attestation is unverified, the checkpoint witness is null, and the rubric's seven-task cohort does not map to the three-scout shape: all six outcomes stay UNKNOWN and nothing about enablement follows.
-- **Gauges and loads.** KVU-12.6 unique-cell gauge r2 PASS (0 to 45 cells over one HTTP-200 token, strict interior mapping timestamps); the v1 attempt failed on a grant-filename lookup before any request. KVU-16a shape-matched r3: 35.0626 GiB non-KV (51.338 GB own-PID VRAM minus 13.690 GB logged KV) from two post-health samples; sampled maximum only, not a peak. CPU-FA-VKQ-2: hybrid +1.84% (16k) and +2.11% (64k) sit inside their 36.39% and 4.11% noise floors, so no superiority; VKQ-3 calibration accepted 96/121 drafts in both arms with identical outputs.
-- **Hygiene.** A 37.8 GB model-hash read overlapped four rc75 disk-floor runner intervals; the audit establishes overlap of intervals only, not cause.
-
-Sources: [KVU progress](../progress/2026-11/2026-11-04-handoff-kvu.md) · [KVFORK progress](../progress/2026-11/2026-11-04-handoff-kvfork.md) · [HSF residency progress](../progress/2026-11/2026-11-04-handoff-heterogeneous-slot-fabric-residency.md) · [P3 r3 report](../docs/reports/kv-cache/kvu16h-p3-r3-result-20261104/report.md) · [KPF-26 review](../docs/reports/kv-cache/kpf26-code-on-r2-summary-20261104/rubric-review.md) · [I/O overlap audit](../docs/reports/kv-cache/kvu126-io-overlap-20261104.md) · [KPF-13.1 predeclaration](../progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md) · [KV program](../handoffs/active/kv-cache-program.md)
 
 ## KPF-64 cache reuse: 2026-11-02 operational comparison
 
@@ -72,427 +9,6 @@ The repaired-cohort F24 run completed 230 requests with 90.99% cached prompt tok
 
 Sources: [F24 coverage and aggregate](../artifacts/compute/rtg58-kpf64-f-20261102/), [FB72 partial comparison](../artifacts/compute/rtg58-kpf64-fb72-partial-20261102/PARTIAL_AGGREGATE.json), [F72 stop decision](../artifacts/engineering/rtg58-kpf64-f72-early-stop-20261102/EARLY_STOP_DECISION.json), [active handoff](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention).
 **Sources**: (+ sweep 2 sources, see its Source References; +5 on 2026-11-19, see the first Compiled Update) 56 documents (added 2026-10-03 wrap-up compile: kv-unified-stack-rollout KVU-15/15a/16/17, agentic-serving-harness-fixes UFH14-B2/B3, the prefill-share review, 2026-10-03 workspace-ec progress) (added 2026-09-24 wrap-up #4: see the top section\'s Source References) (44 prior: 3 deep-dives, 8 active handoffs, 2 completed handoffs, 25 intake entries, 3 progress logs, 2 upstream issue threads; +7 added 2026-09-24: the `kv-unified-stack-rollout` handoff, the `2026-09-24-main-ak-seat` progress log, the `-kvu` stack-change package, the stack-wide `-kvu` inventory, the serving-engine technique audit, the research `np_context_kvu_study_20260924` README, and `OPERATING_CONSTRAINTS.md`)
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **LRAgent multi-LoRA KV sharing** (intake-353#00) Splits KV cache into a shared base part and adapter-dependent part, with a Flash-LoRA-Attention kernel avoiding full materialization. Not applicable: EPYC serves no multi-LoRA agents.
-- **Unified Radix Cache** (intake-1182#record) One radix tree serves heterogeneous attention/state components in hybrid models via component voting, with per-component validity (full path-based, sliding-window needs a contiguous trailing window). Blog unchanged since ingest; relevant to prefix reuse for hybrid SSM models in llama.cpp.
-- **SGLang Rust tree-core cluster** (intake-1207#01) The ownership boundary is already merged as working Python; the PR's perf section reads "TBD", and the blog's 38%/42% are TTFT-minus-GPU-prefill residuals, not Python overhead. Filed as an expansion of a related entry.
-- **SGLang PR 36045 NVFP4 dequant workspace** (intake-1710#00) Alternative SM120 repair dequantizes committed packed-NVFP4 prefixes into an FP8 workspace with a fixed-grid Triton kernel, isolating padded graph requests via reserved slot 0 (intake-1710#01). NVIDIA-only; graph-replay isolation pattern.
-- **SGLang PR 36340 merged NVFP4 KV** (intake-1711#01) Merged SM100/SM103 native packed-NVFP4 KV with slot-major packed K/V read via a strided HND view and separate scale sidecars. Layout reference for packed-KV plus scale design.
-- **SGLang SM120 XQA decode corruption** (intake-1712#00) NVFP4 KV via TRT-LLM XQA was correct at batch 1 but corrupted concurrent decode (1/200 on 32-way GSM8K, 0.005 accuracy); disabling overlap did not help (intake-1712#01), and the fix PR reattributed the defect away from paged FP4 KV to Q contiguity. Lesson: test KV paths at concurrency, not batch 1.
-- **FlashInfer PR 4050 XQA contiguity** (intake-1719#00) Unmerged but reviewed fail-closed boundary: XQA indexes query/output as packed buffers ignoring strides, so non-contiguous inputs must be rejected; regression test is a mocked Python contract test only. Contiguity assertions are a cheap guard for attention kernels.
-- **SGLang PR 23354 NVFP4/MXFP4 KV prototype** (intake-1720#01) Superseded prototype whose "all arch" claim is false (requires SM120); salvageable idea is a three-part design of quant method, storage pool and backend view. Design pattern for KV quantization abstraction.
-- **SGLang FP4 KV roadmap** (intake-1721#00) Open issue 29913 tracks NVIDIA FP4-KV work but is stale as a ledger (PR 36340 merged 2026-09-18 yet unchecked; a checked seed PR closed unmerged). Do not read it as a release state.
-- **SGLang PR 36121 FP4 KV + HiCache guard** (intake-1729#00) Host-pool code transfers only packed K/V pointers and sizes capacity at full-width dtype bytes, with no FP4 scale-sidecar transfer; proposed guard rejects nvfp4/fp4_mx_block16 when HiCache or decode offload is active. Fail-fast for unsupported combos.
-- **SGLang issue 39429 fused fp4_mx_block16 writer** (intake-1730#01) Proposes one Triton kernel for quantize, pack and scatter replacing four indexed assignments; prototype tested on NVIDIA L20 with microbenchmarks in microseconds. Unmerged proposal, GPU-specific.
-- **SGLang PR 35237 GLM-5.2 DSA NVFP4 KV** (intake-1731#00) Canonical 416-byte key-cache row: 256 B packed E2M1 latent, 32 B block-16 E4M3 scales, 128 B BF16 RoPE; decode dequantizes in the FlashMLA producer with no full BF16 workspace. Layout reference for MLA KV quantization.
-- **SGLang PR 29304 closed SM12x NVFP4 KV** (intake-1732#01) Closed draft: native NVFP4 KV plus a Gemma-4 VO split (QK=512 into two V/O=256 passes); split-KV disabled for native FP4 after scale-block corruption on reused radix prefixes. Cautionary data on prefix reuse with block-scaled KV.
-- **CacheWise coding-agent traces** (intake-1844#00) Real Claude Code traces (~10M tokens) show coding-agent requests prefill-heavy (~21x prefill:decode vs chat) and tool-triggered; released traces are redacted, so no copy-rate statistic can be computed (correction overturned that hope). Informs prefix-cache priorities.
-- **llama.cpp issue 28495 unified-KV FA trim** (intake-1849#00) flash_attn_mask_to_KV_max trims only tail blocks and its launch gate (Q->ne[1] >= 1024 || Q->ne[3] > 1) never fires for unified-KV decode; prompt processing loses 27-54% with neighbours resident (-27.2% S_PP on gfx1201, intake-1849#01). Present in v10; correction overturned "decode unaffected". Directly relevant to HIP flash attention with -kvu on MI210.
-- **xLLM-Loop looped model release** (intake-1854#01) Companion code and 49 native BF16 safetensors checkpoints of looped Transformer/Huginn models; native loaders required rather than Transformers AutoModel. Not directly runnable in llama.cpp.
-
-## Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): `-kvu` batched decode is within 5% on the champion, `-b 512` on :8083 was already signed and serving, KPF-64.3 is redesigned, and RATIFY-CTXCKPT lands in root
-
-**Confidence: verified** (predeclared verdicts, signed receipts, the live launch record); the P3 B timing is **indicative**.
-
-- **KVU-19b-fold-c1-p3: WITHIN_5PCT.**
-  - Setup: 27B Q8_0, `llama-batched-bench` npl 4 / npp 16384 / ntg 64, champion store `dcc853b55-c3`, graphs ON, a fresh process per arm, ABAB.
-  - Mean S_TG: `-kvu` 55.93 vs `-no-kvu` 56.47 t/s, so **−0.94%** (pairs +0.39 / −2.27%). The v1 P3 on production v10 measured −15.23%.
-  - The `GGML_CUDA_FA_SEQ_ROWS=0` control is −15.9%, so the per-row skip is what closes the gap.
-  - This unblocks the kvu part of the v11 stack-change signature.
-- **KVU-16f was done, only unticked.**
-  - The 10-04 A/B measured `-b 512` at 3.5–4.2× decode while a neighbour prefills, KFD −3.1 GiB, and solo shallow TTFT +35%.
-  - STACKCHG-8083BATCH is signed, and :8083 has served `-b 512 -ub 512 --no-cache-idle-slots` since 10-07.
-  - The 10-21 triage looked in git rather than at the live launch record. Lesson: check the serving argv before re-running an A/B.
-  - Residue: the registry KQ-mask term (KVU-16f-1).
-- **KPF-64.3 redesign adopted.**
-  - Amendment 4: F/FB run now on q0, and F-FB is evaluated on its own.
-  - Amendment 5: EB, the no-cache arm that re-prefills 32k per turn, moves to 48 cores (q2+q3). Its corrected cost is ~18.5 h (17.5–23.8 h), against the ~26 h the 24-core partial projected; the first 90 requests were the short ones. It is booked from 10-26 03:30Z.
-  - A 48-core EB stays comparable on the predeclared metric, prefix-hit share from server token counts paired by session. Thread count enters it only through interleaving, and all 90 partial EB requests had `cache_n = 0`. Wall time is not compared.
-- **RATIFY-CTXCKPT-HYBRID-20261024 root receipt `b5934d982`.** `--ctx-checkpoints 32` is now declared on every hybrid serving role in all three repos. No reload is needed, because 32 is the default.
-
-Sources: [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-16f, KVU-16f-1, KVU-19b-fold-c1-p3) · [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-64.3, KPF-64.4) · [calendar plan 2026-10-25](../docs/reference/calendar-plan-2026-10-25.md) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): KPF-18 R4 reads FORK_PATH_SPECIFIC, the HPR-B holdout is INVALID_SIM_DISAGREES, KPF-64.3 EB is infeasible at quarter scale, and HSF-5.P G4 was a log filter
-
-**Confidence: verified** (predeclared run verdicts); the HPR-B and G4 mechanisms are **inferred** (accepted static audits, no replay).
-
-- **KPF-18-S1.R4: `FORK_PATH_SPECIFIC`.** The R3 confound (no cold arm at the child's own occupancy) is removed. Teacher-forced mean |dlogprob| over 256 positions: child vs child2 = 0.0 (256/256 exact, so the fork path is deterministic); child vs coldE (child's occupancy matched) 0.0322, vs coldA 0.0293, vs coldB 0.0299; cold-vs-cold 0.0275 (A|B), 0.0259 (A|E), 0.0315 (B|E). The predeclared rule (child-vs-coldE above every cold-vs-cold d) fires on a thin margin (0.0322 vs 0.0315), so the occupancy-only reading of item 3 is rejected. The run was valid (own-pid VRAM 49715 MiB, graphs ON, drained); item 3 stays open and a `do_slot_fork` plus shared-cell FA code read (KPF18-R4-FORK-CODEREAD-1) was delegated to Codex, which must reconcile with KPF-17.4c (layout explains 17.4b).
-- **HPR-B 64k holdout: `INVALID_SIM_DISAGREES`.** One cell (q36_35b dense ckpt 64k wave-0 `extend_1`) has simulator prompt_n 2818 vs log 2799 and cache_n 65314 vs 65333: the server reused 19 more tokens. The predeclared outcome is no decision, never re-graded; the box stays open. The accepted diagnosis (HPR-B-SIM-DISAGREE-1): the simulator keeps generated-output counts but not generated token IDs in its simulated slot prefix; 19 = 4 tokens past the selected checkpoint in the old prompt plus 15 retained generated tokens. The 8k wave-0 and 64k wave-1 cells agree, so a count-only extension would over-correct. Proposed fix: persist prompt and generated token IDs, carry the server's actual sequence across simulated requests, and take the LCP against it (retained boundary `n_total + generated - 1`); the regression needs token-ID fixtures from a new predeclared run, since current artifacts cannot supply the 15 IDs.
-- **KPF-64.3 EB/F/FB: infeasible at quarter scale.** s5-kpf64-ef was stopped at 16:17Z with arm E done and kept; arm EB (cache-ram 0, atomic, 32k re-prefill per turn) had done 90 of about 388 requests in 6h13m on one 24-core quarter (about 26 h projected against a 22:00Z hard end, and a stop would wipe an atomic arm). F/FB never started. Redesign needs a whole-host window or a reduced session set; KPF-64.3 stays unticked.
-- **HSF-5.P microbench: INCONCLUSIVE only on G4, a logging artifact.** G1 decode, G2 graphs-reused and G3 restore PASS; the save (tail_copies=874, replay_steps=6) and restore (device_bytes=298907648) lines are present, but the INFO enable line `HSF-5.P kv host mirror ON` is absent from `server.B.log`: the server ran at verbosity 3 and `common/log.cpp` maps that `LLAMA_LOG_INFO` to verbosity 4. AMENDMENT-G4-log-capture (instrument-only) adds `--log-verbosity 4` to every arm and requires G1 to be evaluated with all arms at verbosity 4, preserving symmetry; extra logging cannot be proven zero-overhead, so the rerun is a separate measurement. The 15:44Z INCONCLUSIVE stands; the GPU rerun is booked after v11-086-cpu.
-
-Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-18-S1.R4, HPR-B, KPF-64.3) · [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) (HSF-5.P) · [backlog-audits checkpoint](../docs/reference/backlog-audits-2026-10-24-checkpoint.md) (HPR-B-SIM-DISAGREE-1, HSF-5P-G4-LOG-1) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): KPF-17.4c finds no reproducible restore defect, 13.1b is a near-tie artifact, KPF-18.0b closes, and the HSF-5.P build gate holds
-
-**Confidence: verified** (run verdicts and predeclared rules in the cited sources); the fork-fix reading is **inferred** until KPF-17.4d.
-
-- **KPF-17.4c: `none_reproduced`, `control_layout_numerics` 4/4.** The layout-matched bisect does not reproduce the c1 divergence, so KV cell layout explains KPF-17.4b's apparent `target_restore_defect`. The CPU legs of KPF-17.4 and KPF-19.1a PASS (honest 6/6, flag_on 3/3, `mut_no_transfer` detected 3/3), but both boxes stay open on the GPU FAIL and the CH-18 build.
-- **KPF-13.1 reconciliation: the 13.1b failures are near-ties.** All 10 failing runs sit inside the 0.031567 band, repeat exactly, and the controls are token-identical. The rules-v4 spec-off judge has no near-tie clause; that is a rule finding and the recorded verdict stands. The fork-fix-build premise is withdrawn: no fix is built until the new KPF-17.4d (a predeclared near-tie- and layout-aware re-judge) decides.
-- **KPF-18.0b closed (`G3_EXACT`).** Group 3 (T = 16384) is bit-identical 4/4 with tokens 4/4; combined groups 0-3 are bit-identical 15/16, tokens 16/16 (grade OBSERVATION). The one g1 / suffix 2 miss has equal tokens and differing top-k probs and goes to KPF-18.0e as CPU input.
-- **KPF-18.0d item 3 group 3 v3: `TARGET_SIDE`.** The token-1 flip (2.13 nats, 3/3) survives graphs OFF and the child's drafter request-off, so it is not HIP-graph reuse or the first verify batch. Item 3 stays not closed; a layout-matched control at T = 32000 is filed, with the caveat that 17.4c's drift is 1e-4-scale and may not explain a 2.13-nat flip.
-- **HSF-5.P build gate verified from logs and binaries, with a negative control.** B0 (`test-kv-host-mirror`) passes CPU-only; B1 finds the three gate strings in the built libs, while the C3 control image has none of them and does have the control string, so the gate can fail. Linkage verified. The microbench with its G1-G4 gates has not run, so the box stays open.
-
-Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-17.4c, 13.1 reconciliation, 18.0b, 18.0d) · [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) (HSF-5.P) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): the DFlash2 restore defect is target-side, the 60k fork deviation is fork-specific, chunk-KV G0 is bit-identical, and the host KV mirror trigger fires
-
-**Confidence: verified** (run records and predeclared rules in the cited sources).
-
-- **KPF-13.1b is decision grade: `target_restore_defect`.** The drafter-on resume ended rc 0 at 08:07Z; rules v4 give `kpf13_1b_locus = target_restore_defect`, with failing spec-off arms g0-S2:B, g1-S2:B, g2-S2:B, g3-S1:B, g3-S2:A (spec-off A 5/6, B 2/6 PASS, no drafter loaded). The drafter-on acceptance drop is therefore confounded by the target-side defect and does not fire the upstream #30141 trigger. [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
-- **KPF-17.4b's `target_restore_defect` reading is confounded by KV cell layout.** Its control C was seeded while the 14336-cell source was resident, so C's cells sit at index 14336+ while the fork X attends cells 0..c-1 written on an empty cache; X differs from C from token 0 (1e-4 to 3e-4) while C1 == C2 == C3 bit for bit. `kpf17-4c-bisect` (rules v1, prepared not run) adds layout-matched arms (Xc~Cmask, Xe~C0, Ks~C0), each judged by exact bit identity; it refuses until KPF-13.1b is decision grade (met 08:06Z).
-- **KPF-18-S1.R3: item 3 stays `NOT_SATISFIED` at 60k, fork-specific.** Worst child-vs-cold 0.029879 against a six-pair floor of 0.027456 (ratio 1.088); the six cold pairs held only two distinct values (the cold spread depends on resident-sequence count, not the slot); child-vs-prompt-cache-hit 0.030706 is outside the floor. The follow-up is **KPF-18-S1.R4** (localise the deviation). Item 2 cell g3.s2 reads `G3S2_WITHIN_PLACEMENT_FLOOR` (three Q repeats; the one-sample prefix floor of 24 was unrepresentative), so item 2 is placement numerics at all 6 judged cells. The item-3 group-3 v2 test read `FORK_EFFECT`; a v3 launcher (graphs ON / graphs OFF / child `speculative.n_max 0`, 3 loads each) is prepared.
-- **KPF-62 chunk-KV reuse: code landed, G0 bit-identical.** `experimental/kpf62-456-20261024` adds `llama_chunk_kv_decode_at` (sparse recompute that fills a position hole; attention-only, refuses otherwise), a shared `server-chunk-recompute.h`, server `--chunk-store-mib` / `--chunk-max-tokens` and a `kv_chunks` request field (off = champion path), and the G3 harness (`test-chunk-kv-g3`, `g3_gate.py`). ctx_dft, MTP, DFlash and quantized-K are startup refusals in v1. The branch was re-pinned to `786a30078` after a stale-build check grepped the thin `llama-server` launcher instead of `libllama-common`; the build passed and the on-role G0 gate then PASSED bit-identical (G0a / G0a-al / G0a-inj). G3 rows wait on a frozen corpus manifest (KPF-60, P0 thresholds section 8 TBD). Manifest row V11-105. [progress](../progress/2026-10/2026-10-24-3c4ca599.md)
-- **KVU-12.3 closes NOT-NEEDED on quiet traffic only.** Only 5 resumed turns fell at >= 3 busy slots, so the predeclared fallback pooled all concurrencies (1,235 resumed turns; 4.52% against the 5% bar). KVU-12.3b re-checks on the busy subset once >= 100 such turns exist on :8083 (stack down since 10-23). [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
-- **Host-pinned KV mirror (HSF-5): the DI-140 trigger FIRES.** Worst-case KV-tail write-through costs 0.44% of a spec-ON step and 1.01% of a spec-OFF step (128 serialized copies), 0.014% as one staged copy; the 149.6 MiB recurrent state fits the 3% budget only as a checkpoint every 6 (ON) / 13 (OFF) steps. It removes 130 / 218 / 395 ms (tmpfs), 250 / 417 / 753 ms (disk) or 105 / 155 / 184 ms (`--cache-ram`) per handover at 8k / 16k / 32k, using graphs-ON rates (HSF-4.G: the KPF-18-S1.7g rule found 4 of 21 cells graphs-sensitive, so HSF-4/5 re-quote only the graphs-ON run). A copy inside the captured HIP graph breaks reuse; graph-safe is a side-stream copy after the step event. Handover frequency is unknown (HSF-3.1), so value is bounded at 0.1-0.75 s per handover. Prototype HSF-5.P (`experimental/hsf-5p-host-kv-mirror-20261024` @ `14d0f7fa2`, `--kv-host-mirror`, default off) is code-complete but not compiled. Per intake-2126#record and intake-2140#record. [hsf-5](../docs/design/hsf-5-host-kv-mirror-costing-20261024.md), [hsf-4](../docs/design/hsf-4-results-20261023.md), [HSF residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency)
-
-Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [hsf-5 costing](../docs/design/hsf-5-host-kv-mirror-costing-20261024.md), [hsf-4 results](../docs/design/hsf-4-results-20261023.md), [llama-v11-manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the KPF-18 CPU re-runs and graphs-ON step 7 land, KVU-12.3 closes NOT NEEDED, and hybrids get a declared checkpoint count
-
-**Confidence: verified** (run records and predeclared rules in the cited handoffs); the CPU re-runs are OBSERVATION grade at 8 pairs and 128 tokens, below the gate's 32 pairs and 256 tokens.
-
-- **KPF-18.0b CPU re-runs (items 1, 2, 5; fixed runner `d4633648…`, 2026-10-20).** Item 5 holds on both cache-idle settings: pool used equals private plus shared 22/22, `pool_used_eq_expected` 14/14 (it was 12/14 on the buggy runner), continuation bit-identical 2/2. Item 1 (MTP on): the fork was taken at n_fork == T in 8 of 8 and top-1, max-abs and greedy prefix match the fresh-vs-fresh control, but KLD max is 0.1045 against 0.0840; that figure is exactly the reverse-direction KL of the control's own pair, and the fork is bit-identical to fresh-B in 8 of 8. The MTP-off arm is a cache restore (`n_fork_tokens` 0), not a trunk fork. Item 2 is bit-identical in 11 of 12 pairs (tokens 12/12) on a partial record; the miss is group 1 / suffix 2 (equal token ids, different top-k probs, 213 vs 210 MTP drafts). "Item 2, rest" is filed as one CPU-quarter inference job.
-- **KPF-18.0b.2 answers NO.** `fork_off` polls carry no `kv_cells_*` key in 0 of 73 polls (fork_on 43/43), by construction: the fork tree gates the cell scan and every `llamacpp:kv_cells_*` gauge on the fork being enabled.
-- **KPF-18.0d item 3 v2 (same-shape control, GPU 27B): verdict `FORK_EFFECT`, 3/3 valid loads.** The child is a fork-effect candidate 3/3 (first divergence at token 1, nofork top-2 margin 2.13 nats), source arms identical 3/3. This does not settle R3 (18.3 part 4): coldC/coldD, the prompt-cache `sameshape` arm and the item-2 g3 repeats are unrun.
-- **KPF-18-S1.7g: step 7 with graphs ON is `graphs-sensitive` in 4 of 21 (L, mode) cells** (cache_baseline at 8000 and 16000; disk_restore_cold and cache_load at 32000). HSF-4/5 must quote the graphs-ON rates (HSF-4.G filed). The difference is attributed jointly to graphs ON, the HSA knob and the fresh-load / step-7-only history, never to HIP graphs alone.
-- **KVU-12.3a closes KVU-12.3 NOT NEEDED.** Rule predeclared before reading: re-prefill caused by divergence inside the previously generated span must reach 5 % of processed prompt tokens at >= 3 busy slots (fallback to all concurrencies when fewer than 10 such turns). On the :8083 log, 1083 of 1235 resumed turns extend exactly (87.7 %), 152 diverge in the generated span; with only 5 turns at >= 3 busy the fallback applies and R = 4.52 % < 5 %. Caveat: the cost sits at 1 busy slot (4.9-6.9 %), where A7 step 1 (render-side root cause) is the cheaper lever. KVU-21's trigger also closes on a refresh: median recompute 0.015 (1 busy), 0.014 (2), 0.065 (>= 3, n = 43).
-- **Hybrid checkpoint count is now declared in the registry.** RATIFY-CTXCKPT-HYBRID-20261024 puts `ctx_checkpoints: 32` on frontdoor, architect_critic and architect_general; the compiler emits and attests `--ctx-checkpoints 32` for the five hybrid targets, every other argv byte-identical (32 is the default, so no reload).
-- **KVU-16g-2 package component drafted, not deployed:** the decode-aware prefill budget flags for :8083 (see [hardware-optimization](hardware-optimization.md)). A KVU-12.1b 64k holdout (dense vs coarse, ~7.3 h, one CPU quarter) is prepared, not run.
-
-Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [qwen38-27b-replace-qwen36](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md), [prefill-budget package](../docs/design/prefill-budget-8083-stack-change-package.md).
-## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-f8 delta): the slot-fabric source rates must come from the graphs-ON run
-
-- **KPF-18-S1.7g came out `graphs-sensitive`** (4 of 21 length-by-mode cells), so the HSF-4/5 source-rate sub-term must be re-quoted from the graphs-ON step-7 run, all numbers from that run. The difference is attributable to graphs ON, the knob and the fresh-load history jointly, not to HIP graphs alone.
-- **Graphs-disabled restore rates stay labelled as such.** tmpfs restore 8.26 / 9.27 / 6.15 GB/s and cold-disk restore 4.12 / 4.10 / 3.06 GB/s at 8k / 16k / 32k, and the earlier judgement that copies sit inside the 3-rep spread is retired (box HSF-4.G).
-- **Not yet judgeable:** the session-keyed dispatch probe still has 0 records with a session key (108 ever), so the fabric dispatch claim waits on live traffic from the restarted API.
-
-Sources: [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 20, 3c4ca599): KPF-64 ran 8/8 arms (checkpoints are load-bearing on hybrids; the RAM tier added nothing at np=4), and INF-42 G1 shows no recall drop to 128K
-
-**Confidence: verified** (run records in the cited handoffs).
-
-- **KPF-64 result.** Frontdoor Qwen3.6-35B-A3B-MTP Q8_0 (hybrid qwen35moe), CPU, np=4, v10 store binary, 19 paired sessions / 388 requests, ideal prefix-hit bound 93.88-93.89% on every arm. Arm A (`--ctx-checkpoints 0 --cache-ram 0`) realised 90.17% / 89.28% (gap 3.71 / 4.61 pp, about 3.6-3.9k uncached tok/req); B, C, D (32 checkpoints, cache-ram 0 / 2048 / 32768) all realised 93.54% (gap 0.35 pp, about 2347 uncached tok/req), replicated across both passes. Predeclared verdict: checkpointing is the whole effect, and the `--cache-ram` tier adds nothing measurable at np=4. ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), KPF-64)
-- **Follow-ups (KPF-64.2/.4/.5).** Pairwise contrasts among B/C/D are null; the pooled checkpoint effect is about -3.9 pp. The 0.35 pp residual is an ideal-estimate artifact. Policy: `--ctx-checkpoints 0` must never be set on a hybrid role; no frontdoor change (it already runs 32 checkpoints + cache-ram 32768). Whether the RAM tier matters above 4 lineages is untested (KPF-64.3, E/F arms, armed). Fan-out was not exercised (child share 0%). ([progress 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md))
-- **INF-42 G1 closed.** q8_0 KV on the frontdoor: 100% needle recall (50/50) at 4K, 32K, 64K and 128K at every depth, 9/9 at 256K; f16 control 100% at 4K and 128K, so q8_0 KV costs nothing on this probe. It is a ceiling result: it rules out collapse-scale amnesia but cannot rank configs or bound subtler loss. ([multiscreen-attention-evaluation](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation), G1)
-
-## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-f8): acceptance intervals from in-run spread, the 27B's SWA cache is the drafter's, and what an idle-cleared slot restores
-
-**Confidence: verified** for the rules, re-judge counts and the oracle history (handoff records, the queue job 24 record). The idle-slot findings are **inferred** (code reading at `49550eda5`, no run yet).
-
-- **KPF-13.1 rules v3: take the acceptance interval from the control's own spread.** Rules v2 took the interval from a single same-shape control, which gives zero width (for example draft_n in [83,83]). All 7 v2 failures were acceptance-only and off by 1-4 draft tokens. Rules v3 run K=3 same-shape controls per arm and accept within (min - spread, max + spread), with the rules hash recorded.
-  - Re-judged offline, the v2 cells pass A 12/12 and B 12/12. They are still not decision-grade, because v2 had only 2 controls per arm.
-  - Two runs are armed: a DFlash2 arm on the 27B GPU fork image, and a plain-MTP CPU arm that adds the `skip` launch needed to decide KPF-13.1a ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
-- **KPF-17.4: the "SWA range fix" blocker was stale, and the real gap was elsewhere.** The 2026-10-20 failures were oracle defects, fixed by `f3a3bb4b1` and verified by queue job 24.
-  - On Qwen3.8-27B + DFlash2, the target is hybrid with n_swa 0. The SWA cache is the **drafter's** (`sliding_window` 2048 on all 5 layers, 8704 cells), so neither existing test could see it.
-  - A new driver (`kpf174_swa_drafter.py`) forks at junctions 2148, 4096 and 10240 on a 14336-token source, so the drafter window has been overwritten. It judges the drafter behaviourally in four launches: honest, `mut_partial_noop`, `flag_on` and `mut_no_transfer`. Both mutants must be DETECTED.
-- **KPF-18-S1 remainder: re-predeclare when the rule's basis abstains.** 18.3 part 4 abstained because the three runs disagreed at token 1, leaving a common greedy prefix of 0. It is re-predeclared as a teacher-forced d() over the S1 cold-A sequence.
-  - Item 2 is re-judged against a placement-varied control (the source restored onto another slot through the prompt-cache path), not the zero A/A floor. That floor measures run-to-run determinism, not placement.
-- **What an idle-cleared slot restores (code reading at `49550eda5`; check before quoting).**
-  1. An explicit `id_slot` on a slot that cache-idle-slots cleared skips the RAM restore: `f_keep` = 0/0 = NaN, so the `< 0.5` test is false, `prompt_load` never runs, and the turn re-prefills from zero. Only `id_slot=-1` LRU selection restores.
-  2. "Explicit id_slot reuse overwrites the victim without saving it" is wrong at the default `slot_prompt_similarity 0.1`: the victim is saved first. It holds only with `--slot-prompt-similarity 0`.
-  3. With the pool full and idle contexts resident (OFF arm), `try_clear_idle_slots` purges idle slots with no RAM save, so the dropped conversation's next turn is a cold prefill.
-
-  UFH14-LB7 is armed to attribute the 43.5 s pre-prefill stall from `-lv 4` TRACE lines. Its predeclared verdicts are OWNER, SHARED, UNATTRIBUTED, NOT_REPRODUCED and INSTRUMENT_FAIL ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), UFH14-B4j.1).
-
-- **KPF-LB1.1: the orchestrator's rebuilt-prompt /completion path keeps most of its prefix cache, so no `message_delimiters` flag.** A 12-turn REPL transcript was self-captured on a private 27B server (`coder_escalation`, orch `f3ab78b2`) and replayed on both lanes on a restarted server. /completion turns 2+ had a median hit of **0.818** (token-weighted 0.814), against **0.951** (0.953) for chat with `message_delimiters`; 0 of 11 turns fell below 10% on either lane. The predeclared trigger (/completion re-prefilling below 10% while chat does not) did not fire, so the verdict is NO_CHANGE. The roughly 13-point gap is recorded, not acted on. One transcript and one role, graphs disabled (GPU-LEAK-1 mitigation) ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) KPF-LB1.1).
-
-### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
-
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-13.1 rules v3, KPF-13.1a, KPF-17.4, KPF-18-S1 remainder, KPF-LB1.1 verdict)
-- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB7, B4j findings, UFH14-B4j.1)
-- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (SPEC-GRAM.1 part 2 armed on the MTP lane)
-- [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
-
----
-## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): always-F32 FA accumulation costs nothing on the architect's CPU decode
-
-**Confidence: verified** (predeclared rule plus Amendment 2, 3/3 valid ABBAAB pairs, every row checked not hardened).
-
-- **KVU-LB1.b run 2: NO_COST.** On the champion store image `49550eda5` (build 10411), Q38FN architect recipe, 96 threads, the median decode effect of F32 vs F16 VKQ accumulation was N1@8k +1.38%, N5@8k +0.86%, N1@32k +1.05%, N5@32k +14.1% (one noisy pair); no cell reached the -1% cost threshold.
-- **Why prefill is not at stake.** `GGML_FA_VKQ_*` only acts in the per-row chunk kernel that serves N<64 query rows (decode, short verify, split-KV). The tiled path used by every 512-token ubatch always accumulates in FP32. The report-only prefill probe agreed (+1.8% / -0.1%).
-- **Consequence.** Always-F32 removes the FP16 V-accumulator overflow risk (KVU-LB1.a) at no measured decode cost. KVU-LB1.d adopts it: choose the carrier (recipe env per CPU role, or a compiled default through the fold ledger), and check the frontdoor and worker CPU shapes with the same guarded harness before flipping a global default ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
-- Run 1 of the same A/B was discarded: its F32 arm ran the hardened llama-bench protocol unasked (see benchmark-methodology).
-
-### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
-
-- [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-LB1.b run 1 and run 2, KVU-LB1.d)
-- [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) (the llama-bench defect behind run 1)
-- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
-
-
-## Compiled Update — 2026-10-23 (wrap-up sweep 17, workspace-f8): coarse checkpoints replace dense at 32k (on a wide spread), and the KPF-26 outcome clause keeps
-
-**Confidence: verified** for the verdicts (VERDICT.json / summary files named in the handoffs). **Observation grade** for what the verdicts imply about production: each one rests on a single predeclared run.
-
-- **KVU-12.1b: coarse REPLACES_DENSE at 32k, against the predicted DENSE_STAYS.** Coarse checkpointing (`--checkpoint-min-step 16384`) keeps 534.05 vs 735.05 MiB per sequence (-27.34%). Its prompt_n stays within the dense wave spread on all four probes. This supersedes, for the coarse grid only, sweep 10's "KVU-12.1 reads DENSE_STAYS" below ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
-  - **Do not oversell it.** On edit_back_8192 coarse re-prefills +5,908 tokens more than dense (~52% more). It passes only because the dense wave-to-wave spread on that probe is itself 6,644 tokens, and the rule is spread-relative. More waves could flip it. Coarse also gains 3,970 tokens on edit_back_16384.
-  - **Scope.** The verdict covers the 32k holdout only. At 8k coarse ties dense, because the conversation is shorter than the 16k step. 64k and 128k are unmeasured.
-  - **Next.** HYBRID-PREFIX-REUSE (b) is re-opened: a 64k holdout of dense vs coarse with more waves, so the dense spread is measured rather than assumed. Production keeps `--ctx-checkpoints 32 --checkpoint-min-step 8192` until then.
-- **KPF-26.1d/e (another session's runs): both v2 windows are WITHIN_SPREAD, so the outcome clause reads KEEP_ON_ELIGIBLE.** Each window ran 144 cases with all gates passing. Window 1: pass A 0.951 / B 0.979, drop -0.028. Window 2: A 0.951 / B 0.958, drop -0.007. Enabling still waits on KPF-26.1g (the terse-share check) and the KPF-26 timing clause ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
-
-### Source References (2026-10-23 wrap-up sweep 17)
-
-- [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-12.1b, HYBRID-PREFIX-REUSE (b))
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-26.1d, KPF-26.1e)
-- [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
-
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): upstream #28576 is carried by the pull; the GPU VKQ half-staging question is open (V11-FA-8)
-
-- V11-FA-7 decided: upstream #28576 (fp32 VKQ accumulation on MFMA, V11-050) is carried by the v11 pull because `bfdc32183` is an ancestor of upstream master `11fe02151`; presence gate G-ANC. It is perf-only on MMA-routed MFMA shapes and overflow-neutral: opnan arms with and without it fail the same 6/228 cases, and it does not touch the ROCWMMA-ON champion route ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
-- CPU-FA-VKQ-4 closed with a corrected premise: upstream has not fixed the GPU analog (the unnormalized VKQ partial is still staged as half before the row-sum division); the CPU defect is upstream issue 29774 / PR 29810, where KVU-LB1.a posted the reduced repro and accumulator peaks.
-- V11-FA-8 (open): measure per-layer peak abs(V) and unnormalized row sums on the 27B (8k repetitive and 57k contexts) and file upstream only if a value is non-finite or exceeds FP16 range. Candidate FA gates compare the non-finite case set against the incumbent rather than demanding 0/228 on the bias1024 stress.
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): KVU-12.1 reads DENSE_STAYS, the fork flip is numerics not a defect, and CME-7 missed its cache gate on client layout
-
-**Confidence: verified** for the recorded KVU-12.1, KPF-18-S1 and CME-7 numbers (run artifacts and server logs, read offline) and for the driver fixes (tests, no server); **inferred** for the CME-7 checkpoint mechanism (INFO-level log, read from cached-token arithmetic plus source) and for every prediction not yet re-run.
-
-- **KVU-12.1 checkpoint-policy arms: DENSE_STAYS for every alternate arm.** Qwen3.6-35B-A3B-MTP Q8_0, one CPU quarter, fork binary, `decide` selection null. Keep `--ctx-checkpoints 32 --checkpoint-min-step 8192`. The 8k conversation (~8.2k tokens) is shorter than every min-step of 8k or more, so dense, coarse, fixed_s8k_c8 and fixed_s16k_c8 place identical checkpoints (296 / 231 MiB for w0 / w1) and fail the bytes rule by tying; fixed_s4k_c8 costs +27.8% bytes and halves edit_back_4096 `prompt_n` (5,176 vs 10,331). 8k therefore does not discriminate.
-- **tail_junction fails on substance at 32k.** On the clean w0 pair it saves 40% bytes (460 vs 763 MiB, 4 vs 7 states) but edit_back_8192 / edit_back_16384 fully re-prefill: `prompt_n` 37,976 / 37,989 vs dense 9,200 / 18,766, TTFT 620 / 651 s vs 291 / 520 s (indicative). Junction-only placement loses every resume deeper than the last user message. Only the coarse grid is unmeasured at 32k (KVU-12.1b, 2.2 h, ~45 GiB, launcher armed, not run); the prediction stated before the run is that coarse restores near ~17k, `prompt_n` about 21k vs 9.2k, so it fails and DENSE_STAYS holds.
-- **The simulator was NOT validated, and the launcher did not check.** `sim_matches_log=false` in 16/16 cells (12/12 at 8k); phase 2 started on phase-1 rc 0 alone. Causes were in the driver: estimated rather than rendered user-start offsets (sim 31,064 vs log 28,930 at 32k), the first user start dropped (the server's empty-set checkpoint sits at 154), an n_ubatch checkpoint 4 tokens off, and a wave-1 artifact (w1 inherits the w0 checkpoint at 154 on the warm server, so every w1 row under-reports count by 1 and bytes by ~63 MiB). The two 32k w1 ERRORS were a driver bug, not a server fault: `fit_conversation` overshot its target (38,868 vs 32,688 tokens) and `extend_1` overflowed `-c 40960` (HTTP 400), which also explains tail_junction's 3,233 s wall.
-- **KVU-12.1a driver fixes landed (research `f7b647705`, not pushed).** Fit refuses loudly (`REFUSED_FIT`), `-c` is sized per cell with a pre-request `REFUSED_CTX`, an exact `ServerSim` runs on rendered token ids, each ckpt cell gets a fresh server, and `run` refuses (rc 8, `REFUSED_SIM_GATE`) while an earlier cell lacks exact agreement. Offline re-check of the recorded run: wave 0 went from 0/8 cells to 8/8 cells and 34/34 requests exact (prompt_n, cache_n, positions, count, bytes); wave 1 still differs only by the inherited checkpoint. 86 tests pass.
-- **KPF-18-S1: the fork flip at token 161 is read as batch-shape/placement numerics (OBSERVATION grade, not a verdict).** Predeclared item-3 rule NOT satisfied, `aa_diverges_earlier`: the no-fork A/A pair itself diverges at token 114 (margins 1.10 / 0.87) while the fork-vs-nofork flip at 161 sits at a 0.167-nat near-tie, 0.010 nats above the 0.157 A/A noise. The fork arm differs from nofork in exactly the dimension the A/A does not vary (shared vs private trunk cells, child resuming at a different time: child TTFT 12.0 s fork vs 14.6 s nofork), so the nofork arms are not a same-shape control; on deterministic CPU, KPF-17.2(3) is byte-identical. A v2 same-shape control (three arms, n >= 3 fresh loads) is filed and armed, not run.
-- **KPF-18-S1 per-item counts.** Item 2 (A/A-floor oracle) 0/12 OK: the zero floor is run-to-run determinism with placement fixed, not the placement floor, so it needs a placement-varied control. 18.1 rules met (A 3/3 n_fork == T; A_tailonly recorded 3/3 at 8000, probably an arm-order confound); 18.2 cold and policy controls met (junction-only = dense = 8508); 18.3 part 1 chunk-split cost -0.25% / -0.08%, inside noise; 18.3 part 4 ABSTAINED (common greedy prefix 0 < 16). Steps 6 (KPF-19.1a) and 7 (HSF-4/5) did not run.
-- **KPF-26.1 outcome runner exists now.** The "runner not located" blocker was wrong: nothing existed, so it was written (orchestrator `c6f58498`, pushed, not merged; 18 fake-endpoint tests). It renders every delegate-wave step with the real `_build_step_prompt`, flags off (arm A) vs shared-first (arm B) plus a flag-off rerun (A2) as the spread; verdict UNCHANGED / WITHIN_SPREAD / CHANGED / INVALID. KEEP_ON_ELIGIBLE needs both windows (seeds 261, 262) UNCHANGED or WITHIN_SPREAD; no window has run. Trunk-prefilled-once timings, child TTFT and admission waits stay in KPF-26.
-- **KPF-LB1: on the 27B chat path one turn in five to four re-prefills from near zero at turns 2-3.** From opencode step records (token-weighted hit): qwen-gpu (Qwen3.8-27B) turn 1 0.032 (n=162, 85% cold), turn 2 0.696 with 19.8% of steps below 10% cache, turn 3 0.784 (24.7% cold), turns 4-5 0.878, 6-10 0.934, 11-20 0.948; qwen-local (Flash-Next) turn 2 0.976, 0% cold from turn 2. The /completion x turn cell is NOT measurable from retained logs (`serving_calls` has no session or turn key; 8 `/completion` rows), so the `message_delimiters` flag is not added. KPF-LB1.1 (replay one captured 12-turn REPL transcript through /completion and chat, ~25 min on :8083) is armed; its capture fixes landed (orchestrator `cdbca26b`).
-- **CME-7 poker smoke missed the prefix-cache gate: 0.7948 vs 0.95 (103,933 cached / 130,762 reusable), mostly client layout.** Of 26,829 re-prefilled reusable tokens: 52.4% (14,058) the schema instruction was attached only to the OUTGOING last user message, so the previous user message changed at its tail; 41.1% (11,028) previous-call generated tokens that the CME-5 rule counts as reusable but a hybrid server never reuses (accounting); 6.5% (1,743) parse-retry history rewind; slot misrouting 0, so pinning slots would gain nothing here. For every one of 38 steady-state calls `cached = previous_input - (380..460)`, i.e. exactly one user message re-prefilled.
-- **Mechanism and gate amendment.** For a recurrent model the slot resumes only from a context checkpoint (last user-message start and prompt end - 4); the LCP ended inside the previous user message, so the end-4 checkpoint was rejected and the user-message-start one used (inferred; CME-7S reruns at `-lv 4`). The 0.95 bar stands but the CME-5 denominator is unreachable (about 0.91 even with perfect layout), so the gate basis was amended before any rerun to `prompt_prefix`: recorded smoke 0.868, projected about 0.99 after the layout fix (research `08ace05fd`, instruction stored once in the user message). Confirmation needs CME-7S.
-- **CPU-FA-VKQ-3 moved to the top of its queue.** Production v10 has no fix for the dense F16 MTP head's overflow-prone accumulation and the architect declares 262144 context, so the > 64k MTP acceptance check (`GGML_FA_VKQ_F16=1` vs default) is now first. Evidence was also posted upstream (llama.cpp PR #29810): non-finite only for n_q < 64 once n_kv*bias > 65504, F16-accumulator sub-overflow error 0.297 vs 4.1e-5 in F32, fused-F32 op-time parity on Zen 5, real-model peak 237.6 with a 2048-cell window.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-12.1 verdict, KVU-12.1a driver fixes, CPU-FA-VKQ-3, KVU-LB1.a upstream post
-- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — KPF-18-S1 counts and item-3 reading, KPF-26.1 runner, KPF-LB1 turn table, KPF-LB1.1 spec
-- [progress/2026-10/2026-10-22-cme7-cache-miss.md](../progress/2026-10/2026-10-22-cme7-cache-miss.md) — CME-7 miss decomposition, checkpoint mechanism, gate amendment
-- [progress/2026-10/2026-10-22-kpf261-runner.md](../progress/2026-10/2026-10-22-kpf261-runner.md) — KPF-26.1 runner design and rule
-- [handoffs/active/conversational-memory-eval-instrument.md](../handoffs/completed/conversational-memory-eval-instrument.md) — CME-7R/7S/7T task text and the cache finding
-- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — KVU-12.1 / KPF-18-S1 verdict analysis
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 9): KPF-64 is slow because of decode contention, not thinking, and it keeps the live design
-
-**Confidence: verified** for the decode rates and the per-arm times (server logs and harness tests); **inferred** for the 4-night total, which depends on windows.
-
-- **Mis-diagnosis corrected.** The first explanation for the slow replay was thinking-on. The logs say otherwise: on raw `/completion` (no chat template) `predicted_n` averaged 119 against a 128 cap, and decode ran at 0.80 tok/s per slot because it competes with the other three slots' prefill, while prefill alone ran about 200 tok/s aggregate.
-- **Outputs are not skippable.** In `--history live` the model's reply is stored, re-sent in later prompts and defines the ideal bound, so an `n_predict 1` shortcut would change what is measured. Research `b93017dc9` caps live generation at the recorded reply length (-17% decode tokens), fixes the `--history reference` bound (`slot_holds_output=False`) and keeps the endpoint on raw `/completion` on purpose (a chat template tail would force a rollback per request).
-- **Time per full arm (24 threads).** Live about 20.7 ks (A) and 14.7 ks (D); the jobs' per-arm minimum windows are 23,800 s (A, B, C) and 16,900 s (D); the reference variant would take 11,500 and 8,100 s. A 2 h 50 min window cannot finish a live arm.
-- **Operator decision (2026-10-22).** Keep the LIVE design with night windows: one atomic arm per quarter-night of at least 6.6 h, 8 arms, about 4 nights. The reference-history variant stays a declined alternative on record. Partial arms pass1-A (196/400) and pass2-D (260/400) are voided (PREDECLARED Amendment 2).
-
-### Source References (2026-10-22 wrap-up sweep 9)
-
-- [progress/2026-10/2026-10-22-kpf64-decode-fix.md](../progress/2026-10/2026-10-22-kpf64-decode-fix.md)
-- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
-- [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): the fork is cleared of the 1-token divergence, the G1 reference was the defect, and unified-vs-split np4 reads NO_DIFFERENCE (weakly)
-
-**Confidence: verified** for the named run records and logs; **inferred** for the filed Locals+Beacon tasks; the KVU-12.4 verdict is PROPOSED-until-ratified and weak, and the np8 pair is CONFOUNDED (no verdict).
-
-- **KPF-13.1 closed in the fork's favour.** The 1-token-suffix divergence is CPU batch-shape numerics (a 1-token ubatch takes vec_dot, not GEMM), not a fork defect; kpf13-v2 shows the fork token-identical to a cache hit 24/24. The same batch-shape drift explains SPEC-RNG.1.1: np1==np4 identity failed 7/8 and 6/8 with a stateful control drifting identically, so the RNG is not the cause.
-- **kvu12-2: an MTP drafter-state bank fixes a roughly 20% decode loss on restore** (f8, ran inside f8-day-q0).
-- **KPF-18 item 3 (fork vs no-fork, G1 repeats, six records).** Token-identical 17/21 vs A/A 20/21, minimum greedy prefix 43 for both. Fork divergences: group 0 at token 43 (once) and group 3 at token 161 in 3 of 3 passes, while group 3 A/A pairs were identical 3 of 3. Observation grade; KPF-18.0d item 3 group 3 is filed to read the top-2 margin at 161 (a near-tie means not a fork effect).
-- **KPF-62.8 chunk-KV real-role G1 (Qwen3-VL-30B-A3B Q4_K_M, f32 K/V): the pre-registered reference was the defect.** First run failed 9 checks (K NMSE 1.4e-3 to 1.8e-3, V 6.4e-3 to 7.8e-3, logits 5.4e-3 to 8.7e-3 at deltas 1/17/300) although injected V was bit-identical to source; the drift is ulp-level RoPE rounding amplified by q8 re-quantization and router top-k flips across 48 layers. Fix @ `357f3117f` adds G1a (inject vs in-tree `seq_add`, bit-identical K, V, logits); re-run PASS at all three deltas, and the in-tree shift shows identical drift against the in-place reference. Operator-visible caveat: the criterion was changed after data existed and is recorded as an amendment (KPF-62.9 ruled option A); in-place drift is now an ungated translation-drift figure under the G3 budget.
-- **KVU-12.4 np4 L64k ABA: NO_DIFFERENCE, weak.** Unified vs split: decode sum -22.78%, per stream -24.33%, TTFT +0.79%, against anchor floors of 12.48%/11.93%/0.51% (threshold 2x floor); a 12% floor means "about 23% slower but within noise", not equal. The np8 L64k pair is confounded (unified `gpu_busy_frac` 0.4654 plus a foreign KFD process vs split 0.0). The s4 128k cell hit its 12,000 s cap on the wrong estimator and the re-runs were declined (frontdoor is moving to GPU).
-- **PB-HOL-1 budget-on arms: the prefill budget is not a head-of-line fix.** Short prompt above the long slot waited 83,352 ms vs 70,932 ms off (below it 3,593 vs 3,217.5 ms); confounded by `-b`/`-ub` 512 to 2048. Frozen PB-QCOST-1 failed held-out (MAPE 12.84% n=1, 26.32% n=4).
-- **Filed, unrun:** KPF-LB1 (cache_n/prompt_n by role x endpoint x turn; message_delimiters on /completion), KPF-LB2 (replay harness amendments before first live arm), DS-LB1 prefix-property tests, KVU-LB1 FP16 V-accumulator upstream follow-through, KVU-12.3a zero-compute log pass (open P-A patch only if generated-span divergence reaches 5% of processed prompt tokens at 3+ busy slots).
-
-### Source References (2026-10-22 sweep 7)
-- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
-- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
-- [handoffs/active/numa-placement-and-contention.md](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency)
-- [progress/2026-10/2026-10-22-kpf62-fix.md](../progress/2026-10/2026-10-22-kpf62-fix.md)
-- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md)
-- [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md)
-
-## Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): KPF-18 item 7 fan-out speed on the MI210, and PB-HOL-1 confirms head-of-line blocking
-
-**Confidence: verified** for the recorded run numbers (records and summaries named); **inferred** for the KPF-62 slices, which are filed and not run.
-
-- **KPF-18.0d item 7 (T4, done 14:55Z 2026-10-21, rc 0, CANDIDATE grade, A/B/A/B; fork build `gpu-20261020-a1f0c8cf9`).** Four-way fan-out total TTFT: fork_off 1312.9 s and 1404.0 s, fork_on 169.3 s and 140.0 s (about 8.5x). Prefill tokens 254,512 -> 74,512, exactly the shared expectation (unique cells 75,532); aggregate decode 3.40/3.32 -> 26.5/32.1 tok/s; all checks OK. Records `/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run-c/records/` and `item7_summary.json`. Equivalence is not measured in item 7 (items 1 and 3 carry it).
-- **PB-HOL-1 off arms (16:00-16:12Z): predeclared verdict CONFIRMED.** Rule B_median >= 2x A_median holds: A-off (short slot below long) TTFT median 3217.5 ms, B-off (short slot above long) median 70932 ms, B/A = 22.05; C solo about 280 ms; solo 64K prefill 119.9 s. Slot-order head-of-line blocking is real on this server, so the ordering-fix trigger (M4, shortest-remaining-prompt-first plus a prefill-vs-prefill cap) is OPEN, and the DI-126 monitor changes from "nothing to fix until measured" to "component (ii) is measured". Summaries `/mnt/raid0/llm/tmp/pb-hol-1/runs/*/summary.md`.
-- **Budget-on arms did not run**: a harness bug (`end_phase` did not clear `self.srv`, so `check()` read the stopped phase-1 server as dead) and a preflight refusal (`plan_estimate` ignored `--phases`); both fixed. Re-armed for 2026-10-22 (`/mnt/raid0/llm/tmp/pb-hol-1/overnight-on-launch.sh`, latest start 06:03Z, hard stop 06:25Z).
-- **KPF-62.3 to KPF-62.8 filed (not run)**: selector (head window W=64 plus check-layer K deviation), sparse recompute by explicit-position batches (G0 at r=100% bit-identical), server wiring (`--chunk-store-mib`, `kv_chunks`), G3 harness on the frozen corpus, speed report vs tuned prefill, and the real-role G1 (Qwen3-VL-30B-A3B Q4_K_M f32 K/V).
-
-### Source References (2026-10-21 sweep 6)
-- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
-- [handoffs/completed/mi210-serving-program.md](../handoffs/completed/mi210-serving-program.md)
-- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
-- [progress/2026-10/2026-10-21-workspace-f8.md](../progress/2026-10/2026-10-21-workspace-f8.md)
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): the unified-KV and prefix-fork programs gain DeepInfer probes, and two decisions close
-
-**Confidence: verified** for the recorded P1 gate results, the champion-manifest rows and the operator decision; **inferred** for every DeepInfer-derived probe below (each is a filed, unrun task whose rule is a hypothesis).
-
-- **KVU-21: agent-resume recompute probe on :8083 (filed, not run).** From existing request logs, compute per resumed agent turn the recompute fraction (prompt tokens processed over prompt tokens) against pool usage from `/slots`, at 1 to 4 concurrent agents. Rule: median fraction at or above 0.25 at 3 or more agents while usage is at or above 0.5 opens a CONCUR-style AIMD admission trigger; below closes it. The point is that the unified pool's fit limit is not the only failure mode; a pool-fit-only cap misses queue wait that rises while occupancy is low (dormant trigger).
-- **KVU-12.3: decode-boundary checkpoint arm.** A fifth hybrid-checkpoint arm in the KVU-12.1 matrix snapshots recurrent (and drafter) state every 128 generated tokens, measured on the frontdoor Qwen3.6-35B-A3B and the 27B by turn-2 resume `prompt_n` after 1k-4k generated tokens, checkpoint bytes and TTFT. Counts are correctness class; TTFT needs a window. Rationale: GDN layers cannot be "replayed instead of checkpointed" (the DeepInfer reading is retained as the boundary for any future replay proposal; only drafter SWA windows qualify).
-- **KPF-28: DS41 checkpoint and fork characterisation.** DeepSeek-V4.1 uses a dsv4 memory with a raw SWA window, compressed planes with compressor state, an indexer and engram state. Before any fork policy is chosen, record bytes per checkpoint per component, whether `create_checkpoint`/restore and the KPF-11 fork rule work on `llama_kv_cache_dsv4`, hit length against the checkpoint grid (128-aligned versus dense) and resume `prompt_n`. It decides whether a 128-grid policy or a window-state-free checkpoint (needs DS41-CED.1) is worth building.
-- **P1 prefix fork was re-cut onto the live champion tip.** Canonical branch `experimental/kv-prefix-fork-p1r2-20261020` @ `14d603f3a` on champion `dd3d9721c`: the six fork commits applied cleanly; `test-kv-seq-share`, save-load/state-restore, `test_slot_fork.py` 12/12 and `test_slot_save.py` 15/15 pass; fork-off equals champion 7/7 on two models. P1 ownership moved from workspace-ec (no bus heartbeat since at least 2026-10-08, code ungated for 16 days) to the operator session; P2-P5 stay with workspace-ec.
-- **The 10-04 "open divergence" finding is benign (KPF-18.0c).** A hybrid fork child departing from a fresh run at token 55-57 is bit-identical to the same slot continuing a trunk it prefilled itself, and a fresh run on a deliberately fragmented pool diverges at the same token. The cause is prefill chunk boundaries and KV cell layout, not fork state. This closes the order-preserving-placement worry for now (P3 stays a measure-first item). KPF-18.0b (re-run items 1, 2, 5 on the fixed runner, plus the 16k fan-out item 7) is still open; the inherited runner had three bugs (late-bound trunk length, child sent after controls, missing log dir).
-- **KPF-17a shared-trunk FlashAttention cases pass:** CPU `FLASH_ATTN_EXT` 5207/5207 including 25 shared-trunk cases; ROCm0 2978/2978. The KVU-19a 64-case exactness harness on ROCm0 and CPU remains open.
-- **Decision OP-KPF19-2: accept upstream's slot-file layout.** A pinned junction restored from a slot file (SCKP block, upstream #26004) comes back unpinned: never wrong output, at worst extra prefill if eviction drops it first. No slot-format divergence. Dormant re-pin trigger: migrated fan-outs losing fork hits after a full-to-half KV migration, handled by re-sending the trunk's `checkpoint_at` request (KPF-21).
-- **Orchestrator scout path (KPF-21/25)** is on `feat/rtg58-kpf21-25-20261020`, pushed and NOT merged: one `max_tokens: 0` trunk request with `checkpoint_at` before siblings are released, behind `ORCHESTRATOR_PREFIX_INDEX` + `_FORK` and `/props.slot_fork`. `llm_call` delegate waves are not wired.
-- **v11 champion manifest ties the KV rows together.** KVU-19a (FA masked-KV-block skip, GPU and CPU), KVU-19b commit 1 (`n_seq` hint to the vec kernel), the HIP-graph MMVQ q8_1 private arena (VRAM growth +0.057 versus +5.83 GiB), the fp16-VKQ overflow fix, FA-INT64-OFFSET (past about 524k cells at ub 2048) and the decode-aware prefill budget (decode-under-prefill x2.92 at solo prefill -4%, versus `-b 512` x3.22 at -14%) are all IN the champion `dd3d9721c`; the `:8083` prefill-budget switch lands with v11. Per-keep percentages are 5-pair screening numbers, not additive (CH-16: 36 claims compounding to +171.7% against a measured +8.524% block effect). The manifest also flags dangling ids: V11-FA-1..6 and `KVU-19b-rework-c2-cal` are referenced by the index but absent from `kv-unified-stack-rollout.md`.
-- **Dormant triggers worth remembering (no tasks):** MTP state-hook port if fork restore drops draft acceptance; iSWA `seq_pos_max` assertion (upstream #29480) on a Gemma-class gate; intra-batch state capture if the forced chunk-end split costs more than the noise floor; a host-pinned KV tier prototype (MORI UMBP gather pattern, MIT) only if an analytic write-through mirror fits the decode budget; MORI itself does not support gfx90a or ROCm 6.2, so any use is a port. Gemma-3n/4 style KV-shared prefill skipping has no consumer since Gemma-4 left the lineup.
-
-Open questions: does the fork-attributable divergence stay under the fragmented-layout control at production length (KPF-18.0b)? Do hybrid agent resumes recompute enough to justify admission control (KVU-21)? See [Inference Serving](inference-serving.md) for the slot-fabric side and [MoE Optimization](moe-optimization.md) for the routing-tap instrument.
-
-### Source References (2026-10-20 sweep 2)
-
-- [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-21, KVU-12.3, dormant triggers.
-- [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — P1 recut, KPF-18.0c, KPF-19.2, KPF-28.
-- [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) — KV rows IN the champion and the at-risk list.
-
-## Compiled Update — 2026-09-24 (wrap-up #4): production is now unified, and the "unified costs aggregate" reading was answer length
-
-**Confidence: verified** for the live shape (launch log, `/proc/<pid>/cmdline`) and the load-only table; the
-throughput confirmation rests on n ≤ 2 per cell and one named substitution (below).
-
-- **Live since ~18:50Z (OP-54, orch `0a564a1f`, research `75ee1b8e`):** :8083 runs `-np 4 -c 196608
-  --kv-unified --spec-draft-n-max 4 -ub 2048 --cache-ram 65536`. The log reads `n_slots = 4, n_ctx_slot =
-  196608, kv_unified = 'true'`, and a 124k-token request served. O-2 (q8_0 draft KV) was **dropped**: the q8_0
-  draft cache adds a 768 MiB FA conversion buffer, which cancels its saving. np 4 at 196k fits only because
-  whisper STT left the GPU (projected free ≈ 1.88 GiB with VL resident).
-- **Load-only (server MiB above a 2,139 MiB base, 27B, n = 1):** split d8 np2/196k 39,018 · unified d4 O-2
-  np2/196k 39,026 · np4/196k 40,522 · np2/262k 42,362 · np4/262k 43,858. Each extra slot pair ≈ +1.5 GiB
-  (per-slot recurrent GDN state, not KV); 196k → 262k ≈ +3.3 GiB.
-- **Throughput verdict confirmed (RTG-57 KVU-8).** 35B-A3B fixed-length L 2048 cells: unified within 2% of split
-  in all 4. 27B cells where every request ran to the cap: unified aggregate +5.1% at np 4. Live np4 at fixed
-  length (M-4, 2 waves): 40.2/39.9, 71.4/67.8, 95.3/93.1 tok/s aggregate at concurrency 1/2/4 — in line with the
-  split study cells. The single-wave −8%/−16% was the answer-length artifact. Substitution: no fixed-length
-  **split** arm was re-run on the 27B.
-- **35B-A3B diverges even at np 1** under the two modes (0 matching fingerprints), so at 8k/32k its −5.3..+5.6%
-  per-request spread compares different sequences. np 8 fits on the 35B (44–45 GiB at 32k).
-- **Context checkpoints fire on the unified hybrid:** 26 `created context checkpoint` lines (150 MiB each, up to
-  32 per slot) since the np4 launch — the only partial-prefix reuse the hybrids get.
-- **None of these numbers can gate a decision yet:** the study drivers, M-4's live driver and M-3's log read have
-  no write-side hook, so they produce zero belief-kernel tuples and are not backfilled (VB-KVU-1, VB-KVU-1a). M-3's
-  depth-4 figure is a projection and must be recorded as one if a script ever emits it.
-- Voice/STT/TTS planners: the GPU constraints above, with the CPU speech contention numbers, are collected in
-  [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
-- **CPU speech contention decided 2026-09-24 (KVU-11b): the operator chose D, no change to the CPU speech layout,**
-  pending their own STT/TTS integration plan. So TTS stays off the GPU and the np 4 / 196k :8083 VRAM budget above
-  stands; returning TTS to the GPU (0.92 GB of weights) is a question for that plan, not open work here.
-
-### Source References (2026-09-24, wrap-up #4)
-
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-1, KVU-1c, KVU-1e, KVU-8, KVU-9, KVU-11b (decision D).
-- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Stack window, part 2*.
-- [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md) — §6, GPU-side facts.
-- research `artifacts/np_context_kvu_study_20260924/README.md` §7–§9 (`07060eaa`).
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — VB-KVU-1, VB-KVU-1a, VB-SPEECH-CPU-1a.
-
-## Compiled Update — 2026-09-24: production was never unified — `-np` disables llama-server's auto-unified KV; the 27B GPU split-vs-unified verdict
-
-**Confidence: verified** for the root cause (frozen-tree `file:line` reads plus every live launch log) and for the 27B GPU numbers (research study README, recomputed from `summary.tsv` / `pq.jsonl` / `server.stderr`; **n = 1 per cell, no noise floor measured**). Figures marked **modelled** come from the stack-change package's buffer model, not from a run; the RAM-tier size is marked **inferred** where its source marks it so. The Qwen3.6-35B-A3B matrix was still running and uncommitted at compile time and is **not** used here (KVU-9).
-
-### Root cause: the auto-unified default exists only when `-np` is absent
-
-The registry said "KV IS UNIFIED ON THIS SERVER" for :8083 (Qwen3.8-27B Q8_0, MI210), but **no production launch ever ran unified KV**. The frozen v10 server's `n_parallel` defaults to `-1` (auto) (`common/arg.cpp:1216`); auto becomes 4 slots **and** `kv_unified = true` (`tools/server/server.cpp:145-150`) — the only place the server enables unified by itself. Any explicit `-np`, including `-np 4`, leaves the library default `kv_unified = false` (`common/common.h:580`; help text "default: enabled if number of slots is auto", `common/arg.cpp:1548`). The orchestrator launcher **always** passes `-np <slots>` (`orchestrator_stack.py` `_build_role_command`) and no orchestrator file mentions kv-unified, so every live llama-server logs `kv_unified = 'false'`. The "unified" registry evidence came from **bench** launches with no `-np` (2026-07-31, 2026-09-17) or with `--kv-unified` passed by hand (2026-08-20). The rule for every agent is now canonical: [`OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* → "The llama-server KV mode is an argv fact, not a default"](../agents/shared/OPERATING_CONSTRAINTS.md).
-
-**Semantics.** Split: `n_ctx_seq = n_ctx / n_seq_max`, so each slot is a hard `-c / -np` partition; unified: `n_ctx_seq = n_ctx`, one shared pool (`src/llama-context.cpp:289-302`). Total attention-KV bytes are identical in both modes — only the partition changes. :8083 runs `-np 2 -c 196608`, so every request has been capped at **98,304 tokens** — the ceiling that emptied DS41 run 8's first planner reply (`finish=length`, 1235.7 s). The MTP draft context inherits the flag (both contexts get `n_ctx_seq = 196608` under `-kvu`).
-
-### The 27B GPU study (v10 GPU binary, MTP draft depth 8, olympiad-style prompts, n = 1 per cell)
-
-| Finding | Measured / modelled | Value |
-|---|---|---|
-| Per-request decode, np 1 | measured | unified vs split +0.2% / −1.1% / −0.4% at L 2k / 8k / 32k — **equal within 1.1%**, byte-identical outputs |
-| Per-request decode, np 2 and np 4 | measured | unified **+0.3% to +5.7%** in all 6 cells (outputs differ, so different sequences are compared) |
-| Aggregate, np 4 | measured, **confounded** | unified −8% at 8k (94.0 vs 102.0 tok/s), −16% at 32k (85.0 vs 100.8); completion tokens differ (8k: 21,894 vs 24,663), so not attributed to KV mode. Where every request hit the same cap (L 2048) unified aggregate was +5.1% (97.6 vs 92.9) |
-| Long prompt at production shape `-np 2 -c 196608` | measured | **124,174-token prompt accepted under unified** (prefill 399.9 tok/s, 310.5 s); split returns HTTP 400 `exceed_context_size_error` at 98,304 after 0.2 s |
-| np 8 | measured | does not fit in either arm: L 2048 skipped at 63 GiB whole-device (above the 62 GiB guard); L 8k/32k OOM at load (32k on a 10,773 MiB `rs cache` allocation). The per-slot GDN recurrent state, not the KV mode, limits the slot count |
-| O-2 (`-ctkd/-ctvd q8_0`) per-request | measured | 39.4 vs 37.1 tok/s (2k), 41.0 vs 41.3 (8k) — **no per-request cost** |
-| O-2 saving 0.35 GiB (draft KV 768 → 408 MiB) | **modelled** | package buffer model at `-c 196608`; the integer-GiB device column shows no difference at the tested shapes |
-| Unified KQ-mask growth +0.75 GiB | **modelled** | mask is 768 MiB at any `-np` under unified vs `196608/np × 2048` elements split; +384 MiB per context × 2 contexts at np 2 — fixed at load, not a runtime ratchet |
-| MTP draft depth 4 vs 8 (unified) | measured | acceptance 0.632 / 0.648 / 0.661 vs 0.403 / 0.448 / 0.443 in the same cells (all v2 depth-8 cells: 0.368–0.460); per-request +7.8% (np2 2k), −2.4% (np2 8k), +2.4% (np4 8k); load-only at `-np 2 -c 196608 --kv-unified`: 63,568 vs 64,582 MiB whole-device = **1014 MiB less** at depth 4 |
-
-Verdict (progress log): **unified KV does not cost throughput** on this model; a fixed-length (`ignore_eos` + `n_predict`) or ≥3-wave confirmation is still owed (KVU-8). Depth 4 is neutral on speed and must be confirmed on production traffic before the recipe changes (KVU-1b). Capacity at production shape (**modelled**, package §4.3): np2 + `-kvu` leaves 0.18 GiB card free; np2 + `-kvu` + O-2 leaves 0.53 GiB (the recommended funding); each extra slot costs +1.315 GiB of GDN state at draft 8, independent of `-kvu`, which is why a higher `-np` is not cheap on the hybrids.
-
-### Two pool-full failure shapes — and the server's general abort-all
-
-At `-np 2 -c 4096` with two concurrent 2048-token generations (measured, v1 + 3 repeats):
-
-- **Unified: exactly one request fails** (HTTP 500) with `speculative batch index 8 is not inside the current sub-batch [0, 8)` in **4 of 4** runs — not the clean "Context size has been exceeded." path; the survivor runs to 2048 tokens, deterministically. Filed as a guarded v11 experimental-kernel candidate (KVU-7).
-- **Split: never errors, silently truncates** at the slot in 4 of 4 runs — both slots stop at `n_tokens = 2047, truncated = 1` (`finish_reason: length`) after 1777 and 1632 generated tokens.
-
-The general v10 behaviour on unified exhaustion (package §4.4, **source-read, not a measured run**): admission checks the prompt against `slot.n_ctx` only (`server-context.cpp:3303-3310`), never pool occupancy, so two long requests (e.g. 120k + 90k on 196,608) are both admitted. When `llama_decode` finds no free cells the server purges idle slots (`try_clear_idle_slots`, `:1716-1735`, unified only), halves `n_batch` down to 1 (`:3797-3801`), then throws "Context size has been exceeded." (`:3759-3763`) and `abort_all_slots` **fails every in-flight request** (`:2949-2951`). Not a crash, but both callers lose their request. How the orchestrator defends against this is in [inference-serving.md](inference-serving.md) (2026-09-24 section).
-
-### Idle slots are cleared under unified, and the RAM tier is too small to catch them
-
-With the default `--cache-idle-slots`, starting any task already saves idle slots to the RAM prompt cache; under unified KV it **also clears them** (`server-context.cpp:2468-2482`, `TAG_IDLE_SLOT_CLEAR`). A returning conversation then restores its prefix from RAM — a warm-prefix latency cost on a shared server, not a correctness cost. But every server runs the **8192 MiB** `--cache-ram` default, and one full-pool 27B prompt is **~9.2 GiB (inferred** from the :8083 buffer lines: 6528 MiB attention KV + 2693 MiB recurrent state; whether RS is stored per entry is not verified), so the idle-slot save is likely a no-op for long prompts until `cache_ram` is sized. Proposed sizes (KVU-2, OP-55): 65536 MiB on :8083 (floor 24576), 32768 on :8070, 16384–32768 on :8074, 0 on :8086. **Decided by the operator 2026-09-24 (~17:50–18:10Z, OP-55):** all of it as recommended. Reroute only `ingest_long_context`; route by the live per-request limit rather than a ~5k threshold; apply these `cache_ram` sizes via the package; the opencode bypass uses live `/slots` plus retry. OP-56 moves whisper STT back to CPU, which is what lets :8083 `-np 4` fit ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) *Start here*).
-
-### Unified changes outputs at the same seed
-
-At seed 42, T 0.6, unified and split produced **different completions at np 2 and np 4 in every cell**; at np 1 they were byte-identical. The expected cause is that the KV layout changes float summation order. Unified np 4 even differed between its 8k and 32k cells, so **the pool size itself perturbs outputs**. Any deterministic replay or output-comparing A/B must pin the KV mode per arm (OAB-4a).
-
-### Rollout candidates (inventory ranking)
-
-1. **:8083** — the only role whose alias (`ingest_long_context`) is defined by long context; package awaiting signature (OP-54; KVU-1).
-2. **Embedders :8090–8095** — `-np 4 -c 512` gives 256 tokens per slot, below bge-large's 512 window, with a WARN on every launch; `-kvu` or simply `-c 2048 -np 4` fixes it; pure attention, no GDN cost.
-3. **:8070** — only if long jobs are routed there (today they go to :8083 at a 20,000-char threshold).
-4. **:8086** — only if its `-np` rises (pure attention, so unified `-np` is cheap there).
-5. **Never** :8080, :8180, :8074 — `-np 1`, per-slot already equals `-c`.
-
-### Source References (2026-09-24, unified KV)
-
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — RTG-57: root cause, the verified "Measured" block, KVU-1..13b.
-- [`progress/2026-09/2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Stack-configuration window*: DS41 run 8's 98,304 ceiling, GPU sweep timeline, the throughput verdict.
-- [`stack-change-kvu-20260924/PACKAGE.md`](../artifacts/operator/stack-change-kvu-20260924/PACKAGE.md) — §1 root cause with `file:line`, §4.2–4.3 buffer model and capacity table (modelled), §4.4 shared-pool failure mode and idle-slot behaviour.
-- [`kvu-stack-inventory-20260924.md`](../artifacts/operator/kvu-stack-inventory-20260924.md) — every live server's `kv_unified = 'false'`, declared-vs-live mismatches, ranked candidates.
-- [`serving-engine-technique-audit-20260924.md`](../artifacts/operator/serving-engine-technique-audit-20260924.md) — §2.3 the ~9.2 GiB (inferred) prompt-cache arithmetic and FIFO prompt-cache eviction.
-- epyc-inference-research `artifacts/np_context_kvu_study_20260924/README.md` @ research main `21cf444c` — the 27B matrix, long-prompt, pool-full, O-2, divergence and MTP-depth results (the files win over the working page).
-- [`OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) — *Inference and Benchmarks*: the KV-mode-is-an-argv-fact rule and the output-divergence caveat.
-
-## Compiled Update — 2026-08-12: a "keep or port?" review that resolves to *neither*, and the first KV-quant decision package
-
-**Confidence: verified** — the fork verdicts are read-only git archaeology with commit SHAs and ancestry checks; the KV-quant numbers are a measured retrieval-parity run.
-
-### The SWA slot-reuse fork commits: DROP, because they subtract a safety check
-
-Two fork commits (`d1c72d7fc`, `603702769`) sat under review as ambiguous keep-or-port candidates. The verdict is **DROP**, and the reason is stronger than redundancy: the fork **deletes** upstream's `cells.seq_get(idx)` lookup and substitutes the incoming batch's position, replacing a per-sequence-aware sliding-window reuse check with a **per-sequence-blind** one. Under multi-slot serving a cell can be judged reusable against the wrong slot's window. Production v6 through v9 correctly retain upstream's original form and were never exposed.
-
-The reusable lesson for fork-reconciliation reviews: **a commit that reads as "our version of upstream's check" may be upstream's check with a lookup removed.** The discriminating question is not *does the fork do the same thing* but *what does the fork's diff delete*.
-
-### KV quantization has a decision package, and q8 is dominated
-
-The first exact-parity KV-quant measurement gives a clean shape: across f16 / q8_0 / q4_0 KV, retrieval parity holds at **51 of 52 on every arm**. `q4_0` buys **10.54 GiB** of KV headroom at **−7.4% decode**; **q8 is dominated** — it neither preserves the f16 operating point nor buys q4_0's memory. One arm (C) aborted invalid. The recommendation is Option A. This is the first result that lets the KV-quant monitor status recorded in the 2026-07-20 pass below be acted on rather than watched.
-
-### Lazy faulting relocates the `-c` provisioning cost, it does not remove it
-
-The old premise for capping context provisioning — that a large `-c` costs at *launch* — is dead: KV pages fault lazily. But the re-read is not "provision maximally and stop worrying". The cost moves from launch to **load**, and the worst case is the sum of full-window KV across all resident roles under concurrent deep-context load, **which is currently uncomputed**. The recommendation is the staged option: raise `-c` only where the lineup's Σ full-window-KV fits RAM with margin, computed mechanically at priors-compile rather than chosen per role. The ruling belongs to the lineup owner plus the operator and is **not settled**.
-
-### Source References (2026-08-12)
-
-- [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the SWA slot-reuse DROP verdict and the deleted per-sequence check.
-- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — the T12 lazy-KV decision package and the uncomputed concurrent-load worst case.
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the KVQuant parity/headroom numbers and the dominated-q8 finding.
-
-## Compiled Update — 2026-07-20
-
-The StreamingLLM baseline — the cluster-wide gate that must precede prioritizing the whole May-2026 KV-reduction cluster (SP-KV / KVP / LU-KV / ForesightKV / PBKV) — reached a pre-v7 verdict, and the MI210 sharpened where KV should physically live. Confidence: `verified` for the CPU floor sweep result; `external` for the KV-quant PRs; `inferred` for the MI210 KV-placement economics.
-
-### Key Findings (2026-07-20)
-
-- **StreamingLLM (attention-sink + sliding-window) is the easy-floor gate, and no simple KV cluster is admitted yet.** The scaffold landed in the fork (`632ce0f92`, default-off, via server context-shift `llama_memory_seq_rm`/`seq_add` + `--kv-streaming-sink/-window` + per-request fields) and was reconciled onto current v7 (`111bff89d`/`cf051d3e1`). The pre-v7 floor/admission sweep (Qwen3-1.7B Q8 CPU, 2026-07-20) ran a context-shift baseline + sink/window clusters `8:128`/`16:192`/`32:256`: all arms exited cleanly but **all failed the prompt-quality/final-marker floor**, and no streaming arm beat baseline speed (0.990–1.011×) → `admit_cluster=false`. This closes the "admit a simple KV cluster *now*?" question negatively; the full 4-axis research sweep (retrieval/reasoning/dialogue × 25/50/75% budget × 2 models) stays open. ([streaming-llm-baseline](../handoffs/active/long-context-program.md#track-streaming-llm-baseline))
-- **KV-quant monitor status:** Hadamard rotation (upstream PR #21038) landed and auto-enables when KV types are quantized — a free KV-quality improvement (custom `--kv-hadamard` removed as redundant). TurboQuant CPU KV kernels (PR #21089, TBQ3_0/TBQ4_0, ~5.2× compression) remain open/monitor; ChunkKV (arXiv:2502.00299, 12% retention, +26.5% throughput) is worth-investigating. TQ3_1S rejection stands (immature, VRAM-savings we don't need, MoE ghost-activation risk). ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation))
-- **Where KV physically lives (MI210):** keeping KV in HBM alongside attention weights is ideal but VRAM-limited; PCIe4 (~64 GB/s) is 7–14× slower than EPYC DDR5, so per-token KV *streaming* is an anti-pattern. GDN-hybrid residents have **O(1) KV**, so long-context ingest is comfortably GPU-served (better than a dense model) and makes teleport KV-copy near-moot — the teleport v1 instead *re-prefills from transcript* to regenerate correct KV at the target quant (a copied KV is wrong under quant-asymmetric transport). **Correction 2026-09-24:** the orchestrator does *not* store that transcript today. On `/v1`, `x_session_id` is recorded only, and the session store has no messages table. So v1 teleport depends on client-resent history until the session-keyed conversation store (conversation-stack CS-15) lands. ([gpu-acceleration-path](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path), [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [conversation-stack](../handoffs/active/speech-and-multimodal.md))
-
-### Open Questions (2026-07-20)
-
-- Does StreamingLLM at 50% budget preserve ≥95% accuracy on our representative workloads (the 4-axis sweep is still pending)? The answer sets whether LU-KV/KVP/ForesightKV get demoted or LU-KV promoted.
-- Does uniform sink+window hide per-head heterogeneity (LU-KV's whole pitch)? Track per-head attention entropy in the sweep.
-- Does PR #21089 (TurboQuant CPU KV) merge and beat Hadamard+q4_0 on context extension?
-
-### Source References (2026-07-20)
-
-- [streaming-llm-baseline.md](../handoffs/active/long-context-program.md#track-streaming-llm-baseline) — cluster-wide floor gate, scaffold, negative pre-v7 admission sweep.
-- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — TurboQuant/ChunkKV/Hadamard KV-quant monitor list.
-- [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — MI210 KV CPU/GPU-split economics + PCIe anti-pattern.
-- [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — O(1)-KV GDN residents + re-prefill teleport (KV-copy near-moot).
 
 ## Summary
 
@@ -744,7 +260,583 @@ _Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-program.m
 `handoffs/completed/kv-cache-quantization.md`; live probes of `:8070`/`:8080`/`:8083` on
 production-consolidated-v8._
 
-## Compiled Update — 2026-08-22: the KV-quant program closed because V-dequant, not K, is the CPU cost — and every exotic lost a fair rematch
+## Incremental synthesis — 2026-10-06 root wrap
+
+**Confidence: experimental evidence with unresolved calibration.** The post-manifest masked-block-skip GPU run passed five bit-identity criteria at 132/132 each and `test-backend-ops` at 118/118 twice. Its measured kernel time versus KVU-19a was 0.708× for 4×9 rows, 0.88–0.90× for uneven layouts, 0.98× for aligned 4×8, and 0.99–1.01× for streams. Two calibration failures remain, including one shared with KVU-19a, and the draft=1 p3batch result still trails the no-KV baseline. Treat this as an experimental path with open calibration and end-to-end questions, not a promoted serving result.
+
+The prefix-fork update reports branch B landed with its flag off; the API was not reloaded, and the live shadow window remains the next proof. The `/props.slot_fork` capability gates automatic fork use. First-prompt TTFT attribution is also still a proposed GPU measurement. The updated campaign record says the operator kept the shared 393K pool after the P3 decode loss (−59.5% with three resident ~99K neighbours) and routed the response to masked-block skip. The champion ledger records P3 v2 on candidate X matching the KVU-19 champion at L3. These are the documented decision and a bounded parity check, not a claim that the cache tax is eliminated for all shapes.
+
+Sources: [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
+
+### Supplemental KV findings — Oct 3–6 changed files
+
+The prefix-fork P1 experimental branch passed CPU exactness checks across generated Qwen3.5 GDN, Qwen3.5-0.8B hybrid, Qwen2.5-0.5B attention and Gemma-3-1B SWA: fork-versus-fresh/state-copy and source continuation were bit-identical in the tested cases, with exact cell accounting. For three trunk-first 1,575-token children, each forked 1,560 tokens and prefetched 9–15 tokens; with idle caching disabled, the pool held 1,772 unique versus 6,452 logical cells. A fork-attributable hybrid divergence appeared after source purge at thread count 8 (55/64 tokens matched fresh); the handoff attributes it to cell order and requires comparison with fresh/fragmented-layout controls at production scale. This remains CPU-only experimental evidence, not GPU serving proof.
+
+The durable masked-block-skip fold record supplies the implementation and early validation boundary behind KVU-19: its 64-case HIP harness was bit-identical skip-on/off, while six cases differed from unpatched champion codegen only at NMSE ≤3.1e-7; its shared-GPU microbench was explicitly indicative. CPU decode stayed within noise (2.85 ms to 2.87–3.01 ms over 0–112K foreign cells), so no CPU speedup is claimed. Full model P3 remeasurement remained a separate exclusive-window gate. The post-manifest workspace science record also finds that a masked tile uses the union of sequence live sets, so per-sequence routing can help batched decode where block skipping alone cannot.
+
+Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [FlashAttention masked-block-skip fold](../docs/design/fa-masked-block-skip-20261003-fold.md), [Oct 4 workspace-ec progress](../progress/2026-10/2026-10-04-workspace-ec.md), [Oct 3 AK progress](../progress/2026-10/2026-10-03-ak-ds41-main.md).
+
+## Incremental synthesis — 2026-10-06: K-shift defects at v10
+
+**Confidence: unit-verified on CPU fixtures; no model-level run.** The K-shift path (`build_rope_shift`, `build_graph_shift`) has three confirmed defects at `ffc1bac82`: it re-applies YaRN mscale on every shift, `pos_div` records shift deltas with the wrong sign, and under quantized K it applies the Hadamard to an n_rot-wide view of a full-head transform (large error; aborts on CPU with a non-contiguous q8_0 destination). Context-shift under YaRN and any quantized-K shift should be treated as unsafe until the probe-branch fixes pass a model-level test. Details: [context-extension](context-extension.md#incremental-synthesis--2026-10-06-workspace-ec-wrap-native-window-inertness-k-shift-jet-long).
+
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) (CTX-KSHIFT), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md).
+
+## RTG-57 implementation checkpoint — 2026-11-02
+
+**Confidence: bounded engineering evidence.** A new experimental unified-attention gauge counts
+physical occupied KV cells once even when sequences share them; unsupported memory types omit the
+gauge. Its CPU build and model-free cell-accounting checks passed, but the endpoint has not been
+validated with a loaded model. The P3 runner now has separate drafted/no-draft lifecycle source and
+fake-server tests; native qualification is still open. A source-bound model-free gfx90a attention
+experiment found repeatable baseline outputs and variable candidate outputs in two cases; a proposed
+barrier change did not eliminate the variation. These results establish neither a production defect
+nor a quality, performance or promotion decision. Sources: [RTG-57 handoff](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout),
+[session progress](../progress/2026-11/2026-11-02-rtg57-readiness-audit.md), and
+[preserved GPU diagnostic](https://github.com/pestopoppa/epyc-inference-research/tree/7a8a2d8fa/artifacts/kvu19a2-sync-build-20261102).
+
+## RTG-58 fork and shared-trunk observations — 2026-11-02
+
+The CPU KPF-17a paired comparison matched all 86 original and 111 extended cases, including 25 shared-trunk cases, bit-for-bit between the pre-skip and C5 images. Its ROCm clauses remain open. On 35B CPU item 2, all 16 fork-versus-own comparisons were fully identical; all 32 A/A controls matched tokens, with 30 fully identical.
+
+On the integrated 27B/DFlash2 GPU item 1, all 32 requested forks were witnessed. Six of 32 draft-on fork-versus-fresh comparisons matched all generated tokens, and six of 32 fresh A/B controls did so. The different-slot controls and co-tenancy do not resolve the cause; neither the GPU observation nor the CPU subsets complete the P1 parent gate.
+
+### Source references
+
+- [RTG-58 handoff and CPU shared-trunk comparison](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
+- [35B CPU item-2 native record](../artifacts/compute/rtg58-p1-cpu-item2-20261102/)
+- [27B/DFlash2 GPU item-1 evidence](../artifacts/compute/rtg58-p1-gpu-item1-20261102/README.md)
+
+## KVU evidence reconciliation — 2026-11-02
+
+- **KVU-19a-2:** A source-bound 20-run HIP diagnostic reproduced five distinct candidate outputs per case, versus identical baseline repetitions, with no NaNs. A follow-on barrier-exit move did not restore repeatability. This is a model-free diagnostic, not a serving verdict.
+- **FA-4b:** All 2,400 accepted responses contained zero JSON nonfinites and zero garbage; that does not prove finite logits or change the one-of-four equivalence result.
+- **KVU-12.5:** The earlier full-host `SPLIT_BETTER` verdict was rejected because it used 96 rather than the required 24 threads and omitted a wave-range term. The later quarter-run comparison remains incomplete; its verdict is unknown. See the handoff for the distinct historical measurements.
+
+Sources: [KV unified rollout and evidence](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [KVU-19a trace analysis](../progress/2026-11/2026-11-02-handoff-kvu.md), [KVU-16a load reconciliation](../progress/evidence/kvu16a-load-result-20261102/RECONCILIATION.md).
+
+## KPF-17a GPU closure and KVU-19a-2 reuse decision — 2026-11-04
+
+- **KPF-17a:** Both retained GPU rows were filed PASS. The shared suite had 111 cases (89 supported bitwise-equal, 22 declared unsupported; all 25 shared-trunk cases supported). The preservation suite had 86 cases (64 supported bitwise-equal under each skip setting, 22 declared unsupported). With the earlier CPU 86/111 PASS, KPF-17a is complete; parent KPF-17 keeps its other clauses.
+- **KVU-19a-2:** No new GPU repeat was run. The existing source-bound 20-run comparison (`f8878bf14`) and the negative barrier diagnostic (`7a8a2d8fa`) already show five identical baseline outputs versus five distinct candidate outputs per case for cases 78 and 80, with matched input bytes. Case 79 is not covered. A concrete upstream ISSUE-DRAFT (historical TILE flash-attention repeatability, MI210 D512/D576, local experimental patch, mechanism unknown, no fix) was prepared but not posted; posting needs explicit operator authorization.
+- **K35 lifecycle:** Filed pass (rc0, distinct PIDs, 16 tokens per arm, verified cleanup). The P3 lifecycle row passed four-CPU qualification, but its full twenty-row benchmark remains unrun.
+- **Filing tooling:** A tested but unapplied `handoff_path()` patch fixes result filing for basename task tokens (5/5 targeted tests); deployment under `scripts/coordination` needs operator acknowledgment.
+- **KPF-26 rubric:** Three prospective source-scout tasks are scored PASS/FAIL/UNKNOWN per arm and window; the rubric makes no representativeness claim and sets no KPF-26 gate.
+
+### Source references
+
+- [KPF-17a GPU filing](../progress/2026-11/2026-11-04-handoff-kvfork.md)
+- [K35/P3 lifecycle and KVU-19a-2 reuse](../progress/2026-11/2026-11-04-handoff-kvu.md)
+- [Reuse decision](../progress/evidence/kvu19a2-upstream-20261104/REUSE-DECISION.md) and [issue draft](../progress/evidence/kvu19a2-upstream-20261104/ISSUE-DRAFT.md)
+- [File-result path correction](../docs/reports/kv-cache/file-result-path-20261104.md) and [KPF-26 outcome rubric](../docs/reports/kv-cache/kpf26-code-requal-v1-20261104/OUTCOME-RUBRIC.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): KVU-16 results
+
+- **KVU-16h:** L3 decode loss of 58-61 % under the unified KV meets the P5 and split-per-slot triggers. Split-per-slot is not re-opened (operator kept shared 393k on 2026-10-03 on the same trigger); KVU-19-P5A1 tests whether the champion masked-block skip removes the tax, and only a NO-RECOVERY result re-asks.
+- **KVU-16g:** no first-prompt TTFT tax. **KVU-16a:** 35 GiB non-KV VRAM for 27B Q8.
+- kvu upstream issue filed: ggml-org/llama.cpp#31654.
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [KV program](../handoffs/active/kv-cache-program.md) · [MI210 program](../handoffs/completed/mi210-serving-program.md)
+
+## Compiled update — 2026-11-04 (wrap-up 2 sweep): KPF-62 / KPF-13.1 / KPF-17 controls
+
+- **KPF-62 G3 outcome continuation (source-only):** a bounded per-arm continuation with a segment ledger and an opt-in paired scoring guard (base `3ec14227a`). 13 G3 tests plus a model-free C++ budget test pass, the build is PASS (`kvfork62-g3-build-20261104`), and a four-request synthetic paired CLI fixture scored complete EOG records while refusing interrupted and exhausted ones. Model scoring remains unverified and the successor separately unauthorized.
+- **KPF-13.1 offline grid controls:** 29 model-free tests cover occupancy/high-water semantics and malformed or contradictory grids; synthetic matches establish no physical ABI or historical verdict.
+- **KPF-17 custody:** the starti-adoption and unknown-orphan controls pass as own-child synthetic tests (GDB starti paused before the receipt; the subreaper adopted and reaped). A custody-race qualification was filed inconclusive because publisher smoke contaminated the result path. Oracle-packet integration is unproven.
+- Process lesson: a smoke result written to the full-run result path is contamination; require same-attempt binding before filing a PASS.
+
+Sources: [KV program](../handoffs/active/kv-cache-program.md) · [KVFORK progress](../progress/2026-11/2026-11-04-handoff-kvfork.md) · [KVU progress](../progress/2026-11/2026-11-04-handoff-kvu.md)
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-20 (autokernel operator wrap-up sweep). Earlier: 2026-11-19 (wrap-up sweep: KPF-41 GPU backend qualification r2/r3, KPF-62.3 tokenizer observation, K-shift model test). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-18 (wrap-up sweep: INF-86 slot checkpoint restore on C13). Earlier: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): KPF-18.x fork-vs-fresh native records, FA4 exact-set R17 outcome, KPF-18.2/18.3 trace builds. Earlier: 2026-10-28 (KPF-62.3 selector port scoped, tiny-model controls; V11-FA-4b scorer diagnostic; KPF-64 EB contrast). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): KVU-16b concurrent residency PASSes on C5, unified KV loses to split at np8 L64k on CPU, and the CME-7S prompt-prefix cache gate passes. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): KVU-19b P3 B is within 5% on the champion, KVU-16f was already serving, KPF-64.3 F/FB run and EB is re-booked on 48 cores, and the ctx-checkpoints receipt lands. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the KPF-18 R4 fork deviation is fork-path-specific, HPR-B INVALID (the simulator omits retained generation), KPF-64.3 EB is infeasible at quarter scale, and HSF-5.P G4 needs a log-capture amendment. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): KPF-17.4c finds no reproducible restore defect, 13.1b is a near-tie artifact, KPF-18.0b closes, and the HSF-5.P build gate holds. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): the DFlash2 restore defect is target-side, the 60k fork deviation is fork-specific, chunk-KV G0 is bit-identical, and the host KV mirror trigger fires. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the KPF-18 CPU re-runs and graphs-ON step 7 land. Earlier: 2026-10-24 (wrap-up sweep 20, 3c4ca599 delta). Earlier: 2026-10-24 (wrap-up sweep 9: KPF-13.1 rules v3 verdicts, KPF-64 hybrid checkpoint rule, v11 fold decisions). Earlier: 2026-10-23 (wrap-up sweep 19, workspace-f8: KPF-13.1 rules v3 and the DFlash2 arm; on the 27B the SWA cache is the drafter's; idle-slot restore semantics from code reading). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: always-F32 VKQ accumulation costs nothing on architect CPU decode). Earlier: 2026-10-23 (wrap-up sweep 17, workspace-f8: coarse checkpoints REPLACE_DENSE at 32k on a wide spread; KPF-26 outcome clause keeps). Earlier: 2026-10-22 (wrap-up sweep 14, 3c4ca599: upstream #28576 is carried by the pull; the GPU VKQ half-staging question is open (V11-FA-8)). Earlier: 2026-10-22 (wrap-up sweep 10: KVU-12.1 DENSE_STAYS, fork flip is numerics, CME-7 cache miss). Earlier: 2026-10-22 (wrap-up sweep 9: KPF-64 is slow because of decode contention). Earlier: 2026-10-22 (wrap-up sweep 8; wrap-up sweep 7: fork cleared, G1 reference, KVU-12.4). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 5: KPF-62 slices filed). Earlier: 2026-10-21 (wrap-up sweep 3 delta). Earlier: 2026-10-20 (wrap-up sweep 2: unified-KV and prefix-fork DeepInfer probes). Earlier: 2026-10-20 (hybrid prefix-cache survey, index entries 2061 through 2115, plus the prefix-fork recut; prior: 2026-10-06 incremental root-wrap synthesis; prior compilation history: 2026-10-03 (wrap-up compile: the 27B's hybrid KV math — 16 of 64 layers hold growing KV, 34,816 B/token q8_0, 42 KiB/token measured marginal; step 1 of the :8083 pool fix is live (token gate, one long prefill per server); step 2 (`-c 393216` unified, per-slot clamp to n_ctx_train 262144) is signed, not yet live); previous: 2026-09-24 (late, main-ak-seat: KVU-11b decided D, no change to the CPU speech layout); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: production is now unified — OP-54 applied np 4 at 196k; the throughput verdict confirmed); earlier: 2026-09-24 (production was never unified: llama-server v10 auto-enables unified KV only when `-np` is absent, the launcher always passes `-np`, so :8083 capped every request at 98,304 tokens; the 27B GPU study (n = 1/cell) finds unified per-request decode equal within 1.1% at np 1 and +0.3..+5.7% at np 2/4, a 124,174-token prompt accepted unified vs HTTP 400 split, two pool-full shapes (unified: one request fails with the MTP sub-batch exception 4/4; split: silent truncation), idle-slot clear under unified against an 8192 MiB RAM tier too small for one full-pool prompt (inferred), and unified-vs-split output divergence at np 2/4 — see the top section); earlier 2026-09-08 note: (the KV-reduction cluster's 09-07 wave — selection-class KV methods hold the FULL cache and buy zero KV memory (1.04 MB vs 8.38 MB on-device at 2K/16K), the streaming-LLM 4-axis sweep gained power and eviction-regime constraints but still has no cells, PS-2 closed as Reset-PE-insignificant, and SWA-window-floor/query-aware-selection coverage pointers filed; earlier 2026-08-23 note: **wave-2 research intake — the KIVI "primary quality gap" recorded for months at `kv-cache-quantization.md:320` never existed**: per-token V is structurally guaranteed once V is quantized (quantized V forces flash attention, which sets `v_trans=false`, making V channel-contiguous), the per-channel-K half is a **2-bit-only** prescription by KIVI's own OB 1, and key outliers are handled instead by the in-tree Hadamard rotation — the only residual is symmetric-vs-asymmetric, which is a flag (`q4_1`/`q5_1`), not a code change; **the granularity reading rule**: with `-fa 1` we quantize K and V per token in 32-element blocks along CHANNELS, finer than the Group-64 *mitigation* published in the alignment-collapse study and on the OPPOSITE axis from KIVI, so third-party KV-quant damage numbers are a pessimistic bound for us and must never be transferred unqualified; **VeriCache's algorithmic core is already expressible in frozen v9 with no code change** (`-ctkd`/`-ctvd` set the draft context's KV type independently of the target's and a model can be its own drafter) while its systems contribution depends on an interconnect we do not have; the dual-cache post-mortem is reframed as **a capacity argument applied to a bandwidth problem**; the PCIe "KV streaming is an anti-pattern" line is scoped to *per token*; R9's spec-decode verdict stands on NIAH+PPL while its throughput warrant is void; and llama.cpp slot-restore reuse loss is **conditional, not blanket** — zero only for a DIVERGENT or EXACT-REPEAT prompt, full for a strict continuation, with upstream PR #25592 (live in-memory checkpoint path) outranking #26004 (dormant disk path) for us — see the end of the page; earlier 2026-08-23 note: evening wave-2 compile: the KIVI "no gap" correction + the REAL instrument gap, the dual-cache reframing (capacity vs bandwidth), the group-32/axis granularity correction, and the KV-quant monitoring gates G2-G5 with the massive-activations deprioritisation — see bottom sections; earlier same-day: the orchestrator prefix-cache path now has an owner and a measurement plan: KV-5 closed in the wiki, the three latent defect fixes KV-0a/b/c landed 2026-08-20 — every KV slot save was failing, roles sharing one server silently clobbered each other's slots, and `radix_cache.py` was dead code — and the KV-1/KV-2/KV-3/KV-4/KV-6 rows filed — see the end of the page; earlier 2026-08-22 note: closure fine-structure of the COMPLETED KV-quant handoff — **V-dequant, not K, is the entire CPU flash-attention prefill cost** (q4_0/f16 −1% vs q8_0/q4_0 +71%; q8_0/q8_0 is the worst prefill config measured at 3.3× slower, reconciling the 2026-08-03 memory-optimal reading as a different axis); Hadamard's isolated contribution priced at 70% gap closure (+0.055 → +0.017); TQ3 abandoned on a *fair* 32B retest after its first gate was flagged as failure-zone-unfair; QJL's SNR≈1.13 arithmetic death; spec-decode +3.3% with q8_0/q4_0; the 4-KV-head q4_0-K hazard; and PR #21089 (TurboQuant CPU KV) verified CLOSED UNMERGED upstream 2026-06-02, retiring the 2026-07-20 monitor row — see the end of the page; earlier 2026-08-12 note: a fork SWA slot-reuse patch previously held for review is **DROPped as a correctness regression, not merely redundant** — it deleted upstream's per-sequence check; KV quantization gets its first decision package with an exact parity result; and lazy KV faulting is re-read as *relocating* provisioning cost rather than removing it; earlier 2026-07-20 note: adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained))
+
+### Compiled Update — 2026-11-19 (wrap-up sweep): KPF-41 GPU backend qualification is INCONCLUSIVE at r2 and repaired for r3, KPF-62.3 tokenizer census observed, K-shift model test inconclusive
+
+**Confidence: observation** (single rows; none is a policy comparison).
+
+- **KPF-41 backend GPU qualification r2 is INCONCLUSIVE, not a kernel failure.** The backend process exited 0 and its log ends `2978/2978 tests passed`, `Backend ROCm0: OK`, but `parse_corpus` expected one line per case and HIP graph diagnostics ("CUDA graph warmup complete") interleave with case output, so the parser threw before the post-run source, five-artifact-hash and loader custody checks. Residency during execution is supported (5723 of 5726 live samples show positive KFD VRAM and the HIP mapping). See [r2 result](../docs/reports/kv-cache/kpf41-backend-gpu-r2-result-20261119.md).
+- **Parser repaired offline (six tests PASS).** The retained r2 replay reconciles 5,207 selected cases (2,978 supported OK, 2,229 unsupported, 25 required shared-trunk cases OK) and accepts exactly 212 graph warmup complete/reset diagnostics. A check run now cannot supply the missing historical custody warrant, so the corrected row is the successor `kpf41-backend-gpu-qualification-r3-20261119` (same pinned kernel and five digests, strict interleaved parsing, custody checked even when parsing fails). Publisher outcome was "GPU busy; smoke queued"; no fresh GPU verdict is claimed. See [parser repair](../docs/reports/kv-cache/kpf41-backend-gpu-parser-repair-20261119.md).
+- **The r2 source precondition vanished because the keeper reaped it.** The keeper journal records `REAP-FREED-INPUT ... /source` on 2026-11-05 followed by 137 launch failures; the original `kpf41-gpu-parity-r4-20261105` PASS filing (D64) is unchanged. The r2 successor uses a detached worktree of experimental commit `15caecbba` with its own `source/` and passes FILLER_ID to child environments. See [custody recovery](../docs/reports/kv-cache/kpf41-backend-gpu-custody-recovery-20261119.md).
+- **KPF-62.3 auxiliary tokenizer census: OBSERVED (128 EXACT, 128 DIFFERENT_BYTES of 256).** Qwen2.5-0.5B Q8_0, vocabulary only, `add_special=false`, `parse_special=false`; ID sequences are 128 equal and 128 differing. The zero DIFFERENT_IDS count is conditional on matching bytes and says nothing about ID agreement for the 128 differing-byte cases. It does not establish general tokenizer compatibility, selector quality, budget re-admission or G3 acceptance. See [result](../docs/reports/kv-cache/kpf623-tokenizer-roundtrip-20261105/result.md).
+- **K-shift model test: native verdict FUTILITY_INSENSITIVE, filed inconclusive** (2 of 10 planned runs; Qwen3-1.7B Q8_0, f16 K, 448 prefix tokens, 64 probe positions; champion C10 `7f1bd044b` plus H2/H3 patches). The half-shift negative control reached only 0.003770928 KLD against a required 0.03, so the harness is not sensitive. The `seq_div` scenario does detect the H2 sign defect in this arm (candidate 0 KLD, baseline 3.025076 with 48 top-1 mismatches), but the translate x1 mismatch is identical in both libraries and does not isolate a regression. YaRN, quantized-K and Llama arms did not run; no production change. See [report](../docs/reports/kshift-model-r1-20261119.md).
+
+#### Source References (2026-11-19)
+- [KPF-41 r2 result](../docs/reports/kv-cache/kpf41-backend-gpu-r2-result-20261119.md)
+- [KPF-41 parser repair](../docs/reports/kv-cache/kpf41-backend-gpu-parser-repair-20261119.md)
+- [KPF-41 custody recovery](../docs/reports/kv-cache/kpf41-backend-gpu-custody-recovery-20261119.md)
+- [KPF-62.3 tokenizer round trip](../docs/reports/kv-cache/kpf623-tokenizer-roundtrip-20261105/result.md)
+- [K-shift model test r1](../docs/reports/kshift-model-r1-20261119.md)
+
+### Compiled Update — 2026-11-18 (wrap-up sweep, INF-86 closeout): where hybrid prefix reuse does and does not break, no cross-session eviction, chunk-KV decision
+
+**Confidence: observation** (single-fixture CPU rows on the frontdoor recipe, bounded nulls; no protocol-id).
+
+- **Slot restore on v10 reuses the prefix only for a strict extension (G4, EXPOSED_NOT_HIT).** After a restore, the production migration shape (E1) reuses 100% of the saved slot: 16K cache_n 15722/15722, prompt_n 1186, 19.2 s against 181 s cold; 64K 63300/63300, prompt_n 1139, 70.7 s against 1962 s cold. The erase-only control reuses 0 (n_restored equals n_saved), and an exact repeat (E0), a 50% divergence (E2) and a moved tools block (E3) all re-prefill fully at both sizes. The upstream defect is real, but our migration shape avoids it.
+- **The moved-tools full re-prefill is a checkpoint cause, not a template defect (E3, NO_FIX).** An offline render of the frontdoor template put the first divergence at character 54946 of 55306 (99.35% depth), at the end of the user turn where the tools text begins; the top is byte-identical. Pinning the tools into the system message did not help on v10: MOVED and PINNED both reused 0, while MOVED_LIVE (no restore, the live slot's checkpoints) reused 86.9%. The restore path carried no hybrid checkpoints, which is what the C13 validation in the section below then fixes (restored slot 13,754 reused tokens, 86.88% of the saved prefix).
+- **No cross-session eviction up to 8 sessions (G5, BOUNDED_NULL_1).** On the v10 frontdoor recipe (`-np 4 -c 262144 --kv-unified --cache-ram 32768`), N in {1,4,8} at 16K and 56K, every cell wasted 0 re-prefill tokens and logged no forced re-prefill, so KVU14 does not open. Caveat: the harness-class gap distribution was unavailable, so tool gaps were modelled as the other sessions' turns.
+- **Template and upstream-PR checks close with nothing to fix.** The production template renders prior turns byte-stable (NO_DEFECT). Upstream PR #25592 gives NO_GAIN on our waste, which is the older-turn suffix, so it is not a fold candidate. Forced re-prefills were NONE_OBSERVED: 0/21 at 16K and 0/14 at 64K (Wilson95 upper bounds 15.46% and 21.53%).
+- **Checkpoint spacing is a partial fix that did not pay live.** cms8192 to cms512 cut about 30% of wasted tokens in the A/B (means 6636.5 vs 4714.5 at 16K, 11015 vs 7688.7 at 64K, below the 50% bar). The live probe on the three roles (`inf86-cms512-live-probe`) gave ALL_HOLD: 0% re-prefill reduction for each role at extra checkpoint memory of 5.845 / 1.278 / 6.520 GiB (critic / general / frontdoor), so the values were reverted and the plumbing kept.
+- **Chunk-KV decision (operator, 2026-11-11).** Option 1 plus a phase-3 skeleton: phase 1 continues as running, the skeleton is built in parallel, the hybrid affine-state phase is decided at the phase-0 drift-curve gate, and KPF-64 runs beside it.
+- **Correction to KVU-16g-3.** Arm 4 did not stop on futility; it aborted on an invalid launch (a foreign KFD process was present) and produced no measurement. "No operating point passes" therefore holds for arms 1-3 only, and the 900/512 point is untested. DS-F1 (a standalone q8_0 KVCOMM prototype) still waits on the unpublished AM-DECISIVE-1 verdict; the handoff asked the operator whether to keep that prerequisite.
+
+#### Source References (2026-11-18, INF-86 closeout)
+- [hybrid-checkpoint-prompt-reuse handoff](../handoffs/active/hybrid-checkpoint-prompt-reuse.md) - G4, G5, E3, template and #25592 records
+- [INF-86 progress 2026-11-17](../progress/2026-11/2026-11-17-handoff-hybrid-checkpoint-prompt-reuse.md) - result recap and C13 validation
+- [INF-86 progress 2026-11-18](../progress/2026-11/2026-11-18-handoff-hybrid-checkpoint-prompt-reuse.md) - DS-F1 operator question
+- [kv-cache program](../handoffs/active/kv-cache-program.md) - OP-CHUNKKV decision and KVU-16g-3 correction
+- [autokernel progress 2026-11-17](../progress/2026-11/2026-11-17-autokernel.md) - G5 and #25592 verdicts
+
+### Compiled Update — 2026-11-18 (wrap-up sweep): INF-86 slot save/restore preserves prefix reuse on C13
+
+**Confidence: verified** (single 16K CPU fixture).
+
+- On C13 `bda43aa17` (includes slot checkpoint serialization from upstream #26004 via `1c999e15b`) a restored slot reused all 13,754 tokens the live slot reused (`prompt_n=3260`), the restored greedy reply matched a fresh full prefill, and save and restore both reported 15,831 tokens. The erase-only control reused zero. Production v10 `ffc1bac82` reused zero on MOVED in the prior G4 E3 run, so the checkpoint serialization is the enabling change. Gate: MOVED `cache_n` >= 80% of MOVED_LIVE, CTRL <= 5% of save, `fresh_reply_match` true. [INF-86](../docs/reference/inf86-slot-checkpoint-validation-20261117.md)
+- Scope is one 16K CPU fixture, frontdoor Qwen3.6-35B-A3B-MTP Q8_0, q8_0 KV, 32 checkpoints, np1.
+
+#### Source References (2026-11-18)
+- [INF-86 validation](../docs/reference/inf86-slot-checkpoint-validation-20261117.md)
+- [hybrid checkpoint handoff](../handoffs/active/hybrid-checkpoint-prompt-reuse.md) - prior run and recipe
+- [kv-cache program](../handoffs/active/kv-cache-program.md) - parent program
+
+### Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): unified-KV decode cost grows to -58% at 91% pool fill, KPF-17/17a close on exactness, and the KPF-30 phase reader needs a position field
+
+**Confidence: verified** (filed native results; every row below is scoped to what its rule covers).
+
+- **P3 unified-KV decode cost (MI210, v10, Qwen3.8-27B Q8_0 + DFlash2).** `handoff-kvu16h-p3-lifecycle-r3` PASS: against an idle parked-neighbour fill, decode loses -30.4% / -46.9% / -58.0% (drafted, 0.40 / 0.66 / 0.91 of the pool) and -34.4% / -51.2% / -61.3% (no-draft, which isolates attention). Baseline drift across L0 before/after is ~0.1%. Both declared triggers are MET (P5 at >=5%, split-per-slot at >=15% at >=300k). The sampled own-PID VRAM maximum (51.7 GiB) is not a lifetime peak, and the native no-draft `draft_n` is UNKNOWN rather than zero. The r2 attempt stopped INCONCLUSIVE (neighbour occupancy read zero after a restore). The champion P5 A1 20-row protocol stopped twice on the 150 GiB disk floor (10 drafted + 9 no-draft rows retained, no result).
+- **KPF-17 / KPF-17a.** Shared-cell exactness is complete: CPU 86/111 PASS and the full ROCm run bitwise-equal on 89/111 supported cases (22 declared unsupported, all 25 shared cases passing); original-versus-extended preservation 64/86 supported. KPF-17.CUSTODY PASS (`n_rs_seq=0/8`, six in-test mapping samples bound to the pinned build manifest, mutation detected). An earlier partial-v2 was INVALID (rc64, region-lock refused a live dispatcher) and proves nothing about the fork. A test-only matched-valid-destination control separates generic copy failure from stale-specific detection (nine model-free checks). KPF-17.4d custody builds stopped on the disk floor three times (r1, r3, r4; r5 is unpublished while disk is under the floor): a first-object smoke is never a full-build acceptance.
+- **KPF-13.1 external observer.** Feasibility only: an own-child hardware breakpoint hit one known libllama export, pinned five mapped DSOs and exited cleanly; the cache allocator breakpoint was not hit, so no physical-cache ABI, allocator layout or historical DSO custody is established.
+- **KPF-30 phase reader.** The integrated observer (`8952a0f69`) emits `KPF30 row= seq=` without `pos`, while the strict phase reader requires `pos` and explicit BEGIN/PHASE/END brackets, so a raw observer stream cannot satisfy it. A position-field patch (unapplied) and a per-token phase-provenance contract (replay provenance fails closed as UNKNOWN) are prepared; three candidate-bound impact attempts ended rc75 disk-floor, so there is no edit clearance. KVFORK31 P3 impact at `c72ec82f`: `find_slot` LOW, `apply_ubatch` LOW, `llama_kv_cells` LOW, no HIGH/CRITICAL, but 25 files over 512 KB were skipped.
+- **KPF-26 CODE diagnostics.** The off/on three-scout code runs completed (fork tokens 0/0/0 vs 3547/5498/0; keyword outcomes true/true/true vs false/true/true) but the top-level flag attestation is unverified, the checkpoint witness is null, and the rubric's seven-task cohort does not map to the three-scout shape: all six outcomes stay UNKNOWN and nothing about enablement follows.
+- **Gauges and loads.** KVU-12.6 unique-cell gauge r2 PASS (0 to 45 cells over one HTTP-200 token, strict interior mapping timestamps); the v1 attempt failed on a grant-filename lookup before any request. KVU-16a shape-matched r3: 35.0626 GiB non-KV (51.338 GB own-PID VRAM minus 13.690 GB logged KV) from two post-health samples; sampled maximum only, not a peak. CPU-FA-VKQ-2: hybrid +1.84% (16k) and +2.11% (64k) sit inside their 36.39% and 4.11% noise floors, so no superiority; VKQ-3 calibration accepted 96/121 drafts in both arms with identical outputs.
+- **Hygiene.** A 37.8 GB model-hash read overlapped four rc75 disk-floor runner intervals; the audit establishes overlap of intervals only, not cause.
+
+Sources: [KVU progress](../progress/2026-11/2026-11-04-handoff-kvu.md) · [KVFORK progress](../progress/2026-11/2026-11-04-handoff-kvfork.md) · [HSF residency progress](../progress/2026-11/2026-11-04-handoff-heterogeneous-slot-fabric-residency.md) · [P3 r3 report](../docs/reports/kv-cache/kvu16h-p3-r3-result-20261104/report.md) · [KPF-26 review](../docs/reports/kv-cache/kpf26-code-on-r2-summary-20261104/rubric-review.md) · [I/O overlap audit](../docs/reports/kv-cache/kvu126-io-overlap-20261104.md) · [KPF-13.1 predeclaration](../progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md) · [KV program](../handoffs/active/kv-cache-program.md)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **LRAgent multi-LoRA KV sharing** (intake-353#00) Splits KV cache into a shared base part and adapter-dependent part, with a Flash-LoRA-Attention kernel avoiding full materialization. Not applicable: EPYC serves no multi-LoRA agents.
+- **Unified Radix Cache** (intake-1182#record) One radix tree serves heterogeneous attention/state components in hybrid models via component voting, with per-component validity (full path-based, sliding-window needs a contiguous trailing window). Blog unchanged since ingest; relevant to prefix reuse for hybrid SSM models in llama.cpp.
+- **SGLang Rust tree-core cluster** (intake-1207#01) The ownership boundary is already merged as working Python; the PR's perf section reads "TBD", and the blog's 38%/42% are TTFT-minus-GPU-prefill residuals, not Python overhead. Filed as an expansion of a related entry.
+- **SGLang PR 36045 NVFP4 dequant workspace** (intake-1710#00) Alternative SM120 repair dequantizes committed packed-NVFP4 prefixes into an FP8 workspace with a fixed-grid Triton kernel, isolating padded graph requests via reserved slot 0 (intake-1710#01). NVIDIA-only; graph-replay isolation pattern.
+- **SGLang PR 36340 merged NVFP4 KV** (intake-1711#01) Merged SM100/SM103 native packed-NVFP4 KV with slot-major packed K/V read via a strided HND view and separate scale sidecars. Layout reference for packed-KV plus scale design.
+- **SGLang SM120 XQA decode corruption** (intake-1712#00) NVFP4 KV via TRT-LLM XQA was correct at batch 1 but corrupted concurrent decode (1/200 on 32-way GSM8K, 0.005 accuracy); disabling overlap did not help (intake-1712#01), and the fix PR reattributed the defect away from paged FP4 KV to Q contiguity. Lesson: test KV paths at concurrency, not batch 1.
+- **FlashInfer PR 4050 XQA contiguity** (intake-1719#00) Unmerged but reviewed fail-closed boundary: XQA indexes query/output as packed buffers ignoring strides, so non-contiguous inputs must be rejected; regression test is a mocked Python contract test only. Contiguity assertions are a cheap guard for attention kernels.
+- **SGLang PR 23354 NVFP4/MXFP4 KV prototype** (intake-1720#01) Superseded prototype whose "all arch" claim is false (requires SM120); salvageable idea is a three-part design of quant method, storage pool and backend view. Design pattern for KV quantization abstraction.
+- **SGLang FP4 KV roadmap** (intake-1721#00) Open issue 29913 tracks NVIDIA FP4-KV work but is stale as a ledger (PR 36340 merged 2026-09-18 yet unchecked; a checked seed PR closed unmerged). Do not read it as a release state.
+- **SGLang PR 36121 FP4 KV + HiCache guard** (intake-1729#00) Host-pool code transfers only packed K/V pointers and sizes capacity at full-width dtype bytes, with no FP4 scale-sidecar transfer; proposed guard rejects nvfp4/fp4_mx_block16 when HiCache or decode offload is active. Fail-fast for unsupported combos.
+- **SGLang issue 39429 fused fp4_mx_block16 writer** (intake-1730#01) Proposes one Triton kernel for quantize, pack and scatter replacing four indexed assignments; prototype tested on NVIDIA L20 with microbenchmarks in microseconds. Unmerged proposal, GPU-specific.
+- **SGLang PR 35237 GLM-5.2 DSA NVFP4 KV** (intake-1731#00) Canonical 416-byte key-cache row: 256 B packed E2M1 latent, 32 B block-16 E4M3 scales, 128 B BF16 RoPE; decode dequantizes in the FlashMLA producer with no full BF16 workspace. Layout reference for MLA KV quantization.
+- **SGLang PR 29304 closed SM12x NVFP4 KV** (intake-1732#01) Closed draft: native NVFP4 KV plus a Gemma-4 VO split (QK=512 into two V/O=256 passes); split-KV disabled for native FP4 after scale-block corruption on reused radix prefixes. Cautionary data on prefix reuse with block-scaled KV.
+- **CacheWise coding-agent traces** (intake-1844#00) Real Claude Code traces (~10M tokens) show coding-agent requests prefill-heavy (~21x prefill:decode vs chat) and tool-triggered; released traces are redacted, so no copy-rate statistic can be computed (correction overturned that hope). Informs prefix-cache priorities.
+- **llama.cpp issue 28495 unified-KV FA trim** (intake-1849#00) flash_attn_mask_to_KV_max trims only tail blocks and its launch gate (Q->ne[1] >= 1024 || Q->ne[3] > 1) never fires for unified-KV decode; prompt processing loses 27-54% with neighbours resident (-27.2% S_PP on gfx1201, intake-1849#01). Present in v10; correction overturned "decode unaffected". Directly relevant to HIP flash attention with -kvu on MI210.
+- **xLLM-Loop looped model release** (intake-1854#01) Companion code and 49 native BF16 safetensors checkpoints of looped Transformer/Huginn models; native loaders required rather than Transformers AutoModel. Not directly runnable in llama.cpp.
+
+### Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): `-kvu` batched decode is within 5% on the champion, `-b 512` on :8083 was already signed and serving, KPF-64.3 is redesigned, and RATIFY-CTXCKPT lands in root
+
+**Confidence: verified** (predeclared verdicts, signed receipts, the live launch record); the P3 B timing is **indicative**.
+
+- **KVU-19b-fold-c1-p3: WITHIN_5PCT.**
+  - Setup: 27B Q8_0, `llama-batched-bench` npl 4 / npp 16384 / ntg 64, champion store `dcc853b55-c3`, graphs ON, a fresh process per arm, ABAB.
+  - Mean S_TG: `-kvu` 55.93 vs `-no-kvu` 56.47 t/s, so **−0.94%** (pairs +0.39 / −2.27%). The v1 P3 on production v10 measured −15.23%.
+  - The `GGML_CUDA_FA_SEQ_ROWS=0` control is −15.9%, so the per-row skip is what closes the gap.
+  - This unblocks the kvu part of the v11 stack-change signature.
+- **KVU-16f was done, only unticked.**
+  - The 10-04 A/B measured `-b 512` at 3.5–4.2× decode while a neighbour prefills, KFD −3.1 GiB, and solo shallow TTFT +35%.
+  - STACKCHG-8083BATCH is signed, and :8083 has served `-b 512 -ub 512 --no-cache-idle-slots` since 10-07.
+  - The 10-21 triage looked in git rather than at the live launch record. Lesson: check the serving argv before re-running an A/B.
+  - Residue: the registry KQ-mask term (KVU-16f-1).
+- **KPF-64.3 redesign adopted.**
+  - Amendment 4: F/FB run now on q0, and F-FB is evaluated on its own.
+  - Amendment 5: EB, the no-cache arm that re-prefills 32k per turn, moves to 48 cores (q2+q3). Its corrected cost is ~18.5 h (17.5–23.8 h), against the ~26 h the 24-core partial projected; the first 90 requests were the short ones. It is booked from 10-26 03:30Z.
+  - A 48-core EB stays comparable on the predeclared metric, prefix-hit share from server token counts paired by session. Thread count enters it only through interleaving, and all 90 partial EB requests had `cache_n = 0`. Wall time is not compared.
+- **RATIFY-CTXCKPT-HYBRID-20261024 root receipt `b5934d982`.** `--ctx-checkpoints 32` is now declared on every hybrid serving role in all three repos. No reload is needed, because 32 is the default.
+
+Sources: [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-16f, KVU-16f-1, KVU-19b-fold-c1-p3) · [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-64.3, KPF-64.4) · [calendar plan 2026-10-25](../docs/reference/calendar-plan-2026-10-25.md) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): KPF-18 R4 reads FORK_PATH_SPECIFIC, the HPR-B holdout is INVALID_SIM_DISAGREES, KPF-64.3 EB is infeasible at quarter scale, and HSF-5.P G4 was a log filter
+
+**Confidence: verified** (predeclared run verdicts); the HPR-B and G4 mechanisms are **inferred** (accepted static audits, no replay).
+
+- **KPF-18-S1.R4: `FORK_PATH_SPECIFIC`.** The R3 confound (no cold arm at the child's own occupancy) is removed. Teacher-forced mean |dlogprob| over 256 positions: child vs child2 = 0.0 (256/256 exact, so the fork path is deterministic); child vs coldE (child's occupancy matched) 0.0322, vs coldA 0.0293, vs coldB 0.0299; cold-vs-cold 0.0275 (A|B), 0.0259 (A|E), 0.0315 (B|E). The predeclared rule (child-vs-coldE above every cold-vs-cold d) fires on a thin margin (0.0322 vs 0.0315), so the occupancy-only reading of item 3 is rejected. The run was valid (own-pid VRAM 49715 MiB, graphs ON, drained); item 3 stays open and a `do_slot_fork` plus shared-cell FA code read (KPF18-R4-FORK-CODEREAD-1) was delegated to Codex, which must reconcile with KPF-17.4c (layout explains 17.4b).
+- **HPR-B 64k holdout: `INVALID_SIM_DISAGREES`.** One cell (q36_35b dense ckpt 64k wave-0 `extend_1`) has simulator prompt_n 2818 vs log 2799 and cache_n 65314 vs 65333: the server reused 19 more tokens. The predeclared outcome is no decision, never re-graded; the box stays open. The accepted diagnosis (HPR-B-SIM-DISAGREE-1): the simulator keeps generated-output counts but not generated token IDs in its simulated slot prefix; 19 = 4 tokens past the selected checkpoint in the old prompt plus 15 retained generated tokens. The 8k wave-0 and 64k wave-1 cells agree, so a count-only extension would over-correct. Proposed fix: persist prompt and generated token IDs, carry the server's actual sequence across simulated requests, and take the LCP against it (retained boundary `n_total + generated - 1`); the regression needs token-ID fixtures from a new predeclared run, since current artifacts cannot supply the 15 IDs.
+- **KPF-64.3 EB/F/FB: infeasible at quarter scale.** s5-kpf64-ef was stopped at 16:17Z with arm E done and kept; arm EB (cache-ram 0, atomic, 32k re-prefill per turn) had done 90 of about 388 requests in 6h13m on one 24-core quarter (about 26 h projected against a 22:00Z hard end, and a stop would wipe an atomic arm). F/FB never started. Redesign needs a whole-host window or a reduced session set; KPF-64.3 stays unticked.
+- **HSF-5.P microbench: INCONCLUSIVE only on G4, a logging artifact.** G1 decode, G2 graphs-reused and G3 restore PASS; the save (tail_copies=874, replay_steps=6) and restore (device_bytes=298907648) lines are present, but the INFO enable line `HSF-5.P kv host mirror ON` is absent from `server.B.log`: the server ran at verbosity 3 and `common/log.cpp` maps that `LLAMA_LOG_INFO` to verbosity 4. AMENDMENT-G4-log-capture (instrument-only) adds `--log-verbosity 4` to every arm and requires G1 to be evaluated with all arms at verbosity 4, preserving symmetry; extra logging cannot be proven zero-overhead, so the rerun is a separate measurement. The 15:44Z INCONCLUSIVE stands; the GPU rerun is booked after v11-086-cpu.
+
+Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-18-S1.R4, HPR-B, KPF-64.3) · [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) (HSF-5.P) · [backlog-audits checkpoint](../docs/reference/backlog-audits-2026-10-24-checkpoint.md) (HPR-B-SIM-DISAGREE-1, HSF-5P-G4-LOG-1) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): KPF-17.4c finds no reproducible restore defect, 13.1b is a near-tie artifact, KPF-18.0b closes, and the HSF-5.P build gate holds
+
+**Confidence: verified** (run verdicts and predeclared rules in the cited sources); the fork-fix reading is **inferred** until KPF-17.4d.
+
+- **KPF-17.4c: `none_reproduced`, `control_layout_numerics` 4/4.** The layout-matched bisect does not reproduce the c1 divergence, so KV cell layout explains KPF-17.4b's apparent `target_restore_defect`. The CPU legs of KPF-17.4 and KPF-19.1a PASS (honest 6/6, flag_on 3/3, `mut_no_transfer` detected 3/3), but both boxes stay open on the GPU FAIL and the CH-18 build.
+- **KPF-13.1 reconciliation: the 13.1b failures are near-ties.** All 10 failing runs sit inside the 0.031567 band, repeat exactly, and the controls are token-identical. The rules-v4 spec-off judge has no near-tie clause; that is a rule finding and the recorded verdict stands. The fork-fix-build premise is withdrawn: no fix is built until the new KPF-17.4d (a predeclared near-tie- and layout-aware re-judge) decides.
+- **KPF-18.0b closed (`G3_EXACT`).** Group 3 (T = 16384) is bit-identical 4/4 with tokens 4/4; combined groups 0-3 are bit-identical 15/16, tokens 16/16 (grade OBSERVATION). The one g1 / suffix 2 miss has equal tokens and differing top-k probs and goes to KPF-18.0e as CPU input.
+- **KPF-18.0d item 3 group 3 v3: `TARGET_SIDE`.** The token-1 flip (2.13 nats, 3/3) survives graphs OFF and the child's drafter request-off, so it is not HIP-graph reuse or the first verify batch. Item 3 stays not closed; a layout-matched control at T = 32000 is filed, with the caveat that 17.4c's drift is 1e-4-scale and may not explain a 2.13-nat flip.
+- **HSF-5.P build gate verified from logs and binaries, with a negative control.** B0 (`test-kv-host-mirror`) passes CPU-only; B1 finds the three gate strings in the built libs, while the C3 control image has none of them and does have the control string, so the gate can fail. Linkage verified. The microbench with its G1-G4 gates has not run, so the box stays open.
+
+Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-17.4c, 13.1 reconciliation, 18.0b, 18.0d) · [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) (HSF-5.P) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): the DFlash2 restore defect is target-side, the 60k fork deviation is fork-specific, chunk-KV G0 is bit-identical, and the host KV mirror trigger fires
+
+**Confidence: verified** (run records and predeclared rules in the cited sources).
+
+- **KPF-13.1b is decision grade: `target_restore_defect`.** The drafter-on resume ended rc 0 at 08:07Z; rules v4 give `kpf13_1b_locus = target_restore_defect`, with failing spec-off arms g0-S2:B, g1-S2:B, g2-S2:B, g3-S1:B, g3-S2:A (spec-off A 5/6, B 2/6 PASS, no drafter loaded). The drafter-on acceptance drop is therefore confounded by the target-side defect and does not fire the upstream #30141 trigger. [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
+- **KPF-17.4b's `target_restore_defect` reading is confounded by KV cell layout.** Its control C was seeded while the 14336-cell source was resident, so C's cells sit at index 14336+ while the fork X attends cells 0..c-1 written on an empty cache; X differs from C from token 0 (1e-4 to 3e-4) while C1 == C2 == C3 bit for bit. `kpf17-4c-bisect` (rules v1, prepared not run) adds layout-matched arms (Xc~Cmask, Xe~C0, Ks~C0), each judged by exact bit identity; it refuses until KPF-13.1b is decision grade (met 08:06Z).
+- **KPF-18-S1.R3: item 3 stays `NOT_SATISFIED` at 60k, fork-specific.** Worst child-vs-cold 0.029879 against a six-pair floor of 0.027456 (ratio 1.088); the six cold pairs held only two distinct values (the cold spread depends on resident-sequence count, not the slot); child-vs-prompt-cache-hit 0.030706 is outside the floor. The follow-up is **KPF-18-S1.R4** (localise the deviation). Item 2 cell g3.s2 reads `G3S2_WITHIN_PLACEMENT_FLOOR` (three Q repeats; the one-sample prefix floor of 24 was unrepresentative), so item 2 is placement numerics at all 6 judged cells. The item-3 group-3 v2 test read `FORK_EFFECT`; a v3 launcher (graphs ON / graphs OFF / child `speculative.n_max 0`, 3 loads each) is prepared.
+- **KPF-62 chunk-KV reuse: code landed, G0 bit-identical.** `experimental/kpf62-456-20261024` adds `llama_chunk_kv_decode_at` (sparse recompute that fills a position hole; attention-only, refuses otherwise), a shared `server-chunk-recompute.h`, server `--chunk-store-mib` / `--chunk-max-tokens` and a `kv_chunks` request field (off = champion path), and the G3 harness (`test-chunk-kv-g3`, `g3_gate.py`). ctx_dft, MTP, DFlash and quantized-K are startup refusals in v1. The branch was re-pinned to `786a30078` after a stale-build check grepped the thin `llama-server` launcher instead of `libllama-common`; the build passed and the on-role G0 gate then PASSED bit-identical (G0a / G0a-al / G0a-inj). G3 rows wait on a frozen corpus manifest (KPF-60, P0 thresholds section 8 TBD). Manifest row V11-105. [progress](../progress/2026-10/2026-10-24-3c4ca599.md)
+- **KVU-12.3 closes NOT-NEEDED on quiet traffic only.** Only 5 resumed turns fell at >= 3 busy slots, so the predeclared fallback pooled all concurrencies (1,235 resumed turns; 4.52% against the 5% bar). KVU-12.3b re-checks on the busy subset once >= 100 such turns exist on :8083 (stack down since 10-23). [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
+- **Host-pinned KV mirror (HSF-5): the DI-140 trigger FIRES.** Worst-case KV-tail write-through costs 0.44% of a spec-ON step and 1.01% of a spec-OFF step (128 serialized copies), 0.014% as one staged copy; the 149.6 MiB recurrent state fits the 3% budget only as a checkpoint every 6 (ON) / 13 (OFF) steps. It removes 130 / 218 / 395 ms (tmpfs), 250 / 417 / 753 ms (disk) or 105 / 155 / 184 ms (`--cache-ram`) per handover at 8k / 16k / 32k, using graphs-ON rates (HSF-4.G: the KPF-18-S1.7g rule found 4 of 21 cells graphs-sensitive, so HSF-4/5 re-quote only the graphs-ON run). A copy inside the captured HIP graph breaks reuse; graph-safe is a side-stream copy after the step event. Handover frequency is unknown (HSF-3.1), so value is bounded at 0.1-0.75 s per handover. Prototype HSF-5.P (`experimental/hsf-5p-host-kv-mirror-20261024` @ `14d0f7fa2`, `--kv-host-mirror`, default off) is code-complete but not compiled. Per intake-2126#record and intake-2140#record. [hsf-5](../docs/design/hsf-5-host-kv-mirror-costing-20261024.md), [hsf-4](../docs/design/hsf-4-results-20261023.md), [HSF residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency)
+
+Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [hsf-5 costing](../docs/design/hsf-5-host-kv-mirror-costing-20261024.md), [hsf-4 results](../docs/design/hsf-4-results-20261023.md), [llama-v11-manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the KPF-18 CPU re-runs and graphs-ON step 7 land, KVU-12.3 closes NOT NEEDED, and hybrids get a declared checkpoint count
+
+**Confidence: verified** (run records and predeclared rules in the cited handoffs); the CPU re-runs are OBSERVATION grade at 8 pairs and 128 tokens, below the gate's 32 pairs and 256 tokens.
+
+- **KPF-18.0b CPU re-runs (items 1, 2, 5; fixed runner `d4633648…`, 2026-10-20).** Item 5 holds on both cache-idle settings: pool used equals private plus shared 22/22, `pool_used_eq_expected` 14/14 (it was 12/14 on the buggy runner), continuation bit-identical 2/2. Item 1 (MTP on): the fork was taken at n_fork == T in 8 of 8 and top-1, max-abs and greedy prefix match the fresh-vs-fresh control, but KLD max is 0.1045 against 0.0840; that figure is exactly the reverse-direction KL of the control's own pair, and the fork is bit-identical to fresh-B in 8 of 8. The MTP-off arm is a cache restore (`n_fork_tokens` 0), not a trunk fork. Item 2 is bit-identical in 11 of 12 pairs (tokens 12/12) on a partial record; the miss is group 1 / suffix 2 (equal token ids, different top-k probs, 213 vs 210 MTP drafts). "Item 2, rest" is filed as one CPU-quarter inference job.
+- **KPF-18.0b.2 answers NO.** `fork_off` polls carry no `kv_cells_*` key in 0 of 73 polls (fork_on 43/43), by construction: the fork tree gates the cell scan and every `llamacpp:kv_cells_*` gauge on the fork being enabled.
+- **KPF-18.0d item 3 v2 (same-shape control, GPU 27B): verdict `FORK_EFFECT`, 3/3 valid loads.** The child is a fork-effect candidate 3/3 (first divergence at token 1, nofork top-2 margin 2.13 nats), source arms identical 3/3. This does not settle R3 (18.3 part 4): coldC/coldD, the prompt-cache `sameshape` arm and the item-2 g3 repeats are unrun.
+- **KPF-18-S1.7g: step 7 with graphs ON is `graphs-sensitive` in 4 of 21 (L, mode) cells** (cache_baseline at 8000 and 16000; disk_restore_cold and cache_load at 32000). HSF-4/5 must quote the graphs-ON rates (HSF-4.G filed). The difference is attributed jointly to graphs ON, the HSA knob and the fresh-load / step-7-only history, never to HIP graphs alone.
+- **KVU-12.3a closes KVU-12.3 NOT NEEDED.** Rule predeclared before reading: re-prefill caused by divergence inside the previously generated span must reach 5 % of processed prompt tokens at >= 3 busy slots (fallback to all concurrencies when fewer than 10 such turns). On the :8083 log, 1083 of 1235 resumed turns extend exactly (87.7 %), 152 diverge in the generated span; with only 5 turns at >= 3 busy the fallback applies and R = 4.52 % < 5 %. Caveat: the cost sits at 1 busy slot (4.9-6.9 %), where A7 step 1 (render-side root cause) is the cheaper lever. KVU-21's trigger also closes on a refresh: median recompute 0.015 (1 busy), 0.014 (2), 0.065 (>= 3, n = 43).
+- **Hybrid checkpoint count is now declared in the registry.** RATIFY-CTXCKPT-HYBRID-20261024 puts `ctx_checkpoints: 32` on frontdoor, architect_critic and architect_general; the compiler emits and attests `--ctx-checkpoints 32` for the five hybrid targets, every other argv byte-identical (32 is the default, so no reload).
+- **KVU-16g-2 package component drafted, not deployed:** the decode-aware prefill budget flags for :8083 (see [hardware-optimization](hardware-optimization.md)). A KVU-12.1b 64k holdout (dense vs coarse, ~7.3 h, one CPU quarter) is prepared, not run.
+
+Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [qwen38-27b-replace-qwen36](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md), [prefill-budget package](../docs/design/prefill-budget-8083-stack-change-package.md).
+### Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-f8 delta): the slot-fabric source rates must come from the graphs-ON run
+
+- **KPF-18-S1.7g came out `graphs-sensitive`** (4 of 21 length-by-mode cells), so the HSF-4/5 source-rate sub-term must be re-quoted from the graphs-ON step-7 run, all numbers from that run. The difference is attributable to graphs ON, the knob and the fresh-load history jointly, not to HIP graphs alone.
+- **Graphs-disabled restore rates stay labelled as such.** tmpfs restore 8.26 / 9.27 / 6.15 GB/s and cold-disk restore 4.12 / 4.10 / 3.06 GB/s at 8k / 16k / 32k, and the earlier judgement that copies sit inside the 3-rep spread is retired (box HSF-4.G).
+- **Not yet judgeable:** the session-keyed dispatch probe still has 0 records with a session key (108 ever), so the fabric dispatch claim waits on live traffic from the restarted API.
+
+Sources: [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 20, 3c4ca599): KPF-64 ran 8/8 arms (checkpoints are load-bearing on hybrids; the RAM tier added nothing at np=4), and INF-42 G1 shows no recall drop to 128K
+
+**Confidence: verified** (run records in the cited handoffs).
+
+- **KPF-64 result.** Frontdoor Qwen3.6-35B-A3B-MTP Q8_0 (hybrid qwen35moe), CPU, np=4, v10 store binary, 19 paired sessions / 388 requests, ideal prefix-hit bound 93.88-93.89% on every arm. Arm A (`--ctx-checkpoints 0 --cache-ram 0`) realised 90.17% / 89.28% (gap 3.71 / 4.61 pp, about 3.6-3.9k uncached tok/req); B, C, D (32 checkpoints, cache-ram 0 / 2048 / 32768) all realised 93.54% (gap 0.35 pp, about 2347 uncached tok/req), replicated across both passes. Predeclared verdict: checkpointing is the whole effect, and the `--cache-ram` tier adds nothing measurable at np=4. ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), KPF-64)
+- **Follow-ups (KPF-64.2/.4/.5).** Pairwise contrasts among B/C/D are null; the pooled checkpoint effect is about -3.9 pp. The 0.35 pp residual is an ideal-estimate artifact. Policy: `--ctx-checkpoints 0` must never be set on a hybrid role; no frontdoor change (it already runs 32 checkpoints + cache-ram 32768). Whether the RAM tier matters above 4 lineages is untested (KPF-64.3, E/F arms, armed). Fan-out was not exercised (child share 0%). ([progress 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md))
+- **INF-42 G1 closed.** q8_0 KV on the frontdoor: 100% needle recall (50/50) at 4K, 32K, 64K and 128K at every depth, 9/9 at 256K; f16 control 100% at 4K and 128K, so q8_0 KV costs nothing on this probe. It is a ceiling result: it rules out collapse-scale amnesia but cannot rank configs or bound subtler loss. ([multiscreen-attention-evaluation](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation), G1)
+
+### Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-f8): acceptance intervals from in-run spread, the 27B's SWA cache is the drafter's, and what an idle-cleared slot restores
+
+**Confidence: verified** for the rules, re-judge counts and the oracle history (handoff records, the queue job 24 record). The idle-slot findings are **inferred** (code reading at `49550eda5`, no run yet).
+
+- **KPF-13.1 rules v3: take the acceptance interval from the control's own spread.** Rules v2 took the interval from a single same-shape control, which gives zero width (for example draft_n in [83,83]). All 7 v2 failures were acceptance-only and off by 1-4 draft tokens. Rules v3 run K=3 same-shape controls per arm and accept within (min - spread, max + spread), with the rules hash recorded.
+  - Re-judged offline, the v2 cells pass A 12/12 and B 12/12. They are still not decision-grade, because v2 had only 2 controls per arm.
+  - Two runs are armed: a DFlash2 arm on the 27B GPU fork image, and a plain-MTP CPU arm that adds the `skip` launch needed to decide KPF-13.1a ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
+- **KPF-17.4: the "SWA range fix" blocker was stale, and the real gap was elsewhere.** The 2026-10-20 failures were oracle defects, fixed by `f3a3bb4b1` and verified by queue job 24.
+  - On Qwen3.8-27B + DFlash2, the target is hybrid with n_swa 0. The SWA cache is the **drafter's** (`sliding_window` 2048 on all 5 layers, 8704 cells), so neither existing test could see it.
+  - A new driver (`kpf174_swa_drafter.py`) forks at junctions 2148, 4096 and 10240 on a 14336-token source, so the drafter window has been overwritten. It judges the drafter behaviourally in four launches: honest, `mut_partial_noop`, `flag_on` and `mut_no_transfer`. Both mutants must be DETECTED.
+- **KPF-18-S1 remainder: re-predeclare when the rule's basis abstains.** 18.3 part 4 abstained because the three runs disagreed at token 1, leaving a common greedy prefix of 0. It is re-predeclared as a teacher-forced d() over the S1 cold-A sequence.
+  - Item 2 is re-judged against a placement-varied control (the source restored onto another slot through the prompt-cache path), not the zero A/A floor. That floor measures run-to-run determinism, not placement.
+- **What an idle-cleared slot restores (code reading at `49550eda5`; check before quoting).**
+  1. An explicit `id_slot` on a slot that cache-idle-slots cleared skips the RAM restore: `f_keep` = 0/0 = NaN, so the `< 0.5` test is false, `prompt_load` never runs, and the turn re-prefills from zero. Only `id_slot=-1` LRU selection restores.
+  2. "Explicit id_slot reuse overwrites the victim without saving it" is wrong at the default `slot_prompt_similarity 0.1`: the victim is saved first. It holds only with `--slot-prompt-similarity 0`.
+  3. With the pool full and idle contexts resident (OFF arm), `try_clear_idle_slots` purges idle slots with no RAM save, so the dropped conversation's next turn is a cold prefill.
+
+  UFH14-LB7 is armed to attribute the 43.5 s pre-prefill stall from `-lv 4` TRACE lines. Its predeclared verdicts are OWNER, SHARED, UNATTRIBUTED, NOT_REPRODUCED and INSTRUMENT_FAIL ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), UFH14-B4j.1).
+
+- **KPF-LB1.1: the orchestrator's rebuilt-prompt /completion path keeps most of its prefix cache, so no `message_delimiters` flag.** A 12-turn REPL transcript was self-captured on a private 27B server (`coder_escalation`, orch `f3ab78b2`) and replayed on both lanes on a restarted server. /completion turns 2+ had a median hit of **0.818** (token-weighted 0.814), against **0.951** (0.953) for chat with `message_delimiters`; 0 of 11 turns fell below 10% on either lane. The predeclared trigger (/completion re-prefilling below 10% while chat does not) did not fire, so the verdict is NO_CHANGE. The roughly 13-point gap is recorded, not acted on. One transcript and one role, graphs disabled (GPU-LEAK-1 mitigation) ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) KPF-LB1.1).
+
+#### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
+
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-13.1 rules v3, KPF-13.1a, KPF-17.4, KPF-18-S1 remainder, KPF-LB1.1 verdict)
+- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB7, B4j findings, UFH14-B4j.1)
+- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (SPEC-GRAM.1 part 2 armed on the MTP lane)
+- [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+---
+### Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): always-F32 FA accumulation costs nothing on the architect's CPU decode
+
+**Confidence: verified** (predeclared rule plus Amendment 2, 3/3 valid ABBAAB pairs, every row checked not hardened).
+
+- **KVU-LB1.b run 2: NO_COST.** On the champion store image `49550eda5` (build 10411), Q38FN architect recipe, 96 threads, the median decode effect of F32 vs F16 VKQ accumulation was N1@8k +1.38%, N5@8k +0.86%, N1@32k +1.05%, N5@32k +14.1% (one noisy pair); no cell reached the -1% cost threshold.
+- **Why prefill is not at stake.** `GGML_FA_VKQ_*` only acts in the per-row chunk kernel that serves N<64 query rows (decode, short verify, split-KV). The tiled path used by every 512-token ubatch always accumulates in FP32. The report-only prefill probe agreed (+1.8% / -0.1%).
+- **Consequence.** Always-F32 removes the FP16 V-accumulator overflow risk (KVU-LB1.a) at no measured decode cost. KVU-LB1.d adopts it: choose the carrier (recipe env per CPU role, or a compiled default through the fold ledger), and check the frontdoor and worker CPU shapes with the same guarded harness before flipping a global default ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
+- Run 1 of the same A/B was discarded: its F32 arm ran the hardened llama-bench protocol unasked (see benchmark-methodology).
+
+#### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
+
+- [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-LB1.b run 1 and run 2, KVU-LB1.d)
+- [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) (the llama-bench defect behind run 1)
+- [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+
+### Compiled Update — 2026-10-23 (wrap-up sweep 17, workspace-f8): coarse checkpoints replace dense at 32k (on a wide spread), and the KPF-26 outcome clause keeps
+
+**Confidence: verified** for the verdicts (VERDICT.json / summary files named in the handoffs). **Observation grade** for what the verdicts imply about production: each one rests on a single predeclared run.
+
+- **KVU-12.1b: coarse REPLACES_DENSE at 32k, against the predicted DENSE_STAYS.** Coarse checkpointing (`--checkpoint-min-step 16384`) keeps 534.05 vs 735.05 MiB per sequence (-27.34%). Its prompt_n stays within the dense wave spread on all four probes. This supersedes, for the coarse grid only, sweep 10's "KVU-12.1 reads DENSE_STAYS" below ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
+  - **Do not oversell it.** On edit_back_8192 coarse re-prefills +5,908 tokens more than dense (~52% more). It passes only because the dense wave-to-wave spread on that probe is itself 6,644 tokens, and the rule is spread-relative. More waves could flip it. Coarse also gains 3,970 tokens on edit_back_16384.
+  - **Scope.** The verdict covers the 32k holdout only. At 8k coarse ties dense, because the conversation is shorter than the 16k step. 64k and 128k are unmeasured.
+  - **Next.** HYBRID-PREFIX-REUSE (b) is re-opened: a 64k holdout of dense vs coarse with more waves, so the dense spread is measured rather than assumed. Production keeps `--ctx-checkpoints 32 --checkpoint-min-step 8192` until then.
+- **KPF-26.1d/e (another session's runs): both v2 windows are WITHIN_SPREAD, so the outcome clause reads KEEP_ON_ELIGIBLE.** Each window ran 144 cases with all gates passing. Window 1: pass A 0.951 / B 0.979, drop -0.028. Window 2: A 0.951 / B 0.958, drop -0.007. Enabling still waits on KPF-26.1g (the terse-share check) and the KPF-26 timing clause ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
+
+#### Source References (2026-10-23 wrap-up sweep 17)
+
+- [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-12.1b, HYBRID-PREFIX-REUSE (b))
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-26.1d, KPF-26.1e)
+- [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
+
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): upstream #28576 is carried by the pull; the GPU VKQ half-staging question is open (V11-FA-8)
+
+- V11-FA-7 decided: upstream #28576 (fp32 VKQ accumulation on MFMA, V11-050) is carried by the v11 pull because `bfdc32183` is an ancestor of upstream master `11fe02151`; presence gate G-ANC. It is perf-only on MMA-routed MFMA shapes and overflow-neutral: opnan arms with and without it fail the same 6/228 cases, and it does not touch the ROCWMMA-ON champion route ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
+- CPU-FA-VKQ-4 closed with a corrected premise: upstream has not fixed the GPU analog (the unnormalized VKQ partial is still staged as half before the row-sum division); the CPU defect is upstream issue 29774 / PR 29810, where KVU-LB1.a posted the reduced repro and accumulator peaks.
+- V11-FA-8 (open): measure per-layer peak abs(V) and unnormalized row sums on the 27B (8k repetitive and 57k contexts) and file upstream only if a value is non-finite or exceeds FP16 range. Candidate FA gates compare the non-finite case set against the incumbent rather than demanding 0/228 on the bias1024 stress.
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): KVU-12.1 reads DENSE_STAYS, the fork flip is numerics not a defect, and CME-7 missed its cache gate on client layout
+
+**Confidence: verified** for the recorded KVU-12.1, KPF-18-S1 and CME-7 numbers (run artifacts and server logs, read offline) and for the driver fixes (tests, no server); **inferred** for the CME-7 checkpoint mechanism (INFO-level log, read from cached-token arithmetic plus source) and for every prediction not yet re-run.
+
+- **KVU-12.1 checkpoint-policy arms: DENSE_STAYS for every alternate arm.** Qwen3.6-35B-A3B-MTP Q8_0, one CPU quarter, fork binary, `decide` selection null. Keep `--ctx-checkpoints 32 --checkpoint-min-step 8192`. The 8k conversation (~8.2k tokens) is shorter than every min-step of 8k or more, so dense, coarse, fixed_s8k_c8 and fixed_s16k_c8 place identical checkpoints (296 / 231 MiB for w0 / w1) and fail the bytes rule by tying; fixed_s4k_c8 costs +27.8% bytes and halves edit_back_4096 `prompt_n` (5,176 vs 10,331). 8k therefore does not discriminate.
+- **tail_junction fails on substance at 32k.** On the clean w0 pair it saves 40% bytes (460 vs 763 MiB, 4 vs 7 states) but edit_back_8192 / edit_back_16384 fully re-prefill: `prompt_n` 37,976 / 37,989 vs dense 9,200 / 18,766, TTFT 620 / 651 s vs 291 / 520 s (indicative). Junction-only placement loses every resume deeper than the last user message. Only the coarse grid is unmeasured at 32k (KVU-12.1b, 2.2 h, ~45 GiB, launcher armed, not run); the prediction stated before the run is that coarse restores near ~17k, `prompt_n` about 21k vs 9.2k, so it fails and DENSE_STAYS holds.
+- **The simulator was NOT validated, and the launcher did not check.** `sim_matches_log=false` in 16/16 cells (12/12 at 8k); phase 2 started on phase-1 rc 0 alone. Causes were in the driver: estimated rather than rendered user-start offsets (sim 31,064 vs log 28,930 at 32k), the first user start dropped (the server's empty-set checkpoint sits at 154), an n_ubatch checkpoint 4 tokens off, and a wave-1 artifact (w1 inherits the w0 checkpoint at 154 on the warm server, so every w1 row under-reports count by 1 and bytes by ~63 MiB). The two 32k w1 ERRORS were a driver bug, not a server fault: `fit_conversation` overshot its target (38,868 vs 32,688 tokens) and `extend_1` overflowed `-c 40960` (HTTP 400), which also explains tail_junction's 3,233 s wall.
+- **KVU-12.1a driver fixes landed (research `f7b647705`, not pushed).** Fit refuses loudly (`REFUSED_FIT`), `-c` is sized per cell with a pre-request `REFUSED_CTX`, an exact `ServerSim` runs on rendered token ids, each ckpt cell gets a fresh server, and `run` refuses (rc 8, `REFUSED_SIM_GATE`) while an earlier cell lacks exact agreement. Offline re-check of the recorded run: wave 0 went from 0/8 cells to 8/8 cells and 34/34 requests exact (prompt_n, cache_n, positions, count, bytes); wave 1 still differs only by the inherited checkpoint. 86 tests pass.
+- **KPF-18-S1: the fork flip at token 161 is read as batch-shape/placement numerics (OBSERVATION grade, not a verdict).** Predeclared item-3 rule NOT satisfied, `aa_diverges_earlier`: the no-fork A/A pair itself diverges at token 114 (margins 1.10 / 0.87) while the fork-vs-nofork flip at 161 sits at a 0.167-nat near-tie, 0.010 nats above the 0.157 A/A noise. The fork arm differs from nofork in exactly the dimension the A/A does not vary (shared vs private trunk cells, child resuming at a different time: child TTFT 12.0 s fork vs 14.6 s nofork), so the nofork arms are not a same-shape control; on deterministic CPU, KPF-17.2(3) is byte-identical. A v2 same-shape control (three arms, n >= 3 fresh loads) is filed and armed, not run.
+- **KPF-18-S1 per-item counts.** Item 2 (A/A-floor oracle) 0/12 OK: the zero floor is run-to-run determinism with placement fixed, not the placement floor, so it needs a placement-varied control. 18.1 rules met (A 3/3 n_fork == T; A_tailonly recorded 3/3 at 8000, probably an arm-order confound); 18.2 cold and policy controls met (junction-only = dense = 8508); 18.3 part 1 chunk-split cost -0.25% / -0.08%, inside noise; 18.3 part 4 ABSTAINED (common greedy prefix 0 < 16). Steps 6 (KPF-19.1a) and 7 (HSF-4/5) did not run.
+- **KPF-26.1 outcome runner exists now.** The "runner not located" blocker was wrong: nothing existed, so it was written (orchestrator `c6f58498`, pushed, not merged; 18 fake-endpoint tests). It renders every delegate-wave step with the real `_build_step_prompt`, flags off (arm A) vs shared-first (arm B) plus a flag-off rerun (A2) as the spread; verdict UNCHANGED / WITHIN_SPREAD / CHANGED / INVALID. KEEP_ON_ELIGIBLE needs both windows (seeds 261, 262) UNCHANGED or WITHIN_SPREAD; no window has run. Trunk-prefilled-once timings, child TTFT and admission waits stay in KPF-26.
+- **KPF-LB1: on the 27B chat path one turn in five to four re-prefills from near zero at turns 2-3.** From opencode step records (token-weighted hit): qwen-gpu (Qwen3.8-27B) turn 1 0.032 (n=162, 85% cold), turn 2 0.696 with 19.8% of steps below 10% cache, turn 3 0.784 (24.7% cold), turns 4-5 0.878, 6-10 0.934, 11-20 0.948; qwen-local (Flash-Next) turn 2 0.976, 0% cold from turn 2. The /completion x turn cell is NOT measurable from retained logs (`serving_calls` has no session or turn key; 8 `/completion` rows), so the `message_delimiters` flag is not added. KPF-LB1.1 (replay one captured 12-turn REPL transcript through /completion and chat, ~25 min on :8083) is armed; its capture fixes landed (orchestrator `cdbca26b`).
+- **CME-7 poker smoke missed the prefix-cache gate: 0.7948 vs 0.95 (103,933 cached / 130,762 reusable), mostly client layout.** Of 26,829 re-prefilled reusable tokens: 52.4% (14,058) the schema instruction was attached only to the OUTGOING last user message, so the previous user message changed at its tail; 41.1% (11,028) previous-call generated tokens that the CME-5 rule counts as reusable but a hybrid server never reuses (accounting); 6.5% (1,743) parse-retry history rewind; slot misrouting 0, so pinning slots would gain nothing here. For every one of 38 steady-state calls `cached = previous_input - (380..460)`, i.e. exactly one user message re-prefilled.
+- **Mechanism and gate amendment.** For a recurrent model the slot resumes only from a context checkpoint (last user-message start and prompt end - 4); the LCP ended inside the previous user message, so the end-4 checkpoint was rejected and the user-message-start one used (inferred; CME-7S reruns at `-lv 4`). The 0.95 bar stands but the CME-5 denominator is unreachable (about 0.91 even with perfect layout), so the gate basis was amended before any rerun to `prompt_prefix`: recorded smoke 0.868, projected about 0.99 after the layout fix (research `08ace05fd`, instruction stored once in the user message). Confirmation needs CME-7S.
+- **CPU-FA-VKQ-3 moved to the top of its queue.** Production v10 has no fix for the dense F16 MTP head's overflow-prone accumulation and the architect declares 262144 context, so the > 64k MTP acceptance check (`GGML_FA_VKQ_F16=1` vs default) is now first. Evidence was also posted upstream (llama.cpp PR #29810): non-finite only for n_q < 64 once n_kv*bias > 65504, F16-accumulator sub-overflow error 0.297 vs 4.1e-5 in F32, fused-F32 op-time parity on Zen 5, real-model peak 237.6 with a 2048-cell window.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-12.1 verdict, KVU-12.1a driver fixes, CPU-FA-VKQ-3, KVU-LB1.a upstream post
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — KPF-18-S1 counts and item-3 reading, KPF-26.1 runner, KPF-LB1 turn table, KPF-LB1.1 spec
+- [progress/2026-10/2026-10-22-cme7-cache-miss.md](../progress/2026-10/2026-10-22-cme7-cache-miss.md) — CME-7 miss decomposition, checkpoint mechanism, gate amendment
+- [progress/2026-10/2026-10-22-kpf261-runner.md](../progress/2026-10/2026-10-22-kpf261-runner.md) — KPF-26.1 runner design and rule
+- [handoffs/active/conversational-memory-eval-instrument.md](../handoffs/completed/conversational-memory-eval-instrument.md) — CME-7R/7S/7T task text and the cache finding
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — KVU-12.1 / KPF-18-S1 verdict analysis
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 9): KPF-64 is slow because of decode contention, not thinking, and it keeps the live design
+
+**Confidence: verified** for the decode rates and the per-arm times (server logs and harness tests); **inferred** for the 4-night total, which depends on windows.
+
+- **Mis-diagnosis corrected.** The first explanation for the slow replay was thinking-on. The logs say otherwise: on raw `/completion` (no chat template) `predicted_n` averaged 119 against a 128 cap, and decode ran at 0.80 tok/s per slot because it competes with the other three slots' prefill, while prefill alone ran about 200 tok/s aggregate.
+- **Outputs are not skippable.** In `--history live` the model's reply is stored, re-sent in later prompts and defines the ideal bound, so an `n_predict 1` shortcut would change what is measured. Research `b93017dc9` caps live generation at the recorded reply length (-17% decode tokens), fixes the `--history reference` bound (`slot_holds_output=False`) and keeps the endpoint on raw `/completion` on purpose (a chat template tail would force a rollback per request).
+- **Time per full arm (24 threads).** Live about 20.7 ks (A) and 14.7 ks (D); the jobs' per-arm minimum windows are 23,800 s (A, B, C) and 16,900 s (D); the reference variant would take 11,500 and 8,100 s. A 2 h 50 min window cannot finish a live arm.
+- **Operator decision (2026-10-22).** Keep the LIVE design with night windows: one atomic arm per quarter-night of at least 6.6 h, 8 arms, about 4 nights. The reference-history variant stays a declined alternative on record. Partial arms pass1-A (196/400) and pass2-D (260/400) are voided (PREDECLARED Amendment 2).
+
+#### Source References (2026-10-22 wrap-up sweep 9)
+
+- [progress/2026-10/2026-10-22-kpf64-decode-fix.md](../progress/2026-10/2026-10-22-kpf64-decode-fix.md)
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
+- [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): the fork is cleared of the 1-token divergence, the G1 reference was the defect, and unified-vs-split np4 reads NO_DIFFERENCE (weakly)
+
+**Confidence: verified** for the named run records and logs; **inferred** for the filed Locals+Beacon tasks; the KVU-12.4 verdict is PROPOSED-until-ratified and weak, and the np8 pair is CONFOUNDED (no verdict).
+
+- **KPF-13.1 closed in the fork's favour.** The 1-token-suffix divergence is CPU batch-shape numerics (a 1-token ubatch takes vec_dot, not GEMM), not a fork defect; kpf13-v2 shows the fork token-identical to a cache hit 24/24. The same batch-shape drift explains SPEC-RNG.1.1: np1==np4 identity failed 7/8 and 6/8 with a stateful control drifting identically, so the RNG is not the cause.
+- **kvu12-2: an MTP drafter-state bank fixes a roughly 20% decode loss on restore** (f8, ran inside f8-day-q0).
+- **KPF-18 item 3 (fork vs no-fork, G1 repeats, six records).** Token-identical 17/21 vs A/A 20/21, minimum greedy prefix 43 for both. Fork divergences: group 0 at token 43 (once) and group 3 at token 161 in 3 of 3 passes, while group 3 A/A pairs were identical 3 of 3. Observation grade; KPF-18.0d item 3 group 3 is filed to read the top-2 margin at 161 (a near-tie means not a fork effect).
+- **KPF-62.8 chunk-KV real-role G1 (Qwen3-VL-30B-A3B Q4_K_M, f32 K/V): the pre-registered reference was the defect.** First run failed 9 checks (K NMSE 1.4e-3 to 1.8e-3, V 6.4e-3 to 7.8e-3, logits 5.4e-3 to 8.7e-3 at deltas 1/17/300) although injected V was bit-identical to source; the drift is ulp-level RoPE rounding amplified by q8 re-quantization and router top-k flips across 48 layers. Fix @ `357f3117f` adds G1a (inject vs in-tree `seq_add`, bit-identical K, V, logits); re-run PASS at all three deltas, and the in-tree shift shows identical drift against the in-place reference. Operator-visible caveat: the criterion was changed after data existed and is recorded as an amendment (KPF-62.9 ruled option A); in-place drift is now an ungated translation-drift figure under the G3 budget.
+- **KVU-12.4 np4 L64k ABA: NO_DIFFERENCE, weak.** Unified vs split: decode sum -22.78%, per stream -24.33%, TTFT +0.79%, against anchor floors of 12.48%/11.93%/0.51% (threshold 2x floor); a 12% floor means "about 23% slower but within noise", not equal. The np8 L64k pair is confounded (unified `gpu_busy_frac` 0.4654 plus a foreign KFD process vs split 0.0). The s4 128k cell hit its 12,000 s cap on the wrong estimator and the re-runs were declined (frontdoor is moving to GPU).
+- **PB-HOL-1 budget-on arms: the prefill budget is not a head-of-line fix.** Short prompt above the long slot waited 83,352 ms vs 70,932 ms off (below it 3,593 vs 3,217.5 ms); confounded by `-b`/`-ub` 512 to 2048. Frozen PB-QCOST-1 failed held-out (MAPE 12.84% n=1, 26.32% n=4).
+- **Filed, unrun:** KPF-LB1 (cache_n/prompt_n by role x endpoint x turn; message_delimiters on /completion), KPF-LB2 (replay harness amendments before first live arm), DS-LB1 prefix-property tests, KVU-LB1 FP16 V-accumulator upstream follow-through, KVU-12.3a zero-compute log pass (open P-A patch only if generated-span divergence reaches 5% of processed prompt tokens at 3+ busy slots).
+
+#### Source References (2026-10-22 sweep 7)
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
+- [handoffs/active/numa-placement-and-contention.md](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency)
+- [progress/2026-10/2026-10-22-kpf62-fix.md](../progress/2026-10/2026-10-22-kpf62-fix.md)
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md)
+- [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md)
+
+### Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): KPF-18 item 7 fan-out speed on the MI210, and PB-HOL-1 confirms head-of-line blocking
+
+**Confidence: verified** for the recorded run numbers (records and summaries named); **inferred** for the KPF-62 slices, which are filed and not run.
+
+- **KPF-18.0d item 7 (T4, done 14:55Z 2026-10-21, rc 0, CANDIDATE grade, A/B/A/B; fork build `gpu-20261020-a1f0c8cf9`).** Four-way fan-out total TTFT: fork_off 1312.9 s and 1404.0 s, fork_on 169.3 s and 140.0 s (about 8.5x). Prefill tokens 254,512 -> 74,512, exactly the shared expectation (unique cells 75,532); aggregate decode 3.40/3.32 -> 26.5/32.1 tok/s; all checks OK. Records `/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run-c/records/` and `item7_summary.json`. Equivalence is not measured in item 7 (items 1 and 3 carry it).
+- **PB-HOL-1 off arms (16:00-16:12Z): predeclared verdict CONFIRMED.** Rule B_median >= 2x A_median holds: A-off (short slot below long) TTFT median 3217.5 ms, B-off (short slot above long) median 70932 ms, B/A = 22.05; C solo about 280 ms; solo 64K prefill 119.9 s. Slot-order head-of-line blocking is real on this server, so the ordering-fix trigger (M4, shortest-remaining-prompt-first plus a prefill-vs-prefill cap) is OPEN, and the DI-126 monitor changes from "nothing to fix until measured" to "component (ii) is measured". Summaries `/mnt/raid0/llm/tmp/pb-hol-1/runs/*/summary.md`.
+- **Budget-on arms did not run**: a harness bug (`end_phase` did not clear `self.srv`, so `check()` read the stopped phase-1 server as dead) and a preflight refusal (`plan_estimate` ignored `--phases`); both fixed. Re-armed for 2026-10-22 (`/mnt/raid0/llm/tmp/pb-hol-1/overnight-on-launch.sh`, latest start 06:03Z, hard stop 06:25Z).
+- **KPF-62.3 to KPF-62.8 filed (not run)**: selector (head window W=64 plus check-layer K deviation), sparse recompute by explicit-position batches (G0 at r=100% bit-identical), server wiring (`--chunk-store-mib`, `kv_chunks`), G3 harness on the frozen corpus, speed report vs tuned prefill, and the real-role G1 (Qwen3-VL-30B-A3B Q4_K_M f32 K/V).
+
+#### Source References (2026-10-21 sweep 6)
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
+- [handoffs/completed/mi210-serving-program.md](../handoffs/completed/mi210-serving-program.md)
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
+- [progress/2026-10/2026-10-21-workspace-f8.md](../progress/2026-10/2026-10-21-workspace-f8.md)
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): the unified-KV and prefix-fork programs gain DeepInfer probes, and two decisions close
+
+**Confidence: verified** for the recorded P1 gate results, the champion-manifest rows and the operator decision; **inferred** for every DeepInfer-derived probe below (each is a filed, unrun task whose rule is a hypothesis).
+
+- **KVU-21: agent-resume recompute probe on :8083 (filed, not run).** From existing request logs, compute per resumed agent turn the recompute fraction (prompt tokens processed over prompt tokens) against pool usage from `/slots`, at 1 to 4 concurrent agents. Rule: median fraction at or above 0.25 at 3 or more agents while usage is at or above 0.5 opens a CONCUR-style AIMD admission trigger; below closes it. The point is that the unified pool's fit limit is not the only failure mode; a pool-fit-only cap misses queue wait that rises while occupancy is low (dormant trigger).
+- **KVU-12.3: decode-boundary checkpoint arm.** A fifth hybrid-checkpoint arm in the KVU-12.1 matrix snapshots recurrent (and drafter) state every 128 generated tokens, measured on the frontdoor Qwen3.6-35B-A3B and the 27B by turn-2 resume `prompt_n` after 1k-4k generated tokens, checkpoint bytes and TTFT. Counts are correctness class; TTFT needs a window. Rationale: GDN layers cannot be "replayed instead of checkpointed" (the DeepInfer reading is retained as the boundary for any future replay proposal; only drafter SWA windows qualify).
+- **KPF-28: DS41 checkpoint and fork characterisation.** DeepSeek-V4.1 uses a dsv4 memory with a raw SWA window, compressed planes with compressor state, an indexer and engram state. Before any fork policy is chosen, record bytes per checkpoint per component, whether `create_checkpoint`/restore and the KPF-11 fork rule work on `llama_kv_cache_dsv4`, hit length against the checkpoint grid (128-aligned versus dense) and resume `prompt_n`. It decides whether a 128-grid policy or a window-state-free checkpoint (needs DS41-CED.1) is worth building.
+- **P1 prefix fork was re-cut onto the live champion tip.** Canonical branch `experimental/kv-prefix-fork-p1r2-20261020` @ `14d603f3a` on champion `dd3d9721c`: the six fork commits applied cleanly; `test-kv-seq-share`, save-load/state-restore, `test_slot_fork.py` 12/12 and `test_slot_save.py` 15/15 pass; fork-off equals champion 7/7 on two models. P1 ownership moved from workspace-ec (no bus heartbeat since at least 2026-10-08, code ungated for 16 days) to the operator session; P2-P5 stay with workspace-ec.
+- **The 10-04 "open divergence" finding is benign (KPF-18.0c).** A hybrid fork child departing from a fresh run at token 55-57 is bit-identical to the same slot continuing a trunk it prefilled itself, and a fresh run on a deliberately fragmented pool diverges at the same token. The cause is prefill chunk boundaries and KV cell layout, not fork state. This closes the order-preserving-placement worry for now (P3 stays a measure-first item). KPF-18.0b (re-run items 1, 2, 5 on the fixed runner, plus the 16k fan-out item 7) is still open; the inherited runner had three bugs (late-bound trunk length, child sent after controls, missing log dir).
+- **KPF-17a shared-trunk FlashAttention cases pass:** CPU `FLASH_ATTN_EXT` 5207/5207 including 25 shared-trunk cases; ROCm0 2978/2978. The KVU-19a 64-case exactness harness on ROCm0 and CPU remains open.
+- **Decision OP-KPF19-2: accept upstream's slot-file layout.** A pinned junction restored from a slot file (SCKP block, upstream #26004) comes back unpinned: never wrong output, at worst extra prefill if eviction drops it first. No slot-format divergence. Dormant re-pin trigger: migrated fan-outs losing fork hits after a full-to-half KV migration, handled by re-sending the trunk's `checkpoint_at` request (KPF-21).
+- **Orchestrator scout path (KPF-21/25)** is on `feat/rtg58-kpf21-25-20261020`, pushed and NOT merged: one `max_tokens: 0` trunk request with `checkpoint_at` before siblings are released, behind `ORCHESTRATOR_PREFIX_INDEX` + `_FORK` and `/props.slot_fork`. `llm_call` delegate waves are not wired.
+- **v11 champion manifest ties the KV rows together.** KVU-19a (FA masked-KV-block skip, GPU and CPU), KVU-19b commit 1 (`n_seq` hint to the vec kernel), the HIP-graph MMVQ q8_1 private arena (VRAM growth +0.057 versus +5.83 GiB), the fp16-VKQ overflow fix, FA-INT64-OFFSET (past about 524k cells at ub 2048) and the decode-aware prefill budget (decode-under-prefill x2.92 at solo prefill -4%, versus `-b 512` x3.22 at -14%) are all IN the champion `dd3d9721c`; the `:8083` prefill-budget switch lands with v11. Per-keep percentages are 5-pair screening numbers, not additive (CH-16: 36 claims compounding to +171.7% against a measured +8.524% block effect). The manifest also flags dangling ids: V11-FA-1..6 and `KVU-19b-rework-c2-cal` are referenced by the index but absent from `kv-unified-stack-rollout.md`.
+- **Dormant triggers worth remembering (no tasks):** MTP state-hook port if fork restore drops draft acceptance; iSWA `seq_pos_max` assertion (upstream #29480) on a Gemma-class gate; intra-batch state capture if the forced chunk-end split costs more than the noise floor; a host-pinned KV tier prototype (MORI UMBP gather pattern, MIT) only if an analytic write-through mirror fits the decode budget; MORI itself does not support gfx90a or ROCm 6.2, so any use is a port. Gemma-3n/4 style KV-shared prefill skipping has no consumer since Gemma-4 left the lineup.
+
+Open questions: does the fork-attributable divergence stay under the fragmented-layout control at production length (KPF-18.0b)? Do hybrid agent resumes recompute enough to justify admission control (KVU-21)? See [Inference Serving](inference-serving.md) for the slot-fabric side and [MoE Optimization](moe-optimization.md) for the routing-tap instrument.
+
+#### Source References (2026-10-20 sweep 2)
+
+- [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-21, KVU-12.3, dormant triggers.
+- [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — P1 recut, KPF-18.0c, KPF-19.2, KPF-28.
+- [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) — KV rows IN the champion and the at-risk list.
+
+### Compiled Update — 2026-09-24 (wrap-up #4): production is now unified, and the "unified costs aggregate" reading was answer length
+
+**Confidence: verified** for the live shape (launch log, `/proc/<pid>/cmdline`) and the load-only table; the
+throughput confirmation rests on n ≤ 2 per cell and one named substitution (below).
+
+- **Live since ~18:50Z (OP-54, orch `0a564a1f`, research `75ee1b8e`):** :8083 runs `-np 4 -c 196608
+  --kv-unified --spec-draft-n-max 4 -ub 2048 --cache-ram 65536`. The log reads `n_slots = 4, n_ctx_slot =
+  196608, kv_unified = 'true'`, and a 124k-token request served. O-2 (q8_0 draft KV) was **dropped**: the q8_0
+  draft cache adds a 768 MiB FA conversion buffer, which cancels its saving. np 4 at 196k fits only because
+  whisper STT left the GPU (projected free ≈ 1.88 GiB with VL resident).
+- **Load-only (server MiB above a 2,139 MiB base, 27B, n = 1):** split d8 np2/196k 39,018 · unified d4 O-2
+  np2/196k 39,026 · np4/196k 40,522 · np2/262k 42,362 · np4/262k 43,858. Each extra slot pair ≈ +1.5 GiB
+  (per-slot recurrent GDN state, not KV); 196k → 262k ≈ +3.3 GiB.
+- **Throughput verdict confirmed (RTG-57 KVU-8).** 35B-A3B fixed-length L 2048 cells: unified within 2% of split
+  in all 4. 27B cells where every request ran to the cap: unified aggregate +5.1% at np 4. Live np4 at fixed
+  length (M-4, 2 waves): 40.2/39.9, 71.4/67.8, 95.3/93.1 tok/s aggregate at concurrency 1/2/4 — in line with the
+  split study cells. The single-wave −8%/−16% was the answer-length artifact. Substitution: no fixed-length
+  **split** arm was re-run on the 27B.
+- **35B-A3B diverges even at np 1** under the two modes (0 matching fingerprints), so at 8k/32k its −5.3..+5.6%
+  per-request spread compares different sequences. np 8 fits on the 35B (44–45 GiB at 32k).
+- **Context checkpoints fire on the unified hybrid:** 26 `created context checkpoint` lines (150 MiB each, up to
+  32 per slot) since the np4 launch — the only partial-prefix reuse the hybrids get.
+- **None of these numbers can gate a decision yet:** the study drivers, M-4's live driver and M-3's log read have
+  no write-side hook, so they produce zero belief-kernel tuples and are not backfilled (VB-KVU-1, VB-KVU-1a). M-3's
+  depth-4 figure is a projection and must be recorded as one if a script ever emits it.
+- Voice/STT/TTS planners: the GPU constraints above, with the CPU speech contention numbers, are collected in
+  [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
+- **CPU speech contention decided 2026-09-24 (KVU-11b): the operator chose D, no change to the CPU speech layout,**
+  pending their own STT/TTS integration plan. So TTS stays off the GPU and the np 4 / 196k :8083 VRAM budget above
+  stands; returning TTS to the GPU (0.92 GB of weights) is a question for that plan, not open work here.
+
+#### Source References (2026-09-24, wrap-up #4)
+
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-1, KVU-1c, KVU-1e, KVU-8, KVU-9, KVU-11b (decision D).
+- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Stack window, part 2*.
+- [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md) — §6, GPU-side facts.
+- research `artifacts/np_context_kvu_study_20260924/README.md` §7–§9 (`07060eaa`).
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — VB-KVU-1, VB-KVU-1a, VB-SPEECH-CPU-1a.
+
+### Compiled Update — 2026-09-24: production was never unified — `-np` disables llama-server's auto-unified KV; the 27B GPU split-vs-unified verdict
+
+**Confidence: verified** for the root cause (frozen-tree `file:line` reads plus every live launch log) and for the 27B GPU numbers (research study README, recomputed from `summary.tsv` / `pq.jsonl` / `server.stderr`; **n = 1 per cell, no noise floor measured**). Figures marked **modelled** come from the stack-change package's buffer model, not from a run; the RAM-tier size is marked **inferred** where its source marks it so. The Qwen3.6-35B-A3B matrix was still running and uncommitted at compile time and is **not** used here (KVU-9).
+
+#### Root cause: the auto-unified default exists only when `-np` is absent
+
+The registry said "KV IS UNIFIED ON THIS SERVER" for :8083 (Qwen3.8-27B Q8_0, MI210), but **no production launch ever ran unified KV**. The frozen v10 server's `n_parallel` defaults to `-1` (auto) (`common/arg.cpp:1216`); auto becomes 4 slots **and** `kv_unified = true` (`tools/server/server.cpp:145-150`) — the only place the server enables unified by itself. Any explicit `-np`, including `-np 4`, leaves the library default `kv_unified = false` (`common/common.h:580`; help text "default: enabled if number of slots is auto", `common/arg.cpp:1548`). The orchestrator launcher **always** passes `-np <slots>` (`orchestrator_stack.py` `_build_role_command`) and no orchestrator file mentions kv-unified, so every live llama-server logs `kv_unified = 'false'`. The "unified" registry evidence came from **bench** launches with no `-np` (2026-07-31, 2026-09-17) or with `--kv-unified` passed by hand (2026-08-20). The rule for every agent is now canonical: [`OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* → "The llama-server KV mode is an argv fact, not a default"](../agents/shared/OPERATING_CONSTRAINTS.md).
+
+**Semantics.** Split: `n_ctx_seq = n_ctx / n_seq_max`, so each slot is a hard `-c / -np` partition; unified: `n_ctx_seq = n_ctx`, one shared pool (`src/llama-context.cpp:289-302`). Total attention-KV bytes are identical in both modes — only the partition changes. :8083 runs `-np 2 -c 196608`, so every request has been capped at **98,304 tokens** — the ceiling that emptied DS41 run 8's first planner reply (`finish=length`, 1235.7 s). The MTP draft context inherits the flag (both contexts get `n_ctx_seq = 196608` under `-kvu`).
+
+#### The 27B GPU study (v10 GPU binary, MTP draft depth 8, olympiad-style prompts, n = 1 per cell)
+
+| Finding | Measured / modelled | Value |
+|---|---|---|
+| Per-request decode, np 1 | measured | unified vs split +0.2% / −1.1% / −0.4% at L 2k / 8k / 32k — **equal within 1.1%**, byte-identical outputs |
+| Per-request decode, np 2 and np 4 | measured | unified **+0.3% to +5.7%** in all 6 cells (outputs differ, so different sequences are compared) |
+| Aggregate, np 4 | measured, **confounded** | unified −8% at 8k (94.0 vs 102.0 tok/s), −16% at 32k (85.0 vs 100.8); completion tokens differ (8k: 21,894 vs 24,663), so not attributed to KV mode. Where every request hit the same cap (L 2048) unified aggregate was +5.1% (97.6 vs 92.9) |
+| Long prompt at production shape `-np 2 -c 196608` | measured | **124,174-token prompt accepted under unified** (prefill 399.9 tok/s, 310.5 s); split returns HTTP 400 `exceed_context_size_error` at 98,304 after 0.2 s |
+| np 8 | measured | does not fit in either arm: L 2048 skipped at 63 GiB whole-device (above the 62 GiB guard); L 8k/32k OOM at load (32k on a 10,773 MiB `rs cache` allocation). The per-slot GDN recurrent state, not the KV mode, limits the slot count |
+| O-2 (`-ctkd/-ctvd q8_0`) per-request | measured | 39.4 vs 37.1 tok/s (2k), 41.0 vs 41.3 (8k) — **no per-request cost** |
+| O-2 saving 0.35 GiB (draft KV 768 → 408 MiB) | **modelled** | package buffer model at `-c 196608`; the integer-GiB device column shows no difference at the tested shapes |
+| Unified KQ-mask growth +0.75 GiB | **modelled** | mask is 768 MiB at any `-np` under unified vs `196608/np × 2048` elements split; +384 MiB per context × 2 contexts at np 2 — fixed at load, not a runtime ratchet |
+| MTP draft depth 4 vs 8 (unified) | measured | acceptance 0.632 / 0.648 / 0.661 vs 0.403 / 0.448 / 0.443 in the same cells (all v2 depth-8 cells: 0.368–0.460); per-request +7.8% (np2 2k), −2.4% (np2 8k), +2.4% (np4 8k); load-only at `-np 2 -c 196608 --kv-unified`: 63,568 vs 64,582 MiB whole-device = **1014 MiB less** at depth 4 |
+
+Verdict (progress log): **unified KV does not cost throughput** on this model; a fixed-length (`ignore_eos` + `n_predict`) or ≥3-wave confirmation is still owed (KVU-8). Depth 4 is neutral on speed and must be confirmed on production traffic before the recipe changes (KVU-1b). Capacity at production shape (**modelled**, package §4.3): np2 + `-kvu` leaves 0.18 GiB card free; np2 + `-kvu` + O-2 leaves 0.53 GiB (the recommended funding); each extra slot costs +1.315 GiB of GDN state at draft 8, independent of `-kvu`, which is why a higher `-np` is not cheap on the hybrids.
+
+#### Two pool-full failure shapes — and the server's general abort-all
+
+At `-np 2 -c 4096` with two concurrent 2048-token generations (measured, v1 + 3 repeats):
+
+- **Unified: exactly one request fails** (HTTP 500) with `speculative batch index 8 is not inside the current sub-batch [0, 8)` in **4 of 4** runs — not the clean "Context size has been exceeded." path; the survivor runs to 2048 tokens, deterministically. Filed as a guarded v11 experimental-kernel candidate (KVU-7).
+- **Split: never errors, silently truncates** at the slot in 4 of 4 runs — both slots stop at `n_tokens = 2047, truncated = 1` (`finish_reason: length`) after 1777 and 1632 generated tokens.
+
+The general v10 behaviour on unified exhaustion (package §4.4, **source-read, not a measured run**): admission checks the prompt against `slot.n_ctx` only (`server-context.cpp:3303-3310`), never pool occupancy, so two long requests (e.g. 120k + 90k on 196,608) are both admitted. When `llama_decode` finds no free cells the server purges idle slots (`try_clear_idle_slots`, `:1716-1735`, unified only), halves `n_batch` down to 1 (`:3797-3801`), then throws "Context size has been exceeded." (`:3759-3763`) and `abort_all_slots` **fails every in-flight request** (`:2949-2951`). Not a crash, but both callers lose their request. How the orchestrator defends against this is in [inference-serving.md](inference-serving.md) (2026-09-24 section).
+
+#### Idle slots are cleared under unified, and the RAM tier is too small to catch them
+
+With the default `--cache-idle-slots`, starting any task already saves idle slots to the RAM prompt cache; under unified KV it **also clears them** (`server-context.cpp:2468-2482`, `TAG_IDLE_SLOT_CLEAR`). A returning conversation then restores its prefix from RAM — a warm-prefix latency cost on a shared server, not a correctness cost. But every server runs the **8192 MiB** `--cache-ram` default, and one full-pool 27B prompt is **~9.2 GiB (inferred** from the :8083 buffer lines: 6528 MiB attention KV + 2693 MiB recurrent state; whether RS is stored per entry is not verified), so the idle-slot save is likely a no-op for long prompts until `cache_ram` is sized. Proposed sizes (KVU-2, OP-55): 65536 MiB on :8083 (floor 24576), 32768 on :8070, 16384–32768 on :8074, 0 on :8086. **Decided by the operator 2026-09-24 (~17:50–18:10Z, OP-55):** all of it as recommended. Reroute only `ingest_long_context`; route by the live per-request limit rather than a ~5k threshold; apply these `cache_ram` sizes via the package; the opencode bypass uses live `/slots` plus retry. OP-56 moves whisper STT back to CPU, which is what lets :8083 `-np 4` fit ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) *Start here*).
+
+#### Unified changes outputs at the same seed
+
+At seed 42, T 0.6, unified and split produced **different completions at np 2 and np 4 in every cell**; at np 1 they were byte-identical. The expected cause is that the KV layout changes float summation order. Unified np 4 even differed between its 8k and 32k cells, so **the pool size itself perturbs outputs**. Any deterministic replay or output-comparing A/B must pin the KV mode per arm (OAB-4a).
+
+#### Rollout candidates (inventory ranking)
+
+1. **:8083** — the only role whose alias (`ingest_long_context`) is defined by long context; package awaiting signature (OP-54; KVU-1).
+2. **Embedders :8090–8095** — `-np 4 -c 512` gives 256 tokens per slot, below bge-large's 512 window, with a WARN on every launch; `-kvu` or simply `-c 2048 -np 4` fixes it; pure attention, no GDN cost.
+3. **:8070** — only if long jobs are routed there (today they go to :8083 at a 20,000-char threshold).
+4. **:8086** — only if its `-np` rises (pure attention, so unified `-np` is cheap there).
+5. **Never** :8080, :8180, :8074 — `-np 1`, per-slot already equals `-c`.
+
+#### Source References (2026-09-24, unified KV)
+
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — RTG-57: root cause, the verified "Measured" block, KVU-1..13b.
+- [`progress/2026-09/2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Stack-configuration window*: DS41 run 8's 98,304 ceiling, GPU sweep timeline, the throughput verdict.
+- [`stack-change-kvu-20260924/PACKAGE.md`](../artifacts/operator/stack-change-kvu-20260924/PACKAGE.md) — §1 root cause with `file:line`, §4.2–4.3 buffer model and capacity table (modelled), §4.4 shared-pool failure mode and idle-slot behaviour.
+- [`kvu-stack-inventory-20260924.md`](../artifacts/operator/kvu-stack-inventory-20260924.md) — every live server's `kv_unified = 'false'`, declared-vs-live mismatches, ranked candidates.
+- [`serving-engine-technique-audit-20260924.md`](../artifacts/operator/serving-engine-technique-audit-20260924.md) — §2.3 the ~9.2 GiB (inferred) prompt-cache arithmetic and FIFO prompt-cache eviction.
+- epyc-inference-research `artifacts/np_context_kvu_study_20260924/README.md` @ research main `21cf444c` — the 27B matrix, long-prompt, pool-full, O-2, divergence and MTP-depth results (the files win over the working page).
+- [`OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) — *Inference and Benchmarks*: the KV-mode-is-an-argv-fact rule and the output-divergence caveat.
+
+### Compiled Update — 2026-08-12: a "keep or port?" review that resolves to *neither*, and the first KV-quant decision package
+
+**Confidence: verified** — the fork verdicts are read-only git archaeology with commit SHAs and ancestry checks; the KV-quant numbers are a measured retrieval-parity run.
+
+#### The SWA slot-reuse fork commits: DROP, because they subtract a safety check
+
+Two fork commits (`d1c72d7fc`, `603702769`) sat under review as ambiguous keep-or-port candidates. The verdict is **DROP**, and the reason is stronger than redundancy: the fork **deletes** upstream's `cells.seq_get(idx)` lookup and substitutes the incoming batch's position, replacing a per-sequence-aware sliding-window reuse check with a **per-sequence-blind** one. Under multi-slot serving a cell can be judged reusable against the wrong slot's window. Production v6 through v9 correctly retain upstream's original form and were never exposed.
+
+The reusable lesson for fork-reconciliation reviews: **a commit that reads as "our version of upstream's check" may be upstream's check with a lookup removed.** The discriminating question is not *does the fork do the same thing* but *what does the fork's diff delete*.
+
+#### KV quantization has a decision package, and q8 is dominated
+
+The first exact-parity KV-quant measurement gives a clean shape: across f16 / q8_0 / q4_0 KV, retrieval parity holds at **51 of 52 on every arm**. `q4_0` buys **10.54 GiB** of KV headroom at **−7.4% decode**; **q8 is dominated** — it neither preserves the f16 operating point nor buys q4_0's memory. One arm (C) aborted invalid. The recommendation is Option A. This is the first result that lets the KV-quant monitor status recorded in the 2026-07-20 pass below be acted on rather than watched.
+
+#### Lazy faulting relocates the `-c` provisioning cost, it does not remove it
+
+The old premise for capping context provisioning — that a large `-c` costs at *launch* — is dead: KV pages fault lazily. But the re-read is not "provision maximally and stop worrying". The cost moves from launch to **load**, and the worst case is the sum of full-window KV across all resident roles under concurrent deep-context load, **which is currently uncomputed**. The recommendation is the staged option: raise `-c` only where the lineup's Σ full-window-KV fits RAM with margin, computed mechanically at priors-compile rather than chosen per role. The ruling belongs to the lineup owner plus the operator and is **not settled**.
+
+#### Source References (2026-08-12)
+
+- [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the SWA slot-reuse DROP verdict and the deleted per-sequence check.
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — the T12 lazy-KV decision package and the uncomputed concurrent-load worst case.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the KVQuant parity/headroom numbers and the dominated-q8 finding.
+
+### Compiled Update — 2026-07-20
+
+The StreamingLLM baseline — the cluster-wide gate that must precede prioritizing the whole May-2026 KV-reduction cluster (SP-KV / KVP / LU-KV / ForesightKV / PBKV) — reached a pre-v7 verdict, and the MI210 sharpened where KV should physically live. Confidence: `verified` for the CPU floor sweep result; `external` for the KV-quant PRs; `inferred` for the MI210 KV-placement economics.
+
+#### Key Findings (2026-07-20)
+
+- **StreamingLLM (attention-sink + sliding-window) is the easy-floor gate, and no simple KV cluster is admitted yet.** The scaffold landed in the fork (`632ce0f92`, default-off, via server context-shift `llama_memory_seq_rm`/`seq_add` + `--kv-streaming-sink/-window` + per-request fields) and was reconciled onto current v7 (`111bff89d`/`cf051d3e1`). The pre-v7 floor/admission sweep (Qwen3-1.7B Q8 CPU, 2026-07-20) ran a context-shift baseline + sink/window clusters `8:128`/`16:192`/`32:256`: all arms exited cleanly but **all failed the prompt-quality/final-marker floor**, and no streaming arm beat baseline speed (0.990–1.011×) → `admit_cluster=false`. This closes the "admit a simple KV cluster *now*?" question negatively; the full 4-axis research sweep (retrieval/reasoning/dialogue × 25/50/75% budget × 2 models) stays open. ([streaming-llm-baseline](../handoffs/active/long-context-program.md#track-streaming-llm-baseline))
+- **KV-quant monitor status:** Hadamard rotation (upstream PR #21038) landed and auto-enables when KV types are quantized — a free KV-quality improvement (custom `--kv-hadamard` removed as redundant). TurboQuant CPU KV kernels (PR #21089, TBQ3_0/TBQ4_0, ~5.2× compression) remain open/monitor; ChunkKV (arXiv:2502.00299, 12% retention, +26.5% throughput) is worth-investigating. TQ3_1S rejection stands (immature, VRAM-savings we don't need, MoE ghost-activation risk). ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation))
+- **Where KV physically lives (MI210):** keeping KV in HBM alongside attention weights is ideal but VRAM-limited; PCIe4 (~64 GB/s) is 7–14× slower than EPYC DDR5, so per-token KV *streaming* is an anti-pattern. GDN-hybrid residents have **O(1) KV**, so long-context ingest is comfortably GPU-served (better than a dense model) and makes teleport KV-copy near-moot — the teleport v1 instead *re-prefills from transcript* to regenerate correct KV at the target quant (a copied KV is wrong under quant-asymmetric transport). **Correction 2026-09-24:** the orchestrator does *not* store that transcript today. On `/v1`, `x_session_id` is recorded only, and the session store has no messages table. So v1 teleport depends on client-resent history until the session-keyed conversation store (conversation-stack CS-15) lands. ([gpu-acceleration-path](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path), [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [conversation-stack](../handoffs/active/speech-and-multimodal.md))
+
+#### Open Questions (2026-07-20)
+
+- Does StreamingLLM at 50% budget preserve ≥95% accuracy on our representative workloads (the 4-axis sweep is still pending)? The answer sets whether LU-KV/KVP/ForesightKV get demoted or LU-KV promoted.
+- Does uniform sink+window hide per-head heterogeneity (LU-KV's whole pitch)? Track per-head attention entropy in the sweep.
+- Does PR #21089 (TurboQuant CPU KV) merge and beat Hadamard+q4_0 on context extension?
+
+#### Source References (2026-07-20)
+
+- [streaming-llm-baseline.md](../handoffs/active/long-context-program.md#track-streaming-llm-baseline) — cluster-wide floor gate, scaffold, negative pre-v7 admission sweep.
+- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — TurboQuant/ChunkKV/Hadamard KV-quant monitor list.
+- [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — MI210 KV CPU/GPU-split economics + PCIe anti-pattern.
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — O(1)-KV GDN residents + re-prefill teleport (KV-copy near-moot).
+
+### Compiled Update — 2026-08-22: the KV-quant program closed because V-dequant, not K, is the CPU cost — and every exotic lost a fair rematch
 
 **Confidence: verified** — everything below is landed, measured and decided inside the COMPLETED
 [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) handoff (closed 2026-03-28: Hadamard Phase 1
@@ -753,7 +845,7 @@ PR #21038 auto-rotation; TurboQuant / PolarQuant / QJL / hybrid buffer ABANDONED
 pass compiles the closure fine-structure the page never carried: the headline results (Hadamard+q4_0 quality-neutral, hybrid
 buffer memory-negative, the 2.2× ikawrakow speed confirmation) were compiled long ago and are not repeated here.
 
-### V dequantization is the ENTIRE CPU flash-attention prefill cost; K dequantization is free
+#### V dequantization is the ENTIRE CPU flash-attention prefill cost; K dequantization is free
 
 The page has so far motivated the asymmetric production config (`-ctk q4_0 -ctv f16` on pure-attention models) purely as a
 *quality* margin. The handoff's 2026-03-28 root-cause section establishes it is equally a **speed** decision, with a clean
@@ -780,7 +872,7 @@ answer different objectives (VRAM ceiling vs CPU prefill throughput); neither do
 axis it is optimizing. The 2026-08-14 GPU falsification on the [Quantization](quantization.md) page (KV-quant −16.7%/−6.9%
 at 64k) is the same cast-cost mechanism showing up on the other substrate.
 
-### Hadamard's isolated contribution, quantified — and the exotics' exact causes of death
+#### Hadamard's isolated contribution, quantified — and the exotics' exact causes of death
 
 **Hadamard rotation closes 70% of the bare-q4_0 quality gap.** The page carries the +0.017 endpoint but never the
 comparison that prices the rotation itself (Coder-32B, 50 chunks, n_ctx=512): q4_0/q4_0 *plain* is **+0.055** PPL vs f16;
@@ -804,7 +896,7 @@ exactly when the method starts working. The paper's remaining viability path is 
 most-attended recent tokens — i.e. the hybrid-precision buffer this handoff independently built and measured as
 memory-negative. PolarQuant's +0.229 PPL at 3.1 effective bits completes the set.
 
-### Residual validated facts worth keeping on the record
+#### Residual validated facts worth keeping on the record
 
 - **Spec-decode composes with quantized KV**: speculative decoding + q8_0/q4_0 measured **19.15 t/s (+3.3% vs f16)** on
   Coder-32B — the R9 interaction risk closed positive, not merely neutral.
@@ -819,7 +911,7 @@ memory-negative. PolarQuant's +0.229 PPL at 3.1 effective bits completes the set
   `state closed`, `merged false`, verified 2026-07-29, re-verified 2026-08-21). No TBQ code entered the local tree. The
   question "does #21089 merge and beat Hadamard+q4_0?" is answered: no, and there is nothing left to monitor on that PR.
 
-### Source References
+#### Source References
 
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the closed handoff: V-dequant root-cause table, Phase-0/1/3b/3c results, TQ3 model-size dependence and fair 32B retest, QJL SNR post-mortem, spec-decode validation, the 4-KV-head q4_0-K bug.
 - [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the verified PR #21089 closed-unmerged state (2026-08-21 re-check) that retires this page's 2026-07-20 monitor row.
@@ -827,25 +919,25 @@ memory-negative. PolarQuant's +0.229 PPL at 3.1 effective bits completes the set
 - [ik_llama.cpp issue #1509](https://github.com/ikawrakow/ik_llama.cpp/issues/1509) — ikawrakow's independent EPYC 9975 confirmation runs (Hadamard+q4_0 better quality AND 2.2× faster than TQ3), the external anchor for the abandonment.
 - [intake-193](https://arxiv.org/abs/2406.03482) QJL — the paper whose S=512 / recency-buffer requirements the SNR post-mortem quantifies against our S=256 implementation.
 
-## Compiled Update — 2026-08-23: the orchestrator prefix-cache path is owned, its three latent defects fixed, and its measurement plan filed
+### Compiled Update — 2026-08-23: the orchestrator prefix-cache path is owned, its three latent defects fixed, and its measurement plan filed
 
 **Confidence: verified** — committed orchestrator fixes with regression tests, read-only artifact archaeology on the slot-save path, and the closed KV-5 row whose wiki correction was already compiled in this page's 2026-05-19 section (not restated below, only pointed to).
 
-### KV-5 closed 2026-08-20 — the KVFlow correction is already on this page
+#### KV-5 closed 2026-08-20 — the KVFlow correction is already on this page
 
 The KV-5 row ("correct `wiki/kv-cache.md`") was closed in the 2026-08-20 wrap-up wiki sweep: KVFlow is recorded above in the 2026-05-19 section as the **ORIGIN of workflow-aware KV residency** — NeurIPS 2025 venue, its own 1.11× eviction-only ablation as the honest portable ceiling, the arXiv-version-check trap, and the PBKV-1.26×-is-on-static-workflows reading. Nothing new to add; the pointer is kept so the row's closure is traceable. [attention-matching-kv-compaction.md](../handoffs/active/long-context-program.md#track-attention-matching-kv-compaction) §KV-5, commit `508eaeb0`.
 
-### The ownership gap is closed: the prefix-cache path now has an owner
+#### The ownership gap is closed: the prefix-cache path now has an owner
 
 No ACTIVE handoff owned the orchestrator prefix-cache path. The original owner, [`radix-attention.md`](../handoffs/archived/radix-attention.md), is **archived "VERIFIED 2026-01-09"** with its Next Steps stopping at *"Integration testing with live llama-server"* — the integration was never done. `repl-turn-efficiency.md` touched `PrefixRouter` only incidentally. The attention-matching handoff adopted the rows (filed there because nothing else owned them); re-home if a better owner appears.
 
-### Three latent defect fixes (KV-0a/b/c, committed 2026-08-20) — all three were silently wrong in production
+#### Three latent defect fixes (KV-0a/b/c, committed 2026-08-20) — all three were silently wrong in production
 
 - **KV-0a — every KV slot save was failing.** `prefix_cache.py` built the filename with `os.path.join(...)`, producing a `/`-containing string that llama-server rejects via `fs_validate_filename(allow_subdirs=false)` before it concatenates `--slot-save-path`. Proof it never worked: the 75 retained slot artifacts on disk are **all** `kv_migrate_*` from the sibling `concurrency_aware.py` path, with **zero** `slot_<id>_<hash>.bin` files anywhere. Two compounding defects fixed alongside: the restore path did a **client-side** `os.path.exists()` on a **server-side** filename, and both backend methods caught `httpx.RequestError`, which does **not** cover `HTTPStatusError` — so a 4xx propagated instead of returning `False` as documented. Fixed by emitting a bare filename (`_slot_state_filename`, mirroring `concurrency_aware._slot_filename`).
 - **KV-0b — roles sharing one llama-server were evicting each other, unobservably.** Under `shared_with`, several roles resolve to one physical server, but the legacy loop built a **separate `PrefixRouter` per role**, each allocating `id_slot` in `[0, num_slots)` from its own private LRU — so two roles both emitted `id_slot=0` and silently clobbered each other. Now one router per physical URL (`_router_for`), matching the shape the fleet layer already had. 3 regression tests added.
 - **KV-0c — `radix_cache.py` deleted** (480 lines + shim). Verified dead: its only two importers were the file importing itself. It also carried an unexercised stale-slot bug and a docstring claiming path compression it did not implement. The 20 tests that exercised the unwired module went with it — green tests over dead code manufacture exactly the false confidence this work exists to avoid.
 
-### The measurement plan (KV-1..KV-4, KV-6) — mostly zero-inference, all from existing logs or one-line changes
+#### The measurement plan (KV-1..KV-4, KV-6) — mostly zero-inference, all from existing logs or one-line changes
 
 - **KV-1 (gates everything below): count DISTINCT hot prefixes per window against resolved slot count, per role and per shared server, from existing logs. ZERO INFERENCE.** Production `num_slots` is **2**; `coder_primary` and `coder_escalation` both declare `slots: 1` — **at slots=1 there is no eviction order to improve**, and at 2 it is a coin flip. The row was named in two consecutive passes with an unchanged blocker — by the recurrence rule that is proof it was never blocked. Do it before anything else here.
 - **KV-2: pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** Both are already present at the call site (`model_server.py:91` requires `role`; `inference.py:755-767` attaches the session id) and the router receives **only prompt text** — the router is discarding for free the identity signal KVFlow had to invent a client-ID scheme to recover.
@@ -853,7 +945,7 @@ No ACTIVE handoff owned the orchestrator prefix-cache path. The original owner, 
 - **KV-4: IF KV-1 shows working set > slot count, THEN consider workflow-aware eviction** — replace the LRU victim choice with an argmax over steps-to-execution, sourced from the delegation DAG that already exists (`parallel_step_executor.py:75` `compute_waves()` — the wave index **is** a steps-to-execution value, already cycle-checked; `routes/delegate.py:86-98` enumerates the whole plan at `dry_run=True` for zero LLM calls). **Ceiling recorded on the row: 1.11×** — KVFlow's own eviction-only ablation; the other 1.18× comes from prefetching we cannot port (llama-server slot restore is on the shared task loop and a failed restore is destructive). **NOT the RLM tree and NOT the autopilot loop** — neither materialises children in advance.
 - **KV-6 (filed 2026-08-20): measure `canonicalize_prompt` before optimising anything downstream of it.** It makes **SEVEN full-length passes** (3 string scans + 4 `re.sub`) over prompts of tens of KB and then **discards everything past char 256**. It has NEVER been measured: grepping both prefix-cache files for timing primitives returns 3 hits, all docstring prose, zero code. Cheap to instrument, and it may dominate the routing cost the rest of the rows are trying to improve.
 
-### Source References (2026-08-23)
+#### Source References (2026-08-23)
 
 - [attention-matching-kv-compaction.md](../handoffs/active/long-context-program.md#track-attention-matching-kv-compaction) — the ownership filing, the KV-0a/b/c fixes with their commit record, the KV-1..KV-6 rows, and the KV-5 closure
 - [progress/2026-08/2026-08-20-research-intake.md](../progress/2026-08/2026-08-20-research-intake.md) — the intake round that surfaced the prefix-cache findings (KVFlow dive, SGLang Rust tree-core cluster)
@@ -862,11 +954,11 @@ No ACTIVE handoff owned the orchestrator prefix-cache path. The original owner, 
 
 ---
 
-## Compiled Update — 2026-08-23 (evening): KIVI's "primary quality gap" was never a gap; the real gap is an instrument gap
+### Compiled Update — 2026-08-23 (evening): KIVI's "primary quality gap" was never a gap; the real gap is an instrument gap
 
 **Confidence: verified** — the KIVI correction is a read of `llama-kv-cache.cpp` / `llama-context.cpp` at frozen v9 against arXiv:2402.02750 v2 in full; the granularity correction reads the alignment-collapse study (arXiv 2606.09864) against our own layout; the monitoring gates G2-G5 are filed, not run.
 
-### The KIVI "per-channel K / per-token V" gap is closed as a misread — all three load-bearing parts are wrong
+#### The KIVI "per-channel K / per-token V" gap is closed as a misread — all three load-bearing parts are wrong
 
 The completed KV-quant handoff had claimed llama.cpp's symmetric block quantization leaves KIVI's per-channel-K / per-token-V unimplemented ("the primary quality gap"). The Stage-2b dive (arXiv:2402.02750 v2, read in full) shows that claim wrong on all three parts:
 
@@ -878,15 +970,15 @@ The one residual difference is real and cheap to test: KIVI's quantizer is **asy
 
 **THE REAL GAP IS AN INSTRUMENT GAP, NOT AN IMPLEMENTATION ONE.** KIVI reports no perplexity at all and rejects single-decode-step metrics; its own data show why — on Llama-2-7B the same 2-bit damage costs CoQA 7% but collapses GSM8K by 57% (13.50 → 5.76). **Our entire first-party quality case for quantized KV is perplexity plus needle-in-a-haystack — precisely the instrument class that survives multi-step damage. No GSM8K-class generation eval has ever been run against quantized KV in this repo** (gate G3 in `tq3-quantization-evaluation.md`).
 
-### The dual-cache conclusion is REFRAMED: a capacity argument applied to a bandwidth problem
+#### The dual-cache conclusion is REFRAMED: a capacity argument applied to a bandwidth problem
 
 The completed handoff's "dual cache = more bytes resident = wrong" conclusion does not generalise the way it has been read. It is sound only when both copies sit in the **same** memory tier and the cheap copy is **dequantized on the read path** — ours did both, which is why it lost (the ~30% gen-speed gap is the `q4_0 → f16` cast on every decode token: a *dequantization* cost, not a *capacity* cost). **A dual-cache design whose second copy lives in a cheaper tier (host DDR5, slower NUMA node) and is never dequantized into the attention hot path is a different design, not refuted by anything measured here.** Same-tier plus dequantize-on-read is memory-negative AND bandwidth-negative; that is the narrow, citable claim. Do not cite the paragraph to close a tiering proposal.
 
-### Granularity correction — we are FINER than the published mitigation, on the OPPOSITE axis from KIVI
+#### Granularity correction — we are FINER than the published mitigation, on the OPPOSITE axis from KIVI
 
 Two facts keep being conflated because both are called "grouping": (1) **granularity** — ours is group-**32** per token (with `-fa 1`, blocks run along the channel dimension, dim0 = channels / dim1 = tokens), while the alignment-collapse study (arXiv 2606.09864) *recommends* Group-**64** as a mitigation; we are already finer than its remedy, by default, everywhere, so **its headline damage figures are a pessimistic bound for us, not a matched estimate**; (2) **axis** — KIVI's prescription is per-channel for K; ours is per-token for both, and quantized V is *structurally incapable* of landing on KIVI's bad axis. Same word "group", orthogonal dimension. Any transfer of a third-party grouping-damage number to this stack must state which axis the grouping runs along (gates G4/G5 in `tq3-quantization-evaluation.md` replace transfers with our own numbers).
 
-### The 2026-08-23 KV-quant monitoring gates (filed, not run — both compute planes were held elsewhere)
+#### The 2026-08-23 KV-quant monitoring gates (filed, not run — both compute planes were held elsewhere)
 
 - **G2 — measure our actual KV outlier ratio** on the 10 full-attention layers only (a quarter of the frontdoor's 40 layers by construction; report as such): capture K after QK-norm and after RoPE, V at cache-write, ~200 prompts; report per layer and per head, K and V separately, max/median and max/p99.9. A pooled max÷median is NOT the measurement. **Gate:** if V's max/median materially exceeds K's, `-ctv` is the risk surface; if both are < ~50×, close the massive-activations line for this stack as measured-and-negative.
 - **G3 — close the instrument gap**: GSM8K-class multi-step generation eval at f16 vs q8_0/q8_0 vs q4_0/q4_0 KV, rotation ON, one pure-attention + one GDN hybrid model, per-question persisted. Gate: reasoning delta outside noise with PPL/NIAH flat = KIVI's instrument finding replicated first-party.
@@ -895,14 +987,14 @@ Two facts keep being conflated because both are called "grouping": (1) **granula
 - **H11 (Z, recorded)** — the frozen tree carries **none** of the three mitigations the massive-activations literature assumes: no per-channel scaling (`cpy_k`/`cpy_v` are pure `ggml_set_rows`), no clipping (zero `clip`/`clamp` in `llama-kv-cache.cpp`), no attention-sink special-casing (sinks exist only as a softmax bias in the graph — "llama.cpp has sinks" ≠ "llama.cpp protects sink tokens from quantization"). The one mitigation we carry is the Walsh-Hadamard rotation — exactly the lever G5 probes.
 - **Massive-activations deprioritisation (record, not task):** our ρ = 4 hybrid (10 of 40 layers full attention) shows the **smallest** massive activations of every hybrid the paper (arXiv 2608.12149) measured — peak first-token magnitude 30 vs Kimi-Linear 180–240 and Nemotron-H 750–1800, and ratio does not explain the gap: output gating on the full-attention layers is the dominant attenuator, and our family ships it natively (`src/models/qwen35moe.cpp:349-354`). The paper contains no quantization experiment and no median anywhere, so no dynamic-range ratio can be computed from it — that is exactly why G2 exists. Deprioritise, do not close; never re-open this line from an abstract.
 
-### Source References (2026-08-23 evening)
+#### Source References (2026-08-23 evening)
 
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the KIVI correction (all three load-bearing parts), the dual-cache capacity-vs-bandwidth reframing, the R9 warrant repair, the group-32/axis granularity correction
 - [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — gates G2/G3/G4/G5 and B1/B2 with their named open/close criteria, H11 static read, the massive-activations deprioritisation record, the PR #21089 closed-unmerged re-verification
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — G3: quantized-KV spec-decode bandwidth-positive only at `draft_max = 1` on MI210 (see [Speculative Decoding](speculative-decoding.md))
 - [KIVI arXiv:2402.02750](https://arxiv.org/abs/2402.02750) / [RotateKV arXiv 2501.16383](https://arxiv.org/abs/2501.16383) / [arXiv 2606.09864](https://arxiv.org/abs/2606.09864) / [arXiv 2608.12149](https://arxiv.org/abs/2608.12149) — the corrected external evidence base
 
-## Compiled Update — 2026-08-23 (wave-2 research intake): the KIVI "primary quality gap" never existed, our KV blocks are finer than the published mitigation, and slot-restore loss is conditional
+### Compiled Update — 2026-08-23 (wave-2 research intake): the KIVI "primary quality gap" never existed, our KV blocks are finer than the published mitigation, and slot-restore loss is conditional
 
 **Confidence: verified** — every statement below about our own tree is a read-only inspection of frozen
 `production-consolidated-v9` (`0db32c06e3e550065b78311a6031ef3dd2c4f27c`) with file:line loci, reproduced
@@ -912,7 +1004,7 @@ number here gates a stack change**; each is a hypothesis, and the tests are file
 [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) and
 [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh).
 
-### The "primary quality gap" at `kv-cache-quantization.md:320` never existed — and it was wrong in three independent ways
+#### The "primary quality gap" at `kv-cache-quantization.md:320` never existed — and it was wrong in three independent ways
 
 The standing first-party claim was: *"llama.cpp's current q4_0/q8_0 KV does symmetric block quantization
 — KIVI's per-channel K / per-token V is NOT implemented. This is the primary quality gap."* A Stage-2b
@@ -965,7 +1057,7 @@ choice is derived from **84.3% attention sparsity** — the output is a weighted
 per-token grouping confines error to unimportant tokens. Anyone citing KIVI for "V is per-token because V
 has outliers" is citing it wrongly.
 
-### The granularity finding: the reading rule for every future KV-quant paper against this stack
+#### The granularity finding: the reading rule for every future KV-quant paper against this stack
 
 **With `-fa 1`, llama.cpp quantizes K and V per token in 32-element blocks running along the CHANNEL
 dimension.** Two consequences that keep being conflated because both mechanisms are called "grouping":
@@ -984,7 +1076,7 @@ The behavioural half of the alignment-collapse result — the decoupling from pe
 asymmetry, and what our KV write path does *not* protect against — is compiled on the
 [Quantization](quantization.md) page, which owns the KV-quant quality-instrument thread.
 
-### Spec-decode over quantized KV: R9's verdict stands, its warrant did not — and VeriCache's algorithm is already expressible in frozen v9
+#### Spec-decode over quantized KV: R9's verdict stands, its warrant did not — and VeriCache's algorithm is already expressible in frozen v9
 
 **R9's warrant is repaired, not its verdict.** This page's 2026-08-22 section records "spec-decode
 composes with quantized KV: 19.15 t/s (+3.3% vs f16) on Coder-32B — the R9 interaction risk closed
@@ -1051,7 +1143,7 @@ reporting mean accept length and per-token agreement. Gate opens if q8_0-draft a
 draft-max 8; closes if q4_0-draft agreement < 90%. The drafter is the full model, so **this measures α,
 not speedup**. Rider on `speculative-decoding-mtp-refresh.md`.
 
-### The dual-cache post-mortem was a capacity argument applied to a bandwidth problem
+#### The dual-cache post-mortem was a capacity argument applied to a bandwidth problem
 
 This page's *"Hybrid buffer architecture is memory-negative"* finding — the `kv_recent` f16 + `kv_old`
 q4_0 design that allocated both at full context size — is **reframed, not overturned**
@@ -1067,7 +1159,7 @@ refuted by anything measured here.** Cite that post-mortem narrowly: *same-tier 
 memory-negative AND bandwidth-negative.* It establishes nothing about tiered KV, and must not be used to
 close a tiering proposal.
 
-### "Per-token KV streaming over PCIe is an anti-pattern" — scope it to *per token*
+#### "Per-token KV streaming over PCIe is an anti-pattern" — scope it to *per token*
 
 The 2026-07-20 section above states that PCIe4 is 7–14× slower than EPYC DDR5, "so per-token KV
 *streaming* is an anti-pattern". That remains true **per token**, and is now scoped: **amortised over an
@@ -1079,7 +1171,7 @@ actually uses (x = 20–50) straddle the DDR5 crossover. The minimum draft lengt
 reload at c = 0.25, B = 1 is x ≥ 24.8 (spec) / 15.3 (attained) at KV/M = 0.5, rising to 74.3 / 46.0 at
 KV/M = 2.0 — i.e. above the 20–50 range once KV exceeds ~0.5× model bytes.
 
-### Slot save/restore: the reuse loss is CONDITIONAL, it is detectable today, and the wrong PR is being watched
+#### Slot save/restore: the reuse loss is CONDITIONAL, it is detectable today, and the wrong PR is being watched
 
 Upstream issue **#25913** ("`/slots` save/restore silently loses all prompt reuse on hybrid/recurrent
 models") is real, open, unfixed on upstream master as of 2026-08-22, and **present byte-identically in
@@ -1153,7 +1245,7 @@ Quarantine note for anyone re-fetching these threads: a PR #26004 comment (2026-
 prompt-injection payload. Treat that thread's off-topic comments, and the `whoreson/picolm` repo they
 point at, as untrusted content.
 
-### Source References (2026-08-23, wave-2)
+#### Source References (2026-08-23, wave-2)
 
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the retired `:320`
   "primary quality gap" with its three-part correction; the 2026-08-23 granularity correction (`:1539`)
@@ -1195,7 +1287,7 @@ point at, as untrusted content.
 - [intake-1292](https://github.com/ggml-org/llama.cpp/issues/25913) llama.cpp `/slots` save/restore (issue #25913 + PR #26004) -- post-restore reuse is zero only for a DIVERGENT or EXACT-REPEAT prompt and full for a strict continuation; detectable today via `timings.cache_n`; PR #25592 (live in-memory checkpoint path) is the larger exposure for us. Cite as `intake-1292#record`
 
 
-## Compiled Update — 2026-08-31 (incremental): GLM-5.2 KILLED; the DSA findings transfer to glm5next
+### Compiled Update — 2026-08-31 (incremental): GLM-5.2 KILLED; the DSA findings transfer to glm5next
 
 **Confidence: verified** (operator ruling + artifact deletion ledgered; GGUF header read for the successor arch).
 
@@ -1219,7 +1311,7 @@ survives the model is the DSA layer knowledge, now seeded into the GLM-5.3-Flash
 - The GLM-5.2 reviewer-capability program (REV-02) is mooted by the KILL; its retarget-or-close
   disposition is flagged to the reviewer control plane.
 
-### Source References (2026-08-31)
+#### Source References (2026-08-31)
 
 - [`glm51-reap-cpu-evaluation.md`](../handoffs/completed/glm51-reap-cpu-evaluation.md) — the
   completed evaluation: KILL verdict, DSA-DENSE-MASK evidence, top-k schedule records.
@@ -1228,11 +1320,11 @@ survives the model is the DSA layer knowledge, now seeded into the GLM-5.3-Flash
 - [`2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md) —
   OP-31 execution record incl. the GLM-5.2 deletion and disk state (87 G → 480 G).
 
-## Compiled Update — 2026-09-08: the KV-reduction cluster's 09-07 wave — selection-class methods cannot serve a memory objective, and the streaming floor's design gained power and an eviction regime
+### Compiled Update — 2026-09-08: the KV-reduction cluster's 09-07 wave — selection-class methods cannot serve a memory objective, and the streaming floor's design gained power and an eviction regime
 
 **Confidence: verified** (source-derived arithmetic on the intake's Table 4; the design-constraint rewrite is the owning handoff's recorded state); the two intake pointers are stage-1 — pointer only, no claims.
 
-### Selection-class KV methods hold the FULL cache — they buy zero KV memory
+#### Selection-class KV methods hold the FULL cache — they buy zero KV memory
 
 At a 2K budget / 16K context, sink+window matches the best selection method on FLOPs (1.05M), global-to-shared transfer (1.04 MB) and kernel latency (20.1 µs) at **1/8th the on-device memory (1.04 MB vs 8.38 MB)** — because every selection-class method (Expected-Attention/TriAttention, SnapKV, H2O, …) keeps the full cache and selects at read time. `intake-1334#05`. Two consequences:
 
@@ -1241,7 +1333,7 @@ At a 2K budget / 16K context, sink+window matches the best selection method on F
 
 Also on that sweep design: **PS-2 closed, no task filed** — our context-shift path is Reset-PE (`seq_rm` + `seq_add -n_discard`), the source reports the difference insignificant, and its recovered Figure 14 puts Reset-PE ahead at 4 of 5 budgets within one standard error (`intake-1315#record`). Three numeric corrections carried against the source so a future sweep session does not re-quote them: Table 1's 128K cell is the **vanilla-SWA** value (11.26×, not 11.7×); W=16384 does **not** match full attention (28.74 vs 31.14; first match at W=32768); the "seconds" axis is **derived** — nothing was timed.
 
-### The streaming-LLM 4-axis sweep: design rewritten with power and an eviction regime — still zero cells
+#### The streaming-LLM 4-axis sweep: design rewritten with power and an eviction regime — still zero cells
 
 The binding design constraints were rewritten 2026-09-07 (full text in [streaming-llm-baseline.md](../handoffs/active/long-context-program.md#track-streaming-llm-baseline)):
 
@@ -1253,18 +1345,18 @@ The binding design constraints were rewritten 2026-09-07 (full text in [streamin
 
 Execution state: **zero cells completed** — the 72-cell daemon (3 workloads × 3 budgets × 3 K_win × 2 models + 6 full-KV baselines + 12 gemma4 F16 controls) was reconciled 2026-08-27 after the lease/region was held by another lane; relaunch is gated on q0–q3 release. SWA finding to carry into it: **gemma4 needs `--swa-full` on v9 or context-shift silently disables**.
 
-### Coverage pointers (stage-1, no claims)
+#### Coverage pointers (stage-1, no claims)
 
 Two structural gaps now have pointer entries in the cluster: the **SWA window floor** (SWAA, arXiv:2512.10411; Cabannes et al., ICLR 2026, *Short window attention enables long-term memorization* — both bear on the PS-1 window floor; `intake-1340#record`) and **query-aware SELECTION-based sparse attention** (TidalDecode arXiv:2410.05076, Quest arXiv:2406.10774, SeerAttention-r arXiv:2506.08889; `intake-1334#record`). Independent external corroboration of the cross-head/cross-layer unification that landed under S4/S7 (TriAttention row S8-d) is recorded in [triattention-kv-selection.md](../handoffs/active/long-context-program.md#track-triattention-kv-selection) (`intake-1334#01`, `intake-1334#04`).
 
-### Source References (2026-09-08, KV-reduction cluster)
+#### Source References (2026-09-08, KV-reduction cluster)
 
 - [`streaming-llm-baseline.md`](../handoffs/active/long-context-program.md#track-streaming-llm-baseline) — the binding constraints, the intake-1334/1340 pointer rows, PS-1/PS-2, and the sweep execution state.
 - [`attention-matching-kv-compaction.md`](../handoffs/active/long-context-program.md#track-attention-matching-kv-compaction) — the KV-7 selection-class rider and the 10× memory objective.
 - [`triattention-kv-selection.md`](../handoffs/active/long-context-program.md#track-triattention-kv-selection) — the S8-d corroboration record.
 
 
-## Compiled Update — 2026-10-03: sizing the 27B's unified pool, and admitting one long prefill at a time
+### Compiled Update — 2026-10-03: sizing the 27B's unified pool, and admitting one long prefill at a time
 
 **Confidence: verified** for step 1: it is deployed (orch `2586a7bb`) and was proven by a live gated call. Step 2 is
 signed and applied in git, but **not live**: the :8083 relaunch and its serving proof are pending. The per-token
@@ -1314,7 +1406,7 @@ figures come from the :8083 KV-sizing decision package.
   - a stale template `draft_max: 4` override.
 - **Hold.** The API must not reload before the :8083 relaunch, because the new code expects the 393k pool.
 
-### Source References
+#### Source References
 
 - [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [multiscreen-attention-evaluation](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation), [progress 2026-10-24 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md) — sweep 20: KPF-64 8/8 arms, G1 closed.
 
@@ -1323,29 +1415,7 @@ figures come from the :8083 KV-sizing decision package.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — evictions, memory-slot warnings and the neighbour-prefill decode collapse.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the hybrid KV figures, the "two full 262k requests" correction, and the hold.
 
-## Incremental synthesis — 2026-10-06 root wrap
-
-**Confidence: experimental evidence with unresolved calibration.** The post-manifest masked-block-skip GPU run passed five bit-identity criteria at 132/132 each and `test-backend-ops` at 118/118 twice. Its measured kernel time versus KVU-19a was 0.708× for 4×9 rows, 0.88–0.90× for uneven layouts, 0.98× for aligned 4×8, and 0.99–1.01× for streams. Two calibration failures remain, including one shared with KVU-19a, and the draft=1 p3batch result still trails the no-KV baseline. Treat this as an experimental path with open calibration and end-to-end questions, not a promoted serving result.
-
-The prefix-fork update reports branch B landed with its flag off; the API was not reloaded, and the live shadow window remains the next proof. The `/props.slot_fork` capability gates automatic fork use. First-prompt TTFT attribution is also still a proposed GPU measurement. The updated campaign record says the operator kept the shared 393K pool after the P3 decode loss (−59.5% with three resident ~99K neighbours) and routed the response to masked-block skip. The champion ledger records P3 v2 on candidate X matching the KVU-19 champion at L3. These are the documented decision and a bounded parity check, not a claim that the cache tax is eliminated for all shapes.
-
-Sources: [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
-
-### Supplemental KV findings — Oct 3–6 changed files
-
-The prefix-fork P1 experimental branch passed CPU exactness checks across generated Qwen3.5 GDN, Qwen3.5-0.8B hybrid, Qwen2.5-0.5B attention and Gemma-3-1B SWA: fork-versus-fresh/state-copy and source continuation were bit-identical in the tested cases, with exact cell accounting. For three trunk-first 1,575-token children, each forked 1,560 tokens and prefetched 9–15 tokens; with idle caching disabled, the pool held 1,772 unique versus 6,452 logical cells. A fork-attributable hybrid divergence appeared after source purge at thread count 8 (55/64 tokens matched fresh); the handoff attributes it to cell order and requires comparison with fresh/fragmented-layout controls at production scale. This remains CPU-only experimental evidence, not GPU serving proof.
-
-The durable masked-block-skip fold record supplies the implementation and early validation boundary behind KVU-19: its 64-case HIP harness was bit-identical skip-on/off, while six cases differed from unpatched champion codegen only at NMSE ≤3.1e-7; its shared-GPU microbench was explicitly indicative. CPU decode stayed within noise (2.85 ms to 2.87–3.01 ms over 0–112K foreign cells), so no CPU speedup is claimed. Full model P3 remeasurement remained a separate exclusive-window gate. The post-manifest workspace science record also finds that a masked tile uses the union of sequence live sets, so per-sequence routing can help batched decode where block skipping alone cannot.
-
-Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [FlashAttention masked-block-skip fold](../docs/design/fa-masked-block-skip-20261003-fold.md), [Oct 4 workspace-ec progress](../progress/2026-10/2026-10-04-workspace-ec.md), [Oct 3 AK progress](../progress/2026-10/2026-10-03-ak-ds41-main.md).
-
-## Incremental synthesis — 2026-10-06: K-shift defects at v10
-
-**Confidence: unit-verified on CPU fixtures; no model-level run.** The K-shift path (`build_rope_shift`, `build_graph_shift`) has three confirmed defects at `ffc1bac82`: it re-applies YaRN mscale on every shift, `pos_div` records shift deltas with the wrong sign, and under quantized K it applies the Hadamard to an n_rot-wide view of a full-head transform (large error; aborts on CPU with a non-contiguous q8_0 destination). Context-shift under YaRN and any quantized-K shift should be treated as unsafe until the probe-branch fixes pass a model-level test. Details: [context-extension](context-extension.md#incremental-synthesis--2026-10-06-workspace-ec-wrap-native-window-inertness-k-shift-jet-long).
-
-Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) (CTX-KSHIFT), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md).
-
-## Compiled Update — 2026-10-20: hybrid prefix-cache survey (vLLM and llama.cpp) and the prefix-fork recut
+### Compiled Update — 2026-10-20: hybrid prefix-cache survey (vLLM and llama.cpp) and the prefix-fork recut
 
 **Confidence: external for every vLLM and upstream-llama.cpp mechanism and number below (author-reported, one setup each, none reproduced on our hardware); verified only for the recorded session facts.** The intake packet is `intake-hybrid-prefix-cache-20261020`: Stage 1 `intake-2061#record`..`intake-2071#record`, then six Stage-2 dive waves (entries 2072 through 2115 of the index) with an independent second reader per wave and a Stage-3 plan that filed 16 tasks (KPF-13.1, KPF-17.1..17.4, KPF-18.1..18.3, KPF-19.1, KPF-26.1, DOC-1, KVU-12.1/12.2, VB-KVU-PF.1, CH-18) and ticked KPF-25. Entries whose verification is still `stage1-unverified` (`intake-2064#record`, `intake-2065#record`, `intake-2067#record`, `intake-2069#record`, `intake-2070#record`) are provenance only; no number from them is used here.
 
@@ -1361,7 +1431,7 @@ Sources: [YaRN context-extension research](../handoffs/active/long-context-progr
 
 Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) (workspace-f8 section), [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [research intake index](../research/intake_index.yaml) (entries for the vLLM and llama.cpp hybrid prefix-cache packet).
 
-## Compiled Update — 2026-10-21: KPF line references are tree-tagged, vacuous fork tests found, and the first KPF-18 and KVU Tier-0 readings
+### Compiled Update — 2026-10-21: KPF line references are tree-tagged, vacuous fork tests found, and the first KPF-18 and KVU Tier-0 readings
 
 **Confidence: verified for the code facts (each checked with `git show <rev>:<path>` on 2026-10-20) and the recorded runs; OBSERVATION grade (n = 1 per cell) for every timing or divergence number. The KPF-18 item 4 and the later KPF-17.1b parked jobs have not reported.**
 
@@ -1380,16 +1450,16 @@ Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-progra
 Sources: [KPF-18 owner handoff](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [2026-10-21 workspace-f8 progress](../progress/2026-10/2026-10-21-workspace-f8.md), [KPF-18 staging record](../docs/reference/kv-prefix-fork-radix-lesson-and-vllm-copy-vs-share.md).
 
 
-### 2026-10-21 hybrid cache reuse guard — pending integration
+#### 2026-10-21 hybrid cache reuse guard — pending integration
 
 The [experimental kernel manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) and [owner progress record](../progress/2026-10/2026-10-21-hybrid-cache-reuse-fix.md) describe experimental `8b08c9f25`: recurrent memory reports `can_shift=false`, and hybrid memory requires both component capabilities. The owner reports `can_shift=0` for two real models and six generated recurrent/hybrid cases, with a dense control reporting `1`. This remains pending integration and does not establish a production fold. Server pytest and Nemotron ctest are unrun; the reported controls do not substitute for those checks.
 
 
-### Peer placement and prefill design refinements — 2026-10-21
+#### Peer placement and prefill design refinements — 2026-10-21
 
 [HSF-4 and WP-15](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine) now require worker-merged dispatch/serving joins, role-specific uncached-length histograms, cached-token recovery costs and load-regime stratification before comparing placement rules. [PB-QCOST-1](../handoffs/completed/mi210-serving-program.md) requires held-out residuals and validation at the target decode concurrency before enabling the fitted prefill budget. These are prerequisites and proposed comparisons; deployment commentary and armed future GPU probes do not establish a local performance gain.
 
-## Compiled Update — 2026-10-21 (sweep 4): the prefix-cache ceiling on real agent traffic, the hybrid shift guard, the radix lesson, and the KPF-17 conformance close
+### Compiled Update — 2026-10-21 (sweep 4): the prefix-cache ceiling on real agent traffic, the hybrid shift guard, the radix lesson, and the KPF-17 conformance close
 
 **Confidence: verified for the code facts and recorded runs named in the sources; the trace figures are measured on our own transcript stores (1,519 Claude Code transcripts plus sampled Codex and opencode sessions) and are OBSERVATION grade for what they imply about the planned REPL, memory and RAG paths, which have no real traffic yet.**
 
@@ -1402,11 +1472,11 @@ The [experimental kernel manifest](../docs/reference/kernel-manifests/llama-v11-
 Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [Streaming LLM baseline](../handoffs/active/long-context-program.md#track-streaming-llm-baseline), [llama.cpp v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [KV prefix fork radix lesson](../docs/reference/kv-prefix-fork-radix-lesson-and-vllm-copy-vs-share.md), [Progress hybrid-cache-reuse-fix](../progress/2026-10/2026-10-21-hybrid-cache-reuse-fix.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md)
 
 
-### Chunk-KV slice1 remains experimental — 2026-10-21
+#### Chunk-KV slice1 remains experimental — 2026-10-21
 
 The [KPF-62 source record](../progress/2026-10/2026-10-21-dpf-kpf62.md) reports attention-only export/inject and tiny-model CPU checks at experimental `2b7e1c98d`; hybrids refuse this path. The owner also identified repeated application of the YaRN magnitude factor during K-shift and filed KPF-62.1. KPF-62 remains open: selection, sparse recompute, server wiring, continuation harness and speed slices remain. Neither the tiny-model checks nor the earlier P1a planner establish real-role equivalence, a timing gain or a production fold.
 
-## Compiled Update — 2026-10-21 (sweep 5): the KPF-62 chunk-KV build is sliced for fresh agents
+### Compiled Update — 2026-10-21 (sweep 5): the KPF-62 chunk-KV build is sliced for fresh agents
 
 **Confidence: inferred.** These are filed task definitions; no slice below has run.
 
@@ -1427,11 +1497,11 @@ The [KPF-62 source record](../progress/2026-10/2026-10-21-dpf-kpf62.md) reports 
 
 Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval)
 
-## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
+### Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 
 - **KVU-12.2 MTP-on bank cells PASSED.** Candidate `dd3d9721c` (champion + #26004 + #30574) 4/4 cells: restored/live acceptance 0.98-1.02, decode 0.98-1.01, tokens identical. The unported control `4348de400` failed 4/4 (acceptance 0.53-0.71, decode 0.77-0.82), so the gate discriminates. ([kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [progress](../progress/2026-10/2026-10-22-workspace-f8.md))
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **KPF-13.1 plain-MTP CPU leg PASSED under rules v3.** K=3 same-shape controls per arm, `decision_grade` true: default A 12/12, B 12/12, skip-A 12/12 PASS. `restore_faithful` true, `fork_equals_cache_hit` true, `investigate` false, `trigger_port_30141` false; `kpf19_1_choice` = keep the full drafter KV through the fork, no re-prefill. The cold-twin `info_vs_twin` column (A 7/12, 6/12, skip-A 8/12) is informational only and gates nothing.
 - **KPF-13.1a decided NO: keep `load_dft` for plain drafters.** Skip-A runs are not equal to default-A runs cell by cell on tokens / draft_n / draft_n_accepted (all three required), so skipping the drafter-KV copy at the fork is not shown output-equivalent.
@@ -1442,14 +1512,14 @@ Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-progra
 Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [ufh14-b4-prefix-cache-policy](../docs/design/ufh14-b4-prefix-cache-policy-20261003.md)
 
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): the GPU fork divergence splits by device, and a layout confound
+### Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): the GPU fork divergence splits by device, and a layout confound
 
 - **The GPU and CPU fork legs point at different loci.** On the MI210, KPF-13.1b became decision-grade `target_restore_defect`: with no drafter loaded, the fork child still differs from its token-identical controls. On CPU, the KPF-19.1a leg reads `c1_locus = drafter_on_only`: honest and flag-on pass, and both mutants are detected. So the GPU c1 divergence is not a property of the fork protocol itself. (Sources: `handoffs/active/kv-cache-program.md` KPF-13.1b and KPF-19.1a notes; `progress/2026-10/2026-10-24-workspace-f8.md` Afternoon section.)
 - **KPF-17.4b's GPU reading was confounded by KV cell layout.** Its control was seeded with the source resident, so its cell layout differed from the fork's. The layout-matched KPF-17.4c bisect then did not reproduce the c1 divergence (`locus = none_reproduced`, decision-grade; read-out by rule pending). Lesson: a fork-vs-control comparison must match cell layout and occupancy, not only tokens. (Sources: KPF-17.4c task and finding in the KPF handoff; the 10-24 progress shard; `/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/PREDECLARATION.md`.)
 - **The KPF-18 item 3 cold floor was degenerate.** R3's six cold pairs gave only two distinct values (A≡C, B≡D), and no cold arm ran at the child's slot occupancy. R4 therefore adds a cold arm at the child's occupancy and a child A/A before calling the 60k fork deviation fork-intrinsic. (Sources: KPF-18-S1.R3 / R4 in the KPF handoff; the R4 PREDECLARATION; the 10-24 progress shard.)
 - **KVU-12.3 is closed only for quiet traffic.** The predeclared fallback pooled all concurrencies when only 5 turns had ≥3 busy slots, so the 4.52% generated-span re-prefill (bar 5%) says nothing about load. KVU-12.3b re-checks on the busy subset once traffic exists. (Sources: `handoffs/active/kv-cache-program.md` KVU-12.3a/b; `/mnt/raid0/llm/tmp/analytics-20261024/KVU-12.3a/PREDECLARED.md`; the 10-24 progress shard.)
 
-## Compiled Update — 2026-10-26 (wrap-up, workspace-58)
+### Compiled Update — 2026-10-26 (wrap-up, workspace-58)
 
 - **Unified-KV rollout live front**: OP-54 GPU residency is applied and serving-proven (:8083 `-np 4 -c 196608 --kv-unified`, speech on CPU). Remaining: kernel candidate v11 (guarded), measurement follow-ups (HPR-b 64k holdout, KVU-12.3b busy-subset re-check), speech residency. ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention))
 - **HPR prefix-capture reader enrolled in the existing `np-ctx-kvu-measurement` family** (no new grading rule): 110 model-free cases and a 6/6 synthetic preflight pass, synthetic scope only; historical HPR-B `INVALID_SIM_DISAGREES` is not regradable, and the native contract stays UNVERIFIED until a golden control. HPR golden v3 later PASSed for instrument equivalence only. ([HPR enrollment](../progress/2026-10/2026-10-25-hpr-prefix-enrollment.md), [workspace-58 log](../progress/2026-10/2026-10-26-workspace-58.md))
@@ -1457,7 +1527,7 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-progra
 
 Sources: [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [HPR enrollment](../progress/2026-10/2026-10-25-hpr-prefix-enrollment.md), [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to-25.md)
 
-## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** (each bullet is a recorded verdict against a predeclared gate unless marked).
 
@@ -1470,7 +1540,7 @@ Sources: [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track
 
 Sources: [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md)
 
-## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
+### Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
 **Confidence: verified** (accepted task receipts and source records listed below).
 
@@ -1478,7 +1548,7 @@ KPF R15’s native attempt is scientifically invalid: the required `gate.pid_own
 
 Sources: [KPF handoff](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) · [GPU serving](../handoffs/completed/mi210-serving-program.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 
-## Compiled Update — 2026-10-28 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-28 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** (accepted receipts; diagnostic/tiny-model results marked as such).
 
@@ -1491,7 +1561,7 @@ Sources: [KPF handoff](../handoffs/active/kv-cache-program.md#track-kv-prefix-fo
 
 Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) · [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [KPF-62 native G1](../progress/2026-10/2026-10-27-kpf62-native-g1-result.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for filed native records (KPF-18.1 CPU subset, KPF-18.3 attribution, FA4 R17 collection); GPU KPF-18.1 and component-custody are unmeasured; no placement floor, parity, quality or performance verdict yet.
 
@@ -1504,13 +1574,13 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-progra
 
 Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) · [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [KPF-18.1 CPU/FU03](../progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md) · [KPF TD29](../progress/2026-10/2026-10-31-codex3-kpf-td29-results.md) · [KPF GPU first segment](../progress/2026-10/2026-10-31-kpf181-gpu-first-segment.md) · [FA4 R17](../progress/2026-10/2026-10-31-codex-ni-fa4-r17-qualified-ready.md)
 
-## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - KV-6 canonicalization timing is descriptive: plain 0.0076 to 31.05 ms across 256 to 1M chars (shared host, non-gate). ([progress](../progress/2026-10/2026-10-31-kv6-canonicalization.md))
 
-## Compiled Update — 2026-11-01 (incremental source review)
+### Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited native records and source controls.**
 
@@ -1518,13 +1588,13 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-progra
 - KVU admission telemetry now records same-ticket long-prefill ownership and observed lease-verdict wait in source controls, not a total queue-wait or live-serving distribution. A 384 MiB mask entry is distinct from the 48.565 GiB capped runtime peak. ([KVU](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout); [prefill gates](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating); [inference changes](../handoffs/active/stack-lifecycle-program.md))
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - Historical 2026-10-29 shared-host synthetic canonicalization timing, 4,014 calls: plain medians at 256/10k/100k/1m characters were 0.0076/0.2786/2.8303/31.0525 ms. They are wall times, not production latency or throughput; archival is not new code quota. [Source](../handoffs/active/long-context-program.md#track-attention-matching-kv-compaction)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
@@ -1532,24 +1602,24 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-progra
 - KPF-24 done (source/CI, not performance): the KV-pool admission gate counts unique cells from native `llamacpp:kv_cells_used`/`kv_cells_size` and `/slots`. Unknown ownership is conservatively reserved twice, missing counters stay unknown, capacity drift refuses until refreshed. Hosted run `41298363381`: 281 passed, 6 explicit skips. [KPF](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
 - KVU-LB1D was stopped by its owner under D1 (no pre-grant qualification receipt for Q38FN): partial, rc 75, cleanup verified; the six-arm ABBAAB is incomplete, so no verdict, and it must not be rearmed without D1 qualification. [KVU](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
 
-## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+### Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
 **Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
 
 - AKV / Cache Engineering for Agents (intake-2596#record, intake-2590#record; [w3_dec](../research/deep-dives/ws58-20261031/dives/w3_dec.yaml)): drop removes entries from future attention and repos RoPE-rotates retained keys, with no re-prefill. The load-bearing finding: KV state is history-dependent, so token-prefix matching can reuse a wrong state; AKV keys its radix tree on tokens plus operation history. Paper numbers (-27.7% price-table cost, 8x A800) exclude linear-attention models and do not transfer.
 - Proposed: W3DEC-6 (an edited slot carries operation history in its key or is excluded from reuse; today's PrefixIndex keys on prompt text only), W3DEC-7 (zero-inference old-tool-response share screen, escalating at >=40% resident and >=20% of decode steps past 48K), W3DEC-8 (drop+repos probe on attention-only roles; hybrids excluded). Owner [KPF](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention).
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
 **Confidence: verified** — 7 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2061–2062 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2061-2062.md)
+#### Run 2026-10-20, IDs 2061–2062 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2061-2062.md)
 
 - intake-2061#record (vLLM partial prefix cache hit for hybrid mode (PR 2/N)): Dive record for the vLLM change supporting partial prefix cache hits on hybrid (SSM plus attention) models. Verdict adopt_patterns, integrated; linked to kv-prefix-fork-and-paged-attention.
 - intake-2062#record (vLLM partial prefix cache primitives (PR 1/N)): Dive record for the vLLM primitives enabling partial prefix caching on hybrid models, the first of the series. Verdict adopt_patterns, integrated; linked to kv-prefix-fork-and-paged-attention.
 
-### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+#### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2117#record (DeepSeek-V4.1-Flash KV report): Citable only for the layer map and CSA2 mode assignment, the CED global-KV mechanism, the FP4 main-KV format and the 890 B/token global-KV figure. The 552B vs 763.2B parameter conflict resolved as a scope difference (backbone plus Engram). Verdict worth_investigating, integrated; see deepseek-v41-flash-evaluation.
 - intake-2122#record (FlashMLA): Primary-source facts verified: the two per-token layouts, the indices/topk_length/attn_sink contract and the scheduler-metadata reuse hazard. Our fork already carries the 528 B row convention. Verdict adopt_patterns, integrated; linked to llama-cpp-dsa-contribution.
@@ -1557,28 +1627,28 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-progra
 - intake-2128#record (YOCO++): Independent small-scale evidence that plain YOCO is slightly worse than a standard Transformer (-0.39 avg points, +0.0106 val loss at 1.1B/100B tokens, single run), plus a training-time KV-residual fix. Verdict adopt_patterns, integrated; linked to kv-unified-stack-rollout.
 - intake-2130#record (YOIO/CLSA): Citable for one shared single-head indexer feeding 16 YOCO cross-decoder layers, trained by distillation, and the GPU observation that per-layer token top-k can exceed dense attention time at 128K. Verdict worth_investigating, integrated.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 5 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
+#### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
 
 - intake-2517#record (llama.cpp issue 30944 DS4.1 single-token corruption): open upstream correctness defect on prompt-prefix reuse and checkpoint restore; the Stage-1 lazy-mode host-to-GPU race framing was retracted by its author. Whether our port is affected is untested. Disposition monitor; linked to deepseek-v41-flash-evaluation.
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2559#record (Cache-to-Cache (C2C) paper): nothing falsified; C2C is a trained per-pair post-prefill KV rewrite giving +3-5 points over text handoff at 0.6B receivers, with the latency win equal to the avoided sharer decode. Not carried to 27B-35B roles. Disposition knowledge_only; linked to kv-prefix-fork-and-paged-attention.
 - intake-2576#record (C2C code and fusers): confirmed; README numbers disagree with paper v2 and only an HF transformers/CUDA path exists (no llama.cpp). Usable as the executable reference for an offline probe with the released Qwen3-8B + Qwen2.5-7B fuser. Disposition knowledge_only; linked to kv-prefix-fork-and-paged-attention.
 - intake-2590#record (AKV cache engineering for agents (repo)): the stage-1 cross-agent KV premise was overturned; substance is more relevant than expected for the orchestrator, notably the history-dependence hazard once KV is edited. The 27.7%/1.5x figures are SGLang plus API-price accounting, not a predicted llama-server gain. Integrated via context-folding-progressive.
 - intake-2596#record (Cache Engineering for Agents paper): confirms the AKV repo entry (intake-2590#record) and adds the exact drop/repos formulas and the history-dependence hazard; cost numbers are price-table estimates and serving numbers are SGLang BF16 on 8xA800, not transferable to EPYC/MI210, and hybrid-SSM models are out of scope. Integrated via context-folding-progressive.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 26 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
+#### Run 2026-10-20, IDs 2063–2115 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2063-2115.md)
 
 - intake-2063#record (vLLM prefix-cache retention PR): mechanism confirmed in merged code, while a premise in the PR body was overturned. Verdict adopt_patterns; linked to kv-unified-stack-rollout.md.
 - intake-2066#record (vLLM APC hybrid docs): docs verified against code: names match current code and conditions are enforced by silent narrowing; survey claim that align mode is required is stale. Verdict already_integrated.
@@ -1591,13 +1661,13 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-progra
 - intake-2095#record (llama.cpp SWA reuse off-by-two PR): v10 and the fork have the off-by-two; the fix is one clean hunk to absorb via the next fresh-production pull, not by patching v10. Verdict adopt_component; linked to autokernel-champion-aggregate.md.
 - intake-2097#record (llama.cpp iSWA seq_pos_max PR): resolved as an open unmerged PR; the body is stale (max() fix dropped), the head diff is an assertion, and v10 carries the unfixed behaviour. Verdict worth_investigating.
 
-### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+#### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
 
 - intake-2230#record (Don't Break the Cache): Citable only for qualitative layout rules (static prefix first, dynamic content last, fixed tool block, history edits break reuse); the 'up to 80% saving' figure is not an expected result. Adopt-patterns; linked to repl-turn-efficiency.md.
 - intake-2283#record (Prompt Cache): Origin of non-prefix modular KV reuse (positions by schema, per-module attention); its 'comparable' quality claim is a single-run LongBench result with a visible 28-43% degradation. Adopt-patterns; linked to context-folding-progressive.md.
 - intake-2326#record (KV concatenation-aware fine-tuning vs recompute): Fine-tuning versus recompute is a false dichotomy (they stack, +9.7 at 124k) yet the stack still loses about 24 points to full attention; neither is servable on EPYC hybrid/recurrent roles. Worth-investigating; linked to kv-prefix-fork-and-paged-attention.md.
 
-### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
+#### Run 2026-10-22, IDs 2386–2458 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2386-2458.md)
 
 - intake-2398#record (Continuum): entry created from a full read of arXiv v7; the 8x headline is an internal-testbed figure and the InferCept critique was checked. Verdict adopt_patterns; linked to agentic-serving-harness-fixes.md.
 - intake-2399#record (Multi-turn serving cost paper): the only gap-related parameter (1 h TTL) is a retention bound with synthetic arrivals; sections 1-4.3.8 and 5 read. Verdict adopt_patterns.
@@ -1612,86 +1682,21 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-progra
 - intake-2433#record (KV cache management evaluation article): a sizing recipe, not a metric; all stages assume a multi-tier external KV manager, so only stages 1 and 3 port to llama-server. Verdict adopt_patterns.
 - intake-2434#record (agentic-coding-analysis): overturned the premise that a global cross-session id mode does not exist in code: it exists. Verdict adopt_patterns; linked to autokernel-research-loop.md.
 
-### Run 2026-10-22, IDs 2494–2510 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2494-2510.md)
+#### Run 2026-10-22, IDs 2494–2510 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2494-2510.md)
 
 - intake-2498#record (Gemma quantized KV cache corruption bug (iqk FA)): Root cause verified from code: in compute_helper_q the Q8_0 per-block-repack branch broke out of the whole KV loop at the first block whose first cell in the last row was not +0.0. Adopt-patterns; handoff autokernel-all-devices.
 
-### KV-row experimental reference (2026-11-02)
+#### KV-row experimental reference (2026-11-02)
 
 A C5-derived opt-in reference gathers planned KV rows before flash attention. A model-free two-slice, 256-padded-row MI210 check matched an independent dense-softmax calculation; the run also recorded GPU residency. This verifies that reference case only: the fused row-aware kernels, serving-graph integration and performance gate remain open. [Run evidence](../artifacts/engineering/kpf41-model-free-20261102/) and [RTG-58](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention).
 
 The subsequent opt-in gfx90a vector prototype gathers noncontiguous KV rows directly and matched the independent reference for a single-query F16 KV case on MI210. Its result is limited to that case; serving integration, additional types and shapes, and performance evaluation remain open. [Original run evidence](../artifacts/engineering/kpf41-direct-20261102/).
-## RTG-57 implementation checkpoint — 2026-11-02
-
-**Confidence: bounded engineering evidence.** A new experimental unified-attention gauge counts
-physical occupied KV cells once even when sequences share them; unsupported memory types omit the
-gauge. Its CPU build and model-free cell-accounting checks passed, but the endpoint has not been
-validated with a loaded model. The P3 runner now has separate drafted/no-draft lifecycle source and
-fake-server tests; native qualification is still open. A source-bound model-free gfx90a attention
-experiment found repeatable baseline outputs and variable candidate outputs in two cases; a proposed
-barrier change did not eliminate the variation. These results establish neither a production defect
-nor a quality, performance or promotion decision. Sources: [RTG-57 handoff](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout),
-[session progress](../progress/2026-11/2026-11-02-rtg57-readiness-audit.md), and
-[preserved GPU diagnostic](https://github.com/pestopoppa/epyc-inference-research/tree/7a8a2d8fa/artifacts/kvu19a2-sync-build-20261102).
-
-## RTG-58 fork and shared-trunk observations — 2026-11-02
-
-The CPU KPF-17a paired comparison matched all 86 original and 111 extended cases, including 25 shared-trunk cases, bit-for-bit between the pre-skip and C5 images. Its ROCm clauses remain open. On 35B CPU item 2, all 16 fork-versus-own comparisons were fully identical; all 32 A/A controls matched tokens, with 30 fully identical.
-
-On the integrated 27B/DFlash2 GPU item 1, all 32 requested forks were witnessed. Six of 32 draft-on fork-versus-fresh comparisons matched all generated tokens, and six of 32 fresh A/B controls did so. The different-slot controls and co-tenancy do not resolve the cause; neither the GPU observation nor the CPU subsets complete the P1 parent gate.
-
-### Source references
-
-- [RTG-58 handoff and CPU shared-trunk comparison](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
-- [35B CPU item-2 native record](../artifacts/compute/rtg58-p1-cpu-item2-20261102/)
-- [27B/DFlash2 GPU item-1 evidence](../artifacts/compute/rtg58-p1-gpu-item1-20261102/README.md)
-
-## KVU evidence reconciliation — 2026-11-02
-
-- **KVU-19a-2:** A source-bound 20-run HIP diagnostic reproduced five distinct candidate outputs per case, versus identical baseline repetitions, with no NaNs. A follow-on barrier-exit move did not restore repeatability. This is a model-free diagnostic, not a serving verdict.
-- **FA-4b:** All 2,400 accepted responses contained zero JSON nonfinites and zero garbage; that does not prove finite logits or change the one-of-four equivalence result.
-- **KVU-12.5:** The earlier full-host `SPLIT_BETTER` verdict was rejected because it used 96 rather than the required 24 threads and omitted a wave-range term. The later quarter-run comparison remains incomplete; its verdict is unknown. See the handoff for the distinct historical measurements.
-
-Sources: [KV unified rollout and evidence](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [KVU-19a trace analysis](../progress/2026-11/2026-11-02-handoff-kvu.md), [KVU-16a load reconciliation](../progress/evidence/kvu16a-load-result-20261102/RECONCILIATION.md).
-
-## KPF-17a GPU closure and KVU-19a-2 reuse decision — 2026-11-04
-
-- **KPF-17a:** Both retained GPU rows were filed PASS. The shared suite had 111 cases (89 supported bitwise-equal, 22 declared unsupported; all 25 shared-trunk cases supported). The preservation suite had 86 cases (64 supported bitwise-equal under each skip setting, 22 declared unsupported). With the earlier CPU 86/111 PASS, KPF-17a is complete; parent KPF-17 keeps its other clauses.
-- **KVU-19a-2:** No new GPU repeat was run. The existing source-bound 20-run comparison (`f8878bf14`) and the negative barrier diagnostic (`7a8a2d8fa`) already show five identical baseline outputs versus five distinct candidate outputs per case for cases 78 and 80, with matched input bytes. Case 79 is not covered. A concrete upstream ISSUE-DRAFT (historical TILE flash-attention repeatability, MI210 D512/D576, local experimental patch, mechanism unknown, no fix) was prepared but not posted; posting needs explicit operator authorization.
-- **K35 lifecycle:** Filed pass (rc0, distinct PIDs, 16 tokens per arm, verified cleanup). The P3 lifecycle row passed four-CPU qualification, but its full twenty-row benchmark remains unrun.
-- **Filing tooling:** A tested but unapplied `handoff_path()` patch fixes result filing for basename task tokens (5/5 targeted tests); deployment under `scripts/coordination` needs operator acknowledgment.
-- **KPF-26 rubric:** Three prospective source-scout tasks are scored PASS/FAIL/UNKNOWN per arm and window; the rubric makes no representativeness claim and sets no KPF-26 gate.
-
-### Source references
-
-- [KPF-17a GPU filing](../progress/2026-11/2026-11-04-handoff-kvfork.md)
-- [K35/P3 lifecycle and KVU-19a-2 reuse](../progress/2026-11/2026-11-04-handoff-kvu.md)
-- [Reuse decision](../progress/evidence/kvu19a2-upstream-20261104/REUSE-DECISION.md) and [issue draft](../progress/evidence/kvu19a2-upstream-20261104/ISSUE-DRAFT.md)
-- [File-result path correction](../docs/reports/kv-cache/file-result-path-20261104.md) and [KPF-26 outcome rubric](../docs/reports/kv-cache/kpf26-code-requal-v1-20261104/OUTCOME-RUBRIC.md)
-
-## Compiled update — 2026-11-04 (wrap-up sweep): KVU-16 results
-
-- **KVU-16h:** L3 decode loss of 58-61 % under the unified KV meets the P5 and split-per-slot triggers. Split-per-slot is not re-opened (operator kept shared 393k on 2026-10-03 on the same trigger); KVU-19-P5A1 tests whether the champion masked-block skip removes the tax, and only a NO-RECOVERY result re-asks.
-- **KVU-16g:** no first-prompt TTFT tax. **KVU-16a:** 35 GiB non-KV VRAM for 27B Q8.
-- kvu upstream issue filed: ggml-org/llama.cpp#31654.
-
-Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [KV program](../handoffs/active/kv-cache-program.md) · [MI210 program](../handoffs/completed/mi210-serving-program.md)
-
-## Compiled update — 2026-11-04 (wrap-up 2 sweep): KPF-62 / KPF-13.1 / KPF-17 controls
-
-- **KPF-62 G3 outcome continuation (source-only):** a bounded per-arm continuation with a segment ledger and an opt-in paired scoring guard (base `3ec14227a`). 13 G3 tests plus a model-free C++ budget test pass, the build is PASS (`kvfork62-g3-build-20261104`), and a four-request synthetic paired CLI fixture scored complete EOG records while refusing interrupted and exhausted ones. Model scoring remains unverified and the successor separately unauthorized.
-- **KPF-13.1 offline grid controls:** 29 model-free tests cover occupancy/high-water semantics and malformed or contradictory grids; synthetic matches establish no physical ABI or historical verdict.
-- **KPF-17 custody:** the starti-adoption and unknown-orphan controls pass as own-child synthetic tests (GDB starti paused before the receipt; the subreaper adopted and reaped). A custody-race qualification was filed inconclusive because publisher smoke contaminated the result path. Oracle-packet integration is unproven.
-- Process lesson: a smoke result written to the full-run result path is contamination; require same-attempt binding before filing a PASS.
-
-Sources: [KV program](../handoffs/active/kv-cache-program.md) · [KVFORK progress](../progress/2026-11/2026-11-04-handoff-kvfork.md) · [KVU progress](../progress/2026-11/2026-11-04-handoff-kvu.md)
-
-## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
+### Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
 
 - **KVU-16g: no first-use tax.** On the :8083 shape (np4, -ub 2048, build 181483cfc, HIP residency proven), the first-request tax was −0.063 s at 1k and −0.043/−0.076 s for size-first at 8k/32k, missing the max(0.25 s, 3x SD) and 5 % bars. x4 TTFT is serialised prefill plus slot queueing. Recommendation: no post-launch warm-up request. Source: [mi210-serving-program.md:367-368](../handoffs/completed/mi210-serving-program.md).
 - **PB-QCOST quadratic prefill term confirmed out of sample:** on the 11-04 KVU-16g run (solo prefill, -ub 2048, lbt build, n=7), prompt_ms = a·ceil(Q/2048) + b·Q + k·Q²/2 gives **k = 1.95e-5 ± 1.6e-6 ms/tok² (t 12.3)**, R² 0.99996, LOO MAPE 5.5 %. A linear-only fit leaves ±1.3 s residuals. This agrees with the confirm-R refit. The target-ms rule is unchanged (TPOT target − 210.7 ms, n=4 P99), and the box stays open for the KVU-16g-2 live A/B. Source: [mi210-serving-program.md:505](../handoffs/completed/mi210-serving-program.md), `/mnt/raid0/llm/tmp/pb-qcost-1-20261105/REPORT.md`, commit `9418c7ea1`.
 
-## Compiled Update — 2026-11-05 (operator wiki sweep 2)
+### Compiled Update — 2026-11-05 (operator wiki sweep 2)
 
 - **Historical-image allocator custody (KPF-13.1).** The allocator ELF capture completed rc0 (three targeted bodies, 6/494/1100 instruction lines), the native and binding grid fixtures passed (first grids empty; honest second grid placed cells 0,1; skip-apply second grid empty), and the own-child memory read control passed. These establish machine-code custody and fixture behaviour only, not ABI, physical layout or task binding. An earlier find-slot filing was corrected to INVALID because child exit codes and executable identity snapshots were not retained.
 - **KPF-18 G3 model-free qualifications.** Later-slot queries (12 controls), residency correlation (18), RAM admission (28, with cleanup) and output supervision (six, process absence) all passed their scoped rules. The prefix request-boundary integration qualification passed (duplicate, multi-layout, foreign-task, foreign-slot and truncated traces all refused before the judge). None of these shows live GPU admission or an integrated lifecycle.
@@ -1702,7 +1707,7 @@ Sources: [KV program](../handoffs/active/kv-cache-program.md) · [KVFORK progres
 
 Sources: [kvfork 11-05](../progress/2026-11/2026-11-05-handoff-kvfork.md) · [kvfork 11-04](../progress/2026-11/2026-11-04-handoff-kvfork.md) · [kvu 11-05](../progress/2026-11/2026-11-05-handoff-kvu.md) · [kvu 11-04](../progress/2026-11/2026-11-04-handoff-kvu.md) · [slot-fabric residency 11-05](../progress/2026-11/2026-11-05-handoff-heterogeneous-slot-fabric-residency.md) · [slot-fabric 11-04](../progress/2026-11/2026-11-04-handoff-heterogeneous-slot-fabric-residency.md) · [TriAttention](../progress/2026-11/2026-11-04-handoff-triattention-kv-selection.md) · [high-impact reviews](../docs/reports/kv-cache/high-impact-reviews-20261105.md) · [RS-1 proposal](../docs/reports/kv-cache/kpf-rs1-impact-r6-20261105/implementation-proposal.md) · [allocator ELF](../docs/reports/kv-cache/kpf131-old-allocator-elf-20261105/PUBLISHED.md) · [prefix integration](../docs/reports/kv-cache/kpf174-prefix-request-integration-20261105/PUBLISHED.md) · [G3 output supervision](../docs/reports/kv-cache/kpf18-g3-output-supervision-20261105/PUBLICATION.md) · [G3 RAM admission](../docs/reports/kv-cache/kpf18-g3-ram-admission-qual-20261105/PUBLISHED.md) · [typed decoder](../docs/reports/kv-cache/kpf131-typed-decoder-qual-20261105/PUBLICATION.md) · [byte alignment](../docs/reports/kv-cache/kpf623-byte-alignment-exploratory-20261105/PUBLISHED.md) · [HSF-3 adjacency](../docs/reports/kv-cache/hsf3-adjacency-impact-3a09-20261105/PUBLISHED.md) · [HSF-3 incremental](../docs/reports/kv-cache/hsf3-incremental-r2-row-20261105/DIAGNOSIS.md) · [KVU-11c comparator](../docs/reports/kv-cache/kvu11c-completion-comparator-20261105/ANALYSIS.md) · [KVU-19b clock](../docs/reports/kv-cache/kvu19b-profiler-prep-20261104/CLOCK-CALIBRATION.md) · [KV program](../handoffs/active/kv-cache-program.md) · [slot fabric program](../handoffs/completed/mi210-serving-program.md)
 
-## Compiled Update — 2026-11-05 (operator wiki sweep 3, main-inf22): KVU-16g-2 prefill budget rejected as configured
+### Compiled Update — 2026-11-05 (operator wiki sweep 3, main-inf22): KVU-16g-2 prefill budget rejected as configured
 
 **Confidence: verified** (live A/B on Qwen3.8-27B Q8_0 + DFlash2, C6 `729599d69`, :8083 shape np4).
 
@@ -1711,19 +1716,19 @@ Sources: [kvfork 11-05](../progress/2026-11/2026-11-05-handoff-kvfork.md) · [kv
 
 Sources: [KV program](../handoffs/active/kv-cache-program.md) · [findings](../docs/reference/mi210-serving-program-findings-20261105.md) · [MI210 serving program](../handoffs/completed/mi210-serving-program.md)
 
-## Compiled Update — 2026-11-06 (operator wiki sweep, main-inf22): KVU-16g-3 re-tune also fails
+### Compiled Update — 2026-11-06 (operator wiki sweep, main-inf22): KVU-16g-3 re-tune also fails
 
 None of the re-tuned prefill-budget operating points met the bound. The p99 iteration time overshoots its target by 50-80 ms, and neighbour TTFT ON/OFF is 1.33-1.59x against a 1.30 bound. Arm 4 was stopped for futility. The operator must now choose between relaxing the bound and fixing the overshoot in the budgeter; this is box KVU-16g-4.
 
 Sources: [kv-cache-program KVU-16g-3](../handoffs/active/kv-cache-program.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)
 
-## Compiled Update — 2026-11-06 (operator wiki sweep 2, main-inf22): budgeter overshoot root cause (KVU-16g-4)
+### Compiled Update — 2026-11-06 (operator wiki sweep 2, main-inf22): budgeter overshoot root cause (KVU-16g-4)
 
 The p99 overshoot behind KVU-16g-3 is a controller-shape defect, not noise. The budgeter centres the *mean* iteration time on its target, but iteration cost is a staircase in 32-row tiles (~60 ms per tile), so a linear EWMA dithers across a step edge: closed-loop iteration sd is 25-33 ms with lag-1 autocorrelation -0.33, against 8 ms open loop. The fix (`0a6c69991`, experimental, off C6) aligns the budget to the tile (`--prefill-budget-align 32`) and sizes it against the tail (`--prefill-budget-tail-k 1.0`); in simulation p99 drops 726->665 ms at target 670 and 949->890 at 900. On this scenario the neighbour-TTFT criterion and the p99 criterion cannot both pass (>= ~1.39x TTFT at p99 <= 670), so both settings are being measured (KVU-16g-4b). Confidence: inferred (simulation + unit test; live A/B pending).
 
 Sources: [kv-cache-program KVU-16g-4](../handoffs/active/kv-cache-program.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)
 
-## Compiled Update — 2026-11-07 (KVU-16g-4b result and the :8083 prefill-budget decision)
+### Compiled Update — 2026-11-07 (KVU-16g-4b result and the :8083 prefill-budget decision)
 
 **Confidence: verified** (two completed paired rows, 4/4 launches valid; criteria are the pre-registered ones, read from the handoff).
 
@@ -1736,22 +1741,57 @@ Sources: [kv-cache-program KVU-16g-4](../handoffs/active/kv-cache-program.md) ·
 Sources: [kv-cache-program KVU-16g-4b / KVU-16g-5](../handoffs/active/kv-cache-program.md) · [main-inf22 decision package](../progress/2026-11/2026-11-06-main-inf22.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)
 
 
-## Compiled Update - 2026-11-17 (INF-86): checkpoint spacing and prompt-reuse for hybrid models
+### Compiled Update - 2026-11-17 (INF-86): checkpoint spacing and prompt-reuse for hybrid models
 Sources: `handoffs/active/hybrid-checkpoint-prompt-reuse.md`, `progress/2026-11/2026-11-10-autokernel.md`, `progress/2026-11/2026-11-11-autokernel.md`.
 
 - **Verbatim reply replay never enters checkpoint search** (the v1 smoke saw 0 attempt lines); the divergence design must use trimmed replies. Observed exposure: with the last-plus-older rewrite, 10/15 turns fall back to the first checkpoint (cache_n 106).
 - **Checkpoint spacing is a partial fix.** cms8192 to cms512 cuts about 30% of wasted tokens; residual analysis shows about 75% of measured waste is the unavoidable SSM suffix after an edited older turn, and cms512 removes 71% (16K) / 99% (64K) of the avoidable spacing term. The operator chose both the cms512 stack change and the byte-identical template fix.
 - **Landed:** cms512 (research `e3aac480b`, orchestrator `9690f455`) with the reload held until live-probe row `inf86-cms512-live-probe-20261111` shows savings and memory fit per model; client-mode replay keeps `reasoning_content` (`301cfb21`) and `preserve_thinking` for unpinned thinking roles (`8dbc2ffa`), pending an API reload by the owner.
 
-## Compiled Update - 2026-11-19 (EA hybrid guard: no safe Expected-Attention ratio on the hybrid 27B)
+### Compiled Update - 2026-11-19 (EA hybrid guard: no safe Expected-Attention ratio on the hybrid 27B)
 **Confidence: verified** (ladder verdict and guard commits read from the owning handoffs; tests rerun by the author, 173 pass).
 Sources: [kernel-champion-and-promotion EA-HYBRID-FOLD-GUARD](../handoffs/active/kernel-champion-and-promotion.md), [long-context-program AM-PORT-2B](../handoffs/active/long-context-program.md), [autopilot-backlog-session progress](../progress/2026-11/2026-11-19-autopilot-backlog-session.md).
 
 - **No keep ratio is safe for Expected-Attention KV compaction on the hybrid 27B (:8083).** Ladder `am-port-ea-ladder-gpu-20261119`: keep 0.8 scored 1/32 against FULL 60/60; 5x compression scored 0/60. AM-PORT-2B found `n_beta_set=0` is by design, not a bug.
 - **Served callers are pinned off.** Orchestrator `a0d0fe05`: `kv_compress.EA_HYBRID_EXCLUDED_PORTS={8083}`, `EA_HYBRID_MIN_KEEP_RATIO=None`; `compress_slot` refuses EA there, `auto_compress_all` skips it and an explicit `slot_compact` is refused. `94cd4320` records the verdict at the guard, so the ratio stays None. The API was reloaded API-only at `68c686e2`, so the guard is now served. Do not fold the EA hparams fix into any composite kernel.
 
-## Compiled Update — 2026-11-20 (autokernel wrap-up): Expected-Attention on the hybrid 27B
+### Compiled Update — 2026-11-20 (autokernel wrap-up): Expected-Attention on the hybrid 27B
 Sources: `docs/reports/ea-27b-evict-audit-20261120.md`, `progress/2026-11/2026-11-19-autokernel.md` (AM-PORT-2B ladder)
 
 - **Two EA defects were fixed in the AM port (verified, fork `c9f2e34ce`).** A hybrid-hparams misparse made Expected-Attention a no-op on the 27B (`n_evicted` 0), and eviction hit the last position. The pre-fix GPU qualification is VOID; the audit finds the six corrected record groups (AM-PORT-2, -2-r2, -2B ladder and smokes) all have positive eviction counts (5825-25993 positions) and four legacy groups never recorded a count (not-recorded, not inferred). `n_evicted` is an operation check, zero invalidates a compression measurement.
 - **No safe EA/L4 ratio exists on the hybrid 27B (AM-PORT-2B ladder, root `7bb72a3a2`, `6353f5d6e`).** EA has no beta term by design (EA arms report `n_beta_set 0`), and per-token eviction drops digit tokens, so numeric content is lost first. The original row was corrected to fail, and EA stays refused on :8083.
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): KPF-41 backend PASS, snapslot checkpoint KEEP, LSA sparse drop, KV-quant verify kernels
+
+- **KPF-41 backend GPU r3: PASS.** The full FLASH_ATTN_EXT corpus on gfx90a (build `15caecbbf`) ran 5,207 selected cases: 2,978 OK, 2,229 unsupported and 0 failed. All 25 required shared-trunk cases are OK. Residency was confirmed on 5,279 of 5,282 owned-PID samples. The r2 run stays INCONCLUSIVE because HIP graph diagnostics broke its parser, and that parser has since been repaired. This answers backend qualification only. It says nothing about the correctness of unsupported cases, CPU qualification or speed. Sources: `docs/reports/kv-cache/kpf41-backend-gpu-r3-result-20261119.md`, `handoffs/active/kv-cache-program.md`.
+- **KPF-41.FAROWS-INPLACE (fork `f65454124` on C17 `1b83c6967`).** r2 was filed FAIL_IDENTITY, but the op win is real: FA per step fell from 9.29 to 6.32 ms and the verify step from 53.5 to 50.7 ms (-5.3%). tbo 29/29 and served 144/144 are bitwise identical. The one gated DIFF was a slot where OFF itself produced two sequences. Source: `handoffs/active/kv-cache-program.md`.
+- **KPF-64 snapslot checkpoint copy (`LLAMA_SNAPSLOT_CKPT=1`, default off): KEEP.** Row `ak-kpf64-snapslot-27b-mtp-gpu-20261121-r4`, binary `5bdaf5b03`, 4 pairs. Prefill ratio was 1.032 [1.022, 1.042] and TTFT ratio 1.032. Within-server KLD mean was 0.00058 against a 0.003 limit. Cuts were 0 with the knob on against 6 with it off. On the served log the copy had cost 1.62 extra ubatches per request, about 15.3% of prefill wall. r2 was invalid and r3 had a gate-design flaw. The operator noted that 27B MTP is not served, so the row was deprioritized and retargeted to 27B+DFlash2. Source: `handoffs/active/kv-cache-program.md`.
+- **Multi-boundary checkpoints are justified.** Prompt-overlap depths are spread out rather than spiking: 94% fall between 16k and 131k, and 252 of 1,716 are zero. Expected recompute per request is 54,660 tokens with no checkpoint, and 26,015 / 17,216 / 10,546 / 5,840 tokens with M = 1/2/4/8 positions. Dense checkpoints every 8192 tokens give 3,393, and every 2048 give 865. This triggers the multi-boundary `checkpoint_at` policy. Source: `handoffs/active/kv-cache-program.md`.
+- **27B DFlash2 launch nondeterminism comes from the drafter.** Row `ak-27b-df2-launch-nondet-gpu-20261121` (DRAFTER_TRAJECTORY) found the DFlash2 arm bimodal, with a max pairwise top-20 KLD of 0.0100 over 6 launches. The target-only arm showed a max KLD of 0.0. Source: `handoffs/active/kv-cache-program.md`.
+- **The cacheclip helper device is not worth building.** Using only the 27B Q8_0 MI210 rate (839 tok/s at pp2048), the predicted cut is 0%, or -0.2 to -3.2% with seam recompute. A >=20% cut needs a helper running at about 0.31-0.33x the home rate at L >= 8k. No implementation box was opened (intake-2773#record, intake-2774#record). The queue-share precondition is also not met: 214 of 215 calls started on an idle server. Source: `handoffs/active/kv-cache-program.md`.
+- **The KV-quant verify path on C17 is MIXED_SEE_TABLE (G3-KTRACE-C17).** Production q8_0 KV runs `gv_fattn` GQA-verify natively at both n-max values, with zero extra convert dispatches per round. q4_0 is VEC-native at n1 and full-dequant at n7. The operator option note recommends keeping q8_0 target KV. B5 stays blocked. Source: `handoffs/active/speculative-decoding.md` (G3), `progress/2026-11/2026-11-23-handoff-df2.md`.
+- **LSA CPU sparse attention end to end: DROP_QUALITY (`lsa-cpu-sparse-e2e-bound-20261120-r4`).** At f16 32k over 5 pairs the speed geomean was 1.092 [1.072, 1.112], which passes the speed gate. Greedy output diverged at token 56 of 64, with KLD mean 0.001919 and p99 0.008681. The q8 geomean of 1.346 over 3 pairs is descriptive only. r3's paired upper bounds (median 15.53%) exclude scoring and are superseded by r4. Sources: `progress/2026-11/2026-11-21-handoff-triattention-kv-selection.md`, `progress/2026-11/2026-11-22-handoff-triattention-kv-selection.md`.
+- **TriAttention and Expected-Attention plumbing.** S8-C-API-PHYS passed (bounded correctness only): physical occupancy went from 128 to 68, sink and recent windows were preserved, and all 8 continuation token IDs match dense. The EA-27B evict audit has its own 11-20 section. EA-POOL-SCREEN has no verdict: r2 was FUTILITY_INPUT, r3 was withdrawn, and r5 was partial with 111 records. AM-PORT-3's stable build batch was built, but its native rows have not run. AM-PORT-2 was partial at 32 of 60 triplets. Sources: `progress/2026-11/2026-11-19-handoff-triattention-kv-selection.md`, `progress/2026-11/2026-11-20-handoff-triattention-kv-selection.md`, `progress/2026-11/2026-11-22-handoff-triattention-kv-selection.md`.
+- **KPF-18 / KPF-17.4D custody work has no performance result.** The R6 full build failed because UI-embed assets were missing. The R7 build passed (source `6ec877068`), and its native smoke passed on CPUs 116-119. The GPU witness smoke stays queued, so KPF-13.1 cannot advance. The hsf4 CPU save aggregate passed: median effective rates were 6.5-7.6 GB/s over 70 eligible blocks. Sources: `progress/2026-11/2026-11-19-handoff-kvu.md`, `handoffs/active/kv-cache-program.md`.
+- **Hybrid checkpoint prompt reuse (INF-86) is COMPLETED as of 2026-11-19.** The slot-restore checkpoint fix is validated on C13 and ships with the next production kernel. DS-F1 moved to long-context-program (the AM compaction track). DS-6-live and DS-F2/F3/F4 were declined or parked. Source: `handoffs/completed/hybrid-checkpoint-prompt-reuse.md`.
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [kv-cache-program handoff](../handoffs/active/kv-cache-program.md)
+- [KPF-41 backend GPU r3](../docs/reports/kv-cache/kpf41-backend-gpu-r3-result-20261119.md)
+- [hybrid-checkpoint-prompt-reuse (completed)](../handoffs/completed/hybrid-checkpoint-prompt-reuse.md)
+- [kvu progress 11-19](../progress/2026-11/2026-11-19-handoff-kvu.md)
+- triattention progress: [11-19](../progress/2026-11/2026-11-19-handoff-triattention-kv-selection.md), [11-20](../progress/2026-11/2026-11-20-handoff-triattention-kv-selection.md), [11-21](../progress/2026-11/2026-11-21-handoff-triattention-kv-selection.md), [11-22](../progress/2026-11/2026-11-22-handoff-triattention-kv-selection.md)
+- [speculative-decoding handoff (G3)](../handoffs/active/speculative-decoding.md), [df2 progress 11-23](../progress/2026-11/2026-11-23-handoff-df2.md)
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): KV compression papers and the llama-server cache-save path (intake 2753..2823)
+
+- **Eviction/selection papers are attention-only and mostly re-derive SnapKV.** SnapKV (`intake-2780#record`): observation-window attention votes plus stride-1 pooling before per-head top-k; pooling is the only ablated piece and its numbers are in a figure; nothing on hybrid/GDN. ChunkKV (`intake-2781#record`) is SnapKV without pooling, keeping whole chunks (c=10); chunk size is a plateau (LongBench 40.49-40.51 for c=3..10, SnapKV 40.15), gains are mostly at small budgets. RocketKV (`intake-2775#record`) is SnapKV permanent eviction then Quest-style top-k; LongBench 51.1/51.9/52.1 at budgets 256/512/1024 vs Full 52.2 on Llama3.1-8B, speed from a PyTorch prototype, prefill not compressed, and permanent eviction is its own named multi-turn weak spot. RoCoKV (`intake-2760#record`) adapts the top-k budget by sampling entropy; thresholds are test-set selected. SkipKV (`intake-2776#record`, not_applicable) is token-level scoring plus a repeated-sentence penalty; sentence scoring alone adds only +3.3 pts over R-KV ([SnapKV](../research/deep-dives/ak-intake-20261121/2404.14469v2.md), [ChunkKV](../research/deep-dives/ak-intake-20261121/2502.00299v5.md), [RocketKV](../research/deep-dives/ak-intake-20261121/2502.14051v3.md), [RoCoKV](../research/deep-dives/ak-intake-20261121/2611.25433v1.md), [SkipKV](../research/deep-dives/ak-intake-20261121/2512.07993v2.md)).
+- **kv_rows vec FA (PR #32520, `intake-2753#record`)**: upstream #29510 made CUDA -kvu FA convert a quantized cache to F16 every call (q8_0 3.14 -> 7.97 ms/tok at an idle 34k slot); the PR reads K/V in place via a template bool, restoring 3.01-3.02 ms. HIP gets no kernel. Production v10 has no kv_rows and champion C17's in-house gather port (UP-FAROWS-HIP, default ON) never converts the cache, so the penalty never existed for us ([pr32520 dive](../research/deep-dives/ak-intake-20261121/pr32520.md)).
+- **Saving idle slots stalls the server thread (issue #30252, `intake-2809#record`).** With unified KV and interleaved cells a 323-token sequence triggers 23,256 blocking tensor_get calls; closed by PR #31391 (`intake-2821#record`, monitor), which gathers reads with one kernel into mapped host memory: Llama-3.1-8B np8 KVU +30.6% tok/s but hybrid Qwen3.8-27B np4 only +3.4%, and the gather is compiled out on HIP, so on MI210 the merged PR does nothing. The batched copy API (PR #30881, `intake-2822#record`, adopt_component) groups mixed buffer types (attention KV + recurrent state) and falls back per backend ([LPR stage3 plan](../research/deep-dives/intake-lpr-20261122/stage3-plan.md), [iss30252](../research/deep-dives/intake-lpr-20261122/intake-2809-iss30252.md), [pr31391/pr30881/pr30137](../research/deep-dives/intake-lpr-20261122/intake-2821-2823-pr31391-pr30881-pr30137.md)).
+- **Reference-counted checkpoints (PR #30137, `intake-2823#record`, adopt_component)**: checkpoints are immutable, so slot and prompt cache share them via shared_ptr; author numbers show cache update -52.6% to -76.4%; independent Qwen3.8-27B np4 KVU snapshot-save interval 95.23 -> 44.30 ms. Open defect: --cache-ram counts a shared checkpoint once per holder ([pr30137 dive](../research/deep-dives/intake-lpr-20261122/intake-2821-2823-pr31391-pr30881-pr30137.md)).
+- **Huge pages for saved cache state.** Issue #32478 (`intake-2804#record`) reports 124K page faults per request; PR #32758 (`intake-2800#record`) adds opt-in madvise(MADV_HUGEPAGE) (H100: faults 256,074 -> 3,488 per request, checkpoint save P95 45.57 -> 30.57 ms), but THP is not separated from the no-init allocator changes; the Tensward report (`intake-2810#record`) gives +3.5% to +21% throughput and no gain where faults are few. Our host already runs THP=always, so the opt-in is largely redundant here, while the champion shares the PR's restore-ordering bug (target buffer released before draft restore) and zero-filling save buffers ([pr32758](../research/deep-dives/intake-lpr-20261122/intake-2800-pr32758.md), [iss32478](../research/deep-dives/intake-lpr-20261122/intake-2804-iss32478.md), [tensward](../research/deep-dives/intake-lpr-20261122/intake-2810-tensward-hp.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [digest 2026-11-21 ids 2752-2787](../research/deep-dives/intake-digests/2026-11-21-ids-2752-2787.md), [digest 2026-11-22 ids 2789-2823](../research/deep-dives/intake-digests/2026-11-22-ids-2789-2823.md)
+- [SnapKV](../research/deep-dives/ak-intake-20261121/2404.14469v2.md), [ChunkKV](../research/deep-dives/ak-intake-20261121/2502.00299v5.md), [RocketKV](../research/deep-dives/ak-intake-20261121/2502.14051v3.md), [RoCoKV](../research/deep-dives/ak-intake-20261121/2611.25433v1.md), [SkipKV](../research/deep-dives/ak-intake-20261121/2512.07993v2.md), [pr32520](../research/deep-dives/ak-intake-20261121/pr32520.md)
+- [LPR stage3 plan](../research/deep-dives/intake-lpr-20261122/stage3-plan.md), [iss30252](../research/deep-dives/intake-lpr-20261122/intake-2809-iss30252.md), [pr31391/pr30881/pr30137](../research/deep-dives/intake-lpr-20261122/intake-2821-2823-pr31391-pr30881-pr30137.md), [pr32758](../research/deep-dives/intake-lpr-20261122/intake-2800-pr32758.md), [iss32478](../research/deep-dives/intake-lpr-20261122/intake-2804-iss32478.md), [tensward huge pages](../research/deep-dives/intake-lpr-20261122/intake-2810-tensward-hp.md)

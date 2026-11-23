@@ -2,360 +2,7 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-12 (operator wiki sweep, AGG Phase 1 update, autopilot-backlog-session). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
 gaps — fail-closed extractor accounting, pinned engine versions, per-document latencies; the
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **W-RAC web chunking** (intake-436#01) Decouples extraction from chunk planning using ID-addressable units where the LLM only groups (never generates content), cutting token cost and hallucination risk. Worth investigating for the KB/ingest chunker.
-
-## Compiled Update — 2026-08-18: the demo ran on the compliant artifact after all — two receipt corrections from the ported lane record
-
-**Confidence: verified** — read from the ported lane run record, the handoff's annotated rows, and
-the named research commits; corrections below supersede the matching statements in the 2026-08-16
-update, which is retained unedited per the append-never-edit rule.
-
-### CORRECTION: the 18-page demo ran on the requantized, quant-compliant model
-
-The 2026-08-16 update below states the default Unlimited-OCR artifact was "still non-compliant"
-(`output.weight` at Q6_K against a required `lm_head >= Q8_0`). The ported 2026-08-13 lane record
-shows the compliance work happened **before** the 22:18Z demo: the model was requantized as
-`Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB; `llama-quantize --allow-requantize
---output-tensor-type q8_0`, `output.weight` verified q8_0 via `llama-gguf`, the other 154 tensors
-byte-copied rather than re-quantized — no double-quant loss), `DEFAULT_MODEL` was repointed
-(research `c733e1ee`), **and the demo ran on it**. What the artifact-gate row still requires is the
-immutable SHA-256 + tensor-audit *record* — the compliance gap that remains is documentary, not
-material. The rest of the 2026-08-16 assessment stands: prompt/profile mismatch (not "root cause"),
-canonical-recipe A/B still owed, no ClaimTuple.
-
-### The `held_s` receipt understated a hold that was in fact full-interval — fixed forward, not backfilled
-
-The stored `inference_window.json` reports `held_s = 1.002881998` and must still never be cited as
-full-interval residency proof for the first run. The root cause is now known: the receipt stamped
-`held_s` right after `wait_for_health` (~1s in), while the flock itself **was** held for the entire
-launch→queries→terminate interval. The fix (research `aca459d9`) recomputes `held_s` at release from
-the lease's acquisition stamp, with a test asserting it. The two statements coexist deliberately:
-the *mechanism* held for the whole run, but the *stored receipt* cannot prove it — so the first
-run's receipt stays inadmissible and the fix applies only to future receipts. A defective receipt is
-corrected by the next run's evidence, never by editing the stored one.
-
-### The write-side wiring row survived a namespace collision
-
-The ODL-P2 ClaimTuple wiring task was filed by the run's author on the lane as "SC37" — a number the
-main tree had independently given to a different task (and a second colliding filing took SC41). On
-forward-port it was renumbered **SC42** with the collision recorded inline and content unchanged.
-The row itself is unchanged in substance: the adapter has no write hook, one witness per run (the
-run-level locator, not per-page), and the hook must exist before any successor run — retrofitting on
-read remains impossible.
-
-### Source References (2026-08-18 lane-record corrections)
-
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
-  — the annotated quant-compliance row (requantized artifact, `DEFAULT_MODEL` repoint, the demo ran
-  on it, SHA-256/tensor-audit still owed) and the run-detail annotation on the Unlimited-OCR status
-  row.
-- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the ported
-  run record: requantization before the demo, the grant saga, the demo receipts, and the `held_s`
-  defect root-cause and fix.
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
-  SC42 row with the renumbering note and the write-side contract.
-- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the ODL-P2 source
-  register row the wiring task resolves against.
-
-## Compiled Update — 2026-08-16: the numbers behind the 2026-08-13 observations, and why none of them carries warrant
-
-**Confidence: verified** — figures are read from the ODL handoff's completed rows and the belief-kernel
-source register; both artifact trees (`/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/intrinsic/` and
-`/mnt/raid0/llm/tmp/odl-p2-unlimited-ocr-demo-20260813T221821Z/`) were confirmed present on disk for
-this compile. **No routing, adoption, or promotion authority attaches to anything below.**
-
-### ODL-011 intrinsic chunk metrics: first real run, and what it can and cannot rank
-
-The non-coreference Ekimetrics arm is now registered in `odl_bench` (`intrinsic.py`, research
-`f24b8aa9` + `cd329746`) with SC/BI/ICC/DCC, upstream MIT provenance pinned (intake-580#record), and 30 tests
-covering metric direction plus degenerate inputs. An unavailable embedder is preserved as an explicit
-`value=None` with a reason rather than a silent zero — the same discipline the belief kernel calls
-"absence is recorded, never filled".
-
-First real run (sentence-transformers 5.7.0, `all-MiniLM-L6-v2`, 200 docs per engine over the ODL-013
-prediction directories):
-
-| engine | ICC | DCC |
-|---|---|---|
-| pdftotext | 0.651 | 0.672 |
-| opendataloader | 0.643 | 0.654 |
-| liteparse | 0.552 | 0.654 |
-
-Two limits keep this from ranking parsers. First, **intrinsic chunk-cohesion scores are not parser
-quality** and the parent contract forbids intrinsic-only gating: the contradictory HOPE family and one
-common downstream RAG answer-correctness endpoint must be reported on the same digest-pinned Phase-2
-fixture before either family informs routing. Second, the notable line in the table — pdftotext, the
-weakest structural extractor, leading ICC — is exactly the result that would mislead if read as a
-parser verdict. RC/FMRE remain excluded on both licence grounds and a recorded upstream
-boundary-corruption defect in that path.
-
-### Unlimited-OCR 18-page demo: a real run whose headline metric is an output-format artifact
-
-The P2 demo executed on 2026-08-13 against 18 OmniDocBench GT pages via
-`adapter.py run-model --engine unlimited_ocr` (research `aca459d9`), producing median **5,857 ms per
-page**, decode ≈ **392 t/s**, text-block edit distance **0.3624**, table TEDS **0.0117**, reading-order
-edit distance **0.2165**.
-
-The verified finding matters more than the scores: **the model emitted coordinate-tagged layout dumps
-rather than markdown on all 18 pages**, which is a sufficient explanation for a near-zero TEDS without
-any claim about table quality. This is structurally the PaddleOCR-VL retraction repeating — an
-off-label invocation profile producing numbers that describe the harness, not the model. Accordingly:
-
-- The **causal** claim is not verified. A bare-passthrough GGUF chat template is confirmed;
-  "coordinate output regardless of prompt" is not, and llama.cpp's own source records prompt-dependent
-  behaviour. The record must say *demonstrated prompt/profile mismatch*, not *root cause*.
-- The mutex evidence does not cover the run. `inference_window.json` reports `held_s = 1.002881998`, so
-  it is not full-interval residency proof and must not be cited as one.
-- The correct next step is the canonical profile as a fresh matched A/B (`document parsing.`,
-  `n_predict=4096`, `n_ctx=16384`, DRY, grounding-strip, per `tools/mtmd/tests/test-deepseek-ocr.py`),
-  with a receipt spanning server launch through termination — gated on the operator's all-inference-stop
-  order being lifted, and on the artifact gate below.
-- The default artifact is still non-compliant: body Q5_K with `output.weight` at Q6_K against a
-  required `lm_head >= Q8_0`.
-
-### The provenance status of all of it: measurements without a claim tuple
-
-The demo run carries more warrant than most parser evidence in this program — a protocol (the engine
-invocation at a pinned research commit), n = 18 protocol-admissible GT pages, a date, durable per-page
-response JSONs plus `model_gated_row_set.json`, and an inference-window receipt. **It still has no
-write-side ClaimTuple hook**, so it is registered as a `candidate` source to be wired *prospectively
-before the next run*, never reconstructed on read. Two constraints travel with that row:
-
-- **Locator: the demo run, not the page.** One 18-page run is one witness, not eighteen — the same
-  same-harness trap that permanently disqualified `benchmarks/results`.
-- **Scratch is not attestation.** These artifacts live under `/mnt/raid0/llm/tmp/`, outside any git
-  tree, so a path alone proves nothing later; a content digest taken at collect time is what would let
-  the claim rise above a located reference.
-
-The general form is on [Knowledge Management](knowledge-management.md): wiring the write side is cheap
-and permanent, retrofitting the read side is impossible, because a tuple invented on read claims
-warrant the original run never captured.
-
-### Source References (2026-08-16 parser-evidence provenance)
-
-- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
-  — the ODL-011 completed row with the ICC/DCC run, the ODL-013 observation boundary, and the
-  Unlimited-OCR correction and rerun contract
-- [`handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
-  — metric-contract corrections, the RC/FMRE exclusion and its upstream defect, and the quant-gate audit
-- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the ODL-P2 register row:
-  exact metrics, artifact locations, the coordinate-dump finding, and the run-level locator warning
-- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.7 — why a pre-hook run is
-  skipped rather than back-filled
-
-## Compiled Update — 2026-08-13: later parser evidence advances observation, not selection authority
-
-**Confidence: verified for stored-output replay and the audited record; no routing or adoption decision.**
-The Ekimetrics SC/BI/ICC/DCC arm is now implemented and exercised over the ODL-013 prediction sets,
-superseding the earlier “unimplemented” snapshot below. The first real embedding run produced usable
-ICC/DCC observations, but the contradictory HOPE family and common downstream RAG endpoint remain open;
-neither intrinsic family can gate a chunker alone. ODL-013's 600 stored outputs still replay exactly,
-and LiteParse still leads aggregate point estimates, but scratch-only storage, absent parser protocol
-and precommitted rule, summary-only timing, and an unpinned ODL version keep the result observational.
-
-Unlimited-OCR also completed a mechanically real 18-page observation, but the independent audit found
-that its record overclaims the cause. A bare-passthrough GGUF chat template does not prove
-prompt-independent coordinate output, the stored mutex receipt covers only about 1.003 seconds rather
-than the full server interval, and the timing narrative needs correction. Preserve the observation,
-correct those claims, then run a fresh matched A/B with the canonical `document parsing.` profile,
-context/prediction limits, DRY settings, grounding-strip, and a new Inference receipt spanning launch
-through termination. The operator's stop-all-inference order remains a hard runtime boundary.
-
-The attempted LightOnOCR comparison was correctly refused before compute: `odl_bench` has only a
-manifest stub, the dispatch prohibited the HTTP server that is the only implemented producer, and the
-known-negative prior lacked a new parser-quality hypothesis. That is a precondition failure, not model
-evidence.
-
-### Source References (2026-08-13 later parser evidence)
-
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
-  — corrected gates and exact rerun contracts.
-- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
-  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer and
-  precondition records.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — exact
-  evidence audit and verdicts.
-
-## Compiled Update — 2026-08-13: ODL-013 is reproducible evidence, not an adoption decision
-
-**Confidence: verified for corpus/output equality and evaluator replay; observation-only for parser
-selection.** This supersedes the preflight-only snapshot below without turning the later run into a
-decision record.
-
-The later ODL-013 execution did process the full matched 200-PDF corpus. Each of LiteParse,
-OpenDataLoader-local, and pdftotext has the same 200 prediction stems, no zero-byte prediction, and
-the stored NID/TEDS/MHS results reproduce exactly when all 600 outputs are replayed through the
-pinned upstream evaluator. LiteParse leads the aggregate point estimates, including overall quality,
-and remains JVM-free. That makes the run useful comparative evidence.
-
-It does **not** license the recorded `ADOPT` verdict or a routing-default change. The artifact exists
-only in local scratch, cites no applicable document-parser protocol/category/attestation, records no
-precommitted selection rule, retains only timing summaries rather than per-document latencies, and
-does not pin the ODL engine version. Exploratory paired intervals for LiteParse-minus-ODL cross zero
-for NID and MHS, so “wins every metric” is true only of aggregate point estimates. The harness also
-needs prospective fail-closed handling for extractor return codes, absent candidates, and empty
-predictions; all actual stored predictions in this run are non-empty, so this is a harness-accounting
-follow-up rather than evidence of an observed failed document.
-
-The operational conclusion is deliberately narrow: preserve or rerun this comparison as durable,
-protocol-admissible evidence with a precommitted decision rule, and keep parser/routing defaults
-unchanged until then. The matched parser report's `decision-grade fixture` wording is superseded.
-
-### Source References (2026-08-13 ODL-013 audit)
-
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
-  — corrected decision gate, completed observation rows, and concrete durability/harness follow-ups.
-- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
-  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer-side
-  execution, corpus, and result records.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent
-  replay, statistical caveats, claim-boundary verdict, and follow-up disposition.
-
-## Compiled Update — 2026-08-13: four first-wave preflights produced no decision-grade parser result
-
-**Confidence: verified by commit, artifact, source, and focused-test audit.**
-
-The committed `odl_bench` schema does **not** expose the previously attributed NID/TEDS/MHS trio. Its package rows are structural text edit distance, table TEDS, reading-order edit distance, and speed; NID and MHS live in the sibling `document_extraction_adapter.py`. ODL-011 completed only this premise/contract audit. Ekimetrics SC/BI/ICC/DCC and contradictory HOPE scoring remain unimplemented in the accepted tree, and neither family may gate a chunker until both run on one pinned fixture with the same downstream RAG answer-correctness endpoint.
-
-ODL-013 likewise completed harness preflight, not a comparison. The July born-digital artifacts remain useful scaffolding but contain no representative 2026-08-13 structural/table result or fast-path verdict. The Unlimited-OCR producer/adapter/manifest scaffold is real and passed 26 focused tests, yet its default model is not eligible for the planned demo: `output.weight` is Q6_K while the parent contract requires `lm_head >= Q8_0`. No live model result was produced.
-
-This also retires the old PaddleOCR table numbers as quality evidence: they came from an off-label full-page invocation rather than the official layout-plus-cropped-recognition pipeline. The live decision surface remains ODL/LiteParse representative scoring, a corrected full-corpus PDF bridge, architecture-faithful model arms, and explicit routing policy.
-
-### Source References (2026-08-13 audit)
-
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) — compact active gates and exact next work.
-- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) — landed phases, corrections, and audit disposition.
-- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent commits/tests/artifact audit.
-
-## Compiled Update — 2026-08-12: the benchmark dataset landed, and every premise about it was wrong
-
-**Confidence: verified** — the two clones were inspected directly on disk for this compile (`git remote -v`, `git rev-parse`, `LICENSE`, `git lfs ls-files`, PDF magic bytes), not restated from the handoff.
-
-**The 200-PDF `opendataloader-bench` dataset is now present** at **`/mnt/raid0/llm/opendataloader-bench-upstream`** @ `7af1d8f`, 180 MB, `ground-truth/` included. That clears the standing blocker on the 200-PDF baseline comparison (our pipeline vs ODL local vs ODL hybrid vs docling vs marker); the run itself is still outstanding.
-
-**All three parenthesised premises of the row that asked for the clone were false**, and each is worth carrying because each would have changed how someone approached it:
-
-| Row said | Measured |
-|---|---|
-| MIT license | **Apache-2.0** (`LICENSE` line 1) |
-| 200 PDFs *via Git LFS* | **No LFS at all** — `git lfs ls-files` returns 0; upstream carries a `chore/remove-lfs-integrate-bench` branch, so a plain clone suffices |
-| entrypoint `uv run src/run.py` | **No `src/` in the repo** |
-
-**Presence of a `.pdf` is not presence of a PDF.** All 200 were verified as real payload rather than LFS pointer stubs — every file `%PDF-1.6`, smallest 251 KB, mean 184 KB. In a repo whose history *did* use LFS, a directory listing of 200 filenames is exactly what a pointer-stub checkout also looks like.
-
-### A dataset name collision that had been answering "yes" to the wrong question for 26 days
-
-**`/mnt/raid0/llm/opendataloader-bench` was a clone of a different project**: `git remote -v` gives `github.com/opendatalab/OmniDocBench` @ `147cd5a`, Apache-2.0, 211 PDFs, with its own CLA file. So anyone testing *"is opendataloader-bench cloned?"* by checking that path got an emphatic **yes, backed by 211 real PDFs** — the right key in the wrong universe. Every prose reference to that bare path in the pipeline handoff (including the `pdf_validation.py` and `demo_data/` descriptions) therefore describes **OmniDocBench**, not the ODL benchmark.
-
-**RESOLVED 2026-08-25 (PIP-05)**: the OmniDocBench clone was renamed to `/mnt/raid0/llm/omnidocbench`, so the colliding bare path no longer exists and a bare-name check now fails loudly instead of silently resolving to the wrong project. `/mnt/raid0/llm/opendataloader-bench-upstream` remains the OpenDataLoader 200-PDF benchmark clone; the 2026-07-21 corpus copy still lives at `/mnt/raid0/llm/omnidocbench/{pdfs,ground-truth}/`.
-
-**Standing rule for this pair: cite the two datasets by their full distinct paths, never by the bare name.**
-
-### A compound checkbox takes the checkbox of its easiest clause
-
-The row read *"Clone opendataloader-bench, **add our pipeline as custom engine**"* and had been `[x]` since 2026-07-17 — with every cited artifact covering the *engine* half only. The clone half was never done, and this file's own text ~226 lines further down said so (*"the actual … dataset is still absent"*). **A contradiction sat 223 lines apart inside one document for 26 days**, because a conjunction inherits the truth value of its easier conjunct. The discipline that follows: **split conjunctions into one row per independently verifiable claim.**
-
-### Source References (2026-08-12)
-
-- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) §Benchmark Suite Integration — the clone, the three corrections, and the name-collision filing
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the premise-by-premise verification and the compound-row finding
-- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) face 9 (*right key, wrong universe*) — the class the path collision belongs to
-
-## Compiled Update — 2026-08-25: the ODL-013 durability gaps are closed in the harness, the demo record is corrected in place, and the table-gap instrument is now a real one
-
-**Confidence: verified** — the harness changes are the shipped research `run_three_way_bench.py` +
-13 new tests (69 passed / 1 skipped) and the in-place supersession note on the 2026-08-13 lane
-record; the disk-state statements were verified with a `find` across `/mnt/raid0/llm` and
-`/workspace`.
-
-### The three ODL-013 durability gaps are closed — for future runs
-
-The 2026-08-13 compile above recorded three harness-accounting gaps that kept ODL-013 observational:
-summary-only timing, an unpinned ODL engine version, and non-fail-closed failure accounting. All
-three are now closed in the harness itself (PIP-05, 2026-08-25):
-
-- **Fail-closed extraction.** Non-zero `pdftotext` return codes raise (was: silent partial stdout);
-  missing ODL markdown candidates raise (was: an empty `<stem>.md` that scored as a valid
-  prediction); empty liteparse/phase predictions raise, and failed documents leave **no prediction
-  file** — `failed_stems` is recorded and the run exits 2.
-- **Engine pins.** `ENGINE_PINS = {"opendataloader": "opendataloader-pdf==2.5.0", "liteparse":
-  "liteparse==2.12.0"}` — the versions used for the 2026-08-13 run — resolved via
-  `importlib.metadata` and fail-closed (exit 2) on mismatch or unresolvable; pin and resolved
-  version are recorded in `summary.json`.
-- **Per-document latencies.** Raw `per_doc_latency_ms` (stem → ms) is persisted, so median and p90
-  are independently reproducible from the artifact, and the report gains a p90 column. The score
-  phase exits 3 on missing/empty predictions or a missing `evaluation.json`.
-
-The result does not retroactively upgrade ODL-013 — the 2026-08-13 run was made under the old
-harness, so its observation-only standing is unchanged. What changed is that the *next* run's
-artifact can carry the full Reporting Contract without follow-up reconstruction.
-
-### The Unlimited-OCR 18-page demo record is corrected in place — and its artifact is now gone
-
-The record-correction row (`Correct the P2 observation record before using it`) closed 2026-08-25:
-`progress/2026-08/2026-08-13-mainD.md` now carries a supersession blockquote that (1) downgrades
-"root cause" to **demonstrated prompt/profile mismatch** — the bare-passthrough chat template is
-verified, but llama.cpp's own `tools/mtmd/tests/test-deepseek-ocr.py` records prompt-dependent
-behaviour, so "coordinate output regardless of prompt" is not established; (2) corrects the timing
-narrative — the stored `inference_window.json` reports only `held_s=1.002881998`, a pre-`aca459d9`
-~1s post-health snapshot, never full-interval proof; and (3) records that **the run directory
-`/mnt/raid0/llm/tmp/odl-p2-unlimited-ocr-demo-20260813T221821Z/` no longer exists** (tmp cleanup;
-no `inference_window.json` remains anywhere on disk), so the receipt cannot even be re-examined and
-the `held_s` value survives only in prose. The 2026-08-18 compile's documentary-gap framing is thus
-superseded in one direction: the gap is no longer merely documentary, the primary artifact is
-physically gone. The canonical-profile A/B (handoff row, `document parsing.` prompt, `n_predict=4096`,
-`n_ctx=16384`, DRY, grounding-strip) remains gated on the operator's all-inference-stop order being
-lifted. Separately noted: the requantized `Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB,
-`output.weight` q8_0, other 154 tensors byte-copied) remains the repointed default under
-`/mnt/raid0/llm/models/Unlimited-OCR-GGUF/`; only the immutable SHA-256 + tensor-audit record is
-still owed.
-
-### The table-gap question finally has a competent instrument — still inference-gated
-
-The `document-parser-table-bench` handoff (2026-07-20, from the intake-864/865 reassessment) is the
-first competent instrument for "do we have a table-extraction gap": the full OmniDocBench is local
-at `/mnt/raid0/llm/datasets/omnidocbench/` — **1,651 pages / 665 table regions (on 458 pages)** with
-a per-page `language` attribute (755 EN / 765 ZH / 116 mixed / 13 trad) against the prior demo's
-18 pages / 10 tables / 64%-Chinese skew. Three broken instruments are documented there and stand as
-the corrected record: the 2026-07-17/18 PaddleOCR-VL runs were **off-label** (PaddleOCR-VL-1.6 is a
-three-stage pipeline — PP-DocLayoutV3 layout → cropped-region VLM recognition under six official
-element prompts → assembler — never a full-page→markdown model), so **`table TEDS = 0.0` and the
-`0.058333` post-processing figure are void and must not be re-cited**; the demo subset was
-unrepresentative; and the production 8-PDF corpus cannot measure tables (half of it is figure
-exports). Phase A (environment) is landed: `paddlepaddle 3.2.2` + `paddleocr 3.7.0` in a dedicated
-1.4 GB venv (with the recorded `libGL.so.1` → `opencv-contrib-python-headless` swap), and the CLI is
-verified — **`--vl_rec_backend llama-cpp-server` is an explicitly supported backend** and the
-`paddleocr --help` listing gap is an argparse registration artifact, not a missing subcommand.
-Phase B (binary gate: does the documented pipeline actually emit HTML `<table>` markup?) and Phase C
-(full n=665, English-only split) are inference and remain operator-approved-run-gated. The
-architecture pre-check also retired MinerU2.5-Pro and GLM-OCR as `odl_bench` model swaps before any
-download: **neither is a single-pass whole-page parser** (MinerU is two-stage with the same weights
-prompt-selected; GLM-OCR requires an external PaddlePaddle layout detector llama.cpp will never
-run); the guardrail against downloading them as model swaps was reinstated 2026-08-11.
-
-### Source References (2026-08-25 PIP-05 + table-bench)
-
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
-  — the hardened-harness row (fail-closed extractors, engine pins, per-doc latencies, score-phase
-  exit 3), the record-correction row closed, and the canonical A/B row still open behind the
-  operator's stop order.
-- [`progress/2026-08/2026-08-25-mainA-pip05.md`](../progress/2026-08/2026-08-25-mainA-pip05.md) —
-  the session record: harness hardening details and validation (69 passed/1 skipped), the
-  supersession-note edit, and the verified disappearance of the demo run dir.
-- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the superseded
-  lane record itself, now carrying the 2026-08-25 correction blockquote.
-- [`document-parser-table-bench.md`](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) — the three
-  broken instruments, the full OmniDocBench acquisition (1,651/665), the Phase A landing and the
-  `llama-cpp-server` backend verification, and the MinerU2.5-Pro/GLM-OCR architecture pre-check.
-- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
-  — the ledger's path repoints and the standing void-note on the July PaddleOCR numbers.
 
 ## Summary
 
@@ -471,7 +118,369 @@ Sources: [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge
 
 [Published writer/reader source and original8/8](../artifacts/ni08/sc42-odl-write-source-20261007/README.md) bind GT/image/query/source/native outputs and completed window records at write time, retaining unsupported or absent identity as unknown. Synthetic controls exercise actual writer→reader paths; historical demos remain pre-hook and actual OCR quality/latency/matched-run acceptance is separate. SC42 parent remains open; no shared grading ladder changed.
 
-## Compiled Update — 2026-10-29: PIP02 Phase B gate met; Phase C approved English-only, scoring still undefined
+## Phase C exposure custody — 2026-11-01
+
+For the approved 755-page English comparison, a retained-evidence inventory classified 690 pages as protected UNKNOWN and 65 as having no observed start. The latter are candidates for review, not automatically eligible for another exposure. The legacy shard lock does not itself prove that child processes have drained, so the approved full-cohort TEDS comparison remains open pending custody, rate and qualification evidence. ([Phase C handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [custody review](../artifacts/compute/codex3-pip-custody-review-20261101/ACTIONABILITY.md); [inventory tests](../artifacts/compute/codex3-pip-custody-review-20261101/TEST.log))
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-17 (operator wiki sweep, see final Compiled Update). Earlier: 2026-11-12 (operator wiki sweep, AGG Phase 1 update, autopilot-backlog-session). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **W-RAC web chunking** (intake-436#01) Decouples extraction from chunk planning using ID-addressable units where the LLM only groups (never generates content), cutting token cost and hallucination risk. Worth investigating for the KB/ingest chunker.
+
+### Compiled Update — 2026-08-18: the demo ran on the compliant artifact after all — two receipt corrections from the ported lane record
+
+**Confidence: verified** — read from the ported lane run record, the handoff's annotated rows, and
+the named research commits; corrections below supersede the matching statements in the 2026-08-16
+update, which is retained unedited per the append-never-edit rule.
+
+#### CORRECTION: the 18-page demo ran on the requantized, quant-compliant model
+
+The 2026-08-16 update below states the default Unlimited-OCR artifact was "still non-compliant"
+(`output.weight` at Q6_K against a required `lm_head >= Q8_0`). The ported 2026-08-13 lane record
+shows the compliance work happened **before** the 22:18Z demo: the model was requantized as
+`Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB; `llama-quantize --allow-requantize
+--output-tensor-type q8_0`, `output.weight` verified q8_0 via `llama-gguf`, the other 154 tensors
+byte-copied rather than re-quantized — no double-quant loss), `DEFAULT_MODEL` was repointed
+(research `c733e1ee`), **and the demo ran on it**. What the artifact-gate row still requires is the
+immutable SHA-256 + tensor-audit *record* — the compliance gap that remains is documentary, not
+material. The rest of the 2026-08-16 assessment stands: prompt/profile mismatch (not "root cause"),
+canonical-recipe A/B still owed, no ClaimTuple.
+
+#### The `held_s` receipt understated a hold that was in fact full-interval — fixed forward, not backfilled
+
+The stored `inference_window.json` reports `held_s = 1.002881998` and must still never be cited as
+full-interval residency proof for the first run. The root cause is now known: the receipt stamped
+`held_s` right after `wait_for_health` (~1s in), while the flock itself **was** held for the entire
+launch→queries→terminate interval. The fix (research `aca459d9`) recomputes `held_s` at release from
+the lease's acquisition stamp, with a test asserting it. The two statements coexist deliberately:
+the *mechanism* held for the whole run, but the *stored receipt* cannot prove it — so the first
+run's receipt stays inadmissible and the fix applies only to future receipts. A defective receipt is
+corrected by the next run's evidence, never by editing the stored one.
+
+#### The write-side wiring row survived a namespace collision
+
+The ODL-P2 ClaimTuple wiring task was filed by the run's author on the lane as "SC37" — a number the
+main tree had independently given to a different task (and a second colliding filing took SC41). On
+forward-port it was renumbered **SC42** with the collision recorded inline and content unchanged.
+The row itself is unchanged in substance: the adapter has no write hook, one witness per run (the
+run-level locator, not per-page), and the hook must exist before any successor run — retrofitting on
+read remains impossible.
+
+#### Source References (2026-08-18 lane-record corrections)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
+  — the annotated quant-compliance row (requantized artifact, `DEFAULT_MODEL` repoint, the demo ran
+  on it, SHA-256/tensor-audit still owed) and the run-detail annotation on the Unlimited-OCR status
+  row.
+- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the ported
+  run record: requantization before the demo, the grant saga, the demo receipts, and the `held_s`
+  defect root-cause and fix.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
+  SC42 row with the renumbering note and the write-side contract.
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the ODL-P2 source
+  register row the wiring task resolves against.
+
+### Compiled Update — 2026-08-16: the numbers behind the 2026-08-13 observations, and why none of them carries warrant
+
+**Confidence: verified** — figures are read from the ODL handoff's completed rows and the belief-kernel
+source register; both artifact trees (`/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/intrinsic/` and
+`/mnt/raid0/llm/tmp/odl-p2-unlimited-ocr-demo-20260813T221821Z/`) were confirmed present on disk for
+this compile. **No routing, adoption, or promotion authority attaches to anything below.**
+
+#### ODL-011 intrinsic chunk metrics: first real run, and what it can and cannot rank
+
+The non-coreference Ekimetrics arm is now registered in `odl_bench` (`intrinsic.py`, research
+`f24b8aa9` + `cd329746`) with SC/BI/ICC/DCC, upstream MIT provenance pinned (intake-580#record), and 30 tests
+covering metric direction plus degenerate inputs. An unavailable embedder is preserved as an explicit
+`value=None` with a reason rather than a silent zero — the same discipline the belief kernel calls
+"absence is recorded, never filled".
+
+First real run (sentence-transformers 5.7.0, `all-MiniLM-L6-v2`, 200 docs per engine over the ODL-013
+prediction directories):
+
+| engine | ICC | DCC |
+|---|---|---|
+| pdftotext | 0.651 | 0.672 |
+| opendataloader | 0.643 | 0.654 |
+| liteparse | 0.552 | 0.654 |
+
+Two limits keep this from ranking parsers. First, **intrinsic chunk-cohesion scores are not parser
+quality** and the parent contract forbids intrinsic-only gating: the contradictory HOPE family and one
+common downstream RAG answer-correctness endpoint must be reported on the same digest-pinned Phase-2
+fixture before either family informs routing. Second, the notable line in the table — pdftotext, the
+weakest structural extractor, leading ICC — is exactly the result that would mislead if read as a
+parser verdict. RC/FMRE remain excluded on both licence grounds and a recorded upstream
+boundary-corruption defect in that path.
+
+#### Unlimited-OCR 18-page demo: a real run whose headline metric is an output-format artifact
+
+The P2 demo executed on 2026-08-13 against 18 OmniDocBench GT pages via
+`adapter.py run-model --engine unlimited_ocr` (research `aca459d9`), producing median **5,857 ms per
+page**, decode ≈ **392 t/s**, text-block edit distance **0.3624**, table TEDS **0.0117**, reading-order
+edit distance **0.2165**.
+
+The verified finding matters more than the scores: **the model emitted coordinate-tagged layout dumps
+rather than markdown on all 18 pages**, which is a sufficient explanation for a near-zero TEDS without
+any claim about table quality. This is structurally the PaddleOCR-VL retraction repeating — an
+off-label invocation profile producing numbers that describe the harness, not the model. Accordingly:
+
+- The **causal** claim is not verified. A bare-passthrough GGUF chat template is confirmed;
+  "coordinate output regardless of prompt" is not, and llama.cpp's own source records prompt-dependent
+  behaviour. The record must say *demonstrated prompt/profile mismatch*, not *root cause*.
+- The mutex evidence does not cover the run. `inference_window.json` reports `held_s = 1.002881998`, so
+  it is not full-interval residency proof and must not be cited as one.
+- The correct next step is the canonical profile as a fresh matched A/B (`document parsing.`,
+  `n_predict=4096`, `n_ctx=16384`, DRY, grounding-strip, per `tools/mtmd/tests/test-deepseek-ocr.py`),
+  with a receipt spanning server launch through termination — gated on the operator's all-inference-stop
+  order being lifted, and on the artifact gate below.
+- The default artifact is still non-compliant: body Q5_K with `output.weight` at Q6_K against a
+  required `lm_head >= Q8_0`.
+
+#### The provenance status of all of it: measurements without a claim tuple
+
+The demo run carries more warrant than most parser evidence in this program — a protocol (the engine
+invocation at a pinned research commit), n = 18 protocol-admissible GT pages, a date, durable per-page
+response JSONs plus `model_gated_row_set.json`, and an inference-window receipt. **It still has no
+write-side ClaimTuple hook**, so it is registered as a `candidate` source to be wired *prospectively
+before the next run*, never reconstructed on read. Two constraints travel with that row:
+
+- **Locator: the demo run, not the page.** One 18-page run is one witness, not eighteen — the same
+  same-harness trap that permanently disqualified `benchmarks/results`.
+- **Scratch is not attestation.** These artifacts live under `/mnt/raid0/llm/tmp/`, outside any git
+  tree, so a path alone proves nothing later; a content digest taken at collect time is what would let
+  the claim rise above a located reference.
+
+The general form is on [Knowledge Management](knowledge-management.md): wiring the write side is cheap
+and permanent, retrofitting the read side is impossible, because a tuple invented on read claims
+warrant the original run never captured.
+
+#### Source References (2026-08-16 parser-evidence provenance)
+
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
+  — the ODL-011 completed row with the ICC/DCC run, the ODL-013 observation boundary, and the
+  Unlimited-OCR correction and rerun contract
+- [`handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
+  — metric-contract corrections, the RC/FMRE exclusion and its upstream defect, and the quant-gate audit
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the ODL-P2 register row:
+  exact metrics, artifact locations, the coordinate-dump finding, and the run-level locator warning
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.7 — why a pre-hook run is
+  skipped rather than back-filled
+
+### Compiled Update — 2026-08-13: later parser evidence advances observation, not selection authority
+
+**Confidence: verified for stored-output replay and the audited record; no routing or adoption decision.**
+The Ekimetrics SC/BI/ICC/DCC arm is now implemented and exercised over the ODL-013 prediction sets,
+superseding the earlier “unimplemented” snapshot below. The first real embedding run produced usable
+ICC/DCC observations, but the contradictory HOPE family and common downstream RAG endpoint remain open;
+neither intrinsic family can gate a chunker alone. ODL-013's 600 stored outputs still replay exactly,
+and LiteParse still leads aggregate point estimates, but scratch-only storage, absent parser protocol
+and precommitted rule, summary-only timing, and an unpinned ODL version keep the result observational.
+
+Unlimited-OCR also completed a mechanically real 18-page observation, but the independent audit found
+that its record overclaims the cause. A bare-passthrough GGUF chat template does not prove
+prompt-independent coordinate output, the stored mutex receipt covers only about 1.003 seconds rather
+than the full server interval, and the timing narrative needs correction. Preserve the observation,
+correct those claims, then run a fresh matched A/B with the canonical `document parsing.` profile,
+context/prediction limits, DRY settings, grounding-strip, and a new Inference receipt spanning launch
+through termination. The operator's stop-all-inference order remains a hard runtime boundary.
+
+The attempted LightOnOCR comparison was correctly refused before compute: `odl_bench` has only a
+manifest stub, the dispatch prohibited the HTTP server that is the only implemented producer, and the
+known-negative prior lacked a new parser-quality hypothesis. That is a precondition failure, not model
+evidence.
+
+#### Source References (2026-08-13 later parser evidence)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
+  — corrected gates and exact rerun contracts.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
+  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer and
+  precondition records.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — exact
+  evidence audit and verdicts.
+
+### Compiled Update — 2026-08-13: ODL-013 is reproducible evidence, not an adoption decision
+
+**Confidence: verified for corpus/output equality and evaluator replay; observation-only for parser
+selection.** This supersedes the preflight-only snapshot below without turning the later run into a
+decision record.
+
+The later ODL-013 execution did process the full matched 200-PDF corpus. Each of LiteParse,
+OpenDataLoader-local, and pdftotext has the same 200 prediction stems, no zero-byte prediction, and
+the stored NID/TEDS/MHS results reproduce exactly when all 600 outputs are replayed through the
+pinned upstream evaluator. LiteParse leads the aggregate point estimates, including overall quality,
+and remains JVM-free. That makes the run useful comparative evidence.
+
+It does **not** license the recorded `ADOPT` verdict or a routing-default change. The artifact exists
+only in local scratch, cites no applicable document-parser protocol/category/attestation, records no
+precommitted selection rule, retains only timing summaries rather than per-document latencies, and
+does not pin the ODL engine version. Exploratory paired intervals for LiteParse-minus-ODL cross zero
+for NID and MHS, so “wins every metric” is true only of aggregate point estimates. The harness also
+needs prospective fail-closed handling for extractor return codes, absent candidates, and empty
+predictions; all actual stored predictions in this run are non-empty, so this is a harness-accounting
+follow-up rather than evidence of an observed failed document.
+
+The operational conclusion is deliberately narrow: preserve or rerun this comparison as durable,
+protocol-admissible evidence with a precommitted decision rule, and keep parser/routing defaults
+unchanged until then. The matched parser report's `decision-grade fixture` wording is superseded.
+
+#### Source References (2026-08-13 ODL-013 audit)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
+  — corrected decision gate, completed observation rows, and concrete durability/harness follow-ups.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
+  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer-side
+  execution, corpus, and result records.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent
+  replay, statistical caveats, claim-boundary verdict, and follow-up disposition.
+
+### Compiled Update — 2026-08-13: four first-wave preflights produced no decision-grade parser result
+
+**Confidence: verified by commit, artifact, source, and focused-test audit.**
+
+The committed `odl_bench` schema does **not** expose the previously attributed NID/TEDS/MHS trio. Its package rows are structural text edit distance, table TEDS, reading-order edit distance, and speed; NID and MHS live in the sibling `document_extraction_adapter.py`. ODL-011 completed only this premise/contract audit. Ekimetrics SC/BI/ICC/DCC and contradictory HOPE scoring remain unimplemented in the accepted tree, and neither family may gate a chunker until both run on one pinned fixture with the same downstream RAG answer-correctness endpoint.
+
+ODL-013 likewise completed harness preflight, not a comparison. The July born-digital artifacts remain useful scaffolding but contain no representative 2026-08-13 structural/table result or fast-path verdict. The Unlimited-OCR producer/adapter/manifest scaffold is real and passed 26 focused tests, yet its default model is not eligible for the planned demo: `output.weight` is Q6_K while the parent contract requires `lm_head >= Q8_0`. No live model result was produced.
+
+This also retires the old PaddleOCR table numbers as quality evidence: they came from an off-label full-page invocation rather than the official layout-plus-cropped-recognition pipeline. The live decision surface remains ODL/LiteParse representative scoring, a corrected full-corpus PDF bridge, architecture-faithful model arms, and explicit routing policy.
+
+#### Source References (2026-08-13 audit)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) — compact active gates and exact next work.
+- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) — landed phases, corrections, and audit disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent commits/tests/artifact audit.
+
+### Compiled Update — 2026-08-12: the benchmark dataset landed, and every premise about it was wrong
+
+**Confidence: verified** — the two clones were inspected directly on disk for this compile (`git remote -v`, `git rev-parse`, `LICENSE`, `git lfs ls-files`, PDF magic bytes), not restated from the handoff.
+
+**The 200-PDF `opendataloader-bench` dataset is now present** at **`/mnt/raid0/llm/opendataloader-bench-upstream`** @ `7af1d8f`, 180 MB, `ground-truth/` included. That clears the standing blocker on the 200-PDF baseline comparison (our pipeline vs ODL local vs ODL hybrid vs docling vs marker); the run itself is still outstanding.
+
+**All three parenthesised premises of the row that asked for the clone were false**, and each is worth carrying because each would have changed how someone approached it:
+
+| Row said | Measured |
+|---|---|
+| MIT license | **Apache-2.0** (`LICENSE` line 1) |
+| 200 PDFs *via Git LFS* | **No LFS at all** — `git lfs ls-files` returns 0; upstream carries a `chore/remove-lfs-integrate-bench` branch, so a plain clone suffices |
+| entrypoint `uv run src/run.py` | **No `src/` in the repo** |
+
+**Presence of a `.pdf` is not presence of a PDF.** All 200 were verified as real payload rather than LFS pointer stubs — every file `%PDF-1.6`, smallest 251 KB, mean 184 KB. In a repo whose history *did* use LFS, a directory listing of 200 filenames is exactly what a pointer-stub checkout also looks like.
+
+#### A dataset name collision that had been answering "yes" to the wrong question for 26 days
+
+**`/mnt/raid0/llm/opendataloader-bench` was a clone of a different project**: `git remote -v` gives `github.com/opendatalab/OmniDocBench` @ `147cd5a`, Apache-2.0, 211 PDFs, with its own CLA file. So anyone testing *"is opendataloader-bench cloned?"* by checking that path got an emphatic **yes, backed by 211 real PDFs** — the right key in the wrong universe. Every prose reference to that bare path in the pipeline handoff (including the `pdf_validation.py` and `demo_data/` descriptions) therefore describes **OmniDocBench**, not the ODL benchmark.
+
+**RESOLVED 2026-08-25 (PIP-05)**: the OmniDocBench clone was renamed to `/mnt/raid0/llm/omnidocbench`, so the colliding bare path no longer exists and a bare-name check now fails loudly instead of silently resolving to the wrong project. `/mnt/raid0/llm/opendataloader-bench-upstream` remains the OpenDataLoader 200-PDF benchmark clone; the 2026-07-21 corpus copy still lives at `/mnt/raid0/llm/omnidocbench/{pdfs,ground-truth}/`.
+
+**Standing rule for this pair: cite the two datasets by their full distinct paths, never by the bare name.**
+
+#### A compound checkbox takes the checkbox of its easiest clause
+
+The row read *"Clone opendataloader-bench, **add our pipeline as custom engine**"* and had been `[x]` since 2026-07-17 — with every cited artifact covering the *engine* half only. The clone half was never done, and this file's own text ~226 lines further down said so (*"the actual … dataset is still absent"*). **A contradiction sat 223 lines apart inside one document for 26 days**, because a conjunction inherits the truth value of its easier conjunct. The discipline that follows: **split conjunctions into one row per independently verifiable claim.**
+
+#### Source References (2026-08-12)
+
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration) §Benchmark Suite Integration — the clone, the three corrections, and the name-collision filing
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the premise-by-premise verification and the compound-row finding
+- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) face 9 (*right key, wrong universe*) — the class the path collision belongs to
+
+### Compiled Update — 2026-08-25: the ODL-013 durability gaps are closed in the harness, the demo record is corrected in place, and the table-gap instrument is now a real one
+
+**Confidence: verified** — the harness changes are the shipped research `run_three_way_bench.py` +
+13 new tests (69 passed / 1 skipped) and the in-place supersession note on the 2026-08-13 lane
+record; the disk-state statements were verified with a `find` across `/mnt/raid0/llm` and
+`/workspace`.
+
+#### The three ODL-013 durability gaps are closed — for future runs
+
+The 2026-08-13 compile above recorded three harness-accounting gaps that kept ODL-013 observational:
+summary-only timing, an unpinned ODL engine version, and non-fail-closed failure accounting. All
+three are now closed in the harness itself (PIP-05, 2026-08-25):
+
+- **Fail-closed extraction.** Non-zero `pdftotext` return codes raise (was: silent partial stdout);
+  missing ODL markdown candidates raise (was: an empty `<stem>.md` that scored as a valid
+  prediction); empty liteparse/phase predictions raise, and failed documents leave **no prediction
+  file** — `failed_stems` is recorded and the run exits 2.
+- **Engine pins.** `ENGINE_PINS = {"opendataloader": "opendataloader-pdf==2.5.0", "liteparse":
+  "liteparse==2.12.0"}` — the versions used for the 2026-08-13 run — resolved via
+  `importlib.metadata` and fail-closed (exit 2) on mismatch or unresolvable; pin and resolved
+  version are recorded in `summary.json`.
+- **Per-document latencies.** Raw `per_doc_latency_ms` (stem → ms) is persisted, so median and p90
+  are independently reproducible from the artifact, and the report gains a p90 column. The score
+  phase exits 3 on missing/empty predictions or a missing `evaluation.json`.
+
+The result does not retroactively upgrade ODL-013 — the 2026-08-13 run was made under the old
+harness, so its observation-only standing is unchanged. What changed is that the *next* run's
+artifact can carry the full Reporting Contract without follow-up reconstruction.
+
+#### The Unlimited-OCR 18-page demo record is corrected in place — and its artifact is now gone
+
+The record-correction row (`Correct the P2 observation record before using it`) closed 2026-08-25:
+`progress/2026-08/2026-08-13-mainD.md` now carries a supersession blockquote that (1) downgrades
+"root cause" to **demonstrated prompt/profile mismatch** — the bare-passthrough chat template is
+verified, but llama.cpp's own `tools/mtmd/tests/test-deepseek-ocr.py` records prompt-dependent
+behaviour, so "coordinate output regardless of prompt" is not established; (2) corrects the timing
+narrative — the stored `inference_window.json` reports only `held_s=1.002881998`, a pre-`aca459d9`
+~1s post-health snapshot, never full-interval proof; and (3) records that **the run directory
+`/mnt/raid0/llm/tmp/odl-p2-unlimited-ocr-demo-20260813T221821Z/` no longer exists** (tmp cleanup;
+no `inference_window.json` remains anywhere on disk), so the receipt cannot even be re-examined and
+the `held_s` value survives only in prose. The 2026-08-18 compile's documentary-gap framing is thus
+superseded in one direction: the gap is no longer merely documentary, the primary artifact is
+physically gone. The canonical-profile A/B (handoff row, `document parsing.` prompt, `n_predict=4096`,
+`n_ctx=16384`, DRY, grounding-strip) remains gated on the operator's all-inference-stop order being
+lifted. Separately noted: the requantized `Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB,
+`output.weight` q8_0, other 154 tensors byte-copied) remains the repointed default under
+`/mnt/raid0/llm/models/Unlimited-OCR-GGUF/`; only the immutable SHA-256 + tensor-audit record is
+still owed.
+
+#### The table-gap question finally has a competent instrument — still inference-gated
+
+The `document-parser-table-bench` handoff (2026-07-20, from the intake-864/865 reassessment) is the
+first competent instrument for "do we have a table-extraction gap": the full OmniDocBench is local
+at `/mnt/raid0/llm/datasets/omnidocbench/` — **1,651 pages / 665 table regions (on 458 pages)** with
+a per-page `language` attribute (755 EN / 765 ZH / 116 mixed / 13 trad) against the prior demo's
+18 pages / 10 tables / 64%-Chinese skew. Three broken instruments are documented there and stand as
+the corrected record: the 2026-07-17/18 PaddleOCR-VL runs were **off-label** (PaddleOCR-VL-1.6 is a
+three-stage pipeline — PP-DocLayoutV3 layout → cropped-region VLM recognition under six official
+element prompts → assembler — never a full-page→markdown model), so **`table TEDS = 0.0` and the
+`0.058333` post-processing figure are void and must not be re-cited**; the demo subset was
+unrepresentative; and the production 8-PDF corpus cannot measure tables (half of it is figure
+exports). Phase A (environment) is landed: `paddlepaddle 3.2.2` + `paddleocr 3.7.0` in a dedicated
+1.4 GB venv (with the recorded `libGL.so.1` → `opencv-contrib-python-headless` swap), and the CLI is
+verified — **`--vl_rec_backend llama-cpp-server` is an explicitly supported backend** and the
+`paddleocr --help` listing gap is an argparse registration artifact, not a missing subcommand.
+Phase B (binary gate: does the documented pipeline actually emit HTML `<table>` markup?) and Phase C
+(full n=665, English-only split) are inference and remain operator-approved-run-gated. The
+architecture pre-check also retired MinerU2.5-Pro and GLM-OCR as `odl_bench` model swaps before any
+download: **neither is a single-pass whole-page parser** (MinerU is two-stage with the same weights
+prompt-selected; GLM-OCR requires an external PaddlePaddle layout detector llama.cpp will never
+run); the guardrail against downloading them as model swaps was reinstated 2026-08-11.
+
+#### Source References (2026-08-25 PIP-05 + table-bench)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
+  — the hardened-harness row (fail-closed extractors, engine pins, per-doc latencies, score-phase
+  exit 3), the record-correction row closed, and the canonical A/B row still open behind the
+  operator's stop order.
+- [`progress/2026-08/2026-08-25-mainA-pip05.md`](../progress/2026-08/2026-08-25-mainA-pip05.md) —
+  the session record: harness hardening details and validation (69 passed/1 skipped), the
+  supersession-note edit, and the verified disappearance of the demo run dir.
+- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the superseded
+  lane record itself, now carrying the 2026-08-25 correction blockquote.
+- [`document-parser-table-bench.md`](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) — the three
+  broken instruments, the full OmniDocBench acquisition (1,651/665), the Phase A landing and the
+  `llama-cpp-server` backend verification, and the MinerU2.5-Pro/GLM-OCR architecture pre-check.
+- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
+  — the ledger's path repoints and the standing void-note on the July PaddleOCR numbers.
+
+### Compiled Update — 2026-10-29: PIP02 Phase B gate met; Phase C approved English-only, scoring still undefined
 
 - **Phase B gate MET (descriptive, CPU 24-47, 67.8 s).** The three-stage PaddleOCR-VL-1.6 pipeline through the llama-cpp-server backend (experimental `build-v9-cpu` llama-server, `-ngl 0 -np 1 -c 8192`) emitted real HTML `<table>` markup on both scheduled English OmniDocBench table pages (7 rows/35 cells and 6 rows/12 cells); `completed=2`, `partial=false`. Page-2 equation cells show dropped-operator OCR, so faithfulness against GT cells is an open follow-up, not a claim. Confidence: measured, n=2 pages.
 - **Operator approved Phase C on 2026-10-29, English-only:** 755 pages, both arms (ODL end-to-end re-baseline and Paddle full pipeline), same scorer and GT; the Phase D decision is gated on English-only table TEDS. The full 1651-page and all-language splits are outside the approval.
@@ -480,7 +489,7 @@ Sources: [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge
 
 Sources: [document-parser-table-bench handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md); [codex3 PIP02 S13 filing](../progress/2026-10/2026-10-29-codex3-pip02-s13-filing.md); [codex3 ended-attempt filing](../progress/2026-10/2026-10-29-codex3-ended-attempt-filing.md)
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for per-shard collection and scoring bindings (original source, plan, GT and prediction hashes reopened); **no verdict** on parser selection: the 755-page fresh English cohort (243 GT tables) and the paired-parser gate remain open, and every score below is descriptive over a partial cohort.
 
@@ -493,24 +502,20 @@ Sources: [document-parser-table-bench handoff](../handoffs/active/knowledge-pipe
 Sources: [document-parser-table-bench](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) · [PIP shard scores](../progress/2026-10/2026-10-30-codex3-pip-shard-scores.md) · [R29 continuation](../progress/2026-10/2026-10-31-pip-r29-continuation.md) · [head recovery](../progress/2026-10/2026-10-31-pip-head-recovery-cs53.md) · [R29 collection audit](../artifacts/compute/codex3-pip-r29-c6-gpu-r2-20261031/SHA256SUMS)
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - Paddle R32 ended partial; five exhausted groups record 61 complete pages, 13 unknown and one geometry error, with seven other completed groups; R35 ended rc75 with 36 complete, 9 missing and one pre-exposure refusal among 46 visited-page summaries. Retained/replayed entries prevent a net-new count; cause unresolved and no quality verdict. [Handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
 - ODL-011: intrinsic chunk-quality scores (text edit distance, table TEDS, reading-order edit distance, speed) now sit beside `odl_bench` rows (Research `1421b578`, 62 model-free tests). Ekimetrics rows are informational diagnostics, not a quality verdict; the task stays open. [ODL](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
 
 
-## Phase C exposure custody — 2026-11-01
-
-For the approved 755-page English comparison, a retained-evidence inventory classified 690 pages as protected UNKNOWN and 65 as having no observed start. The latter are candidates for review, not automatically eligible for another exposure. The legacy shard lock does not itself prove that child processes have drained, so the approved full-cohort TEDS comparison remains open pending custody, rate and qualification evidence. ([Phase C handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [custody review](../artifacts/compute/codex3-pip-custody-review-20261101/ACTIONABILITY.md); [inventory tests](../artifacts/compute/codex3-pip-custody-review-20261101/TEST.log))
-
-## Compiled Update — 2026-11-07 (PIP-04 decisions, P-DOCPARSE-1 draft, R36 custody rebuild)
+### Compiled Update — 2026-11-07 (PIP-04 decisions, P-DOCPARSE-1 draft, R36 custody rebuild)
 
 **Confidence: verified** (handoff records; no document-parser quality verdict exists yet, every PIP02 result stays an operational observation).
 
@@ -520,7 +525,7 @@ For the approved 755-page English comparison, a retained-evidence inventory clas
 
 Sources: [knowledge-pipelines handoff](../handoffs/active/knowledge-pipelines.md) · [P-DOCPARSE-1 draft](../artifacts/operator/p-docparse-1-annex-draft-20261107.md) · [operator-adhoc-ops progress](../progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md)
 
-## Compiled Update — 2026-11-09 (night: docling, LightOnOCR and ODL-hybrid arms on the 200-PDF corpus)
+### Compiled Update — 2026-11-09 (night: docling, LightOnOCR and ODL-hybrid arms on the 200-PDF corpus)
 
 **Confidence: verified** (arm result files filed this day; observations, no adoption decision follows from one arm).
 
@@ -530,7 +535,7 @@ Sources: [knowledge-pipelines handoff](../handoffs/active/knowledge-pipelines.md
 
 Sources: [knowledge-pipelines parser-quality box](../handoffs/active/knowledge-pipelines.md) · [parser arm scores](../artifacts/compute/filed-rows-20261109/parser-arms/parser-scores.json) · [ODL-013 r2 report](../artifacts/compute/pip04-odl013-r2-20261107/report.md)
 
-## Compiled Update — 2026-11-12 (AGG Phase 1: scale run, incremental re-ingest, lazy backfill)
+### Compiled Update — 2026-11-12 (AGG Phase 1: scale run, incremental re-ingest, lazy backfill)
 
 - **Phase 1 gates hold at 28 documents, planner accuracy dropped.** AGG-1.1 (28 FinanceBench 10-Ks): M1 0.877 (185/211), M3 prefill ratio 0.378, M4 median 2 calls / 606.5 prefill; P-large accuracy fell to 0.31 over 58 questions (0.55 at 10 documents). The AGG-1.8 miss table names the cause for the scale drop as the M1 store gap: re-running the 14 saved store-gap SQLs on gold-corrected cells flips 14 of 14 (0.55 on saved plans); 17 wrong plans and 9 broken SQL (7 truncated at n_predict) need a GPU re-score (AGG-1.9, AGG-1.10).
 - **Incremental re-ingest works by content hash.** AGG-1.3 r3: 3 changed documents re-parsed, 25 skipped by hash, superseded facts absent from SQL, 146 calls / 189,422 prefill (inside the 3/28 + 10% bound), M1 0.848 (changed-slot recall 0.583, below the bar on its own). AGG-1.4 r3: lazy `long_term_debt` backfill took 72 calls (<= 100), M1 0.88 on the field, no prior unit touched.
@@ -539,7 +544,7 @@ Sources: [knowledge-pipelines parser-quality box](../handoffs/active/knowledge-p
 Sources: [knowledge-pipelines AGG-1.x boxes](../handoffs/active/knowledge-pipelines.md) · [aggregation design doc, extraction lessons](../docs/design/integrated-document-aggregation-plan-20261110.md) · [progress 2026-11-12](../progress/2026-11/2026-11-12-autopilot-backlog-session.md)
 
 
-## Compiled Update - 2026-11-17 (autopilot-backlog-session): AGG-1.13 to AGG-1.19, PIP-04 closeout
+### Compiled Update - 2026-11-17 (autopilot-backlog-session): AGG-1.13 to AGG-1.19, PIP-04 closeout
 Sources: `handoffs/active/knowledge-pipelines.md`, `progress/2026-11/2026-11-15-autopilot-backlog-session.md`, `progress/2026-11/2026-11-16-autopilot-backlog-session.md`, `progress/2026-11/2026-11-16-pipeline-mgmt.md`, `progress/2026-11/2026-11-17-autopilot-backlog-session.md`, `docs/guides/agent-workflows/measurement-sufficiency.md`.
 
 - **The in-sample gain replicates out of sample (AGG-1.13).** On 10 unseen 10-Ks (76 cells, 30 questions; PREDECLARED before data): extraction M1 v2 71/76 vs v1 61/76 (paired 10-0, p 0.002, 0 regressions); P-large arm C (v2 + planner) 25/30 vs 15/30 for v1; prefill ratio 0.22 vs 0.40. Post-data amendments (fy_end, split-header pairing) are recorded with the result.
@@ -550,3 +555,14 @@ Sources: `handoffs/active/knowledge-pipelines.md`, `progress/2026-11/2026-11-15-
 - **PIP-04 closeout (2026-11-17).** pdf_router fails closed on pdftotext errors; needs_ocr routing to LightOnOCR/LiteParse is behind `ORCHESTRATOR_PDF_ROUTE_LIGHTON` (default off) and passed held-out (n=226, mean +0.267, one-sided LB95 +0.247, 209 wins / 17 losses; synthetic-scan set caveat; born-digital +0.052). The zero-inference L3 text-row extractor (`ORCHESTRATOR_L3_TEXTROW`, default off) closes ODL borderless tables at 0.970 (65/67; pdftotext at 1.000 is near-circular). SearXNG (brave off, yandex on) answered 50/50 queries at p95 1134 ms vs DuckDuckGo p95 15667 ms (SX-6 PROCEED).
 - **Parser paired comparison (zero inference).** Paired per-document bootstrap: docling, LightOnOCR, ODL hybrid and LiteParse are tied overall (only ODL hybrid over LiteParse excludes 0, +0.021); all beat ODL local and pdftotext. NID favours LightOnOCR/ODL hybrid; TEDS favours docling. Evidence `artifacts/analysis/pip04-paired-comparison-20261116/`.
 - **Open:** Phase 2 integration is the operator's decision after the Phase 1 gates; PaddleOCR stack entry gates on the v11 promotion.
+
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): PaddleOCR stack entry remains gated on the v11 freeze
+
+- **PIP02-PADDLE-STACK-ENTRY could not start (2026-11-19).** Two sessions (document-parser-table-bench and sliders-local-validation) each found it the sole remaining box and the operator rule forbids starting before the v11 production kernel promotion is frozen. Production identity was re-read as `production-consolidated-v10` at `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; no stack change, compute row or checkbox was claimed. This is an external sequencing event, not a compute wait ([progress document-parser-table-bench](../progress/2026-11/2026-11-19-handoff-document-parser-table-bench.md), [progress sliders-local-validation](../progress/2026-11/2026-11-19-handoff-sliders-local-validation.md)).
+- **Related eval-tower build item.** EV-26 (`BUILD-paddleocr-vl-adapter`, a `_extract_with_paddleocr` VL backend in `src/services/pdf_router.py`) triggers only when the PaddleOCR-VL model lands on disk, which is gated on `OP-VL-INFERENCE-APPROVAL`, and unblocks `ODLB-W3-03` ([eval-tower-program](../handoffs/active/eval-tower-program.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [document-parser-table-bench progress](../progress/2026-11/2026-11-19-handoff-document-parser-table-bench.md)
+- [sliders-local-validation progress](../progress/2026-11/2026-11-19-handoff-sliders-local-validation.md)
+- [eval-tower-program](../handoffs/active/eval-tower-program.md)

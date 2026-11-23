@@ -4,159 +4,7 @@
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): C6 Q4 component microbench capture, GPU q4_0/q4_K property failures at the C5 baseline, DS41 unsloth-vs-antirez verdict. Earlier: 2026-10-27 (operator wiki sweep, workspace-58): Q38FN arm P2: the expert-only IQ4_XS requant recovers PPL but fails the speed gate; the recipe is preserved and the GGUF reclaimed. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): EXL3 3.05 bpw stays PPL-non-inferior to UD-IQ4_XS on one binary, and the p1 greedy smoke diverges after the answer. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-23 (wrap-up sweep 19, workspace-58: NEW-13 weight-set handoff PASS but the low-bit decoder is slower; NEW-10 FAIL re-derived on the EAR build). Earlier: 2026-10-22 (wrap-up sweep 15, workspace-58: NEW-10 GSQ IQ3_XXS verdict FAIL). Earlier: 2026-10-22 (wrap-up sweep 12, workspace-58: NEW-10 smoke abort root cause, EAR column accepted). Earlier: 2026-10-22 (wrap-up sweep 10: EAR column, NEW-10 pass rule, quant-gate power). Earlier: 2026-10-22 (wrap-up sweep 7: DS41 MXFP4 weight fidelity, vacuous kernel evidence). Earlier: 2026-10-21 (wrap-up sweep 5: DS41 MXFP4 experts measured: ppl, prefill, repack RAM). Earlier: 2026-10-21 (wrap-up sweep 3: the quant-kernel keeps folded into candidate C, EXL3 CPU, Em). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: EXL3 ROI review — nothing EXL3 has ever run on an MI210, the gfx90a kernels are correctness references, and on the dense 27B EXL3 is mainly a VRAM lever that GGUF K-quants already provide; EXL3-X0 bytes-elasticity pre-gate filed and operator-approved); previous: 2026-09-26 (EXL3 standalone implementation: portable artifact/oracle and evidence contracts, qualified EPYC operators, exact-target gfx90a build/static qualification, and remaining MI210 execution gates); earlier: 2026-09-26 (EXL3 throughput closure: native-packed execution contract, independent K4/MCG oracle, c1/c8/c16 attribution grid, and controlled W4A16/NVFP4 admission); earlier: 2026-09-25 (EXL3 CPU/MI210 implementation compile: INF-80 opens the project-owned scalar/AVX-512 and native gfx90a path, separates EXL3 from IQ*_KT and W4A16, preserves the retired Qwen CPU no-go, and requires prospective measurement/verifier receipts); earlier: 2026-09-23 (research-intake jev-exl3: a near-baseline KLD/PPL/top-1 ordering is a FIDELITY ordering, never a quality ordering — the iqk/tq3 trellis port gates now demand a paired-flip task-eval win; flip counts need greedy decoding or a measured flip floor; a "BF16" reference may be a dequantized FP8 upcast; route-set agreement filed as occurrence-only; the DFlash target-quant cause stays a hypothesis, with the two stale cross-reference lines on this page corrected); earlier: 2026-09-15 pm (decode-knee register cost is an unroll multiplier; latent on the live Q8_0/Q4_K GPU stack); earlier: 2026-09-15 (the MI210 low-quant findings were distilled into a public X thread and recorded in the append-only social ledger — no new measurement, the ladder's n=1/speed-only scope carried; earlier: 2026-08-23 (**the flagged KIVI caveat resolves in two halves — the implementation half is RETIRED, the measurement half STANDS and now has a filed gate**: KIVI's per-channel-K prescription is **2-bit-only** by its own OB 1 (no 4-bit or 8-bit axis ablation exists anywhere in the paper), our stack runs 4/8-bit, and per-token V is structurally guaranteed once V is quantized — so the long-standing "primary quality gap" was never a gap, and key outliers are handled by the Hadamard rotation instead; **the granularity reading rule**: with `-fa 1` we quantize K and V per token in 32-element blocks along CHANNELS — finer than the Group-64 *mitigation* published in the alignment-collapse study and on the OPPOSITE axis from KIVI — so every third-party KV-quant damage number is a **pessimistic bound** for us; **behavioural drift decouples from perplexity** (Mistral-7B 15.2% AdvBench flip at 4-bit while PPL moves 5.22 → 5.37, 1.03×; Qwen-2.5-7B IFEval strict-pass 69.50 → 59.89 at **8-bit** with 23.14% CondFlip), K carries **76–102%** of the 4-bit damage in 8 of 9 models, and our KV write path has **NO per-channel scaling, NO clipping and NO attention-sink special-casing** — the rotation is the only mitigation we ship, and sinks exist only as a softmax bias in the graph — see the end of the page; earlier 2026-08-22 note: **the TurboQuant KV monitor is dead upstream — PR #21089 verified CLOSED UNMERGED 2026-06-02, retiring this page's monitor bullet, actionable and open question — and the iqk dispatch whitelist is a quant-SELECTION constraint**: Q2_K/Q3_K are `static_assert`ed out of the iqk path on frozen v8, so never pick them on size grounds (UD-IQ3_XXS over size-matched UD-Q2_K_XL); ChunkKV ruled experimental-candidate-only — the existing `action=compact` endpoint is Expected-Attention, NOT ChunkKV; `eschamoe` W2 closed (CUDA-only, no ROCm); plus a flagged-not-resolved KIVI caveat that our KV-quant quality case rests on PPL/NIAH, an instrument class KIVI shows can stay flat while GSM8K collapses ~57% at 2-bit — see the end of the page; earlier 2026-08-16 note: **the batch-1 decode knee on MI210/gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — every quant whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR reaches 8 waves/SIMD and decodes ≥90.05 t/s, while IQ3_XXS (71 VGPR) and IQ2_XXS (78 VGPR) drop to 6 waves and ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; "batching closes the dequant gap" is refuted as stated; `design_prior`-grade, n=1, one model, speed only; plus a 2026-08-14 pair of GPU negatives — KV quantization at 64k single-stream is FALSIFIED as a speed lever on both arms (−16.7% / −6.9%) and weight quantization is inert on embedding encode (bge-m3 Q8_0 ≈ f16 at every sequence point) — see top sections; earlier 2026-08-12 note: a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
 **Sources**: 70 native document references (source review 2026-10-07)
-
-## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): the EXP01 trellis proxy pilot and its extension leave IQ4_KT at ~0.95-0.96 of Q4_K_M speed: hold the port
-
-**Confidence: verified** (proxy model, reference instrument; not Q38FN/DS41 or production).
-
-- **Pilot r3.** On Qwen3.6-35B-A3B requantized from one Q8_0 source with one shared imatrix, IQ4_KT/Q4_K_M tg128 = 0.9630 (band [0.9436, 0.9824]) and IQ2_KT/IQ2_XXS = 0.9610 ([0.9392, 0.9828]); both looks `continue`. Paired quality 14/24 vs 12/24 (exact p=0.5), so no task-eval win. The earlier r2 ratio is unusable: it mixed one 4-thread smoke sample into 11 official 24-thread samples, and its post-hoc cold-launch exclusion was withdrawn. Earlier builds failed for incomplete importance-matrix coverage (missing shared-expert entry).
-- **Extension (8 launches per arm).** IQ4_KT/Q4_K_M = 0.9530 (band [0.9373, 0.9687]), no stop fired, no quality items. Lower bound did not clear 0.95 and no speed advantage over the control was shown: port stays on hold, T2/T3 and an adequately powered quality comparison remain open. Higher tok/s is better throughout.
-
-Sources: [EXP01 pilot finding](../docs/findings/exp01-trellis-proxy-pilot-20261104.md) · [exl3-cpu-mi210 progress](../progress/2026-11/2026-11-04-handoff-exl3-cpu-mi210.md)
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **QVAC BitNet fabric benchmarks** (intake-163#01) Vulkan ternary-kernel benchmarks and LoRA fine-tuning of BitNet on mobile/consumer GPUs. Dive: correctly filed not_applicable; EPYC neither fine-tunes nor uses Vulkan, and TQ1_0/TQ2_0 are already integrated.
-- **Ternary Bonsai** (intake-384#01) 1.58-bit ternary 8B scores 75.5 average in 1.75 GB vs 70.5 for 1-bit Bonsai (1.15 GB). Worth investigating against EPYC's low-bit lanes; speeds quoted are on Apple silicon, not EPYC.
-- **DavidAU Qwen3.6-27B Fable-Fusion MTP GGUFs** (intake-891#record) Abliterated merge with paired MTP/non-MTP GGUFs; MTP tensors held at Q8_0 with a constant 451,320,768 B delta across ten pairs. Dive: 22 GGUFs not 20 (undocumented low-MTP variants); do not infer MTP presence from file size. Base matches the registered Qwen3.6-27B.
-- **Inkling-Small GGUF (Unsloth)** (intake-942#00) 276B/12B-active sparse MoE (42 layers, 6 of 256 experts plus 2 shared) with Unsloth dynamic GGUFs. Dive confirmed the architecture gate first-hand against the frozen v8 tree (no "inkling" arch present there); four corrections.
-- **SageAttention3 microscaling FP4 attention** (intake-1468#00) Reports 1038 TOPS on RTX5090 versus 214 for FlashAttention2 (intake-1468#00), with NVFP4 (E2M1, 1x16 block, E4M3 scale) and two-level quantization of the attention map P (intake-1468#03). Narrowed: the baseline is FA2 because FA3 is Hopper-only, and there is no AMD/ROCm path. Not usable on MI210 or EPYC CPUs; FP4-attention background only.
-- **thu-ml/SageAttention upstream (SA3 Blackwell path)** (intake-1469#01) The Blackwell path exists in sageattention3_blackwell/ as CuTe/CUTLASS templates (SM120 NVFP4 MMA atom, intake-1469#01), requiring python>=3.13, torch>=2.8, CUDA>=12.8 and targeting sm_100a/120a/121a only (intake-1469#02). No CuTeDSL variant exists on any of 7 branches and no functional ROCm (only a vestigial __HIPCC__ arm). Not portable to gfx90a.
-- **"Give Me BF16 or Give Me Death" quantization study** (intake-1523#01) Aggregate recovery on Leaderboard V1 is 99.75% for 8-bit and 99.36% for W4A16 (intake-1523#01); INT4 is acceptable for dense 8B+ models with GPTQ, MSE-optimal clipping, g128 and good calibration (intake-1523#00). Narrowed: dense Llama-3.1 and R1-distills only, vLLM/NVIDIA formats, no flips or KL, no MoE, KV, CPU or GGUF evidence, so it does not validate quant choices on EPYC.
-- **rocm_exl3: ExLlamaV3 ROCm fork for RDNA** (intake-1529#01) Hand-written HIP/WMMA kernels replace non-compilable CUDA paths, validated on RDNA3/3.5 including gfx1151, requiring ROCm 7.2.4+ (intake-1529#01). The supported target list excludes MI210 gfx90a, and no MI210 results or matched Hopper comparison are reported, so it is a ROCm EXL3 porting reference only.
-- **Zeuss5/cuda-exl3 EXL3 GEMM kernels** (intake-1530#00) Independent dense and MoE EXL3 kernels plus a vLLM plugin, with a tiled GEMM amortizing trellis reads (intake-1530#00). Narrowed: developed mostly on Blackwell but setup.py also builds sm80/86/89/90/120; small-batch GEMV can be faster upstream and atomics cause nondeterminism unless deterministic mode is on. CUDA-only, so a design reference for MI210 trellis kernels.
-- **IST-DASLab Marlin FP16xINT4 kernel** (intake-1531#record) Marlin interleaves packed INT4 dequantization with Tensor Core MMA to approach memory-bound speed at medium batch. Overturned: dequant(int q) uses two lop3, one packed subtract and one packed FMA to reconstruct four FP16 weights, not eight; the inner loop calls it twice for eight (intake-1531#record). The CUDA tile and layout are not transferable to CPU or MI210 without reimplementation.
-- **GLM-5.3 EXL3 TR3 3.42bpw mixed-K checkpoint** (intake-1532#00) Routed experts (layers 3-78 incl. MTP) use EXL3/TR3 MCG with 148 K3 and 108 K4 experts per layer for an average 3.42 bpw (intake-1532#00); data-free identity-Hessian encode with teacher-forced KL on four held-out windows. Requires a custom loader patch and was qualified on four Blackwell GPUs, so not a CPU or MI210 result; relevant to our low-bit MoE storage work.
-- **vcruz305/vllm-exl3 serving plugin** (intake-1542#01) Out-of-tree vLLM plugin registering --quantization exl3 (intake-1542#00) with a fused exl3_moe_mixedk dispatch for mixed-K expert packs (intake-1542#01). Narrowed: the Python procedural-codebook decoder is a reference, not a CPU serving backend, and the 0.4.2 candidate is not GPU-qualified, so planner state is not performance evidence.
-- **MARLIN paper (mixed-precision auto-regressive parallel inference)** (intake-1546#01) Reports ~3.9x versus FP16 for 4-bit weights on a large A10 layer through batch 16-32 (intake-1546#01), falling toward 1.5x at batch 128 as the kernel turns compute-bound; largest speedups when memory-bound (intake-1546#02). Ampere scope; a scheduling and roofline reference that does not predict gfx90a performance.
-- **QQQ four-bit quantization** (intake-1547#00) Adaptive smoothing plus Hessian compensation with W4A8 kernels (intake-1547#00); in vLLM (1,024 in / 128 out) QQQ matches W4A16 Marlin at small batch and pulls ahead as batch grows (intake-1547#02). Narrowed to a compute-bound limit of W4A16 Marlin on NVIDIA that motivates separate decode/prefill paths; author-reported.
-- **Qwen3.8-27B CIRU EXL3 via SGLang on RTX 5090** (intake-1563#01) Serving integration, not a weight repo: unchanged 4.00-bpw EXL3 target and DFlash2 draft executed directly inside SGLang with no dense or NVFP4 copy (intake-1563#01), block 8, NVFP4 target KV, 262144-token request limit. Reports 405.6 decode tok/s for one 2048/2048 request, but the quoted speed figures use different denominators. Matches our 27B always-DFlash2 stance, but RTX 5090 only.
-- **r0b0tlab Qwen3.8-27B EXL3 4.00-bpw target** (intake-1565#00) ExLlamaV3 1.5.0 conversion with 4.00-bpw decoder, 6-bpw output head and vision, and a 4-bpw MTP head (intake-1565#00); 573 valid packed quartets (400 decoder K4, 8 MTP K4, 164 vision K6, one head K6), 15.4 GiB target weights paired with a 1.2 GiB EXL3 DFlash2 draft. Narrowed: 96 decoder linear-attention projections stay FP16 so 4.00 is nominal. RTX 3090 results only; no CPU, ROCm or MI210 data.
-- **r0b0tlab ExLlamaV3 fork: shared-decode tiles and mul1 CPU MoE** (intake-1568#00) Dense M32/M64 tiles reusing one decoded B fragment give 1.35x-1.92x at m32-192 on an RTX 3090 microbench, with m1/8/16 unchanged (intake-1568#00); kernels instantiate K1-K8 for cb0, MCG (0xCBAC1FED) and mul1 (0x83DCD12D) (intake-1568#01). The CPU executor is routed-MoE mul1-only K1-K8 with AVX2/AVX512BW/VNNI/VBMI tiers. CUDA/PTX only (a HIP define does not mean ROCm); a CPU kernel donor for EPYC.
-- **vllm.cpp EXL3 CPU executor** (intake-1708#00) Portable dense CPU executor accepts EXL3 bit widths K1-K8 and codebooks cb0/cb1/cb2, decoding packed 16x16 tiles inside the GEMM; the grouped MoE executor admits only codebook 1/MCG (intake-1708#01). Candidate reference for CPU trellis-quant kernels on EPYC.
-- **vllm.cpp EXL3 type-erased operands** (intake-1718#00) Issue 2597 correctly notes the unaligned-access repair widened four public EXL3 decode/dequant declarations to const void*, and at head b5d5bb56 no wrapper exists, so API debt remains. Alignment-safety lesson for any quantized-payload reader.
-- **GLM-5.3-Flash W4A16 on GB10** (intake-1740#01) Group-128 INT4 GPTQ applied to 36,288 routed-expert GEMMs only (attention stays BF16); three-run medians about 30.4/44.4/69.17/81.13 aggregate tok/s at c1/c2/c4/c6 and 31.816 tok/s streaming soak. A distinct EXL3 alternative; expert-only INT4 pattern.
-- **Reederey87 GLM-5.3-Flash EXL3 fused trellis** (intake-1744#01) Active repo behind a dead URL runs a two-GB10 TP2 stack whose fat-expert CUDA path decodes K4/MCG trellis, MMA, Hadamard and scatter in one kernel; qualification of exl3_fat_gemm.cu adopted 2026-08-31. CUDA-only; design reference for fused trellis MoE.
-- **GLM-5.3-Flash NVFP4 + DFlash2 guarded launchers** (intake-1748#01) Every launcher runs a fail-closed checkpoint guard that rejects ModelOpt checkpoints whose ignore patterns do not exclude every self-attention block. Guard-before-serve pattern for quantized checkpoints.
-- **GLM-5.3-Flash TR3 4bpw artifact** (intake-1752#01) Complete uniform-K4 MCG EXL3 checkpoint; five cold offline decoded-K4 runs give identical mean KLD 0.02455456425 against a sealed BF16-teacher panel of 25 windows and 51,175 positions. Reproducible KLD qualification recipe applicable to our quantized models.
-- **GLM-5.3-Flash W4A16-MTP artifact** (intake-1753#00) Routed-expert INT4 (36,288 GEMMs, group-128 GPTQ, compressed-tensors) with BF16 attention; card reports matched 2x DGX Spark AIME 2026 of 102/120 vs 96/120 for EXL3 (author-reported). Not independently replicated.
-- **Qwen3.8-27B RTX 5090 NVFP4 target** (intake-1754#00) ModelOpt NVFP4 group-16 with FP8 KV and long exclusions for embeddings, Gated-DeltaNet projections and vision; card reports 92.9 tok/s SparkInfer, 85.8 SGLang, 161.7 SGLang+DSpark on 24 sequential prompts. Exclusion list shows hybrid-SSM layers are kept high precision.
-- **vLLM PR 139 EXL3 logical-matrix loader** (intake-1757#00) Treats each logical checkpoint matrix independently since packed QKV and gate/up own separate Hadamard vectors and codebook markers; rank-sliced fused path is MCG-only, generic parity path supports MCG and MUL1. Loader-correctness lessons for packed trellis formats.
-- **GLM-5.3 Flash EXL3 4bpw receipts** (intake-1758#01) Uniform-K4 MCG artifact with hash-verified provenance; raw v84 files report 6,225/6,083 tok/s prefill and 145.5-151.5 c1 decode on two RTX PRO 6000 GPUs but with custom vLLM/B12X, NVFP4 KV and speculation, so not a pure-quant number.
-- **vLLM issue 54150 ModelOpt NVFP4 fused-scale bug** (intake-1770#01) Corruption traced to fused gate/up repacking that uses gate's global scale for both halves when scales differ; compressed-tensors control was clean. Check scale handling when fusing MoE gate/up weights.
-- **vLLM issue 56064 Marlin boundary fault** (intake-1772#00) Headline upstream Marlin defect overturned: the illegal access is reachable only after a research overlay forces an all-data-parallel schedule, and the unmodified op completed M=256 twice with finite outputs (intake-1772#01). Reattributed to the overlay; do not cite as an upstream bug.
-- **NVIDIA GLM-5.3-Flash NVFP4 comparator** (intake-1775#00) Official artifact uses ModelOpt NVFP4 for routed experts and dense MLPs with FP8 KV, shared experts excluded; card gives a six-benchmark BF16-vs-NVFP4 panel with mixed-sign deltas but no teacher-forced logits. Comparator only; no NVFP4 on MI210.
-- **Red Hat GLM-5.3-Flash NVFP4 experts-only W4A4** (intake-1776#00) Quantizes only MoE expert weights and activations, keeps MTP in FP8, exports compressed-tensors; scores are three-seed averages (eight for AIME 2025) with no same-table BF16 row or raw receipts.
-- **Qwen3.8-27B QUASAR NVFP4 QAT** (intake-1781#00) All 496 transformer linears to NVFP4 after one epoch of distillation from a frozen BF16 teacher, 19.7 GB; card reports 90.91 GPQA-Diamond and 100% AIME 2026, near BF16 (author-reported). Shows QAT-by-distillation as a low-bit path.
-- **NVIDIA Qwen3.8-27B NVFP4/FP8 comparator** (intake-1782#00) Official mixed recipe: NVFP4 for MLP and lm_head, FP8 for self-attention and linear-attention, with 2,048-sample calibration; six-task table has small mixed-sign deltas but no teacher-forced KL. Keep attention/linear-attention higher precision.
-- **Hybrid fp8/AutoRound Qwen3.8-Flash build** (intake-1941#00) Original 10-expert model on one Spark, vLLM without b12x: ~50-60 tok/s single stream at MTP=3. Prose is far slower: English 40.4 tok/s at 44% acceptance vs Python+tests 62.5 at 86% (intake-1941#02). Headline table relies on a PLE table served over RDMA from another machine, a non-default setup (intake-1941#05). Keeps lm_head at int8 (intake-1941#record).
-- **LittleBit sub-1-bit QAT** (intake-1977#00) Replaces each linear with two sign-factor low-rank paths with FP16 row/column/latent scales, targeting 0.1-1.0 BPW. Llama2-7B WikiText-2 PPL is 15.92 at 0.1 BPW vs STBLLM 19.17 at 0.7 BPW, but ~2.9x FP16 (5.47) (intake-1977#03). Corrections: QAT with KD, not post-training (intake-1977#02); the 11.6x speedup is one A100 MLP-layer GEMV microbenchmark with no released kernel (intake-1977#04). Not usable on EPYC kernels as released.
-- **LittleBit-2 sub-1-bit** (intake-2022#00) Only change vs LittleBit is Joint-ITQ rotation initialisation (50 iterations). Correction: still QAT with KD, not PTQ (intake-2022#01). Llama-3 8B at 0.1 bpp ppl 26.11 -> 23.74 and at 1.0 bpp 16.30 -> 11.53 (FP16 6.10) (intake-2022#02). Kernel (11.6x) and 2.46x end-to-end claims are inherited, not re-measured (intake-2022#04).
-
-## Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): EXL3 3.05 bpw is PPL-non-inferior to UD-IQ4_XS on the same binary, and the greedy smoke FAILs on p1
-
-**Confidence: verified** (predeclared rule, staged logs and digests); the quality reading stays **non-inferiority on PPL only**.
-
-- **INF-80 EXL3-6c5, correctness half re-run (Qwen3.8-Flash-Next, one CPU quarter).** This time both arms ran on the same EXL3-tree binary (`20192b81d`). On 10-04, U ran on the champion build.
-- **PPL** (wiki c512 × 40): E 2.8909 ± 0.0591 vs U 2.9925 ± 0.0632, so **−3.40% (QUALITY_NOT_WORSE)**. Both values reproduce the 10-04 run.
-  - The standing caveat applies: wikitext overlaps the model's memorised n-gram set, and the Q8_0 KLD floor is 0.022–0.027. Small PPL gaps between 4-bit-class files are therefore not resolvable as quality.
-- **Greedy smoke: FAIL by the prefix rule.**
-  - p1 shares only 8 characters (minimum 100). Both answer " Paris.", then E explains and opens a `<think>` turn while U lists capitals.
-  - p2 (102 characters) and p3 (148 characters) pass.
-  - The 10-04 run had p1 identical over 48 tokens, on a different U binary. Whether the divergence is a near-tie is EXL3-6c5b (top-2 margin).
-- The `epyc.exl3.measurement.v1` rows are still unemitted (EXL3-6c5a). The evidence is now in research `data/exl3-6c5-quality/`. The 10-04 speed result still stands: pp5 −30.9%.
-
-Sources: [exl3-cpu-mi210-implementation](../handoffs/active/quantization-and-low-bit.md) (EXL3-6c5, 6c5a, 6c5b) · [calendar plan 2026-10-25](../docs/reference/calendar-plan-2026-10-25.md) · [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (10-04 EXL3 speed) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): EAR column landed for KLD runs, Q38FN GSQ IQ3_XXS download and pass rule pinned, quant-gate power tables
-
-**Confidence: verified** for the landed code, the unit tests and the pinned rules; **inferred** for every quality or speed outcome (the EAR build, the NEW-10 quality pass and the paired task gates have not run).
-
-- **EAR (= 1 - TV, the SLQ cards' quality metric) is added to `llama-perplexity --kl-divergence` (EXL3-EAR1, code landed, NOT built).** Branch `experimental/ear-kld-column-20261022` @ `782c11ae4` (from champion `dd3d9721c`, v10 untouched). Two variants that are not interchangeable: full-vocab EAR = sum_v min(p_base, q) (a strict 1 - TV, so Pinsker applies) and the SLQ evaluation.py top-10 renormalised variant. Output gains an `EAR statistics` block after `Same top p`; every pre-existing line is unchanged. File-scoped g++ unit test passes (EAR(base,base)=1 within one uint16 encoding step of 16/65535 nats, Pinsker, naive reference, ties); a Python cross-check script recomputes both lines from saved base files. The build and a Qwen2.5-Coder-0.5B Q8_0-vs-Q4_K_M smoke are armed but unrun.
-- **Quant-comparison receipts are wired into the belief kernel (VB-QUANTCMP-WIRE, landed).** `qwen4exp_quality_capture.py --mode kld-quantcmp` extends the existing receipt with the native EAR rows, a Pinsker line the reader re-derives, and a CPU-or-HIP residency check sampled during the child (HIP needs libggml-hip mapped and at least two non-zero KFD VRAM samples). Same source kind and `claim_tuple.grade()`; no new ladder. 16/16 new tests, 42/42 adapter tests; the reader digest was re-pinned. EAR is never labelled as acceptance.
-- **NEW-10 (Q38FN GSQ-RCO IQ3_XXS vs served UD-IQ4_XS): download started, pass rule pinned before any run.** The operator chose IQ3_XXS first; the true size is 75.84 GB, not the ~65 GB estimated (two shards, 47.04 + 28.80 GB). Quality row: perplexity on wiki.test.raw (c512, 40 chunks) with one shared KLD base, then GSQ KLD and a 5-prompt coherence gate. Bars, all required: G1 mean ln(PPL(Q)/PPL(base)) <= 0.005 one-sided; G2 mean KLD <= 0.1045 (1.25 x UD's published 0.0836); G3 same-top-1 >= 88.55% (UD's 89.55% minus 1 pp); G4 zero coherence regressions. G2 and G3 are translations onto a UD base because no high-precision Q38FN base is on disk. PASS authorises only a serving-shape speed bench; FAIL closes the arm and IQ3_S is not pulled. The header predicts 96 native tensors (58 IQ4_NL, 38 Q2_0) plus 12 decode-only IQ3_XXS tensors across 48 layers.
-- **The SLQ checkpoints are not servable here, and the lower-byte candidate is a different artifact.** The kaitchup SLQ 27B checkpoints are vLLM/Humming CUDA-only (no ROCm, CPU or GGUF path) and EAR99 is not smaller than our Q8_0, so no speed or quality case; the operator declined the download. The relevant candidate is the ISTA-DASLab Qwen3.8-27B GSQ-RCO GGUF (11-13 native ggml types incl. IQ1; IQ3_S at 0.42x Q8_0 bytes); its card numbers are author-reported single runs, and the roofline estimate is 0.94-1.65x no-draft and 0.6-1.1x with DFlash2 on v10 (indicative). GSQ code has no GGUF/IQ export, so the iqk NEW-10/NEW-11 trigger stays unfired. Operator declined EXL3-X0D ("not worth it"), EXL3-LB1E and EXL3-EAR2, and held NEW-12 (allocation transplant) until NEW-10 reports.
-- **Quant task gates now carry a power table (EV-DEGR1, TQ3-PWR1, NEW-14).** `degradation_stats.py` (orchestrator `0993affc`, 9 tests) prints n_discordant, direction and a one-sided exact binomial p, and `size` gives required N = ceil(p_flip x (2.486/delta)^2) at one-sided alpha 0.05, 80% power (our arithmetic from the paper's SNR relation; the paper has no N table). At delta 2 pp, N is 773 / 1546 / 2318 / 3091 for p_flip 5 / 10 / 15 / 20%. G4 at N=250 detects only about 5 pp (4.97 pp at p_flip 10%; power for a 2 pp drop 26% at 10%), so G4 is recorded as a coarse screen. All per-gate p_flip inputs are blank: no flip floor has been measured.
-- **Ternary kernel reference noted, no lane opened (K8).** The thrush-ternary-v2 format is readable and a group-128 int8-activation ternary kernel with 16-row interleave exists as a reference for a future TQ2_0 AVX-512-VNNI path; low-bit work stays on the DS41 and Q38FN lanes.
-- **Disaggregated-quantization caveat.** The paper's accuracy is BF16-dequantised vLLM, not llama.cpp-native; its untrained higher-precision prefill control helps at IQ1/IQ2 and hurts at 3-bit or more. NEW-13 (prefill with UD-IQ4_XS, decode with IQ3_XXS via sequence-state copy, N=120 passages, gate 0 KLD_A - KLD_C < 0.005 means uninformative) is filed and waits on NEW-10's download.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — NEW-10 download and pinned pass rule, NEW-13, NEW-14, held NEW-12
-- [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md) — EXL3-EAR1 and operator declines
-- [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — TQ3-PWR1 power table, K8 ternary reference
-- [progress/2026-10/2026-10-22-ear1-vbquantcmp.md](../progress/2026-10/2026-10-22-ear1-vbquantcmp.md) — EAR implementation and VB-QUANTCMP-WIRE receipts
-- [progress/2026-10/2026-10-22-research-intake-ist-slq.md](../progress/2026-10/2026-10-22-research-intake-ist-slq.md) — SLQ/GSQ intake findings and operator rulings
-- [progress/2026-10/2026-10-22-gate-stats.md](../progress/2026-10/2026-10-22-gate-stats.md) — degradation_stats helper and required-N grid
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): DS41-1017 MXFP4 weights are bit-exact, and the old kernel-side NMSE = 0.0 proved nothing
-**Confidence: verified** for the weight-side NMSE and the W8c gate (named artifacts, research `73aab47cc`, `42daa0ac9`); **inferred** for the deferred FP8 QDQ A/B (code written, not built or run).
-
-- **The 1017 experts are natively MXFP4** (HF `I8` packed E2M1 with an `F8_E8M0` scale per 32). In the GGUF the E2M1 codes and E8M0 scales are bit-identical to the source on 4/4 checked expert matrices, so NMSE = 0.0 by construction. Q8_0 non-experts vs their FP8 E4M3 source measure NMSE 2.92e-5 to 2.99e-5 on 4 tensors; F16 vs F32 about 4e-8.
-- **The AK served-shape MXFP4 NMSE = 0.0 was VACUOUS**: `test-backend-ops` allocates plain CPU buffers, so it never runs the `CPU_REPACK` `mxfp4_8x8_q8_0` GEMV the server uses, and both arms run the same generic kernel. The replacement real-weight gate compares CPU_REPACK against an independent scalar decode, reports NMSE plus `maxrel` (catches one wrong block scale that aggregate NMSE hides), and proves engagement per case.
-- **Gate result (2026-10-22):** max anchor NMSE 2.93e-5, max rel 0.052, repack engaged on all 8 cases, broken-scale fixtures caught. Bound = 3x calibrated, capped at 5e-4 NMSE / 0.25 maxrel.
-- **Deferred, not done:** the flag-gated FP8 QDQ of attention output before `wo_a` (W5.1a) and KV fake-quant attribution (T3.2) have code on experimental branch `experimental/ds41-qdq-flag-20261021` but no build or run; cancelled by the 2026-10-22 operator ruling that DS41-1017 tests wait for AutoKernel kernel work.
-
-### Source References (2026-10-22 sweep 7)
-- [handoffs/active/deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md)
-- [progress/2026-10/2026-10-21-ak-repack-gate.md](../progress/2026-10/2026-10-21-ak-repack-gate.md)
-- [progress/2026-10/2026-10-21-ds41-qdq-tooling.md](../progress/2026-10/2026-10-21-ds41-qdq-tooling.md)
-
-## Compiled Update — 2026-10-21 (wrap-up sweep 3: the quant-kernel keeps folded into candidate C, EXL3 CPU, EmbeddingGemma 2 parity)
-
-**Confidence: verified** for the ledger and parity numbers as recorded; per-keep AutoKernel percentages are 5-pair screening numbers and are **not additive** (aggregate CH-16: 36 per-commit claims compounding to +171.7% against a measured block effect of +8.524%).
-
-- **Q38FN (UD-IQ4_XS) keeps in C:** `akm-cpu-solo-verify-five-rows` +2.158% (the three-row bound widened to five), `akm-cpu-q8-next-tile-prefetch` +0.054% (noise scale), `akm-cpu-iq3s-grid-gather` +0.593%, plus the q38fn-lane served-shape case set `6ed37bec8`; the ds41-lane variant of that case set is not folded (alternate calibration of the same name). Q38FN greedy, frozen prompts p1-p3, 128 tokens, n_probs 2: IDENTICAL 3/3 to the champion. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
-- **DS41 held keeps (14): 9 applied, 5 subsumed.** Applied: `seed-accum` (+0.373%), `q4k-x4t-zmm-widen` (+0.601%), `bscale-cvtph` (+2.266%), `two-row-tail-tiles` (+1.716%), `zmm-pair-unroll` (+0.706%), `q4k-activation-metadata-reuse` (+0.817%), `q8-rn3-single-pair-loop` (+0.568%), `rmsnorm-eight-double-chains` (+1.258%), `rmsnorm-single-pass-output` (+0.132%). The earlier bundle result that held these out was DS41 -2.51% against a 4.533% floor; the bundle gate on C is staged, not run. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **GLM Q4_K/kquant kernel keeps were NOT folded.** Eight keeps plus `d2861045f` rewrite the same `mul_mat_qX_K_q8_2_X4_T` Q4_K kernel that the champion's DS41 keeps already rewrote (`ActivationMetadata` hoist): alternative implementations of one loop, the champion's measured on a served model; `d2861045f` applied textually but did not compile (`d8` undeclared), so it was dropped. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **EXL3 CPU backend folded (additive).** `GGML_TYPE_EXL3_1..8` / `EXL3M_1..8`, `ggml-cpu/exl3.cpp` and the GGUF importer (13 commits, new types only); `test-exl3` ALL PASS with scalar = VNNI = VBMI. Model-level windows are still owed. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **EmbeddingGemma 2 quant parity (V11-043).** Against the ST FP32 reference: BF16 min cosine 0.999990 (gate 0.99), Q8_0 0.999323 (gate 0.98), 0 non-finite. The operator ruled 2026-10-20 for BM25 + EG2 @256 (FP16 storage) with RRF; recall evidence only, extension-only. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
-- **DS41 chat template side-finding for quantization work:** neither DS41 GGUF in use carries `tokenizer.chat_template`, so any DS41 quality or parity run that omits `--jinja --chat-template-file` silently measures the ChatML fallback (see [chat templates](chat-templates.md)). ([DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
-
-**Sources (sweep 3):** [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): DeepSeek-V4.1 moves to the 1017 MXFP4-experts build, which retires the Q4_K keep surface
-
-**Confidence: verified** for the operator rulings and artifact facts recorded in the handoff; **inferred** for every plan and every number quoted as public or vendor-reported. No 1017 quality or speed measurement exists yet.
-
-### Key findings
-
-- **Serve the vendor-precision experts directly.** The `1017` finetune is drop-in (identical config and tensor map, all 48 shards changed). Operator ruling: serve antirez's 1017 MXFP4-experts nine-shard build (about 502 GB) rather than requantize to Q4_K, and delete the September Q4 once cutover passes. The MXFP4 experts are a lossless repack of the official FP4 weights; the handoff cites a public DS4-Flash KLD of 0.0102 for native MXFP4 against 0.0290 for the FP4-to-Q4_K requant (public, not locally replicated). No publisher ships a 1017 Q4_K-experts build in the antirez layout, and unsloth's 1017 GGUFs use an upstream layout that does not load in the port. The requant route (with the unsloth imatrix) stays the fallback only if validation fails a gate.
-- **The existing AutoKernel keep does not carry over.** The +7.11% DS41 serving keep targets the Q4_K X4_T kernel; MXFP4 experts run the AVX2 `mxfp4_8x8_q8_0` repack, which was about x1.00 at N=1 and x1.04 at N=3 against Q4_K iqk before the keeps. `DS41-W8` therefore re-anchors the campaign on the MXFP4 expert path after validation. This starts a new DS41 measurement era; old Q4 numbers are not comparable. Low-bit performance remains AutoKernel's job, and a dense-4-bit DS41 variant would be EPYC-original and unproven.
-- **Validation gates (`DS41-W5`).** Nine-shard load (1046 tensors, 32-byte alignment where the old file was 16 KiB-aligned), ppl against the September record, the coherence gate at production prompt length, NMSE spot checks, DSpark alpha once the new drafter exists, and serving speed.
-- **Reference-parity work is quantization work.** The official reference round-trips window KV (FP8), compressed KV (FP4) and indexer K/Q (FP4) before caching, and quantize-dequantizes the attention output to FP8 before `wo_a`; our port has neither. `DS41-T3.2` sizes the reference's own sensitivity with that fake-quant on and off, adds an opt-in op, and labels the re-run `kv_fakequant_matched`; `DS41-W5.1` measures the output-FP8 round trip against Q8_0 activation noise and emulates only if NMSE exceeds it. A T3 divergence is not read as a port defect before these. Sources: intake-2116#record, intake-2117#record, intake-2121#record.
-- **KV type A/B (`DS41-KV.1`).** Compressed-plane KV at q8_0 first, then an NVFP4 layout (288 B per 512-dim token with the vendor's per-16 scale rule but different block interleave); stop the NVFP4 arm if NMSE is worse than q4_0. A hybrid MXFP4 placement on the MI210 (16-entry-LUT dequant feeding MFMA) is a dormant trigger, not a task.
-- **Context: iqk coverage is unchanged.** The iqk IQ-quant enablement shipped in v8 and is inherited through v10; its residual items stay post-v8 research and are not touched by the swap.
-
-### iqk coverage: what shipped and what is still stubbed (verified from the handoff's recorded gates; static source facts)
-
-- **Shipped in frozen v8, inherited by v10:** the iqk whitelist now accelerates IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S and (via the K-quant kernel) IQ4_XS, with Q2_K/Q3_K rejected before activation quantization and compile-time dispatch assertions. The `*_R4` repacked variants stay ik-only and unreachable from our GGUFs. The campaign-scoped Q8 waiver means v8 made no Q8 performance claim.
-- **IQ1 is still stubbed, but the scope audit found it cheap.** `B6` (static, 2026-07-29): the 1-bit kernel file is vendored but omitted from the CPU build list, native IQ1_S/IQ1_M cases exist, and block types and traits are already present, so it is a clean same-shape candidate; it needs a fresh experimental branch and the normal correctness and measurement gates. Hy3-IQ1_M is the only registry model with such tensors (82 IQ1_M tensors).
-- **Open post-v8 work (not done):** `NEW-6` prefill headroom (no 16-wide kernels for plain IQ types; the large-batch repack path is disabled over an un-root-caused Zen4 correctness issue; fused MoE up/gate has no caller; the IQ3_XXS small-shape NMSE gate was shape-gated, not root-caused); `NEW-8`, a Q38FN IQ-K/KS self-quant measured first in ik_llama.cpp as an instrument only (ik is not a serving path), allowed by operator ruling only exceptionally; and the trellis (KT) gate, which must be measured in the ik tree before any port, with a 95% of Q4_K_M tg128 plus task-eval-win bar.
-
-### Decisions and rationale
-
-- Fidelity beats a smaller footprint here: direct MXFP4 avoids a requantization step whose damage the quant gates would then have to price.
-- Do not land the recipe change before all shards are complete, because every DS41 launcher asserts the pinned artifacts.
-
-### Open questions
-
-- Does MXFP4 CPU decode, without the Q4_K keeps, land near or below the September AK headline?
-- Does the output-FP8 and KV fake-quant round trip move NMSE above activation noise?
-
-### Related
-
-[speculative-decoding](speculative-decoding.md) (1017 drafter), [kv-cache](kv-cache.md), [chat-templates](chat-templates.md).
-
-### Source References
-
-- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — section W, DS41-W5/W5.1/W8, T3.2, KV.1.
-- [iqk IQ-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — shipped-in-v8 context.
-- [llama.cpp DSA contribution](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) — fixed sparse-op interface for the quantized KV path.
 
 ## Latest source review — 2026-10-07
 
@@ -179,332 +27,6 @@ The contract separates inexpensive per-candidate operator checks from bundle-lev
 - [All-device AutoKernel program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
 - [October 6 DS41 progress](../progress/2026-10/2026-10-06-ak-ds41-main.md)
 - [DeepSeek evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md)
-
-## Compiled Update — 2026-09-26: EXL3 standalone CPU and gfx90a operators are implemented
-
-**Confidence: verified** for the portable contract, CPU qualification, evidence projection, and gfx90a host/static qualification. CPU timing is an observation only. MI210 device correctness and performance remain unmeasured.
-
-### Key findings
-
-- **The artifact and oracle boundary is live.** `epyc.exl3.artifact.v1` binds canonical packed inputs, tensor metadata, codebook identity, transforms, and backend repacks to content digests. Independent MUL1 and MCG reconstruction covers synthetic K1–K8 cases and three revision-pinned real fixtures. The portable suite passed 17 tests.
-- **EPYC operators passed standalone qualification.** Scalar dense/indexed operators, native and band8 layouts, AVX-512BW/VNNI/VBMI MUL1, and independent vector MCG paths passed 719,096 normal checks and 719,096 ASan/UBSan checks. Preliminary cache-resident mixed-K timing did not establish a runtime-K or grouped-K default, so dispatch selection remains open for protocol-eligible measurement.
-- **The gfx90a implementation is ready for device qualification.** Exact `gfx90a:xnack-:sramecc+` builds contain wave64 packed GEMV, a separate FP16-input/FP32-accumulating 16×16×16 MFMA path, and mixed-K MoE plan/bind/run dispatch. Host/static qualification passed 5,579 assertions across 5,120 dispatch cells and reproduced 384 canonical outputs for each of three real fixtures. These checks do not claim GPU execution.
-- **Evidence is wired before hardware measurements.** `epyc.exl3.measurement.v1` and `epyc.exl3.verifier.v1` project through the registered Vidya dispatcher into the existing `ClaimTuple` grader. The dispatcher projected 78 native rows into 234 frames without refusals or declines.
-- **The remaining gate is an owned MI210 execution window.** `G3`, `G4`, and `G5` require device correctness, MFMA regime, and mixed-K routing/capacity runs. The owner path fails closed while foreign KFD occupancy is present; the implementation record observed about 67.16 GB allocated during review and correctly declined to co-reside.
-
-### Next action
-
-At a safe MI210 drain boundary, run the owner-authorized correctness pass, then the separate MFMA and mixed-K routing microbench observations. Keep `EXL3-3`, `EXL3-4`, and `EXL3-5` open until their device gates pass.
-
-### Source References (2026-09-26 implementation)
-
-- [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — delivered operators, exact gate state, and owner-run requirements.
-- [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) — registered measurement/verifier source kinds and shared grading boundary.
-- [EXL3 standalone implementation record](../progress/2026-09/2026-09-26-exl3-implementation.md) — commit lineage, qualification counts, code-object digest, and remaining hardware gate.
-- [EXL3 session record](../progress/2026-09/2026-09-26-inference.md) — research-to-implementation transition, wrap-up audit, and next device action.
-
-## Compiled Update — 2026-09-26: EXL3 throughput research closes on a native-packed custom-kernel contract
-
-**Confidence: verified** for the filed implementation and measurement requirements. Published NVIDIA rates remain external workload targets; no local EXL3 CPU or MI210 correctness or performance result exists yet.
-
-### Key findings
-
-- **The next useful work is implementation.** The 88-record throughput follow-up found no CPU, HIP, ROCm, gfx90a, or MI210 EXL3 compute path. Broad research expansion is closed unless a source supplies such a path, changes EXL3 reconstruction or ABI semantics, invalidates a correctness gate, or provides matched raw evidence that changes a decision.
-- **Native packing is the execution contract.** Each logical Q/K/V and gate/up/down matrix keeps its own trellis, transform vectors, codebook marker, tensor role, source digest, and expert domain. The runtime exposes `plan`, `bind`, and allocation-free `run` phases over caller-owned persistent scratch. Unknown mappings, codebooks, conflicting MCG/MUL1 markers, capacity overflow, capture fallback, and exhausted scheduler slices fail closed.
-- **The first real oracle target is uniform K4/MCG.** A project-owned scalar decoder must establish packed-window and lane placement independently. One real K4/MCG tensor and synthetic K1–K8/MUL1/MCG vectors separately check procedural state, reconstructed tiles, transforms, and full operator output before optimized EPYC or wave64 code is trusted.
-- **Throughput is decomposed before it is compared.** The local program measures reconstruction, GEMV/GEMM, one layer, bare target serving, and later speculative serving separately. The serving grid fixes prompts and output IDs and reports c1/c8/c16 decode, prefill, TTFT, full-wall throughput, verifier work, acceptance by position, memory, context capacity, and route distributions. Published CIRU/NVIDIA figures are targets only for reproducible workload envelopes, not universal EPYC/MI210 thresholds.
-- **A four-bit comparator must earn admission.** W4A16 and NVFP4 artifacts are separate arms. Codec conclusions require matched teacher, architecture, expert count and pruning plan, module coverage, tokenizer, runtime, KV format, and evaluation panel, plus sampled reconstruction and scale checks. Quality, artifact size, resident memory, capacity, latency, prefill, decode, and serving throughput remain separate directed metrics.
-
-### Next action
-
-Complete `EXL3-1`: freeze the content-addressed packed artifact and metadata schema, independent MCG/MUL1 oracles, real and synthetic fixtures, and prospective measurement/verifier writers. Only then fork into EPYC primitives and native gfx90a wave64 decode.
-
-### Source References (2026-09-26)
-
-- [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — settled throughput findings, packed ABI, kernel gates, comparator admission, and local measurement grid.
-- [DFlash2 experimental build](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — downstream speculative-serving gate and recurrent-state obligations.
-- [EXL3 Stage-4 integration record](../progress/2026-09/2026-09-25.md) — disposition counts, applied owners, and validation boundary.
-- [EXL3 full-session wrap-up](../progress/2026-09/2026-09-26-inference.md) — research closure, validation, commit lineage, and implementation start point.
-
-## Compiled Update — 2026-09-25: EXL3 now has a native EPYC and MI210 implementation program
-
-**Confidence: verified** for the implementation boundaries and evidence contract. This update records an approved program; it adds no local EXL3 correctness, quality, or performance result.
-
-### Key findings
-
-- **EXL3 has a project-owned implementation path.** [`INF-80`](../handoffs/active/quantization-and-low-bit.md) begins with a content-addressed canonical artifact, independent portable `mul1` and MCG reconstruction, project-owned synthetic fixtures, and revision-pinned real-weight fixtures. CPU work then proceeds from scalar dense and indexed-expert operators to AVX-512BW/VNNI/VBMI kernels. Unified runtime-K and grouped K-specialized dispatch both remain candidates until local EPYC measurements choose per-regime defaults.
-- **The old Qwen CPU no-go stays valid within its measured scope.** The completed `INF-71` result ruled out the bytes-only lever for one Qwen CPU operating point. It does not decide dense, MCG, gfx90a, or hybrid execution; those broader paths belong to `INF-80`. Reusing the retired `INF-71` identifier would collapse two different decisions ([CPU roofline successor scope](../handoffs/active/cpu-decode-roofline-program.md)).
-- **EXL3 and IQ*_KT are separate formats and programs.** Native EXL3 CPU and MI210 work belongs to `INF-80`; IQ*_KT remains under the iqk program. Existing IQ*_KT throughput or quality gates do not gate EXL3, and the earlier CPU result for the QTIP 3INST family does not establish EXL3 decode cost ([iqk boundary](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [quantization ownership](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation)).
-- **W4A16 is an alternative deployment family.** A codec comparison is admissible only when teacher revision, architecture, expert count and keep plan, evaluation panel, and storage budget match. A pruned W4A16 production arm can inform a deployment comparison, but it cannot isolate codec quality against a full-width EXL3 arm.
-- **Evidence capture is part of the first milestone.** Before any correctness, performance, or quality-producing run, the producer must emit strict `epyc.exl3.measurement.v1` and `epyc.exl3.verifier.v1` records. Adapters project their native fields into `ClaimTuple`; `claim_tuple.grade()` remains the sole grader ([Vidya task](../handoffs/active/vidya-belief-substrate-program.md)).
-
-### Next action
-
-`EXL3-1`: freeze the artifact and metadata contract, portable `mul1` and MCG oracles, real fixtures, and both evidence writers. The critical path then forks into CPU primitives and gfx90a decode before prefill, mixed-K dispatch, llama.cpp experimental integration, local measurement, hybrid execution, the controlled W4A16 study, and a complete regression package.
-
-### Source References (2026-09-25)
-
-- [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — `INF-80`, settled research, tasks, gates, and exclusions.
-- [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — preserved `INF-71` no-go and successor scope.
-- [IQK iquant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) and [TQ3 quantization evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — EXL3/IQ*_KT ownership boundary.
-- [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) — prospective EXL3 measurement and verifier contracts.
-- [EXL3 intake session record](../progress/2026-09/2026-09-25-codex-exl3-intake.md) — intake counts, decisions, validation, and publication record.
-
-## Compiled Update — 2026-09-23 (research-intake jev-exl3): KLD ranks damage, not quality — and the quant gates now say so
-
-**Confidence: verified** for the gate and wording changes in our own handoffs. **External** for the fidelity-vs-quality evidence: dive-verified with a per-claim second reader, not reproduced on our stack.
-
-### Key findings
-
-- **A KLD/PPL/top-1 ordering among near-baseline quants is a fidelity ordering, not a quality ordering.** Evidence from two GGUF cohorts served on llama.cpp (28 Qwen3.6-35B-A3B quants, 41 Devstral-24B quants):
-  - Over the full cohort, headline KL(BF16‖quant) tracks the task composite well: Spearman ρ −0.72 and −0.86.
-  - Inside the near-baseline "silent zone" the correlation collapses to +0.00 (n=17) and −0.24 (intake-1510#01).
-  - The collapse holds across 14 per-token metric variants, including KLD p99, PPL ratio and top-1 agreement (intake-1510#02).
-  - Used as a per-prompt picker ("lower KLD wins"), KLD was right 42.3-49.4% of the time, no better than a coin (intake-1510#04).
-
-  The flips paper makes the same recommendation from the other side: report distance metrics *alongside* capability metrics, never instead of them (intake-1519#05). So a KLD gate can reject damage, but it cannot rank candidates that all pass it.
-- **The trellis port gates were rewritten to match.** The IQ4_KT decision-flipper in both [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) T3 and [tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) STEP 3 now requires two things. First, ≥95% of Q4_K_M tg128. Second, a measurable **task-eval win**, measured as paired per-item flips against the reference. PPL/KLD are reported beside that as fidelity context only. Previously the gate asked for "a measurable PPL/eval win", which a near-baseline PPL delta could satisfy.
-- **The PLE-precision B7 close is re-scoped, not reversed.** "Does not buy quality" now reads as a fidelity statement. The paired KLD/PPL measure *change vs the IQ4_XS-uniform anchor*, not *damage vs BF16*, and cannot rank near-baseline quality ([cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md), intake-1510, intake-1519#05).
-- **Flip counts need a floor or greedy decoding before they mean anything.** The KV behavioural gate in tq3 gains three rules:
-  - count leapfrogs (FP16 fails, quant passes) as well as drops;
-  - report C→I and I→C separately, with the net direction;
-  - read any flip count only under greedy decoding or against a measured FP16-vs-FP16 flip floor.
-
-  Two sampled 16-bit runs of the same model differ by 23.5% flips (intake-1519#00, intake-1519#record). The same paper's MT-Bench "flips predict downstream quality" headline was OVERTURNED on recount (intake-1519#record). Cite that entry by claim, never bare.
-- **A "BF16" reference can be a dequantized upcast.** A tensor-level audit found the official GLM-5.3-Flash BF16 release sitting largely on an FP8-dequantization grid: ~95% weighted exact or near-exact matches (intake-1508#04). DS41-T3 therefore audits DeepSeek-V4.1-Flash's reference before any KLD claim. If the reference is an upcast of the FP8/FP4-native release, the claim names it `dequantized_from_quant` ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md)).
-- **Route-set agreement under weight quantization is filed as occurrence-only.** RT-2 gains a rider. Run the ported routing tap on a reference GGUF (Q8_0/BF16 experts) and on a Q4_K candidate of the same model, over the identical token stream. Emit:
-  - per-layer top-k Jaccard;
-  - the share of token-layers with at least one replaced expert;
-  - a repeat floor and a chance baseline.
-
-  The result is labelled occurrence-only, not damage. The only published weight-domain measurement of this is an occurrence statistic with no interventional attribution (intake-1524#03, intake-1524#record). v10's `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so any flips come from upstream perturbation ([moe-routing-tap-and-locality-measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)).
-- **DFlash on quantized targets.** The 2026-09-23 correction of this page's Summary and Key Findings, demoting target quantization to a hypothesis, now also covers the two cross-reference lines below. The drafter-side precision priors (4-bit ≈ −1% acceptance, weak) and the filed missing control are in [speculative-decoding](speculative-decoding.md).
-
-### Open questions
-
-- Does any trellis candidate produce a paired-flip task win over Q4_K_M that exceeds a measured flip floor? No such run exists. STEP 2 still needs operator inference approval.
-- The P-KLD annex wording that would make "fidelity ordering ≠ quality ordering" constitutional is prepared only. It is the operator's call via OP-38 ([benchmark-methodology](benchmark-methodology.md)).
-
-### Source References (2026-09-23)
-
-- [iqk-iquant-enablement.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — T3 gate rewrite.
-- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — STEP 3 gate rewrite and the flip-counting amendment.
-- [cpu-decode-roofline-program.md](../handoffs/active/cpu-decode-roofline-program.md) — the B7 fidelity scope note.
-- [moe-routing-tap-and-locality-measurement.md](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-2 route-set agreement rider.
-- [p-kld-annex-proposals-20260923.md](../docs/research-intake/p-kld-annex-proposals-20260923.md) — the drafted V6/V8 wording from the same evidence.
-- [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — the DFlash record correction.
-- intake-1510#01/#02/#04, intake-1519#00/#03/#05, intake-1508#04, intake-1524#03/#04 — dive-verified external evidence.
-
-## Compiled Update — 2026-09-15 (pm): the sub-4-bpw decode knee's register cost is an unroll multiplier, and it is latent on the live stack
-
-The IQ2_XXS/IQ3_XXS register pressure behind the 2026-08-16 knee is mostly clang fully unrolling the 4-trip sign-unpack loop.
-- `#pragma clang loop unroll(disable)` gives 78→44 and 71→44 VGPR statically.
-- It regresses Q3_K (88→96), and global flags regress Q8_0/Q4_K.
-- The "fewer bits = slower" reading stays a statement about the *shipped* compilation, not an irreducible format property.
-- Throughput is untested (AK-QL-7).
-- No IQ format is GPU-resident today: Q8_0 25 / Q4_K 44 VGPR are already at 8 waves.
-
-Full account in [hardware-optimization.md](hardware-optimization.md) (Compiled Update 2026-09-15 pm) and [a10_iq2_vgpr_compiler_ab_20260915.md](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md).
-
-## Compiled Update — 2026-09-15: the MI210 low-quant findings were published as a device-level public summary
-
-**Confidence: observation** — this entry adds no new measurement. It records that the 2026-08-16
-register-pressure / IQ4_XS-boundary / batching findings on this page were distilled into a public X
-thread for a user asking about running low quants on the MI210, with the ladder's n=1, single-model,
-speed-only scope carried explicitly.
-
-The conversation is held in the append-only social ledger [`docs/publication/social/`](../docs/publication/social/)
-(`x-2026-09-15-mi210-low-quants`), alongside its four recorded soft spots (KV-quant is speed-only;
-the MoE batching half is unmeasured; the prefill config wins are nonpromotable candidates; Q3_K at 88
-VGPR is the static table, not a measured rung).
-
-### Source References (2026-09-15)
-
-- [2026-09-15-x-mi210-low-quants.md](../docs/publication/social/threads/2026-09-15-x-mi210-low-quants.md) — the posted thread, verbatim, plus its soft spots and evidence index.
-
-## Compiled Update — 2026-09-04: EXL3 mul1 trellis, hybrid KV-quant, and iqk IQ4_XS routing
-
-**Confidence: verified** for the EXL3 format facts and the CPU decode measurement (layout decoded bit-exactly from `exllamav3` `499890c75`, validated against `pack.cu` on 2304/2304 states; decode-cost numbers are exllamav3's own `mul1` CPU GEMV on the real downloaded expert tensors); **verified** for the hybrid KV-cache budget arithmetic and the iqk IQ4_XS mis-routing (every element differing, max abs ~1.2e3). No GGUF exists and nothing on this host runs EXL3 end to end today — EXL3 quality claims are unmeasured and its end-to-end speed figures are bytes-only arithmetic.
-
-### EXL3 `mul1` trellis is the trellis format that IS a speed play on CPU — its decode folds into the integer dot, unlike the KT/QTIP family
-
-The 2026-08-16 verdict on this page — "trellis quantization is a quality-per-bit play, not a speed play" — was measured on the **KT/QTIP family** (`IQ2_KT`/`IQ3_KT`/`IQ4_KT` in ik_llama.cpp), whose QTIP **3INST** decode emits an fp32 per weight and forces an fp32 GEMM (~4.8 t/s vs ~4.6 t/s F16 — no speed). **EXL3's `mul1` codebook is a different decode and that verdict does not transfer**, so the two must not be conflated.
-
-- **The format** (`turboderp/Qwen3.8-Flash-Next-exl3`, 2.05–6.05 bpw, published 2026-08-31; MTP head quantized at 4 bits). A streamlined QTIP: procedural codebook, tail-biting trellis, blockwise Hadamard incoherence processing, Viterbi search over 16-element vectors in **16×16 tiles**, fractional mixed bitrates. Per quantized linear module: `trellis` (packed tiles) + `suh` (input-side sign×scale, per input channel) + `svh` (output-side sign×scale — this is where `out_scales: always` lives) + `mul1` (the int32 codebook multiplier `0x83DCD12D`, identical in every module).
-- **Why it is fast: decode is arithmetic, not a lookup, and it fuses into the GEMV the kernel already runs.** `mul1` (cb2) decodes as `w(s) = (bytesum(s·0x83DCD12D) − 510)·k_inv`, `k_inv = fp16(0x1eee) = 1/147.77`. Because the codebook is **affine in a byte-sum**, dequant and the activation product fuse: `Σ_k w_kn·x_k = k_inv·q·(Σ_k bytesum(s_kn·M)·x8_k − 510·Σ_k x8_k)`, so `bytesum(s·M)·x8` is **exactly one `vpdpbusd` per 16 weights**. Roughly four vector uops per 16 weights (bit-field extraction of trellis states via `vpermt2var` + funnel shifts, one 32-bit multiply, one `vpdpbusd`) — IQ4_XS-class, not KT-class.
-- **The forward carries a Hadamard on both sides, per GEMV:** `y = svh ⊙ H₁₂₈(Wq · Q8(H₁₂₈(suh ⊙ x)))`, blockwise over 128-element blocks with Q8 activation quantization for the `vpdpbusd`. `suh` differs per (expert, projection), so the input transform **cannot be hoisted out of the expert loop** — but it is O(k) against an O(k·n) GEMV (≈ 1/640 of the work), so it is not the cost. Q8-activation accuracy vs fp32: **0.66–0.98% output RMS** on real expert tensors.
-- **Per-class bit widths** (no fractional mix inside a layer): routed experts **K=4** (4.05 branch) / **K=3** (3.05); dense/shared-expert/attention/`lm_head` K=6/5 (`_h` = head bits); the 39 GB n-gram embedding table at K=6/5 (`_ng`, a different row format). Kernel constraints inherited by any ggml port: `k % 128 == 0`, `n % 128 == 0`, `k ≤ 8192`, K ∈ [1,8]; `mul1`-only; `MAX_M = 4` (GEMV, decode-only — prefill needs a dequant-then-GEMM fallback); MoE experts only (no CPU path for attention/dense/head).
-- **Measured decode cost on this Zen 5 box** (exllamav3's own kernel, VBMI-swizzled layout ≡ VNNI-native bit-for-bit): **per core the fused decode+dot is compute-bound** (K4 17.3 GB/s of trellis in cache, 16 GB/s from DRAM — trellis extraction dominates; decode-only is 1.5–1.7× faster); **from ~10 threads it is memory-bound** (48T: 110–124 GB/s on random K4 experts, 91–105 K3, 160–172 on sequential sets) — the same ~153 GB/s ceiling every quant hits on this machine; t64/t96 do not help.
-- **The bytes lever, and its cap.** Expert stream vs the uniform IQ4_XS artifact (up/gate IQ4_XS 4.25 bpw, down Q5_1 6 bpw = 1.296 GB/token): **K4 1.180 GB (−9%), K3 0.885 GB (−32%).** End to end that is **+2% (K4) / +7% (K3) at today's in-situ efficiency, +11–13% at the 48T rate, +15–18% only at the bandwidth ceiling** — because the expert stream is ~21% of the token and the token is dispatch-bound, not bandwidth-bound. **Parked behind the dispatch-floor work (INF-70 Axis D).**
-- **Porting cost and prior art.** No trellis/QTIP/EXL3 support exists anywhere in `ggml`-land. A port is a new `GGML_TYPE_EXL3_MUL1_K{3,4}` — necessarily an **opaque per-matrix blob** (the natural unit is a 16×16 tile spanning 16 rows of `ne[0]`, so it cannot be a row-block type like IQ4_XS) with its own `mul_mat_id` path and a dequant-then-GEMM prefill fallback — plus a `gguf-py` importer; re-estimated at **3–5 sessions**. exllamav3 is MIT but **CUDA-first with no ROCm path** (the MI210 is out of scope regardless), so only the `mul1` decode identity and the swizzled layout are borrowable.
-
-### KV quantization on a 75%-recurrent hybrid is a small lever (qwen4exp / Qwen3.8-Flash-Next)
-
-Only **12 of 48 layers have a KV cache** — the other 36 are Gated-DeltaNet and carry none — with `head_count_kv = 2` and key/value length 256, giving 24.0 KiB/token in f16. KV is therefore only **2.42% of the 4.16 GB/token read budget at ctx 4096** (4.84% at 8k, ~18% at 32k), so q8_0 (which halves it) saves ~1.2% of bytes at 4k; the memory saving is irrelevant on a 1.1 TB box. The measured d0→d4096 decode drop (−7.8%) is mostly attention compute and the FA split path, **not** KV bandwidth, so KV-quant cannot recover it. Predicted gain ~1–2% decode. Two cautions: **q4_0 is contraindicated** — external evidence shows it concentrating damage in long documents (KL 0.581 vs q8_0 < 0.04), exactly this model's workload, with guidance to spend bits on the Key over the Value; and **quantized KV is precisely what activates the `attn_rot_k`/`attn_rot_v` rotation path** (they require `ggml_is_quantized`), which this stack has never exercised on f16 and which a community Flash-Next MTP repo ships a "critical" disable flag for — so a KV-quant arm must run MTP and a coherence check, not just a speed test. Filed as INF-70 B9.
-
-### iqk does not only exclude types — it can silently reroute an included one to a wrong kernel
-
-`iqk_mul_mat.cpp`'s `is_dequant_better()` sends IQ4_XS to a requantized Q8 repack GEMM once a ubatch reaches `nrc_y >= 32`, and on this Zen host that path is grossly wrong (every element differing, max abs ~1.2e3, at row 0) — the same family already excluded IQ2_XXS/IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S "for large-Ny dense and MoE shapes on Zen", with IQ4_XS mistakenly left on it. It corrupted single prompts above ~32 tokens and concurrent short prompts (a 48-row ubatch), and `GGML_IQK=0` was the only correct config until the targeted exclusion landed. So a quant's price includes not just *whether* it is on the iqk path but *which* iqk kernel a wide ubatch routes it to. See `hardware-optimization.md` → *2026-09-03 (INF-70 wave 3)* for the full root-cause and fix.
-
-### Source References (2026-09-04)
-
-- [`exl3-trellis-cpu-kernel.md`](../handoffs/completed/exl3-trellis-cpu-kernel.md) — INF-71: what exists on disk, the measured reference-kernel numbers, the bytes/token ledger, and the phased port plan with gates.
-- [`docs/design/exl3-mul1-ggml-type.md`](../docs/design/exl3-mul1-ggml-type.md) — the X0 format spec: tile bit-layout, the `mul1` decode identity validated against `pack.cu`, the forward contract, and the proposed ggml type.
-- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70's EXL3 trellis lever, now INF-71 (bytes lever parked behind the dispatch floor) and B9 (hybrid KV-quant analysis).
-- [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the drafter/EXL3 research sweep and the X0/X1 measurement wave.
-- [`2026-09-03-inf70-audit.md`](../progress/2026-09/2026-09-03-inf70-audit.md) — the IQ4_XS iqk large-Ny mis-routing root-cause and fix.
-
-## Compiled Update — 2026-08-16: on CDNA2 the batch-1 decode knee is kernel REGISTER PRESSURE, not bits-per-weight
-
-**Confidence: observation / `design_prior`** — this is a **non-governed** measurement. It is not an AutoKernel `evaluation_event`, carries no governed receipt, and §19.0 rule 4 forbids promoting it by origin. It proposes; it settles nothing. **n=1 per cell, no A/A band, ONE model (8B dense), SPEED ONLY.** Every number below must be quoted with those caveats — see *Caveats* at the end of this section, and do not quote a number without them.
-
-### The partition, and it is not a bpw trend
-
-An 8-rung ladder was built from ONE f16 source of **Goedel-Code-Prover-8B** through ONE quantizer — the frozen production `llama-quantize`, version **10125** (`0db32c06e`) — and benched on the MI210 (gfx90a/CDNA2) with `-ngl 99`, GPU residency proven during both runs. The VGPR / waves-per-SIMD columns are the **static** register allocation of each quant's `mul_mat_vec_q<_,1,true,false>` instantiation, read out of the shipped code object four days earlier (see [Hardware Optimization](hardware-optimization.md) for the method); they are not measured here.
-
-`%HBM` is against the **measured** 1433.3 GB/s achievable bandwidth, not the 1638 GB/s datasheet peak. `eff GB/s` = t/s × model bytes — the weight stream only, ignoring KV and activations, so it is a floor on achieved bandwidth, not a ceiling.
-
-| rung | GB | tg128 t/s | eff GB/s | %HBM | pp512 t/s | VGPR | waves/SIMD |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| f16 | 16.38 | 63.97 | 1047.9 | 73.1% | 2880.9 | — | — |
-| Q8_0 | 8.70 | 99.09 | 862.5 | 60.2% | 2673.1 | 25 | 8 |
-| Q6_K | 6.72 | 90.05 | 605.1 | 42.2% | 2460.0 | 46 | 8 |
-| Q5_K_M | 5.85 | 100.93 | 590.0 | 41.2% | 2459.4 | 55 | 8 |
-| Q4_K_M | 5.02 | 108.75 | 546.1 | 38.1% | 2462.2 | 44 | 8 |
-| **IQ4_XS** | 4.59 | **129.77** | 595.3 | 41.5% | 2440.9 | **64** | **8** |
-| IQ3_XXS | 3.36 | 79.44 | 267.2 | 18.6% | 2398.5 | 71 | 6 |
-| IQ2_XXS | 2.48 | 82.89 | 205.9 | 14.4% | 2468.1 | 78 | 6 |
-
-**Every rung whose kernel fits in ≤64 VGPR (8 waves/SIMD) decodes at ≥90.05 t/s; both rungs above 64 VGPR (6 waves) decode at ≤82.89 t/s — while being 27–46% *smaller*.** Separation is 7.17 t/s with no overlap. **Below IQ4_XS, shrinking the model makes decode ABSOLUTELY SLOWER.** IQ4_XS sits exactly on the 64-VGPR boundary — the last rung that still reaches maximum occupancy — and is the fastest rung measured, 129.77 t/s against Q4_K_M's 108.75 and IQ2_XXS's 82.89.
-
-**Prefill is flat**: 2398–2881 t/s across the whole ladder, 16.7% total spread, no knee. Whatever the cliff is, it is **specific to the batch-1 GEMV path** and does not touch prompt processing.
-
-### "Batching closes the dequant gap" is REFUTED as stated
-
-The never-before-run quantized batched sweep (`llama-bench -p 128 -n 128`, B ∈ {1,2,4,8,16,32}, all 8 rungs) measures the ratio to IQ4_XS rising but plateauing short of parity: **IQ3_XXS 0.60 → 0.77** and **IQ2_XXS 0.66 → 0.88** across B=1→32, while **Q4_K_M converges to ~0.99**. So batching closes the gap for the 8-wave K-quants and leaves **12–23% on the floor** for the 6-wave IQ formats.
-
-That asymmetry is itself mechanism evidence: a cost that were purely per-weight-read amortizes away as B grows (read once, reuse B times); a cost that tracks a **wave-slot ceiling** does not — which is what the static VGPR table predicts. The premise was reasoned-but-never-measured before 2026-08-16 and is now retired with a receipt, so it is not re-proposed as an argument for low-bit serving.
-
-### What this does to the low-bit programme
-
-Three things change in how sub-4-bit work is valued on this device:
-
-- **The ranked IQ2/IQ3 items are OCCUPANCY levers, not dequant-arithmetic levers.** The `v_perm_b32` sign-expansion work (437-instruction excess), the Q4_K branchless six-bit scale/min decoder, and the VGPR 78→64 target all matter *to the extent they hold live registers*. This is the third independent time the codebook gather has been ruled out as the cost — see [Hardware Optimization](hardware-optimization.md) for the disassembly evidence.
-- **The payoff is threshold-shaped, not linear.** Crossing back under 64 VGPR regains the 8th wave; a reduction that lands at 70 buys nothing. Levers whose stated benefit is "fewer instructions" without a register target are currently unrankable and must be re-scoped or declined.
-- **Value cases must be weighted against IQ4_XS, not against the format's own baseline.** An IQ2_XXS win that does not clear a **1.57×** deficit produces no production value at any batch size measured.
-
-The prediction was on disk before the ladder ran and was never carried into the campaign that needed it: the Q8_0 roofline work had already established that the gap is achieved-bandwidth/occupancy and NOT dequant-compute, and the per-quant VGPR table published IQ4_XS at exactly 64 → 8 waves with IQ3_XXS/IQ2_XXS at 71/78 → 6 waves. Measured 2026-08-16, the AutoKernel catalogue mentioned **IQ4_XS zero times** (Q4_K 20, IQ2 8, Q8_0 6, Q6_K 4, IQ3 3, Q5_K 0, IQ1 0) — the loop was aimed at the rungs on the wrong side of its own knee.
-
-**The open discriminating test**: the same static table puts **IQ1_S at 42 VGPR → 8 waves**, below IQ4_XS. If the mechanism is register pressure and not bit-width, the *smallest* format on the shelf should land in the fast band, inverting the monotonic "fewer bits = slower below 4 bpw" reading. That is the one place where the occupancy story and the unpacking-cost story disagree in sign, and it is the cheapest test that can falsify the whole mechanism. Unrun as of 2026-08-16. (Scope note: IQ1 is stubbed in the CPU iqk path; this is a GPU MMVQ question and does not depend on that.)
-
-### A unit-confusion correction to the ladder manifest
-
-The ladder's build manifest warns that the pre-existing upstream Q4_K_M and Q8_0 "differ materially in size" from the ladder's (4.68 vs 5.03 GB; 8.11 vs 8.71 GB). That is a **unit-confusion artifact** — it compares upstream in GiB against ladder in GB. Measured 2026-08-16, both pairs are the *same size* (Q4_K_M 4.68 GiB = 5.03 GB; Q8_0 8.11 GiB = 8.71 GB). Same size is not proof of byte-identity, so the manifest's "do not substitute" instruction is still worth obeying on provenance grounds — but not for the reason it gives.
-
-The same hazard bit the analysis itself: an earlier pass reported the `%HBM` figures ~7.4% low by dividing GiB model sizes into a decimal-GB bandwidth. The 1.0737 factor is constant across rungs, so the *shape* survived the error and the absolute percentages did not — exactly the class of error a constant factor hides.
-
-### Caveats a future reader must not skip
-
-- **n=1 per cell, no A/A band.** The **IQ4_XS B=8 cell (408.5 t/s) is a suspected outlier**: it breaks its own monotonic trend (B=4→8 is 1.37×, B=8→16 is 2.14×; every other rung runs ~1.8–1.9× at both steps) and it is the single point where Q4_K_M inverts above IQ4_XS. Do not quote B=8 without replication.
-- **One model, 8B dense.** The VGPR figures are model-independent (static kernel allocation); the throughput figures are not. The 122B MoE attribution agrees on *direction* only — see [MoE Optimization](moe-optimization.md).
-- **SPEED ONLY — no correctness pairing.** The IQ2/IQ3 rungs were built on a **1.23 MB / 30-chunk imatrix** and are **performance probes, explicitly NOT quality-grade models**. No PPL, no eval. This ladder ranks *throughput* and says nothing about whether IQ4_XS is usable, only that it is fast. **No rung on this ladder may be cited in a promotion argument** until the correctness half runs — the standing project rule is to pair speed with a correctness check.
-- **Non-governed.** These are `design_prior`-grade measurements, not AutoKernel `evaluation_events`. Replication with an A/A band is the precondition for quoting any of it as anything stronger.
-
-### Source References (2026-08-16)
-
-- [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung ladder table, the batched sweep, the manifest unit correction, and the caveat list.
-- [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the re-aiming of the low-bit lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census that found IQ4_XS absent from the catalogue.
-- [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the per-quant static VGPR table that predicted the knee four days early, and the IQ2_XXS-vs-IQ4_XS disassembly diff.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the prior establishing that the Q8_0 gap is achieved-bandwidth/occupancy and not dequant-compute, and the measured 1433.3 GB/s achievable-bandwidth denominator.
-
-## Compiled Update — 2026-08-14: two GPU surfaces where the quant lever is negative or inert
-
-**Confidence: observation** — frozen v9 `0db32c06e` / build `10125` on an idle MI210, single runs, no P-GPU-1. Both entries close a previously-open hypothesis with data.
-
-**KV quantization at long context on the GPU is DEAD — the "alive single-stream at long context" hypothesis is falsified.** The standing reasoning was that KV-quant, measured dead at short context and in aggregate, would pay at 64k single-stream where the KV read starts to rival the weight bytes. Measured, `-ctk q8_0 -ctv q8_0` **hurts decode on both arms**: the 35B-A3B GDN hybrid **75.8 → 63.1 t/s (−16.7%)** and the dense 27B **21.7 → 20.2 t/s (−6.9%)**. It fails even on the dense 27B, whose all-full-global KV is the most favourable geometry available — the dequant cast cost exceeds the bandwidth saving. This matches the CPU precedent that the dequant cast *costs* throughput. **KV quantization stays a max-context / VRAM characterization, never a speed lever**, on either substrate. (Distinct from the weight-quantization knee in the section above: that one is register pressure; this one is cast arithmetic.)
-
-**On embedding encode, weight quantization is inert — it buys memory, not speed.** A 13-point GPU baseline sweep on `bge-m3` found **Q8_0 and f16 landing within noise at every sequence point**. Encode is not the regime where a quant lever pays; the compute-bound analog worth testing is VL vision-encoder prefill, which has not been run.
-
-### Source References (2026-08-14)
-
-- [fable5 window-2 findings-05c — lever × category matrix](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix) §4 — the L14 KV-quant falsification on both arms and the A3 BGE-encode baseline result.
-- [fable5 window-2 findings-02 — heterogeneous GPU](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) §5 — the same-batch GPU-lane context, including that the 64 GB binding constraint at long context is the KV allocation and not the weights.
-- [`artifacts/gpu-aux-baselines/a3_bge_mi210_20260812.jsonl`](../artifacts/gpu-aux-baselines/a3_bge_mi210_20260812.jsonl) — the 13 GPU encode points behind the inertness claim.
-
-## Compiled Update — 2026-08-12: a blocker cited by the right PR number and the wrong description, and it would have cost a benchmark
-
-**Confidence: verified** — the PR state and file list were re-derived from the GitHub API; the Q4_K numbers are receipted governed runs.
-
-### The mislabelled blocker, and why the label was load-bearing
-
-A tracking row blocked sub-2-bit work on "PR #22836 (AngelSlim kernels)". The **number is right and the description is wrong**: #22836 is the **STQ1_0 / Sherry ternary quantization kernel** (author `sjl623`). There is no llama.cpp PR that adds AngelSlim kernels at all.
-
-The reason this is not a bookkeeping nit: **the PR touches only `arch/arm/` — not a single x86 file.** A dependent benchmark row taken naively on this Zen 5 EPYC host would have landed on the generic scalar `vec_dot` path and measured a fallback while believing it measured the kernel. The mislabel would have produced a number, not an error. Gate status as re-derived on 2026-08-12: #22836 is still `open`, `merged: false` (opened 2026-05-08, last touched 2026-08-10); the CUDA sibling PR #23332 was **closed unmerged** on 2026-05-22.
-
-The generalisable rule: **a citation's identifier and its description are two separate claims, and only the identifier is self-verifying.** Re-derive the description before letting it gate compute — especially when the gated work is architecture-sensitive.
-
-### KV quantization: the first parity-and-headroom package
-
-Measured across f16 / q8_0 / q4_0 KV, retrieval parity holds at **51 of 52 on every arm**. `q4_0` buys **10.54 GiB** at a **−7.4%** decode cost; **q8_0 is dominated** — it gives up the f16 operating point without buying q4_0's memory. Full context and the provisioning consequence are on the [KV Cache](kv-cache.md) page.
-
-### Q4_K on gfx90a: a real correctness defect, root-caused
-
-Stock MMQ Q4_K was failing forced-dispatch correctness at **18/43** (max error ratio 3.0361) while rocBLAS passed 43/43. An independently compiled DP4A arm reproduced the *same* failures, which falsified the MFMA-specific hypothesis and located the defect in shared Q8 activation staging: affine Q4_K reconstruction mixed a **dequantized** Q8 dot term with an **original-float** activation sum in the min correction. Deriving both from the same dequantized population gives **172/172 pass, max error ratio 1.2283**. The fix is uncommitted pending operator approval. The performance side of the same investigation — the retracted "+38–43% single-lever" unpack ceiling, now ~10.5% of which 57% is structurally required — is on [Hardware Optimization](hardware-optimization.md).
-
-### Source References (2026-08-12)
-
-- [`angelslim-techniques-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-angelslim-techniques-evaluation) — the mislabel correction and the re-derived PR state.
-- [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the mirrored correction and the ARM-only file-scope consequence for Zen 5.
-- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — the Q4_K MMQ correctness matrices and root cause.
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the KV-quant decision package and the "window saved" framing of the mislabel.
-
-## Compiled Update — 2026-07-24
-
-The architect IQ2-vs-Q4 reasoning-certification question (flagged UNDECIDED in the prior compile) advanced on two fronts: a degenerate-repetition defect first suspected as 2-bit EOS damage was refuted as **quant-independent**, and the CPU Q4 arm (A2) ran the same fenced, pinned-item comparison as the GPU IQ2 arm, tracking at-or-above it. Confidence: `verified` for the RP-1/RP-2 measured refutation (McNemar-paired, offline-rescored); `observation` for A2's still-in-progress paired analysis at compile time.
-
-### Key Findings (2026-07-24)
-
-- **The 2-bit-EOS-damage hypothesis is REFUTED: the Qwen3.5-122B-A10B's degenerate `\boxed{}` repetition loop tracks the MODEL, not the quantization.** On `olympiadbench_hard`, the 122B-A10B looped to the token cap on **25% of items at IQ2** — the original evidence for suspecting 2-bit EOS damage — but the **CPU Q4_K_M arm (A2) loops IDENTICALLY on the same item** (item 1: 32768 tokens, tail-uniqueness 0.03, `\boxed{2n-1}`×N repeated at both quants). The Q8 arms (27B-dense, 35B-A3B — different models entirely) never loop (0–1%). One identical Q4 loop is a sufficient counterexample to the quant-attribution hypothesis. Consequence: the fix is a **per-MODEL** repetition-penalty fence (the 122B-A10B, at any quant it is deployed at), never a per-quant or blanket policy — `repeat_penalty 1.1` breaks the loop (truncation ~100%→22%, tokens 32768→10.6k) with accuracy held (22/40 vs baseline 21/40); `1.3` over-penalizes math to ~15% accuracy; DRY (0.8) is inconsistent and sometimes mangles the answer outright. The `\boxed{}` instruction itself is the leading root-cause hypothesis (untested). Because production currently gives the 122B-A10B architect no repetition penalty at either quant, the loop occurs live today, at a real ~2× token/latency operating cost that does **not** distinguish IQ2 from Q4. [architect-model-selection-bench](../handoffs/active/model-evaluation-queue.md) §RP-1/RP-2, [reasoning-effort-levels](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §MODEL-specific repetition-penalty fence
-
-- **The CPU Q4 arm (A2), run fenced overnight on the pinned item sets, is tracking at-or-above the GPU IQ2 arm's reasoning band — the first direct evidence bearing on H1 (does IQ2 preserve the 122B's reasoning relative to Q4?).** With the RP-1 fence applied (`repeat_penalty 1.1`, port 18073, 25.8 tok/s decode): `aime25` 23/30 (76.7%) complete; `olympiadbench_hard` ~72% on the answered items vs A1-IQ2's 68.4% on the same suite. This is a live, not-yet-finalized read — the canonical-extractor paired McNemar analysis was still pending at compile time — but it argues against a large IQ2 reasoning penalty on this model, complementing the knowledge-axis parity already certified (AXA-1 Δ0.0pp, n=212). `gpqa_diamond_cot` was deliberately skipped on this arm (power math: 185 paired items give an MDE of only ~6–7pp, insufficient to detect a subtle 1–2pp degradation, and the +198 in the full set still only reaches ~4pp). [architect-model-selection-bench](../handoffs/active/model-evaluation-queue.md) §RP-5, [progress 2026-07-24](../progress/2026-07/2026-07-24.md)
-
-### Open Questions (2026-07-24)
-
-- The A2-vs-A1 paired McNemar analysis (canonical rescore) had not landed at compile time — does H1 close as statistical parity, or does a real (if small) IQ2 reasoning penalty emerge once formally tested?
-- RP-3 (does the loop occur on real architect planning workloads, or only on `\boxed{}`-style competition-math prompts?) is unresolved and is the leading root-cause lead.
-- Should the per-model repetition-penalty fence (RP-4) be added to the production registry now, given production currently runs the 122B-A10B unfenced and the loop is confirmed to occur live?
-
-### Source References (2026-07-24)
-
-- [architect-model-selection-bench.md](../handoffs/active/model-evaluation-queue.md) §RP series, §A2 — the CPU Q4 arm execution, the quant-attribution refutation, the repetition-penalty probe results.
-- [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §MODEL-specific repetition-penalty fence — the per-model (not per-quant) invariant and its production-policy implications.
-- [progress 2026-07-23](../progress/2026-07/2026-07-23.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md) — A2 overnight execution log, RP-1 probe results.
-
-## Compiled Update — 2026-07-20
-
-A five-paper literature cluster (intake-859..863) plus the architect-selection and quant-asymmetric self-spec work reframe low-bit quantization along a **reasoning-vs-knowledge asymmetry**: 2-bit barely touches knowledge but can halve *reasoning* — unless the quant is *dynamic/per-layer*. This directly re-opens the architect-quant question and motivates a new, quality-preserving use of aggressive quant (self-spec drafting). Confidence: `external` for the literature, `verified` for the DR-0 self-spec throughput/quality measurements (observation-grade under `P-GPU-1`), `verified` for the sub-2-bit load/quality failures.
-
-### Key Findings (2026-07-20)
-
-- **Reasoning ∝ ACTIVE params; knowledge ∝ TOTAL params; and 2-bit is asymmetric.** On *our exact toolchain* (llama.cpp GGUF K-quants + Unsloth, DeepSeek-class MoE), MMLU holds ~99% (90.99→89.72) while **uniform Q2_K halves reasoning** (DeepSeek-V3 AIME 38.34→15.41) — but **dynamic per-layer quant holds**: DQ3_K_M ≈ Q4 (75.73 vs 75.79), and Q4 ≈ FP8 (intake-861 `2505.02390`, cred 4). Corroborated: harder tasks (AIME) degrade up to ~4× more than GSM8K, sub-4-bit + activation/KV quant are the danger zones, ≥14B tolerate quant better (intake-863 `2504.04823`, cred 3); low-bit PTQ disproportionately raises *procedural/execution* errors, restorable by a ~332-example recovery-SFT in minutes (intake-860 `2505.11574`, cred 3); reasoning peaks at an optimal active-compute point and is architectural, not rescued by test-time compute or GRPO (intake-859 `2508.18672`, cred 5). ([architect-model-selection-2026-07-20](../docs/reference/architect-model-selection-2026-07-20.md))
-- **The architect's IQ2≈Q4 parity is NOT reasoning-certified.** The GPU-resident 122B-A10B UD-IQ2_M candidate's Δ0.0pp parity (212-question paired eval, McNemar p=1.000) was **knowledge/instruction-following-dominated** — the pool was IF (84) + factual QA (72) with only **n≈4 per hard-reasoning suite (~11%)**, and the LLM-rubric gate was deferred. It is a valid *knowledge* parity only; the reasoning axis (exactly what 2-bit erodes) is powerless in that pool. The architect quant choice is therefore **UNDECIDED**, gated behind a full-power AIME'25 + GPQA-Diamond bench: default prior is 122B at **Q4** (safe), IQ2 only if the reasoning re-gate passes, dynamic-3-bit (DQ3) as the mid-precision fallback. ([architect-model-selection-bench](../handoffs/active/model-evaluation-queue.md))
-- **Quant-asymmetric same-model self-spec — a NEW quality-preserving use of aggressive quant.** An aggressive-IQ drafter on the GPU + a high-quant verifier on the CPU is N5-free by construction (identical vocab / M-RoPE / GDN), and the CPU verify **launders quality** (accepted tokens are full-quant). Measured (DR-0e.2, observation-grade): 122B UD-Q4_K_M CPU verifier + 122B UD-IQ2_M MI210 drafter, **K2 = 11.41 t/s (1.61× over 7.08 baseline), alpha 0.90**, 28/28 quality, output byte-stable vs the CPU baseline on every task class. K2 is selected over K4 (K4 adds only +3.85% but alpha drops to 0.787). Default-off research lane; production-named `P-GPU-1` still required. ([quant-asymmetric-self-spec-serving-design](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md), [gpu-drafter-control-redesign](../handoffs/completed/gpu-drafter-control-redesign.md))
-- **Sub-2-bit weight quant is deprioritized (STEERING 2026-07-19).** Bonsai Q1_0 and Ternary Q2_g64 are speed-only and quality-blocked (fail strict instruction/format gates); Ternary Bonsai Q2_0 is a **broken load** (498/498 tensors short, noncanonical PrismML packing ≠ upstream TQ1_0/TQ2_0). Q1_0 (type 41) is already in v6; PrismML Q2_0 landed upstream 2026-07-07, *after* the v6 cutover, so it is **not** in v6. Do not speed-rerun these without a named producer/transcode/loader/prompt fix. ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation), [model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md))
-- **External FP4 / lossless-exponent formats stay non-deployable here.** NVFP4 (intake-756) is GPU-native (no GGUF/MI210 path); its FP8-parity table is an external *bar* for our CPU 4-bit path only. Lossless entropy-coded weight compression (ZipNN/DFloat11/ZipServ, intake-815..818) yields ~11–12 bpw — ~2.5× larger than production Q4_K_M ~4.5 bpw — so it is a storage/download optimization, not an inference win. ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation))
-
-### Open Questions (2026-07-20)
-
-- Does dynamic UD-IQ2 preserve the 122B-A10B's *reasoning* (not just knowledge)? Only the full-power AIME'25/GPQA bench answers it.
-- Is a two-level (per-block FP8 + per-tensor FP32) scale worth emulating in a CPU K-quant variant, or is the accuracy delta below the decision-gating threshold?
-- Does the K2 quant-asymmetric self-spec lane survive broader task-class admission and a production-named `P-GPU-1` certification?
-
-### Source References (2026-07-20)
-
-- [architect-model-selection-2026-07-20.md](../docs/reference/architect-model-selection-2026-07-20.md) — reasoning∝active + 2-bit-asymmetry evidence, the Δ0.0pp-parity gap analysis, the decision tree.
-- [architect-model-selection-bench.md](../handoffs/active/model-evaluation-queue.md) — the reasoning re-gate the parity deferred (specced, gated post-v7-promotion).
-- [quant-asymmetric-self-spec-serving-design-2026-07-20.md](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md) — K2 self-spec design + DR-0e.2 evidence.
-- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — sub-2-bit stop-list, TurboQuant/ChunkKV monitor, lossless-exponent cluster.
-- intake-859 `2508.18672` (cred 5), intake-861 `2505.02390` (cred 4), intake-863 `2504.04823` (cred 3), intake-860 `2505.11574` (cred 3), intake-862 `2604.07035` (cred 2, harness-artifact caveat) — the reasoning-vs-quant literature.
 
 ## Summary
 
@@ -695,13 +217,540 @@ Sources: `research/intake_index.yaml` intake-637 + APEX/MxMoE cross-refs · [`ha
 
 - **Selective-precision carve-outs for large MoEs are already standard practice, not an untaken opportunity.** Two independent practitioners (intake-870 vLLM-Moet, intake-871 GLM-5.2-NVFP4-TR3) converged on holding attention, shared experts, the DSA indexer and early-layer MLPs above 4-bit while pushing routed experts low. Parsing the six GLM-5.2 UD-IQ2_M shard headers shows **Unsloth already implements all four, more aggressively than either describes**: attention KV path at Q8_0, `indexer.proj`/`k_norm` at F32 with indexer projections at Q8_0, shared experts at Q5_K/Q6_K, and layers 0-2 (`leading_dense_block_count=3`) at Q5_K/Q6_K. A corollary worth recording: the historical GLM-5.2 `indexer_top_k` corruption was a runtime parameter bug, and this tensor map rules quantization out as a repeat cause. Sources: [glm52-reviewer-capability-gates.md](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates), [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
 
-## Compiled Update — 2026-08-22: the TurboQuant KV monitor is dead upstream, and the iqk dispatch whitelist is now a quant-SELECTION constraint
+## Compiled update — 2026-11-02: EXL3 and IQ4_XS attribution corrections
+
+- **EXL3 real fixtures:** On three partial device fixtures, the exact canonical GEMV comparison passed, then the MFMA prefill comparison exceeded its declared tolerance. Each binary returned rc1 and the sealed overall verifier failed. The discrepancy was previously attributed to GEMV; its cause and full G3/G4 coverage remain unestablished.
+- **IQ4_XS repack:** The INF-70 node trace identified errors in IQ4_XS → Q8_K_R16 repacking when nrc_y ≥ 32 and npt ≥ 16. The source exclusion was absent from the stale binary under test. This finding does not establish a per-type cause or authorize enabling the separately excluded IQ2/IQ3 paths.
+
+### Source references
+
+- [EXL3 CPU and MI210 handoff](../handoffs/active/quantization-and-low-bit.md)
+- [IQK i-quant handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
+- [INF-70 node-trace and stale-binary audit](../progress/2026-09/2026-09-03-inf70-audit.md)
+
+## Compiled update — 2026-11-04: EXP01 trellis proxy pilot (inconclusive)
+
+- **Setup.** Qwen3.6-35B-A3B proxy requantized from one Q8_0 source with a shared imatrix on four arms, measured with ik_llama.cpp `c04881fc` as a reference instrument; not evidence for Q38FN/DS41 or a production kernel.
+- **Speed (tg128, higher is better).** IQ4_KT/Q4_K_M = 0.9630 (band 0.9436-0.9824); IQ2_KT/IQ2_XXS = 0.9610 (band 0.9392-0.9828). Neither declared stop condition was reached at the three-launch-per-arm cap; bands are exploratory, not a T3 gate.
+- **Quality.** 14/24 vs 12/24 (2 IQ4_KT-only, 0 Q4_K_M-only), exact paired p = 0.5: no established win.
+- **Disposition.** No port triggered; T2/T3 stay open. An earlier r2 ratio was invalid (a 4-thread smoke sample mixed into 24-thread official samples) and was replaced by the isolated r3. Optional extension (needs operator authorization): IQ4_KT vs Q4_K_M to 8 launches per arm, at most 10 minutes.
+
+Sources: [EXP01 findings](../docs/findings/exp01-trellis-proxy-pilot-20261104.md) · [EXL3 CPU/MI210 session record](../progress/2026-11/2026-11-04-handoff-exl3-cpu-mi210.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): EXL3/trellis EXP01
+
+- EXP01-EXT: IQ4_KT/Q4_K_M tg128 = 0.953 [0.937, 0.969]. The result is inconclusive and makes no speed case.
+- The EXP01 pilot r2 is invalid as a ratio: one 4-thread smoke sample was mixed into 11 official 24-thread samples. The post-hoc exclusion was withdrawn, and an isolated r3 rerun decides port/futility.
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md)
+
+## Compiled update — 2026-11-05 (operator-adhoc-ops wrap-up 3): C6 q4_K MMVQ/MMQ numeric bug
+
+- **The C6 combined q4_K failures were a real numeric bug, not tolerance noise**: the min/offset term used the float sum of the activations instead of the quantized sum. Fixed in three places (`experimental/c6-q4-mmvq-mmq-fix` @ 0bccaa85d, folded with llguidance as 21232569a); the full GPU backend suite then had 0 failures. The fixed candidate is +77% slower on the q4_K n=4 case, so the fix is not free; the slowdown and the unsupported-set rule are open boxes.
+- **The C6 port35186 serving −4.75% "FAIL" was not significant** (CI −7.6%..+0.9%); a 24-pair re-measure is queued. The 27B identity mismatch was a harness sort-order bug (lexicographic arm serialization).
+
+Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md)
+
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): low-precision recurrence and the rotation question
+
+- **LinQuant's invariances are activation transforms, not weight-quant knobs.** Six of seven act inside the recurrence and never meet Q4_K/IQ per-32-block layouts; `D_QK` additionally cancels exactly under per-channel scales and is invalid for delta writes. The transferable asset is the float64 reference implementation as a conformance oracle (intake-2641#record, intake-2642).
+- **The SSDi8 "rotation hurts SSD" claim is refuted as a general statement.** MambaQuant's fixed-granularity control improves over RTN in all four tested cells, and SSDi8's own gap is a scale-granularity failure; LinQuant's key rotation is a boundary extension on the state axis SSDi8 excludes (intake-2645, intake-2648).
+- **Quamba2's 3x generation gain is weight streaming**, not activation quantization: weight-only W4A16 is within 2% of W4A8 at batch 1, so its activation machinery is worth ~2%. The remaining byte lever for a bandwidth-bound decode is head-to-toe 4-bit on the LM head and embeddings (intake-2646).
+- **Sub-INT8 recurrence stays out of scope**: the INT4 row still leaves +10.2% perplexity and the authors state a sub-byte kernel is required (intake-2641#record).
+- **Filed work**: `QUANT-HEAD-1` (head/embedding bytes audit) and `QUANT-ROT-1` (offline rotation/permutation probe at a fixed per-32-block budget) in [quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md).
+
+Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [repo dive](../research/deep-dives/quant-compiler-20261106/linquant-repo.md) · [SSDi8](../research/deep-dives/quant-compiler-20261106/ssdi8.md) · [Quamba2](../research/deep-dives/quant-compiler-20261106/quamba2.md) · [MambaQuant](../research/deep-dives/quant-compiler-20261106/mambaquant.md)
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): C6 Q4 component microbench capture, GPU q4_0/q4_K property failures at the C5 baseline, DS41 unsloth-vs-antirez verdict. Earlier: 2026-10-27 (operator wiki sweep, workspace-58): Q38FN arm P2: the expert-only IQ4_XS requant recovers PPL but fails the speed gate; the recipe is preserved and the GGUF reclaimed. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): EXL3 3.05 bpw stays PPL-non-inferior to UD-IQ4_XS on one binary, and the p1 greedy smoke diverges after the answer. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-23 (wrap-up sweep 19, workspace-58: NEW-13 weight-set handoff PASS but the low-bit decoder is slower; NEW-10 FAIL re-derived on the EAR build). Earlier: 2026-10-22 (wrap-up sweep 15, workspace-58: NEW-10 GSQ IQ3_XXS verdict FAIL). Earlier: 2026-10-22 (wrap-up sweep 12, workspace-58: NEW-10 smoke abort root cause, EAR column accepted). Earlier: 2026-10-22 (wrap-up sweep 10: EAR column, NEW-10 pass rule, quant-gate power). Earlier: 2026-10-22 (wrap-up sweep 7: DS41 MXFP4 weight fidelity, vacuous kernel evidence). Earlier: 2026-10-21 (wrap-up sweep 5: DS41 MXFP4 experts measured: ppl, prefill, repack RAM). Earlier: 2026-10-21 (wrap-up sweep 3: the quant-kernel keeps folded into candidate C, EXL3 CPU, Em). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: EXL3 ROI review — nothing EXL3 has ever run on an MI210, the gfx90a kernels are correctness references, and on the dense 27B EXL3 is mainly a VRAM lever that GGUF K-quants already provide; EXL3-X0 bytes-elasticity pre-gate filed and operator-approved); previous: 2026-09-26 (EXL3 standalone implementation: portable artifact/oracle and evidence contracts, qualified EPYC operators, exact-target gfx90a build/static qualification, and remaining MI210 execution gates); earlier: 2026-09-26 (EXL3 throughput closure: native-packed execution contract, independent K4/MCG oracle, c1/c8/c16 attribution grid, and controlled W4A16/NVFP4 admission); earlier: 2026-09-25 (EXL3 CPU/MI210 implementation compile: INF-80 opens the project-owned scalar/AVX-512 and native gfx90a path, separates EXL3 from IQ*_KT and W4A16, preserves the retired Qwen CPU no-go, and requires prospective measurement/verifier receipts); earlier: 2026-09-23 (research-intake jev-exl3: a near-baseline KLD/PPL/top-1 ordering is a FIDELITY ordering, never a quality ordering — the iqk/tq3 trellis port gates now demand a paired-flip task-eval win; flip counts need greedy decoding or a measured flip floor; a "BF16" reference may be a dequantized FP8 upcast; route-set agreement filed as occurrence-only; the DFlash target-quant cause stays a hypothesis, with the two stale cross-reference lines on this page corrected); earlier: 2026-09-15 pm (decode-knee register cost is an unroll multiplier; latent on the live Q8_0/Q4_K GPU stack); earlier: 2026-09-15 (the MI210 low-quant findings were distilled into a public X thread and recorded in the append-only social ledger — no new measurement, the ladder's n=1/speed-only scope carried; earlier: 2026-08-23 (**the flagged KIVI caveat resolves in two halves — the implementation half is RETIRED, the measurement half STANDS and now has a filed gate**: KIVI's per-channel-K prescription is **2-bit-only** by its own OB 1 (no 4-bit or 8-bit axis ablation exists anywhere in the paper), our stack runs 4/8-bit, and per-token V is structurally guaranteed once V is quantized — so the long-standing "primary quality gap" was never a gap, and key outliers are handled by the Hadamard rotation instead; **the granularity reading rule**: with `-fa 1` we quantize K and V per token in 32-element blocks along CHANNELS — finer than the Group-64 *mitigation* published in the alignment-collapse study and on the OPPOSITE axis from KIVI — so every third-party KV-quant damage number is a **pessimistic bound** for us; **behavioural drift decouples from perplexity** (Mistral-7B 15.2% AdvBench flip at 4-bit while PPL moves 5.22 → 5.37, 1.03×; Qwen-2.5-7B IFEval strict-pass 69.50 → 59.89 at **8-bit** with 23.14% CondFlip), K carries **76–102%** of the 4-bit damage in 8 of 9 models, and our KV write path has **NO per-channel scaling, NO clipping and NO attention-sink special-casing** — the rotation is the only mitigation we ship, and sinks exist only as a softmax bias in the graph — see the end of the page; earlier 2026-08-22 note: **the TurboQuant KV monitor is dead upstream — PR #21089 verified CLOSED UNMERGED 2026-06-02, retiring this page's monitor bullet, actionable and open question — and the iqk dispatch whitelist is a quant-SELECTION constraint**: Q2_K/Q3_K are `static_assert`ed out of the iqk path on frozen v8, so never pick them on size grounds (UD-IQ3_XXS over size-matched UD-Q2_K_XL); ChunkKV ruled experimental-candidate-only — the existing `action=compact` endpoint is Expected-Attention, NOT ChunkKV; `eschamoe` W2 closed (CUDA-only, no ROCm); plus a flagged-not-resolved KIVI caveat that our KV-quant quality case rests on PPL/NIAH, an instrument class KIVI shows can stay flat while GSM8K collapses ~57% at 2-bit — see the end of the page; earlier 2026-08-16 note: **the batch-1 decode knee on MI210/gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — every quant whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR reaches 8 waves/SIMD and decodes ≥90.05 t/s, while IQ3_XXS (71 VGPR) and IQ2_XXS (78 VGPR) drop to 6 waves and ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; "batching closes the dequant gap" is refuted as stated; `design_prior`-grade, n=1, one model, speed only; plus a 2026-08-14 pair of GPU negatives — KV quantization at 64k single-stream is FALSIFIED as a speed lever on both arms (−16.7% / −6.9%) and weight quantization is inert on embedding encode (bge-m3 Q8_0 ≈ f16 at every sequence point) — see top sections; earlier 2026-08-12 note: a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
+
+### Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): the EXP01 trellis proxy pilot and its extension leave IQ4_KT at ~0.95-0.96 of Q4_K_M speed: hold the port
+
+**Confidence: verified** (proxy model, reference instrument; not Q38FN/DS41 or production).
+
+- **Pilot r3.** On Qwen3.6-35B-A3B requantized from one Q8_0 source with one shared imatrix, IQ4_KT/Q4_K_M tg128 = 0.9630 (band [0.9436, 0.9824]) and IQ2_KT/IQ2_XXS = 0.9610 ([0.9392, 0.9828]); both looks `continue`. Paired quality 14/24 vs 12/24 (exact p=0.5), so no task-eval win. The earlier r2 ratio is unusable: it mixed one 4-thread smoke sample into 11 official 24-thread samples, and its post-hoc cold-launch exclusion was withdrawn. Earlier builds failed for incomplete importance-matrix coverage (missing shared-expert entry).
+- **Extension (8 launches per arm).** IQ4_KT/Q4_K_M = 0.9530 (band [0.9373, 0.9687]), no stop fired, no quality items. Lower bound did not clear 0.95 and no speed advantage over the control was shown: port stays on hold, T2/T3 and an adequately powered quality comparison remain open. Higher tok/s is better throughout.
+
+Sources: [EXP01 pilot finding](../docs/findings/exp01-trellis-proxy-pilot-20261104.md) · [exl3-cpu-mi210 progress](../progress/2026-11/2026-11-04-handoff-exl3-cpu-mi210.md)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **QVAC BitNet fabric benchmarks** (intake-163#01) Vulkan ternary-kernel benchmarks and LoRA fine-tuning of BitNet on mobile/consumer GPUs. Dive: correctly filed not_applicable; EPYC neither fine-tunes nor uses Vulkan, and TQ1_0/TQ2_0 are already integrated.
+- **Ternary Bonsai** (intake-384#01) 1.58-bit ternary 8B scores 75.5 average in 1.75 GB vs 70.5 for 1-bit Bonsai (1.15 GB). Worth investigating against EPYC's low-bit lanes; speeds quoted are on Apple silicon, not EPYC.
+- **DavidAU Qwen3.6-27B Fable-Fusion MTP GGUFs** (intake-891#record) Abliterated merge with paired MTP/non-MTP GGUFs; MTP tensors held at Q8_0 with a constant 451,320,768 B delta across ten pairs. Dive: 22 GGUFs not 20 (undocumented low-MTP variants); do not infer MTP presence from file size. Base matches the registered Qwen3.6-27B.
+- **Inkling-Small GGUF (Unsloth)** (intake-942#00) 276B/12B-active sparse MoE (42 layers, 6 of 256 experts plus 2 shared) with Unsloth dynamic GGUFs. Dive confirmed the architecture gate first-hand against the frozen v8 tree (no "inkling" arch present there); four corrections.
+- **SageAttention3 microscaling FP4 attention** (intake-1468#00) Reports 1038 TOPS on RTX5090 versus 214 for FlashAttention2 (intake-1468#00), with NVFP4 (E2M1, 1x16 block, E4M3 scale) and two-level quantization of the attention map P (intake-1468#03). Narrowed: the baseline is FA2 because FA3 is Hopper-only, and there is no AMD/ROCm path. Not usable on MI210 or EPYC CPUs; FP4-attention background only.
+- **thu-ml/SageAttention upstream (SA3 Blackwell path)** (intake-1469#01) The Blackwell path exists in sageattention3_blackwell/ as CuTe/CUTLASS templates (SM120 NVFP4 MMA atom, intake-1469#01), requiring python>=3.13, torch>=2.8, CUDA>=12.8 and targeting sm_100a/120a/121a only (intake-1469#02). No CuTeDSL variant exists on any of 7 branches and no functional ROCm (only a vestigial __HIPCC__ arm). Not portable to gfx90a.
+- **"Give Me BF16 or Give Me Death" quantization study** (intake-1523#01) Aggregate recovery on Leaderboard V1 is 99.75% for 8-bit and 99.36% for W4A16 (intake-1523#01); INT4 is acceptable for dense 8B+ models with GPTQ, MSE-optimal clipping, g128 and good calibration (intake-1523#00). Narrowed: dense Llama-3.1 and R1-distills only, vLLM/NVIDIA formats, no flips or KL, no MoE, KV, CPU or GGUF evidence, so it does not validate quant choices on EPYC.
+- **rocm_exl3: ExLlamaV3 ROCm fork for RDNA** (intake-1529#01) Hand-written HIP/WMMA kernels replace non-compilable CUDA paths, validated on RDNA3/3.5 including gfx1151, requiring ROCm 7.2.4+ (intake-1529#01). The supported target list excludes MI210 gfx90a, and no MI210 results or matched Hopper comparison are reported, so it is a ROCm EXL3 porting reference only.
+- **Zeuss5/cuda-exl3 EXL3 GEMM kernels** (intake-1530#00) Independent dense and MoE EXL3 kernels plus a vLLM plugin, with a tiled GEMM amortizing trellis reads (intake-1530#00). Narrowed: developed mostly on Blackwell but setup.py also builds sm80/86/89/90/120; small-batch GEMV can be faster upstream and atomics cause nondeterminism unless deterministic mode is on. CUDA-only, so a design reference for MI210 trellis kernels.
+- **IST-DASLab Marlin FP16xINT4 kernel** (intake-1531#record) Marlin interleaves packed INT4 dequantization with Tensor Core MMA to approach memory-bound speed at medium batch. Overturned: dequant(int q) uses two lop3, one packed subtract and one packed FMA to reconstruct four FP16 weights, not eight; the inner loop calls it twice for eight (intake-1531#record). The CUDA tile and layout are not transferable to CPU or MI210 without reimplementation.
+- **GLM-5.3 EXL3 TR3 3.42bpw mixed-K checkpoint** (intake-1532#00) Routed experts (layers 3-78 incl. MTP) use EXL3/TR3 MCG with 148 K3 and 108 K4 experts per layer for an average 3.42 bpw (intake-1532#00); data-free identity-Hessian encode with teacher-forced KL on four held-out windows. Requires a custom loader patch and was qualified on four Blackwell GPUs, so not a CPU or MI210 result; relevant to our low-bit MoE storage work.
+- **vcruz305/vllm-exl3 serving plugin** (intake-1542#01) Out-of-tree vLLM plugin registering --quantization exl3 (intake-1542#00) with a fused exl3_moe_mixedk dispatch for mixed-K expert packs (intake-1542#01). Narrowed: the Python procedural-codebook decoder is a reference, not a CPU serving backend, and the 0.4.2 candidate is not GPU-qualified, so planner state is not performance evidence.
+- **MARLIN paper (mixed-precision auto-regressive parallel inference)** (intake-1546#01) Reports ~3.9x versus FP16 for 4-bit weights on a large A10 layer through batch 16-32 (intake-1546#01), falling toward 1.5x at batch 128 as the kernel turns compute-bound; largest speedups when memory-bound (intake-1546#02). Ampere scope; a scheduling and roofline reference that does not predict gfx90a performance.
+- **QQQ four-bit quantization** (intake-1547#00) Adaptive smoothing plus Hessian compensation with W4A8 kernels (intake-1547#00); in vLLM (1,024 in / 128 out) QQQ matches W4A16 Marlin at small batch and pulls ahead as batch grows (intake-1547#02). Narrowed to a compute-bound limit of W4A16 Marlin on NVIDIA that motivates separate decode/prefill paths; author-reported.
+- **Qwen3.8-27B CIRU EXL3 via SGLang on RTX 5090** (intake-1563#01) Serving integration, not a weight repo: unchanged 4.00-bpw EXL3 target and DFlash2 draft executed directly inside SGLang with no dense or NVFP4 copy (intake-1563#01), block 8, NVFP4 target KV, 262144-token request limit. Reports 405.6 decode tok/s for one 2048/2048 request, but the quoted speed figures use different denominators. Matches our 27B always-DFlash2 stance, but RTX 5090 only.
+- **r0b0tlab Qwen3.8-27B EXL3 4.00-bpw target** (intake-1565#00) ExLlamaV3 1.5.0 conversion with 4.00-bpw decoder, 6-bpw output head and vision, and a 4-bpw MTP head (intake-1565#00); 573 valid packed quartets (400 decoder K4, 8 MTP K4, 164 vision K6, one head K6), 15.4 GiB target weights paired with a 1.2 GiB EXL3 DFlash2 draft. Narrowed: 96 decoder linear-attention projections stay FP16 so 4.00 is nominal. RTX 3090 results only; no CPU, ROCm or MI210 data.
+- **r0b0tlab ExLlamaV3 fork: shared-decode tiles and mul1 CPU MoE** (intake-1568#00) Dense M32/M64 tiles reusing one decoded B fragment give 1.35x-1.92x at m32-192 on an RTX 3090 microbench, with m1/8/16 unchanged (intake-1568#00); kernels instantiate K1-K8 for cb0, MCG (0xCBAC1FED) and mul1 (0x83DCD12D) (intake-1568#01). The CPU executor is routed-MoE mul1-only K1-K8 with AVX2/AVX512BW/VNNI/VBMI tiers. CUDA/PTX only (a HIP define does not mean ROCm); a CPU kernel donor for EPYC.
+- **vllm.cpp EXL3 CPU executor** (intake-1708#00) Portable dense CPU executor accepts EXL3 bit widths K1-K8 and codebooks cb0/cb1/cb2, decoding packed 16x16 tiles inside the GEMM; the grouped MoE executor admits only codebook 1/MCG (intake-1708#01). Candidate reference for CPU trellis-quant kernels on EPYC.
+- **vllm.cpp EXL3 type-erased operands** (intake-1718#00) Issue 2597 correctly notes the unaligned-access repair widened four public EXL3 decode/dequant declarations to const void*, and at head b5d5bb56 no wrapper exists, so API debt remains. Alignment-safety lesson for any quantized-payload reader.
+- **GLM-5.3-Flash W4A16 on GB10** (intake-1740#01) Group-128 INT4 GPTQ applied to 36,288 routed-expert GEMMs only (attention stays BF16); three-run medians about 30.4/44.4/69.17/81.13 aggregate tok/s at c1/c2/c4/c6 and 31.816 tok/s streaming soak. A distinct EXL3 alternative; expert-only INT4 pattern.
+- **Reederey87 GLM-5.3-Flash EXL3 fused trellis** (intake-1744#01) Active repo behind a dead URL runs a two-GB10 TP2 stack whose fat-expert CUDA path decodes K4/MCG trellis, MMA, Hadamard and scatter in one kernel; qualification of exl3_fat_gemm.cu adopted 2026-08-31. CUDA-only; design reference for fused trellis MoE.
+- **GLM-5.3-Flash NVFP4 + DFlash2 guarded launchers** (intake-1748#01) Every launcher runs a fail-closed checkpoint guard that rejects ModelOpt checkpoints whose ignore patterns do not exclude every self-attention block. Guard-before-serve pattern for quantized checkpoints.
+- **GLM-5.3-Flash TR3 4bpw artifact** (intake-1752#01) Complete uniform-K4 MCG EXL3 checkpoint; five cold offline decoded-K4 runs give identical mean KLD 0.02455456425 against a sealed BF16-teacher panel of 25 windows and 51,175 positions. Reproducible KLD qualification recipe applicable to our quantized models.
+- **GLM-5.3-Flash W4A16-MTP artifact** (intake-1753#00) Routed-expert INT4 (36,288 GEMMs, group-128 GPTQ, compressed-tensors) with BF16 attention; card reports matched 2x DGX Spark AIME 2026 of 102/120 vs 96/120 for EXL3 (author-reported). Not independently replicated.
+- **Qwen3.8-27B RTX 5090 NVFP4 target** (intake-1754#00) ModelOpt NVFP4 group-16 with FP8 KV and long exclusions for embeddings, Gated-DeltaNet projections and vision; card reports 92.9 tok/s SparkInfer, 85.8 SGLang, 161.7 SGLang+DSpark on 24 sequential prompts. Exclusion list shows hybrid-SSM layers are kept high precision.
+- **vLLM PR 139 EXL3 logical-matrix loader** (intake-1757#00) Treats each logical checkpoint matrix independently since packed QKV and gate/up own separate Hadamard vectors and codebook markers; rank-sliced fused path is MCG-only, generic parity path supports MCG and MUL1. Loader-correctness lessons for packed trellis formats.
+- **GLM-5.3 Flash EXL3 4bpw receipts** (intake-1758#01) Uniform-K4 MCG artifact with hash-verified provenance; raw v84 files report 6,225/6,083 tok/s prefill and 145.5-151.5 c1 decode on two RTX PRO 6000 GPUs but with custom vLLM/B12X, NVFP4 KV and speculation, so not a pure-quant number.
+- **vLLM issue 54150 ModelOpt NVFP4 fused-scale bug** (intake-1770#01) Corruption traced to fused gate/up repacking that uses gate's global scale for both halves when scales differ; compressed-tensors control was clean. Check scale handling when fusing MoE gate/up weights.
+- **vLLM issue 56064 Marlin boundary fault** (intake-1772#00) Headline upstream Marlin defect overturned: the illegal access is reachable only after a research overlay forces an all-data-parallel schedule, and the unmodified op completed M=256 twice with finite outputs (intake-1772#01). Reattributed to the overlay; do not cite as an upstream bug.
+- **NVIDIA GLM-5.3-Flash NVFP4 comparator** (intake-1775#00) Official artifact uses ModelOpt NVFP4 for routed experts and dense MLPs with FP8 KV, shared experts excluded; card gives a six-benchmark BF16-vs-NVFP4 panel with mixed-sign deltas but no teacher-forced logits. Comparator only; no NVFP4 on MI210.
+- **Red Hat GLM-5.3-Flash NVFP4 experts-only W4A4** (intake-1776#00) Quantizes only MoE expert weights and activations, keeps MTP in FP8, exports compressed-tensors; scores are three-seed averages (eight for AIME 2025) with no same-table BF16 row or raw receipts.
+- **Qwen3.8-27B QUASAR NVFP4 QAT** (intake-1781#00) All 496 transformer linears to NVFP4 after one epoch of distillation from a frozen BF16 teacher, 19.7 GB; card reports 90.91 GPQA-Diamond and 100% AIME 2026, near BF16 (author-reported). Shows QAT-by-distillation as a low-bit path.
+- **NVIDIA Qwen3.8-27B NVFP4/FP8 comparator** (intake-1782#00) Official mixed recipe: NVFP4 for MLP and lm_head, FP8 for self-attention and linear-attention, with 2,048-sample calibration; six-task table has small mixed-sign deltas but no teacher-forced KL. Keep attention/linear-attention higher precision.
+- **Hybrid fp8/AutoRound Qwen3.8-Flash build** (intake-1941#00) Original 10-expert model on one Spark, vLLM without b12x: ~50-60 tok/s single stream at MTP=3. Prose is far slower: English 40.4 tok/s at 44% acceptance vs Python+tests 62.5 at 86% (intake-1941#02). Headline table relies on a PLE table served over RDMA from another machine, a non-default setup (intake-1941#05). Keeps lm_head at int8 (intake-1941#record).
+- **LittleBit sub-1-bit QAT** (intake-1977#00) Replaces each linear with two sign-factor low-rank paths with FP16 row/column/latent scales, targeting 0.1-1.0 BPW. Llama2-7B WikiText-2 PPL is 15.92 at 0.1 BPW vs STBLLM 19.17 at 0.7 BPW, but ~2.9x FP16 (5.47) (intake-1977#03). Corrections: QAT with KD, not post-training (intake-1977#02); the 11.6x speedup is one A100 MLP-layer GEMV microbenchmark with no released kernel (intake-1977#04). Not usable on EPYC kernels as released.
+- **LittleBit-2 sub-1-bit** (intake-2022#00) Only change vs LittleBit is Joint-ITQ rotation initialisation (50 iterations). Correction: still QAT with KD, not PTQ (intake-2022#01). Llama-3 8B at 0.1 bpp ppl 26.11 -> 23.74 and at 1.0 bpp 16.30 -> 11.53 (FP16 6.10) (intake-2022#02). Kernel (11.6x) and 2.46x end-to-end claims are inherited, not re-measured (intake-2022#04).
+
+### Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): EXL3 3.05 bpw is PPL-non-inferior to UD-IQ4_XS on the same binary, and the greedy smoke FAILs on p1
+
+**Confidence: verified** (predeclared rule, staged logs and digests); the quality reading stays **non-inferiority on PPL only**.
+
+- **INF-80 EXL3-6c5, correctness half re-run (Qwen3.8-Flash-Next, one CPU quarter).** This time both arms ran on the same EXL3-tree binary (`20192b81d`). On 10-04, U ran on the champion build.
+- **PPL** (wiki c512 × 40): E 2.8909 ± 0.0591 vs U 2.9925 ± 0.0632, so **−3.40% (QUALITY_NOT_WORSE)**. Both values reproduce the 10-04 run.
+  - The standing caveat applies: wikitext overlaps the model's memorised n-gram set, and the Q8_0 KLD floor is 0.022–0.027. Small PPL gaps between 4-bit-class files are therefore not resolvable as quality.
+- **Greedy smoke: FAIL by the prefix rule.**
+  - p1 shares only 8 characters (minimum 100). Both answer " Paris.", then E explains and opens a `<think>` turn while U lists capitals.
+  - p2 (102 characters) and p3 (148 characters) pass.
+  - The 10-04 run had p1 identical over 48 tokens, on a different U binary. Whether the divergence is a near-tie is EXL3-6c5b (top-2 margin).
+- The `epyc.exl3.measurement.v1` rows are still unemitted (EXL3-6c5a). The evidence is now in research `data/exl3-6c5-quality/`. The 10-04 speed result still stands: pp5 −30.9%.
+
+Sources: [exl3-cpu-mi210-implementation](../handoffs/active/quantization-and-low-bit.md) (EXL3-6c5, 6c5a, 6c5b) · [calendar plan 2026-10-25](../docs/reference/calendar-plan-2026-10-25.md) · [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (10-04 EXL3 speed) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): EAR column landed for KLD runs, Q38FN GSQ IQ3_XXS download and pass rule pinned, quant-gate power tables
+
+**Confidence: verified** for the landed code, the unit tests and the pinned rules; **inferred** for every quality or speed outcome (the EAR build, the NEW-10 quality pass and the paired task gates have not run).
+
+- **EAR (= 1 - TV, the SLQ cards' quality metric) is added to `llama-perplexity --kl-divergence` (EXL3-EAR1, code landed, NOT built).** Branch `experimental/ear-kld-column-20261022` @ `782c11ae4` (from champion `dd3d9721c`, v10 untouched). Two variants that are not interchangeable: full-vocab EAR = sum_v min(p_base, q) (a strict 1 - TV, so Pinsker applies) and the SLQ evaluation.py top-10 renormalised variant. Output gains an `EAR statistics` block after `Same top p`; every pre-existing line is unchanged. File-scoped g++ unit test passes (EAR(base,base)=1 within one uint16 encoding step of 16/65535 nats, Pinsker, naive reference, ties); a Python cross-check script recomputes both lines from saved base files. The build and a Qwen2.5-Coder-0.5B Q8_0-vs-Q4_K_M smoke are armed but unrun.
+- **Quant-comparison receipts are wired into the belief kernel (VB-QUANTCMP-WIRE, landed).** `qwen4exp_quality_capture.py --mode kld-quantcmp` extends the existing receipt with the native EAR rows, a Pinsker line the reader re-derives, and a CPU-or-HIP residency check sampled during the child (HIP needs libggml-hip mapped and at least two non-zero KFD VRAM samples). Same source kind and `claim_tuple.grade()`; no new ladder. 16/16 new tests, 42/42 adapter tests; the reader digest was re-pinned. EAR is never labelled as acceptance.
+- **NEW-10 (Q38FN GSQ-RCO IQ3_XXS vs served UD-IQ4_XS): download started, pass rule pinned before any run.** The operator chose IQ3_XXS first; the true size is 75.84 GB, not the ~65 GB estimated (two shards, 47.04 + 28.80 GB). Quality row: perplexity on wiki.test.raw (c512, 40 chunks) with one shared KLD base, then GSQ KLD and a 5-prompt coherence gate. Bars, all required: G1 mean ln(PPL(Q)/PPL(base)) <= 0.005 one-sided; G2 mean KLD <= 0.1045 (1.25 x UD's published 0.0836); G3 same-top-1 >= 88.55% (UD's 89.55% minus 1 pp); G4 zero coherence regressions. G2 and G3 are translations onto a UD base because no high-precision Q38FN base is on disk. PASS authorises only a serving-shape speed bench; FAIL closes the arm and IQ3_S is not pulled. The header predicts 96 native tensors (58 IQ4_NL, 38 Q2_0) plus 12 decode-only IQ3_XXS tensors across 48 layers.
+- **The SLQ checkpoints are not servable here, and the lower-byte candidate is a different artifact.** The kaitchup SLQ 27B checkpoints are vLLM/Humming CUDA-only (no ROCm, CPU or GGUF path) and EAR99 is not smaller than our Q8_0, so no speed or quality case; the operator declined the download. The relevant candidate is the ISTA-DASLab Qwen3.8-27B GSQ-RCO GGUF (11-13 native ggml types incl. IQ1; IQ3_S at 0.42x Q8_0 bytes); its card numbers are author-reported single runs, and the roofline estimate is 0.94-1.65x no-draft and 0.6-1.1x with DFlash2 on v10 (indicative). GSQ code has no GGUF/IQ export, so the iqk NEW-10/NEW-11 trigger stays unfired. Operator declined EXL3-X0D ("not worth it"), EXL3-LB1E and EXL3-EAR2, and held NEW-12 (allocation transplant) until NEW-10 reports.
+- **Quant task gates now carry a power table (EV-DEGR1, TQ3-PWR1, NEW-14).** `degradation_stats.py` (orchestrator `0993affc`, 9 tests) prints n_discordant, direction and a one-sided exact binomial p, and `size` gives required N = ceil(p_flip x (2.486/delta)^2) at one-sided alpha 0.05, 80% power (our arithmetic from the paper's SNR relation; the paper has no N table). At delta 2 pp, N is 773 / 1546 / 2318 / 3091 for p_flip 5 / 10 / 15 / 20%. G4 at N=250 detects only about 5 pp (4.97 pp at p_flip 10%; power for a 2 pp drop 26% at 10%), so G4 is recorded as a coarse screen. All per-gate p_flip inputs are blank: no flip floor has been measured.
+- **Ternary kernel reference noted, no lane opened (K8).** The thrush-ternary-v2 format is readable and a group-128 int8-activation ternary kernel with 16-row interleave exists as a reference for a future TQ2_0 AVX-512-VNNI path; low-bit work stays on the DS41 and Q38FN lanes.
+- **Disaggregated-quantization caveat.** The paper's accuracy is BF16-dequantised vLLM, not llama.cpp-native; its untrained higher-precision prefill control helps at IQ1/IQ2 and hurts at 3-bit or more. NEW-13 (prefill with UD-IQ4_XS, decode with IQ3_XXS via sequence-state copy, N=120 passages, gate 0 KLD_A - KLD_C < 0.005 means uninformative) is filed and waits on NEW-10's download.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — NEW-10 download and pinned pass rule, NEW-13, NEW-14, held NEW-12
+- [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md) — EXL3-EAR1 and operator declines
+- [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — TQ3-PWR1 power table, K8 ternary reference
+- [progress/2026-10/2026-10-22-ear1-vbquantcmp.md](../progress/2026-10/2026-10-22-ear1-vbquantcmp.md) — EAR implementation and VB-QUANTCMP-WIRE receipts
+- [progress/2026-10/2026-10-22-research-intake-ist-slq.md](../progress/2026-10/2026-10-22-research-intake-ist-slq.md) — SLQ/GSQ intake findings and operator rulings
+- [progress/2026-10/2026-10-22-gate-stats.md](../progress/2026-10/2026-10-22-gate-stats.md) — degradation_stats helper and required-N grid
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): DS41-1017 MXFP4 weights are bit-exact, and the old kernel-side NMSE = 0.0 proved nothing
+**Confidence: verified** for the weight-side NMSE and the W8c gate (named artifacts, research `73aab47cc`, `42daa0ac9`); **inferred** for the deferred FP8 QDQ A/B (code written, not built or run).
+
+- **The 1017 experts are natively MXFP4** (HF `I8` packed E2M1 with an `F8_E8M0` scale per 32). In the GGUF the E2M1 codes and E8M0 scales are bit-identical to the source on 4/4 checked expert matrices, so NMSE = 0.0 by construction. Q8_0 non-experts vs their FP8 E4M3 source measure NMSE 2.92e-5 to 2.99e-5 on 4 tensors; F16 vs F32 about 4e-8.
+- **The AK served-shape MXFP4 NMSE = 0.0 was VACUOUS**: `test-backend-ops` allocates plain CPU buffers, so it never runs the `CPU_REPACK` `mxfp4_8x8_q8_0` GEMV the server uses, and both arms run the same generic kernel. The replacement real-weight gate compares CPU_REPACK against an independent scalar decode, reports NMSE plus `maxrel` (catches one wrong block scale that aggregate NMSE hides), and proves engagement per case.
+- **Gate result (2026-10-22):** max anchor NMSE 2.93e-5, max rel 0.052, repack engaged on all 8 cases, broken-scale fixtures caught. Bound = 3x calibrated, capped at 5e-4 NMSE / 0.25 maxrel.
+- **Deferred, not done:** the flag-gated FP8 QDQ of attention output before `wo_a` (W5.1a) and KV fake-quant attribution (T3.2) have code on experimental branch `experimental/ds41-qdq-flag-20261021` but no build or run; cancelled by the 2026-10-22 operator ruling that DS41-1017 tests wait for AutoKernel kernel work.
+
+#### Source References (2026-10-22 sweep 7)
+- [handoffs/active/deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md)
+- [progress/2026-10/2026-10-21-ak-repack-gate.md](../progress/2026-10/2026-10-21-ak-repack-gate.md)
+- [progress/2026-10/2026-10-21-ds41-qdq-tooling.md](../progress/2026-10/2026-10-21-ds41-qdq-tooling.md)
+
+### Compiled Update — 2026-10-21 (wrap-up sweep 3: the quant-kernel keeps folded into candidate C, EXL3 CPU, EmbeddingGemma 2 parity)
+
+**Confidence: verified** for the ledger and parity numbers as recorded; per-keep AutoKernel percentages are 5-pair screening numbers and are **not additive** (aggregate CH-16: 36 per-commit claims compounding to +171.7% against a measured block effect of +8.524%).
+
+- **Q38FN (UD-IQ4_XS) keeps in C:** `akm-cpu-solo-verify-five-rows` +2.158% (the three-row bound widened to five), `akm-cpu-q8-next-tile-prefetch` +0.054% (noise scale), `akm-cpu-iq3s-grid-gather` +0.593%, plus the q38fn-lane served-shape case set `6ed37bec8`; the ds41-lane variant of that case set is not folded (alternate calibration of the same name). Q38FN greedy, frozen prompts p1-p3, 128 tokens, n_probs 2: IDENTICAL 3/3 to the champion. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
+- **DS41 held keeps (14): 9 applied, 5 subsumed.** Applied: `seed-accum` (+0.373%), `q4k-x4t-zmm-widen` (+0.601%), `bscale-cvtph` (+2.266%), `two-row-tail-tiles` (+1.716%), `zmm-pair-unroll` (+0.706%), `q4k-activation-metadata-reuse` (+0.817%), `q8-rn3-single-pair-loop` (+0.568%), `rmsnorm-eight-double-chains` (+1.258%), `rmsnorm-single-pass-output` (+0.132%). The earlier bundle result that held these out was DS41 -2.51% against a 4.533% floor; the bundle gate on C is staged, not run. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **GLM Q4_K/kquant kernel keeps were NOT folded.** Eight keeps plus `d2861045f` rewrite the same `mul_mat_qX_K_q8_2_X4_T` Q4_K kernel that the champion's DS41 keeps already rewrote (`ActivationMetadata` hoist): alternative implementations of one loop, the champion's measured on a served model; `d2861045f` applied textually but did not compile (`d8` undeclared), so it was dropped. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **EXL3 CPU backend folded (additive).** `GGML_TYPE_EXL3_1..8` / `EXL3M_1..8`, `ggml-cpu/exl3.cpp` and the GGUF importer (13 commits, new types only); `test-exl3` ALL PASS with scalar = VNNI = VBMI. Model-level windows are still owed. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **EmbeddingGemma 2 quant parity (V11-043).** Against the ST FP32 reference: BF16 min cosine 0.999990 (gate 0.99), Q8_0 0.999323 (gate 0.98), 0 non-finite. The operator ruled 2026-10-20 for BM25 + EG2 @256 (FP16 storage) with RRF; recall evidence only, extension-only. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
+- **DS41 chat template side-finding for quantization work:** neither DS41 GGUF in use carries `tokenizer.chat_template`, so any DS41 quality or parity run that omits `--jinja --chat-template-file` silently measures the ChatML fallback (see [chat templates](chat-templates.md)). ([DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
+
+**Sources (sweep 3):** [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): DeepSeek-V4.1 moves to the 1017 MXFP4-experts build, which retires the Q4_K keep surface
+
+**Confidence: verified** for the operator rulings and artifact facts recorded in the handoff; **inferred** for every plan and every number quoted as public or vendor-reported. No 1017 quality or speed measurement exists yet.
+
+#### Key findings
+
+- **Serve the vendor-precision experts directly.** The `1017` finetune is drop-in (identical config and tensor map, all 48 shards changed). Operator ruling: serve antirez's 1017 MXFP4-experts nine-shard build (about 502 GB) rather than requantize to Q4_K, and delete the September Q4 once cutover passes. The MXFP4 experts are a lossless repack of the official FP4 weights; the handoff cites a public DS4-Flash KLD of 0.0102 for native MXFP4 against 0.0290 for the FP4-to-Q4_K requant (public, not locally replicated). No publisher ships a 1017 Q4_K-experts build in the antirez layout, and unsloth's 1017 GGUFs use an upstream layout that does not load in the port. The requant route (with the unsloth imatrix) stays the fallback only if validation fails a gate.
+- **The existing AutoKernel keep does not carry over.** The +7.11% DS41 serving keep targets the Q4_K X4_T kernel; MXFP4 experts run the AVX2 `mxfp4_8x8_q8_0` repack, which was about x1.00 at N=1 and x1.04 at N=3 against Q4_K iqk before the keeps. `DS41-W8` therefore re-anchors the campaign on the MXFP4 expert path after validation. This starts a new DS41 measurement era; old Q4 numbers are not comparable. Low-bit performance remains AutoKernel's job, and a dense-4-bit DS41 variant would be EPYC-original and unproven.
+- **Validation gates (`DS41-W5`).** Nine-shard load (1046 tensors, 32-byte alignment where the old file was 16 KiB-aligned), ppl against the September record, the coherence gate at production prompt length, NMSE spot checks, DSpark alpha once the new drafter exists, and serving speed.
+- **Reference-parity work is quantization work.** The official reference round-trips window KV (FP8), compressed KV (FP4) and indexer K/Q (FP4) before caching, and quantize-dequantizes the attention output to FP8 before `wo_a`; our port has neither. `DS41-T3.2` sizes the reference's own sensitivity with that fake-quant on and off, adds an opt-in op, and labels the re-run `kv_fakequant_matched`; `DS41-W5.1` measures the output-FP8 round trip against Q8_0 activation noise and emulates only if NMSE exceeds it. A T3 divergence is not read as a port defect before these. Sources: intake-2116#record, intake-2117#record, intake-2121#record.
+- **KV type A/B (`DS41-KV.1`).** Compressed-plane KV at q8_0 first, then an NVFP4 layout (288 B per 512-dim token with the vendor's per-16 scale rule but different block interleave); stop the NVFP4 arm if NMSE is worse than q4_0. A hybrid MXFP4 placement on the MI210 (16-entry-LUT dequant feeding MFMA) is a dormant trigger, not a task.
+- **Context: iqk coverage is unchanged.** The iqk IQ-quant enablement shipped in v8 and is inherited through v10; its residual items stay post-v8 research and are not touched by the swap.
+
+#### iqk coverage: what shipped and what is still stubbed (verified from the handoff's recorded gates; static source facts)
+
+- **Shipped in frozen v8, inherited by v10:** the iqk whitelist now accelerates IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S and (via the K-quant kernel) IQ4_XS, with Q2_K/Q3_K rejected before activation quantization and compile-time dispatch assertions. The `*_R4` repacked variants stay ik-only and unreachable from our GGUFs. The campaign-scoped Q8 waiver means v8 made no Q8 performance claim.
+- **IQ1 is still stubbed, but the scope audit found it cheap.** `B6` (static, 2026-07-29): the 1-bit kernel file is vendored but omitted from the CPU build list, native IQ1_S/IQ1_M cases exist, and block types and traits are already present, so it is a clean same-shape candidate; it needs a fresh experimental branch and the normal correctness and measurement gates. Hy3-IQ1_M is the only registry model with such tensors (82 IQ1_M tensors).
+- **Open post-v8 work (not done):** `NEW-6` prefill headroom (no 16-wide kernels for plain IQ types; the large-batch repack path is disabled over an un-root-caused Zen4 correctness issue; fused MoE up/gate has no caller; the IQ3_XXS small-shape NMSE gate was shape-gated, not root-caused); `NEW-8`, a Q38FN IQ-K/KS self-quant measured first in ik_llama.cpp as an instrument only (ik is not a serving path), allowed by operator ruling only exceptionally; and the trellis (KT) gate, which must be measured in the ik tree before any port, with a 95% of Q4_K_M tg128 plus task-eval-win bar.
+
+#### Decisions and rationale
+
+- Fidelity beats a smaller footprint here: direct MXFP4 avoids a requantization step whose damage the quant gates would then have to price.
+- Do not land the recipe change before all shards are complete, because every DS41 launcher asserts the pinned artifacts.
+
+#### Open questions
+
+- Does MXFP4 CPU decode, without the Q4_K keeps, land near or below the September AK headline?
+- Does the output-FP8 and KV fake-quant round trip move NMSE above activation noise?
+
+#### Related
+
+[speculative-decoding](speculative-decoding.md) (1017 drafter), [kv-cache](kv-cache.md), [chat-templates](chat-templates.md).
+
+#### Source References
+
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — section W, DS41-W5/W5.1/W8, T3.2, KV.1.
+- [iqk IQ-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — shipped-in-v8 context.
+- [llama.cpp DSA contribution](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) — fixed sparse-op interface for the quantized KV path.
+
+### Compiled Update — 2026-09-26: EXL3 standalone CPU and gfx90a operators are implemented
+
+**Confidence: verified** for the portable contract, CPU qualification, evidence projection, and gfx90a host/static qualification. CPU timing is an observation only. MI210 device correctness and performance remain unmeasured.
+
+#### Key findings
+
+- **The artifact and oracle boundary is live.** `epyc.exl3.artifact.v1` binds canonical packed inputs, tensor metadata, codebook identity, transforms, and backend repacks to content digests. Independent MUL1 and MCG reconstruction covers synthetic K1–K8 cases and three revision-pinned real fixtures. The portable suite passed 17 tests.
+- **EPYC operators passed standalone qualification.** Scalar dense/indexed operators, native and band8 layouts, AVX-512BW/VNNI/VBMI MUL1, and independent vector MCG paths passed 719,096 normal checks and 719,096 ASan/UBSan checks. Preliminary cache-resident mixed-K timing did not establish a runtime-K or grouped-K default, so dispatch selection remains open for protocol-eligible measurement.
+- **The gfx90a implementation is ready for device qualification.** Exact `gfx90a:xnack-:sramecc+` builds contain wave64 packed GEMV, a separate FP16-input/FP32-accumulating 16×16×16 MFMA path, and mixed-K MoE plan/bind/run dispatch. Host/static qualification passed 5,579 assertions across 5,120 dispatch cells and reproduced 384 canonical outputs for each of three real fixtures. These checks do not claim GPU execution.
+- **Evidence is wired before hardware measurements.** `epyc.exl3.measurement.v1` and `epyc.exl3.verifier.v1` project through the registered Vidya dispatcher into the existing `ClaimTuple` grader. The dispatcher projected 78 native rows into 234 frames without refusals or declines.
+- **The remaining gate is an owned MI210 execution window.** `G3`, `G4`, and `G5` require device correctness, MFMA regime, and mixed-K routing/capacity runs. The owner path fails closed while foreign KFD occupancy is present; the implementation record observed about 67.16 GB allocated during review and correctly declined to co-reside.
+
+#### Next action
+
+At a safe MI210 drain boundary, run the owner-authorized correctness pass, then the separate MFMA and mixed-K routing microbench observations. Keep `EXL3-3`, `EXL3-4`, and `EXL3-5` open until their device gates pass.
+
+#### Source References (2026-09-26 implementation)
+
+- [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — delivered operators, exact gate state, and owner-run requirements.
+- [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) — registered measurement/verifier source kinds and shared grading boundary.
+- [EXL3 standalone implementation record](../progress/2026-09/2026-09-26-exl3-implementation.md) — commit lineage, qualification counts, code-object digest, and remaining hardware gate.
+- [EXL3 session record](../progress/2026-09/2026-09-26-inference.md) — research-to-implementation transition, wrap-up audit, and next device action.
+
+### Compiled Update — 2026-09-26: EXL3 throughput research closes on a native-packed custom-kernel contract
+
+**Confidence: verified** for the filed implementation and measurement requirements. Published NVIDIA rates remain external workload targets; no local EXL3 CPU or MI210 correctness or performance result exists yet.
+
+#### Key findings
+
+- **The next useful work is implementation.** The 88-record throughput follow-up found no CPU, HIP, ROCm, gfx90a, or MI210 EXL3 compute path. Broad research expansion is closed unless a source supplies such a path, changes EXL3 reconstruction or ABI semantics, invalidates a correctness gate, or provides matched raw evidence that changes a decision.
+- **Native packing is the execution contract.** Each logical Q/K/V and gate/up/down matrix keeps its own trellis, transform vectors, codebook marker, tensor role, source digest, and expert domain. The runtime exposes `plan`, `bind`, and allocation-free `run` phases over caller-owned persistent scratch. Unknown mappings, codebooks, conflicting MCG/MUL1 markers, capacity overflow, capture fallback, and exhausted scheduler slices fail closed.
+- **The first real oracle target is uniform K4/MCG.** A project-owned scalar decoder must establish packed-window and lane placement independently. One real K4/MCG tensor and synthetic K1–K8/MUL1/MCG vectors separately check procedural state, reconstructed tiles, transforms, and full operator output before optimized EPYC or wave64 code is trusted.
+- **Throughput is decomposed before it is compared.** The local program measures reconstruction, GEMV/GEMM, one layer, bare target serving, and later speculative serving separately. The serving grid fixes prompts and output IDs and reports c1/c8/c16 decode, prefill, TTFT, full-wall throughput, verifier work, acceptance by position, memory, context capacity, and route distributions. Published CIRU/NVIDIA figures are targets only for reproducible workload envelopes, not universal EPYC/MI210 thresholds.
+- **A four-bit comparator must earn admission.** W4A16 and NVFP4 artifacts are separate arms. Codec conclusions require matched teacher, architecture, expert count and pruning plan, module coverage, tokenizer, runtime, KV format, and evaluation panel, plus sampled reconstruction and scale checks. Quality, artifact size, resident memory, capacity, latency, prefill, decode, and serving throughput remain separate directed metrics.
+
+#### Next action
+
+Complete `EXL3-1`: freeze the content-addressed packed artifact and metadata schema, independent MCG/MUL1 oracles, real and synthetic fixtures, and prospective measurement/verifier writers. Only then fork into EPYC primitives and native gfx90a wave64 decode.
+
+#### Source References (2026-09-26)
+
+- [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — settled throughput findings, packed ABI, kernel gates, comparator admission, and local measurement grid.
+- [DFlash2 experimental build](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — downstream speculative-serving gate and recurrent-state obligations.
+- [EXL3 Stage-4 integration record](../progress/2026-09/2026-09-25.md) — disposition counts, applied owners, and validation boundary.
+- [EXL3 full-session wrap-up](../progress/2026-09/2026-09-26-inference.md) — research closure, validation, commit lineage, and implementation start point.
+
+### Compiled Update — 2026-09-25: EXL3 now has a native EPYC and MI210 implementation program
+
+**Confidence: verified** for the implementation boundaries and evidence contract. This update records an approved program; it adds no local EXL3 correctness, quality, or performance result.
+
+#### Key findings
+
+- **EXL3 has a project-owned implementation path.** [`INF-80`](../handoffs/active/quantization-and-low-bit.md) begins with a content-addressed canonical artifact, independent portable `mul1` and MCG reconstruction, project-owned synthetic fixtures, and revision-pinned real-weight fixtures. CPU work then proceeds from scalar dense and indexed-expert operators to AVX-512BW/VNNI/VBMI kernels. Unified runtime-K and grouped K-specialized dispatch both remain candidates until local EPYC measurements choose per-regime defaults.
+- **The old Qwen CPU no-go stays valid within its measured scope.** The completed `INF-71` result ruled out the bytes-only lever for one Qwen CPU operating point. It does not decide dense, MCG, gfx90a, or hybrid execution; those broader paths belong to `INF-80`. Reusing the retired `INF-71` identifier would collapse two different decisions ([CPU roofline successor scope](../handoffs/active/cpu-decode-roofline-program.md)).
+- **EXL3 and IQ*_KT are separate formats and programs.** Native EXL3 CPU and MI210 work belongs to `INF-80`; IQ*_KT remains under the iqk program. Existing IQ*_KT throughput or quality gates do not gate EXL3, and the earlier CPU result for the QTIP 3INST family does not establish EXL3 decode cost ([iqk boundary](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [quantization ownership](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation)).
+- **W4A16 is an alternative deployment family.** A codec comparison is admissible only when teacher revision, architecture, expert count and keep plan, evaluation panel, and storage budget match. A pruned W4A16 production arm can inform a deployment comparison, but it cannot isolate codec quality against a full-width EXL3 arm.
+- **Evidence capture is part of the first milestone.** Before any correctness, performance, or quality-producing run, the producer must emit strict `epyc.exl3.measurement.v1` and `epyc.exl3.verifier.v1` records. Adapters project their native fields into `ClaimTuple`; `claim_tuple.grade()` remains the sole grader ([Vidya task](../handoffs/active/vidya-belief-substrate-program.md)).
+
+#### Next action
+
+`EXL3-1`: freeze the artifact and metadata contract, portable `mul1` and MCG oracles, real fixtures, and both evidence writers. The critical path then forks into CPU primitives and gfx90a decode before prefill, mixed-K dispatch, llama.cpp experimental integration, local measurement, hybrid execution, the controlled W4A16 study, and a complete regression package.
+
+#### Source References (2026-09-25)
+
+- [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — `INF-80`, settled research, tasks, gates, and exclusions.
+- [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — preserved `INF-71` no-go and successor scope.
+- [IQK iquant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) and [TQ3 quantization evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — EXL3/IQ*_KT ownership boundary.
+- [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) — prospective EXL3 measurement and verifier contracts.
+- [EXL3 intake session record](../progress/2026-09/2026-09-25-codex-exl3-intake.md) — intake counts, decisions, validation, and publication record.
+
+### Compiled Update — 2026-09-23 (research-intake jev-exl3): KLD ranks damage, not quality — and the quant gates now say so
+
+**Confidence: verified** for the gate and wording changes in our own handoffs. **External** for the fidelity-vs-quality evidence: dive-verified with a per-claim second reader, not reproduced on our stack.
+
+#### Key findings
+
+- **A KLD/PPL/top-1 ordering among near-baseline quants is a fidelity ordering, not a quality ordering.** Evidence from two GGUF cohorts served on llama.cpp (28 Qwen3.6-35B-A3B quants, 41 Devstral-24B quants):
+  - Over the full cohort, headline KL(BF16‖quant) tracks the task composite well: Spearman ρ −0.72 and −0.86.
+  - Inside the near-baseline "silent zone" the correlation collapses to +0.00 (n=17) and −0.24 (intake-1510#01).
+  - The collapse holds across 14 per-token metric variants, including KLD p99, PPL ratio and top-1 agreement (intake-1510#02).
+  - Used as a per-prompt picker ("lower KLD wins"), KLD was right 42.3-49.4% of the time, no better than a coin (intake-1510#04).
+
+  The flips paper makes the same recommendation from the other side: report distance metrics *alongside* capability metrics, never instead of them (intake-1519#05). So a KLD gate can reject damage, but it cannot rank candidates that all pass it.
+- **The trellis port gates were rewritten to match.** The IQ4_KT decision-flipper in both [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) T3 and [tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) STEP 3 now requires two things. First, ≥95% of Q4_K_M tg128. Second, a measurable **task-eval win**, measured as paired per-item flips against the reference. PPL/KLD are reported beside that as fidelity context only. Previously the gate asked for "a measurable PPL/eval win", which a near-baseline PPL delta could satisfy.
+- **The PLE-precision B7 close is re-scoped, not reversed.** "Does not buy quality" now reads as a fidelity statement. The paired KLD/PPL measure *change vs the IQ4_XS-uniform anchor*, not *damage vs BF16*, and cannot rank near-baseline quality ([cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md), intake-1510, intake-1519#05).
+- **Flip counts need a floor or greedy decoding before they mean anything.** The KV behavioural gate in tq3 gains three rules:
+  - count leapfrogs (FP16 fails, quant passes) as well as drops;
+  - report C→I and I→C separately, with the net direction;
+  - read any flip count only under greedy decoding or against a measured FP16-vs-FP16 flip floor.
+
+  Two sampled 16-bit runs of the same model differ by 23.5% flips (intake-1519#00, intake-1519#record). The same paper's MT-Bench "flips predict downstream quality" headline was OVERTURNED on recount (intake-1519#record). Cite that entry by claim, never bare.
+- **A "BF16" reference can be a dequantized upcast.** A tensor-level audit found the official GLM-5.3-Flash BF16 release sitting largely on an FP8-dequantization grid: ~95% weighted exact or near-exact matches (intake-1508#04). DS41-T3 therefore audits DeepSeek-V4.1-Flash's reference before any KLD claim. If the reference is an upcast of the FP8/FP4-native release, the claim names it `dequantized_from_quant` ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md)).
+- **Route-set agreement under weight quantization is filed as occurrence-only.** RT-2 gains a rider. Run the ported routing tap on a reference GGUF (Q8_0/BF16 experts) and on a Q4_K candidate of the same model, over the identical token stream. Emit:
+  - per-layer top-k Jaccard;
+  - the share of token-layers with at least one replaced expert;
+  - a repeat floor and a chance baseline.
+
+  The result is labelled occurrence-only, not damage. The only published weight-domain measurement of this is an occurrence statistic with no interventional attribution (intake-1524#03, intake-1524#record). v10's `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so any flips come from upstream perturbation ([moe-routing-tap-and-locality-measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)).
+- **DFlash on quantized targets.** The 2026-09-23 correction of this page's Summary and Key Findings, demoting target quantization to a hypothesis, now also covers the two cross-reference lines below. The drafter-side precision priors (4-bit ≈ −1% acceptance, weak) and the filed missing control are in [speculative-decoding](speculative-decoding.md).
+
+#### Open questions
+
+- Does any trellis candidate produce a paired-flip task win over Q4_K_M that exceeds a measured flip floor? No such run exists. STEP 2 still needs operator inference approval.
+- The P-KLD annex wording that would make "fidelity ordering ≠ quality ordering" constitutional is prepared only. It is the operator's call via OP-38 ([benchmark-methodology](benchmark-methodology.md)).
+
+#### Source References (2026-09-23)
+
+- [iqk-iquant-enablement.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — T3 gate rewrite.
+- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — STEP 3 gate rewrite and the flip-counting amendment.
+- [cpu-decode-roofline-program.md](../handoffs/active/cpu-decode-roofline-program.md) — the B7 fidelity scope note.
+- [moe-routing-tap-and-locality-measurement.md](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-2 route-set agreement rider.
+- [p-kld-annex-proposals-20260923.md](../docs/research-intake/p-kld-annex-proposals-20260923.md) — the drafted V6/V8 wording from the same evidence.
+- [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — the DFlash record correction.
+- intake-1510#01/#02/#04, intake-1519#00/#03/#05, intake-1508#04, intake-1524#03/#04 — dive-verified external evidence.
+
+### Compiled Update — 2026-09-15 (pm): the sub-4-bpw decode knee's register cost is an unroll multiplier, and it is latent on the live stack
+
+The IQ2_XXS/IQ3_XXS register pressure behind the 2026-08-16 knee is mostly clang fully unrolling the 4-trip sign-unpack loop.
+- `#pragma clang loop unroll(disable)` gives 78→44 and 71→44 VGPR statically.
+- It regresses Q3_K (88→96), and global flags regress Q8_0/Q4_K.
+- The "fewer bits = slower" reading stays a statement about the *shipped* compilation, not an irreducible format property.
+- Throughput is untested (AK-QL-7).
+- No IQ format is GPU-resident today: Q8_0 25 / Q4_K 44 VGPR are already at 8 waves.
+
+Full account in [hardware-optimization.md](hardware-optimization.md) (Compiled Update 2026-09-15 pm) and [a10_iq2_vgpr_compiler_ab_20260915.md](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md).
+
+### Compiled Update — 2026-09-15: the MI210 low-quant findings were published as a device-level public summary
+
+**Confidence: observation** — this entry adds no new measurement. It records that the 2026-08-16
+register-pressure / IQ4_XS-boundary / batching findings on this page were distilled into a public X
+thread for a user asking about running low quants on the MI210, with the ladder's n=1, single-model,
+speed-only scope carried explicitly.
+
+The conversation is held in the append-only social ledger [`docs/publication/social/`](../docs/publication/social/)
+(`x-2026-09-15-mi210-low-quants`), alongside its four recorded soft spots (KV-quant is speed-only;
+the MoE batching half is unmeasured; the prefill config wins are nonpromotable candidates; Q3_K at 88
+VGPR is the static table, not a measured rung).
+
+#### Source References (2026-09-15)
+
+- [2026-09-15-x-mi210-low-quants.md](../docs/publication/social/threads/2026-09-15-x-mi210-low-quants.md) — the posted thread, verbatim, plus its soft spots and evidence index.
+
+### Compiled Update — 2026-09-04: EXL3 mul1 trellis, hybrid KV-quant, and iqk IQ4_XS routing
+
+**Confidence: verified** for the EXL3 format facts and the CPU decode measurement (layout decoded bit-exactly from `exllamav3` `499890c75`, validated against `pack.cu` on 2304/2304 states; decode-cost numbers are exllamav3's own `mul1` CPU GEMV on the real downloaded expert tensors); **verified** for the hybrid KV-cache budget arithmetic and the iqk IQ4_XS mis-routing (every element differing, max abs ~1.2e3). No GGUF exists and nothing on this host runs EXL3 end to end today — EXL3 quality claims are unmeasured and its end-to-end speed figures are bytes-only arithmetic.
+
+#### EXL3 `mul1` trellis is the trellis format that IS a speed play on CPU — its decode folds into the integer dot, unlike the KT/QTIP family
+
+The 2026-08-16 verdict on this page — "trellis quantization is a quality-per-bit play, not a speed play" — was measured on the **KT/QTIP family** (`IQ2_KT`/`IQ3_KT`/`IQ4_KT` in ik_llama.cpp), whose QTIP **3INST** decode emits an fp32 per weight and forces an fp32 GEMM (~4.8 t/s vs ~4.6 t/s F16 — no speed). **EXL3's `mul1` codebook is a different decode and that verdict does not transfer**, so the two must not be conflated.
+
+- **The format** (`turboderp/Qwen3.8-Flash-Next-exl3`, 2.05–6.05 bpw, published 2026-08-31; MTP head quantized at 4 bits). A streamlined QTIP: procedural codebook, tail-biting trellis, blockwise Hadamard incoherence processing, Viterbi search over 16-element vectors in **16×16 tiles**, fractional mixed bitrates. Per quantized linear module: `trellis` (packed tiles) + `suh` (input-side sign×scale, per input channel) + `svh` (output-side sign×scale — this is where `out_scales: always` lives) + `mul1` (the int32 codebook multiplier `0x83DCD12D`, identical in every module).
+- **Why it is fast: decode is arithmetic, not a lookup, and it fuses into the GEMV the kernel already runs.** `mul1` (cb2) decodes as `w(s) = (bytesum(s·0x83DCD12D) − 510)·k_inv`, `k_inv = fp16(0x1eee) = 1/147.77`. Because the codebook is **affine in a byte-sum**, dequant and the activation product fuse: `Σ_k w_kn·x_k = k_inv·q·(Σ_k bytesum(s_kn·M)·x8_k − 510·Σ_k x8_k)`, so `bytesum(s·M)·x8` is **exactly one `vpdpbusd` per 16 weights**. Roughly four vector uops per 16 weights (bit-field extraction of trellis states via `vpermt2var` + funnel shifts, one 32-bit multiply, one `vpdpbusd`) — IQ4_XS-class, not KT-class.
+- **The forward carries a Hadamard on both sides, per GEMV:** `y = svh ⊙ H₁₂₈(Wq · Q8(H₁₂₈(suh ⊙ x)))`, blockwise over 128-element blocks with Q8 activation quantization for the `vpdpbusd`. `suh` differs per (expert, projection), so the input transform **cannot be hoisted out of the expert loop** — but it is O(k) against an O(k·n) GEMV (≈ 1/640 of the work), so it is not the cost. Q8-activation accuracy vs fp32: **0.66–0.98% output RMS** on real expert tensors.
+- **Per-class bit widths** (no fractional mix inside a layer): routed experts **K=4** (4.05 branch) / **K=3** (3.05); dense/shared-expert/attention/`lm_head` K=6/5 (`_h` = head bits); the 39 GB n-gram embedding table at K=6/5 (`_ng`, a different row format). Kernel constraints inherited by any ggml port: `k % 128 == 0`, `n % 128 == 0`, `k ≤ 8192`, K ∈ [1,8]; `mul1`-only; `MAX_M = 4` (GEMV, decode-only — prefill needs a dequant-then-GEMM fallback); MoE experts only (no CPU path for attention/dense/head).
+- **Measured decode cost on this Zen 5 box** (exllamav3's own kernel, VBMI-swizzled layout ≡ VNNI-native bit-for-bit): **per core the fused decode+dot is compute-bound** (K4 17.3 GB/s of trellis in cache, 16 GB/s from DRAM — trellis extraction dominates; decode-only is 1.5–1.7× faster); **from ~10 threads it is memory-bound** (48T: 110–124 GB/s on random K4 experts, 91–105 K3, 160–172 on sequential sets) — the same ~153 GB/s ceiling every quant hits on this machine; t64/t96 do not help.
+- **The bytes lever, and its cap.** Expert stream vs the uniform IQ4_XS artifact (up/gate IQ4_XS 4.25 bpw, down Q5_1 6 bpw = 1.296 GB/token): **K4 1.180 GB (−9%), K3 0.885 GB (−32%).** End to end that is **+2% (K4) / +7% (K3) at today's in-situ efficiency, +11–13% at the 48T rate, +15–18% only at the bandwidth ceiling** — because the expert stream is ~21% of the token and the token is dispatch-bound, not bandwidth-bound. **Parked behind the dispatch-floor work (INF-70 Axis D).**
+- **Porting cost and prior art.** No trellis/QTIP/EXL3 support exists anywhere in `ggml`-land. A port is a new `GGML_TYPE_EXL3_MUL1_K{3,4}` — necessarily an **opaque per-matrix blob** (the natural unit is a 16×16 tile spanning 16 rows of `ne[0]`, so it cannot be a row-block type like IQ4_XS) with its own `mul_mat_id` path and a dequant-then-GEMM prefill fallback — plus a `gguf-py` importer; re-estimated at **3–5 sessions**. exllamav3 is MIT but **CUDA-first with no ROCm path** (the MI210 is out of scope regardless), so only the `mul1` decode identity and the swizzled layout are borrowable.
+
+#### KV quantization on a 75%-recurrent hybrid is a small lever (qwen4exp / Qwen3.8-Flash-Next)
+
+Only **12 of 48 layers have a KV cache** — the other 36 are Gated-DeltaNet and carry none — with `head_count_kv = 2` and key/value length 256, giving 24.0 KiB/token in f16. KV is therefore only **2.42% of the 4.16 GB/token read budget at ctx 4096** (4.84% at 8k, ~18% at 32k), so q8_0 (which halves it) saves ~1.2% of bytes at 4k; the memory saving is irrelevant on a 1.1 TB box. The measured d0→d4096 decode drop (−7.8%) is mostly attention compute and the FA split path, **not** KV bandwidth, so KV-quant cannot recover it. Predicted gain ~1–2% decode. Two cautions: **q4_0 is contraindicated** — external evidence shows it concentrating damage in long documents (KL 0.581 vs q8_0 < 0.04), exactly this model's workload, with guidance to spend bits on the Key over the Value; and **quantized KV is precisely what activates the `attn_rot_k`/`attn_rot_v` rotation path** (they require `ggml_is_quantized`), which this stack has never exercised on f16 and which a community Flash-Next MTP repo ships a "critical" disable flag for — so a KV-quant arm must run MTP and a coherence check, not just a speed test. Filed as INF-70 B9.
+
+#### iqk does not only exclude types — it can silently reroute an included one to a wrong kernel
+
+`iqk_mul_mat.cpp`'s `is_dequant_better()` sends IQ4_XS to a requantized Q8 repack GEMM once a ubatch reaches `nrc_y >= 32`, and on this Zen host that path is grossly wrong (every element differing, max abs ~1.2e3, at row 0) — the same family already excluded IQ2_XXS/IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S "for large-Ny dense and MoE shapes on Zen", with IQ4_XS mistakenly left on it. It corrupted single prompts above ~32 tokens and concurrent short prompts (a 48-row ubatch), and `GGML_IQK=0` was the only correct config until the targeted exclusion landed. So a quant's price includes not just *whether* it is on the iqk path but *which* iqk kernel a wide ubatch routes it to. See `hardware-optimization.md` → *2026-09-03 (INF-70 wave 3)* for the full root-cause and fix.
+
+#### Source References (2026-09-04)
+
+- [`exl3-trellis-cpu-kernel.md`](../handoffs/completed/exl3-trellis-cpu-kernel.md) — INF-71: what exists on disk, the measured reference-kernel numbers, the bytes/token ledger, and the phased port plan with gates.
+- [`docs/design/exl3-mul1-ggml-type.md`](../docs/design/exl3-mul1-ggml-type.md) — the X0 format spec: tile bit-layout, the `mul1` decode identity validated against `pack.cu`, the forward contract, and the proposed ggml type.
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70's EXL3 trellis lever, now INF-71 (bytes lever parked behind the dispatch floor) and B9 (hybrid KV-quant analysis).
+- [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the drafter/EXL3 research sweep and the X0/X1 measurement wave.
+- [`2026-09-03-inf70-audit.md`](../progress/2026-09/2026-09-03-inf70-audit.md) — the IQ4_XS iqk large-Ny mis-routing root-cause and fix.
+
+### Compiled Update — 2026-08-16: on CDNA2 the batch-1 decode knee is kernel REGISTER PRESSURE, not bits-per-weight
+
+**Confidence: observation / `design_prior`** — this is a **non-governed** measurement. It is not an AutoKernel `evaluation_event`, carries no governed receipt, and §19.0 rule 4 forbids promoting it by origin. It proposes; it settles nothing. **n=1 per cell, no A/A band, ONE model (8B dense), SPEED ONLY.** Every number below must be quoted with those caveats — see *Caveats* at the end of this section, and do not quote a number without them.
+
+#### The partition, and it is not a bpw trend
+
+An 8-rung ladder was built from ONE f16 source of **Goedel-Code-Prover-8B** through ONE quantizer — the frozen production `llama-quantize`, version **10125** (`0db32c06e`) — and benched on the MI210 (gfx90a/CDNA2) with `-ngl 99`, GPU residency proven during both runs. The VGPR / waves-per-SIMD columns are the **static** register allocation of each quant's `mul_mat_vec_q<_,1,true,false>` instantiation, read out of the shipped code object four days earlier (see [Hardware Optimization](hardware-optimization.md) for the method); they are not measured here.
+
+`%HBM` is against the **measured** 1433.3 GB/s achievable bandwidth, not the 1638 GB/s datasheet peak. `eff GB/s` = t/s × model bytes — the weight stream only, ignoring KV and activations, so it is a floor on achieved bandwidth, not a ceiling.
+
+| rung | GB | tg128 t/s | eff GB/s | %HBM | pp512 t/s | VGPR | waves/SIMD |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| f16 | 16.38 | 63.97 | 1047.9 | 73.1% | 2880.9 | — | — |
+| Q8_0 | 8.70 | 99.09 | 862.5 | 60.2% | 2673.1 | 25 | 8 |
+| Q6_K | 6.72 | 90.05 | 605.1 | 42.2% | 2460.0 | 46 | 8 |
+| Q5_K_M | 5.85 | 100.93 | 590.0 | 41.2% | 2459.4 | 55 | 8 |
+| Q4_K_M | 5.02 | 108.75 | 546.1 | 38.1% | 2462.2 | 44 | 8 |
+| **IQ4_XS** | 4.59 | **129.77** | 595.3 | 41.5% | 2440.9 | **64** | **8** |
+| IQ3_XXS | 3.36 | 79.44 | 267.2 | 18.6% | 2398.5 | 71 | 6 |
+| IQ2_XXS | 2.48 | 82.89 | 205.9 | 14.4% | 2468.1 | 78 | 6 |
+
+**Every rung whose kernel fits in ≤64 VGPR (8 waves/SIMD) decodes at ≥90.05 t/s; both rungs above 64 VGPR (6 waves) decode at ≤82.89 t/s — while being 27–46% *smaller*.** Separation is 7.17 t/s with no overlap. **Below IQ4_XS, shrinking the model makes decode ABSOLUTELY SLOWER.** IQ4_XS sits exactly on the 64-VGPR boundary — the last rung that still reaches maximum occupancy — and is the fastest rung measured, 129.77 t/s against Q4_K_M's 108.75 and IQ2_XXS's 82.89.
+
+**Prefill is flat**: 2398–2881 t/s across the whole ladder, 16.7% total spread, no knee. Whatever the cliff is, it is **specific to the batch-1 GEMV path** and does not touch prompt processing.
+
+#### "Batching closes the dequant gap" is REFUTED as stated
+
+The never-before-run quantized batched sweep (`llama-bench -p 128 -n 128`, B ∈ {1,2,4,8,16,32}, all 8 rungs) measures the ratio to IQ4_XS rising but plateauing short of parity: **IQ3_XXS 0.60 → 0.77** and **IQ2_XXS 0.66 → 0.88** across B=1→32, while **Q4_K_M converges to ~0.99**. So batching closes the gap for the 8-wave K-quants and leaves **12–23% on the floor** for the 6-wave IQ formats.
+
+That asymmetry is itself mechanism evidence: a cost that were purely per-weight-read amortizes away as B grows (read once, reuse B times); a cost that tracks a **wave-slot ceiling** does not — which is what the static VGPR table predicts. The premise was reasoned-but-never-measured before 2026-08-16 and is now retired with a receipt, so it is not re-proposed as an argument for low-bit serving.
+
+#### What this does to the low-bit programme
+
+Three things change in how sub-4-bit work is valued on this device:
+
+- **The ranked IQ2/IQ3 items are OCCUPANCY levers, not dequant-arithmetic levers.** The `v_perm_b32` sign-expansion work (437-instruction excess), the Q4_K branchless six-bit scale/min decoder, and the VGPR 78→64 target all matter *to the extent they hold live registers*. This is the third independent time the codebook gather has been ruled out as the cost — see [Hardware Optimization](hardware-optimization.md) for the disassembly evidence.
+- **The payoff is threshold-shaped, not linear.** Crossing back under 64 VGPR regains the 8th wave; a reduction that lands at 70 buys nothing. Levers whose stated benefit is "fewer instructions" without a register target are currently unrankable and must be re-scoped or declined.
+- **Value cases must be weighted against IQ4_XS, not against the format's own baseline.** An IQ2_XXS win that does not clear a **1.57×** deficit produces no production value at any batch size measured.
+
+The prediction was on disk before the ladder ran and was never carried into the campaign that needed it: the Q8_0 roofline work had already established that the gap is achieved-bandwidth/occupancy and NOT dequant-compute, and the per-quant VGPR table published IQ4_XS at exactly 64 → 8 waves with IQ3_XXS/IQ2_XXS at 71/78 → 6 waves. Measured 2026-08-16, the AutoKernel catalogue mentioned **IQ4_XS zero times** (Q4_K 20, IQ2 8, Q8_0 6, Q6_K 4, IQ3 3, Q5_K 0, IQ1 0) — the loop was aimed at the rungs on the wrong side of its own knee.
+
+**The open discriminating test**: the same static table puts **IQ1_S at 42 VGPR → 8 waves**, below IQ4_XS. If the mechanism is register pressure and not bit-width, the *smallest* format on the shelf should land in the fast band, inverting the monotonic "fewer bits = slower below 4 bpw" reading. That is the one place where the occupancy story and the unpacking-cost story disagree in sign, and it is the cheapest test that can falsify the whole mechanism. Unrun as of 2026-08-16. (Scope note: IQ1 is stubbed in the CPU iqk path; this is a GPU MMVQ question and does not depend on that.)
+
+#### A unit-confusion correction to the ladder manifest
+
+The ladder's build manifest warns that the pre-existing upstream Q4_K_M and Q8_0 "differ materially in size" from the ladder's (4.68 vs 5.03 GB; 8.11 vs 8.71 GB). That is a **unit-confusion artifact** — it compares upstream in GiB against ladder in GB. Measured 2026-08-16, both pairs are the *same size* (Q4_K_M 4.68 GiB = 5.03 GB; Q8_0 8.11 GiB = 8.71 GB). Same size is not proof of byte-identity, so the manifest's "do not substitute" instruction is still worth obeying on provenance grounds — but not for the reason it gives.
+
+The same hazard bit the analysis itself: an earlier pass reported the `%HBM` figures ~7.4% low by dividing GiB model sizes into a decimal-GB bandwidth. The 1.0737 factor is constant across rungs, so the *shape* survived the error and the absolute percentages did not — exactly the class of error a constant factor hides.
+
+#### Caveats a future reader must not skip
+
+- **n=1 per cell, no A/A band.** The **IQ4_XS B=8 cell (408.5 t/s) is a suspected outlier**: it breaks its own monotonic trend (B=4→8 is 1.37×, B=8→16 is 2.14×; every other rung runs ~1.8–1.9× at both steps) and it is the single point where Q4_K_M inverts above IQ4_XS. Do not quote B=8 without replication.
+- **One model, 8B dense.** The VGPR figures are model-independent (static kernel allocation); the throughput figures are not. The 122B MoE attribution agrees on *direction* only — see [MoE Optimization](moe-optimization.md).
+- **SPEED ONLY — no correctness pairing.** The IQ2/IQ3 rungs were built on a **1.23 MB / 30-chunk imatrix** and are **performance probes, explicitly NOT quality-grade models**. No PPL, no eval. This ladder ranks *throughput* and says nothing about whether IQ4_XS is usable, only that it is fast. **No rung on this ladder may be cited in a promotion argument** until the correctness half runs — the standing project rule is to pair speed with a correctness check.
+- **Non-governed.** These are `design_prior`-grade measurements, not AutoKernel `evaluation_events`. Replication with an A/A band is the precondition for quoting any of it as anything stronger.
+
+#### Source References (2026-08-16)
+
+- [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung ladder table, the batched sweep, the manifest unit correction, and the caveat list.
+- [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the re-aiming of the low-bit lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census that found IQ4_XS absent from the catalogue.
+- [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the per-quant static VGPR table that predicted the knee four days early, and the IQ2_XXS-vs-IQ4_XS disassembly diff.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the prior establishing that the Q8_0 gap is achieved-bandwidth/occupancy and not dequant-compute, and the measured 1433.3 GB/s achievable-bandwidth denominator.
+
+### Compiled Update — 2026-08-14: two GPU surfaces where the quant lever is negative or inert
+
+**Confidence: observation** — frozen v9 `0db32c06e` / build `10125` on an idle MI210, single runs, no P-GPU-1. Both entries close a previously-open hypothesis with data.
+
+**KV quantization at long context on the GPU is DEAD — the "alive single-stream at long context" hypothesis is falsified.** The standing reasoning was that KV-quant, measured dead at short context and in aggregate, would pay at 64k single-stream where the KV read starts to rival the weight bytes. Measured, `-ctk q8_0 -ctv q8_0` **hurts decode on both arms**: the 35B-A3B GDN hybrid **75.8 → 63.1 t/s (−16.7%)** and the dense 27B **21.7 → 20.2 t/s (−6.9%)**. It fails even on the dense 27B, whose all-full-global KV is the most favourable geometry available — the dequant cast cost exceeds the bandwidth saving. This matches the CPU precedent that the dequant cast *costs* throughput. **KV quantization stays a max-context / VRAM characterization, never a speed lever**, on either substrate. (Distinct from the weight-quantization knee in the section above: that one is register pressure; this one is cast arithmetic.)
+
+**On embedding encode, weight quantization is inert — it buys memory, not speed.** A 13-point GPU baseline sweep on `bge-m3` found **Q8_0 and f16 landing within noise at every sequence point**. Encode is not the regime where a quant lever pays; the compute-bound analog worth testing is VL vision-encoder prefill, which has not been run.
+
+#### Source References (2026-08-14)
+
+- [fable5 window-2 findings-05c — lever × category matrix](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix) §4 — the L14 KV-quant falsification on both arms and the A3 BGE-encode baseline result.
+- [fable5 window-2 findings-02 — heterogeneous GPU](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) §5 — the same-batch GPU-lane context, including that the 64 GB binding constraint at long context is the KV allocation and not the weights.
+- [`artifacts/gpu-aux-baselines/a3_bge_mi210_20260812.jsonl`](../artifacts/gpu-aux-baselines/a3_bge_mi210_20260812.jsonl) — the 13 GPU encode points behind the inertness claim.
+
+### Compiled Update — 2026-08-12: a blocker cited by the right PR number and the wrong description, and it would have cost a benchmark
+
+**Confidence: verified** — the PR state and file list were re-derived from the GitHub API; the Q4_K numbers are receipted governed runs.
+
+#### The mislabelled blocker, and why the label was load-bearing
+
+A tracking row blocked sub-2-bit work on "PR #22836 (AngelSlim kernels)". The **number is right and the description is wrong**: #22836 is the **STQ1_0 / Sherry ternary quantization kernel** (author `sjl623`). There is no llama.cpp PR that adds AngelSlim kernels at all.
+
+The reason this is not a bookkeeping nit: **the PR touches only `arch/arm/` — not a single x86 file.** A dependent benchmark row taken naively on this Zen 5 EPYC host would have landed on the generic scalar `vec_dot` path and measured a fallback while believing it measured the kernel. The mislabel would have produced a number, not an error. Gate status as re-derived on 2026-08-12: #22836 is still `open`, `merged: false` (opened 2026-05-08, last touched 2026-08-10); the CUDA sibling PR #23332 was **closed unmerged** on 2026-05-22.
+
+The generalisable rule: **a citation's identifier and its description are two separate claims, and only the identifier is self-verifying.** Re-derive the description before letting it gate compute — especially when the gated work is architecture-sensitive.
+
+#### KV quantization: the first parity-and-headroom package
+
+Measured across f16 / q8_0 / q4_0 KV, retrieval parity holds at **51 of 52 on every arm**. `q4_0` buys **10.54 GiB** at a **−7.4%** decode cost; **q8_0 is dominated** — it gives up the f16 operating point without buying q4_0's memory. Full context and the provisioning consequence are on the [KV Cache](kv-cache.md) page.
+
+#### Q4_K on gfx90a: a real correctness defect, root-caused
+
+Stock MMQ Q4_K was failing forced-dispatch correctness at **18/43** (max error ratio 3.0361) while rocBLAS passed 43/43. An independently compiled DP4A arm reproduced the *same* failures, which falsified the MFMA-specific hypothesis and located the defect in shared Q8 activation staging: affine Q4_K reconstruction mixed a **dequantized** Q8 dot term with an **original-float** activation sum in the min correction. Deriving both from the same dequantized population gives **172/172 pass, max error ratio 1.2283**. The fix is uncommitted pending operator approval. The performance side of the same investigation — the retracted "+38–43% single-lever" unpack ceiling, now ~10.5% of which 57% is structurally required — is on [Hardware Optimization](hardware-optimization.md).
+
+#### Source References (2026-08-12)
+
+- [`angelslim-techniques-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-angelslim-techniques-evaluation) — the mislabel correction and the re-derived PR state.
+- [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the mirrored correction and the ARM-only file-scope consequence for Zen 5.
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — the Q4_K MMQ correctness matrices and root cause.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the KV-quant decision package and the "window saved" framing of the mislabel.
+
+### Compiled Update — 2026-07-24
+
+The architect IQ2-vs-Q4 reasoning-certification question (flagged UNDECIDED in the prior compile) advanced on two fronts: a degenerate-repetition defect first suspected as 2-bit EOS damage was refuted as **quant-independent**, and the CPU Q4 arm (A2) ran the same fenced, pinned-item comparison as the GPU IQ2 arm, tracking at-or-above it. Confidence: `verified` for the RP-1/RP-2 measured refutation (McNemar-paired, offline-rescored); `observation` for A2's still-in-progress paired analysis at compile time.
+
+#### Key Findings (2026-07-24)
+
+- **The 2-bit-EOS-damage hypothesis is REFUTED: the Qwen3.5-122B-A10B's degenerate `\boxed{}` repetition loop tracks the MODEL, not the quantization.** On `olympiadbench_hard`, the 122B-A10B looped to the token cap on **25% of items at IQ2** — the original evidence for suspecting 2-bit EOS damage — but the **CPU Q4_K_M arm (A2) loops IDENTICALLY on the same item** (item 1: 32768 tokens, tail-uniqueness 0.03, `\boxed{2n-1}`×N repeated at both quants). The Q8 arms (27B-dense, 35B-A3B — different models entirely) never loop (0–1%). One identical Q4 loop is a sufficient counterexample to the quant-attribution hypothesis. Consequence: the fix is a **per-MODEL** repetition-penalty fence (the 122B-A10B, at any quant it is deployed at), never a per-quant or blanket policy — `repeat_penalty 1.1` breaks the loop (truncation ~100%→22%, tokens 32768→10.6k) with accuracy held (22/40 vs baseline 21/40); `1.3` over-penalizes math to ~15% accuracy; DRY (0.8) is inconsistent and sometimes mangles the answer outright. The `\boxed{}` instruction itself is the leading root-cause hypothesis (untested). Because production currently gives the 122B-A10B architect no repetition penalty at either quant, the loop occurs live today, at a real ~2× token/latency operating cost that does **not** distinguish IQ2 from Q4. [architect-model-selection-bench](../handoffs/active/model-evaluation-queue.md) §RP-1/RP-2, [reasoning-effort-levels](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §MODEL-specific repetition-penalty fence
+
+- **The CPU Q4 arm (A2), run fenced overnight on the pinned item sets, is tracking at-or-above the GPU IQ2 arm's reasoning band — the first direct evidence bearing on H1 (does IQ2 preserve the 122B's reasoning relative to Q4?).** With the RP-1 fence applied (`repeat_penalty 1.1`, port 18073, 25.8 tok/s decode): `aime25` 23/30 (76.7%) complete; `olympiadbench_hard` ~72% on the answered items vs A1-IQ2's 68.4% on the same suite. This is a live, not-yet-finalized read — the canonical-extractor paired McNemar analysis was still pending at compile time — but it argues against a large IQ2 reasoning penalty on this model, complementing the knowledge-axis parity already certified (AXA-1 Δ0.0pp, n=212). `gpqa_diamond_cot` was deliberately skipped on this arm (power math: 185 paired items give an MDE of only ~6–7pp, insufficient to detect a subtle 1–2pp degradation, and the +198 in the full set still only reaches ~4pp). [architect-model-selection-bench](../handoffs/active/model-evaluation-queue.md) §RP-5, [progress 2026-07-24](../progress/2026-07/2026-07-24.md)
+
+#### Open Questions (2026-07-24)
+
+- The A2-vs-A1 paired McNemar analysis (canonical rescore) had not landed at compile time — does H1 close as statistical parity, or does a real (if small) IQ2 reasoning penalty emerge once formally tested?
+- RP-3 (does the loop occur on real architect planning workloads, or only on `\boxed{}`-style competition-math prompts?) is unresolved and is the leading root-cause lead.
+- Should the per-model repetition-penalty fence (RP-4) be added to the production registry now, given production currently runs the 122B-A10B unfenced and the loop is confirmed to occur live?
+
+#### Source References (2026-07-24)
+
+- [architect-model-selection-bench.md](../handoffs/active/model-evaluation-queue.md) §RP series, §A2 — the CPU Q4 arm execution, the quant-attribution refutation, the repetition-penalty probe results.
+- [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §MODEL-specific repetition-penalty fence — the per-model (not per-quant) invariant and its production-policy implications.
+- [progress 2026-07-23](../progress/2026-07/2026-07-23.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md) — A2 overnight execution log, RP-1 probe results.
+
+### Compiled Update — 2026-07-20
+
+A five-paper literature cluster (intake-859..863) plus the architect-selection and quant-asymmetric self-spec work reframe low-bit quantization along a **reasoning-vs-knowledge asymmetry**: 2-bit barely touches knowledge but can halve *reasoning* — unless the quant is *dynamic/per-layer*. This directly re-opens the architect-quant question and motivates a new, quality-preserving use of aggressive quant (self-spec drafting). Confidence: `external` for the literature, `verified` for the DR-0 self-spec throughput/quality measurements (observation-grade under `P-GPU-1`), `verified` for the sub-2-bit load/quality failures.
+
+#### Key Findings (2026-07-20)
+
+- **Reasoning ∝ ACTIVE params; knowledge ∝ TOTAL params; and 2-bit is asymmetric.** On *our exact toolchain* (llama.cpp GGUF K-quants + Unsloth, DeepSeek-class MoE), MMLU holds ~99% (90.99→89.72) while **uniform Q2_K halves reasoning** (DeepSeek-V3 AIME 38.34→15.41) — but **dynamic per-layer quant holds**: DQ3_K_M ≈ Q4 (75.73 vs 75.79), and Q4 ≈ FP8 (intake-861 `2505.02390`, cred 4). Corroborated: harder tasks (AIME) degrade up to ~4× more than GSM8K, sub-4-bit + activation/KV quant are the danger zones, ≥14B tolerate quant better (intake-863 `2504.04823`, cred 3); low-bit PTQ disproportionately raises *procedural/execution* errors, restorable by a ~332-example recovery-SFT in minutes (intake-860 `2505.11574`, cred 3); reasoning peaks at an optimal active-compute point and is architectural, not rescued by test-time compute or GRPO (intake-859 `2508.18672`, cred 5). ([architect-model-selection-2026-07-20](../docs/reference/architect-model-selection-2026-07-20.md))
+- **The architect's IQ2≈Q4 parity is NOT reasoning-certified.** The GPU-resident 122B-A10B UD-IQ2_M candidate's Δ0.0pp parity (212-question paired eval, McNemar p=1.000) was **knowledge/instruction-following-dominated** — the pool was IF (84) + factual QA (72) with only **n≈4 per hard-reasoning suite (~11%)**, and the LLM-rubric gate was deferred. It is a valid *knowledge* parity only; the reasoning axis (exactly what 2-bit erodes) is powerless in that pool. The architect quant choice is therefore **UNDECIDED**, gated behind a full-power AIME'25 + GPQA-Diamond bench: default prior is 122B at **Q4** (safe), IQ2 only if the reasoning re-gate passes, dynamic-3-bit (DQ3) as the mid-precision fallback. ([architect-model-selection-bench](../handoffs/active/model-evaluation-queue.md))
+- **Quant-asymmetric same-model self-spec — a NEW quality-preserving use of aggressive quant.** An aggressive-IQ drafter on the GPU + a high-quant verifier on the CPU is N5-free by construction (identical vocab / M-RoPE / GDN), and the CPU verify **launders quality** (accepted tokens are full-quant). Measured (DR-0e.2, observation-grade): 122B UD-Q4_K_M CPU verifier + 122B UD-IQ2_M MI210 drafter, **K2 = 11.41 t/s (1.61× over 7.08 baseline), alpha 0.90**, 28/28 quality, output byte-stable vs the CPU baseline on every task class. K2 is selected over K4 (K4 adds only +3.85% but alpha drops to 0.787). Default-off research lane; production-named `P-GPU-1` still required. ([quant-asymmetric-self-spec-serving-design](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md), [gpu-drafter-control-redesign](../handoffs/completed/gpu-drafter-control-redesign.md))
+- **Sub-2-bit weight quant is deprioritized (STEERING 2026-07-19).** Bonsai Q1_0 and Ternary Q2_g64 are speed-only and quality-blocked (fail strict instruction/format gates); Ternary Bonsai Q2_0 is a **broken load** (498/498 tensors short, noncanonical PrismML packing ≠ upstream TQ1_0/TQ2_0). Q1_0 (type 41) is already in v6; PrismML Q2_0 landed upstream 2026-07-07, *after* the v6 cutover, so it is **not** in v6. Do not speed-rerun these without a named producer/transcode/loader/prompt fix. ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation), [model-probe-scoreboard](../docs/reference/model-probe-scoreboard.md))
+- **External FP4 / lossless-exponent formats stay non-deployable here.** NVFP4 (intake-756) is GPU-native (no GGUF/MI210 path); its FP8-parity table is an external *bar* for our CPU 4-bit path only. Lossless entropy-coded weight compression (ZipNN/DFloat11/ZipServ, intake-815..818) yields ~11–12 bpw — ~2.5× larger than production Q4_K_M ~4.5 bpw — so it is a storage/download optimization, not an inference win. ([tq3-quantization-evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation))
+
+#### Open Questions (2026-07-20)
+
+- Does dynamic UD-IQ2 preserve the 122B-A10B's *reasoning* (not just knowledge)? Only the full-power AIME'25/GPQA bench answers it.
+- Is a two-level (per-block FP8 + per-tensor FP32) scale worth emulating in a CPU K-quant variant, or is the accuracy delta below the decision-gating threshold?
+- Does the K2 quant-asymmetric self-spec lane survive broader task-class admission and a production-named `P-GPU-1` certification?
+
+#### Source References (2026-07-20)
+
+- [architect-model-selection-2026-07-20.md](../docs/reference/architect-model-selection-2026-07-20.md) — reasoning∝active + 2-bit-asymmetry evidence, the Δ0.0pp-parity gap analysis, the decision tree.
+- [architect-model-selection-bench.md](../handoffs/active/model-evaluation-queue.md) — the reasoning re-gate the parity deferred (specced, gated post-v7-promotion).
+- [quant-asymmetric-self-spec-serving-design-2026-07-20.md](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md) — K2 self-spec design + DR-0e.2 evidence.
+- [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — sub-2-bit stop-list, TurboQuant/ChunkKV monitor, lossless-exponent cluster.
+- intake-859 `2508.18672` (cred 5), intake-861 `2505.02390` (cred 4), intake-863 `2504.04823` (cred 3), intake-860 `2505.11574` (cred 3), intake-862 `2604.07035` (cred 2, harness-artifact caveat) — the reasoning-vs-quant literature.
+
+### Compiled Update — 2026-08-22: the TurboQuant KV monitor is dead upstream, and the iqk dispatch whitelist is now a quant-SELECTION constraint
 
 **Confidence: verified** — the PR state is re-derived from the GitHub API (2026-08-21), the ChunkKV verdict is a
 source-checked feasibility ruling, and the `static_assert` constraint was read out of the frozen production tree. One
 external caveat at the end is flagged, not resolved.
 
-### PR #21089 (TBQ3_0/TBQ4_0 CPU TurboQuant KV) was CLOSED UNMERGED upstream on 2026-06-02 — the monitor row is retired
+#### PR #21089 (TBQ3_0/TBQ4_0 CPU TurboQuant KV) was CLOSED UNMERGED upstream on 2026-06-02 — the monitor row is retired
 
 Re-verified against the GitHub API 2026-08-21: `state closed`, `merged false`, `merged_at null`, last update 2026-06-03.
 No TBQ code ever entered the local tree, and no build, benchmark or runtime action was taken. **This retires three items on
@@ -714,7 +763,7 @@ own file.** The TQ3 handoff's status paragraph still read "still open — no mov
 its own checklist, four screens down, had recorded the verified closure on 2026-07-29. A citation's identifier is
 self-verifying; its *state description* is a separate claim that must be re-derived from the API before it gates anything.
 
-### ChunkKV has a feasibility ruling: experimental-candidate only, and the existing compact endpoint is NOT ChunkKV
+#### ChunkKV has a feasibility ruling: experimental-candidate only, and the existing compact endpoint is NOT ChunkKV
 
 The 2026-07-29 assessment settles what ChunkKV (arXiv:2502.00299) would take here: **technically implementable as an
 experimental llama.cpp candidate; never an existing-server toggle or a production patch.** The production tree's adjacent
@@ -726,7 +775,7 @@ the paper**. Also settled: server eviction leaves positions gapped and creates r
 allocated-buffer shrink or immediate logical-context extension. Any faithful build starts from fresh production on
 `llama.cpp-experimental` and compares Full KV / Expected Attention / ChunkKV at equal cache budgets.
 
-### The iqk dispatch whitelist is a quant-selection constraint: never pick Q2_K/Q3_K on size grounds
+#### The iqk dispatch whitelist is a quant-selection constraint: never pick Q2_K/Q3_K on size grounds
 
 Verified read-only against frozen `production-consolidated-v8` (`ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp:73-74`):
 
@@ -745,7 +794,7 @@ the complementary, compiler-enforced *exclusion* list. Also closed 2026-08-03: t
 here (closed CUDA sm_80–120, no ROCm path — the same wall as ZipServ, EXL3 and the rest of the quantization×kernel
 co-design school, now recorded corpus-wide so it is not re-derived source by source).
 
-### Flagged, not resolved: our first-party KV-quant quality case rests on the instrument class KIVI shows can miss
+#### Flagged, not resolved: our first-party KV-quant quality case rests on the instrument class KIVI shows can miss
 
 A 2026-08-22 Stage-2b dive on KIVI (arXiv:2402.02750, verified against the primary source) records that KIVI reports **no
 perplexity anywhere** and rejects single-decode-step metrics for compressed-KV study; its own data show the same 2-bit KV
@@ -755,7 +804,7 @@ instrument class that can stay flat through such damage. This does not overturn 
 reasoning eval that would test it (GSM8K-class, f16 vs q8_0/q8_0 vs q4_0/q4_0, rotation ON) is specced but **unrun**, so
 the parity claims stand *as PPL/NIAH claims* with this caveat attached until that gate runs.
 
-### Source References
+#### Source References
 
 - [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the 2026-08-21 re-verified #21089 closure and self-contradiction correction, the ChunkKV feasibility memo, the Escha/`eschamoe` ruling, and the KIVI Stage-2b instrument-gap entry.
 - [llama.cpp PR #21089](https://github.com/ggml-org/llama.cpp/pull/21089) — the closed-unmerged upstream PR itself (state re-derived via the GitHub API, not the tracking row).
@@ -764,7 +813,7 @@ the parity claims stand *as PPL/NIAH claims* with this caveat attached until tha
 - [intake-945/946/956](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) (`EschaLabs/Qwen3.6-35B-A3B-Escha-W2`) — the Stage-2 intake cluster behind the `eschamoe` closure.
 - [KIVI arXiv:2402.02750](https://arxiv.org/abs/2402.02750) — the verified external result behind the flagged PPL/NIAH instrument caveat.
 
-## Compiled Update — 2026-08-23: KIVI's axis prescription is 2-bit-only, our KV blocks are finer than the published mitigation, and behavioural drift decouples from perplexity
+### Compiled Update — 2026-08-23: KIVI's axis prescription is 2-bit-only, our KV blocks are finer than the published mitigation, and behavioural drift decouples from perplexity
 
 **Confidence: verified** — the tree facts are read-only inspections of frozen `production-consolidated-v9`
 (`0db32c06e3e550065b78311a6031ef3dd2c4f27c`) with file:line loci, audited 2026-08-23. The external results
@@ -773,7 +822,7 @@ is a first-party measurement of behavioural damage on this stack, and under
 [MEASUREMENT.md](../MEASUREMENT.md) none of them gates a config change** — the point of this pass is that
 the measurement does not exist yet, and is now filed.
 
-### The 2026-08-22 KIVI caveat resolves in two halves: the implementation half is retired, the measurement half stands
+#### The 2026-08-22 KIVI caveat resolves in two halves: the implementation half is retired, the measurement half stands
 
 The previous pass flagged, unresolved, that our KV-quant quality case rests on PPL/NIAH — an instrument
 class KIVI shows can stay flat while GSM8K collapses ~57%. The full Stage-2b dive (`intake-1286#record`,
@@ -807,7 +856,7 @@ entire first-party quality case for quantized KV remains **perplexity plus needl
 generation eval has ever been run against quantized KV in this repo.** That is the real gap; it is a
 *measurement* gap, not an implementation one, and it is now G3 on the TQ3 handoff.
 
-### The granularity reading rule: group-32 along CHANNELS, finer than the published mitigation and on the opposite axis from KIVI
+#### The granularity reading rule: group-32 along CHANNELS, finer than the published mitigation and on the opposite axis from KIVI
 
 **With `-fa 1`, llama.cpp quantizes K and V per token in 32-element blocks running along the CHANNEL
 dimension** (`src/llama-kv-cache.cpp:231-232` allocates dim0 = channels, dim1 = tokens; `QK4_0 = QK8_0 =
@@ -823,7 +872,7 @@ stack:
    **Never read a Group-64 result as an upper bound on our group-32 damage without first checking which
    axis the grouping runs along.**
 
-### Behavioural drift decouples from perplexity — and INT8 is exonerated on safety but not on instruction-following
+#### Behavioural drift decouples from perplexity — and INT8 is exonerated on safety but not on instruction-following
 
 `intake-1291#record` (arXiv:2606.09864v2, **unreviewed preprint**, credibility 3/Medium; 11
 instruction-tuned models 3.8B–72B, 5 benchmarks, 1,894 prompts; **all measurements NVIDIA** — RTX 3090 /
@@ -870,7 +919,7 @@ axis. The registry is **frozen**: any `-ctk`/`-ctv` change routes through the op
 path, never a hand edit — and nothing here licenses one, because the paper's numbers are NVIDIA,
 unreplicated, and measured against a coarser grouping than ours.
 
-### What our KV write path does NOT have — audited read-only, 2026-08-23
+#### What our KV write path does NOT have — audited read-only, 2026-08-23
 
 The massive-activations and alignment-collapse literatures both assume mitigations our tree does not
 carry. Verified by static read of the canonical frozen tree; nothing built, nothing run:
@@ -894,7 +943,7 @@ alignment-collapse study's Related Work explicitly lists SmoothQuant- and QuaRot
 **untested** for safety, and that is exactly the class we ship. Whether the collapse mechanism survives
 our rotation is **genuinely open in both directions**, and only a measurement on our stack can close it.
 
-### The gates this pass leaves behind — all filed, none run
+#### The gates this pass leaves behind — all filed, none run
 
 Both compute planes were held elsewhere during wave 2; every row below is filed on
 [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) for whoever holds a
@@ -933,7 +982,7 @@ plane next.
   `llama-bench` decode t/s to price the extra scale word. A tie — the prediction, since a rotated
   distribution is near zero-mean — closes KIVI's asymmetry question permanently for one short bench.
 
-### Source References (2026-08-23)
+#### Source References (2026-08-23)
 
 - [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the H11
   read-only audit (no per-channel scaling, no clipping, no sink special-casing) and the G2/G3/G4/G5,
@@ -960,7 +1009,7 @@ plane next.
 - [intake-1282#record](https://arxiv.org/abs/2605.17613) VeriCache -- KV-quantization-adjacent: draft on the compressed cache, verify against the FULL cache so the target is the real FP16 model. Its quantization-compressor arm is its weakest (1.4-1.9x). Expressible in frozen v9 via `-ctkd`/`-ctvd`; detail on [KV Cache](kv-cache.md). Cite as `intake-1282#record`
 
 
-## Compiled Update — 2026-10-03: EXL3 on the 27B — answer the bytes question first (X0)
+### Compiled Update — 2026-10-03: EXL3 on the 27B — answer the bytes question first (X0)
 
 **Confidence: verified** for the inventory: no device execution, no EXL3 weights on disk at review time, and the
 kernels' shapes. The decode-cost estimate is **inferred arithmetic, not a measurement**. External quality and speed
@@ -1000,7 +1049,7 @@ comparisons are **external** (one vendor, one model), cited as records only.
 - **A correction to the review.** It says DS41 competes for the MI210. Since 2026-09-30 DS41's planner and critic are
   external, so it no longer does.
 
-### Source References
+#### Source References
 
 - [EXL3 ROI review](../docs/reviews/exl3-roi-20261003.md) — inventory, ROI table, recommendation, uncertainties.
 - [EXL3 CPU/MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — EXL3-X0 and its decision rule.
@@ -1008,11 +1057,11 @@ comparisons are **external** (one vendor, one model), cited as records only.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the X0 window grant and its production handling.
 
 
-### Existing IQ-family wiring in frozen v10 — 2026-10-07
+#### Existing IQ-family wiring in frozen v10 — 2026-10-07
 
 [INF54's four-blob source adjudication](../artifacts/ni08/inf54-current-iq-source-adjudication-20261007/README.md) finds the requested IQ2_XXS/IQ3_XXS/IQ2_S wiring already present in frozen v10: the real iquant implementation is registered, entrypoints are no longer stubs, and dispatch supports those types. IQ4_XS is also supported, superseding the historical instruction to leave it on the native path. This closes the source-port checklist item without kernel changes. Compiled identity, runtime performance/quality and the trellis measurement/port decisions remain independent gates in the [quantization owner](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation).
 
-## Compiled Update — 2026-10-20: the uniform IQ4_XS trunk is retired, the artifact changed under every CPU headline, and DS41 serves MXFP4 experts directly
+### Compiled Update — 2026-10-20: the uniform IQ4_XS trunk is retired, the artifact changed under every CPU headline, and DS41 serves MXFP4 experts directly
 
 **Confidence: verified** for the recorded operator rulings, the recipe change and the byte census; the expected size of the re-bench shift is an inference from those bytes, not a measurement.
 
@@ -1024,7 +1073,7 @@ DeepSeek-V4.1-Flash takes the opposite route. For the 1017 finetune the operator
 
 Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry as a QAT-only sub-1-bit reference, monitor only, with no run attached. INF37-IQ-4 files a documentation-only comparison of Magnitude's planar IQ2/IQ3 GEMV layout (one 16-byte packet load per 32 elements, factored scale*dot+bias*sum(x)) against ggml-cuda's decode on gfx90a, to be read at the IQ-residency reprice; it claims no benefit and makes no IQ role resident.
 
-### Source References (2026-10-20 quantization delta)
+#### Source References (2026-10-20 quantization delta)
 
 - [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — PROD-3 retirement ruling, epoch reset and the uniform-file provenance correction.
 - [iqk IQ-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — Step 3 arm dropped and the zero-port criterion retired.
@@ -1035,7 +1084,7 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - [Retire IQ4_XS-uniform progress note](../progress/2026-10/2026-10-20-retire-iq4xs-uniform.md) — recipe revision, census and the epoch consequence.
 - [DS41 1017 swap progress note](../progress/2026-10/2026-10-20-ds41-1017-swap.md) — operator rulings.
 
-## Compiled Update — 2026-10-21 (sweep 5): what serving the DS41 MXFP4 experts directly costs and buys
+### Compiled Update — 2026-10-21 (sweep 5): what serving the DS41 MXFP4 experts directly costs and buys
 
 **Confidence: verified** for the recorded runs. Timing is **indicative** only (operator ruling); see the local-inference page for the full ABA table.
 
@@ -1044,14 +1093,14 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - **Memory.** The repack makes each server hold about 276 GiB of private RAM on top of about 463 GiB mapped. A quantized GGUF here is not just a page-cache tenant. Two concurrent servers exhausted MemAvailable and set off the earlyoom kills (INC-20261021-earlyoom-session-kills).
 - **Recovery path.** The DS41 decode floor is now an AutoKernel campaign on the 1017 surface, `ak-ds41-1017-cpu-decode-20261021`. It uses a served-shape oracle calibrated with 360 + 8 routed cases, with two IQ3_XXS cases held anchor-relative. Low-bit performance stays AutoKernel's job.
 
-### Source References
+#### Source References
 
 - [DeepSeek V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — W5 serving-speed note, W5.1a, W8 oracle.
 - [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md) — W5/W5.1/W8 table.
 - [Progress ds41-w5](../progress/2026-10/2026-10-21-ds41-w5.md) — ppl and coherence gates.
 - [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md) — the memory consequence.
 
-## Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): a GSQ IQ4_NL tensor broke the fused decode path, and the EAR column is built
+### Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): a GSQ IQ4_NL tensor broke the fused decode path, and the EAR column is built
 
 **Confidence: verified** for the root-cause chain (traced on the real GGUF; RCA notes kept), the job fix and the EAR acceptance results; **open** for the NEW-10 quality verdict (re-run booked) and for whether the same cause explains FD-DIV-1's synthetic-weight divergence.
 
@@ -1061,7 +1110,7 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - **Patch, unbuilt:** `14c57cbe9` refuses the fused path for repacked or non-F32 raw-pointer weights (one warning, falls through to the graph), widens `ple_conv1d`, aborts cleanly on `best < 0`, and gates the v10 bring-up debug prints and per-token `/tmp` dumps (CH-24 for v11).
 - **EXL3-EAR1 accepted.** The EAR column in `llama-perplexity --kl-divergence` built and passed: EAR(base, base) 99.998%; Q4_K_M vs Q8_0 base on Qwen2.5-Coder-0.5B EAR full 91.21% / top-10 renormalized 92.82%, above the Pinsker floor 85.70%; every pre-existing output line byte-identical to the champion binary; Python cross-check pass. The NEW-10 re-run uses the v10 store binary, so its first real EAR numbers come from a later quantcmp pass on the experimental build.
 
-### Source References (2026-10-22 wrap-up sweep 12)
+#### Source References (2026-10-22 wrap-up sweep 12)
 
 - [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — NEW-10 evening note
 - [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks) — FD-DIV-1 chain, FD-DIV-1a
@@ -1069,7 +1118,7 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-24
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — sections 17.1 and 17.7
 
-## Compiled Update — 2026-10-22 (wrap-up sweep 15, workspace-58): NEW-10 GSQ-RCO IQ3_XXS fails the strict bars, so the arm is closed
+### Compiled Update — 2026-10-22 (wrap-up sweep 15, workspace-58): NEW-10 GSQ-RCO IQ3_XXS fails the strict bars, so the arm is closed
 
 **Confidence: verified** for the gate values (one predeclared run, v10 store binaries, pin `1a5e5ca9…` + addendum `e4aade94…`), refuted for serving GSQ IQ3_XXS in place of UD-IQ4_XS. G4 is incomplete (4 needs_review texts not eyeballed).
 
@@ -1090,13 +1139,13 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - **Fallback census.** 96 tensors are native (non-iqk: 58 IQ4_NL, 38 Q2_0) and 12 are decode-only iqk IQ3_XXS, exactly as the GGUF header predicted.
 - **Belief-kernel lesson.** The job hand-wrote its receipt (`epyc.quantcmp.receipt.v0`), and the VB-QUANTCMP-WIRE strict reader refuses it (unsupported schema). That reader accepts only receipts from `qwen4exp_quality_capture.py`, which proves residency while the child runs. A quant-comparison job must call the capture tool. VB-QUANTCMP-NEW10 re-captures this run before the weights go.
 
-### Source References (2026-10-22 wrap-up sweep 15)
+#### Source References (2026-10-22 wrap-up sweep 15)
 
 - [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — NEW-10 verdict block, NEW-11 IQ3_S note, NEW-13 / NEW-13-RM
 - [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-QUANTCMP-NEW10
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — section 18.1
 
-## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-58): a high-bit prefill rescues ~28% of a low-bit decoder's KLD gap, but the low-bit decoder is ~27% slower
+### Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-58): a high-bit prefill rescues ~28% of a low-bit decoder's KLD gap, but the low-bit decoder is ~27% slower
 
 **Confidence: verified** for the NEW-13 verdict against its predeclared rule and for the belief-ledger ingest; **descriptive only** for every tok/s figure (teacher-force throughput inside the probe, not a serving bench).
 
@@ -1105,20 +1154,20 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - **The NEW-10 FAIL is now in the belief ledger, re-derived on a different binary.** The capture tool's `kld-quantcmp` mode needs the native EAR rows, which only the EAR build prints, and anchor and candidate must share one binary. The re-capture therefore ran on `experimental/ear-kld-column-20261022` @ `782c11ae4` at `-t 96`, not on the v10 store binary at `-t 24`. Values moved within the native ±1σ spread (G1 0.0215 vs 0.0150, G2 0.3206 vs 0.3222, G3 82.77% vs 82.88%), and the FAIL is unchanged. 21 rows and 63 frames were ingested (`--only-new`, idempotent). Lesson: a quant-comparison number is specific to its producer binary and thread count at the second decimal; compare within one binary, or carry the spread.
 - **Receipts.** NEW-13's own `handoff_receipt.json` is hand-written and has no reader, so it is not in the ledger and is never backfilled. VB-NEW13-WIRE puts a capture-written receipt in place before C-L3 runs.
 
-### Source References (2026-10-23 wrap-up sweep 19)
+#### Source References (2026-10-23 wrap-up sweep 19)
 
 - [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — NEW-13 verdict, C-L3, NEW-13-RM
 - [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-QUANTCMP-NEW10 (ingested), VB-NEW13-WIRE
 - [progress/2026-10/2026-10-23-workspace-58.md](../progress/2026-10/2026-10-23-workspace-58.md) — section 19 (19.4, 19.5)
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **27B IQ2 pair dropped; the low-bit follow-on is Q38FN only (C-L3-Q38FN).** Operator ruling: the 27B runs Q8 on the GPU, so C-L3 closed superseded. Evidence for the live task: prefill from UD-IQ4_XS into GSQ IQ3_XXS decode recovers 28% of the KLD gap (R 0.28 [0.25, 0.32]) but GSQ IQ3_XXS decode is about 28% slower (15.8-15.9 vs 21.9-22.6 tok/s). Step 1 profiles why: iqk fast-path coverage for these shapes (NEW-10 recorded 12 decode-only iqk fallback tensors) and Q2_0 `ffn_down_exps`. The 75.84 GB GSQ weights are kept instead of deleted.
 - **AutoKernel hardened-row check is strict where new claims are gated.** `strict_unknown=True` at `microbench.py:4389` and `screening_baseline.py:202`, so a row with no `autokernel_hardened` field is refused (could-not-check is not a pass); 1190 execution tests pass with 3 pre-existing failures identical on a clean checkout.
 
 Sources: [iqk iquant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [autokernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program).
 
-## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for PPL and coherence; the speed A/B is INDICATIVE (one quarter).
 
@@ -1129,7 +1178,7 @@ Sources: [iqk iquant enablement](../handoffs/active/quantization-and-low-bit.md#
 
 Sources: [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [arm-P2 PREDECLARED](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md), [arm-P2 VERDICT](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/VERDICT.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
 
-## Compiled Update — 2026-10-29 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-29 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the artifact-derived path-participation facts; the throughput cause is explicitly **unmeasured**.
 
@@ -1139,7 +1188,7 @@ Sources: [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#
 
 Sources: [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) · [mi210-q8-dequant-gemv-roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) · [2026-10-29 codex refactor](../progress/2026-10/2026-10-29-codex-refactor-01a16fc3.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for diagnostic capture and a documented decision; no timing comparison or quantization quality result; no keep or serving gain.
 
@@ -1150,32 +1199,32 @@ Sources: [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#
 
 Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) · [C6 Q4 R2](../progress/2026-10/2026-10-31-codex3-c6-q4-r2.md) · [C6 failures/PAW](../progress/2026-10/2026-10-31-c6-full-paw-a-failures.md) · [C6 GPU R2](../progress/2026-10/2026-10-31-pip-r29-c6-gpu-r2-filings.md)
 
-## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - CS-22 long-v2: capture 178/178, zero Q8-F32 WER deltas at four contexts; the A1 parent stays open. The Qwen3.6-35B UD-IQ3_XXS candidate was withdrawn by the operator. ([progress](../progress/2026-10/2026-10-31-codex3-results-filing-1633.md))
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - EXL3 evidence inventory adds no rows, frames or grade; original smoke remains FAIL and prior PPL stays QUALITY_NOT_WORSE only within its original scope. [Source](../handoffs/active/quantization-and-low-bit.md)
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 12 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
+#### Run 2026-10-21, IDs 2341–2373 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2341-2373.md)
 
 - intake-2343#record (moondream parakeet-ultra): Stage-2 dive confirmed the card's numbers and the stock-class/CC-BY-4.0 facts, and narrowed the speed claims. Integrated via conversation-stack.
 - intake-2344#record (moondream parakeet-redux ternary Parakeet): packed-format readability resolved (spec in ternary.json; own decode matches the zero fraction); the 'Closed Photon' framing narrowed since a Python engine path exists. Integrated via conversation-stack and tq3-quantization-evaluation.
 - intake-2348#record (parakeet-unified-en-0.6b-gguf): first read: one RNN-T model for offline and streaming, English only, NVIDIA Open Model License, converted not retrained; the GGUF is unique to transcribe.cpp and speeds are M4/Ryzen 4750U author numbers. Integrated via conversation-stack.
 - intake-2351#record (Olicorne parakeet-ultra ONNX pair): best non-Photon evidence that Ultra's weights carry about a 2 pp macro FLEURS gain over base v3, and a CPU-EP int8 ONNX is a ready candidate for the CS-26 fallback. Integrated via conversation-stack.
 
-### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
+#### Run 2026-10-30, IDs 2511–2521 — [digest](../research/deep-dives/intake-digests/2026-10-30-ids-2511-2521.md)
 
 - intake-2511#record (Unsloth DeepSeek-V4.1-Flash run guide): narrowed: only three low-bit quants changed in V3.1 and Q4_K_XL is unchanged; citable for the 1017 GGUF ladder keeping native MXFP4 experts and vendor-only KLD figures, not as a reason to replace the served antirez file. Verdict superseded; linked to deepseek-v41-flash-evaluation.
 - intake-2512#record (unsloth DeepSeek-V4.1-Flash-1017-GGUF): header-only survey of every UD quant; the 2026-10-30 update changed only UD-IQ1_M, UD-IQ1_S and UD-Q2_K_XL. The active-bytes table is a header-derived upper bound, not a speed prediction. Verdict superseded; linked to deepseek-v41-flash-evaluation.
@@ -1185,22 +1234,22 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - intake-2519#record (Unsloth Dynamic 3.0 GGUFs page): documents what Dynamic 3.0 changed (calibration set, layer selection, PTQ only) on Qwen3.8-27B; no V3.1 description exists on the page, so the seed's 'Dynamic V3.1' has no published method. Disposition knowledge_only.
 - intake-2520#record (llama.cpp PR 27512 OCP FP8 E4M3): upstream ggml type 43 became F8_E4M3 on 2026-10-29, explaining the unsloth gibberish; any EPYC tree importing it must refuse PR-#30817 MXFP8 GGUFs explicitly. Linked to deepseek-v41-flash-evaluation.
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2594#record (llama.cpp issue 30064 Q8_0 systemone collapse): a Metal-only fusion bug, now fixed; it corrects stage 1's claim that decision-head tensors were quantized, is not evidence Q8_0 hurts decision heads, and the BF16-head recipe is not a requirement. The same-file CPU/GPU, BF16/quant test design is kept. Integrated via typed-decision-plane.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 27 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
+#### Run 2026-10-20, IDs 2191–2213 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2191-2213.md)
 
 - intake-2197#record (Qwen3.8-Flash-Next abliterated GSQ-RCO Strata GGUF): Byte-identity was upgraded from digest to hash-verified (9 LFS oids), the KL reference was identified as the abliterated BF16 rather than stock, and the Stage-1 Strata ppl contradiction was downgraded to unreconcilable. A supply-chain angle was proposed; handoff model-artifact-integrity.
 - intake-2206#record (ISTA-DASLab Qwen3.8-Flash-Next GSQ-RCO GGUF): Stage 1 treated four directories as uniform standard types servable by iqk; the dive shows per-tensor mixes including Q2_0 (no iqk kernel), IQ4_NL (not whitelisted) and iqk-stubbed IQ1_M, with card launch flags differing from v10. Integrated into iqk-iquant-enablement.
 - intake-2207#record (GSQ paper): The paper covers only uniform symmetric group-wise formats and GGUF K-quants (no IQ types or Q2_0); the Kimi-K2.5 result includes a 12.7-point GPQA-D loss versus the 4.5-bpp base, and quantisation costs 10-68 h on 8xH200. Monitor; handoff iqk-iquant-enablement.
 
-### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
+#### Run 2026-10-22, IDs 2461–2493 — [digest](../research/deep-dives/intake-digests/2026-10-22-ids-2461-2493.md)
 
 - intake-2461#record (Statistically-Lossless Quantization paper): Full text plus repo checked: the Qwen3.5-27B 3.30/5.19/4.1-bit figures are subset-only, the implemented EAR renormalizes over the BF16 top-10 and is teacher-forced on FineWeb-Edu, and Table 3 speedups are per-GPU. Adopt-patterns; handoffs exl3-cpu-mi210-implement and vidya-belief-substrate-program.
 - intake-2462#record (kaitchup Qwen3.8-27B SLQ collection): Checkpoints are a customized SLQ over GPTQ, AutoRound and GSQ candidates rather than the paper pipeline, and the FP8 comparison should use the weights-only 98.10% rather than 97.71%. Declined for our stack; handoff exl3-cpu-mi210-implement.
@@ -1228,41 +1277,7 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - intake-2493#record (AMXFP4): Corrects the Stage-1 framing: asymmetry means two per-sign FP8 E5M2 scales per group (no zero-point), and the "beats MXFP4" headline is against an E5M2-scaled MXFP4, not OCP E8M0. Worth investigating.
 
 
-## Compiled update — 2026-11-02: EXL3 and IQ4_XS attribution corrections
-
-- **EXL3 real fixtures:** On three partial device fixtures, the exact canonical GEMV comparison passed, then the MFMA prefill comparison exceeded its declared tolerance. Each binary returned rc1 and the sealed overall verifier failed. The discrepancy was previously attributed to GEMV; its cause and full G3/G4 coverage remain unestablished.
-- **IQ4_XS repack:** The INF-70 node trace identified errors in IQ4_XS → Q8_K_R16 repacking when nrc_y ≥ 32 and npt ≥ 16. The source exclusion was absent from the stale binary under test. This finding does not establish a per-type cause or authorize enabling the separately excluded IQ2/IQ3 paths.
-
-### Source references
-
-- [EXL3 CPU and MI210 handoff](../handoffs/active/quantization-and-low-bit.md)
-- [IQK i-quant handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
-- [INF-70 node-trace and stale-binary audit](../progress/2026-09/2026-09-03-inf70-audit.md)
-
-## Compiled update — 2026-11-04: EXP01 trellis proxy pilot (inconclusive)
-
-- **Setup.** Qwen3.6-35B-A3B proxy requantized from one Q8_0 source with a shared imatrix on four arms, measured with ik_llama.cpp `c04881fc` as a reference instrument; not evidence for Q38FN/DS41 or a production kernel.
-- **Speed (tg128, higher is better).** IQ4_KT/Q4_K_M = 0.9630 (band 0.9436-0.9824); IQ2_KT/IQ2_XXS = 0.9610 (band 0.9392-0.9828). Neither declared stop condition was reached at the three-launch-per-arm cap; bands are exploratory, not a T3 gate.
-- **Quality.** 14/24 vs 12/24 (2 IQ4_KT-only, 0 Q4_K_M-only), exact paired p = 0.5: no established win.
-- **Disposition.** No port triggered; T2/T3 stay open. An earlier r2 ratio was invalid (a 4-thread smoke sample mixed into 24-thread official samples) and was replaced by the isolated r3. Optional extension (needs operator authorization): IQ4_KT vs Q4_K_M to 8 launches per arm, at most 10 minutes.
-
-Sources: [EXP01 findings](../docs/findings/exp01-trellis-proxy-pilot-20261104.md) · [EXL3 CPU/MI210 session record](../progress/2026-11/2026-11-04-handoff-exl3-cpu-mi210.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md)
-
-## Compiled update — 2026-11-04 (wrap-up sweep): EXL3/trellis EXP01
-
-- EXP01-EXT: IQ4_KT/Q4_K_M tg128 = 0.953 [0.937, 0.969]. The result is inconclusive and makes no speed case.
-- The EXP01 pilot r2 is invalid as a ratio: one 4-thread smoke sample was mixed into 11 official 24-thread samples. The post-hoc exclusion was withdrawn, and an isolated r3 rerun decides port/futility.
-
-Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md)
-
-## Compiled update — 2026-11-05 (operator-adhoc-ops wrap-up 3): C6 q4_K MMVQ/MMQ numeric bug
-
-- **The C6 combined q4_K failures were a real numeric bug, not tolerance noise**: the min/offset term used the float sum of the activations instead of the quantized sum. Fixed in three places (`experimental/c6-q4-mmvq-mmq-fix` @ 0bccaa85d, folded with llguidance as 21232569a); the full GPU backend suite then had 0 failures. The fixed candidate is +77% slower on the q4_K n=4 case, so the fix is not free; the slowdown and the unsupported-set rule are open boxes.
-- **The C6 port35186 serving −4.75% "FAIL" was not significant** (CI −7.6%..+0.9%); a 24-pair re-measure is queued. The 27B identity mismatch was a harness sort-order bug (lexicographic arm serialization).
-
-Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md)
-
-## Compiled Update — 2026-11-05 (operator wiki sweep 3, main-inf22): Q8_0 CPU prefill default and the q4_K unsupported-case rule
+### Compiled Update — 2026-11-05 (operator wiki sweep 3, main-inf22): Q8_0 CPU prefill default and the q4_K unsupported-case rule
 
 - **CPU Q8_0 prefill.** The iqk Q8_0 prefill GEMM present in C6 but env-gated off gives 2.03x pp2048 / 1.56x pp8192 when made the compiled default (quality screen passed, decode check pending); see [hardware-optimization](hardware-optimization.md). At the served precision C6 still decodes about 2x faster than vLLM INT8 on one CPU quarter, so the gap is prefill only.
 - **GPU int8.** On gfx90a int8 MFMA has the same rate as bf16 (1024 ops/clk/CU), so int8 MMQ on MI210 saves bytes and dequant work, never MFMA time; the MI300 doubled-K int8 MFMAs re-express as two `16x16x16i8`.
@@ -1270,17 +1285,7 @@ Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.m
 
 Sources: [kernel champion](../handoffs/active/kernel-champion-and-promotion.md) · [findings](../docs/reference/mi210-serving-program-findings-20261105.md) · [portability report](../artifacts/analysis/mi300-to-mi210-portability-20261105.md)
 
-## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): low-precision recurrence and the rotation question
-
-- **LinQuant's invariances are activation transforms, not weight-quant knobs.** Six of seven act inside the recurrence and never meet Q4_K/IQ per-32-block layouts; `D_QK` additionally cancels exactly under per-channel scales and is invalid for delta writes. The transferable asset is the float64 reference implementation as a conformance oracle (intake-2641#record, intake-2642).
-- **The SSDi8 "rotation hurts SSD" claim is refuted as a general statement.** MambaQuant's fixed-granularity control improves over RTN in all four tested cells, and SSDi8's own gap is a scale-granularity failure; LinQuant's key rotation is a boundary extension on the state axis SSDi8 excludes (intake-2645, intake-2648).
-- **Quamba2's 3x generation gain is weight streaming**, not activation quantization: weight-only W4A16 is within 2% of W4A8 at batch 1, so its activation machinery is worth ~2%. The remaining byte lever for a bandwidth-bound decode is head-to-toe 4-bit on the LM head and embeddings (intake-2646).
-- **Sub-INT8 recurrence stays out of scope**: the INT4 row still leaves +10.2% perplexity and the authors state a sub-byte kernel is required (intake-2641#record).
-- **Filed work**: `QUANT-HEAD-1` (head/embedding bytes audit) and `QUANT-ROT-1` (offline rotation/permutation probe at a fixed per-32-block budget) in [quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md).
-
-Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [repo dive](../research/deep-dives/quant-compiler-20261106/linquant-repo.md) · [SSDi8](../research/deep-dives/quant-compiler-20261106/ssdi8.md) · [Quamba2](../research/deep-dives/quant-compiler-20261106/quamba2.md) · [MambaQuant](../research/deep-dives/quant-compiler-20261106/mambaquant.md)
-
-## Compiled Update — 2026-11-18 (wrap-up sweep, autokernel): quant decode QDEC findings, the IQ3_XXS iqk byte-carry bug, and the q8_1 sum overflow cost
+### Compiled Update — 2026-11-18 (wrap-up sweep, autokernel): quant decode QDEC findings, the IQ3_XXS iqk byte-carry bug, and the q8_1 sum overflow cost
 
 **Confidence: verified** for the source-located IQ3_XXS defect and the Q6_K mechanism (reproduced bit for bit by emulation); **observation** for row verdicts and timing ratios.
 
@@ -1291,9 +1296,33 @@ Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant
 - **HIP MUL_MAT / MUL_MAT_ID returns non-finite on near-f16-max activations (EDGE-HIP-NONFINITE).** The q38fn edge pilot (activations up to 61440) found v10 non-finite on every seed for q4_0, q4_1, q4_K, q5_0, q5_1, q5_K (MUL_MAT) and iq4_nl, q4_0, q4_1, q4_K, q5_0, q5_1 (MUL_MAT_ID); C12 fixes q4_0, iq4_nl and q4_K (except MUL_MAT q4_K n=5) but stays non-finite on q4_1, q5_0, q5_1, q5_K. The likely cause, not yet verified, is the half-precision q8_1 block sum overflowing. The GPU EDGE pass excluded 137 keys (112 `anchor_nonfinite`), so it says nothing about those keys. Whether served activations reach this range is not established.
 - **The sum-overflow fix has a real op cost, so the operator asked for an end-to-end measure.** `8c180a25f` fixes 30/30 near-max cases (C13 fails 10/30) with MUL_MAT 1202/1202 and MUL_MAT_ID 815/815 clean, but q4_K and q5_K n=16 MMQ run at 0.728 and 0.738 of C13 speed because the recompute sits in the inner loop. The v2 fix (`c8f7a85f1`) computes the block sum once in `quantize_mmq_q8_1` and is fully correct but still 3.5-4% slower (0.968 / 0.962 against a 0.97 gate). Of the served MI210 models only `:8086` Qwen3-VL-30B-A3B Q4_K_M holds q4_K tensors (Q4_K 289, Q6_K 49); the 27B Q8_0 and its DFlash2 drafter are Q8_0 plus F32, so the cost is zero by construction there. The fold waits on `q81-v2-e2e-gpu` (FOLD_OK iff decode geomean C13/v2 >= 0.99 with no block below 0.98).
 
-### Source References (2026-11-18, autokernel sweep)
+#### Source References (2026-11-18, autokernel sweep)
 - [autokernel-akx-program](../handoffs/active/autokernel-akx-program.md) - QDEC r3, IQ3_XXS findings, EDGE-HIP-NONFINITE, q8_1 v1/v2 results
 - [autokernel progress 2026-11-17](../progress/2026-11/2026-11-17-autokernel.md) - edge pilot verdicts, QDEC r1/r2
 - [autokernel wrap-up 2026-11-18](../progress/2026-11/2026-11-18-autokernel.md) - QDEC r3, IQ3Q6 fix row, q81 v2 verdict
 - [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) - C14/C15 fold ordering for the q8_1 fix
 - [rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md) - GPU-side kernel route notes
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): target-precision catalog precondition, GGUF recipe search, direct MMVQ/MMQ diagnostic
+
+- **Target-precision catalogs are not identical.** Bounded 16 MiB header reads of the pinned Qwen3.8-27B artifacts: BF16 has 866 tensors (835 + 31 across two splits) against 851 for the non-UD Q4_K_M; the 15 BF16-only tensors are the `blk.64.*` block including `blk.64.nextn.*`. Neither pinned API record binds the `Qwen/Qwen3.8-27B` base to an exact revision. `compare_catalogs.py` (20 tests with the downloader suite) always leaves the causal precision gate unresolved: catalog equality can never pass it. Pinned acquisition was started separately with no integrity claim yet; once it lands, whether the unused MTP block can be held inactive across arms must be established. Sources: `docs/reports/target-precision-acquisition/catalog-precondition-20261120.md`.
+- **GGUF-RECIPE-SEARCH hold lift.** On 2026-11-20 the operator lifted the NEW-12 per-tensor allocator hold for the GGUF-RECIPE-SEARCH only (one served 27B-class pilot, production quantizer and perplexity binaries read-only); NEW-12 itself stays held. Sources: `handoffs/active/quantization-and-low-bit.md`.
+- **LB1c direct MMVQ/MMQ diagnostic (source only).** v10 `MMVQ_MAX_BATCH_SIZE` is 8, so the generated patch (applies to frozen v10 via an isolated index) forces MMVQ at widths 4-8 and MMQ at 4-9 and records width-9 MMVQ as unsupported; no crossover can be inferred from the partial matrix and no GPU run exists. Collector validity controls now refuse unmatched shapes and failed or zero-run launches. Sources: `progress/2026-11/2026-11-19-handoff-iqk-iquant-enablement.md`, `progress/2026-11/2026-11-19-handoff-exl3-cpu-mi210.md`.
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [catalog-precondition-20261120](../docs/reports/target-precision-acquisition/catalog-precondition-20261120.md)
+- [quantization-and-low-bit](../handoffs/active/quantization-and-low-bit.md)
+- [2026-11-19 iqk-iquant-enablement](../progress/2026-11/2026-11-19-handoff-iqk-iquant-enablement.md)
+- [2026-11-19 exl3-cpu-mi210](../progress/2026-11/2026-11-19-handoff-exl3-cpu-mi210.md)
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): entropy-coded weights and upstream CPU quant kernels (intake 2754..2813)
+
+- **Lossless entropy coding of weights does not pay on our hardware.** LazyWeights (`intake-2756#record`): Huffman-coded shaped GPTQ codes are 5.7-31.4% smaller than the smallest llama.cpp file within a 1% / 3.5% dPPL budget, but software Huffman decode in GPU GEMV falls 15-20x short of DRAM rate and the decode unit's benefit is projected, not measured. On our production weights zeroth-order entropy leaves only about 2% (IQ4_NL) to 4-7% (Q8_0) headroom, and software decode cannot beat raw DRAM bytes on Zen 5 or gfx90a. Huff-LLM (`intake-2768#record`, declined) gives 1.16-1.47x lossless on FP16/BF16 with gains only from simulated accelerators; EntroLLM (`intake-2777#record`, not_applicable) decodes once per sequence on a Jetson, so it cannot reduce per-token traffic, and shares authors with LazyWeights ([LazyWeights](../research/deep-dives/ak-intake-20261121/2611.17108v3.md), [Huff-LLM](../research/deep-dives/ak-intake-20261121/2502.00922v1.md), [EntroLLM](../research/deep-dives/ak-intake-20261121/2505.02380v4.md)).
+- **Q1_0 x86 repack (PR #32646, `intake-2754#record`, knowledge_only)**: pp512 43.57 -> 138.96 t/s (AVX-512) on a 6-thread Ryzen 9600X, tg128 -1.3-1.4%; the AVX-512 GEMM clones the existing Q4_0/IQ4_NL/MXFP4 8x8 template and adds nothing for IQ4_NL or Q8_0 that our tree lacks ([pr32646 dive](../research/deep-dives/ak-intake-20261121/pr32646.md)).
+- **IQ3_S / IQ2_S AVX-512 vec_dot PRs declined.** PR #32774 (`intake-2793#record`) uses no VBMI instruction despite its label, and its 1.79x is a cache-resident single-call microbench on a Xeon; PR #32775 (`intake-2794#record`) is 1.15x on the same microbench with maddubs+madd. Under GGML_IQK=1 our IQ3_S/IQ2_S traffic never reaches these vec_dot functions, iqk already uses VNNI dpbusd, and our own ZMM-gather IQ3_S iqk kernel measured NO_MOVE on Zen 5 ([pr32774](../research/deep-dives/intake-lpr-20261122/intake-2793-pr32774.md), [pr32775](../research/deep-dives/intake-lpr-20261122/intake-2794-pr32775.md)).
+- **NVFP4 per-expert scales were missing in Inkling 2 loop slots (PR #32704, `intake-2813#record`)**: slots 24-47 ran NVFP4 experts without .scale tensors; fixed by a post_arch_tensors hook. Non-NVFP4 quants are unaffected (IQ4_NL PPL 7.6931 before and after); the "130.43 vs 7.6531" PPL magnitude is the author's, with no hardware or dataset named ([pr32704](../research/deep-dives/intake-lpr-20261122/intake-2813-pr32704.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [digest 2026-11-21 ids 2752-2787](../research/deep-dives/intake-digests/2026-11-21-ids-2752-2787.md), [digest 2026-11-22 ids 2789-2823](../research/deep-dives/intake-digests/2026-11-22-ids-2789-2823.md)
+- [LazyWeights](../research/deep-dives/ak-intake-20261121/2611.17108v3.md), [Huff-LLM](../research/deep-dives/ak-intake-20261121/2502.00922v1.md), [EntroLLM](../research/deep-dives/ak-intake-20261121/2505.02380v4.md), [pr32646](../research/deep-dives/ak-intake-20261121/pr32646.md)
+- [pr32774](../research/deep-dives/intake-lpr-20261122/intake-2793-pr32774.md), [pr32775](../research/deep-dives/intake-lpr-20261122/intake-2794-pr32775.md), [pr32704](../research/deep-dives/intake-lpr-20261122/intake-2813-pr32704.md)

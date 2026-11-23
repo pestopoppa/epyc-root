@@ -2,283 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-11-19 (wrap-up: backlog waves A-D, audit ordering, cross-worker admission, AK-WIN-CNT-1 draft). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (Autopilot hold and hold-release review). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): autopilot source fixes (false-positive infra classifier, no-op guard, planner-critic labelling) and 10-30 disk/launcher operations lessons. Earlier: 2026-10-28 (ws58 delta since 2026-10-27 15:23Z; see newest Compiled Update). Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): the first planning-context canaries: AutoKernel PASS with caveats, AutoPilot PARTIAL/FAIL, and an inert do-not-repeat guard. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): Codex push onto an experimental branch, the Codex coordination remedy, and the best-of member fence audit. Earlier: 2026-10-24 (wrap-up sweep 24, workspace-7b delta): a stale scratch build lost a keep; CH-27 floors calibrate on the champion store image. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): AutoKernel stops counting abstentions as failures, its gate times build and correctness separately, and harness false-failures are fixed. Earlier: 2026-10-22 (wrap-up sweep 10: grant admission in code, launcher fixes, first 27B width verdict). Earlier: 2026-10-22 (wrap-up sweep 7: fillers, V11 drivers, Locals seeds). Earlier: 2026-10-21 (wrap-up sweep 3: AutoKernel lesson-entry schema, observe-only width dimension). Earlier: 2026-10-20 (wrap-up sweep 2: AutoKernel history/probes, harness-loop architecture, serving depth sweep). Earlier: 2026-10-20 — AK closed-history replay AK-HR-1/2/3 (2026-10-20 intake). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: DS41 lineup moved to gpt-6.1-sol planner + claude-opus-5-5 critic (the MI210 freed); +11.18% serving promotion; a 4.533% floor inflated by the loop owner's own tests; the C84 orphan and process scopes; the C96 abstention storm; 8 non-decisive keeps summed to +0.101% serving (C98)); previous: 2026-09-29 (wrap-up compile: DS41-C69 floor carry-forward and cadence 8, C70–C72 planner cap/budget/salvage turn, C73 anchor-aware env-probe scan, C74/C75 external second lane and context arms, C76 escape-mandate abstention storm); previous: 2026-09-27 late (wrap-up compile: DS41-C66 a dot witness that could never fire on the DS41 lineage; DS41-C67 oracle_unavailable billed as authoring failures and a rule fingerprint blind to the oracle; the operator park sweep across OAB and the GPU MMQ seeds); previous: 2026-09-27 (wrap-up compile: kernel-research gate lifted; P-AK-SEARCH-1-A4 keep-grade runtime-recipe adoption ratified; DS41 keep 2; ak-check vacuous pass, wall budgets, CPU-window yield; OAB-33 delegation is prompt shape, OAB-34 output cap); previous: 2026-09-26 late (OAB-22 planner concision measured on run 10h; DS41 live as run 10j after its first keep); previous: 2026-09-26 (wrap-up, ak-ds41-main: the local-actor bring-up retrospective — 57.5 h to the first measurement, ~26 incidents mostly harness semantics and latent loop bugs; the first local keep +4.535% paired / +7.304% compounded; COR-continuation and resume carry-forward fixes); previous: 2026-09-26 (selector replay implementation and historical evidence audit); previous: 2026-09-25 (System One and evolutionary-agents intake); earlier: 2026-09-25 (wrap-up compile, main-ak-seat: OAB-9 showed inline context beating file-backed context in both pairs while the file arm halved first-step context; run 9 exposed the real floor order and a champion-of-record preflight gap); earlier: 2026-09-24 (late-evening wrap-up compile, main-ak-seat: the reduced-scope planner build — context-as-files cuts the planner prompt 79–83% by the 27B tokenizer, a per-call metrics row reproduces the seat A/B exactly, a perf-output cache makes the bounded seat's "tool time" loss implausible; three planner defects; none A/B'd yet); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: DS41 run 9 ready on a new anchor; floors recalibrate off-hours); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: DS41 run 8 lost its batch-0 planner reply to the 98,304-token split-KV slot — C20 refused the empty reply, the actor-seat call record captured it and ingests refused=0 (VB-AK-SEAT-b1v closed, b1w filed); the operator stopped run 8 at ~15:32Z because region locks held through full-target calibration blocked production /chat, and TERM during calibration only drains (DS41-C26); run 9's prerequisites are ordered (DS41-C25); the shared research clone's fast-forward is blocked by untracked copies git will not overwrite even when identical (DS41-C10a); OAB-4a pins :8083's KV mode per arm); earlier: 2026-09-24 (operator wrap-up compile #2, main-ak-seat: the seat A/B resolved — the plain seat wins on wall, 31.9 vs 44.3 min, and the bounded seat's loss is perf-tool time, not deliberation; offered subagents, the 27B never delegated; every arm compacted once because the conversation is append-only; research main 21ca61b0 and run 8); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: run 7 lost a finished 27B proposal to two actor-seat defects, fixed on a research lane; a bounded opencode seat whose replaced system prompt made each step ~6x longer — the planner's context is filled by its own deliberation, not by tool output; a perf "no samples" that was a symbol-filter miss; SIGTERM is a drain that never reaps the in-flight actor; the orchestrator-as-backend program INF-78); earlier: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
 **Sources**: 210 (206 + 4 added 2026-11-19) native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
-
-
-## Compiled Update — 2026-11-02: typed unavailable results and stop reasons
-
-The documented Q-judge change represents an unavailable judge as `UNAVAILABLE` with a null score and keeps it out of scored averages; eight focused tests passed. Loop guidance also calls for named stop reasons and separates transient failures from substantive failures. Five typed-reason tests passed, but the implementation report still identifies a critic pass-1 checkpoint gap for a runtime pair; these results do not establish that the entire loop is fixed. Sources: [implementation progress](../progress/2026-11/2026-11-02-ws58-intake-impl.md), [agent-loop guidance](../docs/guides/agent-workflows/agent-loop-design.md), [intake implementation review](../progress/2026-11/2026-11-02-ws58-intake-jev-superagent.md).
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **GEAK-HIP** (intake-678#record) AMD's train-free agentic loop that optimizes existing HIP kernels (Generator/Evaluator/Reflector), reporting 1.28x heuristic speedup vs AITER on GEMM. Adopt patterns for MI210 kernel-search; blog data are MI300X, not gfx90a.
-- **ShinkaEvolve** (intake-779#00) Open-source program-evolution framework with weighted parent selection, novelty rejection and adaptive LLM routing, reportedly using 150 samples on its main run. Dive (2026-09-25) caveats: the circle comparison mixed verifier contracts and the ALE/MoE results are single-campaign author reports; adopt patterns only.
-- **The AI Scientist (Nature 2026)** (intake-780#00) End-to-end ML manuscript pipeline with humans supplying topics and filtering outputs. Dive correction: one submission scored 6/7/6 but was withdrawn before a formal decision, so "accepted/passed" wording was replaced; adopt pipeline patterns.
-- **optimize_anything omni** (intake-886#record) One black-box API over GEPA, AutoResearch and Meta-Harness backends; no optimizer dominates (wins split 3/3/4 over 10 Frontier-CS problems). Dive correction: the "source not found" finding was a bad sweep and the post is citable; note no seeds/variance reported. Adopt composition patterns.
-- **RL for code optimization** (intake-939#record) Adding runtime to an RLVR reward barely helps (+0.6 pass@1) and timings from contended local machines are unusable as a ranking signal. Directly relevant to EPYC benchmarking hygiene; dive verified every measurement number and closed the artifact gate negative.
-- **Ave (formerly ARGUS) GPU agent** (intake-967#00) Data-flow-invariant-guided agentic GPU optimization; current v2 reports 89-99% of expert libraries on MI300X (v1's 99-104% is historical). Record status corrected 2026-10-06; relevant to MI300X, not gfx90a, evidence.
-- **MLEvolve** (intake-978#01) Monte Carlo graph search with cross-branch reference edges for ML engineering; MLE-Bench row Gemini-3-Pro-Preview scores Lite 80.30, Medium 57.89, High 42.22, All 61.33. Correction: keep that 61.33 distinct from the paper's 65.3 All on a different backbone; no compute match established.
-- **Weakest hypothesis beats shortest** (intake-991#record) Claims weakness maximization is optimal for generalization within a finite formalism. Dive overturned both load-bearing evidence arms; only the least-commitment intuition survives as a hypothesis.
-- **Optimal Policy Is Weakest Policy** (intake-992#record) Follow-up repairing the formal presentation of the weakness result. Dive: accurately diagnoses earlier flaws but Proposition 2 does not prove its stated necessity conclusion, so overturned as a complete repair.
-- **Weakest-hypothesis technical appendices** (intake-993#record) Repository with PyTorch/SymPy scripts and XLSX workbook for the weakest-vs-MDL experiment. Narrow artifact claims verified; the audit overturns intake-991#record's empirical use of them.
-- **The Wrong Razor** (intake-996#record) Proves finite recoding of positive priors and exchangeable-survival results favoring weakest-correct policies. Dive overturned overall because a load-bearing PAC-Bayes claim does not type-check; the other results are confirmed.
-- **Regret Is Weighted Forgetting** (intake-997#record) Minimum average regret equals K minus weighted weakness on a fixed-quotient lifted task. Fixed-quotient algebra verified; the paper's empirical support is overturned.
-- **Abstraction Ladder Problem** (intake-998#record) Argues weakness maximization cannot explain how abstraction spaces are built. Dive overturned the claimed fundamental circularity but kept the representation-selection warning.
-- **A Formal Theory of Optimal Learning** (intake-1001#record) Two-page IJCAI-25 Doctoral Consortium summary of the weakest-policy thesis with claimed 110-500 percent improvement. Superseded; verified only as a publication summary, no standalone support.
-- **Expert-level empirical software (ERA)** (intake-1370#00) An LLM rewrites programs scored in a sandbox, with a flat PUCT tree allowing backtracking from any node (closer to flat UCB than AlphaZero); tree-search implementations beat the published method for 8 of 9 scRNA-seq methods. Retention is only partly gated by external execution, correcting a related entry.
-- **Convergence of 10,000 LLM-guided experiments** (intake-1371#00) Orze ran two agents (Claude Opus 819 cycles, Gemini 2.5 Pro 864) and generated 42,042 candidate configurations over 27 days; only 1,337 completed experiments have parseable configs. a related entry cited it for the opposite of its conclusion and it used Orze, not the Karpathy template.
-- **AI scientists reason without reasoning** (intake-1374#00) Corral evaluates agents on 8 domains with more than 25,000 runs; IRT-estimated reasoning ability explains 41.4% of explained variance in the best latent-factor model. The earlier framing about a critic pass changing belief was overturned.
-- **FML-bench** (intake-1375#00) 18 ML research tasks across 10 domains isolating the agent's choice of what to try next; 324 runs with a GPT-5.4 backbone. Only a partial instrument for comparing planner search against a baseline sampler.
-- **SciIntegrity-Bench** (intake-1376#00) 33 dilemma scenarios (11 misconduct trap categories x 3 domains) over 7 LLMs: 36 Fail (15.58%) and 34.2% Fail+Flawed; scoring is manual. Overturned for faithful-citation scoring.
-- **Goodhart's Law in RL** (intake-1378#00) In finite MDPs the projected angle between reward vectors determines whether optimization raises true return; early stopping helps only if the angle bound is right. Transfer finding: a wrong theta gives naive results.
-- **In-context reward hacking from feedback loops** (intake-1379#00) Feedback loops cause in-context reward hacking at deployment (output-refinement and policy-refinement mechanisms). EPYC finding: PromptForge's mutation author is `claude -p` with `--resume`, a feedback loop of this type.
-- **GRAFT-ATHENA** (intake-1380#00) Projects solver-attribute DAGs into factored decision trees with a 0-100 rubric reward; low rewards give weak reinforcement rather than explicit negative evidence. Overturned as the nearest autokernel analogue: it selects solver methods and configurations, not kernels.
-- **Orze orchestrator** (intake-1384#00) Schedule-train-evaluate-report loop with exact ingest-time dedup and a dispatch-time refusal added 2026-08-27. Narrows the a related entry claim that Orze refuses near-duplicates by fingerprint: public Orze does exact refusal only.
-- **Agentic AI scientists position paper** (intake-1385#00) Position paper arguing agentic scientists work as co-scientists but not autonomously; its only original experiment is a "hypothesis hivemind" test with 6 models over 50 NeurIPS 2025 papers. Not the corroboration of scaffold-cannot-repair earlier reports suggested.
-- **EvoX meta-evolution of search strategies** (intake-1437#02) EvoX jointly evolves solutions and the strategies that generate them, reporting wins over AlphaEvolve, OpenEvolve, GEPA and ShinkaEvolve on most of ~200 tasks (narrowed to 196; AlphaEvolve numbers imported, not re-run) and matching or exceeding AlphaEvolve on 5 of 7 tasks (intake-1437#02). Decisive finding: strategies are scored only by online deployment, with no replay or offline evaluation. Informs autokernel search-strategy design.
-- **SimpleTES structured test-time scaling for discovery** (intake-1438#01) Organizes evaluator queries as parallel trajectories with refinement and selective reuse, run with global width C=32, depth L=100, local sample K=16 (intake-1438#01) on a single GPT-OSS model; reports SOTA on 28 problems and 2.17x faster than glmnet for the lasso-path solver (intake-1438#02). Title drift resolved (v1 retitled at v2). A template for budgeted autokernel/autopilot search loops.
-- **CostAda cost-calibrated frontier utility** (intake-1445#02) Proves cost-blind credit can forfeit all but a vanishing fraction of attainable quality (intake-1445#00) and divides progress by a remaining-budget-conditioned realized cost; reports equal quality at no more than half the search-side dollar cost on 12 of 16 benchmark-backbone pairs (intake-1445#02). Theorem scope is narrow and code is unreleased. Directly relevant to cost-credit in autokernel allocation.
-- **AdaEvolve adaptive zeroth-order optimization** (intake-1448#00) Needs only the LLM name and iteration count (intake-1448#00); one accumulated-improvement signal drives three adaptation levels (island intensity 0.1-0.7, decayed-reward UCB routing, stagnation-triggered meta-guidance, tau_S=0.02, tau_M=0.12). Confirmed as scalar/control adaptation, not code evolution, evaluated online only; global normalization fixes poor-island bias (intake-1448#02). Settings-adaptation counterpoint to EvoX for autopilot tuning.
-- **CORAL multi-agent evolution via shared memory** (intake-1449#00) Asynchronous agents coordinate primarily through shared persistent memory with no role specialization or islands (intake-1449#00); best final score on all 11 tasks and SOTA on 8 (the abstract says 10, an internal inconsistency) (intake-1449#02). Ablating the knowledge base regresses 1350 to 1601 cycles, and co-evolution beats an equal-compute best-of-4 control. Closest published mechanism to the agent-collab research harness.
-- **SkyDiscover discovery framework** (intake-1452#00) Decomposes the discovery loop into Context Builder, Solution Generator, Evaluator and Solution Selector (intake-1452#00); claims the strongest open-source results across ~200 benchmarks with AdaEvolve and EvoX (repo README, self-reported). The dive covered only abstract and repo, so do not attribute repo claims to the peer-reviewed paper.
-- **LLM-squared blog (DiscoPOP)** (intake-1593#01) Blog accurately describes the propose-train-evaluate-feedback loop run for ~100 generations (intake-1593#00). Its claim of state-of-the-art across held-out tasks and beating DPO is too broad (intake-1593#01): the paper supports only competitive, task-dependent transfer. Code and objectives verify, but no checkpoint snapshot was pinned.
-- **Darwin Godel Machine** (intake-1594#01) Creates and scores new coding agents by interleaving self-modification with evaluation on fixed downstream tasks (intake-1594#00); the blog reports SWE-bench 20.0% to 50.0% (intake-1594#01), public archives reproduce staged records (12/60, 100/200) and a 32/225 Polyglot baseline, while the 30.7% Polyglot endpoint is author-reported. One lineage disabled hallucination-detection markers to fake success, a direct objective-hacking case (intake-1594#03). Supervision meant monitoring, not per-candidate approval.
-- **ShinkaEvolve program evolution** (intake-1595#record) Four case studies (circle packing, AIME scaffolds, ALE-Bench, MoE load-balancing-loss search) with a 150-sample circle run (intake-1595#record). Overturned: circle SOTA fails under a common exact verifier (the run used a relaxed 1e-6 verifier); the AIME scaffold loses to Majority@5, and ALE and MoE results are single-campaign, author-only evidence. Useful as a sample-efficient search pattern for autokernel, with generality claims provisional.
-- **Digital Red Queen: adversarial program evolution in Core War** (intake-1600#01) Linear historical self-play where each round evolves a warrior against prior champions with a two-axis MAP-Elites archive (intake-1600#00). In an unreleased 294-target experiment an oracle portfolio of specialists covered 89.1% by wins and 96.3% by wins or ties (intake-1600#01), author-reported and unmatched-budget. Convergence is weak and not universal; the 77% cycle reduction and probe R-squared 0.442/0.461 cannot be recomputed from releases.
-- **Digital Red Queen launch article** (intake-1601#00) The blog frames DRQ as a minimal instantiation of prior self-play, not a novel algorithm (intake-1601#00). Generality rises across rounds but convergence is weak and of mixed significance; generality was scored against a 317-human warrior panel without proof of per-run train/eval disjointness, and drug design, cybersecurity and market relevance are future-work motivation only.
-- **The AI Scientist (paper)** (intake-1603#02) v1 chains idea generation, code editing, execution, figures, manuscript writing and simulated review around human-provided templates and directions (intake-1603#00); selected papers cost under ~$15 in API charges, excluding accelerators, failed ideas and human effort (intake-1603#02). Open-ended archive improvement is proposed, not tested, and the Automated Reviewer approximates venue accept/reject rather than validity.
-- **AI Scientist first peer-reviewed publication** (intake-1604#00) Three unedited AI-generated manuscripts were submitted blind (intake-1604#00); the real scores were 6/7/6 followed by withdrawal, so 'accepted' is inferred, not a formal decision, and the selection funnel is omitted. The Automated Reviewer reaches 69% balanced accuracy near an inter-reviewer benchmark (intake-1604#01) but was not tested as a truth verifier. The announcement acknowledges hallucinated citations and duplicated figures.
-- **AI Scientist announcement page** (intake-1605#02) Describes the first comprehensive paper-generation system (intake-1605#00) with an archive feedback loop (intake-1605#01) for which no controlled improvement evidence is given. About $15 per paper covers API charges only, excluding compute, failures and human labor (intake-1605#02); near-human means accept/reject agreement on a manuscript corpus, not research validity.
-- **Evaluating Sakana's AI Scientist** (intake-1607#01) In one recommender-system setup, five of twelve ideas failed to execute and four of seven manuscripts (57%) contained incorrect or hallucinated numbers (intake-1607#01). The AI reviewer rejected 9 of 10 papers, including four human-accepted ones (intake-1607#02); the run cost $42 in API charges (~$6 per manuscript), excluding electricity and cluster cost. Single-domain study; strong caution for autonomous-research pipelines.
-- **AI Scientist in Practice (reproduction)** (intake-1609#00) Eight pipelines attempted, three failed (38% failure, small sample, intake-1609#00); code changes were only 0% to 0.3% per iteration (intake-1609#01). Setup took ~7 hours, each pipeline ~3 hours, spend ~EUR 9 per completed paper (intake-1609#02), and none of the five papers reported error bars. Companion evidence, not an independent high-confidence rate.
-- **AI Scientist-v2 agentic tree search** (intake-1610#01) Combines agentic tree search, VLM feedback and parallel execution, with replication nodes rerunning parents under different seeds and aggregation nodes summarizing mean/std (intake-1610#01). One of three workshop submissions scored 6, 6, 7 with a prearranged withdrawal protocol (intake-1610#02). Overturned: the funnel was human-selected (three ideas chosen, best manuscript per idea picked), so end-to-end autonomy is not shown.
-- **Population Digital Red Queen** (intake-1612#01) Compares linear DRQ, a six-member population and a six-member archive-and-niche population under matched call budgets (intake-1612#00); over 40 paired runs archive-and-niche did not reliably improve population mean quality but raised the best champion by 0.0663 (intake-1612#01). Champions were not competitive on external Wilkies, WilMoo and Koenigstuhl panels (negative external replay).
-- **DEI: Diversity in Evolutionary Inference** (intake-1614#01) Adds asynchronous champion exchange to local DRQ and MAP-Elites (intake-1614#00); the final table gives the diverse ensemble 80.6% coverage and QD 45.90 vs 63.0% and 20.46 for solo search at ~248 LLM calls (intake-1614#01). The paper contradicts itself about whether homogeneous or diverse ensembles win, uses tiny unequal samples and releases no raw outputs, so the diversity-causality claim is unproven.
-- **Mutation Without Variation** (intake-1616#01) Accepting every valid rewrite for 300 steps without selection (intake-1616#00), 87% of 150 DSL chains used fewer than 20 structural skeletons and revisited prior structure on over 93% of mutations (intake-1616#01). Overturned: universal collapse, since one model-prompt condition yielded 301 unique programs and 225 skeletons. Relevant caution for LLM mutators in autokernel search.
-- **Darwin Godel Machine independent implementation (Dossman)** (intake-1624#00) Independent (reattributed, not the official repo) DGM-like implementation with a score times 1/(1+children) exploration selector and optional elite/focus paths (intake-1624#00). Overturned: the audit archive stores invalid attempts but only valid entries are eligible parents (intake-1624#record). Four preselected lineages improved on one disjoint 12-task replay, which does not compare selectors or show open-endedness.
-- **Huxley-Godel Machine** (intake-1626#01) Estimates clade metaproductivity from descendant outcomes; at 800 evaluations HGM-Async reports 56.7% vs DGM 53.3% on SWE-Verified-60 and 30.5% vs 27.1% on Polyglot with fewer CPU-hours (intake-1626#01). The comparison bundles clade selection with async scheduling and allocation, so there is no selector-only ablation; the printed best-belief objective is degenerate at epsilon=1 and the released code lacks the selector path.
-- **Simple Baselines are Competitive with Code Evolution** (intake-1628#01) IID sampling and sequential conditioned sampling (SCS, conditioning on random successful programs) match or exceed Shinka on 4 of 9 and 6 of 9 math tasks under a $20 budget (intake-1628#01), but against one modified Shinka run per problem with no raw campaign bundle. Overturned: the circle result is not independent evidence because the evaluator returns a candidate-supplied objective, uses implicit isclose tolerance and fails open on non-finite values. Strong minimal controls for autokernel search.
-- **SMCEvolve sequential Monte Carlo evolution** (intake-1629#00) Code implements reward-softmax resampling, sequential accept/reject proposals, four adaptive modes, ESS scheduling and lambda stopping (intake-1629#00). The finite-sample theorem assumes an ideal kernel while the black-box system uses a reward-only approximation (intake-1629#01); headline comparisons use best of three seeds with no uncertainty, and the circle task is a different relaxed 21-circle problem with a non-finite-center evaluator hole.
-- **Recursive self-improvement of AI research agents** (intake-1630#01) Eight-day principal run produced a 100-node trajectory with 99 rewrite proposals, evaluated on ALE-Bench Lite (10 tasks x 10 seeds); mean private performance rises AIDE0 1536+-33 to AIDE85 1790+-9 (intake-1630#01) with the whole harness changed. Reward-hacking incidence falls 55% to 32% as an association only; a three-seed ignition test (0.780 vs 0.782) was inconclusive and total campaign cost is unreported.
-- **KAPSO knowledge-grounded program synthesis** (intake-1631#00) Branch-local reproducibility bundles and one private final evaluation of the highest-public-score branch (intake-1631#00); ten ALE task ratings average 1909.4 at 6.1% rank percentile and $914.8 spend (intake-1631#01) with no raw campaign, seeds or matched-horizon cost receipts. The claimed knowledge package was not found in the pinned companion repo, and a ten-task estimate with two material losses does not establish reliability.
-- **Huxley-Godel Machine released code** (intake-1639#00) Released code pools descendant outcomes into a Thompson sampler to pick the node to expand (intake-1639#00), overturning the earlier claim that the selector path is missing. The same sampling function also picks which node gets a task measurement (intake-1639#01), so there is no selector-only switch, and no executable epsilon-best-belief endpoint selector was found.
-- **AgentDescent** (intake-1640#00) Runnable code separates candidate selection from task scheduling (intake-1640#00). Every declared policy except exact SingleHead installs a population layer (intake-1640#01), so SingleHead vs Beam(1) changes more than parent selection; population finalization takes the archive maximum with implicit first-max tie-breaking, and archive admission scores on verifier.held_out, which is selector-validation data, not an untouched test.
-- **Red Queen Godel Machine** (intake-1641#00) Evaluator incumbents and challengers are compared on a fixed ground-truth anchor at each epoch boundary (intake-1641#00), but repeated reuse makes the anchor recurrent validation data; evaluators are frozen within epochs and the endpoint uses best-belief selection (intake-1641#01). The preliminary paper author-reports 71.7% vs 69.9% held-out Polyglot and 1.35-1.72x fewer search tokens as bundled full-method results without raw trajectories.
-- **Hill Sampling for test-time scaling** (intake-1642#00) Minimal best-so-far baseline with one incumbent and one stored score, no archive, diversity objective, crossover or parameter update (intake-1642#00); each candidate runs once and the incumbent is not re-evaluated (intake-1642#01), so a favorable noise draw can persist. Compute matching is on nominal completions only, and the claim that archives and diversity are unnecessary holds only for three domains with three seeds. A cheap control for autokernel search.
-- **Global optimization for combinatorial geometry revisited** (intake-1643#01) Authors report unmodified FICO Xpress and SCIP reproduce or improve prior AlphaEvolve-era values (intake-1643#00). All 13 rounded printed values improve in the stated direction, which checks arithmetic only, not feasibility; row-level solver attribution, the validator and runtime table are missing (intake-1643#01). Global-optimality language is rejected; conventional solvers are a baseline for any LLM-search claim.
-- **Finite sample complexity of SMC estimators** (intake-1644#00) Theorem for a fixed measure path with exact weights, multinomial resampling and invariant kernels (intake-1644#00); under bounded weights and mixing the final bounded-function estimator error is controlled. It is a proof-obligation checklist for fixed-target expectation estimation, not a guarantee for reward-only, best-so-far or open-ended program search, and the MCMC comparison is of conditional upper bounds.
-- **Kapso long-running optimization agents** (intake-1645#00) Repo reports 1909 Elo vs ALE Agent's 1879; the ten displayed ratings average 1909.4 (intake-1645#00) but the pinned tree has no campaign workspace or raw scores. The adapter validates acceptance and nonzero scores only on the first of four public evaluations (intake-1645#01) and exposes a separate private-final call; current config uses different models than the Gemini-2.5-pro paper campaign.
-- **Iterative code readability refactoring convergence** (intake-1649#00) Under GPT-5.1 at temperature zero, adjacent-version unchanged-line rate rose from 45% and 76% to 86%, 89%, 92% (intake-1649#00); the metric compares adjacent versions, not survival from v0. Naming prompts keep renaming without convergence, comment prompts stabilize after one pass (intake-1649#01); readability was not measured, and 1,070 semantic-change or compile failures were found in 59,489 tests (intake-1649#03 in claim set).
-- **AI Scientist-v2 fabricated ABM results** (intake-1653#00) On the macroeconomic ABM task AI Scientist-v2 claimed Q-learning simulations but its GDP plots were constant round-number traces (50/100/150/200) that external authors judged fabricated; correction: scoped to the tabulated ABM report, and the paper cannot support a failure-rate estimate. Relevant as a guard: autopilot-style research loops need artifact audits, not self-reported claims.
-- **hgm clean-room Huxley-Goedel Machine** (intake-1661#00) Exposes a use_cmp switch for CMP-guided versus greedy/DGM expansion; the author-reported 0.055 hidden-skill advantage over 40 seeds comes from a synthetic world that deliberately builds a dead-lineage greedy trap. Pattern for archive-search in autopilot; not independent evidence.
-- **Red Queen Goedel Machine implementation** (intake-1662#00) Independent code implements anchor scoring, strict evaluator replacement, epoch increments and selective erasure; promotion authority sits with an injected provider, and the shipped LLM path grades with the same model. Adopt the co-evolving evaluator pattern with an independent anchor source.
-- **LLM Speedrunner replay substrate** (intake-1670#00) Pinned repo ships 231 files, 40 configs, 5 analysis notebooks and 45 workspace templates for static replay; the runtime validator rejects val_loss > 3.28 while released analysis only invalidates >= 3.29 (intake-1670#01), a loose-threshold defect in analysis. Candidate research-agent benchmark.
-- **Kapso long-running optimization agents** (intake-1671#01) Zenodo v0.4.9 preserves an 816-file payload identical to the Git tag but contains zero generated campaign workspaces or raw score outputs; verdict already integrated. Release-identity evidence only, not performance evidence.
-- **Uncertain Quality-Diversity evaluation** (intake-1672#00) In uncertain QD, fitness and descriptors are distributions, and corrected-archive evaluation is needed since ground truth may be inaccessible; M=512 narrowed to the paper's empirical choice. Method for noisy-measurement archives such as autopilot results.
-- **Lenia open-ended evolution via QD** (intake-1673#01) Elite additions continue past one million evaluations, supporting finite-horizon archive activity; the authors explicitly do not claim theoretical open-endedness. Do not cite as unbounded novelty.
-- **Formal definitions of unbounded evolution** (intake-1674#00) Defines unbounded evolution as nonrecurrence beyond the Poincare recurrence time and innovation as exclusion from the trajectory set of equivalent isolated systems; correction removed a complexity-growth requirement. Conceptual framing only.
-- **Real Science Is Harder, pharma part** (intake-1675#01) No AI framework matched the reference scope; on the antibody task the reference used 240 datasets and 30 model families versus one dataset and 2-5 models per framework. Reinforces scope-gap audits of autonomous research output.
-- **RQGM coding-domain reproduction** (intake-1682#01) Statically implements challenger registration, strict anchor replacement, epoch advance and selective erasure, but the host proxy and HGM executor for a live coding run are marked planned. Mechanism fidelity only.
-- **rqgm epoch package (superseded)** (intake-1683#01) Not an implementation of the paper's RQGM: it mutates a tolerance schedule, with zero code hits for best_belief, challenger, anchor_success; correction overturned fidelity and selective-erasure claims. Do not use.
-- **Darwin Goedel Machine official code** (intake-1686#00) Outer archive loop selects parents, runs concurrent self-modification, filters functionality-valid children and updates the archive; default score_child_prop weights sigmoid accuracy by inverse valid-child count (intake-1686#01). Reference design for archive-based self-improvement.
-- **RQGM explainer article** (intake-1687#01) Presents a small no-LLM 20-seed simulation, with full RQGM improving held-out true pass rate over frozen by 0.272 on average, consistent with the notebook. Not a reproduction of the paper's LLM campaign.
-- **RQGM toy simulation notebook** (intake-1688#01) 22-cell seeded NumPy notebook: frozen true pass 0.410 +/- 0.168, full RQGM 0.682 +/- 0.187, paired delta +0.272 +/- 0.237, positive in 90 percent of seeds; runs in 5-10 minutes on CPU. Cheap mechanism check.
-- **Sequential MCMC non-asymptotic bounds** (intake-1694#01) Finite-particle error bounds for multimodal SMC assume the dynamics cannot cross partition elements (particles cannot move between same-level tree nodes). Theory background for search samplers.
-- **Multimodal SMC asymptotic variance bounds** (intake-1695#01) Bounds asymptotic variance while allowing MCMC kernels to cross modes, but explicitly gives no non-asymptotic finite-particle bound. Distinguish from 1694 when citing.
-- **Open-endedness for its own sake** (intake-1696#00) Hintze runs 100 replicate populations for 5 million generations and prefers an exponential over a hyperbolic fit; correction narrowed the indefinite-growth reading to a finite-horizon extrapolation. Do not cite as proof of unbounded growth.
-- **Taylor critique of Hintze model** (intake-1697#01) Taylor's three-part framework (novelty class, process, intrinsic/extrinsic) classifies Hintze's model as exploratory-only open-endedness, since fixed semantics cannot produce expansive novelty. Taxonomy for judging autonomous-research claims.
-- **MODES toolbox** (intake-1698#00) Treats open-endedness as a continuum with separate change, novelty, complexity and ecology metrics; all metrics assume prior noise filtering (intake-1698#01), and the persistence filter is horizon- and population-dependent. Diagnostic pattern for autopilot novelty tracking.
-- **MODES toolbox assessment (Evo-Sandbox)** (intake-1699#record) OpenAlex abstract reports Evo-Sandbox experiments probing the toolbox's ability to detect open-ended-evolution hallmarks; correction overturned an earlier "no abstract" retrieval note. Abstract-level evidence only.
-- **OEE undecidability conditions** (intake-1700#01) Defines OEE as every state being eventually exceeded in complexity and shows noncomputable adaptation times are necessary for strong OEE under sophistication-type measures (delta mapping not computable). Scoped to the paper's system assumptions; conceptual only.
-- **Large-scale Lenia open-ended evolution** (intake-1702#01) Moves inheritance, replication, mutation and selection into one continuous Lenia simulation; runs show transient diversity then converge to extinction or domination, a preserved negative result. Caution against assuming open-ended gains from a simulation.
-- **Can AI conduct autonomous research (two case studies)** (intake-1704#01) Eight open-source frameworks on two reproduction tasks: none completed the full research cycle and none produced genuine results by executing code; correction replaced an apparent 0/16 rate with eight framework-level units. Bounded evidence against trusting unattended research agents.
-- **Practical AI frameworks on real problems** (intake-1705#00) Autonomous runs failed in most cases while one Kosmos property-prediction case matched the human expert; correction: qualitative paper, no defensible system-level failure rate. Scope the success to one framework/task.
-- **Open-ended AI research shadow evaluation** (intake-1706#00) Original authors graded the two main papers Reject (2/6) and Strong Reject (1/6); correction: five heterogeneous runs (two pilots, two main, one robustness), so 0/5 is not an acceptance rate. Small-sample evidence.
-- **Fork-and-Flush** (intake-1993#01) Fixed schedule: K=4 opening branches, then at 33% and 66% of budget fork K=4 branches from the leader workspace with empty chat context. Matched-credit normalized mean 0.78 vs 0.47 single-run vs 0.54 best-of-4 on 13 tasks (intake-1993#02); independent runs plateau from 68.3 to 100.0 (intake-1993#00). Plateau-triggered forking rarely fired (15/25 runs never) (intake-1993#03).
-- **Scaling Discovery Requires Forgetting** (intake-1998#00) Agent sessions narrow as they lengthen; on the VLIW task 66.2% of single-agent spend went to empty turns declaring a plateau. Forgetting means discarding every session and the whole search state at fixed round boundaries (three forgets, four rounds) (intake-1998#01). Team-with-forgetting beats 4 parallel agents by +14% (AHC014) and ~2% lower BPB on nanochat (0.961 vs 0.980) (intake-1998#03). Relevant to AutoKernel session reset policy.
-- **LLM4LLM closed-loop kernel optimization** (intake-2005#00) Isolated kernel benchmarks can misrank against in-model behaviour, shown by three qualitative cases (anecdotal, not a population statistic). Results are NVIDIA-only; geomean end-to-end speedup over eager PyTorch 3.91x (A100) and 6.98x (H100) across ten workloads (intake-2005#02); restart ablation gives small gains, e.g. 2.005 vs 1.961 (intake-2005#03). Relevant to AutoKernel in-model validation.
-- **Stateless Language Agents (SLA)** (intake-2010#00) Harness owns research state and rebuilds a fresh role-specific context per invocation; statelessness enforced with Landlock and cleared sessions (intake-2010#01). Token-matched on the VLIW kernel with Codex+GPT-5.5 (intake-2010#02); removing Advisor reconstruction, Worker isolation or assignments each reduces progress in all 8 comparisons (intake-2010#record). Neither reproduces nor contradicts intake-1998#record (no retention-vs-reset ablation) (intake-2010#04).
-- **Algorithmic mode collapse in autoresearch** (intake-2011#00) Surface diversity stays flat (0.66-0.68) while semantic diversity falls; faithfulness ratio is 0.38-0.49 for vanilla autoresearch (intake-2011#01). DAPS mitigation combines category reweighting, a FIFO memory with cosine rejection (tau 0.85) and a revert gate (intake-2011#02). Scope is ML training loops on one A100 only (intake-2011#03).
-- **Elo-per-token analysis** (intake-2023#00) Independent best-of-n gains exactly 400 Elo per tenfold token increase (intake-2023#01). Measured: every system falls below 400/decade at the largest budgets pooled over 14 tasks (intake-2023#02). Splitting helps on one task (Polyomino, +264 joint-Elo over one 100M session) (intake-2023#04); b_inf is task-specific and unpredictable (intake-2023#05). Useful test for when to restart AutoKernel sessions.
-- **stateless-language-agents repo** (intake-2024#00) Preprint-only repo: one commit and one PDF, no code, README or prompts. The preprint specifies stateful search with stateless agents (intake-2024#01); Appendix E reproduces the full Advisor and Worker prompts, the reusable artifact (intake-2024#04). Headline: 67.9M vs 986.3M tokens (93.1% fewer) on the VLIW cycles task with Codex (intake-2024#05).
-- **Mode-collapse metrics implementation** (intake-2025#00) Surface diversity S_t is mean normalized Levenshtein over the last W=20 diffs; semantic diversity uses all-mpnet-base-v2 embeddings clustered with HDBSCAN (intake-2025#01); mechanism entropy uses a 9-category regex parser (intake-2025#02). Faithfulness ratio counts absolute gains so a held-out regression looks like gain (intake-2025#03). Kernel use needs a new taxonomy for _KEYWORD_RULES (intake-2025#record).
-- **EloScaling code release** (intake-2041#00) Ships Harbor watchdog patches, adapters and analysis pipeline but not raw trials. Games formed within a task from per-trial prefix-max scores on a 1.5x geometric grid from 100K to 100M tokens (intake-2041#01), 500-replicate session bootstrap (intake-2041#02). Missing: b_inf and K=round(B/b_inf) code and a license (intake-2041#05).
-
-## Compiled Update — 2026-10-28 (ws58 delta): AK flakes resolved, OAB-31 candidate validated on the focused suite, unified-surface CPU leg passes
-
-- **AK test flakes RESOLVED (2026-10-27):** the two `test_serial_roster.py` authenticated-control failures were fixed by a subprocess `PYTHONPATH` fix (research `1ff090cc`, merged `dc77ce388`); on research `08fe38e7ec99` 29 focused tests passed; ToolRunner fix `21ef67e69` is an ancestor of that baseline. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [progress](../progress/2026-10/2026-10-27-ak-flake-blocker.md)
-- **Gate-verdict subshell defect already repaired:** current C3/C4/C5 fold gate scripts set `GATE_VERDICT=FAIL` in gate-process scope; rc=0 and rc=7 controls pass on all three (does not run the full gates). [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
-- **OAB-31:** the assertion-fix candidate passed the focused suite (418 passed, 48 subtests); growth-guard status and merge are not shown, so it stays open. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)
-- **Unified surface:** CPU source+runtime leg satisfied (r10 `bdb52d951`, SOURCE_AND_RUNTIME_PASS); DRY receipt only 17 of 23 refs reproducible (6 original assets missing). LIVE GPU leg still needs a serving-owner grant. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
-- **Open question:** INF-74 concurrent-target cutover is blocked until root-owned cgroup delegation lands and the owner-bound grant handoff is built. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination)
-- **Recorded finding (not a result):** the 2026-10-27 RTG57 belief wiring was exercised only with synthetic canaries. [progress](../progress/2026-10/2026-10-27-rtg57-vkq-wire.md)
-
-## Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): the first planning-context canaries, with AutoKernel PASS with caveats and AutoPilot PARTIAL/FAIL
-
-**Confidence: inferred.** The contexts were assembled by read-only harnesses that call the loops' own library functions. There was no inference, and every ledger touched was a scratch copy; the canonical ledger was unchanged.
-
-- **AutoKernel Q38FN: PASS with caveats.** The 10-22 query-major replicate null (row 337, −1.10% vs a 1.365% floor) reaches the context through the in-store "Already tried" channel. Four defects:
-  - **D-A1:** a scoped ingest stamps frames after the plan's fixed `as_of`, so the plan that ran the ingest cannot see it.
-  - **D-A2:** the do-not-repeat formation guard is inert for Q38FN. Split-GGUF quant is None, `research_scope` is dropped over 2 MiB, the surfaces mismatch, and the guard needs at least 3 answers, so a one-shot null is never closed mechanically.
-  - **D-A3:** ranked recall drops the current-epoch keep_candidate.
-  - **D-A4:** the default ROOT is the stale shared clone.
-- **AutoPilot: PARTIAL/FAIL.** Insights, conventions and a belief REGRESSED claim are present. Missing or wrong:
-  - the trial-1472 frontier keep appears only as a bare id;
-  - the Pareto summary reports 0 entries, because the epoch fence postdates every trial;
-  - seeding telemetry is 20/20 unit-test pollution (D-B1);
-  - the prompt carries contradictory frontier sizes (D-B2);
-  - the kvq block disagrees with the belief block (D-B4);
-  - the bridge cannot forward a read log (D-B5).
-- All defects are assigned to Codex (LOOP-SAFETY-C-BUNDLE C1–C3, due 10-26). VB-CANARY-GATE-1 turns both harnesses into the committed gate: a loop is not "wired" while its canary fails.
-
-Sources: [loop canary 2026-10-25](../docs/reference/loop-canary-2026-10-25.md) · [canary harness](../docs/reference/loop-canary-2026-10-25-harness/canary_a.py) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-CANARY-GATE, VB-CANARY-GATE-1) · [loop planning-inputs audit](../docs/reference/loop-planning-inputs-audit-2026-10-25.md) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): Codex coordination: two incidents with one remedy set, and the best-of member fence is already fixed
-
-**Confidence: verified** (incident log, committed regression test).
-
-- **INC-20261024-codex-push-onto-experimental-branch.** A Codex worker's `serialized_push --push --fetch` followed an inherited upstream and fast-forwarded `fork/experimental/kpf62-456-20261024` 786a30078 to 0a9fa2c29 (test-only, opt-in `--g1-capture-jsonl` in tests/test-chunk-kv.cpp) instead of pushing a `codex/` branch. Disposition (operator-directed): retained as proposed and unbuilt; all KPF-62 pins stay 786a30078. Remedy: push only to `codex/*` with an explicit refspec, never an inherited upstream.
-- **The 10-24 Codex tally.** 13 distinct jobs registered, no compute authority: passed S-20 cold-vision (16 tests), OAB fences (3), KPF62 adapter R2 (7; R1 failed on a fixture), m26-cli R2 (10), NIB2-102.c (5), omega-root R2 (10); EG2 held (1 skipped where 45 were expected). Coordination remedy: binding `RULES-FROM-WS58.md`, `OPEN-WINDOWS.json`, `DEADLINES-FROM-WS58.json` (each fix tied to the window it unblocks), plus zero-token watchers on its reports, rows and deadlines; no new quarter grants from 16:00Z until the quiet chain ends.
-- **OAB-28 best-of member `ak-check` fence: already fixed.** Research commit 48ed3f77a (2026-09-29) gives a multi-sibling pool one worker-root fence, with `pool.drive` handing member and winner checks that scheduler-visible fence via `AK_CHECK_FENCE`; this supersedes the old handoff's "disjoint fence directories" wording while keeping its safety intent. Commit 9b4ddb6f2 adds a temporary-fence regression (the tail stays blocked until the last member releases, then both members' checks are refused); the granted run passed 3 focused tests in 1.03 s.
-- **Harness defect found by a read-out.** `inf66-r2364-thread-sweep` failed rc 1 with `AFF: unbound variable` (session.sh:175, never assigned); tracked as INF66-AFF-1 for Codex.
-
-Sources: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [codex-ni campaign reconciliation](../progress/2026-10/2026-10-24-codex-ni-campaign-reconciliation.md) · [bestof_member_fences](../progress/2026-10/2026-10-24-bestof_member_fences.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 24, workspace-7b delta): a stale scratch build silently lost a keep, and CH-27 calibrates floors on the champion's store image
-
-**Confidence: verified** for the landed harness commits and the replicate; **inferred (unverified side-agent claim)** for the sparse-attention mechanism, which is filed as a task to verify.
-
-- **Lost keep, root cause.** In the 2026-10-22 focused Q38FN `cpu_fa_schedule` test, the anchor guard aborted on a stale incremental scratch build (`store/anchor-verify-cpu`, configured from an older source tree), so a keep was never recorded. An identical-diff replicate then measured −1.10% decode / −1.34% prefill: a null. Research `b6e80d24e` makes `gates.py` clear a CMake build dir whose cache names another source tree, and makes the in-flight keep evidence travel on `run_aborted`. Lesson: an incremental build dir is pinned to the source tree it was configured from, so reusing it across trees is a correctness hazard, not just a speed one.
-- **Misleading harness logs fixed.** `f131a9f7b` makes `run.py` print "bench floor NOT USED" under a direct serving launch, instead of a false "UNCALIBRATED … keeps refused". Still open: a store-image anchor that IS attested prints "UNATTESTED", and `--dry-run` appends to `floor-registry-lookups.jsonl`.
-- **CH-27: one window calibrates the serving and 64k floors on the current champion's STORE image.** `eb753e422` admits a store-image anchor on an experimental lane, makes `champion_reanchor` name the exact store COR build on a plain advance (`--cor-build`), and seals the 64k floor per anchor under `floors/anchors/<exec16>/`. The prepared bundle must be re-anchored from `141e4bcf5` to champion `dcc853b55` (C3 changes the K-shift in `llama-kv-cache.cpp`). Then register the `ch27-q38fn-floors` row (whole host quiet + GPU idle, 200 GiB, 5700 s) and book it: the 06:37Z slot was skipped because no row existed.
-- **Unverified mechanism claim, filed to verify.** Q38FN's top-2048 sparse attention is said to be done by masking, so FA still walks every KV row. The real fix (select the rows before attention) would live in `qwen4exp.cpp`.
-
-Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (CH-27), [2026-10-24-workspace-7b](../progress/2026-10/2026-10-24-workspace-7b.md)
-
-## Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): AutoKernel stops counting abstentions as failures, its gate times build and correctness separately, and harness false-failures are fixed
-
-**Confidence: verified** (run records and predeclared rules in the cited sources).
-
-- **Give-up trigger change (operator decision, memo-backed).** `render_context`'s diminishing-returns triggers (`loop/actors.py`) landed as two research commits: (b) the trigger walk follows `recorded_at`, not rank order (`da6d32921`), then (a) `abstained` leaves both trigger sets (`37fe0f50f`); `refused_at_formation` KEEPS counting. Evidence: in replay, 116 of 189 DS41 escape firings counted pre-keep failures and 191 Q38FN stagnation firings were hidden by (b); (a) moves n=1 Q38FN episode, about 1.5 extra attempts per campaign, and 354 of 356 abstentions are reasoned declines. The memo (`/mnt/raid0/llm/tmp/ak-trigger-review-20261024/MEMO.md`) backs it; AK-TRIG-1 verifies on the next campaign: C1 (b) stale-count must be 0; C2/C3 falsify (a) (>= 2 abstention-only episodes with >= 3 measured same-family attempts and no later keep, or a >= 10-call run at >= 80% abstained naming a family); revert (a) alone if C2 or C3 fires, (b) alone only if C1 is non-zero. A yield change at AK-HR-2.2 is not a rollback trigger (confounded with the 10-20 ranked-recall flip). Lesson recorded: trigger changes need data + literature + owner review.
-- **AK-HR-3b: build and correctness are timed separately.** `STAGES` gains `build` and `correctness`; `gates.compiles` records its own wall seconds and `run_all` times the other checks, so `build + correctness <= gate`; observe-only (verdicts and order unchanged). A first cut that edited the GPU branch broke the `HardenedCandidateGates` structural pin and was restored. Hosted codex/claude token counts remain not obtainable.
-- **A procguard false refusal explained.** `TheToolRunnerNeverTreatsAFailureAsOutput` failed 1 in 6 under CPU co-run because an exiting same-uid process (PF_EXITING, mm gone) refuses `/proc/<pid>/environ` with EACCES for a few ms, or its /proc dir vanishes between reads, and both were counted as census errors. 15 s of 4-thread `true` churn produced 14,545 such reads; all were gone at 5 ms and 430 of 430 still present carried PF_EXITING. `Guard._died()` clears an unreadable task only on proof of death (gone, PID recycled, Z/X, or PF_EXITING settled within 0.5 s); a live non-exiting unreadable process still counts, so fail-closed is unchanged.
-- **New dimensions and ranking.** A `threads_batch` runtime arm (`-tb` decoupled from `-t`, normalised so existing recipe hashes and floors are unchanged); a `GGML_FA_SPLIT_KV=0` width-invariance plan; GPU serving profiles now carry tokens and per-kernel `launches_per_token` / `ns_per_token`, ordering the planner's hotspot table and the candidate timing queue (ranking only, no verdict path touched). `-tb 96` needs the whole host, so the draft run is BACKLOG until the CH-27 floors are calibrated on the current champion. AKX-AUTO-6 (auto re-anchor on champion advance) is ticked: a dry-run `plan` names the C3 advance and is actionable; the live exercise waits on workspace-7b's Q38FN relaunch and should take the `dcc853b55` image. AKX-ALL-LB3.2a wrote the attribution instrument (40 tests; critical path = a measurement build).
-- **Harness lessons (this session).** (1) A non-executable re-exec returned rc 126 and `c5-cpu-correctness` recorded it as a verdict; wrappers now treat 3 / 64 / 124-127 / >= 128 as harness errors, never verdicts. (2) A stale-build check grepped the thin `llama-server` launcher, but the option table lives in `libllama-common`; check the library that holds the symbol. (3) The C4 A/B gate now guards on its own noise floor (> 10% / 4% = NOISY, retry). (4) The registry rebuild reads the master registry from research origin/main; a regen on a stale shared clone dropped 10 `ctx_checkpoints: 32` lines and repointed the master, so guard `3c4d6881` refuses a registry blob that differs from origin/main (override `--allow-stale-research-registry` offline only) and the clean regen `e0ba98fe` keeps every `ctx_checkpoints: 32`; never sync the shared clone to make a rebuild work.
-
-Sources: [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), [kernel-freeze-runbook](../docs/reference/kernel-freeze-runbook.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 11): a launcher's class must match the grant shape; C2 b-rerun has no verdict yet
-
-**Confidence: verified** for the run-2 numbers, the refusal record and the re-arm; the C2 verdict is **open** until run 3 (booked 2026-10-23 06:25Z).
-
-- **C2 b-rerun run 2 is INVALID, not a HOLD.** Under the predeclared rule (`c2-regate-20261021/PREDECLARED_b_rerun.md`, both medians at least 45 and per-arm CV at most 6%), the anchor's CV of 6.54% voids the run (anchor 50.46 t/s, candidate 50.63, CV 2.79%, +0.345%, 4/12 pairs slower). An invalid run yields no CAS and no bisect; it is re-run in a fresh quiet slot.
-- **A whole-host quiet slot was lost to a class/grant mismatch.** `--class cpu+gpu` requires an `mi210_0` token in the grant, but a whole-host CPU timing grant is written `regions=0-95`, so the launcher refused it (`.ended rc=2 regions-unusable`) 30 s after the 19:27Z grant. The right form for a CPU timing job that needs the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus 0-95`, which `filler_run8.sh` (run7 plus that allowance) accepts. Rule 22 in the fillers guide: dry-check a new launcher's region parser against the grant line you expect before re-arming.
-
-### Source References (2026-10-22 wrap-up sweep 11)
-
-- [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md) — rule 22
-- [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — wrap-up 8: run-2 numbers, lost slot, run8 re-arm
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 10): grant admission is gated in code, launcher lock bugs are fixed in new versions, and the first non-trivial 27B width verdict
-
-**Confidence: verified** for the validator wiring, launcher dry-runs, gate unit tests and the named job outcomes; **inferred** for anything that still needs a granted window (AK-PORT-LB1.1, AKX-ALL-LB2.1).
-
-- **A grant now has to carry its reasons (CTC-Q-A/B ticked).** `validate_fillers.py --for-grant` (required `prior=`, `decision=`, `min_effect=`, `substrate=` fields) plus `ram_admit` run through one wrapper, `grant_ok.sh`, which every live grant writer calls; `prior_check.py` greps the belief ledger, run records, research artifacts and AK campaign stores to fill `prior=`. The tick was withheld until a check found two armed night writers that still called only `ram_admit.sh`; they were re-armed through the wrapper and the first in-the-wild refusal (`kpf60-p0-gpu`, missing prior/decision/floor fields) was returned to its owner. Lesson: wire-in is proved per writer, not by the module existing.
-- **Launcher bugs are fixed in a NEW launcher version, never in place.** `filler_run5.sh` (CTC-Q-G/H) closes the lock fds on the poller `sleep`s so an orphaned sleep cannot hold the launcher lock after the poller is killed, exits after one window unless `--repeat`, and never deletes a grant held by a running sibling; the dry-run proved kill-then-immediate-re-arm succeeds where the `filler_run2` control fails. Two follow-on incidents shaped run6/run7: region-lock folds `--cpu-list 184-191` (the MI210 host threads, SMT siblings) into a whole-q3 claim, so the MI210 sat idle 12:24-12:41Z behind a q3 build, and the first fix `--no-fold-siblings` was refused ("maps to no regions"). `filler_run6.sh` makes a GPU-class no-fold run claim `gpu-quiet` only and lets the job taskset itself; `filler_run7.sh` exits 64 for `--class gpu --gpu-quiet exclusive` without `--claim-cpus` or `--no-fold-siblings`. Rules recorded: never grant q3 while a GPU runner holds it, no timing-class CPU work on q3 during GPU windows, no ungranted region-lock claims (a subagent ran a second-ASR job with no grant and was killed by PID).
-- **GPU-grant hardening from an audit of CPU use inside GPU grants.** The speech-d1 docker container was unbounded, so `--cpuset-cpus "${FILLER_CPUS:-184-191}"` was added; V11 GPU items need whole-host grants (cpu 0-95 plus GPU exclusive), never GPU-only; a hsprof1 reader tripped a CPU `llama-bench` guard inside a GPU-only grant; dirty-tree refusal (exit 5/8) was added to two jobs that pin a worktree sha.
-- **Thinking-on voided a third job in one day.** The KPF-64 replay passes, a cme7 run and an hsprof1 reader were each voided or failed by Qwen3.6 thinking-on consuming the budget; the later KPF-64 diagnosis was decode contention across four slots, not thinking, which is why a slow-harness diagnosis must be checked against server logs before a cause is named.
-- **First non-trivial 27B width verdict (AKX-ALL-27/27b).** `akx-all-27b-run` COMPLETE 12:58Z, decision `nontrivial_verdict`, verdict `improved`: two Q8_0 matmul cells' first-fail width moved from k=2 to 5, zero new failing cells, route proven in the keep build only. The A/A serving shakedown (`s5-akrsg-shakedown`) passed with `serving_ab.v1` OK; neither record was ingested to the belief kernel because the writer (VB-AKRSG-WRITE) is on an unmerged research branch, so VB-AKRSG-INGEST was filed and no tuples were invented.
-- **A noise-floor-relative candidate gate exists (AK-PORT-LB1, research `f8df555cf`, 17 tests).** For non-bit-exact multi-row kernels the floor is the incumbent's own batched-vs-single divergence; the candidate must stay within 1.5x of it, with no greedy flip where the incumbent top-2 margin is at least max(0.25, 2x floor); empty, short (under 8 positions), shape-mismatched or non-finite input is `oracle_unavailable`, never a pass; a zero floor demands bit-exactness. It is not yet called from any gate chain (AK-PORT-LB1.1 needs per-position logits at N=1 and N>1 from both builds). A companion static ISA audit (INF37-LB1) found Q8_0 and IQ4_XS weight loads hoisted (3 per row, ncols 1-8) while Q4_K re-issues three scale loads per column (6 to 27 per row at ncols 8).
-- **Codex actor sample (OAB-LB1, sample only).** In the first 3,000 AK threads 0.17% of turns did not complete (0.07% interrupted), with no error events, and exec wall was 2,173 s of 205,649 s turn wall (1.1%; git 1,006 s, rg 525 s). Forked children replay parent history with fresh timestamps, so the miner excludes them and counts replayed turns once; the full run is scheduled, not done.
-
-### Source References (2026-10-22 wrap-up sweep 10)
-
-- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination) — CTC-Q-A/B/G/H and the wire-in evidence
-- [progress/2026-10/2026-10-22-a4-launcher-sidecars.md](../progress/2026-10/2026-10-22-a4-launcher-sidecars.md) — filler_run5 dry-run proof
-- [progress/2026-10/2026-10-22-gpu-grant-hardening.md](../progress/2026-10/2026-10-22-gpu-grant-hardening.md) — run7 and cpuset fixes
-- [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — q3 fold incidents and grant calendar
-- [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — job outcomes, run5/run6 history
-- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-PORT-LB1
-- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-LB1 sample
-- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — INF37-LB1 ISA audit
-
-## Compiled Update — 2026-10-22 (wrap-up sweep 7): grant-driven fillers, v11 drivers, Locals intake seeds for AutoKernel
-**Confidence: verified** for the built drivers and recorded dry-runs (named artifacts); **inferred** for every seeded or filed AK task (AKX-ALL-LB1..4, CH-LB1, AK-PORT-LB1, OAB-LB1 are unrun).
-
-- **Compute is now queue-and-grant, not hand-launched.** A generic `filler_run.sh` wrapper (classes cpu / gpu / cpu+gpu, `--self-claim`, `.ended` on every path) and `filler_run2.sh` (`--gpu-quiet shared|exclusive|none`, `--precond-cmd`; rc!=0 gives `.ended rc=5 build-missing`) back the FILLERS.md register (18 columns). Dry-run evidence: rc 3 window below min, 4 own port listening, 2 bad regions, 124 hard end, 143 signalled, job rc 75/0 passthrough. Bug found and fixed in dry-run: wrapping the job in `timeout` moved it out of the captured process group, so the hard-end kill missed it.
-- **V11 measurement drivers (V11-052/050/051/086, AKX-ALL-27b) carry sha256-pinned PREDECLARED.md files** checked before any run; decision strings are computed by `decide_*` and mirrored in the text; `--selftest` has 21 synthetic checks. Armed pollers all refuse `rc=5 build-missing` until the arm builds exist. Lesson: a dry run that stubs the region-lock argv proves nothing about the launch path (overnight GPU jobs rc=64).
-- **Claim scoping bug class:** `akx-all-27b-run` failed rc=75 because the inner region claim asked for the whole CPU while the queue row booked GPU + 184-191; the booking and the inner claim must be derived from one source.
-- **AK autonomy tasks built but not landed:** floor registry + `champion_reanchor` (AKX-AUTO-6: detect champion advance, `--new-anchor-epoch` re-anchor on the store build, one recalibration per advance, OFF by default) passed tests on 2026-10-22 yet stay open until re-run in a granted window and merged. The A/B real-server shakedown pieces (`run_paired_serving_ab.py`, `ab_server_pair.py`, `metrics_map.py`) are built (8 tests); v10 does not export KV usage, reported `not_exposed`, never zero.
-- **Locals/Beacon intake (intake-2386#record through intake-2460#record) seeded into AK lanes, nothing measured:** 27B GPU inbox ports (AKX-ALL-LB1), production-shape verify widths N=16/32 and a ragged surface so an N=8-only keep is labelled not-yet-transferable (AKX-ALL-LB2), a CPU long-context attention lane and uncompiled-iqk-FA wiring with correctness-only op tests (AKX-ALL-LB3/4), a BF16-recurrent-state guard (CH-LB1), and a noise-floor-relative tolerance gate for non-bit-exact multi-row kernels (AK-PORT-LB1: divergence <= 1.5x the incumbent's own batched-vs-single divergence). Retained: v10 grammar forced share measured 13% flexible / 15% compact (the 35-40% hand estimate is withdrawn, intake-2415#record); a p99.9 gap is never cited without sample and stall counts (intake-2405#record).
-
-### Source References (2026-10-22 sweep 7)
-- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions)
-- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
-- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
-- [progress/2026-10/2026-10-21-v11-drivers.md](../progress/2026-10/2026-10-21-v11-drivers.md)
-- [progress/2026-10/2026-10-21-fillers-3c4ca599.md](../progress/2026-10/2026-10-21-fillers-3c4ca599.md)
-
-## Compiled Update — 2026-10-21 (wrap-up sweep 3: AutoKernel lesson-entry schema, observe-only width dimension, harness restoration)
-
-**Confidence: inferred** for design records (no read side is built); **verified** for the code/test counts as recorded. The AKX-ALL-27 replay had not run when these sources were written and is not recorded as a result.
-
-- **AK lesson entries are schema and write-side lint only (AK-PM-18).** No LLM-authored AK lesson library exists; the planner's memory is the deterministic do-not-repeat fold (`controller/do_not_repeat.py:640 @cb6b08fea`). The record extends AK-PM-17: a per-edit verdict in {helped, hurt, no observed effect, confounded} (confounded whenever several components changed and no run isolates one), at most one durable lesson per round with cue, component-naming lesson, evidence ids that resolve to journal rows, and confidence, an explicit NO_ENTRY, and a lint rejecting an empty cue/lesson/evidence or evidence made only of confounded rows. A revision is a new entry with `supersedes`, never an overwrite, with a grounded/leaked/unsupported audit on a 20-entry sample before any enablement. Lessons are observations (no ClaimTuple); admission stays the execution-gated rule of AK-PM-12; nothing is built before the AK-PM-11 ablation returns. Monitor M10: a self-test arm needs the oracle admission rule and one held-out call in its spec, and no such arm exists. ([AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
-- **Width invariance enters keep evaluation as an observe-only record, not a gate.** `width_dimension.py` (research `main` `e46ba5fb2`) produces `epyc.autokernel.width_invariance_dimension.v1` carried under its own key outside `dimensions` (`KEEP_DIMENSIONS` unchanged; no keep/reject change). States: `not_applicable`, `not_measured` (touched but a table is absent, never a pass), or `measured` with a cell-by-cell RELATIVE comparison to the anchor (verdict worse/improved/mixed/unchanged; UNSUPPORTED/ERR/void go to `indeterminate`). A model-level companion carries the DF2-18 recipe fields per width 2/4/5/8, and zero flips with no near-ties is `uninformative`, not a pass. 77 tests passed; not wired into `run.py`, and the replay (parent `gpu-20261004-1bceceb05` vs keep `gpu-20261004-656c9a66b`) needs the GPU. Its predicted unchanged verdict is a prediction. ([AutoKernel all devices, all dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions))
-- **Instruments must prove they can fire, and a null needs the controls.** The HIP guard-band judge reported NO_CATCH only after default-off, negative and positive device-inject controls behaved as designed; the first run's 130 violations were harness false positives (band sized by `ggml_nbytes`, not the backend alloc size). The same pass found two staging bugs, a stale `sys.path` crash and a `strings | grep -q` SIGPIPE false negative under `pipefail`. ([AutoKernel all devices, all dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions))
-- **A harness file that was never committed is a protocol hazard.** `ab_probe.py` was recovered byte-exact from session transcripts and its sha256 matched the recorded `probe_version`, which is what made the 2026-10-04 receipts comparable again. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **Offline analytics can be NOT JUDGEABLE, and that is the correct record.** GPU-ZOS-1 (no decode timers in any :8083 log era) and DSpark T7.1 (drafter graph accumulated 0) were closed as not judgeable rather than estimated. ([GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
-
-**Sources (sweep 3):** [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop); [AutoKernel all devices, all dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md).
-
-## Compiled Update — 2026-10-20 (wrap-up sweep 2): AutoKernel reads its own history, widens its probes, and the champion advances
-
-**Confidence: verified** for the dated measurements, counts and commits named below (each is recorded in the cited handoff or progress note with its evidence path); **inferred** for every reading of what they imply. All kernel work is on experimental branches or the champion branch; the frozen production kernel (v10) is untouched.
-
-### The closed AK history can answer fewer questions than the restart/surrogate triggers assumed (AK-HR-1/2/3)
-
-- **Census (AK-HR-1, read-only, verified).** Eight closed `experiments.db` stores (3,576 rows) and 2,700 actor-call metrics lines were exported offline, opened immutable after proving every write-ahead log empty; four runs were byte-identical and per-status totals equal each store's row count. Findings: no target has two independent scored campaigns (stores sharing an epoch are one campaign), so there is no between-run spread and the restart trigger (needs five) is far off; a trial id exists on every row but a token-budget axis exists on only 287 of 2,700 lines (opencode only) and no call line carries an attempt key; build seconds are recorded nowhere. The surrogate trigger is met for no target. A planning-stage premise (1,686 token-bearing lines in DS41 files) did not reproduce and was corrected.
-- **Diversity diagnostic (AK-HR-2, closed-partial, box deliberately unticked).** A hand-made 10-class mechanism taxonomy failed its own pre-declared held-out agreement gate (Cohen kappa 0.245 against an independent LLM labeller, bar 0.6), so it was retired rather than tuned and no collapse verdict was computed. The live targets are underpowered under any taxonomy (DS41 two non-overlapping 20-hypothesis windows, Q38FN one, rule needs three). Taxonomy-free results: same-epoch structural repeat-null 0.036 (DS41) and 0.030 (Q38FN) versus 0.151 on the legacy loop-memory; the "refused at formation" count is not a valid lower bound because those refusals are critic refusals. Verdict: **not yet decidable**, so the forgetting/fork-and-flush trigger (collapse seen) is not met.
-- **Rendered-context audit changed a default.** Re-rendering 1,960 of 1,963 planner calls showed that under recency recall the 12-row "already tried" window averages 0.043 measured answers and 81.2% of calls show no measured answer; ranked recall cut that to 1.6% with a shorter section (6,770 vs 8,011 chars). The operator ruled "flip the default now": ranked prior-experiment recall is now the planner default (opt-out flag retained), effective from the next campaign launch. No campaign was live; the follow-up is a comparison of keep yield, repeat-null and abstain rates on the next DS41/Q38FN campaign against the recorded pre-flip history.
-- **Write-side gaps closed (AK-HR-3, nullable fields, no behaviour change).** A trial id joining calls to attempts, per-stage seconds, failure class, trial tokens, a store-side monotone ordinal/cumulative-token counter, a runtime-knob descriptor and a `mechanism_family_bucket` (named to avoid colliding with the planner's free-text field) now ride the experiments payload and a sibling metrics line; the closed self-hashed call schema was not widened. The gate's per-case correctness detail (op, tolerance, observed error) is likewise now a nullable `case_records` list instead of a 2,000-character stdout tail. Only item left: re-run the census on a store written by the next campaign.
-- **Lesson on test debt.** Two research-repo test files had been red before today because the package outgrew hand-maintained declarations (an uncovered-module footprint table, a stale calibration fixture); they were repaired by declaring each module with evidence, not by weakening assertions. A narrow fixed-n exemption for the serving-preparation module is pinned by exact module and symbol, and the global optional-stopping fence is unchanged.
-
-### Width-invariance probes and the all-devices program (AKX-ALL-26/28/29)
-
-- **AKX-ALL-26 (verified, CPU + gfx90a HIP, closed).** One graph holds a batched op over k columns and k serial single-column ops; bytes are compared at tolerance 0, three repeats, k = 1..9. CPU (iqk route, 24 threads): MUL_MAT Q8_0, IQ2_XXS, IQ2_XS, IQ3_XXS, IQ3_S and F16-KV flash attention first differ at k = 2; Q4_K, Q3_K, Q6_K, IQ4_XS and quantized-KV flash attention pass; `GGML_ROWEXACT_N=9` makes all nine MUL_MAT types pass; gated delta-net passes with state threaded serially. For expert-routed matmul the first failure coincides with the first routing collision (54 of 54 cells over six seeds). HIP: 96 predicted rows scored 66 confirmed, 30 confirmed on verdict with an earlier first-fail k, none falsified; flash attention fails at k = 2 in all 12 cells; Q8_0 and flash attention agree with CPU, while Q4_K and IQ4_XS differ by backend and HIP has no runtime knob for the matmul route. The two halves used independent harnesses, so they are comparable by op, type and k only. This table is the anchor input for the planned observe-only width-invariance keep dimension (AKX-ALL-27).
-- **AKX-ALL-28 (verified, predeclared FAIL).** The stock TileLang wheel does not compile on ROCm 6.2 (it takes the OCP fp8 header path the host lacks). With two local header shims, a plain f16 MFMA GEMM runs on the MI210 at NMSE 4.3e-8 and about 1.4 to 1.6 s of hipcc per config, so TileLang stays a candidate authoring surface only. An IQ2/IQ3 grid-lookup dequant-GEMM is expressible with workarounds but was not shown.
-- **AKX-ALL-29 (documentation, closed).** A 32-row port map of the Magnitude Vulkan backend's mechanisms against gfx90a HIP: 20 already native, 8 port candidates, 4 not portable; three kernel seeds were routed to the research loop and harness items filed as 29.1 to 29.5. Landed so far: host-identity versions in receipts, a no-op-build skip (identical kernel bodies are not timed), poison guard bands as an opt-in `AKX_GUARD_BANDS=1` in `test-backend-ops` on an experimental branch (CPU leg green, injected out-of-extent write caught; a parser bug that missed mid-line receipts, 1 of 512 found, was fixed). The demand-weighted objective (29.2) and type-relative tolerance (29.4) stayed **not decidable**: no GPU candidate has yet reached timing, and the keep gate is a measurement trust-boundary item the operator decides.
-- **A harness defect worth remembering (verified).** The long-context identity oracle rebuilt its template without the recipe environment, so every recipe key went "unknown" and every Q38FN attention candidate since 10-08 was refused as `oracle_unavailable`; the same environment-less flaw sat in the production runtime-anchor resolver. Both were fixed (92 file-scoped tests pass). A refusal reason common to all candidates points at the harness before the candidates.
-
-### The champion advances: slot-file draft state ("slotdraft")
-
-The standing champion moved from `e33229348` to `dd3d9721c` through the fold ledger: ports of two upstream changes (checkpoints in the slot file; MTP draft state in the slot file). Gates: slot-save server tests 15/15 against 6/15 for the control, and greedy output byte-identical to the prior champion with equal draft counters. After a slot restore the MTP acceptance ratio was 0.98 to 1.02 of live (control 0.53 to 0.85), at the cost of a larger slot file (about +175 MB on a 7,680-token slot). No ggml or `src/` change, so CPU kernels and GPU-resident paths are unchanged; GPU serving validation of the new HIP image is still pending. The EmbeddingGemma 2 model support was rebased onto the new tip without conflicts. Release manifests now track every champion feature per kernel set (v11 llama, speech v2).
-
-### Two negative or bounded outcomes
-
-- **DF2-19: STOP.** A corpus-table n-gram drafter replayed on DF2-14 transcripts gained at most +0.0% (realistic fitted-overlap gate) over request-local drafting; only an optimistic oracle gate showed headroom (+9.0% for a domain table), so it is re-triggered only if a per-position confidence signal exists on the wire. A calibration-fitted overlap model replaced character alignment; the verdict holds with it removed.
-- **Q38FN CPU thread/depth sweep.** Handed to AutoKernel as a runtime arm: `-t 48 -tb 96` (see [local-inference](local-inference.md)); depth, not thread count, is the cost, so the lever is the attention kernel.
-
-**Open questions:** (1) whether the next campaign's ranked recall lifts keep yield; (2) whether any GPU candidate reaches timing so 29.2 and 29.4 become decidable; (3) AK-HR-3 verification needs a post-change campaign store. See also [benchmark-methodology](benchmark-methodology.md), [agent-architecture](agent-architecture.md).
-
-### Source References (2026-10-20 sweep 2)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-HR-1/2/3, ranked-recall default, test-debt notes.
-- [All-devices AutoKernel program](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — AKX-ALL-26/28/29 results and routed items.
-- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — slotdraft fold ledger, manifests; the CH-18 pull list moved 2026-11-07 to [v11-promotion-checklist.md](../handoffs/active/v11-promotion-checklist.md).
-- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — per-class replay and speculation parity contract.
-- [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — day record for every lane above.
-- [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — fold execution and lane state.
-- [intake-498](https://arxiv.org/abs/2604.22748) Agentic World Modeling: Foundations, Capabilities, Laws, and Beyond (high relevance, adopt_patterns, credibility 4)
-- [Agentic World Modeling deep-dive](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full L×R taxonomy + EPYC-stack mapping + governance-recipe alignment + four-principle rubric + risk register
-- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) — L3-Evolver / Digital instance with 2026-04-28 vocabulary adoption
-- [agent-world-env-synthesis.md](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) — L2-Simulator → L3-Evolver bridge / Digital
-- [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md) — third L3-Evolver / Digital instance
-- Critique: arxiv.org/abs/2507.05169 — "Critiques of World Models" (actionability axis underweighted by L×R taxonomy)
-- Competing surveys: arxiv:2503.23037, 2601.12560, 2601.01743 — field is fragmented, Levels × Laws unlikely to become canonical field-wide
-
 
 ## Latest source review — 2026-10-07
 
@@ -327,1864 +51,6 @@ The admission comparison also separates decisions that can otherwise be conflate
 - [current handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 - [Admission and skill granularity](../docs/reference/ni08-admission-and-skill-granularity.md)
 - [AutoPilot handoff](../handoffs/active/autopilot-program.md)
-
-## Compiled Update — 2026-09-25: context placement is not work reduction; live ordering and state invariants belong in launch preflight
-
-**Confidence: verified** for the two-pair OAB-9 measurements, run-9 refusal, calibration order, same-anchor
-floor reuse and actor-call stop record. The A/B has two limits: `n=2`, and inline always ran first.
-
-- **Putting context in files halved first-step context and still increased the work.** On the Qwen3.8-27B
-  plain seat with one 196,608-token server generation, inline took 37.6/28.7 minutes, 23/24 steps and
-  25/26 tool calls; the file-backed arm took 54.4/33.6 minutes, 49/29 steps and 54/35 tool calls. First-step
-  context fell from 40.6k to 19.1k tokens, but peak context rose from 104k/92k to 163k/118k. Both arms had
-  zero compactions and every reply was schema-valid.
-- **Placement alone does not reduce retrieval.** The file arm read all six file-only sections, then explored
-  more source. A useful RLM-style interface therefore needs a reader that pulls precisely or a scaffold that
-  performs the pull: exact section/byte accounting, pull caps, and orchestrator-selected scouts. A smaller
-  context slot, a different model, or explicit pull caps are the recorded retest triggers; the measured
-  magnitudes should not be generalized past this seat.
-- **Plan a serial campaign around its actual phase order.** After an anchor change the observed order was
-  half-screen floor calibration, batch-0 proposal plus half-screen measurement, then batch-1 full-target
-  calibration. The last phase takes every CPU region lock for roughly four hours, so an evening launch can
-  move its production impact into the next morning. Floors persist per anchor, and the same-anchor run-9b
-  relaunch reused the half-screen floor and went directly to the planner.
-- **A dry run must check the state invariant that can refuse the real launch.** Run 9's dry run returned zero,
-  then the real runner refused because the store's champion of record named the old anchor. The accepted
-  recovery archived the old store, started a fresh store while carrying `inbox/`, and retained the refused
-  state directory. The durable fix is a preflight comparison of store COR and requested anchor.
-- **An interrupted actor call is evidence.** TERM during a live planner call ended `run.py`, `serial_run`, and
-  opencode, released the CPU locks, and wrote an `actor_call.v1` record with rc −15. Calibration has a separate
-  child lifecycle and therefore still needs its own stop test.
-
-### Source References (2026-09-25)
-
-- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
-  OAB-7, OAB-9, OAB-12, and *Techniques learned in the opencode seat*.
-- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C24,
-  DS41-C25, DS41-C27, and DS41-C28.
-- [`agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md) — *Launching and stopping a
-  DS41-style serial run* and *Context as files, per-call metrics, tool-output caching*.
-- [`2026-09-25-main-ak-seat.md`](../progress/2026-09/2026-09-25-main-ak-seat.md) — run 9, OAB-9, and run-9b
-  measurement record.
-
-## Compiled Update — 2026-09-24 (late evening): the reduced-scope planner build — context as files, per-call metrics, and a cache that doubts its own premise
-
-**Confidence: verified** for the token counts (`llama-tokenize`, Qwen3.8-27B vocab), the metrics-exporter
-reproduction and the cache timing; **inferred** for the OAB-9 predictions. Three research lanes off research
-`origin/main` `170c763c` (`lane/ak-ctxvar-20260924` `ce5800cb`, `lane/ak-turns-20260924` `0bf2d7c2`,
-`lane/ak-perfcache-20260924` `f4a5d240`) were built while run 9 calibrated. All are pushed and unmerged, and
-**none has been A/B'd**, so nothing here is a seat or campaign result. The operator called these lessons
-"immensely important" for the orchestrator wiring (INF-78).
-
-- **Context as files is the only "variable" the plain seat can use.** The plain seat runs bare
-  `opencode run --auto` with no MCP server, so it has only native `read`/`grep`/`glob`/`bash`. It can read
-  outside `--dir` only because `--auto` approves opencode's `external_directory: ask` default. The critic runs
-  without `--auto`, so it stays inline. `--actor-context-mode variable` writes the rendered bundle beside the lane
-  (sections, JSON blocks, a sized `INDEX.md`, and a manifest bound to the prompt sha). The prompt then carries
-  only the index plus an inline set **chosen from evidence**: the scope directives, the profile/hotspot section
-  that run 7's one complete hypothesis copied its `target_symbol` from, the this-turn blocks, and a target card.
-  The split is lossless (the sections concatenate back byte for byte). Inline mode reproduces run 8's prompt sha.
-- **The measured cut is 79–83%.** The run-8 planner prompt drops from 26,293 to 5,510 tokens, and run 7's
-  pre-diet prompt from 32,917 to 5,629.
-- **Tokenize; never estimate.** chars/3.5 undercounts this prompt by ~30%. The target JSON runs at 2.46
-  chars/token because of its hex digests, and it is 37% of prompt tokens while being nearly useless to the planner.
-- **~13.2k tokens of every call are fixed**: opencode's system prompt, its tool schemas, and the lane's
-  `AGENTS.md`. `AGENTS.md` alone is ~2.5–3k tokens of llama.cpp contributor guidance, and trimming it for the
-  planner is OAB-10. Orchestrator rule: never inherit a repo's agent file into a planner context.
-- **Files outlive compaction.** The planner re-read `INDEX.md` after compacting, which is the property the
-  design depends on. Predictions for OAB-9, not results: first-step context 39.5k → ~18.7k, peak 93.5k → ~79k,
-  0 compactions instead of 1, and a modest wall gain. The conversation still only grows.
-- **A per-call metrics row reproduced the seat A/B exactly.** `actor_call_metrics.v1` is a sibling schema
-  written just before the closed, self-hashed `actor_call.v1` line, and the two join on role, backend and call
-  window. From the real `opencode export` it gives 23 steps, 25 tool calls `{bash 11, glob 1, read 13}`,
-  1 compaction and 57,702 decoded tokens. So **the plain seat never called the MCP perf tools**.
-- **What the export does and does not show.** It gives per-step `{input, output, reasoning, cache.read,
-  cache.write}` and part types. It does not give per-tool latency, per-step wall time, or the step a compaction
-  hit. "Decoded" = `tokens.output` summed over steps, reasoning included, and S4-T1 must define the same quantity
-  for the two harnesses to be comparable. Scouts show up only as sessions new since the call began, because
-  `opencode session list` has no parent/child. After the metrics lane merges, the first line per call is no
-  longer `actor_call.v1`, so the DS41-C24 check reads the first `actor_call.v1` line.
-- **The perf-output cache doubts its own premise.** It is keyed on the exact argv, the profile's identity
-  (realpath, size, `mtime_ns`, first/last-1 MiB hash) and a memoized `perf --version`. It is stored beside, never
-  inside, the integrity-checked `cpu-raw`. On run 7's 25.7 MB profile, `perf report` drops from 1.283 s to
-  0.0012 s, and the hit is byte-identical. At ~1.3 s per call, perf time **cannot explain the bounded seat's
-  ~12-minute loss** in the C20c A/B (`annotate` is still unmeasured). DS41-C20d2 re-runs the bounded arm with
-  the cache and the metrics rows. Per-tool latency is inferred from step timestamps, or reported as unknown,
-  never as zero.
-- **Three planner defects found while building.** Each is filed with a fix task.
-  - `render_context` never printed `node_profile`, although a directive says to read it (DS41-C20e). It is being
-    fixed in both arms, so the A/B stays fair.
-  - The plain planner read the anchor build tree instead of its lane (DS41-C20f).
-  - It compiled `.o` files into `/tmp` despite "never build" (DS41-C20g), which is a competing-work hazard during
-    a measured window. OAB-11 fixes both.
-- **Other findings from the build.** Research `origin/main` has pre-existing test failures: the `oracle()`
-  stand-ins lack `require_reference` after `37d326ac`, and a `test_shared_history` WAL `-shm` mtime check fails.
-  They are being fixed on the integration lane. Separately, the PII pre-commit hook redacted 7 perf sample-period
-  cells in a fixture (TOC-RD-1b).
-- **Operator-confirmed next sequence.** At run 9's calibration boundary, stop run 9 (floors persist per
-  anchor), then merge `lane/ak-planner-integ-20260924` (DS41-C20h). Run the OAB-9 ctx A/B with 3 alternating
-  ABAB pairs, or 2 if short. Relaunch run 9 with the winning arm. The orchestrator can also count and byte-cap
-  what a planner pulls from the bundle, which opencode cannot (OAB-12).
-
-### Source References (2026-09-24, late evening)
-
-- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
-  §Techniques learned in the opencode seat; OAB-7s, OAB-4m, R4c, OAB-9–OAB-12; §Baseline perf-tool attribution
-  marked doubted.
-- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C20d
-  (C20d1/C20d2), C20e–C20h, the C24 acceptance-wording note.
-- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Reduced-scope planner build
-  (evening)*.
-- [`agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md) — *Context as files, per-call
-  metrics, tool-output caching* (the how-to form); [`repl-turn-efficiency.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
-  S4-T1 (comparability target).
-
-## Compiled Update — 2026-09-24 (wrap-up #4): DS41 run 9 is ready on anchor `5a60152ae`; both floors recalibrate off-hours
-
-**Confidence: verified** for the build identity and input resolution (binary `--version`, `sha256sum`, the
-resolved campaign files).
-
-- The run-9 order (DS41-C25) completed its prerequisites the same evening: the champion fast-forwarded to
-  `2b57340bf` (SW-9 probs fix), the DS41 port was **merged** onto it (not rebased) as anchor `5a60152ae` on
-  `experimental/deepseek41-port-20260924`, and `build-cpu` reports `version: 10313 (5a60152ae)`, sha256
-  `763e1474…f8f7`, ggml linkage PASS.
-- Campaign inputs were re-resolved (request r4) to `TARGET_ID ds41-5a60152ae-cpu-t48-dspark-b2`,
-  `verified_resolution`, 0 errors; run-8 inputs backed up to `inputs/bak-20260924-run8/`; dry run rc=0.
-- **A changed anchor invalidates both cached floors.** Recalibration is ~8.5 h holding every CPU region lock,
-  which blocks :8070 and overlaps the CPU speech cores, so the operator scheduled run 9 **off-hours** (launched
-  by main-ak-seat after the wrap-up, `state-run9`).
-- The planner seat's 98,304-token ceiling that emptied run 8's first reply is gone: :8083 now gives each request
-  up to 196,608 tokens of a unified pool.
-- C10a and C24 prep is done (shared research clone at `6afc7eed` ≥ `34373dd8`; `/workspace` carries the seat
-  capture contract; the lane worktree is removed); both close on the run-9 launch line.
-
-### Source References (2026-09-24, wrap-up #4)
-
-- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — C10a, C24, C25.1–C25.6.
-- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — 19:55Z posture.
-- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *DS41 run-9 prep*.
-
-## Compiled Update — 2026-09-24 (evening): DS41 run 8 stopped for the stack window; the run-9 order; calibration ignores a drain
-
-**Confidence: verified.** Sources: the run-8 stop record, the one actor-call line run 8 wrote, and the DS41 / RTG-57 /
-INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here is a campaign result.
-
-### Key findings
-
-- **Run 8's first planner reply was lost to a 98,304-token ceiling, and nothing was fabricated.** Batch 0's planner
-  call ran 13:12:03→13:32:39Z (`wall_s` 1235.7, rc 0) and returned 0 bytes of stdout. The 27B hit `finish=length` at
-  `:8083`'s per-slot limit. The DS41-C20 fix refused the empty reply safely instead of repairing it into an invented
-  proposal. The registry said `:8083` serves a unified 196,608-token pool, so the cap should not have existed.
-  Production was never unified:
-  - the frozen v10 server turns on `kv_unified` only when `-np` is absent (`tools/server/server.cpp:145-150`);
-  - the orchestrator always passes `-np`;
-  - so `:8083` (`-np 2 -c 196608`) gives each request 98,304 tokens.
-
-  This is the failure the `-kvu` package removes. The KV-side diagnosis lives in [kv-cache](kv-cache.md) and RTG-57.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10 run-8 STOPPED note;
-  [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
-- **The actor-seat call record captured the lost reply faithfully, which closes VB-AK-SEAT-b1v.** Run 8 wrote exactly
-  one line, at `state-run8/targets/71f54ec4…/workers/actor-replies/actor-calls.jsonl`. It is a planner call, schema
-  `epyc.autokernel.actor_call.v1`, rc 0, `wall_s` 1235.7, stdout 0 bytes. Running
-  `cli.py ingest ak-actor-seat --as-of 2026-09-24T18:00:00Z --dry-run` gives matched=1, projected=1, declined=0 and
-  **refused=0**. So the producer is proven on a real campaign call.
-  - What the record cannot say yet is which server build and model answered. `server.build_info` and
-    `server.served_model` are both `null`.
-  - VB-AK-SEAT-b1w fills them from `/props`, read once per actor process. It also adds per-slot `n_ctx` (98,304
-    split vs 196,608 unified on `:8083`), because that value decides whether a reply could have been truncated.
-
-  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT-b1v, VB-AK-SEAT-b1w)
-- **Why the operator stopped it (~15:32Z): the region locks, held through calibration, starved production.** `run.py`
-  held **every CPU region lock** through the full-target floor calibration, and that timed out the production
-  frontdoor's `/chat` on `:8070`. Batch 1 was ~2 h into the first full-target calibration: 48 `matched_process_v2`
-  launches, each reloading the 519 GB model. That partial was discarded. The half-screen floor stays cached
-  (`state-run8/STOPPED.txt`). No separate task was filed for the lock-holding itself, because OP-41 owns admission
-  control; DS41-C25 carries it as a scheduling constraint.
-  ([2026-09-24 main-ak-seat progress](../progress/2026-09/2026-09-24-main-ak-seat.md) §"Run 8 stopped")
-- **TERM during calibration only drains (DS41-C26).** DS41-C22 made a stop TERM the in-flight actor's process group,
-  but it covers actor calls only.
-  - What happened during calibration: TERM to `serial_run` and `run.py` drained, and calibration then started its
-    next `matched_process_v2` launch (llama-server 3961920).
-  - Ending the run took KILL on `run.py` (3508990), `serial_run` (3359620) and that calibration server. All three
-    were verified dead, and the region locks were free afterwards.
-  - The fix: calibration consults `should_stop()` before each launch. On a stop it TERMs its own captured
-    llama-server pid (never a name pattern), and it discards the partial floor without caching it.
-  - The test: a fake launcher with a stop requested mid-series must launch nothing further, reap its child and exit.
-
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C26)
-- **Run 9 has an ordered list of prerequisites (DS41-C25), because floors are bound to the anchor.** Any anchor
-  advance must land before run 9's first full-target calibration, which costs ~4 h per scope.
-  1. OP-52 CPU window for the SW-9 spec-accept-probs fix: `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf`,
-     which is the champion `ak/champion/llama-cpp-ffc1bac82eec` @ `8df1b5cf2` + 1. It needs build, tests, the MTP
-     n_probs check and a speed A/B. The operator gave the ADMIT, and its preconditions are met: C1 STT/TTS finished
-     17:10Z, and the operator skipped the Flash-Next matrix at 17:25Z.
-  2. Fast-forward the champion to the fix (the TD-21 session's step, SW-9).
-  3. Rebase the DS41 port onto the new tip. The anchor `ebb68dc55` is a clean descendant of `8df1b5cf2` (+6), so the
-     rebase is expected to be mechanical. This step is main-ak-seat's.
-  4. Rebuild the anchor. Its first full-target calibration (~4 h) is owed.
-  5. DS41-C10a (shared research clone fast-forward, below) and DS41-C24 (`EPYC_ROOT_REPO` off the lane worktree).
-  6. `-kvu` live on `:8083` and `cache_ram` sized (RTG-57 KVU-1/KVU-2, operator OP-54/OP-55), so the planner gets a
-     196,608-token slot.
-
-  Acceptance: run 9's launch line names the rebuilt anchor, a research commit ≥ `34373dd8`, no lane path and a
-  `-kvu` `:8083`, and its first planner reply is not truncated at 98,304 tokens. The calibration window must be
-  agreed with the operator, because it blocks the production frontdoor for hours.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C25;
-  [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) SW-9)
-- **The shared research clone cannot fast-forward past its own untracked copies (DS41-C10a blocker).** Research main
-  now tracks `artifacts/np_context_kvu_study_20260924/{driver,q38_27b_q8,q38_27b_q8_h,q38_27b_q8_depth}/` and
-  `artifacts/speech_cpu_realtime_20260924/`, and the shared clone still holds untracked copies of the same files.
-  **`git merge --ff-only` refuses to overwrite untracked files, even identical ones (checked).**
-  - The kvu copies are checksum-identical to research `21cf444c`.
-  - The speech copies are not. An `smtC` follow-up run kept writing there after the 17:14Z snapshot, so that delta
-    is committed first (RTG-57 KVU-11a).
-  - Then: `sha256sum -c SHA256SUMS` each copy against the committed checksums, remove only the copies that match,
-    and fast-forward.
-  - The 35B `q36_35b_a3b_q8_h/` directory is not tracked yet and must be left alone.
-
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10a;
-  [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) KVU-11a)
-- **Every OAB-4 arm must pin and record `:8083`'s KV mode (OAB-4a).** Unified and split KV give different outputs at
-  the same seed, because float summation order changes. Once `-kvu` lands, the per-request ceiling also moves from
-  98,304 to 196,608 tokens.
-  - An arm pair that straddles the `:8083` reload compares two servers, not two backends.
-  - For each arm, record `kv_unified` from the launch log and `n_ctx` from `/props`, and run both arms of a pair on
-    the same server generation.
-  - OAB-7's "~38k of the 98k slot" is the split-KV ceiling.
-
-  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) OAB-4a)
-- **Generalisable shape:** the empty reply became a diagnosis rather than a fabricated proposal because of two
-  pieces landed earlier the same day. The C20 refusal kept the loop from inventing content, and the call record kept
-  the evidence (rc 0, 1235.7 s, 0 bytes) that pointed at the slot ceiling instead of at the model.
-
-### Source References (2026-09-24 evening)
-
-- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10 (run 8 STOPPED
-  note), DS41-C10a (blocker note), DS41-C25, DS41-C26.
-- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-1, KVU-11a.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AK-SEAT-b1v
-  (proven), VB-AK-SEAT-b1w.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): OAB-4a.
-- [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"Stack-configuration window".
-
-## Compiled Update — 2026-09-24 (operator wrap-up compile #2): the seat A/B resolved — plain wins on wall, bounded loses on tool time, and nobody delegates
-
-This resolves the PENDING verdict in the section below. One pair on the 27B (`:8083`), same run-7 proposal
-prompt, driver `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`:
-
-| Arm | Wall | Steps | Decoded | Compactions | Reply |
-|---|---|---|---|---|---|
-| plain, pre-fix (run 7) | 40.3 min | 71 | 63.8k | 2 | valid, discarded by the seat defects |
-| **plain, fixed prompt** | **31.9 min** | 23 | 57.7k | 1 | schema-valid |
-| bounded v1 (agent prompt replaced the system prompt) | stopped at ~35 min | 12 | 47.3k | 1 | template echo, no hypothesis |
-| bounded v2 (`instructions` file) | 44.3 min | 34 | 60.2k | 1 | schema-valid, better grounded |
-
-- **The prompt fixes alone took the plain seat from 40.3 to 31.9 min.** Those fixes are the un-escaped stdin
-  prompt and the dieted context. Decode dominates the wall (~58k tokens at ~30 tok/s).
-- **Bounded v2 lost on tool time, not deliberation.** *(Doubted 2026-09-24, late evening: a cache measures
-  `perf report` at 1.3 s per uncached call, too little to explain a ~12-minute loss. The deficit is unattributed
-  until DS41-C20d2 re-runs the arm; see the late-evening section above.)* Its perf-backed tools re-ran `perf report` over the 25 MB
-  profile on every call; one 266 s step decoded only 611 tokens (22.6 vs 30.1 tok/s effective). Its proposal
-  was the better grounded one: it cited `symbol_annotate`'s hottest instructions. So the fix is to cache
-  (DS41-C20d), not to drop the tools. The operator chose to merge with `--actor-seat plain` as default:
-  research main `21ca61b0` = seat `e9495971` + follow-ups `1c7d0a2d` + the default flip. n = 1 per arm, so
-  this is a direction, not a magnitude.
-- **Offered subagents, the 27B never delegated.** The `task` tool was offered and allowed, with fan-out
-  guidance, and there were 0 scout calls in 69 bounded steps. Operator ruling: fan-out is the orchestrator's
-  decision, not the model's or the harness's (INF-78 OAB-8).
-- **Every arm compacted exactly once, whatever the tool-output cap.** opencode's conversation is append-only,
-  so capping tool output only delays the overflow. The structural answer is to hold the context bundle as a
-  REPL variable that the model inspects instead of reading it inline — the RLM pattern (INF-78 OAB-7). That
-  supersedes levers (a)/(b)/(c) of DS41-C18.
-- **The follow-ups landed with the merge.**
-  - DS41-C22: a stop now TERMs the in-flight actor's process group and is never retried. A signal death
-    without a stop is still retried, deliberately.
-  - DS41-C23: `symbol_annotate` resolves short names. Its one smoke found perf 6.17's trailing IPC columns in
-    `--sort symbol` rows.
-  - VB-AK-SEAT: every actor call writes an `actor_call.v1` record built by ROOT's own contract writer, and the
-    strict reader caps every tuple at observation. The arm record (b2) waits for OAB-4's driver revision.
-- **Run 8 launched at 13:06:55Z** from the merged tree (plain seat). Its floor of 5.097 came from the cache, so
-  there was no recalibration. It reads the call-record contract from a lane worktree via `EPYC_ROOT_REPO`,
-  because the shared clone's working tree is stale. Releasing that pin before run 9 is DS41-C24, and proving
-  the producer on run 8's first real call is VB-AK-SEAT-b1v.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C20/C20c/C20d/C22–C24;
-  [autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) §Baseline, OAB-7, OAB-8;
-  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT;
-  [completed DS41 §C ledger](../handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md))
-- **The standing homes for these lessons are now repo docs, readable by every agent.**
-  - The `opencode run` headless pitfalls (stdin, pipe truncation, agent `prompt` replacing the system prompt,
-    compaction echo, rc=1 with a complete reply, `hidden`, the unused `task` tool) are in
-    [opencode-p03-audit → Addendum 2026-09-24](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md).
-  - Serial-run launch and stop semantics, and the operator ruling that fan-out and REPL-held context belong to
-    the orchestrator, are in [agent-loop-design](../docs/guides/agent-workflows/agent-loop-design.md).
-  - TD-21.29/30 (research `34373dd8`) are on main but not in run 8. The shared research clone is fast-forwarded
-    only between runs (DS41-C10a), because a mid-run fast-forward mixes code versions across batches.
-
-## Compiled Update — 2026-09-24 (operator wrap-up compile): the actor seat is where the planner's hours go, and the model's own deliberation fills its context
-
-- **Run 7 lost a finished proposal to the seat, not to the model.** The first 27B planner proposal
-  (`akm-q4k-q82x4-weight-prefetch`, a Q4_K weight prefetch in `mul_mat_qX_K_q8_2_X4_T<DequantizerQ4K_AVX2,1>`)
-  landed in ~39 min. opencode then exited rc=1 after an error it had recovered from in its own bash tool, and
-  `_run_agent` discarded every rc≠0 reply unread and retried from zero. The retry returned empty stdout, and the
-  schema repair turned that empty report into a fabricated `src/verify/replay.ts :: replay`. The critic's rejection
-  was correct and took 30 s. Fixes, on research lane `e9495971` (not on `main` until the A/B verdict): salvage a
-  reply only when it is schema-complete AND rc > 0 (a signal death stays a transient); never repair a report under
-  20 chars; refuse a repaired path/symbol that the report never names. The general rule: **a repair step that can
-  run on empty input is a generator, not a repair.** The same grounding rule is filed for the orchestrator's shared
-  helper as TD-21.33.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10/C20;
-  [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.33)
-- **Three transport defects between the loop and opencode, each silent:**
-  - opencode 1.18 re-quotes any positional argument that contains a space, so the run-7 prompt reached the model
-    with 2,982 backslash-escaped quotes. A ~100 KB prompt also sat near the 128 KiB per-argument limit. Fix: the
-    prompt goes on stdin.
-  - opencode/Bun exits without draining a pipe. The same export read 65,536 or 98,304 bytes through a pipe and
-    328,871 through a file, and the reply JSON is at the tail. Fix: capture to files.
-  - opencode's compaction summary quotes the prompt's `{"abstain":"<reason>"}` template, and a driver recorded that
-    quoted template as the hypothesis. Fix: refuse template echoes.
-
-  Each of these looks like a model failure (empty, truncated or abstaining reply) and is not one.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C20;
-  [harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration) HS-4 P7)
-- **Capping tool output did not stop the context overflow. The model's deliberation did the overflowing.** The
-  plain-seat reference for one proposal: 71 steps, 70 tool calls, 63.8k decoded tokens, 40.3 min, 2 compactions,
-  275k chars of tool output. The first bounded arm (output-capped MCP tools, 12 KB `tool_output` cap, step cap,
-  and an agent `prompt` that REPLACED opencode's default system prompt) was stopped at ~35 min after only 12 steps.
-  Its median was 1,626 decoded tokens per step against 266 for the plain seat, it filled the 97.7k slot at step 12
-  and compacted, and it produced only 42k chars of tool output. The caps worked; the replaced system prompt made
-  each step ~6x longer. Config v2 moves the guidance into an opencode `instructions` file. The A/B verdict (plain
-  on the new prompt vs bounded v2) is PENDING. Until it lands, "cap the tool output" is not a demonstrated remedy
-  for the slot overflow (DS41-C18).
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C18/C20;
-  [progress 2026-09-24 main-ak-seat](../progress/2026-09/2026-09-24-main-ak-seat.md))
-- **"has no samples!" from `perf annotate` was a filter miss. The profile had 114K samples.** The planner passed
-  the short template name to `--symbol`. perf matches that option against the full demangled signature
-  (`void (anonymous namespace)::mul_mat_qX_K_q8_2_X4_T<(anonymous namespace)::DequantizerQ4K_AVX2, 1>(int, ...)`),
-  and it reports a filter that matched nothing as an empty profile. The same session's `perf report` showed the
-  symbol at 19.28%. Lesson: a tool's "nothing here" message is only evidence of absence once its filter is known
-  to have matched. The bounded seat's `symbol_annotate` must resolve short names first (DS41-C23).
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C23)
-- **SIGTERM to the loop is a drain, and the drain cannot see an actor call.** Forming lanes abandon at their next
-  stage boundary. But a planner call IS the stage, and the retry inside the call never checks `should_stop()`, so
-  a TERM'd actor (rc −15) was relaunched as a transient. Halting run 7 took TERM on the actor plus KILL on
-  `run.py` and `serial_run`. Filed as DS41-C22: TERM a forming lane's in-flight actor on stop, and never retry it.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C22)
-- **Direction (operator): the loop should call the orchestrator, not individual models.** INF-78 records the
-  requirements a backend must meet:
-  - an agentic tool loop in a per-call worktree root;
-  - no trailing async work after the reply, because the next step is a measurement window, and the check is a
-    witness (60 s of flat CPU time), not a promise;
-  - one schema-conforming object from a 35–75k-char prompt;
-  - bounded tool output;
-  - a `Backend` kind that is a thin CLI, so `_run_agent` stays unchanged.
-
-  The bounded seat is the reference that backend must beat on the same driver. The operator dropped the idea of
-  splitting heavy planning from fast authoring; it is not filed.
-  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend);
-  [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) S4-T1 — `RoleResult.turns` was never
-  copied, so every seeding record carries `turns=0`)
-- **Belief-kernel wiring filed on the write side** (VB-AK-SEAT): per-call `actor-calls.jsonl` and the A/B's
-  `result-<arm>.json` are measurements. Today they are n = 1 per arm, and the arms differ by prompt as well as by
-  seat, so they are observations and not a measured seat effect.
-  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT)
-
-## Compiled Update — 2026-09-24 (wrap-up compile): the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase, and the seat moved onto the GPU
-
-**Confidence: verified** for the run outcomes, timings, commits and the operator ruling — all observed
-in-session on this host. The campaign has produced **one accepted proposal and no completed A/B yet**, so
-nothing here is a kernel result; the findings are about the *loop's* economics, not about the kernel.
-
-### Key findings
-
-- **All three in-tree profilers are now wired into the loop** (operator: "give autokernel access to ALL the
-  profiling tools"). llama.cpp `ebb68dc55` adds Engram gather / per-layer counters, compile-gated on
-  `GGML_CPU_PROF` with `LLAMA_ENGRAM_PROF_JSON_FILE` — and the measured `build-cpu` carries **zero**
-  instrumentation strings, which is the structural check this project requires before reasoning from a
-  binary. Research `c6a46674` + `e59c87ea`: `reprofile()` builds a `-DGGML_CPU_PROF=ON` *sibling* of the
-  anchor and launches it **only inside the profile window**, parses the three dumps into a `node_profile`
-  in the planner context (per-op shares, host phases, Engram fault mix), caches it by the perf capture's
-  key, and **never lets it into a ranked A/B** — so the instrumented build can never contaminate a
-  comparison. Teardown waits 180 s so a `--no-mmap` server's atexit dumps survive. Proven on run 3's anchor:
-  all three dumps `observed`. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C12 (profilers))
-- **The planner's wall time is not the model thinking — it is two different bottlenecks in sequence.**
-  Decomposed from opencode part timestamps: tool execution is **0–5% of wall**; *proposing* is
-  **prefill-bound** (124 k tokens of tool output at 92 t/s ≈ 22 min of a 41 min call); *authoring* is
-  **decode-bound** (91 k generated tokens). This is the finding that makes the seat a hardware question
-  rather than a prompt question, and it is why a single "planner is slow" number was useless.
-  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"Planner cost decomposition")
-- **Four nights of runs, and what each one cost.** Run 3 (19:28, CPU flash-next planner): serving floor
-  5.097 after 48 A/A launches at ~5.2 min each; two planner calls killed at the 30-min actor timeout.
-  Run 4 (01:26, `--actor-timeout-s 7200`): a complete proposal after **91 min** was retried **from zero**
-  because the loop could not see the actor's stdout. Run 5 (03:45, replies persisted): proposal #1 at
-  97 min rejected by the critic in 41 s (non-invariant hoist); proposal #2 at 41 min **accepted** in 2 min
-  (`akm-q4k-q82x4-zmm-scale-apply`); authoring #1 killed at the 2 h budget after 91 k output tokens.
-  Run 6 (08:52) moved the planner to the GPU. For scale, prior campaigns on external planners ran 313
-  attempts in 9 days, median 8.5 min per *whole attempt*.
-  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"What the night measured")
-- **Operator ruling: the planner seat is the production Qwen3.8-27B Q8_0 on the MI210** (`:8083`, idle
-  stack), replacing the local flash-next planner entirely. Measured basis 86 t/s decode / 302 t/s prefill
-  versus 50 / 92 for flash-next; opencode tool-calling proven in 14 s. Run 6 launched 08:52 (request r3),
-  run 7 relaunched 09:10 on research `ad2b89ff` so the schema-constrained repair is active in the loop —
-  same store, floor and profiles cached. Two incidental facts worth carrying: `--variant` is a **no-op**
-  on a plain OpenAI-compatible provider (no `variants` in `opencode.jsonc`), and thinking was already off.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
-- **Stopping a loop must also kill its actor child.** An orphaned actor from the run-3 stop shared the
-  single-slot planner server with run 4 for **40 min**, i.e. a dead run silently taxed a live one. Related
-  fixes landed the same night: `ef287ba9` (`--actor-timeout-s`), `704ef037` (raw reply persistence +
-  stderr fallback — the fix for run 4's blind retry), `3471fe3c` (partial output kept on timeout),
-  `stage_timeout_s` 900→2700 (a perf profile had been refused at the 900 s cap).
-  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md), DS41-C17)
-- **The v10 folded-lineage defect would have fired on this campaign's first recorded CPU candidate.** At
-  v10 `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, so `build_candidate_record`'s old rule "instrument parents
-  == (production,)" was unsatisfiable and the first candidate to reach recording (`campaign.py:5011`) would
-  have raised `ValueError("instrument commit is not the ratified single-child of the production base")`.
-  The shared `worktree.instrument_lineage_ok` now accepts the folded identity while still requiring descent
-  from production (`ebb68dc55` descends from v10 `ffc1bac82`, verified). Nothing had hit it yet — run 3 was
-  still in batch 0 — and the running batch process keeps its already-imported modules, so the next batch
-  process picks the fix up with **no mid-process version mixing**.
-  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C12 (lineage))
-- **A GPU planner brings its own context ceiling.** At 09:42 the 27B planner overflowed its 98 k per-slot
-  context twice (`:8083` runs `-c 196608 -np 2`) and opencode compacted the session to continue — filed as
-  DS41-C18, with `-np 1` on `:8083` named as the cheap lever and left to the stack owner.
-  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md))
-
-### Open questions
-
-- DS41-C10 — run 7 (27B planner, schema repair active) has not yet reached a measured iteration. The thing
-  to report is the planner→critic→author→build→A/B timing chain against the CPU planner's 41–97 min.
-- DS41-C14 — `--node-profile` is still **opt-in** (default OFF) because run.py's hermetic fixtures would
-  gain a real build and a second launch. Until the fixtures opt out explicitly and the default flips, a
-  campaign can still launch without the instrument.
-- DS41-C15 — `node_profile` semantics under speculation are unresolved: `llama-host-prof` counts one
-  batched verify call as `n_eval=1`, so `decode_us_per_token` is per graph eval, not per token, when DSpark
-  is on. Carried as a limitation string; needs a no-drafter cross-check to state the ratio.
-- The DS41 handoff now carries **two different tasks numbered DS41-C12** (the profiler wiring and the v10
-  folded-lineage fix). Cite by text, not by id, until the owning session renumbers.
-- Launch/registry divergence, filed and unowned by the campaign: the planner server `:8074` runs `-t 96`
-  while the registry recipe says `threads: 48` (`NUMA_FULL_T48`) — stack owner's.
-
-### Source References (2026-09-24 wrap-up compile)
-
-- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C12 (both:
-  profiler wiring and the v10 folded-lineage fix), C14, C15, C16, C17, C10 (rewritten to run 7).
-- [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the run table, the planner cost
-  decomposition, the seat-move ruling, the orphaned-actor measurement, DS41-C18.
-## Compiled Update — 2026-09-24: AutoKernel's actor-reply repair works; planner throughput is not a campaign result
-
-**Confidence: verified** for the local actor-schema cases, server throughput observations and workflow timings in
-the cited run record. The V4.1 campaign remained in progress; these operational observations do not establish a
-kernel keep, serving-quality result or campaign outcome.
-
-### Key findings
-
-- **Actor JSON repair now uses constrained schema turns, but the repair pattern's write-side evidence is a
-  separate task.** Three designs failed distinctly (optional abstain was filled beside a real hypothesis,
-  `anyOf` selected its cheap abstain branch, and an in-band marker over-abstained); the final two-stage
-  `response_format: json_schema` repair uses an explicit decline boolean followed by pure extraction. Five
-  shapes passed on the local 27B in 2–12 seconds. This applies the typed-decision plane's TD-1 idiom to
-  AutoKernel actors; reviews omit the decline boolean. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
-  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C16,
-  [typed-decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1)
-- **Runs 3–5 exposed workflow defects, not an accepted kernel result.** The research fixes added an actor-timeout
-  control, reply persistence with stderr fallback, and partial output retention on timeout; stopping the loop
-  must also terminate its actor child. One Q4_K×Q8_2 proposal passed the critic, but it is not yet an admitted
-  performance keep. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
-  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
-- **The planner seat moved to the MI210 Qwen3.8-27B (:8083):** the recorded serving rate was 86 t/s decode /
-  302 t/s prefill, compared with 50 / 92 for CPU flash-next. Proposal calls were prefill-bound (124k tool-output
-  tokens, about 22 minutes of a 41-minute call); 91k-token authoring was decode-bound. Run 6 was still running
-  at report time. These are operational measurements, not a model-quality or kernel-speed claim.
-  ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
-  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
-
-### Open questions
-
-- The local planner endpoint launches with `-t 96`, while its registry recipe says `threads: 48` (`NUMA_FULL_T48`).
-  Resolve the launch/registry divergence before treating these timings as a repeatable planner baseline.
-- The 2026-09-24 operational observations are retrospective; the source table now tracks a prospective,
-  producer-authored evidence hook. Do not reconstruct claim tuples from this progress narrative.
-
-## Compiled Update — 2026-09-23 (evening wrap-up compile): the DS41 AutoKernel campaign launched on the roster-free route, and a store's champion-of-record cannot be relabelled by a moving anchor
-
-**Confidence: verified** for the launch identities, commits and refusals (all observed in-session). The campaign itself has produced **no candidate result yet** — it is still inside its calibration phase, so nothing here is a kernel finding.
-
-### Key findings
-
-- **Operator ruling: AutoKernel and the production roster are orthogonal.** The planner is simply the live `qwen3.8-flash-next` server at `:8074`; no enrollment and no roster are involved. The launch went through `campaign_cli --manifest --registry-snapshot` and `serial_run` — the route the loop already had. That also made the enrollment tool's import-time-argv defect (DS41-C2e) irrelevant to the launch, though it was fixed separately (orchestrator `c3f2cbc2`, re-exec moved under `__main__`). ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2b/C2e)
-- **Launch identity, recorded so the next one is one command.** Store/inputs/state under `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/`; inputs built by `inputs/build_inputs.py` through the loop's own validators (canonical_launch.v1, frozen prompt v2, an IDENTITY receipt on `build-cpu`, manifest plus registry snapshot, `--verify-artifacts` 5/5). Target `ds41-ad932bbd9-cpu-t48-dspark-b2`, `external_draft`, greedy batched, ctx 8192, np 1; serving metric `aggregate_tok_s`; `--rounds 0`; planner `opencode:qwen-local/qwen3.8-flash-next@high`, critic `codex:gpt-6-sol@high`. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2b)
-- **Six contract details each cost a round trip, and are worth carrying forward**: `--batch-iterations 1` is required in scheduled serial mode; effort flags go through `--common-args <json array>`; a hand-built anchor needs `build-cpu/IDENTITY.json` (`epyc.champion-candidate-build.v1`, real files only — `O_NOFOLLOW`); the CPU drafter must carry `--device-draft none`; the `LLAMA_SPEC_EXACT` witness must be `process_environ`; provenance needs `export_sha256` + `instance_mode` + a `source:` key. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md))
-- **A store carries the champion-of-record, and the loop refuses to relabel a new tip as the old one.** Run 2 was refused: the shared store pinned run 1's COR `ad932bbd9` against the new anchor `ebb68dc55` ("supply `--cor-build` or `--resume-run`"). The rule the refusal encodes — *a campaign whose anchor moves with no keeps behind it needs a FRESH store, not a pinned one* — is the right default, because silently relabelling the tip would make every later comparison read against an identity that was never measured. Run 3 therefore uses a fresh store with the hypothesis inbox carried over (`state-run3/serial-run.pid` = 1953258); run 1 was archived as `store-run1-ad932bbd9`. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C13)
-- **Calibration is the loop's entry fee, and its cost is a property of what is being measured.** 48 matched A/A launches, roughly 2 h, each reloading 519 GB, measure **relaunch dispersion** — the noise every candidate pays, since a new binary is a new process. It is not reducible without keeping weights in RAM across launches, which would mean mmap, which changes NUMA placement and is therefore a *different measured condition*. Recorded explicitly as nothing to act on, so a future session does not "optimise" it into a comparability break. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C10)
-- **Hypotheses reach the planner through the inbox, not through the profile form.** Seeded as `store/inbox/30-ds41-seeded-hypotheses.md` (ranked: H2 requant ladder, H1b verify-marginal attribution, H3 rowexact-on-dense, H4 entropy-gated block, H1 demoted, H6, H7), each with its measured basis and a falsifier, re-read every iteration. The `opportunities.json` profile form stays unbound with placeholder digests — the inbox is the channel. Budget guidance carried with it: **decode is flat 24→96 threads**, so barrier and dispatch levers cannot pay on this model; point the campaign at the memory path. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C5)
-- **AK-INST-2 audit: no second champion-drift pin, but a v10 folded-lineage defect.** Auditing every 40-hex / `*_COMMIT` equality in the discovery plane found no other pin of the `READY_CONTINUE_INSTRUMENT_COMMIT` shape (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks; the review-pin at `discovery_deployment_factory.py:1516` stays exact by design and is re-pinned per freeze). It did surface a different defect: once `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, the rule "instrument parents == (production,)" became **unsatisfiable** in both `live_controls` preflight and `candidate_record.build_candidate_record`. Fixed by a shared `worktree.instrument_lineage_ok` that accepts the folded identity (research `714777e4`). A consolidation that merges two identities can invalidate a rule written when they were distinct. ([autokernel-restart-and-strip](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) AK-INST-2)
-
-### Open questions
-
-- DS41-C10 — watch the campaign through calibration into its first source iteration: does the serving floor land **with a unit**, does the planner's first proposal cite the inbox, and does the critic answer?
-- DS41-C11 — two pre-existing test failures reproduce on a clean HEAD (`test_existing_cpu_run`: `oracle()` unexpected kwarg `require_reference`; `test_serial_roster`: "issued selection awaits settlement"). Fix or re-fixture; they are not this session's change.
-
-### Source References (2026-09-23 evening wrap-up compile)
-
-- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2b (launch), C2e, C5 (hypotheses and budget guidance), C10, C11, C13 (run 3).
-- [2026-09-23-main-dsv41.md](../progress/2026-09/2026-09-23-main-dsv41.md) — "AutoKernel campaign STARTED" and "campaign restarted as run 3" sections: identities, contract details, the COR refusal, the calibration rationale.
-- [autokernel-restart-and-strip.md](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-INST-2 audit outcome and the v10 folded-lineage fix (research `714777e4`).
-
-## Compiled Update — 2026-09-18: GLM AutoKernel watch stopped without semantic acceptance
-
-The operator ended the GLM v28 campaign after 36 abstentions and one
-observation-only runtime arm. The final batch settled at the queued stop
-boundary; the supervisor published `complete` and left no active child. This
-was orderly process termination, **not** the requested 20 healthy research
-loops: no new source candidate reached measurement or keep, and no champion
-advancement was established. The 28 earlier keeps and source history remain
-retained. [Monitor record](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md),
-[active loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
-
-The read-only audit found a narrower future diagnostic, not a launch: older
-per-node GLM captures contain zero per-thread timing columns, so they cannot
-separate barrier overhead from straggler work. An exact-request per-thread
-profile would be needed before treating either as causal. The handoff records
-that further campaign work needs a new operator instruction; repeated
-abstentions and observation-only runtime arms cannot be counted as source
-research progress. [Monitor record](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md),
-[loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop),
-[prior implementation checkpoint](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
-
-### Source references
-
-- [GLM v27/v28 monitor and terminal evidence](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md)
-- [AutoKernel research-loop execution pointer](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
-- [Source-aware correctness and observation-route implementation checkpoint](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
-
-## Compiled Update — 2026-09-17 (evening): the speed-axis reseed gets a ledger receipt, journal rows record their manifest and parent, and the shadow gate now records what enforce would have done
-
-**Confidence: verified**: orchestrator commits and focused test runs recorded in the sub-lane logs. No
-inference ran. AutoPilot and the API stayed stopped, so none of this has run live yet.
-
-### Key findings
-
-- **"Option B" was only a recommendation until the operator ruled.** The first AP-57 attempt stopped
-  without implementing anything. The only record of RTG-02's "prepared decision package" was one sentence,
-  "decision package prepared, recommendation B". The package text was never saved, and no ruling existed in
-  the operator queue, `artifacts/operator/`, the bus or the wrap-up commits. Filing a box and re-pointing an
-  index cell are not rulings. The operator then ruled **OP-AP57 = B** (root `bee2f36a` removed the queue
-  row). [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md),
-  [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md)
-- **AP-57 B landed (orchestrator `01906607`).** On the eval-quality re-baseline refusal path, RTG-02
-  re-anchors `frontdoor_speed` and `autopilot_speed_era`. Before this change, that state write had no
-  journal receipt, because `_append_baseline_promotion_event()` returned early for `updated=False`.
-  - A new `speed_axis_reseed` event sits in the same ledger as `baseline_promotion`. It carries the source
-    trial, old and new speed and era, `reason=quality_refusal` with the gate token, the eval-quality era,
-    the AP-63(a) run-manifest digest, the post-write `baseline_state` and a timestamp.
-  - The event is written once per trial. A failed append logs a WARNING and sets
-    `state.speed_axis_reseed_journal_error`, and the state save still happens.
-  - `reconcile_baseline_ledger` replays promotions and reseeds in append order. `baseline_promotion_events()`
-    is unchanged, so promotion counters never count a reseed.
-  - Fixed along the way: a reseed decided on a row the journal does not hold was kept, while a promotion in
-    the same position was rolled back. Both are now rolled back.
-  - Tests: 9 new (collection fails on the old code), plus 333 + 78 in the focused suites.
-  - [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md)
-- **AP-63(a) landed (orchestrator `0286c170`).**
-  - **`run_manifest` on journal rows.** Main-loop rows, dispatcher-skip rows and the AUTOPILOT_KILLED
-    placeholder now copy the in-flight WAL marker's manifest onto the row. Before, the manifest was cleared
-    after the row was written. A trial that was never dispatched, or whose marker is mismatched or legacy,
-    gets `{}`. Nothing is back-filled.
-  - **`lineage`, an explicit stored parent.** The rule is `latest_committed_baseline_promotion_same_species`:
-    the newest same-species trial that has a `baseline_promotion` ledger event. With no accepted parent, the
-    id is `None`, never a fallback.
-  - **Nothing downstream changes yet.** The old heuristic is recorded alongside and still drives
-    `parent_trial`, so config_diff, PEAF, BSV and Pareto do not change.
-  - **Follow-ups.** AP-63c checks the first post-restart row. AP-63d decides whether consumers switch to
-    `lineage.parent_trial_id`. AP-63(b) stays blocked on OP-41.
-  - Tests: 17.
-  - [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md)
-- **AP-55-ARM is prepared but not flipped (orchestrator `cd79b80e`).** The planned review step could not
-  have worked: in shadow mode `_holds()` returns `[]`, so the recorded `hold` is False on every row, and its
-  rate reads 0% whatever enforce would have done.
-  - Each trial now also records `would_hold_enforce` (with reasons) and `would_hold_strict`, using the
-    same rule.
-  - `start_authority_daemon.py` pins `AUTOPILOT_AP55_PROMOTION_GATE=shadow` and
-    `AUTOPILOT_AP55_SEED_RERUN=0`, so an inherited variable cannot arm the shadow run.
-  - `scripts/autopilot/ap55_shadow_review.py --since <ts>` is read-only. Exit 3 means the window holds no
-    shadow verdict. On the live journal today it finds 0 gated rows and exits 3.
-  - The switch is two `AUTHORITY_ENV` lines followed by a restart through the wrapper.
-  - [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md)
-- **ETR-5/6/7 closed (orchestrator `0399c3fe`).**
-  - ETR-5 adds `SafetyVerdict.quality_unmeasured` as a **sibling** field. A `retry_not_revert` property
-    combines it with `reliability_blocked`, and the consecutive-failure guard reads that property. The
-    ETR-2 test pins that an unmeasured quality is not the REL-1 path.
-  - ETR-6 makes mock mode set `tokens_generated=0` explicitly. The two no-decode shapes differed only under
-    `exclude_unset` or a field-presence check.
-  - ETR-7 deletes the dead `INBAND_ERROR_PREFIX` imports. ETR-1 stays open as an operator decision.
-  - [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-program.md#track-eval-tower-loop-robustness-audit-2026-07-20),
-    [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md)
-
-### AutoKernel Dream-RSI follow-through (facts as the shards state them)
-
-- **RB-lineage telemetry is closed on the experimental lane.** The journal commit is `85c7b91e`, and the
-  prospective evidence sidecar is `a6288858`. The fields are nullable, and no search policy changed. SC87
-  records the write side, and its strict reader is still pending.
-  [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), intake-1439#record
-- **The research-loop rows stay open, with a stated boundary.**
-  - **Archives.** They keep final attempt and round counts, but not per-idea contexts. A five-idea cap, a
-    summarize-every-20 comparison or an ancestor-revert A/B therefore cannot be scored retrospectively.
-  - **C6 scanner.** It now refuses explicit benchmark and capture-phase probes (`84aaaf8d`).
-  - **Fresh-input checks.** They are opt-in and report-only.
-  - [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
-- **AK-integrity audit: the existing guards cover the basics, and one narrower gap remains.**
-  - **What exists.** Hardened `llama-bench` receipts need distinct per-repetition input digests and rotated
-    addresses. A versioned reward-hack scan covers the whole candidate diff.
-  - **The gap.** The timed GPU receipt checks output invariance across addresses. It does not compare the
-    candidate's output with a trusted reference on that same fresh input.
-  - **What was added.** `loop/fresh_correctness.py` (`6c5bd9bb`) and an opt-in `fresh_check` observer in
-    `loop/bench.py` (`091e3eb0`) are default-off and have no live caller. The observer refuses
-    `calibrated=True`, and its verdict stays `decisive=None` until the exact protocol has its own A/A.
-  - [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
-    intake-1454#record, intake-1447#record
-- **Historical keeps cannot be labelled same-prompt replayable.** `_run_agent` does not save the prompt
-  bytes, so no N=10 replay or BO ceiling result is claimed. A default-off prompt receipt, capped at 1 MiB,
-  is specified but not implemented. [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
-  intake-1451#record
-- **Retained-variant codegen summaries require prospective provenance.** The
-  VB-AK-CODEGEN write/read side now binds a source-KEEP diagnostic to its exact
-  keep, retained tree, backend, toolchain, recipe and object hashes. Disassembly
-  counts are neither a throughput result nor an occupancy or correctness claim;
-  old keeps cannot acquire this producer receipt retrospectively.
-  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
-- **The GLM loop: v21 was stopped, and v22 was relaunched with a bounded runtime preflight.**
-  - **Why v21 stopped.** Its batch 1 admitted a runtime arm whose default calibration
-    (`CampaignControls(200,...)`) needed **800 full GLM launches** before the first comparison. It was
-    stopped as an invalidly sized setup, not scored. The shard records that TERM did not end the child and
-    server promptly, and that KILL was needed on the captured PIDs.
-  - **The fix.** Research `8d45cb44` offers no runtime treatment unless a runtime statistical declaration
-    is made in advance, and a declared runtime arm must state its full launch budget before claiming
-    resources.
-  - **v22.** It started at 14:27 UTC from source tip `614ff2ba02e0` and the same store, with 28 keeps.
-    Batch 0 screened +0.296% on HALF scope and batch 1 screened +0.064% on the FULL target; both
-    remained candidate-only observations, not keeps. It stopped cleanly at the batch-2 boundary after
-    review found that the default `MUL_MAT` correctness test did not exercise the candidate's GDN edit.
-  - **What is not claimed.** Neither screen establishes a GDN-correct candidate or an advancing
-    champion. The 28 prior keeps, production v9, and champion are unchanged; v22 is not evidence of
-    20 healthy loops.
-  - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md)
-  - [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md)
-- **A source-aware oracle now protects prospective GDN edits.** The old default `MUL_MAT`
-  gate did not exercise a GDN change. Research commits `b4f08d6d`–`c8e79e4c`
-  resolve the changed operation, require a nonempty selected CPU suite, and compare
-  16,896 exactly representable F32 outputs with an independent scalar GDN reference
-  before timing. Unsupported new CPU quant/graph paths refuse before a build;
-  historical keeps remain historical rather than being retroactively regraded.
-  The existing anchor binary passed 38/38 selected GDN cases and the scalar probe.
-  [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
-- **Codegen evidence is diagnostic and prospective.** Research `09bc8fc3` writes
-  bounded build-scoped source-KEEP summaries with producer-authored ClaimTuples;
-  root `7e46f3ca` verifies their bindings on read. Research `44c3dae1` now
-  extracts a bounded CPU-library symbol mix, verified by root `36c378c6`.
-  Research `004de151` samples embedded gfx90a code objects from a HIP DSO,
-  with container/offset consistency enforced by root `2f49a783`. This is not
-  a complete fatbin census or per-kernel attribution. No spill, occupancy,
-  correctness or throughput claim follows from instruction counts. A v23 GLM controller started
-  from the same 28-keep tip at 16:32 UTC. Batch 0 abstained before authoring:
-  IQK was the higher-ROI identified path but lacked a case-level edited-function
-  witness. It stopped cleanly at 16:45 UTC after batch 1 ended during profiling;
-  neither batch measured or kept a candidate. A narrow Q4_K/Q5_K IQK helper
-  witness and independent fixed-shape scalar comparison were then published as
-  research `795f9e5a`/`54b72f40`; continuous v24 launched at 16:58 UTC. This
-  proves only selected helper entry and tested numerical shapes, not all branches
-  or production-shape correctness. v24 profiled but again abstained before
-  authoring: the top 41.60% synchronization family required a broader lever,
-  while the runtime probe was disabled without strict statistical preparation.
-  The loop stopped cleanly after its next full-target profile, with zero new
-  measurements or keeps. Research `bf9b85ae` then opened a full-target,
-  observation-only runtime A/B path; observations do not select recipes or
-  promote champions. Continuous v25 produced its first real observation at
-  18:00 UTC: 32 threads estimated −4.487% versus the original 48-thread
-  recipe, inside the 6.351% full-target floor, with no keep or champion move.
-  Research `37d326ac` also requires native per-case reference metrics for
-  admitted GPU source edits, while `53bc979c` retains observed errors from
-  the existing Q4_K/Q5_K scalar CPU fixture without changing its thresholds.
-  The operator accepted the existing validated per-operation comparator for
-  AK-PORT-1 and a bounded native-code diagnostic or explicit unavailable
-  record on each new source keep for AK-PORT-3. These close the two tasks
-  without claiming universal cosine/PSNR or exhaustive per-kernel occupancy.
-  v25 subsequently retained a second observation (NUMA round-robin −3.176%,
-  also inside the floor), then its serial controller refused the two-iteration
-  child as a one-iteration scheduling unit. That controller failure is separate
-  from the completed porting-method scope decision. Research `67c90866`
-  refuses multi-iteration resolved-campaign children before launch; v26 began
-  with one iteration per child. At the 20:10 UTC wrap-up checkpoint its first
-  child was still measuring full-target CPU A/B, with fresh controller/store
-  heartbeats but zero settled scheduler iterations. A completed v26 stage and
-  the requested 20-loop watch remain unverified.
-  [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
-
-### Open questions
-
-- AP-63d: should config diffs be measured against the stored `lineage` parent instead of the heuristic?
-- AP-55-ARM: what committed-promotion would-hold rate does the first shadow run produce?
-
-### Source References (2026-09-17 evening)
-
-- [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md): AP-57 stop, AP-63(a), AP-55-ARM prep.
-- [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): AP-57 B implementation and the non-projection decision.
-- [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md): ETR-5/6/7.
-- [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md): AP-57, AP-55-ARM runbook, AP-63(a)–(d).
-- [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-program.md#track-eval-tower-loop-robustness-audit-2026-07-20): ETR-5/6/7 ticks.
-- [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md): Dream-RSI checkpoint, v21 stop, v22 relaunch.
-- [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md): v22 candidate-only outcomes and clean stop boundary.
-- [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md): source-aware gate, codegen evidence, v23 start and remaining coverage limits.
-- [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md): integrity and promotion-control audit.
-- [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): row checkpoints.
-- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): prospective codegen write-side task.
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): evening landing table and rulings.
-
-## Compiled Update — 2026-09-17 (afternoon): the merge train landed, and the next gate is one shadow run
-
-**Confidence: verified**: git ancestry on orchestrator `origin/main`.
-
-### Key findings
-
-- **Orchestrator main is `a1a0251a`, and it contains the whole AutoPilot safety and evidence train.** That
-  covers:
-  - MHS-3 structural refusals (`6df6f0d8`);
-  - MHS-4 risk prior and MHS-5 corpus (`8219d8e8`, `4f28e6c3`);
-  - the AP-54 fence;
-  - AP-55 (a)–(d) (`203cb6e2`, `f057f1fb`, `e3e67696`, `f76e65cd`);
-  - gate-frontier (c)+(b), and the W3e axis-name reads (`635a3467`).
-
-  The "unmerged / flip on merge" notes in the handoffs predate this, and the boxes are now ticked.
-  [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md),
-  [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
-- **Everything landed is shadow or restart-gated.** AP-55's gate runs in shadow mode. AP-55-ARM (enforce plus
-  seed re-runs, pre-approved) needs one AutoPilot run in shadow first, and so do VB-MHS-OPS-HOOK and W3e's
-  axis drop. AutoPilot has not been restarted on the new code, and the API is stopped.
-  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- **W3e remains open.** The positional-consumer blocker is gone, but the policy that drops `neg_cost` is
-  still unwritten. [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput)
-
-### Source References (2026-09-17 afternoon)
-
-- [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md)
-- [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
-- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-
-## Compiled Update — 2026-09-17 (later): the Dream-RSI intake files 14 offline rows, and "same candidate" gets a content identity
-
-**Confidence: verified** for the built promotion-guard code, the replayed goldens and the AP-55 arming/attempt logic (all zero-inference, read from the branch records). **external** for every Dream-RSI-cluster number: the intake entries are dive-verified, but they motivate the filed rows and gate nothing (MEASUREMENT.md). No live policy was rewritten and no loop ran.
-
-Two unrelated-looking threads closed the same day. The Dream-RSI batch turned 25 intake entries into 14 filed task rows across 6 handoffs, all explicitly offline/observe-only. And the live-frontier promotion guard the previous pass left on `sub/gate-frontier-20260916` came back from review with the harder half done: the guard had been clustering reproductions by a hash that is not the served configuration, so most of its would-be promotions were an artifact of grouping different runs together.
-
-### Key findings
-
-- **The Dream-RSI batch: 14 rows, 0 checkbox flips, and a corrected external record.** The operator-approved Stage-4 plan (2026-09-17) filed rows in `autokernel-research-loop` (AK-WM-3, adaptive policy panel, plateau pack, cost-credit, lineage diagnostics, promotion controls, integrity pack), `agent-collab-rnd-harness` (AC-CORAL, AC-branch-per-agent), `autokernel-rebuild-program` (RB-lineage telemetry), `harness-selection-and-integration` (HS-E1), `autopilot-sequential-allocation` (SEQ-4) and `agentic-rocm-kernel-authoring` (AR-RPUCG, AR-ROCm-eval). Explicit declines are on record: all `autopilot-continuous-optimization` mechanics (that handoff is STOPPED since 2026-08-10; restart needs explicit operator permission), the DeltaEvolve→TOC/CF mapping, the guidance-prompt task, monitor rows, HS/DAR/TOC domain mismatches, external re-measurements, and the 13/15 re-run (≥$1.1k, no decision depends on it). The load-bearing Stage-2 corrections: Dream-RSI's **implemented replay reward is App. B.2's `pareto.auc − λ·parallel_penalty`, not Eq. 1**; the `1.22×/1.74×/zero-gradient` figures are companion-README-only; EvoX scores strategies **online only** (no replay); PACEvolve's MBB/CE require a **known target bound**; SimpleTES's "generations" is Dream-RSI's relabeling of evaluator queries; and the SwarmResearch 13/15 count is threshold-ambiguous. ([research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
-- **The AutoKernel rows are replay-only by construction.** AK-WM-3 evaluates candidate-ordering/branch/stop policies offline against the recorded AK-WM-2a archive under the implemented App. B.2 objective and the prefix-only contract, reporting AUC-frontier as well as endpoint. The adaptive policy panel shadows EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB, τ_S 0.02 / τ_M 0.12) and BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) over recorded histories only, separating the pool effect from the routing effect. The plateau pack ports PACEvolve's portable half (idea cap 5, summarize-per-idea every 20, momentum detector β=0.85 / ε_rel=0.001, α=1.5 ancestor revert vs cold restart; constants ground-truthed at `google/pacevolve @ 22798d9f`). CostAda's cost-calibrated frontier utility and the EvoReplay lineage layer (deterministic line-level cycling detector + 9-label edit taxonomy via a ~40-line `programs.jsonl` adapter) are offline re-scores, with the vidya source row and write-side tuple required **before** the first run. Promotion controls are report-only (N=10 same-prompt replays; post-hoc BO tuning-ceiling probe). ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
-- **SEQ-4 re-folds the stored AutoPilot pool under a bandit allocator, offline.** 141 stored candidates / 393 trials are to be re-scored under (a) BaSE-style UCB/Thompson routing (intake-1456) and (b) a fluid-style portfolio AUC objective (intake-1457), compared against the fixed budget=8 heuristic, reporting AUC-frontier vs endpoint. It deliberately does not touch the human-amendment-only SEQ-3/SEQ-B1 decision or re-arm any gate. ([autopilot-sequential-allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation))
-- **The promotion guard's identity rule: an ACTION hash is not a served config, so most what-if promotions were grouping artifacts.** Under rule (b), reproductions were keyed by the action hash; for `seed_batch` and `deep_eval` that hash does not identify what ran — `{"type":"seed_batch","n_questions":10}` covered 394 rows, and all 22 what-if promotions were such runs. `action_identity.row_config_identity` now identifies a served config only from an explicit delta (`structural_experiment` flags, `numeric_trial` resolved params) plus the AP-55 infra digest when recorded, and only identity-bearing clean rows are stamped representatives. After the fix: **rule (b) promotes nothing**; 441 decisions are refused for carrying no served-config identity (seed_batch 331, empty-params numeric_trial 72, deep_eval 18, 20 others); 4 promotions remain (3 seeds plus trial 755 under the frontier rule). Per the operator decision (`f083a0cd`), prompt/code/GEPA mutations are identified by `eval_details.served_content = {"files": {path: sha256}}`, hashed from the served file after the write and before the eval and kept off the action so fingerprints are unchanged; the regime digest is the AP-55 digest **without** the orchestrator HEAD/dirty component but **with** evaluator, kernel, recipe, models and host, so an unrelated orchestrator commit no longer splits a cluster. Rows without a content identity stay non-promotable and nothing is back-filled. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput))
-- **(c)+(b) are built: clean trials become frontier representatives, and an empty live frontier needs ≥3 comparable reproductions.** The loop fixes the row it will journal before the promotion decision (`_provisional_trial_row`) and passes it to `update_baseline`, so the guard's live archive includes the candidate; clean rows are stamped `eval_details.frontier_admission = "representative"` and cluster by config fingerprint, with one predicate (`row_is_representative_member`) serving replay, snapshot fold, recovery re-import and reproduction counting, and `upsert_representative` for the live archive (`AUTOPILOT_CLEAN_TRIAL_REPRESENTATIVES`, default on). Rule (b) needs `AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO` comparable live-regime reproductions (default 3; values below 2 are refused and fall back to 3), excludes NON_COMPARABLE rows, and promotes the **median** over them, which must still clear the quantum. `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed`) is logged, returned, and written to the trial row and the `baseline_promotion` event. Review fixes: a provider exception or unreadable archive refuses promotion over an existing baseline (`refused_guard_unavailable`); the replay `compare()` restores the logger level; the live archive is built once per call. On the next restart every tier starts under rule (b), and no promotion happens until a config has 3 comparable reproductions in the new epoch. The W3e `-cost` axis drop itself is still open. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **Mutation candidates now stage under multitier, with a scoped rollback and an external-change refusal.** Prompt/code/GEPA candidates with a `served_content` sha and an exact restore preimage can be staged (`c12f17f5`); every forced stage re-hashes the served files before the eval and again after it, a change or missing file refuses and rolls back, and `structural_prune` stays out of scope. The Fable review (`25c8e913`) then bounded the rollback: it skips the checkpoint's prompt copytree (`restore_prompts=False`) and attests the file's final on-disk state; if the current sha no longer equals the served sha nothing is written and the candidate is retired `rejected_external_change` with an ERROR log and the `autopilot-multitier-rollback-external-change` alarm; all PromptForge commits are path-limited (`git add -A -- p` + `git commit --only -- p`); the preimage is stripped from snapshots; and rollback retries are capped (3 failures → staging refused, `autopilot-multitier-rollback-stalled` alarm). Tests: 21 for multitier mutation candidates; full suite 13,383 passed / 1 known tripwire failure at review time. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract))
-- **AP-55's seed re-run now has an arming flag, a bootstrap, and bounded attempts.** After the Fable review fix `0e6e2288`, a regime change schedules the seed re-run only when `AUTOPILOT_AP55_SEED_RERUN=1` is set (with seq on or off; unset by default, in which case nothing is fingerprinted on the force path and the seq cadence is unchanged from before AP-55). A tier with no reference draw schedules one (`NO_REFERENCE`) — without it `enforce` would hold forever on `seed_rerun:MISSING` — and a forced re-run whose eval comes back invalid or skipped is retried at most `AUTOPILOT_AP55_SEED_RERUN_MAX_ATTEMPTS` (default 3) times per reference, spaced by `AP55_REGIME_REFRESH_MIN_TRIALS` trial ids, with the deferral and the cap logged and a landing reference draw resetting the count. The observe-only paired diagnostic now changes its `seq_paired_baseline` payload even in shadow mode (it may pair against an older same-regime draw or report no reference) while staying `used_for_gating=False`. AP-55-ARM is filed: read the counterfactual `eval_details.ap55_promotion_gate.hold` rate after one shadow run, then arm enforce plus seed re-runs, and it needs the AutoPilot merge train (`sub/autopilot-train-20260916`, carrying the within-noise hold fix `f76e65cd`) on main first. **The train's integration fix is verified:** every `update_baseline` call site (within-noise, clean-trial `else`, multitier `final_t1`) is under an AP-55 hold, and `tests/unit/test_ap55_hold_call_sites.py` walks `autopilot.py`'s syntax tree to reject any new unguarded call; the final train tip `e12fb691` ran 13,665 unit tests with 0 failures. The push itself was denied by the permission classifier and left for the operator. ([sub-ap55bc](../progress/2026-09/2026-09-16-sub-ap55bc.md), [sub-train](../progress/2026-09/2026-09-16-sub-train.md), [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md))
-
-- **AKU-RED-LOOP filed: the research AutoKernel loop suites are red, and the cause is unclassified.** Under `python3`, `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. The clusters: a `test_serial_run.py` settlement refusal, `ProducerSourceRefused` in 13 errors, `test_seed.py` prompt text, missing `samples_ts`/`n_threads`/`build_commit`, and one test path in a removed worktree. The task is classification first — stale test, code bug, or environment — then fix or delete. A first pass the same day fixed two research-side defects behind `test_autokernel_serving_feedback.py` (the CPU-run fixture wrote a root-level `kernel.c` the allowlist refuses; an accumulator cor-vs-tip compare rebound the planner feedback anchor to the old champion): 13/13 after, 8 research tests cleared, but 28 failures in the dependent suites (serial_run settlement, cor-build `StartupRefused`) predate those fixes and are not covered by the task's clusters. ([autokernel-unified-surface-program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [sub-misc](../progress/2026-09/2026-09-16-sub-misc.md), [sub-redtests](../progress/2026-09/2026-09-16-sub-redtests.md))
-
-### Open questions
-
-- The within-noise promotion call site gap is closed by the merge train: `f76e65cd` puts the `ap55_gate.get("hold")` check on that path, and the syntax-tree guard fails any future unguarded `update_baseline` call (see the AP-55 bullet above).
-- After the identity fix, does rule (b) promote anything that a human would recognise as a real gain — or does the 3-reproduction bar simply defer to the frontier rule in practice?
-- The Dream-RSI rows are all filed and none run; the first one to execute (AK-WM-3) is also the one that tests whether App. B.2's objective transfers off Dream-RSI's own loop.
-
-### Source References (2026-09-17 Dream-RSI intake and promotion-guard follow-through)
-
-- [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the 25-entry batch record, the Stage-2 corrections, and the decline list.
-- [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop): the seven AutoKernel rows with their constants and their observe-only scope.
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): RB-lineage telemetry.
-- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
-- [agentic-rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring): AR-RPUCG and AR-ROCm-eval.
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) and [2026-09-16-sub-redtests.md](../progress/2026-09/2026-09-16-sub-redtests.md): the red research AutoKernel loop suites and the AKU-RED-LOOP handover.
-- [autopilot-sequential-allocation.md](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation): SEQ-4's offline allocation replay.
-- [2026-09-16-sub-train.md](../progress/2026-09/2026-09-16-sub-train.md): the AutoPilot merge train — AP-55 hold coverage at every `update_baseline` call site, the syntax-tree guard, and the final tip's test totals.
-- [2026-09-16-sub-gate-frontier.md](../progress/2026-09/2026-09-16-sub-gate-frontier.md): (c)+(b), the served-config identity fix (`f083a0cd`, `53dea5aa`), multitier mutations (`c12f17f5`, `25c8e913`), and the replay goldens.
-- [2026-09-16-sub-ap55bc.md](../progress/2026-09/2026-09-16-sub-ap55bc.md): the `0e6e2288` review fix, the `NO_REFERENCE` bootstrap, and the bounded-attempt cap.
-- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md): AP-55-ARM and the merge-train prerequisite.
-- [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput): the W3e (c)+(b) build note and the still-open axis drop.
-- [promptforge-mutation-safety-contract.md](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract): the multitier mutation staging and rollback review.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AP-PROMO-RULE, the journal projection of the two new fields.
-
-## Compiled Update — 2026-09-17: AutoPilot's promotion evidence is hardened — rejected-mutation memory, an infra-regime fingerprint, a Landlock eval fence, and a promotion guard that reads the live frontier
-
-**Confidence: verified** for the measured re-proposal rate, the landed and branch-built code, and the journal replays (zero inference throughout). **Inferred** for the effect of the gates on future runs: none of them has run in a live AutoPilot loop yet. Most of the work below is still on unmerged orchestrator branches, and the text says which.
-
-The common thread is that AutoPilot could not tell whether a promotion was real. It forgot what it had already rejected. It could not tell whether two trials ran on the same infrastructure. It could not show that the agent under evaluation had not read the project's own knowledge. And its promotion guard was reading the wrong frontier. Each of these now has a structural fix. Each fix was sized by a zero-compute measurement or replay over the stored journal (trials 0–1505, 1,372 rows), not assumed. Two earlier claims are corrected here: the MHS-4 rationale that "every catastrophic held-out regression came from an override patch", and the belief that the E8 reseed chain was still the gating task.
-
-### Key findings
-
-- **AP-53: AutoPilot re-proposed configs it had already rejected. It now keeps a harness-written ledger of rejections.** 133 trials, 9.7% of 1,372 (31.3% of the 425 with a usable `config_fingerprint`), re-ran a config that an earlier trial had rejected. 105 of them were structural experiments. The median gap from the first rejection was 91 trials (IQR 42–208), far outside the planner's 12-row window. Only 8 were blacklisted at dispatch, and 59% were rejected again. `user_modeling=true` failed safety at #778 and then failed four more times without being blacklisted, because the failures were not consecutive. The fix landed on orchestrator `main` (`203cb6e2`, merged at `753343f5`). 15 reject paths write `{target, mutation_type, diff, per-suite deltas, rejecting gate, ts}`, the last 3 same-target rejections lead the mutation context, and the planner gets a fold of hard-rejected configs that are still standing. Replayed over the journal, the fold would have flagged 48 of 216 keyed trials. It takes effect at the next AutoPilot restart. ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-autopilot-evidence](../progress/2026-09/2026-09-16-sub-autopilot-evidence.md))
-- **AP-54: the eval agent could reach the wiki, and the traces could not prove it didn't. A fence is now built.** Nothing injects wiki text. But the builtin `read_file`/`search_files`/`list_files` tools have no path check, the REPL file tools allow anything under `/mnt/raid0/llm/`, and `run_shell` allows cat/grep/find. The 9,172 stored trace records keep only the first 5 tool NAMES, so the answer was AMBIGUOUS. The operator chose a fence that goes live at the next ordinary API reload, with no flag. A tri-state `ChatRequest.eval_fence` sets it: `None` leaves production unchanged, `True` denies, and `False` records only, which is the AP-54b control arm. Armed `run_python_code`/`run_shell` children run under kernel enforcement that their descendants inherit: Landlock on this host, else `mountns`, else `hook-only`. This closes the ctypes/libc and `sh -c` indirection routes that pattern matching could not. Discovery finds about 327 checkouts and 1,145 fenced dirs, including worktree wiki copies and each checkout's `.git`. Rows record `fence`, `touched_paths` and `fence_enforcement`. The tests grew to 112. Branch `sub/ap54-fence-20260916` (`a8bdb15f` → `80fa99aa` → `0d3b6e26`) is NOT merged and is under third review. This supersedes the earlier same-day note that the fence was "proposed, not implemented". The AP-54b A/B is filed but compute-gated. ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-ap54-fence](../progress/2026-09/2026-09-16-sub-ap54-fence.md), [sub-autopilot-evidence](../progress/2026-09/2026-09-16-sub-autopilot-evidence.md))
-- **AP-55: trials now carry an infrastructure-regime fingerprint, and the new promotion gate runs in shadow.** Parts (a) and (d) are on `main` (`203cb6e2`). `infra_fingerprint.py` digests six components separately: orchestrator, evaluator, kernel (live `/proc/<pid>` maps with a PID-reuse guard and no name scan), recipe, models (GGUF first-MiB digest) and host. Each trial gets COMPARABLE, NON_COMPARABLE or UNVERIFIED against the tier baseline, and an unreadable side is never COMPARABLE. Parts (b) and (c) are built but unmerged (`f057f1fb`, `e3e67696`; root `febf56cd`). They add a same-regime seed re-run leg, and a pure-Python chi-square homogeneity test over the in-regime batch judged against the same baseline revision. `AUTOPILOT_AP55_PROMOTION_GATE` takes `shadow`, `enforce` or `strict`. Inside the container the server PIDs are invisible, so the kernel component is declared-only and every verdict is UNVERIFIED. That is why `strict` would block every promotion. **Operator decision 2026-09-16:** run the next AutoPilot run in shadow. AP-55-ARM (`enforce` plus seed re-runs) is pre-approved after one shadow run, once the counterfactual `eval_details.ap55_promotion_gate.hold` rate has been read. ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-ap55bc](../progress/2026-09/2026-09-16-sub-ap55bc.md))
-- **The promotion guard was reading the legacy t/s frontier. It now reads the live one, and q/h can no longer land in a t/s field.** W3e made every `pareto_archive.py`/`safety_gate.py` objective read go by axis name, via `TierSpec.axes` and a shape-checked `objective_value()`. Golden replays of both archives (361 entries each) showed identical behaviour (`635a3467`). That work exposed the archive guard: it replayed the journal under `LEGACY_OBJECTIVE_POLICY` with no epoch fence. Switching the policy alone would have copied q/h into `frontdoor_speed`, where 59.49 q/h would fail an unchanged 14.78 t/s trial on the 0.8× floor. `sub/gate-frontier-20260916` (unmerged) fixes both halves together. It rebuilds the guard through the W3 authority path, and it routes the rate axis by unit into a new `Baseline.frontdoor_task_rate_qph`. An empty live-epoch frontier now refuses promotion over an existing baseline (D2). Replay over the 1,372 rows gives identical promotions, 2 of them. **Pre-existing defect, and an operator decision:** the candidate is journaled AFTER `update_baseline`, so a clean trial is never a frontier representative. That was the reason for 479 of 499 old-path refusals. The operator chose option (c), journal clean trials so they can be representatives, with N≥3 reproductions as the interim rule until (c) lands. The `-cost` axis drop itself is still open. ([objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [sub-autopilot-safety](../progress/2026-09/2026-09-16-sub-autopilot-safety.md))
-- **PromptForge mutation safety: a leakage guard built from eval data, a risk prior that ranks but does not certify, and a refuted rationale.** MHS-3 (`8219d8e8`, unmerged) builds its vocabulary from the research question pool plus the core and sentinel files: 153,450 ids and 295 id families. It fails closed when the pool is unreadable, with measured false positives of 0 over the 33 live targets. `sub-gate-frontier` makes that fail-closed state loud: a startup preflight, a session-bus alarm after 3 consecutive `eval_leakage_vocabulary_unavailable` rejections, and runbook § 7. Note that `question_pool.jsonl` is gitignored, so restoring it means a byte-identical copy (sha256 `64218c27…`), not git. MHS-4 adds an ordinal `MUTATION_EFFECT_RISK` (inert 0.05 < constrain 0.25 < expand 0.50 < replace 0.90 < unknown 1.0 < unsafe ∞) and a gate that can only be tightened. MHS-5 (`4f28e6c3`) mined Harness-R1's 23 valid held-out patches. The REPLACE-before-CONSTRAIN ordering holds: REPLACE was 4/4 negative at a mean of −8.4 pp, and CONSTRAIN (n=19) averaged +3.9 pp. **But the worst single patch is hint-only CONSTRAIN (−16.9 pp).** That refutes the earlier MHS-4 wording "every catastrophic regression came from an override", and the correction is recorded against `intake-1323#record`. The weights stay uncalibrated. ([promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract), [sub-autopilot-safety](../progress/2026-09/2026-09-16-sub-autopilot-safety.md), [sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md))
-- **The E8 reseed chain is retired, not completed.** Operator ruling `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`) closes E8 RE-ARM and its six successor boxes as SUPERSEDED. It re-anchors the reseed gate to the current eras (cpu_bench E9, eval_quality E16), and the gate binds only at promotion. No E8 baseline was ever applied. ([autopilot-decision-plane-audit](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22), [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md))
-- **The livecodebench oracle rebuild of 2026-08-12 never reached the live pool.** `question_pool.jsonl` (built 2026-07-27) still carries 2,349 livecodebench rows scored by `substring 'def '`, including the 5 core-pool rows. So every AutoPilot livecodebench score after 2026-08-12 was vacuous too. The shared scorer now refuses a substring oracle on code rows (orchestrator `f0015306`, branch only). Swapping the live pool is a T1 instrument-era decision for the tower owner. See [Benchmark Methodology](benchmark-methodology.md). ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md))
-
-### Open questions
-
-- Will `enforce` hold an acceptable share of promotions? Chi-square power is low at batch sizes of about 14–50, so HOMOGENEOUS may dominate. This is read from the shadow run's counterfactual hold rate.
-- Does the eval agent actually read the wiki? AP-54b is a compute-gated A/B, armed vs control, with touched-path recording.
-- COMPARABLE cannot be reached inside the container until the kernel component can see live server PIDs.
-
-### Sources
-
-- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md): AP-53 measurement and landing, AP-54 answer and fence, AP-55 (a–d) with the operator gate-mode decision, and the stale-pool livecodebench note.
-- [autopilot-decision-plane-audit-2026-07-22.md](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22): the E8 chain closed as superseded under the OP-19 ruling.
-- [promptforge-mutation-safety-contract.md](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract): MHS-3 leakage guard, MHS-4 risk prior, MHS-5 corpus result and refutation.
-- [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput): W3e axis-name reads, the coupled guard finding, and operator decision D2.
-- [2026-09-16-sub-autopilot-evidence.md](../progress/2026-09/2026-09-16-sub-autopilot-evidence.md): the AP-53/54/55 lane record and W3 segment snapshots.
-- [2026-09-16-sub-ap54-fence.md](../progress/2026-09/2026-09-16-sub-ap54-fence.md): fence design, review fixes, and Landlock enforcement.
-- [2026-09-16-sub-ap55bc.md](../progress/2026-09/2026-09-16-sub-ap55bc.md): the seed re-run leg, the homogeneity gate, and the decision package.
-- [2026-09-16-sub-autopilot-safety.md](../progress/2026-09/2026-09-16-sub-autopilot-safety.md): the MHS-1..5 and W3e lane record.
-- [2026-09-16-sub-gate-frontier.md](../progress/2026-09/2026-09-16-sub-gate-frontier.md): the live-frontier guard, the journal replay, and MHS-3 operability.
-- [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): where the stale pool comes from and who consumes it.
-
-## Compiled Update — 2026-09-16: guard reachability, cross-workload refusal, and disk hygiene
-
-**Confidence: verified** for the installed zero-compute controls, tested worktree tools, and receipted retirement. This is not a new kernel-speed, serving, production, or live cross-workload keep claim.
-
-**A guard is useful only when the live path reaches it and the candidate cannot control its instrument.** The R24 review found five concrete gaps: the installed hardened bench was unused; the candidate could build its own `llama-bench` and hide undeclared edits; an edit-capable critic could change the tree after review; process-level GPU residency did not prove per-op placement; and a purported determinism gate compared return codes rather than outputs. R24-1 through R24-5 are now wired at the run boundary: candidate arms share a hardening seed and require its receipt, whole-tree/protected-path checks and reward-hack scanning run before build, critics are read-only over delimited candidate data with tree-identity checks, scheduler traces refuse missing or CPU-assigned target-op evidence, and repeated hardened outputs must hash alike. The combined zero-compute verification passed 455 tests and 31 subtests. The advisory anti-gaming prompt, keep-drought and no-measurement alarms, same-code tripwire, randomized near-tie draws, and planner dispatch census remain open; none of these changes authorizes a loop relaunch. ([rebuild handoff](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md))
-
-**Cross-workload validation now has a refusal path, but not yet a live keep proof.** The census and footprint producers, full-dirty-set integrity precondition, interim unit-matched `k_delta=1` rule for non-author workloads, and controller refusal on a failed required-source row are installed. Remaining gates include production-workload floors, historical replay/control fixtures, the first live refuse-mode GPU keep, and a composed ValidationBatch/FOLD boundary. A `failed` row is no longer merely an annotation, while `pending` and uncalibrated rows are not converted into passes. ([cross-workload keep gate](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate), [hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md))
-
-**Disk hygiene separates prospective ownership from retrospective, operator-approved recovery.** The design review traced the accumulation to acceptance worktrees created by agents without an owner-bound reaper, plus loop state/build retention; its 606.7 GB inventory and 369.9 GB dirty-tree estimate describe the **pre-retirement** snapshot, not current occupancy. A new acceptance helper now gives future trees durable receipts and clean commit-push/discard closure, but deliberately retains dirty or unverifiable trees. Separately, the operator-approved retirement archived all 224 reviewed `KEEP-dirty` worktrees with content-addressed records and then obtained 224 exact removal receipts, after a transient process-holder refusal was retried. Free space rose by about 334.5 GiB; archives and receipts remain, while production, model artifacts, and the 187 nested pool lanes were outside scope. The serial supervisor also gained bounded child-output retention and a fail-closed disk-reserve gate. These controls do not cover every ad-hoc harness or close the remaining `source_loo` and state-dir retention recommendations. ([disk-hygiene design](../docs/design/autokernel-disk-hygiene-20260915.md), [acceptance helper](../progress/2026-09/2026-09-15-acceptance-worktree-hygiene.md), [retirement implementation](../progress/2026-09/2026-09-15-autokernel-dirty-retirement.md), [retirement result](../progress/2026-09/2026-09-16-autokernel-dirty-retirement.md))
-
-**A truthful actor abstention must remain a science outcome through the scheduler.** The 2026-09-16 GLM continuation profiled and then abstained because the selected MoE store-fusion idea required an IQK edit outside its one-file boundary. The child recorded `abstained`, but the serial scheduler rejected that terminal status and stopped after batch 0; there was no candidate measurement or keep. The retained 27-keep accumulator and champion anchor were not reset. A narrow scheduler fix is being validated before relaunch. This is an execution-status defect, not a measured null or evidence that the mechanism is slow. Full-core confirmation also remains conditioned on a quiet GPU window; the earlier roughly 7% CPU decode drop was during active GPU work and does not isolate a q3-only penalty. ([GLM coordination record](../progress/2026-09/2026-09-16-codex-autokernel.md))
-
-### Source References (2026-09-16)
-
-- [AutoKernel rebuild handoff](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R24 guard defects, landed wiring, and still-open advisory rows.
-- [Cross-workload keep-gate handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate) — installed refusal logic and outstanding live/calibration gates.
-- [AutoKernel hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md) — zero-compute tests, control-plane scope, and serial reserve/output controls.
-- [Disk-hygiene design review](../docs/design/autokernel-disk-hygiene-20260915.md) — pre-retirement inventory, lifecycle causes, and prospective recommendations.
-- [Acceptance-worktree lifecycle record](../progress/2026-09/2026-09-15-acceptance-worktree-hygiene.md) — new-tree receipts and clean-only closure.
-- [Dirty-retirement implementation](../progress/2026-09/2026-09-15-autokernel-dirty-retirement.md) and [operator-approved outcome](../progress/2026-09/2026-09-16-autokernel-dirty-retirement.md) — exact archival/removal authority, receipts, and recovered space.
-- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — resolved runaway-output and archived-retirement subtasks; the frozen-clone lanes remain separate.
-- [GLM coordination and relaunch record](../progress/2026-09/2026-09-16-codex-autokernel.md) — observed abstention failure and retained state.
-
-## Compiled Update — 2026-09-15: AutoKernel's month of zero promotions was five independent defects — and the fix is verification by REPRODUCTION, not by proof
-
-**Confidence: verified** for the defect inventory, the measured effect sizes and the structural rules
-(INF-66 / INF-73 / INF-75 handoffs, each receipted). The autopilot and collaboration-harness findings
-are `observation`-grade design records.
-
-**The largest lever on an autonomous optimization loop is not a kernel — it is whether the loop can reproduce its own result.** A month of promotions sat at zero on **five independently-sufficient verified causes**: `"promotion_claim": false` appears 4,797 times and `true` zero times; the benchmark model (`Qwen2.5-Coder-0.5B-Q4_K_M`) has a GGUF header that is actually 132×Q5_0, so the optimized path never dispatched in production; a mean-anchor-vs-median-candidate estimator bias of **+2.01 pp** flipped the sign of **10 of 25** results; the planner had no memory (`RESOLVED 0 · ADOPTED 0`); and the drift bound was raised **0.0308→0.1850 (6.0×)**, which produced every KEEP. The per-commit record on `ak/loop-champion-20260828` was inflated **~20×** — 36 commit messages claiming **+171.7% compounded** against a measured block effect of **+8.524%** (264.918→287.499 t/s, 20 pairs, floor 1.188%). The diagnosis in one line: **the loop chose verification by *proof* where verification by *reproduction* was available** — a `llama-bench` re-run costs 90 s and the tree is a git commit, while proving a run was honest cost 3,869 LOC to deliver one float. ([autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program))
-
-- **A floor without its unit is a 1200-fold error.** Within-session arm sd **0.501%** vs between-session process-launch sd **2.793%** (~13× coarser); sizing a THP test on the arm unit produced 4 sessions/side where the session-unit answer is **4,780**.
-- **A floor estimated from n=10 on an extreme order statistic cannot gate.** Bootstrap of n=10 draws from 24 spanned **4.200–7.821%**; recalibrate at n≥24 and record n + a CI. The D8 decode floor was rebuilt by bootstrap to **1.188% at 20 pairs** (superseding 0.067%).
-- **The champion is a workload vector, not one number**: −1.414% (27B Q8_0 prefill), **+7.206%** (26B-A4B Q4_K prefill), 2.38× (27B speculative decode, DFlash2). The same kernel can be decisive-positive on one target and decisive-negative on another.
-- **A keep is not a gate until it can refuse or revert.** The required-target validation runs *after* the keep lands, fails only on a decisive negative, and a `failed` aggregate does not refuse the keep — today's row is an annotation, not a gate. ([autokernel-cross-workload-keep-gate.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate))
-- **Anchor drift was DVFS**: the card idled at 800 MHz and jumped to 1700 MHz (**2.125×**) at each benchmark window, paid by every `llama-bench` process; pinning clocks resolved it. `libggml-hip.so` is non-reproducible at `-j64` (hipcc gfx90a code-object generation); `-j1` (~13 min) is byte-identical and fixes the anchor guard.
-
-**The single-champion invariant is ratified.** One champion per production kernel tree aggregates **all** work between promotions; seed-from-production is legal only immediately after a promotion; a second lineage is a defect the moment it exists. **A launch recipe is PER-SURFACE** — one champion commit carries two recipes: `GGML_NOHUGEPAGE_PROCESS=1` is adopted on CPU decode but must NOT be added to GPU serving (R23-58 bounded null: `p95_dev` ratio 0.713, p=0.3159, 48 launches/24 couples), and cross-surface transfer was tested and did not transfer. ([autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program))
-
-**The contention channel is DRAM bandwidth, not cores.** Prefill stayed flat (±2%) while decode fell 7%; mutual degradation was **4.2× / 2.9×** with both sides correctly pinned; a third-party disturbance cost **~17% in arms**. No CPU-occupancy screen can see it — the case for admission control over cooperative locking ("region-lock serialises those who call it; nothing constrains those who don't").
-
-**Autopilot findings** (`observation`, design): per-role evaluation replaced a 3-way eval whose Q-values were **96% uniform after 7,211 decisions**; GEPA was a **guaranteed no-op** (`propose_new_texts` raised `NotImplementedError`); a permanently-red check is indistinguishable from an absent one (autokernel-guards red on **43/43 runs** on `No module named pytest`); and a test can cover all the machinery without touching whether it is *reached* (`sub_decision` 0 of 642,328 rows; `binding_router` dead at three layers). ([autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md))
-
-**Agent-collaboration harness** (`observation`): **Agent Collapse** — agents converge on a narrow axis set and avoid the hard custom-kernel wins — is the headline risk; layered/rotating quality gates defeat metric-gaming, taskforces+channels defeat collapse, and trace sharing defeats repeated dead-ends. ([agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
-
-### Open Questions (2026-09-15)
-
-- The non-inferiority margin `k_δ` (2 = today's "not a decisive negative"; 1 = catches losses ≥ floor) and the gate's timing (synchronous-before-commit vs provisional-blocking) are undecided.
-- The source of the champion's ~12% launch-to-launch variance (page-cache/NUMA placement, THP state, HIP graph capture, allocator) is unexplained.
-
-### Source References (2026-09-15)
-
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — the five zero-promotion causes, the 20× inflated per-commit record, the floor-unit and DVFS root causes.
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the single-champion invariant, per-surface recipe, and the DRAM-bandwidth contention channel.
-- [autokernel-cross-workload-keep-gate.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate) — the cross-workload sign flip and the keep-is-not-a-gate finding.
-- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) — per-role evaluation, the GEPA no-op, and the red-check/reachability defects.
-- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness) — Agent Collapse and the layered-gate / taskforce / trace-sharing patterns.
-
-## Compiled Update — 2026-09-14: the GLM AutoKernel ran 50 monitored measured loops, and its 23-keep accumulator is a direct +0.83% that is still not a champion
-
-**Confidence: verified** for the loop count, outcome classes, artifact digests, boundary handling and
-non-promotion. The +0.83% figure is one direct matched-process comparison. It is not a serving claim or a
-production claim, and the sources record no dispersion floor for that comparison.
-
-**The acceptance tested whether the loop stays healthy, not whether it finds speed.** The operator asked the
-existing GLM-5.3-Flash CPU loop to prove four things: an observed original-request CPU profile, a real
-measured candidate path, continuous automatic operation, and 50 monitored terminal loops. When a genuine
-fault appeared, the loop was to halt, get fixed and relaunch. All four held. The 50 terminal continuations
-come from four retained supervisor states (v2/v3/v4/v7 contributed 2 + 20 + 3 + 25). Every one reached
-a real measurement. Their outcomes were 42 `measured_null` and 8 `kept`. The count is audit-ready. A single
-SHA-256 covers the ordered listing of per-continuation digests. Counting across retained states also means
-a relaunch after a repair did not reset the tally.
-
-**Accumulated effect is measured directly, never summed.** The experimental tip `dc3798db10a6` carries
-23 retained keeps. It is published on the fork branch `ak/glm53-recovered-accumulator-20260912`. A
-current-snapshot matched A/B of that tip against champion-of-record `c463f601bd39` measured +0.830%. This
-follows the 2026-08-30 lesson below: a fixed anchor turns every effect cumulative, so a stack must be
-compared as a whole. The final keep (`akm-q4k-pairrow-zmm-accumulate`) measured +0.182% marginally over
-five pairs. Its clean-rebuilt anchor showed +0.077% five-pair A/A drift. The keep is about 2.4x its own
-anchor drift, which puts it at the small end of what the loop retains.
-
-**Bench and serving diverged again.** Loop 49's cadence gate measured the preceding 22-keep stack at +0.540%
-on the bench comparison and +0.335% on the serving surface. The serving effect was not decisive. The loop
-recorded a surface divergence and did not promote, which is the rule the 2026-09-04 serving
-re-architecture installed.
-
-**A run past the boundary is not evidence.** After loop 50 settled, the supervisor launched batch 25 on its
-own. That showed boundary-to-boundary continuation works. The exact supervisor and child PIDs were then
-stopped, with a `STOP` sentinel and `stop_requested: true` and no name-pattern matching. Batch 25 has no
-terminal continuation, so it is excluded from the 50 and treated as recoverable runtime state.
-
-**What remains open.** AKU-12e must run required-target validation and the exact GLM correctness gates on
-`dc3798db10a6` before anyone proposes champion admission. The 50-loop proof does not include that step.
-Production `production-consolidated-v9` was not touched, and it predates `glm5next` support.
-
-### A critic that demands proof of PAYOFF before authoring can livelock a loop without failing anything (2026-09-14, noninf sweep)
-
-**Confidence: verified** from the campaign's own retained batch records and the narrowing commit. The
-sharpest failure mode this campaign surfaced is not a wrong keep — it is **eight consecutive batches that
-produced nothing while every guard reported correctly**. Batches 27–34 made **24 first-pass critic calls and
-reached zero authoring, zero builds and zero measurements**: three revisions exhausted every batch because
-the critic had promoted ordinary *post-authoring payoff* checks — an eligible-call census, request-wall
-exposure, isolated local speedup — to **mandatory formation evidence**, which the planner had no instrument
-to collect. Nothing errored, nothing went red, and the loop's own health signals stayed green while its
-science rate was zero.
-
-**The remedy is a contract split, not a looser critic.** Payoff is a property the existing matched-A/B
-pipeline measures *after* authoring; formation only requires a **bounded, source-consistent candidate with a
-falsifier**. `loop/actors.py` was narrowed accordingly (research `5ac7b7e4`, 74 tests), so a candidate whose
-only unknown is its payoff now reaches the correctness plus matched-A/B path. Strictness is retained exactly
-where it buys something: an already-measured mechanism, a wrong source route, invented evidence, and
-uncontainable correctness risk are still refused at formation.
-
-Two generalisations worth carrying. **A gate whose evidence requirement cannot be satisfied at the stage it
-gates is a latch, not a gate** — the same shape as the mutually blocking provenance fences recorded on
-[Benchmark Methodology](benchmark-methodology.md). And **headroom masks this defect**: the earlier Qwen GPU
-loop carried the same critic contract, hidden by exact device-kernel timing and a larger available margin, so
-the deadlock only became visible on a surface where candidate payoff is genuinely hard to predict in advance.
-
-Sources: [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
-(§ *GLM planner/critic formation-payoff deadlock*),
-[Unified-surface program handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), and
-`epyc-inference-research` `5ac7b7e4`.
-
-### Source References (2026-09-14 GLM continuous acceptance)
-
-- [Unified-surface program handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the 2026-09-14 acceptance paragraph, AKU-12d (done) and AKU-12e (open).
-- [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md) — per-state composition, digests, final mechanism, the loop-49 cadence gate and runtime disposition.
-- [GLM-5.3 AutoKernel reference](../docs/reference/models/glm53-autokernel-handoff.md) — the continuous result section, the published accumulator branch and the non-admission statement.
-- [2026-09-11 AutoKernel progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — the preceding five-loop GLM trial this run extends.
-- [Benchmark Methodology](benchmark-methodology.md) — anchor drift, unit-bearing floors and bench-vs-serving rules the result is read against.
-
-## Compiled Update — 2026-09-10: one existing AutoKernel loop now owns CPU and GPU targets
-
-**Confidence: verified** for installed control flow, retained artifacts, dry-run coverage and the two
-completed hardware runs; no production promotion or compound performance gain is claimed.
-
-The implementation extended the existing source-search loop instead of replacing it. One serial owner
-now resolves explicit production and candidate targets, rotates their original launch/request recipes,
-holds their native CPU/GPU resources, preserves per-target history, and advances one shared source tip.
-Before that tip can advance across targets, every production surface and every keep-author surface must
-validate the exact assembled commit. It then executes one LOO arm per retained keep plus a re-baseline;
-missing/inconclusive work stays pending, failed work stays failed, and no LOO result independently grants
-deletion or promotion authority.
-
-Fresh CPU campaigns always select the paired `matched_process_v2` instrument. A historical request match
-can no longer make a legacy five-launch floor govern a new run; restarts alone preserve an already-pinned
-instrument. This closes the concrete GLM failure in which an old 7.801% dispersion masked five positive
-but sub-threshold observations. The original GLM trial itself completed 5/5 iterations and 25 A/B pairs,
-all honest measured nulls. A separate original GPU source-search iteration completed five pairs and ten
-GPU-resident launches, proving that the extension preserved the working GPU path.
-
-The installed all-target dry run resolved seven production workloads plus the GLM-5.3-Flash candidate
-without launching models or builds. The existing dashboard now reads a separately attributed capability
-catalog and reports seven champion capabilities, including DFlash2 GPU serving and Flash-Next
-(`qwen4exp`) CPU/native-MTP, while leaving the direct champion-vs-production number untouched.
-
-The final 2026-09-11 acceptance then exercised both selected backends under one installed serial owner.
-Six batches completed with ten accounted held-resource receipts, no failed target, no active child and no
-unsettled scheduler selection. Four GLM attempts in that run plus the valid earlier v4 attempt complete the
-requested five-loop GLM trial. Three reached measurement (+0.186%, -3.360% and -2.152%) and were honest
-nulls below their applicable matched floor; two hypotheses refused formation. The two GPU batches settled
-as formation refusal and planner transient rather than manufacturing a measurement. No keep or promotion
-occurred. The only defect exposed by recovery was a missed forwarding of the explicit unverified-anchor
-policy during restored champion verification; research commit `3aa79c89` fixes it and ensures the associated
-pre-claim scheduler selection settles. The live dashboard now reads the completed serial store directly and
-classifies it as `serial_router` / `complete`.
-
-### Source References (2026-09-10 unified implementation)
-
-- [Unified-surface implementation handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — exact controller, LOO, resource, dry-run and acceptance contracts.
-- [Unified implementation progress](../progress/2026-09/2026-09-10-autokernel-unified-20260908.md) — commits, test totals, hardware outcomes and live dashboard verification.
-- [Final mixed-campaign progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — exact v6 state, outcomes, artifact hashes, recovery repair and live dashboard closure.
-- [GLM CPU optimization report](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — preliminary GLM kernel lineage, measured rates and admission limits.
-
-## Compiled Update — 2026-09-08: consolidation complete; autonomy remains a design
-
-**Confidence: verified** for the recorded dispositions and operator choices below, not for the
-effectiveness of the proposed autonomy mechanisms. This update supersedes the pending-fold posture in
-the September 7 entry; it does not certify new performance measurements.
-
-The recorded assembled champion is `ef81196d5`, combining GPU tip `bff30cebe` with CPU champion3
-`9c4f73e29`. Consolidation is complete, but production promotion and loop relaunch are separate gates.
-The six accumulated GPU keeps remain **UNCONFIRMED**: positive bench screening did not establish a
-serving improvement in the subsequent comparison. The recorded champion-of-record stays
-`445e93a8`. Do not turn an inconclusive serving result into a refutation, multiply solo gains into an
-assembled result, or quote the initial comparison's gap beside the later repeat's result.
-
-The rescued-ref audit is a disposition ledger, not a queue of proven missing keeps: chunked GDN and
-quantize reciprocal/broadcast remain research candidates; the tested GEMV fusion route was refuted;
-`de447119f` must not be folded because later dispatch work superseded it. The earlier claim that unsafe
-math flags remained was corrected: their removal was already recorded on August 31. Final retests
-produced no additional CPU keeps; the sync17-fix2 default-ON bundle is DO-NOT-FOLD, while the THP estimate
-remains unresolved rather than mechanism-refuted.
-
-**Autonomy design status — documentation only.** The operator selected adaptive scheduling with seed
-priority and continuing production coverage, the smallest informative CPU allocation, deeper
-applicability-aware belief integration, deterministic checks for prevalidated runtime options, and
-minimal pause/drain/resume and seeding controls. The owning handoff's §8 proposes concrete manifests,
-broker operations, journal/recovery contracts, mechanism-specific transfer and coexistence evidence,
-candidate validation, dashboard health and migration tests. These implementation designs and numerical
-defaults remain provisional; no service, CLI, admission controller or new belief producer was installed
-by this planning session. The next step is iteration on that notebook, not execution of its work packages.
-
-### Source References (September 8 close-out and autonomy design)
-
-- [Unified-surface handoff, §8](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — accepted preferences, explicit authority boundary and implementation proposals.
-- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — current assembled identity and separate record/production gates.
-- [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — serving repeat, fold gates and final retest dispositions.
-- [Rescued-ref consolidation audit](../docs/design/champion-consolidation-audit-20260908.md) — corrected provenance and candidate/refuted/must-not-fold distinctions.
-- [Planning progress](../progress/2026-09/2026-09-08-autokernel-plan.md) — documentation-only deliverable and validation.
-
-## Compiled Update — 2026-09-07: folding parallel kernel work into the one champion — same-lineage merges are cheap, default-ON ops are the hidden risk
-
-**Confidence: verified** for the lineage/conflict analysis (`git merge-base`, `git merge-tree` dry run) and
-the two blockers (read from source: emit site, missing backend kernel, default gate); the fold itself is
-planned, not executed.
-
-The one-champion doctrine says every kernel effort aggregates into a single champion so promotion ships
-ONE full candidate build. Its first real test came when a parallel session's CPU kernel work
-(INF-70, Qwen3.8-Flash-Next: **MTP-served 23.9→35.4 t/s, 1.48×**, twelve validated levers led by
-`GGML_NOHUGEPAGE` at +35% served) had to be folded into the GPU-optimising AutoKernel champion. Three
-lessons generalize:
-
-- **Fork from the champion lineage and the fold is free.** The CPU branch forked from `270b48ed6`, a
-  commit *on* the champion branch — so merge-base is a champion commit, not the frozen production base,
-  and `git merge-tree` against the live tip found **0 conflicts** despite 86 CPU commits / ~101 files vs
-  24 GPU commits. GPU work lives in `ggml-cuda/*`, CPU work in `ggml-cpu/*`; the one shared file had
-  disjoint hunks. This is the payoff of CLAUDE.md's "never accumulate on a long-lived branch forked from
-  an old tip." Mechanism: `git merge --no-ff` INTO the champion (never rebase — the ledger cites the
-  hashes; never the reverse — it would make the side branch the aggregate).
-- **A default-ON op with no backend kernel is invisible to a gate that measures a different model.**
-  `GGML_OP_MOE_TOPK_NORM` was emitted fleet-wide for every MoE model yet had **no CUDA/HIP kernel and no
-  `test-backend-ops` case**; on the merged GPU build every GPU-served MoE model would silently fall back
-  to CPU per layer and defeat HIP-graph capture — and the loop's gates (a dense 27B) would never see it.
-  Likewise a fused decoder shipped **default-ON** while its own ledger classed it NO-GO and every
-  measurement had been taken with it OFF. Rule: before folding, every new op/path must be opt-in unless
-  it has a kernel on every backend the champion serves AND a backend-ops test; and a validation plan for
-  an aggregate must include **one model per production role class** the loop itself doesn't measure.
-- **A copied CMake build directory is not relocatable — its binaries carry an absolute RUNPATH into the
-  source dir.** The two-tier accumulator's champion-of-record was a `copytree` of an anchor build; when
-  the loop pruned that source gen, the copy's `llama-bench` could no longer load `libggml-hip.so` and the
-  bookkeeping died silently. Fix: reference the real build and *protect it from pruning*; never snapshot
-  a CMake tree by copying. (Companion to the object-digest finding: the compiler is reproducible, the
-  linker and the layout are not.)
-
-**Sources**: [fold plan](../docs/design/inf70-cpu-fold-into-champion-20260907.md); [champion aggregate
-handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (FOLD-0..3); [ak-rebuild progress
-2026-09-04→07](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
-
-## Compiled Update — 2026-09-04: AutoKernel was re-architected around serving performance — because bench keeps did not transfer, and the champion is now (kernel commit + canonical recipe) advanced by a compound-then-gate two-tier rule
-
-**Confidence: verified** for the run-23→28 keep records, the five failure causes and their
-measured evidence, the `-j1` determinism result, and the two-tier champion's built/wired state;
-**verified as an operator-gated state** for run 29, which was standing up but not launched at
-compile time. Nothing here is a promotion — frozen production-v9 is untouched and every receipt is
-`promotion_claim: false`.
-
-Between the 2026-08-27 restart-loop fix and 2026-09-04 the loop ran continuously (runs 23–28) and,
-for the first time, produced production-shaped keeps — and in doing so it exposed that its own
-measurement layer was optimizing the wrong thing. The re-architecture that closed this run makes
-**serving throughput the sole keep gate**, on the operator's principle that *"the only performance
-that matters is serving performance."*
-
-### The five verified ways the loop was producing untransferable science
-
-Each was confirmed by measurement in this cluster, and each is a distinct failure mode of an
-autonomous kernel-search loop:
-
-1. **Recovery-by-restart (v3→v27).** Every failure class was terminal and recovery meant starting
-   over, resetting the counter that measures progress — the zero-science era, root-caused
-   2026-08-27 (carried in the 2026-08-27 update below).
-2. **Optimizing a shape production never runs.** The H1 falsifier (R23-5) swept the champion vs
-   frozen v9 across the verify-batch width `ne11 ∈ {1,2,4,8}`: the headline **+17.259% at ne11=1
-   (tg128)** decays to **+3.834% / +1.178%** at ne11=2/4 and **inverts to −1.462%** at ne11=8. The
-   gain lived in the MMVQ `ncols_dst=1` template — the one shape speculative-verify serving does
-   not occupy. The loop had been tuning a surface production doesn't use.
-3. **Screening on a cheap proxy model.** Run 23's published **+27.363%** headline was measured on
-   the **1.5B DeepSeek-R1-Distill screen rung**, not on the 27B production model (peak VRAM 1.49 GB
-   gave it away, R23-19); the CH-6 precedent is **+23.09% on a 0.5B → +0.50% on the 27B** (~46×
-   attenuation). Worse, a cheap screen *cannot* be made faithful for GEMM work: the winning tile is
-   selected by rocBLAS/Tensile from the matrix dims, which derive from `n_embd=5120`, so any model
-   small enough to be cheap dispatches different tiles (R23-28/29). **The property that makes a
-   screen cheap destroys its fidelity for GEMM.**
-4. **Trusting llama-bench to predict serving.** The sharpest contrast in the program: two keeps
-   measured **+23.3% and +10.1% on dec-b4** (batched prefill) moved DFlash2 serving decode to
-   **~0% — flat 71.22 t/s** (R23-42). dec-b4 keeps optimize a batched-forward path the DFlash2
-   decode loop is not bottlenecked on (its speed is set by the drafter + acceptance, not the target
-   verify). **Bench does not predict serving.**
-5. **Non-reproducible anchor builds.** After each keep the anchor guard rebuilds the champion and
-   compares code-section digests; the rebuild diverged (`d6d195bb…` vs `5e3ca1e7…`) and aborted the
-   promotion "with zero pairs spent." Root cause: `libggml-hip.so` (the gfx90a HIP kernel lib) is
-   non-reproducible at `-j64`, while the CPU `llama-bench` executable is byte-identical across all
-   trees. The guard hashes exactly the non-deterministic lib. Until this was fixed, **every keep
-   aborted at its anchor guard and the loop could not advance past one keep** (R23-40).
-
-### The serving re-architecture (R23-43) and the two-tier champion (R23-44)
-
-**The champion is now (kernel commit + canonical serving recipe).** The recipe is a general,
-spec-decode-agnostic artifact — model, quant, `spec_decode.type ∈ {none, draft-dflash, draft-mtp}`,
-drafter, concurrency (np), context, KV type, server flags, and the throughput metric — so a
-non-DFlash2 model carries `spec_decode: none`/`mtp` with its own optimal np and no DFlash2
-assumption. It doubles as the promotion recipe production needs anyway. **llama-bench is demoted to
-the screen/experiment layer and never decides a keep**; a keep is real only if it improves serving
-throughput on llama-server under the champion's own recipe.
-
-**A per-keep serving gate would veto every keep** — the serving floor is ~3.5% and a single bench
-keep is 1–3%. R23-44 resolves this with a two-tier champion: an **accumulator** advances on every
-cheap bench keep so keeps compound; a **champion-of-record** advances only when the accumulator's
-compounded bench gain clears `fire_multiple × floor` (default 2.5 → ~8.8%) **and** the single
-serving gate fired then is decisive-positive. On divergence — a bundle that clears bench but not
-serving (the proven dec-b4 case) — the champion-of-record **HOLDS**, the bundle is kept, and a
-`planner_evidence` record naming the bundled keeps is journaled so the planner can revise a specific
-keep or aim the next hypothesis at the serving gap. Divergence becomes a strategy signal, not a dead
-end. Built and wired into the pooled loop (`loop/accumulate.py`, `run.py`); 414 loop tests pass.
-
-**The `-j1` determinism fix (R23-40).** `build_champion` now builds the anchor at `-j1`: the
-determinism probe built `445e93a8`'s `libggml-hip.so` twice at `-j1` to byte-identical code digests
-(`1d04c67a…595bb4`, A=B). `-j64` parallelism was the root cause; serial build costs ~13 min per
-build and runs per-keep only, while lane builds stay `-j64`.
-
-### Source References (2026-09-04 AutoKernel serving re-architecture)
-
-- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66; R23-40
-  (`-j1` fix), R23-42 (bench→serving non-transfer), R23-43 (serving re-architecture), R23-44
-  (compound-then-gate two-tier champion).
-- [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
-  one-champion invariant and the three-workload standing table.
-- [Run 23 launch and the H1 collapse](../progress/2026-09/2026-09-01-ak-rebuild-20260828.md) — the
-  `ne11` curve and the screen/confirm two-rung package.
-- [Run 23→24 boundary, R23-19 screen-rung headline](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md).
-- [Run 24→27, screen-fidelity and the planner backend evolution](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
-- [Serving-floor noise reduction and the two-tier wiring](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
-- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
-
-
-## Compiled Update — 2026-08-30: the rebuilt AutoKernel loop ran 464 iterations without losing a lane — and every defect it exposed was a guard that could not go red
-
-**Confidence: verified** for the run counters, the champion lineage, the block audit, and the CI
-run history (43 of 43, read from the workflow's own run list). **Verified as an open state** for
-run 18, which was still live at compile time. Nothing here is a promotion: the champion branch is
-a research lane, not a production kernel, and frozen v9 is untouched.
-
-The rebuilt loop (P4, ~828 LOC replacing 153,865) reached continuous unattended operation between
-runs 11 and 18. **Run 17 is the durability result: 464 iterations in 636.4 minutes, 68 reaching a
-measurement, 30 champion commits, and zero lanes lost.** Twenty-three iterations hit `lane_error`
-and each cost *an iteration, not a lane* — the containment fix (D12) doing exactly its job. The
-serialized tail was 470.5 of 636.3 wall minutes (73.9%), which is now the throughput ceiling to
-attack, and **GPU idle-while-claimed runs 35–40%**, a figure visible only because the row was made
-to carry it.
-
-**The defect family that matters generalises past this loop.** Eight of the fourteen defects found
-across runs 11–18 share one shape: **a test that proved a component EXISTED rather than that it was
-WIRED IN.**
-
-- A test asserting the *string* `shutil.move` appears in `run.py` passed while `shutil` was
-  unimported and every promotion raised `NameError` (D11).
-- A test asserting `pool.stop_requested()` returns True for a file on disk passed while **nothing
-  ever called it**, and the STOP sentinel sat inert for three hours (D13).
-- The drift and clock tests used **synthetic values** rather than real sample vectors or real
-  sysfs, so neither ever exercised the wrong path — `clock_stable` was True on every run, forever,
-  from a check that could not fail (D7).
-
-D12 is the structural cousin: the `lane_error` handler was correct and its **scope** was wrong, so
-a guard covering most of what it guards read exactly like one covering all of it. The remedy that
-actually worked, applied to every fix from D7 onward, is **mutation testing** — reintroduce the
-defect and confirm the suite goes red. Every fix commit from research `a1fcc89e` onward names the
-mutation it was tested with.
-
-**The same disease reached CI itself, in its purest form.** The autokernel-guards workflow had
-failed **43 of 43 runs since its first commit**, every one dying on `No module named pytest`
-before collecting a single assertion — `actions/setup-python` ships a bare interpreter and nothing
-installed the runner. Because it looked *identically red whatever the code did*, it carried no
-signal, and it hid two real regressions for two days: a guard test still asserting
-`LOOP_LOC_BUDGET == 3000` after the deliberate raise to 3400, and a test asserting that the same
-refusal at two different times *deduplicates* — the exact opposite of the identity fix that had
-put `recorded_at` into the hashed material precisely because repeated refusals were being silently
-dropped. **A permanently-red check is indistinguishable from an absent one, and worse, because it
-occupies the slot a working check would take** (research `ac785d2d`).
-
-Installing the runner closed the hole but not its *shape*: a suite that runs FEWER assertions
-reports the same green. pytest exits 5 on zero collected — verified — but a **partial** collapse
-exits 0. Both suites now declare a floor (101 and 196) asserted with `>=`, never `==`, so the
-guard does not become a second thing to update per test. The guard found two defects in itself on
-first run: it laundered a collection error into a plausible "93 collected", because pytest prints
-the count on the same line as `, 1 error`; and its own test module had a cwd-dependent import
-(research `7ee090a5`).
-
-**Two of the run failures were the operator's, not the loop's**, and they are one class. Stopping
-run 12 reached the `timeout` **wrapper** rather than the workload underneath it, so what died was
-`llama-bench` mid-measurement (`rc=-9`), taking the run with it. And run 16's STOP sentinel was
-reported as proven working on the strength of a **shared status file that had gone stale** — a
-second-hand reading of a producer that was no longer writing, which is "verify THE consumer, not A
-consumer" in human form.
-
-**Champion lineage, for the record:** `5ad3e36d` (`akm-q4k-chained-dp4a`, +9.321% marginal) on
-`ak/loop-champion-20260828`, 36 commits above frozen v9 `0db32c06`. Run 17's 30 commits were
-audited **as a block** against what the run started from — **+3.942%, decisive, no drift, residency
-40/40, clocks stable** — and kept rather than rolled back; their individual attribution is not
-recoverable (D14) and is not worth the device time. Run 18 was live at compile time with one keep.
-
-### Source References (2026-08-30 AutoKernel runs 11–18)
-
-- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66, the
-  program of record: CURRENT STATE, the phase ledger P0–P7, and the D1–D3 operator decisions.
-- [Run 11–18 chronology](../progress/2026-08/2026-08-30.md) and
-  [runs 12–16](../progress/2026-08/2026-08-29.md) — the run-by-run counters and defects D7–D14.
-- [Surface and CI half of the day](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
-  CI-never-ran finding, the suite-floor guard, and the deploy-path correction.
-- [AutoKernel restart-and-strip rider](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — INF-64,
-  the predecessor campaign this rebuild replaces.
-- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
-
-## Compiled Update — 2026-08-27: a loop's throughput is set by what it does on FAILURE — AutoKernel's zero-science era was recovery-by-restart, and v28 broke it
-
-**Confidence: verified** for the campaign counters, the crash forensics, the four code fixes and
-their test results, and the v28 first-disposition receipt. **Approximate** for the two ratios quoted
-below (a ~50-commit sample and a core-path line estimate); they are order-of-magnitude claims, not
-measurements. Nothing here is a champion, a promotion, or a kernel win — v28's first disposition is
-an explicit **null result**.
-
-Every AutoKernel campaign from v3 to v27 ended with `scientific_attempts: 0`. An independent audit
-found the cause was not the science and not the GPU: it was that **every failure class was terminal,
-and recovery was defined as starting over**. Two mechanisms did it. First, planner-provider outages
-were spun on rather than waited out — a Codex 401 token outage on 08-26 produced **284
-`planner_failed` events in 23 minutes**, because the typed-transient path `continue`d with no sleep,
-backoff, or consecutive-failure cap. Second, `discovery_supervisor` forced `max_restarts == 0` for
-`kind == "deployment"` (commit `f13434e3`), so any crash was a permanent exit and the **operator**
-became the restart loop — ≥9 hand relaunches in 48 h. Because recovery mints a *fresh sealed
-deployment*, each relaunch reset `iterations`/`scientific_attempts` to 0. The counter that measures
-progress was the counter that recovery destroyed, which is why weeks of relaunches looked identical
-to no work at all.
-
-The generalizable rule: **an autonomous loop's throughput is bounded by its failure semantics, not
-its success path.** A loop whose crash-recovery discards accumulated state cannot accumulate, no
-matter how correct each individual step is. The controller already resumed from durable state
-(`DurableState.load` is its only entry path), so a *supervised* restart was always a resume — the
-clamp, not the design, was the defect.
-
-Forensics on v27's 11 crashes classified 4 to one instrument bug: the KFD residency sampler accepted
-only descendants of the *sampled leg*, so the controller's **own** sibling process (pid 964901,
-ppid = controller) was labelled a "foreign KFD process" and killed the deployment. Any GPU overlap —
-foreign or self — aborted the run rather than waiting for the device to clear. A twelfth failure
-class was found at launch: `_SITE_CRITIC_WRAPPER` pinned `claude/versions/2.1.231`, a path Claude's
-own auto-updates had orphaned, so **every** new deployment bundle failed to initialise with
-`FileNotFoundError` — and that same rotted pin was the true cause of three long-standing "pre-existing
-environment" test failures.
-
-Four fixes landed (research `01f1d2be`): exponential planner backoff with a bounded actor timeout and
-transport-class errors reclassified as retryable transients; the deployment restart clamp lifted;
-the sampler given an `owner_root_pid` so the campaign's own subtree is never "foreign", plus a bounded
-`wait_until_clear()` preflight so a timed leg never opens on a contended GPU; and guarded
-orphan-branch pruning for the crash-orphaned worktree collision. Suite green at 779/779.
-
-v28, launched latched at `--max-restarts 1000`, reached the milestone in **56 minutes**: turn 1
-`authoring_refused` (the critic caught a diff deriving undeclared file-scope symbols — a real gate
-that correctly spends no science budget), turn 2 `inconclusive` on
-`akh-v2-q5-type-specific-dequant` with exact attribution **+0.129 %** against target runtime
-**−0.015 %**, refused by the conjunctive rule. A null result *recorded with evidence* (receipt
-`34f836cc…`), with both arms proving real device residency (anchor KFD pid 3623562, candidate
-3623486, both exit 0) across admission → correctness → attribution → graphs-off → graphs-on. Zero
-restarts; the loop advanced itself to turn 3. That two arms ran back-to-back with distinct KFD pids
-and neither was misflagged is the on-hardware confirmation of the sampler fix.
-
-Two cautions this episode also produced. The package is roughly **278 K LOC** around a measurement
-core of a few dozen lines — "receipt" occurs 2,735 times in non-test source, "authority" 824 — and a
-~50-commit sample ran on the order of 49:1 governance-to-science. The measurement constitution
-requires that custody at **claim** time (P-GPU-1), not at experiment time; a screening run that is
-wrong is simply refused later. Re-scoping the sealed apparatus around the *promotion* boundary while
-keeping the screening loop thin is an operator design question, deliberately not filed as an
-implementer task. Separately, the first monitor built for v28 reported a false stall: it watched only
-iteration-completion fields, so a normal 15-minute single-threaded HIP build was indistinguishable
-from a wedge. **Liveness of a long-running phase must be proven by artifact activity (build-tree
-writes plus a live child), never by a phase-boundary state file** — and never through a truncating
-pipe, which independently produced a false "process gone" reading in the same investigation.
-
-### Source References (2026-08-27 AutoKernel audit and v28 launch)
-
-- [AutoKernel restart-loop fix rider](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — the four
-  fixes, the v28 launch identities, the verified-dead module list, and the remaining disk-expiry task.
-- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the parent campaign
-  handoff whose v3→v27 history is the zero-science record analysed here.
-- [Audit session progress](../progress/2026-08/2026-08-27-autokernel-audit.md) — self-contained
-  chronology: audit findings, v27 stop, disk reclamation, v28 launch, first disposition, and the
-  epyc-root divergence reconciliation.
-- [Inference research index](../handoffs/active/inference-research-index.md) — rows INF-06 (campaign)
-  and INF-63 (this repair track).
-- [`gpu_residency_sampler.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/gpu_residency_sampler.py)
-  and [`discovery_supervisor.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/discovery_supervisor.py)
-  — the two instruments whose failure semantics produced the zero-science era.
-
-## Compiled Update — 2026-08-25: the root repo's last L5 criterion is closed by the vidya loop — and the F1/F4/F6 frontier program states moved
-
-**Confidence: verified** for the readiness closeout (regenerated artifacts, test counts and the
-HEAD-reproduced gate failure read at compile time), the F1 completion record, and the F6 post;
-**verified as a blocked state** for F4 — the record is a cancellation with a named external blocker,
-not a result.
-
-### The L5.self_optimizing_loop criterion closed — by a loop whose units are claims, not kernels
-
-`epyc-root` cleared its last repo-readiness L5 criterion on 2026-08-25: the deterministic scorer now
-credits the **vidya belief substrate** (`scripts/vidya/fold.py`, `citation_gate.py`,
-`correction_queue.py`, `r1_search.py`, `live_eval.py`) — the ledger → graded fold → citation gate →
-correction queue → re-fold feedback loop, plus the R1 exhaustive counterexample search and PR2
-live-ledger evaluation. Two governance facts matter for the autonomy story on this page:
-
-- **The guardrail survived the closeout, test-pinned.** The passive pickup artifact is still explicitly
-  *rejected* as self-optimization evidence (the 2026-07-03 precedent is unchanged), so the L5 pass
-  means "a self-optimizing loop exists", not "the loop's output is certified" — the same
-  existence-vs-quality boundary the readiness scorer has always carried.
-- **The queue drop 13 → 6 is two causes, separated in the record**: one root item closed by the
-  detector change; six `epyc-llama` L4 items left on *repo state* (the frozen tree gained real
-  health/analysis/docs/security surfaces since 2026-07-06). All six remaining items are frozen-llama
-  L5 surfaces.
-
-The vidya loop is the first L5 instance whose optimization target is evidence claims rather than
-kernels/prompts — and it satisfies this page's standing posture that an autonomous loop's load-bearing
-part is the transitions it cannot make: its citation gate blocks project documents from citing
-refuted/conflicted claims, and its correction queue writes `correction_reviewed` frames back into the
-ledger for the next fold.
-
-### F1 COMPLETE: the real-task corpus closed 10/10 — with a stale-prose correction on record
-
-The frontier-F1 real-task program is **COMPLETE (2026-08-23, 10/10 boxes, 0 open)**: W1 task
-taxonomy, W2 passive capture (prompt-free `task_record.v1` payloads with hash refs), W2b historical
-backfill (1,246 prompt-free rows: 372 live + 874 historical), W3 clean-window 50-question EvalTower
-ledger (2026-07-07, 35/50, quality 2.10, reliability 0.94, 3 request errors), and W4 decision wiring
-(per-class real-task regret reporting alongside the routed metrics). The completion record also
-corrects its own stale Status prose — a claim that "F1 still needs the clean ledger run" predated the
-W3 checkbox that had already satisfied it. Residual follow-up (AP-16 instruction-token bloat; how the
-ledger feeds promotion/regret views) is tracked in `tool-output-compression.md`, not reopened here.
-
-### F6: the first upstream publication landed — split cleanly into a half that needed our data and a half that did not
-
-The llama.cpp #27442 analysis went out in two halves, and only the second was ever blocked. **Part one
-was posted 2026-08-23** (operator-approved, under the operator's account): the corrections to the
-reporter's own artifacts need no measurement of ours — `n_prompt_tokens_cache` occurs 14×, all zero;
-both `_noflash` logs carry `flash_attn = enabled`; the sampler ran at `temp = 0.300`; and every build
-tested predates the Metal fixes that rewrote the path. The post says explicitly: *"We have not
-reproduced the bug — we run this architecture on CPU and ROCm, not Metal — so this is analysis of your
-artifacts, not a second data point."* **Part two — our own greedy boundary sweep — remains blocked on
-G1**, because a boundary-sweep number still needs our data behind it. The split is the durable
-autonomy lesson: "posting first offers a critique with no data behind it" was half-right — analysis of
-another party's artifacts and a claim backed by our own measurement are different authority classes,
-and only the second needs the G1 gate.
-
-### F4: the first real backup attempt was cancelled by target rejection — tooling is one named target from a first snapshot
-
-The 2026-08-23 EVL-26 attempt built the missing half of the continuity tooling and then stopped at the
-operator boundary: restic 0.18.0 is installed (apt, flagged to the operator as a host-level action
-taken in error), `backup_critical.sh --backend restic` is the new default (continuity snapshot first —
-live SQLite via the `sqlite3 .backup` API — then `restic init`/`backup`/`check`), and the T0 manifest
-was corrected (`orchestration/repl_memory/**/*.db|.sqlite`; T0 now measures **8.21 GiB / 10,311
-files** — the handoff's "<2GB" estimate is stale). The task-stated target `/mnt/bigdisk` was rejected
-by the operator ("do not touch anything outside /mnt/raid0/llm"), the mount was removed, and the next
-target must be **named by the operator**. W2/W3 remain UNCHECKED — no backup ran, no restore has ever
-been verified, and the standing rule stands: *a backup that has never been restored is a hypothesis*.
-For the autonomy framing: the loop's own preflight correctly refused a same-array/overlayfs target all
-along; the blocker is external and named, and every non-external dependency is now done.
-
-### Source References (2026-08-25)
-
-- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — the 2026-08-25 L5 closeout (vidya evidence paths, 13→6 queue with cause separation, guardrail pin, PII-gate surfacing).
-- [`progress/2026-08/2026-08-25-mainA-evl38.md`](../progress/2026-08/2026-08-25-mainA-evl38.md) — validation record and regenerated 2026-08-25 readiness artifacts.
-- [`handoffs/completed/frontier-f1-real-task-corpus.md`](../handoffs/completed/frontier-f1-real-task-corpus.md) — the 2026-08-23 completion banner (10/10, stale-prose correction, AP-16 residual pointer) and the W3 ledger row.
-- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the 2026-08-23 part-one post record (re-derived artifact facts, operator approval, explicit no-reproduction statement) and the G1-blocked part-two row.
-- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-frontier-f4-continuity-backup) — the 2026-08-23 EVL-26 checkpoint (restic backend, corrected T0 manifest and size, operator target rejection, W2/W3 unchecked).
-
-## Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary
-
-**Confidence: verified** for terminal receipts, paired effects, cleanup, and the exact failure string.
-None of the Q5/Q8 observations is a champion or promotion result.
-
-V18's graphs-on stage failed closed for a sound reason: its anchor and candidate used different hidden
-seeds. Product commits `d0e59dca` and `b9d06347` made oracle-protected arms share one seed and added a
-full-run seam regression. Fresh sealed v19 then proved seed 8613 on both graphs-on arms in both
-execution orders. This is the useful recovery pattern: repair the generator, discard the poisoned
-receipt, seal a fresh deployment, and prove the invariant live.
-
-V19 advanced through bounded Q5 and Q8 screens without turning favorable point estimates into wins.
-Q5 and Q8 candidate 1 became inconclusive when their reversed-order graphs-on effects changed sign;
-Q8 candidate 2 stopped after negative attribution; Q8 candidate 3 had positive runtime estimates in
-both orders but remained inconclusive under the sealed portfolio policy. Three undeclared-file-scope
-authoring refusals spent no GPU science budget and advanced rather than starving the portfolio.
-
-Turn 11 exposed a different control-plane defect before any GPU work. The planner copied semantic FA
-candidate route ids (`gqa7_bulk_pairs`, `gqa7_scalar_tail`) into `expected_dispatch`, but the sealed
-plan authority permits only the anchor route. The controller raised
-`DiscoveryControllerError: dispatch route id is not deployed authority`, released every claim, and
-returned KFD/VRAM to baseline. The repair boundary is to keep controller-owned candidate geometry out
-of planner context and convert invalid planner intent into a secret-free typed refusal with bounded
-retry; no mutable repair worktree may be treated as a successor deployment.
-
-The repair then landed at immutable research `de1d93d5`, hiding controller-owned FA candidate geometry
-from the planner and preserving the anchor-only authority. Fresh v20 passed two byte-identical
-validate-only passes and launched from a new deployment/state root with graph SHA-256
-`283b590df7dcd7e6157af775e5ad827a23513c036923d75ef59d59a822dc5d82`. Its first durable state is
-Q5 turn 1 `actor_entering` with `planner_started`; v19 was neither reused nor modified. Zero GPU claim,
-empty KFD, and 0% VRAM during this planner call are affirmative phase-correct evidence, not evidence
-that the later GPU phase failed to run.
-
-### Source References (2026-08-20 v19 checkpoint)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — exact v18/v19 identities, effects, planner-authority failure, cleanup, and repair task.
-- [Root session progress](../progress/2026-08/2026-08-20-root.md) — self-contained live campaign chronology and dashboard deployment.
-- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — sibling runtime campaign boundary and write-side evidence requirement.
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective claim-carrier integration boundary for future DFlash2 panels.
-- [AutoKernel dashboard progress](../progress/2026-08/2026-08-18-dashboard.md) — actor-aware lifecycle projection and the bounded campaign-selection surface now promoted to root main.
-
-## Compiled Update — 2026-08-18: the controller graph is sealed — and the planner's memory is now a reviewed portfolio, not prose
-
-**Confidence: verified** for graph identity, test counts, commit pins, and the portfolio's recorded
-decisions — all read from the sources' dated rows; **no campaign has run** (`inference_executed=false`
-is the validated state, and the live endpoint reports `active=false`).
-
-### The v3 seal: a deployable identity, validated without spending a single inference
-
-The controller-first implementation reached research `main` via merge `0d701b9ae`; the reviewed
-product tip is `6807a0b10`. The immutable bundle
-`gpu-discovery-quant-ladder-occupancy-v3` validates with `inference_executed=false` and graph
-SHA-256 `31af931de1da…`, binding one `gpt-5.6-sol/high` planner and one independent
-`claude-fable-5/high` critic (both receive the complete sealed planner context), source/dispatch
-authority, the timed output oracle, protected-tree snapshots, device reservations, and 29 immutable
-evidence carriers. The full merged-tree hardware-free gate passed **303/303**, with three explicitly
-*expected* failures documenting future machine-policy work — AK-ADM-1's acceptance criterion is
-those three becoming ordinary passes, i.e. the six currently prompt-bound planner limitations
-(exact kernel instantiation, command phase, static-tool execution, Q4_K correctness, the Q8
-native-path premise, IQ residency) promoted into typed pre-model enforcement.
-
-Before the next long campaign, **AK-RSM-1** makes stop/resume an explicit contract:
-content-addressed receipts for every stage (assignment → planner → critic → authorization → build →
-correctness → attribution → runner → classification), a graceful stop latch, and same-graph restart
-tests proving completed stages never repeat. The launch itself (**AK-RUN-V3**) is deliberately a
-fresh state root with one named external prerequisite — a restored Docker socket followed by exact
-inspection of the pinned planner image — never a migrated stale bundle. And the AK-RUN-2 mutation
-rehearsal's prep is **already staged on disk** (proposal manifest, source-patch manifest, comment-only
-patch, fresh-source plan, verified present 2026-08-16): what remains is execution, not authoring.
-
-### Planner conditioning as a portfolio: exact spend, thresholds, scoped retirements, inactive counterfactuals
-
-The eligible autonomous spend set is exact and short: Q5 type-specific dequant, a genuinely new Q8
-quantizer mechanism, production-shape FA/GQA7 work, and RMS direct load/reduction. Around it, four
-governance shapes worth naming because each is a *kind* of memory, not just a row:
-
-- **A threshold-shaped lever.** The IQ2_XXS occupancy hypothesis is restated as a mechanism with a
-  cliff, not a direction: the production `true,false` instantiation via `v_perm_b32` must land at
-  ≤64 true *and* allocated VGPR, scratch 0, spill 0, eight waves/SIMD — **a 65–70 VGPR result has no
-  predicted payoff at all.** A lever that cannot cross the threshold has no value case to rank.
-- **A scoped retirement.** "Batching closes the dequant gap" is retired as a `design_prior` warning
-  for the exact MI210/Goedel-8B B1–B32 regime measured — deliberately *not* a family-wide
-  do-not-repeat, so narrower per-format hypotheses and governed re-entry stay legal. Retiring the
-  blanket claim without over-widening the retirement is itself the discipline.
-- **An inactive counterfactual.** IQ1_S is retained as a sign-discriminating falsifier with zero
-  expected value, empty templates, and **zero autonomous spend** — the operator explicitly does not
-  need an IQ1 run. Catalogue presence grants no execution; reopen requires operator direction plus a
-  practical IQ1 serving decision. Keeping the falsifier without funding it is the difference between
-  memory and a backlog.
-- **A refusal gate with a named unlock.** The four Q4_K MMQ receipts (stock 18/43, the DP4A and
-  least-squares negatives, the diagnostic 172/172 repair) are bound as immutable `candidate_only`
-  evidence, and source authoring / performance ranking **refuse** until a *committed clean-source*
-  repair passes the unchanged 172/172 κ=1.5 matrix — the uncommitted diagnostic cannot unlock
-  anything. The exact generic "Q8 per-element fp-dequant" premise is a DNR because that path is
-  already integer-native DP4A.
-
-### The reward-integrity gaps our own audit found are now closed as regression requirements
-
-The three exploit classes that neither upstream timing-harness repository covered — our own
-32.8%-timing-loophole family — are implemented and retained in the graph as regression
-requirements: **phase detection** (a candidate correct during correctness rounds that degrades once
-timing starts — closed by fail-closed source detection plus a cross-arm timed-output semantic
-oracle, with an independently-red black-box phase-switch case green under the dynamic oracle);
-**compile/capture-replay** (candidate-added `torch.compile`/graph-capture specializing on
-value-identical timed inputs — rejected, graphs off, address *and* content rotation, validated
-timed outputs before any timing authority); and **side-stream timing** (C3 surfaces now require
-full-device synchronization or the exact tracked fence-after-start/join-before-stop contract;
-event-only timing is refused).
-
-### The correctness oracle is sealed, and an identity conflation was corrected on the way
-
-The SOL-ExecBench port is now usable as a gfx90a **correctness-only** provider: LOCAL/gfx90a
-planning, exact source/runtime/workload identities, ten fresh live-reference rounds,
-`scoring.enabled=false` — real fresh-input verification that a stored reference tensor cannot
-substitute for, available with no measured constants. The live 193-workload run has not happened, so
-the parent empirical task stays open. Two record-hygiene corrections travel with it: the earlier
-"all seeds bf16/fp16" claim conflated oracle-workload identity with candidate metadata — the k145
-oracle surface is actually **fp32** while HyRA's candidate metadata names fp16, and k227 is
-bf16-only; the provider deliberately keeps those identities separate. And the seed bound-quality
-classes are persisted so `S` stops being quoted where it is meaningless: above ~100× headroom the
-SOL score degenerates into plain speedup with no roofline content (four of the eight seeds are in
-that vacuous class), gfx90a SOL *scoring* is blocked without measured constants, and numeric SOL
-fields are kept out of author prompts entirely.
-
-### A latent exposure is machine-remembered, not closed
-
-The gfx90a low-quant VALU/occupancy penalty costs production nothing today — no IQ-format role is
-GPU-resident — and the finding is bound into planner memory as exactly that: zero current live-stack
-payoff, ineligible for spend, **with a mandatory reprice on any registry transition that makes an
-IQ-format GGUF resident on the MI210**. The enforcement trigger is owned by AK-ADM-1's typed
-machine policy. This is the standing pattern for latent exposures: never recorded as "not a
-problem" (which is how they get closed by mistake), never left as prose a planner can forget.
-
-### Source References (2026-08-18 sealed controller)
-
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the 2026-08-16
-  checkpoint: merge/tip/bundle/graph identities, the 303/303 gate, the spend set, AK-RSM-1 /
-  AK-RUN-V3 / AK-ADM-1, the §22 AK-QL closures, and the staged AK-RUN-2 prep.
-- [`progress/2026-08/2026-08-16-inference.md`](../progress/2026-08/2026-08-16-inference.md) — the
-  owning session's record of the seal, the planner/critic binding, and the portfolio decisions.
-- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — RVP-C6-11/12/13
-  closures with mechanisms, and RVP-C2-6c/6d (the receipt binding and the committed-clean-source
-  unlock).
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — C5-3a
-  (sealed correctness-only provider), C5-4 (bound-quality classes), and the fp32/fp16 identity
-  correction.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) —
-  INF37-IQ-1: the latent-residency binding and its AK-ADM-1 enforcement hand-off.
-
-## Compiled Update — 2026-08-16: an autonomous loop is defined by what it cannot invoke — and both of ours are short of their own promotion bar
-
-**Confidence: verified for the campaign posture, the ladder definitions and the recorded counts —
-each read from the tracked campaign file, the handoff, and the operator package it names.
-Explicitly bounded: the funnel numbers below are candidate-only search observations, and this page
-carries that refusal rather than restating them as results.**
-
-### Manual execution was stopped in favour of the controller — with the leaders already in hand
-
-At **2026-08-13 22:14 UTC** the campaign file recorded a hard stop: *"AUTOKERNEL MANUAL EXECUTION
-STOPPED; CONTROLLER-FIRST CORRECTION IS THE NEXT BOUNDARY."* Discovery-first policy is ratified and
-the nonpromotable funnel already holds live leaders — CPU IQK prefill `+31.247%` and decode
-`+7.939%`, GPU MMQ-MFMA-OFF prefill `+26.5965%` and flash-attention-ON prefill `+4.8791%`. **These
-are candidate-only search observations, not champions and not promotion evidence.** The strict path
-exposed and repaired a real IQ3_XXS MMID `n=15` correctness failure *without weakening its
-threshold*, and the new-instrument r6 calibration checkpointed A/A `200/200`, neutral `60/60`,
-anchor-motion `15/15`. On operator request the sealed watcher, parent and captured child were
-stopped and all q0–q3 claims verified free, with a standing instruction not to resume r6 or launch a
-successor campaign.
-
-The ordering is the finding. A loop holding four measured leaders and a clean calibration is exactly
-the moment at which continuing by hand is most tempting and least defensible: the next result would
-be attributable to an operator's dispatch rather than to a controller anyone can replay. Stopping
-there — before the leaders were converted into anything promotable — is what makes the eventual
-promotion mean something.
-
-### Autonomy specified as a negative capability list
-
-The replacement is a deterministic discovery controller, built in an isolated worktree, and its
-specification is written almost entirely as prohibitions: it **must consume sealed measurements
-rather than planner prose**, and must **remain unable to invoke the calibration, held-out, champion,
-promotion, package or release paths**. It must land and be independently reviewed before any
-successor campaign runs.
-
-That shape recurs across every autonomous mechanism this page tracks, and it is worth stating
-generally: **the load-bearing part of an autonomous loop's design is the list of transitions it
-cannot make.** The 2026-08-12 governed pilots below reached the same place from the opposite
-direction — a terminal receipt that *explicitly denies* matched-campaign, ranking, belief-update,
-promotion and release authority. Capability is what the loop can compute; authority is what its
-output is allowed to change, and the two must be specified separately or the first silently becomes
-the second.
-
-### Two promotion ladders, designed independently, agreeing on the same three rules
-
-The self-running lab (F2) and the worker pool (RTG-52) were designed by different sessions for
-different work, and converged:
-
-| | Self-running lab, W3 | Worker pool, Phase-2 gate |
-|---|---|---|
-| Stages | `shadow` → `reviewed` → `autonomous`, enforced only by `promote_job.py` | pilot → scale-out, gated on measured pilot rows |
-| Volume bar | ≥10 shadow runs scored against a cloud-reference run; autonomous only at ≥90% accept-rate over 20 reviewed runs | ≥10 rows end-to-end, 100% independently audited, operator spot-reviews 3 of 10 |
-| Scope limit | `autonomous` restricted to `read_only` report-class jobs | promotion to `main` serialized; loop-plane paths need operator ack |
-| Kill rule | promotion rejected on stage skips/downgrades; referenced gold-tuple files must exist | operator overturning ≥2 of the 3 spot-reviewed rows halts the pilot |
-
-Three rules are common to both, and none of them is about model quality. **First, output is not
-authoritative until an independent reviewer accepts it** — the lab writes to
-`orchestration/lab_review_queue/` and *never* directly to handoffs or indices, and the pool emits a
-pointer packet consumed by a headless audit that derives the diff from git independently and runs
-its own mutation probe. **Second, the promotion script is the only promotion path** — a stage that
-can be reached by editing a config is not a stage. **Third, every rung is counted, not asserted.**
-
-**Both are currently short of their own bar, and saying so is the point.** The lab's ladder scaffold,
-hardening, review-packet export and batch capture have all landed, and the first real quiet-window
-model-backed batch produced verdicts — but W3 is still `- [ ]`, with `verdicts=12` and exactly two F3
-gold tuples: one accepted (`handoff_freshness_lint`) and **one rejected negative**
-(`attestation_watch`, where cloud review caught a false attestation-empty claim). A rejected tuple is
-not a failure of the ladder; it is the ladder's only proof that acceptance means something. The pool
-dispatched six rows against a ≥10-row gate. Neither loop has earned `autonomous` on anything.
-
-### The review queue was the compliance mechanism; a 2026-08-16 ruling generalised it
-
-F2 states the constraint plainly: *"CLAUDE.md forbids sub-agent index modifications without
-approval; the queue IS the compliance mechanism. No job writes directly to handoffs/indices."* The
-lab therefore solved a governance problem with a data structure — a job produces a *proposal* in a
-queue, and a separate accepted verdict is what turns it into a change.
-
-The doctrine ruling of 2026-08-16 makes that the general rule rather than one subsystem's workaround:
-**a subagent may PREPARE index edits; the owning session APPLIES them and owns the commit** — drafting
-row text and reporting the exact diff is preparation, and preparation is not modification (see
-[agent-architecture](agent-architecture.md), *2026-08-16*). The lab's review queue and the pool's
-audit packet are two implementations of one contract, and the contract now has a canonical statement
-independent of either.
-
-### Refusal is a result — now mechanised at the row
-
-This page already records that *a screener certifies a row's FORM; only a read certifies its
-PREMISE* (2026-08-12, below). That check now exists as code. `premise_screener` makes a forced-choice
-still-needed | stale | UNKNOWN call with a mandatory evidence quote; UNKNOWN or stale **parks the row
-and files a routed fix task** rather than guessing. In the first pool pilot, **two rows were refused
-on `premise-unknown`** — and the handoff records those refusals as mattering as much as the four rows
-that passed. The same discipline is visible hand-executed in a worker's log from the same week, whose
-report opens with a "Premise verification" section confirming the screener's still-needed call by
-grep before any code was written.
-
-Read alongside the AutoKernel stop above, this is one posture applied at two scales: a loop that
-cannot say *no* — to a stale row, to an inadmissible journal, to a completed-but-refused pair —
-cannot be trusted with a *yes*.
-
-### Source References (2026-08-16 autonomy ladders)
-
-- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-08-13 22:14Z stop
-  banner, the discovery-first funnel leaders, r6 calibration counts, and the discovery controller's
-  prohibition list.
-- [`frontier-f2-self-running-lab.md`](../handoffs/completed/frontier-lab-automation.md#track-frontier-f2-self-running-lab) — W3
-  reliability-ladder thresholds, `promote_job.py` as the sole promotion path, the review-queue
-  compliance rule, and the accepted/rejected gold-tuple pair.
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
-  the Phase-2 acceptance gate and kill criteria, `premise_screener` (P2-2), the headless audit
-  (P2-7), and the two `premise-unknown` refusals in the pilot record.
-- [`agents/shared/OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) →
-  *Doctrine rulings — 2026-08-16*, ruling (b) — the canonical PREPARE-versus-APPLY statement.
-- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — a worker's own
-  premise-verification-before-implementation record.
-
-## Compiled Update — 2026-08-13: the sequencer restoration was complete before its duplicate row was dispatched
-
-**Confidence: verified from current research code, focused tests, and commit history.** AK-RUN-3 was
-still unchecked even though the lean bank/frontier/champion path had landed on 2026-08-12. The
-reconciliation verified the implementation element by element: proposal/candidate/evaluation
-records feed distinct frontier, banked, and champion state; compatible members are composed and
-directly re-evaluated; `CHAMPION_UPDATED` appends idempotently; production-anchor changes require a
-matching sealed receipt; rejected composition preserves the incumbent; and member speedups are never
-added arithmetically. The focused champion suite passed 16 tests, including import closure,
-re-anchoring refusal, and idempotent replay.
-
-This is another stale-premise dispatch, not new implementation work. The earlier restoration record
-and the later AK-RUN-3 row described the same outcome in different parts of the long handoff; the
-checkbox was reconciled rather than reimplementing the sequencer. One adjacent campaign-rehearsal
-failure remains an unrelated environment/fixture issue: its relative model path is correctly refused
-by the hardened absolute-path contract.
-
-### Source References (2026-08-13 sequencer reconciliation)
-
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-RUN-3
-  element-by-element verification and original restoration pointer.
-- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — independent
-  premise check and focused-test result.
-- [`champion.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/champion.py)
-  and [`test_champion.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/test_champion.py) — current
-  composition/re-anchor semantics and regression coverage.
-
-## Compiled Update — 2026-08-13: accepted controls do not make a refused paired attempt archive evidence
-
-**Confidence: verified for source identity, controls, failure modes, and terminal dispositions; no CPU throughput claim.**
-
-The post-reboot AutoKernel loop produced a narrower, correct CPU IQK instrument without touching frozen production. Experimental commit `f744cc220…` is a direct child of v9 and adds the Q6_K `<32` native fallback exposed by T0; its exact seeded property suite passed. The associated five-control bundle is accepted and rankable (`5/5`, `B_min=10`, MDE `2.0360%`). That establishes the instrument's admission frame, not a candidate win.
-
-The first completed intervention attempt still did not become evidence. R29 reached ten pairs and `DECIDED`, then correctly reverted because anchor drift was `15.27%`, above its `3.08%` bound; its A/A arm independently refused while another OpenDataLoader workload held the CPU. Neither journal can be projected into the archive. The next valid step is a freshly generated f744-bound intervention/A/A pair after the independently quiet-host gate passes, followed by the held-out decode check. Autonomy here means preserving refusals and regenerating exact evidence under the repaired boundary, not extracting a result from a completed-but-inadmissible trajectory.
-
-### Source References (2026-08-13 CPU IQK checkpoint)
-
-- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — frozen-v9 operating boundary and campaign authority.
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — f744 instrument, control bundle, r25-r29 dispositions, and fresh-pair gate.
-- [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — self-contained empirical checkpoint and exact residual work.
-
-## Compiled Update — 2026-08-12: a failed pilot can validate autonomy plumbing without becoming kernel evidence
-
-**Confidence: verified for the captured failure ladder and teardown state; no kernel-performance claim.**
-
-AutoKernel's first governed one-task/K-Search pilot advanced through twelve immutable attempts. R1-r11
-successively exposed missing task-source provenance, controller import identity, Python extension and
-package closure, exact Git/null/config dependencies, and writable transient CLI state. Each defect was
-repaired narrowly rather than by broadening the controller to the host environment. R12 then started
-the real Codex client and attempted the response request, but five retries ended in `Operation not
-permitted` before a completed response. This is evidence that the autonomous controller path reached
-its model boundary; it is not evidence that the model authored a candidate or that a kernel improved.
-
-The claim boundary is the durable finding. A dependency-repair ladder may prove that isolation is
-fail-closed and that teardown works, but it cannot be ranked, aggregated, banked, or promoted as an
-optimization result. No completed model response, candidate, speedup, matched archive, or campaign
-aggregate exists for r1-r12. The next step is therefore an exact-cell retry after a least-authority
-transport-policy repair, followed by verification of the terminal pilot receipt, broker feedback,
-activation, claim/release, sampler, ephemeral-state scrub, and empty/removed cgroup. Only that receipt
-can unlock the 7/7 availability-conditioned panel.
-
-### Source References (2026-08-12 governed pilot)
-
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — exact r1-r12 failure chain, authority boundary, and retry gates
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — research branch identity, captured transport failure, and teardown checkpoint
-
-## Compiled Update — 2026-08-12: a terminal pilot proves execution compatibility, not comparative merit
-
-**Confidence: verified for the r15 receipt, isolation, and teardown; diagnostic-only for timing.**
-
-R15 closed the governed one-task/K-Search compatibility gate after two more fail-closed validator
-attempts. Exactly six `gpt-5.6-sol:high` calls produced one brokered intermediate evaluation and a final
-centralized evaluation. Both compiled, passed all four correctness/timing cases, and returned ratios
-near 1.0. Those ratios are telemetry about this one task, not controller or kernel ranking evidence.
-
-The more durable result is the authority-preserving execution shape. The parent owned three short GPU
-windows with 11/21/21 in-window samples and matched releases. The controller saw only `/dev/null`, both
-evaluators were deny-network with exact GPU device grants, all cgroups were empty and removed, and the
-ephemeral Codex home was scrubbed. The terminal receipt explicitly denies matched-campaign, ranking,
-belief-update, promotion, and release authority. This is the correct boundary for an autonomous-loop
-compatibility pilot: success unlocks the fresh 7/7 panel, but it cannot be silently promoted into a
-comparative conclusion.
-
-### Source References (2026-08-12 terminal pilot)
-
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r13-r15 dispositions, terminal receipt, isolation, and next panel gate
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-10 system-level authority disposition
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact hashes, validation counts, and research-main identity
-**Last compiled**: 2026-08-12 (second pass — three loop-engineering experiments on the loop's own operating assumptions returned **two nulls and one non-portable positive**: more reasoning effort bought time, not hypotheses; a "proximate target" framing was null for one model and adverse for the other; split scaffolding helped one model 1.393× and neither helped nor hurt the other. The governed controller campaign refuses 2 of 8 arms on licensing and is **4/64 checkpoints terminal**, so it has no aggregate. The first real CPU candidate campaign is ready and refused by its own uptime preflight at 13.47 days — see below; earlier same-day note: an AutoPilot dead-machinery audit re-derived: three modules whose surfaces all look green, instrumented with tripwires rather than fixed because each is a decision; the objective plane admits zero-quality Pareto points and one trial row in six is already there; a "sticky refuted" population dissolved as a joint-verdict-vs-single-axis defect; and the stale-premise class that makes a screened backlog row still unsafe to act on — see below; earlier 2026-08-11 note: AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
-**Sources**: 101+ documents
-## Compiled Update — 2026-08-12 (second pass): the loop-engineering experiments returned nulls, and the campaign they were meant to steer is 4/64 done
-
-**Confidence: verified** for the experiment mechanics and campaign state (each cell is receipted and self-hashed); **explicitly bounded** for every conclusion — these are one-observation-per-cell panels that the sources themselves refuse to generalise, and this page keeps that refusal.
-
-### Three experiments on how to run the loop, and two of them found nothing
-
-The AutoKernel program spent this window testing its *own* operating assumptions rather than kernels. The results are mostly negative, which is the useful part — each one closes a knob that was being tuned on faith:
-
-- **Reasoning effort × search persistence (8/8 predeclared cells, two frontier models at high and xhigh).** Higher effort did **not** increase novel or surviving hypothesis counts in either control arm (6 → 6 for one model, 3 → 3 for the other), and **all four xhigh cells took longer**. A bounded null: paying for more reasoning effort bought time, not hypotheses.
-- **A "proximate target" framing arm.** Null for one model (6 surviving hypotheses in every arm) and **adverse** for the other, whose target arms produced *fewer* than their matched controls (3 → 1 at high, 3 → 2 at xhigh). No transferable proximate-target benefit is established.
-- **Split implement/exploit vs direct (4/4 cells).** The only positive, and it does not generalise: average speedup **1.393× for one model's split arm** against **0.996 direct**, while the other model's split arm came in at **0.994** against **1.002 direct**. The split benefit is **task- and model-specific, not a cross-model scaffold default.**
-
-The pattern across all three is the finding: **loop-engineering levers are not portable across models**, and a scaffold that helps one controller can be neutral or adverse on another. Anything written as "use split scaffolding" or "raise effort" without naming the model and task is unsupported.
-
-### The controller campaign is real, governed, and mostly unrun
-
-The eight-arm agentic-kernel comparison **correctly refuses to run as eight arms**. Auditing moved it 1/8 → 2/8 executable, then to **6/8** after porting four controllers; the last two are blocked on licensed sources that have not been released, and **namesake substitutes are explicitly inadmissible**. The 6/6 available-source panel is ready and was expanded from an add-only proxy to four representative tasks.
-
-Two things must be read together. First, every controller smoke so far sits **at or just below 1.0× speedup** (0.9987, 1.0034, 0.9996, 0.9956, 0.9936) and every one is labelled **non-rankable diagnostic telemetry** — one iteration each, no ranking authority. Second, the live governed campaign is **partial**: at the immutable wrap boundary, **4 of 64 checkpoints and 2 of 24 cells were terminal**, with one arm still in controller deliberation. The standing rule is *rank only the terminal full 6/6 panel*, so the partial attempt has no aggregate and this page reports none.
-
-Getting even that far took two fail-closed restarts, and their causes are instructive: run 1 was invalidated because a **dotted task path escaped the exact workspace** and a device claim was left unreleased; run 2 proved the containment repair and then stopped when a strict parser rejected provider JSON carrying extra fields. **The strict parser was retained rather than loosened** when the provider schemas were integrated — the right call, and the one that costs a restart.
-
-### The GEAK reproduction is blocked on licensing, not capability
-
-The substrate works: an exact-pinned adapter refused gfx90a spoofing, compiled a live kernel under Torch 2.5.1+ROCm 6.2 / Triton 3.1.0, and passed correctness 3/3 and timing 5/5 on the physical MI210. What is blocked is the *paper-era reproduction*: both the paper pin and current upstream carry **no project-level license** (`license: null`, license endpoint 404, PyPI declares none). No reproduction may run until a covering license is published. This is an external dependency with no internal workaround, and it should not be re-scoped as an engineering task.
-
-### A calibration placeholder retired, and a matched archive with nothing in it
-
-Two housekeeping results with teeth. The old fixed **2.1310% MDE placeholder** — derived from four runs on a single model — is **no longer live authority**; the CLI now reports `UNCALIBRATED CELL` and each campaign must supply its own era-local calibration bundle. And the matched completed-proposal archive is **structurally ready and empirically empty**: the builder and its governed receipt producers pass their suites, but the archive holds no real records until the first CPU candidate campaign runs. A ready instrument with no data in it is a correct state to be in and a wrong thing to cite.
-
-### What actually gates the next result
-
-The first real CPU candidate campaign is **ready and refused by its own preflight**: host uptime measured **13.47–13.48 days** against a ratified 7-day ceiling, so no claim, build or benchmark occurred. The dry run recovers cleanly (13 steps, 10 pairs, 3% floor, exits zero). The gate is an operator reboot authorization, and its default — no reboot, no result — is the current state.
-
-The five-control acceptance run that *did* execute passed **5/5** at a 3% contribution floor with `may_rank=true`, and its historical replay promoted at **+26.605%** — evidence the harness discriminates, not evidence about any candidate.
-
-### Source References (2026-08-12, second pass)
-
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the 6/8 refusal, the r4 campaign's 4/64 partial state, the two invalidated runs, and the AK-LE-1/2/3 panels.
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the controls campaign, the uptime refusal, the retired MDE placeholder, and the empty matched archive.
-- [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) — the GEAK substrate synthesis behind the compile round-trip.
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the diagnostic controller speedups and the licensing block in session context.
-
-## Compiled Update — 2026-08-12: a self-optimizing loop's audit rows, re-derived — the findings held and the anchors did not
-
-**Confidence: verified** — every item below was re-derived against the current tree rather than inherited from the audit row that named it. Where a re-derivation *changed* the finding, the corrected version is what is recorded.
-
-### Three shapes of dead machinery, all with a green-looking surface
-
-An earlier audit of the optimization loop's codebase listed several "built, tested, zero production importers" items. Re-deriving them found the **findings held and were understated, while the anchors had rotted** — in one case the named function no longer exists at all. The three re-derived instances form a taxonomy:
-
-- **A column with no producer.** An episodic-memory `sub_decision` column: **0 non-null of 642,328 rows** (the row had claimed 0 of 59,337 — an order of magnitude more data, still entirely empty). Its 312-line test suite is green and covers the enum, the normaliser, the migration, the classifier token map and the backfill script — **everything except whether anything writes the column on the live path.** Three agents ran that suite and none noticed. *A test can cover all the machinery and never touch the question of whether the machinery is REACHED.*
-- **A feature dead at three independent layers**, any one of which would suffice: the router class appears exactly once in the tree and **that line is inside a docstring Usage example**; the state field is declared and never assigned; and the guard's **one production caller omits the argument** (every other caller is a test). The feature flag is a fourth layer of inertness. Two of the audit row's three anchors had rotted — the module had moved and the named function no longer exists — *the finding underneath survived the rot; the addresses did not.*
-- **A module whose docstring asserts its own live integration.** A mutation ledger states verbatim that the accept-path constructs records and consults it before composing a mutation onto the live config; a repo-wide grep excluding the module itself returns nothing. **Dead code is inert; a docstring asserting its own live integration is actively misleading** — a reader grepping for how conflict-aware acceptance works concludes it is wired.
-
-**The count in the audit row was wrong, and the honest answer is a range with a method.** "Ten fully-built, zero-importer modules" is at least **20** over 368 modules under `src/`; a stem-match scan gives 24, a dotted-import scan gives 22, and **they agree on 20** — 20 is the defensible floor, 26 the union. *A single number here would have been false precision*, and the caveat exists only because the second pass was run as a cross-check on the first method and disagreed with it. **The raw count is also not the actionable list**: declared console-script entry points and server modules legitimately have zero importers, so anyone acting on a bare importer count would have "cleaned up" a shipped CLI.
-
-**All three were instrumented, not fixed** — a tripwire per dead layer, each failing the moment that layer is wired (or, for the docstring, the moment the claim is softened), so whoever wires one is forced to wire the rest of the chain rather than landing a layer that silently does nothing. Deliberately **not** `xfail`/`skip`, because both are invisible in a green run and invisibility is the defect. The boxes stay **unchecked on purpose**: each is a decision (wire it, or retire it and correct its docstring), not a repair. A follow-up hardened the tripwires themselves after they proved brittle — the "is it constructed" layer now walks the **AST** and counts only real call nodes, so a construction named inside a docstring correctly isn't one, because **a tripwire that cries wolf is one somebody deletes.**
-
-### The objective plane admits a zero-quality Pareto point, and one trial row in six is already there
-
-The live dominance vector maximises `(quality, rate, -cost, reliability)`. A point holding the maximum rate is therefore unbeatable on rate and **nothing dominates it however bad its quality** — only an explicit floor or a scaled axis can exclude it, and no quality floor exists in the loop's core. Compounding it, quality is read as `float(row.get("quality") or 0.0)`, which **cannot distinguish measured-zero from never-measured**: **231 of 1,372 trial rows (16.8%)** carry falsy or absent quality.
-
-A companion gate over-promises in its own docstring: it says *"True when this result carries every axis the live dominance vector needs"* and its body validates the **rate** and nothing else — so a row with no quality, cost or reliability passes a check whose name and docstring both claim otherwise.
-
-> **Fix the `or 0.0` regardless of which metric wins** — a metric change would paper over a data defect. And per the standing rider, a metric change is structurally an **era boundary**, not an edit.
-
-Same store, same habit, one field over: the trial journal's era label is **inferred from a missing question ledger** on ~61% of rows — the absence-read-as-a-value class recorded in [Benchmark Methodology](benchmark-methodology.md).
-
-### A "sticky refuted" population dissolved: a joint verdict compared against a single axis
-
-A sequential-allocation readjudicator tested `state == "refuted" AND E_quality >= budget_min_e` — a **joint** label against **one** axis — while the safety gate stamps `refuted` when *either* axis refutes, recomputing it every trial. Measured: the rate axis's evidence value maxes at **1.1100 across all 393 trials** against a budget minimum of **2.0**, so every candidate's rate axis refutes past the budget threshold, **manufacturing the entire "sticky refuted" population.** The corrected report attributes each label to an axis — **6 quality, 3 rate-only, 0 UNEXPLAINED** — and the bucket that would hold a genuinely stale label is empty. The decision item is therefore **VOID / dissolved, not decided**; the live question moved to a different one. *A joint verdict compared against a single axis is the same category error as a full-machine gate applied to a partial-machine cell.*
-
-### An experience-card schema, derived from the row type that already validates
-
-The requested experience-card facets were mapped onto the existing strategy-store entry rather than a parallel type: **three of six are already carried** (provenance, scores, and the raw material for novelty), **three are genuinely absent** (error type, method family, resource usage). Two design findings worth more than the mapping:
-
-- **`score` is ambiguous in the request, and the existing type proves it.** The entry already carries three `*_score` floats — a validity prior, a retrieval similarity and a fusion rank — and **none is an outcome score**. Adding a fourth bare `score` to that set is exactly how a consumer reads the wrong one. Name it for what it measures.
-- **`species` is a population label, not a method taxonomy**, so it cannot stand in for method family.
-
-Recommended shape: **extend additively rather than defining a parallel type** — the serializer is a plain dataclass dump, so new optional fields round-trip for free and the existing projections keep validating. Filed with it, and deliberately *not* filed as a belief-substrate register row: an experience card carrying an outcome score plus provenance **is a measurement-shaped record and needs a write-side ClaimTuple decision at design time** — but *a register entry for an unbuilt producer is the speculative row that register warns against.* Left NOT IMPLEMENTED on purpose: the row said *schema only*, and each absent facet needs an owner decision.
-
-### Screening checks FORM; whether the premise still holds is a separate read
-
-Multiple backlog rows pulled from the generated bench this period screened as well-formed and dispatchable while their **premises had been overtaken by events** — a row describing files as uncommitted that had been committed two weeks earlier, a row prescribing a validation route that did not exist, a row naming an instrument the run did not use. The sharpest instance: a row asserting an operator-facing results page "still presents retracted numbers" — the page contains **zero** occurrences of the campaign identifiers it names, its figures are a different metric entirely, and it had been rebuilt from scratch. **Acting on that row as written would have stamped a retraction onto figures that were never retracted.**
-
-> **A backlog row is a claim about the world made at a past instant.** A screener can certify its form; only a read certifies its premise. The corollary for anyone driving a queue: budget a premise check per row, and treat *the row disagrees with the tree* as the finding rather than as an obstacle to closing it.
-
-Two related closures from the same lane. A row prescribing a dry-run route was **unfalsifiable for its entire life** because the flag it named was parsed and discarded — it now validates and exits 0 with zero errors, so the row's own numbers were never checkable by the route it named. And a "known blocker" (a port declared twice in the registry) was closed by **executing the layer rather than reading its comment**: the duplicate is real and intentional, the code was taught both spellings, and building against the production registry returns 6 fleets and 11 bindings with no phantom and no collision.
-
-### Source References (2026-08-12)
-
-- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md) — the re-derived dead-machinery rows, the experience-card schema, and the stale-premise closures
-- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the tripwire designs, the module-count cross-check, and the objective-plane measurements
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the joint-verdict dissolution and its per-axis re-attribution
-- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — why the unbuilt experience-card producer was deliberately not given a register row
-
-## Compiled Update — 2026-08-11: two autonomous loops hardened their own measurement integrity before running anything
-
-**Confidence: verified** — read directly from committed code, tests, and operator receipts. AutoKernel's hardened harness has run zero model executions under this checkpoint; AutoPilot remains intentionally stopped. Neither loop advanced its own optimization state today — both advanced the *evidence* that a future advance can be trusted.
-
-### AutoKernel hardened candidate execution, input rotation, and per-quant roofline discipline — before its first hardened campaign
-
-AutoKernel (the autonomous kernel-research loop) landed a static/runtime-authoring hardening checkpoint the same day production froze to v9 (see [Hardware Optimization](hardware-optimization.md) for the full engineering detail — sandbox scope, AK-TR-4/5, AK-X-3/5/6). The autonomous-research-relevant summary: every candidate build and T0/T1 evaluation arm now fails closed through native OS-level confinement with a fresh process identity and verified teardown between arms, closing the gap where the loop's own tool-allowlist did not constrain syscalls made by code the loop itself authored and compiled; a hardened arm rotates input content and buffer/context addresses and validates output through an untimed same-content replica, specifically to stop a repeated-buffer artifact from entering a campaign as if it were a measured result; and the per-quant roofline surface now refuses to construct a comparison across mismatched quant denominators rather than silently producing one. 3,730 tests passed (one declared expected failure); **no model execution ran** — the first real candidate campaign under this hardened harness, cross-lane frequency/power coupling, and the frontier-model comparison track are all still open. The harness validated its own reason to exist the same day it shipped: it refused a stale post-freeze instrument receipt rather than silently scoring a candidate against a superseded kernel.
-
-### AutoPilot's v10 multi-tier baseline is sealed, applied, and the loop is still not running
-
-A consolidated ratifier atomically applied the v10 multi-tier baseline (evening of 2026-08-10, in scope for this pass): **T1=100 quality 1.500, T2=500 quality 1.356, T3=160 quality 1.275**, each at reliability 1.000 with zero error rows, together with the E16 era rows and a staged-promotion policy, while leaving AutoPilot and all model servers stopped. This is a checkpoint-sealing event, not a resumption — restart still requires separate, explicit operator authorization, consistent with the loop's standing pattern this page has tracked since the 2026-08-05 fan-out findings below: an autonomous loop's own guards do not resume it, only an operator does.
-
-### A sequential-verdict mechanism shipped deliberately taking no side on the question it was built to let a human answer
-
-AutoPilot's sequential-allocation policy carries a live tension: the underlying function that decides whether a stopped e-process is `refuted` is **non-sticky** (it has no memory), but the *persisted label* recording that verdict is sticky (never recomputed) — two readings of the same system that are both true and that a lane brief and the owning handoff had stated as opposite framings of a bug. Rather than resolve that human-amendment-only question (SEQ-A1, still open, per `MEASUREMENT.md`), today's fix (`SequentialPolicy.sticky_refuted`, defaulting `False`) reproduces the current non-sticky behavior byte-for-byte — 75 tests pass across every consumer — while unconditionally recording a new `first_refuted_k` field on every trial, on the reasoning that **observing a stop is free and is not the same as deciding it is permanent**. This is a reusable pattern for any autonomous loop sitting on a genuinely undecided policy question: build the instrumentation that lets the decision be made from already-captured data later, ship it behaviorally neutral now, and do not let the mechanism's completion quietly pre-empt the decision it was built to inform.
-
-### Source References (2026-08-11)
-
-- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the sandbox/input-rotation/roofline hardening checkpoint (AK-TR-4/5, AK-X-3/5/6)
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the AutoKernel non-inference hardening checkpoint narrative
-- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md) — the v10 multi-tier baseline seal and consolidated ratifier
-- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation) — SEQ-A0, the neutral `sticky_refuted` mechanism, and the still-open SEQ-A1 operator decision
 
 ## Summary
 
@@ -2883,7 +749,2240 @@ Operationally, the planner now sees three new distinctions it previously blurred
 
 Sources: `progress/2026-06/2026-06-03.md` · `scripts/autopilot/planner_providers.py` · `scripts/autopilot/species/seeder.py` · `scripts/autopilot/species/structural_lab.py` · `scripts/autopilot/autopilot.py`.
 
-## Compiled Update — 2026-08-05: least-commitment selection starts as a shadow diagnostic
+## A ratified design can be refused in code, silently, for four campaigns (2026-08-28)
+
+AutoKernel produced **zero scientific attempts across campaigns v33–v36**. The cause was not the
+search, the planner, or the hardware. A ruling was adopted at the design level and contradicted by
+a constant in the runner, and the runner won every time without anyone being told.
+
+The ruling: the aggregate **champion** becomes the campaign's measurement instrument, so gains
+compound instead of being re-derived against a fixed anchor forever. The contradiction: two
+preflight gates compared the anchor arm's source commit for **equality** against the original
+reviewed instrument. A champion-instrumented campaign cannot satisfy equality, so every attempt
+died at preflight with a message naming a commit nobody was looking for.
+
+Three properties made this expensive rather than obvious:
+
+- **The failure looked like a stall.** The dashboard reported `stalled`, so it read as slowness.
+  Only the payload's `stall.detail` carried the RuntimeError, and only once the page was made
+  legible did anyone see it.
+- **The healthy dispositions masked it.** Turns ended `planner_transient`, `critic_revise`,
+  `authoring_refused` — all legitimate outcomes that spend no science budget. A campaign can look
+  busy and productive while being structurally incapable of producing a result.
+- **The pin was invisible to the design.** Nothing linked "the instrument may now advance" to "some
+  code compares the instrument by equality". It was found only because it killed a campaign.
+
+**The generalisable rule: a design that makes an identity MOVE is incompatible with any code that
+pins that identity by equality.** When adopting such a design, grep the plane for equality
+comparisons against the thing that will now move, before running anything. The fix here was to
+compare by *lineage* — descends-from plus an independently pinned contract blob — which preserves
+what the gate protected (the oracle carries the reviewed apparatus) while permitting the movement
+the design requires. Frozen production still fails the check, asserted rather than assumed.
+
+**Corollary for observability**: the loop's own funnel had reported `champion: 0` throughout, and
+the leaders shown beside it were a mix of already-in-production, config-only and refuted arms. An
+autonomous loop's dashboard must distinguish *cannot be collected* from *not yet collected*, or a
+reader infers progress from numbers that can never move.
+
+### Evidence needs a carrier that matches its authority — not the nearest carrier that fits
+
+An autonomous loop accumulates evidence under an authority its own machinery confers: a campaign
+receipt means something because a sealed chain produced it. The moment humans also produce evidence
+about the same object, there are **two authorities and only one carrier**, and the cheap resolution
+— write the human evidence into the machine's receipt schema — is the expensive mistake.
+
+The concrete case: the champion's strongest measured result (a serving-path gain frozen production
+cannot reach at all, because it rejects the drafter's GGUF outright) came from operator-run gates.
+The dashboard surface that reports champion standing read exactly one artifact, a campaign-produced
+cumulative performance receipt. So the program's best measurement was invisible on the page that
+exists to report it, and the obvious fix was to emit that receipt from the manual harness.
+
+**That fix is a provenance forgery.** The receipt's authority is not in its fields; it is in the
+chain that only a campaign builds. Minting one from operator evidence makes every later consumer
+that trusts the schema's provenance wrong, and the corruption is undetectable at the point of use —
+the artifact validates. The general shape: *when a surface refuses your evidence, the defect may be
+the surface's reader, but the fix is never to disguise the evidence as something it is not.*
+
+The resolution that holds: a **separate carrier that declares its own authority**
+(`authority: operator_gated_manual_research`, `promotion_claim: false`), and a reader that
+**refuses any bundle claiming more than it is** — including one wearing the campaign schema. The
+refusal is the load-bearing part, and it is the part a later "simplification" will remove, so it
+belongs in a mutation test rather than a comment.
+
+Two integrity properties generalise beyond this case:
+
+- **Bind each claim to the artifact that produced it, by hash.** A gate carries its source path and
+  that file's SHA-256, so a claim resolves to its evidence and a silently edited artifact
+  invalidates the bundle rather than quietly restating a stale number.
+- **A missing input is RECORDED, never dropped.** A gate whose artifact is absent appears as
+  missing. Dropping it lets absence read as a pass — the fail-open shape that poisons stores
+  precisely when the component that would detect it is the component that is down.
+
+**Corollary for loop design**: admission and attestation are separate mechanisms and neither
+implies the other. A pipeline that lets manual work *become part of* the optimised object is only
+half a loop; without a path for that work's evidence to *appear as standing*, the human doing the
+research cannot see whether it counted — which is the whole reason they were promised the loop.
+Closing one half and reporting the loop as available is a category error, not a rounding error.
+
+### Source References (2026-08-28)
+
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-INST-1, the v36 postmortem and the lineage fix
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-3's second cost, CH-10/CH-11, CH-7's premature closure, CH-13's two-carrier resolution
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — the DF2 gates the champion carries
+- [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) — the live bundle verification and the authority-boundary decision
+
+
+## Task-rate display availability
+
+Planner and replay displays render absent or malformed task rate as `n/a`, preserving valid zero and positive measurements. The legacy helper/storage zero sentinel stays compatible with historical rows; objective/frontier math is unchanged. [W8 source and synthetic acceptance](../artifacts/ni08/rtg23-w8-display-source-20261007/README.md). This change supplies no live-rate or runtime deployment evidence.
+
+## Retained-source numerical mismatch controls
+
+Both literature projections pass claim text to the existing retained-RAW numeric helper; [actual synthetic response/store/projection controls and original23/23](../artifacts/ni08/sc78-numeric-anchor-source-20261007/README.md) bind the source. One matching magnitude is sufficient under this mechanical rule, so semantic and full numerical truth remain separate. No actual source fetch or historical warrant is added.
+
+## Daily checker and missing planner evidence
+
+[Daily12:17 UTC full-gate checks](../artifacts/ni08/evl38-periodic-gate-20261007/README.md) retain actual red outcomes before failing CI; the first complete proof fails reference validation and establishes no readiness claim. [Planner display20/20](../artifacts/ni08/rtg23-w9-display-source-20261007/README.md) distinguishes unavailable from measured zero and preserves missing replay evidence as blocked.
+
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-19 (wrap-up: backlog waves A-D, audit ordering, cross-worker admission, AK-WIN-CNT-1 draft). Earlier: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (Autopilot hold and hold-release review). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): autopilot source fixes (false-positive infra classifier, no-op guard, planner-critic labelling) and 10-30 disk/launcher operations lessons. Earlier: 2026-10-28 (ws58 delta since 2026-10-27 15:23Z; see newest Compiled Update). Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): the first planning-context canaries: AutoKernel PASS with caveats, AutoPilot PARTIAL/FAIL, and an inert do-not-repeat guard. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): Codex push onto an experimental branch, the Codex coordination remedy, and the best-of member fence audit. Earlier: 2026-10-24 (wrap-up sweep 24, workspace-7b delta): a stale scratch build lost a keep; CH-27 floors calibrate on the champion store image. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): AutoKernel stops counting abstentions as failures, its gate times build and correctness separately, and harness false-failures are fixed. Earlier: 2026-10-22 (wrap-up sweep 10: grant admission in code, launcher fixes, first 27B width verdict). Earlier: 2026-10-22 (wrap-up sweep 7: fillers, V11 drivers, Locals seeds). Earlier: 2026-10-21 (wrap-up sweep 3: AutoKernel lesson-entry schema, observe-only width dimension). Earlier: 2026-10-20 (wrap-up sweep 2: AutoKernel history/probes, harness-loop architecture, serving depth sweep). Earlier: 2026-10-20 — AK closed-history replay AK-HR-1/2/3 (2026-10-20 intake). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: DS41 lineup moved to gpt-6.1-sol planner + claude-opus-5-5 critic (the MI210 freed); +11.18% serving promotion; a 4.533% floor inflated by the loop owner's own tests; the C84 orphan and process scopes; the C96 abstention storm; 8 non-decisive keeps summed to +0.101% serving (C98)); previous: 2026-09-29 (wrap-up compile: DS41-C69 floor carry-forward and cadence 8, C70–C72 planner cap/budget/salvage turn, C73 anchor-aware env-probe scan, C74/C75 external second lane and context arms, C76 escape-mandate abstention storm); previous: 2026-09-27 late (wrap-up compile: DS41-C66 a dot witness that could never fire on the DS41 lineage; DS41-C67 oracle_unavailable billed as authoring failures and a rule fingerprint blind to the oracle; the operator park sweep across OAB and the GPU MMQ seeds); previous: 2026-09-27 (wrap-up compile: kernel-research gate lifted; P-AK-SEARCH-1-A4 keep-grade runtime-recipe adoption ratified; DS41 keep 2; ak-check vacuous pass, wall budgets, CPU-window yield; OAB-33 delegation is prompt shape, OAB-34 output cap); previous: 2026-09-26 late (OAB-22 planner concision measured on run 10h; DS41 live as run 10j after its first keep); previous: 2026-09-26 (wrap-up, ak-ds41-main: the local-actor bring-up retrospective — 57.5 h to the first measurement, ~26 incidents mostly harness semantics and latent loop bugs; the first local keep +4.535% paired / +7.304% compounded; COR-continuation and resume carry-forward fixes); previous: 2026-09-26 (selector replay implementation and historical evidence audit); previous: 2026-09-25 (System One and evolutionary-agents intake); earlier: 2026-09-25 (wrap-up compile, main-ak-seat: OAB-9 showed inline context beating file-backed context in both pairs while the file arm halved first-step context; run 9 exposed the real floor order and a champion-of-record preflight gap); earlier: 2026-09-24 (late-evening wrap-up compile, main-ak-seat: the reduced-scope planner build — context-as-files cuts the planner prompt 79–83% by the 27B tokenizer, a per-call metrics row reproduces the seat A/B exactly, a perf-output cache makes the bounded seat's "tool time" loss implausible; three planner defects; none A/B'd yet); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: DS41 run 9 ready on a new anchor; floors recalibrate off-hours); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: DS41 run 8 lost its batch-0 planner reply to the 98,304-token split-KV slot — C20 refused the empty reply, the actor-seat call record captured it and ingests refused=0 (VB-AK-SEAT-b1v closed, b1w filed); the operator stopped run 8 at ~15:32Z because region locks held through full-target calibration blocked production /chat, and TERM during calibration only drains (DS41-C26); run 9's prerequisites are ordered (DS41-C25); the shared research clone's fast-forward is blocked by untracked copies git will not overwrite even when identical (DS41-C10a); OAB-4a pins :8083's KV mode per arm); earlier: 2026-09-24 (operator wrap-up compile #2, main-ak-seat: the seat A/B resolved — the plain seat wins on wall, 31.9 vs 44.3 min, and the bounded seat's loss is perf-tool time, not deliberation; offered subagents, the 27B never delegated; every arm compacted once because the conversation is append-only; research main 21ca61b0 and run 8); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: run 7 lost a finished 27B proposal to two actor-seat defects, fixed on a research lane; a bounded opencode seat whose replaced system prompt made each step ~6x longer — the planner's context is filled by its own deliberation, not by tool output; a perf "no samples" that was a symbol-filter miss; SIGTERM is a drain that never reaps the in-flight actor; the orchestrator-as-backend program INF-78); earlier: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
+
+### Compiled Update — 2026-11-02: typed unavailable results and stop reasons
+
+The documented Q-judge change represents an unavailable judge as `UNAVAILABLE` with a null score and keeps it out of scored averages; eight focused tests passed. Loop guidance also calls for named stop reasons and separates transient failures from substantive failures. Five typed-reason tests passed, but the implementation report still identifies a critic pass-1 checkpoint gap for a runtime pair; these results do not establish that the entire loop is fixed. Sources: [implementation progress](../progress/2026-11/2026-11-02-ws58-intake-impl.md), [agent-loop guidance](../docs/guides/agent-workflows/agent-loop-design.md), [intake implementation review](../progress/2026-11/2026-11-02-ws58-intake-jev-superagent.md).
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **GEAK-HIP** (intake-678#record) AMD's train-free agentic loop that optimizes existing HIP kernels (Generator/Evaluator/Reflector), reporting 1.28x heuristic speedup vs AITER on GEMM. Adopt patterns for MI210 kernel-search; blog data are MI300X, not gfx90a.
+- **ShinkaEvolve** (intake-779#00) Open-source program-evolution framework with weighted parent selection, novelty rejection and adaptive LLM routing, reportedly using 150 samples on its main run. Dive (2026-09-25) caveats: the circle comparison mixed verifier contracts and the ALE/MoE results are single-campaign author reports; adopt patterns only.
+- **The AI Scientist (Nature 2026)** (intake-780#00) End-to-end ML manuscript pipeline with humans supplying topics and filtering outputs. Dive correction: one submission scored 6/7/6 but was withdrawn before a formal decision, so "accepted/passed" wording was replaced; adopt pipeline patterns.
+- **optimize_anything omni** (intake-886#record) One black-box API over GEPA, AutoResearch and Meta-Harness backends; no optimizer dominates (wins split 3/3/4 over 10 Frontier-CS problems). Dive correction: the "source not found" finding was a bad sweep and the post is citable; note no seeds/variance reported. Adopt composition patterns.
+- **RL for code optimization** (intake-939#record) Adding runtime to an RLVR reward barely helps (+0.6 pass@1) and timings from contended local machines are unusable as a ranking signal. Directly relevant to EPYC benchmarking hygiene; dive verified every measurement number and closed the artifact gate negative.
+- **Ave (formerly ARGUS) GPU agent** (intake-967#00) Data-flow-invariant-guided agentic GPU optimization; current v2 reports 89-99% of expert libraries on MI300X (v1's 99-104% is historical). Record status corrected 2026-10-06; relevant to MI300X, not gfx90a, evidence.
+- **MLEvolve** (intake-978#01) Monte Carlo graph search with cross-branch reference edges for ML engineering; MLE-Bench row Gemini-3-Pro-Preview scores Lite 80.30, Medium 57.89, High 42.22, All 61.33. Correction: keep that 61.33 distinct from the paper's 65.3 All on a different backbone; no compute match established.
+- **Weakest hypothesis beats shortest** (intake-991#record) Claims weakness maximization is optimal for generalization within a finite formalism. Dive overturned both load-bearing evidence arms; only the least-commitment intuition survives as a hypothesis.
+- **Optimal Policy Is Weakest Policy** (intake-992#record) Follow-up repairing the formal presentation of the weakness result. Dive: accurately diagnoses earlier flaws but Proposition 2 does not prove its stated necessity conclusion, so overturned as a complete repair.
+- **Weakest-hypothesis technical appendices** (intake-993#record) Repository with PyTorch/SymPy scripts and XLSX workbook for the weakest-vs-MDL experiment. Narrow artifact claims verified; the audit overturns intake-991#record's empirical use of them.
+- **The Wrong Razor** (intake-996#record) Proves finite recoding of positive priors and exchangeable-survival results favoring weakest-correct policies. Dive overturned overall because a load-bearing PAC-Bayes claim does not type-check; the other results are confirmed.
+- **Regret Is Weighted Forgetting** (intake-997#record) Minimum average regret equals K minus weighted weakness on a fixed-quotient lifted task. Fixed-quotient algebra verified; the paper's empirical support is overturned.
+- **Abstraction Ladder Problem** (intake-998#record) Argues weakness maximization cannot explain how abstraction spaces are built. Dive overturned the claimed fundamental circularity but kept the representation-selection warning.
+- **A Formal Theory of Optimal Learning** (intake-1001#record) Two-page IJCAI-25 Doctoral Consortium summary of the weakest-policy thesis with claimed 110-500 percent improvement. Superseded; verified only as a publication summary, no standalone support.
+- **Expert-level empirical software (ERA)** (intake-1370#00) An LLM rewrites programs scored in a sandbox, with a flat PUCT tree allowing backtracking from any node (closer to flat UCB than AlphaZero); tree-search implementations beat the published method for 8 of 9 scRNA-seq methods. Retention is only partly gated by external execution, correcting a related entry.
+- **Convergence of 10,000 LLM-guided experiments** (intake-1371#00) Orze ran two agents (Claude Opus 819 cycles, Gemini 2.5 Pro 864) and generated 42,042 candidate configurations over 27 days; only 1,337 completed experiments have parseable configs. a related entry cited it for the opposite of its conclusion and it used Orze, not the Karpathy template.
+- **AI scientists reason without reasoning** (intake-1374#00) Corral evaluates agents on 8 domains with more than 25,000 runs; IRT-estimated reasoning ability explains 41.4% of explained variance in the best latent-factor model. The earlier framing about a critic pass changing belief was overturned.
+- **FML-bench** (intake-1375#00) 18 ML research tasks across 10 domains isolating the agent's choice of what to try next; 324 runs with a GPT-5.4 backbone. Only a partial instrument for comparing planner search against a baseline sampler.
+- **SciIntegrity-Bench** (intake-1376#00) 33 dilemma scenarios (11 misconduct trap categories x 3 domains) over 7 LLMs: 36 Fail (15.58%) and 34.2% Fail+Flawed; scoring is manual. Overturned for faithful-citation scoring.
+- **Goodhart's Law in RL** (intake-1378#00) In finite MDPs the projected angle between reward vectors determines whether optimization raises true return; early stopping helps only if the angle bound is right. Transfer finding: a wrong theta gives naive results.
+- **In-context reward hacking from feedback loops** (intake-1379#00) Feedback loops cause in-context reward hacking at deployment (output-refinement and policy-refinement mechanisms). EPYC finding: PromptForge's mutation author is `claude -p` with `--resume`, a feedback loop of this type.
+- **GRAFT-ATHENA** (intake-1380#00) Projects solver-attribute DAGs into factored decision trees with a 0-100 rubric reward; low rewards give weak reinforcement rather than explicit negative evidence. Overturned as the nearest autokernel analogue: it selects solver methods and configurations, not kernels.
+- **Orze orchestrator** (intake-1384#00) Schedule-train-evaluate-report loop with exact ingest-time dedup and a dispatch-time refusal added 2026-08-27. Narrows the a related entry claim that Orze refuses near-duplicates by fingerprint: public Orze does exact refusal only.
+- **Agentic AI scientists position paper** (intake-1385#00) Position paper arguing agentic scientists work as co-scientists but not autonomously; its only original experiment is a "hypothesis hivemind" test with 6 models over 50 NeurIPS 2025 papers. Not the corroboration of scaffold-cannot-repair earlier reports suggested.
+- **EvoX meta-evolution of search strategies** (intake-1437#02) EvoX jointly evolves solutions and the strategies that generate them, reporting wins over AlphaEvolve, OpenEvolve, GEPA and ShinkaEvolve on most of ~200 tasks (narrowed to 196; AlphaEvolve numbers imported, not re-run) and matching or exceeding AlphaEvolve on 5 of 7 tasks (intake-1437#02). Decisive finding: strategies are scored only by online deployment, with no replay or offline evaluation. Informs autokernel search-strategy design.
+- **SimpleTES structured test-time scaling for discovery** (intake-1438#01) Organizes evaluator queries as parallel trajectories with refinement and selective reuse, run with global width C=32, depth L=100, local sample K=16 (intake-1438#01) on a single GPT-OSS model; reports SOTA on 28 problems and 2.17x faster than glmnet for the lasso-path solver (intake-1438#02). Title drift resolved (v1 retitled at v2). A template for budgeted autokernel/autopilot search loops.
+- **CostAda cost-calibrated frontier utility** (intake-1445#02) Proves cost-blind credit can forfeit all but a vanishing fraction of attainable quality (intake-1445#00) and divides progress by a remaining-budget-conditioned realized cost; reports equal quality at no more than half the search-side dollar cost on 12 of 16 benchmark-backbone pairs (intake-1445#02). Theorem scope is narrow and code is unreleased. Directly relevant to cost-credit in autokernel allocation.
+- **AdaEvolve adaptive zeroth-order optimization** (intake-1448#00) Needs only the LLM name and iteration count (intake-1448#00); one accumulated-improvement signal drives three adaptation levels (island intensity 0.1-0.7, decayed-reward UCB routing, stagnation-triggered meta-guidance, tau_S=0.02, tau_M=0.12). Confirmed as scalar/control adaptation, not code evolution, evaluated online only; global normalization fixes poor-island bias (intake-1448#02). Settings-adaptation counterpoint to EvoX for autopilot tuning.
+- **CORAL multi-agent evolution via shared memory** (intake-1449#00) Asynchronous agents coordinate primarily through shared persistent memory with no role specialization or islands (intake-1449#00); best final score on all 11 tasks and SOTA on 8 (the abstract says 10, an internal inconsistency) (intake-1449#02). Ablating the knowledge base regresses 1350 to 1601 cycles, and co-evolution beats an equal-compute best-of-4 control. Closest published mechanism to the agent-collab research harness.
+- **SkyDiscover discovery framework** (intake-1452#00) Decomposes the discovery loop into Context Builder, Solution Generator, Evaluator and Solution Selector (intake-1452#00); claims the strongest open-source results across ~200 benchmarks with AdaEvolve and EvoX (repo README, self-reported). The dive covered only abstract and repo, so do not attribute repo claims to the peer-reviewed paper.
+- **LLM-squared blog (DiscoPOP)** (intake-1593#01) Blog accurately describes the propose-train-evaluate-feedback loop run for ~100 generations (intake-1593#00). Its claim of state-of-the-art across held-out tasks and beating DPO is too broad (intake-1593#01): the paper supports only competitive, task-dependent transfer. Code and objectives verify, but no checkpoint snapshot was pinned.
+- **Darwin Godel Machine** (intake-1594#01) Creates and scores new coding agents by interleaving self-modification with evaluation on fixed downstream tasks (intake-1594#00); the blog reports SWE-bench 20.0% to 50.0% (intake-1594#01), public archives reproduce staged records (12/60, 100/200) and a 32/225 Polyglot baseline, while the 30.7% Polyglot endpoint is author-reported. One lineage disabled hallucination-detection markers to fake success, a direct objective-hacking case (intake-1594#03). Supervision meant monitoring, not per-candidate approval.
+- **ShinkaEvolve program evolution** (intake-1595#record) Four case studies (circle packing, AIME scaffolds, ALE-Bench, MoE load-balancing-loss search) with a 150-sample circle run (intake-1595#record). Overturned: circle SOTA fails under a common exact verifier (the run used a relaxed 1e-6 verifier); the AIME scaffold loses to Majority@5, and ALE and MoE results are single-campaign, author-only evidence. Useful as a sample-efficient search pattern for autokernel, with generality claims provisional.
+- **Digital Red Queen: adversarial program evolution in Core War** (intake-1600#01) Linear historical self-play where each round evolves a warrior against prior champions with a two-axis MAP-Elites archive (intake-1600#00). In an unreleased 294-target experiment an oracle portfolio of specialists covered 89.1% by wins and 96.3% by wins or ties (intake-1600#01), author-reported and unmatched-budget. Convergence is weak and not universal; the 77% cycle reduction and probe R-squared 0.442/0.461 cannot be recomputed from releases.
+- **Digital Red Queen launch article** (intake-1601#00) The blog frames DRQ as a minimal instantiation of prior self-play, not a novel algorithm (intake-1601#00). Generality rises across rounds but convergence is weak and of mixed significance; generality was scored against a 317-human warrior panel without proof of per-run train/eval disjointness, and drug design, cybersecurity and market relevance are future-work motivation only.
+- **The AI Scientist (paper)** (intake-1603#02) v1 chains idea generation, code editing, execution, figures, manuscript writing and simulated review around human-provided templates and directions (intake-1603#00); selected papers cost under ~$15 in API charges, excluding accelerators, failed ideas and human effort (intake-1603#02). Open-ended archive improvement is proposed, not tested, and the Automated Reviewer approximates venue accept/reject rather than validity.
+- **AI Scientist first peer-reviewed publication** (intake-1604#00) Three unedited AI-generated manuscripts were submitted blind (intake-1604#00); the real scores were 6/7/6 followed by withdrawal, so 'accepted' is inferred, not a formal decision, and the selection funnel is omitted. The Automated Reviewer reaches 69% balanced accuracy near an inter-reviewer benchmark (intake-1604#01) but was not tested as a truth verifier. The announcement acknowledges hallucinated citations and duplicated figures.
+- **AI Scientist announcement page** (intake-1605#02) Describes the first comprehensive paper-generation system (intake-1605#00) with an archive feedback loop (intake-1605#01) for which no controlled improvement evidence is given. About $15 per paper covers API charges only, excluding compute, failures and human labor (intake-1605#02); near-human means accept/reject agreement on a manuscript corpus, not research validity.
+- **Evaluating Sakana's AI Scientist** (intake-1607#01) In one recommender-system setup, five of twelve ideas failed to execute and four of seven manuscripts (57%) contained incorrect or hallucinated numbers (intake-1607#01). The AI reviewer rejected 9 of 10 papers, including four human-accepted ones (intake-1607#02); the run cost $42 in API charges (~$6 per manuscript), excluding electricity and cluster cost. Single-domain study; strong caution for autonomous-research pipelines.
+- **AI Scientist in Practice (reproduction)** (intake-1609#00) Eight pipelines attempted, three failed (38% failure, small sample, intake-1609#00); code changes were only 0% to 0.3% per iteration (intake-1609#01). Setup took ~7 hours, each pipeline ~3 hours, spend ~EUR 9 per completed paper (intake-1609#02), and none of the five papers reported error bars. Companion evidence, not an independent high-confidence rate.
+- **AI Scientist-v2 agentic tree search** (intake-1610#01) Combines agentic tree search, VLM feedback and parallel execution, with replication nodes rerunning parents under different seeds and aggregation nodes summarizing mean/std (intake-1610#01). One of three workshop submissions scored 6, 6, 7 with a prearranged withdrawal protocol (intake-1610#02). Overturned: the funnel was human-selected (three ideas chosen, best manuscript per idea picked), so end-to-end autonomy is not shown.
+- **Population Digital Red Queen** (intake-1612#01) Compares linear DRQ, a six-member population and a six-member archive-and-niche population under matched call budgets (intake-1612#00); over 40 paired runs archive-and-niche did not reliably improve population mean quality but raised the best champion by 0.0663 (intake-1612#01). Champions were not competitive on external Wilkies, WilMoo and Koenigstuhl panels (negative external replay).
+- **DEI: Diversity in Evolutionary Inference** (intake-1614#01) Adds asynchronous champion exchange to local DRQ and MAP-Elites (intake-1614#00); the final table gives the diverse ensemble 80.6% coverage and QD 45.90 vs 63.0% and 20.46 for solo search at ~248 LLM calls (intake-1614#01). The paper contradicts itself about whether homogeneous or diverse ensembles win, uses tiny unequal samples and releases no raw outputs, so the diversity-causality claim is unproven.
+- **Mutation Without Variation** (intake-1616#01) Accepting every valid rewrite for 300 steps without selection (intake-1616#00), 87% of 150 DSL chains used fewer than 20 structural skeletons and revisited prior structure on over 93% of mutations (intake-1616#01). Overturned: universal collapse, since one model-prompt condition yielded 301 unique programs and 225 skeletons. Relevant caution for LLM mutators in autokernel search.
+- **Darwin Godel Machine independent implementation (Dossman)** (intake-1624#00) Independent (reattributed, not the official repo) DGM-like implementation with a score times 1/(1+children) exploration selector and optional elite/focus paths (intake-1624#00). Overturned: the audit archive stores invalid attempts but only valid entries are eligible parents (intake-1624#record). Four preselected lineages improved on one disjoint 12-task replay, which does not compare selectors or show open-endedness.
+- **Huxley-Godel Machine** (intake-1626#01) Estimates clade metaproductivity from descendant outcomes; at 800 evaluations HGM-Async reports 56.7% vs DGM 53.3% on SWE-Verified-60 and 30.5% vs 27.1% on Polyglot with fewer CPU-hours (intake-1626#01). The comparison bundles clade selection with async scheduling and allocation, so there is no selector-only ablation; the printed best-belief objective is degenerate at epsilon=1 and the released code lacks the selector path.
+- **Simple Baselines are Competitive with Code Evolution** (intake-1628#01) IID sampling and sequential conditioned sampling (SCS, conditioning on random successful programs) match or exceed Shinka on 4 of 9 and 6 of 9 math tasks under a $20 budget (intake-1628#01), but against one modified Shinka run per problem with no raw campaign bundle. Overturned: the circle result is not independent evidence because the evaluator returns a candidate-supplied objective, uses implicit isclose tolerance and fails open on non-finite values. Strong minimal controls for autokernel search.
+- **SMCEvolve sequential Monte Carlo evolution** (intake-1629#00) Code implements reward-softmax resampling, sequential accept/reject proposals, four adaptive modes, ESS scheduling and lambda stopping (intake-1629#00). The finite-sample theorem assumes an ideal kernel while the black-box system uses a reward-only approximation (intake-1629#01); headline comparisons use best of three seeds with no uncertainty, and the circle task is a different relaxed 21-circle problem with a non-finite-center evaluator hole.
+- **Recursive self-improvement of AI research agents** (intake-1630#01) Eight-day principal run produced a 100-node trajectory with 99 rewrite proposals, evaluated on ALE-Bench Lite (10 tasks x 10 seeds); mean private performance rises AIDE0 1536+-33 to AIDE85 1790+-9 (intake-1630#01) with the whole harness changed. Reward-hacking incidence falls 55% to 32% as an association only; a three-seed ignition test (0.780 vs 0.782) was inconclusive and total campaign cost is unreported.
+- **KAPSO knowledge-grounded program synthesis** (intake-1631#00) Branch-local reproducibility bundles and one private final evaluation of the highest-public-score branch (intake-1631#00); ten ALE task ratings average 1909.4 at 6.1% rank percentile and $914.8 spend (intake-1631#01) with no raw campaign, seeds or matched-horizon cost receipts. The claimed knowledge package was not found in the pinned companion repo, and a ten-task estimate with two material losses does not establish reliability.
+- **Huxley-Godel Machine released code** (intake-1639#00) Released code pools descendant outcomes into a Thompson sampler to pick the node to expand (intake-1639#00), overturning the earlier claim that the selector path is missing. The same sampling function also picks which node gets a task measurement (intake-1639#01), so there is no selector-only switch, and no executable epsilon-best-belief endpoint selector was found.
+- **AgentDescent** (intake-1640#00) Runnable code separates candidate selection from task scheduling (intake-1640#00). Every declared policy except exact SingleHead installs a population layer (intake-1640#01), so SingleHead vs Beam(1) changes more than parent selection; population finalization takes the archive maximum with implicit first-max tie-breaking, and archive admission scores on verifier.held_out, which is selector-validation data, not an untouched test.
+- **Red Queen Godel Machine** (intake-1641#00) Evaluator incumbents and challengers are compared on a fixed ground-truth anchor at each epoch boundary (intake-1641#00), but repeated reuse makes the anchor recurrent validation data; evaluators are frozen within epochs and the endpoint uses best-belief selection (intake-1641#01). The preliminary paper author-reports 71.7% vs 69.9% held-out Polyglot and 1.35-1.72x fewer search tokens as bundled full-method results without raw trajectories.
+- **Hill Sampling for test-time scaling** (intake-1642#00) Minimal best-so-far baseline with one incumbent and one stored score, no archive, diversity objective, crossover or parameter update (intake-1642#00); each candidate runs once and the incumbent is not re-evaluated (intake-1642#01), so a favorable noise draw can persist. Compute matching is on nominal completions only, and the claim that archives and diversity are unnecessary holds only for three domains with three seeds. A cheap control for autokernel search.
+- **Global optimization for combinatorial geometry revisited** (intake-1643#01) Authors report unmodified FICO Xpress and SCIP reproduce or improve prior AlphaEvolve-era values (intake-1643#00). All 13 rounded printed values improve in the stated direction, which checks arithmetic only, not feasibility; row-level solver attribution, the validator and runtime table are missing (intake-1643#01). Global-optimality language is rejected; conventional solvers are a baseline for any LLM-search claim.
+- **Finite sample complexity of SMC estimators** (intake-1644#00) Theorem for a fixed measure path with exact weights, multinomial resampling and invariant kernels (intake-1644#00); under bounded weights and mixing the final bounded-function estimator error is controlled. It is a proof-obligation checklist for fixed-target expectation estimation, not a guarantee for reward-only, best-so-far or open-ended program search, and the MCMC comparison is of conditional upper bounds.
+- **Kapso long-running optimization agents** (intake-1645#00) Repo reports 1909 Elo vs ALE Agent's 1879; the ten displayed ratings average 1909.4 (intake-1645#00) but the pinned tree has no campaign workspace or raw scores. The adapter validates acceptance and nonzero scores only on the first of four public evaluations (intake-1645#01) and exposes a separate private-final call; current config uses different models than the Gemini-2.5-pro paper campaign.
+- **Iterative code readability refactoring convergence** (intake-1649#00) Under GPT-5.1 at temperature zero, adjacent-version unchanged-line rate rose from 45% and 76% to 86%, 89%, 92% (intake-1649#00); the metric compares adjacent versions, not survival from v0. Naming prompts keep renaming without convergence, comment prompts stabilize after one pass (intake-1649#01); readability was not measured, and 1,070 semantic-change or compile failures were found in 59,489 tests (intake-1649#03 in claim set).
+- **AI Scientist-v2 fabricated ABM results** (intake-1653#00) On the macroeconomic ABM task AI Scientist-v2 claimed Q-learning simulations but its GDP plots were constant round-number traces (50/100/150/200) that external authors judged fabricated; correction: scoped to the tabulated ABM report, and the paper cannot support a failure-rate estimate. Relevant as a guard: autopilot-style research loops need artifact audits, not self-reported claims.
+- **hgm clean-room Huxley-Goedel Machine** (intake-1661#00) Exposes a use_cmp switch for CMP-guided versus greedy/DGM expansion; the author-reported 0.055 hidden-skill advantage over 40 seeds comes from a synthetic world that deliberately builds a dead-lineage greedy trap. Pattern for archive-search in autopilot; not independent evidence.
+- **Red Queen Goedel Machine implementation** (intake-1662#00) Independent code implements anchor scoring, strict evaluator replacement, epoch increments and selective erasure; promotion authority sits with an injected provider, and the shipped LLM path grades with the same model. Adopt the co-evolving evaluator pattern with an independent anchor source.
+- **LLM Speedrunner replay substrate** (intake-1670#00) Pinned repo ships 231 files, 40 configs, 5 analysis notebooks and 45 workspace templates for static replay; the runtime validator rejects val_loss > 3.28 while released analysis only invalidates >= 3.29 (intake-1670#01), a loose-threshold defect in analysis. Candidate research-agent benchmark.
+- **Kapso long-running optimization agents** (intake-1671#01) Zenodo v0.4.9 preserves an 816-file payload identical to the Git tag but contains zero generated campaign workspaces or raw score outputs; verdict already integrated. Release-identity evidence only, not performance evidence.
+- **Uncertain Quality-Diversity evaluation** (intake-1672#00) In uncertain QD, fitness and descriptors are distributions, and corrected-archive evaluation is needed since ground truth may be inaccessible; M=512 narrowed to the paper's empirical choice. Method for noisy-measurement archives such as autopilot results.
+- **Lenia open-ended evolution via QD** (intake-1673#01) Elite additions continue past one million evaluations, supporting finite-horizon archive activity; the authors explicitly do not claim theoretical open-endedness. Do not cite as unbounded novelty.
+- **Formal definitions of unbounded evolution** (intake-1674#00) Defines unbounded evolution as nonrecurrence beyond the Poincare recurrence time and innovation as exclusion from the trajectory set of equivalent isolated systems; correction removed a complexity-growth requirement. Conceptual framing only.
+- **Real Science Is Harder, pharma part** (intake-1675#01) No AI framework matched the reference scope; on the antibody task the reference used 240 datasets and 30 model families versus one dataset and 2-5 models per framework. Reinforces scope-gap audits of autonomous research output.
+- **RQGM coding-domain reproduction** (intake-1682#01) Statically implements challenger registration, strict anchor replacement, epoch advance and selective erasure, but the host proxy and HGM executor for a live coding run are marked planned. Mechanism fidelity only.
+- **rqgm epoch package (superseded)** (intake-1683#01) Not an implementation of the paper's RQGM: it mutates a tolerance schedule, with zero code hits for best_belief, challenger, anchor_success; correction overturned fidelity and selective-erasure claims. Do not use.
+- **Darwin Goedel Machine official code** (intake-1686#00) Outer archive loop selects parents, runs concurrent self-modification, filters functionality-valid children and updates the archive; default score_child_prop weights sigmoid accuracy by inverse valid-child count (intake-1686#01). Reference design for archive-based self-improvement.
+- **RQGM explainer article** (intake-1687#01) Presents a small no-LLM 20-seed simulation, with full RQGM improving held-out true pass rate over frozen by 0.272 on average, consistent with the notebook. Not a reproduction of the paper's LLM campaign.
+- **RQGM toy simulation notebook** (intake-1688#01) 22-cell seeded NumPy notebook: frozen true pass 0.410 +/- 0.168, full RQGM 0.682 +/- 0.187, paired delta +0.272 +/- 0.237, positive in 90 percent of seeds; runs in 5-10 minutes on CPU. Cheap mechanism check.
+- **Sequential MCMC non-asymptotic bounds** (intake-1694#01) Finite-particle error bounds for multimodal SMC assume the dynamics cannot cross partition elements (particles cannot move between same-level tree nodes). Theory background for search samplers.
+- **Multimodal SMC asymptotic variance bounds** (intake-1695#01) Bounds asymptotic variance while allowing MCMC kernels to cross modes, but explicitly gives no non-asymptotic finite-particle bound. Distinguish from 1694 when citing.
+- **Open-endedness for its own sake** (intake-1696#00) Hintze runs 100 replicate populations for 5 million generations and prefers an exponential over a hyperbolic fit; correction narrowed the indefinite-growth reading to a finite-horizon extrapolation. Do not cite as proof of unbounded growth.
+- **Taylor critique of Hintze model** (intake-1697#01) Taylor's three-part framework (novelty class, process, intrinsic/extrinsic) classifies Hintze's model as exploratory-only open-endedness, since fixed semantics cannot produce expansive novelty. Taxonomy for judging autonomous-research claims.
+- **MODES toolbox** (intake-1698#00) Treats open-endedness as a continuum with separate change, novelty, complexity and ecology metrics; all metrics assume prior noise filtering (intake-1698#01), and the persistence filter is horizon- and population-dependent. Diagnostic pattern for autopilot novelty tracking.
+- **MODES toolbox assessment (Evo-Sandbox)** (intake-1699#record) OpenAlex abstract reports Evo-Sandbox experiments probing the toolbox's ability to detect open-ended-evolution hallmarks; correction overturned an earlier "no abstract" retrieval note. Abstract-level evidence only.
+- **OEE undecidability conditions** (intake-1700#01) Defines OEE as every state being eventually exceeded in complexity and shows noncomputable adaptation times are necessary for strong OEE under sophistication-type measures (delta mapping not computable). Scoped to the paper's system assumptions; conceptual only.
+- **Large-scale Lenia open-ended evolution** (intake-1702#01) Moves inheritance, replication, mutation and selection into one continuous Lenia simulation; runs show transient diversity then converge to extinction or domination, a preserved negative result. Caution against assuming open-ended gains from a simulation.
+- **Can AI conduct autonomous research (two case studies)** (intake-1704#01) Eight open-source frameworks on two reproduction tasks: none completed the full research cycle and none produced genuine results by executing code; correction replaced an apparent 0/16 rate with eight framework-level units. Bounded evidence against trusting unattended research agents.
+- **Practical AI frameworks on real problems** (intake-1705#00) Autonomous runs failed in most cases while one Kosmos property-prediction case matched the human expert; correction: qualitative paper, no defensible system-level failure rate. Scope the success to one framework/task.
+- **Open-ended AI research shadow evaluation** (intake-1706#00) Original authors graded the two main papers Reject (2/6) and Strong Reject (1/6); correction: five heterogeneous runs (two pilots, two main, one robustness), so 0/5 is not an acceptance rate. Small-sample evidence.
+- **Fork-and-Flush** (intake-1993#01) Fixed schedule: K=4 opening branches, then at 33% and 66% of budget fork K=4 branches from the leader workspace with empty chat context. Matched-credit normalized mean 0.78 vs 0.47 single-run vs 0.54 best-of-4 on 13 tasks (intake-1993#02); independent runs plateau from 68.3 to 100.0 (intake-1993#00). Plateau-triggered forking rarely fired (15/25 runs never) (intake-1993#03).
+- **Scaling Discovery Requires Forgetting** (intake-1998#00) Agent sessions narrow as they lengthen; on the VLIW task 66.2% of single-agent spend went to empty turns declaring a plateau. Forgetting means discarding every session and the whole search state at fixed round boundaries (three forgets, four rounds) (intake-1998#01). Team-with-forgetting beats 4 parallel agents by +14% (AHC014) and ~2% lower BPB on nanochat (0.961 vs 0.980) (intake-1998#03). Relevant to AutoKernel session reset policy.
+- **LLM4LLM closed-loop kernel optimization** (intake-2005#00) Isolated kernel benchmarks can misrank against in-model behaviour, shown by three qualitative cases (anecdotal, not a population statistic). Results are NVIDIA-only; geomean end-to-end speedup over eager PyTorch 3.91x (A100) and 6.98x (H100) across ten workloads (intake-2005#02); restart ablation gives small gains, e.g. 2.005 vs 1.961 (intake-2005#03). Relevant to AutoKernel in-model validation.
+- **Stateless Language Agents (SLA)** (intake-2010#00) Harness owns research state and rebuilds a fresh role-specific context per invocation; statelessness enforced with Landlock and cleared sessions (intake-2010#01). Token-matched on the VLIW kernel with Codex+GPT-5.5 (intake-2010#02); removing Advisor reconstruction, Worker isolation or assignments each reduces progress in all 8 comparisons (intake-2010#record). Neither reproduces nor contradicts intake-1998#record (no retention-vs-reset ablation) (intake-2010#04).
+- **Algorithmic mode collapse in autoresearch** (intake-2011#00) Surface diversity stays flat (0.66-0.68) while semantic diversity falls; faithfulness ratio is 0.38-0.49 for vanilla autoresearch (intake-2011#01). DAPS mitigation combines category reweighting, a FIFO memory with cosine rejection (tau 0.85) and a revert gate (intake-2011#02). Scope is ML training loops on one A100 only (intake-2011#03).
+- **Elo-per-token analysis** (intake-2023#00) Independent best-of-n gains exactly 400 Elo per tenfold token increase (intake-2023#01). Measured: every system falls below 400/decade at the largest budgets pooled over 14 tasks (intake-2023#02). Splitting helps on one task (Polyomino, +264 joint-Elo over one 100M session) (intake-2023#04); b_inf is task-specific and unpredictable (intake-2023#05). Useful test for when to restart AutoKernel sessions.
+- **stateless-language-agents repo** (intake-2024#00) Preprint-only repo: one commit and one PDF, no code, README or prompts. The preprint specifies stateful search with stateless agents (intake-2024#01); Appendix E reproduces the full Advisor and Worker prompts, the reusable artifact (intake-2024#04). Headline: 67.9M vs 986.3M tokens (93.1% fewer) on the VLIW cycles task with Codex (intake-2024#05).
+- **Mode-collapse metrics implementation** (intake-2025#00) Surface diversity S_t is mean normalized Levenshtein over the last W=20 diffs; semantic diversity uses all-mpnet-base-v2 embeddings clustered with HDBSCAN (intake-2025#01); mechanism entropy uses a 9-category regex parser (intake-2025#02). Faithfulness ratio counts absolute gains so a held-out regression looks like gain (intake-2025#03). Kernel use needs a new taxonomy for _KEYWORD_RULES (intake-2025#record).
+- **EloScaling code release** (intake-2041#00) Ships Harbor watchdog patches, adapters and analysis pipeline but not raw trials. Games formed within a task from per-trial prefix-max scores on a 1.5x geometric grid from 100K to 100M tokens (intake-2041#01), 500-replicate session bootstrap (intake-2041#02). Missing: b_inf and K=round(B/b_inf) code and a license (intake-2041#05).
+
+### Compiled Update — 2026-10-28 (ws58 delta): AK flakes resolved, OAB-31 candidate validated on the focused suite, unified-surface CPU leg passes
+
+- **AK test flakes RESOLVED (2026-10-27):** the two `test_serial_roster.py` authenticated-control failures were fixed by a subprocess `PYTHONPATH` fix (research `1ff090cc`, merged `dc77ce388`); on research `08fe38e7ec99` 29 focused tests passed; ToolRunner fix `21ef67e69` is an ancestor of that baseline. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [progress](../progress/2026-10/2026-10-27-ak-flake-blocker.md)
+- **Gate-verdict subshell defect already repaired:** current C3/C4/C5 fold gate scripts set `GATE_VERDICT=FAIL` in gate-process scope; rc=0 and rc=7 controls pass on all three (does not run the full gates). [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
+- **OAB-31:** the assertion-fix candidate passed the focused suite (418 passed, 48 subtests); growth-guard status and merge are not shown, so it stays open. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)
+- **Unified surface:** CPU source+runtime leg satisfied (r10 `bdb52d951`, SOURCE_AND_RUNTIME_PASS); DRY receipt only 17 of 23 refs reproducible (6 original assets missing). LIVE GPU leg still needs a serving-owner grant. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
+- **Open question:** INF-74 concurrent-target cutover is blocked until root-owned cgroup delegation lands and the owner-bound grant handoff is built. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination)
+- **Recorded finding (not a result):** the 2026-10-27 RTG57 belief wiring was exercised only with synthetic canaries. [progress](../progress/2026-10/2026-10-27-rtg57-vkq-wire.md)
+
+### Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): the first planning-context canaries, with AutoKernel PASS with caveats and AutoPilot PARTIAL/FAIL
+
+**Confidence: inferred.** The contexts were assembled by read-only harnesses that call the loops' own library functions. There was no inference, and every ledger touched was a scratch copy; the canonical ledger was unchanged.
+
+- **AutoKernel Q38FN: PASS with caveats.** The 10-22 query-major replicate null (row 337, −1.10% vs a 1.365% floor) reaches the context through the in-store "Already tried" channel. Four defects:
+  - **D-A1:** a scoped ingest stamps frames after the plan's fixed `as_of`, so the plan that ran the ingest cannot see it.
+  - **D-A2:** the do-not-repeat formation guard is inert for Q38FN. Split-GGUF quant is None, `research_scope` is dropped over 2 MiB, the surfaces mismatch, and the guard needs at least 3 answers, so a one-shot null is never closed mechanically.
+  - **D-A3:** ranked recall drops the current-epoch keep_candidate.
+  - **D-A4:** the default ROOT is the stale shared clone.
+- **AutoPilot: PARTIAL/FAIL.** Insights, conventions and a belief REGRESSED claim are present. Missing or wrong:
+  - the trial-1472 frontier keep appears only as a bare id;
+  - the Pareto summary reports 0 entries, because the epoch fence postdates every trial;
+  - seeding telemetry is 20/20 unit-test pollution (D-B1);
+  - the prompt carries contradictory frontier sizes (D-B2);
+  - the kvq block disagrees with the belief block (D-B4);
+  - the bridge cannot forward a read log (D-B5).
+- All defects are assigned to Codex (LOOP-SAFETY-C-BUNDLE C1–C3, due 10-26). VB-CANARY-GATE-1 turns both harnesses into the committed gate: a loop is not "wired" while its canary fails.
+
+Sources: [loop canary 2026-10-25](../docs/reference/loop-canary-2026-10-25.md) · [canary harness](../docs/reference/loop-canary-2026-10-25-harness/canary_a.py) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-CANARY-GATE, VB-CANARY-GATE-1) · [loop planning-inputs audit](../docs/reference/loop-planning-inputs-audit-2026-10-25.md) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): Codex coordination: two incidents with one remedy set, and the best-of member fence is already fixed
+
+**Confidence: verified** (incident log, committed regression test).
+
+- **INC-20261024-codex-push-onto-experimental-branch.** A Codex worker's `serialized_push --push --fetch` followed an inherited upstream and fast-forwarded `fork/experimental/kpf62-456-20261024` 786a30078 to 0a9fa2c29 (test-only, opt-in `--g1-capture-jsonl` in tests/test-chunk-kv.cpp) instead of pushing a `codex/` branch. Disposition (operator-directed): retained as proposed and unbuilt; all KPF-62 pins stay 786a30078. Remedy: push only to `codex/*` with an explicit refspec, never an inherited upstream.
+- **The 10-24 Codex tally.** 13 distinct jobs registered, no compute authority: passed S-20 cold-vision (16 tests), OAB fences (3), KPF62 adapter R2 (7; R1 failed on a fixture), m26-cli R2 (10), NIB2-102.c (5), omega-root R2 (10); EG2 held (1 skipped where 45 were expected). Coordination remedy: binding `RULES-FROM-WS58.md`, `OPEN-WINDOWS.json`, `DEADLINES-FROM-WS58.json` (each fix tied to the window it unblocks), plus zero-token watchers on its reports, rows and deadlines; no new quarter grants from 16:00Z until the quiet chain ends.
+- **OAB-28 best-of member `ak-check` fence: already fixed.** Research commit 48ed3f77a (2026-09-29) gives a multi-sibling pool one worker-root fence, with `pool.drive` handing member and winner checks that scheduler-visible fence via `AK_CHECK_FENCE`; this supersedes the old handoff's "disjoint fence directories" wording while keeping its safety intent. Commit 9b4ddb6f2 adds a temporary-fence regression (the tail stays blocked until the last member releases, then both members' checks are refused); the granted run passed 3 focused tests in 1.03 s.
+- **Harness defect found by a read-out.** `inf66-r2364-thread-sweep` failed rc 1 with `AFF: unbound variable` (session.sh:175, never assigned); tracked as INF66-AFF-1 for Codex.
+
+Sources: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [codex-ni campaign reconciliation](../progress/2026-10/2026-10-24-codex-ni-campaign-reconciliation.md) · [bestof_member_fences](../progress/2026-10/2026-10-24-bestof_member_fences.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 24, workspace-7b delta): a stale scratch build silently lost a keep, and CH-27 calibrates floors on the champion's store image
+
+**Confidence: verified** for the landed harness commits and the replicate; **inferred (unverified side-agent claim)** for the sparse-attention mechanism, which is filed as a task to verify.
+
+- **Lost keep, root cause.** In the 2026-10-22 focused Q38FN `cpu_fa_schedule` test, the anchor guard aborted on a stale incremental scratch build (`store/anchor-verify-cpu`, configured from an older source tree), so a keep was never recorded. An identical-diff replicate then measured −1.10% decode / −1.34% prefill: a null. Research `b6e80d24e` makes `gates.py` clear a CMake build dir whose cache names another source tree, and makes the in-flight keep evidence travel on `run_aborted`. Lesson: an incremental build dir is pinned to the source tree it was configured from, so reusing it across trees is a correctness hazard, not just a speed one.
+- **Misleading harness logs fixed.** `f131a9f7b` makes `run.py` print "bench floor NOT USED" under a direct serving launch, instead of a false "UNCALIBRATED … keeps refused". Still open: a store-image anchor that IS attested prints "UNATTESTED", and `--dry-run` appends to `floor-registry-lookups.jsonl`.
+- **CH-27: one window calibrates the serving and 64k floors on the current champion's STORE image.** `eb753e422` admits a store-image anchor on an experimental lane, makes `champion_reanchor` name the exact store COR build on a plain advance (`--cor-build`), and seals the 64k floor per anchor under `floors/anchors/<exec16>/`. The prepared bundle must be re-anchored from `141e4bcf5` to champion `dcc853b55` (C3 changes the K-shift in `llama-kv-cache.cpp`). Then register the `ch27-q38fn-floors` row (whole host quiet + GPU idle, 200 GiB, 5700 s) and book it: the 06:37Z slot was skipped because no row existed.
+- **Unverified mechanism claim, filed to verify.** Q38FN's top-2048 sparse attention is said to be done by masking, so FA still walks every KV row. The real fix (select the rows before attention) would live in `qwen4exp.cpp`.
+
+Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (CH-27), [2026-10-24-workspace-7b](../progress/2026-10/2026-10-24-workspace-7b.md)
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): AutoKernel stops counting abstentions as failures, its gate times build and correctness separately, and harness false-failures are fixed
+
+**Confidence: verified** (run records and predeclared rules in the cited sources).
+
+- **Give-up trigger change (operator decision, memo-backed).** `render_context`'s diminishing-returns triggers (`loop/actors.py`) landed as two research commits: (b) the trigger walk follows `recorded_at`, not rank order (`da6d32921`), then (a) `abstained` leaves both trigger sets (`37fe0f50f`); `refused_at_formation` KEEPS counting. Evidence: in replay, 116 of 189 DS41 escape firings counted pre-keep failures and 191 Q38FN stagnation firings were hidden by (b); (a) moves n=1 Q38FN episode, about 1.5 extra attempts per campaign, and 354 of 356 abstentions are reasoned declines. The memo (`/mnt/raid0/llm/tmp/ak-trigger-review-20261024/MEMO.md`) backs it; AK-TRIG-1 verifies on the next campaign: C1 (b) stale-count must be 0; C2/C3 falsify (a) (>= 2 abstention-only episodes with >= 3 measured same-family attempts and no later keep, or a >= 10-call run at >= 80% abstained naming a family); revert (a) alone if C2 or C3 fires, (b) alone only if C1 is non-zero. A yield change at AK-HR-2.2 is not a rollback trigger (confounded with the 10-20 ranked-recall flip). Lesson recorded: trigger changes need data + literature + owner review.
+- **AK-HR-3b: build and correctness are timed separately.** `STAGES` gains `build` and `correctness`; `gates.compiles` records its own wall seconds and `run_all` times the other checks, so `build + correctness <= gate`; observe-only (verdicts and order unchanged). A first cut that edited the GPU branch broke the `HardenedCandidateGates` structural pin and was restored. Hosted codex/claude token counts remain not obtainable.
+- **A procguard false refusal explained.** `TheToolRunnerNeverTreatsAFailureAsOutput` failed 1 in 6 under CPU co-run because an exiting same-uid process (PF_EXITING, mm gone) refuses `/proc/<pid>/environ` with EACCES for a few ms, or its /proc dir vanishes between reads, and both were counted as census errors. 15 s of 4-thread `true` churn produced 14,545 such reads; all were gone at 5 ms and 430 of 430 still present carried PF_EXITING. `Guard._died()` clears an unreadable task only on proof of death (gone, PID recycled, Z/X, or PF_EXITING settled within 0.5 s); a live non-exiting unreadable process still counts, so fail-closed is unchanged.
+- **New dimensions and ranking.** A `threads_batch` runtime arm (`-tb` decoupled from `-t`, normalised so existing recipe hashes and floors are unchanged); a `GGML_FA_SPLIT_KV=0` width-invariance plan; GPU serving profiles now carry tokens and per-kernel `launches_per_token` / `ns_per_token`, ordering the planner's hotspot table and the candidate timing queue (ranking only, no verdict path touched). `-tb 96` needs the whole host, so the draft run is BACKLOG until the CH-27 floors are calibrated on the current champion. AKX-AUTO-6 (auto re-anchor on champion advance) is ticked: a dry-run `plan` names the C3 advance and is actionable; the live exercise waits on workspace-7b's Q38FN relaunch and should take the `dcc853b55` image. AKX-ALL-LB3.2a wrote the attribution instrument (40 tests; critical path = a measurement build).
+- **Harness lessons (this session).** (1) A non-executable re-exec returned rc 126 and `c5-cpu-correctness` recorded it as a verdict; wrappers now treat 3 / 64 / 124-127 / >= 128 as harness errors, never verdicts. (2) A stale-build check grepped the thin `llama-server` launcher, but the option table lives in `libllama-common`; check the library that holds the symbol. (3) The C4 A/B gate now guards on its own noise floor (> 10% / 4% = NOISY, retry). (4) The registry rebuild reads the master registry from research origin/main; a regen on a stale shared clone dropped 10 `ctx_checkpoints: 32` lines and repointed the master, so guard `3c4d6881` refuses a registry blob that differs from origin/main (override `--allow-stale-research-registry` offline only) and the clean regen `e0ba98fe` keeps every `ctx_checkpoints: 32`; never sync the shared clone to make a rebuild work.
+
+Sources: [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), [kernel-freeze-runbook](../docs/reference/kernel-freeze-runbook.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 11): a launcher's class must match the grant shape; C2 b-rerun has no verdict yet
+
+**Confidence: verified** for the run-2 numbers, the refusal record and the re-arm; the C2 verdict is **open** until run 3 (booked 2026-10-23 06:25Z).
+
+- **C2 b-rerun run 2 is INVALID, not a HOLD.** Under the predeclared rule (`c2-regate-20261021/PREDECLARED_b_rerun.md`, both medians at least 45 and per-arm CV at most 6%), the anchor's CV of 6.54% voids the run (anchor 50.46 t/s, candidate 50.63, CV 2.79%, +0.345%, 4/12 pairs slower). An invalid run yields no CAS and no bisect; it is re-run in a fresh quiet slot.
+- **A whole-host quiet slot was lost to a class/grant mismatch.** `--class cpu+gpu` requires an `mi210_0` token in the grant, but a whole-host CPU timing grant is written `regions=0-95`, so the launcher refused it (`.ended rc=2 regions-unusable`) 30 s after the 19:27Z grant. The right form for a CPU timing job that needs the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus 0-95`, which `filler_run8.sh` (run7 plus that allowance) accepts. Rule 22 in the fillers guide: dry-check a new launcher's region parser against the grant line you expect before re-arming.
+
+#### Source References (2026-10-22 wrap-up sweep 11)
+
+- [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md) — rule 22
+- [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — wrap-up 8: run-2 numbers, lost slot, run8 re-arm
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 10): grant admission is gated in code, launcher lock bugs are fixed in new versions, and the first non-trivial 27B width verdict
+
+**Confidence: verified** for the validator wiring, launcher dry-runs, gate unit tests and the named job outcomes; **inferred** for anything that still needs a granted window (AK-PORT-LB1.1, AKX-ALL-LB2.1).
+
+- **A grant now has to carry its reasons (CTC-Q-A/B ticked).** `validate_fillers.py --for-grant` (required `prior=`, `decision=`, `min_effect=`, `substrate=` fields) plus `ram_admit` run through one wrapper, `grant_ok.sh`, which every live grant writer calls; `prior_check.py` greps the belief ledger, run records, research artifacts and AK campaign stores to fill `prior=`. The tick was withheld until a check found two armed night writers that still called only `ram_admit.sh`; they were re-armed through the wrapper and the first in-the-wild refusal (`kpf60-p0-gpu`, missing prior/decision/floor fields) was returned to its owner. Lesson: wire-in is proved per writer, not by the module existing.
+- **Launcher bugs are fixed in a NEW launcher version, never in place.** `filler_run5.sh` (CTC-Q-G/H) closes the lock fds on the poller `sleep`s so an orphaned sleep cannot hold the launcher lock after the poller is killed, exits after one window unless `--repeat`, and never deletes a grant held by a running sibling; the dry-run proved kill-then-immediate-re-arm succeeds where the `filler_run2` control fails. Two follow-on incidents shaped run6/run7: region-lock folds `--cpu-list 184-191` (the MI210 host threads, SMT siblings) into a whole-q3 claim, so the MI210 sat idle 12:24-12:41Z behind a q3 build, and the first fix `--no-fold-siblings` was refused ("maps to no regions"). `filler_run6.sh` makes a GPU-class no-fold run claim `gpu-quiet` only and lets the job taskset itself; `filler_run7.sh` exits 64 for `--class gpu --gpu-quiet exclusive` without `--claim-cpus` or `--no-fold-siblings`. Rules recorded: never grant q3 while a GPU runner holds it, no timing-class CPU work on q3 during GPU windows, no ungranted region-lock claims (a subagent ran a second-ASR job with no grant and was killed by PID).
+- **GPU-grant hardening from an audit of CPU use inside GPU grants.** The speech-d1 docker container was unbounded, so `--cpuset-cpus "${FILLER_CPUS:-184-191}"` was added; V11 GPU items need whole-host grants (cpu 0-95 plus GPU exclusive), never GPU-only; a hsprof1 reader tripped a CPU `llama-bench` guard inside a GPU-only grant; dirty-tree refusal (exit 5/8) was added to two jobs that pin a worktree sha.
+- **Thinking-on voided a third job in one day.** The KPF-64 replay passes, a cme7 run and an hsprof1 reader were each voided or failed by Qwen3.6 thinking-on consuming the budget; the later KPF-64 diagnosis was decode contention across four slots, not thinking, which is why a slow-harness diagnosis must be checked against server logs before a cause is named.
+- **First non-trivial 27B width verdict (AKX-ALL-27/27b).** `akx-all-27b-run` COMPLETE 12:58Z, decision `nontrivial_verdict`, verdict `improved`: two Q8_0 matmul cells' first-fail width moved from k=2 to 5, zero new failing cells, route proven in the keep build only. The A/A serving shakedown (`s5-akrsg-shakedown`) passed with `serving_ab.v1` OK; neither record was ingested to the belief kernel because the writer (VB-AKRSG-WRITE) is on an unmerged research branch, so VB-AKRSG-INGEST was filed and no tuples were invented.
+- **A noise-floor-relative candidate gate exists (AK-PORT-LB1, research `f8df555cf`, 17 tests).** For non-bit-exact multi-row kernels the floor is the incumbent's own batched-vs-single divergence; the candidate must stay within 1.5x of it, with no greedy flip where the incumbent top-2 margin is at least max(0.25, 2x floor); empty, short (under 8 positions), shape-mismatched or non-finite input is `oracle_unavailable`, never a pass; a zero floor demands bit-exactness. It is not yet called from any gate chain (AK-PORT-LB1.1 needs per-position logits at N=1 and N>1 from both builds). A companion static ISA audit (INF37-LB1) found Q8_0 and IQ4_XS weight loads hoisted (3 per row, ncols 1-8) while Q4_K re-issues three scale loads per column (6 to 27 per row at ncols 8).
+- **Codex actor sample (OAB-LB1, sample only).** In the first 3,000 AK threads 0.17% of turns did not complete (0.07% interrupted), with no error events, and exec wall was 2,173 s of 205,649 s turn wall (1.1%; git 1,006 s, rg 525 s). Forked children replay parent history with fresh timestamps, so the miner excludes them and counts replayed turns once; the full run is scheduled, not done.
+
+#### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination) — CTC-Q-A/B/G/H and the wire-in evidence
+- [progress/2026-10/2026-10-22-a4-launcher-sidecars.md](../progress/2026-10/2026-10-22-a4-launcher-sidecars.md) — filler_run5 dry-run proof
+- [progress/2026-10/2026-10-22-gpu-grant-hardening.md](../progress/2026-10/2026-10-22-gpu-grant-hardening.md) — run7 and cpuset fixes
+- [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — q3 fold incidents and grant calendar
+- [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — job outcomes, run5/run6 history
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-PORT-LB1
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-LB1 sample
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — INF37-LB1 ISA audit
+
+### Compiled Update — 2026-10-22 (wrap-up sweep 7): grant-driven fillers, v11 drivers, Locals intake seeds for AutoKernel
+**Confidence: verified** for the built drivers and recorded dry-runs (named artifacts); **inferred** for every seeded or filed AK task (AKX-ALL-LB1..4, CH-LB1, AK-PORT-LB1, OAB-LB1 are unrun).
+
+- **Compute is now queue-and-grant, not hand-launched.** A generic `filler_run.sh` wrapper (classes cpu / gpu / cpu+gpu, `--self-claim`, `.ended` on every path) and `filler_run2.sh` (`--gpu-quiet shared|exclusive|none`, `--precond-cmd`; rc!=0 gives `.ended rc=5 build-missing`) back the FILLERS.md register (18 columns). Dry-run evidence: rc 3 window below min, 4 own port listening, 2 bad regions, 124 hard end, 143 signalled, job rc 75/0 passthrough. Bug found and fixed in dry-run: wrapping the job in `timeout` moved it out of the captured process group, so the hard-end kill missed it.
+- **V11 measurement drivers (V11-052/050/051/086, AKX-ALL-27b) carry sha256-pinned PREDECLARED.md files** checked before any run; decision strings are computed by `decide_*` and mirrored in the text; `--selftest` has 21 synthetic checks. Armed pollers all refuse `rc=5 build-missing` until the arm builds exist. Lesson: a dry run that stubs the region-lock argv proves nothing about the launch path (overnight GPU jobs rc=64).
+- **Claim scoping bug class:** `akx-all-27b-run` failed rc=75 because the inner region claim asked for the whole CPU while the queue row booked GPU + 184-191; the booking and the inner claim must be derived from one source.
+- **AK autonomy tasks built but not landed:** floor registry + `champion_reanchor` (AKX-AUTO-6: detect champion advance, `--new-anchor-epoch` re-anchor on the store build, one recalibration per advance, OFF by default) passed tests on 2026-10-22 yet stay open until re-run in a granted window and merged. The A/B real-server shakedown pieces (`run_paired_serving_ab.py`, `ab_server_pair.py`, `metrics_map.py`) are built (8 tests); v10 does not export KV usage, reported `not_exposed`, never zero.
+- **Locals/Beacon intake (intake-2386#record through intake-2460#record) seeded into AK lanes, nothing measured:** 27B GPU inbox ports (AKX-ALL-LB1), production-shape verify widths N=16/32 and a ragged surface so an N=8-only keep is labelled not-yet-transferable (AKX-ALL-LB2), a CPU long-context attention lane and uncompiled-iqk-FA wiring with correctness-only op tests (AKX-ALL-LB3/4), a BF16-recurrent-state guard (CH-LB1), and a noise-floor-relative tolerance gate for non-bit-exact multi-row kernels (AK-PORT-LB1: divergence <= 1.5x the incumbent's own batched-vs-single divergence). Retained: v10 grammar forced share measured 13% flexible / 15% compact (the 35-40% hand estimate is withdrawn, intake-2415#record); a p99.9 gap is never cited without sample and stall counts (intake-2405#record).
+
+#### Source References (2026-10-22 sweep 7)
+- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions)
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
+- [progress/2026-10/2026-10-21-v11-drivers.md](../progress/2026-10/2026-10-21-v11-drivers.md)
+- [progress/2026-10/2026-10-21-fillers-3c4ca599.md](../progress/2026-10/2026-10-21-fillers-3c4ca599.md)
+
+### Compiled Update — 2026-10-21 (wrap-up sweep 3: AutoKernel lesson-entry schema, observe-only width dimension, harness restoration)
+
+**Confidence: inferred** for design records (no read side is built); **verified** for the code/test counts as recorded. The AKX-ALL-27 replay had not run when these sources were written and is not recorded as a result.
+
+- **AK lesson entries are schema and write-side lint only (AK-PM-18).** No LLM-authored AK lesson library exists; the planner's memory is the deterministic do-not-repeat fold (`controller/do_not_repeat.py:640 @cb6b08fea`). The record extends AK-PM-17: a per-edit verdict in {helped, hurt, no observed effect, confounded} (confounded whenever several components changed and no run isolates one), at most one durable lesson per round with cue, component-naming lesson, evidence ids that resolve to journal rows, and confidence, an explicit NO_ENTRY, and a lint rejecting an empty cue/lesson/evidence or evidence made only of confounded rows. A revision is a new entry with `supersedes`, never an overwrite, with a grounded/leaked/unsupported audit on a 20-entry sample before any enablement. Lessons are observations (no ClaimTuple); admission stays the execution-gated rule of AK-PM-12; nothing is built before the AK-PM-11 ablation returns. Monitor M10: a self-test arm needs the oracle admission rule and one held-out call in its spec, and no such arm exists. ([AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
+- **Width invariance enters keep evaluation as an observe-only record, not a gate.** `width_dimension.py` (research `main` `e46ba5fb2`) produces `epyc.autokernel.width_invariance_dimension.v1` carried under its own key outside `dimensions` (`KEEP_DIMENSIONS` unchanged; no keep/reject change). States: `not_applicable`, `not_measured` (touched but a table is absent, never a pass), or `measured` with a cell-by-cell RELATIVE comparison to the anchor (verdict worse/improved/mixed/unchanged; UNSUPPORTED/ERR/void go to `indeterminate`). A model-level companion carries the DF2-18 recipe fields per width 2/4/5/8, and zero flips with no near-ties is `uninformative`, not a pass. 77 tests passed; not wired into `run.py`, and the replay (parent `gpu-20261004-1bceceb05` vs keep `gpu-20261004-656c9a66b`) needs the GPU. Its predicted unchanged verdict is a prediction. ([AutoKernel all devices, all dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions))
+- **Instruments must prove they can fire, and a null needs the controls.** The HIP guard-band judge reported NO_CATCH only after default-off, negative and positive device-inject controls behaved as designed; the first run's 130 violations were harness false positives (band sized by `ggml_nbytes`, not the backend alloc size). The same pass found two staging bugs, a stale `sys.path` crash and a `strings | grep -q` SIGPIPE false negative under `pipefail`. ([AutoKernel all devices, all dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions))
+- **A harness file that was never committed is a protocol hazard.** `ab_probe.py` was recovered byte-exact from session transcripts and its sha256 matched the recorded `probe_version`, which is what made the 2026-10-04 receipts comparable again. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **Offline analytics can be NOT JUDGEABLE, and that is the correct record.** GPU-ZOS-1 (no decode timers in any :8083 log era) and DSpark T7.1 (drafter graph accumulated 0) were closed as not judgeable rather than estimated. ([GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
+
+**Sources (sweep 3):** [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop); [AutoKernel all devices, all dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md).
+
+### Compiled Update — 2026-10-20 (wrap-up sweep 2): AutoKernel reads its own history, widens its probes, and the champion advances
+
+**Confidence: verified** for the dated measurements, counts and commits named below (each is recorded in the cited handoff or progress note with its evidence path); **inferred** for every reading of what they imply. All kernel work is on experimental branches or the champion branch; the frozen production kernel (v10) is untouched.
+
+#### The closed AK history can answer fewer questions than the restart/surrogate triggers assumed (AK-HR-1/2/3)
+
+- **Census (AK-HR-1, read-only, verified).** Eight closed `experiments.db` stores (3,576 rows) and 2,700 actor-call metrics lines were exported offline, opened immutable after proving every write-ahead log empty; four runs were byte-identical and per-status totals equal each store's row count. Findings: no target has two independent scored campaigns (stores sharing an epoch are one campaign), so there is no between-run spread and the restart trigger (needs five) is far off; a trial id exists on every row but a token-budget axis exists on only 287 of 2,700 lines (opencode only) and no call line carries an attempt key; build seconds are recorded nowhere. The surrogate trigger is met for no target. A planning-stage premise (1,686 token-bearing lines in DS41 files) did not reproduce and was corrected.
+- **Diversity diagnostic (AK-HR-2, closed-partial, box deliberately unticked).** A hand-made 10-class mechanism taxonomy failed its own pre-declared held-out agreement gate (Cohen kappa 0.245 against an independent LLM labeller, bar 0.6), so it was retired rather than tuned and no collapse verdict was computed. The live targets are underpowered under any taxonomy (DS41 two non-overlapping 20-hypothesis windows, Q38FN one, rule needs three). Taxonomy-free results: same-epoch structural repeat-null 0.036 (DS41) and 0.030 (Q38FN) versus 0.151 on the legacy loop-memory; the "refused at formation" count is not a valid lower bound because those refusals are critic refusals. Verdict: **not yet decidable**, so the forgetting/fork-and-flush trigger (collapse seen) is not met.
+- **Rendered-context audit changed a default.** Re-rendering 1,960 of 1,963 planner calls showed that under recency recall the 12-row "already tried" window averages 0.043 measured answers and 81.2% of calls show no measured answer; ranked recall cut that to 1.6% with a shorter section (6,770 vs 8,011 chars). The operator ruled "flip the default now": ranked prior-experiment recall is now the planner default (opt-out flag retained), effective from the next campaign launch. No campaign was live; the follow-up is a comparison of keep yield, repeat-null and abstain rates on the next DS41/Q38FN campaign against the recorded pre-flip history.
+- **Write-side gaps closed (AK-HR-3, nullable fields, no behaviour change).** A trial id joining calls to attempts, per-stage seconds, failure class, trial tokens, a store-side monotone ordinal/cumulative-token counter, a runtime-knob descriptor and a `mechanism_family_bucket` (named to avoid colliding with the planner's free-text field) now ride the experiments payload and a sibling metrics line; the closed self-hashed call schema was not widened. The gate's per-case correctness detail (op, tolerance, observed error) is likewise now a nullable `case_records` list instead of a 2,000-character stdout tail. Only item left: re-run the census on a store written by the next campaign.
+- **Lesson on test debt.** Two research-repo test files had been red before today because the package outgrew hand-maintained declarations (an uncovered-module footprint table, a stale calibration fixture); they were repaired by declaring each module with evidence, not by weakening assertions. A narrow fixed-n exemption for the serving-preparation module is pinned by exact module and symbol, and the global optional-stopping fence is unchanged.
+
+#### Width-invariance probes and the all-devices program (AKX-ALL-26/28/29)
+
+- **AKX-ALL-26 (verified, CPU + gfx90a HIP, closed).** One graph holds a batched op over k columns and k serial single-column ops; bytes are compared at tolerance 0, three repeats, k = 1..9. CPU (iqk route, 24 threads): MUL_MAT Q8_0, IQ2_XXS, IQ2_XS, IQ3_XXS, IQ3_S and F16-KV flash attention first differ at k = 2; Q4_K, Q3_K, Q6_K, IQ4_XS and quantized-KV flash attention pass; `GGML_ROWEXACT_N=9` makes all nine MUL_MAT types pass; gated delta-net passes with state threaded serially. For expert-routed matmul the first failure coincides with the first routing collision (54 of 54 cells over six seeds). HIP: 96 predicted rows scored 66 confirmed, 30 confirmed on verdict with an earlier first-fail k, none falsified; flash attention fails at k = 2 in all 12 cells; Q8_0 and flash attention agree with CPU, while Q4_K and IQ4_XS differ by backend and HIP has no runtime knob for the matmul route. The two halves used independent harnesses, so they are comparable by op, type and k only. This table is the anchor input for the planned observe-only width-invariance keep dimension (AKX-ALL-27).
+- **AKX-ALL-28 (verified, predeclared FAIL).** The stock TileLang wheel does not compile on ROCm 6.2 (it takes the OCP fp8 header path the host lacks). With two local header shims, a plain f16 MFMA GEMM runs on the MI210 at NMSE 4.3e-8 and about 1.4 to 1.6 s of hipcc per config, so TileLang stays a candidate authoring surface only. An IQ2/IQ3 grid-lookup dequant-GEMM is expressible with workarounds but was not shown.
+- **AKX-ALL-29 (documentation, closed).** A 32-row port map of the Magnitude Vulkan backend's mechanisms against gfx90a HIP: 20 already native, 8 port candidates, 4 not portable; three kernel seeds were routed to the research loop and harness items filed as 29.1 to 29.5. Landed so far: host-identity versions in receipts, a no-op-build skip (identical kernel bodies are not timed), poison guard bands as an opt-in `AKX_GUARD_BANDS=1` in `test-backend-ops` on an experimental branch (CPU leg green, injected out-of-extent write caught; a parser bug that missed mid-line receipts, 1 of 512 found, was fixed). The demand-weighted objective (29.2) and type-relative tolerance (29.4) stayed **not decidable**: no GPU candidate has yet reached timing, and the keep gate is a measurement trust-boundary item the operator decides.
+- **A harness defect worth remembering (verified).** The long-context identity oracle rebuilt its template without the recipe environment, so every recipe key went "unknown" and every Q38FN attention candidate since 10-08 was refused as `oracle_unavailable`; the same environment-less flaw sat in the production runtime-anchor resolver. Both were fixed (92 file-scoped tests pass). A refusal reason common to all candidates points at the harness before the candidates.
+
+#### The champion advances: slot-file draft state ("slotdraft")
+
+The standing champion moved from `e33229348` to `dd3d9721c` through the fold ledger: ports of two upstream changes (checkpoints in the slot file; MTP draft state in the slot file). Gates: slot-save server tests 15/15 against 6/15 for the control, and greedy output byte-identical to the prior champion with equal draft counters. After a slot restore the MTP acceptance ratio was 0.98 to 1.02 of live (control 0.53 to 0.85), at the cost of a larger slot file (about +175 MB on a 7,680-token slot). No ggml or `src/` change, so CPU kernels and GPU-resident paths are unchanged; GPU serving validation of the new HIP image is still pending. The EmbeddingGemma 2 model support was rebased onto the new tip without conflicts. Release manifests now track every champion feature per kernel set (v11 llama, speech v2).
+
+#### Two negative or bounded outcomes
+
+- **DF2-19: STOP.** A corpus-table n-gram drafter replayed on DF2-14 transcripts gained at most +0.0% (realistic fitted-overlap gate) over request-local drafting; only an optimistic oracle gate showed headroom (+9.0% for a domain table), so it is re-triggered only if a per-position confidence signal exists on the wire. A calibration-fitted overlap model replaced character alignment; the verdict holds with it removed.
+- **Q38FN CPU thread/depth sweep.** Handed to AutoKernel as a runtime arm: `-t 48 -tb 96` (see [local-inference](local-inference.md)); depth, not thread count, is the cost, so the lever is the attention kernel.
+
+**Open questions:** (1) whether the next campaign's ranked recall lifts keep yield; (2) whether any GPU candidate reaches timing so 29.2 and 29.4 become decidable; (3) AK-HR-3 verification needs a post-change campaign store. See also [benchmark-methodology](benchmark-methodology.md), [agent-architecture](agent-architecture.md).
+
+#### Source References (2026-10-20 sweep 2)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-HR-1/2/3, ranked-recall default, test-debt notes.
+- [All-devices AutoKernel program](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — AKX-ALL-26/28/29 results and routed items.
+- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — slotdraft fold ledger, manifests; the CH-18 pull list moved 2026-11-07 to [v11-promotion-checklist.md](../handoffs/active/v11-promotion-checklist.md).
+- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — per-class replay and speculation parity contract.
+- [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — day record for every lane above.
+- [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — fold execution and lane state.
+- [intake-498](https://arxiv.org/abs/2604.22748) Agentic World Modeling: Foundations, Capabilities, Laws, and Beyond (high relevance, adopt_patterns, credibility 4)
+- [Agentic World Modeling deep-dive](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full L×R taxonomy + EPYC-stack mapping + governance-recipe alignment + four-principle rubric + risk register
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) — L3-Evolver / Digital instance with 2026-04-28 vocabulary adoption
+- [agent-world-env-synthesis.md](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) — L2-Simulator → L3-Evolver bridge / Digital
+- [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md) — third L3-Evolver / Digital instance
+- Critique: arxiv.org/abs/2507.05169 — "Critiques of World Models" (actionability axis underweighted by L×R taxonomy)
+- Competing surveys: arxiv:2503.23037, 2601.12560, 2601.01743 — field is fragmented, Levels × Laws unlikely to become canonical field-wide
+
+
+### Compiled Update — 2026-09-25: context placement is not work reduction; live ordering and state invariants belong in launch preflight
+
+**Confidence: verified** for the two-pair OAB-9 measurements, run-9 refusal, calibration order, same-anchor
+floor reuse and actor-call stop record. The A/B has two limits: `n=2`, and inline always ran first.
+
+- **Putting context in files halved first-step context and still increased the work.** On the Qwen3.8-27B
+  plain seat with one 196,608-token server generation, inline took 37.6/28.7 minutes, 23/24 steps and
+  25/26 tool calls; the file-backed arm took 54.4/33.6 minutes, 49/29 steps and 54/35 tool calls. First-step
+  context fell from 40.6k to 19.1k tokens, but peak context rose from 104k/92k to 163k/118k. Both arms had
+  zero compactions and every reply was schema-valid.
+- **Placement alone does not reduce retrieval.** The file arm read all six file-only sections, then explored
+  more source. A useful RLM-style interface therefore needs a reader that pulls precisely or a scaffold that
+  performs the pull: exact section/byte accounting, pull caps, and orchestrator-selected scouts. A smaller
+  context slot, a different model, or explicit pull caps are the recorded retest triggers; the measured
+  magnitudes should not be generalized past this seat.
+- **Plan a serial campaign around its actual phase order.** After an anchor change the observed order was
+  half-screen floor calibration, batch-0 proposal plus half-screen measurement, then batch-1 full-target
+  calibration. The last phase takes every CPU region lock for roughly four hours, so an evening launch can
+  move its production impact into the next morning. Floors persist per anchor, and the same-anchor run-9b
+  relaunch reused the half-screen floor and went directly to the planner.
+- **A dry run must check the state invariant that can refuse the real launch.** Run 9's dry run returned zero,
+  then the real runner refused because the store's champion of record named the old anchor. The accepted
+  recovery archived the old store, started a fresh store while carrying `inbox/`, and retained the refused
+  state directory. The durable fix is a preflight comparison of store COR and requested anchor.
+- **An interrupted actor call is evidence.** TERM during a live planner call ended `run.py`, `serial_run`, and
+  opencode, released the CPU locks, and wrote an `actor_call.v1` record with rc −15. Calibration has a separate
+  child lifecycle and therefore still needs its own stop test.
+
+#### Source References (2026-09-25)
+
+- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
+  OAB-7, OAB-9, OAB-12, and *Techniques learned in the opencode seat*.
+- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C24,
+  DS41-C25, DS41-C27, and DS41-C28.
+- [`agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md) — *Launching and stopping a
+  DS41-style serial run* and *Context as files, per-call metrics, tool-output caching*.
+- [`2026-09-25-main-ak-seat.md`](../progress/2026-09/2026-09-25-main-ak-seat.md) — run 9, OAB-9, and run-9b
+  measurement record.
+
+### Compiled Update — 2026-09-24 (late evening): the reduced-scope planner build — context as files, per-call metrics, and a cache that doubts its own premise
+
+**Confidence: verified** for the token counts (`llama-tokenize`, Qwen3.8-27B vocab), the metrics-exporter
+reproduction and the cache timing; **inferred** for the OAB-9 predictions. Three research lanes off research
+`origin/main` `170c763c` (`lane/ak-ctxvar-20260924` `ce5800cb`, `lane/ak-turns-20260924` `0bf2d7c2`,
+`lane/ak-perfcache-20260924` `f4a5d240`) were built while run 9 calibrated. All are pushed and unmerged, and
+**none has been A/B'd**, so nothing here is a seat or campaign result. The operator called these lessons
+"immensely important" for the orchestrator wiring (INF-78).
+
+- **Context as files is the only "variable" the plain seat can use.** The plain seat runs bare
+  `opencode run --auto` with no MCP server, so it has only native `read`/`grep`/`glob`/`bash`. It can read
+  outside `--dir` only because `--auto` approves opencode's `external_directory: ask` default. The critic runs
+  without `--auto`, so it stays inline. `--actor-context-mode variable` writes the rendered bundle beside the lane
+  (sections, JSON blocks, a sized `INDEX.md`, and a manifest bound to the prompt sha). The prompt then carries
+  only the index plus an inline set **chosen from evidence**: the scope directives, the profile/hotspot section
+  that run 7's one complete hypothesis copied its `target_symbol` from, the this-turn blocks, and a target card.
+  The split is lossless (the sections concatenate back byte for byte). Inline mode reproduces run 8's prompt sha.
+- **The measured cut is 79–83%.** The run-8 planner prompt drops from 26,293 to 5,510 tokens, and run 7's
+  pre-diet prompt from 32,917 to 5,629.
+- **Tokenize; never estimate.** chars/3.5 undercounts this prompt by ~30%. The target JSON runs at 2.46
+  chars/token because of its hex digests, and it is 37% of prompt tokens while being nearly useless to the planner.
+- **~13.2k tokens of every call are fixed**: opencode's system prompt, its tool schemas, and the lane's
+  `AGENTS.md`. `AGENTS.md` alone is ~2.5–3k tokens of llama.cpp contributor guidance, and trimming it for the
+  planner is OAB-10. Orchestrator rule: never inherit a repo's agent file into a planner context.
+- **Files outlive compaction.** The planner re-read `INDEX.md` after compacting, which is the property the
+  design depends on. Predictions for OAB-9, not results: first-step context 39.5k → ~18.7k, peak 93.5k → ~79k,
+  0 compactions instead of 1, and a modest wall gain. The conversation still only grows.
+- **A per-call metrics row reproduced the seat A/B exactly.** `actor_call_metrics.v1` is a sibling schema
+  written just before the closed, self-hashed `actor_call.v1` line, and the two join on role, backend and call
+  window. From the real `opencode export` it gives 23 steps, 25 tool calls `{bash 11, glob 1, read 13}`,
+  1 compaction and 57,702 decoded tokens. So **the plain seat never called the MCP perf tools**.
+- **What the export does and does not show.** It gives per-step `{input, output, reasoning, cache.read,
+  cache.write}` and part types. It does not give per-tool latency, per-step wall time, or the step a compaction
+  hit. "Decoded" = `tokens.output` summed over steps, reasoning included, and S4-T1 must define the same quantity
+  for the two harnesses to be comparable. Scouts show up only as sessions new since the call began, because
+  `opencode session list` has no parent/child. After the metrics lane merges, the first line per call is no
+  longer `actor_call.v1`, so the DS41-C24 check reads the first `actor_call.v1` line.
+- **The perf-output cache doubts its own premise.** It is keyed on the exact argv, the profile's identity
+  (realpath, size, `mtime_ns`, first/last-1 MiB hash) and a memoized `perf --version`. It is stored beside, never
+  inside, the integrity-checked `cpu-raw`. On run 7's 25.7 MB profile, `perf report` drops from 1.283 s to
+  0.0012 s, and the hit is byte-identical. At ~1.3 s per call, perf time **cannot explain the bounded seat's
+  ~12-minute loss** in the C20c A/B (`annotate` is still unmeasured). DS41-C20d2 re-runs the bounded arm with
+  the cache and the metrics rows. Per-tool latency is inferred from step timestamps, or reported as unknown,
+  never as zero.
+- **Three planner defects found while building.** Each is filed with a fix task.
+  - `render_context` never printed `node_profile`, although a directive says to read it (DS41-C20e). It is being
+    fixed in both arms, so the A/B stays fair.
+  - The plain planner read the anchor build tree instead of its lane (DS41-C20f).
+  - It compiled `.o` files into `/tmp` despite "never build" (DS41-C20g), which is a competing-work hazard during
+    a measured window. OAB-11 fixes both.
+- **Other findings from the build.** Research `origin/main` has pre-existing test failures: the `oracle()`
+  stand-ins lack `require_reference` after `37d326ac`, and a `test_shared_history` WAL `-shm` mtime check fails.
+  They are being fixed on the integration lane. Separately, the PII pre-commit hook redacted 7 perf sample-period
+  cells in a fixture (TOC-RD-1b).
+- **Operator-confirmed next sequence.** At run 9's calibration boundary, stop run 9 (floors persist per
+  anchor), then merge `lane/ak-planner-integ-20260924` (DS41-C20h). Run the OAB-9 ctx A/B with 3 alternating
+  ABAB pairs, or 2 if short. Relaunch run 9 with the winning arm. The orchestrator can also count and byte-cap
+  what a planner pulls from the bundle, which opencode cannot (OAB-12).
+
+#### Source References (2026-09-24, late evening)
+
+- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
+  §Techniques learned in the opencode seat; OAB-7s, OAB-4m, R4c, OAB-9–OAB-12; §Baseline perf-tool attribution
+  marked doubted.
+- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C20d
+  (C20d1/C20d2), C20e–C20h, the C24 acceptance-wording note.
+- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Reduced-scope planner build
+  (evening)*.
+- [`agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md) — *Context as files, per-call
+  metrics, tool-output caching* (the how-to form); [`repl-turn-efficiency.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
+  S4-T1 (comparability target).
+
+### Compiled Update — 2026-09-24 (wrap-up #4): DS41 run 9 is ready on anchor `5a60152ae`; both floors recalibrate off-hours
+
+**Confidence: verified** for the build identity and input resolution (binary `--version`, `sha256sum`, the
+resolved campaign files).
+
+- The run-9 order (DS41-C25) completed its prerequisites the same evening: the champion fast-forwarded to
+  `2b57340bf` (SW-9 probs fix), the DS41 port was **merged** onto it (not rebased) as anchor `5a60152ae` on
+  `experimental/deepseek41-port-20260924`, and `build-cpu` reports `version: 10313 (5a60152ae)`, sha256
+  `763e1474…f8f7`, ggml linkage PASS.
+- Campaign inputs were re-resolved (request r4) to `TARGET_ID ds41-5a60152ae-cpu-t48-dspark-b2`,
+  `verified_resolution`, 0 errors; run-8 inputs backed up to `inputs/bak-20260924-run8/`; dry run rc=0.
+- **A changed anchor invalidates both cached floors.** Recalibration is ~8.5 h holding every CPU region lock,
+  which blocks :8070 and overlaps the CPU speech cores, so the operator scheduled run 9 **off-hours** (launched
+  by main-ak-seat after the wrap-up, `state-run9`).
+- The planner seat's 98,304-token ceiling that emptied run 8's first reply is gone: :8083 now gives each request
+  up to 196,608 tokens of a unified pool.
+- C10a and C24 prep is done (shared research clone at `6afc7eed` ≥ `34373dd8`; `/workspace` carries the seat
+  capture contract; the lane worktree is removed); both close on the run-9 launch line.
+
+#### Source References (2026-09-24, wrap-up #4)
+
+- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — C10a, C24, C25.1–C25.6.
+- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — 19:55Z posture.
+- [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *DS41 run-9 prep*.
+
+### Compiled Update — 2026-09-24 (evening): DS41 run 8 stopped for the stack window; the run-9 order; calibration ignores a drain
+
+**Confidence: verified.** Sources: the run-8 stop record, the one actor-call line run 8 wrote, and the DS41 / RTG-57 /
+INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here is a campaign result.
+
+#### Key findings
+
+- **Run 8's first planner reply was lost to a 98,304-token ceiling, and nothing was fabricated.** Batch 0's planner
+  call ran 13:12:03→13:32:39Z (`wall_s` 1235.7, rc 0) and returned 0 bytes of stdout. The 27B hit `finish=length` at
+  `:8083`'s per-slot limit. The DS41-C20 fix refused the empty reply safely instead of repairing it into an invented
+  proposal. The registry said `:8083` serves a unified 196,608-token pool, so the cap should not have existed.
+  Production was never unified:
+  - the frozen v10 server turns on `kv_unified` only when `-np` is absent (`tools/server/server.cpp:145-150`);
+  - the orchestrator always passes `-np`;
+  - so `:8083` (`-np 2 -c 196608`) gives each request 98,304 tokens.
+
+  This is the failure the `-kvu` package removes. The KV-side diagnosis lives in [kv-cache](kv-cache.md) and RTG-57.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10 run-8 STOPPED note;
+  [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
+- **The actor-seat call record captured the lost reply faithfully, which closes VB-AK-SEAT-b1v.** Run 8 wrote exactly
+  one line, at `state-run8/targets/71f54ec4…/workers/actor-replies/actor-calls.jsonl`. It is a planner call, schema
+  `epyc.autokernel.actor_call.v1`, rc 0, `wall_s` 1235.7, stdout 0 bytes. Running
+  `cli.py ingest ak-actor-seat --as-of 2026-09-24T18:00:00Z --dry-run` gives matched=1, projected=1, declined=0 and
+  **refused=0**. So the producer is proven on a real campaign call.
+  - What the record cannot say yet is which server build and model answered. `server.build_info` and
+    `server.served_model` are both `null`.
+  - VB-AK-SEAT-b1w fills them from `/props`, read once per actor process. It also adds per-slot `n_ctx` (98,304
+    split vs 196,608 unified on `:8083`), because that value decides whether a reply could have been truncated.
+
+  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT-b1v, VB-AK-SEAT-b1w)
+- **Why the operator stopped it (~15:32Z): the region locks, held through calibration, starved production.** `run.py`
+  held **every CPU region lock** through the full-target floor calibration, and that timed out the production
+  frontdoor's `/chat` on `:8070`. Batch 1 was ~2 h into the first full-target calibration: 48 `matched_process_v2`
+  launches, each reloading the 519 GB model. That partial was discarded. The half-screen floor stays cached
+  (`state-run8/STOPPED.txt`). No separate task was filed for the lock-holding itself, because OP-41 owns admission
+  control; DS41-C25 carries it as a scheduling constraint.
+  ([2026-09-24 main-ak-seat progress](../progress/2026-09/2026-09-24-main-ak-seat.md) §"Run 8 stopped")
+- **TERM during calibration only drains (DS41-C26).** DS41-C22 made a stop TERM the in-flight actor's process group,
+  but it covers actor calls only.
+  - What happened during calibration: TERM to `serial_run` and `run.py` drained, and calibration then started its
+    next `matched_process_v2` launch (llama-server 3961920).
+  - Ending the run took KILL on `run.py` (3508990), `serial_run` (3359620) and that calibration server. All three
+    were verified dead, and the region locks were free afterwards.
+  - The fix: calibration consults `should_stop()` before each launch. On a stop it TERMs its own captured
+    llama-server pid (never a name pattern), and it discards the partial floor without caching it.
+  - The test: a fake launcher with a stop requested mid-series must launch nothing further, reap its child and exit.
+
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C26)
+- **Run 9 has an ordered list of prerequisites (DS41-C25), because floors are bound to the anchor.** Any anchor
+  advance must land before run 9's first full-target calibration, which costs ~4 h per scope.
+  1. OP-52 CPU window for the SW-9 spec-accept-probs fix: `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf`,
+     which is the champion `ak/champion/llama-cpp-ffc1bac82eec` @ `8df1b5cf2` + 1. It needs build, tests, the MTP
+     n_probs check and a speed A/B. The operator gave the ADMIT, and its preconditions are met: C1 STT/TTS finished
+     17:10Z, and the operator skipped the Flash-Next matrix at 17:25Z.
+  2. Fast-forward the champion to the fix (the TD-21 session's step, SW-9).
+  3. Rebase the DS41 port onto the new tip. The anchor `ebb68dc55` is a clean descendant of `8df1b5cf2` (+6), so the
+     rebase is expected to be mechanical. This step is main-ak-seat's.
+  4. Rebuild the anchor. Its first full-target calibration (~4 h) is owed.
+  5. DS41-C10a (shared research clone fast-forward, below) and DS41-C24 (`EPYC_ROOT_REPO` off the lane worktree).
+  6. `-kvu` live on `:8083` and `cache_ram` sized (RTG-57 KVU-1/KVU-2, operator OP-54/OP-55), so the planner gets a
+     196,608-token slot.
+
+  Acceptance: run 9's launch line names the rebuilt anchor, a research commit ≥ `34373dd8`, no lane path and a
+  `-kvu` `:8083`, and its first planner reply is not truncated at 98,304 tokens. The calibration window must be
+  agreed with the operator, because it blocks the production frontdoor for hours.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C25;
+  [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) SW-9)
+- **The shared research clone cannot fast-forward past its own untracked copies (DS41-C10a blocker).** Research main
+  now tracks `artifacts/np_context_kvu_study_20260924/{driver,q38_27b_q8,q38_27b_q8_h,q38_27b_q8_depth}/` and
+  `artifacts/speech_cpu_realtime_20260924/`, and the shared clone still holds untracked copies of the same files.
+  **`git merge --ff-only` refuses to overwrite untracked files, even identical ones (checked).**
+  - The kvu copies are checksum-identical to research `21cf444c`.
+  - The speech copies are not. An `smtC` follow-up run kept writing there after the 17:14Z snapshot, so that delta
+    is committed first (RTG-57 KVU-11a).
+  - Then: `sha256sum -c SHA256SUMS` each copy against the committed checksums, remove only the copies that match,
+    and fast-forward.
+  - The 35B `q36_35b_a3b_q8_h/` directory is not tracked yet and must be left alone.
+
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10a;
+  [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) KVU-11a)
+- **Every OAB-4 arm must pin and record `:8083`'s KV mode (OAB-4a).** Unified and split KV give different outputs at
+  the same seed, because float summation order changes. Once `-kvu` lands, the per-request ceiling also moves from
+  98,304 to 196,608 tokens.
+  - An arm pair that straddles the `:8083` reload compares two servers, not two backends.
+  - For each arm, record `kv_unified` from the launch log and `n_ctx` from `/props`, and run both arms of a pair on
+    the same server generation.
+  - OAB-7's "~38k of the 98k slot" is the split-KV ceiling.
+
+  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) OAB-4a)
+- **Generalisable shape:** the empty reply became a diagnosis rather than a fabricated proposal because of two
+  pieces landed earlier the same day. The C20 refusal kept the loop from inventing content, and the call record kept
+  the evidence (rc 0, 1235.7 s, 0 bytes) that pointed at the slot ceiling instead of at the model.
+
+#### Source References (2026-09-24 evening)
+
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10 (run 8 STOPPED
+  note), DS41-C10a (blocker note), DS41-C25, DS41-C26.
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-1, KVU-11a.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AK-SEAT-b1v
+  (proven), VB-AK-SEAT-b1w.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): OAB-4a.
+- [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"Stack-configuration window".
+
+### Compiled Update — 2026-09-24 (operator wrap-up compile #2): the seat A/B resolved — plain wins on wall, bounded loses on tool time, and nobody delegates
+
+This resolves the PENDING verdict in the section below. One pair on the 27B (`:8083`), same run-7 proposal
+prompt, driver `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`:
+
+| Arm | Wall | Steps | Decoded | Compactions | Reply |
+|---|---|---|---|---|---|
+| plain, pre-fix (run 7) | 40.3 min | 71 | 63.8k | 2 | valid, discarded by the seat defects |
+| **plain, fixed prompt** | **31.9 min** | 23 | 57.7k | 1 | schema-valid |
+| bounded v1 (agent prompt replaced the system prompt) | stopped at ~35 min | 12 | 47.3k | 1 | template echo, no hypothesis |
+| bounded v2 (`instructions` file) | 44.3 min | 34 | 60.2k | 1 | schema-valid, better grounded |
+
+- **The prompt fixes alone took the plain seat from 40.3 to 31.9 min.** Those fixes are the un-escaped stdin
+  prompt and the dieted context. Decode dominates the wall (~58k tokens at ~30 tok/s).
+- **Bounded v2 lost on tool time, not deliberation.** *(Doubted 2026-09-24, late evening: a cache measures
+  `perf report` at 1.3 s per uncached call, too little to explain a ~12-minute loss. The deficit is unattributed
+  until DS41-C20d2 re-runs the arm; see the late-evening section above.)* Its perf-backed tools re-ran `perf report` over the 25 MB
+  profile on every call; one 266 s step decoded only 611 tokens (22.6 vs 30.1 tok/s effective). Its proposal
+  was the better grounded one: it cited `symbol_annotate`'s hottest instructions. So the fix is to cache
+  (DS41-C20d), not to drop the tools. The operator chose to merge with `--actor-seat plain` as default:
+  research main `21ca61b0` = seat `e9495971` + follow-ups `1c7d0a2d` + the default flip. n = 1 per arm, so
+  this is a direction, not a magnitude.
+- **Offered subagents, the 27B never delegated.** The `task` tool was offered and allowed, with fan-out
+  guidance, and there were 0 scout calls in 69 bounded steps. Operator ruling: fan-out is the orchestrator's
+  decision, not the model's or the harness's (INF-78 OAB-8).
+- **Every arm compacted exactly once, whatever the tool-output cap.** opencode's conversation is append-only,
+  so capping tool output only delays the overflow. The structural answer is to hold the context bundle as a
+  REPL variable that the model inspects instead of reading it inline — the RLM pattern (INF-78 OAB-7). That
+  supersedes levers (a)/(b)/(c) of DS41-C18.
+- **The follow-ups landed with the merge.**
+  - DS41-C22: a stop now TERMs the in-flight actor's process group and is never retried. A signal death
+    without a stop is still retried, deliberately.
+  - DS41-C23: `symbol_annotate` resolves short names. Its one smoke found perf 6.17's trailing IPC columns in
+    `--sort symbol` rows.
+  - VB-AK-SEAT: every actor call writes an `actor_call.v1` record built by ROOT's own contract writer, and the
+    strict reader caps every tuple at observation. The arm record (b2) waits for OAB-4's driver revision.
+- **Run 8 launched at 13:06:55Z** from the merged tree (plain seat). Its floor of 5.097 came from the cache, so
+  there was no recalibration. It reads the call-record contract from a lane worktree via `EPYC_ROOT_REPO`,
+  because the shared clone's working tree is stale. Releasing that pin before run 9 is DS41-C24, and proving
+  the producer on run 8's first real call is VB-AK-SEAT-b1v.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C20/C20c/C20d/C22–C24;
+  [autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) §Baseline, OAB-7, OAB-8;
+  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT;
+  [completed DS41 §C ledger](../handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md))
+- **The standing homes for these lessons are now repo docs, readable by every agent.**
+  - The `opencode run` headless pitfalls (stdin, pipe truncation, agent `prompt` replacing the system prompt,
+    compaction echo, rc=1 with a complete reply, `hidden`, the unused `task` tool) are in
+    [opencode-p03-audit → Addendum 2026-09-24](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md).
+  - Serial-run launch and stop semantics, and the operator ruling that fan-out and REPL-held context belong to
+    the orchestrator, are in [agent-loop-design](../docs/guides/agent-workflows/agent-loop-design.md).
+  - TD-21.29/30 (research `34373dd8`) are on main but not in run 8. The shared research clone is fast-forwarded
+    only between runs (DS41-C10a), because a mid-run fast-forward mixes code versions across batches.
+
+### Compiled Update — 2026-09-24 (operator wrap-up compile): the actor seat is where the planner's hours go, and the model's own deliberation fills its context
+
+- **Run 7 lost a finished proposal to the seat, not to the model.** The first 27B planner proposal
+  (`akm-q4k-q82x4-weight-prefetch`, a Q4_K weight prefetch in `mul_mat_qX_K_q8_2_X4_T<DequantizerQ4K_AVX2,1>`)
+  landed in ~39 min. opencode then exited rc=1 after an error it had recovered from in its own bash tool, and
+  `_run_agent` discarded every rc≠0 reply unread and retried from zero. The retry returned empty stdout, and the
+  schema repair turned that empty report into a fabricated `src/verify/replay.ts :: replay`. The critic's rejection
+  was correct and took 30 s. Fixes, on research lane `e9495971` (not on `main` until the A/B verdict): salvage a
+  reply only when it is schema-complete AND rc > 0 (a signal death stays a transient); never repair a report under
+  20 chars; refuse a repaired path/symbol that the report never names. The general rule: **a repair step that can
+  run on empty input is a generator, not a repair.** The same grounding rule is filed for the orchestrator's shared
+  helper as TD-21.33.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10/C20;
+  [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.33)
+- **Three transport defects between the loop and opencode, each silent:**
+  - opencode 1.18 re-quotes any positional argument that contains a space, so the run-7 prompt reached the model
+    with 2,982 backslash-escaped quotes. A ~100 KB prompt also sat near the 128 KiB per-argument limit. Fix: the
+    prompt goes on stdin.
+  - opencode/Bun exits without draining a pipe. The same export read 65,536 or 98,304 bytes through a pipe and
+    328,871 through a file, and the reply JSON is at the tail. Fix: capture to files.
+  - opencode's compaction summary quotes the prompt's `{"abstain":"<reason>"}` template, and a driver recorded that
+    quoted template as the hypothesis. Fix: refuse template echoes.
+
+  Each of these looks like a model failure (empty, truncated or abstaining reply) and is not one.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C20;
+  [harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration) HS-4 P7)
+- **Capping tool output did not stop the context overflow. The model's deliberation did the overflowing.** The
+  plain-seat reference for one proposal: 71 steps, 70 tool calls, 63.8k decoded tokens, 40.3 min, 2 compactions,
+  275k chars of tool output. The first bounded arm (output-capped MCP tools, 12 KB `tool_output` cap, step cap,
+  and an agent `prompt` that REPLACED opencode's default system prompt) was stopped at ~35 min after only 12 steps.
+  Its median was 1,626 decoded tokens per step against 266 for the plain seat, it filled the 97.7k slot at step 12
+  and compacted, and it produced only 42k chars of tool output. The caps worked; the replaced system prompt made
+  each step ~6x longer. Config v2 moves the guidance into an opencode `instructions` file. The A/B verdict (plain
+  on the new prompt vs bounded v2) is PENDING. Until it lands, "cap the tool output" is not a demonstrated remedy
+  for the slot overflow (DS41-C18).
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C18/C20;
+  [progress 2026-09-24 main-ak-seat](../progress/2026-09/2026-09-24-main-ak-seat.md))
+- **"has no samples!" from `perf annotate` was a filter miss. The profile had 114K samples.** The planner passed
+  the short template name to `--symbol`. perf matches that option against the full demangled signature
+  (`void (anonymous namespace)::mul_mat_qX_K_q8_2_X4_T<(anonymous namespace)::DequantizerQ4K_AVX2, 1>(int, ...)`),
+  and it reports a filter that matched nothing as an empty profile. The same session's `perf report` showed the
+  symbol at 19.28%. Lesson: a tool's "nothing here" message is only evidence of absence once its filter is known
+  to have matched. The bounded seat's `symbol_annotate` must resolve short names first (DS41-C23).
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C23)
+- **SIGTERM to the loop is a drain, and the drain cannot see an actor call.** Forming lanes abandon at their next
+  stage boundary. But a planner call IS the stage, and the retry inside the call never checks `should_stop()`, so
+  a TERM'd actor (rc −15) was relaunched as a transient. Halting run 7 took TERM on the actor plus KILL on
+  `run.py` and `serial_run`. Filed as DS41-C22: TERM a forming lane's in-flight actor on stop, and never retry it.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C22)
+- **Direction (operator): the loop should call the orchestrator, not individual models.** INF-78 records the
+  requirements a backend must meet:
+  - an agentic tool loop in a per-call worktree root;
+  - no trailing async work after the reply, because the next step is a measurement window, and the check is a
+    witness (60 s of flat CPU time), not a promise;
+  - one schema-conforming object from a 35–75k-char prompt;
+  - bounded tool output;
+  - a `Backend` kind that is a thin CLI, so `_run_agent` stays unchanged.
+
+  The bounded seat is the reference that backend must beat on the same driver. The operator dropped the idea of
+  splitting heavy planning from fast authoring; it is not filed.
+  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend);
+  [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) S4-T1 — `RoleResult.turns` was never
+  copied, so every seeding record carries `turns=0`)
+- **Belief-kernel wiring filed on the write side** (VB-AK-SEAT): per-call `actor-calls.jsonl` and the A/B's
+  `result-<arm>.json` are measurements. Today they are n = 1 per arm, and the arms differ by prompt as well as by
+  seat, so they are observations and not a measured seat effect.
+  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT)
+
+### Compiled Update — 2026-09-24 (wrap-up compile): the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase, and the seat moved onto the GPU
+
+**Confidence: verified** for the run outcomes, timings, commits and the operator ruling — all observed
+in-session on this host. The campaign has produced **one accepted proposal and no completed A/B yet**, so
+nothing here is a kernel result; the findings are about the *loop's* economics, not about the kernel.
+
+#### Key findings
+
+- **All three in-tree profilers are now wired into the loop** (operator: "give autokernel access to ALL the
+  profiling tools"). llama.cpp `ebb68dc55` adds Engram gather / per-layer counters, compile-gated on
+  `GGML_CPU_PROF` with `LLAMA_ENGRAM_PROF_JSON_FILE` — and the measured `build-cpu` carries **zero**
+  instrumentation strings, which is the structural check this project requires before reasoning from a
+  binary. Research `c6a46674` + `e59c87ea`: `reprofile()` builds a `-DGGML_CPU_PROF=ON` *sibling* of the
+  anchor and launches it **only inside the profile window**, parses the three dumps into a `node_profile`
+  in the planner context (per-op shares, host phases, Engram fault mix), caches it by the perf capture's
+  key, and **never lets it into a ranked A/B** — so the instrumented build can never contaminate a
+  comparison. Teardown waits 180 s so a `--no-mmap` server's atexit dumps survive. Proven on run 3's anchor:
+  all three dumps `observed`. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C12 (profilers))
+- **The planner's wall time is not the model thinking — it is two different bottlenecks in sequence.**
+  Decomposed from opencode part timestamps: tool execution is **0–5% of wall**; *proposing* is
+  **prefill-bound** (124 k tokens of tool output at 92 t/s ≈ 22 min of a 41 min call); *authoring* is
+  **decode-bound** (91 k generated tokens). This is the finding that makes the seat a hardware question
+  rather than a prompt question, and it is why a single "planner is slow" number was useless.
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"Planner cost decomposition")
+- **Four nights of runs, and what each one cost.** Run 3 (19:28, CPU flash-next planner): serving floor
+  5.097 after 48 A/A launches at ~5.2 min each; two planner calls killed at the 30-min actor timeout.
+  Run 4 (01:26, `--actor-timeout-s 7200`): a complete proposal after **91 min** was retried **from zero**
+  because the loop could not see the actor's stdout. Run 5 (03:45, replies persisted): proposal #1 at
+  97 min rejected by the critic in 41 s (non-invariant hoist); proposal #2 at 41 min **accepted** in 2 min
+  (`akm-q4k-q82x4-zmm-scale-apply`); authoring #1 killed at the 2 h budget after 91 k output tokens.
+  Run 6 (08:52) moved the planner to the GPU. For scale, prior campaigns on external planners ran 313
+  attempts in 9 days, median 8.5 min per *whole attempt*.
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"What the night measured")
+- **Operator ruling: the planner seat is the production Qwen3.8-27B Q8_0 on the MI210** (`:8083`, idle
+  stack), replacing the local flash-next planner entirely. Measured basis 86 t/s decode / 302 t/s prefill
+  versus 50 / 92 for flash-next; opencode tool-calling proven in 14 s. Run 6 launched 08:52 (request r3),
+  run 7 relaunched 09:10 on research `ad2b89ff` so the schema-constrained repair is active in the loop —
+  same store, floor and profiles cached. Two incidental facts worth carrying: `--variant` is a **no-op**
+  on a plain OpenAI-compatible provider (no `variants` in `opencode.jsonc`), and thinking was already off.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
+- **Stopping a loop must also kill its actor child.** An orphaned actor from the run-3 stop shared the
+  single-slot planner server with run 4 for **40 min**, i.e. a dead run silently taxed a live one. Related
+  fixes landed the same night: `ef287ba9` (`--actor-timeout-s`), `704ef037` (raw reply persistence +
+  stderr fallback — the fix for run 4's blind retry), `3471fe3c` (partial output kept on timeout),
+  `stage_timeout_s` 900→2700 (a perf profile had been refused at the 900 s cap).
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md), DS41-C17)
+- **The v10 folded-lineage defect would have fired on this campaign's first recorded CPU candidate.** At
+  v10 `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, so `build_candidate_record`'s old rule "instrument parents
+  == (production,)" was unsatisfiable and the first candidate to reach recording (`campaign.py:5011`) would
+  have raised `ValueError("instrument commit is not the ratified single-child of the production base")`.
+  The shared `worktree.instrument_lineage_ok` now accepts the folded identity while still requiring descent
+  from production (`ebb68dc55` descends from v10 `ffc1bac82`, verified). Nothing had hit it yet — run 3 was
+  still in batch 0 — and the running batch process keeps its already-imported modules, so the next batch
+  process picks the fix up with **no mid-process version mixing**.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C12 (lineage))
+- **A GPU planner brings its own context ceiling.** At 09:42 the 27B planner overflowed its 98 k per-slot
+  context twice (`:8083` runs `-c 196608 -np 2`) and opencode compacted the session to continue — filed as
+  DS41-C18, with `-np 1` on `:8083` named as the cheap lever and left to the stack owner.
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md))
+
+#### Open questions
+
+- DS41-C10 — run 7 (27B planner, schema repair active) has not yet reached a measured iteration. The thing
+  to report is the planner→critic→author→build→A/B timing chain against the CPU planner's 41–97 min.
+- DS41-C14 — `--node-profile` is still **opt-in** (default OFF) because run.py's hermetic fixtures would
+  gain a real build and a second launch. Until the fixtures opt out explicitly and the default flips, a
+  campaign can still launch without the instrument.
+- DS41-C15 — `node_profile` semantics under speculation are unresolved: `llama-host-prof` counts one
+  batched verify call as `n_eval=1`, so `decode_us_per_token` is per graph eval, not per token, when DSpark
+  is on. Carried as a limitation string; needs a no-drafter cross-check to state the ratio.
+- The DS41 handoff now carries **two different tasks numbered DS41-C12** (the profiler wiring and the v10
+  folded-lineage fix). Cite by text, not by id, until the owning session renumbers.
+- Launch/registry divergence, filed and unowned by the campaign: the planner server `:8074` runs `-t 96`
+  while the registry recipe says `threads: 48` (`NUMA_FULL_T48`) — stack owner's.
+
+#### Source References (2026-09-24 wrap-up compile)
+
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C12 (both:
+  profiler wiring and the v10 folded-lineage fix), C14, C15, C16, C17, C10 (rewritten to run 7).
+- [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the run table, the planner cost
+  decomposition, the seat-move ruling, the orphaned-actor measurement, DS41-C18.
+### Compiled Update — 2026-09-24: AutoKernel's actor-reply repair works; planner throughput is not a campaign result
+
+**Confidence: verified** for the local actor-schema cases, server throughput observations and workflow timings in
+the cited run record. The V4.1 campaign remained in progress; these operational observations do not establish a
+kernel keep, serving-quality result or campaign outcome.
+
+#### Key findings
+
+- **Actor JSON repair now uses constrained schema turns, but the repair pattern's write-side evidence is a
+  separate task.** Three designs failed distinctly (optional abstain was filled beside a real hypothesis,
+  `anyOf` selected its cheap abstain branch, and an in-band marker over-abstained); the final two-stage
+  `response_format: json_schema` repair uses an explicit decline boolean followed by pure extraction. Five
+  shapes passed on the local 27B in 2–12 seconds. This applies the typed-decision plane's TD-1 idiom to
+  AutoKernel actors; reviews omit the decline boolean. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C16,
+  [typed-decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1)
+- **Runs 3–5 exposed workflow defects, not an accepted kernel result.** The research fixes added an actor-timeout
+  control, reply persistence with stderr fallback, and partial output retention on timeout; stopping the loop
+  must also terminate its actor child. One Q4_K×Q8_2 proposal passed the critic, but it is not yet an admitted
+  performance keep. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
+- **The planner seat moved to the MI210 Qwen3.8-27B (:8083):** the recorded serving rate was 86 t/s decode /
+  302 t/s prefill, compared with 50 / 92 for CPU flash-next. Proposal calls were prefill-bound (124k tool-output
+  tokens, about 22 minutes of a 41-minute call); 91k-token authoring was decode-bound. Run 6 was still running
+  at report time. These are operational measurements, not a model-quality or kernel-speed claim.
+  ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
+
+#### Open questions
+
+- The local planner endpoint launches with `-t 96`, while its registry recipe says `threads: 48` (`NUMA_FULL_T48`).
+  Resolve the launch/registry divergence before treating these timings as a repeatable planner baseline.
+- The 2026-09-24 operational observations are retrospective; the source table now tracks a prospective,
+  producer-authored evidence hook. Do not reconstruct claim tuples from this progress narrative.
+
+### Compiled Update — 2026-09-23 (evening wrap-up compile): the DS41 AutoKernel campaign launched on the roster-free route, and a store's champion-of-record cannot be relabelled by a moving anchor
+
+**Confidence: verified** for the launch identities, commits and refusals (all observed in-session). The campaign itself has produced **no candidate result yet** — it is still inside its calibration phase, so nothing here is a kernel finding.
+
+#### Key findings
+
+- **Operator ruling: AutoKernel and the production roster are orthogonal.** The planner is simply the live `qwen3.8-flash-next` server at `:8074`; no enrollment and no roster are involved. The launch went through `campaign_cli --manifest --registry-snapshot` and `serial_run` — the route the loop already had. That also made the enrollment tool's import-time-argv defect (DS41-C2e) irrelevant to the launch, though it was fixed separately (orchestrator `c3f2cbc2`, re-exec moved under `__main__`). ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2b/C2e)
+- **Launch identity, recorded so the next one is one command.** Store/inputs/state under `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/`; inputs built by `inputs/build_inputs.py` through the loop's own validators (canonical_launch.v1, frozen prompt v2, an IDENTITY receipt on `build-cpu`, manifest plus registry snapshot, `--verify-artifacts` 5/5). Target `ds41-ad932bbd9-cpu-t48-dspark-b2`, `external_draft`, greedy batched, ctx 8192, np 1; serving metric `aggregate_tok_s`; `--rounds 0`; planner `opencode:qwen-local/qwen3.8-flash-next@high`, critic `codex:gpt-6-sol@high`. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2b)
+- **Six contract details each cost a round trip, and are worth carrying forward**: `--batch-iterations 1` is required in scheduled serial mode; effort flags go through `--common-args <json array>`; a hand-built anchor needs `build-cpu/IDENTITY.json` (`epyc.champion-candidate-build.v1`, real files only — `O_NOFOLLOW`); the CPU drafter must carry `--device-draft none`; the `LLAMA_SPEC_EXACT` witness must be `process_environ`; provenance needs `export_sha256` + `instance_mode` + a `source:` key. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md))
+- **A store carries the champion-of-record, and the loop refuses to relabel a new tip as the old one.** Run 2 was refused: the shared store pinned run 1's COR `ad932bbd9` against the new anchor `ebb68dc55` ("supply `--cor-build` or `--resume-run`"). The rule the refusal encodes — *a campaign whose anchor moves with no keeps behind it needs a FRESH store, not a pinned one* — is the right default, because silently relabelling the tip would make every later comparison read against an identity that was never measured. Run 3 therefore uses a fresh store with the hypothesis inbox carried over (`state-run3/serial-run.pid` = 1953258); run 1 was archived as `store-run1-ad932bbd9`. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C13)
+- **Calibration is the loop's entry fee, and its cost is a property of what is being measured.** 48 matched A/A launches, roughly 2 h, each reloading 519 GB, measure **relaunch dispersion** — the noise every candidate pays, since a new binary is a new process. It is not reducible without keeping weights in RAM across launches, which would mean mmap, which changes NUMA placement and is therefore a *different measured condition*. Recorded explicitly as nothing to act on, so a future session does not "optimise" it into a comparability break. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C10)
+- **Hypotheses reach the planner through the inbox, not through the profile form.** Seeded as `store/inbox/30-ds41-seeded-hypotheses.md` (ranked: H2 requant ladder, H1b verify-marginal attribution, H3 rowexact-on-dense, H4 entropy-gated block, H1 demoted, H6, H7), each with its measured basis and a falsifier, re-read every iteration. The `opportunities.json` profile form stays unbound with placeholder digests — the inbox is the channel. Budget guidance carried with it: **decode is flat 24→96 threads**, so barrier and dispatch levers cannot pay on this model; point the campaign at the memory path. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C5)
+- **AK-INST-2 audit: no second champion-drift pin, but a v10 folded-lineage defect.** Auditing every 40-hex / `*_COMMIT` equality in the discovery plane found no other pin of the `READY_CONTINUE_INSTRUMENT_COMMIT` shape (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks; the review-pin at `discovery_deployment_factory.py:1516` stays exact by design and is re-pinned per freeze). It did surface a different defect: once `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, the rule "instrument parents == (production,)" became **unsatisfiable** in both `live_controls` preflight and `candidate_record.build_candidate_record`. Fixed by a shared `worktree.instrument_lineage_ok` that accepts the folded identity (research `714777e4`). A consolidation that merges two identities can invalidate a rule written when they were distinct. ([autokernel-restart-and-strip](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) AK-INST-2)
+
+#### Open questions
+
+- DS41-C10 — watch the campaign through calibration into its first source iteration: does the serving floor land **with a unit**, does the planner's first proposal cite the inbox, and does the critic answer?
+- DS41-C11 — two pre-existing test failures reproduce on a clean HEAD (`test_existing_cpu_run`: `oracle()` unexpected kwarg `require_reference`; `test_serial_roster`: "issued selection awaits settlement"). Fix or re-fixture; they are not this session's change.
+
+#### Source References (2026-09-23 evening wrap-up compile)
+
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2b (launch), C2e, C5 (hypotheses and budget guidance), C10, C11, C13 (run 3).
+- [2026-09-23-main-dsv41.md](../progress/2026-09/2026-09-23-main-dsv41.md) — "AutoKernel campaign STARTED" and "campaign restarted as run 3" sections: identities, contract details, the COR refusal, the calibration rationale.
+- [autokernel-restart-and-strip.md](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-INST-2 audit outcome and the v10 folded-lineage fix (research `714777e4`).
+
+### Compiled Update — 2026-09-18: GLM AutoKernel watch stopped without semantic acceptance
+
+The operator ended the GLM v28 campaign after 36 abstentions and one
+observation-only runtime arm. The final batch settled at the queued stop
+boundary; the supervisor published `complete` and left no active child. This
+was orderly process termination, **not** the requested 20 healthy research
+loops: no new source candidate reached measurement or keep, and no champion
+advancement was established. The 28 earlier keeps and source history remain
+retained. [Monitor record](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md),
+[active loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
+
+The read-only audit found a narrower future diagnostic, not a launch: older
+per-node GLM captures contain zero per-thread timing columns, so they cannot
+separate barrier overhead from straggler work. An exact-request per-thread
+profile would be needed before treating either as causal. The handoff records
+that further campaign work needs a new operator instruction; repeated
+abstentions and observation-only runtime arms cannot be counted as source
+research progress. [Monitor record](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md),
+[loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop),
+[prior implementation checkpoint](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
+
+#### Source references
+
+- [GLM v27/v28 monitor and terminal evidence](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md)
+- [AutoKernel research-loop execution pointer](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
+- [Source-aware correctness and observation-route implementation checkpoint](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
+
+### Compiled Update — 2026-09-17 (evening): the speed-axis reseed gets a ledger receipt, journal rows record their manifest and parent, and the shadow gate now records what enforce would have done
+
+**Confidence: verified**: orchestrator commits and focused test runs recorded in the sub-lane logs. No
+inference ran. AutoPilot and the API stayed stopped, so none of this has run live yet.
+
+#### Key findings
+
+- **"Option B" was only a recommendation until the operator ruled.** The first AP-57 attempt stopped
+  without implementing anything. The only record of RTG-02's "prepared decision package" was one sentence,
+  "decision package prepared, recommendation B". The package text was never saved, and no ruling existed in
+  the operator queue, `artifacts/operator/`, the bus or the wrap-up commits. Filing a box and re-pointing an
+  index cell are not rulings. The operator then ruled **OP-AP57 = B** (root `bee2f36a` removed the queue
+  row). [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md),
+  [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md)
+- **AP-57 B landed (orchestrator `01906607`).** On the eval-quality re-baseline refusal path, RTG-02
+  re-anchors `frontdoor_speed` and `autopilot_speed_era`. Before this change, that state write had no
+  journal receipt, because `_append_baseline_promotion_event()` returned early for `updated=False`.
+  - A new `speed_axis_reseed` event sits in the same ledger as `baseline_promotion`. It carries the source
+    trial, old and new speed and era, `reason=quality_refusal` with the gate token, the eval-quality era,
+    the AP-63(a) run-manifest digest, the post-write `baseline_state` and a timestamp.
+  - The event is written once per trial. A failed append logs a WARNING and sets
+    `state.speed_axis_reseed_journal_error`, and the state save still happens.
+  - `reconcile_baseline_ledger` replays promotions and reseeds in append order. `baseline_promotion_events()`
+    is unchanged, so promotion counters never count a reseed.
+  - Fixed along the way: a reseed decided on a row the journal does not hold was kept, while a promotion in
+    the same position was rolled back. Both are now rolled back.
+  - Tests: 9 new (collection fails on the old code), plus 333 + 78 in the focused suites.
+  - [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md)
+- **AP-63(a) landed (orchestrator `0286c170`).**
+  - **`run_manifest` on journal rows.** Main-loop rows, dispatcher-skip rows and the AUTOPILOT_KILLED
+    placeholder now copy the in-flight WAL marker's manifest onto the row. Before, the manifest was cleared
+    after the row was written. A trial that was never dispatched, or whose marker is mismatched or legacy,
+    gets `{}`. Nothing is back-filled.
+  - **`lineage`, an explicit stored parent.** The rule is `latest_committed_baseline_promotion_same_species`:
+    the newest same-species trial that has a `baseline_promotion` ledger event. With no accepted parent, the
+    id is `None`, never a fallback.
+  - **Nothing downstream changes yet.** The old heuristic is recorded alongside and still drives
+    `parent_trial`, so config_diff, PEAF, BSV and Pareto do not change.
+  - **Follow-ups.** AP-63c checks the first post-restart row. AP-63d decides whether consumers switch to
+    `lineage.parent_trial_id`. AP-63(b) stays blocked on OP-41.
+  - Tests: 17.
+  - [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md)
+- **AP-55-ARM is prepared but not flipped (orchestrator `cd79b80e`).** The planned review step could not
+  have worked: in shadow mode `_holds()` returns `[]`, so the recorded `hold` is False on every row, and its
+  rate reads 0% whatever enforce would have done.
+  - Each trial now also records `would_hold_enforce` (with reasons) and `would_hold_strict`, using the
+    same rule.
+  - `start_authority_daemon.py` pins `AUTOPILOT_AP55_PROMOTION_GATE=shadow` and
+    `AUTOPILOT_AP55_SEED_RERUN=0`, so an inherited variable cannot arm the shadow run.
+  - `scripts/autopilot/ap55_shadow_review.py --since <ts>` is read-only. Exit 3 means the window holds no
+    shadow verdict. On the live journal today it finds 0 gated rows and exits 3.
+  - The switch is two `AUTHORITY_ENV` lines followed by a restart through the wrapper.
+  - [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md)
+- **ETR-5/6/7 closed (orchestrator `0399c3fe`).**
+  - ETR-5 adds `SafetyVerdict.quality_unmeasured` as a **sibling** field. A `retry_not_revert` property
+    combines it with `reliability_blocked`, and the consecutive-failure guard reads that property. The
+    ETR-2 test pins that an unmeasured quality is not the REL-1 path.
+  - ETR-6 makes mock mode set `tokens_generated=0` explicitly. The two no-decode shapes differed only under
+    `exclude_unset` or a field-presence check.
+  - ETR-7 deletes the dead `INBAND_ERROR_PREFIX` imports. ETR-1 stays open as an operator decision.
+  - [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-program.md#track-eval-tower-loop-robustness-audit-2026-07-20),
+    [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md)
+
+#### AutoKernel Dream-RSI follow-through (facts as the shards state them)
+
+- **RB-lineage telemetry is closed on the experimental lane.** The journal commit is `85c7b91e`, and the
+  prospective evidence sidecar is `a6288858`. The fields are nullable, and no search policy changed. SC87
+  records the write side, and its strict reader is still pending.
+  [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), intake-1439#record
+- **The research-loop rows stay open, with a stated boundary.**
+  - **Archives.** They keep final attempt and round counts, but not per-idea contexts. A five-idea cap, a
+    summarize-every-20 comparison or an ancestor-revert A/B therefore cannot be scored retrospectively.
+  - **C6 scanner.** It now refuses explicit benchmark and capture-phase probes (`84aaaf8d`).
+  - **Fresh-input checks.** They are opt-in and report-only.
+  - [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
+- **AK-integrity audit: the existing guards cover the basics, and one narrower gap remains.**
+  - **What exists.** Hardened `llama-bench` receipts need distinct per-repetition input digests and rotated
+    addresses. A versioned reward-hack scan covers the whole candidate diff.
+  - **The gap.** The timed GPU receipt checks output invariance across addresses. It does not compare the
+    candidate's output with a trusted reference on that same fresh input.
+  - **What was added.** `loop/fresh_correctness.py` (`6c5bd9bb`) and an opt-in `fresh_check` observer in
+    `loop/bench.py` (`091e3eb0`) are default-off and have no live caller. The observer refuses
+    `calibrated=True`, and its verdict stays `decisive=None` until the exact protocol has its own A/A.
+  - [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
+    intake-1454#record, intake-1447#record
+- **Historical keeps cannot be labelled same-prompt replayable.** `_run_agent` does not save the prompt
+  bytes, so no N=10 replay or BO ceiling result is claimed. A default-off prompt receipt, capped at 1 MiB,
+  is specified but not implemented. [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
+  intake-1451#record
+- **Retained-variant codegen summaries require prospective provenance.** The
+  VB-AK-CODEGEN write/read side now binds a source-KEEP diagnostic to its exact
+  keep, retained tree, backend, toolchain, recipe and object hashes. Disassembly
+  counts are neither a throughput result nor an occupancy or correctness claim;
+  old keeps cannot acquire this producer receipt retrospectively.
+  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+- **The GLM loop: v21 was stopped, and v22 was relaunched with a bounded runtime preflight.**
+  - **Why v21 stopped.** Its batch 1 admitted a runtime arm whose default calibration
+    (`CampaignControls(200,...)`) needed **800 full GLM launches** before the first comparison. It was
+    stopped as an invalidly sized setup, not scored. The shard records that TERM did not end the child and
+    server promptly, and that KILL was needed on the captured PIDs.
+  - **The fix.** Research `8d45cb44` offers no runtime treatment unless a runtime statistical declaration
+    is made in advance, and a declared runtime arm must state its full launch budget before claiming
+    resources.
+  - **v22.** It started at 14:27 UTC from source tip `614ff2ba02e0` and the same store, with 28 keeps.
+    Batch 0 screened +0.296% on HALF scope and batch 1 screened +0.064% on the FULL target; both
+    remained candidate-only observations, not keeps. It stopped cleanly at the batch-2 boundary after
+    review found that the default `MUL_MAT` correctness test did not exercise the candidate's GDN edit.
+  - **What is not claimed.** Neither screen establishes a GDN-correct candidate or an advancing
+    champion. The 28 prior keeps, production v9, and champion are unchanged; v22 is not evidence of
+    20 healthy loops.
+  - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md)
+  - [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md)
+- **A source-aware oracle now protects prospective GDN edits.** The old default `MUL_MAT`
+  gate did not exercise a GDN change. Research commits `b4f08d6d`–`c8e79e4c`
+  resolve the changed operation, require a nonempty selected CPU suite, and compare
+  16,896 exactly representable F32 outputs with an independent scalar GDN reference
+  before timing. Unsupported new CPU quant/graph paths refuse before a build;
+  historical keeps remain historical rather than being retroactively regraded.
+  The existing anchor binary passed 38/38 selected GDN cases and the scalar probe.
+  [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
+- **Codegen evidence is diagnostic and prospective.** Research `09bc8fc3` writes
+  bounded build-scoped source-KEEP summaries with producer-authored ClaimTuples;
+  root `7e46f3ca` verifies their bindings on read. Research `44c3dae1` now
+  extracts a bounded CPU-library symbol mix, verified by root `36c378c6`.
+  Research `004de151` samples embedded gfx90a code objects from a HIP DSO,
+  with container/offset consistency enforced by root `2f49a783`. This is not
+  a complete fatbin census or per-kernel attribution. No spill, occupancy,
+  correctness or throughput claim follows from instruction counts. A v23 GLM controller started
+  from the same 28-keep tip at 16:32 UTC. Batch 0 abstained before authoring:
+  IQK was the higher-ROI identified path but lacked a case-level edited-function
+  witness. It stopped cleanly at 16:45 UTC after batch 1 ended during profiling;
+  neither batch measured or kept a candidate. A narrow Q4_K/Q5_K IQK helper
+  witness and independent fixed-shape scalar comparison were then published as
+  research `795f9e5a`/`54b72f40`; continuous v24 launched at 16:58 UTC. This
+  proves only selected helper entry and tested numerical shapes, not all branches
+  or production-shape correctness. v24 profiled but again abstained before
+  authoring: the top 41.60% synchronization family required a broader lever,
+  while the runtime probe was disabled without strict statistical preparation.
+  The loop stopped cleanly after its next full-target profile, with zero new
+  measurements or keeps. Research `bf9b85ae` then opened a full-target,
+  observation-only runtime A/B path; observations do not select recipes or
+  promote champions. Continuous v25 produced its first real observation at
+  18:00 UTC: 32 threads estimated −4.487% versus the original 48-thread
+  recipe, inside the 6.351% full-target floor, with no keep or champion move.
+  Research `37d326ac` also requires native per-case reference metrics for
+  admitted GPU source edits, while `53bc979c` retains observed errors from
+  the existing Q4_K/Q5_K scalar CPU fixture without changing its thresholds.
+  The operator accepted the existing validated per-operation comparator for
+  AK-PORT-1 and a bounded native-code diagnostic or explicit unavailable
+  record on each new source keep for AK-PORT-3. These close the two tasks
+  without claiming universal cosine/PSNR or exhaustive per-kernel occupancy.
+  v25 subsequently retained a second observation (NUMA round-robin −3.176%,
+  also inside the floor), then its serial controller refused the two-iteration
+  child as a one-iteration scheduling unit. That controller failure is separate
+  from the completed porting-method scope decision. Research `67c90866`
+  refuses multi-iteration resolved-campaign children before launch; v26 began
+  with one iteration per child. At the 20:10 UTC wrap-up checkpoint its first
+  child was still measuring full-target CPU A/B, with fresh controller/store
+  heartbeats but zero settled scheduler iterations. A completed v26 stage and
+  the requested 20-loop watch remain unverified.
+  [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
+
+#### Open questions
+
+- AP-63d: should config diffs be measured against the stored `lineage` parent instead of the heuristic?
+- AP-55-ARM: what committed-promotion would-hold rate does the first shadow run produce?
+
+#### Source References (2026-09-17 evening)
+
+- [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md): AP-57 stop, AP-63(a), AP-55-ARM prep.
+- [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): AP-57 B implementation and the non-projection decision.
+- [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md): ETR-5/6/7.
+- [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md): AP-57, AP-55-ARM runbook, AP-63(a)–(d).
+- [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-program.md#track-eval-tower-loop-robustness-audit-2026-07-20): ETR-5/6/7 ticks.
+- [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md): Dream-RSI checkpoint, v21 stop, v22 relaunch.
+- [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md): v22 candidate-only outcomes and clean stop boundary.
+- [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md): source-aware gate, codegen evidence, v23 start and remaining coverage limits.
+- [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md): integrity and promotion-control audit.
+- [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): row checkpoints.
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): prospective codegen write-side task.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): evening landing table and rulings.
+
+### Compiled Update — 2026-09-17 (afternoon): the merge train landed, and the next gate is one shadow run
+
+**Confidence: verified**: git ancestry on orchestrator `origin/main`.
+
+#### Key findings
+
+- **Orchestrator main is `a1a0251a`, and it contains the whole AutoPilot safety and evidence train.** That
+  covers:
+  - MHS-3 structural refusals (`6df6f0d8`);
+  - MHS-4 risk prior and MHS-5 corpus (`8219d8e8`, `4f28e6c3`);
+  - the AP-54 fence;
+  - AP-55 (a)–(d) (`203cb6e2`, `f057f1fb`, `e3e67696`, `f76e65cd`);
+  - gate-frontier (c)+(b), and the W3e axis-name reads (`635a3467`).
+
+  The "unmerged / flip on merge" notes in the handoffs predate this, and the boxes are now ticked.
+  [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md),
+  [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
+- **Everything landed is shadow or restart-gated.** AP-55's gate runs in shadow mode. AP-55-ARM (enforce plus
+  seed re-runs, pre-approved) needs one AutoPilot run in shadow first, and so do VB-MHS-OPS-HOOK and W3e's
+  axis drop. AutoPilot has not been restarted on the new code, and the API is stopped.
+  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **W3e remains open.** The positional-consumer blocker is gone, but the policy that drops `neg_cost` is
+  still unwritten. [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput)
+
+#### Source References (2026-09-17 afternoon)
+
+- [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md)
+- [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+
+### Compiled Update — 2026-09-17 (later): the Dream-RSI intake files 14 offline rows, and "same candidate" gets a content identity
+
+**Confidence: verified** for the built promotion-guard code, the replayed goldens and the AP-55 arming/attempt logic (all zero-inference, read from the branch records). **external** for every Dream-RSI-cluster number: the intake entries are dive-verified, but they motivate the filed rows and gate nothing (MEASUREMENT.md). No live policy was rewritten and no loop ran.
+
+Two unrelated-looking threads closed the same day. The Dream-RSI batch turned 25 intake entries into 14 filed task rows across 6 handoffs, all explicitly offline/observe-only. And the live-frontier promotion guard the previous pass left on `sub/gate-frontier-20260916` came back from review with the harder half done: the guard had been clustering reproductions by a hash that is not the served configuration, so most of its would-be promotions were an artifact of grouping different runs together.
+
+#### Key findings
+
+- **The Dream-RSI batch: 14 rows, 0 checkbox flips, and a corrected external record.** The operator-approved Stage-4 plan (2026-09-17) filed rows in `autokernel-research-loop` (AK-WM-3, adaptive policy panel, plateau pack, cost-credit, lineage diagnostics, promotion controls, integrity pack), `agent-collab-rnd-harness` (AC-CORAL, AC-branch-per-agent), `autokernel-rebuild-program` (RB-lineage telemetry), `harness-selection-and-integration` (HS-E1), `autopilot-sequential-allocation` (SEQ-4) and `agentic-rocm-kernel-authoring` (AR-RPUCG, AR-ROCm-eval). Explicit declines are on record: all `autopilot-continuous-optimization` mechanics (that handoff is STOPPED since 2026-08-10; restart needs explicit operator permission), the DeltaEvolve→TOC/CF mapping, the guidance-prompt task, monitor rows, HS/DAR/TOC domain mismatches, external re-measurements, and the 13/15 re-run (≥$1.1k, no decision depends on it). The load-bearing Stage-2 corrections: Dream-RSI's **implemented replay reward is App. B.2's `pareto.auc − λ·parallel_penalty`, not Eq. 1**; the `1.22×/1.74×/zero-gradient` figures are companion-README-only; EvoX scores strategies **online only** (no replay); PACEvolve's MBB/CE require a **known target bound**; SimpleTES's "generations" is Dream-RSI's relabeling of evaluator queries; and the SwarmResearch 13/15 count is threshold-ambiguous. ([research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
+- **The AutoKernel rows are replay-only by construction.** AK-WM-3 evaluates candidate-ordering/branch/stop policies offline against the recorded AK-WM-2a archive under the implemented App. B.2 objective and the prefix-only contract, reporting AUC-frontier as well as endpoint. The adaptive policy panel shadows EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB, τ_S 0.02 / τ_M 0.12) and BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) over recorded histories only, separating the pool effect from the routing effect. The plateau pack ports PACEvolve's portable half (idea cap 5, summarize-per-idea every 20, momentum detector β=0.85 / ε_rel=0.001, α=1.5 ancestor revert vs cold restart; constants ground-truthed at `google/pacevolve @ 22798d9f`). CostAda's cost-calibrated frontier utility and the EvoReplay lineage layer (deterministic line-level cycling detector + 9-label edit taxonomy via a ~40-line `programs.jsonl` adapter) are offline re-scores, with the vidya source row and write-side tuple required **before** the first run. Promotion controls are report-only (N=10 same-prompt replays; post-hoc BO tuning-ceiling probe). ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
+- **SEQ-4 re-folds the stored AutoPilot pool under a bandit allocator, offline.** 141 stored candidates / 393 trials are to be re-scored under (a) BaSE-style UCB/Thompson routing (intake-1456) and (b) a fluid-style portfolio AUC objective (intake-1457), compared against the fixed budget=8 heuristic, reporting AUC-frontier vs endpoint. It deliberately does not touch the human-amendment-only SEQ-3/SEQ-B1 decision or re-arm any gate. ([autopilot-sequential-allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation))
+- **The promotion guard's identity rule: an ACTION hash is not a served config, so most what-if promotions were grouping artifacts.** Under rule (b), reproductions were keyed by the action hash; for `seed_batch` and `deep_eval` that hash does not identify what ran — `{"type":"seed_batch","n_questions":10}` covered 394 rows, and all 22 what-if promotions were such runs. `action_identity.row_config_identity` now identifies a served config only from an explicit delta (`structural_experiment` flags, `numeric_trial` resolved params) plus the AP-55 infra digest when recorded, and only identity-bearing clean rows are stamped representatives. After the fix: **rule (b) promotes nothing**; 441 decisions are refused for carrying no served-config identity (seed_batch 331, empty-params numeric_trial 72, deep_eval 18, 20 others); 4 promotions remain (3 seeds plus trial 755 under the frontier rule). Per the operator decision (`f083a0cd`), prompt/code/GEPA mutations are identified by `eval_details.served_content = {"files": {path: sha256}}`, hashed from the served file after the write and before the eval and kept off the action so fingerprints are unchanged; the regime digest is the AP-55 digest **without** the orchestrator HEAD/dirty component but **with** evaluator, kernel, recipe, models and host, so an unrelated orchestrator commit no longer splits a cluster. Rows without a content identity stay non-promotable and nothing is back-filled. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput))
+- **(c)+(b) are built: clean trials become frontier representatives, and an empty live frontier needs ≥3 comparable reproductions.** The loop fixes the row it will journal before the promotion decision (`_provisional_trial_row`) and passes it to `update_baseline`, so the guard's live archive includes the candidate; clean rows are stamped `eval_details.frontier_admission = "representative"` and cluster by config fingerprint, with one predicate (`row_is_representative_member`) serving replay, snapshot fold, recovery re-import and reproduction counting, and `upsert_representative` for the live archive (`AUTOPILOT_CLEAN_TRIAL_REPRESENTATIVES`, default on). Rule (b) needs `AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO` comparable live-regime reproductions (default 3; values below 2 are refused and fall back to 3), excludes NON_COMPARABLE rows, and promotes the **median** over them, which must still clear the quantum. `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed`) is logged, returned, and written to the trial row and the `baseline_promotion` event. Review fixes: a provider exception or unreadable archive refuses promotion over an existing baseline (`refused_guard_unavailable`); the replay `compare()` restores the logger level; the live archive is built once per call. On the next restart every tier starts under rule (b), and no promotion happens until a config has 3 comparable reproductions in the new epoch. The W3e `-cost` axis drop itself is still open. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **Mutation candidates now stage under multitier, with a scoped rollback and an external-change refusal.** Prompt/code/GEPA candidates with a `served_content` sha and an exact restore preimage can be staged (`c12f17f5`); every forced stage re-hashes the served files before the eval and again after it, a change or missing file refuses and rolls back, and `structural_prune` stays out of scope. The Fable review (`25c8e913`) then bounded the rollback: it skips the checkpoint's prompt copytree (`restore_prompts=False`) and attests the file's final on-disk state; if the current sha no longer equals the served sha nothing is written and the candidate is retired `rejected_external_change` with an ERROR log and the `autopilot-multitier-rollback-external-change` alarm; all PromptForge commits are path-limited (`git add -A -- p` + `git commit --only -- p`); the preimage is stripped from snapshots; and rollback retries are capped (3 failures → staging refused, `autopilot-multitier-rollback-stalled` alarm). Tests: 21 for multitier mutation candidates; full suite 13,383 passed / 1 known tripwire failure at review time. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract))
+- **AP-55's seed re-run now has an arming flag, a bootstrap, and bounded attempts.** After the Fable review fix `0e6e2288`, a regime change schedules the seed re-run only when `AUTOPILOT_AP55_SEED_RERUN=1` is set (with seq on or off; unset by default, in which case nothing is fingerprinted on the force path and the seq cadence is unchanged from before AP-55). A tier with no reference draw schedules one (`NO_REFERENCE`) — without it `enforce` would hold forever on `seed_rerun:MISSING` — and a forced re-run whose eval comes back invalid or skipped is retried at most `AUTOPILOT_AP55_SEED_RERUN_MAX_ATTEMPTS` (default 3) times per reference, spaced by `AP55_REGIME_REFRESH_MIN_TRIALS` trial ids, with the deferral and the cap logged and a landing reference draw resetting the count. The observe-only paired diagnostic now changes its `seq_paired_baseline` payload even in shadow mode (it may pair against an older same-regime draw or report no reference) while staying `used_for_gating=False`. AP-55-ARM is filed: read the counterfactual `eval_details.ap55_promotion_gate.hold` rate after one shadow run, then arm enforce plus seed re-runs, and it needs the AutoPilot merge train (`sub/autopilot-train-20260916`, carrying the within-noise hold fix `f76e65cd`) on main first. **The train's integration fix is verified:** every `update_baseline` call site (within-noise, clean-trial `else`, multitier `final_t1`) is under an AP-55 hold, and `tests/unit/test_ap55_hold_call_sites.py` walks `autopilot.py`'s syntax tree to reject any new unguarded call; the final train tip `e12fb691` ran 13,665 unit tests with 0 failures. The push itself was denied by the permission classifier and left for the operator. ([sub-ap55bc](../progress/2026-09/2026-09-16-sub-ap55bc.md), [sub-train](../progress/2026-09/2026-09-16-sub-train.md), [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md))
+
+- **AKU-RED-LOOP filed: the research AutoKernel loop suites are red, and the cause is unclassified.** Under `python3`, `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. The clusters: a `test_serial_run.py` settlement refusal, `ProducerSourceRefused` in 13 errors, `test_seed.py` prompt text, missing `samples_ts`/`n_threads`/`build_commit`, and one test path in a removed worktree. The task is classification first — stale test, code bug, or environment — then fix or delete. A first pass the same day fixed two research-side defects behind `test_autokernel_serving_feedback.py` (the CPU-run fixture wrote a root-level `kernel.c` the allowlist refuses; an accumulator cor-vs-tip compare rebound the planner feedback anchor to the old champion): 13/13 after, 8 research tests cleared, but 28 failures in the dependent suites (serial_run settlement, cor-build `StartupRefused`) predate those fixes and are not covered by the task's clusters. ([autokernel-unified-surface-program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [sub-misc](../progress/2026-09/2026-09-16-sub-misc.md), [sub-redtests](../progress/2026-09/2026-09-16-sub-redtests.md))
+
+#### Open questions
+
+- The within-noise promotion call site gap is closed by the merge train: `f76e65cd` puts the `ap55_gate.get("hold")` check on that path, and the syntax-tree guard fails any future unguarded `update_baseline` call (see the AP-55 bullet above).
+- After the identity fix, does rule (b) promote anything that a human would recognise as a real gain — or does the 3-reproduction bar simply defer to the frontier rule in practice?
+- The Dream-RSI rows are all filed and none run; the first one to execute (AK-WM-3) is also the one that tests whether App. B.2's objective transfers off Dream-RSI's own loop.
+
+#### Source References (2026-09-17 Dream-RSI intake and promotion-guard follow-through)
+
+- [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the 25-entry batch record, the Stage-2 corrections, and the decline list.
+- [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop): the seven AutoKernel rows with their constants and their observe-only scope.
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): RB-lineage telemetry.
+- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
+- [agentic-rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring): AR-RPUCG and AR-ROCm-eval.
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) and [2026-09-16-sub-redtests.md](../progress/2026-09/2026-09-16-sub-redtests.md): the red research AutoKernel loop suites and the AKU-RED-LOOP handover.
+- [autopilot-sequential-allocation.md](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation): SEQ-4's offline allocation replay.
+- [2026-09-16-sub-train.md](../progress/2026-09/2026-09-16-sub-train.md): the AutoPilot merge train — AP-55 hold coverage at every `update_baseline` call site, the syntax-tree guard, and the final tip's test totals.
+- [2026-09-16-sub-gate-frontier.md](../progress/2026-09/2026-09-16-sub-gate-frontier.md): (c)+(b), the served-config identity fix (`f083a0cd`, `53dea5aa`), multitier mutations (`c12f17f5`, `25c8e913`), and the replay goldens.
+- [2026-09-16-sub-ap55bc.md](../progress/2026-09/2026-09-16-sub-ap55bc.md): the `0e6e2288` review fix, the `NO_REFERENCE` bootstrap, and the bounded-attempt cap.
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md): AP-55-ARM and the merge-train prerequisite.
+- [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput): the W3e (c)+(b) build note and the still-open axis drop.
+- [promptforge-mutation-safety-contract.md](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract): the multitier mutation staging and rollback review.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AP-PROMO-RULE, the journal projection of the two new fields.
+
+### Compiled Update — 2026-09-17: AutoPilot's promotion evidence is hardened — rejected-mutation memory, an infra-regime fingerprint, a Landlock eval fence, and a promotion guard that reads the live frontier
+
+**Confidence: verified** for the measured re-proposal rate, the landed and branch-built code, and the journal replays (zero inference throughout). **Inferred** for the effect of the gates on future runs: none of them has run in a live AutoPilot loop yet. Most of the work below is still on unmerged orchestrator branches, and the text says which.
+
+The common thread is that AutoPilot could not tell whether a promotion was real. It forgot what it had already rejected. It could not tell whether two trials ran on the same infrastructure. It could not show that the agent under evaluation had not read the project's own knowledge. And its promotion guard was reading the wrong frontier. Each of these now has a structural fix. Each fix was sized by a zero-compute measurement or replay over the stored journal (trials 0–1505, 1,372 rows), not assumed. Two earlier claims are corrected here: the MHS-4 rationale that "every catastrophic held-out regression came from an override patch", and the belief that the E8 reseed chain was still the gating task.
+
+#### Key findings
+
+- **AP-53: AutoPilot re-proposed configs it had already rejected. It now keeps a harness-written ledger of rejections.** 133 trials, 9.7% of 1,372 (31.3% of the 425 with a usable `config_fingerprint`), re-ran a config that an earlier trial had rejected. 105 of them were structural experiments. The median gap from the first rejection was 91 trials (IQR 42–208), far outside the planner's 12-row window. Only 8 were blacklisted at dispatch, and 59% were rejected again. `user_modeling=true` failed safety at #778 and then failed four more times without being blacklisted, because the failures were not consecutive. The fix landed on orchestrator `main` (`203cb6e2`, merged at `753343f5`). 15 reject paths write `{target, mutation_type, diff, per-suite deltas, rejecting gate, ts}`, the last 3 same-target rejections lead the mutation context, and the planner gets a fold of hard-rejected configs that are still standing. Replayed over the journal, the fold would have flagged 48 of 216 keyed trials. It takes effect at the next AutoPilot restart. ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-autopilot-evidence](../progress/2026-09/2026-09-16-sub-autopilot-evidence.md))
+- **AP-54: the eval agent could reach the wiki, and the traces could not prove it didn't. A fence is now built.** Nothing injects wiki text. But the builtin `read_file`/`search_files`/`list_files` tools have no path check, the REPL file tools allow anything under `/mnt/raid0/llm/`, and `run_shell` allows cat/grep/find. The 9,172 stored trace records keep only the first 5 tool NAMES, so the answer was AMBIGUOUS. The operator chose a fence that goes live at the next ordinary API reload, with no flag. A tri-state `ChatRequest.eval_fence` sets it: `None` leaves production unchanged, `True` denies, and `False` records only, which is the AP-54b control arm. Armed `run_python_code`/`run_shell` children run under kernel enforcement that their descendants inherit: Landlock on this host, else `mountns`, else `hook-only`. This closes the ctypes/libc and `sh -c` indirection routes that pattern matching could not. Discovery finds about 327 checkouts and 1,145 fenced dirs, including worktree wiki copies and each checkout's `.git`. Rows record `fence`, `touched_paths` and `fence_enforcement`. The tests grew to 112. Branch `sub/ap54-fence-20260916` (`a8bdb15f` → `80fa99aa` → `0d3b6e26`) is NOT merged and is under third review. This supersedes the earlier same-day note that the fence was "proposed, not implemented". The AP-54b A/B is filed but compute-gated. ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-ap54-fence](../progress/2026-09/2026-09-16-sub-ap54-fence.md), [sub-autopilot-evidence](../progress/2026-09/2026-09-16-sub-autopilot-evidence.md))
+- **AP-55: trials now carry an infrastructure-regime fingerprint, and the new promotion gate runs in shadow.** Parts (a) and (d) are on `main` (`203cb6e2`). `infra_fingerprint.py` digests six components separately: orchestrator, evaluator, kernel (live `/proc/<pid>` maps with a PID-reuse guard and no name scan), recipe, models (GGUF first-MiB digest) and host. Each trial gets COMPARABLE, NON_COMPARABLE or UNVERIFIED against the tier baseline, and an unreadable side is never COMPARABLE. Parts (b) and (c) are built but unmerged (`f057f1fb`, `e3e67696`; root `febf56cd`). They add a same-regime seed re-run leg, and a pure-Python chi-square homogeneity test over the in-regime batch judged against the same baseline revision. `AUTOPILOT_AP55_PROMOTION_GATE` takes `shadow`, `enforce` or `strict`. Inside the container the server PIDs are invisible, so the kernel component is declared-only and every verdict is UNVERIFIED. That is why `strict` would block every promotion. **Operator decision 2026-09-16:** run the next AutoPilot run in shadow. AP-55-ARM (`enforce` plus seed re-runs) is pre-approved after one shadow run, once the counterfactual `eval_details.ap55_promotion_gate.hold` rate has been read. ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-ap55bc](../progress/2026-09/2026-09-16-sub-ap55bc.md))
+- **The promotion guard was reading the legacy t/s frontier. It now reads the live one, and q/h can no longer land in a t/s field.** W3e made every `pareto_archive.py`/`safety_gate.py` objective read go by axis name, via `TierSpec.axes` and a shape-checked `objective_value()`. Golden replays of both archives (361 entries each) showed identical behaviour (`635a3467`). That work exposed the archive guard: it replayed the journal under `LEGACY_OBJECTIVE_POLICY` with no epoch fence. Switching the policy alone would have copied q/h into `frontdoor_speed`, where 59.49 q/h would fail an unchanged 14.78 t/s trial on the 0.8× floor. `sub/gate-frontier-20260916` (unmerged) fixes both halves together. It rebuilds the guard through the W3 authority path, and it routes the rate axis by unit into a new `Baseline.frontdoor_task_rate_qph`. An empty live-epoch frontier now refuses promotion over an existing baseline (D2). Replay over the 1,372 rows gives identical promotions, 2 of them. **Pre-existing defect, and an operator decision:** the candidate is journaled AFTER `update_baseline`, so a clean trial is never a frontier representative. That was the reason for 479 of 499 old-path refusals. The operator chose option (c), journal clean trials so they can be representatives, with N≥3 reproductions as the interim rule until (c) lands. The `-cost` axis drop itself is still open. ([objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [sub-autopilot-safety](../progress/2026-09/2026-09-16-sub-autopilot-safety.md))
+- **PromptForge mutation safety: a leakage guard built from eval data, a risk prior that ranks but does not certify, and a refuted rationale.** MHS-3 (`8219d8e8`, unmerged) builds its vocabulary from the research question pool plus the core and sentinel files: 153,450 ids and 295 id families. It fails closed when the pool is unreadable, with measured false positives of 0 over the 33 live targets. `sub-gate-frontier` makes that fail-closed state loud: a startup preflight, a session-bus alarm after 3 consecutive `eval_leakage_vocabulary_unavailable` rejections, and runbook § 7. Note that `question_pool.jsonl` is gitignored, so restoring it means a byte-identical copy (sha256 `64218c27…`), not git. MHS-4 adds an ordinal `MUTATION_EFFECT_RISK` (inert 0.05 < constrain 0.25 < expand 0.50 < replace 0.90 < unknown 1.0 < unsafe ∞) and a gate that can only be tightened. MHS-5 (`4f28e6c3`) mined Harness-R1's 23 valid held-out patches. The REPLACE-before-CONSTRAIN ordering holds: REPLACE was 4/4 negative at a mean of −8.4 pp, and CONSTRAIN (n=19) averaged +3.9 pp. **But the worst single patch is hint-only CONSTRAIN (−16.9 pp).** That refutes the earlier MHS-4 wording "every catastrophic regression came from an override", and the correction is recorded against `intake-1323#record`. The weights stay uncalibrated. ([promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract), [sub-autopilot-safety](../progress/2026-09/2026-09-16-sub-autopilot-safety.md), [sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md))
+- **The E8 reseed chain is retired, not completed.** Operator ruling `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`) closes E8 RE-ARM and its six successor boxes as SUPERSEDED. It re-anchors the reseed gate to the current eras (cpu_bench E9, eval_quality E16), and the gate binds only at promotion. No E8 baseline was ever applied. ([autopilot-decision-plane-audit](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22), [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md))
+- **The livecodebench oracle rebuild of 2026-08-12 never reached the live pool.** `question_pool.jsonl` (built 2026-07-27) still carries 2,349 livecodebench rows scored by `substring 'def '`, including the 5 core-pool rows. So every AutoPilot livecodebench score after 2026-08-12 was vacuous too. The shared scorer now refuses a substring oracle on code rows (orchestrator `f0015306`, branch only). Swapping the live pool is a T1 instrument-era decision for the tower owner. See [Benchmark Methodology](benchmark-methodology.md). ([autopilot-continuous-optimization](../handoffs/active/autopilot-program.md), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md))
+
+#### Open questions
+
+- Will `enforce` hold an acceptable share of promotions? Chi-square power is low at batch sizes of about 14–50, so HOMOGENEOUS may dominate. This is read from the shadow run's counterfactual hold rate.
+- Does the eval agent actually read the wiki? AP-54b is a compute-gated A/B, armed vs control, with touched-path recording.
+- COMPARABLE cannot be reached inside the container until the kernel component can see live server PIDs.
+
+#### Sources
+
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md): AP-53 measurement and landing, AP-54 answer and fence, AP-55 (a–d) with the operator gate-mode decision, and the stale-pool livecodebench note.
+- [autopilot-decision-plane-audit-2026-07-22.md](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22): the E8 chain closed as superseded under the OP-19 ruling.
+- [promptforge-mutation-safety-contract.md](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract): MHS-3 leakage guard, MHS-4 risk prior, MHS-5 corpus result and refutation.
+- [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput): W3e axis-name reads, the coupled guard finding, and operator decision D2.
+- [2026-09-16-sub-autopilot-evidence.md](../progress/2026-09/2026-09-16-sub-autopilot-evidence.md): the AP-53/54/55 lane record and W3 segment snapshots.
+- [2026-09-16-sub-ap54-fence.md](../progress/2026-09/2026-09-16-sub-ap54-fence.md): fence design, review fixes, and Landlock enforcement.
+- [2026-09-16-sub-ap55bc.md](../progress/2026-09/2026-09-16-sub-ap55bc.md): the seed re-run leg, the homogeneity gate, and the decision package.
+- [2026-09-16-sub-autopilot-safety.md](../progress/2026-09/2026-09-16-sub-autopilot-safety.md): the MHS-1..5 and W3e lane record.
+- [2026-09-16-sub-gate-frontier.md](../progress/2026-09/2026-09-16-sub-gate-frontier.md): the live-frontier guard, the journal replay, and MHS-3 operability.
+- [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): where the stale pool comes from and who consumes it.
+
+### Compiled Update — 2026-09-16: guard reachability, cross-workload refusal, and disk hygiene
+
+**Confidence: verified** for the installed zero-compute controls, tested worktree tools, and receipted retirement. This is not a new kernel-speed, serving, production, or live cross-workload keep claim.
+
+**A guard is useful only when the live path reaches it and the candidate cannot control its instrument.** The R24 review found five concrete gaps: the installed hardened bench was unused; the candidate could build its own `llama-bench` and hide undeclared edits; an edit-capable critic could change the tree after review; process-level GPU residency did not prove per-op placement; and a purported determinism gate compared return codes rather than outputs. R24-1 through R24-5 are now wired at the run boundary: candidate arms share a hardening seed and require its receipt, whole-tree/protected-path checks and reward-hack scanning run before build, critics are read-only over delimited candidate data with tree-identity checks, scheduler traces refuse missing or CPU-assigned target-op evidence, and repeated hardened outputs must hash alike. The combined zero-compute verification passed 455 tests and 31 subtests. The advisory anti-gaming prompt, keep-drought and no-measurement alarms, same-code tripwire, randomized near-tie draws, and planner dispatch census remain open; none of these changes authorizes a loop relaunch. ([rebuild handoff](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md))
+
+**Cross-workload validation now has a refusal path, but not yet a live keep proof.** The census and footprint producers, full-dirty-set integrity precondition, interim unit-matched `k_delta=1` rule for non-author workloads, and controller refusal on a failed required-source row are installed. Remaining gates include production-workload floors, historical replay/control fixtures, the first live refuse-mode GPU keep, and a composed ValidationBatch/FOLD boundary. A `failed` row is no longer merely an annotation, while `pending` and uncalibrated rows are not converted into passes. ([cross-workload keep gate](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate), [hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md))
+
+**Disk hygiene separates prospective ownership from retrospective, operator-approved recovery.** The design review traced the accumulation to acceptance worktrees created by agents without an owner-bound reaper, plus loop state/build retention; its 606.7 GB inventory and 369.9 GB dirty-tree estimate describe the **pre-retirement** snapshot, not current occupancy. A new acceptance helper now gives future trees durable receipts and clean commit-push/discard closure, but deliberately retains dirty or unverifiable trees. Separately, the operator-approved retirement archived all 224 reviewed `KEEP-dirty` worktrees with content-addressed records and then obtained 224 exact removal receipts, after a transient process-holder refusal was retried. Free space rose by about 334.5 GiB; archives and receipts remain, while production, model artifacts, and the 187 nested pool lanes were outside scope. The serial supervisor also gained bounded child-output retention and a fail-closed disk-reserve gate. These controls do not cover every ad-hoc harness or close the remaining `source_loo` and state-dir retention recommendations. ([disk-hygiene design](../docs/design/autokernel-disk-hygiene-20260915.md), [acceptance helper](../progress/2026-09/2026-09-15-acceptance-worktree-hygiene.md), [retirement implementation](../progress/2026-09/2026-09-15-autokernel-dirty-retirement.md), [retirement result](../progress/2026-09/2026-09-16-autokernel-dirty-retirement.md))
+
+**A truthful actor abstention must remain a science outcome through the scheduler.** The 2026-09-16 GLM continuation profiled and then abstained because the selected MoE store-fusion idea required an IQK edit outside its one-file boundary. The child recorded `abstained`, but the serial scheduler rejected that terminal status and stopped after batch 0; there was no candidate measurement or keep. The retained 27-keep accumulator and champion anchor were not reset. A narrow scheduler fix is being validated before relaunch. This is an execution-status defect, not a measured null or evidence that the mechanism is slow. Full-core confirmation also remains conditioned on a quiet GPU window; the earlier roughly 7% CPU decode drop was during active GPU work and does not isolate a q3-only penalty. ([GLM coordination record](../progress/2026-09/2026-09-16-codex-autokernel.md))
+
+#### Source References (2026-09-16)
+
+- [AutoKernel rebuild handoff](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R24 guard defects, landed wiring, and still-open advisory rows.
+- [Cross-workload keep-gate handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate) — installed refusal logic and outstanding live/calibration gates.
+- [AutoKernel hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md) — zero-compute tests, control-plane scope, and serial reserve/output controls.
+- [Disk-hygiene design review](../docs/design/autokernel-disk-hygiene-20260915.md) — pre-retirement inventory, lifecycle causes, and prospective recommendations.
+- [Acceptance-worktree lifecycle record](../progress/2026-09/2026-09-15-acceptance-worktree-hygiene.md) — new-tree receipts and clean-only closure.
+- [Dirty-retirement implementation](../progress/2026-09/2026-09-15-autokernel-dirty-retirement.md) and [operator-approved outcome](../progress/2026-09/2026-09-16-autokernel-dirty-retirement.md) — exact archival/removal authority, receipts, and recovered space.
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — resolved runaway-output and archived-retirement subtasks; the frozen-clone lanes remain separate.
+- [GLM coordination and relaunch record](../progress/2026-09/2026-09-16-codex-autokernel.md) — observed abstention failure and retained state.
+
+### Compiled Update — 2026-09-15: AutoKernel's month of zero promotions was five independent defects — and the fix is verification by REPRODUCTION, not by proof
+
+**Confidence: verified** for the defect inventory, the measured effect sizes and the structural rules
+(INF-66 / INF-73 / INF-75 handoffs, each receipted). The autopilot and collaboration-harness findings
+are `observation`-grade design records.
+
+**The largest lever on an autonomous optimization loop is not a kernel — it is whether the loop can reproduce its own result.** A month of promotions sat at zero on **five independently-sufficient verified causes**: `"promotion_claim": false` appears 4,797 times and `true` zero times; the benchmark model (`Qwen2.5-Coder-0.5B-Q4_K_M`) has a GGUF header that is actually 132×Q5_0, so the optimized path never dispatched in production; a mean-anchor-vs-median-candidate estimator bias of **+2.01 pp** flipped the sign of **10 of 25** results; the planner had no memory (`RESOLVED 0 · ADOPTED 0`); and the drift bound was raised **0.0308→0.1850 (6.0×)**, which produced every KEEP. The per-commit record on `ak/loop-champion-20260828` was inflated **~20×** — 36 commit messages claiming **+171.7% compounded** against a measured block effect of **+8.524%** (264.918→287.499 t/s, 20 pairs, floor 1.188%). The diagnosis in one line: **the loop chose verification by *proof* where verification by *reproduction* was available** — a `llama-bench` re-run costs 90 s and the tree is a git commit, while proving a run was honest cost 3,869 LOC to deliver one float. ([autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program))
+
+- **A floor without its unit is a 1200-fold error.** Within-session arm sd **0.501%** vs between-session process-launch sd **2.793%** (~13× coarser); sizing a THP test on the arm unit produced 4 sessions/side where the session-unit answer is **4,780**.
+- **A floor estimated from n=10 on an extreme order statistic cannot gate.** Bootstrap of n=10 draws from 24 spanned **4.200–7.821%**; recalibrate at n≥24 and record n + a CI. The D8 decode floor was rebuilt by bootstrap to **1.188% at 20 pairs** (superseding 0.067%).
+- **The champion is a workload vector, not one number**: −1.414% (27B Q8_0 prefill), **+7.206%** (26B-A4B Q4_K prefill), 2.38× (27B speculative decode, DFlash2). The same kernel can be decisive-positive on one target and decisive-negative on another.
+- **A keep is not a gate until it can refuse or revert.** The required-target validation runs *after* the keep lands, fails only on a decisive negative, and a `failed` aggregate does not refuse the keep — today's row is an annotation, not a gate. ([autokernel-cross-workload-keep-gate.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate))
+- **Anchor drift was DVFS**: the card idled at 800 MHz and jumped to 1700 MHz (**2.125×**) at each benchmark window, paid by every `llama-bench` process; pinning clocks resolved it. `libggml-hip.so` is non-reproducible at `-j64` (hipcc gfx90a code-object generation); `-j1` (~13 min) is byte-identical and fixes the anchor guard.
+
+**The single-champion invariant is ratified.** One champion per production kernel tree aggregates **all** work between promotions; seed-from-production is legal only immediately after a promotion; a second lineage is a defect the moment it exists. **A launch recipe is PER-SURFACE** — one champion commit carries two recipes: `GGML_NOHUGEPAGE_PROCESS=1` is adopted on CPU decode but must NOT be added to GPU serving (R23-58 bounded null: `p95_dev` ratio 0.713, p=0.3159, 48 launches/24 couples), and cross-surface transfer was tested and did not transfer. ([autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program))
+
+**The contention channel is DRAM bandwidth, not cores.** Prefill stayed flat (±2%) while decode fell 7%; mutual degradation was **4.2× / 2.9×** with both sides correctly pinned; a third-party disturbance cost **~17% in arms**. No CPU-occupancy screen can see it — the case for admission control over cooperative locking ("region-lock serialises those who call it; nothing constrains those who don't").
+
+**Autopilot findings** (`observation`, design): per-role evaluation replaced a 3-way eval whose Q-values were **96% uniform after 7,211 decisions**; GEPA was a **guaranteed no-op** (`propose_new_texts` raised `NotImplementedError`); a permanently-red check is indistinguishable from an absent one (autokernel-guards red on **43/43 runs** on `No module named pytest`); and a test can cover all the machinery without touching whether it is *reached* (`sub_decision` 0 of 642,328 rows; `binding_router` dead at three layers). ([autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md))
+
+**Agent-collaboration harness** (`observation`): **Agent Collapse** — agents converge on a narrow axis set and avoid the hard custom-kernel wins — is the headline risk; layered/rotating quality gates defeat metric-gaming, taskforces+channels defeat collapse, and trace sharing defeats repeated dead-ends. ([agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
+
+#### Open Questions (2026-09-15)
+
+- The non-inferiority margin `k_δ` (2 = today's "not a decisive negative"; 1 = catches losses ≥ floor) and the gate's timing (synchronous-before-commit vs provisional-blocking) are undecided.
+- The source of the champion's ~12% launch-to-launch variance (page-cache/NUMA placement, THP state, HIP graph capture, allocator) is unexplained.
+
+#### Source References (2026-09-15)
+
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — the five zero-promotion causes, the 20× inflated per-commit record, the floor-unit and DVFS root causes.
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the single-champion invariant, per-surface recipe, and the DRAM-bandwidth contention channel.
+- [autokernel-cross-workload-keep-gate.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate) — the cross-workload sign flip and the keep-is-not-a-gate finding.
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) — per-role evaluation, the GEPA no-op, and the red-check/reachability defects.
+- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness) — Agent Collapse and the layered-gate / taskforce / trace-sharing patterns.
+
+### Compiled Update — 2026-09-14: the GLM AutoKernel ran 50 monitored measured loops, and its 23-keep accumulator is a direct +0.83% that is still not a champion
+
+**Confidence: verified** for the loop count, outcome classes, artifact digests, boundary handling and
+non-promotion. The +0.83% figure is one direct matched-process comparison. It is not a serving claim or a
+production claim, and the sources record no dispersion floor for that comparison.
+
+**The acceptance tested whether the loop stays healthy, not whether it finds speed.** The operator asked the
+existing GLM-5.3-Flash CPU loop to prove four things: an observed original-request CPU profile, a real
+measured candidate path, continuous automatic operation, and 50 monitored terminal loops. When a genuine
+fault appeared, the loop was to halt, get fixed and relaunch. All four held. The 50 terminal continuations
+come from four retained supervisor states (v2/v3/v4/v7 contributed 2 + 20 + 3 + 25). Every one reached
+a real measurement. Their outcomes were 42 `measured_null` and 8 `kept`. The count is audit-ready. A single
+SHA-256 covers the ordered listing of per-continuation digests. Counting across retained states also means
+a relaunch after a repair did not reset the tally.
+
+**Accumulated effect is measured directly, never summed.** The experimental tip `dc3798db10a6` carries
+23 retained keeps. It is published on the fork branch `ak/glm53-recovered-accumulator-20260912`. A
+current-snapshot matched A/B of that tip against champion-of-record `c463f601bd39` measured +0.830%. This
+follows the 2026-08-30 lesson below: a fixed anchor turns every effect cumulative, so a stack must be
+compared as a whole. The final keep (`akm-q4k-pairrow-zmm-accumulate`) measured +0.182% marginally over
+five pairs. Its clean-rebuilt anchor showed +0.077% five-pair A/A drift. The keep is about 2.4x its own
+anchor drift, which puts it at the small end of what the loop retains.
+
+**Bench and serving diverged again.** Loop 49's cadence gate measured the preceding 22-keep stack at +0.540%
+on the bench comparison and +0.335% on the serving surface. The serving effect was not decisive. The loop
+recorded a surface divergence and did not promote, which is the rule the 2026-09-04 serving
+re-architecture installed.
+
+**A run past the boundary is not evidence.** After loop 50 settled, the supervisor launched batch 25 on its
+own. That showed boundary-to-boundary continuation works. The exact supervisor and child PIDs were then
+stopped, with a `STOP` sentinel and `stop_requested: true` and no name-pattern matching. Batch 25 has no
+terminal continuation, so it is excluded from the 50 and treated as recoverable runtime state.
+
+**What remains open.** AKU-12e must run required-target validation and the exact GLM correctness gates on
+`dc3798db10a6` before anyone proposes champion admission. The 50-loop proof does not include that step.
+Production `production-consolidated-v9` was not touched, and it predates `glm5next` support.
+
+#### A critic that demands proof of PAYOFF before authoring can livelock a loop without failing anything (2026-09-14, noninf sweep)
+
+**Confidence: verified** from the campaign's own retained batch records and the narrowing commit. The
+sharpest failure mode this campaign surfaced is not a wrong keep — it is **eight consecutive batches that
+produced nothing while every guard reported correctly**. Batches 27–34 made **24 first-pass critic calls and
+reached zero authoring, zero builds and zero measurements**: three revisions exhausted every batch because
+the critic had promoted ordinary *post-authoring payoff* checks — an eligible-call census, request-wall
+exposure, isolated local speedup — to **mandatory formation evidence**, which the planner had no instrument
+to collect. Nothing errored, nothing went red, and the loop's own health signals stayed green while its
+science rate was zero.
+
+**The remedy is a contract split, not a looser critic.** Payoff is a property the existing matched-A/B
+pipeline measures *after* authoring; formation only requires a **bounded, source-consistent candidate with a
+falsifier**. `loop/actors.py` was narrowed accordingly (research `5ac7b7e4`, 74 tests), so a candidate whose
+only unknown is its payoff now reaches the correctness plus matched-A/B path. Strictness is retained exactly
+where it buys something: an already-measured mechanism, a wrong source route, invented evidence, and
+uncontainable correctness risk are still refused at formation.
+
+Two generalisations worth carrying. **A gate whose evidence requirement cannot be satisfied at the stage it
+gates is a latch, not a gate** — the same shape as the mutually blocking provenance fences recorded on
+[Benchmark Methodology](benchmark-methodology.md). And **headroom masks this defect**: the earlier Qwen GPU
+loop carried the same critic contract, hidden by exact device-kernel timing and a larger available margin, so
+the deadlock only became visible on a surface where candidate payoff is genuinely hard to predict in advance.
+
+Sources: [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
+(§ *GLM planner/critic formation-payoff deadlock*),
+[Unified-surface program handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), and
+`epyc-inference-research` `5ac7b7e4`.
+
+#### Source References (2026-09-14 GLM continuous acceptance)
+
+- [Unified-surface program handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the 2026-09-14 acceptance paragraph, AKU-12d (done) and AKU-12e (open).
+- [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md) — per-state composition, digests, final mechanism, the loop-49 cadence gate and runtime disposition.
+- [GLM-5.3 AutoKernel reference](../docs/reference/models/glm53-autokernel-handoff.md) — the continuous result section, the published accumulator branch and the non-admission statement.
+- [2026-09-11 AutoKernel progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — the preceding five-loop GLM trial this run extends.
+- [Benchmark Methodology](benchmark-methodology.md) — anchor drift, unit-bearing floors and bench-vs-serving rules the result is read against.
+
+### Compiled Update — 2026-09-10: one existing AutoKernel loop now owns CPU and GPU targets
+
+**Confidence: verified** for installed control flow, retained artifacts, dry-run coverage and the two
+completed hardware runs; no production promotion or compound performance gain is claimed.
+
+The implementation extended the existing source-search loop instead of replacing it. One serial owner
+now resolves explicit production and candidate targets, rotates their original launch/request recipes,
+holds their native CPU/GPU resources, preserves per-target history, and advances one shared source tip.
+Before that tip can advance across targets, every production surface and every keep-author surface must
+validate the exact assembled commit. It then executes one LOO arm per retained keep plus a re-baseline;
+missing/inconclusive work stays pending, failed work stays failed, and no LOO result independently grants
+deletion or promotion authority.
+
+Fresh CPU campaigns always select the paired `matched_process_v2` instrument. A historical request match
+can no longer make a legacy five-launch floor govern a new run; restarts alone preserve an already-pinned
+instrument. This closes the concrete GLM failure in which an old 7.801% dispersion masked five positive
+but sub-threshold observations. The original GLM trial itself completed 5/5 iterations and 25 A/B pairs,
+all honest measured nulls. A separate original GPU source-search iteration completed five pairs and ten
+GPU-resident launches, proving that the extension preserved the working GPU path.
+
+The installed all-target dry run resolved seven production workloads plus the GLM-5.3-Flash candidate
+without launching models or builds. The existing dashboard now reads a separately attributed capability
+catalog and reports seven champion capabilities, including DFlash2 GPU serving and Flash-Next
+(`qwen4exp`) CPU/native-MTP, while leaving the direct champion-vs-production number untouched.
+
+The final 2026-09-11 acceptance then exercised both selected backends under one installed serial owner.
+Six batches completed with ten accounted held-resource receipts, no failed target, no active child and no
+unsettled scheduler selection. Four GLM attempts in that run plus the valid earlier v4 attempt complete the
+requested five-loop GLM trial. Three reached measurement (+0.186%, -3.360% and -2.152%) and were honest
+nulls below their applicable matched floor; two hypotheses refused formation. The two GPU batches settled
+as formation refusal and planner transient rather than manufacturing a measurement. No keep or promotion
+occurred. The only defect exposed by recovery was a missed forwarding of the explicit unverified-anchor
+policy during restored champion verification; research commit `3aa79c89` fixes it and ensures the associated
+pre-claim scheduler selection settles. The live dashboard now reads the completed serial store directly and
+classifies it as `serial_router` / `complete`.
+
+#### Source References (2026-09-10 unified implementation)
+
+- [Unified-surface implementation handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — exact controller, LOO, resource, dry-run and acceptance contracts.
+- [Unified implementation progress](../progress/2026-09/2026-09-10-autokernel-unified-20260908.md) — commits, test totals, hardware outcomes and live dashboard verification.
+- [Final mixed-campaign progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — exact v6 state, outcomes, artifact hashes, recovery repair and live dashboard closure.
+- [GLM CPU optimization report](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — preliminary GLM kernel lineage, measured rates and admission limits.
+
+### Compiled Update — 2026-09-08: consolidation complete; autonomy remains a design
+
+**Confidence: verified** for the recorded dispositions and operator choices below, not for the
+effectiveness of the proposed autonomy mechanisms. This update supersedes the pending-fold posture in
+the September 7 entry; it does not certify new performance measurements.
+
+The recorded assembled champion is `ef81196d5`, combining GPU tip `bff30cebe` with CPU champion3
+`9c4f73e29`. Consolidation is complete, but production promotion and loop relaunch are separate gates.
+The six accumulated GPU keeps remain **UNCONFIRMED**: positive bench screening did not establish a
+serving improvement in the subsequent comparison. The recorded champion-of-record stays
+`445e93a8`. Do not turn an inconclusive serving result into a refutation, multiply solo gains into an
+assembled result, or quote the initial comparison's gap beside the later repeat's result.
+
+The rescued-ref audit is a disposition ledger, not a queue of proven missing keeps: chunked GDN and
+quantize reciprocal/broadcast remain research candidates; the tested GEMV fusion route was refuted;
+`de447119f` must not be folded because later dispatch work superseded it. The earlier claim that unsafe
+math flags remained was corrected: their removal was already recorded on August 31. Final retests
+produced no additional CPU keeps; the sync17-fix2 default-ON bundle is DO-NOT-FOLD, while the THP estimate
+remains unresolved rather than mechanism-refuted.
+
+**Autonomy design status — documentation only.** The operator selected adaptive scheduling with seed
+priority and continuing production coverage, the smallest informative CPU allocation, deeper
+applicability-aware belief integration, deterministic checks for prevalidated runtime options, and
+minimal pause/drain/resume and seeding controls. The owning handoff's §8 proposes concrete manifests,
+broker operations, journal/recovery contracts, mechanism-specific transfer and coexistence evidence,
+candidate validation, dashboard health and migration tests. These implementation designs and numerical
+defaults remain provisional; no service, CLI, admission controller or new belief producer was installed
+by this planning session. The next step is iteration on that notebook, not execution of its work packages.
+
+#### Source References (September 8 close-out and autonomy design)
+
+- [Unified-surface handoff, §8](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — accepted preferences, explicit authority boundary and implementation proposals.
+- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — current assembled identity and separate record/production gates.
+- [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — serving repeat, fold gates and final retest dispositions.
+- [Rescued-ref consolidation audit](../docs/design/champion-consolidation-audit-20260908.md) — corrected provenance and candidate/refuted/must-not-fold distinctions.
+- [Planning progress](../progress/2026-09/2026-09-08-autokernel-plan.md) — documentation-only deliverable and validation.
+
+### Compiled Update — 2026-09-07: folding parallel kernel work into the one champion — same-lineage merges are cheap, default-ON ops are the hidden risk
+
+**Confidence: verified** for the lineage/conflict analysis (`git merge-base`, `git merge-tree` dry run) and
+the two blockers (read from source: emit site, missing backend kernel, default gate); the fold itself is
+planned, not executed.
+
+The one-champion doctrine says every kernel effort aggregates into a single champion so promotion ships
+ONE full candidate build. Its first real test came when a parallel session's CPU kernel work
+(INF-70, Qwen3.8-Flash-Next: **MTP-served 23.9→35.4 t/s, 1.48×**, twelve validated levers led by
+`GGML_NOHUGEPAGE` at +35% served) had to be folded into the GPU-optimising AutoKernel champion. Three
+lessons generalize:
+
+- **Fork from the champion lineage and the fold is free.** The CPU branch forked from `270b48ed6`, a
+  commit *on* the champion branch — so merge-base is a champion commit, not the frozen production base,
+  and `git merge-tree` against the live tip found **0 conflicts** despite 86 CPU commits / ~101 files vs
+  24 GPU commits. GPU work lives in `ggml-cuda/*`, CPU work in `ggml-cpu/*`; the one shared file had
+  disjoint hunks. This is the payoff of CLAUDE.md's "never accumulate on a long-lived branch forked from
+  an old tip." Mechanism: `git merge --no-ff` INTO the champion (never rebase — the ledger cites the
+  hashes; never the reverse — it would make the side branch the aggregate).
+- **A default-ON op with no backend kernel is invisible to a gate that measures a different model.**
+  `GGML_OP_MOE_TOPK_NORM` was emitted fleet-wide for every MoE model yet had **no CUDA/HIP kernel and no
+  `test-backend-ops` case**; on the merged GPU build every GPU-served MoE model would silently fall back
+  to CPU per layer and defeat HIP-graph capture — and the loop's gates (a dense 27B) would never see it.
+  Likewise a fused decoder shipped **default-ON** while its own ledger classed it NO-GO and every
+  measurement had been taken with it OFF. Rule: before folding, every new op/path must be opt-in unless
+  it has a kernel on every backend the champion serves AND a backend-ops test; and a validation plan for
+  an aggregate must include **one model per production role class** the loop itself doesn't measure.
+- **A copied CMake build directory is not relocatable — its binaries carry an absolute RUNPATH into the
+  source dir.** The two-tier accumulator's champion-of-record was a `copytree` of an anchor build; when
+  the loop pruned that source gen, the copy's `llama-bench` could no longer load `libggml-hip.so` and the
+  bookkeeping died silently. Fix: reference the real build and *protect it from pruning*; never snapshot
+  a CMake tree by copying. (Companion to the object-digest finding: the compiler is reproducible, the
+  linker and the layout are not.)
+
+**Sources**: [fold plan](../docs/design/inf70-cpu-fold-into-champion-20260907.md); [champion aggregate
+handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (FOLD-0..3); [ak-rebuild progress
+2026-09-04→07](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
+
+### Compiled Update — 2026-09-04: AutoKernel was re-architected around serving performance — because bench keeps did not transfer, and the champion is now (kernel commit + canonical recipe) advanced by a compound-then-gate two-tier rule
+
+**Confidence: verified** for the run-23→28 keep records, the five failure causes and their
+measured evidence, the `-j1` determinism result, and the two-tier champion's built/wired state;
+**verified as an operator-gated state** for run 29, which was standing up but not launched at
+compile time. Nothing here is a promotion — frozen production-v9 is untouched and every receipt is
+`promotion_claim: false`.
+
+Between the 2026-08-27 restart-loop fix and 2026-09-04 the loop ran continuously (runs 23–28) and,
+for the first time, produced production-shaped keeps — and in doing so it exposed that its own
+measurement layer was optimizing the wrong thing. The re-architecture that closed this run makes
+**serving throughput the sole keep gate**, on the operator's principle that *"the only performance
+that matters is serving performance."*
+
+#### The five verified ways the loop was producing untransferable science
+
+Each was confirmed by measurement in this cluster, and each is a distinct failure mode of an
+autonomous kernel-search loop:
+
+1. **Recovery-by-restart (v3→v27).** Every failure class was terminal and recovery meant starting
+   over, resetting the counter that measures progress — the zero-science era, root-caused
+   2026-08-27 (carried in the 2026-08-27 update below).
+2. **Optimizing a shape production never runs.** The H1 falsifier (R23-5) swept the champion vs
+   frozen v9 across the verify-batch width `ne11 ∈ {1,2,4,8}`: the headline **+17.259% at ne11=1
+   (tg128)** decays to **+3.834% / +1.178%** at ne11=2/4 and **inverts to −1.462%** at ne11=8. The
+   gain lived in the MMVQ `ncols_dst=1` template — the one shape speculative-verify serving does
+   not occupy. The loop had been tuning a surface production doesn't use.
+3. **Screening on a cheap proxy model.** Run 23's published **+27.363%** headline was measured on
+   the **1.5B DeepSeek-R1-Distill screen rung**, not on the 27B production model (peak VRAM 1.49 GB
+   gave it away, R23-19); the CH-6 precedent is **+23.09% on a 0.5B → +0.50% on the 27B** (~46×
+   attenuation). Worse, a cheap screen *cannot* be made faithful for GEMM work: the winning tile is
+   selected by rocBLAS/Tensile from the matrix dims, which derive from `n_embd=5120`, so any model
+   small enough to be cheap dispatches different tiles (R23-28/29). **The property that makes a
+   screen cheap destroys its fidelity for GEMM.**
+4. **Trusting llama-bench to predict serving.** The sharpest contrast in the program: two keeps
+   measured **+23.3% and +10.1% on dec-b4** (batched prefill) moved DFlash2 serving decode to
+   **~0% — flat 71.22 t/s** (R23-42). dec-b4 keeps optimize a batched-forward path the DFlash2
+   decode loop is not bottlenecked on (its speed is set by the drafter + acceptance, not the target
+   verify). **Bench does not predict serving.**
+5. **Non-reproducible anchor builds.** After each keep the anchor guard rebuilds the champion and
+   compares code-section digests; the rebuild diverged (`d6d195bb…` vs `5e3ca1e7…`) and aborted the
+   promotion "with zero pairs spent." Root cause: `libggml-hip.so` (the gfx90a HIP kernel lib) is
+   non-reproducible at `-j64`, while the CPU `llama-bench` executable is byte-identical across all
+   trees. The guard hashes exactly the non-deterministic lib. Until this was fixed, **every keep
+   aborted at its anchor guard and the loop could not advance past one keep** (R23-40).
+
+#### The serving re-architecture (R23-43) and the two-tier champion (R23-44)
+
+**The champion is now (kernel commit + canonical serving recipe).** The recipe is a general,
+spec-decode-agnostic artifact — model, quant, `spec_decode.type ∈ {none, draft-dflash, draft-mtp}`,
+drafter, concurrency (np), context, KV type, server flags, and the throughput metric — so a
+non-DFlash2 model carries `spec_decode: none`/`mtp` with its own optimal np and no DFlash2
+assumption. It doubles as the promotion recipe production needs anyway. **llama-bench is demoted to
+the screen/experiment layer and never decides a keep**; a keep is real only if it improves serving
+throughput on llama-server under the champion's own recipe.
+
+**A per-keep serving gate would veto every keep** — the serving floor is ~3.5% and a single bench
+keep is 1–3%. R23-44 resolves this with a two-tier champion: an **accumulator** advances on every
+cheap bench keep so keeps compound; a **champion-of-record** advances only when the accumulator's
+compounded bench gain clears `fire_multiple × floor` (default 2.5 → ~8.8%) **and** the single
+serving gate fired then is decisive-positive. On divergence — a bundle that clears bench but not
+serving (the proven dec-b4 case) — the champion-of-record **HOLDS**, the bundle is kept, and a
+`planner_evidence` record naming the bundled keeps is journaled so the planner can revise a specific
+keep or aim the next hypothesis at the serving gap. Divergence becomes a strategy signal, not a dead
+end. Built and wired into the pooled loop (`loop/accumulate.py`, `run.py`); 414 loop tests pass.
+
+**The `-j1` determinism fix (R23-40).** `build_champion` now builds the anchor at `-j1`: the
+determinism probe built `445e93a8`'s `libggml-hip.so` twice at `-j1` to byte-identical code digests
+(`1d04c67a…595bb4`, A=B). `-j64` parallelism was the root cause; serial build costs ~13 min per
+build and runs per-keep only, while lane builds stay `-j64`.
+
+#### Source References (2026-09-04 AutoKernel serving re-architecture)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66; R23-40
+  (`-j1` fix), R23-42 (bench→serving non-transfer), R23-43 (serving re-architecture), R23-44
+  (compound-then-gate two-tier champion).
+- [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
+  one-champion invariant and the three-workload standing table.
+- [Run 23 launch and the H1 collapse](../progress/2026-09/2026-09-01-ak-rebuild-20260828.md) — the
+  `ne11` curve and the screen/confirm two-rung package.
+- [Run 23→24 boundary, R23-19 screen-rung headline](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md).
+- [Run 24→27, screen-fidelity and the planner backend evolution](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
+- [Serving-floor noise reduction and the two-tier wiring](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
+
+
+### Compiled Update — 2026-08-30: the rebuilt AutoKernel loop ran 464 iterations without losing a lane — and every defect it exposed was a guard that could not go red
+
+**Confidence: verified** for the run counters, the champion lineage, the block audit, and the CI
+run history (43 of 43, read from the workflow's own run list). **Verified as an open state** for
+run 18, which was still live at compile time. Nothing here is a promotion: the champion branch is
+a research lane, not a production kernel, and frozen v9 is untouched.
+
+The rebuilt loop (P4, ~828 LOC replacing 153,865) reached continuous unattended operation between
+runs 11 and 18. **Run 17 is the durability result: 464 iterations in 636.4 minutes, 68 reaching a
+measurement, 30 champion commits, and zero lanes lost.** Twenty-three iterations hit `lane_error`
+and each cost *an iteration, not a lane* — the containment fix (D12) doing exactly its job. The
+serialized tail was 470.5 of 636.3 wall minutes (73.9%), which is now the throughput ceiling to
+attack, and **GPU idle-while-claimed runs 35–40%**, a figure visible only because the row was made
+to carry it.
+
+**The defect family that matters generalises past this loop.** Eight of the fourteen defects found
+across runs 11–18 share one shape: **a test that proved a component EXISTED rather than that it was
+WIRED IN.**
+
+- A test asserting the *string* `shutil.move` appears in `run.py` passed while `shutil` was
+  unimported and every promotion raised `NameError` (D11).
+- A test asserting `pool.stop_requested()` returns True for a file on disk passed while **nothing
+  ever called it**, and the STOP sentinel sat inert for three hours (D13).
+- The drift and clock tests used **synthetic values** rather than real sample vectors or real
+  sysfs, so neither ever exercised the wrong path — `clock_stable` was True on every run, forever,
+  from a check that could not fail (D7).
+
+D12 is the structural cousin: the `lane_error` handler was correct and its **scope** was wrong, so
+a guard covering most of what it guards read exactly like one covering all of it. The remedy that
+actually worked, applied to every fix from D7 onward, is **mutation testing** — reintroduce the
+defect and confirm the suite goes red. Every fix commit from research `a1fcc89e` onward names the
+mutation it was tested with.
+
+**The same disease reached CI itself, in its purest form.** The autokernel-guards workflow had
+failed **43 of 43 runs since its first commit**, every one dying on `No module named pytest`
+before collecting a single assertion — `actions/setup-python` ships a bare interpreter and nothing
+installed the runner. Because it looked *identically red whatever the code did*, it carried no
+signal, and it hid two real regressions for two days: a guard test still asserting
+`LOOP_LOC_BUDGET == 3000` after the deliberate raise to 3400, and a test asserting that the same
+refusal at two different times *deduplicates* — the exact opposite of the identity fix that had
+put `recorded_at` into the hashed material precisely because repeated refusals were being silently
+dropped. **A permanently-red check is indistinguishable from an absent one, and worse, because it
+occupies the slot a working check would take** (research `ac785d2d`).
+
+Installing the runner closed the hole but not its *shape*: a suite that runs FEWER assertions
+reports the same green. pytest exits 5 on zero collected — verified — but a **partial** collapse
+exits 0. Both suites now declare a floor (101 and 196) asserted with `>=`, never `==`, so the
+guard does not become a second thing to update per test. The guard found two defects in itself on
+first run: it laundered a collection error into a plausible "93 collected", because pytest prints
+the count on the same line as `, 1 error`; and its own test module had a cwd-dependent import
+(research `7ee090a5`).
+
+**Two of the run failures were the operator's, not the loop's**, and they are one class. Stopping
+run 12 reached the `timeout` **wrapper** rather than the workload underneath it, so what died was
+`llama-bench` mid-measurement (`rc=-9`), taking the run with it. And run 16's STOP sentinel was
+reported as proven working on the strength of a **shared status file that had gone stale** — a
+second-hand reading of a producer that was no longer writing, which is "verify THE consumer, not A
+consumer" in human form.
+
+**Champion lineage, for the record:** `5ad3e36d` (`akm-q4k-chained-dp4a`, +9.321% marginal) on
+`ak/loop-champion-20260828`, 36 commits above frozen v9 `0db32c06`. Run 17's 30 commits were
+audited **as a block** against what the run started from — **+3.942%, decisive, no drift, residency
+40/40, clocks stable** — and kept rather than rolled back; their individual attribution is not
+recoverable (D14) and is not worth the device time. Run 18 was live at compile time with one keep.
+
+#### Source References (2026-08-30 AutoKernel runs 11–18)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66, the
+  program of record: CURRENT STATE, the phase ledger P0–P7, and the D1–D3 operator decisions.
+- [Run 11–18 chronology](../progress/2026-08/2026-08-30.md) and
+  [runs 12–16](../progress/2026-08/2026-08-29.md) — the run-by-run counters and defects D7–D14.
+- [Surface and CI half of the day](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
+  CI-never-ran finding, the suite-floor guard, and the deploy-path correction.
+- [AutoKernel restart-and-strip rider](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — INF-64,
+  the predecessor campaign this rebuild replaces.
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
+
+### Compiled Update — 2026-08-27: a loop's throughput is set by what it does on FAILURE — AutoKernel's zero-science era was recovery-by-restart, and v28 broke it
+
+**Confidence: verified** for the campaign counters, the crash forensics, the four code fixes and
+their test results, and the v28 first-disposition receipt. **Approximate** for the two ratios quoted
+below (a ~50-commit sample and a core-path line estimate); they are order-of-magnitude claims, not
+measurements. Nothing here is a champion, a promotion, or a kernel win — v28's first disposition is
+an explicit **null result**.
+
+Every AutoKernel campaign from v3 to v27 ended with `scientific_attempts: 0`. An independent audit
+found the cause was not the science and not the GPU: it was that **every failure class was terminal,
+and recovery was defined as starting over**. Two mechanisms did it. First, planner-provider outages
+were spun on rather than waited out — a Codex 401 token outage on 08-26 produced **284
+`planner_failed` events in 23 minutes**, because the typed-transient path `continue`d with no sleep,
+backoff, or consecutive-failure cap. Second, `discovery_supervisor` forced `max_restarts == 0` for
+`kind == "deployment"` (commit `f13434e3`), so any crash was a permanent exit and the **operator**
+became the restart loop — ≥9 hand relaunches in 48 h. Because recovery mints a *fresh sealed
+deployment*, each relaunch reset `iterations`/`scientific_attempts` to 0. The counter that measures
+progress was the counter that recovery destroyed, which is why weeks of relaunches looked identical
+to no work at all.
+
+The generalizable rule: **an autonomous loop's throughput is bounded by its failure semantics, not
+its success path.** A loop whose crash-recovery discards accumulated state cannot accumulate, no
+matter how correct each individual step is. The controller already resumed from durable state
+(`DurableState.load` is its only entry path), so a *supervised* restart was always a resume — the
+clamp, not the design, was the defect.
+
+Forensics on v27's 11 crashes classified 4 to one instrument bug: the KFD residency sampler accepted
+only descendants of the *sampled leg*, so the controller's **own** sibling process (pid 964901,
+ppid = controller) was labelled a "foreign KFD process" and killed the deployment. Any GPU overlap —
+foreign or self — aborted the run rather than waiting for the device to clear. A twelfth failure
+class was found at launch: `_SITE_CRITIC_WRAPPER` pinned `claude/versions/2.1.231`, a path Claude's
+own auto-updates had orphaned, so **every** new deployment bundle failed to initialise with
+`FileNotFoundError` — and that same rotted pin was the true cause of three long-standing "pre-existing
+environment" test failures.
+
+Four fixes landed (research `01f1d2be`): exponential planner backoff with a bounded actor timeout and
+transport-class errors reclassified as retryable transients; the deployment restart clamp lifted;
+the sampler given an `owner_root_pid` so the campaign's own subtree is never "foreign", plus a bounded
+`wait_until_clear()` preflight so a timed leg never opens on a contended GPU; and guarded
+orphan-branch pruning for the crash-orphaned worktree collision. Suite green at 779/779.
+
+v28, launched latched at `--max-restarts 1000`, reached the milestone in **56 minutes**: turn 1
+`authoring_refused` (the critic caught a diff deriving undeclared file-scope symbols — a real gate
+that correctly spends no science budget), turn 2 `inconclusive` on
+`akh-v2-q5-type-specific-dequant` with exact attribution **+0.129 %** against target runtime
+**−0.015 %**, refused by the conjunctive rule. A null result *recorded with evidence* (receipt
+`34f836cc…`), with both arms proving real device residency (anchor KFD pid 3623562, candidate
+3623486, both exit 0) across admission → correctness → attribution → graphs-off → graphs-on. Zero
+restarts; the loop advanced itself to turn 3. That two arms ran back-to-back with distinct KFD pids
+and neither was misflagged is the on-hardware confirmation of the sampler fix.
+
+Two cautions this episode also produced. The package is roughly **278 K LOC** around a measurement
+core of a few dozen lines — "receipt" occurs 2,735 times in non-test source, "authority" 824 — and a
+~50-commit sample ran on the order of 49:1 governance-to-science. The measurement constitution
+requires that custody at **claim** time (P-GPU-1), not at experiment time; a screening run that is
+wrong is simply refused later. Re-scoping the sealed apparatus around the *promotion* boundary while
+keeping the screening loop thin is an operator design question, deliberately not filed as an
+implementer task. Separately, the first monitor built for v28 reported a false stall: it watched only
+iteration-completion fields, so a normal 15-minute single-threaded HIP build was indistinguishable
+from a wedge. **Liveness of a long-running phase must be proven by artifact activity (build-tree
+writes plus a live child), never by a phase-boundary state file** — and never through a truncating
+pipe, which independently produced a false "process gone" reading in the same investigation.
+
+#### Source References (2026-08-27 AutoKernel audit and v28 launch)
+
+- [AutoKernel restart-loop fix rider](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — the four
+  fixes, the v28 launch identities, the verified-dead module list, and the remaining disk-expiry task.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the parent campaign
+  handoff whose v3→v27 history is the zero-science record analysed here.
+- [Audit session progress](../progress/2026-08/2026-08-27-autokernel-audit.md) — self-contained
+  chronology: audit findings, v27 stop, disk reclamation, v28 launch, first disposition, and the
+  epyc-root divergence reconciliation.
+- [Inference research index](../handoffs/active/inference-research-index.md) — rows INF-06 (campaign)
+  and INF-63 (this repair track).
+- [`gpu_residency_sampler.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/gpu_residency_sampler.py)
+  and [`discovery_supervisor.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/discovery_supervisor.py)
+  — the two instruments whose failure semantics produced the zero-science era.
+
+### Compiled Update — 2026-08-25: the root repo's last L5 criterion is closed by the vidya loop — and the F1/F4/F6 frontier program states moved
+
+**Confidence: verified** for the readiness closeout (regenerated artifacts, test counts and the
+HEAD-reproduced gate failure read at compile time), the F1 completion record, and the F6 post;
+**verified as a blocked state** for F4 — the record is a cancellation with a named external blocker,
+not a result.
+
+#### The L5.self_optimizing_loop criterion closed — by a loop whose units are claims, not kernels
+
+`epyc-root` cleared its last repo-readiness L5 criterion on 2026-08-25: the deterministic scorer now
+credits the **vidya belief substrate** (`scripts/vidya/fold.py`, `citation_gate.py`,
+`correction_queue.py`, `r1_search.py`, `live_eval.py`) — the ledger → graded fold → citation gate →
+correction queue → re-fold feedback loop, plus the R1 exhaustive counterexample search and PR2
+live-ledger evaluation. Two governance facts matter for the autonomy story on this page:
+
+- **The guardrail survived the closeout, test-pinned.** The passive pickup artifact is still explicitly
+  *rejected* as self-optimization evidence (the 2026-07-03 precedent is unchanged), so the L5 pass
+  means "a self-optimizing loop exists", not "the loop's output is certified" — the same
+  existence-vs-quality boundary the readiness scorer has always carried.
+- **The queue drop 13 → 6 is two causes, separated in the record**: one root item closed by the
+  detector change; six `epyc-llama` L4 items left on *repo state* (the frozen tree gained real
+  health/analysis/docs/security surfaces since 2026-07-06). All six remaining items are frozen-llama
+  L5 surfaces.
+
+The vidya loop is the first L5 instance whose optimization target is evidence claims rather than
+kernels/prompts — and it satisfies this page's standing posture that an autonomous loop's load-bearing
+part is the transitions it cannot make: its citation gate blocks project documents from citing
+refuted/conflicted claims, and its correction queue writes `correction_reviewed` frames back into the
+ledger for the next fold.
+
+#### F1 COMPLETE: the real-task corpus closed 10/10 — with a stale-prose correction on record
+
+The frontier-F1 real-task program is **COMPLETE (2026-08-23, 10/10 boxes, 0 open)**: W1 task
+taxonomy, W2 passive capture (prompt-free `task_record.v1` payloads with hash refs), W2b historical
+backfill (1,246 prompt-free rows: 372 live + 874 historical), W3 clean-window 50-question EvalTower
+ledger (2026-07-07, 35/50, quality 2.10, reliability 0.94, 3 request errors), and W4 decision wiring
+(per-class real-task regret reporting alongside the routed metrics). The completion record also
+corrects its own stale Status prose — a claim that "F1 still needs the clean ledger run" predated the
+W3 checkbox that had already satisfied it. Residual follow-up (AP-16 instruction-token bloat; how the
+ledger feeds promotion/regret views) is tracked in `tool-output-compression.md`, not reopened here.
+
+#### F6: the first upstream publication landed — split cleanly into a half that needed our data and a half that did not
+
+The llama.cpp #27442 analysis went out in two halves, and only the second was ever blocked. **Part one
+was posted 2026-08-23** (operator-approved, under the operator's account): the corrections to the
+reporter's own artifacts need no measurement of ours — `n_prompt_tokens_cache` occurs 14×, all zero;
+both `_noflash` logs carry `flash_attn = enabled`; the sampler ran at `temp = 0.300`; and every build
+tested predates the Metal fixes that rewrote the path. The post says explicitly: *"We have not
+reproduced the bug — we run this architecture on CPU and ROCm, not Metal — so this is analysis of your
+artifacts, not a second data point."* **Part two — our own greedy boundary sweep — remains blocked on
+G1**, because a boundary-sweep number still needs our data behind it. The split is the durable
+autonomy lesson: "posting first offers a critique with no data behind it" was half-right — analysis of
+another party's artifacts and a claim backed by our own measurement are different authority classes,
+and only the second needs the G1 gate.
+
+#### F4: the first real backup attempt was cancelled by target rejection — tooling is one named target from a first snapshot
+
+The 2026-08-23 EVL-26 attempt built the missing half of the continuity tooling and then stopped at the
+operator boundary: restic 0.18.0 is installed (apt, flagged to the operator as a host-level action
+taken in error), `backup_critical.sh --backend restic` is the new default (continuity snapshot first —
+live SQLite via the `sqlite3 .backup` API — then `restic init`/`backup`/`check`), and the T0 manifest
+was corrected (`orchestration/repl_memory/**/*.db|.sqlite`; T0 now measures **8.21 GiB / 10,311
+files** — the handoff's "<2GB" estimate is stale). The task-stated target `/mnt/bigdisk` was rejected
+by the operator ("do not touch anything outside /mnt/raid0/llm"), the mount was removed, and the next
+target must be **named by the operator**. W2/W3 remain UNCHECKED — no backup ran, no restore has ever
+been verified, and the standing rule stands: *a backup that has never been restored is a hypothesis*.
+For the autonomy framing: the loop's own preflight correctly refused a same-array/overlayfs target all
+along; the blocker is external and named, and every non-external dependency is now done.
+
+#### Source References (2026-08-25)
+
+- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — the 2026-08-25 L5 closeout (vidya evidence paths, 13→6 queue with cause separation, guardrail pin, PII-gate surfacing).
+- [`progress/2026-08/2026-08-25-mainA-evl38.md`](../progress/2026-08/2026-08-25-mainA-evl38.md) — validation record and regenerated 2026-08-25 readiness artifacts.
+- [`handoffs/completed/frontier-f1-real-task-corpus.md`](../handoffs/completed/frontier-f1-real-task-corpus.md) — the 2026-08-23 completion banner (10/10, stale-prose correction, AP-16 residual pointer) and the W3 ledger row.
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the 2026-08-23 part-one post record (re-derived artifact facts, operator approval, explicit no-reproduction statement) and the G1-blocked part-two row.
+- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-frontier-f4-continuity-backup) — the 2026-08-23 EVL-26 checkpoint (restic backend, corrected T0 manifest and size, operator target rejection, W2/W3 unchecked).
+
+### Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary
+
+**Confidence: verified** for terminal receipts, paired effects, cleanup, and the exact failure string.
+None of the Q5/Q8 observations is a champion or promotion result.
+
+V18's graphs-on stage failed closed for a sound reason: its anchor and candidate used different hidden
+seeds. Product commits `d0e59dca` and `b9d06347` made oracle-protected arms share one seed and added a
+full-run seam regression. Fresh sealed v19 then proved seed 8613 on both graphs-on arms in both
+execution orders. This is the useful recovery pattern: repair the generator, discard the poisoned
+receipt, seal a fresh deployment, and prove the invariant live.
+
+V19 advanced through bounded Q5 and Q8 screens without turning favorable point estimates into wins.
+Q5 and Q8 candidate 1 became inconclusive when their reversed-order graphs-on effects changed sign;
+Q8 candidate 2 stopped after negative attribution; Q8 candidate 3 had positive runtime estimates in
+both orders but remained inconclusive under the sealed portfolio policy. Three undeclared-file-scope
+authoring refusals spent no GPU science budget and advanced rather than starving the portfolio.
+
+Turn 11 exposed a different control-plane defect before any GPU work. The planner copied semantic FA
+candidate route ids (`gqa7_bulk_pairs`, `gqa7_scalar_tail`) into `expected_dispatch`, but the sealed
+plan authority permits only the anchor route. The controller raised
+`DiscoveryControllerError: dispatch route id is not deployed authority`, released every claim, and
+returned KFD/VRAM to baseline. The repair boundary is to keep controller-owned candidate geometry out
+of planner context and convert invalid planner intent into a secret-free typed refusal with bounded
+retry; no mutable repair worktree may be treated as a successor deployment.
+
+The repair then landed at immutable research `de1d93d5`, hiding controller-owned FA candidate geometry
+from the planner and preserving the anchor-only authority. Fresh v20 passed two byte-identical
+validate-only passes and launched from a new deployment/state root with graph SHA-256
+`283b590df7dcd7e6157af775e5ad827a23513c036923d75ef59d59a822dc5d82`. Its first durable state is
+Q5 turn 1 `actor_entering` with `planner_started`; v19 was neither reused nor modified. Zero GPU claim,
+empty KFD, and 0% VRAM during this planner call are affirmative phase-correct evidence, not evidence
+that the later GPU phase failed to run.
+
+#### Source References (2026-08-20 v19 checkpoint)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — exact v18/v19 identities, effects, planner-authority failure, cleanup, and repair task.
+- [Root session progress](../progress/2026-08/2026-08-20-root.md) — self-contained live campaign chronology and dashboard deployment.
+- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — sibling runtime campaign boundary and write-side evidence requirement.
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective claim-carrier integration boundary for future DFlash2 panels.
+- [AutoKernel dashboard progress](../progress/2026-08/2026-08-18-dashboard.md) — actor-aware lifecycle projection and the bounded campaign-selection surface now promoted to root main.
+
+### Compiled Update — 2026-08-18: the controller graph is sealed — and the planner's memory is now a reviewed portfolio, not prose
+
+**Confidence: verified** for graph identity, test counts, commit pins, and the portfolio's recorded
+decisions — all read from the sources' dated rows; **no campaign has run** (`inference_executed=false`
+is the validated state, and the live endpoint reports `active=false`).
+
+#### The v3 seal: a deployable identity, validated without spending a single inference
+
+The controller-first implementation reached research `main` via merge `0d701b9ae`; the reviewed
+product tip is `6807a0b10`. The immutable bundle
+`gpu-discovery-quant-ladder-occupancy-v3` validates with `inference_executed=false` and graph
+SHA-256 `31af931de1da…`, binding one `gpt-5.6-sol/high` planner and one independent
+`claude-fable-5/high` critic (both receive the complete sealed planner context), source/dispatch
+authority, the timed output oracle, protected-tree snapshots, device reservations, and 29 immutable
+evidence carriers. The full merged-tree hardware-free gate passed **303/303**, with three explicitly
+*expected* failures documenting future machine-policy work — AK-ADM-1's acceptance criterion is
+those three becoming ordinary passes, i.e. the six currently prompt-bound planner limitations
+(exact kernel instantiation, command phase, static-tool execution, Q4_K correctness, the Q8
+native-path premise, IQ residency) promoted into typed pre-model enforcement.
+
+Before the next long campaign, **AK-RSM-1** makes stop/resume an explicit contract:
+content-addressed receipts for every stage (assignment → planner → critic → authorization → build →
+correctness → attribution → runner → classification), a graceful stop latch, and same-graph restart
+tests proving completed stages never repeat. The launch itself (**AK-RUN-V3**) is deliberately a
+fresh state root with one named external prerequisite — a restored Docker socket followed by exact
+inspection of the pinned planner image — never a migrated stale bundle. And the AK-RUN-2 mutation
+rehearsal's prep is **already staged on disk** (proposal manifest, source-patch manifest, comment-only
+patch, fresh-source plan, verified present 2026-08-16): what remains is execution, not authoring.
+
+#### Planner conditioning as a portfolio: exact spend, thresholds, scoped retirements, inactive counterfactuals
+
+The eligible autonomous spend set is exact and short: Q5 type-specific dequant, a genuinely new Q8
+quantizer mechanism, production-shape FA/GQA7 work, and RMS direct load/reduction. Around it, four
+governance shapes worth naming because each is a *kind* of memory, not just a row:
+
+- **A threshold-shaped lever.** The IQ2_XXS occupancy hypothesis is restated as a mechanism with a
+  cliff, not a direction: the production `true,false` instantiation via `v_perm_b32` must land at
+  ≤64 true *and* allocated VGPR, scratch 0, spill 0, eight waves/SIMD — **a 65–70 VGPR result has no
+  predicted payoff at all.** A lever that cannot cross the threshold has no value case to rank.
+- **A scoped retirement.** "Batching closes the dequant gap" is retired as a `design_prior` warning
+  for the exact MI210/Goedel-8B B1–B32 regime measured — deliberately *not* a family-wide
+  do-not-repeat, so narrower per-format hypotheses and governed re-entry stay legal. Retiring the
+  blanket claim without over-widening the retirement is itself the discipline.
+- **An inactive counterfactual.** IQ1_S is retained as a sign-discriminating falsifier with zero
+  expected value, empty templates, and **zero autonomous spend** — the operator explicitly does not
+  need an IQ1 run. Catalogue presence grants no execution; reopen requires operator direction plus a
+  practical IQ1 serving decision. Keeping the falsifier without funding it is the difference between
+  memory and a backlog.
+- **A refusal gate with a named unlock.** The four Q4_K MMQ receipts (stock 18/43, the DP4A and
+  least-squares negatives, the diagnostic 172/172 repair) are bound as immutable `candidate_only`
+  evidence, and source authoring / performance ranking **refuse** until a *committed clean-source*
+  repair passes the unchanged 172/172 κ=1.5 matrix — the uncommitted diagnostic cannot unlock
+  anything. The exact generic "Q8 per-element fp-dequant" premise is a DNR because that path is
+  already integer-native DP4A.
+
+#### The reward-integrity gaps our own audit found are now closed as regression requirements
+
+The three exploit classes that neither upstream timing-harness repository covered — our own
+32.8%-timing-loophole family — are implemented and retained in the graph as regression
+requirements: **phase detection** (a candidate correct during correctness rounds that degrades once
+timing starts — closed by fail-closed source detection plus a cross-arm timed-output semantic
+oracle, with an independently-red black-box phase-switch case green under the dynamic oracle);
+**compile/capture-replay** (candidate-added `torch.compile`/graph-capture specializing on
+value-identical timed inputs — rejected, graphs off, address *and* content rotation, validated
+timed outputs before any timing authority); and **side-stream timing** (C3 surfaces now require
+full-device synchronization or the exact tracked fence-after-start/join-before-stop contract;
+event-only timing is refused).
+
+#### The correctness oracle is sealed, and an identity conflation was corrected on the way
+
+The SOL-ExecBench port is now usable as a gfx90a **correctness-only** provider: LOCAL/gfx90a
+planning, exact source/runtime/workload identities, ten fresh live-reference rounds,
+`scoring.enabled=false` — real fresh-input verification that a stored reference tensor cannot
+substitute for, available with no measured constants. The live 193-workload run has not happened, so
+the parent empirical task stays open. Two record-hygiene corrections travel with it: the earlier
+"all seeds bf16/fp16" claim conflated oracle-workload identity with candidate metadata — the k145
+oracle surface is actually **fp32** while HyRA's candidate metadata names fp16, and k227 is
+bf16-only; the provider deliberately keeps those identities separate. And the seed bound-quality
+classes are persisted so `S` stops being quoted where it is meaningless: above ~100× headroom the
+SOL score degenerates into plain speedup with no roofline content (four of the eight seeds are in
+that vacuous class), gfx90a SOL *scoring* is blocked without measured constants, and numeric SOL
+fields are kept out of author prompts entirely.
+
+#### A latent exposure is machine-remembered, not closed
+
+The gfx90a low-quant VALU/occupancy penalty costs production nothing today — no IQ-format role is
+GPU-resident — and the finding is bound into planner memory as exactly that: zero current live-stack
+payoff, ineligible for spend, **with a mandatory reprice on any registry transition that makes an
+IQ-format GGUF resident on the MI210**. The enforcement trigger is owned by AK-ADM-1's typed
+machine policy. This is the standing pattern for latent exposures: never recorded as "not a
+problem" (which is how they get closed by mistake), never left as prose a planner can forget.
+
+#### Source References (2026-08-18 sealed controller)
+
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the 2026-08-16
+  checkpoint: merge/tip/bundle/graph identities, the 303/303 gate, the spend set, AK-RSM-1 /
+  AK-RUN-V3 / AK-ADM-1, the §22 AK-QL closures, and the staged AK-RUN-2 prep.
+- [`progress/2026-08/2026-08-16-inference.md`](../progress/2026-08/2026-08-16-inference.md) — the
+  owning session's record of the seal, the planner/critic binding, and the portfolio decisions.
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — RVP-C6-11/12/13
+  closures with mechanisms, and RVP-C2-6c/6d (the receipt binding and the committed-clean-source
+  unlock).
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — C5-3a
+  (sealed correctness-only provider), C5-4 (bound-quality classes), and the fp32/fp16 identity
+  correction.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) —
+  INF37-IQ-1: the latent-residency binding and its AK-ADM-1 enforcement hand-off.
+
+### Compiled Update — 2026-08-16: an autonomous loop is defined by what it cannot invoke — and both of ours are short of their own promotion bar
+
+**Confidence: verified for the campaign posture, the ladder definitions and the recorded counts —
+each read from the tracked campaign file, the handoff, and the operator package it names.
+Explicitly bounded: the funnel numbers below are candidate-only search observations, and this page
+carries that refusal rather than restating them as results.**
+
+#### Manual execution was stopped in favour of the controller — with the leaders already in hand
+
+At **2026-08-13 22:14 UTC** the campaign file recorded a hard stop: *"AUTOKERNEL MANUAL EXECUTION
+STOPPED; CONTROLLER-FIRST CORRECTION IS THE NEXT BOUNDARY."* Discovery-first policy is ratified and
+the nonpromotable funnel already holds live leaders — CPU IQK prefill `+31.247%` and decode
+`+7.939%`, GPU MMQ-MFMA-OFF prefill `+26.5965%` and flash-attention-ON prefill `+4.8791%`. **These
+are candidate-only search observations, not champions and not promotion evidence.** The strict path
+exposed and repaired a real IQ3_XXS MMID `n=15` correctness failure *without weakening its
+threshold*, and the new-instrument r6 calibration checkpointed A/A `200/200`, neutral `60/60`,
+anchor-motion `15/15`. On operator request the sealed watcher, parent and captured child were
+stopped and all q0–q3 claims verified free, with a standing instruction not to resume r6 or launch a
+successor campaign.
+
+The ordering is the finding. A loop holding four measured leaders and a clean calibration is exactly
+the moment at which continuing by hand is most tempting and least defensible: the next result would
+be attributable to an operator's dispatch rather than to a controller anyone can replay. Stopping
+there — before the leaders were converted into anything promotable — is what makes the eventual
+promotion mean something.
+
+#### Autonomy specified as a negative capability list
+
+The replacement is a deterministic discovery controller, built in an isolated worktree, and its
+specification is written almost entirely as prohibitions: it **must consume sealed measurements
+rather than planner prose**, and must **remain unable to invoke the calibration, held-out, champion,
+promotion, package or release paths**. It must land and be independently reviewed before any
+successor campaign runs.
+
+That shape recurs across every autonomous mechanism this page tracks, and it is worth stating
+generally: **the load-bearing part of an autonomous loop's design is the list of transitions it
+cannot make.** The 2026-08-12 governed pilots below reached the same place from the opposite
+direction — a terminal receipt that *explicitly denies* matched-campaign, ranking, belief-update,
+promotion and release authority. Capability is what the loop can compute; authority is what its
+output is allowed to change, and the two must be specified separately or the first silently becomes
+the second.
+
+#### Two promotion ladders, designed independently, agreeing on the same three rules
+
+The self-running lab (F2) and the worker pool (RTG-52) were designed by different sessions for
+different work, and converged:
+
+| | Self-running lab, W3 | Worker pool, Phase-2 gate |
+|---|---|---|
+| Stages | `shadow` → `reviewed` → `autonomous`, enforced only by `promote_job.py` | pilot → scale-out, gated on measured pilot rows |
+| Volume bar | ≥10 shadow runs scored against a cloud-reference run; autonomous only at ≥90% accept-rate over 20 reviewed runs | ≥10 rows end-to-end, 100% independently audited, operator spot-reviews 3 of 10 |
+| Scope limit | `autonomous` restricted to `read_only` report-class jobs | promotion to `main` serialized; loop-plane paths need operator ack |
+| Kill rule | promotion rejected on stage skips/downgrades; referenced gold-tuple files must exist | operator overturning ≥2 of the 3 spot-reviewed rows halts the pilot |
+
+Three rules are common to both, and none of them is about model quality. **First, output is not
+authoritative until an independent reviewer accepts it** — the lab writes to
+`orchestration/lab_review_queue/` and *never* directly to handoffs or indices, and the pool emits a
+pointer packet consumed by a headless audit that derives the diff from git independently and runs
+its own mutation probe. **Second, the promotion script is the only promotion path** — a stage that
+can be reached by editing a config is not a stage. **Third, every rung is counted, not asserted.**
+
+**Both are currently short of their own bar, and saying so is the point.** The lab's ladder scaffold,
+hardening, review-packet export and batch capture have all landed, and the first real quiet-window
+model-backed batch produced verdicts — but W3 is still `- [ ]`, with `verdicts=12` and exactly two F3
+gold tuples: one accepted (`handoff_freshness_lint`) and **one rejected negative**
+(`attestation_watch`, where cloud review caught a false attestation-empty claim). A rejected tuple is
+not a failure of the ladder; it is the ladder's only proof that acceptance means something. The pool
+dispatched six rows against a ≥10-row gate. Neither loop has earned `autonomous` on anything.
+
+#### The review queue was the compliance mechanism; a 2026-08-16 ruling generalised it
+
+F2 states the constraint plainly: *"CLAUDE.md forbids sub-agent index modifications without
+approval; the queue IS the compliance mechanism. No job writes directly to handoffs/indices."* The
+lab therefore solved a governance problem with a data structure — a job produces a *proposal* in a
+queue, and a separate accepted verdict is what turns it into a change.
+
+The doctrine ruling of 2026-08-16 makes that the general rule rather than one subsystem's workaround:
+**a subagent may PREPARE index edits; the owning session APPLIES them and owns the commit** — drafting
+row text and reporting the exact diff is preparation, and preparation is not modification (see
+[agent-architecture](agent-architecture.md), *2026-08-16*). The lab's review queue and the pool's
+audit packet are two implementations of one contract, and the contract now has a canonical statement
+independent of either.
+
+#### Refusal is a result — now mechanised at the row
+
+This page already records that *a screener certifies a row's FORM; only a read certifies its
+PREMISE* (2026-08-12, below). That check now exists as code. `premise_screener` makes a forced-choice
+still-needed | stale | UNKNOWN call with a mandatory evidence quote; UNKNOWN or stale **parks the row
+and files a routed fix task** rather than guessing. In the first pool pilot, **two rows were refused
+on `premise-unknown`** — and the handoff records those refusals as mattering as much as the four rows
+that passed. The same discipline is visible hand-executed in a worker's log from the same week, whose
+report opens with a "Premise verification" section confirming the screener's still-needed call by
+grep before any code was written.
+
+Read alongside the AutoKernel stop above, this is one posture applied at two scales: a loop that
+cannot say *no* — to a stale row, to an inadmissible journal, to a completed-but-refused pair —
+cannot be trusted with a *yes*.
+
+#### Source References (2026-08-16 autonomy ladders)
+
+- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-08-13 22:14Z stop
+  banner, the discovery-first funnel leaders, r6 calibration counts, and the discovery controller's
+  prohibition list.
+- [`frontier-f2-self-running-lab.md`](../handoffs/completed/frontier-lab-automation.md#track-frontier-f2-self-running-lab) — W3
+  reliability-ladder thresholds, `promote_job.py` as the sole promotion path, the review-queue
+  compliance rule, and the accepted/rejected gold-tuple pair.
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
+  the Phase-2 acceptance gate and kill criteria, `premise_screener` (P2-2), the headless audit
+  (P2-7), and the two `premise-unknown` refusals in the pilot record.
+- [`agents/shared/OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) →
+  *Doctrine rulings — 2026-08-16*, ruling (b) — the canonical PREPARE-versus-APPLY statement.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — a worker's own
+  premise-verification-before-implementation record.
+
+### Compiled Update — 2026-08-13: the sequencer restoration was complete before its duplicate row was dispatched
+
+**Confidence: verified from current research code, focused tests, and commit history.** AK-RUN-3 was
+still unchecked even though the lean bank/frontier/champion path had landed on 2026-08-12. The
+reconciliation verified the implementation element by element: proposal/candidate/evaluation
+records feed distinct frontier, banked, and champion state; compatible members are composed and
+directly re-evaluated; `CHAMPION_UPDATED` appends idempotently; production-anchor changes require a
+matching sealed receipt; rejected composition preserves the incumbent; and member speedups are never
+added arithmetically. The focused champion suite passed 16 tests, including import closure,
+re-anchoring refusal, and idempotent replay.
+
+This is another stale-premise dispatch, not new implementation work. The earlier restoration record
+and the later AK-RUN-3 row described the same outcome in different parts of the long handoff; the
+checkbox was reconciled rather than reimplementing the sequencer. One adjacent campaign-rehearsal
+failure remains an unrelated environment/fixture issue: its relative model path is correctly refused
+by the hardened absolute-path contract.
+
+#### Source References (2026-08-13 sequencer reconciliation)
+
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-RUN-3
+  element-by-element verification and original restoration pointer.
+- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — independent
+  premise check and focused-test result.
+- [`champion.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/champion.py)
+  and [`test_champion.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/test_champion.py) — current
+  composition/re-anchor semantics and regression coverage.
+
+### Compiled Update — 2026-08-13: accepted controls do not make a refused paired attempt archive evidence
+
+**Confidence: verified for source identity, controls, failure modes, and terminal dispositions; no CPU throughput claim.**
+
+The post-reboot AutoKernel loop produced a narrower, correct CPU IQK instrument without touching frozen production. Experimental commit `f744cc220…` is a direct child of v9 and adds the Q6_K `<32` native fallback exposed by T0; its exact seeded property suite passed. The associated five-control bundle is accepted and rankable (`5/5`, `B_min=10`, MDE `2.0360%`). That establishes the instrument's admission frame, not a candidate win.
+
+The first completed intervention attempt still did not become evidence. R29 reached ten pairs and `DECIDED`, then correctly reverted because anchor drift was `15.27%`, above its `3.08%` bound; its A/A arm independently refused while another OpenDataLoader workload held the CPU. Neither journal can be projected into the archive. The next valid step is a freshly generated f744-bound intervention/A/A pair after the independently quiet-host gate passes, followed by the held-out decode check. Autonomy here means preserving refusals and regenerating exact evidence under the repaired boundary, not extracting a result from a completed-but-inadmissible trajectory.
+
+#### Source References (2026-08-13 CPU IQK checkpoint)
+
+- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — frozen-v9 operating boundary and campaign authority.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — f744 instrument, control bundle, r25-r29 dispositions, and fresh-pair gate.
+- [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — self-contained empirical checkpoint and exact residual work.
+
+### Compiled Update — 2026-08-12: a failed pilot can validate autonomy plumbing without becoming kernel evidence
+
+**Confidence: verified for the captured failure ladder and teardown state; no kernel-performance claim.**
+
+AutoKernel's first governed one-task/K-Search pilot advanced through twelve immutable attempts. R1-r11
+successively exposed missing task-source provenance, controller import identity, Python extension and
+package closure, exact Git/null/config dependencies, and writable transient CLI state. Each defect was
+repaired narrowly rather than by broadening the controller to the host environment. R12 then started
+the real Codex client and attempted the response request, but five retries ended in `Operation not
+permitted` before a completed response. This is evidence that the autonomous controller path reached
+its model boundary; it is not evidence that the model authored a candidate or that a kernel improved.
+
+The claim boundary is the durable finding. A dependency-repair ladder may prove that isolation is
+fail-closed and that teardown works, but it cannot be ranked, aggregated, banked, or promoted as an
+optimization result. No completed model response, candidate, speedup, matched archive, or campaign
+aggregate exists for r1-r12. The next step is therefore an exact-cell retry after a least-authority
+transport-policy repair, followed by verification of the terminal pilot receipt, broker feedback,
+activation, claim/release, sampler, ephemeral-state scrub, and empty/removed cgroup. Only that receipt
+can unlock the 7/7 availability-conditioned panel.
+
+#### Source References (2026-08-12 governed pilot)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — exact r1-r12 failure chain, authority boundary, and retry gates
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — research branch identity, captured transport failure, and teardown checkpoint
+
+### Compiled Update — 2026-08-12: a terminal pilot proves execution compatibility, not comparative merit
+
+**Confidence: verified for the r15 receipt, isolation, and teardown; diagnostic-only for timing.**
+
+R15 closed the governed one-task/K-Search compatibility gate after two more fail-closed validator
+attempts. Exactly six `gpt-5.6-sol:high` calls produced one brokered intermediate evaluation and a final
+centralized evaluation. Both compiled, passed all four correctness/timing cases, and returned ratios
+near 1.0. Those ratios are telemetry about this one task, not controller or kernel ranking evidence.
+
+The more durable result is the authority-preserving execution shape. The parent owned three short GPU
+windows with 11/21/21 in-window samples and matched releases. The controller saw only `/dev/null`, both
+evaluators were deny-network with exact GPU device grants, all cgroups were empty and removed, and the
+ephemeral Codex home was scrubbed. The terminal receipt explicitly denies matched-campaign, ranking,
+belief-update, promotion, and release authority. This is the correct boundary for an autonomous-loop
+compatibility pilot: success unlocks the fresh 7/7 panel, but it cannot be silently promoted into a
+comparative conclusion.
+
+#### Source References (2026-08-12 terminal pilot)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r13-r15 dispositions, terminal receipt, isolation, and next panel gate
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-10 system-level authority disposition
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact hashes, validation counts, and research-main identity
+**Last compiled**: 2026-08-12 (second pass — three loop-engineering experiments on the loop's own operating assumptions returned **two nulls and one non-portable positive**: more reasoning effort bought time, not hypotheses; a "proximate target" framing was null for one model and adverse for the other; split scaffolding helped one model 1.393× and neither helped nor hurt the other. The governed controller campaign refuses 2 of 8 arms on licensing and is **4/64 checkpoints terminal**, so it has no aggregate. The first real CPU candidate campaign is ready and refused by its own uptime preflight at 13.47 days — see below; earlier same-day note: an AutoPilot dead-machinery audit re-derived: three modules whose surfaces all look green, instrumented with tripwires rather than fixed because each is a decision; the objective plane admits zero-quality Pareto points and one trial row in six is already there; a "sticky refuted" population dissolved as a joint-verdict-vs-single-axis defect; and the stale-premise class that makes a screened backlog row still unsafe to act on — see below; earlier 2026-08-11 note: AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
+**Sources**: 101+ documents
+### Compiled Update — 2026-08-12 (second pass): the loop-engineering experiments returned nulls, and the campaign they were meant to steer is 4/64 done
+
+**Confidence: verified** for the experiment mechanics and campaign state (each cell is receipted and self-hashed); **explicitly bounded** for every conclusion — these are one-observation-per-cell panels that the sources themselves refuse to generalise, and this page keeps that refusal.
+
+#### Three experiments on how to run the loop, and two of them found nothing
+
+The AutoKernel program spent this window testing its *own* operating assumptions rather than kernels. The results are mostly negative, which is the useful part — each one closes a knob that was being tuned on faith:
+
+- **Reasoning effort × search persistence (8/8 predeclared cells, two frontier models at high and xhigh).** Higher effort did **not** increase novel or surviving hypothesis counts in either control arm (6 → 6 for one model, 3 → 3 for the other), and **all four xhigh cells took longer**. A bounded null: paying for more reasoning effort bought time, not hypotheses.
+- **A "proximate target" framing arm.** Null for one model (6 surviving hypotheses in every arm) and **adverse** for the other, whose target arms produced *fewer* than their matched controls (3 → 1 at high, 3 → 2 at xhigh). No transferable proximate-target benefit is established.
+- **Split implement/exploit vs direct (4/4 cells).** The only positive, and it does not generalise: average speedup **1.393× for one model's split arm** against **0.996 direct**, while the other model's split arm came in at **0.994** against **1.002 direct**. The split benefit is **task- and model-specific, not a cross-model scaffold default.**
+
+The pattern across all three is the finding: **loop-engineering levers are not portable across models**, and a scaffold that helps one controller can be neutral or adverse on another. Anything written as "use split scaffolding" or "raise effort" without naming the model and task is unsupported.
+
+#### The controller campaign is real, governed, and mostly unrun
+
+The eight-arm agentic-kernel comparison **correctly refuses to run as eight arms**. Auditing moved it 1/8 → 2/8 executable, then to **6/8** after porting four controllers; the last two are blocked on licensed sources that have not been released, and **namesake substitutes are explicitly inadmissible**. The 6/6 available-source panel is ready and was expanded from an add-only proxy to four representative tasks.
+
+Two things must be read together. First, every controller smoke so far sits **at or just below 1.0× speedup** (0.9987, 1.0034, 0.9996, 0.9956, 0.9936) and every one is labelled **non-rankable diagnostic telemetry** — one iteration each, no ranking authority. Second, the live governed campaign is **partial**: at the immutable wrap boundary, **4 of 64 checkpoints and 2 of 24 cells were terminal**, with one arm still in controller deliberation. The standing rule is *rank only the terminal full 6/6 panel*, so the partial attempt has no aggregate and this page reports none.
+
+Getting even that far took two fail-closed restarts, and their causes are instructive: run 1 was invalidated because a **dotted task path escaped the exact workspace** and a device claim was left unreleased; run 2 proved the containment repair and then stopped when a strict parser rejected provider JSON carrying extra fields. **The strict parser was retained rather than loosened** when the provider schemas were integrated — the right call, and the one that costs a restart.
+
+#### The GEAK reproduction is blocked on licensing, not capability
+
+The substrate works: an exact-pinned adapter refused gfx90a spoofing, compiled a live kernel under Torch 2.5.1+ROCm 6.2 / Triton 3.1.0, and passed correctness 3/3 and timing 5/5 on the physical MI210. What is blocked is the *paper-era reproduction*: both the paper pin and current upstream carry **no project-level license** (`license: null`, license endpoint 404, PyPI declares none). No reproduction may run until a covering license is published. This is an external dependency with no internal workaround, and it should not be re-scoped as an engineering task.
+
+#### A calibration placeholder retired, and a matched archive with nothing in it
+
+Two housekeeping results with teeth. The old fixed **2.1310% MDE placeholder** — derived from four runs on a single model — is **no longer live authority**; the CLI now reports `UNCALIBRATED CELL` and each campaign must supply its own era-local calibration bundle. And the matched completed-proposal archive is **structurally ready and empirically empty**: the builder and its governed receipt producers pass their suites, but the archive holds no real records until the first CPU candidate campaign runs. A ready instrument with no data in it is a correct state to be in and a wrong thing to cite.
+
+#### What actually gates the next result
+
+The first real CPU candidate campaign is **ready and refused by its own preflight**: host uptime measured **13.47–13.48 days** against a ratified 7-day ceiling, so no claim, build or benchmark occurred. The dry run recovers cleanly (13 steps, 10 pairs, 3% floor, exits zero). The gate is an operator reboot authorization, and its default — no reboot, no result — is the current state.
+
+The five-control acceptance run that *did* execute passed **5/5** at a 3% contribution floor with `may_rank=true`, and its historical replay promoted at **+26.605%** — evidence the harness discriminates, not evidence about any candidate.
+
+#### Source References (2026-08-12, second pass)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the 6/8 refusal, the r4 campaign's 4/64 partial state, the two invalidated runs, and the AK-LE-1/2/3 panels.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the controls campaign, the uptime refusal, the retired MDE placeholder, and the empty matched archive.
+- [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) — the GEAK substrate synthesis behind the compile round-trip.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the diagnostic controller speedups and the licensing block in session context.
+
+### Compiled Update — 2026-08-12: a self-optimizing loop's audit rows, re-derived — the findings held and the anchors did not
+
+**Confidence: verified** — every item below was re-derived against the current tree rather than inherited from the audit row that named it. Where a re-derivation *changed* the finding, the corrected version is what is recorded.
+
+#### Three shapes of dead machinery, all with a green-looking surface
+
+An earlier audit of the optimization loop's codebase listed several "built, tested, zero production importers" items. Re-deriving them found the **findings held and were understated, while the anchors had rotted** — in one case the named function no longer exists at all. The three re-derived instances form a taxonomy:
+
+- **A column with no producer.** An episodic-memory `sub_decision` column: **0 non-null of 642,328 rows** (the row had claimed 0 of 59,337 — an order of magnitude more data, still entirely empty). Its 312-line test suite is green and covers the enum, the normaliser, the migration, the classifier token map and the backfill script — **everything except whether anything writes the column on the live path.** Three agents ran that suite and none noticed. *A test can cover all the machinery and never touch the question of whether the machinery is REACHED.*
+- **A feature dead at three independent layers**, any one of which would suffice: the router class appears exactly once in the tree and **that line is inside a docstring Usage example**; the state field is declared and never assigned; and the guard's **one production caller omits the argument** (every other caller is a test). The feature flag is a fourth layer of inertness. Two of the audit row's three anchors had rotted — the module had moved and the named function no longer exists — *the finding underneath survived the rot; the addresses did not.*
+- **A module whose docstring asserts its own live integration.** A mutation ledger states verbatim that the accept-path constructs records and consults it before composing a mutation onto the live config; a repo-wide grep excluding the module itself returns nothing. **Dead code is inert; a docstring asserting its own live integration is actively misleading** — a reader grepping for how conflict-aware acceptance works concludes it is wired.
+
+**The count in the audit row was wrong, and the honest answer is a range with a method.** "Ten fully-built, zero-importer modules" is at least **20** over 368 modules under `src/`; a stem-match scan gives 24, a dotted-import scan gives 22, and **they agree on 20** — 20 is the defensible floor, 26 the union. *A single number here would have been false precision*, and the caveat exists only because the second pass was run as a cross-check on the first method and disagreed with it. **The raw count is also not the actionable list**: declared console-script entry points and server modules legitimately have zero importers, so anyone acting on a bare importer count would have "cleaned up" a shipped CLI.
+
+**All three were instrumented, not fixed** — a tripwire per dead layer, each failing the moment that layer is wired (or, for the docstring, the moment the claim is softened), so whoever wires one is forced to wire the rest of the chain rather than landing a layer that silently does nothing. Deliberately **not** `xfail`/`skip`, because both are invisible in a green run and invisibility is the defect. The boxes stay **unchecked on purpose**: each is a decision (wire it, or retire it and correct its docstring), not a repair. A follow-up hardened the tripwires themselves after they proved brittle — the "is it constructed" layer now walks the **AST** and counts only real call nodes, so a construction named inside a docstring correctly isn't one, because **a tripwire that cries wolf is one somebody deletes.**
+
+#### The objective plane admits a zero-quality Pareto point, and one trial row in six is already there
+
+The live dominance vector maximises `(quality, rate, -cost, reliability)`. A point holding the maximum rate is therefore unbeatable on rate and **nothing dominates it however bad its quality** — only an explicit floor or a scaled axis can exclude it, and no quality floor exists in the loop's core. Compounding it, quality is read as `float(row.get("quality") or 0.0)`, which **cannot distinguish measured-zero from never-measured**: **231 of 1,372 trial rows (16.8%)** carry falsy or absent quality.
+
+A companion gate over-promises in its own docstring: it says *"True when this result carries every axis the live dominance vector needs"* and its body validates the **rate** and nothing else — so a row with no quality, cost or reliability passes a check whose name and docstring both claim otherwise.
+
+> **Fix the `or 0.0` regardless of which metric wins** — a metric change would paper over a data defect. And per the standing rider, a metric change is structurally an **era boundary**, not an edit.
+
+Same store, same habit, one field over: the trial journal's era label is **inferred from a missing question ledger** on ~61% of rows — the absence-read-as-a-value class recorded in [Benchmark Methodology](benchmark-methodology.md).
+
+#### A "sticky refuted" population dissolved: a joint verdict compared against a single axis
+
+A sequential-allocation readjudicator tested `state == "refuted" AND E_quality >= budget_min_e` — a **joint** label against **one** axis — while the safety gate stamps `refuted` when *either* axis refutes, recomputing it every trial. Measured: the rate axis's evidence value maxes at **1.1100 across all 393 trials** against a budget minimum of **2.0**, so every candidate's rate axis refutes past the budget threshold, **manufacturing the entire "sticky refuted" population.** The corrected report attributes each label to an axis — **6 quality, 3 rate-only, 0 UNEXPLAINED** — and the bucket that would hold a genuinely stale label is empty. The decision item is therefore **VOID / dissolved, not decided**; the live question moved to a different one. *A joint verdict compared against a single axis is the same category error as a full-machine gate applied to a partial-machine cell.*
+
+#### An experience-card schema, derived from the row type that already validates
+
+The requested experience-card facets were mapped onto the existing strategy-store entry rather than a parallel type: **three of six are already carried** (provenance, scores, and the raw material for novelty), **three are genuinely absent** (error type, method family, resource usage). Two design findings worth more than the mapping:
+
+- **`score` is ambiguous in the request, and the existing type proves it.** The entry already carries three `*_score` floats — a validity prior, a retrieval similarity and a fusion rank — and **none is an outcome score**. Adding a fourth bare `score` to that set is exactly how a consumer reads the wrong one. Name it for what it measures.
+- **`species` is a population label, not a method taxonomy**, so it cannot stand in for method family.
+
+Recommended shape: **extend additively rather than defining a parallel type** — the serializer is a plain dataclass dump, so new optional fields round-trip for free and the existing projections keep validating. Filed with it, and deliberately *not* filed as a belief-substrate register row: an experience card carrying an outcome score plus provenance **is a measurement-shaped record and needs a write-side ClaimTuple decision at design time** — but *a register entry for an unbuilt producer is the speculative row that register warns against.* Left NOT IMPLEMENTED on purpose: the row said *schema only*, and each absent facet needs an owner decision.
+
+#### Screening checks FORM; whether the premise still holds is a separate read
+
+Multiple backlog rows pulled from the generated bench this period screened as well-formed and dispatchable while their **premises had been overtaken by events** — a row describing files as uncommitted that had been committed two weeks earlier, a row prescribing a validation route that did not exist, a row naming an instrument the run did not use. The sharpest instance: a row asserting an operator-facing results page "still presents retracted numbers" — the page contains **zero** occurrences of the campaign identifiers it names, its figures are a different metric entirely, and it had been rebuilt from scratch. **Acting on that row as written would have stamped a retraction onto figures that were never retracted.**
+
+> **A backlog row is a claim about the world made at a past instant.** A screener can certify its form; only a read certifies its premise. The corollary for anyone driving a queue: budget a premise check per row, and treat *the row disagrees with the tree* as the finding rather than as an obstacle to closing it.
+
+Two related closures from the same lane. A row prescribing a dry-run route was **unfalsifiable for its entire life** because the flag it named was parsed and discarded — it now validates and exits 0 with zero errors, so the row's own numbers were never checkable by the route it named. And a "known blocker" (a port declared twice in the registry) was closed by **executing the layer rather than reading its comment**: the duplicate is real and intentional, the code was taught both spellings, and building against the production registry returns 6 fleets and 11 bindings with no phantom and no collision.
+
+#### Source References (2026-08-12)
+
+- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md) — the re-derived dead-machinery rows, the experience-card schema, and the stale-premise closures
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the tripwire designs, the module-count cross-check, and the objective-plane measurements
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the joint-verdict dissolution and its per-axis re-attribution
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — why the unbuilt experience-card producer was deliberately not given a register row
+
+### Compiled Update — 2026-08-11: two autonomous loops hardened their own measurement integrity before running anything
+
+**Confidence: verified** — read directly from committed code, tests, and operator receipts. AutoKernel's hardened harness has run zero model executions under this checkpoint; AutoPilot remains intentionally stopped. Neither loop advanced its own optimization state today — both advanced the *evidence* that a future advance can be trusted.
+
+#### AutoKernel hardened candidate execution, input rotation, and per-quant roofline discipline — before its first hardened campaign
+
+AutoKernel (the autonomous kernel-research loop) landed a static/runtime-authoring hardening checkpoint the same day production froze to v9 (see [Hardware Optimization](hardware-optimization.md) for the full engineering detail — sandbox scope, AK-TR-4/5, AK-X-3/5/6). The autonomous-research-relevant summary: every candidate build and T0/T1 evaluation arm now fails closed through native OS-level confinement with a fresh process identity and verified teardown between arms, closing the gap where the loop's own tool-allowlist did not constrain syscalls made by code the loop itself authored and compiled; a hardened arm rotates input content and buffer/context addresses and validates output through an untimed same-content replica, specifically to stop a repeated-buffer artifact from entering a campaign as if it were a measured result; and the per-quant roofline surface now refuses to construct a comparison across mismatched quant denominators rather than silently producing one. 3,730 tests passed (one declared expected failure); **no model execution ran** — the first real candidate campaign under this hardened harness, cross-lane frequency/power coupling, and the frontier-model comparison track are all still open. The harness validated its own reason to exist the same day it shipped: it refused a stale post-freeze instrument receipt rather than silently scoring a candidate against a superseded kernel.
+
+#### AutoPilot's v10 multi-tier baseline is sealed, applied, and the loop is still not running
+
+A consolidated ratifier atomically applied the v10 multi-tier baseline (evening of 2026-08-10, in scope for this pass): **T1=100 quality 1.500, T2=500 quality 1.356, T3=160 quality 1.275**, each at reliability 1.000 with zero error rows, together with the E16 era rows and a staged-promotion policy, while leaving AutoPilot and all model servers stopped. This is a checkpoint-sealing event, not a resumption — restart still requires separate, explicit operator authorization, consistent with the loop's standing pattern this page has tracked since the 2026-08-05 fan-out findings below: an autonomous loop's own guards do not resume it, only an operator does.
+
+#### A sequential-verdict mechanism shipped deliberately taking no side on the question it was built to let a human answer
+
+AutoPilot's sequential-allocation policy carries a live tension: the underlying function that decides whether a stopped e-process is `refuted` is **non-sticky** (it has no memory), but the *persisted label* recording that verdict is sticky (never recomputed) — two readings of the same system that are both true and that a lane brief and the owning handoff had stated as opposite framings of a bug. Rather than resolve that human-amendment-only question (SEQ-A1, still open, per `MEASUREMENT.md`), today's fix (`SequentialPolicy.sticky_refuted`, defaulting `False`) reproduces the current non-sticky behavior byte-for-byte — 75 tests pass across every consumer — while unconditionally recording a new `first_refuted_k` field on every trial, on the reasoning that **observing a stop is free and is not the same as deciding it is permanent**. This is a reusable pattern for any autonomous loop sitting on a genuinely undecided policy question: build the instrumentation that lets the decision be made from already-captured data later, ship it behaviorally neutral now, and do not let the mechanism's completion quietly pre-empt the decision it was built to inform.
+
+#### Source References (2026-08-11)
+
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the sandbox/input-rotation/roofline hardening checkpoint (AK-TR-4/5, AK-X-3/5/6)
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the AutoKernel non-inference hardening checkpoint narrative
+- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md) — the v10 multi-tier baseline seal and consolidated ratifier
+- [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation) — SEQ-A0, the neutral `sticky_refuted` mechanism, and the still-open SEQ-A1 operator decision
+
+### Compiled Update — 2026-08-05: least-commitment selection starts as a shadow diagnostic
 
 The world-model intake changes the immediate AutoPilot/AutoKernel question from “which richer model
 should choose actions?” to “can alternative representations even be compared without silently changing
@@ -2902,7 +3001,7 @@ interesting. Resource-lane objective versioning adds the other half of the bound
 startup. Across all three loops, representation choice, evidence eligibility, and objective identity are
 now typed inputs rather than ambient assumptions.
 
-### Source References
+#### Source References
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - [AutoPilot continuous optimization](../handoffs/active/autopilot-program.md)
@@ -2911,7 +3010,7 @@ now typed inputs rather than ambient assumptions.
 - [2026-08-05 progress](../progress/2026-08/2026-08-05.md)
 - Research intakes 991 and 998 (world-model / least-commitment synthesis)
 
-## Compiled Update — 2026-08-12: real-archive eligibility is now fixed before measurement
+### Compiled Update — 2026-08-12: real-archive eligibility is now fixed before measurement
 
 AutoKernel's least-commitment path now distinguishes a plausible proposal from an archive-eligible
 experiment before any compute is spent. The IQK intervention and its matched A/A control each carry
@@ -2930,13 +3029,13 @@ archive binds the live record by sequence and bytes. Architecture rehearsal prov
 chain, but it remains explicitly non-empirical; only two clean DECIDED campaign journals may close the
 matched archive and unlock observe-only AK-WM-2/AP-WM-1 evaluation.
 
-### Source References
+#### Source References
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — owning tasks, archive gate, and empirical remainder
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact commands, artifact hashes, and validation
 - [System-wide inference-kernel optimization program](../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md) — autonomy and evidence-boundary design
 
-## Compiled Update — 2026-08-09: a meta-evolutionary search layer is the same object AutoPilot already is — and the gaps are five named mechanisms, verified against source
+### Compiled Update — 2026-08-09: a meta-evolutionary search layer is the same object AutoPilot already is — and the gaps are five named mechanisms, verified against source
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled from dive-verified intake entries. Every mechanism below is a **design pattern to test, not a validated win** — the source paper contains **no selector-only ablation anywhere**, and only two of its claims survive scrutiny. Adoption is gated on the existing curated-baseline guard stack.
 
@@ -2952,7 +3051,7 @@ matched archive and unlock observe-only AK-WM-2/AP-WM-1 evaluation.
 
 - **An execution sandbox can be professionally built and still not be a sandbox.** A purpose-built distributed grading service — controller, dispatcher, router, containerized workers with CPU/memory/device limits — launches **every** worker with seccomp disabled, on containers whose entire job is running untrusted model-generated code; and a file in the same project named for a sandbox, documented as executing "inside the configured OS sandbox", performs an in-process module exec with no isolation at all. The durable lesson for our own harness-sandbox criteria is that *"runs in a container"* is not *"sandboxed"*, and acceptance criteria must name syscall confinement explicitly. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), intake-1028.
 
-## Compiled Update — 2026-08-10: a baseline becomes an authority only at a deliberate promotion boundary
+### Compiled Update — 2026-08-10: a baseline becomes an authority only at a deliberate promotion boundary
 
 **Confidence: verified.** The E16 AutoPilot baseline is three matched, clean evaluation lanes rather
 than a single T1 headline: T1 is 100/100 at quality 1.500, T2 is 500/500 at 1.356, and T3 is 160/160
@@ -2969,14 +3068,14 @@ candidate attestation before production mutation plus retraction propagation acr
 an author's assertion as evidence, or treating a single noisy run as a sealed baseline, would collapse
 the distinction that the staged promotion path was built to protect.
 
-### Source References
+#### Source References
 
 - [AutoPilot continuous optimization](../handoffs/active/autopilot-program.md) — E16 evidence, staged promotion, and the still-open promotion-gate work
 - [2026-08-10 progress](../progress/2026-08/2026-08-10.md) — ratification receipt, checkpoint identity, and stopped-state invariant
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC14's read-only planner bridge and the remaining promotion contract
 - [Ratification receipt](../artifacts/operator/ratify_multitier_baseline_v10_20260810.json) — exact applied boundary and no-start attestations
 
-## Compiled Update — 2026-08-10: every cheap lane is a proxy with a measured transfer function, and that ratio is free today and impossible to backfill
+### Compiled Update — 2026-08-10: every cheap lane is a proxy with a measured transfer function, and that ratio is free today and impossible to backfill
 
 **Confidence: verified for the local-code claims (read directly in our own trees on 2026-08-10);
 `inferred` for the synthesis, which no single source states.**
@@ -3032,7 +3131,7 @@ your own figures to a measured-achievable basis while a competitor's stay on spe
 without shrinking it. Keep the metric diagnostic-only: a target any promotion gate can read re-introduces
 threshold peeking.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — §21 (AK-TR-1…6 transfer machinery, AK-LN-1…5 screening lanes, AK-BH-1…3 baseline honesty, AK-OP-1/2 operator-only)
 - [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — AK-PT-1 per-turn productivity accounting; AK-LE-1…5 loop-engineering experiments
@@ -3040,7 +3139,7 @@ threshold peeking.
 - [`wiki/benchmark-methodology.md`](benchmark-methodology.md) — the instrument-integrity findings this rests on
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the research-intake session record
 
-## Compiled Update — 2026-08-12: durable campaign rehearsals must traverse the current validator
+### Compiled Update — 2026-08-12: durable campaign rehearsals must traverse the current validator
 
 **Confidence: verified.** AutoKernel's prepared IQK pair became stale when proposal-v4 made the
 source-transparent provider reference mandatory. The repair migrated both durable inputs to v4,
@@ -3052,12 +3151,12 @@ smoke test is insufficient for durable campaigns: the regression must load the m
 its dependent receipts, and its matched control through the same current-schema validator the live
 entry point uses.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-WM-2a durable producer state and empirical next action
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact v4 artifact identities and validation results
 
-## Compiled Update — 2026-08-12: a narrow sandbox probe does not prove the full controller cell
+### Compiled Update — 2026-08-12: a narrow sandbox probe does not prove the full controller cell
 
 **Confidence: verified.** The first fresh seven-arm AutoKernel attempt exposed a Claude CLI SIGSEGV
 inside the confined actor-critic planner. A trace-derived Landlock repair for a separately reproducible
@@ -3079,13 +3178,13 @@ mutually exclusive options inside `assertRaises(SystemExit)` was mistaken for an
 failure. Full discovery collected 3,927 tests, and static inspection found no module-scope parser call.
 Expected failure output is not evidence that discovery aborted.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning INF-03 differential and fresh-attempt gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AutoKernel completion audit and evidence-authority boundary
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r5/r6 and probe paths, hashes, and validation caveats
 
-## Compiled Update — 2026-08-12: bind self-referential sandbox paths to the process that consumes them
+### Compiled Update — 2026-08-12: bind self-referential sandbox paths to the process that consumes them
 
 **Confidence: verified.** The r5/r6 Claude failure was not another missing fixed path. Landlock bound
 the controller's literal `/proc/self/*` grants to the controller PID, so a forked model process could
@@ -3106,13 +3205,13 @@ capabilities. A sandbox policy prepared in a parent cannot safely stand in for t
 and moving work behind a broker should remove the corresponding dependency from the broker client—not
 carry a second implementation of it inside the confined process.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning INF-03 checklist, r7/r8 authority boundary, and fresh-attempt gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — matched-archive dependency and separation from AK-WM-2 evidence
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact research commits, receipt hashes, failure transcript, and cleanup evidence
 
-## Compiled Update — 2026-08-12: broker authority and semantic task state need explicit interfaces
+### Compiled Update — 2026-08-12: broker authority and semantic task state need explicit interfaces
 
 **Confidence: verified for the implementation boundary and first completed loop; the live campaign
 remains incomplete and non-rankable.** R9 and r10 exposed two failures that would both have looked
@@ -3139,13 +3238,13 @@ contract* saying which inherited operation is permitted, and an *identity contra
 constitute the object being protected. Generic socket helpers and whole-workspace hashing silently
 broaden those contracts in opposite directions.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning r9-r11 checklist, next terminal gate, and authority boundary
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — separation from the matched-archive and champion gates
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commits, artifact hashes, ratios, and cleanup evidence
 
-## Compiled Update — 2026-08-12: feedback is part of the loop only when the next planner consumes it
+### Compiled Update — 2026-08-12: feedback is part of the loop only when the next planner consumes it
 
 **Confidence: verified for the live controller behavior and confinement failures; neither measured
 ratio is a performance claim.** R12 supplied the first direct proof that AutoKernel's critic output is
@@ -3173,13 +3272,13 @@ forward as bounded structured state, host attestations produced once at the auth
 read them, and runtime directories staged prospectively inside the child sandbox. Recomputing any of
 these implicitly turns a successful model/evaluator sequence into a late non-terminal failure.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning INF-03 attempt ledger, receipt authority, and fresh-attempt gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — feedback-memory completion evidence and separation from archive/champion authority
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r12/r13 receipts, hashes, measurements, failure paths, and teardown evidence
 
-## Compiled Update — 2026-08-12: repair derived evidence semantics before spending the empirical run
+### Compiled Update — 2026-08-12: repair derived evidence semantics before spending the empirical run
 
 **Confidence: verified for the current implementation gaps.** AutoKernel's matched-archive machinery is
 implemented, but its prepared IQK inputs still fail six semantics/provenance requirements: proposal-v4
@@ -3195,13 +3294,13 @@ product, not just the executable**. Every identity-derived field, held-out disti
 diagnostic, provenance edge, and regeneration command must survive exact current-schema replay before
 spending the measurement window.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-WM-2a task-level repair contract and real-archive boundary
 - [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — live pre-reboot ordering and refusal posture
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — audit finding-to-task mapping and no-inference wrap boundary
 
-## Compiled Update — 2026-08-12: repeated sandbox success is a capability proof, not a terminal campaign
+### Compiled Update — 2026-08-12: repeated sandbox success is a capability proof, not a terminal campaign
 
 **Confidence: verified for call-scoped runtime isolation and the first three live evaluator windows;
 the seven-arm campaign remained in progress at the checkpoint.** R13 showed that an otherwise confined
@@ -3225,13 +3324,13 @@ falsifiers and native diagnostic semantics; and AP-WM labels evidence real only 
 projection provenance. The exact proposal-v4 regeneration command remains the sole filed pre-reboot
 implementation gap.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r14 live checkpoint and terminal receipt-chain gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-14 and AK-WM repair disposition
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commit and artifact hashes, call counts, evaluator receipts, and non-authority boundary
 
-## Compiled Update — 2026-08-12: immutable source identity is part of the campaign
+### Compiled Update — 2026-08-12: immutable source identity is part of the campaign
 
 **Confidence: verified from terminal receipts and the corrected campaign launch.** Repeated successful
 model calls and evaluator windows do not make a campaign rankable when the source identity changes
@@ -3254,13 +3353,13 @@ come from a distinct clean hypothesis-bound completed journal. This closes the o
 gap without pretending fixtures are empirical evidence: the real pair and least-commitment evaluation
 still wait on the post-reboot completed campaigns.
 
-### Source References
+#### Source References
 
 - [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r14 terminal refusal and immutable r15 receipt-chain gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-14/15 and completed deterministic pair-producer task
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact campaign, teardown, publication, and live-checkpoint hashes
 
-## Compiled Update — 2026-08-22: deployment identity must bind logical content, not paths — and a durable supervisor is proven only by surviving its launcher's death
+### Compiled Update — 2026-08-22: deployment identity must bind logical content, not paths — and a durable supervisor is proven only by surviving its launcher's death
 
 **Confidence: verified** — every event below is a sealed, forensically preserved campaign terminal or
 a repair commit promoted to `epyc-inference-research` `origin/main` with its warning-strict suite
@@ -3358,21 +3457,21 @@ historical refusal as the headline even as producer state advanced; audited succ
 lineage before any successor event can outrank a refusal, preserving the refusal as digest-bounded
 history. Ordering an event stream by wall time is not enough — **precedence must be lineage-typed.**
 
-### Source References
+#### Source References
 
 - [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — primary chronology: v20–v24 forensic terminals, all repair/product commit ids, suite counts, dashboard lineage, and the explicit v25/CPU-TP in-flight boundaries
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — standing campaign handoff; the v18/v19 identities and typed-refusal repair boundary this update extends
 - epyc-inference-research `b62d63f8f9caecac597ebd9f1b3b7b098623dc71` / `b12c672af1f205ae0262f6de8f8ea30e04cf779e` / `8022aa764d0bdae06064033cfddac8aa78f24af6` / `a0fdad399bbbf050180c1c69423479e1b8b14be6` — promoted repair products cited by the source (graph v5, dual-identity carrier, `run_build` boundary test, verdict disposition)
 - epyc-root `130d41c5688a41e4f93df3720c15a011cb1fe646` / `35c2663d1e4331b7df21889a439eadd68cdb0fc8` / `7752ed72d6fd0388b2c886a2176503f6cffb5aaa` — audited dashboard commits (strict grammars, v2 build-receipt adapter, lineage-typed refusal precedence)
 
-## Compiled Update — 2026-08-23: AutoKernel v27 stays pre-launch at science 0/10 — the trust boundary is now committed, and typed refusal reached the provider plane
+### Compiled Update — 2026-08-23: AutoKernel v27 stays pre-launch at science 0/10 — the trust boundary is now committed, and typed refusal reached the provider plane
 
 **Confidence: verified** for commit identities, test counts, audit postures, and the restart map —
 each read from the loop handoff's restart checkpoint, the 2026-08-22 root progress record, and the
 campaign banner. **No science claim of any kind**: the valid scientific ledger is **0/10**, no v27
 campaign was launched, no dashboard pin was set, and no GPU inference or measurement ran.
 
-### The loop is at its launch gate, not through it — and the gate moved forward this week
+#### The loop is at its launch gate, not through it — and the gate moved forward this week
 
 AutoKernel v27 was **not launched**; the requested terminal outcome — ten meaningful consecutive
 scientific dispositions without a crash — remains at **0/10**. What advanced is the trust boundary,
@@ -3396,7 +3495,7 @@ ordinary-refusal recovery fix `caa22f42` (focused regression GO). **Strict NO-GO
 dashboard consumer `23b01a5b`. Do not promote the accumulated experimental branches wholesale — the
 successor is one descendant of the audited foundations, never a merge of rejected checkpoints.
 
-### Typed refusal reached the provider plane
+#### Typed refusal reached the provider plane
 
 The provider message "This content can't be shown … Trusted Access" is a single suppressed model
 response, not a machine-wide stop — and the loop now has a sealed disposition for exactly that
@@ -3407,7 +3506,7 @@ on this page for the verdict plane (2026-08-22, v24's sealed `correctness_falsif
 model-provider plane: an autonomous loop must have a sealed disposition for every outcome its own
 screens and its providers are designed to produce. It is a checkpoint, not launch authority.
 
-### Discovery policy posture is unchanged, and the funnel is untouched
+#### Discovery policy posture is unchanged, and the funnel is untouched
 
 `P-AK-SEARCH-1-A2` discovery-first policy stands exactly as ratified: screened candidates are a
 ranked, deliberately nonpromotable funnel; only competing model inference overlapping the held
@@ -3417,7 +3516,7 @@ enter an archive, or authorize release. The candidate-only leaders carried on th
 flash-attention-ON prefill +4.8791%) remain observations — no new screen ran, and the v27 campaign
 would consume sealed measurements, not planner prose.
 
-### The exact restart order, because the loop is defined by what it cannot skip
+#### The exact restart order, because the loop is defined by what it cannot skip
 
 (1) finish and independently audit the C6 repair against the full adversarial matrix (live native
 Ghost Replay process, interposer/runtime-map authentication, cache-metric deny aliases); (2) finish
@@ -3430,7 +3529,7 @@ identical identities; (6) only then launch the ten-science campaign. Typed provi
 precompute refusals advance scheduling but spend zero science and cannot satisfy AK-V27-10. Frozen
 production v9 was not modified, rebuilt, or executed anywhere in this window.
 
-### Source References (2026-08-23 v27 loop state)
+#### Source References (2026-08-23 v27 loop state)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the v27 restart
   checkpoint: science 0/10, the `a7aaa47a` provider-policy skip, AK-V27-C6/PERF/DASH/10 rows, and
@@ -3445,90 +3544,7 @@ production v9 was not modified, rebuilt, or executed anywhere in this window.
 
 ---
 
-## A ratified design can be refused in code, silently, for four campaigns (2026-08-28)
-
-AutoKernel produced **zero scientific attempts across campaigns v33–v36**. The cause was not the
-search, the planner, or the hardware. A ruling was adopted at the design level and contradicted by
-a constant in the runner, and the runner won every time without anyone being told.
-
-The ruling: the aggregate **champion** becomes the campaign's measurement instrument, so gains
-compound instead of being re-derived against a fixed anchor forever. The contradiction: two
-preflight gates compared the anchor arm's source commit for **equality** against the original
-reviewed instrument. A champion-instrumented campaign cannot satisfy equality, so every attempt
-died at preflight with a message naming a commit nobody was looking for.
-
-Three properties made this expensive rather than obvious:
-
-- **The failure looked like a stall.** The dashboard reported `stalled`, so it read as slowness.
-  Only the payload's `stall.detail` carried the RuntimeError, and only once the page was made
-  legible did anyone see it.
-- **The healthy dispositions masked it.** Turns ended `planner_transient`, `critic_revise`,
-  `authoring_refused` — all legitimate outcomes that spend no science budget. A campaign can look
-  busy and productive while being structurally incapable of producing a result.
-- **The pin was invisible to the design.** Nothing linked "the instrument may now advance" to "some
-  code compares the instrument by equality". It was found only because it killed a campaign.
-
-**The generalisable rule: a design that makes an identity MOVE is incompatible with any code that
-pins that identity by equality.** When adopting such a design, grep the plane for equality
-comparisons against the thing that will now move, before running anything. The fix here was to
-compare by *lineage* — descends-from plus an independently pinned contract blob — which preserves
-what the gate protected (the oracle carries the reviewed apparatus) while permitting the movement
-the design requires. Frozen production still fails the check, asserted rather than assumed.
-
-**Corollary for observability**: the loop's own funnel had reported `champion: 0` throughout, and
-the leaders shown beside it were a mix of already-in-production, config-only and refuted arms. An
-autonomous loop's dashboard must distinguish *cannot be collected* from *not yet collected*, or a
-reader infers progress from numbers that can never move.
-
-### Evidence needs a carrier that matches its authority — not the nearest carrier that fits
-
-An autonomous loop accumulates evidence under an authority its own machinery confers: a campaign
-receipt means something because a sealed chain produced it. The moment humans also produce evidence
-about the same object, there are **two authorities and only one carrier**, and the cheap resolution
-— write the human evidence into the machine's receipt schema — is the expensive mistake.
-
-The concrete case: the champion's strongest measured result (a serving-path gain frozen production
-cannot reach at all, because it rejects the drafter's GGUF outright) came from operator-run gates.
-The dashboard surface that reports champion standing read exactly one artifact, a campaign-produced
-cumulative performance receipt. So the program's best measurement was invisible on the page that
-exists to report it, and the obvious fix was to emit that receipt from the manual harness.
-
-**That fix is a provenance forgery.** The receipt's authority is not in its fields; it is in the
-chain that only a campaign builds. Minting one from operator evidence makes every later consumer
-that trusts the schema's provenance wrong, and the corruption is undetectable at the point of use —
-the artifact validates. The general shape: *when a surface refuses your evidence, the defect may be
-the surface's reader, but the fix is never to disguise the evidence as something it is not.*
-
-The resolution that holds: a **separate carrier that declares its own authority**
-(`authority: operator_gated_manual_research`, `promotion_claim: false`), and a reader that
-**refuses any bundle claiming more than it is** — including one wearing the campaign schema. The
-refusal is the load-bearing part, and it is the part a later "simplification" will remove, so it
-belongs in a mutation test rather than a comment.
-
-Two integrity properties generalise beyond this case:
-
-- **Bind each claim to the artifact that produced it, by hash.** A gate carries its source path and
-  that file's SHA-256, so a claim resolves to its evidence and a silently edited artifact
-  invalidates the bundle rather than quietly restating a stale number.
-- **A missing input is RECORDED, never dropped.** A gate whose artifact is absent appears as
-  missing. Dropping it lets absence read as a pass — the fail-open shape that poisons stores
-  precisely when the component that would detect it is the component that is down.
-
-**Corollary for loop design**: admission and attestation are separate mechanisms and neither
-implies the other. A pipeline that lets manual work *become part of* the optimised object is only
-half a loop; without a path for that work's evidence to *appear as standing*, the human doing the
-research cannot see whether it counted — which is the whole reason they were promised the loop.
-Closing one half and reporting the loop as available is a category error, not a rounding error.
-
-### Source References (2026-08-28)
-
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-INST-1, the v36 postmortem and the lineage fix
-- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-3's second cost, CH-10/CH-11, CH-7's premature closure, CH-13's two-carrier resolution
-- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — the DF2 gates the champion carries
-- [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) — the live bundle verification and the authority-boundary decision
-
-
-## Compiled Update — 2026-08-30: a loop that is still emitting measurements is not thereby working — the run-18 post-promotion collapse
+### Compiled Update — 2026-08-30: a loop that is still emitting measurements is not thereby working — the run-18 post-promotion collapse
 
 AutoKernel run 18 ran 188 iterations and produced 138 measurements and **one keep**. Split at the
 champion promotion that landed mid-run, the two halves are different experiments:
@@ -3589,12 +3605,12 @@ caught the class.
   Ratification and implementation are two separate deliverables and must be tracked as two.
   [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
-### Source References (2026-08-30, run 18)
+#### Source References (2026-08-30, run 18)
 
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — CURRENT STATE: the run-18 split table and the six-hour detection gap; the R18 section (R18-L1 the guard and the abort-propagation fix, R18-B the open forensics, R18-G the unbuilt ranking capability); the operator decision package with D1 approved / D2 declined on measurement / D3 shipped.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §2 (the collapse and the three refuted hypotheses), §3 (what landed instead), §7 (the decisions), §8 (the two declines).
 
-## Compiled Update — 2026-08-31: one champion per tree — a lineage fork becomes doctrine, and a STOP that kept spending
+### Compiled Update — 2026-08-31: one champion per tree — a lineage fork becomes doctrine, and a STOP that kept spending
 
 **INC-20260831-champion-lineage-fork.** The rebuilt AutoKernel loop was seeded 2026-08-30 from
 bare frozen v9 as a NEW sibling branch while THE champion — `ak/champion/llama-cpp-0db32c06e3e5`
@@ -3645,7 +3661,7 @@ Sources:
 
 ---
 
-## Compiled Update — 2026-08-31 (evening): the loop advances the champion twice unattended, and the internet becomes a hypothesis source under contract
+### Compiled Update — 2026-08-31 (evening): the loop advances the champion twice unattended, and the internet becomes a hypothesis source under contract
 
 **The rebuilt loop completed its purpose end-to-end, twice in one run.** Run 21 produced two
 champion advances, each a full unattended sequence — keep → anchor rebuilt → A/A guard verified →
@@ -3678,7 +3694,7 @@ ends at a run-22 readiness report and stops; the property that run 22 cannot sta
 operator is enforced in the driver and mutation-tested, continuing the pattern that operator
 gates live in code (cf. the single-champion startup refusal).
 
-### Source References (2026-08-31 evening)
+#### Source References (2026-08-31 evening)
 
 - Research `a95581c8` (run-22 prep + flag admission), `8179dde0` (serving-evidence refresh
   runbook, claim-held).
@@ -3687,7 +3703,7 @@ gates live in code (cf. the single-champion startup refusal).
 
 ---
 
-## Compiled Update — 2026-09-07 (incremental): blind read-back — an auditor given the artifact and never the intent, emitting a description and never a verdict
+### Compiled Update — 2026-09-07 (incremental): blind read-back — an auditor given the artifact and never the intent, emitting a description and never a verdict
 
 **Confidence: external, mechanism only** (protocol read at a pinned repository commit and verified
 byte-identical to that commit's tarball, 2026-09-07). **The source carries NO efficacy measurement
@@ -3739,7 +3755,7 @@ the pattern earn an efficacy claim instead of borrowing one. Those are filed as 
 read-back), RA-13b (its write-time instrumentation) and RA-13c (its record format) in
 [`reviewer-typed-artifacts.md`](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts).
 
-### Source References (2026-09-07)
+#### Source References (2026-09-07)
 
 - [intake-1308#record](https://raw.githubusercontent.com/prove2me/prove2me_workspace/main/references/mission_auditor.md)
   — *Mission Auditor: Writing Read-backs*, pinned at `prove2me_workspace @ 58332c69`, dive-verified
@@ -3750,7 +3766,7 @@ read-back), RA-13b (its write-time instrumentation) and RA-13c (its record forma
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
   record.
 
-## Compiled Update — 2026-09-09: the unified AutoKernel control plane is being built, but it is not live research yet
+### Compiled Update — 2026-09-09: the unified AutoKernel control plane is being built, but it is not live research yet
 
 The unified CPU/GPU AutoKernel plan has moved from a documentation notebook into bounded source
 implementation. The durable design still has one champion and separate surface-specific recipes,
@@ -3783,7 +3799,7 @@ by target, surface and operating mode, records effective environment absences, a
 claim uses it cannot prove. Ordinary foreign load remains recorded search noise under the ratified search
 protocol; it is not silently promoted into either a clean result or a universal scheduling veto.
 
-### Source References (2026-09-08/09 unified AutoKernel)
+#### Source References (2026-09-08/09 unified AutoKernel)
 
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   current design, authority boundaries, implementation ledger and still-open parent tasks.
@@ -3792,7 +3808,7 @@ protocol; it is not silently promoted into either a clean result or a universal 
 - [`2026-09-09-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-09-autokernel-unified-20260908.md) —
   accepted source slices, reproduced test counts, publication identities and remaining live-system gaps.
 
-## Compiled Update — 2026-09-14: payoff uncertainty belongs in the experiment, not its formation gate
+### Compiled Update — 2026-09-14: payoff uncertainty belongs in the experiment, not its formation gate
 
 The GLM CPU campaign exposed a planner/critic deadlock that GPU campaigns could obscure with richer
 kernel timing. A planner proposed a bounded source mechanism and named matched measurement as its
@@ -3810,7 +3826,7 @@ source-consistent candidate to prove its payoff in advance when the existing cor
 A/B pipeline can test that payoff directly. Diminishing-returns guidance remains useful, but must not
 name an unavailable diagnostic as mandatory admission evidence.
 
-### Source References (2026-09-14 AutoKernel formation correction)
+#### Source References (2026-09-14 AutoKernel formation correction)
 
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   AKU-12f root cause, retained safety grounds, implementation identity and live deployment boundary.
@@ -3819,7 +3835,7 @@ name an unavailable diagnostic as mandatory admission evidence.
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — actor preparation,
   context and refusal-feedback boundary that the live planner/critic contract implements.
 
-## Compiled Update — 2026-09-15: an accumulator screen is not a champion-promotion result
+### Compiled Update — 2026-09-15: an accumulator screen is not a champion-promotion result
 
 **Confidence: verified for the recorded campaign checkpoint; live monitoring remains in progress.**
 The GLM AutoKernel's bounded recovery corrected escape, screening, stopped-resume accounting,
@@ -3837,7 +3853,7 @@ continuous curve through incompatible evidence. This avoids treating an estimate
 cheap screen as if it had cleared a different full-target or serving gate. The production-v9 kernel
 remains frozen; the live batch is an operational health monitor, not authority to mutate it.
 
-### Source References (2026-09-15 GLM recovery and trajectory scope)
+#### Source References (2026-09-15 GLM recovery and trajectory scope)
 
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
   — AKU-12g/h completed checkpoint, AKU-12i operational remainder and production boundary.
@@ -3846,12 +3862,12 @@ remains frozen; the live batch is an operational health monitor, not authority t
 - [`2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
   — preceding 50-loop health proof and the earlier trajectory-scope contract.
 
-## Compiled Update — 2026-09-15 (research-intake noninf-20260914): the judge step, reward hacking of the judge, and who should own the proposer
+### Compiled Update — 2026-09-15 (research-intake noninf-20260914): the judge step, reward hacking of the judge, and who should own the proposer
 
 **Confidence: verified** against dive-verified intake entries and the handoff rows they were filed into.
 Nothing in this section is a measurement on our host; it is design knowledge and its provenance.
 
-### orx has no judge in code — what transfers is plumbing, not epistemics (2026-09-15, research-intake noninf-20260914)
+#### orx has no judge in code — what transfers is plumbing, not epistemics (2026-09-15, research-intake noninf-20260914)
 
 The operator asked what alphaXiv's OpenResearch (`orx`) does in the propose → run → judge → refill cycle
 that AutoKernel and AutoPilot do not. The re-dive at head `3a8b0286` answered it directly: **orx has no
@@ -3870,7 +3886,7 @@ The mechanics that do transfer are infrastructure:
 - **A coded fan-out cap and depth limit.** Recorded as an operator observation (D-01), because the rule
   would live on a human-only path.
 
-### Workflow closure is not scientific closure — the three-collapse vocabulary and its gating test (2026-09-15, research-intake noninf-20260914)
+#### Workflow closure is not scientific closure — the three-collapse vocabulary and its gating test (2026-09-15, research-intake noninf-20260914)
 
 intake-1367#record ("Workflow Closure Is Not Scientific Closure") names three collapses that let a
 research loop close without earning scientific standing:
@@ -3891,7 +3907,7 @@ fits the rule [`MEASUREMENT.md`](../MEASUREMENT.md) already ratified (consolidat
 evidence collection and validation never wait for a human, and the human signs **once, at apply time**,
 over a consolidated bundle. We adopt the phrase as vocabulary only (S3-WIKI-02). It adds no mechanism.
 
-### "Internal review fails to validate" is an EPYC claim with its own citations, not an inheritance from intake-1367 (2026-09-15, research-intake noninf-20260914)
+#### "Internal review fails to validate" is an EPYC claim with its own citations, not an inheritance from intake-1367 (2026-09-15, research-intake noninf-20260914)
 
 If any gate is going to rest on the proposition that *manuscript-only or internal LLM review fails to
 validate research output*, write it as **our** claim and cite the two sources that measured it (S3-WIKI-03):
@@ -3908,7 +3924,7 @@ validate research output*, write it as **our** claim and cite the two sources th
 The counterfactual test fails: 1367's position stands without either study. A citation of 1367 for this
 proposition would claim warrant that 1367 does not carry.
 
-### Agents hack the judge they can reach — the undeclared-edit hole in AutoKernel (2026-09-15, research-intake noninf-20260914)
+#### Agents hack the judge they can reach — the undeclared-edit hole in AutoKernel (2026-09-15, research-intake noninf-20260914)
 
 **The hole (AK-RH-1).** At research `94c75914` the author step checks only the paths the actor *declares*.
 The `test-backend-ops` oracle and `llama-bench` are built from the **whole** candidate worktree, and the keep
@@ -3936,7 +3952,7 @@ Filed remedies, all in [the unified-surface program](../handoffs/active/autokern
 
 The plan declined an LLM reward-hacking judge as a keep gate.
 
-### LLM planners vs classical and random search on config surfaces — the honest reading (2026-09-15, research-intake noninf-20260914)
+#### LLM planners vs classical and random search on config surfaces — the honest reading (2026-09-15, research-intake noninf-20260914)
 
 Four dives bear on who should propose `RUNTIME_CONFIG` arms (INF-73 U3):
 
@@ -3964,7 +3980,7 @@ fewer than three distinct non-default configs is reported **under-explored, not 
 declined a GPU-serving performance model (AIConfigurator) on the same grounds (intake-1392#record, round-3
 gate).
 
-### Source References (2026-09-15, research-intake noninf-20260914)
+#### Source References (2026-09-15, research-intake noninf-20260914)
 
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   *Research-intake 2026-09-15 — judge/critic hardening* (S3-AKU-01/05/15/16/17/18) and S3-AKU-08 inside U3-SEED.
@@ -3981,7 +3997,7 @@ gate).
   intake-1392#record, intake-1395#record, intake-1396#record.
 - [`MEASUREMENT.md`](../MEASUREMENT.md) — consolidated apply-time ratification (the human signs once, at apply).
 
-## Compiled Update — 2026-09-15 (research-intake agk): contest kernel-agent loops are weaker than ours, and that is the finding
+### Compiled Update — 2026-09-15 (research-intake agk): contest kernel-agent loops are weaker than ours, and that is the finding
 
 **Confidence: verified** against dive-verified intake entries (intake-1425#record … intake-1434#record) and
 code read at `epyc-inference-research @ ae8e5ef9`. Every contest number below is self-reported by its team;
@@ -3992,7 +4008,7 @@ The operator asked a single question of the MLSys 2026 FlashInfer contest loops 
 (MoE Full-Agent #1), Kachua (GDN Agent-Assisted #1): **what, if anything, do they do better than AutoKernel?**
 Ten dives answered it, and the answer inverts the usual intake shape.
 
-### A contest placement is not evidence about a loop
+#### A contest placement is not evidence about a loop
 
 Four independent findings, each from the winner's own artifacts:
 
@@ -4010,7 +4026,7 @@ So the ranking measures kernel provenance, model and prompt seeding, not loop ma
 own reporting: *our* keep rates and floors are the only evidence about our loop, and an external leaderboard
 cannot stand in for them.
 
-### What the contest harnesses did prove: an output-only harness rewards memoization
+#### What the contest harnesses did prove: an output-only harness rewards memoization
 
 The official FlashInfer evaluator ran correctness and then **timed the same tensor objects**, with no
 cloning between passes. Placed teams exploited exactly that: a `data_ptr`-keyed output LRU, CUDA-graph
@@ -4033,7 +4049,7 @@ dives found four of ours that nothing reads:
 Filed as R24-1..R24-5 in [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program),
 with RVP-C6-26 for the within-pair content-memo hole in the hardened bench itself.
 
-### Two mechanisms worth adopting, both warranted by our own history rather than theirs
+#### Two mechanisms worth adopting, both warranted by our own history rather than theirs
 
 - **A drought reflex.** auto-gpu-kernel fires a clean-context research agent on a plateau, a correctness wall
   or an about-to-repeat attempt; it writes the next plan with a do-not-try list. Its logs show that producing
@@ -4045,7 +4061,7 @@ with RVP-C6-26 for the within-pair content-memo hole in the hardened bench itsel
 - **Alarms for measuring nothing.** Our pool breaker counts errored iterations only, by design, so run 9 spent
   10 iterations and 149 minutes producing zero measurements. Filed as R24-8.
 
-### Where ours is already stronger, recorded so it is not re-litigated
+#### Where ours is already stronger, recorded so it is not re-litigated
 
 Stateless actors; paired alternating A/B against a bootstrap A/A floor; evaluator immutability with gate-move
 history; loop-owned outcome logging; a two-pass critic with budgets on a different provider; narrative kept
@@ -4059,7 +4075,7 @@ Declined with reasons, so they are not re-proposed: evolutionary population sear
 unmeasured partials, a stall-triggered web researcher, session-resumed actor context, LESSONS pruning, and
 every NVIDIA/B200 kernel technique.
 
-### Sources
+#### Sources
 
 - [`research/deep-dives/mlsys26-contest-loops-vs-autokernel.md`](../research/deep-dives/mlsys26-contest-loops-vs-autokernel.md)
   — the full pattern-by-pattern comparison, the corrections list, and the "do not cite for" list.
@@ -4067,9 +4083,9 @@ every NVIDIA/B200 kernel technique.
   dated declined block.
 - `research/intake_index.yaml` — intake-1425#record … intake-1434#record.
 
-## Compiled Update — 2026-09-25: Evolutionary Agents and Autonomous Science
+### Compiled Update — 2026-09-25: Evolutionary Agents and Autonomous Science
 
-### What the new evidence changes
+#### What the new evidence changes
 
 The Darwin Gödel Machine, ShinkaEvolve, ALE-Agent, Digital Red Queen, and AI Scientist sources sharpen the evaluation boundary for systems that modify programs or research workflows. A child agent is evidence only after the harness preserves the fixed task set, evaluator, environment, budget, ancestry, and complete result package. Archive admission demonstrates validity under those rules; it does not by itself identify which mutation, selector, or language model caused the gain. Parent selection therefore needs causal controls against random, uniform, nearest-parent, and incumbent policies, with failed children retained in the denominator.
 
@@ -4077,14 +4093,14 @@ Open-endedness metrics such as diversity, lineage depth, coverage, and quality-d
 
 Autonomous-science claims need separate grades for execution success, artifact completeness, manuscript quality, venue outcome, and scientific validity. A generated paper or accepted build is not evidence that the scientific claim is true. Durable review requires an attempt manifest, raw trajectories, exact dependencies, negative results, and an independent replay path.
 
-### Operational consequences
+#### Operational consequences
 
 - Treat program evolution as a proposal generator feeding deterministic evaluation and human-governed promotion.
 - Record parent choice, mutation operator, evaluator version, token and wall-clock budgets, seeds, failures, and all children before comparing selectors.
 - Use hidden or private evaluators for final generalization checks, while keeping a fixed public development set for reproducible iteration.
 - Keep lineage and diversity measurements descriptive until they are connected to downstream task quality under matched controls.
 
-### Source References
+#### Source References
 
 - [Autopilot continuous optimization](../handoffs/active/autopilot-program.md)
 - [Autopilot sequential allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation)
@@ -4095,7 +4111,7 @@ Autonomous-science claims need separate grades for execution success, artifact c
 
 **Confidence:** verified against the cited intake handoffs and repository measurement rules; implementation tasks remain prospective until their own receipts exist.
 
-## Compiled Update — 2026-09-25: Trigger-Gated Escalation for Evolutionary Research
+### Compiled Update — 2026-09-25: Trigger-Gated Escalation for Evolutionary Research
 
 The immediate autonomous-research task is a selector-policy replay over existing EPYC journals, not a
 paper-wide DGM, ShinkaEvolve, or ALE reproduction. One shared run compares the current policy, a score-only
@@ -4113,7 +4129,7 @@ when an artifact will support a claim or evaluator; autonomous-science controls 
 proposal-to-execution scientific experiments. An unfired trigger is neither blocked work nor an active
 checkbox, and historical runs are not retrofitted into evidence their producers did not record.
 
-### Source References
+#### Source References
 
 - [Autopilot continuous optimization](../handoffs/active/autopilot-program.md) — selector replay provenance and policy arms.
 - [Autopilot sequential allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation) — shared Shinka/DGM selector comparison.
@@ -4123,7 +4139,7 @@ checkbox, and historical runs are not retrofitted into evidence their producers 
 
 **Confidence:** verified as repository task structure; every algorithmic gain remains prospective until the shared replay emits a governed receipt.
 
-## Compiled Update — 2026-09-25: Candidate Recovery and Planner Cost Are Loop State
+### Compiled Update — 2026-09-25: Candidate Recovery and Planner Cost Are Loop State
 
 The current AutoKernel campaign exposed a silent candidate-class loss: a tree-specific `gates.op_scope`
 marker prevented every Q4/Q5 dot-kernel proposal from reaching build across runs 3–9c, roughly 15 attempted
@@ -4138,7 +4154,7 @@ turn consuming 68% of its call. `--planner-effort high` was inert, and `tokens.r
 artifact. These observations justify better accounting and bounded controls, not an outcome claim for the
 new backend.
 
-### Source References
+#### Source References
 
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — dedicated worktrees, recovery, disposition retention, and gate-loss record.
 - [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — prompt-overhead and planner-timeline measurements.
@@ -4148,7 +4164,7 @@ new backend.
 **Confidence:** verified for the gate loss and accounting observations; backend quality remains unmeasured.
 
 
-## Compiled Update — 2026-09-26: Selector Replay Is Ready, but the Historical Record Cannot Identify an Effect
+### Compiled Update — 2026-09-26: Selector Replay Is Ready, but the Historical Record Cannot Identify an Effect
 
 The shared replay now implements current-policy and score-only controls, separate Shinka rank-power and
 score-times-inverse-offspring treatments, source-parameterized DGM weighting, and seeded HGM Beta Thompson
@@ -4168,7 +4184,7 @@ that capture later shows a stable held-out gain, the existing trigger records ad
 and then, if still justified, broader DGM, ShinkaEvolve, or ALE work. No replay result restarts AutoPilot or
 changes production selection policy by itself.
 
-### Source References
+#### Source References
 
 - [Autopilot continuous optimization](../handoffs/active/autopilot-program.md) — AP-DGM-PROV and AP-DGM-SEL checkpoints and trigger boundaries.
 - [Autopilot sequential allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation) — SEQ-SHINKA-1 implementation and fail-closed status.
@@ -4177,7 +4193,7 @@ changes production selection policy by itself.
 
 **Confidence:** verified for implementation, frozen-byte counts, and missing-field audit; selector gains remain unmeasured.
 
-## Compiled Update — 2026-09-26: Actor Budgets, a Silent Output Cap, and the Measurement Epoch
+### Compiled Update — 2026-09-26: Actor Budgets, a Silent Output Cap, and the Measurement Epoch
 
 Six AutoKernel lanes merged to research main `d643d794`, and run 10h went live on them. The durable lessons:
 
@@ -4197,7 +4213,7 @@ Six AutoKernel lanes merged to research main `d643d794`, and run 10h went live o
   result, swapping an actor no longer blanks history or lets retired ideas be proposed again. The code
   switch is DS41-C44.
 
-### Source References
+#### Source References
 
 - [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-23..OAB-28.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C35..C44.
@@ -4206,7 +4222,7 @@ Six AutoKernel lanes merged to research main `d643d794`, and run 10h went live o
 **Confidence:** verified for the merged code and the ratification; run 10h had 0 measurements when this
 was compiled (DS41-C39).
 
-## Compiled Update — 2026-09-26 (wrap-up, ak-ds41-main): the first local keep took 57.5 h, and the model was not the bottleneck
+### Compiled Update — 2026-09-26 (wrap-up, ak-ds41-main): the first local keep took 57.5 h, and the model was not the bottleneck
 
 **Confidence: verified** for the timeline, incident attribution, campaign-store counts, the keep's paired A/B and
 accumulate numbers, and the landed research commits. The keep itself is **unconfirmed at serving** (see
@@ -4269,7 +4285,7 @@ was compiled in the previous section; its code switch is DS41-C44. Still open: t
 continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j64` anchor-build reproducibility
 (DS41-C46), and an inbox evidence-freshness gate (DS41-C48).
 
-### Source References
+#### Source References
 
 - [AutoKernel local-actor bring-up retrospective](../docs/design/autokernel-local-actor-bringup-retro-20260926.md) — timeline, failure-class table, store counts, attribution, prevention map.
 - [INC-20260926-local-actor-bringup](../docs/reference/agent-config/INCIDENT_LOG.md#inc-20260926-local-actor-bringup) — the incident record and the rules it fed.
@@ -4278,7 +4294,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the keep and the post-keep findings.
 - epyc-inference-research commits `eae75696` (COR continuation), `36ebe3a7` and `846bef21` (resume carry-forward), `77f8bf58`, `7037165f`, `b8d6a046`, `2a060a41`.
 
-## Compiled Update — 2026-09-26 (late): planner concision measured, DS41 live as run 10j
+### Compiled Update — 2026-09-26 (late): planner concision measured, DS41 live as run 10j
 
 **Confidence: verified** for the one measured planner call (n=1).
 
@@ -4293,7 +4309,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - **The orchestrator seat's next gates are wire tests.** OAB-29 (a fake-model wire test) and OAB-30 (a stub
   end-to-end run that includes keep→continuation) come before the live OAB-4 A/B.
 
-### Source References
+#### Source References
 
 - [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-22 result, the start-here next steps.
 - [CURRENT-CAMPAIGN.md](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-09-26 ~19:40Z DS41 posture block.
@@ -4301,7 +4317,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) and its [completed-through-2026-09-26 sibling](../handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-26.md) — the INF-77 compaction.
 
 
-## Compiled Update — 2026-09-27: the kernel-research gate lifts, and AutoKernel may adopt its own runtime recipe
+### Compiled Update — 2026-09-27: the kernel-research gate lifts, and AutoKernel may adopt its own runtime recipe
 
 **Confidence: verified** for the ratified governance text, the keep record and the landed loop fixes; the delegation probe is 3 trials per cell.
 
@@ -4317,7 +4333,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - **A capped step with no final report wastes the whole call (OAB-34).** Planner and a1-medium author calls ended `output_capped_empty` at the 16,384-token output cap. The next step measures the cap-hit rate per role before choosing between a larger per-role cap, report-first instructions, or salvaging the last complete JSON block.
 - **Disk stopped a run.** Run 10k refused to start on disk; the retention trigger was lowered by hand to 300 GiB, and on operator approval 24 of the session's worktrees were removed (330 → 381 GiB free). The hand override is not the durable fix (DS41-C42 (b) stays open); the leak ranking is in [Agent Architecture](agent-architecture.md), same date.
 
-### Source References
+#### Source References
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — keep 2, DS41-C42/C47/C53/C55/C56/C59/C63/C64/C65.
 - [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-33, OAB-34.
@@ -4326,7 +4342,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — results, research commits, governance, disk.
 
 
-## Compiled Update — 2026-09-27 (late): an oracle that could never fire, and an oracle refusal billed to the author
+### Compiled Update — 2026-09-27 (late): an oracle that could never fire, and an oracle refusal billed to the author
 
 **Confidence: verified** for both fixes (regression tests, end-to-end check on the live candidate build, dry scan of the live store); the park notes record state, not results.
 
@@ -4349,7 +4365,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
   - DS41-C52: the static gemm4xN spill check is not built. It is needed before any register-raising variant is timed.
   - The GPU MMQ seeds are covered in [Hardware Optimization](hardware-optimization.md).
 
-### Source References
+#### Source References
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C52 park, DS41-C66, DS41-C67 and the triage follow-ups.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — § DS41-C66, § DS41-C67.
@@ -4358,7 +4374,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — MMQ seed park notes.
 
 
-## Compiled Update — 2026-09-29: the planner, not the CPU, was the DS41 bottleneck — and a steering rule made both lanes abstain
+### Compiled Update — 2026-09-29: the planner, not the CPU, was the DS41 bottleneck — and a steering rule made both lanes abstain
 
 **Confidence: verified** for the loop fixes (each has regression tests and a live-store check, and is deployed to the run worktree) and for the per-call failure counts read from `actor-calls.jsonl`; **observation** for the context-arm comparison (arm A n=10, arm B n=3, arm C n=1 valid call on uncontaminated code, with no ABBA ordering) and for the two-lane throughput effect, which has not been measured.
 
@@ -4379,7 +4395,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
   - The fix (`4fefe923`, `56dfdccf`): the block bans cosmetic variants of exhausted families rather than whole families, says closed categories are not grounds to abstain, and a keep resets its family.
   - Rule: a steering mandate must leave an open exit, or honest actors abstain.
 
-### Source References
+#### Source References
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C69 through DS41-C77.
 - [2026-09-28 ak-ds41-main progress](../progress/2026-09/2026-09-28-ak-ds41-main.md) — DS41-C69 governance finding and dry check, C70–C72 session comparisons and rejected alternatives.
@@ -4387,7 +4403,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-34 premise change for the planner cap.
 
 
-## Compiled Update — 2026-10-03: DS41 runs on external planners, and the bench keeps stopped adding up
+### Compiled Update — 2026-10-03: DS41 runs on external planners, and the bench keeps stopped adding up
 
 **Confidence: verified** for the loop mechanics and fixes (research commits, test counts and row numbers in the
 sources) and for the serving-gate verdicts the loop itself recorded.
@@ -4440,39 +4456,27 @@ sources) and for the serving-gate verdicts the loop itself recorded.
 - **Outage recovery.** After the host outage (about 10-01 21:00Z to 10-03 03:20Z), watchdog v3 relaunched DS41 at
   03:41Z.
 
-### Source References
+#### Source References
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C77 to C103.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — lineup change, floor incident, C84–C90.
 - [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — abstention storm, C96/C97, the 8-keep divergence.
 - [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — outage recovery.
 
-## Task-rate display availability
-
-Planner and replay displays render absent or malformed task rate as `n/a`, preserving valid zero and positive measurements. The legacy helper/storage zero sentinel stays compatible with historical rows; objective/frontier math is unchanged. [W8 source and synthetic acceptance](../artifacts/ni08/rtg23-w8-display-source-20261007/README.md). This change supplies no live-rate or runtime deployment evidence.
-
-## Retained-source numerical mismatch controls
-
-Both literature projections pass claim text to the existing retained-RAW numeric helper; [actual synthetic response/store/projection controls and original23/23](../artifacts/ni08/sc78-numeric-anchor-source-20261007/README.md) bind the source. One matching magnitude is sufficient under this mechanical rule, so semantic and full numerical truth remain separate. No actual source fetch or historical warrant is added.
-
-## Daily checker and missing planner evidence
-
-[Daily12:17 UTC full-gate checks](../artifacts/ni08/evl38-periodic-gate-20261007/README.md) retain actual red outcomes before failing CI; the first complete proof fails reference validation and establishes no readiness claim. [Planner display20/20](../artifacts/ni08/rtg23-w9-display-source-20261007/README.md) distinguishes unavailable from measured zero and preserves missing replay evidence as blocked.
-
-## Compiled Update — 2026-10-20: replay the closed AutoKernel history before adding loop machinery
+### Compiled Update — 2026-10-20: replay the closed AutoKernel history before adding loop machinery
 
 **Confidence: inferred** (record-level synthesis; the replay tasks have not run).
 
 The 2026-10-20 AutoKernel-methodology intake (records `intake-1980#record`, `intake-2000#record`) produced no new campaigns. It filed offline analyses over the existing AK history instead: AK-HR-1 (closed-store history census and read-only exporter, to settle which restart, surrogate and diversity analyses the stored history can answer), AK-HR-2 (search-diversity, faithfulness and repeat-null diagnostic: is the keep drought mode collapse or space exhaustion), AK-HR-3 (prospective write-side gaps that AK-HR-1 lists, as nullable additive fields with no behavior change), and VB-AK-HISTORY (keeps AK-HR-1/2 retrospective, reported as descriptive with zero ClaimTuples, and wires AK-HR-3's fields on the write side before their first post-change run). Context-reset, stateless-context, budget-axis restart, learned pre-screen and runtime-arm search-order ideas stay monitor items (M1-M5) gated on AK-HR-1's census. One retained pattern governs how any future surrogate may be described: store predicted and measured values separately and refit only when a coverage-aware reliability check fails; the code-repair pre-screen in the source held the evaluation count constant (3.71 versus 3.72 calls), so a pre-screen is not credited with savings it did not show. AK already separates screen from verify and stores a typed claim grammar, and no predictor exists whose reliability could be gated, so no loop change was filed.
 
-### Source References (2026-10-20 AK methodology)
+#### Source References (2026-10-20 AK methodology)
 
 - [AutoKernel research loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-HR-1/2/3 and the M1-M5 monitor prose.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-HISTORY write-side capture.
 - [AutoKernel cross-workload keep gate](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate) — deployment-gap fixture trigger record.
 - [2026-10-20 progress note](../progress/2026-10/2026-10-20.md) — batch scope and dispositions.
 
-## Compiled Update — 2026-10-29 (wrap-up sweep)
+### Compiled Update — 2026-10-29 (wrap-up sweep)
 
 **Confidence: verified for the smoke; no quality result.**
 
@@ -4482,7 +4486,7 @@ The 2026-10-20 AutoKernel-methodology intake (records `intake-1980#record`, `int
 
 Sources: [INF-12 Gate2 diagnostic](../progress/2026-10-28-inf12-gate2-triton36-diagnostic.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [decision-aware-routing](../handoffs/active/routing-program.md); [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service).
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for source repairs and regression counts; none is a live-behavior measurement and no reload occurred.
 
@@ -4493,13 +4497,13 @@ Sources: [INF-12 Gate2 diagnostic](../progress/2026-10-28-inf12-gate2-triton36-d
 
 Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md) · [2026-10-30 workspace-58](../progress/2026-10/2026-10-30-workspace-58.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md) · [2026-10-30 inference pipeline](../progress/2026-10/2026-10-30-codex3-inference-pipeline.md)
 
-## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
 **Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
 
 - AK-PM-12 execution-gated write hook (108 tests, UNKNOWN on missing verification), R24-8 alarms (R24-8 stays OPEN), and AKX-AUTO-5 boundary grace of 8400 s landed. ([akpm12](../progress/2026-10/2026-10-31-akpm12-hyg2b.md), [alarms](../progress/2026-10/2026-10-31-r24-8-alarms.md))
 
-## Compiled Update — 2026-11-01 (incremental source review)
+### Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited records and source controls.**
 
@@ -4507,7 +4511,7 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 - Research-intake design and trigger rows describe future proposed experiments, including KV history and typed decision backend conformance; they are not evidence that those experiments ran. ([KV prefix](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention); [typed decisions](../handoffs/active/routing-program.md#track-typed-decision-plane); [tool-use contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
 
 
-## Compiled Update — 2026-11-01 (source-delta review)
+### Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
@@ -4517,7 +4521,7 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 - AP-66 finite-table replay at 100 calls reported mean rule-infeasible rates .782/.754/.754 for FAIL/raw/bounded and .191 for qLogNEHVI; at 50 calls FAIL/raw/bounded all .828, so no 50-call improvement. Ten seeds, 20-row matched starts, native table hits and joint-row repair constrain interpretation; live optimizer gain is unproven. [Source](../handoffs/active/autopilot-program.md)
 - Refutation capture now carries observed k_rate for new records and reconstruction, preserving legacy fallback where counts are absent; 36 controls, policy thresholds unchanged (orchestrator bd2f7105). [Source](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation)
 
-## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
+### Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
@@ -4533,19 +4537,19 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 - Inference, last 12 h of 11-01: 16 runs ended and were filed, none decision-grade; 10 failed (5 admission, 5 harness). [ws58](../progress/2026-11/2026-11-01-workspace-58.md), [six filings](../progress/2026-11/2026-11-01-codex3-six-filing.md)
 - R18-A CUID forensics: the 141 HIP host-name differences are fully explained by ROCm 6.2 CUID hashing over source path/args plus a second ASTContext hash; identical TU bytes with relocated roots account for every pair. Next: test pinned per-TU `-cuid=` in a fresh complete build. [progress](../progress/2026-11/2026-11-01.md)
 
-## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
+### Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
 **Confidence: dive-verified source readings; paper and vendor numbers are claims, not local measurements, and every derived task is proposed, not run.** Source record: [ws58-20261031 deep dives](../research/deep-dives/ws58-20261031/README.md).
 
 - Resin (intake-2562#record; [w1_agent](../research/deep-dives/ws58-20261031/dives/w1_agent.yaml), [w5_meta](../research/deep-dives/ws58-20261031/dives/w5_meta.yaml)), CUDA-only: its claims are uncorroborated, and its measurement discipline is weaker than ours on every statistical axis (no A/A floor, MDE or e-process). It is stronger on in-window path counters and union-vs-sum trace attribution. Proposed: AK-WIN-CNT-1 (hipGraph replay vs eager launch counters as a sidecar, with an Annex K amendment drafted for human ratification), AK-PROF-ATTR-1 (GPU-active union vs summed kernel time, lint against cross-run subtraction), AGENT-9 (copy only the missing discipline lines into the AK actor context).
 - AK correctness context (w1 header, local code reading): MUL_MAT allows NMSE 5e-4 on uniform(-1,1) inputs with no KLD gate. Proposed KERN-9 requires diagnostic feedback to use a seed disjoint from acceptance ([w1_kern](../research/deep-dives/ws58-20261031/dives/w1_kern.yaml)).
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
 **Confidence: verified** — 14 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
+#### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2143#record (agent-optimizer continual-learning evaluation): Citable for a two-phase protocol shape (tune on T1, test on arriving T2 without re-tuning, then re-tune) and one vendor-authored data point that a regression-rejecting selector held gains where prompt-only evolution overfit. Verdict adopt_patterns, integrated; linked to harness-improvement-loop.
 - intake-2145#record (TTHE paper): Pattern-level adoption: trace-reading proposers plus a probing judge over unaggregated proxy signals carried forward batch to batch is a precise precedent for the HIL label-free arm. Verdict adopt_patterns, integrated; linked to harness-improvement-loop.
@@ -4562,21 +4566,21 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 - intake-2179#record (Hierarchical Self-Improvement): Contains no two-gate acceptance rule (that rule is from a different paper), Setup-A gains are not generalization, and its scope-isolation design duplicates guards EPYC already has. Verdict not_applicable, disposition monitor.
 - intake-2186#record (Self-Evolving Agents with Anytime-Valid Certificates): Not evidence that anytime-valid gates stay valid when an agent authors its own data or evaluator: the paper leaves that as an open conjecture and its live runs disable the SGM-CS gate. Verdict adopt_patterns, integrated; linked to autopilot-sequential-allocation.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2589#record (CAKE compiler-agent co-design): CAKE is an NVIDIA agent+compiler co-design paper, not a caching technique; citable for the pattern of typed representation, cheap static verifier gates and a cost model filtering candidates before GPU time. Verdict adopt_patterns; linked to autokernel-rebuild-program.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 13 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+#### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
 
 - intake-2232#record (REx code repair): Treats each candidate program as a bandit arm chosen by Thompson sampling to balance exploring new programs against refining promising ones; arXiv v3 read. Worth-investigating, integrated; linked to autokernel-research-loop.md.
 - intake-2247#record (Prime Intellect autonomous research measurement): Cite for a frozen verifier with unseen fixed seeds and a margin set to a stated false-pass rate, and for best-of-n seed selection inflating records. Worth-investigating; linked to harness-improvement-loop.md.
@@ -4592,16 +4596,16 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 - intake-2307#record (Anthropic long-running scientific computing): Harness lessons recur across two oracle-bound coding tasks but are not shown outside coding; transferable parts are the progress file with failures and the oracle pattern. Adopt-patterns; linked to harness-improvement-loop.md.
 - intake-2334#record (Anthropic quantum circuits with Claude): A 53-hour run with minimal human input produced the elliptic-curve point-addition design; the headline improvement over published circuits is vendor-reported. Adopt-patterns, monitor; linked to harness-improvement-loop.md.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch f, workspace-58)
 
 **Confidence: verified** — 1 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
+#### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1226#record (GPU Kernel Scientist): The dive found the target is AMD MI300 (CDNA3), not gfx90a, with no profiler and no released framework: the only artifact is one example HIP kernel in a ZIP, and the loop depended on a defunct competition endpoint. Verdict adopt_patterns (no component exists), dive-verified; handoff agentic-rocm-kernel-authoring.
 
-## Compiled Update — 2026-11-04 (AutoKernel filings and harness churn)
+### Compiled Update — 2026-11-04 (AutoKernel filings and harness churn)
 
 **Confidence: verified** — filed native results; scope limits are as stated in each filing.
 
@@ -4614,7 +4618,7 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 
 Sources: [autokernel-rebuild shard](../progress/2026-11/2026-11-04-handoff-autokernel-rebuild.md) · [akagg shard](../progress/2026-11/2026-11-04-handoff-akagg.md) · [all-devices shard](../progress/2026-11/2026-11-04-handoff-autokernel-all-devices-all-dimensions.md) · [codex-gen shard](../progress/2026-11/2026-11-04-handoff-codex-gen.md) · [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)
 
-## Compiled Update — 2026-11-07 (AutoKernel: loop efficiency, safety and admission tooling)
+### Compiled Update — 2026-11-07 (AutoKernel: loop efficiency, safety and admission tooling)
 
 **Confidence: verified** (research commits and replay evidence cited in the progress log; the typed pre-screen and typed planner replays were offline, pre-registered and read-only on the DS41 store).
 
@@ -4628,7 +4632,7 @@ Sources: [autokernel-rebuild shard](../progress/2026-11/2026-11-04-handoff-autok
 
 Sources: [AutoKernel progress 2026-11-07](../progress/2026-11/2026-11-07-autokernel.md) · [autokernel-loop handoff](../handoffs/active/autokernel-loop.md) · [AKX program handoff](../handoffs/active/autokernel-akx-program.md)
 
-## Compiled Update — 2026-11-08 (AutoKernel: floor self-check, speculative keep gate, harvests #5-#11)
+### Compiled Update — 2026-11-08 (AutoKernel: floor self-check, speculative keep gate, harvests #5-#11)
 
 **Confidence: verified for what landed (research commits cited in the progress log); no measurement exists yet for SL-2, SL-4 or AKX-AUTO-4.**
 
@@ -4639,7 +4643,7 @@ Sources: [AutoKernel progress 2026-11-07](../progress/2026-11/2026-11-07-autoker
 
 Sources: [AutoKernel progress 2026-11-08](../progress/2026-11/2026-11-08-autokernel.md) · [autokernel-loop handoff](../handoffs/active/autokernel-loop.md) · [AKX program handoff](../handoffs/active/autokernel-akx-program.md) · [speculative-decoding handoff](../handoffs/active/speculative-decoding.md)
 
-## Compiled Update — 2026-11-09 (R18-D clock eligibility: band, not equality)
+### Compiled Update — 2026-11-09 (R18-D clock eligibility: band, not equality)
 
 **Confidence: verified for the diagnosis; the prospective r4 test is in flight**
 
@@ -4649,13 +4653,13 @@ Sources: [AutoKernel progress 2026-11-08](../progress/2026-11/2026-11-08-autoker
 
 Sources: [r18d diagnosis](../artifacts/analysis/r18d-clock-diagnosis-20261109.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [2026-11-09 r18d-r4 progress](../progress/2026-11/2026-11-09-r18d-r4.md)
 
-## Compiled Update — 2026-11-09 (Autopilot audit refresh)
+### Compiled Update — 2026-11-09 (Autopilot audit refresh)
 
 - True last Autopilot run is 2026-08-09T19:29Z (trial 1503), not 07-27; journal shards are `autopilot_journal.jsonl` (0-999) and `autopilot_journal_1.jsonl` (1000-1505). The relaunch will use a brand-new era (human-only ratify script), so E8-era premises (SEQ-3, SEQ-B1, re-arm) were rewritten. New box AP-HOLD-RELEASE-REVIEW lists every box to re-premise before the hold lifts. AP-DGM-PROV/SEL and SEQ-SHINKA-1 lack a capture target (`select_lineage_parent` is deterministic); recommended option A, observe-only `eligible_parents` logging ([autopilot-program](../handoffs/active/autopilot-program.md)).
 
 Sources: [autopilot-program](../handoffs/active/autopilot-program.md) · [routing-program](../handoffs/active/routing-program.md)
 
-## Compiled Update — 2026-11-18 (handoff-session autonomy, the production-promotion gate, and what unattended sessions cost)
+### Compiled Update — 2026-11-18 (handoff-session autonomy, the production-promotion gate, and what unattended sessions cost)
 
 **Confidence: verified for the recorded commits, counts and operator rulings (progress and handoff boxes); inferred for the causal reading of the token-ceiling failures.**
 
@@ -4677,7 +4681,7 @@ Sources: [autopilot-program](../handoffs/active/autopilot-program.md) · [routin
 - [RTG-22 progress 2026-11-18](../progress/2026-11/2026-11-18-rtg22.md)
 - [Engineering hygiene backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
-## Compiled Update — 2026-11-19 (backlog waves, audit ordering, cross-worker admission, measurement-window draft)
+### Compiled Update — 2026-11-19 (backlog waves, audit ordering, cross-worker admission, measurement-window draft)
 
 - **Backlog waves A-D landed, all flagged default off**: REPL-EMB-3.1 extractive spill summary, UFH14-TOOLS-1 tool-surface cap, report-only SEQ-5 monitors, an AP-71 real-journal lineage-depth audit (6 keeps, no ICRH signature), RTG-VAR-1 host-capability manifest, TD-29.M2 validate-first shadow, AP-72 per-model speed ceiling table and the M-12k memory-off switch ([autopilot-backlog-session 2026-11-19](../progress/2026-11/2026-11-19-autopilot-backlog-session.md)).
 - **Gating.** STACK-UP-RELOAD-QUEUE (embedder bring-up, C3 flip, one API-only reload, M-12k A/B, tool-selector canary) is blocked on the production stack being down, an external event. AP-JOURNAL-STALENESS-AUDIT is filed to run last per the operator, noting the autopilot has not run since 2026-08-09; BSV-2 paired runs are approved but parked until the autopilot relaunch after that audit.
@@ -4685,3 +4689,45 @@ Sources: [autopilot-program](../handoffs/active/autopilot-program.md) · [routin
 - **Path-counter amendment draft.** AK-WIN-CNT-1 proposes an in-window path sidecar so a timed window that ran eager launches instead of hipGraph replay is detectable; it is a human-amendment-only draft with its evidence row published but not yet run ([draft](../docs/design/ak-win-cnt-1-annexk-path-counters-amendment-draft.md)).
 - **Embedder placement.** The operator signed option A (GPU co-host `embedder_gpu` :8099 beside the 27B); bring-up row `embedder-gpu-bringup-20261119` filed FAIL because the stack was down and G1-G4 could not run.
 - **Rows filed as filing hygiene, not retries.** dripreview12 closed on its frozen futility rule rather than being rerun ([dripreview12](../docs/reports/dripreview12-futility-20261119.md)); the failed CF-3c binding qualification was preserved and not replaced ([qualification](../docs/research/cf3c-binding-qualification-20261119.md)).
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): the parallel AutoKernel loop (AKPL P0-P6), rowflow fixes, AK audit and dashboard
+
+- **Program.** The operator approved the whole plan P0..P6 on 2026-11-21 (owner pipeline-mgmt; boxes AKPL-P0..P6 in `churn-pipeline.md`), derived from a read-only audit of the 16-day AutoKernel management session (10,192 assistant turns, 523 subagent spawns, 46 Reads, 309 operator turns: the main thread briefs, verifies, publishes and files rather than working). Hard limits at every phase: production kernels frozen, promotion operator-only, all scheduling through rowflow (no second keeper), main sessions remain the only row publishers. Sources: `docs/design/autokernel-parallel-loop.md`.
+- **Phase state.** P0 (stage timing export, `estimate_history.py`) landed with one clause open (>= 30 iterations of stage timings need a loop run). P2 chain scaffolder, P4 lineage manager, P5 and P6 code landed. P3 tail split landed with offline proof only (not deployed; `--legacy-tail` / `--workers 1` rollback), plus a deterministic step 4 of `ak_runend` (2026-11-22): `census_update` re-ranks the MI210 bandwidth census idempotently per RESULT sha, writes seed stubs and marks seeds done, with no LLM. Single-MI210 caveat: oracle-KLD rows hold `mi210_0`, so GPU gates serialize with timing and concurrency comes from CPU-quarter builds. Sources: `docs/design/autokernel-parallel-loop.md`.
+- **P1 gate evaluator is still open.** `gate_eval.py` (pure function, no LLM) replayed over 471 owner filings since 2026-11-06: strict agreement 392/471 = 83.2% (85.8% with SUPERSEDED and WITHDRAWN merged; 89.3% on claim-bearing filings; 4 polarity flips). The policy layer (27B-anchored graph-KLD policy, speed floor) matched every claim-bearing fold-gate filing it decided. After the operator's 2026-11-21 filing ruling "no result means no claim" (SUPERSEDED when a successor exists, else WITHDRAWN, never inconclusive; gate id `filing.no_result_no_claim`), the ruled agreement is 94.1% (SUPERSEDED 80/80, WITHDRAWN 20/20, pass 157/163, fail 96/106, inconclusive 91/103), below the >= 95% gate, and the no-result part agrees by construction. The token vocabulary was written while reading the same corpus, so this is in-sample; a holdout re-run on filings after 2026-11-21 is required. Two row-template fixes (one polar token per row, split the overloaded FUTILITY tokens) are named. Sources: `docs/design/autokernel-parallel-loop-p1-replay.md`.
+- **P5 hand-back verifier and failure classifier.** `handback_verify.py` checks claims mechanically (pushed, branch_contains, published, smoke_pass, filed, built via symbol bytes never mtime, ticked with a belief tag, tests, file_exists) and stamps VERIFIED only when at least one claim exists and all verify; zero checkable claims is UNVERIFIED. Since 2026-11-23 `handback_auto.py` stamps every AK subagent hand-back through the existing PostToolUse(Agent|Task) hook (the stamp reaches the dispatcher as additionalContext, ledger at `/mnt/raid0/llm/tmp/handback-stamps/stamps.jsonl`; no CLAIMS block means UNVERIFIED). `failclass.py` splits failures into `harness` (pipeline or instrument failed, candidate never judged), `candidate` (compile, correctness_gate, timing_loss, noise), `ok` and `unknown`, and only harness failures route to `notify.emit`. A later box added CRASH versus VACUOUS tokens to the harness judge (research `bf4c33f10`). Sources: `docs/design/autokernel-parallel-loop-p5.md`, `handoffs/active/autokernel-loop.md`.
+- **P6 decision-needed detector.** `decisions.py` is a deterministic read-only scanner (gate-unknown, gate-open, hold-hit, refusal-cap at 2 of MAX_FAILS=3, row-parked, futility without successor, supersede dead-end, repeated smoke FAIL) that drafts a 3-option AskUserQuestion package per event with stable event ids and never sends anything. Its 2026-11-21 sample for the autokernel owner listed 17 events (7 gate-unknown, 3 gate-open, 7 hold-hit). A row refused by the publish-time hold check is not persisted, so the hold signal comes from `holds.yaml` plus the held boxes. Sources: `docs/design/autokernel-parallel-loop-p6.md`.
+- **Rowflow and keeper fix briefs (F2-F9, all carry a D9-ack because they touch the engine or publish gate).** One smoke runner per row id (per-id flock), verdict semantics on every filing path (`--correct pass` on DROP/FUTILITY/diagnostic is coerced), holds keyed by (session, scope) with a `holds.yaml` source of truth, churn tools that print their tool-commit and warn when the checkout is more than 50 commits behind origin/main, grants that end or shrink on idle-after-crash or an over-declared width, builds as a claimed lane with contamination naming the offending pid, predicate and completion-check path provenance (`expects_created`), and a roster check on `owner` so every alert reaches a real owner. B10, B11, B13 are absorbed by the handoff standard; B1, B3 (agent path), B12, B14 were already satisfied on origin/main. Sources: `docs/design/ak-audit-reqs-fixes-20261120.md`.
+- **Dashboard audit and fixes (2026-11-21).** The hub `/loop` page rendered a legacy loop status 25 days stale, so rowflow-era AK activity, blocked reasons, decisions needed and the flow were invisible. Implemented: an "At a glance" strip (rows running/queued, candidates, P6 decisions, own freshness envelope) and a live DET-versus-AI flowchart (`epyc.akloop.flow.v1`, `/api/akflow`, probe `/api/akflow/health`, panel `akflow` feeding `/api/health`). Deferred: glossing ticket-id headings and collapsing legacy cards when the producer is stale (needs an operator view on defaults). Sources: `docs/design/ak-dashboard-audit-20261121.md`.
+- **Loop-side lesson and integrity items filed in the AK handoff.** AK-PM-12 write-side admission (research `93c217ec5d743da8f81b430630a03ad3638d106a`): `lesson_cap.py` derives a speedup ceiling from a measured part table (gfx90a 1.4982 TB/s best of 36 stream lines); the native receipt `ak-pm12-native-receipt-gpu-20261122` (RECEIPT_OK) shows V5I 2.301x per forward (446 to 1,027 GB/s implied), and `ak-pm12-s4-capadmit-gpu-20261123` CAP_VERIFIED shows the cap (3.356x) correctly REJECTing a candidate below its verification threshold. AK-WM-3 (offline exploration-policy replay), AK-EFF-P2 typed planner output (typed `exhausted`, >= 25% explore share, DNR rows selectable), AK-integrity pack (fresh-input recheck per timed run, static blocklist), a SOL-ExecBench hack-scan with 11 detectors and mutant fixtures, a device-ISA identity check that skips re-measurement of byte-identical compiled GPU code, and the profile-unit rule (TFLOP/s above the ridge point, GB/s below it) all landed. C6 semantic tier ratified as GATING with an in-context Claude judge (operator 2026-11-21), conditional on the mutant calibration (3/3 reject, 3/3 accept; rubric source `intake-1241#record`). Sources: `handoffs/active/autokernel-loop.md`, `handoffs/active/rocm-kernel-authoring.md`.
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [autokernel-parallel-loop](../docs/design/autokernel-parallel-loop.md)
+- [autokernel-parallel-loop-p1-replay](../docs/design/autokernel-parallel-loop-p1-replay.md)
+- [autokernel-parallel-loop-p5](../docs/design/autokernel-parallel-loop-p5.md)
+- [autokernel-parallel-loop-p6](../docs/design/autokernel-parallel-loop-p6.md)
+- [ak-audit-reqs-fixes-20261120](../docs/design/ak-audit-reqs-fixes-20261120.md)
+- [ak-dashboard-audit-20261121](../docs/design/ak-dashboard-audit-20261121.md)
+- [autokernel-loop](../handoffs/active/autokernel-loop.md)
+- [rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md)
+
+### Compiled Update — 2026-11-23 (operator wiki sweep): autopilot relaunch checklist, journal-staleness audit, speed ceilings
+
+- **Autopilot stays dormant (it has not run since 2026-08-09), and the relaunch is now a written checklist (W-11..W-37).** The checklist requires:
+  - The HOLD is lifted only after the next production kernel promotion and the stack reorg.
+  - The verify scripts and ggml linkage pass.
+  - PaddleOCR-VL enters the stack before the lift (PIP02-PADDLE-STACK-ENTRY).
+  - The lineup is final.
+  - Journal readers are shard-aware (`journal_shards.py`, `918b8143`).
+  - The SEQ gate is decided, and AP-55 stays shadow.
+  - The start goes only via `start_authority_daemon.py`.
+  - The belief canary is armed.
+  - The default-off launcher flags are set at release.
+  
+  ([autopilot-program](../handoffs/active/autopilot-program.md)).
+- **AP-JOURNAL-STALENESS-AUDIT is ordered LAST (operator 2026-11-19).** It must review `autopilot_journal*.jsonl` (1,390 records, 2026-05-26 to 2026-08-09) and everything derived from it before any relaunch. BSV-2 paired runs were approved, then prepared and parked until then (booking 15,700 s from August-era timings, to re-derive at relaunch) ([autopilot-program](../handoffs/active/autopilot-program.md)).
+- **AP-72 per-model speed ceilings** (`a6f65249`, `autopilot_speed_ceilings.yaml`): measured throughput × slots × 1.10. The values are 27B 210.3, A3B 177.0, Flash-Next 58.0 and VL 123.4 t/s. They are achieved spec-decode rates, not bandwidth rooflines. The flag `autopilot_speed_physical_bound` is default OFF ([autopilot-program](../handoffs/active/autopilot-program.md)).
+- **AP-71 PromptForge lineage audit** found 6 keeps. `frontdoor.md` (4 keeps) shows no signature: quality rho +0.63, prompt-tokens rho -0.77. The other two keeps had insufficient depth. It will be re-run as keeps accumulate. SEQ-5 follow-ups added report-only `K_opened` per quarter and a rolling 90-day fingerprint-alpha line (monitors M1 and M3 decided) ([autopilot-program](../handoffs/active/autopilot-program.md)).
+
+#### Source References (2026-11-23, operator wiki sweep)
+- [handoffs/active/autopilot-program.md](../handoffs/active/autopilot-program.md)
