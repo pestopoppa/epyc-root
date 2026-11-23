@@ -518,9 +518,9 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 208,
+      "closed": 209,
       "guarded": 0,
-      "last_advanced": "2026-11-21",
+      "last_advanced": "2026-11-23",
       "open": 48,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -530,7 +530,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 258,
+      "total": 259,
       "tracks": [
         {
           "blocked": 1,
@@ -544,7 +544,7 @@
         },
         {
           "blocked": 0,
-          "closed": 32,
+          "closed": 33,
           "gates": [],
           "guarded": 0,
           "line": 378,
@@ -557,7 +557,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 617,
+          "line": 621,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -567,7 +567,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 883,
+          "line": 887,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 5
@@ -577,7 +577,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1395,
+          "line": 1399,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -587,7 +587,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1932,
+          "line": 1936,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -597,7 +597,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2694,
+          "line": 2698,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -607,7 +607,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3121,
+          "line": 3125,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 8
@@ -617,7 +617,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 3797,
+          "line": 3801,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
@@ -2216,10 +2216,10 @@
     },
     "routing-program.md": {
       "blocked": 1,
-      "closed": 183,
+      "closed": 184,
       "frozen": 7,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-23",
       "open": 61,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -2229,7 +2229,7 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 252,
+      "total": 253,
       "tracks": [
         {
           "blocked": 0,
@@ -2243,7 +2243,7 @@
         },
         {
           "blocked": 0,
-          "closed": 44,
+          "closed": 45,
           "frozen": 4,
           "gates": [],
           "guarded": 0,
@@ -2257,7 +2257,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 604,
+          "line": 608,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
           "open": 4
@@ -2268,7 +2268,7 @@
           "frozen": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1079,
+          "line": 1083,
           "markers": 1,
           "name": "learned-routing-controller",
           "open": 5
@@ -2278,7 +2278,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2327,
+          "line": 2331,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2288,7 +2288,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2403,
+          "line": 2407,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2298,7 +2298,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2536,
+          "line": 2540,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2309,7 +2309,7 @@
           "frozen": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2839,
+          "line": 2843,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 25
@@ -2319,7 +2319,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3594,
+          "line": 3598,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2331,7 +2331,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3675,
+          "line": 3679,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2341,7 +2341,7 @@
           "closed": 1,
           "gates": null,
           "guarded": 0,
-          "line": 4164,
+          "line": 4168,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2

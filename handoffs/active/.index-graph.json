@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T14:23:04Z",
+  "generated_at": "2026-11-23T14:44:23Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2847,16 +2847,16 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 208,
+      "closed": 209,
       "dispatchable": 48,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
-      "last_advanced": "2026-11-21",
+      "last_advanced": "2026-11-23",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
       "open": 50,
       "priority": 0.5087,
@@ -2898,7 +2898,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 617,
+          "line": 621,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2907,7 +2907,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 883,
+          "line": 887,
           "name": "per-request-reasoning-budget",
           "open": 5,
           "readiness": "ready"
@@ -2916,7 +2916,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1395,
+          "line": 1399,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2925,7 +2925,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1932,
+          "line": 1936,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -2934,7 +2934,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2694,
+          "line": 2698,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -2943,7 +2943,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 3121,
+          "line": 3125,
           "name": "tool-output-compression",
           "open": 8,
           "readiness": "ready"
@@ -2952,7 +2952,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 3797,
+          "line": 3801,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"
@@ -2960,16 +2960,16 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 183,
+      "closed": 184,
       "dispatchable": 61,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-23",
       "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
       "open": 62,
       "priority": 0.1445,
@@ -3020,7 +3020,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 604,
+          "line": 608,
           "name": "internal-interaction-lifecycle",
           "open": 4,
           "readiness": "ready"
@@ -3029,7 +3029,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1079,
+          "line": 1083,
           "name": "learned-routing-controller",
           "open": 6,
           "readiness": "ready"
@@ -3038,7 +3038,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2327,
+          "line": 2331,
           "name": "model-capability-descriptors",
           "open": 0,
           "readiness": "no_open"
@@ -3047,7 +3047,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2403,
+          "line": 2407,
           "name": "retrain-routing-models",
           "open": 0,
           "readiness": "no_open"
@@ -3056,7 +3056,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2536,
+          "line": 2540,
           "name": "tri-role-coordinator-architecture",
           "open": 2,
           "readiness": "ready"
@@ -3065,7 +3065,7 @@
           "blocked_by": [],
           "dispatchable": 25,
           "gates": [],
-          "line": 2839,
+          "line": 2843,
           "name": "typed-decision-plane",
           "open": 25,
           "readiness": "ready"
@@ -3074,7 +3074,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3594,
+          "line": 3598,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3087,7 +3087,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3675,
+          "line": 3679,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3096,7 +3096,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 4164,
+          "line": 4168,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"
