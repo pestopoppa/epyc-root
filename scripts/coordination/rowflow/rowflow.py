@@ -80,6 +80,7 @@ import os
 import re
 import shlex
 import shutil
+import stat
 import signal
 import subprocess
 import sys
@@ -952,6 +953,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["admission_class"] = spec["admission_class"]
     if spec.get("busy_fraction") is not None:
         row["busy_fraction"] = float(spec["busy_fraction"])
+    if spec.get("reclaimable") is not None:   # raw/reclaimable declaration (2026-11-23): globs under scratch_root; LARGE-DERIVED flags the rest
+        row["reclaimable"] = [str(x) for x in (spec["reclaimable"] if isinstance(spec["reclaimable"], (list, tuple)) else [spec["reclaimable"]])]
     if spec.get("scratch_gb") is not None:   # per-row scratch declaration (disk guards 2026-11-21); the keeper logs SCRATCH-OVER, never kills
         row["scratch_gb"] = float(spec["scratch_gb"])
     qg = check_quiet_guard(spec, regions)
@@ -5387,6 +5390,78 @@ def scratch_over(flags, grants, log, now=None, du_gb=None, state_path=None):
     return out
 
 
+# ---------------------------------------------------------------- LARGE-DERIVED (operator 2026-11-23; LOG ONLY, never a kill)
+# 18 GB of leftover GGUF/safetensors/bin sat in scratch because no row declared them. A running row whose scratch_root holds a regular
+# file >= LARGE_DERIVED_MIN_BYTES (1 GiB) with a model suffix that the manifest's `reclaimable` globs (relative to scratch_root; "*" =
+# everything is raw) do not name logs `LARGE-DERIVED <row> ...`. Symlinks are skipped (they own no bytes here). Declared files are freed at filing
+# by the reaper, which deletes everything outside keep; the flag exists so a >1G file is a deliberate declaration, not an accident.
+LARGE_DERIVED_MIN_BYTES = 1 << 30
+LARGE_DERIVED_SUFFIXES = (".gguf", ".safetensors", ".bin")
+LARGE_DERIVED_EVERY_S = 600
+
+
+def large_derived(root, reclaimable=None, min_bytes=LARGE_DERIVED_MIN_BYTES):
+    """[(path, bytes)] of undeclared regular files >= min_bytes with a model suffix under root, biggest first."""
+    import fnmatch
+    globs = [g.lstrip("./") for g in (reclaimable or [])]
+    found = []
+    for dp, _dn, fns in os.walk(root, followlinks=False):
+        for fn in fns:
+            if not fn.lower().endswith(LARGE_DERIVED_SUFFIXES):
+                continue
+            fp = os.path.join(dp, fn)
+            try:
+                st = os.lstat(fp)
+            except OSError:
+                continue
+            if not stat.S_ISREG(st.st_mode) or st.st_size < min_bytes:
+                continue
+            rel = os.path.relpath(fp, root)
+            if any(g == "*" or fnmatch.fnmatch(rel, g) or fnmatch.fnmatch(fn, g) for g in globs):
+                continue
+            found.append((fp, st.st_size))
+    return sorted(found, key=lambda x: -x[1])
+
+
+def large_derived_check(flags, grants, log, now=None, state_path=None, scan=None):
+    """Log LARGE-DERIVED once per (row, file) for running grants. Returns [(rid, path, GB)] logged. Never raises, never kills."""
+    now = time.time() if now is None else now
+    scan = scan or large_derived
+    sp = state_path or os.path.join(flags, "ws58-keeper-state", "allocator", "large_derived.json")
+    st = load_json(sp) or {}
+    out = []
+    for g in grants:
+        rid = g["id"]
+        try:
+            ent = st.get(rid) or {}
+            if now - float(ent.get("checked", 0)) < LARGE_DERIVED_EVERY_S:
+                continue
+            m = load_json(ready_path(flags, rid)) or {}
+            root = m.get("scratch_root")
+            if not isinstance(root, str) or not os.path.isdir(root):
+                continue
+            ent["checked"] = now
+            seen = set(ent.get("logged") or [])
+            for fp, sz in scan(root, m.get("reclaimable")):
+                if fp in seen:
+                    continue
+                log(f"LARGE-DERIVED {rid} {sz / 2**30:.1f}G {fp} (undeclared; add `reclaimable: [\"<glob under scratch_root>\"]` to the row spec "
+                    "so filing frees it, or `keep` it deliberately; log-only)")
+                seen.add(fp)
+                out.append((rid, fp, round(sz / 2**30, 1)))
+            ent["logged"] = sorted(seen)
+            st[rid] = ent
+        except Exception as ex:  # noqa: BLE001 - a log-only guard never stops allocation
+            log(f"LARGE-DERIVED check failed for {rid}: {type(ex).__name__}: {ex}")
+    try:
+        os.makedirs(os.path.dirname(sp), exist_ok=True)
+        with open(sp, "w") as fh:
+            json.dump(st, fh)
+    except OSError:
+        pass
+    return out
+
+
 def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
     """2026-11-03 session review item 2: every held region is judged by MEASUREMENT, not by its grant file - a grant
     older than IDLE_HELD_AFTER_S whose region reads < IDLE_PCT busy logs IDLE-HELD (one line: region, row, %, age,
@@ -7379,6 +7454,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     idle_now = idle_held(flags, grants, holders, util, log, seen)
     if not dry:
         scratch_over(flags, grants, log)
+        large_derived_check(flags, grants, log)
         try:   # operator 2026-11-05: IDLE-HELD tells the owner (notify-only; never ends a grant)
             idle_held_notify(flags, idle_now, grants, log, wanted=cands)
         except Exception as e:  # noqa: BLE001 - a warning never stops allocation
@@ -7551,6 +7627,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                             {"rows_blocked": blocked[:50]}, log)
         except Exception as e:  # noqa: BLE001 - an alerting fault must not stop allocation
             log(f"DISK-FLOOR check failed: {type(e).__name__}: {e}")
+        try:  # early warning at floor+40 GiB (2026-11-23): tell owners BEFORE the pause, with the top reclaimable dirs
+            notify.disk_warn_check(flags, os.path.join(state_dir(flags), "disk_warn.json"), reclaim_root=TMP, log=log)
+        except Exception as e:  # noqa: BLE001 - an alerting fault must not stop allocation
+            log(f"DISK-WARN check failed: {type(e).__name__}: {e}")
         try:  # inference mailbox: a CRITICAL alert unacked for ROWFLOW_ALERT_ESCALATE_S -> operator alarm, exactly once
             if notify.is_live(flags):
                 notify.escalate_stale(flags, lambda k, m, ev: route_alert(f"{k}-{ev['key']}", m, ev, log), log=log)

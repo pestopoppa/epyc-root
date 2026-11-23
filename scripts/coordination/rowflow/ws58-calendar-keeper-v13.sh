@@ -89,6 +89,10 @@ allocate_tick() {
 # disk-audit-20261028/destructive-scratch-keeper-v5.patch).
 REAP_DAYS=${REAP_DAYS:-1}
 REAP_MAX_GIB=${REAP_MAX_GIB:-50}; REAP_MAX_DIRS=${REAP_MAX_DIRS:-200}; REAP_IDLE=${REAP_IDLE:-1}; REAP_IDLE_DAYS=${REAP_IDLE_DAYS:-1}
+# DISK PRESSURE (2026-11-23): free < REAP_PRESSURE_FREE_GIB (200) on the data disk shortens the idle window to REAP_IDLE_DAYS_PRESSURE
+# (default 0.0833 d = 2 h). Every other idle-rule guard (no process, no handoff/FILLERS/manifest reference, clean landed .git, vault, rescan) still applies.
+_free_gib=$(df -BG --output=avail /mnt/raid0 2>/dev/null | tail -1 | tr -dc 0-9); _free_gib=${_free_gib:-9999}
+if [ "$_free_gib" -lt "${REAP_PRESSURE_FREE_GIB:-200}" ] 2>/dev/null; then REAP_IDLE_DAYS=${REAP_IDLE_DAYS_PRESSURE:-0.0833}; fi
 # SCRATCH LEASE (operator-directed scratch-leak structural fix 2026-11-04, Phase 1): a KEEP marker with an EXPIRED lease
 # (scripts/system/scratch_lease.py; leases in tmp/.scratch-leases/) no longer blocks; a marker WITHOUT a lease keeps the old
 # never-auto behaviour; lease module unloadable => every marker blocks (fail closed).

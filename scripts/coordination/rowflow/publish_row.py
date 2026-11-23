@@ -69,7 +69,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction", "handoff_task_sha",
              "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
-             "resumable", "max_window_s", "expects_created", "quiet_guard_regions", "scratch_gb", "declared_threads", "shape_widen", "autorequeue_max")
+             "resumable", "max_window_s", "expects_created", "quiet_guard_regions", "scratch_gb", "reclaimable", "declared_threads", "shape_widen", "autorequeue_max")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -289,6 +289,14 @@ def lint(spec):
     if spec.get("scratch_gb") is None:   # disk guards 2026-11-21: WARN (never refuse); the keeper's SCRATCH-OVER default is 40 GB
         w = ("no-scratch-gb: the spec declares no `scratch_gb` (expected peak scratch_root size in GB); the keeper logs "
              "SCRATCH-OVER at 40 GB by default, so declare it when the row writes GGUF/trace intermediates (publish continues)")
+        print(f"WARN {w}")
+        pw = list(spec.get("publish_warnings") or [])
+        if w not in pw:
+            spec["publish_warnings"] = pw + [w]
+    kg = spec.get("keep")   # 2026-11-23: a keep glob that names model files without a raw/reclaimable declaration is a >1G leak waiting
+    if isinstance(kg, (list, tuple)) and spec.get("reclaimable") is None and any(str(k).lower().endswith(rf.LARGE_DERIVED_SUFFIXES) for k in kg):
+        w = ("keeps-model-files: `keep` names GGUF/safetensors/bin files and the spec declares no `reclaimable` globs; the keeper logs "
+             "LARGE-DERIVED for undeclared >1 GiB model files and the reaper will not free kept ones (publish continues)")
         print(f"WARN {w}")
         pw = list(spec.get("publish_warnings") or [])
         if w not in pw:

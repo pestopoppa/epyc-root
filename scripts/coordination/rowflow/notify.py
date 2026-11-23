@@ -515,6 +515,41 @@ def disk_floor_check(flags, state_path, blocked_rows, free=None, floor=None, hys
     return None
 
 
+def disk_warn_check(flags, state_path, free=None, floor=None, margin=None, hyst=None, regrow_gib=10.0, reclaim_root=None, log=print,
+                    cands_fn=None):
+    """EARLY WARNING (2026-11-23, after the 150 GiB pause stopped all compute with no prior alert): ONE alert when free falls below
+    floor + margin (default 40 GiB), naming the top reclaimable dirs and the worktree-janitor command; re-alerted only if free drops a
+    further `regrow_gib` while still in the band; re-armed once free >= warn + hysteresis. Information only - nothing is deleted."""
+    floor = float(floor if floor is not None else os.environ.get("FILLER_DISK_FLOOR_GIB", 150))
+    margin = float(margin if margin is not None else os.environ.get("ROWFLOW_DISK_WARN_MARGIN_GIB", 40))
+    hyst = float(hyst if hyst is not None else os.environ.get("ROWFLOW_DISK_HYST_GIB", 25))
+    free = free_gib() if free is None else float(free)
+    warn = floor + margin
+    try:
+        with open(state_path) as f:
+            st = json.load(f)
+    except (OSError, ValueError):
+        st = {"warned": False, "crossing": 0}
+    if free < warn and (not st.get("warned") or free <= float(st.get("last_free", warn)) - regrow_gib):
+        st = {"warned": True, "crossing": int(st.get("crossing", 0)) + (0 if st.get("warned") else 1), "last_free": free, "since": st.get("since") or _now()}
+        _write_json(state_path, st)
+        cands = (cands_fn or (lambda: reclaimable(reclaim_root) if reclaim_root else []))()
+        log(f"DISK-WARN /mnt/raid0 free {free:.0f} GiB < warn {warn:.0f} GiB (floor {floor:.0f}); top: "
+            + ", ".join(f"{c.get('path')} {c.get('gib')}G" for c in cands if "path" in c))
+        emit(flags, "disk-warn", "", f"crossing-{st['crossing']}-{int(free)}",
+             f"/mnt/raid0 free {free:.0f} GiB is within {margin:.0f} GiB of the pause floor ({floor:.0f} GiB). Reclaim your own scratch/worktrees NOW: "
+             f"`python3 scripts/system/worktree_gate.py by-owner` lists clean+landed worktrees by owner; `disk_janitor.sh --once` reaps filed scratch. "
+             f"Nothing was deleted.", "warning", FALLBACK_ASSIGNEE,
+             {"free_gib": round(free, 1), "floor_gib": floor, "warn_gib": warn, "top_dirs_info_only": cands})
+        return "raised"
+    if st.get("warned") and free >= warn + hyst:
+        st = {"warned": False, "crossing": int(st.get("crossing", 0)), "cleared": _now()}
+        _write_json(state_path, st)
+        log(f"DISK-WARN cleared: free {free:.0f} GiB >= {warn + hyst:.0f} GiB")
+        return "cleared"
+    return None
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--flags", default=os.environ.get("ROWFLOW_FLAGS", LIVE_FLAGS))

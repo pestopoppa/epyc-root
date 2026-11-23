@@ -753,6 +753,31 @@ def close_lane(ticket: str, repos: list[str], *, base: str, apply: bool, fetch: 
     return rc, lines
 
 
+OWNER_PREFIXES = (("ak-", "autokernel"), ("akdc", "autokernel"), ("cx", "codex"), ("codex", "codex"), ("pm-", "pipeline-mgmt"),
+                  ("tf", "taskflow"), ("research-", "research"), ("llama-", "kernel"), ("op-", "operator-ratify"))
+
+
+def owner_of(row: dict) -> str:
+    """Best-effort owner of a worktree from its directory name, then its branch (ak-*, cx*, pm-*, taskflow/...). Heuristic, display only."""
+    for cand in (os.path.basename(str(row.get("path") or "").rstrip("/")), str(row.get("branch") or "").split("/")[-1],
+                 str(row.get("branch") or "")):
+        for pre, who in OWNER_PREFIXES:
+            if cand.startswith(pre):
+                return who
+    return "other"
+
+
+def by_owner(rows: list[dict], min_idle_days: float = 0.0) -> dict[str, list[dict]]:
+    """REMOVABLE (clean + landed + unreferenced) rows idle >= min_idle_days, grouped by owner, biggest first when sizes are known."""
+    out: dict[str, list[dict]] = {}
+    for r in rows:
+        if r.get("verdict") == REMOVABLE and float(r.get("idle_days") or 0) >= min_idle_days:
+            out.setdefault(owner_of(r), []).append(r)
+    for v in out.values():
+        v.sort(key=lambda r: -(r.get("size_bytes") or 0))
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -775,6 +800,10 @@ def main(argv: list[str] | None = None) -> int:
     cl.add_argument("--no-fetch", action="store_true")
     cl.add_argument("--min-idle-days", type=float, default=CLOSE_LANE_MIN_IDLE_DAYS,
                     help="idle floor; must be > 0 with --apply")
+    bo = sub.add_parser("by-owner", help="read-only: clean+landed+unreferenced (REMOVABLE) worktrees grouped by owner, with the exact remove command")
+    bo.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
+    bo.add_argument("--min-idle-days", type=float, default=0.25)
+    bo.add_argument("--sizes", action="store_true", help="du each tree (slow)")
     p = sub.add_parser("report", help="read-only inventory of every linked worktree")
     p.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
     p.add_argument("--min-idle-days", type=float, default=7.0)
@@ -826,6 +855,18 @@ def main(argv: list[str] | None = None) -> int:
             print(msg)
             rc |= 0 if ok else 1
         return rc
+
+    if a.cmd == "by-owner":
+        rep = build_report(a.repos or DEFAULT_REPOS, base=a.base, min_idle_days=a.min_idle_days, sizes=a.sizes)
+        groups = by_owner(rep["worktrees"], a.min_idle_days)
+        for who in sorted(groups):
+            tot = sum((r.get("size_bytes") or 0) for r in groups[who]) / 2**30
+            print(f"== {who}: {len(groups[who])} removable" + (f", {tot:.1f} GiB" if a.sizes else ""))
+            for r in groups[who]:
+                sz = f" {r['size_bytes'] / 2**30:.1f}G" if r.get("size_bytes") else ""
+                print(f"   idle={r.get('idle_days')}d{sz} {r['path']}")
+        print("remove one: python3 scripts/system/worktree_gate.py remove <path>   (the gate re-checks and never uses --force/prune)")
+        return 0
 
     rep = build_report(a.repos or DEFAULT_REPOS, base=a.base, min_idle_days=a.min_idle_days,
                        sizes=a.sizes)
