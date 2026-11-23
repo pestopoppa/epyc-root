@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 591
+      "open": 589
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 471
+      "open": 474
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 957,
+      "closed": 961,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 125,
+      "open": 121,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5372,
+          "line": 5373,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5457,
+          "line": 5458,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,24 +160,24 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5638,
+          "line": 5639,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 11
         },
         {
           "blocked": 0,
-          "closed": 282,
+          "closed": 286,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7521,
+          "line": 7522,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 25
+          "open": 21
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10758,
+          "line": 10763,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11005,
+          "line": 11010,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -219,10 +219,10 @@
     },
     "autopilot-program.md": {
       "blocked": 1,
-      "closed": 297,
+      "closed": 301,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 82,
+      "open": 85,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -231,7 +231,7 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 380,
+      "total": 387,
       "tracks": [
         {
           "blocked": 0,
@@ -245,20 +245,20 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 4,
           "gates": [],
           "guarded": 0,
           "line": 21,
           "markers": 1,
           "name": "autopilot-program",
-          "open": 0
+          "open": 3
         },
         {
           "blocked": 1,
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1073,
+          "line": 1169,
           "markers": 1,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 1
@@ -268,7 +268,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1483,
+          "line": 1579,
           "markers": 1,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1
@@ -278,7 +278,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2181,
+          "line": 2277,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
           "open": 2
@@ -288,7 +288,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2318,
+          "line": 2414,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
           "open": 1
@@ -298,7 +298,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2388,
+          "line": 2484,
           "markers": 1,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2
@@ -308,7 +308,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2582,
+          "line": 2678,
           "markers": 1,
           "name": "evidence-plane-instrument-repair",
           "open": 3
@@ -318,7 +318,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 2742,
+          "line": 2838,
           "markers": 1,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1
@@ -328,7 +328,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 3127,
+          "line": 3223,
           "markers": 1,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1
@@ -338,7 +338,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 3519,
+          "line": 3615,
           "markers": 1,
           "name": "objective-task-rate-goodput",
           "open": 5
@@ -348,7 +348,7 @@
           "closed": 47,
           "gates": [],
           "guarded": 0,
-          "line": 3864,
+          "line": 3960,
           "markers": 1,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4
@@ -358,7 +358,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 4119,
+          "line": 4215,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7
@@ -381,7 +381,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4353,
+          "line": 4449,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
           "open": 4
@@ -404,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4816,
+          "line": 4912,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -414,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 5093,
+          "line": 5189,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
@@ -966,7 +966,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1129,
+          "line": 1130,
           "markers": 1,
           "name": "bulk-inference-campaign",
           "open": 3
@@ -976,7 +976,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1785,
+          "line": 1786,
           "markers": 1,
           "name": "eval-benchmark-cost-reduction",
           "open": 0
@@ -986,7 +986,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1886,
+          "line": 1887,
           "markers": 1,
           "name": "eval-tower-architecture-audit-2026-07-20",
           "open": 2
@@ -996,7 +996,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 2275,
+          "line": 2276,
           "markers": 1,
           "name": "eval-tower-loop-robustness-audit-2026-07-20",
           "open": 2
@@ -1006,7 +1006,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2475,
+          "line": 2476,
           "markers": 1,
           "name": "fable5-window2-findings-01-optimizer-integrity",
           "open": 1
@@ -1016,7 +1016,7 @@
           "closed": 17,
           "gates": [],
           "guarded": 1,
-          "line": 2544,
+          "line": 2545,
           "markers": 1,
           "name": "inference-batch-loop",
           "open": 4
@@ -1026,7 +1026,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 2813,
+          "line": 2814,
           "markers": 1,
           "name": "prompt-construction-determinism",
           "open": 0
@@ -1036,7 +1036,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 2937,
+          "line": 2938,
           "markers": 1,
           "name": "re4-protocol-redesign",
           "open": 2
@@ -1046,7 +1046,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 3102,
+          "line": 3103,
           "markers": 1,
           "name": "scoring-infra-standardization",
           "open": 8
@@ -1107,7 +1107,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 938,
+          "line": 941,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 6
@@ -1119,7 +1119,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1719,
+          "line": 1722,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 8
@@ -1131,7 +1131,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2427,
+          "line": 2431,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1148,7 +1148,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2516,
+          "line": 2520,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 16
@@ -1161,7 +1161,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2995,
+          "line": 2999,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 28
@@ -1171,7 +1171,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3938,
+          "line": 3942,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1180,7 +1180,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 249,
+      "closed": 250,
       "guarded": 0,
       "last_advanced": "2026-11-23",
       "open": 41,
@@ -1192,11 +1192,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 292,
+      "total": 293,
       "tracks": [
         {
           "blocked": 2,
-          "closed": 205,
+          "closed": 206,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1214,7 +1214,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1923,
+          "line": 1928,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2051,
+          "line": 2056,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2383,
+          "line": 2388,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2484,
+          "line": 2489,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 3038,
+          "line": 3043,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3176,
+          "line": 3181,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3183,
+          "line": 3188,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2354,7 +2354,7 @@
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 38,
+      "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 313,
+      "total": 315,
       "tracks": [
         {
           "blocked": 1,
@@ -2374,7 +2374,7 @@
           "line": 15,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 13
+          "open": 14
         },
         {
           "blocked": 1,
@@ -2384,10 +2384,10 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 940,
+          "line": 952,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 25
+          "open": 26
         }
       ]
     },
@@ -2653,7 +2653,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
+      "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
       "track": "autokernel research loop"
     },
     "INF-45": {
@@ -2682,7 +2682,7 @@
       "id": "INF-50",
       "index": "inference-research-index.md",
       "line": 26,
-      "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
+      "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
       "track": "speculative decoding mtp refresh"
     },
     "INF-59": {
@@ -2705,7 +2705,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
+      "next_action": "C19 27B ASan diagnostic for the test-dtree-device-accept heap corruption; then assemble C20 (Q0_RM4, GDNPROJ_FUSE, SPEC-DISTS-TRUNC)",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
@@ -2811,7 +2811,7 @@
       "id": "RTG-02",
       "index": "routing-and-optimization-index.md",
       "line": 13,
-      "next_action": "Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script",
+      "next_action": "Run AP-POSTREBOOT-LH-RIGOR (R1-R5 accept for the Life-Harness run); smoke after reboot; hold-lift review last",
       "track": "autopilot continuous optimization"
     },
     "RTG-08": {
