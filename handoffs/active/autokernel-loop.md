@@ -9884,9 +9884,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [x] **AKU-04j — refuse discovery misrouting through ordinary comparisons**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-04h — align native startup fixture with prospective sample admission**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-04g — installed raw serving-calibration preparation**: . ✅ 2026-09-09 _(detail → completed ledger)_
-- [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
+- [x] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
+      · ✅ 2026-11-23 [no-belief: software] 87429c2103b8 — automatic runtime LOO requires both prior execution and snapshot recipe identities; otherwise a trusted resolver or explicit unsupported debt is required. Out-of-scope targets and frozen production remain pinned. Focused fixtures: 29 passed.
   - [x] **AKU-05a — private-index accepted source commits**: the real `archive.keep()` consumer commits ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-05b — immutable candidate/validation contract and offline CLI**: explicit Git object ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-05c — durable candidate transactions and recovery consumer**: native journaled ✅ 2026-09-09 _(detail → completed ledger)_
