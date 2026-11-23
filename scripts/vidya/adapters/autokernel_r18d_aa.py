@@ -24,7 +24,17 @@ ADAPTER_ID = "vidya.adapters.autokernel_r18d_aa/v1"
 SCHEMA = "epyc.autokernel.r18d.native_capture.v1"
 MARKER = "VB-AK-R18D-AA-WIRE/v1"
 CONDITIONS = (("SETTLED", 1), ("PREHEATED", 6), ("POST_BUILD", 1))
-PAIRS = 20
+DEFAULT_PAIRS = 20  # captures that predate `pairs_per_condition` in run_start (the 27B rows) declared 20
+FLOOR_K = 20        # the floor-table row projected (bootstrap_floor ks 1,3,5,9,20); independent of N
+DEFAULT_REPS = 9    # llama-bench -r for captures that predate `reps_per_invocation`
+
+
+def _declared_int(context, key, default, minimum):
+    """An integer the producer sealed into run_start; absent -> the pre-field default; malformed -> refused."""
+    value = context.get(key, default)
+    _require(isinstance(value, int) and not isinstance(value, bool) and value >= minimum,
+             f"run_start {key} malformed: {value!r}")
+    return value
 _RESEARCH = (os.environ.get("EPYC_RESEARCH_REPO", ""), "/workspace/repos/epyc-inference-research",
              "/mnt/raid0/llm/epyc-inference-research")
 
@@ -103,6 +113,8 @@ def _derive_rows(path, data, rows) -> dict:
     context, end = rows[0]["native"], rows[-1]["native"]
     _require(context.get("prospective_capture") == MARKER, "pre-hook source")
     _require(end["disposition"] == "complete", "partial/failed/refused source is not a floor")
+    pairs = _declared_int(context, "pairs_per_condition", DEFAULT_PAIRS, FLOOR_K)
+    reps = _declared_int(context, "reps_per_invocation", DEFAULT_REPS, 1)
     ids = context["identities"]
     files = ids["files"]
     _require(all(x.get("sha256") and x.get("ino") for x in files), "missing content identities")
@@ -120,8 +132,8 @@ def _derive_rows(path, data, rows) -> dict:
     values, expected_total = {}, 0
     for condition, warmup in CONDITIONS:
         events = [x for x in invocations if x["condition"] == condition]
-        expected_total += (PAIRS + warmup) * 2
-        _require(len(events) == (PAIRS + warmup) * 2, "missing/retried units cannot silently form a floor")
+        expected_total += (pairs + warmup) * 2
+        _require(len(events) == (pairs + warmup) * 2, "missing/retried units cannot silently form a floor")
         arms = {"anchor": [], "candidate": []}
         for i, event in enumerate(events):
             phase = "warmup" if i < warmup * 2 else "scored"
@@ -149,7 +161,7 @@ def _derive_rows(path, data, rows) -> dict:
                          "mapped DSO identity mismatch")
             _require([f["path"] for f in files if f["path"].endswith("/llama-bench")][0] in event["argv"],
                      "executable binding mismatch")
-            value = float(bench.hardened_row(event["stdout"], pp=512, tg=0, reps=9).avg_ts)
+            value = float(bench.hardened_row(event["stdout"], pp=512, tg=0, reps=reps).avg_ts)
             if phase == "scored":
                 arms[arm].append(value)
         native = next(x["native_result"] for x in conditions if x["condition"] == condition)
@@ -164,7 +176,7 @@ def _derive_rows(path, data, rows) -> dict:
     return {"path": str(path), "sha256": hashlib.sha256(data).hexdigest(), "run_id": rows[0]["run_id"],
             "date": rows[-1]["recorded_at_utc"], "context": context, "model": model[0], "ids": ids,
             "values": values, "floors": floors, "declared": declared,
-            "protocol_id": context.get("protocol_id") or ""}
+            "protocol_id": context.get("protocol_id") or "", "pairs": pairs}
 
 
 def native_rows(path):
@@ -177,19 +189,19 @@ def project(row):
     d = _derive(row["path"])
     if d["sha256"] != row.get("sha256"):
         raise ProjectionError("R18-D A/A row changed")
-    ctx, floors = d["context"], d["floors"]
+    ctx, floors, pairs = d["context"], d["floors"], d["pairs"]
     return ClaimTuple(
-        measurement_id="r18d-aa:" + d["run_id"], metric="pp512.aa_noise_floor_pct", value=floors[PAIRS],
+        measurement_id="r18d-aa:" + d["run_id"], metric="pp512.aa_noise_floor_pct", value=floors[FLOOR_K],
         unit="percent", date=d["date"], category="BASELINE",
-        claim=f"SETTLED pp512 process-pair A/A bootstrap floor at {PAIRS} pairs: {floors[PAIRS]}%; calibration observation",
-        metric_direction="lower_better", protocol_id=d["protocol_id"], reps=PAIRS,
-        reps_basis=f"scored:{PAIRS} ordered process pairs; warmups excluded",
+        claim=f"SETTLED pp512 process-pair A/A bootstrap floor at {FLOOR_K} pairs: {floors[FLOOR_K]}%; calibration observation",
+        metric_direction="lower_better", protocol_id=d["protocol_id"], reps=pairs,
+        reps_basis=f"scored:{pairs} ordered process pairs; warmups excluded",
         attestation_path=d["path"], attestation_locator=d["path"], attestation_sha256=d["sha256"],
         attestation_present=True, attestation_verified=True, source_kind=SOURCE_KIND,
         applicability={"model_file": Path(ctx["model"]).name, "model_sha256": d["model"]["sha256"],
                        "quant": ctx["quant"], "backend": ctx["backend"], "surface": "pp512",
                        "scope_basis": "native"},
-        observation={"outcome": "floor", "n_pairs": PAIRS, "noise_floor_rel": floors[PAIRS] / 100,
+        observation={"outcome": "floor", "n_pairs": pairs, "noise_floor_rel": floors[FLOOR_K] / 100,
                      "retrofit": False},
         extra={"adapter": ADAPTER_ID, "conditions": d["values"], "bootstrap_floor_pct": d["declared"],
                "identities": d["ids"]})

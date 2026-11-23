@@ -46,7 +46,8 @@ def _trace(dip=None, level="high"):
 
 
 def fixture(root, *, unstable=False, marker=True, partial=False, missing_dso=False, no_trace=False,
-            dip=None, level="high"):
+            dip=None, level="high", pairs=None, reps=None):
+    n = a.DEFAULT_PAIRS if pairs is None else pairs
     ctx = {"prospective_capture": a.MARKER if marker else None,
            "identities": {"files": [{"path": "/model", "sha256": "a" * 64, "ino": 1},
                                     {"path": "/bin/llama-bench", "sha256": "b" * 64, "ino": 2},
@@ -54,11 +55,15 @@ def fixture(root, *, unstable=False, marker=True, partial=False, missing_dso=Fal
                           "grant": {"FILLER_ID": "s", "FILLER_END": "1", "FILLER_CPUS": "1", "FILLER_THREADS": "1"}},
            "model": "/model", "model_pregrant_identity": {"sha256": "a" * 64},
            "workload": {"pp": 512, "tg": 0}, "surface": "pp512", "quant": "Q8_0", "backend": "gpu"}
+    if pairs is not None:
+        ctx["pairs_per_condition"] = pairs
+    if reps is not None:
+        ctx["reps_per_invocation"] = reps
     s = _Stream(Path(root) / "r18d-capture-r1.jsonl")
     s.add("run_start", ctx)
     s.add("claim", {"owner": {"start_ticks": 1}})
     for cond, warm in a.CONDITIONS:
-        for i in range((a.PAIRS + warm) * 2):
+        for i in range((n + warm) * 2):
             phase = "warmup" if i < warm * 2 else "scored"
             sample = {"binary_match": True, "mapping": {"status": "matched"}, "vram_bytes": 2 << 30,
                       "monotonic_s": 1.5,
@@ -75,8 +80,8 @@ def fixture(root, *, unstable=False, marker=True, partial=False, missing_dso=Fal
                                                "own_process": {"verified": True, "pid": 1,
                                                                "joint_samples": [sample, sample]}},
                                  "argv": ["/bin/llama-bench"], "stdout": "synthetic"})
-        s.add("condition", {"condition": cond, "native_result": {"anchor_samples": [100.0] * a.PAIRS,
-                                                                  "candidate_samples": [100.0] * a.PAIRS}})
+        s.add("condition", {"condition": cond, "native_result": {"anchor_samples": [100.0] * n,
+                                                                  "candidate_samples": [100.0] * n}})
     floors = {str(k): 0.0 for k in (1, 3, 5, 9, 20)}
     s.add("run_end", {"disposition": "partial" if partial else "complete",
                       "outcome": {"bootstrap_floor_pct": floors}})
@@ -169,3 +174,42 @@ def test_registered_and_wired():
     import ingest_sources
     src = ingest_sources.SOURCES["ak-r18d-aa"]
     assert src.module == "autokernel_r18d_aa" and "ak-r18d-aa" in cli._FILE_SOURCES
+
+
+def _reseal(path, name, **ctx_extra):
+    """Copy a fixture stream with run_start context fields overridden, re-chained (a validly sealed variant)."""
+    rows = [json.loads(x) for x in Path(path).read_text().splitlines()]
+    s = _Stream(Path(path).parent / name)
+    for r in rows:
+        native = dict(r["native"])
+        if r["kind"] == "run_start":
+            native.update(ctx_extra)
+        s.add(r["kind"], native)
+    return s.write()
+
+
+def test_pairs_and_reps_read_from_context(tmp_path):
+    """The 1.5B rows seal pairs_per_condition=24 and reps_per_invocation; N and -r are read, never hardcoded."""
+    seen = []
+    bench = SimpleNamespace(hardened_row=lambda *x, **k: seen.append(k["reps"]) or SimpleNamespace(avg_ts=100),
+                            bootstrap_floor=lambda x, y: {k: 0.0 for k in (1, 3, 5, 9, 20)})
+    row = a.native_rows(fixture(tmp_path, pairs=24, reps=45))[0]
+    with patch.object(a, "_bench", return_value=bench):
+        t = a.project(row)
+    assert t.observation["n_pairs"] == 24 and t.reps == 24 and "at 20 pairs" in t.claim
+    assert seen and set(seen) == {45}
+
+
+def test_unit_count_disagreeing_with_sealed_pairs_refused(tmp_path):
+    path = _reseal(fixture(tmp_path, pairs=24), "r18d-capture-n25.jsonl", pairs_per_condition=25)
+    with pytest.raises(ProjectionError, match="missing/retried units"):
+        a._derive(path)
+
+
+@pytest.mark.parametrize("key,bad", [("pairs_per_condition", 19), ("pairs_per_condition", "24"),
+                                     ("pairs_per_condition", True), ("reps_per_invocation", 0),
+                                     ("reps_per_invocation", None)])
+def test_malformed_declared_ints_refused(tmp_path, key, bad):
+    path = _reseal(fixture(tmp_path, pairs=24), "r18d-capture-bad.jsonl", **{key: bad})
+    with pytest.raises(ProjectionError, match=key + " malformed"):
+        a._derive(path)
