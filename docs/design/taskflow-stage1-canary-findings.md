@@ -255,7 +255,7 @@ thinking-length timeouts on a slow CPU arm rather than capability limits. Not sa
 least one arm (LOOP-62, NOFOLD-1, MM-5), TU-GR-1 and WS4 have no legitimate verify. The TASKFLOW-STAGE1-CANARY done-when is
 a STAY-35B|TRY-27B|FIX-HARNESS verdict, but the box's own RESUME POINT is "iterate to 35B saturation", so it stays open.
 
-**Fixes before r8g** (listed, not implemented):
+**Fixes before r8g** (all LANDED 2026-11-23, epyc-root 9d7e102c6 fix 1, f0ee5a168 + c6ea4fa42 fix 2, b60f9862d fix 3, 6694fcf50 fix 4, 8f46306e2 fix 5, ccb51d59e fix 6; tests `tests/coordination/test_taskflow_r8f_harness_fixes.py`; r8g row `tf1-cpu-r8g-canary-35b-q0q2-20261123`):
 1. Vacuity guard (`verify.py::vacuity_hits`): its `_LAUNCHER_ERR` pattern needs a `launcher_error` token. Extend it to the empty-stdout
    / `no-output` / json-parse-failed shape (any probe branch that returns a denial-shaped result when the child printed nothing),
    or require the isolation test to assert a distinguishing errno. Add the nothink TU-GR-1 diff as a regression fixture.
