@@ -44,3 +44,8 @@ Q0_RM4, Q4X concurrent bisect). Offline canary (seed.install into a scratch stor
 retired_mechanisms + archive.recall): all 21 sampled items present on at least one planner surface. Gap boxed:
 AK-CENSUS-UPDATE-SHAPES (census_update.apply parses none of this session's RESULT shapes; owner Pipeline).
 [belief: cc]
+
+## pipeline-mgmt: AKU-17 and AKU-18 (loop-infra boxes, operator ruling 2026-11-23)
+
+- AKU-17: research `3f49fb474`, `5b34a1c71`. `loop/cpu_fold_record.py` derives `accumulator-bundle.cpu.<recipe>.<hash8>.json` from kept experiment rows (effect, floor, floor unit, contention, statistic read from the row, none invented). The v11 manifest cites 20 kept rows across three campaign stores; all 20 resolve into 4 bundles (`data/aku17-cpu-bundles-20261123/`), every magnitude `provisional`, contention `unproven` (new label; never settles). Recipe name alone collided across two recipe hashes, so bundles are keyed name.hash8.
+- AKU-18: research `1be8120bf` (contract `loop/accumulator_surfaces.py`, fail-closed fire decision mirroring `accumulate.gate_trigger`; estimate fires on cadence only), root `3ac61766c` (hub panel `accumulator_surfaces`, `/api/accumulator_surfaces` + `/health`, card inside `akflow-sec`). The record is published by CLI to `/mnt/raid0/llm/tmp/ak-accumulator-surfaces/`; both surfaces read `cannot_decide` because no calibrated serving floor was passed, which is the fail-closed answer, not a verdict. Hub verified on :8100.
