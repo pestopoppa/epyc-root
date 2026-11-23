@@ -168,6 +168,12 @@ def acceptance_cmd(task: dict) -> str | None:
     return a if a and _RUNNABLE.match(a) else None
 
 
+# r8e fix 5 (WS4-WAKE-IMPERATIVE): the done-when's "a live woken session acts on one" cannot be shown by the packet
+# acceptance. A packet with verify_scope: acceptance-only is reviewed on what the acceptance can show, and its verified
+# result is held (never ticks the box; the live clause stays open).
+ACCEPTANCE_ONLY = "acceptance-only"
+
+
 _GUARD = re.compile(r"vacuous|never pass|must (?:yield|fail|raise|report|deny|skip)|pytest\.skip|skip with", re.I)
 
 
@@ -261,6 +267,9 @@ def review_prompt(task: dict, diff: str) -> str:
             "passes without exercising what it claims (a SKIPPED case, or a probe/launcher error counted as a denial) "
             "does not meet the DONE WHEN: answer not_done.\n\n## BOX\n"
             + task["goal"] + "\n\n## DONE WHEN\n" + str(task.get("done_when") or "(see box)")
+            + ("\n\n## SCOPE: ACCEPTANCE ONLY\nJudge the DONE WHEN only as far as the ACCEPTANCE can show it. A clause "
+               "the acceptance cannot show (e.g. a live session acting on it) is out of scope here: not a reason for "
+               "not_done, and a done verdict does not close it." if task.get("verify_scope") == ACCEPTANCE_ONLY else "")
             + "\n\n## ACCEPTANCE\n" + (str(acc) if acc else "(no brief acceptance)")
             + "\n\n## ACCEPTANCE RESULT\n" + res_txt
             + "\n\n## NON-GOALS\n" + ("\n".join(f"- {g}" for g in ng) if ng else "(none stated)")
@@ -331,6 +340,8 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
     if res == "fail":
         return {"verdict": "rejected", "reason": "done-when-fail", "checks": checks, "evidence": ev}
     hold = {"hold": "accepted-pending"} if task.get("brief_accepted") == "pending" else {}
+    if task.get("verify_scope") == ACCEPTANCE_ONLY:
+        hold = {"hold": (hold.get("hold") + "," if hold else "") + ACCEPTANCE_ONLY}
     if res == "ok":
         return {"verdict": "verified", "reason": "mechanical", "checks": checks, "evidence": ev, **hold}
     if reviewer is None:

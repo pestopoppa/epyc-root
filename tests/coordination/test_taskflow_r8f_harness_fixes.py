@@ -214,3 +214,40 @@ def test_contention_only_reclasses_timed_out_model_rows():
     assert dispatch.contention_class({"timed_out": True, "failure_class": "harness"}, unit, phase) is None
     assert dispatch.contention_class({"timed_out": True, "failure_class": "model-limitation"},
                                      [_req(40000, 1e6, n=1)], phase) is None        # 1-token replies ignored
+
+
+# ------------------------------------------------------------------------- fix 5: WS4 packet is acceptance-only
+WS4 = {"key": "WS4-WAKE-IMPERATIVE", "goal": "- [ ] **WS4-WAKE-IMPERATIVE** ...", "verify_scope": "acceptance-only",
+       "done_when": ("a test shows every wake/nudge builder in handoff_sessions.py and session_bus emits an imperative "
+                     "line, and a live woken session acts on one"),
+       "acceptance": "python3 -m pytest -q scripts/coordination/tests/test_wake_imperative.py"}
+
+
+def test_acceptance_only_scope_in_review_prompt():
+    from taskflow import verify
+    p = verify.review_prompt(WS4, "diff")
+    assert "SCOPE: ACCEPTANCE ONLY" in p and "live session" in p
+    assert "SCOPE: ACCEPTANCE ONLY" not in verify.review_prompt(dict(WS4, verify_scope=None), "diff")
+
+
+def test_acceptance_only_verified_is_held_never_ticked(tmp_path):
+    from taskflow import verify
+    r = tmp_path / "lane"
+    r.mkdir()
+    _g(r.parent, "init", "-q", "-b", "main", str(r))
+    (r / "a.py").write_text("a = 1\n")
+    _g(r, "add", "a.py")
+    _g(r, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "init")
+    base = _g(r, "rev-parse", "HEAD").strip()
+    (r / "a.py").write_text("a = 2\n")
+    _g(r, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-am", "w")
+    t = dict(WS4, acceptance=None, test_cmds=[], inputs=["a.py"], outputs=[], forbidden=[], where=[])
+    v = verify.verify(t, r, base, reviewer=lambda *a: {"verdict": "done", "reason": "ok"})
+    assert v["verdict"] == "verified" and v["hold"] == "acceptance-only"     # dispatch: apply only when not hold
+    v = verify.verify(dict(t, brief_accepted="pending"), r, base, reviewer=lambda *a: {"verdict": "done"})
+    assert v["hold"] == "accepted-pending,acceptance-only"
+
+
+def test_verify_scope_is_a_brief_key():
+    from taskflow import schema
+    assert "verify_scope" in schema.BRIEF_KEYS
