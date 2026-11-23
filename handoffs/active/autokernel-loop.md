@@ -199,6 +199,7 @@ planner logs; it currently reports `active=false` because no campaign is running
       versioned carry-forward receipt rather than copying state or weakening deployment identity.
       · history: notes moved to autokernel-loop-box-history-20261122.md
       · done when: live executors run through `StageRunner`, the stop latch is checked in `UnifiedCampaignDriver.tick`, and a versioned carry-forward receipt exists for graph upgrades.
+      · 2026-11-23 PARTIAL: research `6cc74b0ddcc5` persists the standalone stop request and hardens receipt, carry and interrupted-intent checks; 58 targeted tests pass. Choice: fence an interrupted intent until its owner is reconciled. Still open: route the real live executors and their native recovery authorities through `StageRunner`, with same-graph restart coverage of those real paths. [no-belief: software]
 - [x] ~~**AK-V20-LIVE — monitor the fresh v20 receipt chain through its next terminal or safe boundary.**~~ (closed 2026-10-29 audit: OBSOLETE → watch target PID 469246 is dead (ps), v20 deployment dir last touched 2026-08-20, campaign moved to v27/DS41 (handoff:Status header 2026-09-27); no live …  _(detail → completed ledger)_
 - [x] **AK-ADM-1 — promote the six planner-memory limitations into typed pre-model enforcement.** ✅ 2026-11-10 [no-belief: code change, no measurement] _(detail → completed ledger)_
 
