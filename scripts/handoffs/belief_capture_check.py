@@ -64,6 +64,8 @@ TAG_BELIEF_OK = re.compile(r"^(?:cc|clm_[A-Za-z0-9_.:-]+(?:\s*,\s*clm_[A-Za-z0-9
 UNKNOWN = re.compile(
     r"\b(?:unknown\s+completion|completion\s+unknown|INCONCLUSIVE|NOT\s+MET|no\s+verdict|verdict\s+unknown)\b",
     re.I)
+BRACKET_TAG = re.compile(r"\[(?:receipt-ack|no-belief|belief|moved|declined):[^\]]*\]", re.I)
+OWNER_CLOSURE = re.compile(r"\b(?:WITHDRAWN|owner\s+decline[d]?|declined|SUPERSEDED)\b", re.I)
 ACK = re.compile(r"\[receipt-ack:\s*[^\s\]]+\s+[A-Z][A-Z0-9_-]*\s+[—-]+\s*[^\]]+\]", re.I)
 MOVED = re.compile(r"\[moved:\s*[^\]\s][^\]]*\]", re.I)
 DECLINED = re.compile(r"\[declined:\s*[^\]]*20\d{2}-\d{2}-\d{2}[^\]]*\]", re.I)
@@ -281,6 +283,18 @@ def item_text(lines: list[str] | None, lineno: int, first: str) -> tuple[str, st
     return " ".join(core), " ".join(full), last
 
 
+def states_inconclusive(core_body: str, tags: list) -> bool:
+    """T4 verdict scan. Text inside bracketed belief tags (notably `[receipt-ack: <id> INCONCLUSIVE — ...]`, which
+    the receipt rule itself demands) is not completion text; an explicit owner closure (WITHDRAWN / owner decline /
+    declined / SUPERSEDED) carrying `[no-belief: ...]` is not an unknown completion at all."""
+    evidence = BRACKET_TAG.sub(" ", completion_evidence(core_body))
+    if not UNKNOWN.search(evidence):
+        return False
+    if OWNER_CLOSURE.search(evidence) and any(k.lower() == "no-belief" for k, _v in tags):
+        return False
+    return True
+
+
 def check(diff: Diff, receipts_root: Path | None, reader=None) -> list[tuple[str, str]]:
     """Return [(key, message)]. The key is stable across merge parents (path + line text).
 
@@ -340,7 +354,7 @@ def check(diff: Diff, receipts_root: Path | None, reader=None) -> list[tuple[str
                                     f"[belief: cc] or [no-belief: <reason>]"))
             if kind.lower() == "no-belief" and not value:
                 errors.append((key, f"{where}: [no-belief:] needs a reason, e.g. [no-belief: not-a-result]"))
-        if UNKNOWN.search(completion_evidence(core_body)):
+        if states_inconclusive(core_body, tags):
             errors.append((key, f"{where}: tick text states unknown/inconclusive completion; leave the box "
                                 f"[ ] and add a checkpoint child task (SESSION_LIFECYCLE.md -> Two axioms)"))
         beliefs = [v.strip() for k, v in tags if k.lower() == "belief"]

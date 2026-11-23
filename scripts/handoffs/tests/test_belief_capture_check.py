@@ -336,3 +336,35 @@ def test_t4_reads_the_unified_verdict_field():
     import belief_capture_check as B
     assert B.completion_evidence("- [x] **A-1** task ✅ 2026-11-20 [belief: cc] INCONCLUSIVE at 3 reps") == "INCONCLUSIVE at 3 reps"
     assert B.completion_evidence("- [x] **A-1** task ✅ 2026-11-20 — NOT MET").strip() == "NOT MET"
+
+
+AK_LINE = (
+    "- [x] **AK-Q38FN-CPU-MMID-GATEUP-FUSE \u2014 fused gate+up MUL_MAT_ID for Q38FN experts on CPU (m=1)** [inference] "
+    "gate-class = futility-only. \u2705 2026-11-23 WITHDRAWN (owner decline, no further pair): over 3 valid quiet pairs, "
+    "ON was slower in every pair (tok/s -5.3 %). Fork kept as a record. "
+    "[receipt-ack: ak-q38fn-cpu-mmid-gateup-fuse-20261123 INCONCLUSIVE \u2014 owner withdrew the lever on the 3-pair "
+    "evidence instead of spending a 4th pair] [no-belief: owner withdrawal]")
+
+
+def _errs(line):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import belief_capture_check as B
+    d = B.Diff()
+    d.added.append(("handoffs/active/x.md", 1, line))
+    return [m for _k, m in B.check(d, None)]
+
+
+def test_real_ak_withdrawal_line_has_no_inconclusive_warning():
+    assert not [m for m in _errs(AK_LINE) if "unknown/inconclusive" in m]
+
+
+def test_receipt_ack_tag_text_is_not_completion_text():
+    line = "- [x] **X-1 \u2014 t** \u2705 2026-11-23 KEEP +3% [belief: cc] abc1234 [receipt-ack: r1 INCONCLUSIVE \u2014 reason]"
+    assert not [m for m in _errs(line) if "unknown/inconclusive" in m]
+
+
+def test_true_inconclusive_claim_still_warns():
+    line = "- [x] **X-2 \u2014 t** \u2705 2026-11-23 INCONCLUSIVE at 3 reps [no-belief: not-a-result]"
+    assert [m for m in _errs(line) if "unknown/inconclusive" in m]
+    line2 = "- [x] **X-3 \u2014 t** \u2705 2026-11-23 INCONCLUSIVE [receipt-ack: r1 INCONCLUSIVE \u2014 why] [no-belief: x]"
+    assert [m for m in _errs(line2) if "unknown/inconclusive" in m]
