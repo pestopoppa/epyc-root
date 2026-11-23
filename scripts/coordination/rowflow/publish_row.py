@@ -1139,6 +1139,53 @@ def gpu_busy(flags):
     return rf.gpu_batch_running(flags) or any(rf.GPU in g["holds"] for g in rf.open_grants(flags))
 
 
+def smoke_identity(spec, row):
+    """A reusable PASS is bound to the complete submitted spec and referenced code."""
+    launcher = (row.get("launcher") or {}).get("path")
+    job = rf.job_sha(launcher) if launcher else None
+    if not job:
+        return None
+    encoded = json.dumps(spec, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    return {"spec_sha256": hashlib.sha256(encoded).hexdigest(), "job_sha256": job}
+
+
+def smoke_strikes_path(flags, rid):
+    return os.path.join(rf.dry_dir(flags, rid), "SMOKE-STRIKES.json")
+
+
+def smoke_unpark_sha(flags, rid):
+    path = rf.unpark_path(flags, rid)
+    try:
+        st = os.stat(path)
+        return f"{st.st_ino}:{st.st_mtime_ns}:{rf.sha256(path)}"
+    except OSError:
+        return None
+
+
+def smoke_strikes(flags, rid):
+    rec = rf.load_json(smoke_strikes_path(flags, rid)) or {}
+    if rec and smoke_unpark_sha(flags, rid) != rec.get("unpark_sha256"):
+        return {}
+    return rec
+
+
+def record_smoke_outcome(flags, rid, verdict, msg):
+    if verdict == "WAIT":
+        return
+    rec = smoke_strikes(flags, rid)
+    fails = rf.fail_paths(flags, rid) if verdict == "FAIL" else []
+    failure_sha = f"{fails[-1]}:{rf.sha256(fails[-1])}" if fails else None
+    if failure_sha and failure_sha == rec.get("failure_sha256"):
+        return  # another caller observed the same locked smoke verdict
+    n = 0 if verdict == "PASS" else int(rec.get("count") or 0) + 1
+    reason = f"PARKED-3STRIKE: {n} consecutive smoke failures; owner can clear with rowflow.py unpark {rid}" if n >= 3 else ""
+    rf.atomic_json(smoke_strikes_path(flags, rid), {"id": rid, "count": n, "updated_epoch": time.time(),
+                                                   "reason": reason, "last_failure": msg if n else None,
+                                                   "unpark_sha256": smoke_unpark_sha(flags, rid), "failure_sha256": failure_sha})
+    if reason:
+        print(f"{reason}: {msg}")
+
+
 SMOKE_BUSY_MARK = "not run twice"   # rowflow.dryrun_run's WAIT text when another runner holds dryrun/<id>/SMOKE.lock
 
 
@@ -1147,8 +1194,19 @@ def run_smoke(flags, rid, regions, smoke_s, keep_on_wait=False, wait_s=None):
     ready/ manifest it did not move there belongs to a live concurrent smoke, ak-gap-1-step1-gpu-20261119)."""
     v, msg = "FAIL", "smoke did not run"
     try:
+        strikes = smoke_strikes(flags, rid)
+        if int(strikes.get("count") or 0) >= 3:
+            return "FAIL", strikes.get("reason") or "PARKED-3STRIKE"
+        row = rf.load_json(rf.ready_path(flags, rid)) or {}
+        identity = row.get("smoke_identity")
         v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=smoke_s,
                                **({} if wait_s is None else {"wait_s": wait_s}))
+        if v == "PASS" and identity and rf.job_sha(row["launcher"]["path"]) == identity.get("job_sha256"):
+            passed = rf.load_json(rf.pass_path(flags, rid))
+            if passed:
+                passed["smoke_identity"] = identity
+                rf.atomic_json(rf.pass_path(flags, rid), passed)
+        record_smoke_outcome(flags, rid, v, msg)
     finally:
         if v != "PASS" and not (keep_on_wait and v == "WAIT") and not (v == "WAIT" and SMOKE_BUSY_MARK in msg):
             unpublish(flags, rid)
@@ -1482,15 +1540,30 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
             busy += f"; SMOKE.lock held by {holder}"
         raise rf.Refused(f"smoke already in flight for {spec.get('id')}: {busy}; republishing now would unpublish the live row. "
                          "Wait for its verdict (or stop that smoke), then publish again")
+    rid = str(spec.get("id") or "")
+    strikes = smoke_strikes(flags, rid)
+    rf.need(int(strikes.get("count") or 0) < 3, strikes.get("reason") or "PARKED-3STRIKE")
+    previous_pass = rf.load_json(rf.pass_path(flags, rid)) or {}
     want = smoke_cpus_of(spec)   # refused before anything is published
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
+    identity = smoke_identity(spec, row)
+    if identity:
+        row["smoke_identity"] = identity
+        rf.atomic_json(rf.ready_path(flags, rid), row)
     if want > rf.SMOKE_CPUS:
         held = int(rf.contract_of(row, flags=flags).get("held") or 0)
         if want > held:
             unpublish(flags, rid)
             raise rf.Refused(f"smoke_cpus {want} exceeds the row's own contract width ({held} cores); a smoke never runs wider "
                              "than its row. FIX: lower smoke_cpus (plumbing only: latency pre-check plus one answered request)")
+    if identity and previous_pass.get("smoke_identity") == identity:
+        print(f"SMOKE PASS REUSED {rid}: identical spec and code sha")
+        supersede_prior_attempts(flags, rid)
+        rf.supersede(flags, row)
+        if file_if_complete(flags, rid, row):
+            return None
+        return row
     retire_old_verdicts(flags, rid)
     supersede_prior_attempts(flags, rid)
     smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
