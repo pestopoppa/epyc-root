@@ -69,6 +69,33 @@ def wall_budget_s(cfg: dict | None) -> int | None:
     return int(round(w))
 
 
+# Per-request output cap (r8g fix 5, r8f LOOP-62 think): two 4096-token capped thinking outputs burned ~1160 s of a 1739 s
+# wall at 10.7 tok/s decode and left no room to write the test. The proxy cap is now min(configured cap, what one request
+# may spend of the wall at the MEASURED decode rate); `max_request_wall_frac` < 0.5 guarantees two capped requests can
+# never consume the whole wall. Every key is configurable per arm in the job CONFIG (`arms[].request_cap`):
+#   agent_cap_tokens          nothink agent-turn cap (default 2048)
+#   think_cap_tokens          thinking agent-turn cap (default 6144)
+#   max_request_wall_frac     share of the task wall one request may spend decoding (default 0.25; null disables)
+#   decode_tok_s              measured decode rate (default: arm wall_budget.decode_tok_s)
+#   floor_tokens              never cap below this (default 1024)
+REQUEST_CAP_DEFAULTS = {"agent_cap_tokens": 2048, "think_cap_tokens": 6144, "max_request_wall_frac": 0.25, "floor_tokens": 1024}
+
+
+def request_token_cap(arm: dict | None, thinking: bool | None = None, wall_s: float | None = None) -> int:
+    """max_tokens cap for one agent-turn request of `arm` (a job-CONFIG arm dict). See REQUEST_CAP_DEFAULTS."""
+    arm = arm or {}
+    think = bool(arm.get("thinking") if thinking is None else thinking)
+    c = dict(REQUEST_CAP_DEFAULTS, **(arm.get("request_cap") or {}))
+    cap = int(c["think_cap_tokens"] if think else c["agent_cap_tokens"])
+    frac = c.get("max_request_wall_frac")
+    wb = arm.get("wall_budget") or {}
+    dec = c.get("decode_tok_s") or wb.get("decode_tok_s")
+    wall = wall_s if wall_s is not None else wall_budget_s(wb or None)
+    if frac and dec and wall:
+        cap = min(cap, int(float(frac) * float(wall) * float(dec)))
+    return max(int(c["floor_tokens"]), cap)
+
+
 def apply_wall_budget(task: dict, cfg: dict | None) -> dict:
     """Return the task with budget.wall_s derived from `cfg` (unchanged when cfg carries no rate)."""
     w = wall_budget_s(cfg)

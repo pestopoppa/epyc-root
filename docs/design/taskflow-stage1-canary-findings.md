@@ -273,3 +273,12 @@ a STAY-35B|TRY-27B|FIX-HARNESS verdict, but the box's own RESUME POINT is "itera
    or a wall budget that scales with measured CPU decode; this is a model-fit question, not a packet defect.
 6. WS4 nothink: a 36k-token single read at 10 tok/s decode ate about 200 s per large read. Packet `where` should point at line ranges
    of `handoff_sessions.py`, not the whole file.
+
+## r8g configuration (2026-11-23): think-arm budget knobs
+Per-arm keys in the job `CONFIG.json` (`arms[]`), read by `job.py` and `schema.py`:
+- `wall_budget` (existing): `prefill_tok_s`, `decode_tok_s`, `expected_prompt_tokens`, `expected_output_tokens`, `margin`, `overhead_s`,
+  `floor_s`, `cap_s` -> per-task `wall_s`. r8g sets the think arm to its measured r8f rates (prefill 79, decode 10.7 tok/s), which scales
+  the think wall from 1739 s to 2554 s; the nothink arm keeps 1452 s.
+- `request_cap` (new, `schema.request_token_cap`): `agent_cap_tokens` (2048), `think_cap_tokens` (6144), `max_request_wall_frac` (0.25;
+  null disables), `decode_tok_s` (default: the arm's `wall_budget.decode_tok_s`), `floor_tokens` (1024). The proxy caps an agent-turn
+  request at min(configured cap, frac x wall x decode). With frac < 0.5, two capped thinking outputs can never consume the wall.

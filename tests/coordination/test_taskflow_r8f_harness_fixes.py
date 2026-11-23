@@ -435,3 +435,22 @@ def test_denied_shell_result_gets_the_allowed_forms_idempotently():
     assert L.annotate_denials(body) == 0 and body["messages"][1]["content"] == c          # idempotent: stable prefix
 
 
+# ------------------------------------------------------------------------- r8g fix 5: think-arm per-request cap
+def test_request_cap_defaults_and_configurable():
+    assert schema.request_token_cap({"thinking": False}) == 2048
+    assert schema.request_token_cap({"thinking": True}) == 6144
+    assert schema.request_token_cap({"thinking": True, "request_cap": {"think_cap_tokens": 3000}}) == 3000
+    assert schema.request_token_cap({"thinking": True, "request_cap": {"think_cap_tokens": 500}}) == 1024   # floor
+
+
+def test_two_capped_thinking_requests_never_consume_the_wall():
+    # r8f think: decode 10.7 tok/s; the old wall rate (17.4) and a 1739 s budget let two 4096-token outputs take ~1160 s
+    arm = {"thinking": True, "wall_budget": {"prefill_tok_s": 79.0, "decode_tok_s": 10.7, "expected_output_tokens": 10000,
+                                             "expected_prompt_tokens": 80000}}
+    for wall in (600, 1000, 1739, 2554, 3600):
+        cap = schema.request_token_cap(arm, wall_s=wall)
+        assert 2 * cap / 10.7 <= 0.5 * wall + 1, (wall, cap)       # two capped outputs <= half the wall
+    assert schema.request_token_cap(arm) == 6144                   # wall scaled from measured rates (2554 s): cap binds
+    assert schema.request_token_cap(dict(arm, request_cap={"max_request_wall_frac": None}), wall_s=600) == 6144   # disabled
+
+
