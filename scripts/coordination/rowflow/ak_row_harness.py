@@ -357,7 +357,10 @@ def end_smoke(verdict, rc, reason, out_dir="out", extra=None, stream=None):
     return rc
 
 
-def check_spec_estimate(spec):
+PROVISIONAL_TAG = "ESTIMATE-PROVISIONAL"
+
+
+def check_spec_estimate(spec, base_dir=None):
     """publish-time check. spec.estimate_basis = {"smoke_measure": <path to a smoke_measure.json>, "units": N,
     "margin": 1.25 (opt), "loads_s": (opt, overrides the measured load only when larger)}.
     Returns (derived or None, [warnings]); raises ValueError when estimate_s < derived or the basis is unreadable."""
@@ -365,6 +368,25 @@ def check_spec_estimate(spec):
     if not b:
         return None, ["estimate_s is not derived from a smoke measurement (no estimate_basis); see "
                       "ak_row_harness.estimate_from_smoke"]
+    if not isinstance(b, dict):
+        raise ValueError(f"estimate_basis must be a dict ({{smoke_measure, units}} or a provisional basis), "
+                         f"got {type(b).__name__}")
+    if b.get("provisional"):
+        # Pre-smoke basis: allowed only while the smoke has not produced its measurement; after that, re-book.
+        reason = str(b.get("reason") or "").strip()
+        rebook = b.get("rebook_from")
+        if not reason or not isinstance(rebook, str) or not rebook.strip():
+            raise ValueError("provisional estimate_basis needs a non-empty 'reason' and 'rebook_from' "
+                             "(the smoke_measure.json path the estimate is re-booked from)")
+        root = base_dir or spec.get("workdir") or spec.get("scratch_root") or "."
+        rp = Path(rebook)
+        if not rp.is_absolute():
+            rp = Path(root) / rp
+        if rp.exists():
+            raise ValueError(f"provisional estimate_basis but {rp} exists: re-book estimate_s from it "
+                             "(estimate_basis = {smoke_measure, units})")
+        return None, [f"{PROVISIONAL_TAG}: estimate_s {spec.get('estimate_s')} is provisional ({reason}); "
+                      f"re-book from {rebook} after the smoke"]
     path = b.get("smoke_measure")
     try:
         m = json.loads(Path(path).read_text())

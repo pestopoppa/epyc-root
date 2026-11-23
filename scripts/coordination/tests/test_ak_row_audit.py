@@ -142,3 +142,27 @@ def test_mk_ak_row_refuses_existing_and_withholds_spec_on_fail(tmp_path, monkeyp
 
 if __name__ == "__main__":
     raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/coordination/tests/test_ak_row_audit.py -q")
+
+
+def test_provisional_estimate_basis(tmp_path):
+    import pytest
+    prov = {"provisional": True, "reason": "pre-smoke", "rebook_from": "out-smoke/smoke_measure.json"}
+    d = _row(tmp_path, spec={"estimate_s": 2400, "estimate_basis": prov})
+    assert "ESTIMATE-PROVISIONAL" in codes(d, "WARN")
+    assert "ESTIMATE-UNMEASURED" not in codes(d)
+    # smoke measurement now exists: a provisional basis must FAIL (re-book required)
+    (d / "out-smoke").mkdir()
+    (d / "out-smoke" / "smoke_measure.json").write_text("{}")
+    assert "ESTIMATE-UNMEASURED" in codes(d, "FAIL")
+    assert "ESTIMATE-PROVISIONAL" not in codes(d)
+    # missing reason / rebook_from fails
+    d2 = _row(tmp_path, rid="ak-t2-20261123", spec={"estimate_s": 5, "estimate_basis": {"provisional": True}})
+    assert "ESTIMATE-UNMEASURED" in codes(d2, "FAIL")
+    # non-dict basis fails cleanly (no AttributeError)
+    with pytest.raises(ValueError):
+        H.check_spec_estimate({"estimate_s": 5, "estimate_basis": "out-smoke/smoke_measure.json"})
+    d3 = _row(tmp_path, rid="ak-t3-20261123", spec={"estimate_s": 5, "estimate_basis": "x"})
+    assert "ESTIMATE-UNMEASURED" in codes(d3, "FAIL")
+    # dict form still works
+    m = H.write_smoke_measure(tmp_path / "sm", 10.0, 2, 120)
+    assert H.check_spec_estimate({"estimate_s": 350, "estimate_basis": {"smoke_measure": m, "units": 16}}) == (350, [])

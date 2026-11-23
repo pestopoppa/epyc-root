@@ -237,9 +237,12 @@ def lint_dir(d, selftest=True):
 
     if spec.get("estimate_s") is not None:
         try:
-            _, w = H.check_spec_estimate(spec)
+            _, w = H.check_spec_estimate(spec, base_dir=d)
             for x in w:
-                out.append(("FAIL", "ESTIMATE-UNMEASURED", x))
+                if x.startswith("ESTIMATE-PROVISIONAL"):
+                    out.append(("WARN", "ESTIMATE-PROVISIONAL", x))
+                else:
+                    out.append(("FAIL", "ESTIMATE-UNMEASURED", x))
         except ValueError as e:
             out.append(("FAIL", "ESTIMATE-UNMEASURED", str(e)))
 
