@@ -357,7 +357,7 @@
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-06",
-      "weight": 7
+      "weight": 8
     },
     {
       "from": "INF-65",
@@ -696,10 +696,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-22T23:41:30Z",
+  "generated_at": "2026-11-23T00:13:59Z",
   "nodes": [
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 133,
@@ -1039,7 +1039,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
@@ -1127,7 +1127,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [],
       "closed": 139,
@@ -1203,7 +1203,7 @@
       ]
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 0,
       "blocked_by": [],
       "closed": 215,
@@ -1325,7 +1325,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 485,
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 912,
-      "dispatchable": 145,
+      "closed": 913,
+      "dispatchable": 144,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-22",
+      "last_advanced": "2026-11-23",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 145,
+      "open": 144,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1416,7 +1416,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 60,
+          "dispatchable": 59,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1425,14 +1425,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 60,
+          "open": 59,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5245,
+          "line": 5246,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1441,7 +1441,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5330,
+          "line": 5331,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1460,7 +1460,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5510,
+          "line": 5511,
           "name": "autokernel-rebuild-program",
           "open": 12,
           "readiness": "blocked"
@@ -1477,7 +1477,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7391,
+          "line": 7392,
           "name": "autokernel-unified-surface-program",
           "open": 36,
           "readiness": "blocked"
@@ -1490,7 +1490,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10575,
+          "line": 10576,
           "name": "autokernel-concurrent-target-coordination",
           "open": 13,
           "readiness": "blocked"
@@ -1524,7 +1524,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10820,
+          "line": 10821,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 21,
           "readiness": "blocked"
@@ -1532,7 +1532,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 248,
@@ -1646,7 +1646,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
@@ -1764,7 +1764,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 253,
@@ -1831,7 +1831,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 119,
@@ -1912,7 +1912,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 242,
@@ -1973,7 +1973,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1857,
+          "line": 1858,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1982,7 +1982,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1985,
+          "line": 1986,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1991,7 +1991,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2317,
+          "line": 2318,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2000,7 +2000,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2418,
+          "line": 2419,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2972,
+          "line": 2973,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2021,7 +2021,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3110,
+          "line": 3111,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2033,7 +2033,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3117,
+          "line": 3118,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 157,
@@ -2132,7 +2132,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2173,7 +2173,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 19,
       "blocked_by": [],
       "closed": 121,
@@ -2223,7 +2223,7 @@
       ]
     },
     {
-      "age_days": 15,
+      "age_days": 16,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2282,7 +2282,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2369,7 +2369,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2395,7 +2395,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 15,
+      "age_days": 16,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2421,7 +2421,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
       "closed": 149,
@@ -2518,7 +2518,7 @@
       ]
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2618,7 +2618,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 296,
@@ -2847,7 +2847,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [],
       "closed": 208,
@@ -2960,7 +2960,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 183,
@@ -3104,7 +3104,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3130,7 +3130,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 311,
@@ -3225,7 +3225,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 359,
@@ -3366,7 +3366,7 @@
       ]
     },
     {
-      "age_days": 17,
+      "age_days": 18,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3482,7 +3482,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 6,
       "blocked_by": [],
       "closed": 445,
@@ -3557,7 +3557,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 269,
@@ -3712,7 +3712,7 @@
       ]
     },
     {
-      "age_days": 50,
+      "age_days": 51,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
