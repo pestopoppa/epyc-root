@@ -14,7 +14,9 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                0.5 the row is never promoted to a host/quiet-host drain, only placed on free regions),
                                requires_quiet_host (bool: granted only onto quarters measuring < 15% foreign busy, never on
                                the NUMA side of a whole-host / bandwidth-heavy grant; see QUIET GATE), bandwidth_heavy (bool;
-                               unset = heavy iff a declared busy_fraction >= 0.6),
+                               unset = heavy iff a declared busy_fraction >= 0.6), quiet_sensitive (bool: QUIET-SERIAL
+                               only, no foreign-busy gate; also derived from job code - see QUIET-SERIAL-ALL), exclusive_cpu
+                               (bool, owner opt-in: while this quiet row of rank <= 10 runs, no new CPU grant anywhere),
                                ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs that
                                ADD reaper protection; empty = inputs (older than the first job start) + result_path),
                                first_progress_s (300; aliases smoke_timeout_s, dryrun_timeout_s), smoke_predicate (shell; exit 0 =
@@ -1022,7 +1024,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     qg = check_quiet_guard(spec, regions)
     if qg:
         row["quiet_guard_regions"] = qg
-    for k in ("requires_quiet_host", "bandwidth_heavy"):   # PM-KEEPER3 2026-11-23: quiet-host gate inputs (bool only)
+    for k in ("requires_quiet_host", "bandwidth_heavy", "quiet_sensitive", "exclusive_cpu"):   # PM-KEEPER3 / QUIET-SERIAL-ALL (bool only)
         if spec.get(k) is not None:
             need(isinstance(spec[k], bool), f"{k} {spec[k]!r} must be true or false")
             row[k] = spec[k]
@@ -1367,7 +1369,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
               "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by",
               "resumable", "max_window_s", "whole_host_need", "quiet_guard_regions", "autorequeue_max",
-              "requires_quiet_host", "bandwidth_heavy"):
+              "requires_quiet_host", "bandwidth_heavy", "quiet_sensitive", "exclusive_cpu"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -7347,6 +7349,73 @@ def quiet_required(d):
     return d.get("requires_quiet_host") is True or bool(d.get("quiet_guard_regions"))
 
 
+# QUIET-SERIAL-ALL (AK 2026-11-23 23:43Z): c20-fold-cpu-r4 (q0) and ak-cpu-aa-calibration-q-a3b (q2) ran together and the
+# cross-quarter DRAM traffic broke both. Neither MANIFEST said requires_quiet_host (r4's spec did, but it was published by a
+# checkout without the PM-KEEPER3 copy loop; the calibration spec never declared it), so QUIET-SERIAL never saw them. A row is
+# quiet-SENSITIVE when it declares it (requires_quiet_host / quiet_guard_regions / quiet_sensitive), OR its spec source says
+# requires_quiet_host true, OR its job code runs an in-run quiet guard (ak_row_harness quiet_guard/run_quiet, a
+# QUIET_BUSY_P<nn> foreign-load clause). An explicit `requires_quiet_host: false` on the manifest wins (owner opt-out).
+QUIET_CODE_RX = re.compile(r"\b(?:quiet_guard|run_quiet)\s*\(|\bQUIET_BUSY_P\d+\b")
+_QUIET_SCAN = {}
+
+
+def _quiet_code_scan(d):
+    """True when the row's job dir (launcher's dir) holds a *.py that runs an in-run quiet guard. Cached per launcher sha."""
+    lp = (d.get("launcher") or {}).get("path") if isinstance(d.get("launcher"), dict) else None
+    wd = os.path.dirname(lp) if lp else d.get("workdir")
+    if not wd or not os.path.isdir(str(wd)):
+        return False
+    key = (str(wd), str((d.get("launcher") or {}).get("sha256") if isinstance(d.get("launcher"), dict) else ""))
+    if key not in _QUIET_SCAN:
+        hit = False
+        for f in sorted(glob.glob(os.path.join(str(wd), "*.py")))[:40]:
+            if os.path.basename(f) == "ak_row_harness.py":   # the library itself defines them; only a CALL site counts
+                continue
+            try:
+                with open(f, errors="replace") as fh:
+                    if QUIET_CODE_RX.search(fh.read(2_000_000)):
+                        hit = True
+                        break
+            except OSError:
+                continue
+        _QUIET_SCAN[key] = hit
+    return _QUIET_SCAN[key]
+
+
+def quiet_sensitive(d):
+    """QUIET-SERIAL class: every quiet-sensitive CPU row, declared or derived (see QUIET-SERIAL-ALL above)."""
+    d = d or {}
+    if quiet_required(d) or d.get("quiet_sensitive") is True:
+        return True
+    if d.get("requires_quiet_host") is False or d.get("lane") == "gpu" or str(d.get("shape") or "") in ("gpu", "gpu-q3"):
+        return False   # owner opt-out; a GPU row's derived guard is about the device, not the CPU quarters
+    src = d.get("published_from")
+    if isinstance(src, str) and src.endswith(".json") and os.path.isfile(src):
+        if (load_json(src) or {}).get("requires_quiet_host") is True:
+            return True
+    return _quiet_code_scan(d)
+
+
+def exclusive_cpu_holder(grants, man):
+    """EXCLUSIVE-CPU-HOLD (AK request 2026-11-23, owner opt-in): the id of a RUNNING quiet-sensitive row of priority_rank
+    <= EXCLUSIVE_CPU_MAX_RANK whose manifest declares `exclusive_cpu: true`, else None. While it runs no NEW CPU grant is
+    placed anywhere (GPU-lane rows and smokes are unaffected). Never host-wide by default: idle quarters cost throughput."""
+    for g in grants:
+        if g["id"].startswith(BUILD_PREFIX):
+            continue
+        d = man(g["id"])
+        try:
+            rank = float(d.get("priority_rank", 100))
+        except (TypeError, ValueError):
+            rank = 100.0
+        if d.get("exclusive_cpu") is True and rank <= EXCLUSIVE_CPU_MAX_RANK and quiet_sensitive(d):
+            return g["id"]
+    return None
+
+
+EXCLUSIVE_CPU_MAX_RANK = 10
+
+
 def bandwidth_heavy(d):
     d = d or {}
     if isinstance(d.get("bandwidth_heavy"), bool):
@@ -7389,7 +7458,7 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
         d = man(g["id"])
         if not gq:
             continue
-        if not g["id"].startswith(BUILD_PREFIX) and quiet_required(d):
+        if not g["id"].startswith(BUILD_PREFIX) and quiet_sensitive(d) and str(d.get("shape") or "") not in ("host", "quiet-host"):
             running_quiet.append(g["id"])
         if g["id"].startswith(BUILD_PREFIX):   # a build claim is bandwidth-heavy (AK addendum) - except a LIGHT test claim
             if not is_light_build(flags, g["id"]):
@@ -7400,16 +7469,25 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
         if quiet_required(d):
             quiet_q |= gq
     kept, waits, lines = [], [], {}
+    xhold = exclusive_cpu_holder(grants, man)
     for c in cands:
         d = man(c["id"])
-        q_need, heavy = quiet_required(d), bandwidth_heavy(d)
-        if not (q_need or heavy):
+        if xhold and not gpu_lane_cand(c):
+            lines[c["id"]] = f"EXCLUSIVE-CPU-HOLD {xhold}: {c['id']} not granted while it runs (exclusive_cpu: true)"
+            waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: "
+                             f"EXCLUSIVE-CPU-HOLD {xhold}"))
+            continue
+        q_need, heavy, q_ser = quiet_required(d), bandwidth_heavy(d), quiet_sensitive(d)
+        if not (q_need or heavy or q_ser):
             kept.append(c)
             continue
-        if q_need and running_quiet and c.get("shape") != "quiet-host" and str(d.get("shape") or "") not in ("host", "quiet-host"):
+        if q_ser and running_quiet and c.get("shape") != "quiet-host" and str(d.get("shape") or "") not in ("host", "quiet-host"):
             lines[c["id"]] = f"QUIET-SERIAL {c['id']} waits for running quiet {running_quiet[0]}"
             waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: "
                              f"QUIET-SERIAL waits for running quiet {running_quiet[0]}"))
+            continue
+        if not (q_need or heavy):   # derived quiet-sensitive only: QUIET-SERIAL applies, the foreign-busy gate does not
+            kept.append(c)
             continue
         ok, why = [], None
         for o in c["options"]:
@@ -7444,7 +7522,7 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
     # the tie. Non-quiet and whole-host (quiet-host) candidates keep their normal order and are never dropped here.
     def _qser(c):
         d = man(c["id"])
-        return quiet_required(d) and c.get("shape") != "quiet-host" and str(d.get("shape") or "") not in ("host", "quiet-host")
+        return quiet_sensitive(d) and c.get("shape") != "quiet-host" and str(d.get("shape") or "") not in ("host", "quiet-host")
     qk = [c for c in kept if _qser(c)]
     if len(qk) > 1:
         def est(c):
