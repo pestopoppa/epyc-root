@@ -130,6 +130,39 @@ class QuietGate(unittest.TestCase):
         kept, _, _ = rf.quiet_gate([cand("a", [{"q0"}])], rows, [{"id": "build-x", "holds": {"c72", "t168"}}], UTIL_QUIET)
         self.assertEqual(kept, [])
 
+    def test_quiet_serial_running_quiet_blocks_other_quiet(self):
+        rows = {"run": {"requires_quiet_host": True}, "a": {"requires_quiet_host": True}, "n": {"busy_fraction": 0.1}}
+        grants = [{"id": "run", "holds": {"q0"}}]
+        kept, waits, lines = rf.quiet_gate([cand("a", [{"q2"}]), cand("n", [{"q3"}])], rows, grants, UTIL_QUIET)
+        self.assertEqual([c["id"] for c in kept], ["n"])             # non-quiet untouched
+        self.assertEqual(lines["a"], "QUIET-SERIAL a waits for running quiet run")
+        self.assertEqual(len(waits), 1)
+
+    def test_quiet_serial_shortest_first_rank_tiebreak(self):
+        rows = {k: {"requires_quiet_host": True} for k in "abc"}
+        cs = [dict(cand("a", [{"q0"}], rank=10), estimate_s=9000), dict(cand("b", [{"q1"}], rank=30), estimate_s=1000),
+              dict(cand("c", [{"q2"}], rank=20), estimate_s=1000)]
+        kept, _, lines = rf.quiet_gate(cs, rows, [], UTIL_QUIET)
+        self.assertEqual([c["id"] for c in kept], ["c"])             # tie on estimate -> better rank
+        self.assertEqual(lines["a"], "QUIET-SERIAL a waits for running quiet c")
+        self.assertEqual(lines["b"], "QUIET-SERIAL b waits for running quiet c")
+
+    def test_quiet_serial_keeps_reserve_and_quiet_host_exempt(self):
+        rows = {"a": {"requires_quiet_host": True}, "b": {"requires_quiet_host": True}, "h": {"bandwidth_heavy": True},
+                "e5": {"requires_quiet_host": True, "shape": "quiet-host"}}
+        cs = [dict(cand("a", [{"q0"}]), estimate_s=100), dict(cand("b", [{"q1"}]), estimate_s=50), cand("h", [{"q2"}])]
+        res = {"now": 1.0, "max_s": 5400}
+        kept, _, lines = rf.quiet_gate(cs, rows, [], UTIL_QUIET, reserve=res)
+        self.assertEqual([c["id"] for c in kept], ["b"])
+        self.assertEqual(lines["h"], "QUIET-RESERVE h held for a")
+        cs = [cand("e5", [{"q0", "q1", "q2", "q3"}], shape="quiet-host"), dict(cand("a", [{"q0"}]), estimate_s=100)]
+        kept, _, _ = rf.quiet_gate(cs, rows, [{"id": "x", "holds": {"q3"}}], UTIL_QUIET)
+        self.assertIn("e5", [c["id"] for c in kept])
+
+    def test_gpu_default_unchanged_with_running_quiet(self):
+        gpu = {"shape": "gpu-q3", "busy_fraction": 1.0, "regions": "mi210_0,88-95"}
+        self.assertFalse(rf.bandwidth_heavy(gpu))
+
     def test_heavy_not_placed_beside_running_quiet_row(self):
         rows = {"q": {"requires_quiet_host": True}, "h": {"bandwidth_heavy": True}}
         kept, _, _ = rf.quiet_gate([cand("h", [{"q1"}, {"q2"}])], rows, [{"id": "q", "holds": {"q0"}}], UTIL_QUIET)

@@ -6695,11 +6695,14 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
     def man(rid):
         return allrows.get(rid) or (load_json(ready_path(flags, rid)) if flags else None) or {}
     loud, quiet_q = set(), set()
+    running_quiet = []   # QUIET-SERIAL (AK ak-shexp-r5-quietgate-20261123): a RUNNING quiet row is loud to every other quiet candidate
     for g in grants:
         gq = option_quarters(g.get("holds") or ())
         d = man(g["id"])
         if not gq:
             continue
+        if not g["id"].startswith(BUILD_PREFIX) and quiet_required(d):
+            running_quiet.append(g["id"])
         if g["id"].startswith(BUILD_PREFIX):   # a build claim is bandwidth-heavy (AK addendum)
             loud |= gq
             continue
@@ -6713,6 +6716,11 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
         q_need, heavy = quiet_required(d), bandwidth_heavy(d)
         if not (q_need or heavy):
             kept.append(c)
+            continue
+        if q_need and running_quiet and c.get("shape") != "quiet-host" and str(d.get("shape") or "") not in ("host", "quiet-host"):
+            lines[c["id"]] = f"QUIET-SERIAL {c['id']} waits for running quiet {running_quiet[0]}"
+            waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: "
+                             f"QUIET-SERIAL waits for running quiet {running_quiet[0]}"))
             continue
         ok, why = [], None
         for o in c["options"]:
@@ -6743,6 +6751,24 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
         why = why or ("no quiet option", "")
         lines[c["id"]] = f"WAIT {c['id']}: {why[0]}"
         waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: {why[0]}"))
+    # QUIET-SERIAL, shortest first: at most ONE quiet row is placed per pass; the shortest estimate_s wins, priority_rank breaks
+    # the tie. Non-quiet and whole-host (quiet-host) candidates keep their normal order and are never dropped here.
+    def _qser(c):
+        d = man(c["id"])
+        return quiet_required(d) and c.get("shape") != "quiet-host" and str(d.get("shape") or "") not in ("host", "quiet-host")
+    qk = [c for c in kept if _qser(c)]
+    if len(qk) > 1:
+        def est(c):
+            e = c.get("estimate_s") or man(c["id"]).get("estimate_s")
+            return float(e) if e else float("inf")
+        win = min(qk, key=lambda c: (est(c), float(c["rank"]), c["id"]))
+        for c in qk:
+            if c is not win:
+                lines[c["id"]] = f"QUIET-SERIAL {c['id']} waits for running quiet {win['id']}"
+                waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: "
+                                 f"QUIET-SERIAL waits for running quiet {win['id']}"))
+        drop = {c["id"] for c in qk if c is not win}
+        kept = [c for c in kept if c["id"] not in drop]
     if reserve is not None:
         _quiet_reserve(cands, kept, waits, lines, man, reserve)
         kept = [c for c in kept if c["id"] not in reserve.get("held", ())]

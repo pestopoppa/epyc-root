@@ -1277,7 +1277,43 @@ def sc_heavy_row_held_while_quiet_waits(path):
     return write(path, ticks), check
 
 
+def sc_quiet_rows_serialize_shortest_first(path):
+    """2026-11-23 QUIET-SERIAL (AK ak-shexp-r5-quietgate-20261123): three quiet rows of different lengths wait on a quiet
+    host (shexp r5 / Q4X r9 / CAFE-1 ran at once and spoiled each other). Exactly one runs at a time, shortest estimate
+    first; a heavy row stays reserved (QUIET-RESERVE) until the quiet rows are done."""
+    mk = lambda rid, est, where: row(rid, regions=f"any-of {where}", extra="./bench -t 24", est=est, rank=20,
+                                      man={"requires_quiet_host": True})
+    rows = {"quiet-long": mk("quiet-long", TICK * 6, "q0"), "quiet-short": mk("quiet-short", TICK * 2, "q1"),
+            "quiet-mid": mk("quiet-mid", TICK * 4, "q2"),
+            "heavy-x": row("heavy-x", regions="any-of q3", extra="./bench -t 24", est=TICK * 2, rank=20, man={"bandwidth_heavy": True})}
+    quiet = {"util": {"q0": 1.0, "q1": 1.0, "q2": 1.0, "q3": 1.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}}
+
+    def check(d):
+        out = []
+        order = ["quiet-short", "quiet-mid", "quiet-long"]
+        first = []
+        for r in order:
+            g = _granted(d, r)
+            if not g:
+                return [f"{r} never granted"]
+            first.append(g[0][0])
+        if first != sorted(first) or len(set(first)) < 3:
+            out.append(f"quiet rows not granted shortest-first one after another: first ticks {dict(zip(order, first))}")
+        for x in d:
+            n = sum(1 for g in x["grants"] if g["id"].startswith("quiet-"))
+            if n > 1:
+                out.append(f"{n} quiet rows granted at once at tick {x['i']}")
+        hg = _granted(d, "heavy-x")
+        if hg and hg[0][0] <= first[0]:
+            out.append(f"heavy row granted at tick {hg[0][0]} before the quiet rows")
+        if not _lines(d, "QUIET-SERIAL quiet-long waits for running quiet"):
+            out.append("no QUIET-SERIAL line")
+        return out
+    return write(path, [(rows, quiet)] * 30), check
+
+
 SCENARIOS = {
+    "quiet-rows-serialize-shortest-first": sc_quiet_rows_serialize_shortest_first,
     "heavy-row-held-while-quiet-waits": sc_heavy_row_held_while_quiet_waits,
     "quiet-row-granted-beside-gpu-grant": sc_quiet_row_granted_beside_gpu_grant,
     "instant-complete-is-suspect": sc_instant_complete_suspect,
