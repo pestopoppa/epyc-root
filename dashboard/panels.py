@@ -736,6 +736,30 @@ _PANEL_SOURCE_CATALOG = _index((
               "dashboard/bw_census.py; schema owned by AutoKernel.",
     ),
     PanelSource(
+        panel="accumulator_surfaces",
+        kind=KIND_EXPORT,
+        payload_func="accumulator_surfaces_payload",
+        route="/api/accumulator_surfaces",
+        health_route="/api/accumulator_surfaces/health",
+        health_func="accumulator_surfaces_health",
+        producer="accumulator_surfaces.py (AutoKernel loop, epyc-inference-research scripts/kernel_rnd/autokernel/loop/), run as a CLI over the per-surface accumulator bundles",
+        producer_repo="epyc-inference-research",
+        evidence="/mnt/raid0/llm/tmp/ak-accumulator-surfaces/accumulator_surfaces.json",
+        timestamp_field="record generated_at (producer-written)",
+        absence_means=(
+            "the per-surface accumulator record is missing, unreadable, unknown-schema or presents an "
+            "estimate without the ESTIMATE label, so nothing can be said about whether a surface's "
+            "serving gate fires next. The /loop card says so instead of drawing zeros; no fire "
+            "decision is shown from a refused record."),
+        warn_s=1 * _DAY,
+        stale_s=3 * _DAY,
+        gates_health=False,
+        absence_is_anomalous=False,
+        notes="Read by dashboard/accumulator_surfaces.py; schema owned by AutoKernel. The producer is a "
+              "CLI run, so an unrefreshed record ages to stale: that means nobody re-ran it, not that "
+              "no surface changed. The hub never recomputes a decision.",
+    ),
+    PanelSource(
         panel="knowledge",
         kind=KIND_EXPORT,
         payload_func="knowledge_payload",

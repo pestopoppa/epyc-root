@@ -374,6 +374,11 @@
     <div class="akf-legend"><span><span class="akf-sw d"></span><b>DET</b> deterministic: code decides (rowflow, gate evaluator, filing, lineage, failure routing, decisions detector)</span><span><span class="akf-sw a"></span><b>AI</b> an LLM does the work (planner, critic, author in each lane)</span></div>
     <div id="akflow-svg"></div>
     <div id="akflow-items" class="pad"></div>
+    <!-- Per-surface accumulator card (AKU-18). Contract epyc.autokernel.accumulator_surfaces.v1 lives with
+         AutoKernel; this page only draws it. A product-of-solos figure is always labelled ESTIMATE. -->
+    <h3 class="akf-h3">Accumulator by surface <span class="count">per-surface serving-gate fire decision · data <a href="/api/accumulator_surfaces">/api/accumulator_surfaces</a> · probe <a href="/api/accumulator_surfaces/health">/api/accumulator_surfaces/health</a> · refresh 60s</span>
+      <span id="aks-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="aks-badgetxt">…</span></span></h3>
+    <div id="aks-cards" class="pad">Loading…</div>
   </section>
 
   <!-- The page opens with THE headline (operator note, 2026-08-31: no scope
@@ -3253,6 +3258,29 @@ akfLoad();setInterval(akfLoad,30000);
 </script>
 <script>
 "use strict";
+// Per-surface accumulator card (/api/accumulator_surfaces). aksCard is pure; aksLoad is the DOM/fetch code.
+function aksEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function aksPct(v){return (typeof v==='number'&&isFinite(v))?(v>=0?'+':'')+v.toFixed(2)+'%':'-';}
+function aksCard(s){
+ const f=s.fire||{},g=s.figure||{};
+ const tag={fire:'FIRES NEXT',accumulate:'ACCUMULATING',cannot_decide:'CANNOT DECIDE'}[f.decision]||String(f.decision).toUpperCase();
+ const fig=g.kind==='none'?aksEsc(g.label):`<strong>${aksPct(g.pct)}</strong> <span class="muted">${aksEsc(g.label)}</span>`;
+ const fe=(s.fold_estimates||[]).map(e=>`<tr><td class="mono">${aksEsc(e.recipe)}</td><td>${aksEsc(e.n_keeps)} keeps</td><td><strong>${aksPct(e.pct)}</strong> <span class="muted">${aksEsc(e.label)}</span></td><td>${aksEsc(e.provisional_keeps)} provisional</td></tr>`).join('');
+ return `<div class="akf-tile" style="min-width:300px;flex:1"><strong>${aksEsc(s.surface)} &middot; ${aksEsc(tag)}</strong>`+
+  `<div>${fig}</div>`+
+  `<div class="muted">${aksEsc(s.n_keeps)} keeps in bundle &middot; ${aksEsc(s.keeps_since_serving_gate)}/${aksEsc(s.every_keeps)} to the mandatory cadence &middot; floor ${s.floor_pct==null?'<strong>uncalibrated</strong>':aksEsc(s.floor_pct)+'%'} &middot; validity <span class="mono">${aksEsc(s.measurement_validity)}</span></div>`+
+  `<div class="muted">${aksEsc(f.reason)}${f.trigger?' ('+aksEsc(f.trigger)+')':''}</div>`+
+  (fe?`<table><tr><th>CPU fold recipe</th><th></th><th>product of solo keeps</th><th></th></tr>${fe}</table>`:'')+`</div>`;}
+let aksData=null;
+function aksRender(){const d=aksData||{},f=d._freshness||{},cls=f.staleness_class||'absent';
+ const b=document.getElementById('aks-badge'),t=document.getElementById('aks-badgetxt');
+ b.className='badge '+({fresh:'fresh',aging:'malformed',stale:'stale'}[cls]||'absent');
+ t.textContent=String(cls).toUpperCase()+(d.generated_at?' · record '+d.generated_at:'');
+ const host=document.getElementById('aks-cards');
+ if(d.present===false){host.innerHTML=`<p class="warn">Per-surface accumulator ABSENT: ${aksEsc(d.error||'')}. ${aksEsc(f.absence_means||'')}</p>`;return;}
+ host.innerHTML=`<div class="akf-tiles">${(d.surfaces||[]).map(aksCard).join('')}</div>`;}
+async function aksLoad(){try{aksData=await (await fetch('/api/accumulator_surfaces')).json();}catch(e){aksData={present:false,error:'/api/accumulator_surfaces unreachable: '+e};}aksRender();}
+aksLoad();setInterval(aksLoad,60000);
 // Bandwidth census panel (/api/bw_census). bwcTable is pure; bwcLoad is the DOM/fetch code.
 const BWC_COLS=[['kernel','kernel/op'],['model','model'],['gbps','GB/s'],['ceiling_gbps','ceiling'],['gap_gbps','gap vs floor'],['frac_of_ceiling','% ceil'],['share_of_round','share'],['recoverable_ms','recov ms'],['status','status'],['seed','seed'],['source_row','source row'],['measured_at','measured_at'],['trend','trend']];
 const BWC_COLOR={open_surface:'#f85149',no_ceiling:'#d29922',ok:'#3fb950',stale:'#8b949e'};

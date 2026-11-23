@@ -35,6 +35,8 @@ GET /api/pipeline            pipeline page data: flowchart counts, sessions by s
 GET /api/akflow              AK parallel-loop live flowchart (akloop/flow_status.py contract) + freshness
 GET /api/bw_census         AK bandwidth census (MI210 + Zen 5 tables) + freshness (age + event arms)
 GET /api/bw_census/health  is the census still true (no AK row ended after it, mtime within budget)?
+GET /api/accumulator_surfaces         per-surface accumulator fire decision (AutoKernel contract) + freshness
+GET /api/accumulator_surfaces/health  is the published per-surface record still true (generated_at within budget)?
 GET /api/akflow/health       is the AK flow view still true (newest loop event within budget)?
 GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
                              freshness envelope + watchdog, plus one status that
@@ -1593,6 +1595,32 @@ def bw_census_health() -> tuple[int, dict]:
 
 
 # --------------------------------------------------------------------------- #
+# Per-surface accumulator card  (/loop, AKU-18). Contract owned by AutoKernel.
+# --------------------------------------------------------------------------- #
+from dashboard import accumulator_surfaces  # noqa: E402
+
+
+def accumulator_surfaces_payload(path=None, now: float | None = None) -> dict:
+    """Per-surface fire decisions + envelope. Age = the record's own ``generated_at``."""
+    data = accumulator_surfaces.build(path)
+    src = panels.source("accumulator_surfaces")
+    if not data.get("present"):
+        obs = panels.absent(src, data.get("error") or "record unreadable")
+    else:
+        obs = panels.Observation(
+            artifact_present=True, timestamp=_parse_semantic_timestamp(data.get("generated_at")),
+            source="record generated_at", evidence=data["evidence"],
+            populated=bool(data["surfaces"]), watermark=data.get("generated_at"))
+    data["_freshness"] = _panel_envelope("accumulator_surfaces", obs, now=now)
+    return data
+
+
+def accumulator_surfaces_health() -> tuple[int, dict]:
+    """``/api/accumulator_surfaces/health`` - is the per-surface record still true?"""
+    return _subject_health("accumulator_surfaces", accumulator_surfaces_payload())
+
+
+# --------------------------------------------------------------------------- #
 # KT-3: read-only claim browser  (/knowledge)
 # --------------------------------------------------------------------------- #
 def knowledge_payload() -> dict:
@@ -1901,6 +1929,7 @@ def panel_envelopes() -> dict:
         "pipeline": lambda: pipeline_payload()["_freshness"],
         "akflow": lambda: akflow_payload()["_freshness"],
         "bw_census": lambda: bw_census_payload()["_freshness"],
+        "accumulator_surfaces": lambda: accumulator_surfaces_payload()["_freshness"],
         "knowledge": lambda: knowledge_payload()["_freshness"],
         "knowledge_claim": lambda: panels.live(),
     }
@@ -2390,6 +2419,7 @@ API_ROUTES = {
     "/api/pipeline": pipeline_payload,
     "/api/akflow": akflow_payload,
     "/api/bw_census": bw_census_payload,
+    "/api/accumulator_surfaces": accumulator_surfaces_payload,
     "/api/knowledge": knowledge_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
@@ -2410,6 +2440,7 @@ PANEL_HEALTH_ROUTES = {
     "/api/pipeline/health": pipeline_health,
     "/api/akflow/health": akflow_health,
     "/api/bw_census/health": bw_census_health,
+    "/api/accumulator_surfaces/health": accumulator_surfaces_health,
     "/api/knowledge/health": knowledge_health,
 }
 
