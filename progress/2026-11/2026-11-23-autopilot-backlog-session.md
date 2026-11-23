@@ -67,3 +67,8 @@ not retried, so that class is unreplayed. Box left open with a checkpoint. Detai
 - Stood up the native ALFWorld env without Docker (venv, extracted data, `smoke_alfworld.py` passed); AgentRL controller binary downloaded and SHA-verified but not executed (controller/worker step classifier-denied, not retried).
 - Found and worked around eight upstream defects without editing the clone; the list and the launch recipe are under the box in `handoffs/active/autopilot-program.md`.
 - No inference, no model server; network use was package, tokenizer and controller-release downloads only. [no-belief: build/landing]
+
+## Research intake: nanocode resubmission (re-encounter)
+
+- Operator resubmitted https://github.com/nanocodexyz/nanocode/; the unbounded dedup found an exact url collision with intake-2789 (ingested, dived and plan-approved 2026-11-22).
+- Per intake rule 2b no new entry or dive was made; a re-encounter line was added to intake-2789 notes only. No Stage-3 plan was produced because the existing one (research/deep-dives/pm-intake-nanocode-20261122/stage3-plan.md) is already approved and filed. [no-belief: duplicate re-encounter]
