@@ -48,7 +48,7 @@ not retried, so that class is unreplayed. Box left open with a checkpoint. Detai
 
 ## AP-BSV2-RIGOR-GATE-CODE (non-inference, code + unit tests)
 
-- Orchestrator commit `3f14c783` (branch `bsv2-rigor-gate`, worktree `/mnt/raid0/llm/worktrees/bsv2-rigor-gate`, unpushed): R1-R5 in `scripts/autopilot/bsv2_accept_rigor.py`, called from `actions._bsv2_accepts` (prompt, GEPA, code paths) behind new default-off sub-flag `AUTOPILOT_BSV2_ACCEPT_RIGOR` under the existing `AUTOPILOT_BSV2_ACCEPT_GATE`.
+- Orchestrator commit `31ee413c` on main (rebased from `3f14c783`): R1-R5 in `scripts/autopilot/bsv2_accept_rigor.py`, called from `actions._bsv2_accepts` (prompt, GEPA, code paths) behind new default-off sub-flag `AUTOPILOT_BSV2_ACCEPT_RIGOR` under the existing `AUTOPILOT_BSV2_ACCEPT_GATE`.
 - Wired: FeatureSpecs `autopilot_bsv2_accept_gate` and `autopilot_bsv2_accept_rigor`, `runtime_flags.spec.yaml`, `HOT_SWAP_FEATURES`, `scripts/autopilot/program.md`.
 - Tests (fakes only): 12 new pass; test_runtime_flag_spec, test_features, test_flag_surface, test_ap72_speed_ceiling_table 165 pass; existing `-k bsv2` actions tests 3 pass. System pytest with the orchestrator venv python (venv has no pytest).
 - Fails closed on unknown proposal-qid set; live use needs the loop to populate `state["bsv2_rigor"]`. Open: the gate flags are proposer-flippable (hot swap); pinning needs a `test_flag_surface.py` change. Autopilot not started. [no-belief: build/landing]
