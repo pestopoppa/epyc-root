@@ -97,3 +97,7 @@ Next: autokernel. Run the C19 27B ASan diagnostic, file the SPEC-DISTS-TRUNC ser
 Checkbox sync: SPEC-ID-GATE-1 and SPEC-DTREE-ACCEPT-GAP were already ticked by their agents; the boxes for SPEC-PIT.1, CAFE-3, AK-MMQ-SK2, DTREE-GDN-BATCH and AK-GVFATTN-LONGCTX stay open because their rows have not produced verdicts, so no new tick was written here.
 
 Next: autokernel. Run the held SPEC-PIT t1p100/t1p095/t4p095 rows, then the C19 27B ASan diagnostic.
+
+## 20:45Z — CAFE-3-CTRL-CPU r2 filed fail (DROP at THROUGHPUT_NONE)
+
+Row ak-cafe3-cpu-20261123-r2 (rerun of ak-cafe3-cpu-20261123, rc=0 complete 20:41:37Z): 30 of 30 TIME visits ran (5 blocks x C/S/Sr x T0.3/1.0); 30 DIST visits not run (stop-on-futility). Quiet-guard clean (one unit, b3 T1.0 S, needed 3 tries; refs 50.0/53.5 < floor 81.8, cleared). Controller ON vs static p-min 0.75 aggregate tok/s: T0.3 23.63 vs 26.30 (-10.17%, A/A Sr -0.88%, floor 24.1%); T1.0 24.79 vs 22.31 (+11.12%, A/A Sr +10.36%, floor 65.6%). Gate (aggregate >= 1.0 + A/A floor at both T) not met at either T: DROP / THROUGHPUT_NONE. Filed fail (filed_by autokernel). The filing tool refused the box tick (done-when also names the original row id and gate() verdicts, which a DROP before DIST never produces); box left open. RESULT /mnt/raid0/llm/tmp/ak-cafe3-cpu-20261123-r2/out/RESULT.json. [no-belief: filing record; conclusion is in RESULT.json]
