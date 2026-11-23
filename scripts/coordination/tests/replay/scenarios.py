@@ -1247,7 +1247,38 @@ def sc_quiet_row_granted_beside_gpu_grant(path):
     return write(path, ticks), check
 
 
+def sc_heavy_row_held_while_quiet_waits(path):
+    """2026-11-23 QUIET-RESERVE: a heavy occupant runs; a quiet row waits (host loud); a NEW heavy row arrives and is NOT
+    granted while the quiet row waits; the occupant ends; the quiet row is granted; the heavy row is granted after it."""
+    occ = row("occ-heavy", regions="any-of q0", extra="./bench -t 24", est=TICK * 3, rank=20,
+              man={"bandwidth_heavy": True})
+    q = row("quiet-r1", regions="any-of q1", extra="./bench -t 24", est=TICK * 2, rank=20, man={"requires_quiet_host": True})
+    h = row("heavy-r2", regions="any-of q2", extra="./bench -t 24", est=TICK * 2, rank=20, man={"bandwidth_heavy": True})
+    ticks = [({"occ-heavy": occ}, {})] + [({"occ-heavy": occ, "quiet-r1": q, "heavy-r2": h}, {})] * 16
+
+    def check(d):
+        out = []
+        go, gq, gh = _granted(d, "occ-heavy"), _granted(d, "quiet-r1"), _granted(d, "heavy-r2")
+        if not go:
+            return ["occupant never granted (scenario precondition)"]
+        if not gq:
+            out.append("quiet row never granted after the loud occupant ended")
+        if not gh:
+            out.append("heavy row never granted after the quiet row (starved)")
+        if gq and gh:
+            if gh[0][0] <= gq[0][0]:
+                out.append(f"heavy row granted at tick {gh[0][0]} not after the quiet row (tick {gq[0][0]})")
+        for x in d:
+            if x["i"] > 0 and gq and x["i"] < gq[0][0] and any(g["id"] == "heavy-r2" for g in x["grants"]):
+                out.append(f"heavy row granted at tick {x['i']} while the quiet row waited")
+        if not _lines(d, "QUIET-RESERVE heavy-r2 held for quiet-r1"):
+            out.append("no QUIET-RESERVE line")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
+    "heavy-row-held-while-quiet-waits": sc_heavy_row_held_while_quiet_waits,
     "quiet-row-granted-beside-gpu-grant": sc_quiet_row_granted_beside_gpu_grant,
     "instant-complete-is-suspect": sc_instant_complete_suspect,
     "quiet-host-waits-for-foreign-busy": sc_quiet_host_waits_for_foreign_busy,

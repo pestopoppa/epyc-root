@@ -45,6 +45,48 @@ class QuietGate(unittest.TestCase):
         rows["gpu"] = dict(gpu, bandwidth_heavy=True)
         self.assertEqual(rf.quiet_gate([cand("q", [{"q0"}])], rows, grants, UTIL_QUIET)[0], [])
 
+    def test_quiet_reserve_holds_new_heavy_row(self):
+        rows = {"q": {"requires_quiet_host": True}, "h": {"bandwidth_heavy": True}, "n": {"busy_fraction": 0.1},
+                "occ": {"bandwidth_heavy": True}}
+        grants = [{"id": "occ", "holds": ["c0"]}]
+        cs = [cand("q", [{"q1"}], rank=20), cand("h", [{"q2"}], rank=20), cand("n", [{"q3"}], rank=20)]
+        res = {"now": 1000.0, "max_s": 5400, "since": None}
+        kept, waits, lines = rf.quiet_gate(cs, rows, grants, UTIL_QUIET, reserve=res)
+        self.assertEqual([c["id"] for c in kept], ["n"])            # non-heavy unaffected
+        self.assertEqual(lines["h"], "QUIET-RESERVE h held for q")
+        self.assertTrue(res["active"] and not res["released"])
+        self.assertEqual(res["since"], 1000.0)
+        # a worse-ranked quiet row does not reserve against a better-ranked heavy row
+        cs2 = [cand("q", [{"q1"}], rank=30), cand("h", [{"q2"}], rank=20)]
+        kept, _, lines = rf.quiet_gate(cs2, rows, grants, UTIL_QUIET, reserve={"now": 1.0, "max_s": 5400})
+        self.assertEqual([c["id"] for c in kept], ["h"])
+        # without a reserve arg the old behaviour is unchanged
+        self.assertEqual(len(rf.quiet_gate(cs, rows, grants, UTIL_QUIET)[0]), 2)
+
+    def test_quiet_reserve_released_after_bound_and_whole_host_exempt(self):
+        rows = {"q": {"requires_quiet_host": True}, "h": {"bandwidth_heavy": True}, "e5": {"requires_quiet_host": True, "shape": "quiet-host"},
+                "occ": {"bandwidth_heavy": True}}
+        grants = [{"id": "occ", "holds": ["c0"]}]
+        cs = [cand("q", [{"q1"}]), cand("h", [{"q2"}])]
+        res = {"now": 1000.0 + 5401, "max_s": 5400, "since": 1000.0}
+        kept, _, lines = rf.quiet_gate(cs, rows, grants, UTIL_QUIET, reserve=res)
+        self.assertEqual([c["id"] for c in kept], ["h"])
+        self.assertTrue(res["released"])
+        self.assertIn("QUIET-RESERVE-RELEASE", lines["__quiet_reserve_release"])
+        # a quiet-host (E5) candidate neither reserves nor is held
+        cs = [cand("e5", [{"q0", "q1", "q2", "q3"}], shape="quiet-host"), cand("h", [{"q2"}])]
+        res = {"now": 1.0, "max_s": 5400}
+        kept, _, _ = rf.quiet_gate(cs, rows, [], UTIL_QUIET, reserve=res)
+        self.assertEqual({c["id"] for c in kept}, {"e5", "h"})
+
+    def test_quiet_reserve_max_env(self):
+        os.environ["ROWFLOW_QUIET_RESERVE_MAX_S"] = "600"
+        try:
+            self.assertEqual(rf.quiet_reserve_max_s(None), 600.0)
+        finally:
+            del os.environ["ROWFLOW_QUIET_RESERVE_MAX_S"]
+        self.assertEqual(rf.quiet_reserve_max_s(None), 5400.0)
+
     def test_foreign_busy_drops_option(self):
         rows = {"gdn": {"requires_quiet_host": True}}
         c = cand("gdn", [{"q0"}, {"q1"}, {"q2"}])

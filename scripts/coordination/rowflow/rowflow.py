@@ -5796,6 +5796,9 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
             and quiet_required(allrows.get(g["id"]) or load_json(ready_path(flags, g["id"])) or {})]
     need(not qrun, f"BUILD-REFUSED: quiet-host row {','.join(qrun)} is running (DRAM-wide quiet needed); a build claim is "
                    "bandwidth-heavy - retry when it ends")
+    qres_rows = quiet_reserve_blocks_build(flags)
+    need(not qres_rows, f"BUILD-REFUSED: QUIET-RESERVE - quiet-host row(s) {','.join(qres_rows)} wait for a quiet host; a build claim is "
+                        f"bandwidth-heavy - retry when they run (reserve self-releases after {quiet_reserve_max_s(flags) / 60:.0f} min)")
     tq = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX)], allrows)
     holder = {q: g["id"] for g in grants for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
     s = str(cpus).strip()
@@ -6548,6 +6551,32 @@ QUIET_HEAVY_BUSY = 0.6
 # "side" is the WHOLE socket - a quiet row needs NO bandwidth-heavy / whole-host row and NO build claim on any quarter.
 QUIET_NUMA_SIDES = (frozenset({"q0", "q1", "q2", "q3"}),)
 QUIET_NOISE_MIN_PCT = 5.0
+# QUIET RESERVE (2026-11-23, pipeline-mgmt): the reverse rule above only blocks a heavy row while a quiet row is RUNNING. While
+# quiet rows merely WAIT (grantable, held because the host is loud) a new heavy row used to be placed, kept the host loud and
+# starved them (ak-spec-id-noise-q38fn-cpu-r2 granted onto q0 with three quiet rows waiting). Now a waiting quiet row of equal
+# or better priority_rank reserves the host: no NEW heavy row and no NEW build claim until it runs. Running rows are never
+# pre-empted; whole-host / quiet-host (E5) rows keep their own precedence and are exempt. Anti-starvation: after
+# QUIET_RESERVE_MAX_S of continuous reserve the reserve is released (env ROWFLOW_QUIET_RESERVE_MAX_S, else
+# <flags>/allocator.json {"quiet_reserve_max_s": N}, else 90 min) and the release is logged.
+QUIET_RESERVE_MAX_S = 5400
+QUIET_RESERVE_STATE = "quiet_reserve.json"
+
+
+def quiet_reserve_max_s(flags):
+    v = os.environ.get("ROWFLOW_QUIET_RESERVE_MAX_S") or ((load_json(os.path.join(flags, "allocator.json")) or {}).get("quiet_reserve_max_s") if flags else None)
+    try:
+        return max(0.0, float(v)) if v is not None else float(QUIET_RESERVE_MAX_S)
+    except (TypeError, ValueError):
+        return float(QUIET_RESERVE_MAX_S)
+
+
+def quiet_reserve_blocks_build(flags, now=None):
+    """-> the waiting quiet row ids when a fresh (< 5 min old) un-released reserve is recorded, else []. Used by claim --build."""
+    st = load_json(os.path.join(state_dir(flags), QUIET_RESERVE_STATE)) or {}
+    t = time.time() if now is None else now
+    if st.get("active") and not st.get("released") and t - float(st.get("ts") or 0) < 300:
+        return list(st.get("rows") or [])
+    return []
 
 
 def quiet_required(d):
@@ -6581,11 +6610,13 @@ def option_quarters(o):
     return out
 
 
-def quiet_gate(cands, allrows, grants, util, flags=None):
+def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
     """PURE (flags only to read a grant's manifest when allrows lacks it). -> (kept cands, [(row, reason)], waits{rid: line}).
     Quiet candidates keep only options whose quarters measure < QUIET_FOREIGN_MAX_PCT and share no NUMA side with an open
     whole-host / bandwidth-heavy grant; bandwidth-heavy candidates keep only options off the side of a running quiet row.
-    A candidate left with no option is removed (it waits; nothing is stopped)."""
+    A candidate left with no option is removed (it waits; nothing is stopped).
+    QUIET RESERVE: `reserve` (dict; in: since, now, max_s; out: active, released, rows, since, elapsed_s) - a quiet candidate
+    the gate held back reserves the host against NEW bandwidth-heavy candidates of equal or worse rank until it is granted."""
     def man(rid):
         return allrows.get(rid) or (load_json(ready_path(flags, rid)) if flags else None) or {}
     loud, quiet_q = set(), set()
@@ -6637,7 +6668,41 @@ def quiet_gate(cands, allrows, grants, util, flags=None):
         why = why or ("no quiet option", "")
         lines[c["id"]] = f"WAIT {c['id']}: {why[0]}"
         waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: {why[0]}"))
+    if reserve is not None:
+        _quiet_reserve(cands, kept, waits, lines, man, reserve)
+        kept = [c for c in kept if c["id"] not in reserve.get("held", ())]
     return kept, waits, lines
+
+
+def _quiet_reserve(cands, kept, waits, lines, man, reserve):
+    kept_ids = {c["id"] for c in kept}
+    # reservers: quiet rows held back by the gate, AND quiet rows grantable this very tick (the heavy row must not be placed
+    # beside a quiet row granted in the same pass); both ride the same anti-starvation clock
+    wq = [c for c in cands if quiet_required(man(c["id"]))
+          and str(man(c["id"]).get("shape") or "") not in ("host", "quiet-host") and c.get("shape") != "quiet-host"]
+    now = float(reserve.get("now") or time.time())
+    since = float(reserve.get("since") or now) if wq else None
+    elapsed = (now - since) if wq else 0.0
+    released = bool(wq) and elapsed > float(reserve.get("max_s", QUIET_RESERVE_MAX_S))
+    reserve.update(active=bool(wq), released=released, rows=[c["id"] for c in wq], since=since, elapsed_s=elapsed, held=set())
+    if not wq:
+        return
+    if released:
+        lines["__quiet_reserve_release"] = (f"QUIET-RESERVE-RELEASE reserve for {','.join(c['id'] for c in wq)} held {elapsed / 60:.0f} min "
+                                            f"> {float(reserve.get('max_s', QUIET_RESERVE_MAX_S)) / 60:.0f} min bound "
+                                            f"(ROWFLOW_QUIET_RESERVE_MAX_S / allocator.json quiet_reserve_max_s): heavy rows placed")
+        return
+    for c in kept:
+        d = man(c["id"])
+        if quiet_required(d) or not bandwidth_heavy(d) or str(d.get("shape") or "") in ("host", "quiet-host") or c.get("shape") == "quiet-host":
+            continue
+        for q in sorted(wq, key=lambda x: float(x["rank"])):
+            if float(q["rank"]) <= float(c["rank"]):
+                reserve["held"].add(c["id"])
+                lines[c["id"]] = f"QUIET-RESERVE {c['id']} held for {q['id']}"
+                waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: "
+                                 f"QUIET-RESERVE held for {q['id']} (rank {float(q['rank']):g})"))
+                break
 
 
 def quiet_noise(flags, quarters, grants, census=None, prev=None, dt_s=None):
@@ -7286,9 +7351,20 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     out, excluded, plan_free, ram = [], set(), set(free), mem_available_gib()
     util = measure_util()
     try:   # PM-KEEPER3 #1: quiet-host rows only onto quiet quarters, never beside whole-host / bandwidth-heavy rows
-        cands, qwaits, qlines = quiet_gate(cands, allrows, grants, util, flags)
+        qres = {"now": time.time(), "max_s": quiet_reserve_max_s(flags)}
+        qst_p = os.path.join(state_dir(flags), QUIET_RESERVE_STATE)
+        qst = load_json(qst_p) or {}
+        qres["since"] = qst.get("since") if qst.get("active") else None
+        cands, qwaits, qlines = quiet_gate(cands, allrows, grants, util, flags, reserve=qres)
         for line in qlines.values():
             log(line)
+        if not dry:
+            new = {"active": qres.get("active", False), "released": qres.get("released", False), "rows": qres.get("rows", []),
+                   "since": qres.get("since"), "max_s": qres["max_s"], "ts": qres["now"]}
+            try:
+                atomic_json(qst_p, new)
+            except Exception:  # noqa: BLE001
+                pass
         smoke_waits = qwaits + smoke_waits
         noisy = {m.group(1) for line in qlines.values() for m in [re.search(r"foreign busy \S+ on (q\d)", line)] if m}
         if noisy and not dry:
