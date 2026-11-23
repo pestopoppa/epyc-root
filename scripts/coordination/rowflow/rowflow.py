@@ -2057,8 +2057,12 @@ def contract_of(d, o=None, flags=None):
     if not re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", cc or ""):   # an unresolved claim ($CPUS): a legacy engine may
         cc = "0-95" if cc and not honours and not re.search(r"WS58_REGIONS|FILLER_CPUS", cc) else ""   # lock anything
         # (read as the host) unless it names the grant's own cpus; a CONTRACT_LOCK engine's lock= replaces it anyway
-    tv = [x for x in (row_threads(d, flags), o.get("threads")) if x]
-    threads = max(tv) if tv else None
+    # declthreads 2026-11-23 (ak-cpu-a3b-nonweight-split-20261123: declared_threads 24, launcher argv scan 48 from
+    # "--threads 24, --threads 48" -> keeper booked multi-quarter(2) and drained q2 for a one-quarter row). The row's
+    # declared_threads is authoritative (publish already overrode the scan: THREADS-SCAN-OVERRIDDEN); the keeper re-parses
+    # the launcher, so the scan is only the fallback when the row declares nothing.
+    rt = row_threads(d, flags)
+    threads = rt if rt else (o.get("threads") or None)
     if threads is None and (len(str(d.get("width_justification") or "").strip()) >= WIDTH_JUSTIFICATION_MIN
                             or bool(str(d.get("shape_override") or "").strip())):
         # a width-agnostic job (no thread knob) with a justified (width_justification) or operator-overridden

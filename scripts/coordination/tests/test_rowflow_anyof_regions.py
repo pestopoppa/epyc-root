@@ -49,6 +49,14 @@ class AnyOfRegions(unittest.TestCase):
         for o in c["options"]:
             self.assertFalse(quarters(o) - {"q1", "q2"}, sorted(o))
 
+    def test_declared_threads_beats_launcher_scan(self):
+        # ak-cpu-a3b-nonweight-split-20261123: declared 24, argv scan 48 -> was multi-quarter(2) draining q2
+        d = {"regions": "any-of q0,q1,q2", "shape": "quarter", "declared_shape": "quarter", "declared_threads": 24,
+             "lane": "cpu", "gib": 64}
+        c = rf.contract_of(d, {"class": "cpu", "threads": 48})
+        self.assertEqual(c["shape"], "quarter")
+        self.assertEqual({frozenset(quarters(o)) for o in c["options"]}, {frozenset({q}) for q in ("q0", "q1", "q2")})
+
     def test_any_cpu_quarter_unrestricted(self):
         c = rf.contract_of(spec("any-cpu-quarter"))
         self.assertEqual({frozenset(quarters(o)) for o in c["options"]}, {frozenset({q}) for q in rf.QUARTERS})
