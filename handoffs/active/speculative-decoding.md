@@ -1076,7 +1076,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · arms: OFF / OFF2 (C18 default, split16 on), MF (cap 16; e2e + KLD), MF64 (cap 64; op), MF64S (cap 64 + slc; op). Caps 16/32/64 derived at op level from the OFF and MF64 cells (a cap only picks, per n, between those two measured paths)
       · decision rule: moved to AK-MMID-MF-ROW done when
       · done when: RESULT.json carries a terminal verdict with per-n moe_step_ms / GB/s for every arm and derived cap, per-concurrency m / A/A / g CIs, KLD and identity rates; a KEEP feeds the C19 fold list, a DROP with BW_TARGET not met points the next iteration at the in-place expert repack (V5I q8ip for 3D tensors)
-  - [ ] **AK-MMID-MF-ROW** [inference] Run row `ak-mmid-mf-gpu-20261122` (arms OFF / OFF2 / MF / MF64 / MF64S as in the parent): op cells, KLD and e2e.
+  - [x] **AK-MMID-MF-ROW** [inference] Run row `ak-mmid-mf-gpu-20261122` (arms OFF / OFF2 / MF / MF64 / MF64S as in the parent): op cells, KLD and e2e. ✅ 2026-11-23 [belief: cc] FUTILITY_RESIDENCY at tbo-perf-OFF-p1; inconclusive, rc=0; HIP store residency false, KFD VRAM max 0 B, one sample; no correctness or performance verdict; RESUL
         · model: Qwen3.6-35B-A3B-MTP Q8_0 (op: test-backend-ops MUL_MAT_ID at the A3B expert shapes) · build: store gpu-20261122-c18-mmid-mf (fork 4297a2caa; strings GGML_HIP_MMID_MF) · region: gpu-q3 · est 3300 s
         · gate: none
         · stop rule: correctness first (tbo mmid_mf 82 cases OFF/MF64/MF64S, knob witness route=MMID_MF); FUTILITY_OP iff MF64/OFF geomean over n 2..16 > 1.05; e2e no futility before judged triple 4, then mean m > 1.0 at every concurrency -> FUTILITY_ABOVE_BASELINE; max 8 judged triples; gate-class = futility-only at interim looks
