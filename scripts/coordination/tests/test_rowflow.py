@@ -52,7 +52,7 @@ class Fixture:
         os.environ["ROWFLOW_FLAGS"] = self.flags
         os.environ["FILLER_DISK_FLOOR_GIB"] = "0"
 
-    def job(self, rid, behaviour="ok"):
+    def job(self, rid, behaviour="ok", measure=True):
         """A job dir with a launcher on filler_run15.sh. behaviour: ok (one unit every 2 s, honours the stop file),
         crash (exit 1 before any unit), noexit (writes units, ignores the stop file)."""
         d = os.path.join(self.root, rid)
@@ -62,7 +62,9 @@ class Fixture:
             "crash": 'echo "model path missing" >&2; exit 1',
             "noexit": 'for i in $(seq 1 400); do echo "{\\"item\\": $i}" >> "$D/out/results.jsonl"; sleep 2; done',
         }[behaviour]
-        write(os.path.join(d, "job.sh"), f'#!/bin/bash\nD={d}\n{body}\n', 0o755)
+        measure_cmd = ('if [ "${FILLER_SMOKE:-0}" = 1 ]; then mkdir -p "$D/out-smoke"; '
+                       "echo '{\"unit_s\":1,\"units_measured\":1,\"loads_s\":0}' > \"$D/out-smoke/smoke_measure.json\"; fi\n") if measure else ""
+        write(os.path.join(d, "job.sh"), f'#!/bin/bash\nD={d}\n{measure_cmd}{body}\n', 0o755)
         write(os.path.join(d, "launch.sh"), textwrap.dedent(f"""\
             #!/bin/bash
             set -euo pipefail

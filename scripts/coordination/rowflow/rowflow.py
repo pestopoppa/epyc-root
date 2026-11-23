@@ -76,6 +76,7 @@ import glob
 import hashlib
 import itertools
 import json
+import math
 import os
 import re
 import shlex
@@ -3534,8 +3535,6 @@ def sample_gpu_residency(root, tracked, own, rid=None, containers=None):
     clients and device-wide VRAM never count: the idle device reads about 13 MB and another row's model is not this row's proof."""
     harness_tree(root, tracked)
     for q, b in (gpu_occupancy().get("pids") or {}).items():
-        if b <= 0:
-            continue
         mine = pid_is_rows(q, rid, tracked)
         if not mine and rid and containers is not None:   # a container's processes sit in docker's cgroup, not the row's leaf
             cid = pid_container_id(q)
@@ -4028,6 +4027,38 @@ def gpu_residency_required(d, regions):
     return "mi210_0" in regions and (d or {}).get("gpu_use") != "quiet-only"
 
 
+def smoke_measure_paths(d, dry_dir_path):
+    return [os.path.join(dry_dir_path, "smoke_measure.json"),
+            os.path.join(str(d.get("scratch_root") or ""), "out-smoke", "smoke_measure.json")]
+
+
+def smoke_measure_stamp(path):
+    try:
+        st = os.stat(path)
+        return (st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+    except OSError:
+        return None
+
+
+def fresh_smoke_measure(d, dry_dir_path, before):
+    """Accept a valid measurement created or changed after the pre-launch snapshot."""
+    for path in smoke_measure_paths(d, dry_dir_path):
+        try:
+            stamp = smoke_measure_stamp(path)
+            if stamp is None or stamp == before.get(path):
+                continue
+            m = load_json(path)
+            if not m:
+                continue
+            unit_s, loads_s = float(m["unit_s"]), float(m["loads_s"])
+            if not math.isfinite(unit_s) or unit_s <= 0 or int(m["units_measured"]) < 1 or not math.isfinite(loads_s) or loads_s < 0:
+                continue
+            return path
+        except (OSError, KeyError, TypeError, ValueError, OverflowError):
+            continue
+    return None
+
+
 SMOKE_LOCK_NAME = "SMOKE.lock"   # F2 (AK audit B2, D9 2026-11-20): one smoke runner per row id
 
 
@@ -4157,6 +4188,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
     out.write(f"\n==== dry run {now_iso()} regions={regions} launcher_sha={lsha} units_before={units0}\n"); out.flush()
     lout = os.path.join(dd, "launcher.out")
     out_lines0 = len(tail(lout, 10**6))  # counted BEFORE the launch: a region-lock line the job prints at once is this run's
+    measure_before = {p: smoke_measure_stamp(p) for p in smoke_measure_paths(d, dd)}
     p = subprocess.Popen(["bash", lp], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
     tracked = harness_tree(p.pid, {p.pid: (_proc_stat(p.pid) or (0, 0, None))[2]})  # setsid'd group: pgid == p.pid
     # the dry-run grant's end= is a HARD deadline, carried in RUNNING.json so the keeper
@@ -4170,12 +4202,12 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
     vram_max = None
     kfd_seen = {}
     gpu_containers = {}
-    gpu = gpu_residency_required(d, regions)
+    gpu = gpu_residency_required(d, regions) or d.get("lane") == "gpu"
 
     def residency_ok():
         nonlocal vram_max
         vram_max = own_vram_peak(kfd_seen) or vram_max
-        return vram_max is not None and vram_max >= RESIDENCY_FLOOR_B
+        return bool(kfd_seen)
     first_unit_at = None
     progress = None
     stop_requested = None
@@ -4233,7 +4265,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
                 elif rc not in (0, 75):
                     verdict, reason = "FAIL", f"first unit written but the job ended {rc_line[:120]}"
                 elif gpu and not residency_ok():
-                    verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
+                    verdict, reason = "FAIL", f"GPU row produced a unit but no owned KFD process or VRAM was observed during the run (max {vram_max} B)"
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {rc_line[:80]}"
                 break
@@ -4241,7 +4273,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
                 # the engine's hard-end kill is production's truncation path too: PASS with a warning, then stop the group
                 warning = f"job did not stop within {STOP_GRACE_S}s of the stop file (FILLER_STOPFILE not honoured between items); truncated by signal"
                 if gpu and not residency_ok():
-                    verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
+                    verdict, reason = "FAIL", f"GPU row produced a unit but no owned KFD process or VRAM was observed during the run (max {vram_max} B)"
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {warning}"
                 break
@@ -4306,12 +4338,18 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
             reason += (f" [dry run held ONE quarter, WS58_REGIONS={ws58_cpus(regions)}; a launcher whose own taskset/claim "
                        "hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]")
         out.write(f"==== dry run {verdict}: {reason} ({now_iso()})\n"); out.close()
+    measure = fresh_smoke_measure(d, dd, measure_before) if verdict == "PASS" and smoke_s else None
+    if verdict == "PASS" and smoke_s and not measure:
+        verdict, reason = "FAIL", "SMOKE-NO-MEASURE: no valid fresh smoke_measure.json from this smoke"
+        with open(os.path.join(dd, "launcher.out"), "a") as log:
+            log.write(f"==== dry run FAIL: {reason} ({now_iso()})\n")
     cur_sha = sha256(lp) if os.path.isfile(lp) else None
     if verdict == "PASS" and cur_sha != lsha:
         verdict, reason = "FAIL", "launcher changed while the dry run was running"
     rec = {"regions": regions, "units": count_units(result_path, result_format, d.get("workdir")) - units0, "result_path": result_path,
            "result_format": result_format, "first_unit_at": first_unit_at, "first_progress": progress,
-           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max, "residency_evidence": None,
+           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max,
+           "residency_evidence": {"kfd_pids": sorted(kfd_seen)} if kfd_seen else None, "smoke_measure": measure,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     # refinement 1: what the job actually used (before the harness's stop), against the row's declared claim

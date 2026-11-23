@@ -100,6 +100,8 @@ class DryrunProgressTests(unittest.TestCase):
             if argv[:2] == ["bash", "-c"]:  # the smoke_predicate probe runs for real; only the launcher is mocked
                 return real_popen(argv, **kw)
             env = kw["env"]
+            Path(env["FILLER_DRYRUN_DIR"], "smoke_measure.json").write_text(
+                json.dumps({"unit_s": 1, "units_measured": 1, "loads_s": 0}))
             rc = write(env, row["result_path"])
             Path(env["FILLER_DRYRUN_DIR"], "ended").write_text(f"rc={rc} time=x reason=exited\n")
             return Done()

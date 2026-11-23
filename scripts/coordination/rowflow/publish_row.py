@@ -1557,7 +1557,13 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
             unpublish(flags, rid)
             raise rf.Refused(f"smoke_cpus {want} exceeds the row's own contract width ({held} cores); a smoke never runs wider "
                              "than its row. FIX: lower smoke_cpus (plumbing only: latency pre-check plus one answered request)")
-    if identity and previous_pass.get("smoke_identity") == identity:
+    # PASSes produced before the fresh-measure gate cannot be carried forward.
+    measured_pass = bool(previous_pass.get("smoke_measure"))
+    evidence = previous_pass.get("residency_evidence") or {}
+    vram = previous_pass.get("vram_used_max_bytes")
+    gpu_proof = (isinstance(evidence, dict) and bool(evidence.get("kfd_pids"))) or (
+        isinstance(vram, (int, float)) and not isinstance(vram, bool) and vram > 0)
+    if identity and previous_pass.get("smoke_identity") == identity and measured_pass and (spec.get("lane") != "gpu" or gpu_proof):
         print(f"SMOKE PASS REUSED {rid}: identical spec and code sha")
         supersede_prior_attempts(flags, rid)
         rf.supersede(flags, row)
