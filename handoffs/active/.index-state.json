@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 586
+      "open": 584
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 946,
+      "closed": 948,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 129,
+      "open": 127,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -193,7 +193,7 @@
         },
         {
           "blocked": 0,
-          "closed": 45,
+          "closed": 47,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -213,7 +213,7 @@
           "line": 10971,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 19
+          "open": 17
         }
       ]
     },
@@ -1183,7 +1183,7 @@
       "closed": 246,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 39,
+      "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1192,7 +1192,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 287,
+      "total": 288,
       "tracks": [
         {
           "blocked": 2,
@@ -1207,14 +1207,14 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 37
+          "open": 38
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1901,
+          "line": 1903,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2029,
+          "line": 2031,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2361,
+          "line": 2363,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2462,
+          "line": 2464,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 3016,
+          "line": 3018,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3154,
+          "line": 3156,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3161,
+          "line": 3163,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2350,11 +2350,11 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 268,
+      "closed": 269,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 34,
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2378,7 +2378,7 @@
         },
         {
           "blocked": 1,
-          "closed": 145,
+          "closed": 146,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2387,7 +2387,7 @@
           "line": 906,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 24
+          "open": 23
         }
       ]
     },
