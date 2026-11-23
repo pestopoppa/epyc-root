@@ -31,6 +31,10 @@ class B2HoldOrphan(Flags):
         super().setUp()
         rf.write_grant(self.f, "gpu-a", "mi210_0,184-191", {rf.GPU} | {f"t{k}" for k in range(184, 192)}, 7200)
         rf.atomic_json(rf.ready_path(self.f, "gpu-a"), {"id": "gpu-a", "owner": "autokernel", "workdir": "/mnt/raid0/llm/tmp/gpu-a-workdir"})
+        os.makedirs(rf.dry_dir(self.f, "gpu-a"), exist_ok=True)
+        with open(os.path.join(rf.dry_dir(self.f, "gpu-a"), "poller.out"), "w") as fh:   # the engine logged START: a started grant
+            fh.write("START regions=mi210_0,184-191\n")
+        os.utime(os.path.join(self.G, "gpu-a.grant"), (time.time() - 60, time.time() - 60))
         self.alerts = []
         for name, fn in (("own_pids", lambda *a, **k: set()), ("proc_alive", lambda p: False)):
             p = mock.patch.object(rf, name, side_effect=fn)
@@ -61,6 +65,13 @@ class B2HoldOrphan(Flags):
             self.run_at(t0, ps)
             self.assertEqual(self.run_at(t0 + 900, ps), [], ps)
             self.assertFalse(os.path.exists(os.path.join(self.G, "gpu-a.ended")))
+
+    def test_unstarted_grant_is_not_an_orphan(self):
+        with open(os.path.join(rf.dry_dir(self.f, "gpu-a"), "poller.out"), "w") as fh:
+            fh.write("armed, waiting\n")   # no START line: heal_grants' business, not an orphan
+        t0 = 1_800_000_000.0
+        self.run_at(t0, [])
+        self.assertEqual(self.run_at(t0 + 900, []), [])
 
     def test_zombie_does_not_count_and_recorded_pgid_does(self):
         t0 = 1_800_000_000.0

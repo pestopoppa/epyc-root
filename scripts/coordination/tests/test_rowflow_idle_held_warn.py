@@ -123,6 +123,9 @@ class IdleHeldWarn(Fixture):
         rf.measure_util = lambda *a, **k: GPU_IDLE
         rf.underused = self.saved["underused"]
         saved_time = rf.time.time
+        saved_orphans = rf.hold_orphans
+        # B2 HOLD-ORPHAN would release this process-less fixture grant; this test covers idle-held only.
+        rf.hold_orphans = lambda *a, **k: []
         try:
             for i in range(4):
                 now = time.time() + i * TICK
@@ -130,6 +133,7 @@ class IdleHeldWarn(Fixture):
                 rf.allocate(self.flags, log=self.lines.append)
         finally:
             rf.time.time = saved_time
+            rf.hold_orphans = saved_orphans
         self.assertEqual(len(alerts(self.flags)), 1)
         self.assertEqual(alerts(self.flags)[0]["kind"], "idle-held")
         self.assertTrue(os.path.exists(os.path.join(self.flags, "grants", rid + ".grant")))

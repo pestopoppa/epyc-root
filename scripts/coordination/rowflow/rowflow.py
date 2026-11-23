@@ -5369,8 +5369,8 @@ def hold_orphans(flags, grants, log, now=None, emit=None, ps=None, act=True):
     ps = ps_listing() if ps is None else ps
     for g in grants:
         rid = g["id"]
-        if rid.startswith(BUILD_PREFIX) or g.get("dryrun"):
-            continue
+        if rid.startswith(BUILD_PREFIX) or g.get("dryrun") or not g.get("started"):
+            continue   # an unstarted grant is heal_grants' business (armed poller / region conflict), not an orphan
         d = load_json(ready_path(flags, rid)) or {}
         prev = st.get(rid) or {}
         pgids = set(int(x) for x in prev.get("pgids") or [])
