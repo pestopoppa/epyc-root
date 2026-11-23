@@ -315,13 +315,13 @@
       "from": "INF-50",
       "kind": "ref",
       "to": "INF-06",
-      "weight": 3
+      "weight": 4
     },
     {
       "from": "INF-50",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 10
+      "weight": 11
     },
     {
       "from": "INF-59",
@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T06:08:50Z",
+  "generated_at": "2026-11-23T06:29:10Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 918,
-      "dispatchable": 143,
+      "closed": 919,
+      "dispatchable": 146,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-23",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 143,
+      "open": 146,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1416,7 +1416,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 58,
+          "dispatchable": 61,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1425,14 +1425,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 58,
+          "open": 61,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5273,
+          "line": 5289,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1441,7 +1441,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5358,
+          "line": 5374,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1460,7 +1460,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5538,
+          "line": 5554,
           "name": "autokernel-rebuild-program",
           "open": 12,
           "readiness": "blocked"
@@ -1477,7 +1477,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7419,
+          "line": 7435,
           "name": "autokernel-unified-surface-program",
           "open": 36,
           "readiness": "blocked"
@@ -1490,7 +1490,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10609,
+          "line": 10625,
           "name": "autokernel-concurrent-target-coordination",
           "open": 13,
           "readiness": "blocked"
@@ -1524,7 +1524,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10854,
+          "line": 10870,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 21,
           "readiness": "blocked"
@@ -1767,7 +1767,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 262,
+      "closed": 263,
       "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
