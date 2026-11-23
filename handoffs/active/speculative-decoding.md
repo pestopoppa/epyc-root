@@ -1223,6 +1223,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · done when: KEEP/DROP on the gates above, plus T16-vs-linear tok/s with the A/A band
       · stop rule: DROP if GDN at T16 > 4.4 ms (saving < 1.0 ms cannot reach break-even); gate-class futility-only
       · gate: DTREE-ROWCOST-LEVER, GDN-FUSED-VARIANT
+  - 2026-11-23 (autokernel) GDN-FUSED-VARIANT gate satisfied: r3 KEEP (ak-gdn-fused-gpu-20261123-r3; autokernel-loop.md:GDN-FUSED-VARIANT-R3). Build on fork `llama.cpp-experimental-c18-gdn-fused-20261123` @ `e2b1f54f3` with `GGML_HIP_GDN_FUSED=1`: K=1 verify rows go to the rows kernel (T12 2.95x op time), K=T snapshot ops to the fused kernel (F32 T12 1.55x, 915 GB/s; T16 1.43x, 830 GB/s). Tree mode (parent links) is not covered by the fused route; the batched tree kernel should start from the r3 K=T kernel (chunked LDS staging, 6 waves/SIMD). [no-belief: cross-reference]
 
 #### Verify-cost priority plan V1..V5 (AK-DTREE, operator top priority, 2026-11-20)
 Goal: make 12-16-token verify on the MI210 cheap enough that tree drafting beats chain, then unpark AK-DTREE (P6). Covers DTREE-0, DTREE-0-WVSK16-WITNESS, DTREE-0-Q8MF, DTREE-0-Q8MF-GATE, DTREE-0-A3B and P5.
