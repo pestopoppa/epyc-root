@@ -4326,7 +4326,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
                 elif rc not in (0, 75):
                     verdict, reason = "FAIL", f"first unit written but the job ended {rc_line[:120]}"
                 elif gpu and not residency_ok():
-                    verdict, reason = "FAIL", f"GPU row produced a unit but no owned KFD process or VRAM was observed during the run (max {vram_max} B)"
+                    verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency and no owned KFD process was observed during the run (max {vram_max} B)"
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {rc_line[:80]}"
                 break
@@ -4334,7 +4334,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
                 # the engine's hard-end kill is production's truncation path too: PASS with a warning, then stop the group
                 warning = f"job did not stop within {STOP_GRACE_S}s of the stop file (FILLER_STOPFILE not honoured between items); truncated by signal"
                 if gpu and not residency_ok():
-                    verdict, reason = "FAIL", f"GPU row produced a unit but no owned KFD process or VRAM was observed during the run (max {vram_max} B)"
+                    verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency and no owned KFD process was observed during the run (max {vram_max} B)"
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {warning}"
                 break

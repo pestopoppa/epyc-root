@@ -173,6 +173,8 @@ class SmokeRuns(unittest.TestCase):
             #!/bin/bash
             D={d}
             echo "$$" > "$D/out/job.pid"
+            mkdir -p "$D/out-smoke"
+            echo '{{"unit_s":1,"units_measured":1,"loads_s":0}}' > "$D/out-smoke/smoke_measure.json"
             echo "units=${{FILLER_SMOKE_UNITS:-unset}}" > "$D/out/env.txt"
             {res}for i in 1 2 3 4 5 6 7 8 9 10; do [ -e "$FILLER_STOPFILE" ] && exit 75; echo "{{\\"item\\": $i, \\"score\\": 1}}" >> "$D/out/results.jsonl"; sleep 2; done
             exit 0
@@ -199,10 +201,14 @@ class SmokeRuns(unittest.TestCase):
         self.assertEqual(v, "FAIL")
         self.assertIn("VRAM never showed residency", msg)
 
-    def test_job_written_record_is_no_longer_evidence(self):   # audit #1: residency.json retired, the cgroup leaf replaces it
-        v, msg, _ = self.run_smoke("res-job-20261101", True, 1 << 20)
+    def test_job_written_record_without_kfd_is_not_evidence(self):
+        v, msg, _ = self.run_smoke("res-job-20261101", True, None)
         self.assertEqual(v, "FAIL", msg)
         self.assertIn("VRAM never showed residency", msg)
+
+    def test_owned_kfd_client_counts_below_old_vram_floor(self):
+        v, msg, _ = self.run_smoke("res-small-kfd-20261101", False, 1 << 20)
+        self.assertEqual(v, "PASS", msg)
 
     def test_negative_control_job_record_for_a_pid_that_is_no_kfd_client_is_rejected(self):
         v, msg, _ = self.run_smoke("res-fake-20261101", True, None)
