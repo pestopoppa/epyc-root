@@ -4844,12 +4844,85 @@ def autorequeue_history(flags, rid):
                                .get("requeued_at") or [])]
 
 
+COMPLETE_SUSPECT_S = 60   # rc=0 reason=complete this soon after grant start, with no evidence of work, is not a completion
+
+
+def _iso_epoch(s):
+    try:
+        return dt.datetime.strptime(s.strip(), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc).timestamp()
+    except (ValueError, AttributeError):
+        return None
+
+
+def complete_suspect(flags, rid, text=None):
+    """Why an rc=0 reason=complete end is SUSPECT ("" = trustworthy). Suspect = ended within COMPLETE_SUSPECT_S of the grant
+    start (.ended `started=`) AND (a) no result file was written after the start (the --complete-cmd passed on OUTPUT THAT
+    PREDATES THE GRANT: c18-fold-cpu-20261122), or (b) the only evidence is a PASS with no first-progress marker (no other
+    artifact under the workdir written since the start). A fresh RESULT with a FUTILITY*/FAIL* verdict is a legitimate fast
+    end (c19-fold-cpu-20261123: proof-clause futility in seconds) and is never flagged."""
+    text = _ended_text(flags, rid) if text is None else text
+    head = text.splitlines()[0] if text else ""
+    if not (re.search(r"(^|\s)rc=0(\s|$)", head) and "reason=complete" in head):
+        return ""
+    t_end = _iso_epoch((re.search(r"time=(\S+)", head) or [None, ""])[1])
+    m = re.search(r"(?m)^started=(\S+)", text)
+    t0 = _iso_epoch(m.group(1)) if m else None
+    if t0 is None or t_end is None or not 0 <= t_end - t0 < COMPLETE_SUSPECT_S:
+        return ""
+    d = load_json(ready_path(flags, rid)) or {}
+    wd = str(d.get("workdir") or "")
+    rp = str(d.get("result_path") or "")
+    if rp and not os.path.isabs(rp):
+        rp = os.path.join(wd, rp)
+    cands = [rp] if rp else []
+    for base in (wd, os.path.join(wd, "out")) if wd else ():
+        cands += glob.glob(os.path.join(base, "RESULT*.json"))
+    fresh = [c for c in cands if os.path.isfile(c) and os.path.getmtime(c) >= t0 - 1]
+    el = int(t_end - t0)
+    if not fresh:
+        return f"ended {el}s after grant start with no result file written since (complete-check passed on pre-existing output)"
+    for c in fresh:
+        try:
+            v = str((json.load(open(c, errors="replace")) or {}).get("verdict") or "")
+        except (OSError, ValueError, AttributeError):
+            v = ""
+        if v.startswith(("FUTILITY", "FAIL")):
+            return ""   # the job itself wrote a terminal non-PASS verdict this run: legitimate fast end
+    marker = False
+    if wd and os.path.isdir(wd):
+        skip = set(fresh)
+        for root, dirs, files in os.walk(wd):
+            dirs[:] = [x for x in dirs if x not in ("smoke", "__pycache__") and not x.startswith("out-smoke")]
+            if root[len(wd):].count(os.sep) >= 3:
+                dirs[:] = []
+            for f in files:
+                fp = os.path.join(root, f)
+                if fp not in skip and not f.endswith(".pyc") and os.path.getmtime(fp) >= t0 - 1:
+                    marker = True
+                    break
+            if marker:
+                break
+    if marker:
+        return ""
+    return f"ended {el}s after grant start with a PASS result but no first-progress marker (no artifact written by the run)"
+
+
 def autorequeue_decision(flags, rid):
-    """(kind, why): kind 'requeue' | 'blocked' | 'limit' | 'stop' | None (not an auto-requeue end at all)."""
+    """(kind, why): kind 'requeue' | 'blocked' | 'limit' | 'stop' | 'suspect' | 'suspect-requeue' | None (not an auto-requeue end at all)."""
     G = os.path.join(flags, "grants")
+    text = _ended_text(flags, rid)
+    if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
+        return None, ""
+    sus = complete_suspect(flags, rid, text)
+    if sus:
+        d = load_json(ready_path(flags, rid))
+        done = bool(((load_json(os.path.join(autorequeue_dir(flags), rid + ".history.json")) or {}).get("suspect_requeued")))
+        stale = sus.startswith("ended") and "no result file" in sus
+        if d and d.get("resumable") and stale and not done:
+            return "suspect-requeue", sus
+        return "suspect", sus
     if os.path.exists(os.path.join(G, rid + ".complete")):
         return None, ""
-    text = _ended_text(flags, rid)
     first = text.splitlines()[0] if text else ""
     if not (re.search(r"(^|\s)rc=75(\s|$)", first) and re.search(r"(^|\s)reason=partial-\S+", first)):
         return None, ""
@@ -4873,7 +4946,7 @@ def autorequeue_decision(flags, rid):
 
 def autorequeue_pending(flags, rid):
     """Filing must not file this end: the keeper requeues it under the same id."""
-    return autorequeue_decision(flags, rid)[0] == "requeue"
+    return autorequeue_decision(flags, rid)[0] in ("requeue", "suspect-requeue", "suspect")   # suspect: held, not filed done
 
 
 def autorequeue(flags, log=print, now=None, emit=None):
@@ -4894,7 +4967,20 @@ def autorequeue(flags, log=print, now=None, emit=None):
         hp = os.path.join(ad, rid + ".history.json")
         hj = load_json(hp) or {}
         head = (_ended_text(flags, rid).splitlines() or [""])[0]
-        if kind != "requeue":
+        if kind == "suspect":
+            if hj.get("final_for") == head:
+                continue
+            owner = str((load_json(ready_path(flags, rid)) or {}).get("owner") or "")
+            summary = (f"COMPLETE-SUSPECT {rid}: {why}; NOT filed as done - owner: verify the result is from this run "
+                       f"(not auto-requeued: no stale output proven or already requeued once)")
+            log(summary)
+            try:
+                emit(flags, "complete-suspect", rid, head[:80], summary, "warning", owner=owner)
+            except Exception as ex:  # noqa: BLE001
+                log(f"COMPLETE-SUSPECT alert failed: {type(ex).__name__}: {ex}")
+            atomic_json(hp, dict(hj, id=rid, final_for=head, requeued_at=hj.get("requeued_at") or []))
+            continue
+        if kind != "requeue" and kind != "suspect-requeue":
             if hj.get("final_for") == head:
                 continue   # decided once for this end; filing files it
             owner = str((load_json(ready_path(flags, rid)) or {}).get("owner") or "")
@@ -4916,12 +5002,20 @@ def autorequeue(flags, log=print, now=None, emit=None):
             atomic_json(hp, dict(hj, id=rid, final_for=head, requeued_at=hj.get("requeued_at") or []))
             continue
         ts = dt.datetime.fromtimestamp(now, dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        for suf in (".ended", ".grant"):
+        if kind == "suspect-requeue":
+            owner = str((load_json(ready_path(flags, rid)) or {}).get("owner") or "")
+            summary = (f"COMPLETE-SUSPECT {rid}: {why}; requeued once, reason=partial-blocked-stale-complete - owner: "
+                       f"remove the stale output or the requeue ends complete again")
+            try:
+                emit(flags, "complete-suspect", rid, head[:80], summary, "warning", owner=owner)
+            except Exception as ex:  # noqa: BLE001
+                log(f"COMPLETE-SUSPECT alert failed: {type(ex).__name__}: {ex}")
+        for suf in (".ended", ".grant", ".complete"):
             src = os.path.join(G, rid + suf)
             if os.path.exists(src):
                 shutil.move(src, os.path.join(ad, f"{rid}.{ts}{suf}"))
         hist = autorequeue_history(flags, rid) + [now]
-        atomic_json(hp, {"id": rid, "requeued_at": hist})
+        atomic_json(hp, {"id": rid, "requeued_at": hist, **({"suspect_requeued": "partial-blocked-stale-complete"} if kind == "suspect-requeue" else {})})
         log(f"AUTO-REQUEUE {rid}: {head}; resumable partial end, .ended/.grant archived to .autorequeue/{rid}.{ts}.*, "
             f"same id grantable again ({len(hist)}/{autorequeue_max_for(load_json(ready_path(flags, rid)))})")
         out.append(rid)

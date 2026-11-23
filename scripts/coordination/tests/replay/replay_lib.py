@@ -507,7 +507,11 @@ class Sandbox:
         g = os.path.join(self.flags, "grants", rid + ".grant")
         with contextlib.suppress(OSError):
             os.remove(g)
-        _write(os.path.join(self.flags, "grants", rid + ".ended"), f"rc={rc} time={_iso(W.t)} reason={reason}\n")
+        s0 = self.sim.get(rid) or {}
+        # a job whose whole estimate is < 60 s ran for that long, not for the tick it was reaped on
+        t0 = W.t - (s0["end"] - s0["start"]) if s0.get("start") and s0["end"] - s0["start"] < 60 else s0.get("start")
+        st = f"started={_iso(t0)}\n" if t0 else ""   # the real engine writes started= (OV_STARTED)
+        _write(os.path.join(self.flags, "grants", rid + ".ended"), f"rc={rc} time={_iso(W.t)} reason={reason}\n{st}")
         s = self.sim.pop(rid, None)
         if s:
             W.alive.discard(s.get("pid"))

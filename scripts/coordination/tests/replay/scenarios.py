@@ -1166,7 +1166,27 @@ def sc_quiet_host_not_starved_by_smokes(path):
     return write(path, ticks), check
 
 
+def sc_instant_complete_suspect(path):
+    """c18-fold-cpu-20261122 / c19-fold-cpu-20261123: a multi-quarter row ends rc=0 reason=complete seconds after its grant
+    with no result written since the grant and no first-progress marker. The keeper must flag it COMPLETE-SUSPECT: requeue it ONCE
+    (partial-blocked-stale-complete) then hold it for its owner, never let it pass as a normal completion. A 3600 s row beside it is not flagged."""
+    rid, ok = "c19-fold-cpu-instant-20261123", "c19-fold-cpu-normal-20261123"
+    r = row(rid, est=30, regions="any-cpu-quarter", man={"resumable": True, "workdir": f"{JOB}/{rid}"})
+    o = row(ok, est=3600, regions="any-cpu-quarter")
+
+    def check(d):
+        out = []
+        n, m = len(_granted(d, rid)), len(_granted(d, ok))
+        if n != 2:
+            out.append(f"instant complete granted {n}x; want exactly 2 (flagged COMPLETE-SUSPECT, auto-requeued ONCE, then held)")
+        if m != 1:
+            out.append(f"a genuine long row was granted {m}x (flagged or requeued)")
+        return out
+    return write(path, [({rid: r, ok: o}, {})] * 8), check
+
+
 SCENARIOS = {
+    "instant-complete-is-suspect": sc_instant_complete_suspect,
     "foreign-server-blocks-quiet-host": sc_foreign_server_blocks_quiet_host,
     "stack-server-not-foreign": sc_stack_server_not_foreign,
     "quiet-host-not-starved-by-smokes": sc_quiet_host_not_starved_by_smokes,
