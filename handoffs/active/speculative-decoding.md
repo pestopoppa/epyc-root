@@ -1166,11 +1166,27 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · est: 0.5 agent-day (inferred)
       · gate: DTREE-ROWCOST-GDN
   - 2026-11-23 projection (autokernel, analysis only): **lever = batched tree GDN, one state read/write per layer across the tree columns.** It brings the tree per-row GDN cost from 0.42-0.49 down to the chain slope 0.23 ms/row (in-graph, 1->8), with the op-level K=1 bound 0.15 ms/row as the floor. Saving vs measured: T12 1.04-1.36 ms, T16 1.49-2.13 ms. GDN-FUSED-VARIANT (row ak-gdn-fused-gpu-20261123, queued) targets >= 10% of op time on top of that: ~0.27-0.30 ms at T12, ~0.33-0.40 ms at T16. Break-even round (linear 45.59 ms / tau 4.706 = 9.688 ms per token): T12 47.60 ms (needs -3.11 from 50.71), T16 50.92 ms (needs -1.88 from 52.80). Projected T12 49.05-49.40 ms: **ruled out**, 1.5-1.8 ms short. Projected T16 50.27-50.91 ms: **break-even to +1.3% tok/s**, marginal (the low end of the range is exactly break-even; the high end clears the GPU W2 floor of 0.84%). Reopen trigger fires for T16 only, conditional on the measured lever. Addendum (2026-11-23): the projection covers kernel time only. The decode phase carries a further ~3.0 ms (T12) / ~5.25 ms (T16) of host time over linear that the trace does not see (decode +6.02 / +9.70 vs forward +3.03 / +4.45). If DTREE-HOST-GAP finds >= ~1.5 ms of that recoverable at T12 (graph re-capture, mask build, syncs), T12 also reaches break-even (49.05-49.40 -> <= 47.60 ms), and T16 clears it with margin. Filed DTREE-GDN-BATCH below. FA (0.03-0.05 ms/row) and MUL_MAT (0.11-0.24 ms/row) levers cannot close T12 either. [belief: cc]
-- [ ] **DTREE-HOST-GAP** [inference] Attribute the host time inside target decode at T12 and T16 vs linear. The decode phase grows +6.0 / +9.7 ms, but the traced verify forward grows only +3.0 / +4.45 ms, leaving ~3-5 ms/round the kernel stream does not see; that is larger than the whole T12 break-even gap of 3.11 ms. Candidates: graph build or re-capture per tree shape, tree-mask construction, ubatch splitting, sampling and accept bookkeeping inside decode, sync points. Method: rocprofv3 kernel + HIP API trace, decode window per round split into pre / intra / post host phases plus HIP API ms by family (graph / launch / memcpy / sync / alloc).
+- [x] **DTREE-HOST-GAP** [inference] Attribute the host time inside target decode at T12 and T16 vs linear. The decode phase grows +6.0 / +9.7 ms, but the traced verify forward grows only +3.0 / +4.45 ms, leaving ~3-5 ms/round the kernel stream does not see; that is larger than the whole T12 break-even gap of 3.11 ms. Candidates: graph build or re-capture per tree shape, tree-mask construction, ubatch splitting, sampling and accept bookkeeping inside decode, sync points. Method: rocprofv3 kernel + HIP API trace, decode window per round split into pre / intra / post host phases plus HIP API ms by family (graph / launch / memcpy / sync / alloc). ✅ 2026-11-23 [belief: cc] ANSWERED: host-side ms table by phase and HIP API family for L, T12, T16 with T - L deltas filed here; largest phase post
       · model/build: Qwen3.8-27B Q8_0 + DFlash2-Q8_0 on the C18 store /mnt/raid0/llm/kernels/builds/gpu-20261122-74c18e2d8-c18, V5I env · row ak-dtree-host-gap-gpu-20261123 · region gpu-q3, resumable · est 300 s (ROWCOST measured 13.4 s/unit; 9 units at ~20 s + proofs, +25%)
       · done when: a host-side ms table by phase (pre / intra / post and HIP API family) for L, T12, T16 with T - L deltas, filed here with the largest phase named
       · stop rule: 3 interleaved reps, max 5; stop-on-answer when the largest phase leads the second by more than the rep spread for both T12-L and T16-L; stop-on-futility on FUTILITY_RESIDENCY / FUTILITY_MISSING_INPUT / FUTILITY_NO_KERNELS; gate-class futility-only
       · gate: none
+      · RESULT: ANSWERED (3 reps, rc=0); largest host phase **post**. Result `/mnt/raid0/llm/tmp/ak-dtree-host-gap-gpu-20261123/out/RESULT.json` SHA-256 `90833230f39b78ab0a876991a736e4fc1e677ee86d9d646ef678c1aa2b7d2ab8`; build `74c18e2d811424402f6987c91961d9f4978e3bb1`. Medians ms/round (paired deltas are medians of per-rep differences):
+
+      | Phase / HIP API | L | T12 | T16 | T12-L | T16-L |
+      |---|---:|---:|---:|---:|---:|
+      | pre | 0.3344 | 0.3987 | 0.3801 | 0.0641 | 0.0720 |
+      | intra | 0 | 0 | 0 | 0 | 0 |
+      | post | 0.4448 | 2.6885 | 3.5695 | 2.2349 | 3.1756 |
+      | graph | 1.9812 | 1.7777 | 1.7172 | -0.1738 | -0.1635 |
+      | launch | 0 | 0 | 0 | 0 | 0 |
+      | memcpy | 35.6572 | 38.6755 | 40.7143 | 2.9291 | 4.8241 |
+      | sync | 0.2250 | 0.6971 | 0.8537 | 0.4721 | 0.6287 |
+      | alloc | 0 | 0 | 0 | 0 | 0 |
+      | other | 0.0015 | 0.0013 | 0.0013 | -0.0002 | -0.0001 |
+
+      Post leads pre by 2.1708 / 3.1036 ms, exceeding the respective maximum rep ranges 0.7322 / 0.1857 ms. This is descriptive attribution, not a causal gate.
+
 - [ ] **DTREE-GDN-BATCH** [inference] Build the batched tree GATED_DELTA_NET (one state read/write per layer over all tree columns, per-column outputs and snapshots kept) on a fresh experimental branch from C18 plus GDN-FUSED-VARIANT if it KEEPs. Gate it on 27B T16 verify-forward GDN <= 3.95 ms (rocprofv3, as ak-dtree-rowcost-gdn-gpu-20261123), tree tokens identical to the fresh-prefill oracle, and 27B KLD <= 0.003. Then run an e2e T16-vs-linear row (break-even 50.92 ms/round at tau 5.256).
       · model/build: Qwen3.8-27B Q8_0 + DFlash2-Q8_0; new branch from C18 74c18e2d8
       · done when: KEEP/DROP on the gates above, plus T16-vs-linear tok/s with the A/A band
