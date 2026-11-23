@@ -4,28 +4,29 @@
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 380,
-    "progress": 1427,
+    "progress": 1432,
     "research": 366
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-18T15:49:03Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 0,
+      "added": 5,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-22T20:51:09Z",
+    "at": "2026-11-23T09:26:01Z",
     "scope_paths": [
-      "docs/design/spec-decode-run-nondeterminism-20261122.md",
-      "progress/2026-11/2026-11-22-autokernel.md"
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "progress/2026-11/*autokernel*"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-22T20:51:09Z",
+  "scan_time": "2026-11-23T09:26:01Z",
   "schema_version": 1,
-  "source_set_hash": "832a8db47a0e1d7f2c5d9a29128b5b80143b51d0ee318b4c4fc8642d1e2ccb93",
+  "source_set_hash": "62dee9cb21b96f4978cd5fd8c04dbfdae74af70303611b53654caf1c285d0eb0",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -36,18 +37,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b00e497aa88db831e91714d145d1b79957efd9d41ac77619ecdb3b04fc68ce8e",
-      "modified": "2026-11-20T12:40:58Z",
+      "content_hash": "9be0748fb3ba6545f3f629e91ed6970f1b17b04f2249461039e1e91a528e4c75",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 405861,
+      "size": 439805,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "b01b290b7cf71fbb9b76a63964e85cb81fef46e0be4cd46cc53bbcd458e373cf",
-      "modified": "2026-11-20T12:56:09Z",
+      "content_hash": "12c1974457099c326ffad81ba3a8a5dc03a3ff8eff985beb01a64937b829d866",
+      "modified": "2026-11-23T09:23:41Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1227335,
+      "size": 1489147,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -15365,7 +15366,7 @@
     },
     {
       "content_hash": "a3cebb6978794032335afab9e53088d3a2ee9cc827ed9aa6c17f732ca1578611",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-01-handoff-autokernel-all-devices-all-dimensions.md",
       "size": 648,
       "title": "2026-11-01 \u2014 AutoKernel all devices handoff",
@@ -15373,7 +15374,7 @@
     },
     {
       "content_hash": "f0fd9f528a6f0ff56ae796c39745b55bbc9ce9b24b5d091118d0c041a79f9f26",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-01-handoff-autokernel-cross-workload-keep-gate.md",
       "size": 1176,
       "title": "INF-75 session boundary \u2014 2026-11-01",
@@ -15381,7 +15382,7 @@
     },
     {
       "content_hash": "0d8eb2e81ef40c53645f04d9e47686bab5bd6738d355a29c35b41210e2130bcb",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-01-handoff-autokernel-rebuild.md",
       "size": 2012,
       "title": "AutoKernel rebuild session \u2014 2026-11-01",
@@ -15389,7 +15390,7 @@
     },
     {
       "content_hash": "85bea6524d96523f60568bf85a7a1bb53c822b96693cd08a593435846b41fd6a",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-01-handoff-autokernel-research-loop.md",
       "size": 2961,
       "title": "2026-11-01 \u2014 handoff autokernel-research-loop",
@@ -15397,7 +15398,7 @@
     },
     {
       "content_hash": "b1afde851deb3324f7d83b2acd0620e62566cf25cce402b0cd42f4c46e39a807",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-01-handoff-autokernel-unified-surface.md",
       "size": 3288,
       "title": "2026-11-01 \u2014 handoff autokernel-unified-surface",
@@ -15901,7 +15902,7 @@
     },
     {
       "content_hash": "7e83514db15f7620f47a0e5975be121b938cda6900f2a8e7cb641ed4c2022c68",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-02-handoff-autokernel-all-devices-all-dimensions.md",
       "size": 16435,
       "title": "2026-11-02 \u2014 handoff autokernel-all-devices-all-dimensions",
@@ -15909,7 +15910,7 @@
     },
     {
       "content_hash": "18fa7dcfc859b97dc9668dc186293450e64c26eb1094a2296ebcbc5f64b1c0ec",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-02-handoff-autokernel-cross-workload-keep-gate.md",
       "size": 24689,
       "title": "2026-11-02 \u2014 handoff autokernel-cross-workload-keep-gate",
@@ -15917,7 +15918,7 @@
     },
     {
       "content_hash": "473d783657929be6d23860e435cc50a4803b2970835cd312b78da331883e146f",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-02-handoff-autokernel-rebuild.md",
       "size": 33552,
       "title": "2026-11-02 \u2014 handoff autokernel-rebuild",
@@ -15925,7 +15926,7 @@
     },
     {
       "content_hash": "cdf81b2002b3a12425aa81a14b05687e205b08171197a73a3065b4dd192f9845",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-02-handoff-autokernel-research-loop.md",
       "size": 47217,
       "title": "2026-11-02 \u2014 handoff autokernel-research-loop",
@@ -15933,7 +15934,7 @@
     },
     {
       "content_hash": "259681fc70a36d60aae6026a59d941e661c50605099f2ab427138a8b2138b6ab",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-02-handoff-autokernel-unified-surface.md",
       "size": 45154,
       "title": "2026-11-02 \u2014 handoff autokernel-unified-surface",
@@ -16589,7 +16590,7 @@
     },
     {
       "content_hash": "4addcdfea91c435966a0678fa4088d6bede6c9bd215d3b4e707a161e7043734b",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-04-handoff-autokernel-all-devices-all-dimensions.md",
       "size": 51161,
       "title": "2026-11-04 \u2014 handoff autokernel-all-devices-all-dimensions",
@@ -16597,7 +16598,7 @@
     },
     {
       "content_hash": "d3a7aa0343704fb73eabb566029bf3aaf67dd6d895120c298e53a5ab6fd0dc98",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-04-handoff-autokernel-cross-workload-keep-gate.md",
       "size": 102021,
       "title": "2026-11-04 \u2014 handoff autokernel-cross-workload-keep-gate",
@@ -16605,7 +16606,7 @@
     },
     {
       "content_hash": "c800675f3ee3a2c2e60466b7ae0f86cc545f31909f5b8c7fc8ebf6e6ef23d978",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-04-handoff-autokernel-rebuild.md",
       "size": 21530,
       "title": "2026-11-04 \u2014 handoff autokernel-rebuild",
@@ -16757,7 +16758,7 @@
     },
     {
       "content_hash": "a4f591bad0cc02fec0e9437568a50304f311c190dd026e5bff95b593c7996c7f",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-05-handoff-autokernel-cross-workload-keep-gate.md",
       "size": 42467,
       "title": "2026-11-05 \u2014 handoff autokernel-cross-workload-keep-gate",
@@ -16893,7 +16894,7 @@
     },
     {
       "content_hash": "087d933c7567f80f9fb02bfe7f7d2479a814edde2cb1243286f00e0af9fb2307",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-07-autokernel.md",
       "size": 10092,
       "title": "2026-11-07 \u2014 autokernel (AutoKernel session wrap-up)",
@@ -16941,7 +16942,7 @@
     },
     {
       "content_hash": "b295f7a6e8095264955fdc58047c7172350b2d0a266b59756f1e767471e63b11",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-08-autokernel.md",
       "size": 4901,
       "title": "2026-11-08 \u2014 autokernel (AutoKernel operator-invoked wrap-up, covers 2026-11-07..08)",
@@ -17077,7 +17078,7 @@
     },
     {
       "content_hash": "7be826399965d4f9f60e643d65dec7d92886cb138219925b5d04f5f439542f3e",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-09-autokernel.md",
       "size": 8752,
       "title": "2026-11-09 AutoKernel",
@@ -17197,7 +17198,7 @@
     },
     {
       "content_hash": "7e351e3da7d9063b10590c147e1124cc8913be3f360069bb12081325438041c3",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-10-autokernel.md",
       "size": 4866,
       "title": "2026-11-10 \u2014 autokernel",
@@ -17237,7 +17238,7 @@
     },
     {
       "content_hash": "d75c3b0769cdf770b826c68669f9f932c781cb3f020f0a876fe660865a8216c8",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-11-autokernel.md",
       "size": 7029,
       "title": "2026-11-11 autokernel progress",
@@ -17317,7 +17318,7 @@
     },
     {
       "content_hash": "e39679a813d53f041cd17b5d8741fa2bbd66c425915708fe4761c6315520191c",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-16-autokernel.md",
       "size": 2296,
       "title": "2026-11-16 AutoKernel (roster `autokernel`, ad-hoc) -- includes 2026-11-15 items",
@@ -17349,7 +17350,7 @@
     },
     {
       "content_hash": "e06cafceb64e8de9e4c0496fcdd6801440529f0316ad34ecdf8de6fd3c6b7096",
-      "modified": "2026-11-18T15:37:08Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-17-autokernel.md",
       "size": 11405,
       "title": "2026-11-17 autokernel",
@@ -17413,7 +17414,7 @@
     },
     {
       "content_hash": "08926738bfcf3fbef815c81eae489bb652bb5db6424de114a89c8a3de7d30c98",
-      "modified": "2026-11-19T09:29:25Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-18-autokernel.md",
       "size": 9409,
       "title": "2026-11-18 autokernel wrap-up (since 633b2ce6b, 2026-11-17)",
@@ -17485,7 +17486,7 @@
     },
     {
       "content_hash": "591c634ab1083df0517013e6553b5392b30402d1f0619338a8f42edcbdba0275",
-      "modified": "2026-11-20T12:40:58Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-19-autokernel.md",
       "size": 15963,
       "title": "2026-11-19 \u2014 autokernel session (roster id `autokernel`, no lane: ad-hoc session in the shared clone)",
@@ -17497,6 +17498,14 @@
       "path": "progress/2026-11/2026-11-19-autopilot-backlog-session.md",
       "size": 8172,
       "title": "2026-11-19 \u2014 autopilot-backlog-session",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f1a8a402d32bdf48b394a69fa8d3db7ebde37b932e8bf74d5607ef9bb5fa5785",
+      "modified": "2026-11-23T09:23:12Z",
+      "path": "progress/2026-11/2026-11-19-handoff-autokernel-rebuild.md",
+      "size": 1230,
+      "title": "2026-11-19 \u2014 handoff autokernel-rebuild",
       "type": "progress"
     },
     {
@@ -17516,19 +17525,51 @@
       "type": "progress"
     },
     {
-      "content_hash": "eed6aa4db8aa9811a39bc705a068fec95dcf4408f70d6e98cf0955c5ecc8f3f7",
-      "modified": "2026-11-20T12:56:09Z",
+      "content_hash": "3ae87cf01d4d8379a8b6e21fae85210f7d5db32f7f44a586f5a7c57062a8ab6f",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-20-autokernel.md",
-      "size": 3999,
+      "size": 11964,
       "title": "2026-11-20 autokernel (wrap-up 5; covers work since wrap-up 4 root 83387347a and the cadence sweep a8b94439f)",
       "type": "progress"
     },
     {
+      "content_hash": "61e9adca5aa03c6601c51b63cecab08ac1a5f332831ad51e6359376db3a6c8f3",
+      "modified": "2026-11-23T09:23:12Z",
+      "path": "progress/2026-11/2026-11-21-autokernel.md",
+      "size": 13301,
+      "title": "2026-11-21 autokernel",
+      "type": "progress"
+    },
+    {
+      "content_hash": "97de083baccc8474903cd5fa4b318d7904033e4dcd7a68080558166156e72abb",
+      "modified": "2026-11-23T09:23:12Z",
+      "path": "progress/2026-11/2026-11-22-autokernel-gpuround2f-s4.md",
+      "size": 1935,
+      "title": "2026-11-22 \u2014 autokernel: GPU-RESIDENT-ROUND-2f phase 3 step 4(a)-(c)",
+      "type": "progress"
+    },
+    {
       "content_hash": "592e11ac5ef423d40d9fed46686f6ac09218193494a91a433818f4c50d0aa1eb",
-      "modified": "2026-11-22T20:41:16Z",
+      "modified": "2026-11-23T09:23:12Z",
       "path": "progress/2026-11/2026-11-22-autokernel.md",
       "size": 4732,
       "title": "2026-11-22 \u2014 autokernel (operator-invoked /wrap-up)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e781bff1e1ab4f896ca433d11006a13c4fa5189768e9741f129bdebf3824dd72",
+      "modified": "2026-11-23T09:24:02Z",
+      "path": "progress/2026-11/2026-11-23-autokernel.md",
+      "size": 3980,
+      "title": "2026-11-23 \u2014 autokernel (covers 2026-11-22 20:00Z \u2192 2026-11-23 ~09:30Z)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0412267d1044dc81a2a2d008806c740651691fac124a35700f332ee702aead6f",
+      "modified": "2026-11-23T09:23:12Z",
+      "path": "progress/2026-11/autokernel-loop-box-history-20261122.md",
+      "size": 36908,
+      "title": "autokernel-loop.md \u2014 open-box progress history (moved 2026-11-22)",
       "type": "progress"
     },
     {
@@ -21764,7 +21805,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2717,
+  "total_new": 2722,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
