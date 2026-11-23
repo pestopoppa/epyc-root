@@ -33,7 +33,8 @@ def test_zero_vram_owned_kfd_is_residency(monkeypatch):
     assert own == {12: 0}
 
 
-def test_smoke_without_fresh_measure_cannot_pass():
+def test_smoke_without_fresh_measure_cannot_pass(monkeypatch):
+    monkeypatch.setattr(rf, "SMOKE_MEASURE_ENFORCE", True)
     fx = Fixture()
     try:
         rid = "measure-required"
@@ -42,5 +43,20 @@ def test_smoke_without_fresh_measure_cannot_pass():
         verdict, reason = rf.dryrun_run(fx.flags, rid, "0-3", True, smoke_s=60)
         assert verdict == "FAIL" and "SMOKE-NO-MEASURE" in reason
         assert not os.path.exists(rf.pass_path(fx.flags, rid))
+    finally:
+        fx.cleanup()
+
+
+def test_smoke_without_fresh_measure_warns_when_not_enforced(monkeypatch):
+    monkeypatch.setattr(rf, "SMOKE_MEASURE_ENFORCE", False)
+    fx = Fixture()
+    try:
+        rid = "measure-warn"
+        d = fx.job(rid, measure=False)
+        rf.publish(fx.spec(rid, d), fx.flags)
+        verdict, reason = rf.dryrun_run(fx.flags, rid, "0-3", True, smoke_s=60)
+        assert verdict == "PASS", reason
+        log = open(os.path.join(fx.flags, "dryrun", rid, "launcher.out")).read()
+        assert "WARN: SMOKE-NO-MEASURE" in log
     finally:
         fx.cleanup()

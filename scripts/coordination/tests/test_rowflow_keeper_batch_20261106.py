@@ -164,6 +164,9 @@ class SmokeRuns(unittest.TestCase):
     def setUp(self):
         self.fx = Fixture()
         self.addCleanup(self.fx.cleanup)
+        p = mock.patch.object(rf, "SMOKE_MEASURE_ENFORCE", True)   # FAIL cases test the enforced contract
+        p.start()
+        self.addCleanup(p.stop)
 
     def job(self, rid, residency):
         d = self.fx.job(rid)
@@ -205,6 +208,13 @@ class SmokeRuns(unittest.TestCase):
         v, msg, _ = self.run_smoke("res-job-20261101", True, None)
         self.assertEqual(v, "FAIL", msg)
         self.assertIn("VRAM never showed residency", msg)
+
+    def test_no_kfd_warns_and_passes_when_not_enforced(self):
+        with mock.patch.object(rf, "SMOKE_MEASURE_ENFORCE", False):
+            v, msg, _ = self.run_smoke("res-warn-20261101", False, None)
+        self.assertEqual(v, "PASS", msg)
+        log = open(os.path.join(rf.dry_dir(self.fx.flags, "res-warn-20261101"), "launcher.out")).read()
+        self.assertIn("WARN: GPU row: no owned KFD process observed", log)
 
     def test_owned_kfd_client_counts_below_old_vram_floor(self):
         v, msg, _ = self.run_smoke("res-small-kfd-20261101", False, 1 << 20)

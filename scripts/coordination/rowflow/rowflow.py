@@ -4088,6 +4088,13 @@ def gpu_residency_required(d, regions):
     return "mi210_0" in regions and (d or {}).get("gpu_use") != "quiet-only"
 
 
+# 2026-11-23 (pipeline-mgmt): SMOKE-NO-MEASURE and the kfd-only GPU residency check are WARN-only until every AK row writes smoke_measure.json.
+# Queued rows whose job never writes one (c20-fold-*, ak-cpu-aa-calibration-q-*, rka-a3b-d-remeasure-q-*-r3,
+# ak-ea-pool-screen-gpu-*-r6) would FAIL every re-smoke; GPU rows queued before 7edd5d77b start servers with
+# start_new_session and may show no owned KFD process. Enforce after AK rows write smoke_measure.json: set True.
+SMOKE_MEASURE_ENFORCE = False
+
+
 def smoke_measure_paths(d, dry_dir_path):
     return [os.path.join(dry_dir_path, "smoke_measure.json"),
             os.path.join(str(d.get("scratch_root") or ""), "out-smoke", "smoke_measure.json")]
@@ -4268,7 +4275,10 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
     def residency_ok():
         nonlocal vram_max
         vram_max = own_vram_peak(kfd_seen) or vram_max
-        return bool(kfd_seen)
+        if kfd_seen or SMOKE_MEASURE_ENFORCE:
+            return bool(kfd_seen)
+        out.write(f"==== dry run WARN: GPU row: no owned KFD process observed (warn-only, SMOKE_MEASURE_ENFORCE=False) ({now_iso()})\n")
+        return True
     first_unit_at = None
     progress = None
     stop_requested = None
@@ -4401,9 +4411,15 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
         out.write(f"==== dry run {verdict}: {reason} ({now_iso()})\n"); out.close()
     measure = fresh_smoke_measure(d, dd, measure_before) if verdict == "PASS" and smoke_s else None
     if verdict == "PASS" and smoke_s and not measure:
-        verdict, reason = "FAIL", "SMOKE-NO-MEASURE: no valid fresh smoke_measure.json from this smoke"
-        with open(os.path.join(dd, "launcher.out"), "a") as log:
-            log.write(f"==== dry run FAIL: {reason} ({now_iso()})\n")
+        nm = "SMOKE-NO-MEASURE: no valid fresh smoke_measure.json from this smoke"
+        if SMOKE_MEASURE_ENFORCE:
+            verdict, reason = "FAIL", nm
+            with open(os.path.join(dd, "launcher.out"), "a") as log:
+                log.write(f"==== dry run FAIL: {reason} ({now_iso()})\n")
+        else:
+            warning = f"{warning}; WARN {nm}" if warning else f"WARN {nm}"
+            with open(os.path.join(dd, "launcher.out"), "a") as log:
+                log.write(f"==== dry run WARN: {nm} (warn-only, SMOKE_MEASURE_ENFORCE=False) ({now_iso()})\n")
     cur_sha = sha256(lp) if os.path.isfile(lp) else None
     if verdict == "PASS" and cur_sha != lsha:
         verdict, reason = "FAIL", "launcher changed while the dry run was running"
