@@ -1185,8 +1185,54 @@ def sc_instant_complete_suspect(path):
     return write(path, [({rid: r, ok: o}, {})] * 8), check
 
 
+def sc_quiet_host_waits_for_foreign_busy(path):
+    """PM-KEEPER3 #1 (GDNPROJ r2 / aa-calibration-q-c / shexp r2 died on foreign bandwidth load, busy up to 48%): a
+    requires_quiet_host row whose only option is q1 is NOT granted while q1 (free of grants) measures 48% foreign busy;
+    WAIT + IDLE-WHY name it; once q1 reads quiet the row is granted."""
+    r = row("ak-q38fn-cpu-gdnproj-fuse-r2", regions="any-of q1", extra="./bench -t 24", est=1800, rank=20,
+            man={"requires_quiet_host": True, "busy_fraction": 1.0})
+    busy = {"util": {"q0": 2.0, "q1": 48.0, "q2": 3.0, "q3": 2.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}}
+    quiet = {"util": {"q0": 2.0, "q1": 4.0, "q2": 3.0, "q3": 2.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}}
+    rows = {"ak-q38fn-cpu-gdnproj-fuse-r2": r}
+    ticks = [(rows, busy)] * 3 + [(rows, quiet)] * 2
+
+    def check(d):
+        out = []
+        g = _granted(d, "ak-q38fn-cpu-gdnproj-fuse-r2")
+        if any(i < 3 for i, _ in g):
+            out.append(f"quiet-host row granted at tick {g[0][0]} onto q1 at 48% foreign busy")
+        if not any(i >= 3 for i, _ in g):
+            out.append("quiet-host row never granted once q1 read quiet")
+        if not _lines(d, "WAIT ak-q38fn-cpu-gdnproj-fuse-r2: foreign busy 48% on q1 (quiet-host needs <15%)"):
+            out.append("no WAIT line naming the foreign busy")
+        if not any("foreign busy 48% on q1" in l for _, l in _lines(d, "IDLE-WHY q1")):
+            out.append("no IDLE-WHY q1 line naming the foreign busy")
+        return out
+    return write(path, ticks), check
+
+
+def sc_superseded_predecessor_never_regranted(path):
+    """PM-KEEPER3 #3 (repro r1 re-granted after r2 published; the two collided on ports): once a successor that
+    `supersedes` r1 is published - even before its own smoke passed - r1 is never granted again."""
+    r1 = row("ak-repro-r1", regions="any-of q0", extra="./bench -t 24", est=1800, rank=20)
+    r2 = row("ak-repro-r2", regions="any-of q0", extra="./bench -t 24", est=1800, rank=20, passed=False,
+             man={"supersedes": "ak-repro-r1"})
+    ticks = [({"ak-repro-r1": r1, "ak-repro-r2": r2}, {})] * 3
+
+    def check(d):
+        out = []
+        if _granted(d, "ak-repro-r1"):
+            out.append("superseded predecessor ak-repro-r1 granted after its successor was published")
+        if not _lines(d, "SUPERSEDED-BLOCK ak-repro-r1 by ak-repro-r2"):
+            out.append("no SUPERSEDED-BLOCK line")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
     "instant-complete-is-suspect": sc_instant_complete_suspect,
+    "quiet-host-waits-for-foreign-busy": sc_quiet_host_waits_for_foreign_busy,
+    "superseded-predecessor-never-regranted": sc_superseded_predecessor_never_regranted,
     "foreign-server-blocks-quiet-host": sc_foreign_server_blocks_quiet_host,
     "stack-server-not-foreign": sc_stack_server_not_foreign,
     "quiet-host-not-starved-by-smokes": sc_quiet_host_not_starved_by_smokes,

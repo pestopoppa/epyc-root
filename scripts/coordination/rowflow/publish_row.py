@@ -1217,7 +1217,14 @@ def clear_stale_dryrun(flags, rid):
     return True
 
 
-def run_gpu_queue(flags):
+def _marker_smoke_s(q):
+    try:
+        return int((rf.load_json(q) or {}).get("smoke_s") or rf.QUEUED_SMOKE_DEFAULT_S)
+    except (TypeError, ValueError):
+        return rf.QUEUED_SMOKE_DEFAULT_S
+
+
+def run_gpu_queue(flags, max_smoke_s=None):
     """The allocator's detached batch: every queued GPU smoke, one after another, as publish_row would run it - in
     priority_rank order (queue_order_key); every non-PASS reaches the owner (alert_queued_nonpass).
     2026-11-19 (ak-gap-1-step1-gpu-20261119): a stale RUNNING.json is cleared first (clear_stale_dryrun); a WAIT keeps the
@@ -1228,7 +1235,8 @@ def run_gpu_queue(flags):
     done = set()
     while True:   # PM-SMOKEFIX: re-pick the best-ranked marker each time, so a row queued mid-batch is ordered by rank too
         todo = [x for x in glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))
-                if os.path.basename(os.path.dirname(x)) not in done]
+                if os.path.basename(os.path.dirname(x)) not in done
+                and (max_smoke_s is None or _marker_smoke_s(x) <= max_smoke_s)]   # PM-KEEPER3 #2: a short smoke slot
         if not todo:
             break
         q = min(todo, key=lambda x: queue_order_key(flags, x))
@@ -1574,6 +1582,7 @@ def main(argv=None):
     ap.add_argument("--resume-complete", metavar="ROW_ID", help="retry terminal filing from an unchanged prior completed PASS; no smoke rerun")
     ap.add_argument("--flags", default=rf.FLAGS)
     ap.add_argument("--run-gpu-queue", action="store_true", help="(allocator, detached) run every queued GPU smoke")
+    ap.add_argument("--max-smoke-s", type=int, help="with --run-gpu-queue: only smokes whose budget is <= this (short slot)")
     ap.add_argument("--smoke-now", action="store_true", help="run the CPU smoke now on free cores of the keeper's snapshot "
                     "instead of queueing it for the keeper (still queued when nothing is free)")
     ap.add_argument("--run-smoke", metavar="ROW_ID", help="(allocator, detached) run ONE keeper-placed CPU smoke")
@@ -1587,7 +1596,7 @@ def main(argv=None):
         return 0 if v in ("PASS", "WAIT") else 1
     if a.run_gpu_queue:
         try:
-            print(f"GPU-SMOKE-BATCH ran {run_gpu_queue(a.flags)}")
+            print(f"GPU-SMOKE-BATCH ran {run_gpu_queue(a.flags, a.max_smoke_s)}")
         finally:
             rf.release_gpu_batch(a.flags)
         return 0

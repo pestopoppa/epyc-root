@@ -12,6 +12,9 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                UNDERUSED skips them, queue_status shows GUARD),
                                busy_fraction (0..1: share of its claimed cpus the job keeps busy; unset = 1.0; below
                                0.5 the row is never promoted to a host/quiet-host drain, only placed on free regions),
+                               requires_quiet_host (bool: granted only onto quarters measuring < 15% foreign busy, never on
+                               the NUMA side of a whole-host / bandwidth-heavy grant; see QUIET GATE), bandwidth_heavy (bool;
+                               unset = heavy iff a declared busy_fraction >= 0.6),
                                ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs that
                                ADD reaper protection; empty = inputs (older than the first job start) + result_path),
                                first_progress_s (300; aliases smoke_timeout_s, dryrun_timeout_s), smoke_predicate (shell; exit 0 =
@@ -954,6 +957,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     qg = check_quiet_guard(spec, regions)
     if qg:
         row["quiet_guard_regions"] = qg
+    for k in ("requires_quiet_host", "bandwidth_heavy"):   # PM-KEEPER3 2026-11-23: quiet-host gate inputs (bool only)
+        if spec.get(k) is not None:
+            need(isinstance(spec[k], bool), f"{k} {spec[k]!r} must be true or false")
+            row[k] = spec[k]
     if snap:
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
@@ -1068,6 +1075,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["busy_fraction"] = round(min(1.0, row["declared_threads"] / claimed_cpus(regions, o.get("claim_cpus"), row["shape"])), 3)
         row["busy_fraction_source"] = "declared_threads"
     atomic_json(ready_path(flags, rid), row)
+    supersede_block(flags, row)   # PM-KEEPER3 #3: the predecessor stops being grantable NOW, not at the successor's PASS
     return row
 
 
@@ -1179,6 +1187,67 @@ def supersede(flags, row, log=print):
     return out
 
 
+# PM-KEEPER3 #3 (AK 2026-11-23, supersede race): ak-rsreplay-q4x-singleslot-repro r1 (resumable) was re-granted after its
+# successor r2 PUBLISHED and the two collided on ports. supersede() only withdraws at the successor's PASS, and the guards
+# that stop a requeue (capcut_closed / resume_row) only scanned ready/*.json - a successor still waiting for its smoke
+# (dryrun/<id>/unpublished.json or a queued marker) was invisible, so auto-requeue / capcut requeue / resume made the
+# predecessor grantable again. publish() now writes ready/.superseded/<pred>.json at once; superseded_by() reads it plus
+# every manifest form, and every requeue path and the allocator's candidate list refuse a superseded id. A RUNNING
+# predecessor keeps running (nothing is stopped or killed); it is simply never granted again.
+def superseded_dir(flags): return os.path.join(flags, "ready", ".superseded")
+
+
+def _supersedes_list(d):
+    sup = (d or {}).get("supersedes")
+    out = []
+    for v in (sup if isinstance(sup, list) else [sup]):
+        out += re.findall(r"[A-Za-z0-9_.-]+", str(v or ""))
+    return out
+
+
+def supersede_block(flags, row, log=print):
+    """At publish: mark every `supersedes` predecessor not-grantable (ready/.superseded/<pred>.json {by, at}). Returns ids."""
+    out = []
+    for pred in _supersedes_list(row):
+        if not pred or pred == row.get("id"):
+            continue
+        p = os.path.join(superseded_dir(flags), pred + ".json")
+        cur = load_json(p) or {}
+        if cur.get("by") != row.get("id"):
+            os.makedirs(superseded_dir(flags), exist_ok=True)
+            atomic_json(p, {"id": pred, "by": row.get("id"), "at": now_iso()})
+            log(f"SUPERSEDED-BLOCK {pred} by {row.get('id')}: not grantable from now (requeue/resume/re-grant refused); "
+                "a running grant finishes")
+        out.append(pred)
+    return out
+
+
+def superseded_index(flags):
+    """{predecessor id: successor id} from the block markers, ready/*.json, dryrun/*/unpublished.json and queued smoke
+    markers' specs (one scan; allocate builds it once per tick)."""
+    out = {}
+    for mp in glob.glob(os.path.join(flags, "ready", "*.json")) + glob.glob(os.path.join(flags, "dryrun", "*", "unpublished.json")):
+        oid = os.path.basename(os.path.dirname(mp)) if mp.endswith("unpublished.json") else os.path.basename(mp)[:-5]
+        for pred in _supersedes_list(load_json(mp)):
+            if pred != oid:
+                out.setdefault(pred, oid)
+    for q in glob.glob(os.path.join(flags, "dryrun", "*", "*SMOKE-QUEUED.json")):
+        oid = os.path.basename(os.path.dirname(q))
+        for pred in _supersedes_list((load_json(q) or {}).get("spec")):
+            if pred != oid:
+                out.setdefault(pred, oid)
+    for mp in glob.glob(os.path.join(superseded_dir(flags), "*.json")):
+        pred, b = os.path.basename(mp)[:-5], (load_json(mp) or {}).get("by")
+        if b and b != pred:
+            out[pred] = str(b)
+    return out
+
+
+def superseded_by(flags, rid, index=None):
+    """The successor id that supersedes `rid`, else ''."""
+    return (superseded_index(flags) if index is None else index).get(rid, "")
+
+
 def published_line(row, flags):
     return (f"PUBLISHED {row['id']} lane={row['lane']} regions={row['regions']} window_s={row['window_s']} min_window_s={row['min_window_s']} "
             f"book_s={row.get('book_s')} resumable={str(bool(row.get('resumable'))).lower()} gib={row['gib']} ports={row['ports']} result={row['result_path']} ({row['result_format']}) -> {ready_path(flags, row['id'])}")
@@ -1232,7 +1301,8 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
               "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by",
-              "resumable", "max_window_s", "whole_host_need", "quiet_guard_regions", "autorequeue_max"):
+              "resumable", "max_window_s", "whole_host_need", "quiet_guard_regions", "autorequeue_max",
+              "requires_quiet_host", "bandwidth_heavy"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -4669,16 +4739,8 @@ def capcut_closed(flags, rid):
     SUPERSEDED (any ready/*.json names it in `supersedes`) - requeueing would duplicate work. Returns the reason or ""."""
     if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
         return "already filed"
-    for mp in glob.glob(os.path.join(flags, "ready", "*.json")):
-        try:
-            with open(mp, errors="replace") as fh:
-                sup = (json.load(fh) or {}).get("supersedes")
-        except (OSError, ValueError, AttributeError):
-            continue
-        for v in (sup if isinstance(sup, list) else [sup]):
-            if rid in re.findall(r"[A-Za-z0-9_.-]+", str(v or "")):
-                return f"superseded by {os.path.basename(mp)[:-5]}"
-    return ""
+    by = superseded_by(flags, rid)   # PM-KEEPER3 #3: also an unsmoked successor and the publish-time block marker
+    return f"superseded by {by}" if by else ""
 
 
 def capcut_cut(flags, rid):
@@ -5728,6 +5790,12 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
     allrows = rows(flags) if allrows is None else allrows
     if free is None:
         _, free, _ = host_snapshot(flags, grants)
+    # PM-KEEPER3 (AK reverse case): a build claim is bandwidth-heavy and DRAM contention is host-wide, so no build claim
+    # starts while a requires_quiet_host row runs anywhere (the same rule quiet_gate applies the other way)
+    qrun = [g["id"] for g in grants if not g["id"].startswith(BUILD_PREFIX)
+            and quiet_required(allrows.get(g["id"]) or load_json(ready_path(flags, g["id"])) or {})]
+    need(not qrun, f"BUILD-REFUSED: quiet-host row {','.join(qrun)} is running (DRAM-wide quiet needed); a build claim is "
+                   "bandwidth-heavy - retry when it ends")
     tq = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX)], allrows)
     holder = {q: g["id"] for g in grants for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
     s = str(cpus).strip()
@@ -5943,11 +6011,8 @@ def resume_row(flags, rid, by, reason, log=print, now=None):
     need(direct_run(flags, rid) is None, f"resume {rid}: a direct run is live")
     run = load_json(running_path(flags, rid))
     need(not (run and alive(run.get("pid"))), f"resume {rid}: a dry run is live (pid {(run or {}).get('pid')})")
-    for op in glob.glob(os.path.join(flags, "ready", "*.json")):
-        sup = (load_json(op) or {}).get("supersedes")
-        for v in (sup if isinstance(sup, list) else [sup]):
-            need(rid not in re.findall(r"[A-Za-z0-9_.-]+", str(v or "")),
-                 f"resume {rid}: superseded by {os.path.basename(op)[:-5]}")
+    by = superseded_by(flags, rid)
+    need(not by, f"resume {rid}: superseded by {by} (SUPERSEDED-BLOCK)")
     d = load_json(mp) or {}
     lp = (d.get("launcher") or {}).get("path") or ""
     p = load_json(pass_path(flags, rid))
@@ -6462,6 +6527,142 @@ def foreign_server_gate(flags, cands, grants, log, dry=False, procs=None, stack=
     return [c for c in cands if c not in gated], waits
 
 
+# PM-KEEPER3 #1 (AK 2026-11-23): GDNPROJ r2, ak-cpu-aa-calibration-q-20261122-c and shexp r2 were granted into quarters
+# that measured up to 48% busy from foreign load (unclaimed pytest pinned to 24-47, a neighbour's bandwidth-heavy row) and
+# died on it. The planner only knew "free" from region locks, never the measured load. QUIET GATE:
+#   * a row is QUIET when its spec declares `requires_quiet_host: true` (or `quiet_guard_regions`, which already means
+#     "keep these idle for me"). Such a row is granted only onto quarters whose measured busy (the keeper's per-tick
+#     hostutil reading, a quarter's 24 cores + their 24 SMT siblings - the same numbers as SNAPSHOT util / IDLE-WHY /
+#     queue_status measured q*=%) is < QUIET_FOREIGN_MAX_PCT. A free quarter's busy is foreign by definition.
+#   * and never on the same NUMA side (QUIET_NUMA_SIDES: q0+q1, q2+q3 - the two halves of the IO die) as an open
+#     whole-host grant (shape host / quiet-host) or a BANDWIDTH-HEAVY grant. Bandwidth-heavy = spec `bandwidth_heavy: true`,
+#     or (no explicit `bandwidth_heavy: false`) a DECLARED busy_fraction >= QUIET_HEAVY_BUSY (0.6). An undeclared
+#     busy_fraction is not heavy (it would make every legacy row a blocker).
+#   * the converse: a bandwidth-heavy candidate is not placed on the NUMA side of a running quiet row.
+# A held-back row logs `WAIT <row>: foreign busy X% on <q> (quiet-host needs <15%)`, the reason joins IDLE-WHY, and
+# QUIET-NOISE names the unclaimed processes on that quarter (pid, comm, cpu%, cmdline) so the owner of the noise is found.
+QUIET_FOREIGN_MAX_PCT = 15.0
+QUIET_HEAVY_BUSY = 0.6
+# AK addendum 2026-11-23 (calibration -d on q0 died FUTILITY_CONTENTION with q0's own cores 0.7-4.9% busy: read BW
+# 68-76 GB/s vs a 111 ceiling, co-tenants on q1/q2/q3 and a build claim on 72-87): contention is DRAM-wide, so the
+# "side" is the WHOLE socket - a quiet row needs NO bandwidth-heavy / whole-host row and NO build claim on any quarter.
+QUIET_NUMA_SIDES = (frozenset({"q0", "q1", "q2", "q3"}),)
+QUIET_NOISE_MIN_PCT = 5.0
+
+
+def quiet_required(d):
+    d = d or {}
+    return d.get("requires_quiet_host") is True or bool(d.get("quiet_guard_regions"))
+
+
+def bandwidth_heavy(d):
+    d = d or {}
+    if isinstance(d.get("bandwidth_heavy"), bool):
+        return d["bandwidth_heavy"]
+    b = d.get("busy_fraction")
+    return isinstance(b, (int, float)) and not isinstance(b, bool) and float(b) >= QUIET_HEAVY_BUSY
+
+
+def numa_side(qs):
+    return frozenset().union(*[s for s in QUIET_NUMA_SIDES if s & set(qs)]) if qs else frozenset()
+
+
+def option_quarters(o):
+    out = set()
+    for t in o:
+        if t in QUARTERS:
+            out.add(t)
+        elif re.fullmatch(r"[ct]\d+", str(t)):
+            out.add(hostutil.quarter_of_cpu(int(t[1:])))
+    return out
+
+
+def quiet_gate(cands, allrows, grants, util, flags=None):
+    """PURE (flags only to read a grant's manifest when allrows lacks it). -> (kept cands, [(row, reason)], waits{rid: line}).
+    Quiet candidates keep only options whose quarters measure < QUIET_FOREIGN_MAX_PCT and share no NUMA side with an open
+    whole-host / bandwidth-heavy grant; bandwidth-heavy candidates keep only options off the side of a running quiet row.
+    A candidate left with no option is removed (it waits; nothing is stopped)."""
+    def man(rid):
+        return allrows.get(rid) or (load_json(ready_path(flags, rid)) if flags else None) or {}
+    loud, quiet_q = set(), set()
+    for g in grants:
+        gq = option_quarters(g.get("holds") or ())
+        d = man(g["id"])
+        if not gq:
+            continue
+        if g["id"].startswith(BUILD_PREFIX):   # a build claim is bandwidth-heavy (AK addendum)
+            loud |= gq
+            continue
+        if bandwidth_heavy(d) or set(QUARTERS) <= gq or str(d.get("shape") or "") in ("host", "quiet-host"):
+            loud |= gq
+        if quiet_required(d):
+            quiet_q |= gq
+    kept, waits, lines = [], [], {}
+    for c in cands:
+        d = man(c["id"])
+        q_need, heavy = quiet_required(d), bandwidth_heavy(d)
+        if not (q_need or heavy):
+            kept.append(c)
+            continue
+        ok, why = [], None
+        for o in c["options"]:
+            qs = option_quarters(o)
+            side = numa_side(qs)
+            if q_need:
+                hot = [(q, (util or {}).get(q)) for q in sorted(qs)]
+                bad = [(q, v) for q, v in hot if v is None or v >= QUIET_FOREIGN_MAX_PCT]
+                if bad:
+                    q, v = max(bad, key=lambda x: 1e9 if x[1] is None else x[1])
+                    why = why or (f"foreign busy {'?' if v is None else f'{v:.0f}'}% on {q} (quiet-host needs "
+                                  f"<{QUIET_FOREIGN_MAX_PCT:.0f}%)", q)
+                    continue
+                near = sorted(side & loud)
+                if near:
+                    why = why or (f"bandwidth-heavy/whole-host grant on {','.join(near)} shares its NUMA side "
+                                  f"(quiet-host needs a quiet side)", near[0])
+                    continue
+            if heavy and not q_need:
+                near = sorted(side & quiet_q)
+                if near:
+                    why = why or (f"bandwidth-heavy row not placed beside the running quiet-host row on {','.join(near)}", near[0])
+                    continue
+            ok.append(o)
+        if ok:
+            kept.append(c if len(ok) == len(c["options"]) else dict(c, options=ok))
+            continue
+        why = why or ("no quiet option", "")
+        lines[c["id"]] = f"WAIT {c['id']}: {why[0]}"
+        waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: {why[0]}"))
+    return kept, waits, lines
+
+
+def quiet_noise(flags, quarters, grants, census=None, prev=None, dt_s=None):
+    """Unclaimed processes on `quarters` (not a grant's own pid, not the keeper/smoke tree) above QUIET_NOISE_MIN_PCT CPU,
+    from the contamination sampler's stored census vs a fresh one: [(q, pid, comm, pct, cmdline)], busiest first."""
+    st = load_json(os.path.join(state_dir(flags), "contamination.json")) or {}
+    census = hostutil.proc_census() if census is None else census
+    prev = {int(k): tuple(v) for k, v in (st.get("census") or {}).items()} if prev is None else prev
+    dt_s = (time.time() - float(st.get("t") or time.time())) if dt_s is None else dt_s
+    if dt_s <= 0:
+        return []
+    own = set(contamination_exempt_pids(flags))
+    for g in grants:
+        try:
+            own |= set(own_pids(flags, g))
+        except Exception:  # noqa: BLE001
+            pass
+    out = []
+    for pid, (birth, cpu, last, comm) in census.items():
+        pv = prev.get(pid)
+        if pid in own or not pv or pv[0] != birth:
+            continue
+        pct = 100.0 * (cpu - pv[1]) / dt_s
+        q = hostutil.quarter_of_cpu(last)
+        if pct >= QUIET_NOISE_MIN_PCT and q in quarters:
+            out.append((q, pid, comm, round(pct, 1), _cmdline(pid)[:100]))
+    return sorted(out, key=lambda x: -x[3])
+
+
 # E5 starvation fix B (2026-11-23): before r8 was raised to rank 15, WAIT-FOR-SMOKE kept the rank-25 quiet-host row out of
 # planning while 16 better-ranked GPU smokes stayed queued, so its drain never formed (the PM-DRAINFIX exemption covers
 # formed drains only). A quiet-host row that has waited longer than this behind queued smokes enters planning anyway.
@@ -6911,6 +7112,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     gpu_open = any(GPU in g["holds"] for g in grants)
     counts = lane_counts(flags, allrows)
     cands = []
+    sup_blocked = {}
+    try:
+        sup_index = superseded_index(flags)
+    except Exception as e:  # noqa: BLE001 - an unreadable manifest never stops allocation
+        log(f"SUPERSEDED-INDEX failed: {type(e).__name__}: {e}")
+        sup_index = {}
     gpu_queued = False   # D9 2026-11-18 GPU-Q3-GUARD: a GPU-lane row queued (grantable, armed or awaiting its smoke)
     for rid, d in allrows.items():
         sd = status(flags, rid, allrows)
@@ -6918,6 +7125,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             gpu_queued = True
         if not runnable(sd):
             continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed, unparked rows are granted
+        sby = sup_index.get(rid, "")
+        if sby:   # PM-KEEPER3 #3: a superseded predecessor is never granted again (a running one is not a candidate anyway)
+            sup_blocked[rid] = f"SUPERSEDED-BLOCK {rid} by {sby}: not granted (its successor is published)"
+            continue
         kind = "grant"
         # 2026-11-03 session review item 2: UNDERUSED alerts, never blocks (it de-granted r3 for its engine's spin).
         k = contract_of(d, flags=flags)
@@ -6930,6 +7141,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
                       "claim": k["claim"], "threads": k["threads"], "explicit": bool(k["explicit_cpus"])})
+    log_transition(flags, "superseded-block", sup_blocked, log, persist=not dry)
     if admit_hold:
         cands = []   # operator 2026-11-07: nothing new is granted; the reason was logged once on its transition
     qh_hold = None
@@ -6956,10 +7168,28 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         log_transition(flags, "smoke-hold", {hc["id"]: f"SMOKE-HOLD: quiet-host {hc['id']} (rank {hc['rank']:g}) can start by "
                        f"{dt.datetime.fromtimestamp(S, dt.timezone.utc):%H:%MZ} (<= {QH_SMOKE_HOLD_S}s); queued GPU smoke batch "
                        f"({queued_gpu_batch_s(flags)}s) not started"}, log, persist=True)
+        short = short_gpu_smokes(flags)
+        short_s = sum(x[1] for x in short)
+        if short and GPU in free and not dry and not smoke_block and time.time() + short_s <= S \
+                and start_gpu_batch(flags, log, max_smoke_s=SHORT_SMOKE_S):
+            free.discard(GPU)   # PM-KEEPER3 #2: the short slot finishes before the held quiet-host row can start
     else:
         log_transition(flags, "smoke-hold", {}, log, persist=not dry)
         if GPU in free and not dry and not smoke_block and start_gpu_batch(flags, log):
             free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
+    slot = {}
+    if gpu_open and not dry:   # PM-KEEPER3 #2: short smokes are booked for the next GPU grant boundary (never a preemption)
+        try:
+            short = short_gpu_smokes(flags)
+            if short:
+                g0 = next((g for g in grants if GPU in g["holds"]), {})
+                ids = ",".join(r for r, _ in short[:6]) + (f",+{len(short) - 6}" if len(short) > 6 else "")
+                slot[ids] = (f"SMOKE-SLOT {ids}: GPU smoke(s) <= {SHORT_SMOKE_S}s take the GPU at the next grant boundary "
+                             f"({g0.get('end') or '?'}, end of {g0.get('id') or '?'}), ahead of the next full GPU grant; the "
+                             "running grant is not preempted")
+        except Exception as e:  # noqa: BLE001
+            log(f"SMOKE-SLOT check failed: {type(e).__name__}: {e}")
+    log_transition(flags, "smoke-slot", slot, log, persist=not dry)
     smoke_waits = []   # [(row, reason)]: ready rows taken out of the planner by WAIT-FOR-SMOKE; still named in IDLE-WHY
     qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
     wait_lines = {}
@@ -7051,6 +7281,21 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     r_ends = region_end_map(flags, grants, busy)
     out, excluded, plan_free, ram = [], set(), set(free), mem_available_gib()
     util = measure_util()
+    try:   # PM-KEEPER3 #1: quiet-host rows only onto quiet quarters, never beside whole-host / bandwidth-heavy rows
+        cands, qwaits, qlines = quiet_gate(cands, allrows, grants, util, flags)
+        for line in qlines.values():
+            log(line)
+        smoke_waits = qwaits + smoke_waits
+        noisy = {m.group(1) for line in qlines.values() for m in [re.search(r"foreign busy \S+ on (q\d)", line)] if m}
+        if noisy and not dry:
+            noise = quiet_noise(flags, noisy, grants)
+            nl = {f"{q}:{pid}": f"QUIET-NOISE {q}: pid {pid} {comm} {pct}% ({cmd}) - unclaimed (no grant owns it); its "
+                                f"owner must claim a region (rowflow.py claim --build) or move it"
+                  for q, pid, comm, pct, cmd in noise[:8]}
+            for line in nl.values():
+                log(line)
+    except Exception as e:  # noqa: BLE001 - a gate fault never stops allocation
+        log(f"QUIET-GATE failed: {type(e).__name__}: {e}")
     idle_now = idle_held(flags, grants, holders, util, log, seen)
     if not dry:
         scratch_over(flags, grants, log)
@@ -7589,21 +7834,49 @@ def gpu_idle_smoke_note(flags, why, blocked=None, qh_hold=None):
     return f"{why}; {len(q)} queued GPU smoke(s) ({ids}) {st}"
 
 
-def start_gpu_batch(flags, log):
+def start_gpu_batch(flags, log, max_smoke_s=None):
     """GPU free + queued smokes: start ONE detached batch (publish_row.py --run-gpu-queue) under a lock. True = the
-    batch owns the GPU this tick (running or just started), so no GPU grant is assigned."""
+    batch owns the GPU this tick (running or just started), so no GPU grant is assigned. max_smoke_s: a SHORT SLOT batch
+    that runs only the markers whose smoke_s <= it (PM-KEEPER3 #2)."""
     if gpu_batch_running(flags):
         return True
-    if not glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+    if not (short_gpu_smokes(flags, max_smoke_s) if max_smoke_s else
+            glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))):
         return False
     os.makedirs(os.path.join(flags, "dryrun"), exist_ok=True)
     out = open(os.path.join(flags, "dryrun", "GPU-SMOKE-BATCH.out"), "a")
-    p = subprocess.Popen([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "publish_row.py"),
-                          "--run-gpu-queue", "--flags", flags], stdout=out, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
-                         start_new_session=True)
-    atomic_json(gpu_batch_lock(flags), {"pid": p.pid, "started": now_iso()})
-    log(f"GPU-SMOKE-BATCH started pid={p.pid}")
+    argv = [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "publish_row.py"),
+            "--run-gpu-queue", "--flags", flags] + (["--max-smoke-s", str(int(max_smoke_s))] if max_smoke_s else [])
+    p = subprocess.Popen(argv, stdout=out, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, start_new_session=True)
+    atomic_json(gpu_batch_lock(flags), {"pid": p.pid, "started": now_iso(), "max_smoke_s": max_smoke_s})
+    log(f"GPU-SMOKE-BATCH started pid={p.pid}" + (f" (short slot: smokes <= {int(max_smoke_s)}s)" if max_smoke_s else ""))
     return True
+
+
+# PM-KEEPER3 #2 (AK 2026-11-23): c19attr-a3b-gpu and c19-dtree-gpu-diag (30 s smokes) sat SMOKE-QUEUED from 10:01Z to
+# 11:24Z behind vidya-r18d-aa-27b-r1's 2 h GPU grant. CHOSEN: option A, "place a short smoke at the next GPU grant
+# boundary, ahead of the next full grant" - not option B (a reserved gap between grants). A uses the GPU only when a
+# smoke exists, leaves grant windows and drain arithmetic untouched, and never idles the device; B would have to shorten
+# or delay every GPU grant while smokes queue, i.e. carve idle reservations into the calendar. A running grant is never
+# preempted. Mechanics: (1) while a GPU grant is open and smokes <= SHORT_SMOKE_S are queued, SMOKE-SLOT names them and
+# the boundary; (2) at the boundary the batch starts before the planner (unchanged order) in priority_rank order; (3)
+# when the quiet-host smoke hold would hold the FULL batch, a short-slot batch (only smokes <= SHORT_SMOKE_S) still starts
+# if it finishes before the held row could start - the same "smokes run in gaps they finish before" rule, applied to the
+# short budget instead of the whole queue.
+SHORT_SMOKE_S = 300
+
+
+def short_gpu_smokes(flags, max_s=SHORT_SMOKE_S):
+    """[(rid, smoke_s)] of queued GPU smokes whose declared budget (marker smoke_s) is <= max_s."""
+    out = []
+    for q in glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+        try:
+            s_ = int((load_json(q) or {}).get("smoke_s") or QUEUED_SMOKE_DEFAULT_S)
+        except (TypeError, ValueError):
+            s_ = QUEUED_SMOKE_DEFAULT_S
+        if s_ <= max_s:
+            out.append((os.path.basename(os.path.dirname(q)), s_))
+    return sorted(out)
 
 
 # HOLD SMOKES FOR A QUIET-HOST ROW (operator D9 2026-11-11 "Hold smokes (Recommended)"; 14:20Z: AutoKernel's queued GPU

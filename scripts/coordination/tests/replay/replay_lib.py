@@ -657,7 +657,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             "kills": W.kills[kills0:], "fails_new": sorted(set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json"))) - fails0),
             "running_json": running, "cands": int(mc.group(1)) if mc else None, "assigned": int(mc.group(2)) if mc else None,
             "snapshot_busy": mb.group(1) if mb else "",
-            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT"))][:400],
+            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET"))][:400],
             "foreign": tick.get("foreign") or {},
         })
     with open(os.path.join(out_dir, "decisions.jsonl"), "w") as f:
