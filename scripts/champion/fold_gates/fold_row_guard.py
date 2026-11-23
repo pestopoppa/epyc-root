@@ -154,7 +154,9 @@ def install_guard(row_dir, guard_src=None):
     Returns the files to add to SOURCE.sha256 (the caller seals; spec.json is never sealed)."""
     import re
     guard_src = guard_src or os.path.abspath(__file__)
-    shutil.copy(guard_src, os.path.join(row_dir, 'fold_row_guard.py'))
+    dst = os.path.join(row_dir, 'fold_row_guard.py')
+    if not (os.path.exists(dst) and os.path.samefile(guard_src, dst)):
+        shutil.copy(guard_src, dst)
     lp = os.path.join(row_dir, 'launch.sh')
     s = open(lp).read()
     if 'fold_row_guard.py' not in s:

@@ -55,6 +55,7 @@ def main():
         open(d + '/launch.sh', 'w').write('#!/bin/bash\nD=/x\nexec run.sh --id x --cmd "/usr/bin/python3 -I -B $D/job.py" \\\n'
                                           '  --complete-cmd "/usr/bin/python3 -I $D/check_complete.py" --stop "$D/STOP"\n')
         fg.install_guard(d, G)
+        fg.install_guard(d, os.path.join(d, 'fold_row_guard.py'))   # re-install from the row's own copy: no SameFileError
         s = open(d + '/launch.sh').read()
         if 'fold_row_guard.py run --dir $D -- /usr/bin/python3 -I -B $D/job.py' not in s or 'fold_row_guard.py check --dir $D' not in s:
             fails.append('install_guard did not wrap launch.sh: ' + s)
