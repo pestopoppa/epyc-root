@@ -1,6 +1,6 @@
 # Stage-3 plan — HIP ISA/MMQ PRs, AITER v0.1.30, BPE, spec-decoding, context and harness papers (intake-ak-1123) — AWAITING OPERATOR APPROVAL
 
-Entries intake-2824..intake-2862 (39): 13 submitted, 23 in Stage-2b wave 1, 3 in wave 2 (wave 2 surfaced nothing further, so the close-out gate is closed). 37 dive-verified; intake-2830 (Vega-Fafnir) and intake-2848 (ReTrace) are PDF-only and stay stage1-unverified, so no number or mechanism from them is used below. Subagents: 3 opus (MMQ dive, spec-decoding dive, determinism wave), 9 sonnet (dives and waves), 3 haiku/low (second readers over 409 anchors: 147 yes, 244 partial, 18 no; partials are mostly multi-part claims with one anchor per part). No compute was used; every [inference] box is a separately booked row.
+Entries intake-2824..intake-2862 (39): 13 submitted, 23 in Stage-2b wave 1, 3 in wave 2 (wave 2 surfaced nothing further, so the close-out gate is closed). 37 dive-verified; intake-2830 (Vega-Fafnir) and intake-2848 (ReTrace) are PDF-only and stay stage1-unverified, so no number or mechanism from them is used below. Subagents: 3 opus (MMQ dive, spec-decoding dive, determinism wave), 8 sonnet (dives and waves), 3 haiku/low (second readers over 409 anchors: 147 yes, 244 partial, 18 no; partials are mostly multi-part claims with one anchor per part). No compute was used; every [inference] box is a separately booked row.
 
 ## Per-source verdicts
 
