@@ -104,6 +104,21 @@ class BuildClaimReverse(unittest.TestCase):
         self.assertIn("quiet-host row quiet-a is running", str(e.exception))
 
 
+class FilingFallback(unittest.TestCase):
+    def test_workdir_out_result(self):
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "churn"))
+        import file_result as fr
+        wd = tempfile.mkdtemp(prefix="k3file-")
+        self.assertEqual(fr.result_fallback({"workdir": wd}), "")
+        os.makedirs(os.path.join(wd, "out"))
+        p = os.path.join(wd, "out", "RESULT.json")
+        open(p, "w").write('{"verdict": "FUTILITY_CONTENTION", "units": 0}')
+        self.assertEqual(fr.result_fallback({"workdir": wd}), p)
+        m, sha = fr.load_result(p, "json")
+        self.assertEqual(m["verdict"], "FUTILITY_CONTENTION")
+        self.assertIsNotNone(sha)
+
+
 class ShortSmokeSlot(unittest.TestCase):
     def setUp(self):
         self.flags = tempfile.mkdtemp(prefix="k3slot-")

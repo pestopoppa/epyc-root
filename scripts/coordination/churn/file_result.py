@@ -165,6 +165,13 @@ def load_result(path, fmt):
     return {}, sha  # csv/tsv/text: only rc is checkable
 
 
+def result_fallback(m):
+    """<workdir>/out/RESULT.json when it exists (the engine's own record), else ''."""
+    wd = str((m or {}).get("workdir") or "")
+    p = os.path.join(wd, "out", "RESULT.json") if wd else ""
+    return p if p and os.path.isfile(p) else ""
+
+
 def decide(rule, metrics):
     """-> (verdict, values, machine_checkable, reason)."""
     try:
@@ -491,6 +498,11 @@ def main(argv=None):
     rule = str(m.get("decision_rule") or "")
     result_path, fmt = str(m.get("result_path") or ""), str(m.get("result_format") or "json")
     metrics, sha = load_result(result_path, fmt) if result_path else ({}, None)
+    if sha is None:   # PM-KEEPER3 (AK 2026-11-23): a FUTILITY row with 0 units never creates result_path; its engine record
+        fb = result_fallback(m)   # <workdir>/out/RESULT.json is the result, not "no result" (was filed WITHDRAWN)
+        if fb:
+            result_path, fmt = fb, "json"
+            metrics, sha = load_result(result_path, fmt)
     metrics = dict(metrics, rc=rc if rc is not None else "?")
     verdict, values, machine, reason = decide(rule, metrics)
     filed_by = "file_result.py"
