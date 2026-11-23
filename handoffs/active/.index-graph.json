@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T15:59:02Z",
+  "generated_at": "2026-11-23T16:31:30Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1490,7 +1490,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10750,
+          "line": 10751,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1524,7 +1524,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10997,
+          "line": 10998,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
