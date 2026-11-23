@@ -23,6 +23,7 @@ holds:
   - handoff-akagg
   - h-akagg
   scope: loop-launch
+  launch_only: true  # operator ruling 2026-11-23: gates the agent loop sessions only; boxes show true state
   since: '2026-11-19T02:12:51Z'
   reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
     auto-unpark'
