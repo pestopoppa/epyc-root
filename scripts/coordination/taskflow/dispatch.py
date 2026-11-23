@@ -281,7 +281,37 @@ def reclaim_resumed_lane(lane: Path, base_dir: Path, task: dict, repo: Path) -> 
     return "guarded_rm"
 
 
+# r8e fix 2: what commit_lane dropped / restored, by lane (read by run() into the ledger row)
+COMMIT_REPORTS: dict[str, dict] = {}
+KEEP_EMPTY = {"__init__.py", "py.typed", ".gitkeep", ".keep"}
+
+
+def tidy_lane(lane: Path, task: dict) -> dict:
+    """Before the commit: restore TRACKED files the worker deleted (the shell only lets it `rm` scratch files), and
+    drop zero-byte NEW files (an emptied scratch file, r8e TU-GR-1 / LOOP-62 nothink) unless the packet names them or
+    they are conventionally empty (__init__.py, py.typed, .gitkeep). Returns {"restored": [...], "dropped_empty": [...]}."""
+    named = set(task.get("outputs") or []) | set(task.get("inputs") or []) | verify.approach_new_paths(task)
+    rep: dict = {"restored": [], "dropped_empty": []}
+    for ln in _git(lane, "status", "--porcelain", "-uall").stdout.splitlines():
+        code, p = ln[:2], ln[3:].split(" -> ")[-1]
+        if p.startswith(REFS + "/"):
+            continue
+        if "D" in code and p not in set(task.get("outputs") or []):
+            _git(lane, "restore", "--source=HEAD", "--staged", "--worktree", "--", p, check=False)
+            rep["restored"].append(p)
+        elif code == "??":
+            f = lane / p
+            if f.is_file() and not f.is_symlink() and f.stat().st_size == 0 and f.name not in KEEP_EMPTY \
+                    and p not in named:
+                f.unlink()
+                rep["dropped_empty"].append(p)
+    return rep
+
+
 def commit_lane(lane: Path, task: dict) -> bool:
+    rep = tidy_lane(lane, task)
+    if rep["restored"] or rep["dropped_empty"]:
+        COMMIT_REPORTS[str(lane)] = rep
     st = _git(lane, "status", "--porcelain", "-uall").stdout
     paths = [p for p in (ln[3:].split(" -> ")[-1] for ln in st.splitlines() if ln.strip())
              if not p.startswith(REFS + "/") and not p.endswith(".compile-cache.json")]
@@ -892,6 +922,8 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                     raise _EndRun()
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
             committed = commit_lane(lane, task)
+            if str(lane) in COMMIT_REPORTS:
+                row["commit_tidy"] = COMMIT_REPORTS.pop(str(lane))      # r8e fix 2: reported, never silent
             reviewer = reviewer_for(endpoint, w["model"]) if use_reviewer else None
             v = verify.verify(task, lane, base, {"verdict": (w.get("result") or {}).get("summary", "")}, reviewer)
             if committed:

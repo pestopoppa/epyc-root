@@ -75,7 +75,7 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
    git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc, grep, sed, sort, awk or cut. No `>` files, no && chains, no cd.
    When an ALLOWED COMMAND runs through orch-py.sh, the same orch-py.sh also runs `-c "<python>"` and a .py file
-   inside your cwd (relative path).
+   inside your cwd (relative path). `rm <relative path>` deletes a scratch file you created (never tracked files).
 10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
     Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
@@ -398,6 +398,14 @@ def scratch_patterns(task: dict, lane: Path | str | None = None) -> list[str]:
     return out
 
 
+# r8e fix 2: TU-GR-1 / LOOP-62 nothink emptied a scratch file but could not delete it and were rejected outside-pathspec.
+# `rm <lane-relative path>` is allowed; flags, absolute, `..`, `~` and .git paths are denied. A TRACKED file the worker
+# deletes anyway is restored by dispatch.commit_lane, so only untracked (scratch) files can actually go.
+RM_ALLOW = ["rm *"]
+RM_DENY = ["rm -*", "rm * -*", "rm /*", "rm * /*", "rm *..*", "rm ~*", "rm * ~*", "rm *.git*", "rm *;*", "rm *&*",
+           "rm *|*", "rm *$*", "rm *`*"]
+
+
 def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
                  out_tokens: int = 4096, lane: Path | str | None = None) -> Path:
     """Per-run opencode config (XDG_CONFIG_HOME/opencode/opencode.json) + the POLICY instructions file.
@@ -410,7 +418,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         bash[ro] = "allow"
     for ro in RETRIEVAL:
         bash[ro] = "allow"
-    for ro in PIPE_FILTERS:
+    for ro in PIPE_FILTERS + RM_ALLOW:
         bash[ro] = "allow"
     acc_pats = acceptance_patterns(task, lane) + scratch_patterns(task, lane)
     for c in acc_pats:
@@ -421,7 +429,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     for base in acc_pats:
         for tail in EXIT_TAILS:
             bash[base + tail] = "allow"
-    for d in BASH_DENY + SCRATCH_DENY:
+    for d in BASH_DENY + SCRATCH_DENY + RM_DENY:
         bash[d] = "deny"
     cfg = {
         "$schema": "https://opencode.ai/config.json",
