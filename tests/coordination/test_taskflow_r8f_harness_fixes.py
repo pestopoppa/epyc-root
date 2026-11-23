@@ -178,3 +178,39 @@ def test_acceptance_runs_with_ra():
     assert verify.with_ra("bash /r/orch-py.sh -m pytest -q t.py") == "bash /r/orch-py.sh -m pytest -q t.py -rA"
     assert verify.with_ra("pytest -q -rfE t.py") == "pytest -q -rfE t.py"
     assert verify.with_ra("bash scripts/validate.sh") == "bash scripts/validate.sh"
+
+
+# ------------------------------------------------------------------------- fix 4: env-contention vs model on timeout
+def _req(ctx, dec, n=200):
+    return {"prompt_n": 100, "cache_n": ctx - 100, "decode_tok_s": dec, "predicted_n": n}
+
+
+def test_timeout_slow_at_matched_context_is_env_contention():
+    from taskflow import dispatch
+    phase = [_req(40000 + i * 100, 12.0) for i in range(10)]
+    unit = [_req(40000 + i * 100, 5.0) for i in range(6)]
+    row = {"timed_out": True, "failure_class": "model-limitation"}
+    assert dispatch.contention_class(row, unit, phase + unit) == "env-contention"
+    assert row["contention"]["ref_decode"] == 12.0 and row["contention"]["slow"] is True
+
+
+def test_r8e_ws4_think_shape_stays_model():
+    """r8e WS4 think: 6.3 tok/s at 76-92k context; the phase median 15 came from 4-40k requests. No matched reference ->
+    the slowdown is the unit's own KV length, not the host: class unchanged."""
+    from taskflow import dispatch
+    phase = [_req(c, d) for c, d in [(3700, 29), (8800, 24), (25000, 15.4), (30000, 13.9), (33000, 12.5), (12000, 23),
+                                     (24500, 14.7), (28000, 15.3), (36000, 13), (38000, 11.2)]]
+    unit = [_req(c, d) for c, d in [(76354, 7.1), (78561, 7.0), (82602, 6.7), (86070, 6.3), (88785, 6.3), (90637, 5.6)]]
+    row = {"timed_out": True, "failure_class": "model-limitation"}
+    assert dispatch.contention_class(row, unit, phase) is None
+    assert row["contention"]["slow"] is None and row["contention"]["unit_decode"] < 0.5 * row["contention"]["phase_decode"]
+
+
+def test_contention_only_reclasses_timed_out_model_rows():
+    from taskflow import dispatch
+    phase = [_req(40000, 12.0)] * 10
+    unit = [_req(40000, 5.0)] * 6
+    assert dispatch.contention_class({"timed_out": False, "failure_class": "model-limitation"}, unit, phase) is None
+    assert dispatch.contention_class({"timed_out": True, "failure_class": "harness"}, unit, phase) is None
+    assert dispatch.contention_class({"timed_out": True, "failure_class": "model-limitation"},
+                                     [_req(40000, 1e6, n=1)], phase) is None        # 1-token replies ignored

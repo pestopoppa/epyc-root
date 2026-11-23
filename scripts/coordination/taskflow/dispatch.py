@@ -697,7 +697,7 @@ def _check_why(v: dict, name: str) -> list[str]:
 
 
 def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
-    """model-limitation | harness | task | None (verified). Order: packet defects (task) before harness/env, and the
+    """model-limitation | harness | task | None (verified); job-level re-class: env-contention (contention_class). Order: packet defects (task) before harness/env, and the
     model is charged only when none of those explains the failure."""
     if v.get("verdict") == "verified":
         return None
@@ -742,6 +742,55 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
     if reason == "no-change":
         return "model-limitation" if w["usage"]["steps"] else "harness"
     return "model-limitation"
+
+
+# r8e fix 4 (WS4 think, rc=4 at 1739 s, decode median 6.3 tok/s vs 15 for the phase): a timeout whose measured decode is
+# under half the phase's is env-contention, not the model -- but only against a CONTEXT-MATCHED reference. On CPU the
+# 35B's decode falls with KV length (r8e: ~29 tok/s at 4k, ~12 at 40k, ~9-10 at 55k, ~6 at 85-92k); WS4 think ran at
+# 76-92k with q0 held by r8e alone and q1/q2 idle in every keeper SNAPSHOT, so its slowdown was its own context. The
+# literal "under 50% of the phase median" rule would have charged that to the host.
+CONTENTION_FRACTION = 0.5
+_MIN_DECODE_N = 32           # decode_tok_s of a 1-token reply is meaningless (r8e logged 1e6 for those)
+
+
+def _ctx(r: dict) -> int:
+    return int(r.get("prompt_n") or 0) + int(r.get("cache_n") or 0)
+
+
+def _dec(rs: list[dict]) -> list[tuple[int, float]]:
+    return [(_ctx(r), float(r["decode_tok_s"])) for r in rs
+            if r.get("decode_tok_s") and int(r.get("predicted_n") or 0) >= _MIN_DECODE_N]
+
+
+def contention_check(unit_reqs: list[dict], phase_reqs: list[dict], ctx_band: float = 0.25, min_ref: int = 5) -> dict:
+    """Unit decode median vs the phase's, at matched context. `phase_reqs` may include the unit (it is excluded).
+    -> {unit_decode, phase_decode, ref_decode, ref_n, unit_ctx, slow (bool | None = no comparable reference)}."""
+    import statistics as st
+    ids = {id(r) for r in unit_reqs}
+    u, ph = _dec(unit_reqs), _dec([r for r in phase_reqs if id(r) not in ids])
+    if not u or not ph:
+        return {"slow": None, "why": "no decode samples"}
+    uctx = st.median(c for c, _ in u)
+    ud, pd = st.median(d for _, d in u), st.median(d for _, d in ph)
+    ref = [d for c, d in ph if abs(c - uctx) <= ctx_band * uctx]
+    out = {"unit_decode": round(ud, 1), "phase_decode": round(pd, 1), "unit_ctx": int(uctx), "ref_n": len(ref)}
+    if len(ref) >= min_ref:
+        out["ref_decode"] = round(st.median(ref), 1)
+        out["slow"] = ud < CONTENTION_FRACTION * out["ref_decode"]
+    else:
+        out["slow"] = None
+        out["why"] = f"no context-matched reference (<{min_ref} phase requests within {ctx_band:.0%} of {int(uctx)} tok)"
+    return out
+
+
+def contention_class(row: dict, unit_reqs: list[dict], phase_reqs: list[dict]) -> str | None:
+    """Re-class a timed-out, model-charged unit as env-contention when its decode was under half a context-matched
+    phase reference. Returns the new class, or None to keep the row's class. Writes row["contention"]."""
+    if not row.get("timed_out") or row.get("failure_class") != "model-limitation":
+        return None
+    c = contention_check(unit_reqs, phase_reqs)
+    row["contention"] = c
+    return "env-contention" if c.get("slow") else None
 
 
 def needs_brief_class(task: dict) -> str:
