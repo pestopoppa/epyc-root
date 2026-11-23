@@ -1312,7 +1312,33 @@ def sc_quiet_rows_serialize_shortest_first(path):
     return write(path, [(rows, quiet)] * 30), check
 
 
+def sc_build_lane_holds_quiet_grants(path):
+    """BUILD LANE 2026-11-23 (QUIET-RESERVE starved 5 AK builds, a chain of quiet rows): while a build window is open no NEW quiet
+    row is granted (a non-quiet row still is); after it expires the quiet row is granted."""
+    q = row("quiet-chain-r1", regions="any-of q1", extra="./bench -t 24", est=TICK * 2, rank=20, man={"requires_quiet_host": True})
+    c = row("plain-cpu-r1", regions="any-of q2", extra="make -j 24", est=TICK * 2, rank=30)
+    quiet = {"util": {"q0": 1.0, "q1": 1.0, "q2": 1.0, "q3": 1.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}}
+    rows = {"quiet-chain-r1": q, "plain-cpu-r1": c}
+    # window = 4 ticks (TICK 120 s = 2 min -> 8 min); opened on tick 0
+    ticks = [(rows, dict(quiet, build_window_min=8))] + [(rows, quiet)] * 11
+
+    def check(d):
+        out = []
+        g = _granted(d, "quiet-chain-r1")
+        if not g:
+            return ["quiet row never granted after the build window expired"]
+        if g[0][0] < 4:
+            out.append(f"quiet row granted at tick {g[0][0]} while the build window was open")
+        if not _granted(d, "plain-cpu-r1"):
+            out.append("non-quiet row never granted during the build window")
+        if not _lines(d, "BUILD-LANE open for"):
+            out.append("no BUILD-LANE line")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
+    "build-lane-holds-quiet-grants": sc_build_lane_holds_quiet_grants,
     "quiet-rows-serialize-shortest-first": sc_quiet_rows_serialize_shortest_first,
     "heavy-row-held-while-quiet-waits": sc_heavy_row_held_while_quiet_waits,
     "quiet-row-granted-beside-gpu-grant": sc_quiet_row_granted_beside_gpu_grant,

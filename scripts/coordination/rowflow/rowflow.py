@@ -5962,7 +5962,19 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
         fcntl.flock(fd, fcntl.LOCK_EX)   # blocking: claims are short; serialising them is the point
         if light:
             return _claim_light_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free)
-        return _claim_build_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free, wait_pid)
+        try:
+            r = _claim_build_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free, wait_pid)
+        except Refused:
+            try:
+                record_build_refusal(flags, owner, cpus, now)
+            except Exception:  # noqa: BLE001 - bookkeeping never changes the refusal
+                pass
+            raise
+        try:
+            clear_build_refusal(flags, owner, cpus)
+        except Exception:  # noqa: BLE001
+            pass
+        return r
     finally:
         os.close(fd)   # closing releases the flock
 
@@ -5999,7 +6011,10 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
             and quiet_required(allrows.get(g["id"]) or load_json(ready_path(flags, g["id"])) or {})]
     need(not qrun, f"BUILD-REFUSED: quiet-host row {','.join(qrun)} is running (DRAM-wide quiet needed); a build claim is "
                    "bandwidth-heavy - retry when it ends")
-    qres_rows = quiet_reserve_blocks_build(flags)
+    lane, _lk = build_lane_open(flags, now)
+    qres_rows = [] if lane else quiet_reserve_blocks_build(flags)   # BUILD LANE: the reserve stops refusing builds
+    if lane:
+        _keeper_log_line(flags, f"BUILD-LANE open for {lane}: QUIET-RESERVE does not refuse build claim {owner} {cpus}")
     need(not qres_rows, f"BUILD-REFUSED: QUIET-RESERVE - quiet-host row(s) {','.join(qres_rows)} wait for a quiet host; a build claim is "
                         f"bandwidth-heavy - retry when they run (reserve self-releases after {quiet_reserve_max_s(flags) / 60:.0f} min)")
     tq = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX)], allrows)
@@ -6780,6 +6795,73 @@ def quiet_reserve_blocks_build(flags, now=None):
     if st.get("active") and not st.get("released") and t - float(st.get("ts") or 0) < 300:
         return list(st.get("rows") or [])
     return []
+
+
+# BUILD LANE (coordinator 2026-11-23, QUIET-RESERVE starved 5 AutoKernel builds for 30+ refusals since 18:30Z): a non-light
+# build claim refused for > BUILD_LANE_AFTER_S opens the lane - no NEW quiet row is granted and QUIET-RESERVE stops refusing
+# build claims until that claim is granted. `rowflow.py build-window` opens the same hold explicitly (<= BUILD_WINDOW_MAX_MIN).
+# Running quiet rows are never pre-empted (the running-quiet refusal in claim --build stays).
+BUILD_LANE_AFTER_S = 900
+BUILD_LANE_STALE_S = 600       # a refusal record not retried for this long is dead (its claimant gave up)
+BUILD_WINDOW_MAX_MIN = 90
+BUILD_REFUSALS = "build_refusals.json"
+BUILD_WINDOW = "build_window.json"
+
+
+def _build_key(owner, cpus):
+    return f"{owner}|{str(cpus).strip()}"
+
+
+def record_build_refusal(flags, owner, cpus, now=None):
+    """A refused non-light build claim: remember when this owner+cpus first (continuously) asked."""
+    now = time.time() if now is None else now
+    p = os.path.join(state_dir(flags), BUILD_REFUSALS)
+    st = load_json(p) or {}
+    k = _build_key(owner, cpus)
+    e = st.get(k) or {}
+    if not e or now - float(e.get("last_at") or 0) > BUILD_LANE_STALE_S:
+        e = {"owner": owner, "cpus": str(cpus).strip(), "first_at": now, "refusals": 0}
+    e["last_at"], e["refusals"] = now, int(e.get("refusals") or 0) + 1
+    st[k] = e
+    atomic_json(p, st)
+
+
+def clear_build_refusal(flags, owner, cpus):
+    p = os.path.join(state_dir(flags), BUILD_REFUSALS)
+    st = load_json(p) or {}
+    if st.pop(_build_key(owner, cpus), None) is not None:
+        atomic_json(p, st)
+
+
+def build_lane_open(flags, now=None):
+    """-> (label, kind) when the build lane is open ('' , '' when closed). kind: 'window' | 'claim'."""
+    now = time.time() if now is None else now
+    w = load_json(os.path.join(state_dir(flags), BUILD_WINDOW)) or {}
+    if float(w.get("until") or 0) > now:
+        return f"window by {w.get('by') or '?'} until {dt.datetime.fromtimestamp(float(w['until']), dt.timezone.utc):%H:%MZ} ({w.get('reason') or '-'})", "window"
+    st = load_json(os.path.join(state_dir(flags), BUILD_REFUSALS)) or {}
+    old = [(e["first_at"], k) for k, e in st.items() if now - float(e.get("first_at") or now) > BUILD_LANE_AFTER_S
+           and now - float(e.get("last_at") or 0) <= BUILD_LANE_STALE_S]
+    if old:
+        k = min(old)[1]
+        return f"{k} (refused {int((now - float(st[k]['first_at'])) / 60)} min)", "claim"
+    return "", ""
+
+
+def build_window(flags, minutes, by, reason, now=None, log=print):
+    """`rowflow.py build-window --minutes N --by <owner> --reason R`: open the build lane explicitly for N (<= 90) minutes."""
+    need(isinstance(minutes, int) and 1 <= minutes <= BUILD_WINDOW_MAX_MIN, f"--minutes must be 1..{BUILD_WINDOW_MAX_MIN}")
+    need(str(by or "").strip(), "build-window: --by <owner> is required")
+    reason = re.sub(r"\s+", "_", str(reason or "").strip())
+    need(reason, "build-window: --reason is required")
+    now = time.time() if now is None else now
+    rec = {"by": by, "reason": reason, "at": now_iso(), "minutes": minutes, "until": now + minutes * 60}
+    atomic_json(os.path.join(state_dir(flags), BUILD_WINDOW), rec)
+    msg = (f"BUILD-WINDOW opened by {by} for {minutes} min until {dt.datetime.fromtimestamp(rec['until'], dt.timezone.utc):%H:%MZ} "
+           f"(reason={reason}): no new quiet row is granted; QUIET-RESERVE does not refuse build claims; closes itself")
+    _keeper_log_line(flags, msg)
+    log(msg)
+    return rec
 
 
 def quiet_required(d):
@@ -7573,6 +7655,14 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             if any(c.get("shape") == "quiet-host" for c in cands):
                 log(f"QUIET-HOST-WAIT smoke(s) live in pockets ({','.join(smoke_live[:5])}): no quiet-host grant this tick")
     # E5 fix A 2026-11-23: no quiet-host / whole-host grant while a foreign inference server runs (never kills it)
+    lane, _lk = build_lane_open(flags)
+    if lane:   # BUILD LANE: no NEW quiet row is granted (running ones are never pre-empted)
+        hold = [c for c in cands if quiet_required(allrows.get(c["id"])) or c.get("shape") == "quiet-host"]
+        log_transition(flags, "build-lane", {"lane": f"BUILD-LANE open for {lane}: no new quiet row granted ({','.join(c['id'] for c in hold[:5]) or '-'} held)"},
+                       log, persist=not dry)
+        cands = [c for c in cands if c not in hold]
+    else:
+        log_transition(flags, "build-lane", {}, log, persist=not dry)
     cands, fwaits = foreign_server_gate(flags, cands, grants, log, dry=dry)
     smoke_waits = fwaits + smoke_waits   # named in this tick's IDLE-WHY lines for the regions the row needs
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
@@ -8337,6 +8427,8 @@ def main(argv=None):
     s.add_argument("--light", action="store_true", help="LIGHT test claim: --cpus a subset of 84-87 (<= 4 cores), --minutes <= 15, one light claim host-wide, "
                    "not bandwidth-heavy (never blocks a quiet row); refused while a running quiet row logged a contended launch in the last 10 min. "
                    "ADVISORY contract (not enforced): " + "; ".join(LIGHT_ADVISORY).replace("%", "%%"))
+    s = sub.add_parser("build-window", help="open the BUILD LANE for N minutes (<= 90): no new quiet row is granted and QUIET-RESERVE stops refusing build claims; closes itself")
+    s.add_argument("--minutes", type=int, required=True); s.add_argument("--by", required=True); s.add_argument("--reason", required=True)
     s = sub.add_parser("deploy-guard", help="deploy_rowflow step 3: rc 75 when a changed engine file would reach LEGACY open grants")
     s.add_argument("--changed", nargs="*", default=[]); s.add_argument("--allow-open-grants", action="store_true")
     sub.add_parser("legacy-grants", help="ids of open grants whose poller still reads the live engine path (one per line)")
@@ -8406,6 +8498,9 @@ def main(argv=None):
         if a.cmd == "claim":
             gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes, wait_pid=a.wait_pid, light=a.light)
             print(f"BUILD-GRANT {gid} {line}")
+            return 0
+        if a.cmd == "build-window":
+            build_window(a.flags, a.minutes, a.by, a.reason)
             return 0
         if a.cmd == "withdraw":
             r = withdraw(a.flags, a.id, a.reason)

@@ -605,6 +605,8 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             _jdump(os.path.join(sb.flags, "dryrun", sid, "GPU-SMOKE-QUEUED.json"), {"id": sid, "spec": {"id": sid, "priority_rank": rank}})
         sb.advance(tick)
         sb.materialize(tick, rf)
+        if tick.get("build_window_min") and hasattr(rf, "build_window"):   # {"build_window_min": N}: `rowflow build-window` opens at this tick
+            rf.build_window(sb.flags, int(tick["build_window_min"]), "replay", "replay-build-lane", now=W.t, log=lambda m: None)
         W.admit = {rid: b["admit"] for rid, b in tick["rows"].items() if isinstance(b.get("admit"), dict)}
         for rid, s_ in sb.sim.items():   # blob["kfd_own"]: the granted row's own poller is a KFD client (a working GPU job)
             b = tick["rows"].get(rid) or {}
@@ -657,7 +659,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             "kills": W.kills[kills0:], "fails_new": sorted(set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json"))) - fails0),
             "running_json": running, "cands": int(mc.group(1)) if mc else None, "assigned": int(mc.group(2)) if mc else None,
             "snapshot_busy": mb.group(1) if mb else "",
-            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET"))][:400],
+            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD"))][:400],
             "foreign": tick.get("foreign") or {},
         })
     with open(os.path.join(out_dir, "decisions.jsonl"), "w") as f:
