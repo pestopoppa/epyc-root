@@ -75,6 +75,17 @@ class AutoFile(unittest.TestCase):
         self.assertEqual((v["row_verdict"], v["filed_by"]), ("pass", "file_result.py"))
         self.assertEqual(self.run_pass()["filed"], [], "a filed run is attempted once")
 
+    def test_filed_record_preserves_smoke_identity(self):
+        rid = "r-bound"
+        self.row(rid, "tps >= 10 and rc == 0")
+        manifest = os.path.join(self.flags, "ready", rid + ".json")
+        m = json.load(open(manifest))
+        m["smoke_identity"] = {"spec_sha256": "s", "job_sha256": "j"}
+        json.dump(m, open(manifest, "w"))
+        self.assertEqual(self.run_pass()["filed"], [rid])
+        rec = json.load(open(os.path.join(self.flags, "filing-done", rid + ".verdict.json")))
+        self.assertEqual(rec["smoke_identity"], m["smoke_identity"])
+
     def test_prose_rule_owner_dead_queued_once_and_never_filed(self):
         self.row("r-prose", "operator reads the flame graph and decides")
         rep = self.run_pass()

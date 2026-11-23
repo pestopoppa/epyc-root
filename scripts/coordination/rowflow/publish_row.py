@@ -964,6 +964,19 @@ def path_provenance_refusal(spec, cmds, warn=None, flags=None):
     return None
 
 
+def warn_filed_replay(spec, flags):
+    launcher = str(spec.get("launcher") or "")
+    row = {"launcher": {"path": launcher}}
+    identity = smoke_identity(spec, row)
+    if not identity:
+        return
+    row["smoke_identity"] = identity
+    warning = rf.same_filed_result_warning(flags, str(spec.get("id") or ""), row, {"smoke_identity": identity})
+    if warning:
+        print("WARN " + warning)
+        rf._keeper_log_line(flags, warning)
+
+
 def preflight(spec, flags, rerun=False):
     """Run once each, bounded (PREFLIGHT_TIMEOUT_S), before anything is published: the decision-rule parse, the smoke
     predicate, the engine's --complete-cmd and --precond-cmd (in the engine's --workdir, with preflight_env), and the
@@ -1022,6 +1035,7 @@ def preflight(spec, flags, rerun=False):
                                  "(build or fetch it in your turn), then re-run publish_row.py")
         if rc is None:
             _warn(spec, f"preflight: --precond-cmd {out}; not judged (the gate admits a timed-out precond too)")
+    warn_filed_replay(spec, flags)
 
 
 def smoke_cpus_of(spec):

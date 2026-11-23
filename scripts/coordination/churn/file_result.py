@@ -549,6 +549,9 @@ def main(argv=None):
            "end_record": ep, "source": end_source(ep), "result_path": result_path, "result_format": fmt, "handoff_task": m.get("handoff_task"), "manifest": mp,
            "filed_by": filed_by, "reason": reason, "agent_verdict": agent, "dry_run": a.dry_run,
            "answer": (agent or {}).get("answer") or a.answer}
+    # Bind the filed bytes to the spec/code that produced this row when available.
+    if isinstance(m.get("smoke_identity"), dict):
+        rec["smoke_identity"] = m["smoke_identity"]
     if coerced_from:
         rec["coerced_from"] = coerced_from
     kt = keep_tail_report(m, metrics, rid, flags)

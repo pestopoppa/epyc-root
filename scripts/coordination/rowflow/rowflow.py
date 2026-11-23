@@ -6600,6 +6600,30 @@ def resumable_stopped(flags, rid):
     return mp, None
 
 
+def same_filed_result_warning(flags, rid, row, passed):
+    """Flag unchanged filed bytes only when the recorded spec and code still match."""
+    ident = row.get("smoke_identity")
+    if not isinstance(ident, dict) or not ident or (passed or {}).get("smoke_identity") != ident:
+        return None
+    launcher = (row.get("launcher") or {}).get("path") or ""
+    if not os.path.isfile(launcher) or job_sha(launcher) != ident.get("job_sha256"):
+        return None
+    rec = load_json(os.path.join(flags, "filing-done", rid + ".verdict.json")) or {}
+    if rec.get("smoke_identity") != ident or not os.path.isfile(os.path.join(flags, "filing-done", rid + ".FILED")):
+        return None
+    path = rec.get("native_result_path") or rec.get("result_path")
+    filed_verdict = rec.get("verdict")
+    digest = filed_verdict.get("native_result_sha256") if isinstance(filed_verdict, dict) else None
+    if not path or not digest or not os.path.isfile(path):
+        return None
+    try:
+        if sha256(path) != digest:
+            return None
+    except OSError:
+        return None
+    return f"SAME-RESULT {rid}: current result matches previously filed bytes for the same spec and code; verify the resumed run produces new work ({path})"
+
+
 def resume_row(flags, rid, by, reason, log=print, now=None):
     """`rowflow.py resume <id> --by <owner> --reason R`: owner-only requeue of a STOPPED / released-early RESUMABLE row under
     the SAME id. Its grants/<id>.ended (and .grant.released-early) move to grants/.resume/<id>.<ts>.*, the STOP file is
@@ -6628,6 +6652,10 @@ def resume_row(flags, rid, by, reason, log=print, now=None):
     p = load_json(pass_path(flags, rid))
     need(p and os.path.isfile(lp) and p.get("launcher_sha256") == sha256(lp),
          f"resume {rid}: no PASS.json matching the current launcher; republish with publish_row.py for a new smoke")
+    warning = same_filed_result_warning(flags, rid, d, p)
+    if warning:
+        log(warning)
+        _keeper_log_line(flags, warning)
     now_t = time.time() if now is None else now
     ts = dt.datetime.fromtimestamp(now_t, dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     rd = resume_dir(flags)
