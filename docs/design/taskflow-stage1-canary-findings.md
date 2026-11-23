@@ -225,3 +225,51 @@ otherwise-complete work. TRY-27B is not supported.
    unit's window (requests.jsonl timestamps against the grant calendar). If it did, classify that timeout as env, not model.
 5. Packet: the WS4 done-when has a live-session clause the acceptance cannot show. Split it into its own box, or mark the
    canary verify as "acceptance only".
+
+## r8f (2026-11-23): CPU canary after the r8e fixes 1-5, hand-audited — verdict FIX-HARNESS (not saturated)
+Row `tf1-cpu-r8f-canary-35b-q0q2-20261123`, rc=0 complete 12:00Z, C14 CPU build, Qwen3.6-35B-A3B-MTP-Q8_0, np1, 2 stints (the
+think arm was yielded to a C19 fold after t01 and resumed at t02), 5 tasks x 2 arms. RESULT.json is final,
+`aggregated_from: results.jsonl`, total 10 tasks; `check_complete.py` is honest (10 model-work rows, no harness/lane rows).
+`stints.jsonl` holds only the last stint (3 think tasks), which is why `phases_this_stint` shows 3; the phase totals come from
+results.jsonl. **Reported: canary-nothink 3/5, canary-think 2/5 = 5/10. Audited: 4/10 = 0.4.**
+Perf: decode median 15.5 / 10.7 tok/s, prefill median 103 / 79 tok/s, MTP acceptance 0.91 / 0.87, prefix hit 0.94 / 0.80.
+
+| task | nothink: audited (classifier) | think: audited (classifier) |
+|---|---|---|
+| TU-GR-1 | **false verify** (classifier verified). `test_isolated_launch_denies` launches `exec python3 -c 'import sys; sys.exit(0)'` under unshare, so the child prints nothing; `probe_grader_access` maps empty stdout to `ok=False, errno=no-output` (a denial) and the test passes with no isolation. The vacuity guard returned ok and the reviewer passed it | model (classifier harness/outside-pathspec; the reject is correct). 30 steps burned debugging nested shell quoting, scratch files `_debug_isolation.py`, `_debug_result.json`, `_debug_probe.py`, `test_debug_probe.py` left; bare `python3 -c` and `mv` were denied and contributed, but `rm` and `orch-py.sh -c` were available and unused |
+| LOOP-62 | verified; legitimate (16 aliases, identity asserts on `sys.modules[target]`, mixed test `xfail(strict=False)`) | model (agree). 11 requests, two hit the 4096-token cap in thinking, 1739 s wall, tests fail; decode 10.7 vs context-matched 11.8, so not slow |
+| NOFOLD-1 | verified; legitimate | verified; legitimate (markdown link form is used here) |
+| WS4-WAKE-IMPERATIVE | model (agree, rc=4: test file never written; only `handoff_sessions.py` edited). Not contention: decode fell smoothly with context (10.2 at 36k, 7.9 at 58k, 5.7 at 76k) and the classifier had no context-matched reference. A 36k-token single read drove it | **env contention** (classifier: harness/no-change, never evaluated). Decode 3.5 tok/s on the first request at 3.7k context vs 20-27 for every other arm's first request (13-17 percent), 2.5-3.1 through 20-60k vs the nothink arm's 5.7-10.2 at the same context, then MM-5 in the same stint decoded normally (13.3) |
+| MM-5 | **harness** (classifier harness, agree). 18 tests passed, then the model called `opencode_worktree_remove` with `force` on its own lane; `git status` on the lane failed rc=128. The diff is gone, the unit would very likely have verified | verified; legitimate (aspect-preserving resize, multiples of 28, estimate(896,896)=1024, env default None) |
+
+**Audited counts (10 runs):** verified 4, harness/env 3 (MM-5 worktree removal, think WS4 contention, nothink TU-GR-1 false verify),
+model 3 (nothink WS4, think TU-GR-1, think LOOP-62), packet 0. The classifier agrees on 7/10; it misses the nothink TU-GR-1
+false verify, the think WS4 env timeout, and calls think TU-GR-1 harness where the proximate cause is the model.
+
+**r8e fixes held:** no refusal of `orch-py.sh -c` (11 uses across 5 units); the reviewer saw the acceptance log; WS4 acceptance-only
+held (no live-session clause was demanded); 0 lane errors, `lane_path_repairs` 0, 0 template echoes, 0 degenerate aborts.
+
+**Verdict by the box rule: FIX-HARNESS.** 4/10 = 0.4 >= 0.3, but model failures are 3/6 (not the minority) and harness/env
+failures are 3/6 (>= 50%). Not TRY-27B: model failures do not dominate, and two of the three are long-context or
+thinking-length timeouts on a slow CPU arm rather than capability limits. Not saturated: 3 of 5 tasks verify legitimately in at
+least one arm (LOOP-62, NOFOLD-1, MM-5), TU-GR-1 and WS4 have no legitimate verify. The TASKFLOW-STAGE1-CANARY done-when is
+a STAY-35B|TRY-27B|FIX-HARNESS verdict, but the box's own RESUME POINT is "iterate to 35B saturation", so it stays open.
+
+**Fixes before r8g** (listed, not implemented):
+1. Vacuity guard (`verify.py::vacuity_hits`): its `_LAUNCHER_ERR` pattern needs a `launcher_error` token. Extend it to the empty-stdout
+   / `no-output` / json-parse-failed shape (any probe branch that returns a denial-shaped result when the child printed nothing),
+   or require the isolation test to assert a distinguishing errno. Add the nothink TU-GR-1 diff as a regression fixture.
+   Packet: add to TU-GR-1's approach that an empty child stdout is an error, never a denial.
+2. Worker tool list: remove `opencode_worktree_remove` (and any worktree-mutating opencode tool) from the worker's tools, and make
+   `dispatch` report a missing lane as `lane-destroyed-by-worker` (harness) rather than an uncaught `CalledProcessError`. Re-run
+   MM-5 nothink once; its work was done.
+3. Contention classifier (`dispatch.py::contention_class`): it runs only on timed-out rows already classed model-limitation. Run it
+   on every timed-out row (including `no-change`) before the class is fixed, and when the phase has under 5 context-matched
+   requests fall back to the whole job's requests (all arms, same context band), plus an early-context check (first-request decode
+   against the job median of first requests). A no-change timeout at rc=130 must not default to harness.
+4. Shell allowlist: bare `python3 -c` and `mv` inside the lane were denied and drove the think TU-GR-1 flailing. Either allow
+   `mv` of untracked lane files, or add a refusal message naming the allowed forms (`orch-py.sh -c`, `rm`) so the model switches.
+5. Think-arm budget: LOOP-62 think burned two 4096-token capped thinking outputs (about 1160 s). Consider a per-request thinking cap
+   or a wall budget that scales with measured CPU decode; this is a model-fit question, not a packet defect.
+6. WS4 nothink: a 36k-token single read at 10 tok/s decode ate about 200 s per large read. Packet `where` should point at line ranges
+   of `handoff_sessions.py`, not the whole file.
