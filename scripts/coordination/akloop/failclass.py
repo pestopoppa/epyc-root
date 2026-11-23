@@ -183,6 +183,9 @@ RESULT_TOKENS = {
     "FAILED": ("harness", "job_script_error"),
     "ANSWERED": ("ok", "answered"), "EQUIVALENT": ("ok", "answered"), "NEUTRAL": ("candidate", "timing_loss"),
     "NO_GAIN": ("candidate", "timing_loss"), "TESTS_FAIL": ("candidate", "correctness_gate"),
+    # AK-HARNESS-CRASH-VS-VACUOUS (retarget harness job.py statuses): a kernel that ran and faulted was judged and lost;
+    # VACUOUS means no kernel ran, so the candidate was never judged. Reuses existing classes, no new taxonomy.
+    "CRASH": ("candidate", "correctness_gate"), "VACUOUS": ("harness", "result_contract"),
 }
 _TOKEN_PAREN = re.compile(r"\(([^)]*)\)")
 _LEAD_WORD = re.compile(r"^[A-Z][A-Z0-9_\-]*")

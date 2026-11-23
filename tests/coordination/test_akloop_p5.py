@@ -262,3 +262,11 @@ def test_cli_fail_and_result(tmp_path, capsys):
     r = tmp_path / "RESULT.json"
     r.write_text(json.dumps({"verdict": "KEEP"}))
     assert fc.main(["--result", str(r)]) == 0
+
+
+def test_harness_crash_vs_vacuous_tokens():
+    """AK-HARNESS-CRASH-VS-VACUOUS: retarget-harness CRASH is a candidate loss, VACUOUS a harness (never judged) class."""
+    c = fc.classify_result({"status": "crash"})
+    assert (c.side, c.klass) == ("candidate", "correctness_gate")
+    v = fc.classify_result({"status": "vacuous"})
+    assert (v.side, v.klass) == ("harness", "result_contract")
