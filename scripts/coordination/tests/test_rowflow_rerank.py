@@ -99,3 +99,57 @@ def test_stale_failed_smoke_not_live_predecessor(tmp_path):
     os.makedirs(os.path.join(f, "grants"), exist_ok=True)
     open(os.path.join(f, "grants", fam + ".grant"), "w").close()
     assert set(SC.check({"id": fam + "-r4"}, f)[0]) == {fam, fam + "-r2", fam + "-r3"}
+
+
+# ---------------------------------------------------------------- scope extension (operator 2026-11-24)
+def test_operator_overrides_owner(flags):
+    logs = []
+    rf.rerank_row(flags, RID, 1, "operator", "op first", log=logs.append)
+    assert logs[0].startswith("RERANK-OPERATOR ak-verify-attn-x 50 -> 1 by operator")
+    assert rf.load_json(rf.ready_path(flags, RID))["priority_rank"] == 1
+
+
+def test_family_reranks_only_ungranted(flags):
+    for r in ("ak-verify-attn-y", "ak-verify-attn-z"):
+        wj(rf.ready_path(flags, r), {"id": r, "owner": "autokernel", "lane": "gpu", "priority_rank": 60})
+    wj(rf.ready_path(flags, "other-row"), {"id": "other-row", "owner": "autokernel", "priority_rank": 60})
+    open(os.path.join(flags, "grants", "ak-verify-attn-z.grant"), "w").close()
+    res = rf.rerank_family(flags, "ak-verify-attn", 2, "autokernel", "family", log=lambda s: None)
+    assert res[RID] == (50, 2) and res["ak-verify-attn-y"] == (60, 2) and res["ak-verify-attn-z"].startswith("SKIP")
+    assert rf.load_json(rf.ready_path(flags, "other-row"))["priority_rank"] == 60
+    assert rf.load_json(rf.ready_path(flags, "ak-verify-attn-z"))["priority_rank"] == 60
+    assert rf.main(["--flags", flags, "rerank", "--family", "ak-verify-attn-y", "4", "--by", "autokernel", "--reason", "r"]) == 0
+    assert rf.load_json(rf.ready_path(flags, "ak-verify-attn-y"))["priority_rank"] == 4
+    with pytest.raises(rf.Refused):
+        rf.rerank_family(flags, "nomatch", 1, "autokernel", "r", log=lambda s: None)
+
+
+def test_republish_rank_only_routes_to_rerank(flags, monkeypatch):
+    import publish_row as pr
+    launcher = os.path.join(flags, "l.sh")
+    monkeypatch.setattr(rf, "job_sha", lambda p: "jobsha")
+    open(launcher, "w").write("#!/bin/bash\necho hi\n")
+    spec = {"id": RID, "owner": "autokernel", "launcher": launcher, "priority_rank": 50, "notes": "a"}
+    d = rf.load_json(rf.ready_path(flags, RID))
+    d["launcher"] = {"path": launcher}
+    d["smoke_identity"] = pr.smoke_identity(spec, d)
+    rf.atomic_json(rf.ready_path(flags, RID), d)
+    # legacy row (no norank sha): rank-only change routes
+    assert pr.route_rerank(dict(spec, priority_rank=0), flags, log=lambda s: None) == (50, 0)
+    # a real change (or a cosmetic one on a legacy row) does not
+    assert pr.route_rerank(dict(spec, priority_rank=5, estimate_s=999), flags, log=lambda s: None) is None
+    # new rows carry spec_sha256_norank: cosmetic fields may differ too
+    d = rf.load_json(rf.ready_path(flags, RID))
+    d["spec_sha256_norank"] = pr.norank_sha(spec)
+    rf.atomic_json(rf.ready_path(flags, RID), d)
+    assert pr.route_rerank(dict(spec, priority_rank=3, notes="b"), flags, log=lambda s: None) == (0, 3)
+    assert open(rf.pass_path(flags, RID)).read()   # PASS kept
+    open(os.path.join(flags, "grants", RID + ".grant"), "w").close()
+    assert pr.route_rerank(dict(spec, priority_rank=7), flags, log=lambda s: None) is None   # granted: normal path
+
+
+def test_queue_status_shows_rerank_history():
+    sys.path.insert(0, os.path.join(HERE, "..", "..", "..", ".claude", "skills", "inference-backlog-scheduling", "scripts"))
+    import queue_status as QS
+    assert QS._rerank_note({}) == ""
+    assert QS._rerank_note({"rerank_history": [{"old": 50, "new": 0, "by": "operator"}]}) == " reranked[50->0 by operator]"

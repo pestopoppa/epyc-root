@@ -31,6 +31,14 @@ CAMPAIGN_STATUS_SCHEMA = "epyc.autokernel.campaign_status.v1"   # published by t
 CAMPAIGN_STATUS_STALE_S = 6 * 3600
 
 
+
+def _rerank_note(m):
+    """' reranked[old->new by who; ...]' from a manifest's rerank_history (last 3), else ''. Priority mistakes stay visible."""
+    h = [x for x in ((m or {}).get("rerank_history") or []) if isinstance(x, dict)]
+    if not h:
+        return ""
+    return " reranked[" + "; ".join(f"{x.get('old')}->{x.get('new')} by {x.get('by')}" for x in h[-3:]) + "]"
+
 def campaign_status(flags, now_ts=None):
     """READ-ONLY: <flags>/campaign-status/<row>.json written by the AK loop's publisher.
     A file that is unreadable / wrong schema is listed as bad (never silently dropped); a payload older
@@ -188,7 +196,7 @@ def classify(flags, owner=None, now=None):
         if owner and owner.lower() not in str(m.get("owner", "")).lower():
             continue
         rec = {"id": rid, "owner": m.get("owner"), "shape": m.get("shape") or m.get("declared_shape"),
-               "rank": m.get("priority_rank"), "regions": m.get("regions"), "handoff_task": m.get("handoff_task")}
+               "rank": m.get("priority_rank"), "reranks": _rerank_note(m), "regions": m.get("regions"), "handoff_task": m.get("handoff_task")}
         gp = os.path.join(G, rid + ".grant")
         if os.path.exists(gp) and rid in allrows:
             g = GRANT_RE.search(_read(gp))
@@ -257,7 +265,7 @@ def classify(flags, owner=None, now=None):
             if rid in seen:
                 continue
             rec = {"id": rid, "owner": m.get("owner"), "shape": m.get("shape") or m.get("declared_shape"),
-                   "rank": m.get("priority_rank"), "regions": q.get("regions"), "handoff_task": m.get("handoff_task")}
+                   "rank": m.get("priority_rank"), "reranks": _rerank_note(m), "regions": q.get("regions"), "handoff_task": m.get("handoff_task")}
             out["SMOKE-QUEUED"].append(rec)
         rec.update(kind="SMOKE-QUEUED (GPU)", queued_at=q.get("queued_at"), wait_attempts=q.get("wait_attempts") or 0,
                    expected_start=gstart,
@@ -404,7 +412,7 @@ def main(argv=None) -> int:
               + (f" IDLE-HELD {','.join(x['idle_held'])}" if x.get("idle_held") else ""))
     print(f"\nGRANTABLE/QUEUED ({len(r['GRANTABLE'])})  (dry run PASSED, waiting for a keeper placement)")
     for x in sorted(r["GRANTABLE"], key=lambda x: (x.get("rank") is None, x.get("rank") or 0, x["id"])):
-        print(f"  {ow(x):<18} {x['id']:<44} shape={x.get('shape')} rank={x.get('rank')}"
+        print(f"  {ow(x):<18} {x['id']:<44} shape={x.get('shape')} rank={x.get('rank')}{x.get('reranks') or ''}"
               + (f"\n    GPU: {x['gpu_wait']}" if x.get("gpu_wait") else ""))
     for title, key in (("SMOKE-QUEUED", "SMOKE-QUEUED"), ("NEEDS-REPUBLISH", "NEEDS-REPUBLISH"), ("FAILED", "FAILED"),
                        ("NOT-A-ROW (keeper ignores)", "NOT-A-ROW")):

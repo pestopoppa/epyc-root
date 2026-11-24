@@ -9132,7 +9132,10 @@ def claim_wait(flags, owner, cpus, minutes, light=False, rank=None, wait_s=CLAIM
         time.sleep(CLAIM_POLL_S)
 
 
-def rerank_row(flags, rid, rank, by, reason, log=print):
+RERANK_OPERATOR = "operator"   # operator 2026-11-24: the operator's priority overrides the owner's (logged RERANK-OPERATOR)
+
+
+def rerank_row(flags, rid, rank, by, reason, log=print, via=None):
     """`rowflow.py rerank <id> <rank> --by <owner> --reason R` (operator 2026-11-24, AK verify-attention to the head of the
     GPU queue): change ONLY priority_rank of ready/<id>.json - no re-smoke; PASS.json / smoke state are untouched (a
     republish would refuse: the smoke predicate already exits 0). Refused unless by == the manifest owner, the row is in
@@ -9159,13 +9162,16 @@ def rerank_row(flags, rid, rank, by, reason, log=print):
         d = load_json(rp)
         need(d, f"rerank {rid}: no ready/{rid}.json (only a queued ready row can be reranked)")
         owner = str(d.get("owner") or "")
-        need(owner and owner == by, f"rerank {rid}: owner is {owner or '(unknown)'}, caller is {by}; only the row owner may rerank")
+        need((owner and owner == by) or by == RERANK_OPERATOR, f"rerank {rid}: owner is {owner or '(unknown)'}, caller is {by}; "
+             f"only the row owner (or --by {RERANK_OPERATOR}) may rerank")
         need(not os.path.exists(os.path.join(G, rid + ".grant")), f"rerank {rid}: grants/{rid}.grant is open (granted/running)")
         for t in (".ended", ".complete"):
             need(not os.path.exists(os.path.join(G, rid + t)), f"rerank {rid}: grants/{rid}{t} exists (terminal)")
         need(direct_run(flags, rid) is None, f"rerank {rid}: a direct run is live")
         old = d.get("priority_rank", 100)
         rec = {"at": now_iso(), "by": by, "old": old, "new": new, "reason": reason}
+        if via:
+            rec["via"] = via
         sp = d.get("published_from") if isinstance(d.get("published_from"), str) else ""
         spec_rank = (load_json(sp) or {}).get("priority_rank") if sp.endswith(".json") else None
         if spec_rank is not None:
@@ -9175,10 +9181,29 @@ def rerank_row(flags, rid, rank, by, reason, log=print):
         atomic_json(rp, d)
     finally:
         os.close(fd)
-    line = f"RERANK {rid} {old} -> {new} by {by}: {reason}"
+    tag = "RERANK-OPERATOR" if by == RERANK_OPERATOR and by != owner else "RERANK"
+    line = f"{tag} {rid} {old} -> {new} by {by}: {reason}"
     _keeper_log_line(flags, line)
     log(line)
     return old, new
+
+
+def rerank_family(flags, prefix, rank, by, reason, log=print):
+    """`rerank --family <prefix> <rank>`: rerank every UNGRANTED ready row whose id starts with prefix (owner's own rows,
+    or every owner's with --by operator). Granted/foreign rows are skipped with a line, never an error. Returns
+    {id: (old, new) | 'SKIP: why'}; refused when nothing matched at all."""
+    prefix = str(prefix or "").strip()
+    need(prefix, "rerank --family: prefix is required")
+    out = {}
+    for mp in sorted(glob.glob(os.path.join(flags, "ready", prefix + "*.json"))):
+        rid = os.path.basename(mp)[:-5]
+        try:
+            out[rid] = rerank_row(flags, rid, rank, by, reason, log=log, via="family:" + prefix)
+        except Refused as e:
+            out[rid] = f"SKIP: {e}"
+            log(f"RERANK-SKIP {rid}: {e}")
+    need(out, f"rerank --family {prefix}: no ready/{prefix}*.json")
+    return out
 
 
 def withdraw_request(flags, rid, by):
@@ -10735,7 +10760,8 @@ def main(argv=None):
     s = sub.add_parser("release", help="owner-only: end an idle/finished grant early, or shrink it with --regions q2,..; refused while its job runs (never kills)")
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True); s.add_argument("--regions")
     s = sub.add_parser("rerank", help="owner-only: change priority_rank of a queued ready/<id>.json in place (no re-smoke; PASS kept); refused once granted")
-    s.add_argument("id"); s.add_argument("rank"); s.add_argument("--by"); s.add_argument("--reason", required=True)
+    s.add_argument("target", nargs="+", metavar="ID RANK | RANK (with --family)"); s.add_argument("--family", metavar="PREFIX")
+    s.add_argument("--by"); s.add_argument("--reason", required=True)
     s = sub.add_parser("resume", help="owner-only: requeue a STOPPED / released-early resumable row under the SAME id (clears STOP + the terminal end, back to ready/, no new smoke)")
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True)
     s = sub.add_parser("unpark", help="operator: a parked row (precond refusal / arming failures) is grantable again next tick; its "
@@ -10853,7 +10879,12 @@ def main(argv=None):
             return 0
         if a.cmd == "rerank":
             by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
-            rerank_row(a.flags, a.id, a.rank, by, a.reason)
+            if a.family:
+                need(len(a.target) == 1, "rerank --family <prefix> <rank>: exactly one positional (the rank)")
+                res = rerank_family(a.flags, a.family, a.target[0], by, a.reason)
+                return 0 if any(not isinstance(v, str) for v in res.values()) else 2
+            need(len(a.target) == 2, "rerank <id> <rank> (or --family <prefix> <rank>)")
+            rerank_row(a.flags, a.target[0], a.target[1], by, a.reason)
             return 0
         if a.cmd == "resume":
             by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")

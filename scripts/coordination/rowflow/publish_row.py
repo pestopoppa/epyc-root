@@ -1195,6 +1195,61 @@ def smoke_identity(spec, row):
     return {"spec_sha256": hashlib.sha256(encoded).hexdigest(), "job_sha256": job}
 
 
+# Operator 2026-11-24 ("fix pipeline robustness"): a republish that differs from the live ready manifest ONLY in
+# priority_rank (+ RERANK_COSMETIC) routes to rowflow.rerank_row - no re-smoke, no "already exits 0" refusal.
+RERANK_COSMETIC = ("priority_rank", "notes", "publish_warnings")
+
+
+def _norank(spec):
+    return {k: v for k, v in (spec or {}).items() if k not in RERANK_COSMETIC}
+
+
+def norank_sha(spec):
+    return hashlib.sha256(json.dumps(_norank(spec), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
+
+
+def rank_only_change(spec, flags):
+    """The live ready manifest when `spec` (the SUBMITTED spec) equals the one it was published from except for
+    RERANK_COSMETIC and the row is ungranted with its PASS; else None. Rows published before this change carry no
+    spec_sha256_norank: then only priority_rank may differ (the spec, with the original rank put back, must reproduce
+    the manifest's smoke_identity)."""
+    rid = str((spec or {}).get("id") or "")
+    if not rid:
+        return None
+    row = rf.load_json(rf.ready_path(flags, rid))
+    if not row or os.path.exists(os.path.join(flags, "grants", rid + ".grant")) or not os.path.exists(rf.pass_path(flags, rid)):
+        return None
+    if str(row.get("owner") or "") != str(spec.get("owner") or ""):
+        return None
+    if rf.row_rank(spec) == rf.row_rank(row):
+        return None   # nothing to rerank: the normal publish path decides
+    if row.get("spec_sha256_norank"):
+        if row["spec_sha256_norank"] != norank_sha(spec):
+            return None
+        ident = smoke_identity(spec, row)
+        return row if ident and (row.get("smoke_identity") or {}).get("job_sha256") == ident["job_sha256"] else None
+    ident = row.get("smoke_identity")
+    if not isinstance(ident, dict):
+        return None
+    hist = row.get("rerank_history") or []
+    orig = hist[0].get("old") if hist else row.get("priority_rank")
+    for cand in ({**spec, "priority_rank": orig}, {k: v for k, v in spec.items() if k != "priority_rank"}):
+        if smoke_identity(cand, row) == ident:
+            return row
+    return None
+
+
+def route_rerank(spec, flags, log=print):
+    """(old, new) when the republish was a rank-only change and was applied as a rerank; None otherwise."""
+    row = rank_only_change(spec, flags)
+    if not row:
+        return None
+    log(f"REPUBLISH-AS-RERANK {spec['id']}: only priority_rank changed ({row.get('priority_rank')} -> "
+        f"{spec.get('priority_rank')}); no re-smoke, PASS kept")
+    return rf.rerank_row(flags, spec["id"], spec.get("priority_rank", 100), str(spec.get("owner")),
+                         "republish-rank-only", log=log, via="publish_row")
+
+
 def smoke_strikes_path(flags, rid):
     return os.path.join(rf.dry_dir(flags, rid), "SMOKE-STRIKES.json")
 
@@ -1630,6 +1685,7 @@ def publish_smoked(spec, flags, source, queue_cpu=False, identity_spec=None):
     identity = smoke_identity(identity_spec if identity_spec is not None else spec, row)
     if identity:
         row["smoke_identity"] = identity
+        row["spec_sha256_norank"] = norank_sha(identity_spec if identity_spec is not None else spec)
         rf.atomic_json(rf.ready_path(flags, rid), row)
     if want > rf.SMOKE_CPUS:
         held = int(rf.contract_of(row, flags=flags).get("held") or 0)
@@ -1812,6 +1868,8 @@ def main(argv=None):
             spec = rf.spec_from_legacy(spec, a.flags)
         # Lint/preflight add derived fields and warnings; bind reuse to the submitted spec instead.
         identity_spec = json.loads(json.dumps(spec))
+        if route_rerank(identity_spec, a.flags):
+            return 0
         rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
         check_operator_gate(spec, a.flags)
         check_owner_roster(spec, a.flags)
