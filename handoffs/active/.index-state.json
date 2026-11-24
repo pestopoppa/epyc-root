@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 548
+      "open": 550
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-19",
-      "open": 259
+      "open": 260
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 490
+      "open": 492
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -45,7 +45,7 @@
       "closed": 153,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 42,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 196,
+      "total": 197,
       "tracks": [
         {
           "blocked": 0,
@@ -95,7 +95,7 @@
           "line": 812,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 35
+          "open": 36
         }
       ]
     },
@@ -104,7 +104,7 @@
       "closed": 998,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 118,
+      "open": 119,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1116,
+      "total": 1117,
       "tracks": [
         {
           "blocked": 0,
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 58
+          "open": 59
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5494,
+          "line": 5499,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5579,
+          "line": 5584,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5760,
+          "line": 5765,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 7
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7645,
+          "line": 7650,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 24
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10926,
+          "line": 10931,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11173,
+          "line": 11178,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -501,11 +501,11 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 94,
+      "closed": 96,
       "guarded": 0,
-      "last_advanced": "2026-11-23",
+      "last_advanced": "2026-11-24",
       "needs_owner": 1,
-      "open": 52,
+      "open": 51,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -514,7 +514,7 @@
       },
       "row_id": "RTG-100",
       "state": "active",
-      "total": 146
+      "total": 147
     },
     "context-and-token-economy.md": {
       "blocked": 2,
@@ -629,7 +629,7 @@
       "closed": 361,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 11,
+      "open": 14,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -638,7 +638,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 372,
+      "total": 375,
       "tracks": [
         {
           "blocked": 0,
@@ -648,14 +648,14 @@
           "line": 21,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 10
+          "open": 13
         },
         {
           "blocked": 0,
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2519,
+          "line": 2532,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 0
@@ -665,7 +665,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 2527,
+          "line": 2540,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 0
@@ -675,7 +675,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2999,
+          "line": 3012,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -690,7 +690,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3444,
+          "line": 3457,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0
@@ -706,7 +706,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4960,
+          "line": 4973,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -722,7 +722,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5620,
+          "line": 5633,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 1
@@ -738,7 +738,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5828,
+          "line": 5841,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -748,7 +748,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6384,
+          "line": 6397,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1183,7 +1183,7 @@
       "closed": 273,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 27,
+      "open": 28,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1192,7 +1192,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 300,
+      "total": 301,
       "tracks": [
         {
           "blocked": 0,
@@ -1207,14 +1207,14 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 26
+          "open": 27
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1972,
+          "line": 1975,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 2100,
+          "line": 2103,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2432,
+          "line": 2435,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2533,
+          "line": 2536,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 3087,
+          "line": 3090,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3225,
+          "line": 3228,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3232,
+          "line": 3235,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2352,11 +2352,11 @@
     },
     "speculative-decoding.md": {
       "blocked": 3,
-      "closed": 292,
+      "closed": 293,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 28,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2380,7 +2380,7 @@
         },
         {
           "blocked": 1,
-          "closed": 158,
+          "closed": 159,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2389,7 +2389,7 @@
           "line": 1002,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 16
+          "open": 15
         }
       ]
     },
@@ -2570,7 +2570,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "needs_owner": 8,
-      "open": 132,
+      "open": 133,
       "owner_index": "research-evaluation-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -2580,7 +2580,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 620
+      "total": 621
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
