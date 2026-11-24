@@ -122,12 +122,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 13 | 539 | 23 | 2026-11-07 |
-| pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
-| research-evaluation | 4 | 251 | 2 | 2026-11-19 |
-| reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
-| routing-and-optimization | 9 | 484 | 12 | 2026-11-05 |
-| user-facing-harness | 2 | 108 | 1 | 2026-10-03 |
+| inference-research | 13 | 559 | 24 | 2026-11-07 |
+| pipeline-integration | 1 | 2 | 0 | 2026-11-17 |
+| research-evaluation | 4 | 257 | 2 | 2026-11-19 |
+| reviewer-control-plane | 1 | 19 | 8 | 2026-11-24 |
+| routing-and-optimization | 9 | 487 | 12 | 2026-11-05 |
+| user-facing-harness | 2 | 111 | 1 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 
 ## Reporting
