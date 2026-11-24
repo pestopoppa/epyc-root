@@ -641,16 +641,17 @@ def fetch_harness(repo: str, ref: str = "origin/main") -> tuple[str, dict[str, b
 
 
 CHECK_T = '''#!/usr/bin/python3
-"""rc 0 iff THIS row's out/RESULT.json is complete with a terminal verdict AND one polar token; smoke never counts.
-Polar token: "polar": "PASS"|"FAIL", or a split futility verdict FUTILITY_HARNESS_* / FUTILITY_CANDIDATE_*."""
+"""rc 0 iff THIS row's out/RESULT.json is complete:true AND carries a polar field, whatever the verdict text
+(CEILING_OPEN, ANSWERED, ... decide the row too: AK bug 2026-11-24); a split futility verdict
+FUTILITY_HARNESS_* / FUTILITY_CANDIDATE_* also counts as polar. Smoke never counts."""
 import json, sys
 try:
     r = json.load(open("{dir}/out/RESULT.json"))
 except (OSError, ValueError):
     sys.exit(1)
 v = str(r.get("verdict") or "")
-polar = str(r.get("polar") or "").upper() in ("PASS", "FAIL") or v.startswith(("FUTILITY_HARNESS", "FUTILITY_CANDIDATE"))
-sys.exit(0 if r.get("complete") is True and polar and v.startswith(("PASS", "KEEP", "DROP", "FAIL", "FUTILITY")) else 1)
+polar = "polar" in r or v.startswith(("FUTILITY_HARNESS", "FUTILITY_CANDIDATE"))
+sys.exit(0 if r.get("complete") is True and polar and r.get("smoke") is not True else 1)
 '''
 
 

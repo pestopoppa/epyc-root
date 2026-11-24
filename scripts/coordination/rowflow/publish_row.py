@@ -1061,6 +1061,12 @@ def row_preflight(spec, flags):
     preflight.PREFLIGHT_ENFORCE refuses. Findings land in publish_warnings like every other publish warning."""
     import preflight as PF
     PF.publish_check(spec, flags, warn=lambda w: _warn(spec, w))
+    try:   # AK bug 2026-11-24: WARN-only COMPLETE-REGEX-EXCLUDES-DECIDE
+        import complete_check
+        for w in complete_check.warnings(spec):
+            _warn(spec, w)
+    except Exception as e:  # noqa: BLE001 - advisory check never blocks a publish
+        print(f"WARN complete_check skipped: {type(e).__name__}: {e}", file=sys.stderr)
 
 
 def smoke_cpus_of(spec):

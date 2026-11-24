@@ -71,5 +71,64 @@ class Keeper(unittest.TestCase):
         self.assertFalse(sv.is_decided({"complete": True, "verdict": "CEILING_OPEN"}))
 
 
+import subprocess  # noqa: E402
+import mk_ak_row  # noqa: E402
+import complete_check as cc  # noqa: E402
+
+OLD_CHECK = """import json, sys
+r = json.load(open("x"))
+v = str(r.get("verdict") or "")
+polar = str(r.get("polar") or "").upper() in ("PASS", "FAIL")
+sys.exit(0 if r.get("complete") is True and polar and v.startswith(("PASS", "KEEP", "DROP", "FAIL", "FUTILITY")) else 1)
+"""
+JOB = """
+def decide(m):
+    if m > 1:
+        return "CEILING_OPEN"
+    if m < 0:
+        return {"verdict": "NO_ABORT_AT_16385"}
+    return "PASS"
+"""
+
+
+class Generator(unittest.TestCase):
+    def run_check(self, result):
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, "out"))
+            with open(os.path.join(d, "out", "RESULT.json"), "w") as fh:
+                json.dump(result, fh)
+            p = os.path.join(d, "check_complete.py")
+            with open(p, "w") as fh:
+                fh.write(mk_ak_row.CHECK_T.format(dir=d))
+            return subprocess.run([sys.executable, "-I", p]).returncode
+
+    def test_template_accepts_ceiling_open_with_polar(self):
+        self.assertEqual(self.run_check(I8GEMM), 0)
+
+    def test_template_rejects_incomplete_or_no_polar_or_smoke(self):
+        self.assertEqual(self.run_check(dict(I8GEMM, complete=False)), 1)
+        r = dict(I8GEMM); r.pop("polar")
+        self.assertEqual(self.run_check(r), 1)
+        self.assertEqual(self.run_check(dict(I8GEMM, smoke=True)), 1)
+
+    def test_template_passes_own_preflight(self):
+        self.assertEqual(cc.excluded(mk_ak_row.CHECK_T.format(dir="/x"), JOB), [])
+
+
+class Preflight(unittest.TestCase):
+    def test_old_regex_flags_descriptive_verdicts(self):
+        self.assertEqual(cc.excluded(OLD_CHECK, JOB), ["CEILING_OPEN", "NO_ABORT_AT_16385"])
+
+    def test_warnings_from_spec(self):
+        with tempfile.TemporaryDirectory() as d:
+            cp = os.path.join(d, "check_complete.py")
+            open(cp, "w").write(OLD_CHECK)
+            open(os.path.join(d, "job.py"), "w").write(JOB)
+            w = cc.warnings({"launcher": {"argv": ["--complete-cmd", f"/usr/bin/python3 -I {cp}"]}})
+            self.assertEqual(len(w), 1)
+            self.assertIn(cc.CODE, w[0])
+            self.assertIn("CEILING_OPEN", w[0])
+
+
 if __name__ == "__main__":
     unittest.main()
