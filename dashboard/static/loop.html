@@ -454,6 +454,8 @@
       <span id="bwc-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="bwc-badgetxt">…</span></span>
       <span class="infolinks">ⓘ data <a href="/api/bw_census">census</a> · <a href="/api/bw_census/health">probe</a></span></h2>
     <div id="bwc-summary" class="pad"></div>
+    <div id="bwc-coverage" class="pad"></div>
+    <div id="bwc-family" class="pad"></div>
     <div id="bwc-filter" class="pad"></div>
     <div id="bwc-surfaces" class="pad">Loading…</div>
     <details class="pad tight"><summary>How saving is computed, ceilings and caveats</summary><div id="bwc-note"></div></details>
@@ -3487,18 +3489,29 @@ function bwcBatch(p){const b=p&&p.batch_dependence;if(!b)return '<p class="muted
 function bwcTop(rows){const r=(rows||[]).filter(x=>typeof x.saving_ms_per_step==='number'&&x.saving_ms_per_step>0).sort((a,b)=>b.saving_ms_per_step-a.saving_ms_per_step).slice(0,3);
  if(!r.length)return '<p class="muted">No surface has a positive estimated saving in this census.</p>';
  return '<p><b>Top estimated savings</b> (ms per decode step, lower step time is better): '+r.map(x=>'<b>'+bwcEsc(x.saving_ms_per_step.toFixed(1))+' ms</b> '+bwcEsc(x.op)+' <span class="muted">('+bwcEsc(x.path)+', '+bwcEsc(x.status)+')</span>').join(' · ')+'</p>';}
+function bwcCoverage(c){if(!c)return '<p class="muted">Coverage: this census predates the registry coverage key.</p>';
+ if(c.status!=='ok')return '<p class="warn"><b>Coverage unknown</b>: '+bwcEsc(c.status)+' (the producer could not read model_registry.yaml, so no uncovered-op count is shown).</p>';
+ const bad=(c.mismatch||[]).length+(c.unmapped||[]).length;
+ return '<p><b>Uncovered ops per served path</b> (parity ops marked served with no census record; lower is better): '+(c.paths||[]).map(p=>'<span title="'+bwcEsc((p.uncovered_ops||[]).join('; '))+'">'+bwcEsc(p.path||p.key)+' <b style="color:'+(p.uncovered_count?'#d29922':'#3fb950')+'">'+p.uncovered_count+'</b>'+(p.planned?' <span class="count">(planned, not yet served)</span>':'')+'</span>').join(' · ')+
+  (bad?' · <span class="warn">'+(c.mismatch||[]).length+' op(s) claim served on a path absent from the registry, '+(c.unmapped||[]).length+' live host(s) unmapped</span>':'')+'</p>';}
+function bwcFamily(fr){if(!(fr||[]).length)return '<p class="muted">No family rank in this census yet.</p>';
+ return '<details open class="tight"><summary><b>Family rank</b> <span class="count">score = sum of weight x saving ms/step over every path; - = unpriced, never guessed</span></summary><div style="overflow-x:auto"><table class="akx-table"><thead><tr><th>#</th><th>family</th><th>kind</th><th>score ms/step</th><th>paths</th><th>unpriced</th></tr></thead><tbody>'+
+  fr.map((r,i)=>{const ps=[...new Set((r.members||[]).map(m=>m.path).filter(Boolean).concat(r.path?[r.path]:[]))].sort();
+   return '<tr><td>'+(i+1)+'</td><td><b>'+bwcEsc(r.family)+'</b></td><td>'+bwcEsc(r.kind)+'</td><td>'+(r.score==null?'-':'<b>'+r.score.toFixed(2)+'</b>')+'</td><td>'+bwcEsc(ps.join(', ')||'-')+'</td><td>'+bwcEsc(r.n_unpriced==null?(r.score==null?1:0):r.n_unpriced)+'</td></tr>';}).join('')+'</tbody></table></div></details>';}
 function bwcResort(k){bwcSort[1]=bwcSort[0]===k?-bwcSort[1]:-1;bwcSort[0]=k;bwcRender();}
 function bwcRender(){const d=bwcData||{},f=d._freshness||{};
  const b=document.getElementById('bwc-badge'),t=document.getElementById('bwc-badgetxt');
  const cls=d.present===false?'absent':(f.staleness_class||'absent');b.className='badge '+cls;t.textContent=cls+(f.age_s!=null?' · '+Math.round(f.age_s/60)+' min':'');
  if(typeof hsSet==='function')hsSet('census',{present:d.present!==false,cls:cls,age_s:f.age_s});
  if(d.present===false){document.getElementById('bwc-note').innerHTML=`<p class="warn">Census ABSENT: ${bwcEsc(d.error||'')}. ${bwcEsc(f.absence_means||'')}</p>`;
-  for(const i of ['bwc-filter','bwc-surfaces','bwc-batch'])document.getElementById(i).innerHTML='';
+  for(const i of ['bwc-coverage','bwc-family','bwc-filter','bwc-surfaces','bwc-batch'])document.getElementById(i).innerHTML='';
   document.getElementById('bwc-summary').innerHTML=`<p class="warn">Census ABSENT: census_update.py writes it at each AutoKernel row end.</p>`;return;}
  document.getElementById('bwc-summary').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+bwcTop(d.surfaces);
  const cc=(d.cpu||{}).ceiling_gbps||{};
  document.getElementById('bwc-note').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+
   `<span class="count">Ceilings: MI210 ${bwcEsc(d.ceiling_gbps)} GB/s · CPU quarter-24t ${bwcEsc(cc['quarter-24t'])} GB/s · CPU full host ${bwcEsc(cc['full-host'])} GB/s · target ${bwcEsc(d.target_pct)}% of ceiling · saving = step ms × share × max(0, 1 − ours%/target%) · applied rows ${bwcEsc(d.applied_count)} · click a row for its census runs</span>`+bwcGroups(d.surface_groups);
+ document.getElementById('bwc-coverage').innerHTML=bwcCoverage(d.coverage);
+ document.getElementById('bwc-family').innerHTML=bwcFamily(d.family_rank);
  document.getElementById('bwc-filter').innerHTML=bwcFilter();
  document.getElementById('bwc-surfaces').innerHTML=(d.surfaces||[]).length?bwcSurfaces(d.surfaces,bwcSort,bwcDev,bwcOpen):'<p class="count">this census has no surfaces[] (producer predates the surfaces view)</p>';
  document.getElementById('bwc-batch').innerHTML=bwcBatch(d.parity);}

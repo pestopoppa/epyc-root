@@ -188,6 +188,35 @@ class CensusTests(unittest.TestCase):
         self.assertIn("r.stale?", page)
         self.assertIn("bwc-stale", page)
 
+    def test_coverage_and_family_rank_pass_through(self):
+        doc = {**FIXTURE, "coverage": {"status": "ok", "paths": {
+            "a3b|mi210": {"status": "planned", "path": "a3b-mtp-mi210", "n": [1, 2], "uncovered_ops": ["x", "y"]},
+            "27b|mi210": {"status": "live", "path": "27b-df2-mi210", "n": [1], "uncovered_ops": []}},
+            "mismatch": [{"op": "o", "path": "ghost"}], "unmapped": []},
+            "family_rank": [{"family": "b", "kind": "family", "score": None, "members": []},
+                            {"family": "a", "kind": "family", "score": 1.5, "n_unpriced": 0, "members": [{"path": "p"}]},
+                            {"family": "serving-knob:k", "kind": "knob", "score": None, "members": []}]}
+        self.census.write_text(json.dumps(doc))
+        d = S.bw_census_payload(self.census, self.grants)
+        cov = d["coverage"]
+        self.assertEqual([(p["path"], p["uncovered_count"], p["planned"]) for p in cov["paths"]],
+                         [("27b-df2-mi210", 0, False), ("a3b-mtp-mi210", 2, True)])
+        self.assertEqual((cov["uncovered_total"], len(cov["mismatch"])), (2, 1))
+        fr = d["family_rank"]
+        self.assertEqual([r["family"] for r in fr], ["a", "b", "serving-knob:k"])  # priced first, unpriced last
+        self.assertEqual([r["status"] for r in fr], ["priced", "unpriced", "unpriced"])
+        self.assertIsNone(fr[1]["score"])  # a null is never filled
+        self.census.write_text(json.dumps({**FIXTURE, "coverage": {"status": "registry-unreadable"}}))
+        d = S.bw_census_payload(self.census, self.grants)
+        self.assertEqual((d["coverage"]["status"], d["coverage"]["paths"], d["family_rank"]), ("registry-unreadable", [], []))
+        self.census.write_text(json.dumps(FIXTURE))  # a census that predates both keys
+        d = S.bw_census_payload(self.census, self.grants)
+        self.assertEqual((d["coverage"], d["family_rank"]), (None, []))
+        page = (REPO / "dashboard/static/loop.html").read_text()
+        for needle in ('id="bwc-coverage"', 'id="bwc-family"', "bwcCoverage", "bwcFamily", "uncovered_count", "planned, not yet served",
+                       "Family rank", "Coverage unknown"):
+            self.assertIn(needle, page)
+
     def test_trend(self):
         self.assertEqual(bw_census.trend(None), "")
         self.assertTrue(bw_census.trend([["a", 2], ["b", 1]]).endswith("↓"))

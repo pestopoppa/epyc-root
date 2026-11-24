@@ -201,6 +201,36 @@ def shape_surfaces(doc: dict, tables: dict) -> list[dict]:
     return out
 
 
+def shape_coverage(doc: dict) -> Optional[dict]:
+    """The producer's registry-derived ``coverage`` (RSL-R1): uncovered-op count per served path, planned paths labelled.
+
+    None when the census predates the key. A registry-unreadable census passes through as such (no counts invented)."""
+    cov = doc.get("coverage")
+    if not isinstance(cov, dict):
+        return None
+    paths = []
+    for key, v in sorted((cov.get("paths") or {}).items()):
+        if not isinstance(v, dict):
+            continue
+        ops = [str(o) for o in v.get("uncovered_ops") or []]
+        paths.append({"key": key, "path": v.get("path"), "status": v.get("status") or "live",
+                      "planned": v.get("status") == "planned", "n": v.get("n") or [],
+                      "uncovered_count": len(ops), "uncovered_ops": ops})
+    return {"status": cov.get("status") or "ok", "paths": paths, "mismatch": cov.get("mismatch") or [],
+            "unmapped": cov.get("unmapped") or [], "uncovered_total": sum(p["uncovered_count"] for p in paths)}
+
+
+def shape_family_rank(doc: dict) -> list[dict]:
+    """The producer's ``family_rank`` (RSL-R4/R7), re-sorted by score desc with unpriced (null score) last; a null is never filled."""
+    out = []
+    for r in doc.get("family_rank") or []:
+        if isinstance(r, dict) and r.get("family"):
+            out.append({**r, "score": _num(r.get("score")), "kind": r.get("kind") or "family",
+                        "status": "priced" if _num(r.get("score")) is not None else "unpriced"})
+    out.sort(key=lambda r: (r["score"] is None, -(r["score"] or 0.0), str(r["family"])))
+    return out
+
+
 def build(census_path: Path = None, grants_dir: Path = None) -> dict:
     """Read the census; return the payload body (no envelope)."""
     census_path = Path(census_path or CENSUS_PATH)
@@ -233,6 +263,8 @@ def build(census_path: Path = None, grants_dir: Path = None) -> dict:
         "surfaces": shape_surfaces(doc, tables),
         "surface_groups": doc.get("surface_groups") or [],
         "parity": shape_parity(doc),
+        "coverage": shape_coverage(doc),
+        "family_rank": shape_family_rank(doc),
         "event_stale": bool(ended),
         "ak_rows_ended_after_census": ended[:20],
     }
