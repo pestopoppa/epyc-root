@@ -9,6 +9,8 @@ cached per store SHA256SUMS digest under <flags>/preflight-cache/).
 WARN FIRST: every check reports a raw level (FAIL = the row would fail it, WARN = advisory). A raw FAIL only refuses
 (publish) or holds the grant (allocator) when PREFLIGHT_ENFORCE[check] is True. All start False. Flip one only when
 `rowflow.py preflight --report` (or `preflight.py --report`) shows zero currently queued rows fail it.
+--report counts only really-queued rows (report_scope: not ended/superseded/STOP-held; excluded rows listed with the reason) and
+grandfathers PUBLISH_ONLY checks (witness_log, witness_decl) on rows whose smoke PASSED. witness_log/witness_decl enforced 2026-11-24.
 
 Checks (AutoKernel spec 2026-11-24, items 1-10):
   selftest  1  job.py has a --selftest handler (all owners) and the D9 lint reports 0 FAIL (ak_row_lint, static part;
@@ -58,7 +60,7 @@ CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "p
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
-PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True)
+PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True, witness_log=True, witness_decl=True)
 # estimate: on the operator's 0-fail list, but the RCA F5 tightening (2026-11-24) re-stages it warn-first; flip at 0 fails.
 DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness", "served")   # re-run at grant time (code is sealed at publish)
 
@@ -1313,13 +1315,47 @@ CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_fl
 
 
 # ---------------------------------------------------------------- runners
-def run(spec, row_dir=None, flags=None, queued=None, checks=CHECKS, run_selftest=False, nodes=None, vram=None, rebuild=True):
-    """[(check, raw_level, code, msg)] for one row. Never raises: a crashing check is reported as a WARN."""
+# Publish-only checks: they judge what the row DECLARES before its smoke has run. A row whose smoke already PASSED ran the real
+# binary and found the witness, which is stronger evidence, so report / keeper-side use grandfathers it (grandfather=True);
+# publish never does (its new id has no PASS). Operator-adjacent origin: AutoKernel report 2026-11-24 23:2xZ.
+PUBLISH_ONLY = ("witness_log", "witness_decl")
+
+
+def smoke_pass_date(flags, spec):
+    """'YYYY-MM-DD' of the row's PASS.json (dryrun/<id>/) when it exists and, if both name a launcher sha, matches; else None."""
+    rid = str((spec or {}).get("id") or "")
+    if not (flags and rid):
+        return None
+    p = os.path.join(flags, "dryrun", rid, "PASS.json")
+    d = _load_json(p)
+    if not isinstance(d, dict):
+        return None
+    want = str(((spec or {}).get("launcher") or {}).get("sha256") or "")
+    if want and d.get("launcher_sha256") and not str(d["launcher_sha256"]).startswith(want[:16]) and not want.startswith(str(d["launcher_sha256"])[:16]):
+        return None   # PASS belongs to an older launcher: republish re-smokes, so it is not evidence for this one
+    t = str(d.get("first_unit_at") or d.get("at") or "")
+    if len(t) >= 10 and t[4] == "-":
+        return t[:10]
+    try:
+        import time as _t
+        return _t.strftime("%Y-%m-%d", _t.gmtime(os.path.getmtime(p)))
+    except OSError:
+        return None
+
+
+def run(spec, row_dir=None, flags=None, queued=None, checks=CHECKS, run_selftest=False, nodes=None, vram=None, rebuild=True,
+        grandfather=False):
+    """[(check, raw_level, code, msg)] for one row. Never raises: a crashing check is reported as a WARN.
+    grandfather=True: PUBLISH_ONLY checks on a row whose smoke PASSED report one PASS line instead of re-judging it."""
     row = Row(spec, row_dir)
+    gf = smoke_pass_date(flags, spec) if grandfather else None
     ctx = {"flags": flags, "queued": queued, "run_selftest": run_selftest, "nodes": nodes, "vram": vram, "rebuild": rebuild,
            "history": rebuild}
     out = []
     for c in checks:
+        if gf and c in PUBLISH_ONLY:
+            out.append((c, "PASS", "GRANDFATHERED", f"PASS (grandfathered: smoke PASS {gf})"))
+            continue
         try:
             out += [(c, l, code, m) for l, code, m in CHECK_FNS[c](row, ctx)]
         except Exception as e:  # noqa: BLE001
@@ -1358,6 +1394,43 @@ def queued_rows(flags):
     return out
 
 
+def report_scope(flags):
+    """({id: manifest} really queued, {id: reason} excluded). Queued = ready manifest or pending dry run (supersedes_check.live_ids),
+    not ended/complete/filed, not superseded (ready/.superseded/ marker, or named in a live row's `supersedes`), not STOP-held."""
+    import rowflow as rf
+    import supersedes_check as SC
+    base = queued_rows(flags)
+    allrows = rf.rows(flags)
+    G = os.path.join(flags, "grants")
+    live = SC.live_ids(flags)
+    markers = SC.superseded_markers(flags)
+    named = {}
+    for rid in live:
+        for pred in SC._sup_list(allrows.get(rid) or {}):
+            named.setdefault(pred, rid)
+    queued, excl = {}, {}
+    for rid, d in sorted(base.items()):
+        if any(os.path.exists(os.path.join(G, rid + e)) for e in (".ended", ".complete")):
+            excl[rid] = "ended/complete"
+        elif rid in markers:
+            excl[rid] = f"superseded by {markers[rid]}"
+        elif rid in named:
+            excl[rid] = f"superseded by {named[rid]}"
+        elif rid not in live:
+            excl[rid] = "not live (no ready manifest / pending dry run)"
+        else:
+            sf = None
+            try:
+                sf = rf.resolve_stop_path(d)
+            except Exception:  # noqa: BLE001
+                pass
+            if sf and os.path.exists(sf):
+                excl[rid] = f"STOP-held ({sf})"
+            else:
+                queued[rid] = d
+    return queued, excl
+
+
 def publish_check(spec, flags, warn=print, queued=None):
     """publish_row hook: effective FAILs raise rowflow.Refused; every raw FAIL/WARN is reported through warn()."""
     import rowflow as rf
@@ -1387,12 +1460,14 @@ def grant_check(flags, rid, d, queued=None):
 
 def report(flags, as_json=False, out=print, queued=None):
     """Per check: how many queued rows would FAIL it (raw), and which; WARN counts too. The evidence for flipping."""
-    queued = queued_rows(flags) if queued is None else queued
+    excl = {}
+    if queued is None:
+        queued, excl = report_scope(flags)
     nodes = node_map()
     per = {c: {"fail": [], "warn": [], "enforced": PREFLIGHT_ENFORCE.get(c, False)} for c in CHECKS}
     detail = {}
     for rid in sorted(queued):
-        res = run(queued[rid], flags=flags, queued=queued, nodes=nodes)
+        res = run(queued[rid], flags=flags, queued=queued, nodes=nodes, grandfather=True)
         detail[rid] = [list(f) for f in res]
         for c in CHECKS:
             lv = {l for cc, l, _code, _m in res if cc == c}
@@ -1401,7 +1476,7 @@ def report(flags, as_json=False, out=print, queued=None):
             elif "WARN" in lv:
                 per[c]["warn"].append(rid)
     if as_json:
-        out(json.dumps({"queued": len(queued), "checks": per, "detail": detail}, indent=1))
+        out(json.dumps({"queued": len(queued), "excluded": excl, "checks": per, "detail": detail}, indent=1))
         return per
     out(f"PREFLIGHT REPORT over {len(queued)} queued row(s); FAIL = would fail if enforced (flip only at 0)")
     for c in CHECKS:
@@ -1412,6 +1487,10 @@ def report(flags, as_json=False, out=print, queued=None):
             for cc, l, code, m in detail[rid]:
                 if cc == c and l == "FAIL":
                     out(f"    {rid}: {code}: {m[:220]}")
+    if excl:
+        out(f"EXCLUDED {len(excl)} row(s) (not queued, not counted):")
+        for rid, why in excl.items():
+            out(f"    {rid}: {why}")
     return per
 
 
