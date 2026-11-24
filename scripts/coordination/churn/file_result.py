@@ -172,6 +172,20 @@ def result_fallback(m):
     return p if p and os.path.isfile(p) else ""
 
 
+def complete_result_of(m):
+    """smoke_verdict.complete_result(manifest) - the keeper's no-requeue rule (complete: true + polar or a verdict, not a
+    smoke) - or None. A row with such a RESULT is finished whatever its .ended rc (rows sealed by the old verdict-prefix
+    check_complete ended rc=75 and were misfiled WITHDRAWN, AK 2026-11-24). Never raises."""
+    try:
+        d = os.path.join(os.path.dirname(HERE), "rowflow")
+        if d not in sys.path:
+            sys.path.insert(0, d)
+        import smoke_verdict
+        return smoke_verdict.complete_result(m)
+    except Exception:   # noqa: BLE001 - fall back to the rc rule
+        return None
+
+
 def decide(rule, metrics):
     """-> (verdict, values, machine_checkable, reason)."""
     try:
@@ -498,6 +512,10 @@ def main(argv=None):
     rule = str(m.get("decision_rule") or "")
     result_path, fmt = str(m.get("result_path") or ""), str(m.get("result_format") or "json")
     metrics, sha = load_result(result_path, fmt) if result_path else ({}, None)
+    cres = complete_result_of(m)
+    if sha is None and cres:   # a complete RESULT beats the .ended rc: file from it, never as no-result
+        result_path, fmt = cres["path"], "json"
+        metrics, sha = load_result(result_path, fmt)
     if sha is None:   # PM-KEEPER3 (AK 2026-11-23): a FUTILITY row with 0 units never creates result_path; its engine record
         fb = result_fallback(m)   # <workdir>/out/RESULT.json is the result, not "no result" (was filed WITHDRAWN)
         if fb:
@@ -512,7 +530,7 @@ def main(argv=None):
         coerced_from, verdict = "pass", "inconclusive"
         reason = f"[coerced pass->inconclusive: result record declares {declared[:120]}] {reason or ''}".strip()
     resumable_end = window_end_resumable(m, rc, endline)
-    if not resumable_end and not filing.finished_result(rc, endline, metrics, sha is not None) \
+    if not resumable_end and not cres and not filing.finished_result(rc, endline, metrics, sha is not None) \
             and (not machine or verdict == "inconclusive") and (agent is None or agent.get("verdict") == "inconclusive"):
         # NO RESULT -> NO CLAIM (operator ruling 2026-11-21): a row that never produced a finished RESULT is filed
         # SUPERSEDED when a successor row exists, otherwise WITHDRAWN - never inconclusive. Owners need not remember it.

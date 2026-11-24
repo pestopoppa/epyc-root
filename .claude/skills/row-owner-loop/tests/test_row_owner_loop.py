@@ -326,3 +326,64 @@ def test_row_dir_resolves_from_manifest_when_dir_not_named_after_row(tmp_path, m
     assert rx.row_dir(row, loader=lambda f, r: (None, None)) == str(tmp_path / row)
     (tmp_path / row).mkdir()
     assert rx.row_dir(row, loader=lambda f, r: ("x", {"workdir": str(real)})) == str(tmp_path / row)
+
+
+# ---------------------------------------------------------------- complete RESULT beats a stale .ended rc (AK 2026-11-24)
+def _ended_row(tmp_path, monkeypatch, row, result, rc=75, reason="hard-end"):
+    monkeypatch.setattr(runend, "TMP", str(tmp_path))
+    monkeypatch.setattr(runend, "FLAGS", str(tmp_path / "flags"))
+    (tmp_path / row / "out").mkdir(parents=True, exist_ok=True)
+    (tmp_path / row / "out" / "RESULT.json").write_text(json.dumps(result))
+    (tmp_path / "flags" / "grants").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "flags" / "grants" / f"{row}.ended").write_text(f"rc={rc} time=2026-11-24T23:00:00Z reason={reason}\n")
+
+
+def test_runend_draft_rc75_complete_result_files_from_result(tmp_path, monkeypatch):
+    # ak-gvfattn-served-gpu-20261124-r6 / ak-i8gemm-pc-sol-gpu-20261124 shape
+    _ended_row(tmp_path, monkeypatch, "row-r", {"complete": True, "polar": "PASS", "verdict": "PASS(ops clean)", "x": 3})
+    assert runend.complete_result("row-r")
+    assert runend.draft("row-r")["verdict"] == "pass"
+
+
+def test_runend_draft_rc75_complete_verdict_only_result(tmp_path, monkeypatch):
+    # ak-mmid-ub-ceil-gpu-20261124 shape: no polar field, non-empty verdict
+    _ended_row(tmp_path, monkeypatch, "row-m", {"complete": True, "verdict": "DROP(futility) ceiling 1.02x"})
+    assert runend.draft("row-m")["verdict"] == "fail"      # filed from the RESULT (DROP+number), not WITHDRAWN
+
+
+def test_runend_draft_real_stop_without_complete_result_keeps_rc_rule(tmp_path, monkeypatch):
+    _ended_row(tmp_path, monkeypatch, "row-s", {"complete": False, "verdict": "PASS partial 3 of 9"}, rc=143, reason="stop")
+    assert runend.complete_result("row-s") is None
+    assert runend.draft("row-s")["verdict"] == "inconclusive"   # file_result then files it WITHDRAWN (no result -> no claim)
+    _ended_row(tmp_path, monkeypatch, "row-k", {"complete": True, "polar": "PASS", "verdict": "KEEP", "smoke": True})
+    assert runend.complete_result("row-k") is None               # a smoke is never the row's result
+
+
+def _fake_gate_eval(tmp_path, assert_line):
+    pkg = tmp_path / "kr" / "autokernel" / "loop"
+    pkg.mkdir(parents=True)
+    (tmp_path / "kr" / "autokernel" / "__init__.py").write_text("")
+    (pkg / "__init__.py").write_text("")
+    (pkg / "gate_eval.py").write_text(
+        "import json, sys\n" + assert_line + "\n"
+        "print(json.dumps({'filed_verdict': 'pass', 'verdict': 'PASS', 'gate_id': 'g', 'rationale': 'n=1', "
+        "'native_verdict': 'PASS', 'checks': []}))\n")
+
+
+def test_runend_gate_eval_draft_omits_ended_for_complete_result(tmp_path, monkeypatch):
+    _ended_row(tmp_path, monkeypatch, "row-e", {"complete": True, "polar": "PASS", "verdict": "PASS"})
+    _fake_gate_eval(tmp_path, "assert '--ended' not in sys.argv, sys.argv")
+    assert runend.gate_eval_draft("row-e", kernel_rnd=str(tmp_path / "kr"))["verdict"] == "pass"
+
+
+def test_runend_gate_eval_draft_passes_ended_when_no_complete_result(tmp_path, monkeypatch):
+    _ended_row(tmp_path, monkeypatch, "row-n", {"complete": False, "verdict": "PASS"}, rc=143, reason="stop")
+    _fake_gate_eval(tmp_path, "assert '--ended' in sys.argv, sys.argv")
+    assert runend.gate_eval_draft("row-n", kernel_rnd=str(tmp_path / "kr"))["verdict"] == "pass"
+
+
+def test_runend_text_trips_no_delete_primitive_hook():
+    # the destructive-scratch hook scans a script's TEXT; os.rmdir(wt) in file_row blocked `--check-cc`
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "scripts", "hooks"))
+    import destructive_scratch_scan as dss
+    assert not dss.PRIMITIVE.search(open(runend.__file__).read())

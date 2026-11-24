@@ -8,6 +8,7 @@ import io
 import builtins
 import json
 import os
+import shutil
 import sys
 import tempfile
 import unittest
@@ -373,6 +374,47 @@ class TestFileResult(Base):
         v = self.verdict("akx-lb3-2-cv5-pair-r2")
         self.assertEqual(v["row_verdict"], "WITHDRAWN")
         self.assertIn("no result -> no claim", v["reason"])
+
+    def _out_result(self, body):
+        os.makedirs(os.path.join(self.tmp.name, "out"), exist_ok=True)
+        Path(self.tmp.name, "out", "RESULT.json").write_text(json.dumps(body))
+
+    def test_rc75_with_complete_result_files_from_result_not_withdrawn(self):
+        # AK 2026-11-24: rows sealed by the old verdict-prefix check_complete ended rc=75 with a complete RESULT
+        # (ak-gvfattn-served-gpu-20261124-r6 shape): file from the RESULT, never WITHDRAWN
+        self.row("akx-lb3-2-cv5-pair-r2", "tps >= 1", None, rc=75)
+        self._out_result({"complete": True, "polar": "PASS", "verdict": "KEEP gvfattn +3.1%", "tps": 2})
+        code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2")
+        self.assertEqual(code, 0)
+        v = self.verdict("akx-lb3-2-cv5-pair-r2")
+        self.assertEqual(v["row_verdict"], "pass")
+        self.assertTrue(v["result_exists"])
+
+    def test_rc75_complete_result_with_agent_inconclusive_is_not_withdrawn(self):
+        # ak-mmid-ub-ceil shape: verdict-only RESULT (no polar), owner draft maps rc=75 to inconclusive
+        self.row("akx-lb3-2-cv5-pair-r2", "judge by eye", None, rc=75)
+        self._out_result({"complete": True, "verdict": "DROP(futility) mmid ceiling 1.02x"})
+        vj = os.path.join(self.tmp.name, "v.json")
+        Path(vj).write_text(json.dumps({"verdict": "inconclusive", "rationale": "RESULT DROP; rc=75 ceiling 1.02"}))
+        code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2", "--verdict-json", vj)
+        self.assertEqual(code, 0)
+        self.assertNotEqual(self.verdict("akx-lb3-2-cv5-pair-r2")["row_verdict"], "WITHDRAWN")
+
+    def test_rc75_incomplete_or_smoke_result_still_withdrawn(self):
+        for body in ({"complete": False, "polar": "PASS", "verdict": "KEEP"},
+                     {"complete": True, "polar": "PASS", "verdict": "KEEP", "smoke": True}):
+            self.row("akx-lb3-2-cv5-pair-r2", "tps >= 1", None, rc=75)
+            self._out_result(body)
+            code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2")
+            self.assertEqual(code, 0)
+            self.assertEqual(self.verdict("akx-lb3-2-cv5-pair-r2")["row_verdict"], "WITHDRAWN")
+            shutil.rmtree(os.path.join(self.flags, "filing-done"))
+
+    def test_real_stop_no_result_still_withdrawn(self):
+        self.row("akx-lb3-2-cv5-pair-r2", "tps >= 1", None, rc=143)
+        code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.verdict("akx-lb3-2-cv5-pair-r2")["row_verdict"], "WITHDRAWN")
 
     def test_no_result_with_successor_is_superseded(self):
         self.row("akx-lb3-2-cv5-pair-r2", "tps >= 1", None, rc=75)
