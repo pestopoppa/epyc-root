@@ -28,8 +28,8 @@ would mass-fail; tighten once mk_ak_row.py rows dominate):
   SELFTEST-MISSING   FAIL  (autokernel rows) job.py has no `--selftest` argv handler that exits before main()
   WALL-STOP-PAST     FAIL  a hard-coded absolute wall-clock deadline (deadline/stop/until/cutoff/... = ISO time or epoch)
                            that is already in the past: the row can only stop at once
-D9 (operator 2026-11-24): SMOKE-NO-MEASURE / SMOKE-FAIL-SILENT were WARN, now FAIL: a row certain to fail its smoke is
-refused at publish.
+D9 (operator 2026-11-24): SMOKE-NO-MEASURE / SMOKE-FAIL-SILENT were WARN, now FAIL for autokernel rows (ids ak- / c2x-,
+or owner autokernel*) and stay WARN for every other owner: a row certain to fail its smoke is refused at publish.
   FRESH-SERVER-UNJUSTIFIED WARN  a server is started per loop iteration (per request/unit/visit) and spec.json does not set
                            "fresh_server_per_visit": true with a "fresh_server_reason" (default: one server per arm,
                            many requests, cache_prompt:false on every request; D9 2026-11-24)
@@ -622,9 +622,12 @@ def lint_dir(d, selftest=True):
 
     own = {f: t for f, t in code.items() if f not in VENDORED}
     allc = "\n".join(own.values())
-    if SMOKE_RX.search(allc):
-        out += smoke_checks(d, spec, own)
     is_ak = str(spec.get("owner") or "").startswith("autokernel") or str(rid).startswith("ak-")
+    if SMOKE_RX.search(allc):
+        # D9-ack 2026-11-24: SMOKE-FAIL-SILENT / SMOKE-NO-MEASURE FAIL only for autokernel rows (ak-, c2x-); WARN otherwise
+        sm_fail = is_ak or re.match(r"c2[0-9]-", str(rid))
+        out += [(l if (l != "FAIL" or c not in ("SMOKE-FAIL-SILENT", "SMOKE-NO-MEASURE") or sm_fail) else "WARN", c, m)
+                for l, c, m in smoke_checks(d, spec, own)]
     if is_ak and "job.py" in code and selftest_missing(code["job.py"]):
         out.append(("FAIL", "SELFTEST-MISSING", "job.py has no `--selftest` argv handler that exits before main() "
                                                 "(e.g. sys.exit(selftest() if '--selftest' in sys.argv[1:] else main())); "

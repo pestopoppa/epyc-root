@@ -135,6 +135,18 @@ def test_smoke_fails(tmp_path):
     assert not codes(d) & {"SMOKE-FAIL-SILENT", "SMOKE-NO-MEASURE"}
 
 
+def test_smoke_fails_scoped_to_autokernel_rows(tmp_path):
+    job = "import os\nS = os.environ.get('FILLER_SMOKE')\n"
+    both = {"SMOKE-FAIL-SILENT", "SMOKE-NO-MEASURE"}
+    ak = _row(tmp_path, rid="ak-t-20261124", job=job)
+    assert both <= codes(ak, "FAIL")
+    c2 = _row(tmp_path, rid="c21-t-20261124", job=job)
+    assert both <= codes(c2, "FAIL")
+    (tmp_path / "other").mkdir()
+    ot = _row(tmp_path / "other", rid="zz-t-20261124", job=job, spec={"owner": "someone-else"})
+    assert both <= codes(ot, "WARN") and not codes(ot, "FAIL") & both
+
+
 def test_smoke_measure_path_must_match_keeper(tmp_path):
     hdr = "import os, sys\nD = os.path.dirname(os.path.abspath(__file__))\nS = os.environ.get('FILLER_SMOKE')\n"
     end = "H.end_smoke('PASS', 0, 'ok', os.path.join(D, 'out'))\n"
