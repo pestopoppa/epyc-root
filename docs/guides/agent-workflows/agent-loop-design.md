@@ -555,6 +555,12 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
   - **Served-config rows.** Rows that run the served recipe (np4, official sampling, the registry
     argv) are a separate track. They collect serving specs: floors, served tok/s and recipe tuning.
     Never use them, or the noise they measure, to size or judge a lever gate.
+  - **Serving-recipe and drafter changes are screened, not gated** (operator, 2026-11-24). They are part
+    of the max-performance objective. Pick whichever setting makes the model run fastest, using a short
+    screening sweep: a few launches per arm after warm-up, ranked by aggregate tok/s. Keep three guard
+    rails: it must fit in memory, decode latency during prefill must not regress badly, and output must
+    stay correct. They need no apples-to-apples decision-grade gate. A winning setting still reaches
+    serving only through a signed stack-change package.
   - **Why.** On 2026-11-24 the served-recipe floor (np4, four concurrent 3.8k prefills) leaked into lever
     design and sizing, and two lever gates were built on the served argv at T=1.0. The served aggregate
     (about 30 tok/s, prefill-dominated) says nothing about a kernel's speed.
