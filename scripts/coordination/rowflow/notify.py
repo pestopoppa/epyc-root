@@ -286,6 +286,8 @@ def escalate_stale(flags, route, now=None, after_s=None, log=print):
                                 "severity": "critical", "row_id": r.get("row_id"), "row_owner": r.get("owner"),
                                 "summary": msg, "detail": {"routed": bool(ok)}}, sort_keys=True) + "\n")
         log(f"ALERT-UNACKED {r['key']} {r.get('row_id') or '-'} escalated routed={bool(ok)}")
+        _push_safe(flags, {"key": "esc-" + str(r["key"]), "kind": "alert-unacked", "row_id": r.get("row_id"),
+                           "detail": {"cause": msg}}, str(r.get("owner") or ""))
         done.append(r["key"])
     return done
 
@@ -373,6 +375,230 @@ def _bus_send(rec, owner, action, flags=LIVE_FLAGS):
     return f"sent:{assignee}:{msg['id']}"
 
 
+# ------------------------------------------------------------------ live push (operator 2026-11-24: delivery must be deterministic)
+# The bus record above is DURABLE but is read only at the owner's next drain; a live owner in a long task saw a smoke-fail
+# 2 h late (ak-c22-i8pc-gate-gpu-20261124-r3, 20:10Z -> 22:3xZ). For actionable kinds the keeper also PUSHES one line:
+#   channel  <flags>/notify/push/channel/<owner>.log - one line per push; watch_rows.sh (the owner's run_in_background
+#            watcher) prints it as `PUSH <line>` and exits, which re-invokes the live session. That is the ONLY push channel a
+#            `monitor:file` roster identity has (autokernel, pipeline-mgmt). GAP: with no watcher armed nothing host-side can
+#            reach such a session (no sanctioned client for the Claude Code UDS sockets; tmux doorbell needs a tmux endpoint);
+#            owner_watch.py raises OWNER-WATCHER-DEAD and the 15 min escalation below still runs.
+#   doorbell tmux_adapter.py doorbell --agent <owner> (sanctioned content-free pane signal, C45) for a tmux:* endpoint.
+# Dedupe: one push per alert key (O_EXCL marker). Rate limit: <= 1 push per owner per PUSH_MIN_INTERVAL_S; the rest queue
+# and leave as ONE batched line at the next allowed moment (push_tick, every keeper tick). Escalation: a pushed key not acked
+# (rowflow.py alerts --ack) after PUSH_ESCALATE_S is pushed once to PUSH_ESCALATE_TO. Every failure is swallowed.
+PUSH_KINDS = frozenset({"smoke-fail", "queued-smoke-orphaned", "queued-smoke-dropped", "ak-harness-failure",
+                        "gpu-host-foreign", "tick-refused"})
+PUSH_MIN_INTERVAL_S = 60
+PUSH_ESCALATE_S = 15 * 60
+PUSH_ESCALATE_TO = "pipeline-mgmt"
+PUSH_LINE_MAX = 400
+
+
+def _push_dir(flags, *parts):
+    return os.path.join(flags, "notify", "push", *parts)
+
+
+def time_now():
+    return dt.datetime.now(dt.timezone.utc).timestamp()
+
+
+def smoke_fail_cause(fail_path, rec=None):
+    """First `SMOKE FAIL` line of the row's launcher.out, else TERMINAL-smoke.json's reason/error, else the FAIL reason."""
+    rec = rec or {}
+    logs = [rec.get("dryrun_log")] + ([os.path.join(os.path.dirname(fail_path), "launcher.out")] if fail_path else [])
+    term = None
+    for lp in [p for p in logs if p]:
+        try:
+            with open(lp, errors="replace") as f:
+                for line in f:
+                    if "SMOKE FAIL" in line:
+                        return line.strip()
+                    if term is None and "TERMINAL-smoke.json" in line:
+                        term = next((t for t in line.replace("(", " ").replace(")", " ").split()
+                                     if t.endswith("TERMINAL-smoke.json")), None)
+        except OSError:
+            continue
+    for tp in (term, rec.get("terminal")):
+        if not tp:
+            continue
+        try:
+            with open(tp) as f:
+                t = json.load(f)
+            why = t.get("reason") or t.get("error") or t.get("detail")
+            if why:
+                return f"TERMINAL-smoke: {str(why).strip()}"
+        except (OSError, ValueError, AttributeError):
+            continue
+    return str(rec.get("reason") or "").strip()
+
+
+def push_line(rec):
+    d = rec.get("detail") or {}
+    cause = " ".join(str(d.get("cause") or rec.get("summary") or "").split())
+    fix = d.get("fix_task") or rec.get("handoff_task") or "-"
+    return f"{rec.get('kind')} row={rec.get('row_id') or '-'} cause={cause} fix_task={fix} key={rec.get('key')}"[:PUSH_LINE_MAX]
+
+
+def _push_target(owner):
+    roster = _roster(_bus_root())
+    owner = owner if owner in roster else OWNER_ALIASES.get(owner, owner)
+    return owner if roster.get(owner) not in (None, "", "retired") and owner != WRITER else FALLBACK_ASSIGNEE
+
+
+def _endpoint(owner):
+    try:
+        import yaml  # noqa: PLC0415
+        with open(os.path.join(_bus_root(), "config.yaml")) as f:
+            cfg = yaml.safe_load(f) or {}
+        for r in cfg.get("roster") or []:
+            if isinstance(r, dict) and str(r.get("id")) == owner:
+                return str(r.get("endpoint") or "")
+    except Exception:  # noqa: BLE001
+        pass
+    return ""
+
+
+def _tmux_adapter():
+    for p in (os.environ.get("ROWFLOW_TMUX_ADAPTER"), os.path.join(os.path.dirname(_HERE), "tmux_adapter.py"),
+              "/workspace/scripts/coordination/tmux_adapter.py"):
+        if p and os.path.isfile(p):
+            return p
+    return None
+
+
+def _deliver(flags, owner, text):
+    """Channel line always (the owner's watcher reads it); doorbell when the owner has a tmux endpoint on the live bus."""
+    res = {}
+    try:
+        p = _push_dir(flags, "channel", owner + ".log")
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "a") as f:
+            f.write(f"{_now()} {text}\n")
+        res["channel"] = "written"
+    except OSError as e:
+        res["channel"] = f"failed: {e}"
+    if not is_live(flags):
+        res["doorbell"] = "skipped: non-live flags tree"
+    elif not _endpoint(owner).startswith("tmux:"):
+        res["doorbell"] = "n/a: endpoint not tmux (watcher channel only)"
+    elif not _tmux_adapter():
+        res["doorbell"] = "failed: tmux_adapter.py not found"
+    else:
+        try:
+            r = subprocess.run([sys.executable, _tmux_adapter(), "doorbell", "--agent", owner],
+                               capture_output=True, text=True, timeout=30)
+            res["doorbell"] = "rung" if r.returncode == 0 else f"refused: rc={r.returncode} {(r.stderr or r.stdout).strip()[-160:]}"
+        except (OSError, subprocess.TimeoutExpired) as e:
+            res["doorbell"] = f"failed: {type(e).__name__}: {e}"
+    return res
+
+
+class _Lock:
+    def __init__(self, flags):
+        self.p = _push_dir(flags, ".lock")
+
+    def __enter__(self):
+        import fcntl  # noqa: PLC0415
+        os.makedirs(os.path.dirname(self.p), exist_ok=True)
+        self.fd = os.open(self.p, os.O_CREAT | os.O_RDWR)
+        fcntl.flock(self.fd, fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, *a):
+        os.close(self.fd)
+
+
+def _flush_owner(flags, owner, now, deliver=None):
+    """Send the owner's queued lines as ONE push if the per-owner rate limit allows. Caller holds the lock."""
+    qp = _push_dir(flags, "queue", owner + ".jsonl")
+    items = _read_jsonl(qp)
+    if not items:
+        return None
+    sp = _push_dir(flags, "owner", owner + ".json")
+    try:
+        with open(sp) as f:
+            last = float(json.load(f).get("last_push") or 0)
+    except (OSError, ValueError, AttributeError):
+        last = 0.0
+    if now - last < PUSH_MIN_INTERVAL_S:
+        return "deferred"
+    text = items[0]["line"] if len(items) == 1 else f"{len(items)} alerts: " + " | ".join(i["line"] for i in items)
+    res = (deliver or _deliver)(flags, owner, text)
+    _write_json(sp, {"last_push": now, "at": _now(), "n": len(items), "result": res})
+    os.unlink(qp)
+    for i in items:
+        mp = _push_dir(flags, "sent", i["key"] + ".json")
+        try:
+            with open(mp) as f:
+                m = json.load(f)
+        except (OSError, ValueError):
+            m = {"key": i["key"], "owner": owner}
+        m.update(pushed_at=now, delivery=res, batch=len(items))
+        _write_json(mp, m)
+    _log(f"PUSH {owner} n={len(items)} {res}")
+    return res
+
+
+def push(flags, rec, owner, now=None, deliver=None):
+    """Queue one push for `rec` to `owner` (at most once per alert key), then flush if the rate limit allows."""
+    now = time_now() if now is None else now
+    key = str(rec["key"])
+    mp = _push_dir(flags, "sent", key + ".json")
+    os.makedirs(os.path.dirname(mp), exist_ok=True)
+    try:
+        os.close(os.open(mp, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+    except FileExistsError:
+        return "dup"
+    line = push_line(rec)
+    _write_json(mp, {"key": key, "owner": owner, "kind": rec.get("kind"), "row_id": rec.get("row_id"),
+                     "queued_at": now, "line": line})
+    with _Lock(flags):
+        _append_line(_push_dir(flags, "queue", owner + ".jsonl"), {"key": key, "line": line})
+        return _flush_owner(flags, owner, now, deliver) or "queued"
+
+
+def push_tick(flags, now=None, deliver=None, log=print):
+    """Keeper tick: flush rate-limited queues; push an unacked pushed key once to PUSH_ESCALATE_TO after PUSH_ESCALATE_S."""
+    now = time_now() if now is None else now
+    out = {"flushed": [], "escalated": []}
+    qd = _push_dir(flags, "queue")
+    with _Lock(flags):
+        for n in sorted(os.listdir(qd)) if os.path.isdir(qd) else []:
+            if n.endswith(".jsonl") and _flush_owner(flags, n[:-6], now, deliver) not in (None, "deferred"):
+                out["flushed"].append(n[:-6])
+    sd = _push_dir(flags, "sent")
+    acked = acked_keys(flags)
+    for n in sorted(os.listdir(sd)) if os.path.isdir(sd) else []:
+        if not n.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(sd, n)) as f:
+                m = json.load(f)
+        except (OSError, ValueError):
+            continue
+        key = str(m.get("key") or "")
+        if (not m.get("pushed_at") or m.get("escalated") or m.get("owner") == PUSH_ESCALATE_TO or key.startswith("pesc-")
+                or key in acked or key.removeprefix("esc-") in acked or now - float(m["pushed_at"]) < PUSH_ESCALATE_S):
+            continue
+        m["escalated"] = now
+        _write_json(os.path.join(sd, n), m)
+        push(flags, {"key": "pesc-" + key, "kind": "push-unacked", "row_id": m.get("row_id"),
+                     "detail": {"cause": f"unacked {int((now - float(m['pushed_at'])) // 60)} min by {m.get('owner')}: "
+                                         f"{m.get('line')}"}}, PUSH_ESCALATE_TO, now=now, deliver=deliver)
+        log(f"PUSH-UNACKED {key} {m.get('row_id') or '-'} -> {PUSH_ESCALATE_TO}")
+        out["escalated"].append(key)
+    return out
+
+
+def _push_safe(flags, rec, owner):
+    try:
+        return push(flags, rec, _push_target(owner))
+    except Exception as e:  # noqa: BLE001 - a push fault never breaks emit()
+        _log(f"push {rec.get('kind')} {rec.get('row_id') or '-'}: {type(e).__name__}: {e}")
+        return f"failed: {e}"
+
+
 def emit(flags, kind, rid, disc, summary, severity, owner="", detail=None, action=True, meta=None):
     """One idempotent notification. Returns the alert record (or the stored marker on a repeat)."""
     key = event_key(kind, rid, disc)
@@ -417,6 +643,8 @@ def emit(flags, kind, rid, disc, summary, severity, owner="", detail=None, actio
         mark["bus"] = _bus_send(mark["record"], owner or mark["record"].get("row_owner") or "", action, flags)
         _write_json(mpath, mark)
         _log(f"{kind} {rid or '-'} [{mark['record']['severity']}] bus={mark['bus']}")
+    if kind in PUSH_KINDS:
+        _push_safe(flags, mark["record"], owner or mark["record"].get("row_owner") or "")
     return mark
 
 
@@ -439,9 +667,13 @@ def row_ended(flags, rid, ended_text=None, reason=None, rc=None, owner=None):
 def smoke_fail(flags, rid, fail_path, rec, owner=None):
     owner = owner or row_owner(flags, rid)
     reason = str(rec.get("reason") or "")[:300]
+    try:
+        cause = smoke_fail_cause(fail_path, rec)[:300]
+    except Exception:  # noqa: BLE001
+        cause = reason
     return emit(flags, "smoke-fail", rid, os.path.basename(fail_path), f"row {rid} {rec.get('kind') or 'smoke'} FAIL "
                 f"({os.path.basename(fail_path)}): {reason}", "warning", owner,
-                {"fail_file": fail_path, "reason": reason, "fix_task": rec.get("fix_task")})
+                {"fail_file": fail_path, "reason": reason, "fix_task": rec.get("fix_task"), "cause": cause})
 
 
 # ------------------------------------------------------------------ host disk floor

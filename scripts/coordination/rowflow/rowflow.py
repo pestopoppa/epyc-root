@@ -10354,6 +10354,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 notify.escalate_stale(flags, lambda k, m, ev: route_alert(f"{k}-{ev['key']}", m, ev, log), log=log)
         except Exception as e:  # noqa: BLE001
             log(f"ALERT-UNACKED check failed: {type(e).__name__}: {e}")
+        try:  # live push (2026-11-24): flush rate-limited owner pushes, escalate a pushed alert unacked for 15 min
+            notify.push_tick(flags, log=log)
+        except Exception as e:  # noqa: BLE001
+            log(f"PUSH tick failed: {type(e).__name__}: {e}")
         try:  # AK RCA 2026-11-24 item 6b: OWNER-WATCHER-DEAD (owner_watch.py)
             import owner_watch  # noqa: PLC0415
             owner_watch.check(flags, allrows, notify_mod=notify, log=log)

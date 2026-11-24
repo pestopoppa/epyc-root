@@ -6,6 +6,8 @@
 #   QUEUED-DROPPED <id> <file>    dryrun/<id>/QUEUED-DROPPED-*.json
 #   QUEUED-AGED <id> <age_s>      dryrun/<id>/*SMOKE-QUEUED.json older than --queued-max
 #   IDLE-GRANT <id> gpu|cpu <pct> owner grant open, device/quarter busy < --idle-pct for --idle-n samples
+#   PUSH <ts> <kind> row= cause= fix_task= key=   keeper live push (notify/push/channel/<owner>.log); ack the key with
+#                                 rowflow.py alerts --ack <key>, else it escalates to pipeline-mgmt after 15 min
 # --gate-eval: on ENDED, also draft <rowdir>/verdict.json with the deterministic gate evaluator
 #   (runend.py <id> --gate-eval, AKPL-P1) and append `gate=<verdict>` to the event line.
 # AK chain / fold rows (akc-*, c<N>-fold-*, c<N>-composite-*), always: akloop/ak_runend.py files the gate_eval verdict
@@ -82,7 +84,18 @@ EOF
 }
 
 scan() {
-  local f id rc reason age q last busy cnt regs gv
+  local f id rc reason age q last busy cnt regs gv n off
+  # PUSH: keeper live-push channel (notify.py push, 2026-11-24) - every line new since the last print, in one event
+  f=$FLAGS/notify/push/channel/$OWNER.log
+  if [ -f "$f" ]; then
+    n=$(wc -l < "$f"); off=$(cat "$STATE_DIR/$OWNER.pushoff" 2>/dev/null || echo 0)
+    [ "$n" -lt "$off" ] && off=0
+    if [ "$n" -gt "$off" ]; then
+      echo "$n" > "$STATE_DIR/$OWNER.pushoff"
+      sed -n "$((off + 1)),${n}p" "$f" | sed 's/^/PUSH /'
+      return 0
+    fi
+  fi
   # ENDED
   for f in "$FLAGS"/grants/*.ended; do
     [ -e "$f" ] || continue

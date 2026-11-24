@@ -167,5 +167,90 @@ class FillerHook(Base):
         self.assertEqual(a[0]["row_owner"], "ws58")
 
 
+class LivePush(Base):
+    """notify.push (2026-11-24): dedupe per key, <=1 push/owner/60 s with batching, 15 min escalation, best-effort."""
+    LAUNCHER = ("==== dry run 2026-11-24T20:09:59Z regions=mi210_0\n==== engine START at +5s\n"
+                "SMOKE FAIL rc=3: knob witness missing for ['GGML_HIP_I8PC'] (/x/out/TERMINAL-smoke.json)\n"
+                "SMOKE FAIL rc=3: second line\n==== dry run FAIL: job ended rc=3\n")
+
+    def setUp(self):
+        super().setUp()
+        self.sent = []
+        self.deliver = lambda flags, owner, text: self.sent.append((owner, text)) or {"channel": "fake"}
+
+    def rec(self, key, kind="smoke-fail", cause="c"):
+        return {"key": key, "kind": kind, "row_id": "r1", "detail": {"cause": cause, "fix_task": "FIX-1"}}
+
+    def tick(self, now):
+        return notify.push_tick(self.flags, now=now, deliver=self.deliver, log=lambda m: None)
+
+    def test_cause_first_smoke_fail_line_from_launcher_out(self):
+        d = os.path.join(self.flags, "dryrun", "r1")
+        os.makedirs(d)
+        with open(os.path.join(d, "launcher.out"), "w") as f:
+            f.write(self.LAUNCHER)
+        cause = notify.smoke_fail_cause(os.path.join(d, "FAIL-1.json"), {"reason": "fallback"})
+        self.assertEqual(cause, "SMOKE FAIL rc=3: knob witness missing for ['GGML_HIP_I8PC'] (/x/out/TERMINAL-smoke.json)")
+
+    def test_cause_falls_back_to_terminal_smoke_json(self):
+        d = os.path.join(self.flags, "dryrun", "r1")
+        os.makedirs(d)
+        t = os.path.join(self.root, "TERMINAL-smoke.json")
+        with open(t, "w") as f:
+            json.dump({"ok": False, "reason": "build missing"}, f)
+        with open(os.path.join(d, "launcher.out"), "w") as f:
+            f.write(f"==== engine START\nwrote {t}\n")
+        self.assertEqual(notify.smoke_fail_cause(os.path.join(d, "FAIL-1.json"), {}), "TERMINAL-smoke: build missing")
+
+    def test_line_has_kind_row_cause_fix(self):
+        self.assertEqual(notify.push_line(self.rec("k1", cause="SMOKE FAIL rc=3: x")),
+                         "smoke-fail row=r1 cause=SMOKE FAIL rc=3: x fix_task=FIX-1 key=k1")
+
+    def test_dedupe_one_push_per_key(self):
+        notify.push(self.flags, self.rec("k1"), "ak", now=1000, deliver=self.deliver)
+        self.assertEqual(notify.push(self.flags, self.rec("k1"), "ak", now=2000, deliver=self.deliver), "dup")
+        self.assertEqual(len(self.sent), 1)
+
+    def test_rate_limit_batches_into_one_message(self):
+        notify.push(self.flags, self.rec("k1"), "ak", now=1000, deliver=self.deliver)
+        self.assertEqual(notify.push(self.flags, self.rec("k2"), "ak", now=1010, deliver=self.deliver), "deferred")
+        notify.push(self.flags, self.rec("k3"), "ak", now=1020, deliver=self.deliver)
+        notify.push(self.flags, self.rec("k4"), "other", now=1020, deliver=self.deliver)   # other owner: own limit
+        self.tick(1030)
+        self.assertEqual([o for o, _ in self.sent], ["ak", "other"])
+        self.tick(1061)
+        self.assertEqual(len(self.sent), 3)
+        self.assertTrue(self.sent[2][1].startswith("2 alerts: "))
+        self.assertIn("key=k2", self.sent[2][1])
+        self.assertIn("key=k3", self.sent[2][1])
+
+    def test_escalates_once_after_15_min_unless_acked(self):
+        notify.push(self.flags, self.rec("k1"), "ak", now=1000, deliver=self.deliver)
+        notify.push(self.flags, self.rec("k2"), "ak2", now=1000, deliver=self.deliver)
+        notify._append_line(notify.acks_path(self.flags), {"key": "k2"})
+        self.tick(1000 + 899)
+        self.assertEqual(len(self.sent), 2)
+        self.assertEqual(self.tick(1000 + 901)["escalated"], ["k1"])
+        self.assertEqual(self.sent[-1][0], "pipeline-mgmt")
+        self.assertIn("push-unacked", self.sent[-1][1])
+        self.tick(5000)
+        self.assertEqual(len(self.sent), 3)
+
+    def test_failed_push_never_breaks_emit(self):
+        with mock.patch.object(notify, "push", side_effect=RuntimeError("boom")):
+            m = notify.emit(self.flags, "smoke-fail", "r1", "FAIL-1.json", "s", "warning", "ws58")
+        self.assertEqual(m["record"]["kind"], "smoke-fail")
+        self.assertEqual(len(alerts(self.flags)), 1)
+
+    def test_emit_pushes_actionable_kinds_only_once(self):
+        notify.emit(self.flags, "smoke-fail", "r1", "FAIL-1.json", "s", "warning", "ws58")
+        notify.emit(self.flags, "smoke-fail", "r1", "FAIL-1.json", "s", "warning", "ws58")
+        notify.emit(self.flags, "underused", "r1", "x", "s", "warning", "ws58")
+        ch = os.path.join(self.flags, "notify", "push", "channel")
+        lines = [ln for n in os.listdir(ch) for ln in open(os.path.join(ch, n))]
+        self.assertEqual(len(lines), 1)
+        self.assertIn("smoke-fail row=r1", lines[0])
+
+
 if __name__ == "__main__":
     unittest.main()
