@@ -649,6 +649,12 @@ def check_lane(row, ctx):
         out.append(("FAIL", "INTERLEAVE-CONCURRENT", f"concurrent streams on nodes {sorted(nodes_used)} under numactl "
                                                      "--interleave=all draw every node's DRAM: the streams contend "
                                                      "(c21-cpu-r2); bind each stream to its node (--membind=q --cpunodebind=q)"))
+    gpu_host = set(range(88, 96)) | set(range(184, 192))
+    shape = str(row.spec.get("shape") or row.spec.get("declared_shape") or "")
+    if row.spec.get("lane") == "cpu" and (shape == "host" or granted & gpu_host):
+        out.append(("WARN", "HOST-SHAPE-OVERLAPS-GPU", "HOST-SHAPE-OVERLAPS-GPU: book q0,q1,q2 quiet-host instead (q3 holds "
+                                                       "the GPU host cores 88-95/184-191; a host booking waits on the GPU row "
+                                                       "and idles q0-q2)"))
     tvals = {int(v) for v in argv_value(argvs, "-t", "--threads") if v.isdigit()}
     dt = row.spec.get("declared_threads")
     if isinstance(dt, int) and tvals and max(tvals) != dt:

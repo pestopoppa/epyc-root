@@ -181,6 +181,15 @@ def test_lane_membind_remote_and_outside_grant(tmp_path):
     assert "CPUS-OUTSIDE-GRANT" in codes(run(s, d, "lane"), level="FAIL")
 
 
+def test_lane_host_shape_overlaps_gpu(tmp_path):
+    d, s = make_row(tmp_path, "zz-host-20261124", spec={"shape": "host", "regions": "q0,q1,q2,q3"})
+    assert "HOST-SHAPE-OVERLAPS-GPU" in codes(run(s, d, "lane"), level="WARN")
+    s.update(shape="quiet-host", regions="q0,q1,q2")
+    assert "HOST-SHAPE-OVERLAPS-GPU" not in codes(run(s, d, "lane"))
+    s.update(lane="gpu", shape="host", regions="mi210_0,184-191")
+    assert "HOST-SHAPE-OVERLAPS-GPU" not in codes(run(s, d, "lane"))
+
+
 def test_lane_threads(tmp_path):
     st, m = make_store(tmp_path), make_model(tmp_path)
     head = SELFTEST_OK + "W = ['/usr/bin/taskset', '-c', '0-3']\n"
