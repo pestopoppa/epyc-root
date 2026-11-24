@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-19",
-      "open": 257
+      "open": 256
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -34,7 +34,7 @@
       "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 111
+      "open": 110
     }
   },
   "duplicates": {},
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10924,
+          "line": 10925,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11171,
+          "line": 11172,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -278,7 +278,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2304,
+          "line": 2315,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
           "open": 2
@@ -288,7 +288,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2441,
+          "line": 2452,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
           "open": 1
@@ -298,7 +298,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2511,
+          "line": 2522,
           "markers": 1,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2
@@ -308,7 +308,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2705,
+          "line": 2716,
           "markers": 1,
           "name": "evidence-plane-instrument-repair",
           "open": 3
@@ -318,7 +318,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 2865,
+          "line": 2876,
           "markers": 1,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1
@@ -328,7 +328,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 3250,
+          "line": 3261,
           "markers": 1,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1
@@ -338,7 +338,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 3642,
+          "line": 3653,
           "markers": 1,
           "name": "objective-task-rate-goodput",
           "open": 5
@@ -348,7 +348,7 @@
           "closed": 47,
           "gates": [],
           "guarded": 0,
-          "line": 3987,
+          "line": 3998,
           "markers": 1,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4
@@ -358,7 +358,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 4242,
+          "line": 4253,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7
@@ -381,7 +381,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4476,
+          "line": 4487,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
           "open": 4
@@ -404,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4939,
+          "line": 4950,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -414,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 5216,
+          "line": 5227,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
@@ -937,10 +937,10 @@
     },
     "eval-tower-program.md": {
       "blocked": 0,
-      "closed": 221,
+      "closed": 222,
       "guarded": 1,
       "last_advanced": "2026-11-24",
-      "open": 49,
+      "open": 48,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1043,24 +1043,24 @@
         },
         {
           "blocked": 0,
-          "closed": 35,
+          "closed": 36,
           "gates": [],
           "guarded": 0,
           "line": 3103,
           "markers": 1,
           "name": "scoring-infra-standardization",
-          "open": 14
+          "open": 13
         }
       ]
     },
     "harness-program.md": {
       "blocked": 1,
-      "closed": 275,
+      "closed": 276,
       "frozen": 14,
       "guarded": 0,
       "last_advanced": "2026-11-24",
       "needs_owner": 8,
-      "open": 104,
+      "open": 103,
       "owner_index": "user-facing-harness-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -1114,7 +1114,7 @@
         },
         {
           "blocked": 1,
-          "closed": 45,
+          "closed": 46,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
@@ -1122,7 +1122,7 @@
           "line": 1723,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 0,
@@ -1131,7 +1131,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2464,
+          "line": 2472,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1148,7 +1148,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2553,
+          "line": 2561,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 16
@@ -1161,7 +1161,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 3032,
+          "line": 3040,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 28
@@ -1171,7 +1171,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3999,
+          "line": 4007,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
