@@ -383,6 +383,13 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
         lt = re.sub(r"^C=.*\n", "", open(lp).read(), flags=re.M).replace(' --claim-cpus "$C"', "")
         with open(lp, "w") as f:
             f.write(lt)
+    if stage.lane == "gpu":   # GPU rows: filler_run15.sh --claim-cpus takes a digit/comma/dash cpu list, never the mi210_0 region token
+        lp = os.path.join(d, "launch.sh")
+        claim = ",".join(t for t in stage.regions.split(",") if re.fullmatch(r"\d+(-\d+)?", t)) or "184-191"
+        lt = re.sub(r"^C=.*$", lambda m: f"C=${{WS58_CPUS:-{claim}}}", open(lp).read(), flags=re.M)
+        with open(lp, "w") as f:
+            f.write(lt)
+
     sp = os.path.join(d, "spec.json")
     spec = json.load(open(sp))
     spec.update({"estimate_s": est, "estimate_justification": just, "min_window_s": spec["min_window_s"],
@@ -407,11 +414,14 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
         spec.update(json.loads(json.dumps(stage.extra)))
         spec["baseline_ref"] = (f"arm A = base build {str(cand['base_sha'])[:9]}, arm B = patch "
                                 f"{str(cand['patch_sha'])[:9]} (same store, same env, interleaved pairs)")
+    spec["estimate_basis"] = {"provisional": True, "rebook_from": os.path.join(d, "out", "smoke_measure.json"),
+                              "reason": (f"chain stage {stage.name}: estimate from the stage table/history ({just}); "
+                                         f"re-book from this row's smoke_measure.json after the smoke")}
     if stage.resumable and not spec.get("max_window_s"):
         spec["max_window_s"] = max(int(spec["min_window_s"]) + 300, int(math.ceil(est * 1.2)) + 300)
     with open(sp, "w") as f:
         json.dump(spec, f, indent=1)
-    RS.seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json", "candidate.json"]
+    RS.seal(d, ["job.py", "check_complete.py", "launch.sh", "candidate.json"]
             + sorted(n for n in RS.HARNESS_FILES if os.path.exists(os.path.join(d, n))))
     return {"stage": stage.name, "id": rid, "rowdir": d, "box": box_id(cand, stage), "estimate_s": est,
             "regions": spec["regions"], "lane": stage.lane, "serving_path": serving_path(cand), "resumable": stage.resumable, "gate": list(gate),
@@ -577,7 +587,8 @@ def successor(rowdir: str, changes: dict[str, Any], reason: str, evidence: list[
                    f"{', '.join(sorted(changes))}; prior evidence {', '.join(ev) or 'none on disk'} (cite, do not re-run)")
     with open(os.path.join(nd, "spec.json"), "w") as f:
         json.dump(s2, f, indent=1)
-    names = [ln.split()[1].lstrip("*") for ln in open(os.path.join(nd, "SOURCE.sha256")) if len(ln.split()) == 2]
+    names = [ln.split()[1].lstrip("*") for ln in open(os.path.join(nd, "SOURCE.sha256")) if len(ln.split()) == 2
+             and ln.split()[1].lstrip("*") != "spec.json"]
     RS.seal(nd, names)
     return {"id": new, "rowdir": nd, "supersedes": old, "changed": sorted(changes), "evidence": ev}
 

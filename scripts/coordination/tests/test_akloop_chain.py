@@ -301,3 +301,17 @@ def test_rebase_chain_subset_and_distinct_ids(tmp_path, cand):
     assert fold["gate"] == [rep["rows"][1]["box"]] and fold["rebase_of"]["candidate"] == cand["id"]
     with pytest.raises(ValueError):
         C.chain_stages(dict(cand, stages=["oracle-kld", "fold-check"]))
+
+
+@pytest.mark.parametrize("path", [None, "a3b-q8_0-cpu|cpu"])
+def test_every_scaffolded_row_passes_publish_lint_with_zero_fails(tmp_path, cand, path):
+    """CPU and GPU shapes: no ESTIMATE-UNMEASURED, SEALED-SPEC or CLAIM-PARSE (ak_row_lint) on any chain row."""
+    import ak_row_lint as AL
+    rep = _chain(tmp_path, dict(cand, serving_path=path) if path else cand)
+    assert {r["lane"] for r in rep["rows"]} >= ({"cpu"} if path else {"gpu", "cpu"})
+    for r in rep["rows"]:
+        fails = [x for x in AL.lint_dir(r["rowdir"], selftest=False) if x[0] == "FAIL"]
+        codes = {x[1] for x in fails}
+        assert not codes & {"ESTIMATE-UNMEASURED", "SEALED-SPEC", "CLAIM-PARSE"}, (r["id"], fails)
+        assert C.lint_row(r["rowdir"], rep["box_file"]) == [], r["id"]
+        assert "spec.json" not in open(os.path.join(r["rowdir"], "SOURCE.sha256")).read()
