@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T03:52:08Z",
+  "generated_at": "2026-11-24T06:40:16Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1375,18 +1375,18 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 975,
-      "dispatchable": 122,
+      "closed": 976,
+      "dispatchable": 121,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-23",
+      "last_advanced": "2026-11-24",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 122,
+      "open": 121,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1423,7 +1423,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 61,
+          "dispatchable": 60,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1432,14 +1432,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 61,
+          "open": 60,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5400,
+          "line": 5404,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1448,7 +1448,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5485,
+          "line": 5489,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1467,7 +1467,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5666,
+          "line": 5670,
           "name": "autokernel-rebuild-program",
           "open": 10,
           "readiness": "blocked"
@@ -1484,7 +1484,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7550,
+          "line": 7554,
           "name": "autokernel-unified-surface-program",
           "open": 22,
           "readiness": "blocked"
@@ -1497,7 +1497,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10817,
+          "line": 10821,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1531,7 +1531,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11064,
+          "line": 11068,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1981,7 +1981,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1930,
+          "line": 1932,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2058,
+          "line": 2060,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2390,
+          "line": 2392,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2491,
+          "line": 2493,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3045,
+          "line": 3047,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2029,7 +2029,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3183,
+          "line": 3185,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3190,
+          "line": 3192,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"

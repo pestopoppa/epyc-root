@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 582
+      "open": 581
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 975,
+      "closed": 976,
       "guarded": 0,
-      "last_advanced": "2026-11-23",
-      "open": 122,
+      "last_advanced": "2026-11-24",
+      "open": 121,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 447,
+          "closed": 448,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 61
+          "open": 60
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5400,
+          "line": 5404,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5485,
+          "line": 5489,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5666,
+          "line": 5670,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 10
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7550,
+          "line": 7554,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 22
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10817,
+          "line": 10821,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11064,
+          "line": 11068,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -1214,7 +1214,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1930,
+          "line": 1932,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2058,
+          "line": 2060,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2390,
+          "line": 2392,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2491,
+          "line": 2493,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 3045,
+          "line": 3047,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3183,
+          "line": 3185,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3190,
+          "line": 3192,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
