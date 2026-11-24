@@ -3160,12 +3160,27 @@ Structural change → **implement in a follow-on pass** (not in this design task
     - 2026-11-24, operator: cloud egress for the credibility judge is CLEARED. Book the full three-judge live run once the stack is up, with `--n-items` capped as needed.
 - Monitor (intake-ak-1124 M11, operator-approved 2026-11-24, no checkbox): The harness accept gate (BSV-2 family) is not activated until an A/A floor from >= 3 replicas exists for its metric, per SPEC-ID-GATE-2 rule (a) (intake-2872).
 - Monitor (intake-ak-1124 M7, operator-approved 2026-11-24, no checkbox): If EV-JUDGE-FPR-1 finds a judge that gates a decision with any master-key FPR >= 1%: compare a no-question prompt fix with a trained robust judge (Master-RM-style, 20k truncation negatives) before that judge gates an optimiser (intake-2886).
-- [ ] **AEI-DROPS-MANIFEST** [non-inference] Emit a drops manifest (n scheduled, n scored, n dropped by reason) and graded_fraction = n_scored / n_attempted per arm with every eval-tower aggregate beside EV-18's ITT fields, and flag a quality delta whose two arms' graded fractions differ by more than 5 points (intake-2921#record claims 0-1, intake-2935#record).
+- [x] **AEI-DROPS-MANIFEST** [non-inference] Emit a drops manifest (n scheduled, n scored, n dropped by reason) and graded_fraction = n_scored / n_attempted per arm with every eval-tower aggregate beside EV-18's ITT fields, and flag a quality delta whose two arms' graded fractions differ by more than 5 points (intake-2921#record claims 0-1, intake-2935#record).
       · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_eval_tower_drops_manifest.py -q passes, including a fixture where unequal graded fractions raise the flag
       · gate: none        · inputs: `repos/epyc-orchestrator/scripts/autopilot/eval_tower.py` `repos/epyc-orchestrator/scripts/benchmark/debug_scorer.py`
+  - 2026-11-24 done, orchestrator `9079993b`: `tests/unit/test_eval_tower_drops_manifest.py` 6 pass, including the unequal-fraction fixture (98% vs 51% graded).
+    - **What it adds:** `EvalTower._aggregate` now carries `drops_manifest` and `graded_fraction` beside the ITT fields.
+    - **The flag:** a gap of more than 0.05 sets `imbalanced`, and the self-criticism ITT delta text notes it.
+    - **Gap:** scoring-failed drops are listed as `unclassified`, because rows carry no failure reason. [no-belief: build/landing]
 - [ ] **AEI-TOKEN-SPAN-RATIO** [non-inference] Check orchestrator token accounting for nested-span double counting: for one stored run per serving path (CPU llama-server role, MI210 role, streaming), compare summed per-call tokens against root-request tokens and record the ratio, fixing the aggregation if any ratio is not 1.0 (intake-2921#record claim 2).
       · done when: progress/2026-11 note or handoff sub-bullet records the all-span/root-span token ratio for each of the three paths, and any ratio other than 1.0 has a linked fix commit
       · gate: none        · inputs: `repos/epyc-orchestrator/src/backends/llama_server.py`
+  - 2026-11-24 partial, orchestrator `9079993b`.
+    - **Tool:** `scripts/analysis/token_span_ratio.py`. It never invents a ratio; a missing root gives `no_root_total`.
+    - **Code audit:** found no nested-span double counting. Ledger rows are leaf backend calls only, and a cache replay is charged once on both sides.
+    - **No ratio recorded:** no stored run pairs a root-request total with per-call rows.
+      - CPU: 82 of 82 requests in `usage_provenance.jsonl` came back `no_root_total`.
+      - MI210: no stored token rows at all.
+      - Streaming: per-call rows exist, but there is no root total.
+    - **What closes it:** the capture gap below (AEI-TOKEN-ROOT-CAPTURE) plus one run per path after stack-up. [no-belief: build/landing]
+  - [ ] **AEI-TOKEN-ROOT-CAPTURE** [non-inference] Persist each ChatResponse's root token totals (`prompt_tokens`, `output_tokens_reported`) keyed by request id beside the usage ledger, behind a default-off flag, so `token_span_ratio.py --root` has input on the CPU, MI210 and streaming paths.
+      · done when: unit test writes and reads root totals for one fixture request and token_span_ratio.py returns a numeric ratio for it
+      · gate: none        · inputs: `repos/epyc-orchestrator/src/llm_primitives/usage.py`
 - [ ] **AEI-RERUN-ARM-OD** [operator-decision] Decide whether measurement/protocols/quality-eval.md P-AB-1 and P-PAIRED add a same-configuration rerun arm and report the rerun flip rate beside any scaffold, harness or reviewer-arm effect (intake-2934#record: reruns flipped 13% of tasks at the median, as many as a harness swap).
       · done when: operator decision recorded in this box's tick verdict, and if adopted a ratified protocol amendment exists
       · gate: none        · inputs: `measurement/protocols/quality-eval.md`
