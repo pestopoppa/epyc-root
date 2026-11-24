@@ -415679,7 +415679,7 @@
   - 4 GiB budget, SSD-streamed experts, 912-token prompt: TTFT 3.60 s, decode 18.26 tok/s (README prose).
   credibility_score: null
   contradicting_evidence:
-  - 'Provisional, from the published JSON: the Atomic Engine arms run with the DSpark drafter while the stock arm appears to run without one, so the headline ratio confounds speculative decoding with the engine; and the recorded 64-token greedy output repeats a short id cycle, which inflates draft acceptance. Both unverified until a dive reads tools/expert-source/bench-inkling-metal.py.'
+  - 'DIVE-CONFIRMED 2026-11-24 (was provisional): the Atomic Engine arms run with the DSpark drafter while the stock arm appears to run without one, so the headline ratio confounds speculative decoding with the engine; and the recorded 64-token greedy output repeats a short id cycle, which inflates draft acceptance. Both unverified until a dive reads tools/expert-source/bench-inkling-metal.py.'
   cross_references:
   - intake-2798
   - intake-2805
@@ -415688,8 +415688,222 @@
   - handoffs/active/deepseek-v41-flash-evaluation.md (draft-dspark, DS41-C2d)
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
+  verification: dive-verified
   read_depth: PARTIAL
+  lane_head: 8f49b151a4e4300f3018e864e53769754e2e4f93
+  dive_corrections: '2026-11-24 Stage 2 (read FULL from disk at fb69fff: bench-inkling-metal.py, inkling2-dspark.cpp
+    head, common/speculative.cpp L1395-1450, llama-expert-store.cpp L150-410/L1277-1310, llama-atomic.h
+    L50-60, llama-inkling-core-banks.h head). (1) H1 RESOLVED: the README 33.7 -> 105.7 tok/s ratio is NOT
+    an engine speedup. server_command() gives the stock arm no -md/--spec-type at all (budget None returns
+    command + --jinja), while every Atomic arm adds -md draft --spec-type draft-dspark; so the ratio is
+    spec-decode plus engine, inseparable from this JSON. The prompt is a context file concatenated twice
+    without a separator and cropped to 4000 ids, sent as a raw /completion with ignore_eos and n_predict
+    64; the recorded greedy ids repeat a short cycle, so draft acceptance is near its ceiling. Treat 105.7
+    as an upper bound on a repetitive continuation, not a chat decode rate. matches_stock true is a valid
+    greedy-equivalence check. (2) DSpark here is a port of upstream llama.cpp PR #32218 (already intake-2805
+    lineage; graph pinned to revision 8ea43631), host-sampled, noncausal 8-token block with anchor, and
+    the drafter ships as a GGUF (dspark-Inkling-2-Mini-Q8_0.gguf, 504 MB, AtomicChat/Inkling-2-Mini-GGUF
+    @ 30950984). This overturns the model-evaluation-queue.md INK2-PORT-2c premise no GGUF drafter published.
+    (3) inkling-loop-age is an OPT-IN experimental env policy (LLAMA_EXPERIMENTAL_INKLING_EXPERT_CACHE),
+    a class-LRU adapted from upstream moe_cache_lru PR #31233 with half-life 512 instead of 128 and an age
+    divided by sqrt(layer clock) at 4-token verify batches; the default residency mechanism is llama_inkling_core_banks
+    (core layers kept native when n_passes > 1). No measurement of loop-age vs class-lru is published. (4)
+    Executor is CPU and MTL0 only; no HIP or CUDA-for-Inkling path.'
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: 105.71 tok/s is DSpark-on vs stock-without-draft on a repetitive raw continuation; not an engine-only
+      or chat-decode figure.
+  - claim_index: 1
+    effect: narrowed
+    note: inkling-loop-age is opt-in experimental; default residency is core banks; no A/B published.
+  - claim_index: 0
+    effect: unaffected
+    note: budget/streaming description matches executor code.
+  - claim_index: 3
+    effect: unaffected
+    note: moe-cache doc read; not re-measured.
+  - claim_index: 4
+    effect: unaffected
+    note: credit line only; TurboQuant code not read.
+  depends_on: []
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    locator: README.md @ fb69fff
+    quote: on a 48 GB M4 Max
+    quote_sha256: c6338068a76687901727d6cb14edc5ad5c89ed07fb9cdd4ec443069e20e820e9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+    observed_revision: sha256:761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+      retrieved_at_utc: '2026-11-24T10:34:44.738681Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102
+      relative_path: sha256/76/761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102.raw
+      raw_sha256: 761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102
+      byte_length: 4954
+  - claim_index: 2
+    kind: page-and-quote
+    locator: tools/expert-source/bench-inkling-metal.py @ fb69fff
+    quote: return command + ["--jinja"]
+    quote_sha256: f6bcb577f1077ff8dbd3e05785328e212148e4adecc1f3476410811988b3cfbe
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+    observed_revision: sha256:a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+      retrieved_at_utc: '2026-11-24T10:34:44.997489Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790
+      relative_path: sha256/a4/a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790.raw
+      raw_sha256: a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790
+      byte_length: 13081
+  - claim_index: 2
+    kind: page-and-quote
+    locator: tools/expert-source/bench-inkling-metal.py @ fb69fff
+    quote: '# The original benchmark repeated the archive without a separator and cropped native token IDs.'
+    quote_sha256: 4e1755b0407dce8fe90f49c31448cbb73ed12a0d94ce8c5828aabef59570b4da
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+    observed_revision: sha256:a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/tools/expert-source/bench-inkling-metal.py
+      retrieved_at_utc: '2026-11-24T10:34:44.997489Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790
+      relative_path: sha256/a4/a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790.raw
+      raw_sha256: a41804e29969882a6e37f68a8811c108356ac768c2cfb9837a759c9f432b1790
+      byte_length: 13081
+  - claim_index: 1
+    kind: page-and-quote
+    locator: src/llama-expert-store.cpp @ fb69fff
+    quote: the half-life because the same physical layers run multiple times.
+    quote_sha256: 6141648397229254a169bb4dfa984d4640068dfbcc642971cf278de746043615
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 79df1083c724d20ca355f2a07e01788915b9b616f45835e01ae21f36491f8b18, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-store.cpp
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-store.cpp
+    observed_revision: sha256:79df1083c724d20ca355f2a07e01788915b9b616f45835e01ae21f36491f8b18
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-store.cpp
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-store.cpp
+      retrieved_at_utc: '2026-11-24T10:34:45.665177Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:79df1083c724d20ca355f2a07e01788915b9b616f45835e01ae21f36491f8b18
+      relative_path: sha256/79/79df1083c724d20ca355f2a07e01788915b9b616f45835e01ae21f36491f8b18.raw
+      raw_sha256: 79df1083c724d20ca355f2a07e01788915b9b616f45835e01ae21f36491f8b18
+      byte_length: 63558
+  - claim_index: 1
+    kind: page-and-quote
+    locator: src/llama-atomic.h @ fb69fff
+    quote: the experimental "inkling-loop-age" for Inkling loop models.
+    quote_sha256: f1113cf71a8e8cc09d08ee92b6cc6042335e816a153669e0c07ac618c5fc68e1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f68c37a2a1a762acafaee47ee6111e4185dcb02488260070983305bfdb795335, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-atomic.h
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-atomic.h
+    observed_revision: sha256:f68c37a2a1a762acafaee47ee6111e4185dcb02488260070983305bfdb795335
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-atomic.h
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-atomic.h
+      retrieved_at_utc: '2026-11-24T10:34:45.888577Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f68c37a2a1a762acafaee47ee6111e4185dcb02488260070983305bfdb795335
+      relative_path: sha256/f6/f68c37a2a1a762acafaee47ee6111e4185dcb02488260070983305bfdb795335.raw
+      raw_sha256: f68c37a2a1a762acafaee47ee6111e4185dcb02488260070983305bfdb795335
+      byte_length: 8781
+  - claim_index: 2
+    kind: page-and-quote
+    locator: src/models/inkling2-dspark.cpp @ fb69fff
+    quote: '// Inkling2 DSpark graph from llama.cpp PR #32218, revision 8ea4363119c0d8d205e0cce264d004c017cbd402.'
+    quote_sha256: 7d98741ee6408b402c9267a500ab66bd04b27db45ce8c68ce5d44ba34d21f294
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f18829a9c8253bf15816e5f0da9050193086e6c47c3a2ece0d18d8fad5f2de2f, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/models/inkling2-dspark.cpp
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/models/inkling2-dspark.cpp
+    observed_revision: sha256:f18829a9c8253bf15816e5f0da9050193086e6c47c3a2ece0d18d8fad5f2de2f
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/models/inkling2-dspark.cpp
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/models/inkling2-dspark.cpp
+      retrieved_at_utc: '2026-11-24T10:34:46.121417Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f18829a9c8253bf15816e5f0da9050193086e6c47c3a2ece0d18d8fad5f2de2f
+      relative_path: sha256/f1/f18829a9c8253bf15816e5f0da9050193086e6c47c3a2ece0d18d8fad5f2de2f.raw
+      raw_sha256: f18829a9c8253bf15816e5f0da9050193086e6c47c3a2ece0d18d8fad5f2de2f
+      byte_length: 19917
+  - claim_index: 1
+    kind: page-and-quote
+    locator: src/llama-expert-executor.cpp @ fb69fff
+    quote: throw std::runtime_error("expert executor currently supports CPU and MTL0 only");
+    quote_sha256: 98883a49f482a303b3940dea3df6c0df48f0ec2f55d5d14c81360cbee8795c0c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e887a7cccc0c4885f57e5289320070ce951dd93d6333a021306e677017a68ad7, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-executor.cpp
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-executor.cpp
+    observed_revision: sha256:e887a7cccc0c4885f57e5289320070ce951dd93d6333a021306e677017a68ad7
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-executor.cpp
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/src/llama-expert-executor.cpp
+      retrieved_at_utc: '2026-11-24T10:34:46.349205Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e887a7cccc0c4885f57e5289320070ce951dd93d6333a021306e677017a68ad7
+      relative_path: sha256/e8/e887a7cccc0c4885f57e5289320070ce951dd93d6333a021306e677017a68ad7.raw
+      raw_sha256: e887a7cccc0c4885f57e5289320070ce951dd93d6333a021306e677017a68ad7
+      byte_length: 119854
+  - claim_index: 2
+    kind: page-and-quote
+    locator: README.md @ fb69fff
+    quote: the Q8_0 draft is 504 MB.
+    quote_sha256: c2acbf2f70f8cd4e2e0ac313660df2c345de576b7d5506c7675e75a76a56b85d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102, found: true}
+    source: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+    source_revision: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+    observed_revision: sha256:761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102
+    source_artifact:
+      entry_url: https://github.com/AtomicBot-ai/atomic-engine
+      requested_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+      effective_url: https://raw.githubusercontent.com/AtomicBot-ai/atomic-engine/fb69fff02101b048a0a165a3b502712dd2ca978f/README.md
+      retrieved_at_utc: '2026-11-24T10:34:44.738681Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102
+      relative_path: sha256/76/761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102.raw
+      raw_sha256: 761012de71c16d2ea6d7957525aa8e80b44ccde17aeb8491cba97cd6b59e4102
+      byte_length: 4954
   notes: 'Read at engine-development HEAD fb69fff02101b048a0a165a3b502712dd2ca978f, retrieved 2026-11-24 (README sha256 761012de71c1, docs/moe-cache.md a3e8a88499d9). Read: README, docs/moe-cache.md head, docs/atomic-engine-inkling-low-bit-metal.json, src/llama-expert-executor.cpp L195-215 and L1320-1365. The executor throws for any device other than CPU and MTL0 (L196-197), and Inkling acceleration is gated on Metal, so no HIP path exists; that is a porting cost, not a decline. Not read: bench script, docs PNG figures, the DSpark implementation files, TurboQuant parts. Repo also carries many DFlash/flash-next experiment JSONs for other models. Operator steering 2026-11-24: likely no immediate AutoKernel action, but hypotheses for an eventual Inkling 2 Mini evaluation.'
   novelty_justification: Inkling 2 Mini itself is covered (intake-2798/2805/2812, INK2-* boxes); the new part is a loop-aware expert-residency executor and a llama.cpp DSpark path for Inkling, neither in the index.
   verdict_justification: Gives testable hypotheses for INK2-MEAS-1 and later MI210 placement; our host holds the whole model in RAM or HBM, so streaming itself is not a current need.
