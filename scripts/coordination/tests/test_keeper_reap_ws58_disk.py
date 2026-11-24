@@ -3,6 +3,7 @@ git dirs reapable only when provably landed (git_reapable), and the disk janitor
 nothing here runs the reaper against the live tree."""
 import os
 import re
+import shlex
 import subprocess
 import tempfile
 import unittest
@@ -148,8 +149,10 @@ class JanitorQuietHostSkip(unittest.TestCase):
                 f.write("echo KEEPER-RAN\n")
             j = open(JANITOR).read()
             funcs = "".join(re.search(r"^%s\(\) \{.*?^\}\n" % n, j, re.S | re.M).group(0) for n in ("quiet_host_grant", "reap"))
-            sh = ('set -euo pipefail; MODE=loop; F=%s; KEEPER=%s; STAMP=%s/none; DISK=%s; REAP_EVERY_S=1800; LOG=/dev/stdout; '
-                  'REAP_DISK_FLOOR_GIB=%d; log() { echo "$*"; }\n%s\nreap %s\n' % (td, keeper, td, td, floor, funcs, arg))
+            sh = ('set -euo pipefail; MODE=loop; QH=%s; F=%s; KEEPER=%s; STAMP=%s/none; DISK=%s; REAP_EVERY_S=1800; LOG=/dev/stdout; '
+                  'REAP_DISK_FLOOR_GIB=%d; log() { echo "$*"; }\n%s\nreap %s\n' %
+                  (shlex.quote(os.path.join(CO, "quiet_host.py")), shlex.quote(td), shlex.quote(keeper),
+                   shlex.quote(td), shlex.quote(td), floor, funcs, arg))
             r = subprocess.run(["bash", "-c", sh], capture_output=True, text=True, timeout=30)
             self.assertEqual(r.returncode, 0, r.stderr)
             return r.stdout

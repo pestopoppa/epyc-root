@@ -6,6 +6,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RF_DIR = os.path.normpath(os.path.join(HERE, "..", "rowflow"))
@@ -153,17 +154,30 @@ class BusyMeasureExclusion(unittest.TestCase):
         self.assertEqual(adj[185], (1000, 5100))
 
     def test_measure_excludes_pidfile_tree(self):
-        hk = tempfile.mkdtemp()
-        burner = subprocess.Popen([sys.executable, "-c", "import os\nos.sched_setaffinity(0, {0})\nwhile True: pass"])
-        try:
-            time.sleep(0.3)
-            with_burn = hostutil.measure(1.0, {"c0": [0]}, pid_dir=hk)["c0"]
-            open(os.path.join(hk, "reap.pid"), "w").write(str(burner.pid))
-            excl = hostutil.measure(1.0, {"c0": [0]}, pid_dir=hk)["c0"]
-        finally:
-            burner.kill(); burner.wait()
-        self.assertGreater(with_burn, 80.0)
-        self.assertLess(excl, with_burn - 50.0)
+        with tempfile.TemporaryDirectory() as root:
+            proc = os.path.join(root, "proc")
+            hk = os.path.join(root, "hk")
+            os.makedirs(hk)
+            census = hostutil.housekeeping_pids
+
+            def measure(named):
+                _fake_proc(proc, {100: (1, 0, 0, 0), 101: (100, 0, 0, 0)})
+                if named:
+                    with open(os.path.join(hk, "reap.pid"), "w") as f:
+                        f.write("100\n")
+
+                def advance(_):
+                    _fake_proc(proc, {100: (1, 40, 0, 0), 101: (100, 60, 0, 0)})
+
+                with mock.patch.object(hostutil, "housekeeping_pids", side_effect=lambda path: census(path, proc)), \
+                     mock.patch.object(hostutil, "pid_jiffies", side_effect=lambda pids: pid_jiffies(pids, proc)), \
+                     mock.patch.object(hostutil, "cpu_sample", side_effect=[{0: (1000, 5000)}, {0: (1100, 5100)}]), \
+                     mock.patch.object(hostutil, "gpu_sample", return_value=None):
+                    return hostutil.measure(1.0, {"c0": [0]}, sleep=advance, pid_dir=hk)["c0"]
+
+            pid_jiffies = hostutil.pid_jiffies
+            self.assertEqual(measure(False), 100.0)
+            self.assertEqual(measure(True), 0.0)
 
 
 if __name__ == "__main__":
