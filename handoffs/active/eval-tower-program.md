@@ -3178,9 +3178,16 @@ Structural change → **implement in a follow-on pass** (not in this design task
       - MI210: no stored token rows at all.
       - Streaming: per-call rows exist, but there is no root total.
     - **What closes it:** the capture gap below (AEI-TOKEN-ROOT-CAPTURE) plus one run per path after stack-up. [no-belief: build/landing]
-  - [ ] **AEI-TOKEN-ROOT-CAPTURE** [non-inference] Persist each ChatResponse's root token totals (`prompt_tokens`, `output_tokens_reported`) keyed by request id beside the usage ledger, behind a default-off flag, so `token_span_ratio.py --root` has input on the CPU, MI210 and streaming paths.
+  - [x] **AEI-TOKEN-ROOT-CAPTURE** [non-inference] Persist each ChatResponse's root token totals (`prompt_tokens`, `output_tokens_reported`) keyed by request id beside the usage ledger, behind a default-off flag, so `token_span_ratio.py --root` has input on the CPU, MI210 and streaming paths.
       · done when: unit test writes and reads root totals for one fixture request and token_span_ratio.py returns a numeric ratio for it
       · gate: none        · inputs: `repos/epyc-orchestrator/src/llm_primitives/usage.py`
+    - 2026-11-24 done, orchestrator `353cb5e0` + `ceb93ff3`.
+      - **What it writes:** the default-off flag `usage_root_capture` appends one `epyc.request_root_usage.v1` row per completed `/chat` request to `usage_roots.jsonl`, tagged `cpu`/`gpu`/`unknown`. The real-mode unified `/chat/stream` writes `path=stream` rows.
+      - **Tool:** `token_span_ratio.py --root` reads the file. The fixture ratio is 1.0. 155 tests pass across features, the flag surface and usage; the 2 flag-surface tests broken by the `http_post_guard` pin are fixed.
+      - **Gaps:**
+        - the stream path doesn't call `bind_request_usage`, so call-row keys may not match; check this on the first live stream;
+        - the mock, plan-review-abort and legacy inline stream paths are unhooked;
+        - a client disconnect writes no row. [no-belief: build/landing]
 - [ ] **AEI-RERUN-ARM-OD** [operator-decision] Decide whether measurement/protocols/quality-eval.md P-AB-1 and P-PAIRED add a same-configuration rerun arm and report the rerun flip rate beside any scaffold, harness or reviewer-arm effect (intake-2934#record: reruns flipped 13% of tasks at the median, as many as a harness swap).
       · done when: operator decision recorded in this box's tick verdict, and if adopted a ratified protocol amendment exists
       · gate: none        · inputs: `measurement/protocols/quality-eval.md`
