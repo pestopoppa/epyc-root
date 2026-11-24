@@ -234,11 +234,11 @@ GPU roofline = MI210 HBM nameplate 1638 GB/s; CPU roofline = measured quarter-24
 | 2 | a3b-mtp-mi210 | router mul_mat_f F32 [2048,256] | 1 | 85 | cuda-gemv | 84 | 13.5% | 11.4 | **none** | yes | C14 (pre MMVF cap knob 79650eeab) |
 | 3 | 27b-df2-mi210 | verify dense Q8 GEMV/GEMM (q8mf6, V5I) | 65 | 85 | cuda-gemv | 20 | 55.2% | 10.8 | V5I base; C21 V2 RRS fold | yes | ak-c18-27b-df2-v5i-trace-gpu-20261122 |
 | 4 | 27b-df2-mi210 | launch-bound tail (eltwise/norm/copy/rope/conv) | 35 | 85 | cuda-fused-tail | 50 | 14.7% | 7.3 | **none** | - | C18 verify 40.07 ms minus named classes |
-| 5 | 27b-df2-mi210 | gv_fattn + merge (verify FA) | 11 | 85 | cuda-flashdecode | 74 | 7.1% | 5.3 | ak-gvfattn-lds/splits/served rows; G3 | yes | same + ak-g3-trace-read-20261124 (130-235 GB/s at 8-16k) |
+| 5 | 27b-df2-mi210 | gv_fattn + merge (verify FA) | 11 | 88 | cuda-flashdecode | 77 | 7.1% | 5.5 | ak-gvfattn-lds/splits/served rows; G3 | yes | same + ak-g3-trace-read-20261124 (130-235 GB/s at 8-16k) |
 | 6 | flash-next-cpu | forward m1 dense (UD-IQ4_XS) | 54 | 88 | cpu-avx512-gemv | 34 | 14.0% | 4.8 | Q38P-1; INF-70; AKX-ALL-25 | yes | q38fn-cpu-verify-weight-reuse-20261122 r3 (quarter-24t; served NUMA_FULL needs full-host ceiling) |
 | 7 | a3b-mtp-mi210 | quantize_q8_1 | 35 | 85 | cuda-fused-tail | 50 | 9.1% | 4.6 | **none** | yes | C14 |
 | 8 | a3b-mtp-mi210 | k_bin_bcast / scale | 35 | 85 | cuda-fused-tail | 50 | 7.1% | 3.5 | **none** | yes | C14 |
-| 9 | a3b-mtp-mi210 | FA / gv (10 layers, f16 KV) | 11 | 85 | cuda-flashdecode | 74 | 4.1% | 3.0 | **none** | yes | C14 share; GB/s borrowed from 27B gv_fattn |
+| 9 | a3b-mtp-mi210 | FA / gv (10 layers, f16 KV) | 11 | 88 | cuda-flashdecode | 77 | 4.1% | 3.2 | **none** | yes | C14 share; GB/s borrowed from 27B gv_fattn |
 | 10 | a3b-mtp-mi210 | router chain softmax/argsort/get_rows | 35 | 85 | cuda-fused-tail | 50 | 5.6% | 2.8 | **none** | yes | C14 |
 | 11 | a3b-mtp-mi210 | MUL_MAT_ID experts n=3 | 48 | 70 | cuda-moe | 22 | 11.6% | 2.6 | ak-mmid-mf-gpu-20261122 (4297a2caa); MMID-HELPER-N10 | yes | ak-mmid-split16-gpu-20261121-r4 |
 | 12 | 27b-df2-mi210 | actquant (q8mf_pre_i8 + q8sk_quantize) | 35 | 85 | cuda-fused-tail | 50 | 4.6% | 2.3 | AK-BW-27B-ACTQUANT-FUSE | - | C18 trace |
@@ -254,16 +254,28 @@ GPU roofline = MI210 HBM nameplate 1638 GB/s; CPU roofline = measured quarter-24
 | 22 | a3b-mtp-cpu | lm_head | 98 | 88 | cpu-avx512-gemv | 0 | 12.0% | 0.0 | **none** | - | a3b-cpu-gap-census-20261121 |
 | 23 | a3b-mtp-cpu | router (CPU) | - | 88 | cpu-avx512-gemv | - | - | - | AK-CPU-C22-LEVERS (router BF16 shadow) | - | not in census: needs a row |
 | 24 | 27b-df2-mi210 (not served) | drafter BF16 hipBLAS (not served; training deferred) | 9 | 85 | cuda-gemv | 76 | 0.0% | 0.0 | DF2-11-BF16-FIX (done); DF2-FT-1 deferred | - | DF2-11-BF16-TRACE-PROF |
+| 25 | 27b-df2-mi210 (not served) | q4_0 KV attention (gv_fattn, q4_0 KV) | - | 71 | cuda-flashdecode-q4kv | - | - | - | ak-gvfattn-q4kv-gpu-20261124 | - | not yet measured; row ak-gvfattn-q4kv-gpu-20261124 supplies ours; compare at batch 32-128 |
 
-Top unworked gaps (served, no box or row): a3b-mtp-mi210 router mul_mat_f F32 [2048,256] (11.4); 27b-df2-mi210 launch-bound tail (eltwise/norm/copy/rope/conv) (7.3); a3b-mtp-mi210 quantize_q8_1 (4.6); a3b-mtp-mi210 k_bin_bcast / scale (3.5); a3b-mtp-mi210 FA / gv (10 layers, f16 KV) (3.0)
+Top unworked gaps (served, no box or row): a3b-mtp-mi210 router mul_mat_f F32 [2048,256] (11.4); 27b-df2-mi210 launch-bound tail (eltwise/norm/copy/rope/conv) (7.3); a3b-mtp-mi210 quantize_q8_1 (4.6); a3b-mtp-mi210 k_bin_bcast / scale (3.5); a3b-mtp-mi210 FA / gv (10 layers, f16 KV) (3.2)
 
 References:
 
-- `cpu-avx512-gemv` 88% (% of measured STREAM): llama.cpp/ik_llama.cpp Zen4/5 AVX-512 Q8_0 token generation reported near STREAM; Intel neural-speed (Shen et al., arXiv:2311.00502). Approximate.
-- `cuda-flashdecode` 85% (% of HBM peak): FlashInfer (Ye et al., arXiv:2501.01005) decode attention; FlashDecoding (Dao et al., 2023 blog). Recalled, not re-verified.
-- `cuda-fused-tail` 85% (launch-efficiency proxy): TensorRT-LLM fused norm/act-quant prologues + CUDA graphs. Proxy: ours fixed at 35 for launch-bound classes.
-- `cuda-gemv` 85% (% of HBM peak): Marlin (Frantar et al., arXiv:2408.11743): near-ideal weight-stream speedup to batch 16-32 on A10/A100; TensorRT-LLM decode GEMV. Recalled, not re-verified.
-- `cuda-moe` 70% (% of HBM peak): vLLM/SGLang fused_moe Triton decode and MegaBlocks (Gale et al., arXiv:2211.15841). Approximate; no single published %-of-peak.
-- `cuda-scan` 60% (% of HBM peak, estimate): Mamba/Mamba2 selective scan (arXiv:2312.00752, 2405.21060) and flash-linear-attention GDN kernels publish speedups, not %-of-peak. Estimate.
+- `cpu-avx512-gemv` 88% [recalled, not re-verified] (% of measured STREAM): llama.cpp/ik_llama.cpp Zen4/5 AVX-512 Q8_0 token generation reported near STREAM; Intel neural-speed (Shen et al., arXiv:2311.00502). Approximate.
+- `cuda-flashdecode` 88% [measured] (% of HBM peak (H200 measured; upper bracket H100/B200)): MEASURED, intake-2866 (arXiv 2611.30027): FA4 FP8 decode attention 85-89% of peak at batch>=8 on H200; plain device copy of the same bytes 87-89% on H200 (copy ceiling); ref = 88% midpoint of FA4 FP8 and the copy ceiling. Upper bracket: FlashInfer BF16 decode >90% on H100/B200 (intake-2875). Operator-approved figures.
+- `cuda-flashdecode-q4kv` 71% [measured] (% of HBM peak (H200 measured, batched)): MEASURED, intake-2866 (arXiv 2611.30027): best 4-bit KV attention kernel 67-75% of peak at batch 32-128 on H200; ref = 71% midpoint of 67-75%. Deployed vLLM NVFP4 only 10-20% on H200. Operator-approved figures. Benchmarks row ak-gvfattn-q4kv-gpu-20261124.
+- `cuda-fused-tail` 85% [recalled, not re-verified] (launch-efficiency proxy): TensorRT-LLM fused norm/act-quant prologues + CUDA graphs. Proxy: ours fixed at 35 for launch-bound classes.
+- `cuda-gemv` 85% [recalled, not re-verified] (% of HBM peak): Marlin (Frantar et al., arXiv:2408.11743): near-ideal weight-stream speedup to batch 16-32 on A10/A100; TensorRT-LLM decode GEMV. Recalled, not re-verified.
+- `cuda-moe` 70% [recalled, not re-verified] (% of HBM peak): vLLM/SGLang fused_moe Triton decode and MegaBlocks (Gale et al., arXiv:2211.15841). Approximate; no single published %-of-peak.
+- `cuda-scan` 60% [recalled, not re-verified] (% of HBM peak, estimate): Mamba/Mamba2 selective scan (arXiv:2312.00752, 2405.21060) and flash-linear-attention GDN kernels publish speedups, not %-of-peak. Estimate.
+
+Batch dependence of reference %-of-peak: Reference %-of-peak is batch-dependent: compare our nb=1 / nb=8 attention cells against batch-appropriate references, not the batched ceilings above. Source: intake-2866 (arXiv 2611.30027), H200, operator-approved.
+
+| Kernel | % of peak | Batch |
+|---|---|---|
+| FA4 FP8 decode attention | 85-89 | >=8 |
+| best 4-bit KV kernel | 18-38 | 1 |
+| best 4-bit KV kernel | 67-75 | 32-128 |
+| plain device copy (same bytes) | 87-89 | any (ceiling) |
+| deployed vLLM NVFP4 | 10-20 | n/a |
 
 <!-- BW-CENSUS:END -->
