@@ -5,27 +5,34 @@
     "handoff-blocked": 1,
     "handoff-completed": 382,
     "progress": 1490,
-    "research": 483
+    "research": 527
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 0,
+      "added": 44,
+      "changed": 4,
       "removed": 0
     },
-    "at": "2026-11-24T07:20:44Z",
+    "at": "2026-11-24T16:21:01Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-24-handoff-pipeline-mgmt-wrapup-20261124.md",
-      "progress/2026-11/2026-11-24-pipeline-mgmt.md"
+      "docs/design/mi210-served-kernel-bandwidth-census-20261122.md",
+      "docs/guides/agent-workflows/spec-identity-gate-protocol.md",
+      "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "progress/2026-11/2026-11-24-autokernel.md",
+      "research/deep-dives/intake-2863",
+      "research/deep-dives/intake-2864",
+      "research/deep-dives/intake-ak-1124",
+      "research/deep-dives/intake-digests/2026-11-24-ids-2863-2866.md",
+      "research/deep-dives/intake-digests/2026-11-24-ids-2867-2904.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-24T07:20:44Z",
+  "scan_time": "2026-11-24T16:21:01Z",
   "schema_version": 1,
-  "source_set_hash": "1542b2278ff5368ae8ff4d7638ae0c3567495676e29180238f0c67f9c93b3b6b",
+  "source_set_hash": "d7e85854a45fd12a632d0eb4dbc80a8fbad0a7a64cb965796bd5c8796d08374d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -4500,6 +4507,30 @@
       "type": "research"
     },
     {
+      "content_hash": "247b83b32837f1620ff4a98d1aa7a1c16c8d3929fbf07a3975b81b0fc80199c0",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-2863/atomic-engine-inkling2-mini.md",
+      "size": 2064,
+      "title": "intake-2863 \u2014 Atomic Engine (Inkling 2 Mini) deep dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "3bd382f92f24972d60fef519bd34bb2147f479bad94e1c9d7b6ed1c5107d57b6",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-2863/stage2b-pr31233-and-atomicchat-card.md",
+      "size": 1445,
+      "title": "intake-2863 Stage 2b \u2014 PR #31233 and the AtomicChat Inkling 2 Mini GGUF card",
+      "type": "research"
+    },
+    {
+      "content_hash": "ce8b28815ad55ab4acac5f58d8c3d590be2130e515ebc6ec83d587f19ab21b95",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-2864/sybil-inference-optimisation-skill-vs-ak-loop.md",
+      "size": 1899,
+      "title": "intake-2864 \u2014 Sybil inference-optimisation skill vs the AutoKernel loop",
+      "type": "research"
+    },
+    {
       "content_hash": "5155581d1874ca3e7e0dda3db41e4d7f0aa3578fba76de2ea9dad3ce2d61a984",
       "modified": "2026-11-23T18:02:41Z",
       "path": "research/deep-dives/intake-ak-1123/intake-2824-pr32837.md",
@@ -4825,6 +4856,318 @@
       "path": "research/deep-dives/intake-ak-1123/stage3-plan.md",
       "size": 235686,
       "title": "Stage-3 plan \u2014 HIP ISA/MMQ PRs, AITER v0.1.30, BPE, spec-decoding, context and harness papers (intake-ak-1123) \u2014 REVISION 1, APPROVED 2026-11-23 (OD-5 = C)",
+      "type": "research"
+    },
+    {
+      "content_hash": "e272ee0a257d407ceb81e08188e2ee79e82c351bf339df2c5c3091b412de6881",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2867-pr32820.md",
+      "size": 14434,
+      "title": "Dive \u2014 pr32820 \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "bcb4056bb1525d3e65f0a056c5df8b8eaed24595cca2de963ec85cb56112c3f2",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2868-pr32177.md",
+      "size": 12467,
+      "title": "Dive \u2014 pr32177 \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "ade78a576063fd7c16ac82955c27ebb9aed4d45422276f16584c44935cf39583",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2869-pr32533.md",
+      "size": 23130,
+      "title": "Dive \u2014 pr32533 \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "f852ff66731a0d908872c98e8a165d2d0c26953dc0cbefc2ea6d5e373ba40e0b",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2870-fp4kv.md",
+      "size": 29269,
+      "title": "Dive \u2014 fp4kv \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "7f6c218db822e0e8c492b466c9f48e12c9de57023ec4ad785aca213377f12d92",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2871-kernelshift.md",
+      "size": 17920,
+      "title": "Dive \u2014 kernelshift \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "19088159dfab595e11afa440d79e82531d85a2954e7799ae2dd9fdd961d5e42b",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2872-exactpaper.md",
+      "size": 23441,
+      "title": "Dive \u2014 exactpaper \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "31fd76cc6c77168dbe4e47e723d8dfde02b75a43c6f142a1179a693164b04fc1",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2873-grammardraft.md",
+      "size": 28137,
+      "title": "Dive \u2014 grammardraft \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "5dfba7d7563ea08b9e9cbe73e124273467900422ff28c3d4681b3a10bb962d90",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2874-autoresearch.md",
+      "size": 14858,
+      "title": "Dive \u2014 autoresearch \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "4558df0d112b79416d5198460fd13e15dda78a9e1f3b13c4728c719b079135df",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2875-dmc5.md",
+      "size": 14592,
+      "title": "Dive \u2014 dmc5 \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "e5416a6093c6ccc906cd751e1f0006d7499a0b1ca4caa4bff66832dca930cc46",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2876-ccamoe.md",
+      "size": 13233,
+      "title": "Dive \u2014 ccamoe \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "f9d836115fc7d1e96348cbd9f108a9de9cc02b6de60509bd58acb5680de557f8",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2877-loopholes.md",
+      "size": 17612,
+      "title": "Dive \u2014 loopholes \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "b47795c930e0090396a5feed23e6fdff1ad3455f54a12f917931b578ba834926",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2878-kv4repo.md",
+      "size": 9448,
+      "title": "Dive \u2014 kv4repo \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "8e470734784486ee10e06a81ad9fb366c755da3949c5f23caf259abbd2376b27",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2879-foscar.md",
+      "size": 8669,
+      "title": "Dive \u2014 foscar \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "94c8689f1a275cfc2b0ce28c94cfa58b5034c5dc5f69203aade09d78812691bc",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2880-ultraquant.md",
+      "size": 7249,
+      "title": "Dive \u2014 ultraquant \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "b4b0df87caf0e3ddeb5608c2fd8f96a34e0e1b114e75e03265f94a2ad30dffee",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2881-flagrot.md",
+      "size": 9601,
+      "title": "Dive \u2014 flagrot \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "d0642fe52e5016deb772c8629b83bc6effbd393f09c3d5228fbed256ec14b6c2",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2882-tmblog.md",
+      "size": 13533,
+      "title": "Dive \u2014 tmblog \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "7634c461f38612419cd7a846b0c061c7c1478ed0cc4cd1001c545ccd0f1654e3",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2883-divloc.md",
+      "size": 10886,
+      "title": "Dive \u2014 divloc \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "a5cc546086867a94eb0c63ba7927489f8ec4c3ec7eea4de9895844d949d7856a",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2884-x2605.md",
+      "size": 9623,
+      "title": "Dive \u2014 x2605 \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "e83277df5c1fb827d85557a6ea14bd81ef08d3876acf33ca309183ea8328f2c4",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2885-futurevalid.md",
+      "size": 11448,
+      "title": "Dive \u2014 futurevalid \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "d363a15e388779dc7c916f3052275708bbc2cc76529d3cf93f5810fd0017daa3",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2886-onetoken.md",
+      "size": 8276,
+      "title": "Dive \u2014 onetoken \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "03555c8217d0a3a7b85c5aad17c78679e03ba20dc196187aa7efd352af1146d4",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2887-catch.md",
+      "size": 6472,
+      "title": "Dive \u2014 catch \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "2278788909154823e256c26054ceb452ccac3520a4f3e8e12458e26e4d348810",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2888-noisyrew.md",
+      "size": 6087,
+      "title": "Dive \u2014 noisyrew \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "e4e83157f462d2f88ab0c678d6c91eea61f582d6d7d761826072aee19300c86d",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2889-ray.md",
+      "size": 6469,
+      "title": "Dive \u2014 ray \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "cb0375d570dcdb4dc67452f010dedf0f128a7423ec912730662515822d439db3",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2890-rhind.md",
+      "size": 6498,
+      "title": "Dive \u2014 rhind \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "cbc8639f4ba3c89aebd9c8fc16e11690bc2cc217fc26f6f7100760f5062a355f",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2891-samereq.md",
+      "size": 12611,
+      "title": "Dive \u2014 samereq \u2014 intake-ak-1124 (Stage 2b wave 1, expanded from intake-2872 exactpaper)",
+      "type": "research"
+    },
+    {
+      "content_hash": "209131ec7de4e1331f0d88dc3eeda4d523f0c1bdbcdbc621d78d83e49fe8998a",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2892-lowbitdec.md",
+      "size": 11155,
+      "title": "Dive \u2014 lowbitdec \u2014 intake-ak-1124 (Stage 2b wave 1, expanded from intake-2872 exactpaper)",
+      "type": "research"
+    },
+    {
+      "content_hash": "a1cc7fa8bd89a405b6b0b98a3cb1005868f37e6fca7b7adde4a8dc6bd88cf264",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2893-qnoise.md",
+      "size": 11610,
+      "title": "Dive \u2014 qnoise \u2014 intake-ak-1124 (Stage 2b wave 1, expanded from intake-2872 exactpaper)",
+      "type": "research"
+    },
+    {
+      "content_hash": "c6fd2e348c133500c1f364f62030d28c2ad0f1393c31ed0906f1026925f299bb",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2894-illusion.md",
+      "size": 11228,
+      "title": "Dive \u2014 illusion \u2014 intake-ak-1124 (Stage 2b wave 1, expanded from intake-2872 exactpaper)",
+      "type": "research"
+    },
+    {
+      "content_hash": "4206623f4ff695cbead7ca280531611346db3ee65074f0ccb392d9344ca49032",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2895-specmoe.md",
+      "size": 8783,
+      "title": "Dive \u2014 specmoe \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "a3dad03308d237afe48fe2d1b1365850eed30c2ad7dd811f50e8eef51ae741e6",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2896-s2moe.md",
+      "size": 10183,
+      "title": "Dive \u2014 s2moe \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "60a3639c987ce6f9a7bc2ff7e72bcb1abe78f807eaaf2e223fbf1d0430446979",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2897-kshiftrepo.md",
+      "size": 9639,
+      "title": "Dive \u2014 kshiftrepo \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "7025b21ae7c925f2fc7b3da2eb2aa196fcb26aec0b42a1380ec9b45b8885b120",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2898-simdbench.md",
+      "size": 7736,
+      "title": "Dive \u2014 simdbench \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "20f08c50e3319f361b81b91caa819dc28a7780fcb7bc48ab4a90ed115a365033",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2899-pr32135.md",
+      "size": 7312,
+      "title": "Dive \u2014 pr32135 \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "56f703ba0f5ea434d518aa4e243727fc3dff167d1f9a44ffbba53544f592a4a8",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2900-pr32387.md",
+      "size": 5349,
+      "title": "Dive \u2014 pr32387 \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "19bf954764261a16b343460c2930698470c70b4244a91fe8b3b64a9968daf5a6",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2901-klfloor.md",
+      "size": 6094,
+      "title": "Dive \u2014 klfloor \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "c5a27e5bb8dc17b00b3a8ad002c94074ad7812bd20a71f99a4b343dfdaeee369",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2902-cachecomp.md",
+      "size": 5358,
+      "title": "Dive \u2014 cachecomp \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "87e180a85d16161b7d83025857b73359f22415256739c07a472b907090b54e87",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2903-memmgmt.md",
+      "size": 4934,
+      "title": "Dive \u2014 memmgmt \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "dfcc1c091104791842cfb2cb744310a9ac9fdf778b2bdde0450c4c410dd2a4ca",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/intake-2904-huangrob.md",
+      "size": 13241,
+      "title": "Dive \u2014 huangrob \u2014 intake-ak-1124",
+      "type": "research"
+    },
+    {
+      "content_hash": "b92e279c11e8ae86150d53eca5196d0f2d7530bd001b070ffb0b2dbf4fe37ba8",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-ak-1124/stage3-plan.md",
+      "size": 277712,
+      "title": "Stage-3 plan \u2014 upstream GDN/MMID/BF16 PRs, 4-bit KV decode, noise floors, grammar drafts, harness and judge papers (intake-ak-1124) \u2014 REVISION 1, APPROVED 2026-11-24 (OD-1 = A, changes 1-3)",
       "type": "research"
     },
     {
@@ -5681,6 +6024,22 @@
       "path": "research/deep-dives/intake-digests/2026-11-23-ids-2824-2862.md",
       "size": 218100,
       "title": "Intake dive digest \u2014 2026-11-23, intake-2824#record .. intake-2862#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "dd68a24d9edfa14ec4aedcc71bfa49ecdc9ef211f51b30fbdda1a6177bcca3fa",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-digests/2026-11-24-ids-2863-2866.md",
+      "size": 12074,
+      "title": "Intake dive digest \u2014 2026-11-24, intake-2863#record .. intake-2866#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "dbd081c69b46d6c42782d0a06af4e6b181cb3b38b4d7c06ce05abc3c3b891ebc",
+      "modified": "2026-11-24T16:09:39Z",
+      "path": "research/deep-dives/intake-digests/2026-11-24-ids-2867-2904.md",
+      "size": 190260,
+      "title": "Intake dive digest \u2014 2026-11-24, intake-2867#record .. intake-2904#record",
       "type": "research"
     },
     {
@@ -18956,10 +19315,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c1010ee6b1b662837721a129b8a26a3e7518f8b38a98a2b087f6b50fdb5d1d0a",
-      "modified": "2026-11-24T07:14:24Z",
+      "content_hash": "ecd8982c633c7e25ff8b50590a2c0f053d62e12a5821cce8f013a7b8926536bb",
+      "modified": "2026-11-24T16:14:37Z",
       "path": "progress/2026-11/2026-11-24-autokernel.md",
-      "size": 5510,
+      "size": 10585,
       "title": "2026-11-24 autokernel: overnight push, 20:00Z 11-23 to 07:20Z 11-24 (operator-invoked /wrap-up)",
       "type": "progress"
     },
@@ -20148,10 +20507,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "cad9086705a49908bde063a44d3eb593cff639ca2832b1cbc82623fe4b56c61c",
-      "modified": "2026-11-23T18:02:40Z",
+      "content_hash": "5e95b37b0c0155bc7b6f85bf233a23312817f9ddae7bbad95d387f9ac14dad79",
+      "modified": "2026-11-24T16:09:39Z",
       "path": "docs/design/mi210-served-kernel-bandwidth-census-20261122.md",
-      "size": 17632,
+      "size": 32050,
       "title": "MI210 served-path kernel bandwidth census (2026-11-22)",
       "type": "docs"
     },
@@ -20804,10 +21163,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "a8ce17c736924d8fcd0187cf1e6d8a22aa629c8f0117b7205f435cb5436ce470",
-      "modified": "2026-11-24T07:13:24Z",
+      "content_hash": "75e35cd1e89b0123ac0f03320e3dcc735ff0b4eb3b08ea48400836f3fe836b0a",
+      "modified": "2026-11-24T16:09:39Z",
       "path": "docs/guides/agent-workflows/spec-identity-gate-protocol.md",
-      "size": 8072,
+      "size": 12698,
       "title": "Speculative-decoding identity and distribution gates (SPEC-ID-GATE-1 / SPEC-PIT.1)",
       "type": "docs"
     },
@@ -21508,10 +21867,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "b69e5f293661087fd65cff0252a3eec0b37729a4d9369c57b8448c3bc4bdd6c1",
-      "modified": "2026-11-23T18:02:40Z",
+      "content_hash": "bd01c4704fe739b1bb55ea9ff294fa3682f18737c0aac4f406d586219a849a35",
+      "modified": "2026-11-24T16:09:39Z",
       "path": "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "size": 134130,
+      "size": 137014,
       "title": "llama.cpp v11 release manifest",
       "type": "docs"
     },
@@ -23868,7 +24227,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2980,
+  "total_new": 3024,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -3366,3 +3366,14 @@ Sources: `docs/design/rowflow2-20261105.md`, `docs/design/mi210-eval-lane-fleet-
 - [v11 handoff progress 2026-11-17](../progress/2026-11/2026-11-17-handoff-v11-promotion-checklist.md) - resident-calibration tooling before the hold
 - [autokernel progress 2026-11-17](../progress/2026-11/2026-11-17-autokernel.md) - operator decisions D1-D8, row hygiene
 - [compute-fillers guide](../docs/guides/agent-workflows/compute-fillers.md) - lessons from 2026-11-17/18
+
+### Compiled Update — 2026-11-24 (operator wiki sweep, autokernel slice): Inkling expert streaming, official sampling, serving-state caveats
+
+- **Atomic Engine (Inkling 2 Mini).** Memory-budgeted expert streaming is real (CPU and Metal executors) but the 105.71 tok/s headline is confounded: the stock arm has no drafter and the prompt is a doubled file continued raw with ignore_eos, so it is an upper bound. A GGUF DSpark drafter (504 MB) is published, correcting INK2-PORT-2c. The card reports DSpark on one A100 at +35.0% (46.4 to 62.7 tok/s, acceptance 44.9%) with drafter-on output diverging from drafter-off ([dive](../research/deep-dives/intake-2863/atomic-engine-inkling2-mini.md), [stage 2b](../research/deep-dives/intake-2863/stage2b-pr31233-and-atomicchat-card.md)). Our host holds the whole model in RAM or HBM, so streaming is not a current need.
+- **Official sampling.** An audit found no served role ran at vendor sampling (registry temperatures 0.0-0.3, backend hardcoded top_k 40, repetition 1.1, min_p 0.05); the package was signed and applied and canonical recipes now use official sampling. Offline check passed for every role except vision_escalation; serving proof is blocked on the stack being down by operator choice ([progress](../progress/2026-11/2026-11-24-autokernel.md)).
+- **Serving caveat.** No served-config C21-vs-C18 speed number exists: every speed visit is greedy np1, and the C21 A3B served gate has not run ([progress](../progress/2026-11/2026-11-24-autokernel.md)).
+- **Cost model form.** Cache-aware compression crossover on reuse fraction transfers only re-expressed in seconds; every API dollar figure is non-transferable (intake-2902#record).
+
+#### Source References (2026-11-24, operator wiki sweep, autokernel slice)
+- [Atomic Engine dive](../research/deep-dives/intake-2863/atomic-engine-inkling2-mini.md), [stage 2b](../research/deep-dives/intake-2863/stage2b-pr31233-and-atomicchat-card.md), [progress 2026-11-24](../progress/2026-11/2026-11-24-autokernel.md)
+- [cachecomp dive](../research/deep-dives/intake-ak-1124/intake-2902-cachecomp.md), [digest 2863-2866](../research/deep-dives/intake-digests/2026-11-24-ids-2863-2866.md), [v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md)

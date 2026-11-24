@@ -964,3 +964,14 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - [q38fn-cpu-verify-weight-reuse-20261122](../docs/design/q38fn-cpu-verify-weight-reuse-20261122.md)
 - [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md)
+
+### Compiled Update — 2026-11-24 (operator wiki sweep, autokernel slice): expert-cache evidence, A3B census and MMID closures
+
+- **A3B MUL_MAT_ID bandwidth.** At n=3 the expert matmuls read about 3.08 GB (U(3) about 23 experts x 134 MB) at about 780 GB/s, 1.38 ms/step recoverable at 1.2 TB/s ([census](../docs/design/mi210-served-kernel-bandwidth-census-20261122.md)). A3B expert dedup (MMID dedup) was dropped, and the router chunk keep was folded into C20 (np4 MMVF_CHUNK=8 B/A 1.0817) ([progress](../progress/2026-11/2026-11-24-autokernel.md)).
+- **mul_mat_id abort at large ubatch.** CUDA keeps 4 bytes of shared memory per token and asserts above smpbo/4 tokens (25344 on GB10); derived gfx90a ceiling 16384 tokens, unreachable from any configured recipe (max ubatch 2048). The fix would be a separate fold next to MMID-HELPER-N10 (intake-2868#record).
+- **Offloaded-MoE evidence does not transfer to a DRAM-resident A3B.** SpecMoE's resident draft pool wins because the pool sits in a faster tier than the verify path; S2-MoE and CCAMoE are all offload-only, no CPU-resident speedup measured (intake-2895#record, intake-2896#record, intake-2876#record).
+- **Device expert cache exists upstream.** llama.cpp PR 31233 (merged 2026-11-06) ranks eight LRU classes by a decaying CRF score (half-life 128 tokens); the author reports +6% decode (QFN) and +7% (GLM) vs SLRU with 8% fewer uploads, warm cache, HIP not checked. Relevant only if an MoE needs a device expert cache on the MI210 (intake-2865#record).
+
+#### Source References (2026-11-24, operator wiki sweep, autokernel slice)
+- [bandwidth census](../docs/design/mi210-served-kernel-bandwidth-census-20261122.md), [progress 2026-11-24](../progress/2026-11/2026-11-24-autokernel.md), [PR 32177 dive](../research/deep-dives/intake-ak-1124/intake-2868-pr32177.md)
+- [SpecMoE dive](../research/deep-dives/intake-ak-1124/intake-2895-specmoe.md), [S2-MoE dive](../research/deep-dives/intake-ak-1124/intake-2896-s2moe.md), [stage 2b PR 31233](../research/deep-dives/intake-2863/stage2b-pr31233-and-atomicchat-card.md)
