@@ -60,8 +60,29 @@ class Keeper(unittest.TestCase):
         self.setup_row(dict(I8GEMM, complete=False))
         self.assertEqual(self.tick(), [RID])
 
-    def test_no_polar_still_requeued(self):
+    def test_verdict_no_polar_not_requeued(self):
         r = dict(I8GEMM); r.pop("polar")
+        self.setup_row(r)
+        self.assertEqual(self.tick(), [])
+        self.assertTrue(any(l.startswith("NO-REQUEUE-COMPLETE " + RID) for l in self.logs))
+
+    def test_no_polar_no_verdict_still_requeued(self):
+        r = dict(I8GEMM); r.pop("polar"); r.pop("verdict")
+        self.setup_row(r)
+        self.assertEqual(self.tick(), [RID])
+
+    def test_no_polar_empty_verdict_still_requeued(self):
+        r = dict(I8GEMM, verdict="  "); r.pop("polar")
+        self.setup_row(r)
+        self.assertEqual(self.tick(), [RID])
+
+    def test_verdict_no_polar_incomplete_still_requeued(self):
+        r = dict(I8GEMM, complete=False); r.pop("polar")
+        self.setup_row(r)
+        self.assertEqual(self.tick(), [RID])
+
+    def test_verdict_no_polar_smoke_still_requeued(self):
+        r = dict(I8GEMM, smoke=True); r.pop("polar")
         self.setup_row(r)
         self.assertEqual(self.tick(), [RID])
 

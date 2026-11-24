@@ -78,7 +78,8 @@ def is_decided(r) -> bool:
 
 
 def complete_result(d: dict) -> dict | None:
-    """{path, verdict, polar} for the row's real (non-smoke) RESULT that is complete with a polar field; else None.
+    """{path, verdict, polar} for the row's real (non-smoke) RESULT that is complete with a polar field or a non-empty
+    string verdict; else None.
     Looks at <scratch_root|workdir>/out/RESULT.json, then a literal .json result_path. Never raises."""
     d = d or {}
     paths = [os.path.join(str(r), "out", n) for r in (d.get("scratch_root"), d.get("workdir")) if r for n in RESULT_NAMES]
@@ -91,6 +92,8 @@ def complete_result(d: dict) -> dict | None:
                 r = json.load(f)
         except (OSError, ValueError, TypeError):
             continue
-        if isinstance(r, dict) and r.get("complete") is True and "polar" in r and r.get("smoke") is not True:
+        v = r.get("verdict") if isinstance(r, dict) else None
+        has_verdict = isinstance(v, str) and bool(v.strip())   # hand-built rows: complete + verdict, no polar field
+        if isinstance(r, dict) and r.get("complete") is True and ("polar" in r or has_verdict) and r.get("smoke") is not True:
             return {"path": p, "verdict": str(r.get("verdict") or ""), "polar": r.get("polar")}
     return None
