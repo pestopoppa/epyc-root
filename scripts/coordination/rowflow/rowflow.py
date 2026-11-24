@@ -4945,6 +4945,36 @@ def write_grant(flags, rid, regions, holds, window_s, lock="", end_cap=None):
     return line.strip()
 
 
+def write_row_grant_locked(flags, rid, regions, holds, window_s, lock="", end_cap=None):
+    """(line, None) after writing rid's grant under grants/.claim.lock, or (None, holder_id) when another open grant -
+    a build claim (.grant / .build.json) or a row - already holds any of `holds` on disk. HEAL-DBL 2026-11-24."""
+    G = os.path.join(flags, "grants")
+    os.makedirs(G, exist_ok=True)
+    fd = os.open(os.path.join(G, ".claim.lock"), os.O_CREAT | os.O_RDWR, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        want = expand(set(holds))
+        for g in open_grants(flags):
+            if g["id"] != rid and want & expand(g["holds"]):
+                return None, g["id"]
+        for bp in glob.glob(os.path.join(G, BUILD_PREFIX + "*.build.json")):   # a build claim whose .grant is not yet/no longer there
+            gid = os.path.basename(bp)[:-len(".build.json")]
+            if any(os.path.exists(os.path.join(G, gid + t)) for t in (".ended", ".complete", ".grant")):
+                continue   # ended, or already checked through its .grant above
+            bj = load_json(bp) or {}
+            if not bj or bj.get("heal_withdrawn"):
+                continue
+            end = iso_epoch(bj.get("at")) if bj.get("at") else None
+            if end is not None and time.time() > end + 60 * float(bj.get("minutes") or 0):
+                continue
+            bh = set(bj.get("partial") or bj.get("quarters") or [])
+            if want & expand(bh):
+                return None, gid
+        return write_grant(flags, rid, regions, holds, window_s, lock, end_cap=end_cap), None
+    finally:
+        os.close(fd)
+
+
 # ---------------------------------------------------------------- D9 capcut requeue (operator: "Requeue same id")
 CAPCUT_MAX = 6            # requeues per row per CAPCUT_WINDOW_S; then the row ends normally
 CAPCUT_WINDOW_S = 86400
@@ -5428,7 +5458,8 @@ def repeat_alert(flags, seen, log):
 def heal_grants(flags, grants, rl, log, seen, allrows=None):
     """(c) a grant whose region another job holds is re-assigned (grant removed before the poller started; the row is
     grantable again next tick); a grant whose poller/dry-run pid is dead with no end record is stale (moved aside)."""
-    keep = []
+    keep, withdrawn = [], set()
+    by_id = {g["id"]: g for g in grants}
     stale_dir = os.path.join(flags, "grants", "stale-" + dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
     for g in grants:
         rid = g["id"]
@@ -5439,18 +5470,94 @@ def heal_grants(flags, grants, rl, log, seen, allrows=None):
             log(f"HEAL stale-grant {rid}: poller pid {g['pid']} dead, no .ended; grant moved to {os.path.basename(stale_dir)}/ (row re-granted when free)")
             seen.add(f"stale-grant:{id_stem(rid)}")
             continue
+        if rid in withdrawn:
+            continue
         foreign = [r for r in g["holds"] if r in REGIONS and r in rl and rl[r][0] != "free" and rl[r][1] not in ("", f"filler-{rid}")]
         if foreign:
             holder = ",".join(f"{r}={rl[r][1]}" for r in foreign)
+            # HEAL-DBL 2026-11-24: the EARLIER of the two claims is kept (by grant timestamp), never blindly this one.
+            others = {rl[r][1][len("filler-"):] for r in foreign if rl[r][1].startswith("filler-")}
+            later = [o for o in sorted(others) if o in by_id and o not in withdrawn
+                     and _grant_epoch(flags, rid) < _grant_epoch(flags, o)]
+            if later and len(later) == len(others):
+                for o in later:
+                    _heal_withdraw(flags, by_id[o], rid, log)
+                    withdrawn.add(o)
+                    seen.add(f"conflict:{o}")
+                keep.append(g)
+                continue
             if not g["started"] and not g["dryrun"]:
                 os.remove(g["path"])
+                if rid.startswith(BUILD_PREFIX):
+                    _mark_build_withdrawn(flags, rid, ",".join(sorted(others)) or holder)
                 log(f"HEAL conflict {rid}: granted onto {holder} held by another job before START; grant withdrawn, re-assigned next tick")
+                log(f"HEAL-CONFLICT kept {','.join(sorted(others)) or holder} withdrew {rid}")
+                _heal_alert(flags, rid, ",".join(sorted(others)) or holder, log)
                 seen.add(f"conflict:{rid}")
                 continue
             log(f"CONFLICT {rid}: running on {holder} held by another job (engine queued in region-lock); not killed")
             seen.add(f"conflict:{rid}")
         keep.append(g)
-    return keep
+    return [g for g in keep if g["id"] not in withdrawn]
+
+
+def _grant_epoch(flags, gid):
+    """When gid was granted: build.json / GRANTED.json `at`, else the .grant mtime; +inf when unknown (treated as latest)."""
+    G = os.path.join(flags, "grants")
+    rec = load_json(os.path.join(G, gid + ".build.json")) if gid.startswith(BUILD_PREFIX) else load_json(granted_path(flags, gid))
+    t = iso_epoch((rec or {}).get("at")) if (rec or {}).get("at") else None
+    if t is None:
+        try:
+            t = os.path.getmtime(os.path.join(G, gid + ".grant"))
+        except OSError:
+            t = float("inf")
+    return t
+
+
+def _grant_owner(flags, gid):
+    if gid.startswith(BUILD_PREFIX):
+        return str((load_json(os.path.join(flags, "grants", gid + ".build.json")) or {}).get("owner") or "")
+    return notify.row_owner(flags, gid) or str((load_json(ready_path(flags, gid)) or {}).get("owner") or "")
+
+
+def _mark_build_withdrawn(flags, gid, kept):
+    bp = os.path.join(flags, "grants", gid + ".build.json")
+    bj = load_json(bp)
+    if bj:
+        bj.update(heal_withdrawn=now_iso(), heal_kept=kept)
+        atomic_json(bp, bj)
+
+
+def _heal_alert(flags, withdrew, kept, log):
+    """The owner of a HEAL-withdrawn grant is always told (one idempotent alert per withdrawn id)."""
+    try:
+        notify.emit(flags, "heal-conflict", withdrew, kept,
+                    f"HEAL-CONFLICT: grant {withdrew} withdrawn; it collided with earlier {kept}. "
+                    + ("Stop work pinned to its cpus and re-claim (`rowflow.py claim --build`), or `rowflow.py release` it."
+                       if withdrew.startswith(BUILD_PREFIX) else "The row is requeued and re-granted when its regions free."),
+                    "warning", _grant_owner(flags, withdrew), {"kept": kept, "withdrew": withdrew})
+    except Exception as ex:  # noqa: BLE001 - an alert failure never changes the heal
+        log(f"HEAL-CONFLICT {withdrew}: notify failed: {type(ex).__name__}: {ex}")
+
+
+def _heal_withdraw(flags, g, kept, log):
+    """Withdraw the LATER grant g of a collision with `kept`. A row grant not yet started is removed (re-granted next tick);
+    a started row is drained via its STOP file (never killed; rc=75 stopped is resumable). A build is marked withdrawn."""
+    gid = g["id"]
+    if gid.startswith(BUILD_PREFIX):
+        _rm(g["path"]); _mark_build_withdrawn(flags, gid, kept)
+    elif not g["started"] and not g["dryrun"]:
+        _rm(g["path"])
+    else:
+        sf = resolve_stop_path(load_json(ready_path(flags, gid)) or {})
+        if sf:
+            try:
+                os.makedirs(os.path.dirname(sf), exist_ok=True)
+                open(sf, "a").close()
+            except OSError as e:
+                log(f"HEAL-CONFLICT {gid}: could not touch STOP {sf}: {e}")
+    log(f"HEAL-CONFLICT kept {kept} withdrew {gid}")
+    _heal_alert(flags, gid, kept, log)
 
 
 # ---------------------------------------------------------------- HOLD-ORPHAN (AK audit B2, 2026-11-23)
@@ -6640,6 +6747,20 @@ def release_grant(flags, rid, by, reason, regions=None, log=print, now=None, end
     by = str(by or "").strip()
     need(reason, "release: --reason is required")
     need(by, "release: --by <owner> is required (or EPYC_AGENT_ID in the environment)")
+    bjp = os.path.join(G, rid + ".build.json")
+    if rid.startswith(BUILD_PREFIX) and not os.path.exists(gp) and os.path.exists(bjp) and not regions:
+        # HEAL-DBL 2026-11-24: a build claim left only as .build.json (HEAL withdrew its .grant) is released idempotently
+        bj0 = load_json(bjp) or {}
+        bo = str(bj0.get("owner") or "")
+        ended0 = any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete"))
+        need(not ended0 or bj0.get("heal_withdrawn"),
+             f"release {rid}: already ended (grants/{rid}.ended|.complete); nothing to release")
+        need(bo and bo == by, f"release {rid}: owner is {bo or '(unknown)'}, caller is {by or '(none)'}; only the row owner may release")
+        if not any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete")):
+            with open(os.path.join(G, rid + ".ended"), "w") as f:
+                f.write(f"rc=75 time={now_iso() if now is None else now} reason={ended_reason} by={by} note={reason}\njob_id={rid}\n")
+        log(f"GRANT-RELEASED {rid}: build claim (build.json only) ended by owner {by} reason={reason}")
+        return "RELEASED"
     need(not any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete")),
          f"release {rid}: already ended (grants/{rid}.ended|.complete); nothing to release")
     need(os.path.exists(gp), f"release {rid}: no open grant (grants/{rid}.grant)")
@@ -8565,8 +8686,17 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                     stop_poller_if_parked(flags, rid, d, pid, line, n, log)
                     failed.append(rid); continue
                 # the engine's region-lock claim IS the contract: a CONTRACT_LOCK engine locks lock= instead of --claim-cpus
-                gl = write_grant(flags, rid, regions, opt, win, (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "",
-                                 end_cap=end_cap)
+                # HEAL-DBL 2026-11-24: the tick's grant snapshot predates arming (seconds); a build claim written meanwhile
+                # (build-autokernel-20261124T100323Z-cc70ff on q0) was double-booked. Re-check on-disk grants and write
+                # under the same grants/.claim.lock claim_build holds, so a claim and a row grant can never both land.
+                gl, clash = write_row_grant_locked(flags, rid, regions, opt, win,
+                                                   (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "",
+                                                   end_cap=end_cap)
+                if clash:
+                    log(f"GRANT-RACE {rid}: {','.join(compress(opt))} now held by {clash} (claimed after this tick's snapshot); "
+                        "not granted, re-planned")
+                    plan_free -= expand(set(opt))
+                    failed.append(rid); continue
                 if end_cap:
                     log(f"HARD-END-CAP {rid}: admitted by book_s {int(book_s(d))}s ahead of "
                         f"{dt.datetime.fromtimestamp(end_cap, dt.timezone.utc):%H:%MZ}; grant ends there (engine hard-end kills an overrun)")
