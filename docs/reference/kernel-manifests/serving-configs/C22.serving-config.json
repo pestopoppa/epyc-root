@@ -167,6 +167,31 @@
               "results_jsonl_sha256": "a0c3a72a2fd9519754e51528d7d060be3ba164a983ebdfb491dd6390bcb001fd"
             }
           }
+        },
+        {
+          "id": "single-stream-np1-t1.0-short",
+          "config": "evidence:np1-single-stream",
+          "throughput_tok_s": 96.617,
+          "throughput_basis": "OFF arm decode tok/s, single stream (np1), short prompts, max_tokens 1024, T 1.0 top_k 20 top_p 0.95, /v1/chat/completions; A/A repeat OFF2 95.076 (aa 0.984, CI 0.960..1.016)",
+          "itl_p50_ms": null,
+          "itl_p95_ms": null,
+          "temperature": 1.0,
+          "acceptance": 0.6249,
+          "acceptance_basis": "summary.distribution.acc.per_arm.OFF (OFF2 0.619)",
+          "memory_gib": null,
+          "unmeasured": {
+            "itl_p50_ms": "the row reports tok/s and acceptance, not inter-token latency",
+            "itl_p95_ms": "the row reports tok/s and acceptance, not inter-token latency",
+            "memory_gib": "the row records no VRAM sample"
+          },
+          "note": "Compare the np4 floor row: 14 tok/s per slot with 3.8k concurrent prefill, so 4 slots deliver less than one stream; the loss is concurrency plus prefill, not temperature (autokernel 2026-11-24). Measured np4 aggregate is 29.7 tok/s including prefill time; 4 x 14 = 56 counts decode time only",
+          "provenance": {
+            "row_id": "ak-spec-bsamp-gpu-20261124",
+            "result_json": "/mnt/raid0/llm/tmp/ak-spec-bsamp-gpu-20261124/out/RESULT.json",
+            "result_sha256": "beafc07e4c54d0796942838c8049d71e747b7e0d874ad0fb5ac1efe2571c88cd",
+            "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-4f2e5618e-c22-df2pm-bsamp",
+            "verdict": "OFF/OFF2 arms (backend sampling off); store as recorded in the RESULT, not C21"
+          }
         }
       ]
     },
