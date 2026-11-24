@@ -921,11 +921,27 @@ def rebuild_served_argv(role, port, flags=None):
     if p.returncode != 0:
         return None, f"rebuild rc {p.returncode}: {(p.stderr or '').strip()[-160:]}"
     try:
-        argv = [("{PORT}" if x == str(port) else x) for x in json.loads(p.stdout.strip().splitlines()[-1])]
+        argv = placeholder_argv(json.loads(p.stdout.strip().splitlines()[-1]))
     except (ValueError, IndexError):
         return None, "rebuild printed no argv"
     _cache_put(flags, key, "served", {"argv": argv, "role": role, "registry_sha256": rsha, "orchestrator_commit": head})
     return argv, None
+
+
+def placeholder_argv(argv):
+    """mk_ak_row v2 contract: the --port value becomes "{PORT}" and the --slot-save-path value "{SLOTDIR}"; nothing else."""
+    out = [str(x) for x in argv]
+    for k, x in enumerate(out[:-1]):
+        if x == "--port":
+            out[k + 1] = "{PORT}"
+        elif x == "--slot-save-path":
+            out[k + 1] = "{SLOTDIR}"
+    return out
+
+
+def served_argv_sha256(argv):
+    """mk_ak_row v2 contract: sha256(json.dumps(argv)) with default separators."""
+    return hashlib.sha256(json.dumps(argv).encode()).hexdigest()
 
 
 def argv_map(tokens):
@@ -943,12 +959,6 @@ def argv_map(tokens):
                 v = None
             out[f] = v
     return out
-
-
-def _argv_sha_candidates(argv):
-    a = [str(x) for x in argv]
-    forms = [json.dumps(a), json.dumps(a, separators=(",", ":")), " ".join(a), "\x00".join(a), "\n".join(a)]
-    return {hashlib.sha256(f.encode()).hexdigest() for f in forms}
 
 
 def _diff(expected, got, declared):
@@ -988,9 +998,12 @@ def check_served(row, ctx):
                 continue
             declared[str(dlt["flag"])] = dlt.get("value")
     sargv = ref.get("argv")
-    if isinstance(sargv, list) and ref.get("argv_sha256"):
-        if str(ref["argv_sha256"]).lower() not in _argv_sha_candidates(sargv):
-            out.append(("WARN", "SERVED-ARGV-SHA", "served_ref.argv_sha256 matches no known hashing of served_ref.argv"))
+    if isinstance(sargv, list):
+        if not ref.get("argv_sha256"):
+            out.append(("FAIL", "SERVED-ARGV-SHA", "served_ref.argv_sha256 missing"))
+        elif str(ref["argv_sha256"]).lower() != served_argv_sha256(sargv):
+            out.append(("FAIL", "SERVED-ARGV-SHA", "served_ref.argv_sha256 != sha256(json.dumps(served_ref.argv)): the "
+                                                   "argv was edited after generation"))
     if ref.get("registry_sha256"):
         try:
             if _sha256(REGISTRY) != str(ref["registry_sha256"]).lower():
@@ -1003,10 +1016,9 @@ def check_served(row, ctx):
     rebuilt, why = (None, "disabled") if ctx.get("rebuild") is False else rebuild_served_argv(role, ref.get("port"), ctx.get("flags"))
     job = argv_map([t for _f, _ln, a in argvs for t in a])
     if rebuilt is not None:
-        if isinstance(sargv, list):
-            stale = _diff(argv_map(rebuilt), argv_map(sargv), {})
-            if stale:
-                out.append(("FAIL", "SERVED-STALE", f"served_ref.argv differs from a fresh build of {role}: {stale[:3]}"))
+        if isinstance(sargv, list) and [str(x) for x in sargv] != rebuilt:
+            stale = _diff(argv_map(rebuilt), argv_map(sargv), {}) or ["token order/content"]
+            out.append(("FAIL", "SERVED-STALE", f"served_ref.argv differs from a fresh build of {role}: {stale[:3]}"))
         expected = argv_map(rebuilt)
     elif isinstance(sargv, list):
         expected = argv_map(sargv)
@@ -1034,27 +1046,31 @@ GEN_STAMP_RX = re.compile(r"^#\s*GENERATED-BY:\s*(\S+)\s+(v\S+)\s+harness_sha256
 
 
 def check_generator(row, ctx):
-    """Check 12 (WARN only; the future publish-refusal key): job.py carries `# GENERATED-BY: mk_ak_row.py v2
-    harness_sha256=<sha>` and spec.generator {tool, version, harness_sha256} agrees with it and with ak_row_harness.py."""
+    """Check 12 (WARN only; enforce candidate at 0 unstamped queued rows). Valid: the job.py line `# GENERATED-BY:
+    mk_ak_row.py v2 harness_sha256=<sha of the vendored ak_row_harness.py>` OR spec.generator {tool: "mk_ak_row.py",
+    version: "v2", harness_sha256[, profile: "polar"]} (polar rows: akloop/chain.py rewrites job.py, spec only)."""
     job = row.code.get("job.py")
     if job is None:
         return []
-    m = GEN_STAMP_RX.search(job)
-    g = row.spec.get("generator")
-    out = []
-    if not m:
-        out.append(("WARN", "GENERATOR-UNSTAMPED", "job.py has no `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` "
-                                                   "stamp (hand-built row; publish will refuse these later)"))
-    if not isinstance(g, dict) or not all(g.get(k) for k in ("tool", "version", "harness_sha256")):
-        out.append(("WARN", "GENERATOR-SPEC", "spec.generator {tool, version, harness_sha256} absent or incomplete"))
-    if m and isinstance(g, dict):
-        tool, ver, hs = m.groups()
-        if (os.path.basename(str(g.get("tool") or "")), str(g.get("version") or "").lstrip("v"),
-                str(g.get("harness_sha256") or "").lower()) != (os.path.basename(tool), ver.lstrip("v"), hs):
-            out.append(("WARN", "GENERATOR-MISMATCH", "job.py stamp and spec.generator disagree"))
     hp = os.path.join(row.dir, "ak_row_harness.py")
-    if m and os.path.isfile(hp) and _sha256(hp) != m.group(3):
-        out.append(("WARN", "GENERATOR-HARNESS", "ak_row_harness.py sha256 differs from the stamp's harness_sha256"))
+    hsha = _sha256(hp) if os.path.isfile(hp) else None
+    out = []
+    m = GEN_STAMP_RX.search(job)
+    stamp_ok = bool(m and os.path.basename(m.group(1)) == "mk_ak_row.py" and m.group(2) == "v2"
+                    and (hsha is None or m.group(3) == hsha))
+    if m and not stamp_ok:
+        out.append(("WARN", "GENERATOR-HARNESS", "job.py GENERATED-BY stamp is not mk_ak_row.py v2 or its harness_sha256 "
+                                                 "differs from the vendored ak_row_harness.py"))
+    g = row.spec.get("generator")
+    spec_ok = bool(isinstance(g, dict) and os.path.basename(str(g.get("tool") or "")) == "mk_ak_row.py"
+                   and str(g.get("version") or "") == "v2" and re.fullmatch(r"[0-9a-f]{64}", str(g.get("harness_sha256") or ""))
+                   and g.get("profile") in (None, "polar"))
+    if isinstance(g, dict) and not spec_ok:
+        out.append(("WARN", "GENERATOR-SPEC", f"spec.generator {g} is not {{tool: mk_ak_row.py, version: v2, harness_sha256"
+                                              "[, profile: polar]}"))
+    if not (stamp_ok or spec_ok):
+        out.append(("WARN", "GENERATOR-UNSTAMPED", "neither a job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` "
+                                                   "stamp nor spec.generator (hand-built row; publish will refuse these later)"))
     return out
 
 

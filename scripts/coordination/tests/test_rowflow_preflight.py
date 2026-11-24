@@ -115,7 +115,7 @@ def test_store_ok_and_missing(tmp_path):
     m = make_model(tmp_path)
     d, s = make_row(tmp_path, "zz-store-20261124", job=server_job(st, m))
     assert not codes(run(s, d, "store"), level="FAIL")
-    (d / "job.py").write_text(server_job(str(st) + "-gone", str(m) + ".x.gguf"))
+    (d / "job.py").write_text(server_job(str(st) + "-gone", str(m).replace(".gguf", "-gone.gguf")))
     got = codes(run(s, d, "store"), level="FAIL")
     assert {"STORE-MISSING", "MODEL-MISSING"} <= got
 
@@ -378,21 +378,28 @@ def test_served_v2_schema_rebuild_and_delta(tmp_path, monkeypatch):
     monkeypatch.setattr(P, "rebuild_served_argv", lambda *a: ([x if x != "2" else "4" for x in served], None))
     assert "SERVED-STALE" in codes(run(s, d, "served"), level="FAIL")       # the registry moved since generation
     s["served_ref"]["argv_sha256"] = "0" * 64
-    assert "SERVED-ARGV-SHA" in codes(run(s, d, "served"), level="WARN")
+    assert "SERVED-ARGV-SHA" in codes(run(s, d, "served"), level="FAIL")
 
 
 # ---------------------------------------------------------------- 12 generator (WARN only)
 def test_generator_stamp_warn_only(tmp_path):
     d, s = make_row(tmp_path, "zz-gen-20261124")
     got = run(s, d, "generator")
-    assert {"GENERATOR-UNSTAMPED", "GENERATOR-SPEC"} <= codes(got, level="WARN") and not codes(got, level="FAIL")
+    assert "GENERATOR-UNSTAMPED" in codes(got, level="WARN") and not codes(got, level="FAIL")
     (d / "ak_row_harness.py").write_text("# harness\n")
     hs = _sha(d / "ak_row_harness.py")
     (d / "job.py").write_text(f"# GENERATED-BY: mk_ak_row.py v2 harness_sha256={hs}\n" + SELFTEST_OK)
     s["generator"] = {"tool": "mk_ak_row.py", "version": "v2", "harness_sha256": hs}
     assert not codes(run(s, d, "generator"))
-    s["generator"]["harness_sha256"] = "1" * 64
-    assert "GENERATOR-MISMATCH" in codes(run(s, d, "generator"), level="WARN")
+    s.pop("generator")
+    assert not codes(run(s, d, "generator"))                                # the stamp alone is valid
+    (d / "job.py").write_text(SELFTEST_OK)
+    s["generator"] = {"tool": "mk_ak_row.py", "version": "v2", "harness_sha256": hs, "profile": "polar"}
+    assert not codes(run(s, d, "generator"))                                # polar: spec.generator alone is valid
+    s.pop("generator")
+    (d / "job.py").write_text(f"# GENERATED-BY: mk_ak_row.py v2 harness_sha256={'1' * 64}\n" + SELFTEST_OK)
+    got = codes(run(s, d, "generator"))
+    assert {"GENERATOR-HARNESS", "GENERATOR-UNSTAMPED"} <= got and not codes(run(s, d, "generator"), level="FAIL")
 
 
 # ---------------------------------------------------------------- hooks + report
