@@ -105,3 +105,28 @@ def test_record_fail_classifies_ak_rows_only(tmp_path, monkeypatch):
 
 if __name__ == "__main__":
     raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/coordination/tests/test_akloop_ak_runend.py -q")
+
+
+def test_census_update_passes_merge_static_every_run(tmp_path):
+    kr = tmp_path / "kr"
+    loop = kr / "autokernel" / "loop"
+    (loop / "census").mkdir(parents=True)
+    (loop / "census" / "mi210_bandwidth_census.json").write_text("{}")
+    (loop / "census_update.py").write_text("# supports --merge-static-from\n")
+    res = tmp_path / "r.json"
+    res.write_text("{}")
+    state = tmp_path / "state"
+    (state).mkdir()
+    (state / "mi210_bandwidth_census.json").write_text("{}")  # live file already exists: seed-copy branch is skipped
+    seen = []
+
+    def fake(argv, **kw):
+        seen.append(argv)
+        return type("R", (), {"stdout": "BW-CENSUS {}", "stderr": "", "returncode": 0})()
+
+    AR.census_update("r", str(res), kernel_rnd=str(kr), state=str(state), run=fake)
+    assert "--merge-static-from" in seen[0]
+    assert seen[0][seen[0].index("--merge-static-from") + 1].endswith("mi210_bandwidth_census.json")
+    (loop / "census_update.py").write_text("# old\n")  # snapshot predating the flag must not receive it
+    AR.census_update("r", str(res), kernel_rnd=str(kr), state=str(state), run=fake)
+    assert "--merge-static-from" not in seen[1]

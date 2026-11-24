@@ -109,8 +109,8 @@ def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, 
     kr = kernel_rnd or research_snapshot()
     os.makedirs(state, exist_ok=True)
     census = os.path.join(state, "mi210_bandwidth_census.json")
+    seed = os.path.join(kr, "autokernel", "loop", "census", "mi210_bandwidth_census.json")
     if not os.path.exists(census):
-        seed = os.path.join(kr, "autokernel", "loop", "census", "mi210_bandwidth_census.json")
         if os.path.exists(seed):
             with open(seed) as f, open(census, "w") as g:
                 g.write(f.read())
@@ -119,7 +119,10 @@ def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, 
         open(journal, "w").write("# AK bandwidth census journal (deterministic; fold into loop/program.md)\n")
     r = run([sys.executable, "-s", "-B", "-m", "autokernel.loop.census_update", "--result", result_path, "--row", rid,
              "--census", census, "--program", journal, "--doc", os.path.join(state, "census-table.md"),
-             "--seeds-out", os.path.join(state, "seed-stubs")], cwd=kr, capture_output=True, text=True, timeout=120)
+             "--seeds-out", os.path.join(state, "seed-stubs"),
+             *(["--merge-static-from", seed] if os.path.exists(seed) and "merge-static-from" in open(
+                 os.path.join(kr, "autokernel", "loop", "census_update.py")).read() else [])],  # committed parity/time_only -> live, every run
+            cwd=kr, capture_output=True, text=True, timeout=120)
     return ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
 
 
