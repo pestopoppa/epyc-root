@@ -132,6 +132,18 @@
           "temperature": 1.0,
           "acceptance": 0.39869276876471466,
           "acceptance_basis": "mean of per-launch draft_n_accepted/draft_n, 48 launches",
+          "drafter": {
+            "status": "under investigation",
+            "drafter_id": "dflash2",
+            "n_max": 7,
+            "tokens_per_verify_step": 3.73,
+            "drafted_per_step": 6.86,
+            "accepted_fraction": 0.40,
+            "verify_step_ms_approx": 270,
+            "n_requests": 192,
+            "basis": "autokernel 2026-11-24 from results.jsonl (sha256 a0c3a72a2fd9519754e51528d7d060be3ba164a983ebdfb491dd6390bcb001fd); verify step ~= per-slot 14 tok/s / 3.73 with 4 slots plus concurrent 3.8k prefill at ub 512",
+            "investigation": "3.73 is ~9% below the DFlash2 card's lowest benchmark (card acceptance length incl. bonus token: mean 4.80 at T 1.0, 4.10 MT-Bench .. 5.46 GSM8K, xhigh reasoning, 4096 max tokens). Row ak-df2-card-conformance-gpu-20261124 (card prompts; reasoning off/on; Q8_0 vs BF16 drafter) separates workload, quantization and llama.cpp path"
+          },
           "memory_gib": 49.848411560058594,
           "memory_basis": "max own-PID KFD VRAM after the round, np4 c393216 q8_0 KV, DFlash2 drafter",
           "noise": {
