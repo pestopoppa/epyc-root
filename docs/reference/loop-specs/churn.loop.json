@@ -486,7 +486,7 @@
   },
   {
    "id": "RAM_MARGIN_GIB",
-   "value": 64,
+   "value": 100,
    "unit": "GiB",
    "source": "scripts/coordination/rowflow/rowflow.py:RAM_MARGIN_GIB",
    "meaning": "allocator keeps this much RAM free (earlyoom fires at 40 GiB)"
