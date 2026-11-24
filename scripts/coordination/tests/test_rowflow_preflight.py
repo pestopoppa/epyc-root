@@ -83,7 +83,7 @@ def _cache(tmp_path, monkeypatch):
 
 # ---------------------------------------------------------------- the switch
 def test_enforce_table_all_false_and_one_entry_per_check():
-    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS)
+    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS) and len(P.CHECKS) == 12
     assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "ports", "append"}
     assert set(P.DRIFT_CHECKS) <= set(P.CHECKS)
 
@@ -277,6 +277,7 @@ def test_served_argv_against_registry(tmp_path, monkeypatch):
                    "      kv_quant: {k: q8_0, v: q8_0}\n")
     monkeypatch.setattr(P, "REGISTRY", str(reg))
     P._REG.clear()
+    monkeypatch.setattr(P, "rebuild_served_argv", lambda *a: (None, "test: no orchestrator"))
     st, m = make_store(tmp_path), make_model(tmp_path)
     good = '"-c", "32768", "-np", "2", "-ctk", "q8_0", "-ctv", "q8_0", "--no-mmap"'
     d, s = make_row(tmp_path, "zz-srv-20261124", job=server_job(st, m, good), spec={"served_ref": {"registry_role": "worker"}})
@@ -354,6 +355,44 @@ def test_regression_c21_cpu_r2_interleave_contention(tmp_path):
     assert "INTERLEAVE-CONCURRENT" in codes(run(s, d, "lane"), level="FAIL")
     (d / "job.py").write_text(server_job(st, m, head=head.replace("--interleave=all", "--membind=0")))
     assert "INTERLEAVE-CONCURRENT" not in codes(run(s, d, "lane"))
+
+
+def test_served_v2_schema_rebuild_and_delta(tmp_path, monkeypatch):
+    """mk_ak_row v2 served_ref: argv with {PORT}, argv_sha256, argv_delta[{flag, value, reason}]; rebuilt argv wins."""
+    st, m = make_store(tmp_path), make_model(tmp_path)
+    served = ["llama-server", "-m", str(m), "--port", "{PORT}", "-c", "32768", "-np", "2", "--slot-save-path", "{SLOTDIR}"]
+    monkeypatch.setattr(P, "rebuild_served_argv", lambda *a: (list(served), None))
+    job_argv = '"-c", "32768", "-np", "2", "--slot-save-path", SLOTS'
+    d, s = make_row(tmp_path, "zz-v2-20261124", job=server_job(st, m, job_argv),
+                    spec={"served_ref": {"registry_role": "worker", "port": 1, "argv": served,
+                                         "argv_sha256": hashlib.sha256(json.dumps(served).encode()).hexdigest(),
+                                         "argv_delta": []}})
+    assert not codes(run(s, d, "served"))
+    (d / "job.py").write_text(server_job(st, m, job_argv.replace('"32768"', '"36864"')))
+    assert "SERVED-DELTA" in codes(run(s, d, "served"), level="FAIL")
+    s["served_ref"]["argv_delta"] = [{"flag": "-c", "value": "36864", "reason": "fits the 32k prompt"}]
+    assert not codes(run(s, d, "served"), level="FAIL")
+    s["served_ref"]["argv_delta"] = [{"flag": "-c", "value": "36864"}]
+    assert "SERVED-DELTA-UNREASONED" in codes(run(s, d, "served"), level="FAIL")
+    s["served_ref"]["argv_delta"] = [{"flag": "-c", "value": "36864", "reason": "r"}]
+    monkeypatch.setattr(P, "rebuild_served_argv", lambda *a: ([x if x != "2" else "4" for x in served], None))
+    assert "SERVED-STALE" in codes(run(s, d, "served"), level="FAIL")       # the registry moved since generation
+    s["served_ref"]["argv_sha256"] = "0" * 64
+    assert "SERVED-ARGV-SHA" in codes(run(s, d, "served"), level="WARN")
+
+
+# ---------------------------------------------------------------- 12 generator (WARN only)
+def test_generator_stamp_warn_only(tmp_path):
+    d, s = make_row(tmp_path, "zz-gen-20261124")
+    got = run(s, d, "generator")
+    assert {"GENERATOR-UNSTAMPED", "GENERATOR-SPEC"} <= codes(got, level="WARN") and not codes(got, level="FAIL")
+    (d / "ak_row_harness.py").write_text("# harness\n")
+    hs = _sha(d / "ak_row_harness.py")
+    (d / "job.py").write_text(f"# GENERATED-BY: mk_ak_row.py v2 harness_sha256={hs}\n" + SELFTEST_OK)
+    s["generator"] = {"tool": "mk_ak_row.py", "version": "v2", "harness_sha256": hs}
+    assert not codes(run(s, d, "generator"))
+    s["generator"]["harness_sha256"] = "1" * 64
+    assert "GENERATOR-MISMATCH" in codes(run(s, d, "generator"), level="WARN")
 
 
 # ---------------------------------------------------------------- hooks + report

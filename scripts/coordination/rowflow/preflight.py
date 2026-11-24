@@ -29,7 +29,9 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
   witness  10  a verdict that rests on a debug/log line declares it in spec.witness_lines [{line, needs, cap}]; the line
                must be in the store's strings and needs <= cap (gvfattn-served-r2: an 8-line debug cap)
   served   11  spec.served_ref {registry_role, argv_delta} -> the registry server_mode entry's serving_shape, diffed
-               against the job's llama-server argv; any delta not declared in argv_delta (with a reason) fails (RCA F2)
+               against the job's llama-server argv; any delta not declared in argv_delta (with a reason) fails (RCA F2).
+               mk_ak_row v2 schema: served_ref.argv is rebuilt via orchestrator_stack.build_server_command and diffed
+  generator 12 WARN only: job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` + spec.generator agree
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
    row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
 
@@ -49,7 +51,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`
     sys.path.insert(0, _HERE)
 
-CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served")
+CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator")
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
@@ -872,38 +874,185 @@ def _registry(path):
     return _REG[path]
 
 
+ORCH_ROOT = os.environ.get("PREFLIGHT_ORCH_ROOT", _LLM + "epyc-orchestrator")
+REBUILD_TIMEOUT_S = 30
+_REBUILD_PY = r"""
+import json, sys
+sys.path.insert(0, sys.argv[1])
+from scripts.server.orchestrator_stack import build_server_command
+from src.registry_loader import RegistryLoader
+cmd = build_server_command(RegistryLoader().get_role(sys.argv[2]), int(sys.argv[3]), prepare_runtime_dirs=False)
+print(json.dumps([str(x) for x in cmd]))
+"""
+
+
+def _git_head(root):
+    try:
+        return subprocess.run(["git", "-C", root, "rev-parse", "HEAD"], capture_output=True, text=True,
+                              timeout=10).stdout.strip() or None
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+
+def rebuild_served_argv(role, port, flags=None):
+    """The served argv as mk_ak_row v2 builds it: orchestrator_stack.build_server_command(RegistryLoader().get_role(role),
+    port, prepare_runtime_dirs=False), run in a subprocess in the orchestrator checkout (no server, no dirs). Cached per
+    (registry sha, orchestrator HEAD, role, port). Returns (argv with {PORT}, None) or (None, why)."""
+    reg = REGISTRY
+    try:
+        rsha = _sha256(reg)
+    except OSError as e:
+        return None, f"registry unreadable: {e}"
+    head = _git_head(ORCH_ROOT) or "nohead"
+    port = int(port or 1)
+    key = hashlib.sha256(f"{rsha}:{head}:{role}:{port}".encode()).hexdigest()
+    c = _cache_get(flags, key, "served")
+    if c and "argv" in c:
+        return c["argv"], None
+    try:
+        p = subprocess.run([sys.executable, "-I", "-c", _REBUILD_PY, ORCH_ROOT, str(role), str(port)], cwd=ORCH_ROOT,
+                           capture_output=True, text=True, timeout=REBUILD_TIMEOUT_S,
+                           env={"PATH": "/usr/bin:/bin", "HOME": os.environ.get("HOME", "/tmp"),
+                                "HIP_VISIBLE_DEVICES": "-1", "ROCR_VISIBLE_DEVICES": "-1"})
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return None, f"rebuild failed: {type(e).__name__}"
+    if p.returncode != 0:
+        return None, f"rebuild rc {p.returncode}: {(p.stderr or '').strip()[-160:]}"
+    try:
+        argv = [("{PORT}" if x == str(port) else x) for x in json.loads(p.stdout.strip().splitlines()[-1])]
+    except (ValueError, IndexError):
+        return None, "rebuild printed no argv"
+    _cache_put(flags, key, "served", {"argv": argv, "role": role, "registry_sha256": rsha, "orchestrator_commit": head})
+    return argv, None
+
+
+def argv_map(tokens):
+    """{flag: value | True} of a server argv; '<expr>' / '{PLACEHOLDER}' values are wildcards (None)."""
+    toks = [t for y in tokens for t in str(y).split()]
+    out = {}
+    for k, x in enumerate(toks):
+        if x.startswith("-") and len(x) > 1 and not re.fullmatch(r"-[\d.]+", x):
+            if "=" in x and x.startswith("--"):
+                f, v = x.split("=", 1)
+            else:
+                nxt = toks[k + 1] if k + 1 < len(toks) else None
+                f, v = x, (nxt if nxt is not None and not (nxt.startswith("-") and not re.fullmatch(r"-[\d.]+", nxt)) else True)
+            if isinstance(v, str) and (v == "<expr>" or re.search(r"\{[A-Z_]+\}", v)):
+                v = None
+            out[f] = v
+    return out
+
+
+def _argv_sha_candidates(argv):
+    a = [str(x) for x in argv]
+    forms = [json.dumps(a), json.dumps(a, separators=(",", ":")), " ".join(a), "\x00".join(a), "\n".join(a)]
+    return {hashlib.sha256(f.encode()).hexdigest() for f in forms}
+
+
+def _diff(expected, got, declared):
+    """Deltas of got vs expected not covered by declared {flag: value|None}. Wildcards (None) never differ."""
+    out = []
+    for f in sorted(set(expected) | set(got)):
+        if f in ("--port",):
+            continue
+        e, g = expected.get(f, "<absent>"), got.get(f, "<absent>")
+        if e is None or g is None or e == g:
+            continue
+        if f in declared and (declared[f] is None or str(declared[f]) == str(g)):
+            continue
+        out.append(f"{f}: served {e!r} vs job {g!r}")
+    return out
+
+
 def check_served(row, ctx):
+    """Check 11 (RCA F2, mk_ak_row v2 schema): spec.served_ref = {registry_role, port, argv ({PORT}/{SLOTDIR}),
+    argv_sha256, argv_delta[{flag, value, reason}], serving_shape, registry_sha256, orchestrator_commit, ...}. The
+    served argv is rebuilt the way the generator builds it and diffed against both served_ref.argv and the job's
+    llama-server argv; a delta not declared in argv_delta (with a reason) fails."""
     ref = row.spec.get("served_ref")
     argvs = server_argvs(row)
     if not ref:
-        return [("WARN", "SERVED-REF-MISSING", "server row with no spec.served_ref {registry_role, argv_delta}: its argv "
-                                               "is not tied to a served shape")] if argvs else []
+        return [("WARN", "SERVED-REF-MISSING", "server row with no spec.served_ref: its argv is not tied to a served "
+                                               "shape (mk_ak_row v2 writes it)")] if argvs else []
     if not isinstance(ref, dict) or not ref.get("registry_role"):
-        return [("FAIL", "SERVED-REF-SPEC", "served_ref must be {registry_role, port?, argv_delta: [{flag, reason}]}")]
-    reg = _registry(ctx.get("registry") or REGISTRY)
-    if reg is None:
-        return [("WARN", "SERVED-REGISTRY", f"registry {ctx.get('registry') or REGISTRY} unreadable")]
-    entry = (reg.get("server_mode") or {}).get(ref["registry_role"])
-    if not isinstance(entry, dict):
-        return [("FAIL", "SERVED-ROLE", f"registry has no server_mode.{ref['registry_role']}")]
+        return [("FAIL", "SERVED-REF-SPEC", "served_ref must carry registry_role (mk_ak_row v2 schema)")]
+    role = ref["registry_role"]
+    out = []
     declared = {}
     for dlt in ref.get("argv_delta") or []:
-        if isinstance(dlt, dict) and dlt.get("flag") and str(dlt.get("reason") or "").strip():
-            declared[dlt["flag"]] = dlt["reason"]
-    have_flags = argv_flags(argvs)
+        if isinstance(dlt, dict) and dlt.get("flag"):
+            if not str(dlt.get("reason") or "").strip():
+                out.append(("FAIL", "SERVED-DELTA-UNREASONED", f"argv_delta {dlt['flag']} has no reason"))
+                continue
+            declared[str(dlt["flag"])] = dlt.get("value")
+    sargv = ref.get("argv")
+    if isinstance(sargv, list) and ref.get("argv_sha256"):
+        if str(ref["argv_sha256"]).lower() not in _argv_sha_candidates(sargv):
+            out.append(("WARN", "SERVED-ARGV-SHA", "served_ref.argv_sha256 matches no known hashing of served_ref.argv"))
+    if ref.get("registry_sha256"):
+        try:
+            if _sha256(REGISTRY) != str(ref["registry_sha256"]).lower():
+                out.append(("WARN", "SERVED-REGISTRY-DRIFT", "the registry changed since served_ref was written "
+                                                             "(registry_sha256 differs); regenerate the row"))
+        except OSError:
+            pass
+    if ref.get("orchestrator_dirty"):
+        out.append(("WARN", "SERVED-DIRTY", "served_ref was built from a dirty orchestrator checkout"))
+    rebuilt, why = (None, "disabled") if ctx.get("rebuild") is False else rebuild_served_argv(role, ref.get("port"), ctx.get("flags"))
+    job = argv_map([t for _f, _ln, a in argvs for t in a])
+    if rebuilt is not None:
+        if isinstance(sargv, list):
+            stale = _diff(argv_map(rebuilt), argv_map(sargv), {})
+            if stale:
+                out.append(("FAIL", "SERVED-STALE", f"served_ref.argv differs from a fresh build of {role}: {stale[:3]}"))
+        expected = argv_map(rebuilt)
+    elif isinstance(sargv, list):
+        expected = argv_map(sargv)
+        out.append(("WARN", "SERVED-REBUILD", f"could not rebuild {role} ({why}); diffed against served_ref.argv"))
+    else:
+        reg = _registry(REGISTRY)
+        entry = ((reg or {}).get("server_mode") or {}).get(role)
+        if not isinstance(entry, dict):
+            return out + [("FAIL", "SERVED-ROLE", f"registry has no server_mode.{role} and no served_ref.argv ({why})")]
+        expected = {}
+        for f, v in served_expect(entry).items():   # legacy: only the serving_shape-derived flags
+            names = FLAG_ALIASES.get(f, (f,))
+            got = next((n for n in names if n in job), None)
+            expected[got or f] = v
+        job = {f: v for f, v in job.items() if f in expected}
+    if argvs:
+        d = _diff(expected, job, declared)
+        if d:
+            out.append(("FAIL", "SERVED-DELTA", f"job argv vs served {role}: {d[:4]}" + (f" (+{len(d) - 4})" if len(d) > 4 else "")
+                        + "; declare each in served_ref.argv_delta with a reason"))
+    return out
+
+
+GEN_STAMP_RX = re.compile(r"^#\s*GENERATED-BY:\s*(\S+)\s+(v\S+)\s+harness_sha256=([0-9a-f]{64})\b", re.M)
+
+
+def check_generator(row, ctx):
+    """Check 12 (WARN only; the future publish-refusal key): job.py carries `# GENERATED-BY: mk_ak_row.py v2
+    harness_sha256=<sha>` and spec.generator {tool, version, harness_sha256} agrees with it and with ak_row_harness.py."""
+    job = row.code.get("job.py")
+    if job is None:
+        return []
+    m = GEN_STAMP_RX.search(job)
+    g = row.spec.get("generator")
     out = []
-    for flag, want in served_expect(entry).items():
-        names = FLAG_ALIASES.get(flag, (flag,))
-        if any(n in declared for n in names):
-            continue
-        if want is True:
-            if not any(n in have_flags for n in names):
-                out.append(("FAIL", "SERVED-DELTA", f"{flag} (registry {ref['registry_role']}) missing from the argv"))
-            continue
-        vals = set(argv_value(argvs, *names))
-        if want not in vals:
-            out.append(("FAIL", "SERVED-DELTA", f"{flag} {sorted(vals) or 'absent'} != registry {ref['registry_role']} "
-                                                f"{want}; declare it in served_ref.argv_delta with a reason"))
+    if not m:
+        out.append(("WARN", "GENERATOR-UNSTAMPED", "job.py has no `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` "
+                                                   "stamp (hand-built row; publish will refuse these later)"))
+    if not isinstance(g, dict) or not all(g.get(k) for k in ("tool", "version", "harness_sha256")):
+        out.append(("WARN", "GENERATOR-SPEC", "spec.generator {tool, version, harness_sha256} absent or incomplete"))
+    if m and isinstance(g, dict):
+        tool, ver, hs = m.groups()
+        if (os.path.basename(str(g.get("tool") or "")), str(g.get("version") or "").lstrip("v"),
+                str(g.get("harness_sha256") or "").lower()) != (os.path.basename(tool), ver.lstrip("v"), hs):
+            out.append(("WARN", "GENERATOR-MISMATCH", "job.py stamp and spec.generator disagree"))
+    hp = os.path.join(row.dir, "ak_row_harness.py")
+    if m and os.path.isfile(hp) and _sha256(hp) != m.group(3):
+        out.append(("WARN", "GENERATOR-HARNESS", "ak_row_harness.py sha256 differs from the stamp's harness_sha256"))
     return out
 
 
@@ -1004,14 +1153,16 @@ def check_witness(row, ctx):
 
 CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_flags, "model": check_model,
              "lane": check_lane, "smoke": check_smoke, "estimate": check_estimate, "ports": check_ports,
-             "append": check_append, "witness": check_witness, "served": check_served}
+             "append": check_append, "witness": check_witness, "served": check_served,
+             "generator": check_generator}
 
 
 # ---------------------------------------------------------------- runners
-def run(spec, row_dir=None, flags=None, queued=None, checks=CHECKS, run_selftest=False, nodes=None, vram=None):
+def run(spec, row_dir=None, flags=None, queued=None, checks=CHECKS, run_selftest=False, nodes=None, vram=None, rebuild=True):
     """[(check, raw_level, code, msg)] for one row. Never raises: a crashing check is reported as a WARN."""
     row = Row(spec, row_dir)
-    ctx = {"flags": flags, "queued": queued, "run_selftest": run_selftest, "nodes": nodes, "vram": vram}
+    ctx = {"flags": flags, "queued": queued, "run_selftest": run_selftest, "nodes": nodes, "vram": vram, "rebuild": rebuild,
+           "history": rebuild}
     out = []
     for c in checks:
         try:
@@ -1072,7 +1223,8 @@ def publish_check(spec, flags, warn=print, queued=None):
 
 def grant_check(flags, rid, d, queued=None):
     """Allocator hook (just before a grant is written): DRIFT_CHECKS only. Returns (hold_reason or None, lines)."""
-    res = effective(run(d, flags=flags, queued=queued or {}, checks=DRIFT_CHECKS))
+    # no orchestrator rebuild / history scan inside an allocator tick: served diffs against served_ref.argv here
+    res = effective(run(d, flags=flags, queued=queued or {}, checks=DRIFT_CHECKS, rebuild=False))
     lines = [fmt(f) for f in res if f[1] in ("FAIL", "WARN")]
     fails = [fmt(f) for f in res if f[1] == "FAIL"]
     return ("preflight: " + "; ".join(fails)[:600]) if fails else None, lines
