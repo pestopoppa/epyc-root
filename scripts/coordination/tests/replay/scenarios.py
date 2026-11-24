@@ -1438,9 +1438,12 @@ def _c21(rid, passed=True, est=7900, man=None):
                          "requires_quiet_host": True, "busy_fraction": 0.75, "exclusive_cpu": True}, **(man or {})))
 
 
-def _ak_q(rid, rank, est, quiet=True, sensitive=False):
-    """An AutoKernel quarter row (any-of q0,q1,q2, 24 threads): requires_quiet_host, or only quiet_sensitive."""
+def _ak_q(rid, rank, est, quiet=True, sensitive=False, min_window=None):
+    """An AutoKernel quarter row (any-of q0,q1,q2, 24 threads): requires_quiet_host, or only quiet_sensitive; min_window_s as
+    the real row's grant line (minwin=2400 / 3600) so a T-capped backfill is not admitted where the real one was not."""
     m = {"requires_quiet_host": True} if quiet else ({"quiet_sensitive": True} if sensitive else {})
+    if min_window:
+        m["min_window_s"] = min_window
     return row(rid, regions="any-of q0,q1,q2", extra="./bench -t 24", est=est, rank=rank, man=dict(m, busy_fraction=1.0))
 
 
@@ -1542,8 +1545,9 @@ def sc_res_1120_specpit_r4(path):
 
 
 def sc_res_1135_shadow_changes_nothing(path):
-    """Shadow twin of 11:35Z: placement is today's (a low row IS granted on q0-q2 while c21-r3 waits: RANK-SKIP with the wrong
-    T) and the reservation is only logged (RESERVE-SHADOW for c21-r3, WOULD-REFUSE for the low row)."""
+    """Shadow twin of 11:35Z: placement is today's (the low row IS granted on q0-q2 while c21-r3 waits: RANK-SKIP with the wrong
+    T) and the reservation is only logged (RESERVE-SHADOW for c21-r3, WOULD-REFUSE for the low row). The low row is a plain
+    quarter row here: with the full quiet set the live QUIET-RESERVE / QUIET-SERIAL pair holds both low rows in the fixture."""
     def check(d):
         out = []
         lows = [r for r in ("ak-cpu-aa-calibration-q-c18-r3", "ak-specpit1-t1p095") if _granted(d, r)]
@@ -1555,21 +1559,23 @@ def sc_res_1135_shadow_changes_nothing(path):
         if not any(_lines(d, f"WOULD-REFUSE {r}") for r in lows):
             out.append("no WOULD-REFUSE line for the low row")
         return out
-    return write(path, _mode(_ticks_1135(), "shadow")), check
+    return write(path, _mode(_ticks_1135(plain_low=True), "shadow")), check
 
 
-def _ticks_1135():
+def _ticks_1135(plain_low=False):
     """11:35/11:39Z: q0 held by a short row (ends in 3 ticks), an unrelated GPU grant runs 3 h; c21-r3 grantable. RANK-SKIP used
     T = the GPU grant's end (> 1 h) and calib-c18 (rank 60, 1 h) then specpit-t1p095 (rank 40, 24 h) took quarters."""
     occ = row("rka-a3b-remeasure-r5", regions="any-of q0", extra="./bench -t 24", est=3 * TICK, rank=20)
     gpu = row("c21-fold-gpu-r2", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=3 * 3600, rank=9,
               extra="llama-server -t 8", man={"min_window_s": 3600})
     c21 = _c21("c21-fold-cpu-r3")
-    c18 = _ak_q("ak-cpu-aa-calibration-q-c18-r3", 60, 3600, quiet=False, sensitive=True)
-    t1 = _ak_q("ak-specpit1-t1p095", 40, 85800)
+    c18 = _ak_q("ak-cpu-aa-calibration-q-c18-r3", 60, 3600, quiet=False, sensitive=not plain_low, min_window=2400)
+    t1 = _ak_q("ak-specpit1-t1p095", 40, 85800, min_window=3600)
     first = {"rka-a3b-remeasure-r5": occ, "c21-fold-gpu-r2": gpu}
-    rest = dict(first, **{"c21-fold-cpu-r3": c21, "ak-cpu-aa-calibration-q-c18-r3": c18, "ak-specpit1-t1p095": t1})
-    return [(first, _util())] + [(rest, _util())] * 7
+    rest = dict(first, **{"c21-fold-cpu-r3": c21, "ak-cpu-aa-calibration-q-c18-r3": c18})
+    if not plain_low:
+        rest["ak-specpit1-t1p095"] = t1
+    return [(first, _util())] + [(rest, _util())] * 9
 
 
 def sc_res_1135_rank_skip(path):
