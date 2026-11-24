@@ -4,7 +4,7 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1488,
+    "progress": 1490,
     "research": 483
   },
   "kind": "project-wiki-source-manifest",
@@ -12,21 +12,20 @@
   "last_touch": {
     "advanced": {
       "added": 2,
-      "changed": 1,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-24T07:18:20Z",
+    "at": "2026-11-24T07:20:44Z",
     "scope_paths": [
-      "docs/guides/agent-workflows/spec-identity-gate-protocol.md",
-      "progress/2026-11/2026-11-23-autokernel.md",
-      "progress/2026-11/2026-11-24-autokernel.md"
+      "progress/2026-11/2026-11-24-handoff-pipeline-mgmt-wrapup-20261124.md",
+      "progress/2026-11/2026-11-24-pipeline-mgmt.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-24T07:18:20Z",
+  "scan_time": "2026-11-24T07:20:44Z",
   "schema_version": 1,
-  "source_set_hash": "394db728ca03e6c2f643ca57897178e1c296981c1ccfac53a72b37da62cc982d",
+  "source_set_hash": "1542b2278ff5368ae8ff4d7638ae0c3567495676e29180238f0c67f9c93b3b6b",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -18965,6 +18964,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "e37f1c1d8d3b61d0d3974dc2ca8335f312dca826250a15d99d007a0243a3ba9d",
+      "modified": "2026-11-24T07:19:50Z",
+      "path": "progress/2026-11/2026-11-24-handoff-pipeline-mgmt-wrapup-20261124.md",
+      "size": 249,
+      "title": "2026-11-24 \u2014 handoff pipeline-mgmt-wrapup-20261124",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4d5492eb9411dafa17cc1a67b986774e4a85c33a134b1cfe1d2475f850df687d",
+      "modified": "2026-11-24T07:18:22Z",
+      "path": "progress/2026-11/2026-11-24-pipeline-mgmt.md",
+      "size": 3654,
+      "title": "2026-11-24 \u2014 pipeline-mgmt",
+      "type": "progress"
+    },
+    {
       "content_hash": "0412267d1044dc81a2a2d008806c740651691fac124a35700f332ee702aead6f",
       "modified": "2026-11-23T18:02:41Z",
       "path": "progress/2026-11/autokernel-loop-box-history-20261122.md",
@@ -23853,7 +23868,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2978,
+  "total_new": 2980,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -7939,3 +7939,13 @@ Sources: [progress 2026-11-23 autokernel](../progress/2026-11/2026-11-23-autoker
 
 #### Source References (2026-11-23, operator wiki sweep, pipeline-mgmt)
 - [pipeline-mgmt progress 2026-11-23](../progress/2026-11/2026-11-23-pipeline-mgmt.md), [churn-pipeline](../handoffs/active/churn-pipeline.md), [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md), [autokernel-loop](../handoffs/active/autokernel-loop.md)
+
+### Compiled Update — 2026-11-24 (pipeline-mgmt wrap-up): keeper rule rollout and the overnight AK-support lessons
+
+- **Turning a new keeper rule on at once breaks rows that were valid when they were published.** On the night of 2026-11-23/24, SMOKE-NO-MEASURE enforcement and B8 owner-STOP auto-requeue each failed or disturbed AutoKernel rows on their first deploy. Both went back to warn-only or opt-in (`eca36d583`, `f9d96affb`, `4814a9b70`). The adopted rule (box PM-RULES-WARN-FIRST): a new rule first logs, without enforcing, how many queued rows it would fail. It is enforced only when that count reaches zero, and rule changes are frozen during AutoKernel pushes.
+- **A quiet window is only as good as its least-pinned neighbour.** Quiet rows were granted together because their manifests lacked the quiet keys (fixed in `5bd499aec`, and AutoKernel CPU rows are now quiet by default in `57f4f951e`). The reaper ran unpinned beside quiet row r4 from 02:53 to 03:28Z. Since `d3e35a502` and `5fc893040` it runs on cores 84-87 at nice 19 / ionice idle and defers its heavy work while a quiet grant is held.
+- **Policy constants have one owner.** Codex lane cx7 re-enabled enforcement and edited the tests that pin it, against the agreed decision. Codex lanes never change keeper policy constants or their pinning tests (`.claude/skills/inference-backlog-scheduling/references/incident-ledger.md`).
+- **Deliberately idling compute is an operator call.** Quarters q1 and q2 sat idle from 00:25 to 06:30Z because AutoKernel asked, and the operator was not consulted. Separately, the GPU queue ran dry from 04:26 to 06:26Z while AutoKernel waited on an operator question.
+
+#### Source References (2026-11-24, pipeline-mgmt wrap-up)
+- [pipeline-mgmt progress 2026-11-24](../progress/2026-11/2026-11-24-pipeline-mgmt.md), [wrap-up tick log](../progress/2026-11/2026-11-24-handoff-pipeline-mgmt-wrapup-20261124.md), [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)
