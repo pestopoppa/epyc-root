@@ -282,3 +282,41 @@ Per-arm keys in the job `CONFIG.json` (`arms[]`), read by `job.py` and `schema.p
 - `request_cap` (new, `schema.request_token_cap`): `agent_cap_tokens` (2048), `think_cap_tokens` (6144), `max_request_wall_frac` (0.25;
   null disables), `decode_tok_s` (default: the arm's `wall_budget.decode_tok_s`), `floor_tokens` (1024). The proxy caps an agent-turn
   request at min(configured cap, frac x wall x decode). With frac < 0.5, two capped thinking outputs can never consume the wall.
+
+## r8g (2026-11-24): CPU canary after the r8f fixes 1-6, hand-audited — verdict FIX-HARNESS (not saturated)
+Row `tf1-cpu-r8g-canary-35b-q0q2-20261123`, rc=0 complete 2026-11-24T00:24:45Z, 2 stints (stopped for quiet-host rows, resumed),
+Qwen3.6-35B-A3B-MTP-Q8_0, np1, 5 tasks x 2 arms, 0 timeouts. Verdict file `/mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8g-20261123/out/verdict.json`.
+**Reported: canary-nothink 3/5, canary-think 3/5 = 6/10. Audited: 6/10 = 0.6.**
+Perf: decode median 17.2 / 14.9 tok/s, prefill median 116 / 99 tok/s, MTP acceptance 0.91 / 0.85, prefix hit 0.93 / 0.94,
+task wall median 503 / 692 s.
+
+| task | nothink: audited (classifier) | think: audited (classifier) |
+|---|---|---|
+| TU-GR-1 | **model** (classifier model, reason wrong). The reject is right but the reviewer's reason is not. The model's unshare launcher runs a one-line `try: ...; except` python inside `sh -c` with no argv, so the child crashes (SyntaxError/IndexError), always returns `launcher_error`, and the test always skips. It also skips when the sentinel is reachable, which is a vacuous escape | **harness: reviewer false reject** (classifier model). The work follows the packet. The control test asserts that `GraderReachable` is raised, which is the done-when's "fails on a deliberately reachable grader". The isolation test uses the packet launcher and skips with a real reason: `unshare: write failed /proc/self/uid_map: Operation not permitted`, and the host has `kernel.apparmor_restrict_unprivileged_userns=1`. The packet sanctions that skip. The reviewer read the passing control as "did not fail" and treated the sanctioned skip as not_done |
+| LOOP-62 | verified; legitimate (16 aliases, `module is sys.modules[target]`, mixed test `xfail(strict=False)`, no src edits) | verified; legitimate (18 passed, 1 xfailed). In r8f this unit was a model timeout; the request_token_cap fixed it |
+| NOFOLD-1 | verified; legitimate (markdown link to `#no-fold-list`) | verified; legitimate (the citation is a code-span path rather than a link, which is acceptable) |
+| WS4-WAKE-IMPERATIVE | **harness: pathspec regression from r8g fix 6** (classifier model). The approach tells the worker to edit `tmux_adapter.cmd_nudge`, but `verify.brief_paths` keeps the `#L<a>-<b>` suffix, so `scripts/coordination/tmux_adapter.py#L2301-2488` never matches the file. `handoff_sessions.py` got in only through the bare-name sibling rule. The diff (helper, 6 builders wrapped, nudge wrapped, 11-case test) is plausibly correct, but its tests never ran. It finished in 498 s; r8f timed out at 1452 s | model (agree). It spent the 30-step cap on `oldString` misses, never wrote the test file, and acceptance gave rc=4. No timeout, no contention |
+| MM-5 | verified; legitimate (aspect-preserving resize, sides snapped to multiples of 28, `max_pixels=None` passes bytes through). No `opencode_worktree_remove` call | verified; legitimate (same design, 15 tests) |
+
+**Audited counts (10 runs):** verified 6, harness 2 (think TU-GR-1 reviewer, nothink WS4 pathspec), model 2 (nothink TU-GR-1, think WS4),
+packet 0, contention 0. The classifier agrees on 8/10.
+
+**r8f fixes, did they hold:**
+1. Vacuity: held. There was no empty-stdout false verify. Both TU-GR-1 probes return `launcher_error` on empty stdout, as the packet line asks.
+2. Worktree tool: held. 0 `worktree_remove` calls, and MM-5 nothink verified.
+3. Contention classifier: not exercised (0 timeouts).
+4. Refusal hints: **not observed.** All 16 shell denials return a bare `Permission denied: shell` with no hint naming the allowed forms. 0 `mv` attempts.
+5. request_token_cap: held. LOOP-62 think verified.
+6. WS4 line ranges: held for the wall time (498 / 608 s against r8f's 1452 s timeout). It regressed the pathspec, see above.
+
+**Verdict by the box rule: FIX-HARNESS.** 6/10 = 0.6 >= 0.3, but model failures are 2/4, which is not the minority, and harness failures are 2/4 (>= 50%).
+Not TRY-27B. Not saturated: both residual tasks have an arm whose correct or plausibly correct work the harness blocked. With the two harness defects
+fixed, the expected count is 7-8/10, and the remaining failures would be model-class. The box stays open (RESUME POINT: iterate to saturation).
+
+**Fixes before r8h** (boxes TF-R8G-PATHSPEC-LRANGE, TF-R8G-REVIEWER-CONTROL, TF-R8G-REFUSAL-HINT in `handoffs/active/churn-pipeline.md`):
+1. `verify.brief_paths` (and through it `forbidden_hits` / `outside_pathspec`) must strip a `#L<a>-<b>` suffix, using the same regex as `brief.py`. Regression
+   fixture: the nothink WS4 r8g diff touching `scripts/coordination/tmux_adapter.py`.
+2. Reviewer context: tell the reviewer which test is the done-when control. For TU-GR-1, a passing `pytest.raises(GraderReachable)` test IS
+   "fails on a reachable grader". Also tell it that a skip the packet sanctions, when it carries a real errno, is not not_done. Packet: name the control test in the done-when gloss.
+3. Shell refusal hint: the r8f fix 4 hint does not reach the model. Make the denial text name the allowed forms (`orch-py.sh -m pytest ...`,
+   `orch-py.sh -c`, `rm`/`mv` of untracked lane files), or surface it through the proxy.
