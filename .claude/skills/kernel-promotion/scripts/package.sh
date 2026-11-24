@@ -130,7 +130,7 @@ def _validate_artifact(art: Path) -> list[str]:
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     try:
-        rep = mod.validate(json.loads(art.read_text()))
+        rep = mod.validate(json.loads(art.read_text()), strict_files=True)
     except ValueError as exc:
         return [f"serving-config artifact {art} is not valid JSON: {exc}"]
     return [f"serving-config artifact fails validate_serving_config.py: {e}" for e in rep.errors]

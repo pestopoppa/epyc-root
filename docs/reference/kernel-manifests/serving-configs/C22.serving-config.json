@@ -2,13 +2,18 @@
   "schema": "epyc.champion.serving_config.v1",
   "champion": "C22",
   "generated_utc": "2026-11-24T20:00:00Z",
-  "notes": "Seed (CHAMPION-SERVING-CONFIG-1, 2026-11-24). The 27B measurements ran on the C21 GPU store, the only GPU store built so far; re-confirm on the C22 GPU candidate before the promotion package writes the registry. Argv deltas are against the orchestrator registry server_mode.<mode>.serving_shape (registry sha256 70712c0f00cd512a2deab4c3d2ffa54a45cbc222141eda935917b2462b7af5b9). No number here is recomputed beyond a mean/median of the cited row's own per-launch records.",
+  "notes": "Seed (CHAMPION-SERVING-CONFIG-1, 2026-11-24). The 27B measurements ran on the C21 GPU store, the only GPU store built so far; re-confirm on the C22 GPU candidate before the promotion package writes the registry. Argv deltas are against the orchestrator registry server_mode.<mode>.serving_shape (registry sha256 70712c0f00cd512a2deab4c3d2ffa54a45cbc222141eda935917b2462b7af5b9). Numbers are the cited rows' own recorded values, a mean/median of a row's own per-launch records, or a ratio derived from a row's own pooled aggregate and labelled DERIVED in its throughput_basis (tradeoffs 117.8 and 119.4 are 1000 * tok_per_round / ms_per_round); none is recomputed from outside the cited row.",
   "servers": [
     {
       "server_mode": "architect_critic",
       "port": 8083,
       "model": "Qwen3.8-27B-Q8_0",
       "device": "ROCm0",
+      "registry_runtime": {
+        "slots": 4,
+        "ctx_checkpoints": 32,
+        "cache_ram": 65536
+      },
       "registry_serving_shape": {
         "n_ctx": 393216,
         "batch": 512,
@@ -98,12 +103,12 @@
           "intended_delta": [
             {
               "flag": "-b",
-              "value": "1024|2048",
+              "value": [1024, 2048],
               "reason": "sweep arms B1024, B2048, B2048U512"
             },
             {
               "flag": "-ub",
-              "value": "1024|2048|512",
+              "value": [1024, 2048, 512],
               "reason": "sweep arms B1024, B2048, B2048U512"
             }
           ]
@@ -201,7 +206,7 @@
           "id": "single-stream-np1-t1.0-f16kv-ub2048-c21",
           "config": "evidence:np1-f16kv-ub2048",
           "throughput_tok_s": 117.8,
-          "throughput_basis": "arm L decode tok/s (L2 119.4), np1, 8 short prompts, max_tokens 1024, T 1.0 top_k 20 top_p 0.95, f16 KV, -b/-ub 2048, -c 16384, ~47 ms/round",
+          "throughput_basis": "DERIVED, not a recorded RESULT field: 1000 * tok_per_round / ms_per_round from the row's own pooled arm aggregate (cells.T1.0-T10.pooled.L: 5.7083 tok/round / 48.4602 ms/round = 117.79; arm L2: 5.8679 / 49.1292 = 119.44), rounded to 117.8 and 119.4. Setup: np1, 8 short prompts, max_tokens 1024, T 1.0 top_k 20 top_p 0.95, f16 KV, -b/-ub 2048, -c 16384",
           "itl_p50_ms": null,
           "itl_p95_ms": null,
           "temperature": 1.0,

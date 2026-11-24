@@ -117,6 +117,18 @@ def test_check_fails_when_artifact_changed_after_assembly(tmp_path, artifact):
     assert r.returncode == 1 and "changed since the package recorded it" in r.stdout
 
 
+def test_check_fails_on_a_fabricated_sha_with_a_missing_result_json(tmp_path, artifact):
+    """Defect 5 (wiring audit 2026-11-24): the validator is called strict, so provenance that points at a
+    RESULT.json absent from this host (sha fabricated) fails the package instead of passing as a warning."""
+    doc = json.loads(artifact.read_text())
+    prov = doc["servers"][0]["optimal"]["provenance"]
+    prov["result_json"], prov["result_sha256"] = "/nonexistent/fabricated/RESULT.json", "f" * 64
+    artifact.write_text(json.dumps(doc))
+    r = _check(tmp_path, _package(artifact))
+    assert r.returncode == 1, r.stdout + r.stderr
+    assert "fails validate_serving_config.py" in r.stdout and "not present on this host" in r.stdout
+
+
 def test_check_fails_when_the_artifact_does_not_validate(tmp_path, artifact):
     doc = json.loads(artifact.read_text())
     doc["servers"][0]["optimal"]["provenance"].pop("result_sha256")

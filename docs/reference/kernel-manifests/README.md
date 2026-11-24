@@ -20,8 +20,16 @@ role it carries:
   cache-ram, drafter and draft window, sampling defaults where the role allows them to move);
 - **tradeoffs**: a table of throughput vs latency vs temperature/acceptance vs memory, so a change such
   as a temperature move is an informed one;
-- **alternates**: 2-3 named configs, for example `latency`, `throughput` and `low-temperature` (T 0..0.6; T > 1.0 is not tested);
+- **alternates**: 2-3 named configs, for example `latency`, `throughput` and `low-temperature` (T 0..0.6; operator 2026-11-24: no high-temperature testing, T > 1.0);
 - **provenance** on every entry: the row id, RESULT.json path and sha256, and the store it ran on.
+
+Validation (`scripts/champion/serving_config/validate_serving_config.py`; both programmatic callers, `package.sh`
+and the orchestrator's `serving_config_registry.py`, run it with `strict_files=True`, so a missing RESULT.json or
+a sha mismatch fails the package): an `argv_delta` row for a value-taking flag must carry a typed `value`
+(`|` and whitespace are rejected; only a known bare switch omits it); `np`, `ctx_checkpoints` and `cache_ram_mib`
+are compared against the server's `registry_runtime` snapshot, like the `serving_shape` fields, and a difference
+needs its delta flag; throughput numbers derived from a row's own aggregate are labelled `DERIVED` in
+`throughput_basis`.
 
 At production promotion the package writes the registry `serving_shape` and its alternates from this
 artifact. That registry write is a stack change bundled into the kernel promotion, under the same single
