@@ -275,3 +275,22 @@ def test_watch_rows_routes_plain_ak_rows_to_the_hook_and_keeps_gate_eval():
     arm = wr[wr.index("ak-*|akx-*)"):wr.index("        *)\n")]
     assert "ak_runend.py" in arm and "--gate-eval" in arm        # the hook AND what the `*)` arm gave ak-* rows
     assert wr.index("akc-*|") < wr.index("ak-*|akx-*)") < wr.index("        *)\n")   # ordered before the catch-all
+
+
+
+def test_research_snapshot_includes_scripts_lib_for_path_gates(tmp_path):
+    """path-gates (stage_bodies.coverage_report) imports scripts/lib/canonical_recipe.py: the snapshot must carry it."""
+    import subprocess
+    repo = tmp_path / "repo"
+    (repo / "scripts/kernel_rnd/autokernel/lineage").mkdir(parents=True)
+    (repo / "scripts/kernel_rnd/autokernel/lineage/__init__.py").write_text("")
+    (repo / "scripts/lib").mkdir(parents=True)
+    (repo / "scripts/lib/canonical_recipe.py").write_text("X = 1\n")
+    g = lambda *a: subprocess.run(["git", "-C", str(repo), *a], check=True, capture_output=True)
+    g("init", "-q", "-b", "main"); g("add", "-A")
+    g("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "x")
+    g("update-ref", "refs/remotes/origin/main", "HEAD")
+    kr = AR.research_snapshot(repo=str(repo), ref="origin/main", cache=str(tmp_path / "cache"))
+    root = os.path.dirname(os.path.dirname(kr))
+    assert os.path.isfile(os.path.join(root, "scripts", "lib", "canonical_recipe.py"))
+    assert os.path.isdir(os.path.join(kr, "autokernel", "lineage"))
