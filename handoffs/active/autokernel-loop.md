@@ -32,6 +32,10 @@
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
 ### Backlog
+- [ ] **AK-SURFACE-SERVING-1** [non-inference] Extend the AutoKernel manipulation surface to serving-recipe knobs (operator 2026-11-24; policy: docs/guides/agent-workflows/agent-loop-design.md "Serving knobs are on the AutoKernel manipulation surface"). Today the loop's candidate model (research scripts/kernel_rnd/autokernel/loop/candidate_manifest.py KEEP_KINDS source/build/runtime) has a `runtime` keep bound to a resolved recipe identity (resolved_recipe.py), and serving.Recipe already carries np, batch, ubatch, kv_unified, ctk/ctv, spec_decode and extra_flags, but no planner-proposable serving knob family, no screening evaluator and no seed format for one. Build: (1) a serving-knob schema (server argv deltas over the registry serving_shape: -b/-ub, -np, --kv-unified, -ctxcp, --cache-ram, spec-draft-n-max, drafter id, sampling defaults only where the role allows) and its actuator (renders the delta argv, never hand-typed); (2) a screening evaluator: a few launches per arm after warm-up, rank by aggregate tok/s, with guard rails fit-memory, no bad ITL regression, correct output; (3) a seed/inbox format (seeds/hypotheses entry kind `serving-knob`). Loop-infrastructure code: not held by the AK hold; loop launches are.
+      · done when: the planner can emit a serving-knob candidate, the actuator renders its argv from the registry serving_shape plus the delta, the screening evaluator ranks arms by aggregate tok/s and rejects on each guard rail, each with a unit test passing in the research repo, and one seed file in the new format loads through seed.py
+      · gate: unit tests only (no compute); a first screening run is a separate row
+      · owner: autokernel
 - [ ] **AK-EVAL-FUT — futility-only interim looks in bench.compare and serving matched A/B** [non-inference]
       Add `loop/futility.py` (pure), checked after each complete pair from pair 2: stop as `measured_null`
       (`stop_reason: futility`) when mean pair log-ratio + z·σ_pair/√k < bar, σ_pair from the surface's stored

@@ -259,6 +259,15 @@ uv run python scripts/registry/stack_change_pipeline.py update --numa-mode <decl
 uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate
 ```
 
+**The promotion carries its serving config** (operator, 2026-11-24, C22 onward). The package (step 5)
+includes the champion serving-config artifact
+(`docs/reference/kernel-manifests/serving-configs/<champion>.serving-config.json`: optimal config,
+2-3 named alternates and the tradeoff table, with provenance per entry). Step 8 writes the registry
+`serving_shape` for every served model and role, plus its alternates, from that artifact, and runs the
+stack-change preflight on it. The one operator signature in step 6 covers both the kernel and this
+registry write; there is no second signature. A package without the artifact is incomplete.
+Implementation: PROMOTION-REGISTRY-SERVING-1 in `handoffs/active/kernel-champion-and-promotion.md`.
+
 The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
 
 The derived layer pins a resolved `binary_dir`/`binary_path`/`ld_library_path` PER ROLE, so it goes

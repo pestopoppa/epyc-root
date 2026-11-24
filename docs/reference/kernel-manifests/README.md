@@ -10,4 +10,22 @@ A manifest is the running ledger of one next-production kernel set: one table, o
 4. **Presence gate = promotion gate.** Each row names the gate that proves it is still in a candidate (ancestry/`git cherry`, an op test, a `strings` probe, a bench cell). A promotion candidate must pass the presence gate of EVERY row whose status is `in champion`, and every `pending fold` row must be folded, excluded with a reason, or deferred explicitly before the freeze. A row with no gate is a defect.
 5. **At-risk check.** Before a promotion, list rows that are kept but unfolded, local-only (not on the `fork` remote), on a stale base, or owned by a gone session, and resolve each.
 
+## Champion serving config (operator directive 2026-11-24)
+
+From C22 on, each champion ships a serving-config artifact next to its manifest, at
+`docs/reference/kernel-manifests/serving-configs/<champion>.serving-config.json`. For each served model and
+role it carries:
+
+- **optimal**: the fastest screened serving config (server argv deltas, np, b/ub, KV, ctx checkpoints,
+  cache-ram, drafter and draft window, sampling defaults where the role allows them to move);
+- **tradeoffs**: a table of throughput vs latency vs temperature/acceptance vs memory, so a change such
+  as a temperature move is an informed one;
+- **alternates**: 2-3 named configs, for example `latency`, `throughput` and `high-temperature`;
+- **provenance** on every entry: the row id, RESULT.json path and sha256, and the store it ran on.
+
+At production promotion the package writes the registry `serving_shape` and its alternates from this
+artifact. That registry write is a stack change bundled into the kernel promotion, under the same single
+operator signature. Implementation: CHAMPION-SERVING-CONFIG-1 and PROMOTION-REGISTRY-SERVING-1 in
+`handoffs/active/kernel-champion-and-promotion.md`.
+
 Production trees stay frozen; the manifests are read-only analysis documents and never authorize a build or a branch switch in a frozen tree.

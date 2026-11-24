@@ -561,6 +561,14 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
     rails: it must fit in memory, decode latency during prefill must not regress badly, and output must
     stay correct. They need no apples-to-apples decision-grade gate. A winning setting still reaches
     serving only through a signed stack-change package.
+  - **Serving knobs are on the AutoKernel manipulation surface** (operator, 2026-11-24). The AK loop
+    proposes and screens serving-recipe knobs the same way it does kernel knobs: `-b`/`-ub`, `-np`,
+    `--kv-unified`, ctx checkpoints, `--cache-ram`, `spec-draft-n-max`, the drafter choice, and the
+    sampling defaults where the role allows them to move. They use the screening rule above (fastest
+    setting wins, under the fit-memory, no-bad-ITL-regression and correct-output guard rails), not an
+    apples-to-apples gate. A screened winner lands in the champion serving config (see
+    `docs/reference/kernel-manifests/README.md`), not in serving directly. Implementation:
+    AK-SURFACE-SERVING-1 in `handoffs/active/autokernel-loop.md`.
   - **Why.** On 2026-11-24 the served-recipe floor (np4, four concurrent 3.8k prefills) leaked into lever
     design and sizing, and two lever gates were built on the served argv at T=1.0. The served aggregate
     (about 30 tok/s, prefill-dominated) says nothing about a kernel's speed.
