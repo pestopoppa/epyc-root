@@ -166,7 +166,9 @@
               "results_jsonl": "/mnt/raid0/llm/tmp/ak-27b-served-np4-floor-gpu-20261124/out/results.jsonl",
               "results_jsonl_sha256": "a0c3a72a2fd9519754e51528d7d060be3ba164a983ebdfb491dd6390bcb001fd"
             }
-          }
+          },
+          "tokens_per_verify_step": 3.732,
+          "tokens_per_verify_step_basis": "predicted_n / (predicted_n - draft_n_accepted), pooled over all 192 requests in results.jsonl (73728 / 19756)"
         },
         {
           "id": "single-stream-np1-t1.0-short",
@@ -191,7 +193,9 @@
             "result_sha256": "beafc07e4c54d0796942838c8049d71e747b7e0d874ad0fb5ac1efe2571c88cd",
             "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-4f2e5618e-c22-df2pm-bsamp",
             "verdict": "OFF/OFF2 arms (backend sampling off); store as recorded in the RESULT, not C21"
-          }
+          },
+          "tokens_per_verify_step": 5.322,
+          "tokens_per_verify_step_basis": "predicted_n / (predicted_n - draft_n_accepted), pooled over the OFF arm's 48 requests in RESULT units[].req[] (29831 / 5605); OFF2 5.284"
         },
         {
           "id": "single-stream-np1-t1.0-f16kv-ub2048-c21",
@@ -215,7 +219,9 @@
             "result_json": "/mnt/raid0/llm/tmp/ak-c21-tree-official-gpu-20261124/out/RESULT.json",
             "result_sha256": "761bd094aa71a8a2d58555de070210625abb1f37e52c1e71172353c8cf1bd7f0",
             "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-98ff8a42a-c21"
-          }
+          },
+          "tokens_per_verify_step": 5.579,
+          "tokens_per_verify_step_basis": "predicted_n / (predicted_n - draft_n_accepted), pooled over RESULT cells.T1.0-T10.pooled.L (7632 / 1368)"
         },
         {
           "id": "single-stream-np1-t1.0-f16kv-ub2048-tailfuse-off",
@@ -239,7 +245,9 @@
             "result_json": "/mnt/raid0/llm/tmp/ak-27b-tail-fuse-gate-gpu-20261124-r2/out/RESULT.json",
             "result_sha256": "2cb65eb27a67ca789df863ea6ea0f27fa27b5ba6447bba2867932bd5b4ed7405",
             "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-24a348720-27b-tail-fuse"
-          }
+          },
+          "tokens_per_verify_step": 5.758,
+          "tokens_per_verify_step_basis": "predicted_n / (predicted_n - draft_n_accepted), pooled over the OFF arm's 96 requests in RESULT units[].req[] (19216 / 3337); OFF2 5.653"
         },
         {
           "id": "single-stream-np1-greedy-14k-c21",
@@ -263,7 +271,9 @@
             "result_json": "/mnt/raid0/llm/tmp/c21-fold-gpu-20261124-r2/out/RESULT.json",
             "result_sha256": "e37d52e9d67787b712eb0cac93e6718f73970dfdc020b9bc94cd6527d5ef5ec0",
             "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-98ff8a42a-c21"
-          }
+          },
+          "tokens_per_verify_step": null,
+          "tokens_per_verify_step_basis": "the RESULT carries no predicted_n / draft_n_accepted counters for the D1 cell"
         }
       ]
     },
