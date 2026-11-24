@@ -189,3 +189,20 @@ def test_shim_fetch_harness_monkeypatch_still_applies(tmp_path, monkeypatch):
     assert RS.main(["new", "row-g", "--handoff", str(hf), "--box", "B", "--lane", "gpu", "--regions", "88-95",
                     "--threads", "8", "--units", "1", "--unit-s", "1", "--model", "X", "--root", str(tmp_path)]) == 1
     assert not (tmp_path / "row-g").exists()
+
+
+def test_knob_row_adds_witness_loglevel(tmp_path, monkeypatch):
+    d, spec, job = _mk(tmp_path, "ak-v2-knoblv-cpu-20261124", ["--served-ref", "frontdoor", "--knob", "GGML_TEST_KNOB"], SERVED, monkeypatch)
+    ref = spec["served_ref"]
+    assert ref["argv"][-2:] == ["-lv", "4"]
+    assert {"flag": "-lv", "value": "4", "reason": "witness log level"} in ref["argv_delta"]
+    import hashlib
+    assert ref["argv_sha256"] == hashlib.sha256(json.dumps(ref["argv"]).encode()).hexdigest()
+
+
+def test_knob_row_keeps_explicit_lv_and_no_knob_no_lv(tmp_path, monkeypatch):
+    served = dict(SERVED, argv=SERVED["argv"] + ["--verbosity", "5"])
+    _, spec, _ = _mk(tmp_path, "ak-v2-knoblv2-cpu-20261124", ["--served-ref", "frontdoor", "--knob", "GGML_K"], served, monkeypatch)
+    assert spec["served_ref"]["argv"] == served["argv"]
+    _, spec, _ = _mk(tmp_path, "ak-v2-noknob-cpu-20261124", ["--served-ref", "frontdoor"], SERVED, monkeypatch)
+    assert "-lv" not in spec["served_ref"]["argv"]

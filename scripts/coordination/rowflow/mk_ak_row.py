@@ -398,6 +398,19 @@ def resolve_served(role, repo=ORCH_REPO, probe_port=27999, timeout=120):
             "resolver": "orchestrator_stack.build_server_command(RegistryLoader().get_role(role))"}
 
 
+def add_witness_loglevel(served):
+    """A knob witness is an INFO log line: llama-server needs -lv 4 or it never prints (ak-c22-i8pc-gate-gpu-20261124-r3).
+    Adds `-lv 4` to the served argv as a declared argv delta when no log level is given."""
+    argv = list(served["argv"])
+    if any(t in ("-lv", "--verbosity", "--log-verbose", "--log-verbosity") or t.startswith("--verbosity=") for t in argv):
+        return served
+    argv += ["-lv", "4"]
+    served = dict(served, argv=argv, argv_sha256=hashlib.sha256(json.dumps(argv).encode()).hexdigest())
+    served["argv_delta"] = list(served.get("argv_delta") or []) + [
+        {"flag": "-lv", "value": "4", "reason": "witness log level"}]
+    return served
+
+
 def scaffold(a, served=None):
     d = os.path.join(a.root, a.id)
     if os.path.exists(d):
@@ -840,6 +853,8 @@ def main(argv=None):
         if not served:
             ap.error("--arm-delta needs --served-ref")
         served["argv_delta"] = list(served.get("argv_delta") or []) + [parse_arm_delta(x) for x in a.arm_delta]
+    if served and a.knob:
+        served = add_witness_loglevel(served)
     d, spec = scaffold(a, served)
     fails = lint(d)
     if fails:

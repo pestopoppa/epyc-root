@@ -31,6 +31,9 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
   served   11  spec.served_ref {registry_role, argv_delta} -> the registry server_mode entry's serving_shape, diffed
                against the job's llama-server argv; any delta not declared in argv_delta (with a reason) fails (RCA F2).
                mk_ak_row v2 schema: served_ref.argv is rebuilt via orchestrator_stack.build_server_command and diffed
+  witness_log  13  a row declaring a knob witness (job.py KNOBS / spec.witness_lines) must run llama-server with -lv >= 4
+               (INFO witness lines never print otherwise: ak-c22-i8pc-gate-gpu-20261124-r3). WITNESS-LOGLEVEL
+  witness_decl 14  a row declaring job.py KNOBS but no spec.witness_lines: WITNESS-UNDECLARED
   generator 12 WARN only: job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` + spec.generator agree
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
    row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
@@ -51,7 +54,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`
     sys.path.insert(0, _HERE)
 
-CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator")
+CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl")
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
@@ -1236,9 +1239,76 @@ def check_witness(row, ctx):
     return out
 
 
+WITNESS_LV_MIN = 4
+KNOBS_DECL_RX = re.compile(r"^KNOBS\s*=\s*(\[.*?\])", re.M)
+
+
+def _job_knobs(row):
+    out = []
+    for f, t in row.code.items():
+        m = KNOBS_DECL_RX.search(t)
+        if m:
+            try:
+                out += [str(x) for x in ast.literal_eval(m.group(1))]
+            except (ValueError, SyntaxError):
+                pass
+    return out
+
+
+def _knob_witnesses(row):
+    """Knob names the row declares a witness for: job.py KNOBS = [...] (mk_ak_row) plus spec.witness_lines[].line."""
+    out = _job_knobs(row)
+    wl = row.spec.get("witness_lines")
+    if isinstance(wl, list):
+        out += [str(w.get("line")) for w in wl if isinstance(w, dict) and w.get("line")]
+    return out
+
+
+def effective_log_level(row):
+    """(found_any_server_argv, level|None): max -lv/--verbosity (--log-verbose = 99) over the job argv, served_ref.argv
+    and served_ref.argv_delta."""
+    argvs = [a for _f, _ln, a in server_argvs(row)]
+    ref = row.spec.get("served_ref") or {}
+    if isinstance(ref.get("argv"), list):
+        argvs.append([str(x) for x in ref["argv"]])
+    deltas = [d for d in (ref.get("argv_delta") or []) if isinstance(d, dict)]
+    if deltas:
+        argvs.append([t for d in deltas for t in (str(d.get("flag")), str(d.get("value"))) if t not in ("True", "None")])
+    lv = None
+    for a in argvs:
+        m = argv_map(a)
+        if "--log-verbose" in m:
+            lv = 99
+        for k in ("-lv", "--verbosity", "--log-verbosity"):
+            v = m.get(k)
+            if isinstance(v, str) and v.lstrip("-").isdigit():
+                lv = max(lv or 0, int(v))
+    return bool(argvs), lv
+
+
+def check_witness_loglevel(row, ctx):
+    ws = _knob_witnesses(row)
+    if not ws:
+        return []
+    have, lv = effective_log_level(row)
+    if not have or (lv is not None and lv >= WITNESS_LV_MIN):
+        return []
+    x = "none" if lv is None else f"-lv {lv}"
+    return [("FAIL", "WITNESS-LOGLEVEL", f"WITNESS-LOGLEVEL: witness {ws[0]} needs -lv >= {WITNESS_LV_MIN}; argv has {x}")]
+
+
+def check_witness_declared(row, ctx):
+    ws = _job_knobs(row)
+    if ws and not row.spec.get("witness_lines"):
+        return [("FAIL", "WITNESS-UNDECLARED", f"knob witness {ws[0]} declared (job.py KNOBS) but spec.witness_lines is absent: "
+                                               "declare [{line, needs, cap}] so the cap is checked against the binary")]
+    return []
+
+
 CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_flags, "model": check_model,
              "lane": check_lane, "smoke": check_smoke, "estimate": check_estimate, "ports": check_ports,
-             "append": check_append, "witness": check_witness, "served": check_served,
+             "append": check_append, "witness": check_witness, "witness_log": check_witness_loglevel,
+             "witness_decl": check_witness_declared, "served": check_served,
              "generator": check_generator}
 
 
