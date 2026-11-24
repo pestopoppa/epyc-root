@@ -101,7 +101,7 @@ class CensusTests(unittest.TestCase):
         self.assertIn("/api/bw_census/health", S.PANEL_HEALTH_ROUTES)
         self.assertFalse(any(panels.registry_gaps(S).values()))
         page = (REPO / "dashboard/static/loop.html").read_text()
-        for needle in ('id="bwc-sec"', "/api/bw_census", "MI210", "Zen 5 EPYC 9655"):
+        for needle in ('id="bwc-sec"', "/api/bw_census", "MI210", "CPU", 'id="bwc-surfaces"', "bwcSurfaces", "saving ms/step"):
             self.assertIn(needle, page)
 
     def test_parity_table_and_batch_block(self):
@@ -140,13 +140,40 @@ class CensusTests(unittest.TestCase):
         r = S.bw_census_payload(self.census, self.grants)["parity"]["rows"][0]
         self.assertEqual((r["ref_pct"], r["gap_pp"], r["score"], r["ref_bracket_pct"]), (None, None, None, {"x": 80}))
         page = (REPO / "dashboard/static/loop.html").read_text()
-        for needle in ("no published measurement", "ref_bracket_pct"):
-            self.assertIn(needle, page)
+        self.assertIn("no published measurement", page)
 
     def test_parity_dom_on_page(self):
         page = (REPO / "dashboard/static/loop.html").read_text()
-        for needle in ('id="bwc-parity"', 'id="bwc-batch"', "bwcParity", "ref_status", "C21 refresh"):
+        for needle in ('id="bwc-batch"', "bwcBatch", "ref_status", "<b>none</b>", "unmeasured", "bwcRuns",
+                       "ABSENT", "STALE", "target_pct", "quarter-24t", "full-host"):
             self.assertIn(needle, page)
+        for gone in ('id="bwc-mi210"', 'id="bwc-cpu"', 'id="bwc-parity"'):  # the three old tables are replaced
+            self.assertNotIn(gone, page)
+
+    def test_surfaces_pass_through_ranked_with_runs(self):
+        doc = {**FIXTURE, "target_pct": 88.0, "surface_groups": [{"op": "g", "unreconciled": True}], "surfaces": [
+            {"path": "p", "op": "small", "device": "mi210", "saving_ms_per_step": 0.5, "ours_pct": 60.0,
+             "ours_measured": True, "census_rows": ["g1"], "covered_by": None, "status": "open", "gap_pp": None},
+            {"path": "p", "op": "unmeasured", "device": "mi210", "saving_ms_per_step": None, "ours_pct": None,
+             "ours_measured": False, "census_rows": [], "covered_by": "box", "status": "needs_measurement"},
+            {"path": "q", "op": "big", "device": "cpu-quarter-24t", "saving_ms_per_step": 7.5, "ours_pct": 15.0,
+             "ours_measured": True, "census_rows": ["c1", "missing"], "covered_by": "", "status": "bogus"}]}
+        doc["records"] = {k: dict(v, op="x") for k, v in FIXTURE["records"].items()}
+        self.census.write_text(json.dumps(doc))
+        d = S.bw_census_payload(self.census, self.grants)
+        self.assertEqual(d["target_pct"], 88.0)
+        self.assertTrue(d["surface_groups"][0]["unreconciled"])
+        s = d["surfaces"]
+        self.assertEqual([x["op"] for x in s], ["big", "small", "unmeasured"])  # saving desc, null last
+        self.assertEqual(s[0]["status"], "open")       # unknown status is never drawn as covered/ok
+        self.assertEqual([r["id"] for r in s[0]["runs"]], ["c1"])  # dangling id dropped
+        self.assertEqual(s[0]["runs"][0]["pct_ceiling"], 50.0)
+        self.assertEqual(s[1]["runs"][0]["source_row"], "ak-r1")
+        self.assertEqual(s[1]["covered_by"], "")
+        self.assertIsNone(s[1]["gap_pp"])               # null gap stays null
+        self.assertEqual(d["tables"]["mi210"][0]["op"], "x")
+        self.census.write_text(json.dumps(FIXTURE))      # pre-surfaces census still renders
+        self.assertEqual(S.bw_census_payload(self.census, self.grants)["surfaces"], [])
 
     def test_trend(self):
         self.assertEqual(bw_census.trend(None), "")

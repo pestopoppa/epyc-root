@@ -2,8 +2,8 @@
 
 Plane rule: the data contract ``mi210_bandwidth_census.json`` is owned by the
 AutoKernel subsystem (``census_update.py`` in epyc-inference-research rewrites it
-at each AK row end). This module only READS it and shapes two tables (MI210, Zen 5
-EPYC 9655) for the page. It never edits the schema.
+at each AK row end). This module only READS it and passes through the producer's ranked
+``surfaces[]`` (one row per (path, op), runs attached) plus the legacy per-device tables. It never edits the schema.
 
 Freshness has two arms:
 
@@ -105,6 +105,8 @@ def shape_rows(doc: dict) -> dict:
             "n": rec.get("n"),
             "config": rec.get("config"),
             "model": rec.get("model"),
+            "op": rec.get("op"),
+            "op_path": rec.get("op_path"),
             "gbps": gbps,
             "ceiling_gbps": ceiling,
             "gap_gbps": gap,
@@ -166,6 +168,37 @@ def shape_parity(doc: dict) -> Optional[dict]:
             "batch_dependence": par.get("batch_dependence")}
 
 
+SURFACE_STATUSES = ("open", "covered", "needs_measurement", "ok")
+
+
+def shape_surfaces(doc: dict, tables: dict) -> list[dict]:
+    """The producer's ranked ``surfaces[]`` passed through, each with its census runs attached.
+
+    Ranking is the producer's (saving_ms_per_step desc, nulls last); the hub only re-applies that order so a
+    hand-edited file cannot reorder the page, and never fills a null (an unknown saving or gap stays null).
+    """
+    by_id = {r["id"]: r for rows in tables.values() for r in rows}
+    out = []
+    for s in doc.get("surfaces") or []:
+        if not isinstance(s, dict):
+            continue
+        runs = []
+        for rid in s.get("census_rows") or []:
+            r = by_id.get(rid)
+            if r is None:
+                continue
+            runs.append({"id": rid, "kernel": r["kernel"], "shape": r["shape"], "n": r["n"], "config": r["config"],
+                         "gbps": r["gbps"], "pct_ceiling": None if r["frac_of_ceiling"] is None
+                         else round(100 * r["frac_of_ceiling"], 1),
+                         "measured_at": r["measured_at"], "source_row": r["source_row"]})
+        runs.sort(key=lambda r: (str(r["measured_at"] or ""), r["id"]), reverse=True)
+        out.append({**s, "covered_by": s.get("covered_by") or "",
+                    "status": s.get("status") if s.get("status") in SURFACE_STATUSES else "open",
+                    "saving_ms_per_step": _num(s.get("saving_ms_per_step")), "runs": runs})
+    out.sort(key=lambda s: (s["saving_ms_per_step"] is None, -(s["saving_ms_per_step"] or 0.0)))
+    return out
+
+
 def build(census_path: Path = None, grants_dir: Path = None) -> dict:
     """Read the census; return the payload body (no envelope)."""
     census_path = Path(census_path or CENSUS_PATH)
@@ -182,6 +215,7 @@ def build(census_path: Path = None, grants_dir: Path = None) -> dict:
     except (OSError, ValueError) as exc:
         return {**base, "present": False, "error": f"census unreadable: {type(exc).__name__}: {exc}"}
     ended = ak_rows_ended_after(grants_dir, mtime)
+    tables = shape_rows(doc)
     return {
         **base,
         "present": True,
@@ -192,7 +226,10 @@ def build(census_path: Path = None, grants_dir: Path = None) -> dict:
         "ceiling_gbps": doc.get("ceiling_gbps"),
         "cpu": doc.get("cpu"),
         "applied_count": len(doc.get("applied") or []),
-        "tables": shape_rows(doc),
+        "tables": tables,
+        "target_pct": doc.get("target_pct"),
+        "surfaces": shape_surfaces(doc, tables),
+        "surface_groups": doc.get("surface_groups") or [],
         "parity": shape_parity(doc),
         "event_stale": bool(ended),
         "ak_rows_ended_after_census": ended[:20],

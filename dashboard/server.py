@@ -33,7 +33,7 @@ GET /api/outcome             the autopilot outcome contract (+ freshness), if ex
 GET /api/gpu_window          the G1 watchdog's executor-status file (+ freshness envelope)
 GET /api/pipeline            pipeline page data: flowchart counts, sessions by step, compute regions
 GET /api/akflow              AK parallel-loop live flowchart (akloop/flow_status.py contract) + freshness
-GET /api/bw_census         AK bandwidth census (MI210 + Zen 5 tables) + freshness (age + event arms)
+GET /api/bw_census         AK bandwidth census (ranked surfaces + per-device tables) + freshness (age + event arms)
 GET /api/bw_census/health  is the census still true (no AK row ended after it, mtime within budget)?
 GET /api/accumulator_surfaces         per-surface accumulator fire decision (AutoKernel contract) + freshness
 GET /api/accumulator_surfaces/health  is the published per-surface record still true (generated_at within budget)?
@@ -1575,7 +1575,7 @@ def bw_census_payload(census_path=None, grants_dir=None, now: float | None = Non
         obs = panels.Observation(
             artifact_present=True, timestamp=data["census_mtime"],
             source="census file mtime", evidence=data["evidence"],
-            populated=bool(rows["mi210"] or rows["cpu"]))
+            populated=bool(rows["mi210"] or rows["cpu"] or data.get("surfaces")))
     env = _panel_envelope("bw_census", obs, now=now)
     if data.get("event_stale"):
         ended = data["ak_rows_ended_after_census"]
