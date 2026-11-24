@@ -547,6 +547,17 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
   speeds one model and slows another, as DS41 keeps did to Qwen3.8-Flash-Next prefill, prefer model-specific
   dispatch keyed on shape, type or architecture. Keep both fast rather than drop the gain. The objective is the
   fastest serving for every production model in our operating environment, not one kernel for all models.
+- **Lever gates use the normal greedy method; served-config rows are a separate track** (operator,
+  2026-11-24).
+  - **Lever gates.** A gate that advances the champion runs on the standard harness: one request at a
+    time on an np1 server, greedy decoding (temperature 0, top_k 1), the candidate store against the
+    current champion store, and N sized from single-request noise.
+  - **Served-config rows.** Rows that run the served recipe (np4, official sampling, the registry
+    argv) are a separate track. They collect serving specs: floors, served tok/s and recipe tuning.
+    Never use them, or the noise they measure, to size or judge a lever gate.
+  - **Why.** On 2026-11-24 the served-recipe floor (np4, four concurrent 3.8k prefills) leaked into lever
+    design and sizing, and two lever gates were built on the served argv at T=1.0. The served aggregate
+    (about 30 tok/s, prefill-dominated) says nothing about a kernel's speed.
 - **Build now or seed: the +3% threshold** (operator, 2026-11-20 and 2026-11-24).
   - **The rule.** A lever with an expected end-to-end gain of +3% or more on a served operating point is built
     directly as a directed row. Below +3% it becomes an AutoKernel hypothesis seed instead.
