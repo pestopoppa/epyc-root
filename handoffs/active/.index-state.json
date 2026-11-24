@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 573
+      "open": 575
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2147,7 +2147,7 @@
       "closed": 312,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 6,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2156,7 +2156,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 318,
+      "total": 319,
       "tracks": [
         {
           "blocked": 0,
@@ -2168,7 +2168,7 @@
           "line": 60,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 4
+          "open": 5
         },
         {
           "blocked": 0,
@@ -2178,7 +2178,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1224,
+          "line": 1227,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2191,7 +2191,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2370,
+          "line": 2373,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2
@@ -2201,7 +2201,7 @@
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2745,
+          "line": 2748,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2211,7 +2211,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3181,
+          "line": 3184,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2221,7 +2221,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3276,
+          "line": 3279,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2364,11 +2364,11 @@
     },
     "speculative-decoding.md": {
       "blocked": 3,
-      "closed": 294,
+      "closed": 293,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 30,
+      "open": 31,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2392,7 +2392,7 @@
         },
         {
           "blocked": 1,
-          "closed": 159,
+          "closed": 158,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2401,7 +2401,7 @@
           "line": 1012,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 17
+          "open": 18
         }
       ]
     },

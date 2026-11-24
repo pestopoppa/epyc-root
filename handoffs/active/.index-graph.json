@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T23:08:55Z",
+  "generated_at": "2026-11-24T23:19:06Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1680,14 +1680,14 @@
         "INF-48#rocm-verify-profile-backend"
       ],
       "closed": 312,
-      "dispatchable": 6,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-24",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 6,
+      "open": 7,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1722,13 +1722,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [
             "EVL-47"
           ],
           "line": 60,
           "name": "rocm-verify-profile-backend",
-          "open": 4,
+          "open": 5,
           "readiness": "blocked"
         },
         {
@@ -1741,7 +1741,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1224,
+          "line": 1227,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1756,7 +1756,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2370,
+          "line": 2373,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1765,7 +1765,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2745,
+          "line": 2748,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1774,7 +1774,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3181,
+          "line": 3184,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1783,7 +1783,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3276,
+          "line": 3279,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1794,15 +1794,15 @@
       "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 294,
-      "dispatchable": 30,
+      "closed": 293,
+      "dispatchable": 31,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-24",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 33,
+      "open": 34,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1845,14 +1845,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 17,
+          "dispatchable": 18,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 1012,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 18,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
