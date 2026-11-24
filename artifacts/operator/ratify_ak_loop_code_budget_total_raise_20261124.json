@@ -1,0 +1,45 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-LOOP-CODE-BUDGET-TOTAL-RAISE-20261124",
+  "status": "ratified",
+  "ratified_at": "2026-11-24T10:00:53Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "reason": "legitimate 2026-11-24 loop/ growth (AK-TEMP-AXIS-1..5 official-sampling work, run-budget arm-seconds, run-parser split) overran the ratcheted ceiling; same measured+2% formula as 2026-11-23",
+  "operator_decisions": {
+    "1": "2026-11-23 operator ruling (precedent): total code-line ceiling = measured + 2% headroom; applied again to 2026-11-24 growth"
+  },
+  "items": {
+    "1": "research scripts/kernel_rnd/autokernel/loop_code_budget_baseline.json: total_ceiling 127259 -> 130183"
+  },
+  "old": {
+    "total_ceiling": 127259,
+    "total_ceiling_approval": "RATIFY-AK-LOOP-CODE-BUDGET-TOTAL-RAISE-20261123",
+    "research_commit": "249a27960"
+  },
+  "new": {
+    "total_ceiling": 130183,
+    "total_ceiling_approval": "RATIFY-AK-LOOP-CODE-BUDGET-TOTAL-RAISE-20261124"
+  },
+  "sizing": {
+    "rule": "total_ceiling = max(floor, ceil(measured_total_at_signing * 1.02))",
+    "formula": "ceil(measured_total * 1.02)",
+    "floor": 130148,
+    "metric": "guard code-only metric: sum(composition_by_file(loop/)) in check_regrowth_guards",
+    "measured_total": 127630,
+    "headroom_pct": 2,
+    "headroom_lines": 2553,
+    "ceil_measured_x_1_02": 130183
+  },
+  "fields_changed": [
+    "total_ceiling",
+    "total_ceiling_approval"
+  ],
+  "obligation": "any later raise of total_ceiling is a new operator ratify; lowering is ordinary code (--tighten-total)",
+  "base_origin_main": "4c85f1cf473b4fe019bde9a566a2b7101a6a07b2",
+  "research_base": "04ef096358d1d47bf90ae63fd8e04b8a1b462302",
+  "research_commit_new": "c5517782aad468c08fb8145cf288c1f5191b61c4",
+  "applied_by": "scripts/operator/ratify_ak_loop_code_budget_total_raise_20261124.sh",
+  "ratify_script_sha256": "857e83140afedf17a1d4b8282c4195ce15566cdbf77d350023e337c19185ae1a",
+  "processes_touched": []
+}
