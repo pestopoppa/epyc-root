@@ -12,6 +12,7 @@
 bin/rowflow/rowflow.py               scripts/coordination/rowflow/rowflow.py              hot
 bin/rowflow/build_pocket_policy.json scripts/coordination/rowflow/build_pocket_policy.json hot
 bin/rowflow/publish_row.py           scripts/coordination/rowflow/publish_row.py          hot
+bin/rowflow/publish_and_clean.sh     scripts/coordination/rowflow/publish_and_clean.sh    hot
 bin/rowflow/notify.py                scripts/coordination/rowflow/notify.py               engine
 bin/rowflow/diskpause.py             scripts/coordination/rowflow/diskpause.py            engine
 bin/rowflow/hostutil.py              scripts/coordination/rowflow/hostutil.py             hot
