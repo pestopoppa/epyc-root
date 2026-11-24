@@ -7651,6 +7651,26 @@ def urgent_quiet_pending(flags, grants=(), now=None):
         except (TypeError, ValueError):
             budget = None
         out.append((rid, rank, since, budget))
+    # STOP-held (coordinator 2026-11-24: c21-fold-cpu-r2 STOP-held 10:26-10:30Z, calib-a3b rank 60 took q0): a published
+    # urgent quiet row with its owner STOP file present and no grant holds too; since = STOP mtime, default 45 min bound.
+    seen = {p[0] for p in out}
+    for mp in glob.glob(os.path.join(flags, "ready", "*.json")):
+        rid = os.path.basename(mp)[:-5]
+        if rid in granted or rid in seen or os.path.exists(os.path.join(flags, "grants", rid + ".complete")):
+            continue
+        d = load_json(mp) or {}
+        try:
+            rank = float(d.get("priority_rank", 100))
+        except (TypeError, ValueError):
+            continue
+        if rank >= URGENT_RANK or not quiet_sensitive(d):
+            continue
+        sf = resolve_stop_path(d)
+        if sf and os.path.exists(sf):
+            try:
+                out.append((rid, rank, os.path.getmtime(sf), None))
+            except OSError:
+                pass
     return sorted(out, key=lambda x: (x[1], x[0]))
 
 

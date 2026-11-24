@@ -176,5 +176,25 @@ class QuietUrgentPending(unittest.TestCase):
             json.dump({"priority_rank": 50, "quiet_sensitive": True}, f)
         self.assertEqual(rf.urgent_quiet_pending(self.flags), [])
 
+    def test_stop_held_urgent_holds_and_expires(self):
+        sf = os.path.join(self.flags, "c21.STOP")
+        open(sf, "w").close()
+        with open(os.path.join(self.flags, "ready", "c21-fold-cpu-r2.json"), "w") as f:
+            json.dump({"priority_rank": 9, "requires_quiet_host": True, "stop_file": sf}, f)
+        rows = dict(self.ROWS, **{"calib-a3b": {"quiet_sensitive": True, "priority_rank": 60}})
+        cs = [cand("calib-a3b", [{"q0"}], rank=60)]
+        pend = rf.urgent_quiet_pending(self.flags)
+        self.assertEqual([p[0] for p in pend], ["c21-fold-cpu-r2"])
+        kept, _, logs = rf.quiet_urgent_hold(cs, rows, pend)
+        self.assertEqual(kept, [])
+        self.assertIn("QUIET-URGENT-PENDING c21-fold-cpu-r2 holds calib-a3b", logs)
+        t = __import__("time").time() - 46 * 60
+        os.utime(sf, (t, t))
+        kept, _, logs = rf.quiet_urgent_hold(cs, rows, rf.urgent_quiet_pending(self.flags))
+        self.assertEqual([c["id"] for c in kept], ["calib-a3b"])
+        self.assertTrue(any("EXPIRED" in l for l in logs))
+        os.remove(sf)
+        self.assertEqual(rf.urgent_quiet_pending(self.flags), [])
+
 if __name__ == "__main__":
     unittest.main()
