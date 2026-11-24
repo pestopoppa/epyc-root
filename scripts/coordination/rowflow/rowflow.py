@@ -8061,6 +8061,10 @@ def slot_keep_holds(flags, grants, allrows=None, now=None, enabled=None):
         sup = {}
     w = load_json(os.path.join(state_dir(flags), BUILD_WINDOW)) or {}
     w_until = float(w.get("until") or 0)
+    try:
+        w_start = w_until - 60 * float(w.get("minutes") or BUILD_WINDOW_MAX_MIN)
+    except (TypeError, ValueError):
+        w_start = w_until - 60 * BUILD_WINDOW_MAX_MIN
     out, seen = [], set()
 
     def rank_of(d):
@@ -8071,7 +8075,7 @@ def slot_keep_holds(flags, grants, allrows=None, now=None, enabled=None):
 
     def dead(rid):
         return rid in granted or sup.get(rid) or os.path.exists(os.path.join(G, rid + ".complete"))
-    # (a) owner pause, still resumable
+    # (a) a build-window pause (owner STOP / resumable stopped end inside an open or just-closed build window)
     for mp in sorted(glob.glob(os.path.join(flags, "ready", "*.json"))):
         rid = os.path.basename(mp)[:-5]
         if dead(rid):
@@ -8097,11 +8101,14 @@ def slot_keep_holds(flags, grants, allrows=None, now=None, enabled=None):
             since = None
         if since is None:
             continue
-        cap = since + SLOT_KEEP_CAP_S
-        until = min(w_until + SLOT_KEEP_GRACE_S, cap) if w_until >= since - 60 else cap
+        # only a build-window pause holds (coordinator 2026-11-24 19:07Z): a plain owner STOP / rc=75 stopped end blocks
+        # nothing. The window must be open or closed < SLOT_KEEP_GRACE_S ago, and the pause must fall inside it.
+        if not (w_until and w_start - 120 <= since <= w_until and now <= w_until + SLOT_KEEP_GRACE_S):
+            continue
+        until = min(w_until + SLOT_KEEP_GRACE_S, since + SLOT_KEEP_CAP_S)
         if until <= now:
             continue
-        h = _slot_keep_held(flags, rid, d, rank, since, until, "build-window pause" if w_until >= since - 60 else "owner pause")
+        h = _slot_keep_held(flags, rid, d, rank, since, until, "build-window pause")
         if h:
             out.append(h); seen.add(rid)
     # (b) a successor whose smoke is pending

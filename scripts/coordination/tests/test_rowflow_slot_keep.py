@@ -94,6 +94,22 @@ class BuildWindowPause(Base):
         self.assertAlmostEqual(h[0]["until"], NOW - 120 + rf.SLOT_KEEP_CAP_S)
         self.assertEqual(self.holds(now=NOW - 120 + rf.SLOT_KEEP_CAP_S + 1), [])
 
+    def test_plain_owner_stop_holds_nothing(self):
+        """No build window: an owner STOP (e.g. the coordinator's STOP of r8h) is not a slot hold."""
+        os.remove(os.path.join(self.sd, rf.BUILD_WINDOW))
+        self.assertEqual(self.holds(), [])
+
+    def test_window_closed_over_grace_ago_holds_nothing(self):
+        with open(os.path.join(self.sd, rf.BUILD_WINDOW), "w") as f:
+            json.dump({"by": "ak", "minutes": 10, "until": NOW - rf.SLOT_KEEP_GRACE_S - 1}, f)
+        self.assertEqual(self.holds(), [])
+
+    def test_stop_before_window_holds_nothing(self):
+        with open(os.path.join(self.sd, rf.BUILD_WINDOW), "w") as f:
+            json.dump({"by": "ak", "minutes": 1, "until": NOW + 60}, f)   # opened at NOW; STOP 5 min earlier
+        self.touch(self.stop, NOW - 300)
+        self.assertEqual(self.holds(), [])
+
     def test_flag_off(self):
         with mock.patch.object(rf, "SLOT_KEEP", False), mock.patch.object(rf, "resolve_stop_path", lambda d: d.get("stop_file")):
             self.assertEqual(rf.slot_keep_holds(self.flags, [], {}, now=NOW), [])
