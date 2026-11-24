@@ -152,6 +152,31 @@ def check(d):
     return True, 'ok run_id=%s verdict=%s' % (run['run_id'], v)
 
 
+# FOLD-KLD-FLOOR-1 (kernel-champion-and-promotion.md): measured KLD A/A floor of the fold-gate corpus per device, i.e. the mean
+# KLD the gate reads when only reduction order changes (same build, one reduction-order toggle). None = not yet measured; the
+# header then says so instead of inventing a ratio. Set from the filed rows fold-kld-floor-{gpu,cpu}-20261124 (value + row id).
+KLD_GATE = 0.003
+KLD_FLOOR = {'gpu': None, 'cpu': None}          # {'gpu': (floor, 'row-id'), ...}
+
+
+def kld_floor_header(device, cand_kld, floor=None, gate=KLD_GATE):
+    """Fold-gate result header fields for the KLD clause: the floor, candidate KLD / floor and gate / floor.
+
+    Every fold row's RESULT.json carries this block beside its KLD gate so a reader can see whether the 0.003 gate is
+    floor-limited. floor overrides KLD_FLOOR[device]; a zero floor (bit-identical A/A) reports the ratios as None, not inf."""
+    f = floor if floor is not None else KLD_FLOOR.get(device)
+    src = None
+    if isinstance(f, (tuple, list)):
+        f, src = f
+    if f is None:
+        return {'kld_floor': None, 'kld_floor_status': 'UNMEASURED (FOLD-KLD-FLOOR-1)', 'candidate_kld_over_floor': None,
+                'kld_gate_over_floor': None, 'kld_gate': gate}
+    f = abs(float(f))
+    ratio = (abs(float(cand_kld)) / f) if (f > 0 and cand_kld is not None) else None
+    return {'kld_floor': f, 'kld_floor_source': src, 'kld_floor_status': 'MEASURED' if f > 0 else 'MEASURED_ZERO',
+            'candidate_kld_over_floor': ratio, 'kld_gate_over_floor': (gate / f) if f > 0 else None, 'kld_gate': gate}
+
+
 def touched_libs(repo, ref_sha, cand_sha):
     names = subprocess.check_output(['git', '-C', repo, 'diff', '--name-only', ref_sha + '..' + cand_sha], text=True).split()
     libs = {}

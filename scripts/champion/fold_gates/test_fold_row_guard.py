@@ -104,3 +104,12 @@ def test_move_stale_covers_out_smoke(tmp_path) -> None:
     assert sorted(os.listdir(dst)) == ['RESULT.json', 'log.txt', 'out.TERMINAL-smoke.json']
     assert os.path.exists(d + '/out/RESULT.json')          # the real RESULT is not a smoke file
     assert fg.move_stale(d + '/out-smoke', smoke=True) is None
+
+
+def test_kld_floor_header() -> None:
+    h = fg.kld_floor_header('gpu', 0.0012, floor=None)
+    assert h['kld_floor'] is None and h['candidate_kld_over_floor'] is None and 'UNMEASURED' in h['kld_floor_status']
+    h = fg.kld_floor_header('cpu', 0.0012, floor=(0.0003, 'row-x'))
+    assert abs(h['candidate_kld_over_floor'] - 4.0) < 1e-9 and abs(h['kld_gate_over_floor'] - 10.0) < 1e-9 and h['kld_floor_source'] == 'row-x'
+    h = fg.kld_floor_header('gpu', 0.0, floor=0.0)
+    assert h['kld_floor_status'] == 'MEASURED_ZERO' and h['candidate_kld_over_floor'] is None

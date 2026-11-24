@@ -2030,6 +2030,7 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
 - [ ] **CDR-A3B-Q4KV-32K** [inference] Measure 35B-A3B MTP CPU decode at 32k context with q4_0 vs q8_0 KV on one quarter (C21 CPU store), with the attention share of the step from the existing per-op profile (intake-2870). Model 35B-A3B Q8_0 MTP; build C21 98ff8a4 CPU store; region one CPU quarter; estimate ~1.5 h. Stop-on-answer on KEEP or FUTILITY; stop-on-futility when attention is under 10% of the step.
       · done when: tok/s per arm with A/A floor and the attention share filed under this box with verdict KEEP (>= 5% tok/s and the KVQ-ROT-KLD-1 CPU-arm KLD gate passing) or FUTILITY (attention < 10% of the step)
       · gate: KVQ-ROT-KLD-1        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
+  - 2026-11-24 (autokernel) row cdr-a3b-q4kv-32k-cpu-20261124 published (quiet quarter, priority_rank 45, C21 CPU store; llama-bench Q8/Q4 KV at -d 32768 plus a -d 0 arm for the attention share, 3 interleaved launches each). [no-belief: row published]
 
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
@@ -5983,6 +5984,7 @@ MoE-Spec Phase 0
 - [ ] **CDR-RT9-COVER-1** [non-inference] Close the A3B expert-residency question from the existing RT-9 traces (intake-2876, intake-2895): run skew_report.py on the saved Qwen3.6-35B-A3B frontdoor traces and report per-layer top-12.5% expert coverage, same-domain and cross-domain. RT-9 already shows top-25% share 0.68-0.74 at prefill, so coverage >= 0.6 at <= 12.5% residency is not expected.
       · done when: per-layer coverage table filed under this box with the trace digest and verdict: CLOSE the resident-expert drafter idea if same-domain coverage at 12.5% is below 0.6, else record the coverage for the operator's HBM allotment decision
       · gate: none        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
+  - 2026-11-24 (autokernel) `skew_report.py --residency F --cover-gate G` committed (research 5f8309e87): per-layer held-out coverage of the top-ceil(F*E) set, same-domain (even/odd windows) and cross-domain, with a CLOSE/RECORD verdict. Replay on results-q36 deferred: the light claim on 84-87 was refused (held by c21-fold-cpu-20261124-r3); rerun after 13:30Z. [no-belief: tooling only]
 - Monitor (intake-ak-1124 M10, operator-approved 2026-11-24, no checkbox): Fires when the second GPU is installed and A3B is placed GPU-resident (operator 2026-11-24: A3B GPU will be served on the 2nd GPU): design a GPU-resident expert-subset drafter for A3B, using CDR-RT9-COVER-1's same-domain coverage at <= 12.5% residency (>= 0.6 makes a resident subset worth drafting from) as a design input (intake-2876).
 
 ### MoE per-token routing tap and locality measurement (INF-72)
