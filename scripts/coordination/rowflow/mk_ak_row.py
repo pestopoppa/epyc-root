@@ -345,6 +345,26 @@ print("RESOLVED " + json.dumps({"argv": [str(x) for x in argv], "serving_shape":
 """
 
 
+DEFAULT_ARM_REASON = "arm-scoped lever delta (mk_ak_row --arm-delta)"
+
+
+def parse_arm_delta(text):
+    """'ARM:flag=value[:reason]' -> {arm, flag, value, reason} (preflight check 11's canonical arm-scoped delta).
+    A value without '=' (`ON:--no-warmup`) is a bare flag (value true)."""
+    arm, sep, rest = str(text).partition(":")
+    if not sep or not arm.strip() or not rest.strip():
+        raise SystemExit(f"mk_ak_row: --arm-delta {text!r}: want ARM:flag=value[:reason]")
+    if "=" in rest:
+        flag, _, tail = rest.partition("=")
+        value, _, reason = tail.partition(":")
+    else:
+        flag, _, reason = rest.partition(":")
+        value = True
+    if not flag.strip():
+        raise SystemExit(f"mk_ak_row: --arm-delta {text!r}: empty flag")
+    return {"arm": arm.strip(), "flag": flag.strip(), "value": value, "reason": reason.strip() or DEFAULT_ARM_REASON}
+
+
 def resolve_served(role, repo=ORCH_REPO, probe_port=27999, timeout=120):
     """The production server argv for registry `role`, built by the orchestrator's OWN launcher
     (orchestrator_stack.build_server_command over RegistryLoader, i.e. serving_shape + the canonical recipe), run in a
@@ -805,6 +825,9 @@ def main(argv=None):
     ap.add_argument("--fresh-server-starts", type=int, default=3, help="cap of fresh server starts per arm")
     ap.add_argument("--no-quiet-host", action="store_true", help="CPU row that is not a timing row")
     ap.add_argument("--served-ref", metavar="ROLE", help="derive SERVER_ARGV from the orchestrator registry role")
+    ap.add_argument("--arm-delta", action="append", default=[], metavar="ARM:flag=value[:reason]",
+                    help="with --served-ref: an arm-scoped served argv delta (repeatable), written to served_ref.argv_delta "
+                         "as {arm, flag, value, reason}; flag argv[0] swaps the binary (lever rows)")
     ap.add_argument("--orch-repo", default=ORCH_REPO, help="orchestrator checkout --served-ref resolves in")
     a = ap.parse_args(argv)
     if a.reseal:
@@ -813,6 +836,10 @@ def main(argv=None):
     if not (a.id and a.task and a.rule):
         ap.error("--id, --task and --rule are required")
     served = resolve_served(a.served_ref, a.orch_repo) if a.served_ref else None
+    if a.arm_delta:
+        if not served:
+            ap.error("--arm-delta needs --served-ref")
+        served["argv_delta"] = list(served.get("argv_delta") or []) + [parse_arm_delta(x) for x in a.arm_delta]
     d, spec = scaffold(a, served)
     fails = lint(d)
     if fails:

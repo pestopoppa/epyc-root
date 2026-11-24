@@ -193,7 +193,8 @@ def test_lane_host_shape_overlaps_gpu(tmp_path):
 def test_lane_threads(tmp_path):
     st, m = make_store(tmp_path), make_model(tmp_path)
     head = SELFTEST_OK + "W = ['/usr/bin/taskset', '-c', '0-3']\n"
-    d, s = make_row(tmp_path, "zz-thr-20261124", job=server_job(st, m, '"-t", "8"', head=head), spec={"declared_threads": 4})
+    d, s = make_row(tmp_path, "zz-thr-20261124", job=server_job(st, m, '"-t", "8"', head=head),
+                    spec={"declared_threads": 4, "regions": "0-3"})
     got = codes(run(s, d, "lane"))
     assert "THREADS-OVERSUB" in got and "THREADS-DECLARED" in got
 
@@ -409,6 +410,88 @@ def test_generator_stamp_warn_only(tmp_path):
     (d / "job.py").write_text(f"# GENERATED-BY: mk_ak_row.py v2 harness_sha256={'1' * 64}\n" + SELFTEST_OK)
     got = codes(run(s, d, "generator"))
     assert {"GENERATOR-HARNESS", "GENERATOR-UNSTAMPED"} <= got and not codes(run(s, d, "generator"), level="FAIL")
+
+
+# ---------------------------------------------------------------- AK lever-row gaps (ak-spec-copy-ngrammod-gpu-20261124)
+def test_lane_region_wider_than_threads_is_warn_only(tmp_path):
+    st, m = make_store(tmp_path), make_model(tmp_path)
+    d, s = make_row(tmp_path, "zz-lev-20261124", job=server_job(st, m, '"-t", "8"'),
+                    spec={"lane": "gpu", "regions": "mi210_0,88-95,184-191", "declared_threads": 16})
+    got = run(s, d, "lane")
+    assert "THREADS-DECLARED" in codes(got, level="WARN") and not codes(got, level="FAIL")
+    (d / "job.py").write_text(server_job(st, m, '"-t", "32"'))
+    assert "THREADS-OVERSUB" in codes(run(s, d, "lane"), level="FAIL")       # only -t > granted cpus fails
+
+
+def _served(st, m):
+    return [str(st / "bin" / "llama-server"), "-m", str(m), "--port", "{PORT}", "-c", "32768", "-t", "8"]
+
+
+def test_store_keys_on_effective_argv0(tmp_path, monkeypatch):
+    reg = make_store(tmp_path, name="gpu-20260921-ffc1bac82", sha="ffc1bac82")
+    (reg / "BUILD-IDENTITY.json").unlink()                                  # the registry store: no identity
+    cand = make_store(tmp_path, name="gpu-20261124-98ff8a42a-c21", sha="98ff8a42a00c")
+    m = make_model(tmp_path)
+    served = _served(reg, m)
+    d, s = make_row(tmp_path, "zz-argv0-20261124", job=SELFTEST_OK + f"SERVER_ARGV = {served!r}\n",
+                    spec={"served_ref": {"registry_role": "r", "argv": served, "argv_delta": [
+                        {"flag": "argv[0]", "value": str(cand / "bin" / "llama-server"), "reason": "lever on C21"}]}})
+    got = codes(run(s, d, "store"))
+    assert "STORE-NO-IDENTITY" not in got and not codes(run(s, d, "store"), level="FAIL")
+    (cand / "BUILD-IDENTITY.json").write_text(json.dumps({"source_sha": "0000000000"}))
+    assert "STORE-COMMIT" in codes(run(s, d, "store"), level="FAIL")          # the binary it RUNS is checked
+    s["served_ref"]["argv_delta"] = []
+    assert "STORE-NO-IDENTITY" in codes(run(s, d, "store"))                   # no swap: the registry binary runs
+
+
+def _arm_job(served, extras):
+    return (SELFTEST_OK + f"SERVER_ARGV = {served!r}\nARM_EXTRA = {extras!r}\n"
+            "def argv(arm):\n    return list(SERVER_ARGV) + ARM_EXTRA.get(arm, [])\n")
+
+
+def test_served_arm_scoped_deltas(tmp_path, monkeypatch):
+    st, m = make_store(tmp_path), make_model(tmp_path)
+    served = _served(st, m)
+    monkeypatch.setattr(P, "rebuild_served_argv", lambda *a: (list(served), None))
+    ref = {"registry_role": "r", "argv": served, "argv_sha256": P.served_argv_sha256(served), "argv_delta": [
+        {"arm": "ON", "flag": "--spec-ngram-mod-n-match", "value": "4", "reason": "lever arm"}]}
+    d, s = make_row(tmp_path, "zz-arm-20261124", job=_arm_job(served, {"ON": ["--spec-ngram-mod-n-match", "4"]}),
+                    spec={"served_ref": ref})
+    assert not codes(run(s, d, "served"), level="FAIL")
+    (d / "job.py").write_text(_arm_job(served, {"ON": ["--spec-ngram-mod-n-match", "4"], "OFF": ["--draft-p-min", "0.5"]}))
+    assert "SERVED-DELTA" in codes(run(s, d, "served"), level="FAIL")          # an undeclared per-arm flag fails
+    s["served_ref"]["argv_delta"] = [{"arm": "", "flag": "-c", "value": "1", "reason": "r"}]
+    assert "SERVED-DELTA-SPEC" in codes(run(s, d, "served"), level="FAIL")
+
+
+def test_served_legacy_arm_argv_delta(tmp_path, monkeypatch):
+    st, m = make_store(tmp_path), make_model(tmp_path)
+    served = _served(st, m)
+    monkeypatch.setattr(P, "rebuild_served_argv", lambda *a: (list(served), None))
+    d, s = make_row(tmp_path, "zz-leg-20261124", job=_arm_job(served, {"ON": ["--spec-ngram-mod-n-match", "4", "-c", "65536"]}),
+                    spec={"served_ref": {"registry_role": "r", "argv": served, "argv_sha256": P.served_argv_sha256(served)},
+                          "arm_argv_delta": {"ON": {"replace": {"-c": "65536"}, "append": ["--spec-ngram-mod-n-match", "4"]},
+                                             "OFF": {}}})
+    got = run(s, d, "served")
+    assert "ARM-DELTA-LEGACY" in codes(got, level="WARN") and not codes(got, level="FAIL")
+
+
+def test_mk_ak_row_arm_delta_rows_pass_check_11_per_arm(tmp_path, monkeypatch):
+    import mk_ak_row as MK
+    st, m = make_store(tmp_path), make_model(tmp_path)
+    served = _served(st, m)
+    monkeypatch.setattr(P, "rebuild_served_argv", lambda *a: (list(served), None))
+    arms = {"ON": ["ON:--spec-ngram-mod-n-match=4:lever", "ON:--no-warmup"], "OFF": ["OFF:-c=65536:fits prompt"]}
+    deltas = [MK.parse_arm_delta(x) for xs in arms.values() for x in xs]
+    assert all(set(x) == {"arm", "flag", "value", "reason"} and x["reason"] for x in deltas)
+    extras = {"ON": ["--spec-ngram-mod-n-match", "4", "--no-warmup"], "OFF": ["-c", "65536"]}
+    for arm in arms:
+        d, s = make_row(tmp_path / arm, f"zz-mk-{arm.lower()}-20261124", job=_arm_job(served, {arm: extras[arm]}),
+                        spec={"served_ref": {"registry_role": "r", "argv": served,
+                                             "argv_sha256": P.served_argv_sha256(served), "argv_delta": deltas}})
+        assert not codes(run(s, d, "served"), level="FAIL"), arm
+    with pytest.raises(SystemExit):
+        MK.parse_arm_delta("noflag")
 
 
 # ---------------------------------------------------------------- hooks + report

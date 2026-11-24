@@ -75,7 +75,8 @@ WITNESS_DEP_RX = re.compile(r"\w+_DEBUG=1|\bdebug\b[^.\n]{0,80}\b(?:lines?|print
 CONCURRENT_RX = re.compile(r"\bconcurrent|\bstreams\b|\bin parallel\b|\bparallel (?:paired|streams|quarters)", re.I)
 ROWID_RX = re.compile(r"\b([a-z][a-z0-9.]*(?:-[a-z0-9.]+)*-20\d{6}(?:-[a-z0-9]+)*)\b")
 WRAPPER_FLAGS = {"--interleave", "--membind", "--cpunodebind", "--physcpubind", "--preferred", "--localalloc",
-                 "--selftest", "-c", "-n", "-N"}
+                 "--selftest", "-c", "-n", "-N", "--"}
+WRAPPER_TOOLS = {"taskset", "numactl", "nice", "ionice", "env", "chrt", "timeout", "stdbuf"}
 OTHER_TOOLS_RX = re.compile(r"llama-(?:perplexity|bench|cli|batched-bench|quantize|imatrix|completion|fit-params)|"
                             r"test-backend-ops|\bgit\b|cmake|\bmake\b|\bcurl\b|rocm-smi|sha256sum|gcc|python|bench_readbw|\btbo\b")
 KV_BYTES = {"f32": 4.0, "f16": 2.0, "bf16": 2.0, "q8_0": 34 / 32, "q5_0": 22 / 32, "q5_1": 24 / 32, "q4_0": 18 / 32,
@@ -220,6 +221,11 @@ def server_argvs(row):
                     continue
                 if any(OTHER_TOOLS_RX.search(x) for x in a if not x.startswith("-")):
                     continue
+                srv = next((k for k, x in enumerate(a) if x.endswith("llama-server")), None)
+                if srv is not None:
+                    a = a[srv:]          # [taskset, -c, .., numactl, .., --, llama-server, ...]: the server's own argv
+                elif any(os.path.basename(x) in WRAPPER_TOOLS for x in a):
+                    continue             # a pure placement wrapper (taskset/numactl/nice ... --)
                 out.append((f, n.lineno, a))
     for f, t in row.sh.items():
         for i, l in enumerate(re.sub(r"\\\n", " ", t).splitlines(), 1):
@@ -494,6 +500,51 @@ def store_manifest(root):
 
 
 # ---------------------------------------------------------------- the checks: each returns [(level, code, msg)]
+def arm_deltas(row):
+    """served_ref.argv_delta in canonical form [{arm?, flag, value, reason}] plus the legacy top-level
+    arm_argv_delta {"ON": {"replace": {flag: value}, "append": [flag, value, ...]}} converted (legacy=True)."""
+    ref = row.spec.get("served_ref") if isinstance(row.spec.get("served_ref"), dict) else {}
+    out = [dict(d) for d in (ref.get("argv_delta") or []) if isinstance(d, dict)]
+    legacy = row.spec.get("arm_argv_delta")
+    if isinstance(legacy, dict):
+        for arm, body in legacy.items():
+            body = body if isinstance(body, dict) else {}
+            for f, v in (body.get("replace") or {}).items():
+                out.append({"arm": arm, "flag": f, "value": v, "reason": "legacy arm_argv_delta replace", "legacy": True})
+            toks = [str(x) for x in (body.get("append") or [])]
+            k = 0
+            while k < len(toks):
+                f = toks[k]
+                v = toks[k + 1] if k + 1 < len(toks) and not toks[k + 1].startswith("-") else True
+                out.append({"arm": arm, "flag": f, "value": v, "reason": "legacy arm_argv_delta append", "legacy": True})
+                k += 2 if v is not True else 1
+    return out
+
+
+def _bin_store(path):
+    p = str(path or "")
+    return os.path.dirname(os.path.dirname(p)) if p.endswith("/bin/llama-server") else None
+
+
+def row_stores(row):
+    """The stores the row actually RUNS: literal stores in its code, plus served_ref.argv[0] after any `argv[0]` delta
+    (lever rows swap it to a candidate store on purpose), minus a served argv[0] store every arm replaces."""
+    lit = set(stores_of(row))
+    ref = row.spec.get("served_ref") if isinstance(row.spec.get("served_ref"), dict) else {}
+    argv = ref.get("argv") if isinstance(ref.get("argv"), list) else None
+    if not argv:
+        return sorted(lit)
+    base = _bin_store(argv[0])
+    d0 = [d for d in arm_deltas(row) if d.get("flag") == "argv[0]" and d.get("value")]
+    allarm = [d for d in d0 if not d.get("arm")]
+    eff = {_bin_store(d["value"]) for d in d0} - {None}
+    if not allarm and base:
+        eff.add(base)          # arms without an argv[0] delta run the registry binary
+    if allarm and base and base not in eff:
+        lit = {x for x in lit if store_root(x) != store_root(base)}
+    return sorted(lit | eff)
+
+
 def check_selftest(row, ctx):
     out = []
     job = row.code.get("job.py")
@@ -529,7 +580,7 @@ def check_store(row, ctx):
     if TREE_BUILD_RX.search(row.codetext):
         out.append(("WARN", "TREE-BUILD-PATH", "code reads llama.cpp/build*/bin: since v10 production serves from "
                                                "kernels/production/{cpu,gpu}; the tree's build dirs hold v9"))
-    for root in stores_of(row):
+    for root in row_stores(row):
         if not os.path.isdir(root):
             out.append(("FAIL", "STORE-MISSING", f"{root} does not exist"))
             continue
@@ -581,7 +632,7 @@ def _declared_knobs(row):
 
 def check_flags(row, ctx):
     out = []
-    stores = [store_root(s) for s in stores_of(row) if os.path.isfile(os.path.join(store_root(s), "bin", "llama-server"))]
+    stores = [store_root(s) for s in row_stores(row) if os.path.isfile(os.path.join(store_root(s), "bin", "llama-server"))]
     fl = argv_flags(server_argvs(row))
     for root in stores:
         have = store_flags(root, ctx.get("flags"))
@@ -590,7 +641,7 @@ def check_flags(row, ctx):
         miss = sorted(f for f in fl if f not in have)
         if miss:
             out.append(("FAIL", "FLAG-UNKNOWN", f"server flag(s) {miss[:6]} not in {os.path.basename(root)}/bin/llama-server"))
-    libstores = [store_root(s) for s in stores_of(row) if glob.glob(os.path.join(store_root(s), "bin", "libggml*.so*"))]
+    libstores = [store_root(s) for s in row_stores(row) if glob.glob(os.path.join(store_root(s), "bin", "libggml*.so*"))]
     if libstores:
         sets = {r: store_knobs(r, ctx.get("flags")) for r in libstores}
         for k in sorted(_declared_knobs(row)):
@@ -659,8 +710,9 @@ def check_lane(row, ctx):
     dt = row.spec.get("declared_threads")
     if isinstance(dt, int) and tvals and max(tvals) != dt:
         out.append(("WARN", "THREADS-DECLARED", f"server -t {sorted(tvals)} != declared_threads {dt}"))
-    if pinned and tvals and max(tvals) > len(pinned):
-        out.append(("FAIL", "THREADS-OVERSUB", f"-t {max(tvals)} on {len(pinned)} pinned cpus"))
+    lim = len(granted) if granted else len(pinned)   # AK 2026-11-24: only -t > the granted cpus fails; a region
+    if lim and tvals and max(tvals) > lim:            # wider than -t (16 vs 8) is the THREADS-DECLARED WARN above
+        out.append(("FAIL", "THREADS-OVERSUB", f"-t {max(tvals)} > {lim} granted cpus"))
     offload = bool(re.search(r"--n-cpu-moe|--cpu-moe|exps=CPU|-ot[\"',\s]+[^\"'\n]*CPU", text))
     if offload and tvals and max(tvals) <= HYBRID_MIN_THREADS:
         out.append(("WARN", "HYBRID-THIN-HOST", f"expert offload to CPU (--n-cpu-moe/-ot CPU) with -t {max(tvals)}: the "
@@ -976,7 +1028,7 @@ def _diff(expected, got, declared):
         e, g = expected.get(f, "<absent>"), got.get(f, "<absent>")
         if e is None or g is None or e == g:
             continue
-        if f in declared and (declared[f] is None or str(declared[f]) == str(g)):
+        if f in declared and (None in declared[f] or str(g) in declared[f] or g is True):
             continue
         out.append(f"{f}: served {e!r} vs job {g!r}")
     return out
@@ -996,13 +1048,22 @@ def check_served(row, ctx):
         return [("FAIL", "SERVED-REF-SPEC", "served_ref must carry registry_role (mk_ak_row v2 schema)")]
     role = ref["registry_role"]
     out = []
-    declared = {}
-    for dlt in ref.get("argv_delta") or []:
-        if isinstance(dlt, dict) and dlt.get("flag"):
-            if not str(dlt.get("reason") or "").strip():
-                out.append(("FAIL", "SERVED-DELTA-UNREASONED", f"argv_delta {dlt['flag']} has no reason"))
-                continue
-            declared[str(dlt["flag"])] = dlt.get("value")
+    declared = {}      # flag -> set of allowed values (None = any); arm-scoped and all-arm entries alike
+    deltas = arm_deltas(row)
+    if any(d.get("legacy") for d in deltas):
+        out.append(("WARN", "ARM-DELTA-LEGACY", "spec.arm_argv_delta is the legacy form; write served_ref.argv_delta "
+                                                "entries {arm, flag, value, reason} (mk_ak_row --arm-delta ARM:flag=value:reason)"))
+    for dlt in deltas:
+        if not dlt.get("flag"):
+            continue
+        if not str(dlt.get("reason") or "").strip():
+            out.append(("FAIL", "SERVED-DELTA-UNREASONED", f"argv_delta {dlt['flag']} has no reason"))
+            continue
+        if "arm" in dlt and not str(dlt.get("arm") or "").strip():
+            out.append(("FAIL", "SERVED-DELTA-SPEC", f"argv_delta {dlt['flag']}: empty arm"))
+            continue
+        v = dlt.get("value")
+        declared.setdefault(str(dlt["flag"]), set()).add(None if v is None or v is True else str(v))
     sargv = ref.get("argv")
     if isinstance(sargv, list):
         if not ref.get("argv_sha256"):
@@ -1153,7 +1214,7 @@ def check_witness(row, ctx):
     if not isinstance(wl, list):
         return [("FAIL", "WITNESS-SPEC", "witness_lines must be a list of {line, needs, cap}")]
     out = []
-    stores = [store_root(s) for s in stores_of(row) if os.path.isdir(s)]
+    stores = [store_root(s) for s in row_stores(row) if os.path.isdir(s)]
     for i, w in enumerate(wl):
         if not isinstance(w, dict) or not str(w.get("line") or "").strip():
             out.append(("FAIL", "WITNESS-SPEC", f"witness_lines[{i}] needs a non-empty 'line'"))
