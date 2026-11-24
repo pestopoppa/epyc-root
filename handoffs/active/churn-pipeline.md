@@ -232,11 +232,11 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · 2026-11-24 RESUME POINT addendum (P-AB-1/P-PAIRED, root ae2d53e1f): r8h must include a rerun arm R (the r8g config re-run alongside, or a same-config repeat) before any r8g→r8h improvement is claimed; r8f 4/10 → r8g 6/10 is an OBSERVATION only. [no-belief: process]
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **TF-R8G-PATHSPEC-LRANGE** [non-inference] taskflow verify: strip the #L<a>-<b> where-range suffix in verify.brief_paths so pathspec/forbidden checks match the file (r8g nothink WS4 was rejected outside-pathspec on scripts/coordination/tmux_adapter.py because of this; regression from r8g fix 6).
+- [x] **TF-R8G-PATHSPEC-LRANGE** [non-inference] taskflow verify: strip the #L<a>-<b> where-range suffix in verify.brief_paths so pathspec/forbidden checks match the file (r8g nothink WS4 was rejected outside-pathspec on scripts/coordination/tmux_adapter.py because of this; regression from r8g fix 6). ✅ 2026-11-24 [no-belief: software] fix landed 3b11e6c82: verify.brief_paths strips #L<a>-<b>, so a line-ranged where entry matches its file (pathspec + forbidden_hits); 74/74 tests pass (test_tas
       · done when: a test in tests/coordination/ shows outside_pathspec admits scripts/coordination/tmux_adapter.py for a task whose where names scripts/coordination/tmux_adapter.py#L2301-2488, and the test is on origin/main
       · gate: none
       · tier: terra   · owner: pipeline-mgmt
-- [ ] **TF-R8G-REVIEWER-CONTROL** [non-inference] taskflow reviewer: stop false not_done on control tests and packet-sanctioned skips (r8g think TU-GR-1: a passing pytest.raises(GraderReachable) control was read as 'did not fail', and an unshare EPERM skip the packet allows was read as not done).
+- [x] **TF-R8G-REVIEWER-CONTROL** [non-inference] taskflow reviewer: stop false not_done on control tests and packet-sanctioned skips (r8g think TU-GR-1: a passing pytest.raises(GraderReachable) control was read as 'did not fail', and an unshare EPERM skip the packet allows was read as not done). ✅ 2026-11-24 [no-belief: software] fix landed 3b11e6c82: reviewer prompt carries CONTROL TESTS / SANCTIONED SKIPS + rule (passing pytest.raises control = fails-on met; sanctioned EPERM skip is no
       · done when: the reviewer prompt names the done-when control test and the packet's sanctioned skips, and a test feeds it the r8g think TU-GR-1 acceptance log and checks the prompt carries both; on origin/main
       · gate: none
       · tier: terra   · owner: pipeline-mgmt
