@@ -147,6 +147,21 @@ def test_flags_known_unknown_and_tail_merged(tmp_path):
     assert "FLAG-UNKNOWN" in codes(run(s, d, "flags"), level="FAIL")
 
 
+def test_flags_scoped_to_server_argv_not_test_backend_ops(tmp_path):
+    """AK 2026-11-24: a test-backend-ops argv (--test-file) sharing a job with a server argv is not a llama-server argv."""
+    st = make_store(tmp_path)
+    m = make_model(tmp_path)
+    extra = ("TBO = STORE + '/bin/test-backend-ops'\n"
+             "def tbo_argv():\n    return [TBO, '--test-file', 'x.json', '-o', 'MUL_MAT']\n"
+             "def tbo2():\n    return [STORE + '/bin/test-backend-ops', '--test-file', 'y.json']\n"
+             "def bench():\n    return ['llama-bench', '--delay', '1']\n")
+    d, s = make_row(tmp_path, "zz-tbo-20261124", job=server_job(st, m, '"-t", "8"') + extra)
+    assert "FLAG-UNKNOWN" not in codes(run(s, d, "flags"))
+    (d / "job.py").write_text(server_job(st, m, '"-t", "8", "--dca-chunk-size", "8"') + extra)
+    msgs = [x[3] for x in run(s, d, "flags") if x[2] == "FLAG-UNKNOWN"]
+    assert msgs and "--dca-chunk-size" in msgs[0] and "--test-file" not in msgs[0]   # server flags still checked
+
+
 def test_knob_must_be_in_some_store_lib(tmp_path):
     st = make_store(tmp_path)
     m = make_model(tmp_path)

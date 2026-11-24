@@ -198,14 +198,34 @@ class Row:
 
 
 # ---------------------------------------------------------------- argv extraction (static)
-def _const_list(node):
+def _const_list(node, aliases=None):
     out = []
     for e in node.elts:
         if isinstance(e, ast.Constant) and isinstance(e.value, (str, int, float)):
             out.append(str(e.value))
         else:
-            out.append("<expr>")
+            out.append(_expr_binary(e, aliases) or "<expr>")
     return out
+
+
+_BIN_HINT_RX = re.compile(r"(test[-_]backend[-_]ops|llama[-_][a-z][a-z0-9_-]*)", re.I)
+
+
+def _expr_binary(e, aliases=None):
+    """A non-literal argv element (f-string, path join, variable) that visibly names a llama binary -> its basename, else ''.
+    Lets the argv[0] scoping see `[str(BIN / "test-backend-ops"), "--test-file", ...]` and `[TEST_BACKEND_OPS, ...]`."""
+    for n in ast.walk(e):
+        t = None
+        if isinstance(n, ast.Constant) and isinstance(n.value, str):
+            t = os.path.basename(n.value.rstrip("/"))
+        elif isinstance(n, ast.Name):
+            t = (aliases or {}).get(n.id) or n.id
+        elif isinstance(n, ast.Attribute):
+            t = n.attr
+        m = _BIN_HINT_RX.fullmatch(t or "") or (_BIN_HINT_RX.match(t) if isinstance(n, ast.Constant) and t else None)
+        if m:
+            return m.group(1).replace("_", "-").lower()
+    return ""
 
 
 def server_argvs(row):
@@ -219,9 +239,15 @@ def server_argvs(row):
             tree = ast.parse(t)
         except (SyntaxError, ValueError):
             continue
+        aliases = {}   # NAME = <expr naming a llama binary> (any depth of assignment), so `[TBO, "--test-file"]` reads as test-backend-ops
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+                b = _expr_binary(n.value, aliases)
+                if b:
+                    aliases[n.targets[0].id] = b
         for n in ast.walk(tree):
             if isinstance(n, (ast.List, ast.Tuple)) and n.elts:
-                a = _const_list(n)
+                a = _const_list(n, aliases)
                 if not any(x.startswith("-") and len(x) > 1 and not re.fullmatch(r"-[\d.]+", x) for x in a):
                     continue
                 if any(OTHER_TOOLS_RX.search(x) for x in a if not x.startswith("-")):
@@ -231,6 +257,8 @@ def server_argvs(row):
                     a = a[srv:]          # [taskset, -c, .., numactl, .., --, llama-server, ...]: the server's own argv
                 elif any(os.path.basename(x) in WRAPPER_TOOLS for x in a):
                     continue             # a pure placement wrapper (taskset/numactl/nice ... --)
+                elif not a[0].startswith("-") and a[0] != "<expr>" and not a[0].isdigit():
+                    continue             # argv[0] names another binary (test-backend-ops, llama-bench, python3 ...): not a server argv
                 out.append((f, n.lineno, a))
     for f, t in row.sh.items():
         for i, l in enumerate(re.sub(r"\\\n", " ", t).splitlines(), 1):

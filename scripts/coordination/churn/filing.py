@@ -411,6 +411,57 @@ def _end_info(flags, rid):
     return load_end(flags, rid)
 
 
+def deferred_dir(flags):
+    return os.path.join(flags, "reclaim-deferred")
+
+
+def defer_reclaim(flags, rid, successor, log=print):
+    """AK 2026-11-24 (r5 logs lost at r6 publish): a superseded row's evidence is NOT reclaimed at supersede time. Record a marker;
+    run_deferred_reclaims reclaims once rid is FILED and the successor's smoke has passed."""
+    d = deferred_dir(flags)
+    os.makedirs(d, exist_ok=True)
+    tmp = os.path.join(d, f".{rid}.json.tmp{os.getpid()}")
+    with open(tmp, "w") as fh:
+        json.dump({"id": rid, "successor": successor, "at": now_iso()}, fh)
+    os.replace(tmp, os.path.join(d, rid + ".json"))
+    log(f"RECLAIM-DEFER {rid}: unfiled/fail evidence kept until FILED (and successor {successor} smoke PASS)")
+
+
+def run_deferred_reclaims(flags, no_reclaim_globs=None, log=print):
+    """Reclaim every deferred row whose predecessor is FILED and whose successor's smoke passed (dryrun/<succ>/PASS.json) or
+    is itself filed. Never raises. -> list of reclaimed ids."""
+    done = []
+    try:
+        if no_reclaim_globs is None:
+            no_reclaim_globs = read_no_reclaim(flags)
+        for mp in sorted(glob.glob(os.path.join(deferred_dir(flags), "*.json"))):
+            try:
+                with open(mp) as fh:
+                    rec = json.load(fh)
+                rid, succ = str(rec["id"]), str(rec.get("successor") or "")
+            except (OSError, ValueError, KeyError):
+                continue
+            if not is_filed(flags, rid):
+                continue
+            if not (succ and (os.path.exists(os.path.join(flags, "dryrun", succ, "PASS.json")) or is_filed(flags, succ))):
+                continue
+            pinned = next((g for g in no_reclaim_globs if fnmatch.fnmatch(rid, g)), None)
+            if pinned:
+                log(f"RECLAIM-SKIPPED-SHARED {rid}: operator-named shared scratch ({pinned}); deferred reclaim dropped")
+            else:
+                if run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"]):
+                    continue   # kept for the next sweep
+                log(f"RECLAIM-DEFERRED-DONE {rid}: predecessor FILED and successor {succ} smoke passed")
+            try:
+                os.unlink(mp)
+            except OSError:
+                pass
+            done.append(rid)
+    except BaseException as e:  # noqa: BLE001
+        log(f"WARN run_deferred_reclaims: {type(e).__name__}: {e}")
+    return done
+
+
 def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answer=None, reclaim=True,
                   no_reclaim_globs=(), dry_run=False, log=print):
     """FILE rid as SUPERSEDED or WITHDRAWN. -> 'FILED' | 'NOOP' (already filed) | 'SKIP:<why>'."""
@@ -437,8 +488,12 @@ def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answe
     pinned = next((g for g in no_reclaim_globs if fnmatch.fnmatch(rid, g)), None)
     if reclaim and pinned:
         log(f"RECLAIM-SKIPPED-SHARED {rid}: operator-named shared scratch ({pinned}); filed without reclaim")
+    elif reclaim and verdict == "SUPERSEDED" and superseded_by:
+        defer_reclaim(flags, rid, superseded_by, log)   # evidence of a superseded, previously unfiled row is kept
     elif reclaim:
         run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
+    if reclaim:
+        run_deferred_reclaims(flags, no_reclaim_globs, log)
     return "FILED"
 
 
@@ -579,6 +634,7 @@ def supersede_on_publish(flags, new_id, log=print):
     try:
         globs = read_no_reclaim(flags)
         rep = supersede_lineage(flags, new_id, no_reclaim_globs=globs, log=log)
+        run_deferred_reclaims(flags, globs, log)
         succ = rep.get("successor", {})
         own = [r for r in rep["superseded"] if succ.get(r) == new_id]
         if own or rep["withdrawn"]:
@@ -724,6 +780,7 @@ def file_receipt(flags, rid, receipt, *, repo, verdict="RECEIPT", answer=None, b
     log(summary)
     if reclaim:
         run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
+        run_deferred_reclaims(flags, None, log)
     return 0, summary
 
 

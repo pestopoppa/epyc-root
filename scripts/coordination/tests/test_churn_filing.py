@@ -275,9 +275,34 @@ class TestSupersede(Base):
         self.assertEqual(self.verdict("lin-r2")["superseded_by"], "lin-r3")
         self.assertFalse(self.filed("other-r1")); self.assertFalse(self.filed("lin-r3"))
         self.assertEqual(self.read_filed("done-r1"), "FILED real\n")
-        self.assertEqual(sorted(r[0] for r in self.reclaims), ["lin-r1", "lin-r2"])
+        self.assertEqual(self.reclaims, [])                 # 2026-11-24: evidence kept; reclaim deferred
+        self.assertEqual(sorted(os.listdir(os.path.join(self.flags, "reclaim-deferred"))), ["lin-r1.json", "lin-r2.json"])
         again = filing.supersede_lineage(self.flags, "lin-r3")
         self.assertEqual(again["superseded"], [])           # idempotent
+
+    def test_supersede_defers_reclaim_until_filed_and_successor_smoke_pass(self):
+        """AK 2026-11-24: r6's publish deleted r5's FUTILITY evidence. Supersede must keep it until the successor smoke PASSes."""
+        self.row("ev-r5", rc=3, published="2026-11-06T01:00:00Z"); self.row("ev-r6", ended=False, published="2026-11-06T02:00:00Z")
+        lines = []
+        filing.supersede_on_publish(self.flags, "ev-r6", log=lines.append)
+        self.assertTrue(self.filed("ev-r5"))
+        self.assertEqual(self.reclaims, [])
+        self.assertTrue(any(l.startswith("RECLAIM-DEFER ev-r5: unfiled/fail evidence kept until FILED") for l in lines), lines)
+        self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lines.append), [])   # smoke not passed yet
+        self.assertEqual(self.reclaims, [])
+        Path(self.flags, "dryrun", "ev-r6").mkdir(parents=True)
+        Path(self.flags, "dryrun", "ev-r6", "PASS.json").write_text("{}")
+        self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lines.append), ["ev-r5"])
+        self.assertEqual(self.reclaims, [["ev-r5", "--flags", self.flags, "--apply", "--pre-filed"]])
+        self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lines.append), [])   # marker consumed
+
+    def test_deferred_reclaim_waits_for_filed(self):
+        self.row("ev-r5"); self.row("ev-r6", ended=False)
+        filing.defer_reclaim(self.flags, "ev-r5", "ev-r6", log=lambda *_: None)
+        Path(self.flags, "dryrun", "ev-r6").mkdir(parents=True); Path(self.flags, "dryrun", "ev-r6", "PASS.json").write_text("{}")
+        self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lambda *_: None), [])   # r5 not FILED
+        Path(self.flags, "filing-done", "ev-r5.FILED").write_text("FILED x\n")
+        self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lambda *_: None), ["ev-r5"])
 
     def test_complete_predecessor_kept_unless_named(self):
         self.row("c-r1", published="2026-11-06T01:00:00Z"); self.row("c-r2", ended=False, published="2026-11-06T02:00:00Z")
