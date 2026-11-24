@@ -2,8 +2,8 @@
  "session_id": "intake-always-on-1124",
  "started_at": "2026-11-24T15:55:00Z",
  "last_checkpoint": "2026-11-24T17:40:00Z",
- "stage": "stage2-complete",
- "phase": "stage2-closeout-closed",
+ "stage": "stage3",
+ "phase": "stage3-plan-presented",
  "lane": "intake/always-on-1124 (worktree /mnt/raid0/llm/worktrees/intake-always-on-1124)",
  "owner": "research-intake subagent for pipeline-mgmt (Opus 5.5)",
  "urls_processed": [
