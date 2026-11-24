@@ -20,7 +20,7 @@ role it carries:
   cache-ram, drafter and draft window, sampling defaults where the role allows them to move);
 - **tradeoffs**: a table of throughput vs latency vs temperature/acceptance vs memory, so a change such
   as a temperature move is an informed one;
-- **alternates**: 2-3 named configs, for example `latency`, `throughput` and `high-temperature`;
+- **alternates**: 2-3 named configs, for example `latency`, `throughput` and `low-temperature` (T 0..0.6; T > 1.0 is not tested);
 - **provenance** on every entry: the row id, RESULT.json path and sha256, and the store it ran on.
 
 At production promotion the package writes the registry `serving_shape` and its alternates from this

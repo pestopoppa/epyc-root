@@ -270,7 +270,7 @@ def validate(doc, strict_files=False, registry=None):
         if len(alts) > 3:
             rep.err(w, "at most 3 alternates")
         if isinstance(opt, dict) and opt.get("status") == "measured" and len(alts) < 2:
-            rep.err(w, "a measured optimal needs 2-3 named alternates (latency, throughput, high-temperature)")
+            rep.err(w, "a measured optimal needs 2-3 named alternates (latency, throughput, low-temperature)")
         for j, a in enumerate(alts):
             check_entry(a, "%s.alternates[%d]" % (w, j), rep, shape, strict_files, alt=True)
             if isinstance(a, dict):

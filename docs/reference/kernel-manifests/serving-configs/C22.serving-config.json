@@ -109,11 +109,10 @@
           ]
         },
         {
-          "name": "high-temperature",
+          "name": "low-temperature",
           "status": "pending",
-          "row_id": null,
-          "needs_row": "no row exists yet for a served 27B temperature-vs-acceptance measurement; the floor row measured only T=1.0 (acceptance 0.399)",
-          "pending_reason": "no row filed; acceptance at a higher temperature has not been measured"
+          "row_id": "ak-df2-card-conformance-gpu-20261124",
+          "pending_reason": "low-temperature / greedy end (T 0..0.6), where acceptance and tok/s rise; served T 1.0 is the official setting and T > 1.0 is not tested (operator). Points come from the card-conformance row and the DFlash2 draft-proposal-policy analysis"
         }
       ],
       "tradeoffs": [
