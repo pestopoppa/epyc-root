@@ -2881,6 +2881,24 @@ def earliest_start(c, free, now, grant_ends=(), region_ends=None):
     return best, None
 
 
+def own_start(h, free, now, region_ends, later):
+    """RESERVATION: when better row h can start - over its options, the latest KNOWN end of its missing tokens (grants AND live
+    smokes; an unknown token frees with the latest of them, else with the latest running grant). Unlike earliest_start it never
+    drops a start beyond the longest grant end (live check 16:18Z: draftwin's 16:38Z smoke end > the 16:31Z grant end ->
+    RANK-SKIP let rank-45 cdr take its quarter). None only when nothing at all has a known end. Never before now."""
+    best = None
+    for o in h["options"]:
+        ends = [(region_ends or {}).get(t) for t in (o - free)]
+        known = [float(e) for e in ends if e is not None]
+        if len(known) < len(ends) and not known:
+            if not later:
+                continue
+            known = [max(later)]
+        s = max(known or [now])
+        best = s if best is None else min(best, s)
+    return None if best is None else max(best, now)
+
+
 def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain, region_ends=None, reserve=False):
     """ws58 2026-11-04 (rank inversion): the regions c may NOT take because a strictly better-ranked pending row that
     cannot be placed yet needs them and is blocked only by busy regions that free within DRAIN_MAX_WAIT_S (T = latest
@@ -2901,9 +2919,9 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
             # RESERVATION (2026-11-24 root cause C): T is h's OWN earliest start (the ends of the regions h needs), never the
             # latest end of every running grant - at 11:35Z/11:39Z the GPU grant c21-fold-gpu-r2 (13:56Z, regions c21-fold-cpu-r3
             # does not need) pushed T past DRAIN_MAX_WAIT_S and RANK-SKIP let rank-60/40 rows take q0
-            Th, w2 = earliest_start(h, free, now, grant_ends, region_ends)
+            Th = own_start(h, free, now, region_ends, later)
             if Th is None:
-                why = w2
+                why = "needs busy regions with no known end (foreign hold) and no running grant end is known"
             elif Th - now > DRAIN_MAX_WAIT_S:
                 why = f"needs busy regions until {dt.datetime.fromtimestamp(Th, dt.timezone.utc):%H:%MZ} (> {DRAIN_MAX_WAIT_S}s)"
         elif why is None:
@@ -3069,6 +3087,12 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 drain, T = c, S
             elif not _fits(c, free, ram, gpu_grant_open):
                 S, why = earliest_start(c, free, now, grant_ends, region_ends)
+                if reserve and S is None and region_ends is not None:
+                    # RESERVATION (live check 16:19Z: draftwin rank 40 NO-RESERVE "start 16:39Z is beyond the longest busy
+                    # window" - its start was a live smoke's end - and rank-45 cdr took q0 for 1 h): the head's own start
+                    S2 = own_start(c, free, now, region_ends, [float(e) for e in grant_ends if e and float(e) > now])
+                    if S2 is not None and S2 > now:
+                        S, why = S2, None
                 prev = (drain_prev or {}).get(c["id"])
                 if S is not None and prev and now < float(prev) < S:   # T only moves earlier; an EXPIRED T never blocks
                     S = float(prev)

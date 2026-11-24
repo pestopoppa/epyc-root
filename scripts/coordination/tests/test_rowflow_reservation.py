@@ -94,6 +94,32 @@ class Plan(unittest.TestCase):
         self.assertNotIn("q1", res0)   # today's behaviour: skipped on the GPU grant's end
         self.assertTrue(skips0)
 
+    def test_rank_reservation_start_beyond_grant_ends_still_holds(self):
+        """Live check 16:18Z: the better row's start (a live smoke's end, 20 min) is past every grant end (13 min); it still
+        reserves - earliest_start's 'beyond the longest busy window' rule RANK-SKIPped it and a rank-45 row took its quarter."""
+        free = allfree() - rf.expand({"q0"})
+        ends = {t: NOW + 1200 for t in rf.expand({"q0"})}
+        better = cand("draftwin", 40, [{"q0"}])
+        low = cand("cdr", 45, [{"q0"}, {"q1"}], est=8 * 3600, min_window_s=3600)
+        rf.plan.caps = []
+        res, holds, skips = rf.rank_reservation(low, [better, low], free, 900, False, set(), NOW, [NOW + 780], None,
+                                                region_ends=ends, reserve=True)
+        self.assertEqual(skips, [])
+        self.assertTrue(holds and abs(holds[0][1] - (NOW + 1200)) < 1)
+
+    def test_drain_start_beyond_grant_ends_still_reserves(self):
+        """Live 16:19Z: host row draftwin (rank 40, waited > 1 h) got NO-RESERVE (start = a smoke end past every grant end);
+        rank-45 cdr took q0 for 65 min. With reserve the drain forms at the smoke end and cdr is kept off q0."""
+        free = allfree() - {"c80", "c81", "c82", "c83", "q3"}
+        ends = {"c80": NOW + 1200, "c81": NOW + 1200, "c82": NOW + 1200, "c83": NOW + 1200, "q3": NOW + 1200}
+        head = cand("draftwin", 40, [set(rf.QUARTERS)], shape="host", since=NOW - 2 * 3600)
+        low = cand("cdr", 45, [{"q0"}], est=3900, min_window_s=3600)
+        out0, _, _ = rf.plan(free, [head, low], 900, now=NOW, grant_ends=[], region_ends=ends)
+        self.assertIn("cdr", [c["id"] for c, _ in out0])   # today's behaviour (NO-RESERVE + RANK-SKIP "no grant end")
+        out, _, _ = rf.plan(free, [head, low], 900, now=NOW, grant_ends=[], region_ends=ends, reserve=True)
+        self.assertEqual(rf.plan.last_drain[0]["id"], "draftwin")
+        self.assertNotIn("cdr", [c["id"] for c, _ in out])
+
     def test_reservation_start_unknown_end_holds_from_now(self):
         c = {"options": [frozenset({"q0", "c80"})]}
         free = allfree() - {"q0", "c80"}
