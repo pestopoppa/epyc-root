@@ -33,6 +33,10 @@ KLOG=${WS58_KEEPER_LOG:-/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.lo
 KEEPER_HOUSEKEEPING_CPUS=0-87,96-183   # every cpu except the MI210 host cores 88-95 and threads 184-191
 REAP_LOCK="${S}reap.lock"; HK_DIR="${S}housekeeping/"; REAP_PIDFILE="${HK_DIR}reap.pid"
 hk() { taskset -c "$KEEPER_HOUSEKEEPING_CPUS" "$@"; }   # run one housekeeping child pinned off the GPU host threads
+# REAP-LIGHT (pipeline-mgmt 2026-11-24): the reap pass (vault copies, deletes, du scans) is DRAM/IO-heavy and once ran 31 min on
+# 0-87 beside a quiet q0 gate row. It runs ONLY in the light build pocket, at nice 19 and idle IO class; never on quarter cores 0-71.
+KEEPER_REAP_CPUS=84-87
+hk_heavy() { nice -n 19 ionice -c3 taskset -c "$KEEPER_REAP_CPUS" "$@"; }
 STOP_AT=$(date -u -d '2036-01-01T00:00:00Z' +%s)  # v7d: no expiry; the calendar must never lapse (10-31 06:00Z outage)
 DRY=0; REAPONLY=""; REAP_LEGACY=${REAP_LEGACY:-0}
 case "${1:-}" in
@@ -112,7 +116,7 @@ reap_filed() {   # called only by --reap-now / --reap-dry-run / --backfill-repor
     touch "${S}reap-last"; mkdir -p "${S}reap"   # disk_janitor.sh reads this stamp so a manual --reap-now and its own pass never double up
   fi
   REAP_MODE=$mode REAP_LEGACY=$REAP_LEGACY REAP_DAYS=$REAP_DAYS REAP_MAX_GIB=$REAP_MAX_GIB REAP_MAX_DIRS=$REAP_MAX_DIRS REAP_PRESSURE=$REAP_PRESSURE REAP_IDLE=$REAP_IDLE REAP_IDLE_DAYS=$REAP_IDLE_DAYS REAP_WORKTREES=$REAP_WORKTREES REAP_STATE="${S}reap/" REAP_REPORT="${REAP_REPORT:-0}" \
-  hk python3 -I - <<'PY' | while IFS= read -r ln; do log "$ln"; done
+  hk_heavy python3 -I - <<'PY' | while IFS= read -r ln; do log "$ln"; done
 import os, sys, re, json, glob, time, hashlib, tarfile, subprocess, fnmatch, shutil, datetime as dt
 E = os.environ; MODE = E['REAP_MODE']; LEGACY = E['REAP_LEGACY'] == '1'; DAYS = float(E['REAP_DAYS'])
 ST = E['REAP_STATE']; REPORT = E['REAP_REPORT'] == '1'
@@ -207,9 +211,30 @@ def vault_subset(sized, cap, evid):
 def safe_owner(o):
     o = re.sub(r'[^A-Za-z0-9_.-]', '_', str(o or 'unknown'))[:60]
     return o if o and not o.startswith('.') else 'unknown'
+QUIET_TOKENS = re.compile(r'\b(requires_quiet_host|quiet_guard_regions|quiet_sensitive)\b')
+def quiet_holders(gdir, mans, qs=None):
+    """REAP-DEFER-QUIET (pipeline-mgmt 2026-11-24; the reap's vault copies ran 31 min beside AK's quiet c20 gate row on q0):
+    sorted ids of RUNNING grants (<id>.grant without .ended/.complete) that are quiet-sensitive. Sensitive = rowflow's
+    quiet_sensitive(manifest) when qs is given, else the manifest declares requires_quiet_host/quiet_guard_regions/quiet_sensitive,
+    or the grant file itself names one of those keys. Fails CLOSED: an unreadable grant or a predicate error counts as quiet."""
+    hold = []
+    for gf in sorted(glob.glob(os.path.join(gdir, '*.grant'))):
+        rid = os.path.basename(gf)[:-6]
+        if os.path.exists(os.path.join(gdir, rid + '.ended')) or os.path.exists(os.path.join(gdir, rid + '.complete')): continue
+        try: txt = open(gf).read()
+        except OSError: hold.append(rid); continue
+        m = (mans.get(rid) or (None,))[0]
+        try:
+            if QUIET_TOKENS.search(txt): q = True
+            elif not isinstance(m, dict): q = False
+            elif qs is not None: q = bool(qs(m))
+            else: q = m.get('requires_quiet_host') is True or bool(m.get('quiet_guard_regions')) or m.get('quiet_sensitive') is True
+        except Exception: q = True
+        if q: hold.append(rid)
+    return hold
 # <<REAP-RULES-END>>
 DEDUP = E.get('REAP_LOG_DEDUP', '1') == '1' and MODE == 'live'
-ALWAYS = ('PASS-SUMMARY', 'IDLE-SUMMARY', 'SWEPT')   # carry changing numbers; a handful of lines per pass
+ALWAYS = ('PASS-SUMMARY', 'IDLE-SUMMARY', 'SWEPT', 'DEFER-QUIET')   # carry changing numbers; a handful of lines per pass
 LOGGED_P = ST + 'logged.json'
 try: LOGGED = {k: v for k, v in json.load(open(LOGGED_P)).items() if now - float(v) < 7 * 86400}
 except Exception: LOGGED = {}
@@ -394,6 +419,26 @@ try:   # prompt input release + supersession (operator-directed 2026-11-04; scri
 except Exception as _e:
     SREL = None; out('RELEASE-ERR', 'all', 'scratch_release unloadable (%r); inputs wait for the filing rules' % (_e,))
 ALLIDS = set()   # filled before the group pass (mans is built above it)
+# ---- REAP-DEFER-QUIET: while a quiet-sensitive row holds a grant, the heavy work (vault copies, deletes, du scans, trash sweep)
+# waits; metadata-only rules above (rule 8 markers) still run. Rechecked every QUIET_RECHECK_S so a row that starts mid-pass stops it.
+QS = None
+try:
+    _sp = _ilu.spec_from_file_location('rowflow_q', E.get('REAP_ROWFLOW', F + 'bin/rowflow/rowflow.py'))
+    _rf = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_rf); QS = _rf.quiet_sensitive
+except Exception as _e:
+    out('QUIET-PRED-FALLBACK', 'all', 'rowflow.quiet_sensitive unloadable (%r); declared keys only' % (_e,))
+QUIET_RECHECK_S = float(E.get('REAP_QUIET_RECHECK_S', '30')); _QH = dict(t=-1e18, ids=[])
+def quiet_defer():
+    '''True (and logs REAP-DEFER-QUIET <rid>) while any quiet-sensitive row holds a grant. REAP_IGNORE_QUIET=1 disables.'''
+    if E.get('REAP_IGNORE_QUIET', '0') == '1': return False
+    t = time.time()
+    if t - _QH['t'] >= QUIET_RECHECK_S:
+        try: ids = quiet_holders(G, mans, QS)
+        except Exception as e: ids = ['predicate-error:%r' % (e,)]
+        for rid in ids:
+            if rid not in _QH['ids']: out('DEFER-QUIET', rid, 'quiet-sensitive grant held; vault copies, deletes and du scans wait for the next pass')
+        _QH['t'] = t; _QH['ids'] = ids
+    return bool(_QH['ids'])
 def release_inputs(root, ids, tag):
     '''INPUTS are freed as soon as every row naming the root is released (ended any rc / dry run complete / superseded):
     verified re-derivable => freed directly (no trash, no idle wait); a DECLARED input that fails verification => guarded_rm;
@@ -470,6 +515,7 @@ VAULT_NOTE = ['']
 VAULT_KEEP = int(E.get('REAP_VAULT_KEEP', '2'))   # policy data: newest N versions kept per vault key
 def vault(name, root, files, filed_at):
     """returns (ok, msg). dry: only sizes."""
+    if quiet_defer(): return False, 'deferred: quiet-sensitive grant held (REAP-DEFER-QUIET)'
     name = vault_key(name, root)
     tot = 0; big = []
     for f in files:
@@ -681,6 +727,7 @@ def take_budget(tag, b):
         out('DEFER', tag, 'per-pass cap (%d dirs / %s) reached; %s waits for the next pass' % (MAXDIRS, gib(MAXB), gib(b))); return False
     budget['n'] += 1; budget['b'] += b; return True
 def really_delete(tag, root, dels, dbytes, note=''):
+    if quiet_defer(): out('DEFERRED', tag, 'quiet-sensitive grant held; delete waits for the next pass'); return
     # re-check right before delete (a process may have started since the snapshot)
     chk = subprocess.run(['bash', '-c', 'for q in /proc/[0-9]*; do tr "\\0" " " < $q/cmdline 2>/dev/null | grep -qF "$0/" && exit 3; ls -l $q/fd 2>/dev/null | grep -qF "$0/" && exit 3; done; exit 0', root]).returncode
     if chk != 0: out('BLOCKED', tag, 'process appeared at delete time'); return
@@ -700,13 +747,14 @@ def really_delete(tag, root, dels, dbytes, note=''):
 ALLIDS |= set(mans) | {os.path.basename(x)[:-6] for x in glob.glob(G + '*.ended')}
 def pressure_key(path, name):
     """GB x idle-days, biggest first, under pressure; alphabetical otherwise (any error => sorts last)."""
-    if not PRESSURE: return (0, name)
+    if not PRESSURE or quiet_defer(): return (0, name)
     try:
         newest, size, _g = scan_tree(path)
         return (-(size / 2**30) * max(0.0, (now - newest) / 86400), name)
     except Exception: return (0, name)
 for root in sorted(groups, key=lambda r: pressure_key(r, r)):
   g = groups[root]; ids = g['ids']; name = os.path.basename(root); tag = '%s[%s]' % (name, g['src'])
+  if quiet_defer(): break
   try:
     if not os.path.isdir(root): out('GONE', tag, 'scratch_root does not exist'); continue
     release_inputs(root, ids, tag)
@@ -771,6 +819,7 @@ if IDLE or LEGACY:
     def tally(c, b): x = cnt.setdefault(c, [0, 0]); x[0] += 1; x[1] += b
     for d in sorted(os.scandir(TMP), key=lambda e: pressure_key(e.path, e.name) if e.is_dir(follow_symlinks=False) else (0, e.name)):
         p = d.path; name = d.name; tag = name + '[idle]'
+        if quiet_defer(): break
         try:
             if not d.is_dir(follow_symlinks=False) or name in PROTECT or name.startswith('.'): continue
             if p in manifested: continue
@@ -817,6 +866,7 @@ if E.get('REAP_WORKTREES', '0') == '1':
     WTROOT = E.get('REAP_WORKTREE_ROOT', '/mnt/raid0/llm/worktrees'); WG = os.path.join(SYSDIR, 'worktree_gate.py')
     for d in (sorted(os.scandir(WTROOT), key=lambda e: e.name) if os.path.isdir(WTROOT) else []):
         p = d.path; tag = d.name + '[worktree]'
+        if quiet_defer(): break
         try:
             if not d.is_dir(follow_symlinks=False) or d.name in ('mains', 'pool') or d.name.startswith('.'): continue
             if not os.path.isfile(os.path.join(p, '.git')): continue   # linked worktrees only; nested dirs are never walked
@@ -833,7 +883,7 @@ if E.get('REAP_WORKTREES', '0') == '1':
             out('SKIP-ERR', tag, 'worktree guard error %r; item skipped' % (e,))
 if FUTURE['n']: out('FUTURE-MTIME', 'all', '%d entries had an mtime >1h in the future; aged by ctime instead (kept when ctime is also in the future)' % FUTURE['n'])
 out('PASS-SUMMARY', MODE, 'reaped-or-would %d dirs, %s (caps %d dirs / %s)' % (budget['n'], gib(budget['b']), MAXDIRS, gib(MAXB)))
-if MODE == 'live' and os.path.isdir(TRASH):
+if MODE == 'live' and os.path.isdir(TRASH) and not quiet_defer():
     r = subprocess.run(['bash', '/workspace/scripts/safety/trash-sweep.sh', '--older-than', '1'], env=dict(os.environ, TRASH_ROOT=TRASH), capture_output=True, text=True)
     if r.stdout.strip(): out('SWEPT', 'trash-backstop', r.stdout.strip().splitlines()[-1][:160])
 PY
@@ -853,14 +903,14 @@ reap_job() {
     return 0
   fi
   t0=$(date -u +%s); echo "$BASHPID" > "$REAP_PIDFILE"
-  log "REAP-START pid=$BASHPID cpus=$KEEPER_HOUSEKEEPING_CPUS (out of band; placement never waits on it)"
+  log "REAP-START pid=$BASHPID cpus=$KEEPER_REAP_CPUS nice=19 ionice=idle (out of band; placement never waits on it)"
   reap_filed || rc=$?
   log "REAP-END pid=$BASHPID rc=$rc duration=$(( $(date -u +%s) - t0 ))s"
   : > "$REAP_PIDFILE"   # emptied, not deleted: an empty pidfile names no pid
   return 0
 }
 reap_launch() {   # detach: new session, pinned, stdio closed; the caller (disk_janitor.sh) returns at once
-  setsid -f taskset -c "$KEEPER_HOUSEKEEPING_CPUS" bash "${BASH_SOURCE[0]}" --reap-job </dev/null >/dev/null 2>&1
+  setsid -f nice -n 19 ionice -c3 taskset -c "$KEEPER_REAP_CPUS" bash "${BASH_SOURCE[0]}" --reap-job </dev/null >/dev/null 2>&1
 }
 
 if [ $DRY = 1 ]; then tick; echo "[dry-run] one pass done; nothing changed"; exit 0; fi

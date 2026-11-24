@@ -63,12 +63,12 @@ class HousekeepingPinned(Base):
         r = subprocess.run(["bash", KEEPER, "--reap-job"], env=self.env, capture_output=True, text=True, timeout=60)
         self.assertEqual(r.returncode, 0, r.stderr)
         calls = self.lines(self.stub_log)
-        self.assertIn("-c 0-87,96-183 python3 -I -", calls)
+        self.assertIn("-c 84-87 python3 -I -", calls)   # REAP-LIGHT: light pocket only, never quarter cores 0-71
         # no python3 heredoc in the keeper escapes the wrapper
         text = open(KEEPER).read()
         for l in text.splitlines():
             if "python3 -I -" in l and "<<" in l:
-                self.assertIn("hk python3", l, l)
+                self.assertIn("hk_heavy python3", l, l)
 
     def test_reap_now_launcher_is_pinned_and_detached(self):
         self.env["STUB_SLEEP"] = "3"
@@ -78,7 +78,17 @@ class HousekeepingPinned(Base):
         self.assertLess(time.time() - t0, 2.5, "--reap-now must not wait for the pass")
         self.assertTrue(self.wait_for(lambda: any("REAP-END" in l for l in self.lines(self.log))), self.lines(self.log))
         calls = self.lines(self.stub_log)
-        self.assertTrue(any(c.startswith("-c 0-87,96-183 bash ") and c.endswith(" --reap-job") for c in calls), calls)
+        self.assertTrue(any(c.startswith("-c 84-87 bash ") and c.endswith(" --reap-job") for c in calls), calls)
+
+    def test_reap_runs_niced_idle_io_in_light_pocket(self):
+        text = open(KEEPER).read()
+        val = text.split("KEEPER_REAP_CPUS=", 1)[1].split()[0]
+        cpus = set(hostutil.parse_cpus(val))
+        self.assertTrue(cpus <= set(range(84, 88)), val)   # never quarter cores 0-71, never the GPU host threads
+        self.assertIn('hk_heavy() { nice -n 19 ionice -c3 taskset -c "$KEEPER_REAP_CPUS" "$@"; }', text)
+        launch = [l for l in text.splitlines() if "setsid -f" in l and "--reap-job" in l]
+        self.assertEqual(len(launch), 1, launch)
+        self.assertIn('nice -n 19 ionice -c3 taskset -c "$KEEPER_REAP_CPUS" bash', launch[0])
 
 
 class ReapOutOfBand(Base):
