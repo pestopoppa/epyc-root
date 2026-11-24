@@ -153,3 +153,49 @@ rows filed) is not met because the A3B row has not run. Already ticked earlier t
 The 17 lever rows have no verdicts, so no lever box is ticked.
 
 Next: autokernel. File each lever row as it ends (futility looks on), then C22 consolidation only after every lever row is filed.
+
+## Wrap-up 2 (since a39e37108, about 16:15Z)
+
+### Lever verdicts filed
+
+| Row | Verdict | Numbers | Class |
+|---|---|---|---|
+| `ak-df2-pointmass-gpu-20261124` | FUTILITY_BELOW_BASELINE at block 3 | ON/OFF tok/s 0.971x (95% CI 0.941-0.988); acceptance 0.628/0.611 (OFF/OFF2) to 0.593 (ON); len/eos/ttr inside the A/A band; the in-row OFF/OFF2 A/A ratio read 0.967 | performance reject |
+| `ak-spec-bsamp-gpu-20261124` | FUTILITY_BELOW_BASELINE at block 3 | 0.862x (95% CI 0.829-0.884); distribution inside the A/A bands | performance reject |
+
+Both rows ran the served :8083 argv at np 1 on the SPEC-BSAMP fork build (`ac61f25bc` / `10ae6928e`). Neither knob helps
+at the served sampler. DF2-PM adoption rule (acceptance +3% in 4 of 5 pairs) cannot pass, so the box closes and nothing
+folds into C22. The backend-sampling A/B box (under DF2-LB1) was ticked by its filing (`47dc33ca7`); DF2-PM is ticked in
+this wrap-up, `[belief: cc]`, with the result sub-bullet. The DF2-4 np1/np4 pair protocol was not run (futility makes it moot).
+
+### Already filed by a subagent (root `ad95ab59d`), not re-ticked here
+
+SPEC-COPY-COV-1 FIRE_TRIGGER, CDR-RT9-COVER-1 CLOSE, SPEC-ID-GATE-2, CPU-NT-WEIGHT-STREAM closed; new box SPEC-COPY-PROBE-1.
+
+### RCA F1/F2
+
+Single row generator `mk_ak_row` v2, harness helpers, and `--served-ref` are live at `a89b7a151` (operator D9 ack).
+
+### Operator rules recorded
+
+- Whole-host CPU rows run only after the GPU lever queue finishes, and only after a staleness triage of each row.
+- E5 is deferred until every lever row and its follow-ups have filed.
+- Pipeline supports the lever campaign continuously.
+
+### Rows
+
+Republished: q0-q2 quiet-host `ak-q38fn-draftwin-c22-cpu-20261124-r2` (running) and `ak-c21-census-refresh-cpu-20261124-r3`.
+`akx-all-13a` is paused. The specpit rows were withdrawn as not served operating points. Lever list:
+`/mnt/raid0/llm/tmp/ak-lever-rows-20261124.txt` (20 rows).
+
+### Checkbox sync and belief gate
+
+Result ticks this pass: 1 (DF2-PM, `[belief: cc]`, FUTILITY_BELOW_BASELINE). Cited 0, cc 1, declined 0. The remaining 18 lever
+rows have no verdict yet, so no other lever box is ticked.
+
+### Memory
+
+`feedback_no_c22_fold_until_all_rows_filed` already carries E5; `project_ak_hold_until_c22_and_reboot` updated with the
+lever-campaign rules; new `feedback_whole_host_cpu_rows_after_gpu_queue_with_staleness_triage`.
+
+Next: autokernel. File each lever row as it ends; whole-host CPU rows only after the GPU queue drains and each is triaged; E5 after all rows and follow-ups.
