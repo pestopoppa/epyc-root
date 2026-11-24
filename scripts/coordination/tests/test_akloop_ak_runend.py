@@ -286,6 +286,8 @@ def test_research_snapshot_includes_scripts_lib_for_path_gates(tmp_path):
     (repo / "scripts/kernel_rnd/autokernel/lineage/__init__.py").write_text("")
     (repo / "scripts/lib").mkdir(parents=True)
     (repo / "scripts/lib/canonical_recipe.py").write_text("X = 1\n")
+    (repo / "scripts/benchmark").mkdir(parents=True)
+    (repo / "scripts/benchmark/__init__.py").write_text("")
     g = lambda *a: subprocess.run(["git", "-C", str(repo), *a], check=True, capture_output=True)
     g("init", "-q", "-b", "main"); g("add", "-A")
     g("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "x")
@@ -294,3 +296,4 @@ def test_research_snapshot_includes_scripts_lib_for_path_gates(tmp_path):
     root = os.path.dirname(os.path.dirname(kr))
     assert os.path.isfile(os.path.join(root, "scripts", "lib", "canonical_recipe.py"))
     assert os.path.isdir(os.path.join(kr, "autokernel", "lineage"))
+    assert os.path.isfile(os.path.join(root, "scripts", "benchmark", "__init__.py"))

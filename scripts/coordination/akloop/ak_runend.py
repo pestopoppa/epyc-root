@@ -96,17 +96,17 @@ def classify(flags: str, rid: str, man: dict, *, route: bool, notify_mod=None) -
 
 
 def research_snapshot(repo: str = RESEARCH_REPO, ref: str = "origin/main", cache: str = RESEARCH_CACHE) -> str:
-    """scripts/kernel_rnd (+ scripts/lib) of research `ref`, extracted once per commit via fetch + git archive (read-only on the clone)."""
+    """research scripts/ of `ref` (kernel_rnd is returned), extracted once per commit via fetch + git archive (read-only on the clone)."""
     remote, _, branch = ref.partition("/")
     subprocess.run(["git", "-C", repo, "fetch", "-q", remote, branch], capture_output=True)
     commit = subprocess.run(["git", "-C", repo, "rev-parse", f"{ref}^{{commit}}"], capture_output=True, text=True,
                             check=True).stdout.strip()
     root = os.path.join(cache, commit)
     kr = os.path.join(root, "scripts", "kernel_rnd")
-    # scripts/lib rides along: stage_bodies.coverage_report (path-gates) imports scripts/lib/canonical_recipe.py
+    # all of research scripts/: stage_bodies.coverage_report (path-gates) imports scripts/lib and scripts/benchmark
     if not (os.path.isdir(os.path.join(kr, "autokernel", "lineage"))
-            and os.path.isfile(os.path.join(root, "scripts", "lib", "canonical_recipe.py"))):
-        a = subprocess.run(["git", "-C", repo, "archive", commit, "scripts/kernel_rnd/autokernel", "scripts/lib"],
+            and os.path.isdir(os.path.join(root, "scripts", "benchmark"))):
+        a = subprocess.run(["git", "-C", repo, "archive", commit, "scripts"],
                            capture_output=True, check=True)
         os.makedirs(root, exist_ok=True)
         tarfile.open(fileobj=io.BytesIO(a.stdout)).extractall(root)
