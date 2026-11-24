@@ -5160,6 +5160,7 @@ def complete_suspect(flags, rid, text=None):
     return f"ended {el}s after grant start with a PASS result but no first-progress marker (no artifact written by the run)"
 
 
+OWNER_STOP_REQUEUE = False   # B8 auto-requeue of an owner STOP; off since 2026-11-23 23:56Z (a STOP is a pause; see autorequeue_pending)
 STOP_FINAL_MARKERS = ("STOP-FINAL", "WITHDRAW")   # AK audit B8: the owner's "do not requeue" markers beside the STOP file
 
 
@@ -5229,6 +5230,12 @@ def autorequeue_decision(flags, rid):
         return None, ""
     if capcut_closed(flags, rid):
         return None, ""
+    if not OWNER_STOP_REQUEUE:
+        # 2026-11-23 23:56Z rollback of B8: AK paused quiet rows with STOP to protect a rank-5 gate row; B8 requeued and
+        # re-granted one within the same tick, beside the gate row. An owner STOP is a PAUSE again; `rowflow resume` ends it.
+        sf = resolve_stop_path(d)
+        if stopped or (re.search(r"reason=partial-\S*stopped", first) and sf and os.path.exists(sf)):
+            return "stop", "owner STOP is a pause (OWNER_STOP_REQUEUE=False); resume with `rowflow.py resume <id>`"
     why = autorequeue_blocked(text, _result_json(d))
     if why:
         return "blocked", why

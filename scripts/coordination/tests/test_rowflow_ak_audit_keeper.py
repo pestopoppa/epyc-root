@@ -111,6 +111,17 @@ class B8StopRequeue(Flags):
         open(self.stop, "w").write("owner stop\n")
         with open(os.path.join(self.G, self.RID + ".ended"), "w") as fh:
             fh.write("rc=75 time=2026-11-23T10:00:00Z reason=stopped\n")
+        self._saved_osr = rf.OWNER_STOP_REQUEUE
+        rf.OWNER_STOP_REQUEUE = True   # these tests cover the (now opt-in) B8 auto-requeue path
+        self.addCleanup(setattr, rf, "OWNER_STOP_REQUEUE", self._saved_osr)
+
+    def test_default_owner_stop_is_a_pause(self):
+        """2026-11-23 rollback: with OWNER_STOP_REQUEUE off (default), an owner STOP is a pause, not a requeue."""
+        rf.OWNER_STOP_REQUEUE = False
+        self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "stop")
+        with open(os.path.join(self.G, self.RID + ".ended"), "w") as fh:
+            fh.write("rc=75 time=2026-11-23T10:00:00Z reason=partial-native-stopped\n")
+        self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "stop")
 
     def test_owner_stop_requeues_and_clears_stop(self):
         self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "requeue")
