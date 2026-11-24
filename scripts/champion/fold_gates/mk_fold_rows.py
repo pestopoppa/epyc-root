@@ -13,6 +13,15 @@ Template rules (C19 lessons, scripts/champion/fold_gates/fold_row_guard.py):
     2026-11-23: two full suites, C18 then C20, are mostly CPU-reference bound - 0 % GPU busy, 1 % VRAM - while the GPU queue
     waits). Scope tbo with `-o` to the ops the fold touched (MUL_MAT, MUL_MAT_ID, GATED_DELTA_NET, SSM_CONV, ARGSORT/TOP_K/
     TOPK_MOE for routers), or run the full suite as a separate CPU-lane step before the GPU grant.
+  * (FOLD-GATE-SPEC-CORRECTNESS-V2, 2026-11-24) the GPU row's spec-vs-nospec correctness is STEP C (fold_step_c.py + step_c_block.txt,
+    ported from c21-fold-gpu-20261124-r4/job.py), never the retired step-4 clause "first divergence char >= previous-fold floor"
+    (c21-fold-gpu-20261124-r2 FAIL 232 < 365 on word-choice near-ties). STEP C = spec and nospec arms, fresh server per unit, >= 6
+    ABBA reps, gated requests at n_probs 0 (the served fast paths), fork margins from teacher-forced n_probs 2 probes on a nospec
+    server, NEAR_TIE iff margin < 0.05 nat and both fork tokens are the probe's top-2, REAL_DEFECT iff any HARD CAND fork or
+    median(x_cand) < p10(aa_cand) and < p10(x_ref). fix_gpu_stepc() splices the canonical block into the clone and refuses a job
+    with the old step-4 code; seal refuses a GPU row whose job fails fold_step_c.check(). Clone the GPU row from an r4-style job
+    (STEP C markers or the [r3] STEP C heading) and use relabel_keep_arms() so the c18/c19 arm labels in code are not rewritten.
+    Selftest: `mk_fold_rows.py selftest` (runs test_fold_step_c.py).
 """
 import importlib.util as _ilu
 import hashlib, json, os, re, shutil, sys
@@ -89,6 +98,30 @@ def clone(old, new):
     return dst
 
 
+def relabel_keep_arms(s, old_row, new_row, pairs):
+    """Relabel for r4-style jobs whose arm labels ('c18' = REF, 'c19' = CAND) are fixed names in code: only the row id and the explicit
+    (old, new) literals in pairs (SHAs, trees, store names, paths) are replaced; bare c17/c18/c19 tokens are NOT touched."""
+    s = s.replace(old_row, new_row)
+    for a, b in pairs:
+        s = s.replace(a, b)
+    return s
+
+
+def fix_gpu_stepc(dst):
+    """Install the canonical STEP C into a cloned fold-gpu job (replaces the retired step-4 first-divergence clause)."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import fold_step_c
+    p = dst + '/job.py'
+    s = open(p).read()
+    if 'def step4(' in s and fold_step_c.BEGIN not in s and fold_step_c.R3_HEAD not in s:
+        sys.exit(f'{p}: old step-4 job (first divergence >= floor); clone the GPU row from an r4-style job that carries STEP C')
+    s = fold_step_c.splice(s)
+    ok, why = fold_step_c.check(s)
+    if not ok:
+        sys.exit(f'{p}: STEP C check failed: {why}')
+    open(p, 'w').write(s)
+
+
 def fix_gpu(dst):
     p = dst + '/job.py'
     s = open(p).read()
@@ -146,6 +179,12 @@ def fix_qdec(dst):
 
 
 def seal(dst):
+    if '-fold-gpu-' in dst:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import fold_step_c
+        ok, why = fold_step_c.check(open(dst + '/job.py').read())
+        if not ok:
+            sys.exit(f'seal: {dst}/job.py lacks the canonical STEP C: {why}')
     if os.path.exists(dst + '/shas.json'):
         new = {}
         for k in json.load(open(dst + '/shas.json')):
@@ -168,6 +207,9 @@ def seal(dst):
 
 
 if __name__ == '__main__':
+    if sys.argv[1:] == ['selftest']:   # no store needed: STEP C block + splice/check
+        import subprocess
+        sys.exit(subprocess.call([sys.executable, '-I', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_fold_step_c.py')]))
     lib = [f for f in os.listdir(f'/mnt/raid0/llm/kernels/builds/{G19}/bin') if f.startswith('libllama.so.0.0.')]
     assert len(lib) == 1, lib
     LL19 = lib[0]
@@ -177,6 +219,8 @@ if __name__ == '__main__':
         if phase == 'clone':
             clone(old, new)
             {'gpu': fix_gpu, 'a3b': fix_a3b, 'cpu': fix_cpu, 'qdec': fix_qdec}[new.split('-')[2]](dst)
+            if new.split('-')[2] == 'gpu':
+                fix_gpu_stepc(dst)   # STEP C replaces the step-4 first-divergence clause
             fold_row_guard.install_guard(dst, GUARD)
         else:
             seal(dst)

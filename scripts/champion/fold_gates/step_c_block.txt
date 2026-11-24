@@ -1,0 +1,345 @@
+# STEP C canonical block (FOLD-GATE-SPEC-CORRECTNESS-V2). Ported verbatim from /mnt/raid0/llm/tmp/c21-fold-gpu-20261124-r4/job.py
+# lines 534-876 (r3/r4 design, sha256 of the source job recorded in fold_step_c.py). mk_fold_rows.fix_gpu_stepc() splices this block
+# into a cloned fold-gpu job between the STEP_C_BEGIN / STEP_C_END marker lines. Host-job globals it needs: D, OUT, PORT, ARMS, SHORT,
+# N_PREDICT, EXPECT_N, gp, post, append, done, stop, jsave, median, prefix, acc_summary, residency, gpu_env, xserver_argv, and the stdlib imports hashlib json os re shutil subprocess sys threading time urllib.request.
+# ----------------------------------------------------------------------------------------------------- [r3] STEP C correctness
+NEAR_TIE_NAT = 0.05
+R_CORE = 6
+R_ATT = 4
+FRESH_SERVER_STARTS = R_CORE   # fresh_server_starts per correctness arm (spec fresh_server_starts_reason)
+CCFG = {'c18-spec': ('c18', True, {}), 'c18-nospec': ('c18', False, {}), 'c19-spec': ('c19', True, {}), 'c19-nospec': ('c19', False, {}),
+        'c19-nospec-gdn0': ('c19', False, {'GGML_HIP_GDN_FUSED': '0'})}
+CORDER = ['c18-spec', 'c19-spec', 'c18-nospec', 'c19-nospec']
+CPROMPT = {'c': 'P3', 'k': 'P2'}   # unit prefix -> prompt: c = code28k (P3, default); k = code16k (P2, pre-registered futility switch)
+GDN_WITNESS = 'GDN_FUSED'
+
+
+def core_units(pfx):
+    return [(pfx, r, c) for r in range(1, R_CORE + 1) for c in (CORDER if r % 2 else list(reversed(CORDER)))]
+
+
+def att_units(pfx):
+    return [(pfx, r, 'c19-nospec-gdn0') for r in range(1, R_ATT + 1)]
+
+
+def cuid(pfx, rep, cfg):
+    return f'{pfx}{rep}-{cfg}'
+
+
+def gen(base, prompt, n_predict=N_PREDICT, n_probs=0, cache=False):
+    body = {'prompt': prompt, 'n_predict': n_predict, 'temperature': 0.0, 'top_k': 1, 'cache_prompt': cache, 'stream': False,
+            'ignore_eos': True, 'return_tokens': True}
+    if n_probs:
+        body['n_probs'] = n_probs
+    return post(base, '/completion', body)
+
+
+class Served:
+    """One llama-server for one unit/probe session: started, health-waited, killed in finally (also on stop)."""
+
+    def __init__(self, uid, argv, env, store):
+        self.uid, self.argv, self.env, self.store = uid, argv, env, store
+        self.base = f'http://127.0.0.1:{PORT}'
+
+    def __enter__(self):
+        os.makedirs(OUT + '/servers', exist_ok=True)
+        jsave(OUT + f'/servers/{self.uid}.argv.json', {'argv': self.argv, 'env': self.env})
+        card = gp.gpu_card(); self.v0 = gp.rd(card + '/mem_info_vram_used', 0) if card else None
+        self.smp = gp.Sampler(sid=os.getsid(0)); self.smp.start()
+        self.lf = open(OUT + f'/servers/{self.uid}.server.log', 'wb')
+        self.p = subprocess.Popen(self.argv, stdout=self.lf, stderr=subprocess.STDOUT, env=self.env, cwd=D)
+        pf = os.environ.get('FILLER_PIDFILE')
+        if pf:
+            with open(pf, 'a') as f:
+                f.write(f'{self.p.pid}\n')
+        _LIVE.add(self.p)
+        try:
+            return self._wait()
+        except BaseException:
+            self.__exit__(None, None, None)
+            raise
+
+    def _wait(self):
+        t0 = time.time()
+        while time.time() - t0 < 1800:
+            if stop():
+                raise InterruptedError('stop during load')
+            if self.p.poll() is not None:
+                raise RuntimeError(f'server exited rc={self.p.returncode} during load')
+            try:
+                with urllib.request.urlopen(self.base + '/health', timeout=2) as r:
+                    if b'"ok"' in r.read():
+                        return self
+            except Exception:  # noqa: BLE001
+                pass
+            time.sleep(2)
+        raise RuntimeError('server not healthy in 1800 s')
+
+    def __exit__(self, *exc):
+        _kill(self.p)
+        self.smp.stop.set(); self.smp.join(5)
+        self.lf.close()
+        return False
+
+    def residency(self):
+        return residency(self.smp.record(self.v0), self.store)
+
+    def log(self):
+        try:
+            return open(OUT + f'/servers/{self.uid}.server.log', errors='replace').read()
+        except OSError:
+            return ''
+
+
+_LIVE = set()
+
+
+def _kill(p):
+    if p.poll() is None:
+        p.terminate()
+        try:
+            p.wait(30)
+        except subprocess.TimeoutExpired:
+            p.kill(); p.wait()
+    _LIVE.discard(p)
+
+
+def _kill_all(*_a):
+    for p in list(_LIVE):
+        _kill(p)
+
+
+import atexit, signal  # noqa: E402
+atexit.register(_kill_all)
+signal.signal(signal.SIGTERM, lambda *a: (_kill_all(), sys.exit(75)))
+
+
+def cvisit(pfx, rep, cfg, texts):
+    """STEP C unit: fresh server (cfg), warm-up on short100 (not scored), one gated greedy request, n_probs 0 (served path)."""
+    arm, spec, extra = CCFG[cfg]
+    pid = CPROMPT[pfx]
+    uid = cuid(pfx, rep, cfg)
+    store = ARMS[arm]['bdir']
+    env = {**gpu_env(store), **extra}
+    q, err, rs, lg = {}, None, None, ''
+    try:
+        with Served(uid, xserver_argv(store, spec), env, store) as sv:
+            gen(sv.base, open(SHORT).read())
+            d = gen(sv.base, texts[pid])
+            tm = d.get('timings') or {}
+            toks = d.get('tokens') or []
+            q = {'tok_s': tm.get('predicted_per_second'), 'prompt_n': tm.get('prompt_n'), 'predicted_n': tm.get('predicted_n'),
+                 'predicted_ms': tm.get('predicted_ms'), 'draft_n': tm.get('draft_n'), 'draft_n_accepted': tm.get('draft_n_accepted'),
+                 'n_tokens': len(toks), 'content_sha256': hashlib.sha256(d.get('content', '').encode()).hexdigest()}
+            q['valid'] = q['predicted_n'] == N_PREDICT and q['prompt_n'] == EXPECT_N[pid] and len(toks) == N_PREDICT
+            os.makedirs(OUT + '/content', exist_ok=True)
+            jsave(OUT + f'/content/{uid}.json', {'content': d.get('content', ''), 'tokens': toks})
+            rs = sv.residency(); lg = sv.log()
+    except InterruptedError:
+        return None
+    except RuntimeError as e:
+        err = str(e)[:300]
+    row = {'unit_id': uid, 'final': True, 'kind': 'cvisit', 'prefix': pfx, 'prompt': pid, 'rep': rep, 'cfg': cfg, 'arm': arm, 'spec': spec,
+           'env_extra': extra, 'q': q, 'content_file': OUT + f'/content/{uid}.json', 'error': err, 'residency': rs,
+           'witness': {'gdn_fused_lines': lg.count(GDN_WITNESS), 'device_accept_enabled_line': 'llama_device_accept: ENABLED' in lg},
+           'valid': err is None and bool(rs and rs['ok']) and bool(q.get('valid'))}
+    append(row)
+    return row
+
+
+def ctoks(u):
+    return json.load(open(u['content_file']))
+
+
+def first_div(a, b):
+    """(token index of first divergence or None if a and b agree through the shorter, position scored = index or min len)."""
+    k = prefix(a, b)
+    n = min(len(a), len(b))
+    return (None, n) if k >= n else (k, k)
+
+
+def ctx_key(pid, toks):
+    return pid + '-' + hashlib.sha256(json.dumps(toks).encode()).hexdigest()[:16]
+
+
+def pairs(cu, pfx):
+    """All pairs of STEP C units under prefix pfx: name -> list of (uidA, uidB). Built from valid units only."""
+    def rs(cfg):
+        return [cuid(pfx, r, cfg) for r in range(1, (R_ATT if cfg.endswith('gdn0') else R_CORE) + 1) if cuid(pfx, r, cfg) in cu]
+    out = {}
+    for arm in ('c18', 'c19'):
+        s, n = rs(f'{arm}-spec'), rs(f'{arm}-nospec')
+        out[f'x_{arm}'] = [(a, b) for a in s for b in n]
+        out[f'aa_{arm}'] = [(n[i], n[j]) for i in range(len(n)) for j in range(i + 1, len(n))]
+        out[f'aas_{arm}'] = [(s[i], s[j]) for i in range(len(s)) for j in range(i + 1, len(s))]
+    g, n = rs('c19-nospec-gdn0'), rs('c19-nospec')
+    out['aa_gdn0'] = [(g[i], g[j]) for i in range(len(g)) for j in range(i + 1, len(g))]
+    out['x_gdn0_vs_c19nospec'] = [(a, b) for a in g for b in n]
+    return out
+
+
+def p10(xs):
+    xs = sorted(xs)
+    return xs[max(0, -(-len(xs) // 10) - 1)] if xs else None
+
+
+def fork_table(d, pfx):
+    """Every pair's fork: position, chars, the probe context, and its class from the probes in d."""
+    cu = {u['unit_id']: u for u in d.values() if u.get('kind') == 'cvisit' and u.get('prefix') == pfx and u.get('valid')}
+    data = {k: ctoks(u) for k, u in cu.items()}
+    pid = CPROMPT[pfx]
+    tab = {}
+    for name, ps in pairs(cu, pfx).items():
+        rows = []
+        for a, b in ps:
+            ta, tb = data[a]['tokens'], data[b]['tokens']
+            k, pos = first_div(ta, tb)
+            r = {'a': a, 'b': b, 'pos': pos, 'char': prefix(data[a]['content'], data[b]['content'])}
+            if k is not None:
+                arm = cu[a]['arm']
+                key = ctx_key(pid, ta[:k])
+                pr = d.get(f'probe-{arm}-{key}')
+                r.update(k=k, tok_a=ta[k], tok_b=tb[k], ctx=key, probe_arm=arm)
+                if pr is None or len(pr.get('top') or []) < 2:
+                    r['cls'] = 'UNMEASURED'
+                else:
+                    t1, t2 = pr['top'][0], pr['top'][1]
+                    r['margin'] = t1['logprob'] - t2['logprob']
+                    r['top2'] = [t1['id'], t2['id']]
+                    r['cls'] = 'NEAR_TIE' if r['margin'] < NEAR_TIE_NAT and {ta[k], tb[k]} == {t1['id'], t2['id']} else 'HARD'
+            rows.append(r)
+        tab[name] = rows
+    return tab, cu, data
+
+
+def need_probes(d, pfx, arms):
+    """Probe contexts still unmeasured for the forks of pairs owned by arms: {arm: {key: prefix tokens}}."""
+    tab, cu, data = fork_table(d, pfx)
+    want = {a: {} for a in arms}
+    order = ['x_c19', 'aa_c19', 'aas_c19', 'aa_gdn0', 'x_gdn0_vs_c19nospec', 'x_c18', 'aa_c18', 'aas_c18']
+    for name in order:
+        for r in tab.get(name, []):
+            if r.get('cls') == 'UNMEASURED' and r['probe_arm'] in want and f"probe-{r['probe_arm']}-{r['ctx']}" not in d:
+                want[r['probe_arm']][r['ctx']] = data[r['a']]['tokens'][:r['k']]
+    return want
+
+
+def probe_session(arm, ctxs, pfx, texts, look):
+    """Teacher-forced margin probes on a nospec server of arm: prompt = tokenize(prompt) + prefix, n_predict 1, n_probs 2,
+    cache_prompt true; contexts sorted so each extends the previous where possible (prompt checkpoints reused). Each probe is
+    appended as it finishes. Returns False on stop."""
+    if not ctxs:
+        return True
+    pid = CPROMPT[pfx]
+    store = ARMS[arm]['bdir']
+    uid = f'probesrv-{pfx}-{arm}-{look}'
+    err = None
+    try:
+        with Served(uid, xserver_argv(store, False) + ['-ctxcp', '32'], gpu_env(store), store) as sv:
+            ids = post(sv.base, '/tokenize', {'content': texts[pid], 'add_special': True}).get('tokens') or []
+            if len(ids) != EXPECT_N[pid]:
+                raise RuntimeError(f'tokenize gave {len(ids)} != {EXPECT_N[pid]}')
+            for key, pre in sorted(ctxs.items(), key=lambda kv: kv[1]):
+                if stop():
+                    raise InterruptedError('stop')
+                r = gen(sv.base, ids + pre, n_predict=1, n_probs=2, cache=True)
+                cp = (r.get('completion_probabilities') or [{}])[0]
+                top = [{'id': t.get('id'), 'logprob': t.get('logprob'), 'token': t.get('token')} for t in (cp.get('top_logprobs') or [])]
+                tm = r.get('timings') or {}
+                append({'unit_id': f'probe-{arm}-{key}', 'final': True, 'kind': 'probe', 'arm': arm, 'prompt': pid, 'k': len(pre),
+                        'top': top, 'sampled': cp.get('id'), 'prompt_ms': tm.get('prompt_ms'), 'prompt_n': tm.get('prompt_n'),
+                        'tokens_cached': r.get('tokens_cached'), 'session': uid})
+            rs = sv.residency()
+    except InterruptedError:
+        return False
+    except RuntimeError as e:
+        err = str(e)[:300]; rs = None
+    append({'unit_id': uid, 'final': True, 'kind': 'probe-session', 'arm': arm, 'n_ctx': len(ctxs), 'error': err, 'residency': rs})
+    return True
+
+
+def correctness(d, pfx, final):
+    """RULE C on the units/probes in d. Returns dict with 'verdict' in REAL_DEFECT | PASS_NEAR_TIE | FUTILITY_MARGIN_UNMEASURED | None
+    (None = interim look, no answer yet)."""
+    tab, cu, _ = fork_table(d, pfx)
+    pos = {n: [r['pos'] for r in rows] for n, rows in tab.items()}
+    hard_x = [r for r in tab['x_c19'] if r.get('cls') == 'HARD']
+    unm_x = [r for r in tab['x_c19'] if r.get('cls') == 'UNMEASURED']
+    hard_reps = sorted({r['a'] for r in hard_x})
+    stats = {n: {'n': len(v), 'median': median(v), 'p10': p10(v), 'min': min(v) if v else None} for n, v in pos.items()}
+    cls = {n: {c: sum(1 for r in rows if r.get('cls') == c) for c in ('NEAR_TIE', 'HARD', 'UNMEASURED')} for n, rows in tab.items()}
+    out = {'prefix': pfx, 'prompt': CPROMPT[pfx], 'stats_token_pos': stats, 'fork_classes': cls, 'hard_x_c19': hard_x,
+           'hard_spec_reps': hard_reps, 'forks': tab, 'units_valid': sorted(cu)}
+    m, a21, x18 = stats['x_c19']['median'], stats['aa_c19']['p10'], stats['x_c18']['p10']
+    clause_ii = None not in (m, a21, x18) and m < a21 and m < x18
+    out['clause_ii'] = {'median_x_c19': m, 'p10_aa_c19': a21, 'p10_x_c18': x18, 'fires': clause_ii}
+    allc = [u for u in d.values() if u.get('kind') == 'cvisit' and u.get('prefix') == pfx]
+    out['units_invalid'] = sorted(u['unit_id'] for u in allc if not u.get('valid'))
+    thin = [c for c in CORDER if sum(1 for u in cu.values() if u['cfg'] == c) < R_CORE - 1]
+    if len(hard_reps) >= 2:
+        out['verdict'] = 'REAL_DEFECT'; out['why'] = f'HARD spec-vs-nospec fork repeats in C21 spec reps {hard_reps}'
+    elif not final:
+        out['verdict'] = None
+    elif hard_x:
+        out['verdict'] = 'REAL_DEFECT'; out['why'] = f'{len(hard_x)} HARD C21 spec-vs-nospec fork(s) (clause i)'
+    elif clause_ii:
+        out['verdict'] = 'REAL_DEFECT'; out['why'] = f'median x21 {m} < p10 aa21 {a21} and < p10 x18 {x18} (clause ii)'
+    elif thin:
+        out['verdict'] = 'FUTILITY_MARGIN_UNMEASURED'; out['why'] = f'core arms with < {R_CORE - 1} valid reps: {thin}'
+    elif unm_x:
+        out['verdict'] = 'FUTILITY_MARGIN_UNMEASURED'; out['why'] = f'{len(unm_x)} C21 spec-vs-nospec forks without a probe margin'
+    else:
+        out['verdict'] = 'PASS_NEAR_TIE'; out['why'] = 'every C21 spec-vs-nospec fork is a near-tie and clause ii does not fire'
+    att = {u['unit_id']: u['witness'] for u in cu.values() if u['cfg'] == 'c19-nospec-gdn0'}
+    out['attribution_info'] = {'gdn0_witness': att, 'gdn0_witness_ok': bool(att) and all(w['gdn_fused_lines'] == 0 for w in att.values()),
+                               'aa_gdn0': stats.get('aa_gdn0'), 'aa_c19': stats['aa_c19'], 'aa_c18': stats['aa_c18'],
+                               'n_cpu_moe_0': 'skipped: Q38FN UD-IQ4_XS 93.7 GB > MI210 68.7 GB VRAM (pre-registered)'}
+    acc = {}
+    for cfg in ('c18-spec', 'c19-spec'):
+        qs = [u['q'] for u in cu.values() if u['cfg'] == cfg]
+        acc[cfg] = {**acc_summary(qs), 'tok_s': [q.get('tok_s') for q in qs]}
+    out['acceptance_info'] = acc
+    return out
+
+
+def run_correctness(texts):
+    """STEP C driver. Returns ('answer', result dict) or ('stop', None)."""
+    d = done()
+    pfx = 'k' if (d.get('cx-futility-look') or {}).get('switch') else 'c'
+    for blk_end in (2, 4, R_CORE):
+        for p_, rep, cfg in core_units(pfx):
+            if rep > blk_end or cuid(p_, rep, cfg) in d:
+                continue
+            if stop() or cvisit(p_, rep, cfg, texts) is None:
+                return 'stop', None
+            d = done()
+        if blk_end == 2 and pfx == 'c' and 'cx-futility-look' not in d:
+            tab, _, _ = fork_table(d, 'c')
+            aa = {arm: [r['char'] for r in tab[n] if {r['a'], r['b']} == {cuid('c', 1, arm), cuid('c', 2, arm)}]
+                  for arm, n in (('c18-nospec', 'aa_c18'), ('c19-nospec', 'aa_c19'), ('c18-spec', 'aas_c18'), ('c19-spec', 'aas_c19'))}
+            sw = all(v and v[0] < 100 for v in aa.values())
+            append({'unit_id': 'cx-futility-look', 'final': True, 'aa_rep1_rep2_char': aa, 'switch': sw})
+            d = done()
+            if sw:
+                return run_correctness(texts)
+        if blk_end == R_CORE:
+            for p_, rep, cfg in att_units(pfx):
+                if cuid(p_, rep, cfg) in d:
+                    continue
+                if stop() or cvisit(p_, rep, cfg, texts) is None:
+                    return 'stop', None
+                d = done()
+        final = blk_end == R_CORE
+        look = f'b{blk_end}'
+        want = need_probes(d, pfx, ['c19'] if not final else ['c19', 'c18'])
+        for arm in (['c19'] if not final else ['c19', 'c18']):
+            if want.get(arm) and f'probesrv-{pfx}-{arm}-{look}' not in d:
+                if not probe_session(arm, want[arm], pfx, texts, look):
+                    return 'stop', None
+                d = done()
+        c = correctness(d, pfx, final)
+        append({'unit_id': f'cx-look-{pfx}-{look}', 'final': True, 'verdict': c['verdict'], 'why': c.get('why'),
+                'hard_spec_reps': c['hard_spec_reps'], 'clause_ii': c['clause_ii']})
+        if c['verdict'] is not None:
+            return 'answer', c
+    return 'answer', correctness(done(), pfx, True)
