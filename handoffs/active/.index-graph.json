@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T21:00:53Z",
+  "generated_at": "2026-11-24T21:10:58Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2309,14 +2309,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 153,
-      "dispatchable": 45,
+      "dispatchable": 46,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-24",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
-      "open": 46,
+      "open": 47,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2346,7 +2346,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2354,7 +2354,7 @@
           ],
           "line": 21,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 8,
+          "open": 9,
           "readiness": "blocked"
         },
         {
@@ -2375,7 +2375,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 818,
+          "line": 824,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 38,
           "readiness": "blocked"

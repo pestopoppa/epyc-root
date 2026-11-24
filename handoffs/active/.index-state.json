@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 559
+      "open": 560
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -45,7 +45,7 @@
       "closed": 153,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 45,
+      "open": 46,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 199,
+      "total": 200,
       "tracks": [
         {
           "blocked": 0,
@@ -78,7 +78,7 @@
           "line": 21,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 8
+          "open": 9
         },
         {
           "blocked": 1,
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 818,
+          "line": 824,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 37
