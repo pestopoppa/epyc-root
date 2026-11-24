@@ -102,7 +102,7 @@ def lineage_generate(rid: str, *, kernel_rnd: str | None = None, out_root: str =
 
 
 def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, state: str = CENSUS_STATE,
-                  run=subprocess.run) -> str:
+                  run=subprocess.run, spec_path: str | None = None) -> str:
     """Deterministic census step (no LLM). Returns the updater's BW-CENSUS line."""
     if not result_path or not os.path.exists(result_path):
         return "-"
@@ -120,6 +120,8 @@ def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, 
     r = run([sys.executable, "-s", "-B", "-m", "autokernel.loop.census_update", "--result", result_path, "--row", rid,
              "--census", census, "--program", journal, "--doc", os.path.join(state, "census-table.md"),
              "--seeds-out", os.path.join(state, "seed-stubs"),
+             *(["--spec", spec_path] if spec_path and os.path.exists(spec_path) and "--spec" in open(
+                 os.path.join(kr, "autokernel", "loop", "census_update.py")).read() else []),  # KEEP-stale target fallback
              *(["--merge-static-from", seed] if os.path.exists(seed) and "merge-static-from" in open(
                  os.path.join(kr, "autokernel", "loop", "census_update.py")).read() else [])],  # committed parity/time_only -> live, every run
             cwd=kr, capture_output=True, text=True, timeout=120)
@@ -154,7 +156,9 @@ def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=su
         rep["census"] = f"dry-run: census_update --result {rp or '-'}"
     else:
         try:
-            rep["census"] = census(rid, rp)
+            sp = next((p for p in (os.path.join(flags, "ready", rid + ".json"),
+                                   os.path.join(flags, "ready", ".withdrawn", rid + ".json")) if os.path.exists(p)), None)
+            rep["census"] = census(rid, rp, spec_path=sp) if census is census_update else census(rid, rp)
         except Exception as e:  # noqa: BLE001
             rep["census"] = f"error {type(e).__name__}: {e}"
     return rep
