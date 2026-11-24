@@ -4929,3 +4929,6 @@ Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/kn
 - [ ] **VB-TASKFLOW-BRIEF-WIRE** [non-inference] project taskflow task-brief compile records and the P6 brief pilot verdict through the existing carrier and pass the planning-context canary. Source row: `scripts/vidya/adapters/README.md` (taskflow task-brief compile); design: `docs/design/task-brief-layer.md` §10. Compile states are structural observations only; shared `claim_tuple.grade()` decides, no new ladder.
       · done when: the P6 pilot verdict carries a `[belief: clm_<id>]` tag and the planning-context canary for this source passes
       · gate: none
+- [ ] **VB-REPLAN-METRICS-WIRE** [non-inference] Adapter for rowflow replan-metrics.jsonl (C shadow soak) → ClaimTuple; one record per day; no new grading rule. Source row: scripts/vidya/adapters/README.md (Rowflow replan-metrics).
+      · done when: a daily replan-metrics record yields a ClaimTuple that claim_tuple.grade() accepts, and the planning-context canary for this source passes
+      · gate: none
