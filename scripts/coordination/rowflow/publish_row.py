@@ -42,6 +42,7 @@ may set it): spec.smoke_predicate exits 0, or a NEW non-placeholder record appea
 then a clean stop -> dryrun/<id>/PASS.json: ready at once. FAIL writes the FAIL memo and prints ONE line (cause + fix +
 the log path); the allocator grants only PASSed rows."""
 import argparse
+import ast
 import contextlib
 import datetime as dt
 import glob
@@ -50,6 +51,7 @@ import json
 import os
 import re
 import shutil
+import shlex
 import subprocess
 import sys
 import time
@@ -76,6 +78,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
+PUBLISH_REHEARSAL = 'warn'  # warn | enforce; static only, never executes the launcher or server
 DERIVABLE = ("lane", "scratch_root", "kind")
 _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
 
@@ -1069,6 +1072,146 @@ def row_preflight(spec, flags):
         print(f"WARN complete_check skipped: {type(e).__name__}: {e}", file=sys.stderr)
 
 
+def publish_rehearsal(spec, flags):
+    """Inspect launch inputs without executing any row code or accessing the GPU.
+
+    Dynamic shell/Python expressions cannot be evaluated safely; report them as
+    unverified rather than claiming that the server would successfully start.
+    """
+    import preflight as PF
+    rf.need(PUBLISH_REHEARSAL in ('warn', 'enforce'), "invalid PUBLISH_REHEARSAL mode")
+    findings = []
+
+    def fail(message):
+        findings.append(message)
+
+    row = PF.Row(spec)
+    launcher = str(spec.get("launcher") or "")
+    try:
+        info = rf.parse_launcher(launcher)
+    except (OSError, ValueError, IndexError, StopIteration, rf.Refused) as e:
+        fail(f"launcher parse: {e}")
+        info = {}
+    for level, code, message in PF.check_store(row, {"paths_only": True}):
+        if level == "FAIL":
+            fail(f"{code}: {message}")
+    for level, code, message in PF.check_model(row, {}):
+        if level == "FAIL":
+            fail(f"{code}: {message}")
+
+    for label, path in (("engine", info.get("engine")), ("workdir", info.get("workdir"))):
+        if path and "$" not in path and not os.path.exists(path):
+            fail(f"{label} path missing: {path}")
+    for field in ("cmd", "complete_cmd", "precond_cmd"):
+        try:
+            tokens = shlex.split(info.get(field) or "")
+        except ValueError as e:
+            fail(f"{field} parse: {e}")
+            continue
+        for index, token in enumerate(tokens):
+            if (token.startswith("/") and "$" not in token and
+                    (index == 0 or token.endswith((".py", ".sh"))) and not os.path.exists(token)):
+                fail(f"{field} path missing: {token}")
+
+    launch_text = row.sh.get(os.path.basename(launcher), "")
+    env = preflight_env(spec, flags)
+    assigned = set(re.findall(r"^\s*(?:export\s+)?([A-Za-z_]\w*)=", launch_text, re.M))
+    for name in sorted(set(re.findall(r"\$\{([A-Za-z_]\w*):\?[^}]*\}", launch_text)) - assigned):
+        if not env.get(name):
+            fail(f"required environment variable {name} is unset")
+
+    seal = os.path.join(row.dir, "SOURCE.sha256")
+    if os.path.isfile(seal) or "SOURCE.sha256" in launch_text:
+        try:
+            with open(seal, encoding="utf-8") as f:
+                lines = f.read().splitlines()
+            if not lines:
+                fail("SOURCE.sha256 is empty")
+            for line in lines:
+                match = re.fullmatch(r"([0-9a-fA-F]{64}) [ *](.+)", line)
+                if not match:
+                    fail(f"SOURCE.sha256 malformed entry: {line[:100]!r}")
+                    continue
+                path = os.path.join(row.dir, match.group(2))
+                try:
+                    # Source seals should not hash model weights during publish.
+                    if os.path.getsize(path) > 16 * 1024 * 1024:
+                        fail(f"SOURCE.sha256 entry too large to rehearse: {path}")
+                    elif PF._sha256(path) != match.group(1).lower():
+                        fail(f"SOURCE.sha256 mismatch: {path}")
+                except OSError as e:
+                    fail(f"SOURCE.sha256: {path}: {e}")
+        except (OSError, UnicodeError) as e:
+            fail(f"SOURCE.sha256: {e}")
+
+    argvs = []
+    ref = spec.get("served_ref")
+    if isinstance(ref, dict) and "argv" in ref:
+        argvs.append(("served_ref.argv", ref["argv"]))
+    for name, source in row.code.items():
+        try:
+            tree = ast.parse(source)
+        except SyntaxError as e:
+            fail(f"{name} syntax: {e}")
+            continue
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Subscript) and isinstance(node.ctx, ast.Load)
+                    and isinstance(node.value, ast.Attribute) and isinstance(node.value.value, ast.Name)
+                    and node.value.value.id == "os" and node.value.attr == "environ"
+                    and isinstance(node.slice, ast.Constant) and isinstance(node.slice.value, str)
+                    and not env.get(node.slice.value)):
+                _warn(spec, f"publish-rehearsal: {name} reads environment variable {node.slice.value}; "
+                            "its value at that point is unverified")
+            if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "SERVER_ARGV" for t in node.targets):
+                try:
+                    argvs.append((f"{name}:SERVER_ARGV", ast.literal_eval(node.value)))
+                except (ValueError, TypeError):
+                    _warn(spec, f"publish-rehearsal: {name}:SERVER_ARGV is dynamic; server argv unverified")
+    for name, source in row.sh.items():
+        for line in re.sub(r"\\\n", " ", source).splitlines():
+            if "llama-server" not in line or line.lstrip().startswith("#"):
+                continue
+            try:
+                tokens = shlex.split(line, comments=True)
+            except ValueError as e:
+                fail(f"{name} server argv parse: {e}")
+                continue
+            start = next((i for i, t in enumerate(tokens) if t.endswith("llama-server")), None)
+            if start is not None:
+                argvs.append((f"{name}:server", tokens[start:]))
+    for name, argv in argvs:
+        if not isinstance(argv, (list, tuple)) or not argv or not all(isinstance(x, str) and x for x in argv):
+            fail(f"{name} must be a nonempty list of nonempty strings")
+            continue
+        binary = argv[0]
+        if os.path.isabs(binary) and not os.path.isfile(binary):
+            fail(f"{name} binary missing: {binary}")
+        elif os.path.isabs(binary) and not os.access(binary, os.X_OK):
+            fail(f"{name} binary not executable: {binary}")
+        elif not os.path.isabs(binary) and "$" not in binary and not shutil.which(binary):
+            fail(f"{name} binary not found in PATH: {binary}")
+        if any("$" in x or "{" in x for x in argv):
+            _warn(spec, f"publish-rehearsal: {name} contains dynamic arguments; server argv unverified")
+        for i, token in enumerate(argv[1:], 1):
+            if token in ("-m", "--model", "-t", "--threads", "--port", "--host") and (i + 1 == len(argv) or argv[i + 1].startswith("--")):
+                fail(f"{name} missing value for {token}")
+            if token in ("-m", "--model") and i + 1 < len(argv):
+                model = argv[i + 1]
+                if os.path.isabs(model) and not os.path.isfile(model):
+                    fail(f"{name} model missing: {model}")
+            if token.startswith("--model="):
+                model = token.partition("=")[2]
+                if not model or (os.path.isabs(model) and not os.path.isfile(model)):
+                    fail(f"{name} model missing: {model or '(empty)'}")
+    if not argvs and ("llama-server" in row.codetext or "llama_server" in row.codetext):
+        _warn(spec, "publish-rehearsal: server argv is dynamic or unavailable; server start unverified")
+    for message in dict.fromkeys(findings):
+        if PUBLISH_REHEARSAL == 'warn':
+            _warn(spec, f"publish-rehearsal: {message} (would refuse if enforced)")
+    if findings and PUBLISH_REHEARSAL == 'enforce':
+        raise rf.Refused("publish-rehearsal: " + "; ".join(dict.fromkeys(findings)))
+
+
 def smoke_cpus_of(spec):
     """D9 2026-11-18 SMOKE-CPUS: the spec's optional smoke_cpus (an int SMOKE_CPUS..SMOKE_CPUS_MAX), default SMOKE_CPUS.
     Big-model smokes should test plumbing only (latency pre-check plus one answered request), not the full workload;
@@ -1812,6 +1955,7 @@ def repair(rid, flags):
     # lint-derivable fields (result_path/result_format/lane/scratch_root/keep), never handoff_task
     for note in lint(spec):
         print(f"LINT {note}")
+    publish_rehearsal(spec, flags)
     new = rf.publish(spec, flags, source=f"repair:{fails[-1]}")
     changed = [f"{k} {row.get(k)!r} -> {new.get(k)!r}" for k in ("result_path", "result_format", "lane", "regions", "scratch_root", "keep") if row.get(k) != new.get(k)]
     rf.need(changed, f"repair of {rid} would republish an identical row; the keeper would fail it again")
@@ -1886,6 +2030,7 @@ def main(argv=None):
         for note in lint(spec):
             print(f"LINT {note}")
         check_supersedes(spec, a.flags)
+        publish_rehearsal(spec, a.flags)
         preflight(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)   # pipeline audit 2026-11-10 #4: before anything is published or queued
         row_preflight(spec, a.flags)   # D9-ack 2026-11-24: deterministic preflight, warn-first
         row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now, identity_spec=identity_spec)
