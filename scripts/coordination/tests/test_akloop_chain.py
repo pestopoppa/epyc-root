@@ -6,6 +6,7 @@ Run: python3 -m pytest -q scripts/coordination/tests/test_akloop_chain.py
 """
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -66,11 +67,35 @@ def test_stage_estimates_from_history():
     assert est == 6500                                       # p75 5200 x 1.25
 
 
+#: Publish-lint errors every scaffolded chain row carries on origin/main (they predate op-perf and apply to GPU rows
+#: and to the whole-host CPU rows alike): the estimate is not smoke-derived, the seal lists spec.json, and a GPU row's
+#: launch.sh `C=` is not a cpu list. A chain row's OWN lint (CHAIN-*, WIDTH, CPU-GPUTHR, ...) must still be clean.
+_KNOWN_PUBLISH_LINT = ("PUBLISH-LINT", "ESTIMATE-UNMEASURED", "SEALED-SPEC", "CLAIM-PARSE")
+
+
+def _own_lint(row):
+    """The row's lint problems minus the known publish-lint codes (matched by their CODE: prefix, not by message text)."""
+    out = []
+    for e in row["lint"]:
+        if e.startswith("PUBLISH-LINT"):
+            out += [f"PUBLISH-LINT {c}" for c in re.findall(r"\b([A-Z][A-Z0-9]+(?:-[A-Z0-9]+)+):", e)
+                    if c not in _KNOWN_PUBLISH_LINT]
+        else:
+            out.append(e)
+    return out
+
+
+def _specs(rep):
+    return {r["stage"]: json.load(open(os.path.join(r["rowdir"], "spec.json"))) for r in rep["rows"]}
+
+
 def test_chain_shapes_deps_and_lint(tmp_path, cand):
     rep = _chain(tmp_path, cand)
-    assert rep["published"] is False and rep["lint_clean"], [r["lint"] for r in rep["rows"]]
+    assert rep["published"] is False and not [_own_lint(r) for r in rep["rows"] if _own_lint(r)]
     rows = {r["stage"]: r for r in rep["rows"]}
-    assert list(rows) == ["build", "oracle-kld", "ab-timing", "fold-check"]
+    # the 5-stage order of research stage_bodies.STAGES: op-perf sits before ab-timing
+    assert list(rows) == ["build", "oracle-kld", "op-perf", "ab-timing", "fold-check"]
+    assert [s.name for s in C.STAGES] == list(rows)
     specs = {k: json.load(open(os.path.join(r["rowdir"], "spec.json"))) for k, r in rows.items()}
     # builds on one CPU quarter, never q3
     assert specs["build"]["lane"] == "cpu" and specs["build"]["regions"] == "any-of q0,q1,q2"
@@ -78,6 +103,9 @@ def test_chain_shapes_deps_and_lint(tmp_path, cand):
     assert "88-95" in specs["ab-timing"]["regions"] and specs["ab-timing"]["timing"] == "ak-keep-gate"
     assert specs["ab-timing"]["admission_class"] == "block-timing-quiet"
     assert "88-95" not in specs["oracle-kld"]["regions"]
+    # op-perf on a GPU path is a GPU timing row like ab-timing
+    assert specs["op-perf"]["lane"] == "gpu" and specs["op-perf"]["regions"] == "mi210_0,88-95,184-191"
+    assert specs["op-perf"]["shape"] == "gpu-q3" and specs["op-perf"]["admission_class"] == "block-timing-quiet"
     # resumable where safe; the A/B timing window is one grant
     assert specs["build"]["resumable"] and specs["fold-check"]["resumable"] and not specs["ab-timing"]["resumable"]
     # lineage / supersedes / gate deps / P1 gate ids
@@ -85,10 +113,95 @@ def test_chain_shapes_deps_and_lint(tmp_path, cand):
         assert s["lineage"] == cand["id"] and "supersedes" in s and s["gate_ids"]
     assert specs["build"]["gate"] == []
     assert specs["oracle-kld"]["gate"] == [rows["build"]["box"]]
+    assert specs["op-perf"]["gate"] == [rows["oracle-kld"]["box"]]
+    assert specs["ab-timing"]["gate"] == [rows["op-perf"]["box"]]
     assert specs["fold-check"]["gate"] == [rows["ab-timing"]["box"]]
     assert "graph_kld.gpu.q38_27b" in specs["oracle-kld"]["gate_ids"]
     box = open(rep["box_file"]).read()
     assert f"· gate: {rows['build']['box']}" in box and "est 307 s" in box
+    assert f"· gate: {rows['op-perf']['box']}" in box and "never a PASS" in box
+
+
+def test_gpu_candidate_unchanged_by_serving_path(tmp_path, cand):
+    """No serving_path == the explicit default 27b-q8_0|mi210: every spec field identical, and the default is written
+    into candidate.json so the stage driver never has to guess."""
+    base = _specs(_chain(tmp_path / "a", cand))
+    expl = _specs(_chain(tmp_path / "b", dict(cand, serving_path="27b-q8_0|mi210")))
+    for st in base:
+        a, b = dict(base[st]), dict(expl[st])
+        for x in (a, b):
+            for k in ("launcher", "result_path", "scratch_root", "workdir", "stop_file"):
+                x.pop(k, None)
+        assert json.dumps(a, sort_keys=True).replace(str(tmp_path / "a"), "<R>") == \
+            json.dumps(b, sort_keys=True).replace(str(tmp_path / "b"), "<R>"), st
+    assert base["ab-timing"]["regions"] == C.GPU_TIMING_REGIONS and base["ab-timing"]["lane"] == "gpu"
+    assert base["ab-timing"]["shape"] == "gpu-q3" and "requires_quiet_host" not in base["ab-timing"]
+    assert base["fold-check"]["lane"] == "gpu" and base["oracle-kld"]["regions"] == C.GPU_PLAIN_REGIONS
+    cj = json.load(open(os.path.join(str(tmp_path / "a" / "rows"), base["ab-timing"]["id"], "candidate.json")))
+    assert cj["serving_path"] == "27b-q8_0|mi210"
+
+
+@pytest.mark.parametrize("path", ["q38fn-ud-iq4xs-cpu|cpu", "a3b-q8_0-cpu|cpu"])
+def test_cpu_path_ab_timing_and_op_perf_are_whole_host_quiet_cpu_rows(tmp_path, cand, path):
+    rep = _chain(tmp_path, dict(cand, serving_path=path))
+    assert not [_own_lint(r) for r in rep["rows"] if _own_lint(r)], [r["lint"] for r in rep["rows"]]
+    specs = _specs(rep)
+    assert list(specs) == ["build", "oracle-kld", "op-perf", "ab-timing", "fold-check"]
+    for st in ("op-perf", "ab-timing"):
+        s = specs[st]
+        # the published whole-host quiet CPU shape (ak-q38fn-cpu-aa-floor / ak-a3b-cpu-aa-floor rows), never gpu-q3
+        assert s["lane"] == "cpu" and s["regions"] == "q0,q1,q2,q3" and s["claim_cpus"] == "any-of q0,q1,q2"
+        assert s["shape"] == "host" and s["declared_threads"] == 96 and s["requires_quiet_host"] is True
+        assert s["role"] == "bench" and s["resumable"] is False and s["serving_path"] == path
+        assert "mi210" not in s["regions"] and "184" not in s["regions"]
+        assert "timing" not in s and "admission_class" not in s          # no GPU timing grant
+        assert len(s["width_justification"]) >= 20 and s["baseline_ref"] and s["threads_evidence"]
+        assert s["family"] == f"akchain-{st}" and s["gate_ids"]
+        d = os.path.dirname(s["launcher"])
+        launch = open(os.path.join(d, "launch.sh")).read()
+        assert "--class cpu" in launch and "--claim-cpus" not in launch and "\nC=" not in launch
+        assert "mi210" not in launch
+        cj = json.load(open(os.path.join(d, "candidate.json")))
+        assert cj["serving_path"] == path
+        assert "STAGE, LANE, ROW = " + repr(st) + ", 'cpu'" in open(os.path.join(d, "job.py")).read()
+        assert not _own_lint({"lint": C.lint_row(d, rep["box_file"])})
+    # the CPU path's history is its own: GPU timing rows are not its samples (the `_recs` ab-timing row is a GPU row)
+    assert "usable runs < 3" in specs["ab-timing"]["estimate_justification"]
+    assert specs["ab-timing"]["estimate_s"] == C.CPU_PATH_FALLBACK_S["ab-timing"]
+    assert specs["op-perf"]["estimate_s"] == C.CPU_PATH_FALLBACK_S["op-perf"]
+    # gates still chain in order; the other three stages keep today's lanes
+    assert specs["ab-timing"]["gate"] == [rep["rows"][2]["box"]] and specs["op-perf"]["gate"] == [rep["rows"][1]["box"]]
+    assert specs["build"]["lane"] == "cpu" and specs["build"]["regions"] == "any-of q0,q1,q2"
+    assert specs["oracle-kld"]["lane"] == "gpu" and specs["fold-check"]["lane"] == "gpu"
+    assert specs["fold-check"]["regions"] == C.GPU_TIMING_REGIONS
+    box = open(rep["box_file"]).read()
+    assert f"served path {path}" in box
+
+
+def test_cpu_path_narrowed_chain_and_bad_paths(tmp_path, cand):
+    narrowed = dict(cand, serving_path="a3b-q8_0-cpu|cpu", stages=["build", "oracle-kld", "fold-check"])
+    assert [s.name for s in C.chain_stages(narrowed)] == ["build", "oracle-kld", "fold-check"]
+    ab = dict(cand, serving_path="a3b-q8_0-cpu|cpu", stages=["build", "op-perf", "ab-timing", "fold-check"])
+    assert [(s.name, s.lane) for s in C.chain_stages(ab)] == [("build", "cpu"), ("op-perf", "cpu"), ("ab-timing", "cpu"),
+                                                             ("fold-check", "gpu")]
+    for bad in ("a3b-q8_0-cpu", "a3b|gpu", "|cpu", "A3B|cpu"):
+        with pytest.raises(ValueError):
+            C.chain_stages(dict(cand, serving_path=bad))
+
+
+def test_lint_catches_cpu_path_row_on_a_gpu_shape(tmp_path, cand):
+    rep = _chain(tmp_path, dict(cand, serving_path="q38fn-ud-iq4xs-cpu|cpu"))
+    d = next(r["rowdir"] for r in rep["rows"] if r["stage"] == "ab-timing")
+    sp = json.load(open(os.path.join(d, "spec.json")))
+    sp.update({"lane": "gpu", "shape": "gpu-q3", "regions": C.GPU_TIMING_REGIONS, "timing": "ak-keep-gate"})
+    json.dump(sp, open(os.path.join(d, "spec.json"), "w"))
+    C.RS.seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"])
+    assert any("CHAIN-PATHLANE" in e for e in C.lint_row(d, rep["box_file"]))
+    sp.update({"lane": "cpu", "shape": "quarter", "regions": "q0,q1,q2", "requires_quiet_host": False})
+    sp.pop("timing")
+    json.dump(sp, open(os.path.join(d, "spec.json"), "w"))
+    C.RS.seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"])
+    assert any("CHAIN-CPUPATH" in e for e in C.lint_row(d, rep["box_file"]))
 
 
 def test_prior_rows_become_supersedes(tmp_path, cand):
@@ -110,7 +223,7 @@ def test_lint_catches_q3_build(tmp_path, cand):
 
 def test_successor_changes_only_the_named_clause(tmp_path, cand):
     rep = _chain(tmp_path, cand)
-    d = rep["rows"][2]["rowdir"]
+    d = next(r["rowdir"] for r in rep["rows"] if r["stage"] == "ab-timing")
     (Path(d) / "out" / "RESULT.json").write_text(json.dumps({"complete": True, "verdict": "FUTILITY_HARNESS_CAP"}))
     old = json.load(open(os.path.join(d, "spec.json")))
     r = C.successor(d, {"estimate_s": 2400}, "cap raised to 2400 s after r1 hit the window", ["box line 12"])

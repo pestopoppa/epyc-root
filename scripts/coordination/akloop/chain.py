@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """chain.py -- AutoKernel parallel-loop P2: row-chain scaffolder + successor emitter (NEVER publishes).
 
-One CANDIDATE RECORD (base sha, patch sha, hypothesis id, predicted effect) becomes a chain of four epyc.row.v3
+One CANDIDATE RECORD (base sha, patch sha, hypothesis id, predicted effect) becomes a chain of five epyc.row.v3
 row dirs, each scaffolded by row_scaffold.py and linted by row_scaffold.lint + publish_row.lint (a dry run):
 
-    build  ->  oracle-kld  ->  ab-timing  ->  fold-check
+    build  ->  oracle-kld  ->  op-perf  ->  ab-timing  ->  fold-check
+
+(the order of research stage_bodies.STAGES; op-perf is a SCREEN, never a polar PASS: RSL-R3).
 
 Every spec carries `lineage=<candidate id>`, `supersedes` (the prior attempt of the same stage, or null), a
 `gate` list naming the previous stage's box (also rendered as the box's `· gate:` field, which index_state.py
@@ -14,8 +16,15 @@ estimate_history.py over the AK rows of the same stage class (p75 wall x 1.25).
 Region shapes (keeper packing rules, inference-backlog-scheduling skill):
     build       cpu lane, ONE quarter (any-of q0,q1,q2) (never q3: 88-95 are the MI210 host threads a GPU timing row holds)
     oracle-kld  gpu lane, mi210_0 + host threads 184-191, not a timing row (quiet-only on the timing cores)
+    op-perf     gpu timing row like ab-timing (GPU path): shape gpu-q3, admission block-timing-quiet
     ab-timing   gpu timing row: shape gpu-q3 (mi210_0, 88-95 held, 184-191), admission block-timing-quiet
     fold-check  gpu timing row like ab-timing, resumable (per-step checkpoints)
+PATH STAGES (op-perf, ab-timing) follow the candidate's `serving_path` ("model|device", default 27b-q8_0|mi210,
+research stage_bodies.DEFAULT_PATH). A `|cpu` path (q38fn-ud-iq4xs-cpu|cpu, a3b-q8_0-cpu|cpu) runs them on the CPU
+lane as a WHOLE-HOST QUIET row, never the gpu-q3 shape: Q38FN is one NUMA_FULL instance and A3B two concurrent
+NUMA-half instances, both spanning all 96 physical cores (research cpu_timing_runner reads the instance list from the
+registry + stack_numa). Shape copied from the published ak-{q38fn,a3b}-cpu-aa-floor / ak-opperf-cal-q38fn-cpu rows:
+regions q0,q1,q2,q3, claim_cpus "any-of q0,q1,q2", shape host, declared_threads 96, requires_quiet_host, role bench.
 `resumable` is true where a window end can continue from a checkpoint (incremental build, chunked KLD, per-step
 fold check) and false for the A/B timing window, which must be one quiet grant.
 
@@ -40,6 +49,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import dataclasses
 import io
 import json
 import math
@@ -71,6 +81,14 @@ GPU_PLAIN_REGIONS = "mi210_0,184-191"
 #: Any ONE of q0..q2 (never q3: 88-95 are the MI210 host cores a timing row holds). AKPL-P3: a fixed "q1" pinned
 #: every candidate's build to one quarter, so two candidates could never build at once.
 BUILD_REGIONS = "any-of q0,q1,q2"
+#: Research stage_bodies.DEFAULT_PATH: a candidate without `serving_path` is the 27B on the MI210 (the legacy chain).
+DEFAULT_SERVING_PATH = "27b-q8_0|mi210"
+#: Stages whose device is the candidate PATH's (research stage_bodies.PATH_STAGES).
+PATH_STAGE_NAMES = ("op-perf", "ab-timing")
+#: Whole-host CPU quiet booking (a CPU path's served topology spans all 96 physical cores). `regions` is the published
+#: precedent spelling; the polar scaffolder refuses a cpu-lane row touching 88-95, so scaffold_stage books q0,q1,q2 into
+#: the scaffolder and writes this over the spec (see CPU_WHOLE_HOST_SPEC).
+CPU_WHOLE_HOST_REGIONS = "q0,q1,q2,q3"
 SUCCESSOR_CLAUSES = ("estimate_s", "max_window_s", "min_window_s", "decision_rule", "regions", "resumable",
                      "timing", "admission_class", "gate_ids", "busy_fraction", "first_progress_s")
 
@@ -107,6 +125,14 @@ STAGES: tuple[Stage, ...] = (
           "FAIL if 27B mean KLD > 0.003 or |dPPL| > 0.5% or Q38FN same-top < 93%; FUTILITY_HARNESS_* if the oracle "
           "harness or residency proof fails; PASS otherwise. polar PASS|FAIL.",
           "on-answer: all 16 chunks scored. on-futility: residency proof fails twice.", 1800),
+    Stage("op-perf", "gpu", GPU_TIMING_REGIONS, 8, False, r"^(ak|akx|c\d+)-.*-op-?perf(-|$)",
+          ("declared.polar", "declared.futility_harness"),
+          "Does the candidate regress any served-shape op (paired test-backend-ops perf over the path's served grid, "
+          "per-cell A/A floors)? SCREEN ONLY (RSL-R3): it can fail a candidate, never keep one.",
+          "FAIL (FAIL_OP_PERF_*) if a cell regresses beyond its A/A floor; a clean screen is FUTILITY_SCREEN_ONLY_NO_KEEP "
+          "and never a polar PASS; FUTILITY_HARNESS_* if the path is ungated or the runner refuses. polar FAIL only.",
+          "on-answer: every served-grid cell measured. on-futility: runner refusal or an ungated path.",
+          3600, timing="bench", admission_class="block-timing-quiet", shape="gpu-q3"),
     Stage("ab-timing", "gpu", GPU_TIMING_REGIONS, 8, False, r"^(ak|akx|c\d+)-.*-(timing|e2e|ab|step\d*)(-|$)",
           ("speed.row_geomean_floor", "speed.bench_floor.tg128"),
           "Is the candidate faster than its base on the served shapes (quiet A/B, interleaved pairs)?",
@@ -123,6 +149,56 @@ STAGES: tuple[Stage, ...] = (
           3600, timing="bench", shape="gpu-q3"),
 )
 STAGE_BY_NAME = {s.name: s for s in STAGES}
+
+#: Spec fields of a CPU-path whole-host quiet row (copied from the published ak-q38fn-cpu-aa-floor-20261124 /
+#: ak-a3b-cpu-aa-floor-20261124 / ak-opperf-cal-q38fn-cpu-20261124 specs; placement itself is the runner's, from the
+#: registry path spec + stack_numa, never typed here).
+CPU_WHOLE_HOST_SPEC = {
+    "regions": CPU_WHOLE_HOST_REGIONS, "claim_cpus": "any-of q0,q1,q2", "shape": "host", "declared_threads": 96,
+    "requires_quiet_host": True, "role": "bench", "resumable": False,
+    "width_justification": ("whole host (q0-q3) because the served CPU path's instances span all 96 physical cores; the "
+                            "quiet-host booking keeps co-tenants off the other regions."),
+    "threads_evidence": ["whole host: the path's NUMA_FULL instance (Q38FN :8074) or its two concurrent NUMA-half "
+                         "instances (A3B :8070), 96 physical cores, aggregate tok/s; placement from the registry path "
+                         "spec + stack_numa inside the runner; smoke refuses unless the served topology totals 96 threads"],
+    "gpu_fence_override": ("akloop/chain.py: CPU-path stage; no GPU code runs (CPU store, --device none, "
+                           "HIP/ROCR visibility -1 off the gpu lane)"),
+}
+#: History population / fallback of a CPU-path stage: its own (GPU rows are not its samples); measured on the
+#: 24-pair calibration rows (Q38FN floor 14700 s, A3B floor 10000 s, Q38FN op-perf cal 10800 s) scaled to a screen/A-B run.
+CPU_PATH_FALLBACK_S = {"ab-timing": 7200, "op-perf": 4800}
+_PATH_RX = re.compile(r"^[a-z0-9][a-z0-9_.+-]*\|(mi210|cpu)$")
+
+
+def serving_path(cand: dict[str, Any]) -> str:
+    """The candidate's served path `model|device` (research stage_bodies resolves it against the registry). Absent ->
+    the 27B on the MI210, so an old candidate scaffolds exactly as before."""
+    p = str(cand.get("serving_path") or DEFAULT_SERVING_PATH)
+    if not _PATH_RX.match(p):
+        raise ValueError(f"serving_path must be '<model>|mi210' or '<model>|cpu', got {p!r}")
+    return p
+
+
+def path_lane(cand: dict[str, Any]) -> str:
+    return "gpu" if serving_path(cand).endswith("|mi210") else "cpu"
+
+
+def stage_for(cand: dict[str, Any], st: Stage) -> Stage:
+    """`st` as this candidate's path runs it: a GPU path keeps today's stage; a CPU path's op-perf / ab-timing is a
+    cpu-lane whole-host quiet row (never the gpu-q3 timing shape, never an MI210 grant)."""
+    if st.name not in PATH_STAGE_NAMES or path_lane(cand) == "gpu":
+        return st
+    return dataclasses.replace(st, lane="cpu", regions=CPU_WHOLE_HOST_REGIONS, threads=96, resumable=False,
+                               history=r"(?!)", timing=None, admission_class=None, shape="host", fallback_s=CPU_PATH_FALLBACK_S[st.name],
+                               extra=dict(CPU_WHOLE_HOST_SPEC))
+
+
+def model_label(cand: dict[str, Any], stage: Stage) -> str:
+    if stage.name == "build":
+        return "n/a (build)"
+    if stage.name in PATH_STAGE_NAMES and serving_path(cand) != DEFAULT_SERVING_PATH:
+        return f"served path {serving_path(cand)}"
+    return "Qwen3.8-27B Q8_0 + Q38FN"
 
 
 # ---- candidate record ---------------------------------------------------------------------------
@@ -163,7 +239,7 @@ def candidate_from_ledger(ledger: dict[str, Any], tag: str, git: Callable[..., s
 def stage_estimate(stage: Stage, recs: list[dict[str, Any]] | None = None, flags: str = EH.FLAGS) -> tuple[int, str]:
     """(estimate_s, justification) from estimate_history over the AK rows of this stage class."""
     recs = EH.samples(flags) if recs is None else recs
-    fam = f"akchain-{stage.name}"
+    fam = f"akchain-{stage.name}" + ("-cpu" if stage.lane == "cpu" and stage.name in PATH_STAGE_NAMES else "")
     rx = re.compile(stage.history)
     pool = [dict(r, family=fam) for r in recs if rx.search(str(r.get("row", "")))]
     sug = EH.suggest(fam, recs=pool)
@@ -198,10 +274,11 @@ def box_id(cand: dict[str, Any], stage: Stage) -> str:
 def render_box(cand: dict[str, Any], stage: Stage, est: int, gate: list[str], owner: str) -> str:
     text = (f"AK chain {stage.name} for candidate `{cand['id']}` ({cand['hypothesis_id']}; patch {cand['patch_sha'][:9]} "
             f"on base {cand['base_sha'][:9]}; predicted {cand['predicted_effect']}). model: "
-            f"{'Qwen3.8-27B Q8_0 + Q38FN' if stage.lane == 'gpu' else 'n/a (build)'}. STOP {stage.stop} est {est} s.")
+            f"{model_label(cand, stage)}. STOP {stage.stop} est {est} s.")
     lines = [f"- [ ] **{box_id(cand, stage)}** [inference] {text}",
              f"      · done when: row `{row_id(cand, stage, '<date>')}` filed by gate_eval on "
-             f"{', '.join(stage.gate_ids)} (polar PASS/FAIL).",
+             f"{', '.join(stage.gate_ids)} "
+             f"({'screen only: polar FAIL or FUTILITY_SCREEN_ONLY_NO_KEEP, never a PASS' if stage.name == 'op-perf' else 'polar PASS/FAIL'}).",
              f"      · gate: {', '.join(gate) if gate else 'none'}",
              f"      · owner: {owner}"]
     return "\n".join(lines)
@@ -209,7 +286,7 @@ def render_box(cand: dict[str, Any], stage: Stage, est: int, gate: list[str], ow
 
 CAND_FIELDS = ("id", "base_sha", "patch_sha", "hypothesis_id", "predicted_effect", "paths", "rebase_of",
                "skip_stages", "champion_ref", "op", "geomean_min", "pairs", "timing_model", "anchor_build",
-               "llama_repo", "stages", "test_outcomes", "test_refs", "test_parents", "test_fixture_repo",
+               "llama_repo", "serving_path", "stages", "test_outcomes", "test_refs", "test_parents", "test_fixture_repo",
                "test_lineage_log")
 
 
@@ -281,9 +358,13 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
                    research_tree: str | None = None, test_mode: bool = False) -> dict[str, Any]:
     rid = row_id(cand, stage, date)
     est, just = stage_estimate(stage, recs)
-    a = SimpleNamespace(row_id=rid, handoff=handoff, box=box_id(cand, stage), lane=stage.lane, regions=stage.regions,
+    whole_host = bool(stage.extra.get("requires_quiet_host"))
+    # the polar scaffolder refuses a cpu-lane row touching 88-95: a whole-host row is scaffolded on q0,q1,q2 and its spec
+    # is then written with the published whole-host shape (stage.extra, CPU_WHOLE_HOST_SPEC)
+    a = SimpleNamespace(row_id=rid, handoff=handoff, box=box_id(cand, stage), lane=stage.lane,
+                        regions="q0,q1,q2" if whole_host else stage.regions,
                         threads=stage.threads, units=1, unit_s=est / 1.25, flags=None, owner=owner, root=root,
-                        model=("Qwen3.8-27B Q8_0 + Q38FN" if stage.lane == "gpu" else "n/a (build)"),
+                        model=model_label(cand, stage),
                         research_repo=research_repo, research_ref="origin/main")
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
@@ -295,7 +376,13 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
         f.write(_job_text(cand, stage, rid, d, prior_results=prior_results or {}, research_commit=research_commit,
                           research_tree=research_tree, test_mode=test_mode, research_repo=research_repo))
     with open(os.path.join(d, "candidate.json"), "w") as f:
-        json.dump({k: cand[k] for k in CAND_FIELDS if k in cand}, f, indent=1, sort_keys=True)
+        json.dump({**{k: cand[k] for k in CAND_FIELDS if k in cand}, "serving_path": serving_path(cand)}, f, indent=1,
+                  sort_keys=True)
+    if whole_host:   # precedent launchers (ak-q38fn-cpu-aa-floor): no C= / --claim-cpus, the grant's cpus are the claim
+        lp = os.path.join(d, "launch.sh")
+        lt = re.sub(r"^C=.*\n", "", open(lp).read(), flags=re.M).replace(' --claim-cpus "$C"', "")
+        with open(lp, "w") as f:
+            f.write(lt)
     sp = os.path.join(d, "spec.json")
     spec = json.load(open(sp))
     spec.update({"estimate_s": est, "estimate_justification": just, "min_window_s": spec["min_window_s"],
@@ -303,7 +390,7 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
                  "resumable": stage.resumable, "family": f"akchain-{stage.name}", "verdict_by": "gate_eval",
                  "decision_rule": f"gate_eval {', '.join(stage.gate_ids)}; job.py RULE",
                  "candidate": {k: cand[k] for k in ("id", "base_sha", "patch_sha", "hypothesis_id", "predicted_effect")},
-                 "stage": stage.name, "stage_driver": {"research_commit": research_commit,
+                 "stage": stage.name, "serving_path": serving_path(cand), "stage_driver": {"research_commit": research_commit,
                                                        "research_tree": research_tree, "test_mode": bool(test_mode)},
                  **({"rebase_of": cand["rebase_of"]} if cand.get("rebase_of") else {}),
                  "notes": (f"akloop/chain.py stage {stage.name} of {cand['id']}; gate: {', '.join(gate) or 'none'}; "
@@ -316,6 +403,10 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
         v = getattr(stage, k)
         if v:
             spec[k] = v
+    if whole_host:
+        spec.update(json.loads(json.dumps(stage.extra)))
+        spec["baseline_ref"] = (f"arm A = base build {str(cand['base_sha'])[:9]}, arm B = patch "
+                                f"{str(cand['patch_sha'])[:9]} (same store, same env, interleaved pairs)")
     if stage.resumable and not spec.get("max_window_s"):
         spec["max_window_s"] = max(int(spec["min_window_s"]) + 300, int(math.ceil(est * 1.2)) + 300)
     with open(sp, "w") as f:
@@ -323,14 +414,23 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
     RS.seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json", "candidate.json"]
             + sorted(n for n in RS.HARNESS_FILES if os.path.exists(os.path.join(d, n))))
     return {"stage": stage.name, "id": rid, "rowdir": d, "box": box_id(cand, stage), "estimate_s": est,
-            "regions": stage.regions, "lane": stage.lane, "resumable": stage.resumable, "gate": list(gate),
+            "regions": spec["regions"], "lane": stage.lane, "serving_path": serving_path(cand), "resumable": stage.resumable, "gate": list(gate),
             "gate_ids": list(stage.gate_ids), "supersedes": supersedes}
+
+
+def _is_whole_host(spec: dict[str, Any]) -> bool:
+    return (spec.get("lane") == "cpu" and spec.get("shape") == "host" and spec.get("requires_quiet_host") is True
+            and int(spec.get("declared_threads") or 0) >= 96
+            and len(str(spec.get("width_justification") or "").strip()) >= 20)
 
 
 def lint_row(rowdir: str, box_file: str | None) -> list[str]:
     """row_scaffold.lint + publish_row.lint on a COPY of the spec (lint rewrites in place; nothing is published)."""
     errs = list(RS.lint(rowdir, box_file))
     spec = json.load(open(os.path.join(rowdir, "spec.json")))
+    whole_host = _is_whole_host(spec)
+    if whole_host:   # q3's cores are inside the served topology: the published whole-host shape, not the gpu-q3 shape
+        errs = [e for e in errs if not e.startswith("CPU-GPUTHR")]
     try:
         import publish_row as PR
         buf = io.StringIO()
@@ -338,10 +438,18 @@ def lint_row(rowdir: str, box_file: str | None) -> list[str]:
             PR.lint(dict(spec))
     except Exception as e:  # noqa: BLE001 - rf.Refused and any lint crash are lint failures
         errs.append(f"PUBLISH-LINT: {type(e).__name__}: {e}")
-    if spec.get("lane") == "cpu" and RS.cpus(spec.get("regions", "")) & set(range(72, 96)):
+    if spec.get("lane") == "cpu" and not whole_host and RS.cpus(spec.get("regions", "")) & set(range(72, 96)):
         errs.append("CHAIN-Q3: a cpu-lane chain row books q3 (GPU timing rows hold 88-95)")
     if spec.get("timing") and "88-95" not in str(spec.get("regions")):
         errs.append("CHAIN-TIMING: a GPU timing row must hold 88-95")
+    if spec.get("stage") in PATH_STAGE_NAMES and spec.get("serving_path"):
+        want = "gpu" if str(spec["serving_path"]).endswith("|mi210") else "cpu"
+        if spec.get("lane") != want:
+            errs.append(f"CHAIN-PATHLANE: {spec['stage']} of path {spec['serving_path']} must run on the {want} lane, "
+                        f"not {spec.get('lane')}")
+        if want == "cpu" and not whole_host:
+            errs.append("CHAIN-CPUPATH: a cpu-path stage must be a whole-host quiet row (shape host, requires_quiet_host, "
+                        "declared_threads 96)")
     for k in ("lineage", "gate_ids"):
         if not spec.get(k):
             errs.append(f"CHAIN-FIELD: spec.{k} missing")
@@ -364,20 +472,21 @@ def research_head(repo: str = RS.RESEARCH_REPO, ref: str = "origin/main") -> str
 
 
 def chain_stages(cand: dict[str, Any]) -> tuple[Stage, ...]:
-    """The stages this candidate's chain runs: all four, or the record's `stages` (a rebase-and-recheck chain is
-    build + oracle-kld [+ ab-timing only when the measured path moved] + fold-check)."""
+    """The stages this candidate's chain runs: all five, or the record's `stages` (a rebase-and-recheck chain is
+    build + oracle-kld [+ op-perf + ab-timing only when the measured path moved] + fold-check), each as the
+    candidate's `serving_path` runs it (stage_for)."""
     names = cand.get("stages") or [s.name for s in STAGES]
     bad = [n for n in names if n not in STAGE_BY_NAME]
     if bad or names[-1] != "fold-check" or names[0] != "build":
         raise ValueError(f"chain stages must run build .. fold-check from {[s.name for s in STAGES]}; got {names}")
-    return tuple(STAGE_BY_NAME[n] for n in names)
+    return tuple(stage_for(cand, STAGE_BY_NAME[n]) for n in names)
 
 
 def scaffold_chain(cand: dict[str, Any], *, root: str, date: str, handoff: str, owner: str = "pipeline-mgmt",
                    prior: dict[str, str] | None = None, recs: list[dict[str, Any]] | None = None,
                    research_repo: str = RS.RESEARCH_REPO, research_commit: str | None = None,
                    research_tree: str | None = None, test_mode: bool = False) -> dict[str, Any]:
-    """Scaffold + dry-run lint the stage rows. Never publishes. `prior` maps stage -> prior row id.
+    """Scaffold + dry-run lint the stage rows (build, oracle-kld, op-perf, ab-timing, fold-check). Never publishes. `prior` maps stage -> prior row id.
 
     Each job runs autokernel.loop.stage_bodies pinned to `research_commit` (default: research origin/main), with the
     RESULT paths of its upstream stage rows, so fold-check can prove the keep lands on the base it was built from."""
