@@ -134,5 +134,6 @@ def test_malformed_measured_basis_is_refused_cleanly(tmp_path):
         harness.check_spec_estimate({"estimate_s": 600, "estimate_basis": {"smoke_measure": str(measure), "units": 1}})
 
 
-def test_fresh_smoke_measure_is_enforced_by_default():
-    assert rf.SMOKE_MEASURE_ENFORCE is True
+def test_fresh_smoke_measure_is_warn_only_until_ak_confirms():
+    # warn-only by agreement with AutoKernel (2026-11-23) until every queued AK row writes smoke_measure.json
+    assert rf.SMOKE_MEASURE_ENFORCE is False

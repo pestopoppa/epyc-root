@@ -7452,11 +7452,18 @@ def quiet_sensitive(d):
         return True
     if d.get("requires_quiet_host") is False or d.get("lane") == "gpu" or str(d.get("shape") or "") in ("gpu", "gpu-q3"):
         return False   # owner opt-out; a GPU row's derived guard is about the device, not the CPU quarters
+    if "requires_quiet_host" not in d and str(d.get("owner") or "") in QUIET_DEFAULT_OWNERS:
+        return True    # owner asked: its CPU rows that do not declare requires_quiet_host are quiet by default
     src = d.get("published_from")
     if isinstance(src, str) and src.endswith(".json") and os.path.isfile(src):
         if (load_json(src) or {}).get("requires_quiet_host") is True:
             return True
     return _quiet_code_scan(d)
+
+
+# AutoKernel 2026-11-24 07:00Z: until every AK CPU row declares requires_quiet_host, treat an AK CPU row that omits it as
+# quiet (serialised). An explicit `requires_quiet_host: false` still opts out; GPU rows are never affected.
+QUIET_DEFAULT_OWNERS = {"autokernel"}
 
 
 def exclusive_cpu_holder(grants, man):
