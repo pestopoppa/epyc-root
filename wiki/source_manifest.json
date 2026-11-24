@@ -1,33 +1,32 @@
 {
   "by_type": {
-    "docs": 592,
+    "docs": 593,
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1487,
+    "progress": 1488,
     "research": 483
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 3,
+      "added": 2,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-23T19:57:15Z",
+    "at": "2026-11-24T07:18:20Z",
     "scope_paths": [
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/churn-pipeline.md",
-      "handoffs/active/coordination-and-churn-pipeline.md",
-      "progress/2026-11/2026-11-23-pipeline-mgmt.md"
+      "docs/guides/agent-workflows/spec-identity-gate-protocol.md",
+      "progress/2026-11/2026-11-23-autokernel.md",
+      "progress/2026-11/2026-11-24-autokernel.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-23T19:57:15Z",
+  "scan_time": "2026-11-24T07:18:20Z",
   "schema_version": 1,
-  "source_set_hash": "e07607740accda7326aa38e06b3f8a4796910afd431a90c07de5365aa921fc08",
+  "source_set_hash": "394db728ca03e6c2f643ca57897178e1c296981c1ccfac53a72b37da62cc982d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -18926,10 +18925,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "73e48ec33b569177ca51ccc39bbdcc0fe81187e12fa3fd56ffd8fe90dc899ed0",
-      "modified": "2026-11-23T18:26:31Z",
+      "content_hash": "9f470e91b0fb06564ac7b231e1f0920d68d781a1fdf443201979cbfe2b7a9564",
+      "modified": "2026-11-24T07:13:25Z",
       "path": "progress/2026-11/2026-11-23-autokernel.md",
-      "size": 8567,
+      "size": 12069,
       "title": "2026-11-23 \u2014 autokernel (covers 2026-11-22 20:00Z \u2192 2026-11-23 ~09:30Z)",
       "type": "progress"
     },
@@ -18955,6 +18954,14 @@
       "path": "progress/2026-11/2026-11-23-pipeline-mgmt.md",
       "size": 4884,
       "title": "2026-11-23 \u2014 pipeline-mgmt",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c1010ee6b1b662837721a129b8a26a3e7518f8b38a98a2b087f6b50fdb5d1d0a",
+      "modified": "2026-11-24T07:14:24Z",
+      "path": "progress/2026-11/2026-11-24-autokernel.md",
+      "size": 5510,
+      "title": "2026-11-24 autokernel: overnight push, 20:00Z 11-23 to 07:20Z 11-24 (operator-invoked /wrap-up)",
       "type": "progress"
     },
     {
@@ -20779,6 +20786,14 @@
       "path": "docs/guides/agent-workflows/safety-reviewer.md",
       "size": 568,
       "title": "Safety Reviewer Workflow",
+      "type": "docs"
+    },
+    {
+      "content_hash": "a8ce17c736924d8fcd0187cf1e6d8a22aa629c8f0117b7205f435cb5436ce470",
+      "modified": "2026-11-24T07:13:24Z",
+      "path": "docs/guides/agent-workflows/spec-identity-gate-protocol.md",
+      "size": 8072,
+      "title": "Speculative-decoding identity and distribution gates (SPEC-ID-GATE-1 / SPEC-PIT.1)",
       "type": "docs"
     },
     {
@@ -23838,7 +23853,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2976,
+  "total_new": 2978,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
