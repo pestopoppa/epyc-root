@@ -156,7 +156,19 @@ def check(d):
 # KLD the gate reads when only reduction order changes (same build, one reduction-order toggle). None = not yet measured; the
 # header then says so instead of inventing a ratio. Set from the filed rows fold-kld-floor-{gpu,cpu}-20261124 (value + row id).
 KLD_GATE = 0.003
-KLD_FLOOR = {'gpu': None, 'cpu': None}          # {'gpu': (floor, 'row-id'), ...}
+# Values read from each row's out/RESULT.json (detail.floor_kld, id, sha256 of the file), not typed by hand.
+KLD_FLOOR = {
+    # FLOOR_LOW_KEEP_GATE: floor 0.0 (top-1 100%) -> the absolute 0.003 gate stays.
+    'gpu': (0.0, 'fold-kld-floor-gpu-20261124-r2', '11e59db796c9232406f2f41c4a1df17939e277d9706a1fac1323bab9b520f7bf'),
+    # FLOOR_HIGH_RELATIVE_GATE: floor 0.040492 = 13.5x the gate (top-1 92.7%) -> gate is judged against the floor.
+    'cpu': (0.040492, 'fold-kld-floor-cpu-20261124', '0d8c6894e68df22f9a67beeef1793dbd45eee7f8dee30d5112548d1b18c8f170'),
+}
+# Per-device gate mode. 'absolute': candidate_kld <= gate. 'relative': candidate_kld <= floor * (1 + KLD_REL_MARGIN).
+KLD_GATE_MODE = {'gpu': 'absolute', 'cpu': 'relative'}
+# Neither the CPU RESULT.json nor the FOLD-KLD-FLOOR-1 brief states the relative rule (the brief says only "makes the gate
+# relative to the floor"), so this is a conservative choice: the floor is itself the KLD between two equally valid reduction
+# orders, so a candidate may sit at it, with 50% headroom for run-to-run spread of a 5-chunk estimate. Operator may retune.
+KLD_REL_MARGIN = 0.5
 
 
 def kld_floor_header(device, cand_kld, floor=None, gate=KLD_GATE):
@@ -167,7 +179,7 @@ def kld_floor_header(device, cand_kld, floor=None, gate=KLD_GATE):
     f = floor if floor is not None else KLD_FLOOR.get(device)
     src = None
     if isinstance(f, (tuple, list)):
-        f, src = f
+        f, src = f[0], '%s sha256:%s' % (f[1], f[2]) if len(f) > 2 else f[1]
     if f is None:
         return {'kld_floor': None, 'kld_floor_status': 'UNMEASURED (FOLD-KLD-FLOOR-1)', 'candidate_kld_over_floor': None,
                 'kld_gate_over_floor': None, 'kld_gate': gate}
@@ -175,6 +187,26 @@ def kld_floor_header(device, cand_kld, floor=None, gate=KLD_GATE):
     ratio = (abs(float(cand_kld)) / f) if (f > 0 and cand_kld is not None) else None
     return {'kld_floor': f, 'kld_floor_source': src, 'kld_floor_status': 'MEASURED' if f > 0 else 'MEASURED_ZERO',
             'candidate_kld_over_floor': ratio, 'kld_gate_over_floor': (gate / f) if f > 0 else None, 'kld_gate': gate}
+
+
+def kld_gate_verdict(device, cand_kld, floor=None, gate=KLD_GATE, margin=KLD_REL_MARGIN):
+    """Per-device KLD gate: (ok, detail). Fails closed on a missing candidate KLD, unknown device mode, or (relative mode) a
+    missing floor. Absolute mode never reads the floor, so a zero GPU floor changes nothing."""
+    mode = KLD_GATE_MODE.get(device)
+    f = floor if floor is not None else KLD_FLOOR.get(device)
+    if isinstance(f, (tuple, list)):
+        f = f[0]
+    d = {'kld_gate_mode': mode, 'candidate_kld': cand_kld}
+    if mode is None or cand_kld is None:
+        return False, dict(d, kld_gate_effective=None, reason='unknown device mode or no candidate KLD (fail closed)')
+    c = abs(float(cand_kld))
+    if mode == 'absolute':
+        eff = gate
+    elif f is None:
+        return False, dict(d, kld_gate_effective=None, reason='relative gate but floor unmeasured (fail closed)')
+    else:
+        eff = abs(float(f)) * (1.0 + margin)
+    return c <= eff, dict(d, kld_gate_effective=eff, reason='candidate_kld <= effective gate' if c <= eff else 'candidate_kld > effective gate')
 
 
 def touched_libs(repo, ref_sha, cand_sha):

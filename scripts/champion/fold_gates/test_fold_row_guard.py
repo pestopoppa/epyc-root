@@ -107,9 +107,52 @@ def test_move_stale_covers_out_smoke(tmp_path) -> None:
 
 
 def test_kld_floor_header() -> None:
-    h = fg.kld_floor_header('gpu', 0.0012, floor=None)
+    saved = dict(fg.KLD_FLOOR)
+    fg.KLD_FLOOR.update({'gpu': None, 'cpu': None})
+    try:
+        h = fg.kld_floor_header('gpu', 0.0012, floor=None)
+    finally:
+        fg.KLD_FLOOR.update(saved)
     assert h['kld_floor'] is None and h['candidate_kld_over_floor'] is None and 'UNMEASURED' in h['kld_floor_status']
     h = fg.kld_floor_header('cpu', 0.0012, floor=(0.0003, 'row-x'))
     assert abs(h['candidate_kld_over_floor'] - 4.0) < 1e-9 and abs(h['kld_gate_over_floor'] - 10.0) < 1e-9 and h['kld_floor_source'] == 'row-x'
     h = fg.kld_floor_header('gpu', 0.0, floor=0.0)
     assert h['kld_floor_status'] == 'MEASURED_ZERO' and h['candidate_kld_over_floor'] is None
+
+
+def test_kld_floor_table_matches_filed_results() -> None:
+    for dev, rid in (('gpu', 'fold-kld-floor-gpu-20261124-r2'), ('cpu', 'fold-kld-floor-cpu-20261124')):
+        floor, row, sha = fg.KLD_FLOOR[dev]
+        assert row.startswith(rid) and len(sha) == 64
+        p = '/mnt/raid0/llm/tmp/%s/out/RESULT.json' % rid
+        if os.path.exists(p):
+            assert abs(json.load(open(p))['detail']['floor_kld'] - floor) < 1e-12 and fg.sha256(p) == sha
+
+
+def test_kld_gpu_absolute_zero_floor() -> None:
+    assert fg.KLD_GATE_MODE == {'gpu': 'absolute', 'cpu': 'relative'}
+    h = fg.kld_floor_header('gpu', 0.001)
+    assert h['kld_floor'] == 0.0 and h['candidate_kld_over_floor'] is None and h['kld_gate_over_floor'] is None
+    assert fg.kld_gate_verdict('gpu', 0.0029)[0] and not fg.kld_gate_verdict('gpu', 0.0031)[0]
+    assert fg.kld_gate_verdict('gpu', 0.0029)[1]['kld_gate_effective'] == fg.KLD_GATE
+
+
+def test_kld_cpu_relative() -> None:
+    fl = fg.KLD_FLOOR['cpu'][0]
+    assert fg.kld_gate_verdict('cpu', fl)[0]                  # at the floor passes (absolute 0.003 would fail)
+    assert fg.kld_gate_verdict('cpu', fl * 1.5)[0]
+    assert not fg.kld_gate_verdict('cpu', fl * 3)[0]          # well above the floor fails
+    assert not fg.kld_gate_verdict('cpu', 0.2)[0]
+    assert abs(fg.kld_gate_verdict('cpu', fl)[1]['kld_gate_effective'] - fl * 1.5) < 1e-12
+
+
+def test_kld_missing_floor_fails_closed() -> None:
+    saved = dict(fg.KLD_FLOOR)
+    fg.KLD_FLOOR['cpu'] = None
+    try:
+        ok, d = fg.kld_gate_verdict('cpu', 0.0)
+        assert not ok and 'fail closed' in d['reason']
+    finally:
+        fg.KLD_FLOOR.update(saved)
+    assert not fg.kld_gate_verdict('npu', 0.0)[0]
+    assert not fg.kld_gate_verdict('cpu', None)[0]
