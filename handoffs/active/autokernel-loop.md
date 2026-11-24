@@ -11823,6 +11823,15 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
 - [ ] **RSL-R5 WIRED + BELIEF** [non-inference] Add a Vidya adapter README row and a vidya-belief-substrate-program task for epyc.autokernel.bw_census.v1. Write the planning-context canary per agent-loop-design.md "Wired is a canary result".
       · done when: the README row and the task exist; the canary file shows a census-derived seed in the assembled context and a shape_class in a cand.json
       · owner: autokernel
-- [ ] **RSL-R6 PER-MODEL TIMING GATE** [non-inference] The chain times only 27B: TIMING_MODEL in stage_bodies.py:58-59 and :214-224, and KLD policy covers only q38_27b and q38fn. A3B, the busiest server, has no chain gate. The fix: take the timing model from the candidate's path, and mark surfaces with no gate as `ungated`.
-      · done when: stage_bodies timing takes timing_model from the candidate's path; A3B surfaces show their gate or `ungated`
+- [ ] **RSL-R6 PER-MODEL TIMING GATE** [non-inference] (widened by operator 2026-11-24 to EVERY served model) The chain times only 27B. Since AKPL-P3 (research 48a660cd2, 2026-11-21), `TIMING_MODEL` has been a constant at stage_bodies.py:58-59, with no stated rationale. `ab-timing` sits in GPU_STAGES, so only an MI210-served model could be timed, and 27B was the only one. KLD policy covers only q38_27b and q38fn. Fix: derive the timed set from the registry server_mode, using census_coverage.served_set, not a hand list. Today's set:
+  - 27B on the MI210 (architect_critic :8083)
+  - Qwen3.8-Flash-Next on the CPU (architect_general :8074, NUMA_FULL)
+  - A3B on the CPU (frontdoor :8070), plus A3B on the MI210 as planned next-GPU at its RSL-R4 weight
+  - any further served host the registry gains
+
+  DS41-Flash is not served: the registry has only catalogue and graveyard rows for it. The worker_vision host (:8086) has no model_role, so it shows as unmapped until it is classified. Each surface gets a greedy speed cell on its own served device and served shape, with its own A/A floor. CPU cells run on that host's served topology and claim, not on the GPU lane.
+      · done when: stage_bodies takes the timing model and device from the candidate's path via served_set; every live and planned path has a timing cell with its own A/A floor; a path with no cell shows `ungated` on /loop; --test-mode runs no binary
+      · owner: autokernel
+- [ ] **RSL-R7 HYPOTHESIS JOURNAL RE-KEY** [non-inference] (operator 2026-11-24) The census now supplies what to try, and the journal keeps what was tried: candidates, outcomes, and measured negatives. Re-key journal entries and negatives by op_family + shape_class, not by model, so that a negative on one model's shape range also blocks the same idea on another model's overlapping range. Hand-written hypotheses stay for ideas the census cannot see: kernel fusion, new drafting schemes, removing a pass, and device placement such as a hybrid CPU+GPU Flash-Next split. These rank in the same list, with an estimated saving priced from census rows on every device the entry touches (device-aware pricing). Per-model hand-curated campaign seed lists are retired.
+      · done when: negatives and journal entries carry op_family + shape_class; a negative on one model's range suppresses an overlapping seed on another model in a fixture; a hand-written hypothesis with a multi-device estimate ranks in the RSL-R4 list
       · owner: autokernel
