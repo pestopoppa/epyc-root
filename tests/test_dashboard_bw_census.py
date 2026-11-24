@@ -175,6 +175,19 @@ class CensusTests(unittest.TestCase):
         self.census.write_text(json.dumps(FIXTURE))      # pre-surfaces census still renders
         self.assertEqual(S.bw_census_payload(self.census, self.grants)["surfaces"], [])
 
+    def test_stale_surface_marker_passes_through_and_renders(self):
+        doc = {**FIXTURE, "surfaces": [
+            {"path": "p", "op": "tail", "saving_ms_per_step": None, "census_rows": [], "status": "needs_measurement",
+             "stale": True, "stale_since": "2026-11-24T10:00:00Z", "stale_row": "ak-x"},
+            {"path": "p", "op": "fresh", "saving_ms_per_step": 1.0, "census_rows": [], "status": "open", "stale": "yes"}]}
+        self.census.write_text(json.dumps(doc))
+        s = {x["op"]: x for x in S.bw_census_payload(self.census, self.grants)["surfaces"]}
+        self.assertEqual((s["tail"]["stale"], s["tail"]["stale_row"]), (True, "ak-x"))
+        self.assertFalse(s["fresh"]["stale"])  # only a literal true is drawn as stale
+        page = (REPO / "dashboard/static/loop.html").read_text()
+        self.assertIn("r.stale?", page)
+        self.assertIn("bwc-stale", page)
+
     def test_trend(self):
         self.assertEqual(bw_census.trend(None), "")
         self.assertTrue(bw_census.trend([["a", 2], ["b", 1]]).endswith("↓"))

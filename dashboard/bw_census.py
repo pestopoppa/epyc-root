@@ -194,7 +194,9 @@ def shape_surfaces(doc: dict, tables: dict) -> list[dict]:
         runs.sort(key=lambda r: (str(r["measured_at"] or ""), r["id"]), reverse=True)
         out.append({**s, "covered_by": s.get("covered_by") or "",
                     "status": s.get("status") if s.get("status") in SURFACE_STATUSES else "open",
-                    "saving_ms_per_step": _num(s.get("saving_ms_per_step")), "runs": runs})
+                    "saving_ms_per_step": _num(s.get("saving_ms_per_step")), "runs": runs,
+                    # a KEEP touched this parity-only surface after its static ours % was taken (census_update mark_stale)
+                    "stale": s.get("stale") is True, "stale_since": s.get("stale_since"), "stale_row": s.get("stale_row")})
     out.sort(key=lambda s: (s["saving_ms_per_step"] is None, -(s["saving_ms_per_step"] or 0.0)))
     return out
 

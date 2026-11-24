@@ -3304,7 +3304,7 @@ function bwcCell(k,r){
    ' <span class="count" style="color:'+(meas?'#3fb950':'#d29922')+'">'+(meas?'● ':'○ ')+bwcEsc(r.ref_status||'-')+'</span>';}
  if(k==='gap_pp')return r.gap_pp==null?'-':bwcEsc(r.gap_pp);
  if(k==='covered_by')return (r.covered_by?bwcEsc(r.covered_by):'<b>none</b>')+(r.group_covered_by?' <span class="count">group: '+bwcEsc(r.group_covered_by)+'</span>':'');
- if(k==='status')return `<span style="color:${BWC_COLOR[r.status]||'inherit'};font-weight:700">● ${bwcEsc(r.status)}</span>`;
+ if(k==='status')return `<span style="color:${BWC_COLOR[r.status]||'inherit'};font-weight:700">● ${bwcEsc(r.status)}</span>`+(r.stale?` <span class="bwc-stale" style="color:#d29922;font-weight:700" title="${bwcEsc('a KEEP ('+(r.stale_row||'?')+') touched this parity-only surface since '+(r.stale_since||'?')+'; its ours % predates it: re-measure')}">⚠ stale</span>`:'');
  return bwcEsc(r[k]);}
 function bwcRuns(r){const runs=r.runs||[];if(!runs.length)return '<span class="count">no census runs map to this surface</span>';
  return '<table class="akx-table"><thead><tr><th>kernel</th><th>shape</th><th>GB/s</th><th>% ceil</th><th>measured_at</th><th>source row</th></tr></thead><tbody>'+
