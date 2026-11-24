@@ -1,0 +1,207 @@
+{
+  "schema": "epyc.champion.serving_config.v1",
+  "champion": "C22",
+  "generated_utc": "2026-11-24T20:00:00Z",
+  "notes": "Seed (CHAMPION-SERVING-CONFIG-1, 2026-11-24). The 27B measurements ran on the C21 GPU store, the only GPU store built so far; re-confirm on the C22 GPU candidate before the promotion package writes the registry. Argv deltas are against the orchestrator registry server_mode.<mode>.serving_shape (registry sha256 70712c0f00cd512a2deab4c3d2ffa54a45cbc222141eda935917b2462b7af5b9). No number here is recomputed beyond a mean/median of the cited row's own per-launch records.",
+  "servers": [
+    {
+      "server_mode": "architect_critic",
+      "port": 8083,
+      "model": "Qwen3.8-27B-Q8_0",
+      "device": "ROCm0",
+      "registry_serving_shape": {
+        "n_ctx": 393216,
+        "batch": 512,
+        "ubatch": 512,
+        "kv_unified": true,
+        "kv_quant": {
+          "k": "q8_0",
+          "v": "q8_0"
+        },
+        "kv_kib_per_token_f16": 64.0,
+        "vram_non_kv_gib": 38.03,
+        "vram_non_kv_drafter": "dflash2",
+        "vram_non_kv_ubatch": 512
+      },
+      "optimal": {
+        "status": "measured",
+        "screen_state": "baseline_only",
+        "screen_note": "The only screened config is the registry serving_shape itself (the floor row ran the served recipe). The ub sweep (alternates below) is pending; if an arm beats b512/ub512 by more than the serving floor it replaces this entry.",
+        "config": {
+          "n_ctx": 393216,
+          "np": 4,
+          "batch": 512,
+          "ubatch": 512,
+          "kv_k": "q8_0",
+          "kv_v": "q8_0",
+          "kv_unified": true,
+          "ctx_checkpoints": 32,
+          "cache_ram_mib": 65536,
+          "drafter": {
+            "spec_type": "draft-dflash",
+            "model": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+            "n_max": 7
+          },
+          "sampling": {
+            "temperature": 1.0,
+            "top_p": 0.95,
+            "top_k": 20
+          }
+        },
+        "argv_delta": [],
+        "harness_only_differences": [
+          {
+            "flag": "--port",
+            "reason": "row-owned port 28082, not 8083"
+          },
+          {
+            "flag": "--no-webui",
+            "reason": "bench harness only"
+          },
+          {
+            "flag": "--reasoning off",
+            "reason": "row measures raw decode; the registry sets reasoning via chat_template_kwargs, not argv"
+          },
+          {
+            "flag": "--chat-template-file / --slot-save-path",
+            "reason": "omitted by the floor row; do not change decode or batching"
+          },
+          {
+            "flag": "-fa on / -ngl 99",
+            "reason": "spelling of the registry's --flash-attn on / -ngl all"
+          }
+        ],
+        "provenance": {
+          "row_id": "ak-27b-served-np4-floor-gpu-20261124",
+          "result_json": "/mnt/raid0/llm/tmp/ak-27b-served-np4-floor-gpu-20261124/out/RESULT.json",
+          "result_sha256": "6737fce733db9ca0fe43995dc4359fadcd561445f0d1fd499a77f70253a8018c",
+          "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-98ff8a42a-c21",
+          "verdict": "CALIBRATED",
+          "also_read": {
+            "results_jsonl": "/mnt/raid0/llm/tmp/ak-27b-served-np4-floor-gpu-20261124/out/results.jsonl",
+            "results_jsonl_sha256": "a0c3a72a2fd9519754e51528d7d060be3ba164a983ebdfb491dd6390bcb001fd"
+          }
+        }
+      },
+      "alternates": [
+        {
+          "name": "latency",
+          "status": "pending",
+          "row_id": "ak-27b-served-ub-sweep-gpu-20261124",
+          "pending_reason": "row ak-27b-served-ub-sweep-gpu-20261124 has no out/RESULT.json (launcher and spec filed, no results yet); nothing measured; the latency arm is chosen from the sweep by ITL p95 during concurrent prefill (LATENCY_REGRESSION flag at >1.20x baseline); the sweep baseline arm B512 is the current optimal config"
+        },
+        {
+          "name": "throughput",
+          "status": "pending",
+          "row_id": "ak-27b-served-ub-sweep-gpu-20261124",
+          "pending_reason": "row ak-27b-served-ub-sweep-gpu-20261124 has no out/RESULT.json (launcher and spec filed, no results yet); nothing measured; the throughput arm is the fastest of B1024 / B2048 / B2048U512 by median aggregate_tok_s",
+          "intended_delta": [
+            {
+              "flag": "-b",
+              "value": "1024|2048",
+              "reason": "sweep arms B1024, B2048, B2048U512"
+            },
+            {
+              "flag": "-ub",
+              "value": "1024|2048|512",
+              "reason": "sweep arms B1024, B2048, B2048U512"
+            }
+          ]
+        },
+        {
+          "name": "high-temperature",
+          "status": "pending",
+          "row_id": null,
+          "needs_row": "no row exists yet for a served 27B temperature-vs-acceptance measurement; the floor row measured only T=1.0 (acceptance 0.399)",
+          "pending_reason": "no row filed; acceptance at a higher temperature has not been measured"
+        }
+      ],
+      "tradeoffs": [
+        {
+          "id": "floor-np4-t1.0-b512",
+          "config": "optimal",
+          "throughput_tok_s": 29.662952238590325,
+          "throughput_basis": "mean aggregate tok/s over 48 launches, 4 concurrent slots (one 3824-token prompt each, 384 tokens predicted), unit=process",
+          "per_slot_decode_tok_s_median": 14.034286590494109,
+          "per_slot_decode_tok_s_mean": 15.926093488557065,
+          "per_slot_basis": "192 per-request values (48 launches x 4), predicted_n/predicted_ms; derived from results.jsonl",
+          "prefill_tok_s_per_request_median": 189.5298812695644,
+          "prefill_basis": "192 per-request values, prompt_n/prompt_ms with 4 prefills concurrent; derived from results.jsonl",
+          "itl_p50_ms": null,
+          "itl_p95_ms": null,
+          "temperature": 1.0,
+          "acceptance": 0.39869276876471466,
+          "acceptance_basis": "mean of per-launch draft_n_accepted/draft_n, 48 launches",
+          "memory_gib": 49.848411560058594,
+          "memory_basis": "max own-PID KFD VRAM after the round, np4 c393216 q8_0 KV, DFlash2 drafter",
+          "noise": {
+            "screen_floor_pct": 15.6444817982177,
+            "serving_floor_pct": 3.370099977136884,
+            "launch_cv_pct": 7.129930689371941,
+            "n_pairs": 24,
+            "note": "a throughput difference below the serving floor is not distinguishable from launch noise"
+          },
+          "unmeasured": {
+            "itl_p50_ms": "the floor row measures aggregate and per-request tok/s only, not inter-token latency",
+            "itl_p95_ms": "the floor row measures aggregate and per-request tok/s only, not inter-token latency"
+          },
+          "provenance": {
+            "row_id": "ak-27b-served-np4-floor-gpu-20261124",
+            "result_json": "/mnt/raid0/llm/tmp/ak-27b-served-np4-floor-gpu-20261124/out/RESULT.json",
+            "result_sha256": "6737fce733db9ca0fe43995dc4359fadcd561445f0d1fd499a77f70253a8018c",
+            "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-98ff8a42a-c21",
+            "verdict": "CALIBRATED",
+            "also_read": {
+              "results_jsonl": "/mnt/raid0/llm/tmp/ak-27b-served-np4-floor-gpu-20261124/out/results.jsonl",
+              "results_jsonl_sha256": "a0c3a72a2fd9519754e51528d7d060be3ba164a983ebdfb491dd6390bcb001fd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "server_mode": "architect_general",
+      "port": 8074,
+      "model": "Qwen3.8-Flash-Next-UD-IQ4_XS",
+      "device": "CPU",
+      "registry_serving_shape": {
+        "n_ctx": 262144,
+        "slots_by_shape": {
+          "full": 1
+        },
+        "kv_quant": {
+          "k": "f16",
+          "v": "f16"
+        },
+        "kv_kib_per_token_f16": 96.0,
+        "kv_kib_per_token_f16_measured": 24.0,
+        "kv_kib_per_token_f16_mtp_head_observed": 9.0
+      },
+      "optimal": {
+        "status": "pending",
+        "row_id": "ak-q38fn-draftwin-c22-cpu-20261124-r4",
+        "pending_reason": "draft-window (LLAMA_MTP_DRAFT_WINDOW=4096, SINK=64, MIN_POS=40000) candidate: r2 ANSWERED with FUTILITY_STEP_DROP at n=2 (rule too strict per draftwin-triage-20261124.md), r3 FAIL_GREEDY_IDENTITY at P64K (temp 0 outputs diverge at token 14); r4 (greedy-identity re-run) has results.jsonl but no filed RESULT.json. The window stays a kernel env knob until r4 files a PASS; the served argv (MTP n-max 4) is unchanged"
+      },
+      "alternates": [],
+      "tradeoffs": [],
+      "evidence": [
+        {
+          "row_id": "ak-q38fn-draftwin-c22-cpu-20261124-r2",
+          "result_json": "/mnt/raid0/llm/tmp/ak-q38fn-draftwin-c22-cpu-20261124-r2/out/RESULT.json",
+          "result_sha256": "49ff3ec934bc33553be028d03ab4e7c979aa2dff9e4834347ae626d2d5a07535",
+          "verdict": "ANSWERED (arm W4096A40K: FUTILITY_STEP_DROP, n=2 blocks)",
+          "store": "/mnt/raid0/llm/kernels/builds/cpu-20261124-9e8dc418d-c22-draftwin",
+          "note": "P64K B/A geomean +14.8% (CI +2.3%..+27.3%), step 133.8->127.0 ms, acceptance 0.371->0.461; P1K -0.6%, P32K +0.3%; sampled stream differed at P64K. Evidence only; below the pre-registered 3 blocks"
+        },
+        {
+          "row_id": "ak-q38fn-draftwin-c22-cpu-20261124-r3",
+          "result_json": "/mnt/raid0/llm/tmp/ak-q38fn-draftwin-c22-cpu-20261124-r3/out/RESULT.json",
+          "result_sha256": "73ceba7a1fa9234b8cb1f8a746e4e386df32969a666d0414ac731d630594ef38",
+          "verdict": "FAIL_GREEDY_IDENTITY",
+          "store": "/mnt/raid0/llm/kernels/builds/cpu-20261124-9e8dc418d-c22-draftwin",
+          "note": "greedy P64K A-vs-B mismatch, first_diff_index 14 of 256; the window is not yet shown lossless"
+        }
+      ]
+    }
+  ]
+}
