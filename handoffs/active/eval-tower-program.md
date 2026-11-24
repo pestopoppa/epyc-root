@@ -3170,6 +3170,11 @@ Structural change → **implement in a follow-on pass** (not in this design task
       · done when: operator decision recorded in this box's tick verdict, and if adopted a ratified protocol amendment exists
       · gate: none        · inputs: `measurement/protocols/quality-eval.md`
   - 2026-11-24, operator: option (a), a rerun arm for ALL comparisons. The box stays open until the human-only amendment to `measurement/protocols/quality-eval.md` is ratified; the owning session prepares the amendment text for the operator.
+    - The amendment is prepared and rehearsed in `/mnt/raid0/llm/tmp/rerun-arm-amendment/`. It changes MEASUREMENT.md's CHANGELOG plus quality-eval.md P-AB-1 and P-PAIRED: rerun arm R, `flip_rate = (f_AR + f_RA) / n_AR` with a Wilson interval, and a no-claim rule (`|Δ|` at or below the flip rate is not claimed). It is prospective only.
+    - The operator runs `ratify_aei_rerun_arm_20261124.sh` (`--show`, then `--dry-run`, then `RATIFY_OPERATOR=... --apply`, then `--verify`).
+  - [ ] **AEI-RERUN-FLIP-CODE** [non-inference] Make `paired_stats.py` compute the A-versus-R rerun flip rate (McNemar discordant count of A against R over the tasks scored in both) and downgrade an `a_better`/`b_better` verdict to `indistinguishable` (reason `within_rerun_noise`) when `|Δ|` is at or below the flip rate. Refuse a pair that has no R for decision use.
+      · done when: unit tests over a fixture pair with and without R pass, covering the downgrade and the refusal
+      · gate: AEI-RERUN-ARM-OD        · inputs: `measurement/protocols/quality-eval.md`
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 

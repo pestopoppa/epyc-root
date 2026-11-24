@@ -919,14 +919,25 @@ pinned commit). RA-13b exists because of that gap, and RA-13b gates RA-13a's cit
 <!-- gate: REV-02#glm52-reviewer-capability-gates -->
 
 ### Backlog
-- [ ] **AEI-REV-FLIPS** [non-inference] Add per-arm fix and break counts (worker-wrong to reviewer-reject, worker-right to reviewer-reject) and a Kamoi-style fairness line (initial-prompt strength, no oracle stop, matched-token baseline present or absent) to the RM-2 arm report, computed offline from decisions already in the review ledger (intake-2930#record claims 1-2, intake-2929#record claim 4).
+- [x] **AEI-REV-FLIPS** [non-inference] Add per-arm fix and break counts (worker-wrong to reviewer-reject, worker-right to reviewer-reject) and a Kamoi-style fairness line (initial-prompt strength, no oracle stop, matched-token baseline present or absent) to the RM-2 arm report, computed offline from decisions already in the review ledger (intake-2930#record claims 1-2, intake-2929#record claim 4).
       · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_reviewer_calibration_flips.py -q passes and the RM-2 report for the A1 48-row slice prints the new columns
       · gate: none        · inputs: `repos/epyc-orchestrator/scripts/analysis/reviewer_calibration_report.py`
+  - 2026-11-24 done, orchestrator `5b7e2100`.
+    - **What it adds:** `reviewer_calibration_report.py` now reports per-arm fix and break counts with their denominators, and a Kamoi-style fairness line. The line's three fields are supplied by CLI flags, because the ledger doesn't record them; anything not supplied prints "unrecorded".
+    - **Tests:** 5 new tests pass, plus 35 existing ones.
+    - **A1 48-row slice:** fix 13/24, break 10/24. FA 45.8%, FR 41.7% and AUC 0.463 match the recorded A1 result.
+    - **Fairness:** with my reading of the A1 setup (basic prompt, no oracle stop, no matched-token baseline), the line reads "fair comparison = no". [belief: cc]
 
 > Folded from `handoffs/active/reviewer-model-ablations.md` @ `28b488861d1f` on 2026-11-03 (BRF-T7-F15, route 1b, operator D1/D5; retired row REV-07 → REV-02). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
-- [ ] **AEI-REV-A1-PRECHECK** [non-inference] Record two facts about the A1 self-review runner before any further A1 arm: whether the worker patch reaches the reviewer as user-role or assistant-role content, and whether the C-CRAB rows of the 48-row slice carry a gold defect location usable as an oracle hint (intake-2939#record, intake-2940#record).
+- [x] **AEI-REV-A1-PRECHECK** [non-inference] Record two facts about the A1 self-review runner before any further A1 arm: whether the worker patch reaches the reviewer as user-role or assistant-role content, and whether the C-CRAB rows of the 48-row slice carry a gold defect location usable as an oracle hint (intake-2939#record, intake-2940#record).
       · done when: a sub-bullet under this box names the runner file:line for the message role and the count of the 48 rows with a gold defect location
       · gate: none
+  - Precheck 2026-11-24:
+    - **Message role:** the worker patch reaches the reviewer as USER-role content, in a single user message with no system or assistant turn.
+      - The prompt is built at `epyc-inference-research:scripts/benchmark/glm52_reviewer_corpus_direct_runner.py:449-493`.
+      - The request is built at `:1231`, via `glm52_dsa_probe_runner.py:689` (`{"role": "user"}`).
+      - Confirmed on the stored A1 request.json.
+    - **Gold defect locations:** 24 of the 48 A1-slice rows carry one (`path`, `line` and `diff_hunk` in `reasoning_module_labels` of `nearmiss-corpus-v1/rows.jsonl`). These are all 24 gold-reject rows and none of the 24 gold-accept rows. None of it appears in the A1 prompt, so the location is usable as the arm-L oracle hint. [belief: cc]
 - [ ] **AEI-REV-A1-LOCATE-PROBE** [inference] Run one bounded diagnostic on the 48-row A1 slice with the incumbent A1 reviewer: arm L gives the gold defect location, arm P uses a comprehensive single-pass review prompt; report FA, FR and AUC per arm against the A1 baseline, then close A1 as a negative control unless arm L lifts (intake-2940#record claims, intake-2937#record).
       · done when: verdict tick records FA/FR/AUC for arms L and P on the 48 rows with the pass/close decision under the stop rule
       · gate: AEI-REV-A1-PRECHECK

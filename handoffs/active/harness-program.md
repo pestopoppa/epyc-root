@@ -1839,9 +1839,23 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
       · gate: AEI-CT18-ARMD-PREP
       · model CT-18 worker and architect roles + DataFilter-8B GGUF · harness CT-18 fixture harness · metric ASR lower, task_ok higher, false-removal lower · region CT-18 substrate split, DataFilter on MI210 · est from CT-18.1 timings
       · stop rule: question = does D-1 or D-2 cut static ASR below arms A-C with clean task_ok within 5 pts; checkpoint after the worker role; futility if both within 5 pts of arm A; answer opens M6
-- [ ] **AEI-BOUNDARY-LAUNDER-LINT** [non-inference] Add a static test that flags any delegation call site where a value from the untrusted-source list (tool output, worker output, doc text, retrieved chunk, report) is interpolated into a child role's natural-language instruction instead of a separate data field (intake-2928#record claims 0-1).
+- [x] **AEI-BOUNDARY-LAUNDER-LINT** [non-inference] Add a static test that flags any delegation call site where a value from the untrusted-source list (tool output, worker output, doc text, retrieved chunk, report) is interpolated into a child role's natural-language instruction instead of a separate data field (intake-2928#record claims 0-1).
       · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_boundary_laundering_lint.py -q passes and lists each current call site as clean or allowlisted with a reason
       · gate: none
+  - 2026-11-24 done, orchestrator `a8c49312`: `tests/unit/test_boundary_laundering_lint.py`, 6 tests passing.
+    - **What it checks:** an AST pass over `src/` and `orchestration/` finds 97 delegation sites. It runs a name-based taint pass inside each function.
+    - **Result:** 86 sites are clean or forwarders, 0 are allowlisted, and 10 real violations are recorded as `KNOWN_VIOLATIONS`. None was fixed.
+    - **Why they count:** `neutralise_control_tokens` (CT-12.3c) strips control tokens only, so the text keeps instruction authority.
+    - **Limits:** the lint is heuristic and works one function at a time, so taint that crosses a function boundary under an innocuous name is invisible. [no-belief: static lint on current code, no measurement]
+  - [ ] **AEI-LAUNDER-FIX-1** [non-inference] Move the 10 `KNOWN_VIOLATIONS` from AEI-BOUNDARY-LAUNDER-LINT out of child-role instructions into a separate data field, behind a default-off flag. Each fix deletes its registry entry. The sites:
+    - the previous-turn REPL `last_output`/`last_error` into `root_prompt`, in `chat.py` `chat_stream.generate`, `stream_adapter.py` `_stream_repl`, `stages.py` `_execute_react`, and their builder `builder.py` `build_root_lm_prompt`;
+    - `arch_last_output` in `_run_architect_decision`;
+    - `deleg_last_output`/`deleg_last_error` in `_run_specialist_loop`, and its builder `_build_compact_specialist_prompt`;
+    - the joined specialist reports in `_architect_delegated_answer_inner`;
+    - the specialist report in `_maybe_summarize_specialist_report`;
+    - the specialist report in `review.py` `build_architect_synthesis_prompt`.
+      · done when: test_boundary_laundering_lint.py passes with KNOWN_VIOLATIONS empty under the flag, and the existing chat and delegation unit tests pass
+      · gate: none        · inputs: `repos/epyc-orchestrator/tests/unit/test_boundary_laundering_lint.py`
 - [ ] **AEI-HTTPPOST-GUARD** [non-inference] Apply the SEC-EXEC-3 web_guard destination check to http_post (orchestration/tools/web.py), which today posts to any URL while roles holding the web category also read untrusted pages (intake-2907#record discovery; intake-2928#record context).
       · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_web_guard_http_post.py -q passes, refusing private and metadata destinations for http_post
       · gate: none        · inputs: `repos/epyc-orchestrator/orchestration/tools/web.py` `repos/epyc-orchestrator/src/repl_environment/web_guard.py`
