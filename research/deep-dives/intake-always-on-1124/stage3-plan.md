@@ -1,3 +1,4 @@
+<!-- Line citations are pinned at a290df6 unless marked; origin/main 20a74f6 (rowflow reservation own_start) shifted the RESERVATION block by +84 lines and leaves RESERVATION_MODE = "shadow" and no owner box. -->
 # Stage-3 plan: always-on agent primitives against our loops and pipelines (intake-always-on-1124), PENDING OPERATOR APPROVAL
 
 Nothing in this plan has been applied. Stage 4 writes only what is approved here.
@@ -40,7 +41,7 @@ C/P/O/NF = CONFIRMED / PARTIAL / OVERTURNED / NOT-FOUND-IN-SOURCE.
 | Lesson | Source stance | Evidence (verified passages) | Our current state (pinned) | Plan |
 |---|---|---|---|---|
 | L1 one-shot workers ending early with no resume | **Agrees and adds.** Every run end is a typed state that a later event resumes (deferred call, progress file); a refusal is a retry signal with a counter; a timer per parked item | intake-2942 Permissions and Memory; intake-2947 deny-and-continue (3 consecutive, 20 total); intake-2950; intake-2953 (Fable returns early on 55% of runs when nothing resumes it) | rowflow already resumes rows (`resume <id>`); the AutoKernel loop resumes from its store (`--resume on`); the autopilot resumes each cycle from durable state. Gaps: taskflow `dispatch.py` has no resume path; the Codex drivers resume on a fixed message with an 8-round cap and no no-progress rule | P2 (no-progress STALLED rule), P3 (count first, then build or decline) |
-| L2 claims bypassing the scheduler queue | **Agrees.** Sources never call the agent; everything goes through one inbox with one worker | intake-2942 Event inbox; intake-2952 (independent, 2020) | rowflow.py L8419 records root cause E: light and build claims never ask the planner. The fix (`claim_reservation_check`) exists but runs in shadow and has no owner box | P1 |
+| L2 claims bypassing the scheduler queue | **Agrees.** Sources never call the agent; everything goes through one inbox with one worker | intake-2942 Event inbox; intake-2952 (independent, 2020) | rowflow.py (L8419 @ a290df6, L8502 @ 20a74f6) records root cause E: light and build claims never ask the planner. The fix (`claim_reservation_check`) exists but runs in shadow and has no owner box | P1 |
 | L3 patch-rule accretion versus a single reservation | **Agrees as a pattern; adds pruning.** One source of truth instead of per-source patches; prune rules on a routine and set a promotion bar for new ones | intake-2942; intake-2943 rule pruning | rowflow.py L8424-L8427: enforce mode bypasses five patch rules but does not delete them | P1 (PM-RESERVE-RETIRE-PATCHES) |
 | L4 warn-first rollout of new rules | **Agrees directly** (intake-2943 off/observe/enforce); intake-2947 only measures offline, with no staged rollout; intake-2942 is silent | intake-2943 "Observe mode will log what would have been blocked..." | PM-RESERVE-SOAK is warn-first for the reservation; PM-RULES-WARN-FIRST already owns the registry; `RESERVATION_MODE`, `SMOKE_MEASURE_ENFORCE` and commit-hygiene Rule G are existing ad-hoc instances | No new box. intake-2943's block-twice-then-allow valve is declined for keeper rules (AON-B2) |
 | L5 deterministic acceptance from artifacts | **Agrees** (intake-2943 checks the change cannot edit and a per-commit stamp; intake-2949 confirmation before the ledger; intake-2955 an agent's approval never counts as a person's) and **adds verifier grading** (intake-2955 answer key from past incidents) | intake-2943, intake-2949, intake-2955 | taskflow `verify.py` already decides from artifacts. Gaps: the Codex drivers stop on the lane's own LANE-STATUS line; no verifier is graded against past failures | P2, P4 |
@@ -116,7 +117,7 @@ Six new boxes, each written with `handoff_box.py add ... --brief --brief-author 
 #### PM-RESERVE-SOAK (P1) -> `handoffs/active/coordination-and-churn-pipeline.md`, track `coordination-and-churn-pipeline`
 
 ```text
-- [ ] **PM-RESERVE-SOAK** [non-inference] Report the RESERVATION_MODE shadow soak (rowflow.py L8405-L8432, shipped in shadow by eb643ac37): for each keeper day count RESERVE-SHADOW, BACKFILL-SHADOW, WOULD-REFUSE and CLAIM-SHADOW lines in ws58-calendar-keeper.log, classify every WOULD-REFUSE and CLAIM-SHADOW line as protects-urgent-head or false-refusal, and list which of the five patch rules it subsumes fired in the same window (intake-2942, intake-2952)
+- [ ] **PM-RESERVE-SOAK** [non-inference] Report the RESERVATION_MODE shadow soak (the RESERVATION block of rowflow.py, shipped in shadow by eb643ac37): for each keeper day count RESERVE-SHADOW, BACKFILL-SHADOW, WOULD-REFUSE and CLAIM-SHADOW lines in ws58-calendar-keeper.log, classify every WOULD-REFUSE and CLAIM-SHADOW line as protects-urgent-head or false-refusal, and list which of the five patch rules it subsumes fired in the same window (intake-2942, intake-2952)
       · done when: /mnt/raid0/llm/tmp/reservation-soak/REPORT.md covers at least 3 keeper days with the four counts per day and a class for every WOULD-REFUSE and CLAIM-SHADOW line
       · gate: none
       · inputs: `scripts/coordination/rowflow/rowflow.py`
@@ -138,7 +139,7 @@ Brief: where `epyc-root:scripts/coordination/rowflow/rowflow.py::RESERVATION_MOD
 #### PM-RESERVE-RETIRE-PATCHES (P1) -> `handoffs/active/coordination-and-churn-pipeline.md`, track `coordination-and-churn-pipeline`
 
 ```text
-- [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once enforce is live, delete the patch rules the reservation subsumes (QUIET-RESERVE with its build refusal, QUIET-URGENT-PENDING and -WAITING, the light-claim urgent-quiet refusal, BUILD-LANE holding an urgent row) and keep one replay test per original starvation case A-E (rowflow.py L8405-L8424), so the single reservation is the only path (intake-2942, intake-2943)
+- [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once enforce is live, delete the patch rules the reservation subsumes (QUIET-RESERVE with its build refusal, QUIET-URGENT-PENDING and -WAITING, the light-claim urgent-quiet refusal, BUILD-LANE holding an urgent row) and keep one replay test per original starvation case A-E (listed in the RESERVATION comment block of rowflow.py), so the single reservation is the only path (intake-2942, intake-2943)
       · done when: none of the five rules remains in rowflow.py on origin/main and pytest scripts/coordination/tests -k reservation passes with one named test per case A-E
       · gate: PM-RESERVE-ENFORCE
       · inputs: `scripts/coordination/rowflow/rowflow.py`
@@ -424,7 +425,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
  "opportunity_reviews": {
   "P1": {
    "project_objective": "Every compute claim and quiet gate goes through one reservation, so urgent heads are not starved and the patch rules stop accreting",
-   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py L8405-L8432 (RESERVATION_MODE = shadow) and L8549-L8580 (claim_reservation_check) @ a290df6",
+   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py RESERVATION block (RESERVATION_MODE = shadow; L8405-L8432 @ a290df6, L8489-L8516 @ 20a74f6) and claim_reservation_check",
    "gap": "The reservation planner shipped in shadow on 2026-11-24 (eb643ac37) and no box owns its soak, its enforce decision or the deletion of the five rules it subsumes; the keeper log shows 2 RESERVE-SHADOW and 0 WOULD-REFUSE or CLAIM-SHADOW lines so far",
    "operational_change": "Soak report, then an operator enforce decision, then deletion of the subsumed patch rules with A-E replay tests",
    "benefit_direction": "Fewer starved urgent rows and fewer special-case rules; correctness constraint: no legitimate claim is refused (false-refusal count must be reported)",
@@ -726,7 +727,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
   {
    "scan_id": "S02",
    "source_ref": "intake-2942 dive A (Event inbox: one worker; rowflow.py L8405-L8432)",
-   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py L8405-L8432 (RESERVATION_MODE = shadow) and L8549-L8580 (claim_reservation_check) @ a290df6",
+   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py RESERVATION block (RESERVATION_MODE = shadow; L8405-L8432 @ a290df6, L8489-L8516 @ 20a74f6) and claim_reservation_check",
    "mechanism": "Give the shadow reservation planner an owner: soak report, then the enforce decision",
    "consumer": "handoffs/active/coordination-and-churn-pipeline.md",
    "application": "Give the shadow reservation planner an owner: soak report, then the enforce decision",
@@ -739,7 +740,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
   {
    "scan_id": "S03",
    "source_ref": "intake-2942 dive A plus main review (rowflow.py L8424-L8427)",
-   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py L8405-L8432 (RESERVATION_MODE = shadow) and L8549-L8580 (claim_reservation_check) @ a290df6",
+   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py RESERVATION block (RESERVATION_MODE = shadow; L8405-L8432 @ a290df6, L8489-L8516 @ 20a74f6) and claim_reservation_check",
    "mechanism": "Operator decides whether to enforce the single reservation",
    "consumer": "handoffs/active/coordination-and-churn-pipeline.md",
    "application": "Operator decides whether to enforce the single reservation",
@@ -752,7 +753,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
   {
    "scan_id": "S04",
    "source_ref": "intake-2943 dive B (rule pruning) and intake-2942 (single inbox)",
-   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py L8405-L8432 (RESERVATION_MODE = shadow) and L8549-L8580 (claim_reservation_check) @ a290df6",
+   "implementation_ref": "epyc-root:scripts/coordination/rowflow/rowflow.py RESERVATION block (RESERVATION_MODE = shadow; L8405-L8432 @ a290df6, L8489-L8516 @ 20a74f6) and claim_reservation_check",
    "mechanism": "Delete the five subsumed patch rules once enforce is live, keeping A-E replay tests",
    "consumer": "handoffs/active/coordination-and-churn-pipeline.md",
    "application": "Delete the five subsumed patch rules once enforce is live, keeping A-E replay tests",
@@ -1097,7 +1098,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
     {
      "owner": "handoffs/active/coordination-and-churn-pipeline.md",
      "task_id": "PM-RESERVE-SOAK",
-     "task_text": "- [ ] **PM-RESERVE-SOAK** [non-inference] Report the RESERVATION_MODE shadow soak (rowflow.py L8405-L8432, shipped in shadow by eb643ac37): for each keeper day count RESERVE-SHADOW, BACKFILL-SHADOW, WOULD-REFUSE and CLAIM-SHADOW lines in ws58-calendar-keeper.log, classify every WOULD-REFUSE and CLAIM-SHADOW line as protects-urgent-head or false-refusal, and list which of the five patch rules it subsumes fired in the same window (intake-2942, intake-2952)",
+     "task_text": "- [ ] **PM-RESERVE-SOAK** [non-inference] Report the RESERVATION_MODE shadow soak (the RESERVATION block of rowflow.py, shipped in shadow by eb643ac37): for each keeper day count RESERVE-SHADOW, BACKFILL-SHADOW, WOULD-REFUSE and CLAIM-SHADOW lines in ws58-calendar-keeper.log, classify every WOULD-REFUSE and CLAIM-SHADOW line as protects-urgent-head or false-refusal, and list which of the five patch rules it subsumes fired in the same window (intake-2942, intake-2952)",
      "acceptance": "/mnt/raid0/llm/tmp/reservation-soak/REPORT.md covers at least 3 keeper days with the four counts per day and a class for every WOULD-REFUSE and CLAIM-SHADOW line"
     }
    ]
@@ -1123,7 +1124,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
     {
      "owner": "handoffs/active/coordination-and-churn-pipeline.md",
      "task_id": "PM-RESERVE-RETIRE-PATCHES",
-     "task_text": "- [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once enforce is live, delete the patch rules the reservation subsumes (QUIET-RESERVE with its build refusal, QUIET-URGENT-PENDING and -WAITING, the light-claim urgent-quiet refusal, BUILD-LANE holding an urgent row) and keep one replay test per original starvation case A-E (rowflow.py L8405-L8424), so the single reservation is the only path (intake-2942, intake-2943)",
+     "task_text": "- [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once enforce is live, delete the patch rules the reservation subsumes (QUIET-RESERVE with its build refusal, QUIET-URGENT-PENDING and -WAITING, the light-claim urgent-quiet refusal, BUILD-LANE holding an urgent row) and keep one replay test per original starvation case A-E (listed in the RESERVATION comment block of rowflow.py), so the single reservation is the only path (intake-2942, intake-2943)",
      "acceptance": "none of the five rules remains in rowflow.py on origin/main and pytest scripts/coordination/tests -k reservation passes with one named test per case A-E"
     }
    ]
@@ -1318,7 +1319,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
  "proposed_tasks": [
   {
    "owner": "handoffs/active/coordination-and-churn-pipeline.md",
-   "task_text": "- [ ] **PM-RESERVE-SOAK** [non-inference] Report the RESERVATION_MODE shadow soak (rowflow.py L8405-L8432, shipped in shadow by eb643ac37): for each keeper day count RESERVE-SHADOW, BACKFILL-SHADOW, WOULD-REFUSE and CLAIM-SHADOW lines in ws58-calendar-keeper.log, classify every WOULD-REFUSE and CLAIM-SHADOW line as protects-urgent-head or false-refusal, and list which of the five patch rules it subsumes fired in the same window (intake-2942, intake-2952)"
+   "task_text": "- [ ] **PM-RESERVE-SOAK** [non-inference] Report the RESERVATION_MODE shadow soak (the RESERVATION block of rowflow.py, shipped in shadow by eb643ac37): for each keeper day count RESERVE-SHADOW, BACKFILL-SHADOW, WOULD-REFUSE and CLAIM-SHADOW lines in ws58-calendar-keeper.log, classify every WOULD-REFUSE and CLAIM-SHADOW line as protects-urgent-head or false-refusal, and list which of the five patch rules it subsumes fired in the same window (intake-2942, intake-2952)"
   },
   {
    "owner": "handoffs/active/coordination-and-churn-pipeline.md",
@@ -1326,7 +1327,7 @@ All six operator steering rows are retained verbatim in the payload's `steering_
   },
   {
    "owner": "handoffs/active/coordination-and-churn-pipeline.md",
-   "task_text": "- [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once enforce is live, delete the patch rules the reservation subsumes (QUIET-RESERVE with its build refusal, QUIET-URGENT-PENDING and -WAITING, the light-claim urgent-quiet refusal, BUILD-LANE holding an urgent row) and keep one replay test per original starvation case A-E (rowflow.py L8405-L8424), so the single reservation is the only path (intake-2942, intake-2943)"
+   "task_text": "- [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once enforce is live, delete the patch rules the reservation subsumes (QUIET-RESERVE with its build refusal, QUIET-URGENT-PENDING and -WAITING, the light-claim urgent-quiet refusal, BUILD-LANE holding an urgent row) and keep one replay test per original starvation case A-E (listed in the RESERVATION comment block of rowflow.py), so the single reservation is the only path (intake-2942, intake-2943)"
   },
   {
    "owner": "handoffs/active/coordination-and-churn-pipeline.md",
