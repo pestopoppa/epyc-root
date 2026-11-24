@@ -430433,3 +430433,526 @@
   notes: 'Dive-surfaced from intake-2929; Stage-2b wave 2 (final) on 2026-11-24 (sonnet agent L). Read v2, CMU. Not read: Sections 6.4-6.6 detail, Appendices A-E except hyperparameters. Training needs an answer checker (reward) on a training set of verifiable math prompts; models are open Llama-2-7B, Llama-3-8B, Mistral-7B, not the 27B-122B scale EPYC serves; supervised ''knowledge boosting'' stage uses a stronger model (identity of the teacher not stated in the extracted text).'
   dive_corrections: '2026-11-24 Stage-2b wave 2: corroborates intake-2929: even with a stated ''this is wrong'' signal prompt-only revision degrades or barely helps, and the one route that works needs fine-tuning on a verifiable reward, so it is not a training-free fix for the A1 reviewer.'
   verdict_justification: 'RISE shows self-correction is trainable on verifiable math with 7B-8B open models, but it needs a reward oracle and training, so it is far from a cheap probe for a patch-review task.'
+- id: intake-2942
+  arxiv_id: null
+  url: https://claude.com/resources/articles/building-always-on-agents
+  source_type: blog
+  title: Building always-on agents (William Hu, Anthropic, 2026-11-13)
+  categories:
+  - agent_architecture
+  - context_management
+  - memory_augmented
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - William Hu
+  key_claims:
+  - Always-on agents sleep between brief runs; every event source writes to a durable inbox that one worker drains instead of calling the agent directly.
+  - 'Inbox rules: acknowledge fast, the inbox is the source of truth, deduplicate by source ids, one active worker per inbox, batch pending events.'
+  - Timers (agent follow-ups and recurring schedules) live in a separate store; a scheduler polls it and adds events to the inbox.
+  - A deferred tool call ends the run and saves the session mid-call; the answer returns as an inbox event that resumes it.
+  - Memory holds only what cannot be looked up again; a per-task progress file lets any new run resume where the last one stopped.
+  - A run ends by sending to the outbox, sending nothing, or deferring; agents should start quiet.
+  techniques:
+  - durable event inbox with a single worker
+  - dedup by source event id
+  - timer store separate from the inbox, scheduler injects events
+  - deferred tool call ends the run and resumes via an inbox event
+  - per-task progress file plus a small index loaded at run start
+  - credential-injecting proxy outside the agent
+  - optional outbox with a dispatcher
+  - start quiet
+  reported_results:
+  - Opus 5.5 cost 78% less per solved task than Opus 5 (40% less on typical workloads); vendor self-report, unnamed benchmark. No other measurements.
+  credibility_score: 3
+  contradicting_evidence:
+  - 'No worker lease or expiry: intake-2951 (lease-style claims, dead-letter state) and intake-2952 (at-least-once delivery needs idempotent effects) show one active worker plus dedup
+    is under-specified.'
+  - intake-2950 (RAZ critique) reports, without a linked source, that vendor webhooks are dropped after three tries and deferrals have no timeout, so the inbox and a follow-up timer
+    must be owned by the builder.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    - autokernel-loop.md
+    intake_entries:
+    - intake-2946
+    - intake-2948
+    - intake-2950
+    - intake-2951
+    - intake-2952
+    - intake-1113
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Primary source, fetched 2026-11-24T15:57Z (raw HTML sha256 9472980d614d for the curl copy; the anchor snapshot is the retained artifact). Vendor best-practice guide with no
+    measurements apart from the Opus cost figure. Its run cycle maps onto our stack: the session bus is already an inbox (per-agent files, byte cursors, id dedup, ack nudge); rowflow
+    resume and the keeper are the scheduler; taskflow and the Codex lanes lack the deferred-call/resume half. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended
+    entry for up to two Stage-2 waves.'
+- id: intake-2943
+  arxiv_id: null
+  url: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+  source_type: blog
+  title: How the Claude Code team thinks about verification (Addy Osmani, Anthropic, 2026-11-16)
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2942
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Addy Osmani
+  key_claims:
+  - End-to-end, property and differential tests are the three test types worth investing in for agent-written code.
+  - A change must not be able to modify the check that judges it.
+  - New gates start in observe mode (off, observe, enforce) with an escape valve after repeated blocks.
+  - Failing checks escalate to a human after a bounded number of fix rounds.
+  - Verifiers are graded against past incidents, with a tuning set split from a fixed test set.
+  techniques:
+  - off/observe/enforce gate modes
+  - block-twice-then-allow escape valve
+  - checks immutable from the change under test
+  - per-commit verification stamp
+  - three-round fix cap then human
+  - property and differential tests as bias breakers
+  - routine rule pruning with a promotion bar
+  reported_results:
+  - About 90% of Claude Code's code is written and reviewed by Claude (author-reported).
+  - A separate grader adds up to 10 points of task success on structured file generation (internal, no n).
+  - Reliability checklist of 39 items, usually 3 to 10 triggered per diff.
+  credibility_score: 2
+  contradicting_evidence:
+  - Its verification is tests, review and running the app; it says checks cost few extra tokens, which does not hold for our compute-bound measurement rows where each check takes scarce
+    CPU or MI210 time.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    - autokernel-loop.md
+    intake_entries:
+    - intake-2942
+    - intake-2955
+    - intake-2944
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Linked from intake-2942 Related articles. Vendor engineering post by the Claude Code team. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for
+    up to two Stage-2 waves.'
+- id: intake-2944
+  arxiv_id: null
+  url: https://claude.dev/blog/automating-eval-design-and-hillclimbing/
+  source_type: blog
+  title: Automating eval design and hillclimbing with Claude (Lance Martin, Anthropic, 2026-09-28)
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2942
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Lance Martin
+  key_claims:
+  - Hillclimbing needs a train/test split; if train improves and test is flat, revert.
+  - Failures are never pasted into the prompt and answers are kept structurally out of reach.
+  - Noise must be smaller than the smallest improvement worth acting on; a gain within noise is not merged.
+  - Graders are validated by reading transcripts and re-running the grader on the same output.
+  - A supervised hillclimb took a support benchmark from 74.4% at 4.6 cents to 98.9% at 1 cent per ticket.
+  techniques:
+  - train/test split hillclimb, one patch per round
+  - revert on train up and test flat
+  - noise check before round 1
+  - stall-triggered failure bucketing with no edit
+  - grader run twice on the same output
+  - never paste failures into the prompt
+  reported_results:
+  - 'Support benchmark, 44 tickets (30 search, 14 held out): search set 74.4% at 4.6 cents to 98.9% at 1 cent; held out 78.6% to 90.5% at about one fifth of the cost.'
+  - claude-api skill eval 66.1% to 87.9% over 24 rounds (phase 3 also fixed graders and reworded tasks).
+  credibility_score: 2
+  contradicting_evidence:
+  - The held-out gain (+11.9 points, n=14) is far smaller than the search-set headline and has no interval.
+  - Part of the 66.1% to 87.9% skill-eval gain comes from changing graders and tasks inside the loop.
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-loop.md
+    - autokernel-akx-program.md
+    intake_entries:
+    - intake-2942
+    - intake-2943
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Linked from intake-2942 (the ''building evals'' link in the Outbox section). Vendor post. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for
+    up to two Stage-2 waves.'
+- id: intake-2945
+  arxiv_id: null
+  url: https://claude.dev/blog/chaos-loop-claude-docs-launch/
+  source_type: blog
+  title: 'Using a chaos loop to harden the Claude Docs launch: 60 server errors across billions of requests (Vivek Nair, Anthropic, 2026-11-17)'
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - swarm_techniques
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2942
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - Vivek Nair
+  key_claims:
+  - A two-week autonomous load-test and fix loop on staging hardened the service, giving 60 server errors across billions of requests.
+  - Telemetry legibility (Rust, few dependencies) let the agent close the loop.
+  - Hard-to-undo decisions were reserved for the human; the rest was autonomous.
+  - The loop works because frontier models no longer drift across long runs.
+  - The effort cost about $125,000 of inference.
+  techniques:
+  - coordinator plus sub-agents loop
+  - scenario-driven saturation harness
+  - telemetry on every operation
+  - up-front approval list for irreversible decisions
+  - fixed invariants
+  - fixes behind runtime flags
+  reported_results:
+  - 2 billion requests, 60 server errors, 0 rollbacks (launch week, author-reported, uncontrolled).
+  - About 50 memory-optimized pods versus more than 500 estimated; one document 3 GB to about 180 MB.
+  - About 11 sub-agents typical, 30 at peak.
+  - About $125,000 of inference.
+  credibility_score: 1
+  contradicting_evidence:
+  - No control separates the loop's effect from the editor fixes credited in the same weeks; internal research model, not reproducible with public models.
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-loop.md
+    intake_entries:
+    - intake-2942
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Linked from intake-2942 Related articles. Single anecdotal campaign; credibility low. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for up
+    to two Stage-2 waves.'
+- id: intake-2946
+  arxiv_id: null
+  url: https://www.anthropic.com/research/components-of-agent-memory
+  source_type: blog
+  title: The components of agent memory (Lance Martin, Anthropic, 2026-11-06)
+  categories:
+  - memory_augmented
+  - context_management
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2942
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Lance Martin
+  key_claims:
+  - Memory should hold only what the agent cannot look up again; store pointers, not copies.
+  - Load a small index at session start and keep details in lower layers read on demand.
+  - Dreaming (offline reflection over transcripts) corrects, curates and restructures memory.
+  - Stronger models should be told memory exists, not how to use it.
+  - Memory notes go stale and a wrong note propagates to every session.
+  techniques:
+  - small injected index with lower layers on demand
+  - 'dreaming: offline curation against transcripts'
+  - wiki plus search
+  - one writer per page
+  - steer lightly rather than by fixed rules
+  reported_results:
+  - Wiki scaling 13% to 48% (2 to 128 sessions, 25 questions, about 350,000 files and 420M tokens).
+  - Search plus wiki 54% to 61% versus 53% search alone; wiki alone 48%; about 20,000 tokens saved per question.
+  - 'Shared page: 41 of 57 facts versus 57 of 57 with one writer per page.'
+  - Claude Code loads the first 200 lines or 25 KB of MEMORY.md.
+  credibility_score: 3
+  contradicting_evidence:
+  - Vendor evaluations on vendor models; the Pokemon comparison is one run per model.
+  - Wiki alone underperformed search plus wiki, and one wiki grew larger than its raw files.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2942
+    - intake-819
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Linked from intake-2942 as ''our post on agent memory''. Sleep-time compute (intake-819) is the independent paper behind dreaming. Integrator check 2026-11-24: the operator''s
+    auto-memory index is 97 lines and 20,039 bytes, inside the 200-line and 25 KB load window this post states. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended
+    entry for up to two Stage-2 waves.'
+- id: intake-2947
+  arxiv_id: null
+  url: https://www.anthropic.com/research/claude-code-auto-mode
+  source_type: blog
+  title: 'How we built Claude Code auto mode: a safer way to skip permissions (John Hughes, Anthropic, 2026-03-25)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2942
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - John Hughes
+  key_claims:
+  - A two-stage classifier replaces human approval prompts with a very low false-positive rate.
+  - Auto mode catches dangerous actions the user did not authorize.
+  - When blocked, the agent retries a safer path instead of halting.
+  - 'The classifier is reasoning-blind: it sees only user messages and tool calls.'
+  techniques:
+  - two-stage classifier (cheap recall-tuned filter, then reasoning on flagged calls)
+  - reasoning-blind action gating
+  - deny-and-continue with consecutive and total denial caps
+  - prompt-injection probe on tool results
+  reported_results:
+  - 'Stage 1: 8.5% FPR (n=10,000), 6.6% FNR (n=52 real overeager), 1.8% FNR (n=1,000 synthetic exfiltration).'
+  - 'Full pipeline: 0.4% FPR, 17% FNR, 5.7% FNR.'
+  - Users accept 93% of manual prompts.
+  credibility_score: 3
+  contradicting_evidence:
+  - 17% FNR on real overeager actions, which the post says is arguably a regression against careful manual approval; no independent replication.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2942
+    - intake-2948
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Linked from intake-2942 Permissions section. Vendor research post; all datasets internal. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for
+    up to two Stage-2 waves.'
+- id: intake-2948
+  arxiv_id: null
+  url: https://code.claude.com/docs/en/hooks
+  source_type: repo
+  title: 'Claude Code hooks reference: deferred tool calls and async rewake (docs, read 2026-11-24)'
+  categories:
+  - tool_implementation
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2942
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Anthropic
+  key_claims:
+  - A PreToolUse hook can return defer to pause a headless run at a tool call and resume it later.
+  - asyncRewake lets a background hook wake an idle session.
+  - Hooks can block (exit 2 or deny) or only inform.
+  techniques:
+  - PreToolUse defer plus claude -p --resume
+  - asyncRewake wake on exit 2
+  - hook decision precedence deny > defer > ask > allow
+  reported_results:
+  - 'None: reference documentation with no measurements.'
+  credibility_score: null
+  contradicting_evidence:
+  - Defer is unavailable interactively and for parallel tool calls, and resume does not restore the permission mode.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2942
+    - intake-2947
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Linked from intake-2942 (''a hook can defer a tool call''). Documentation page; credibility_score null by rubric. The page is about 1.3M characters including a JS bundle. Stage
+    1 (2026-11-24): operator pre-authorised dives on every recommended entry for up to two Stage-2 waves.'
+- id: intake-2949
+  arxiv_id: null
+  url: https://claude.dev/blog/building-effective-agent-automations/
+  source_type: blog
+  title: Building effective agent automations (Lance Martin and CJ Avilla, Anthropic, 2026-10-08)
+  categories:
+  - autonomous_research
+  - memory_augmented
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2942
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Lance Martin
+  - CJ Avilla
+  key_claims:
+  - Scheduled agents read from per-source bookmarks rather than fixed windows.
+  - A failed source read is reported as unreadable, not as a quiet day.
+  - An action counts as done only after external confirmation, and only then is the ledger updated.
+  - Preferences are re-read each run from a store the agent cannot edit.
+  techniques:
+  - bookmark per source
+  - write-ahead run record (posting, posted, maybe posted)
+  - ledger updated only after external confirmation
+  - read-only preferences re-read each run
+  - per-run spend cap that pauses
+  reported_results:
+  - 'None: no measurements.'
+  credibility_score: 2
+  contradicting_evidence:
+  - Each run is a fresh session by design, so it has no resume of an interrupted run.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2942
+    - intake-2616
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Linked from intake-2942 (''build them from the ground up''). Vendor post tied to the Managed Agents product (intake-2616). Stage 1 (2026-11-24): operator pre-authorised dives
+    on every recommended entry for up to two Stage-2 waves.'
+- id: intake-2950
+  arxiv_id: null
+  url: https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake
+  source_type: blog
+  title: An always-on agent is mostly asleep. So what's awake? (RAZ Team, 2026-11-16)
+  categories:
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2942
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - RAZ Team (edited by Mihan Tilakaratne)
+  key_claims:
+  - Vendor webhooks drop a delivery after three failed attempts, so they cannot be the inbox.
+  - A filter in front of the inbox decides cost (41 of 645 alerts reached an agent).
+  - Models are poor clocks and cache expiry makes frequent wake-ups expensive (103.7 million tokens in ten days).
+  - Deferred calls have no timeout and expire with the session after 30 days, so every parked question needs a follow-up timer.
+  techniques:
+  - own the inbox table even when the vendor offers webhooks
+  - filter before the inbox
+  - a follow-up timer per parked question
+  - wake interval chosen against cache lifetime
+  reported_results:
+  - 'All figures are uncited anecdotes: 41 of 645 alerts; 103.7 million tokens in ten days; AgentTime 4% and 63% (named, not linked); webhook three attempts then dropped (vendor doc,
+    not linked).'
+  credibility_score: 1
+  contradicting_evidence:
+  - No primary source is linked for any number.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2942
+    - intake-2953
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Found by the Stage-1 Tier-2b contradiction search on intake-2942 (query: always-on agents event inbox single worker criticism). Commentary site, single post. Stage 1 (2026-11-24):
+    operator pre-authorised dives on every recommended entry for up to two Stage-2 waves.'
+- id: intake-2951
+  arxiv_id: null
+  url: https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html
+  source_type: blog
+  title: Webhook Inboxes for AI Agents That Do Not Duplicate Side Effects (Anirudh Negi, 2026-05-29)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2942
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Anirudh Negi
+  key_claims:
+  - Webhook intake is a durable inbox with a dedupe key written before agent work; acknowledge after durable intake.
+  - Claim work with explicit states and a lease (claimed_by, claimed_until), not a boolean flag; expired leases are re-claimable.
+  - Inbox dedup is not enough; downstream side effects need idempotency keys too.
+  - Redis-only dedupe with expiring keys is weak.
+  techniques:
+  - inbox ledger unique on provider and dedupe key
+  - lease claim with claimed_until and skip-locked
+  - terminal states done, failed, dead_letter
+  - idempotency keys on downstream effects
+  reported_results:
+  - 'None: no measurements.'
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2942
+    - intake-2952
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Found by the Stage-1 Tier-2b search on intake-2942. Single-author design blog; corroborated in substance by intake-2952. Stage 1 (2026-11-24): operator pre-authorised dives
+    on every recommended entry for up to two Stage-2 waves.'
+- id: intake-2952
+  arxiv_id: null
+  url: https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/
+  source_type: blog
+  title: Outbox, Inbox patterns and delivery guarantees explained (Oskar Dudycz, 2020-12-30)
+  categories:
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2942
+  verdict: already_integrated
+  ingested_date: '2026-11-24'
+  authors:
+  - Oskar Dudycz
+  key_claims:
+  - The inbox saves the event and then acknowledges; the outbox stores outgoing messages for a background sender; both give at-least-once delivery.
+  - At-least-once delivery requires idempotent handling via a unique message id stored in the same transaction.
+  - Scaling is by per-consumer offsets and partitions, with ordering only within a partition.
+  techniques:
+  - transactional outbox
+  - inbox table
+  - idempotency by unique message id in the same transaction
+  - consumer offset row
+  - partition-key ordering
+  reported_results:
+  - 'None: no measurements.'
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2942
+    - intake-2951
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Found by the Stage-1 Tier-2b search on intake-2942. Independent distributed-systems source predating agent use. Our session bus already implements this design: per-agent append-only
+    files, byte-offset cursors, id dedup over retained history and redelivery nudges (BUS_PROTOCOL.md L28-L37, session_bus.py L1666-L1672 @ 3b11e6c). Stage 1 (2026-11-24): operator pre-authorised
+    dives on every recommended entry for up to two Stage-2 waves.'
