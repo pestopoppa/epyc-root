@@ -245,6 +245,22 @@ Throughput*.
 - **Reservation and claim queue (2026-11-24, `RESERVATION_MODE` in rowflow.py; ships `shadow`).** An urgent row (priority_rank < 10) is the keeper's drain head at once: T = the earliest time every region it needs is free (an unknown end holds from now); a lower row or claim backfills only if it ends by T or uses none of the head's resources, and a quiet head also reserves host quietness (no loud row anywhere unless it ends by T). A head the quiet gates drop, or whose smoke is pending / owner STOP set, still reserves. Logs: `RESERVE <id> at <T> needs <res>`, `BACKFILL <id> ends <t> <= <T>`; shadow adds `-SHADOW`, `WOULD-REFUSE`, `WOULD-GRANT`, `CLAIM-SHADOW`. In `enforce`, `rowflow.py claim --build [--light] ... [--rank N] [--wait S]` queues a request (`grants/requests/`), the keeper grants it in rank order (`CLAIM-GRANT`), the CLI prints the same `BUILD-GRANT` line, a timeout prints `REFUSED: QUEUED-TIMEOUT position <n> behind <id>`, and `release <req id>` withdraws a pending request. `rowflow.py list`, `status <id>` and `queue_status.py` show the head and the queue.
 - **Build pocket: a long q0-q2 row must leave short builds a pocket (2026-11-20).** filler-ak-q38fn-draftfa-window-cpu-20261119 (multi-quarter(3), 28000 s) held q0-q2 for ~7.8 h while a build claim waited >45 min (q3 is the MI210's host threads). Rule (`build_pocket_policy.json`, overridable via `allocator.json` `build_pocket`): a CPU row booking all of q0-q2 with hold > `long_hold_s` (7200 s) and no `"whole_host_need": true` (a) is not granted while a build claim waits (`BUILD-POCKET-HELD`; waiter = live region-lock FIFO ticket on q0-q2, or a `build-wait/<owner>.json` left by a refused `rowflow.py claim --build`), and (b) if `"resumable": true`, is granted with a hard end at `max_hold_s` (capcut-requeued), so the pocket reopens at each cut. A non-resumable long row is never cut. Wire a long row's declaration instead of relying on the carve-out: resumable if it checkpoints, `whole_host_need` if it truly needs q0-q2 for hours.
 
+## Batching builds behind a long quiet row (2026-11-24, pipeline-mgmt)
+
+When >= 2 build claims are queued AND a running quiet row has more than 1 h left and is `resumable`, its owner pauses the row once and opens one build window instead of letting each build wait:
+
+```
+touch <row STOP file>                                    # pause: ends rc=75 reason=stopped
+python3 scripts/coordination/rowflow/rowflow.py build-window --minutes <N<=90> --by <owner> --reason "<why>"
+# ... every queued build claim runs inside the window ...
+python3 scripts/coordination/rowflow/rowflow.py resume <row> --by <owner> --reason "<why>"   # when the window closes
+```
+
+- BUILD-INTERSTICE admits only one short build per quiet-row end; this covers the batch case.
+- SLOT-KEEP keeps the paused row's slot against lower-ranked rows during the window (+ grace, capped); a pause outside a window holds nothing.
+- Cost: the row loses its pause time. Pause only a resumable row. A STOP is a pause, not a requeue: arm an owner watcher to run `resume`.
+- The keeper proposes it (`BUILD-WINDOW-PROPOSE <row> builds=<n>`, one `build-window-proposal` alert per row per hour, with the exact command). Advisory: it never pauses a row.
+
 ## Releasing an idle grant early (2026-11-20, AutoKernel)
 
 A grant whose job is idle or finished (a leftover q2 slot, a build lane booked to 22:16Z) is released by its OWNER, not left to run to `end=`:

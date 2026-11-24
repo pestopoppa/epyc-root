@@ -8132,6 +8132,63 @@ def apply_build_interstice(flags, cands, res_base, pre_quiet, reqc, grants, allr
     return keep, rb, {"hold": hold, "until": float(a.get("until") or now)}
 
 
+# BUILD-WINDOW-PROPOSE (pipeline-mgmt 2026-11-24): >= 2 queued build claims behind ONE running quiet row that is resumable and has
+# > BUILD_WINDOW_PROPOSE_LEFT_S left. BUILD-INTERSTICE admits one build per quiet-row end; a batch needs the owner to pause the row
+# once and open `build-window`. ADVISORY ONLY: one notify.emit per (row, hour) to the row's owner; it never pauses or opens anything.
+BUILD_WINDOW_PROPOSE_MIN_BUILDS = 2
+BUILD_WINDOW_PROPOSE_LEFT_S = 3600
+BUILD_WINDOW_PROPOSED = "build_window_proposed.json"
+
+
+def build_window_propose(flags, grants, allrows, reqc, log, now=None, emit=None, dry=False):
+    """-> [(row, [builds])] proposed this call. Never acts: the only side effects are the alert and a per-hour dedupe record."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    out = []
+    if build_lane_open(flags, now)[1] == "window":
+        return out   # a window is already open: nothing to propose
+    waiting = queued_builds(flags, reqc, now)
+    if len(waiting) < BUILD_WINDOW_PROPOSE_MIN_BUILDS:
+        return out
+    sp = os.path.join(state_dir(flags), BUILD_WINDOW_PROPOSED)
+    st = load_json(sp) or {}
+    hour = int(now // 3600)
+    st = {k: v for k, v in st.items() if int(str(k).rsplit("|", 1)[-1] or 0) >= hour - 1}
+    for g in grants:
+        rid = g["id"]
+        if rid.startswith(BUILD_PREFIX) or g.get("dryrun"):
+            continue
+        d = allrows.get(rid) or load_json(ready_path(flags, rid)) or {}
+        end = iso_epoch(g.get("end")) if g.get("end") else None
+        if not (d.get("resumable") is True and _interstice_quiet(d) and end and end - now > BUILD_WINDOW_PROPOSE_LEFT_S):
+            continue
+        k = f"{rid}|{hour}"
+        if k in st:
+            continue
+        owner = str(d.get("owner") or "")
+        names = [f"{b['key']} ({b.get('minutes') or '?'} min)" for b in waiting]
+        mins = [int(b["minutes"]) for b in waiting if b.get("minutes")]
+        win = min(BUILD_WINDOW_MAX_MIN, max(15, sum(mins) + 10)) if mins else BUILD_WINDOW_MAX_MIN
+        cmd = (f"python3 scripts/coordination/rowflow/rowflow.py build-window --minutes {win} --by {owner or '<owner>'} "
+               f"--reason batch-builds-behind-{rid}")
+        msg = (f"BUILD-WINDOW-PROPOSAL {rid}: {len(waiting)} build claims wait behind it, which has {int((end - now) / 60)} min left and is "
+               f"resumable: {'; '.join(names)}. Pause it once (STOP file), then run `{cmd}`, let the claims run, then "
+               f"`rowflow.py resume {rid} --by {owner or '<owner>'} --reason <why>`. Advisory: the keeper does not pause anything")
+        try:
+            if not dry:
+                emit(flags, "build-window-proposal", rid, str(hour), msg, "warning", owner,
+                     {"builds": [b["key"] for b in waiting], "minutes": [b.get("minutes") for b in waiting], "command": cmd})
+        except Exception as ex:  # noqa: BLE001
+            log(f"BUILD-WINDOW-PROPOSE {rid}: notify failed: {type(ex).__name__}: {ex}")
+            continue
+        st[k] = now
+        out.append((rid, [b["key"] for b in waiting]))
+        log(f"BUILD-WINDOW-PROPOSE {rid} builds={len(waiting)}")
+    if not dry:
+        atomic_json(sp, st)
+    return out
+
+
 # SLOT-KEEP (pipeline-mgmt 2026-11-24): a row briefly off the grant table kept its slot from nobody. 18:30Z AK paused quiet row
 # ak-c21-census-refresh-cpu-20261124-r4 (rank 42) with build-window; the keeper granted q1 to tf1-cpu-r8h-canary (rank 100,
 # bandwidth_heavy, ~3.5 h), whose load then blocked census-r4 and draftwin-r3 (rank 40) until its owner STOPped it at 18:56Z.
@@ -9910,6 +9967,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             cands, res_base, inter_info = apply_build_interstice(flags, cands, res_base, pre_quiet, reqc, grants, allrows, log, dry=dry)
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"BUILD-INTERSTICE failed: {type(e).__name__}: {e}")
+        try:   # BUILD-WINDOW-PROPOSE: advisory only, never pauses a row
+            build_window_propose(flags, grants, allrows, reqc, log, dry=dry)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"BUILD-WINDOW-PROPOSE failed: {type(e).__name__}: {e}")
         try:   # SLOT-KEEP: a paused / republished row keeps its slot from lower-ranked rows (bounded)
             sk_holds = slot_keep_holds(flags, grants, allrows)
             cands = apply_slot_keep(flags, sk_holds, cands, allrows, log, dry=dry)

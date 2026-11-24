@@ -329,6 +329,17 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
 - **A real-lane smoke, not a fixture preflight, makes a row ready** (`references/launch-admission-gate.md`).
 - **A re-arm reassesses; it never copies the spec.** Before republishing a row after a failed or stopped run, re-derive its shape (cores/quarters, slots), its estimate and the way the prior run failed from the prior run's own evidence. SLIDERS r3 was a verbatim copy of r2 and booked about 13 h on one quarter; its first question took 5,516 s and ended `[Error] Request timed out.` (hard-coded 200 s client timeout, up to 16 concurrent calls into 2 slots). The operator objected (2026-11-09); r4 fixed the cause, used 4 slots and two quarters, and cut the estimate from 12 h to 8 h from r3's measured first question.
 
+### Batching builds behind a long quiet row: one build window (pipeline-mgmt 2026-11-24)
+
+Use when >= 2 build claims are queued (claim queue or `build_refusals.json`) AND the running quiet row has more than 1 h left and is `resumable`. The row's OWNER (never the keeper) does, once, early in the run or between blocks:
+
+1. Pause: touch the row's STOP file (manifest `stop_file`); the row ends `rc=75 reason=stopped`.
+2. `python3 scripts/coordination/rowflow/rowflow.py build-window --minutes <N, <= 90> --by <owner> --reason "<why>"`. Size N as the sum of the waiting claims' declared minutes plus margin.
+3. Every queued build claim runs inside the window (no new quiet row is granted; QUIET-RESERVE stops refusing builds).
+4. When the window closes, `rowflow.py resume <row> --by <owner> --reason "<why>"`. A STOP is a pause: nothing auto-resumes it (`OWNER_STOP_REQUEUE=False`), so arm one owner watcher on the window end.
+
+BUILD-INTERSTICE admits only ONE short build per quiet-row end, so it does not cover this case. SLOT-KEEP holds the paused row's slot against lower-ranked rows while the window is open (+ `SLOT_KEEP_GRACE_S`, capped at `SLOT_KEEP_CAP_S`); a pause outside a window holds nothing. Cost: the row loses its pause time, so pause only a resumable row (a non-resumable one restarts from zero). The keeper only SUGGESTS it: `BUILD-WINDOW-PROPOSE <row> builds=<n>` plus one `build-window-proposal` alert per (row, hour) naming the builds and the exact command; it never pauses anything.
+
 ### Releasing an idle grant early (2026-11-20)
 
 `rowflow.py release <id> --by <owner> --reason R [--regions q2,..]` is the owner-only early release for a grant (row or `build-*` claim) whose job is idle or done: refused unless `--by` is the row/build owner and no live pid (zombie = dead) runs the job; never kills. Ends the grant (`.ended rc=75 reason=released-early`, `GRANT-RELEASED`) or shrinks it to the remaining quarters; the keeper frees the cores next tick, and any grant with a `.ended` receipt holds nothing. Details: `docs/guides/agent-workflows/compute-fillers.md` -> *Releasing an idle grant early*. Do not hand-edit `grants/`.
