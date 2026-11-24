@@ -63,7 +63,7 @@ _LLM = "/mnt/raid0/llm/"
 TMP_ROOT = _LLM + "tmp"
 STORE_RX = re.compile(r"(/(?:[A-Za-z0-9._+-]+/)*kernels/(?:builds|production|candidates|experimental|quarantine)/[A-Za-z0-9._+-]+)")
 TREE_BUILD_RX = re.compile(re.escape(_LLM) + r"llama\.cpp/build(?:-hip)?/bin")
-GGUF_RX = re.compile(r"(/[^\s\"'`,;:)\]}{$]+?\.gguf)\b")
+GGUF_RX = re.compile(r"(?<![\w}).$])(/[^\s\"'`,;:)\]}{$]+?\.gguf)\b")
 SHARD_RX = re.compile(r"-(\d{5})-of-(\d{5})\.gguf$")
 KNOB_SET_RX = (re.compile(r"[\"']((?:GGML|LLAMA)_[A-Z0-9_]{2,})[\"']\s*:"),          # env dict {"GGML_X": ...}
                re.compile(r"(?<![A-Za-z0-9_])((?:GGML|LLAMA)_[A-Z0-9_]{2,})=(?!=)"),   # GGML_X=1 (sh / prose argv)
@@ -445,6 +445,8 @@ def model_files(row):
     """{primary gguf path: [all shard paths]} for every absolute GGUF path in the row's code (not prose)."""
     out = {}
     for p in sorted(set(GGUF_RX.findall(row.codetext))):
+        if not os.path.isdir("/" + p.lstrip("/").split("/", 1)[0]):
+            continue   # MDIR + '/UD-IQ4_XS/x.gguf': a suffix joined at run time, not an absolute path
         m = SHARD_RX.search(p)
         if m:
             n = int(m.group(2))
