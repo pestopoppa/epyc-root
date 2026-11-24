@@ -37,6 +37,10 @@ SCHEMA = "epyc.akloop.flow.v1"
 FLAGS = "/mnt/raid0/llm/tmp/compute-flags"
 SPOOL = "/mnt/raid0/llm/tmp/akchain-spool"
 LINEAGE = "/mnt/raid0/llm/tmp/akchain-lineage"
+INBOX = "/mnt/raid0/llm/autokernel/loop-memory/inbox"
+CENSUS = "/mnt/raid0/llm/tmp/ak-bw-census/mi210_bandwidth_census.json"
+HOLDS = os.path.normpath(os.path.join(HERE, "..", "..", "..", "handoffs", "active", "holds.yaml"))
+AK_HOLD_SESSIONS = ("autokernel-all-devices-all-dimensions", "autokernel-rebuild", "akagg")
 OWNER = "autokernel"
 ITEM_CAP = 40
 CHAIN_RX = re.compile(r"^akc-(?P<hyp>.+?)(?P<rb>-rb[0-9a-f]{7})?-(?P<stage>build|oracle-kld|ab-timing|fold-check)-\d{8}")
@@ -44,22 +48,24 @@ STAGE_NAMES = ("build", "oracle-kld", "ab-timing", "fold-check")
 
 # Node spec: the ONE place the flowchart's topology is declared (the page draws positions, not semantics).
 NODES = (
-    ("planner", "AI", "planner", "proposes a hypothesis per lane"),
+    ("inbox", "DET", "hypothesis inbox", "seeds + census surface seeds"),
+    ("planner", "AI", "planner", "hypothesis per lane; reads BW surfaces"),
     ("critic", "AI", "critic", "reviews plan and patch (bounded rounds)"),
     ("author", "AI", "author", "writes the patch in the lane worktree"),
     ("candidate", "DET", "candidate record", "spool: base sha, patch sha, hypothesis"),
-    ("build", "DET", "build", "CPU quarter q0-q2"),
+    ("build", "DET", "build", "CPU quarter q0-q2, NUMA-bound"),
     ("oracle-kld", "DET", "oracle + KLD", "correctness gate, GPU quiet-only"),
-    ("ab-timing", "DET", "A/B timing", "quiet GPU window, 88-95 held"),
-    ("fold-check", "DET", "fold check", "C-fold composite step"),
+    ("ab-timing", "DET", "A/B timing", "pre-registered pairs, futility looks"),
+    ("fold-check", "DET", "fold check", "C-fold step, keep-path timing"),
     ("gate_eval", "DET", "gate evaluator", "RESULT -> verdict, no LLM"),
-    ("file", "DET", "filed", "verdict filed (filing-done)"),
+    ("file", "DET", "filed", "verdict filed, hand-back stamped"),
     ("lineage", "DET", "lineage / fold list", "keep ledger + next composite"),
     ("rebase", "DET", "stale-base recheck", "rebase-and-recheck chain (-rb)"),
-    ("failclass", "DET", "failure routing", "harness -> pipeline inbox; candidate -> drop"),
+    ("failclass", "DET", "failure routing", "crash/vacuous -> pipeline; cand -> drop"),
+    ("census", "DET", "bandwidth census", "re-ranks surfaces; writes seed stubs"),
     ("decisions", "DET", "decisions detector", "operator/owner decisions needed"),
 )
-EDGES = (("planner", "critic"), ("critic", "author"), ("author", "candidate"), ("candidate", "build"),
+EDGES = (("inbox", "planner"), ("file", "census"), ("census", "planner"), ("planner", "critic"), ("critic", "author"), ("author", "candidate"), ("candidate", "build"),
          ("build", "oracle-kld"), ("oracle-kld", "ab-timing"), ("ab-timing", "fold-check"),
          ("fold-check", "gate_eval"), ("gate_eval", "file"), ("file", "lineage"),
          ("lineage", "rebase"), ("rebase", "build"), ("gate_eval", "failclass"), ("file", "decisions"))
@@ -144,6 +150,20 @@ def _failclass(man: dict) -> dict | None:
         return {"side": "unknown", "klass": "classifier_error", "rule": type(e).__name__}
 
 
+def ak_hold(holds: str = HOLDS) -> dict | None:
+    """The loop-launch hold covering the AK loop sessions, or None. Text scan (no yaml dep); unreadable = unknown."""
+    try:
+        txt = open(holds, encoding="utf-8").read()
+    except OSError:
+        return {"id": "unknown", "since": None, "reason": "holds.yaml unreadable (fail closed)"}
+    for blk in re.split(r"\n- id: ", "\n" + txt)[1:]:
+        if "scope: loop-launch" in blk and any(f"- {s}\n" in blk for s in AK_HOLD_SESSIONS):
+            m = re.search(r"since: '?([^'\n]+)", blk)
+            return {"id": blk.split("\n", 1)[0].strip(), "since": m.group(1) if m else None,
+                    "reason": "operator loop-launch hold: AK agent loop is not launched"}
+    return None
+
+
 def _node(owner, label, sub):
     return {"owner": owner, "label": label, "sub": sub, "count": 0, "in_flight": 0, "queued": 0,
             "done": 0, "last_event": None, "age_s": None, "state": "idle", "note": None, "items": []}
@@ -161,7 +181,8 @@ def _item(n, it):
 
 
 def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: float | None = None,
-          window_h: float = 168.0, detect=None) -> dict:
+          window_h: float = 168.0, detect=None, inbox: str = INBOX, census: str = CENSUS,
+          holds: str = HOLDS) -> dict:
     now = time.time() if now is None else now
     lo = now - window_h * 3600
     nodes = {nid: _node(o, lab, sub) for nid, o, lab, sub in NODES}
@@ -171,6 +192,35 @@ def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: f
         nodes[nid]["count"] = None
         nodes[nid]["state"] = "uninstrumented"
         nodes[nid]["note"] = "lanes report only through candidate records; no per-step signal"
+    hold = ak_hold(holds)
+    sources["hold"] = hold
+    if hold:
+        for nid in ("planner", "critic", "author"):
+            nodes[nid]["state"] = "held"
+            nodes[nid]["note"] = f"{hold['reason']} (hold {hold['id']}, since {hold['since'] or '?'})"
+
+    # hypothesis inbox (seed.py install target) -- counts what the planner will see
+    ib = sorted(glob.glob(os.path.join(inbox, "*.md")))
+    sources["inbox"] = {"path": inbox, "present": os.path.isdir(inbox), "files": len(ib)}
+    for p in ib:
+        _item(nodes["inbox"], {"id": os.path.basename(p), "state": "installed", "at": _iso(_mtime(p)), "detail": "seed file"})
+        _touch(nodes["inbox"], _mtime(p))
+    nodes["inbox"]["done"] = len(ib)
+
+    # bandwidth census (ak_runend step 4 -> census_update)
+    cz = _load(census)
+    sources["census"] = {"path": census, "present": isinstance(cz, dict)}
+    if isinstance(cz, dict):
+        cn = nodes["census"]
+        surf = cz.get("surfaces") or []
+        stale = sum(1 for x in surf if x.get("stale"))
+        cn["done"] = len(cz.get("applied") or [])
+        cn["note"] = f"{len(surf)} surfaces, {stale} stale; {len(cz.get('applied') or [])} RESULT(s) applied"
+        for x in sorted(surf, key=lambda x: -(x.get("saving_ms_per_step") or 0)):
+            _item(cn, {"id": x.get("id") or x.get("op") or "?", "state": "stale" if x.get("stale") else (x.get("status") or "open"),
+                       "at": None, "detail": f"saves {x.get('saving_ms_per_step')} ms/step"})
+        _touch(cn, _mtime(census))
+        sources["census"]["surfaces"] = len(surf)
 
     # candidate spool
     cands = sorted(glob.glob(os.path.join(spool, "cand-*.json")))
@@ -287,7 +337,7 @@ def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: f
         if n["last_event"]:
             t = _epoch(n["last_event"])
             n["age_s"] = round(now - t, 1)
-            if nid != "decisions":
+            if nid not in ("decisions", "census", "inbox"):
                 newest = t if newest is None else max(newest, t)
         if n["state"] == "idle":
             n["state"] = "active" if n["in_flight"] else ("waiting" if n["queued"] else "idle")
@@ -301,7 +351,8 @@ def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: f
             "glance": {"running": running[:ITEM_CAP], "queued": queued[:ITEM_CAP], "running_n": len(running),
                        "queued_n": len(queued), "chain_rows": sum(1 for r in rows if r["chain"]),
                        "other_rows": other, "candidates": nodes["candidate"]["count"],
-                       "decisions_n": len(decisions["events"])},
+                       "decisions_n": len(decisions["events"]),
+                       "hold": hold},
             "decisions": decisions, "sources": sources}
 
 

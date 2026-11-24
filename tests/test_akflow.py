@@ -64,7 +64,7 @@ class FlowContract(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         self.flags, self.spool, self.lin = _fixture(self.tmp)
-        self.d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=_detect)
+        self.d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=_detect, holds=os.devnull, inbox=str(self.flags / "no-inbox"), census=str(self.flags / "no-census.json"))
 
     def tearDown(self):
         shutil.rmtree(self.tmp)
@@ -108,7 +108,7 @@ class FlowContract(unittest.TestCase):
     def test_detector_failure_is_stated(self):
         def boom(*a, **k):
             raise RuntimeError("x")
-        d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=boom)
+        d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=boom, holds=os.devnull, inbox=str(self.flags / "no-inbox"), census=str(self.flags / "no-census.json"))
         self.assertFalse(d["decisions"]["present"])
         self.assertIsNone(d["nodes"]["decisions"]["count"])
 
@@ -142,7 +142,7 @@ class RenderSmoke(unittest.TestCase):
     def test_render_fixture(self):
         tmp = Path(tempfile.mkdtemp())
         try:
-            d = FS.build(*map(str, _fixture(tmp)), now=NOW, detect=_detect)
+            d = FS.build(*map(str, _fixture(tmp)), now=NOW, detect=_detect, holds=os.devnull, inbox=os.path.join(str(tmp), "ib"), census=os.path.join(str(tmp), "c.json"))
         finally:
             shutil.rmtree(tmp)
         page = (REPO / "dashboard/static/loop.html").read_text()
@@ -168,6 +168,27 @@ class RenderSmoke(unittest.TestCase):
         if art:
             Path(art).write_text("<!doctype html><meta charset=utf-8><body style='background:#0d1117;color:#c9d1d9'>"
                                  + out["g"] + out["s"] + out["i"] + "</body>")
+
+
+class HoldAndCensus(unittest.TestCase):
+    def test_held_lanes_inbox_and_census(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            t = Path(tmp)
+            (t / "holds.yaml").write_text("holds:\n- id: akagg\n  sessions:\n  - akagg\n  scope: loop-launch\n  launch_only: true\n  since: '2026-11-19T02:12:51Z'\n")
+            (t / "ib").mkdir(); (t / "ib" / "01-x.md").write_text("x")
+            (t / "c.json").write_text(json.dumps({"surfaces": [{"id": "a", "saving_ms_per_step": 2.0}, {"id": "b", "stale": True, "saving_ms_per_step": 1.0}], "applied": ["s1"]}))
+            d = FS.build(str(t / "f"), str(t / "s"), str(t / "l"), now=NOW, detect=_detect,
+                         holds=str(t / "holds.yaml"), inbox=str(t / "ib"), census=str(t / "c.json"))
+            self.assertEqual(d["nodes"]["planner"]["state"], "held")
+            self.assertEqual(d["glance"]["hold"]["id"], "akagg")
+            self.assertEqual(d["nodes"]["inbox"]["done"], 1)
+            self.assertEqual(d["nodes"]["census"]["count"], 2)
+            self.assertIn("1 stale", d["nodes"]["census"]["note"])
+            self.assertIn(["file", "census"], d["edges"])
+            # an unreadable holds file fails closed: lanes read held, never "free"
+            d2 = FS.build(str(t / "f"), str(t / "s"), str(t / "l"), now=NOW, detect=_detect,
+                          holds=str(t / "missing.yaml"), inbox=str(t / "ib"), census=str(t / "c.json"))
+            self.assertEqual(d2["nodes"]["planner"]["state"], "held")
 
 
 if __name__ == "__main__":

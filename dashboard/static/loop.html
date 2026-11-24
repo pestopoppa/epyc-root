@@ -363,6 +363,8 @@
   .infolinks{margin-left:auto;font-weight:400;font-size:11px;color:var(--muted);white-space:nowrap}
   h2 .badge + .infolinks{margin-left:6px}
   .scroll{max-height:360px;overflow:auto}
+  .flowgrid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1400px){.flowgrid{grid-template-columns:minmax(0,2.2fr) minmax(0,1fr)}}
+  .akf svg g.node.held rect{stroke-dasharray:2 3;opacity:.75}
   .pad.tight{padding-top:4px;padding-bottom:4px;margin:0}
   section > h2{flex-wrap:wrap}
   .hs-row{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline}
@@ -418,6 +420,13 @@
       <div id="champion-capabilities"></div></details>
   </section>
 
+  <section id="sec-flow" class="full akf">
+    <h2>Loop flow <span class="count">Where is the AutoKernel loop working right now? Click a stage to list its items.</span>
+      <span class="infolinks">ⓘ data <a href="/api/akflow">flow</a> · <a href="/api/akflow/health">probe</a></span></h2>
+    <div class="akf-legend pad"><span><span class="akf-sw d"></span><b>DET</b> (deterministic): code decides</span><span><span class="akf-sw a"></span><b>AI</b>: a language model does the work</span><span>thick border = running now · faded = idle · count = items in the 7-day window</span></div>
+    <div class="flowgrid"><div id="akflow-svg"></div><div><div id="akflow-glance" class="pad"></div><div id="akflow-items" class="pad scroll"></div></div></div>
+  </section>
+
   <section id="sec-needs" class="c-needs akf">
     <h2>Needs you <span class="count">What must the operator decide now?</span>
       <span class="infolinks">ⓘ data <a href="/api/akflow">decisions</a></span></h2>
@@ -460,20 +469,9 @@
   </section>
 
   <details id="sec-details" class="full">
-    <summary><strong>Details for agents</strong> <span class="count">loop flow, screens, evidence, identity, knowledge, contracts</span></summary>
+    <summary><strong>Details for agents</strong> <span class="count">screens, evidence, identity, knowledge, contracts</span></summary>
     <div id="details-note" class="pad muted">The ~1.2 MB knowledge ledger, trajectory and progression load when this is opened.</div>
     <div class="dgrid">
-      <section class="akf">
-        <h2>Loop flow <span class="count">Where is each candidate in the loop?</span>
-          <span class="infolinks">ⓘ data <a href="/api/akflow">flow</a></span></h2>
-        <div class="akf-legend pad"><span><span class="akf-sw d"></span><b>DET</b> (deterministic): code decides</span><span><span class="akf-sw a"></span><b>AI</b>: a language model does the work</span></div>
-        <div id="akflow-svg"></div>
-        <div id="akflow-glance" class="pad"></div>
-      </section>
-      <section class="akf">
-        <h2>Node items <span class="count">What is inside the selected flow node?</span></h2>
-        <div id="akflow-items" class="pad scroll"></div>
-      </section>
       <section id="sec-akx-keep-screen">
         <h2>Cross-workload keep screen <span class="count">Does each retained keep hold on other workloads?</span></h2>
         <div id="akx-keep-screen"></div>
@@ -3313,10 +3311,10 @@ function hsPaint(){const el = document.getElementById('health-strip'); if(el) el
 "use strict";
 // AK flow panel. Pure render functions (akfGlance/akfSvg/akfItems) are tested under Node
 // (tests/test_akflow.py); akfLoad is the only DOM/fetch code.
-const AKF_POS={planner:[40,60],critic:[250,60],author:[460,60],candidate:[700,60],
+const AKF_POS={inbox:[40,60],planner:[250,60],critic:[460,60],author:[670,60],candidate:[890,60],
  build:[40,210],'oracle-kld':[250,210],'ab-timing':[460,210],'fold-check':[670,210],gate_eval:[890,210],
- file:[890,350],lineage:[670,350],rebase:[460,350],failclass:[890,480],decisions:[670,480]};
-const AKF_DASH={'gate_eval>failclass':1,'file>decisions':1,'lineage>rebase':1,'rebase>build':1};
+ file:[890,350],lineage:[670,350],rebase:[460,350],census:[40,480],failclass:[890,480],decisions:[670,480]};
+const AKF_DASH={'census>planner':1,'file>census':1,'gate_eval>failclass':1,'file>decisions':1,'lineage>rebase':1,'rebase>build':1};
 function akfEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function akfAge(s){if(s==null)return '-';s=Math.round(s);return s<120?s+' s':s<7200?Math.round(s/60)+' min':s<172800?Math.round(s/3600)+' h':Math.round(s/86400)+' d';}
 function akfGlance(d){
@@ -3335,7 +3333,7 @@ function akfSvg(d,sel){
  if(!d||!d.nodes)return '';
  const W=180,H=74,box=id=>{const p=AKF_POS[id]||[0,0];return [p[0],p[1],W,H];};
  let s='<svg viewBox="0 0 1110 580" role="img" aria-label="AutoKernel loop flowchart"><defs><marker id="akar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b949e"/></marker></defs>';
- s+='<rect class="grp" x="25" y="35" width="640" height="112"/><text x="30" y="28" style="font-weight:700">LLM LANES (per candidate)</text>';
+ s+='<rect class="grp" x="235" y="35" width="640" height="112"/><text x="30" y="28" style="font-weight:700">LLM LANES (per candidate)</text>';
  s+='<rect class="grp" x="25" y="185" width="1060" height="112"/><text x="30" y="178" style="font-weight:700">ROW CHAIN on rowflow (deterministic)</text>';
  s+='<text x="30" y="330" style="font-weight:700">AFTER THE RUN</text><text x="30" y="460" style="font-weight:700">SIDE PATHS</text>';
  for(const [a,b] of (d.edges||[])){if(!AKF_POS[a]||!AKF_POS[b])continue;const A=box(a),B=box(b);const ac=[A[0]+W/2,A[1]+H/2],bc=[B[0]+W/2,B[1]+H/2];
@@ -3347,7 +3345,7 @@ function akfSvg(d,sel){
   s+=`<text class="badge bd-${ai?'AI':'DET'}" x="${x+(ai?16:6)}" y="${y+12}">${ai?'AI':'DET'}</text>`;
   s+=`<text class="cnt" x="${x+W-(ai?16:8)}" y="${y+16}" text-anchor="end">${n.count==null?'-':akfEsc(n.count)}</text>`;
   s+=`<text x="${cx}" y="${y+30}" text-anchor="middle" style="font-weight:600">${akfEsc(n.label)}</text>`;
-  const line=n.count==null?(n.state==='uninstrumented'?'not instrumented':akfEsc(n.state)):`run ${n.in_flight} · queued ${n.queued} · done ${n.done}`;
+  const line=n.count==null?(n.state==='uninstrumented'?'not instrumented':n.state==='held'?'held by operator hold':akfEsc(n.state)):`run ${n.in_flight} · queued ${n.queued} · done ${n.done}`;
   s+=`<text class="sub" x="${cx}" y="${y+47}" text-anchor="middle">${line}</text>`;
   s+=`<text class="sub" x="${cx}" y="${y+62}" text-anchor="middle">last ${n.age_s==null?'never':akfAge(n.age_s)+' ago'}</text></g>`;}
  return s+'</svg>';
