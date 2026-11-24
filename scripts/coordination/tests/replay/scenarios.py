@@ -1419,7 +1419,198 @@ def sc_b4_short_row_slot(path):
     return write(path, ticks), check
 
 
+# ---------------------------------------------------------------------------------------------- RESERVATION (2026-11-24)
+# Replays of the six c21-fold-cpu-20261124 incidents (keeper log 10:03-11:43Z). Each runs in RESERVATION_MODE enforce (the
+# tick key "reservation_mode") and checks the low-ranked row of the incident is NOT granted before the rank-9 head; the
+# shadow twin checks that shadow changes no placement (the incident still happens) but logs RESERVE-SHADOW / WOULD-REFUSE.
+_QUIET_U = {"q0": 1.0, "q1": 1.0, "q2": 1.0, "q3": 1.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}
+
+
+def _util(**over):
+    w = {k: over.pop(k) for k in ("claims", "reservation_mode") if k in over}
+    return dict(w, util=dict(_QUIET_U, **over))
+
+
+def _c21(rid, passed=True, est=7900, man=None):
+    """c21-fold-cpu-20261124-r*: rank 9, requires_quiet_host, exclusive_cpu, shape host -> q0-q2 + 72-87 (CPU-only)."""
+    return row(rid, regions="0-95", cls="cpu", claim="0-95", role="bench", extra="./bench -t 72", est=est, rank=9, passed=passed,
+               man=dict({"shape": "host", "declared_shape": "host", "baseline_ref": "replay fixture: c21 fold gate",
+                         "requires_quiet_host": True, "busy_fraction": 0.75, "exclusive_cpu": True}, **(man or {})))
+
+
+def _ak_q(rid, rank, est, quiet=True, sensitive=False):
+    """An AutoKernel quarter row (any-of q0,q1,q2, 24 threads): requires_quiet_host, or only quiet_sensitive."""
+    m = {"requires_quiet_host": True} if quiet else ({"quiet_sensitive": True} if sensitive else {})
+    return row(rid, regions="any-of q0,q1,q2", extra="./bench -t 24", est=est, rank=rank, man=dict(m, busy_fraction=1.0))
+
+
+def _pending(blob, i, smoke_s=600):
+    """A smoke-pending blob (no PASS, SMOKE-QUEUED.json); the tick index makes it re-materialize every tick."""
+    b = dict(blob)
+    b["pass"] = None
+    b["smoke_queued"] = {"id": blob["manifest"]["id"], "smoke_s": smoke_s, "tick": i}
+    return b
+
+
+def _first(d, rid):
+    g = _granted(d, rid)
+    return g[0][0] if g else None
+
+
+def _before_head(d, head, low):
+    """Violations: `low` granted on a tick before `head`'s first grant (or head never granted)."""
+    h = _first(d, head)
+    out = [] if h is not None else [f"head {head} never granted"]
+    for i, _ in _granted(d, low):
+        if h is None or i < h:
+            out.append(f"{low} granted at tick {i} while head {head} waited (head first granted at tick {h})")
+    return out
+
+
+def _mode(ticks, mode):
+    return [(r, dict(w, reservation_mode=mode)) for r, w in ticks]
+
+
+def _ticks_1003():
+    """10:03Z: c21-r1 (rank 9) runs, ends; its successor r2 is still in smoke; gdn-state-fwd-r2 (rank 100, quiet-sensitive,
+    4.9 h) took q0 until 14:55Z. A 16-core AutoKernel build claim arrived the same minute (the HEAL double-book race)."""
+    r1 = _c21("c21-fold-cpu-r1", est=2 * TICK)
+    r2 = _c21("c21-fold-cpu-r2")
+    gdn = _ak_q("ak-cpu-gdn-state-fwd-r2", 100, 17580, quiet=False, sensitive=True)
+    ticks = [({"c21-fold-cpu-r1": r1, "ak-cpu-gdn-state-fwd-r2": gdn}, _util())]
+    ticks += [({"c21-fold-cpu-r1": r1, "c21-fold-cpu-r2": _pending(r2, 1), "ak-cpu-gdn-state-fwd-r2": gdn}, _util())]
+    for i in range(2, 6):
+        w = _util(claims=[{"owner": "autokernel", "cpus": "16", "minutes": 30}]) if i == 2 else _util()
+        ticks.append(({"c21-fold-cpu-r2": _pending(r2, i), "ak-cpu-gdn-state-fwd-r2": gdn}, w))
+    ticks += [({"c21-fold-cpu-r2": r2, "ak-cpu-gdn-state-fwd-r2": gdn}, _util())] * 4
+    return ticks
+
+
+def _no_double_book(d):
+    import re as _re
+    out = []
+    for x in d:
+        rows_ = {g["id"]: set(g["holds"]) for g in x["grants"]}
+        for l in x["lines"]:
+            if not l.startswith("CLAIM-GRANT"):
+                continue
+            m = _re.search(r"holds=(\S+)", l)
+            ch = set(m.group(1).split(",")) if m else set()
+            for rid, h in rows_.items():
+                if ch & h:
+                    out.append(f"tick {x['i']}: claim {l.split()[1]} and row {rid} granted on the same tokens {sorted(ch & h)[:4]}")
+    return out
+
+
+def sc_res_1003_gdn_vs_c21_r2(path):
+    def check(d):
+        out = _before_head(d, "c21-fold-cpu-r2", "ak-cpu-gdn-state-fwd-r2") + _no_double_book(d)
+        h = _first(d, "c21-fold-cpu-r2")
+        for i, l in _lines(d, "CLAIM-GRANT"):
+            if h is None or i < h:
+                out.append(f"tick {i}: the loud build claim was granted while the quiet head waited ({l[:100]})")
+        if not _lines(d, "RESERVE c21-fold-cpu-r2"):
+            out.append("no RESERVE line for the smoke-pending head (phantom)")
+        return out
+    return write(path, _mode(_ticks_1003(), "enforce")), check
+
+
+def _ticks_noise(low, low_rid, noise):
+    """c21 head grantable; a quarter it needs reads foreign noise for 3 ticks (quiet_gate drops it), then quiet."""
+    c21 = _c21("c21-fold-cpu-r3")
+    rows_ = {"c21-fold-cpu-r3": c21, low_rid: low}
+    return [(rows_, _util(**noise))] * 3 + [(rows_, _util())] * 3
+
+
+def sc_res_1026_calib_a3b(path):
+    """10:26Z: c21-r2 dropped by quiet_gate (foreign busy on q0); calib-a3b (rank 60, quiet-sensitive, 1 h) took q0."""
+    low = _ak_q("ak-cpu-aa-calibration-q-a3b", 60, 3600, quiet=False, sensitive=True)
+
+    def check(d):
+        out = _before_head(d, "c21-fold-cpu-r3", "ak-cpu-aa-calibration-q-a3b")
+        if not _lines(d, "RESERVE c21-fold-cpu-r3"):
+            out.append("no RESERVE line for the gate-held head")
+        return out
+    return write(path, _mode(_ticks_noise(low, "ak-cpu-aa-calibration-q-a3b", {"q0": 50.0}), "enforce")), check
+
+
+def sc_res_1120_specpit_r4(path):
+    """11:20Z: c21-r3 dropped by quiet_gate (unclaimed pytest 31% on q3); specpit-r4 (rank 40, quiet, 7.7 h) took q0."""
+    low = _ak_q("ak-specpit1-t1p100-r4", 40, 28020)
+    return write(path, _mode(_ticks_noise(low, "ak-specpit1-t1p100-r4", {"q3": 31.0}), "enforce")), \
+        (lambda d: _before_head(d, "c21-fold-cpu-r3", "ak-specpit1-t1p100-r4"))
+
+
+def sc_res_1135_shadow_changes_nothing(path):
+    """Shadow twin of 11:35Z: placement is today's (a low row IS granted on q0-q2 while c21-r3 waits: RANK-SKIP with the wrong
+    T) and the reservation is only logged (RESERVE-SHADOW for c21-r3, WOULD-REFUSE for the low row)."""
+    def check(d):
+        out = []
+        lows = [r for r in ("ak-cpu-aa-calibration-q-c18-r3", "ak-specpit1-t1p095") if _granted(d, r)]
+        h = _first(d, "c21-fold-cpu-r3")
+        if not any(h is None or _first(d, r) < h for r in lows):
+            out.append("shadow changed placement: no low row was granted ahead of c21-r3 as the live keeper does")
+        if not _lines(d, "RESERVE-SHADOW c21-fold-cpu-r3"):
+            out.append("no RESERVE-SHADOW line")
+        if not any(_lines(d, f"WOULD-REFUSE {r}") for r in lows):
+            out.append("no WOULD-REFUSE line for the low row")
+        return out
+    return write(path, _mode(_ticks_1135(), "shadow")), check
+
+
+def _ticks_1135():
+    """11:35/11:39Z: q0 held by a short row (ends in 3 ticks), an unrelated GPU grant runs 3 h; c21-r3 grantable. RANK-SKIP used
+    T = the GPU grant's end (> 1 h) and calib-c18 (rank 60, 1 h) then specpit-t1p095 (rank 40, 24 h) took quarters."""
+    occ = row("rka-a3b-remeasure-r5", regions="any-of q0", extra="./bench -t 24", est=3 * TICK, rank=20)
+    gpu = row("c21-fold-gpu-r2", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=3 * 3600, rank=9,
+              extra="llama-server -t 8", man={"min_window_s": 3600})
+    c21 = _c21("c21-fold-cpu-r3")
+    c18 = _ak_q("ak-cpu-aa-calibration-q-c18-r3", 60, 3600, quiet=False, sensitive=True)
+    t1 = _ak_q("ak-specpit1-t1p095", 40, 85800)
+    first = {"rka-a3b-remeasure-r5": occ, "c21-fold-gpu-r2": gpu}
+    rest = dict(first, **{"c21-fold-cpu-r3": c21, "ak-cpu-aa-calibration-q-c18-r3": c18, "ak-specpit1-t1p095": t1})
+    return [(first, _util())] + [(rest, _util())] * 7
+
+
+def sc_res_1135_rank_skip(path):
+    def check(d):
+        return (_before_head(d, "c21-fold-cpu-r3", "ak-cpu-aa-calibration-q-c18-r3")
+                + _before_head(d, "c21-fold-cpu-r3", "ak-specpit1-t1p095"))
+    return write(path, _mode(_ticks_1135(), "enforce")), check
+
+
+def _ticks_light():
+    """11:13-11:43Z: pm-lc.sh light claims on 84-87 (15 min each, retried) kept c21-r3 (needs 72-87) unplaceable. Tick 0: one
+    claim is granted on the spot (today's path); then a new 15-min request arrives every tick, queued (enforce)."""
+    c21 = _c21("c21-fold-cpu-r3")
+    lc = [{"owner": "pipeline-mgmt", "cpus": "84-87", "minutes": 15, "light": True}]
+    ticks = [({}, _util(claims=lc, reservation_mode="shadow"))]
+    ticks += [({"c21-fold-cpu-r3": c21}, _util(claims=lc, reservation_mode="enforce")) for _ in range(13)]
+    return ticks
+
+
+def sc_res_light_claim_84_87(path):
+    def check(d):
+        out = []
+        h = _first(d, "c21-fold-cpu-r3")
+        if h is None:
+            return ["c21-r3 never granted: light claims on 84-87 kept it out"]
+        for i, l in _lines(d, "CLAIM-GRANT") + _lines(d, "CLAIM-ONSPOT"):
+            if 0 < i <= h:
+                out.append(f"tick {i}: a light claim on 84-87 was granted while c21-r3 (needs 72-87) waited: {l[:90]}")
+        if h > 9:   # the tick-0 claim ends at 15 min = 7.5 ticks; the head starts on the next tick
+            out.append(f"c21-r3 granted only at tick {h}")
+        return out + _no_double_book(d)
+    return write(path, _ticks_light()), check
+
+
 SCENARIOS = {
+    "res-1003-gdn-vs-c21-r2-smoke-pending": sc_res_1003_gdn_vs_c21_r2,
+    "res-1026-calib-a3b-gate-dropped-head": sc_res_1026_calib_a3b,
+    "res-1120-specpit-r4-noise-dropped-head": sc_res_1120_specpit_r4,
+    "res-1135-shadow-changes-nothing": sc_res_1135_shadow_changes_nothing,
+    "res-1135-1139-rank-skip-wrong-T": sc_res_1135_rank_skip,
+    "res-light-claim-84-87-queue": sc_res_light_claim_84_87,
     "build-lane-holds-quiet-grants": sc_build_lane_holds_quiet_grants,
     "b1-quiet-host-drain-leaves-gpu": sc_b1_quiet_host_drain_leaves_gpu,
     "b2-orphan-grant-released": sc_b2_orphan_grant_released,

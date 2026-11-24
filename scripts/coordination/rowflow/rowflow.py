@@ -2877,7 +2877,7 @@ def earliest_start(c, free, now, grant_ends=(), region_ends=None):
     return best, None
 
 
-def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain):
+def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain, region_ends=None, reserve=False):
     """ws58 2026-11-04 (rank inversion): the regions c may NOT take because a strictly better-ranked pending row that
     cannot be placed yet needs them and is blocked only by busy regions that free within DRAIN_MAX_WAIT_S (T = latest
     running-grant end); c may still take them when it ends by T. Returns (reserved regions, [(h, T)], [(h, reason)]) -
@@ -2892,7 +2892,17 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
         if not any(o & need for o in c["options"]):
             continue
         why = own_block(h, free, ram, gpu_grant_open, ports)
-        if why is None:
+        Th = None
+        if why is None and reserve:
+            # RESERVATION (2026-11-24 root cause C): T is h's OWN earliest start (the ends of the regions h needs), never the
+            # latest end of every running grant - at 11:35Z/11:39Z the GPU grant c21-fold-gpu-r2 (13:56Z, regions c21-fold-cpu-r3
+            # does not need) pushed T past DRAIN_MAX_WAIT_S and RANK-SKIP let rank-60/40 rows take q0
+            Th, w2 = earliest_start(h, free, now, grant_ends, region_ends)
+            if Th is None:
+                why = w2
+            elif Th - now > DRAIN_MAX_WAIT_S:
+                why = f"needs busy regions until {dt.datetime.fromtimestamp(Th, dt.timezone.utc):%H:%MZ} (> {DRAIN_MAX_WAIT_S}s)"
+        elif why is None:
             if not later:
                 why = "needs busy regions with no grant end (foreign hold)"
             elif max(later) - now > DRAIN_MAX_WAIT_S:
@@ -2900,7 +2910,7 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
         if why is not None:
             skips.append((h, why))
             continue
-        T = max(later)
+        T = Th if Th is not None else max(later)
         over = now + dur > T or now + hold_s(c) > T
         if over and not cap_ok(c, now, T):
             reserved |= need
@@ -2951,7 +2961,8 @@ def gpu_q3_guard(c):
 
 
 def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None,
-         region_ends=None, region_holders=None, gpu_queued=False, build_waiting=False, build_policy=None, stopping=(), gap_rows=None):
+         region_ends=None, region_holders=None, gpu_queued=False, build_waiting=False, build_policy=None, stopping=(), gap_rows=None,
+         reserve=False):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
@@ -2976,6 +2987,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     STOP-RESERVE (PM-STOPRES 2026-11-21): stopping = tokens held by grants whose STOP file is set (checkpointing, free within
     build_policy stopping_horizon_s); a better-ranked multi-quarter row that fits once they end reserves the already-free
     quarters (plan.stop_reserves = [(worse row, better row, regions)]); worse rows ending within the horizon may still take them.
+    RESERVATION (reserve=True; RESERVATION_MODE shadow/enforce, 2026-11-24): an URGENT row (rank < URGENT_RANK) is the drain head
+    at once - no DRAIN_AFTER_S wait, no 2 h deferral, any size when quiet or held (cand "hold"), T from reservation_start (an
+    unknown end holds from now); a QUIET head (cand "quiet") also reserves host quietness: a loud backfill (cand "loud") on ANY
+    region is admitted only when it ends by T (capped there). rank_reservation uses the better row's own earliest start.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
     now = time.time() if now is None else now
     free = set(free)
@@ -3026,11 +3041,12 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             return None
     # PM-DRAINFIX 2026-11-22: a drain formed on an earlier tick (persisted T still ahead) is considered FIRST and is not
     # dropped for a better-ranked row (drain_blocker), so its T can never slide later
-    for c in sorted(pending, key=lambda c: _prev_T(c) is None):
+    for c in sorted(pending, key=lambda c: ((not reservation_head_ok(c, reserve)), _prev_T(c) is None)):
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
         sticky_T = _prev_T(c)
-        if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
-            if row_busy(c) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row never books a quiet/whole host
+        urgent_head = reservation_head_ok(c, reserve)   # RESERVATION: an urgent row drains at once (root cause D)
+        if urgent_head or (big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S)):
+            if row_busy(c) < DRAIN_MIN_BUSY and not urgent_head:   # operator 2026-11-03: a mostly idle row never books a quiet/whole host
                 plan.drain_lowbusy.append(c)
                 continue
             # PM-INVERSION 2026-11-20: build-pocket-held rows still outrank a drain target - they are off the plan only
@@ -3041,7 +3057,13 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 plan.drain_held.append((c, blocker))
                 continue
             pending.remove(c); pending.insert(0, c)   # the drain row goes FIRST: at T it takes the host before any quarter row
-            if not _fits(c, free, ram, gpu_grant_open):
+            if not _fits(c, free, ram, gpu_grant_open) and urgent_head:
+                S, why = reservation_start(c, free, now, region_ends), None
+                if sticky_T is not None:
+                    S = min(S, sticky_T)
+                    c["drain_sticky"] = True
+                drain, T = c, S
+            elif not _fits(c, free, ram, gpu_grant_open):
                 S, why = earliest_start(c, free, now, grant_ends, region_ends)
                 prev = (drain_prev or {}).get(c["id"])
                 if S is not None and prev and now < float(prev) < S:   # T only moves earlier; an EXPIRED T never blocks
@@ -3064,6 +3086,11 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             break
     plan.last_drain = (drain, T) if drain else None
     need_r = set().union(*drain["options"]) if drain is not None else set()
+    qhead = bool(reserve and drain is not None and drain.get("quiet"))   # RESERVATION: host quietness is the head's resource too
+    plan.backfills = []   # [(row, end, T)]: rows placed while a head reservation stands (RESERVATION logging)
+
+    def _qlate(c):
+        return qhead and c is not drain and c.get("loud") and drain_outranks(c, drain) and (now + book_s(c) > T or now + hold_s(c) > T)
     if drain is not None:  # best fit: the longest backfill that still ends by T goes first, so the gap is packed
         dur = book_s
         pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (drain_outranks(c, drain), now + dur(c) > T, -dur(c)))
@@ -3083,12 +3110,15 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             opts = _fits(c, free, ram, gpu_grant_open)
             if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
                 opts = [o for o in opts if not (o & need_r)]
+            if _qlate(c) and not cap_ok(c, now, T):   # RESERVATION: a loud row would end after a quiet head's T: no region at all
+                opts = []
             if dfr_T is not None and (now + book_s(c) > dfr_T or now + hold_s(c) > dfr_T) and not cap_ok(c, now, dfr_T):
                 opts = [o for o in opts if not (o & dfr_r)]   # would end beyond the horizon: off the deferred target's regions
             if ports & {int(x) for x in (c.get("ports") or [])}:
                 continue  # its port is held by a running grant: it waits
             if opts:   # ws58 2026-11-04: never hand a lower-ranked row regions a better-ranked row is waiting for
-                reserved, holds, skips = rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain)
+                reserved, holds, skips = rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain,
+                                                          region_ends=region_ends, reserve=reserve)
                 kept = [o for o in opts if not (o & reserved)]
                 if len(kept) < len(opts):
                     plan.rank_holds += [(c, h, T) for h, T in holds if (c, h, T) not in plan.rank_holds]
@@ -3143,6 +3173,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         caps = [t for rid, need, t in plan.caps if rid == c["id"] and need & o]
         if drain_outranks(c, drain) and (now + hold_s(c) > T or now + book_s(c) > T) and o & need_r:
             caps.append(T)
+        if _qlate(c):
+            caps.append(T)
         if dfr_T is not None and (now + hold_s(c) > dfr_T or now + book_s(c) > dfr_T) and o & dfr_r:
             caps.append(dfr_T)
         ge = (gap_rows or {}).get(c["id"])   # B4 SHORT-ROW-SLOT: the grant ends where the gap ends
@@ -3159,6 +3191,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             continue
         if caps:
             plan.hard_end[c["id"]] = min(caps)
+        if reserve and drain is not None and c is not drain and drain_outranks(c, drain):
+            plan.backfills.append((c, min(caps) if caps else now + max(book_s(c), hold_s(c)), T,
+                                   bool(o & need_r) or bool(_qlate(c))))
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
         ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
@@ -3268,6 +3303,7 @@ plan.hard_end = {}
 plan.build_held = []
 plan.idle_entries = {}
 plan.build_held_rows = []
+plan.backfills = []
 
 
 def quiet_ok_now(flags, now=None):
@@ -3395,6 +3431,13 @@ def status(flags, rid, allrows=None, util=None):
     hostutil measurement, `util` (measured % of those regions). A grant is never reported as work: only `util` is."""
     st = _status_raw(flags, rid, allrows)
     st["next"] = next_action(st, flags, rid)
+    try:   # RESERVATION: the head (or a row the reservation would refuse) sees when it starts
+        rec = load_json(os.path.join(state_dir(flags), RESERVATION_STATE)) or {}
+        if rec.get("id") and time.time() - float(rec.get("ts") or 0) <= RESERVATION_FRESH_S:
+            st["reservation"] = (f"{rec['mode']}: head {rec['id']} (rank {rec.get('rank', 0):g}) starts by {rec.get('T_iso')} "
+                                 f"needs {reservation_needs_text(rec)}" + (" - THIS ROW" if rec["id"] == rid else ""))
+    except Exception:  # noqa: BLE001 - a status read never fails on the reservation
+        pass
     st["logs"] = dry_dir(flags, rid)
     if st["state"] == "running":
         held, g = None, None
@@ -6496,7 +6539,7 @@ def gpu_rows_waiting_on_q3(flags, grants, allrows, free):
     return out
 
 
-def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None):
+def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, queued=False):
     """LIGHT claim (see LIGHT TEST CLAIM). Refusals raise Refused('LIGHT-REFUSED <reason>') and are logged to the keeper log."""
     def refuse(why):
         msg = f"LIGHT-REFUSED {why}"
@@ -6516,12 +6559,13 @@ def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants
     grants = open_grants(flags) if grants is None else grants
     allrows = rows(flags) if allrows is None else allrows
     t_now = time.time() if now is None else now
-    held = [g["id"] for g in grants if is_light_build(flags, g["id"])]
-    if held:
-        refuse(f"another light claim is open ({held[0]}); one light claim at a time host-wide")
-    uq = urgent_whole_host_quiet(flags, grants, allrows, t_now)
-    if uq:   # coordinator 2026-11-24 11:25Z: a light claim on 84-87 kept c21-fold-cpu-r3's whole-host grant (needs c72-87) out
-        refuse(f"urgent-quiet-pending {uq}")
+    if not queued:   # CLAIM QUEUE (enforce): the keeper's plan orders claims; these on-the-spot patches are subsumed
+        held = [g["id"] for g in grants if is_light_build(flags, g["id"])]
+        if held:
+            refuse(f"another light claim is open ({held[0]}); one light claim at a time host-wide")
+        uq = urgent_whole_host_quiet(flags, grants, allrows, t_now)
+        if uq:   # coordinator 2026-11-24 11:25Z: a light claim on 84-87 kept c21-fold-cpu-r3's whole-host grant (needs c72-87) out
+            refuse(f"urgent-quiet-pending {uq}")
     for g in grants:   # AutoKernel run_quiet rejects contended launches and retries after 90 s: a marker < 10 min old = hands off
         if g["id"].startswith(BUILD_PREFIX):
             continue
@@ -6552,6 +6596,8 @@ def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants
         both = want_tokens & expand(g["holds"])
         if both:
             refuse(f"{compress_cpus({int(x[1:]) % 96 for x in both if x[0] in 'ct'})} already held by {g['id']}")
+    if not queued:
+        claim_reservation_check(flags, want_tokens, minutes, True, owner, s, now=t_now)
     t = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
     gid = _new_build_id(flags, owner, t)
     cl = tokens_cpus(part)
@@ -6569,7 +6615,8 @@ def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants
     return gid, line
 
 
-def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None, light=False):
+def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None, light=False,
+                queued=False):
     """CLAIM-ID 2026-11-21 (AK, D9 standing ack): two concurrent `claim --build --cpus 72-87` calls in the same UTC second both
     read the same free snapshot, both passed the checks, both minted build-<owner>-<second> and the second write_grant
     os.replace()d the first's grant: one id, two claimants, and the first release freed cores the second was still building on.
@@ -6582,10 +6629,12 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
     try:
         fcntl.flock(fd, fcntl.LOCK_EX)   # blocking: claims are short; serialising them is the point
         if light:
-            return _claim_light_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free)
+            return _claim_light_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free, queued=queued)
         try:
-            r = _claim_build_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free, wait_pid)
+            r = _claim_build_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free, wait_pid, queued=queued)
         except Refused:
+            if queued:
+                raise
             try:
                 record_build_refusal(flags, owner, cpus, now)
             except Exception:  # noqa: BLE001 - bookkeeping never changes the refusal
@@ -6614,7 +6663,8 @@ def _new_build_id(flags, owner, t):
     raise Refused("BUILD-REFUSED: could not mint a unique build grant id")
 
 
-def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None):
+def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None,
+                        queued=False):
     """`rowflow.py claim --build`: a short `build` grant (--cpus 72-87 or a count that finds no q0-q2 room = the q3 pocket, never
     88-95/184-191, never gpu-quiet; see Q3-POCKET BUILD) (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
     is a lane the planner sees instead of contamination. cpus = a count (<= 24: the first whole-free quarter q0-q2)
@@ -6633,8 +6683,8 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
     need(not qrun, f"BUILD-REFUSED: quiet-host row {','.join(qrun)} is running (DRAM-wide quiet needed); a build claim is "
                    "bandwidth-heavy - retry when it ends")
     lane, _lk = build_lane_open(flags, now)
-    qres_rows = [] if lane else quiet_reserve_blocks_build(flags)   # BUILD LANE: the reserve stops refusing builds
-    if lane:
+    qres_rows = [] if (lane or queued) else quiet_reserve_blocks_build(flags)   # BUILD LANE / CLAIM QUEUE: no QUIET-RESERVE refusal
+    if lane and not queued:
         _keeper_log_line(flags, f"BUILD-LANE open for {lane}: QUIET-RESERVE does not refuse build claim {owner} {cpus}")
     need(not qres_rows, f"BUILD-REFUSED: QUIET-RESERVE - quiet-host row(s) {','.join(qres_rows)} wait for a quiet host; a build claim is "
                         f"bandwidth-heavy - retry when they run (reserve self-releases after {quiet_reserve_max_s(flags) / 60:.0f} min)")
@@ -6700,6 +6750,8 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
         both = want_tokens & expand(g["holds"])
         need(not both, f"BUILD-REFUSED: {compress_cpus({int(x[1:]) % 96 for x in both if x[0] in 'ct'}) or ','.join(sorted(both))} "
                        f"already held by {g['id']}; a second claim on the same cores is refused while it holds them")
+    if not queued:
+        claim_reservation_check(flags, want_tokens, minutes, False, owner, s, now=time.time() if now is None else now)
     gid = _new_build_id(flags, owner, t)
     _rm(os.path.join(flags, BUILD_WAIT_DIR, f"{owner}.json"))
     if part:   # core-granular hold: explicit cpus + core/thread tokens, so the rest of the quarter stays claimable
@@ -8351,6 +8403,340 @@ def region_end_map(flags, grants, busy, now=None):
     return out
 
 
+# ---------------------------------------------------------------- RESERVATION (operator 2026-11-24 "start the reservation scheduler now")
+# The EASY-backfill reservation IS the existing DRAIN / BACKFILL-IF-FITS machinery (plan: one head, T = its earliest start,
+# a lower row backfills only when it ends by T or stays off the head's regions; grant end capped at T). It did not protect the
+# rank-9 c21-fold-cpu-20261124-r2/r3 gate on 2026-11-24 (six quarters lost for hours) because the urgent head never reached
+# it, or reached it with the wrong T:
+#   A  a row whose smoke is pending (or whose owner STOPped it to republish) is not a candidate (runnable() = PASSed only):
+#      10:03Z gdn-state-fwd-r2 (rank 100) took q0 until 14:55Z while r2 smoked; 11:12Z rka-a3b-d-remeasure-r5 (STOP-held r2).
+#   B  the quiet gates (quiet_gate foreign-busy / NUMA side / QUIET-SERIAL, BUILD-LANE, foreign_server_gate) REMOVE a quiet
+#      row from the candidate list, so the planner never forms its drain: 10:26Z calib-a3b (r2 dropped: foreign busy on q0 +
+#      BUILD-LANE), 11:20Z specpit-r4 for 7.7 h (r3 dropped: unclaimed pytest noise 31% on q3).
+#   C  rank_reservation took T = the latest end of ALL running grants: the GPU grant (13:56Z) that c21-fold-cpu-r3 does not
+#      need pushed T past DRAIN_MAX_WAIT_S -> RANK-SKIP at 11:35Z (calib-c18) and 11:39Z (specpit-t1p095, 24 h window).
+#   D  a host-shape row becomes a drain target only after DRAIN_AFTER_S (1 h) of waiting since its PASS.
+#   E  light / build claims never ask the planner: a 15-min light claim on 84-87 kept r3 (needs 72-87) unplaceable at 11:19Z.
+# Fix (RESERVATION_MODE): A - an urgent pending row enters the planner as a phantom candidate (never placeable: a hold token
+# whose end is its smoke budget); B - an urgent row a gate dropped stays in as a hold candidate (hold end = the latest end of
+# the loud grants, else one tick: unknown = hold from now); C - rank_reservation uses earliest_start on the better row's own
+# regions; D - an urgent row is the drain head at once; E - the head is persisted (reservation.json) and claims check it
+# (REFUSED: RESERVED-FOR <id> until <T>). A quiet head also reserves host quietness (plan: cand "loud").
+# shadow: the reservation plan runs beside the live plan, logs RESERVE-SHADOW / BACKFILL-SHADOW / WOULD-REFUSE, changes nothing.
+# enforce: the reservation plan IS the live plan, and the patch rules it subsumes are bypassed: QUIET-RESERVE (+ its build
+# refusal), QUIET-URGENT-PENDING / -WAITING, the light-claim urgent-quiet refusal, BUILD-LANE holding an urgent row.
+RESERVATION_MODE = "shadow"          # off | shadow | enforce   (enforce: operator decision after the shadow soak)
+RESERVATION_STATE = "reservation.json"
+RESERVATION_FRESH_S = 300            # a claim honours a persisted head only this long after the keeper wrote it
+RESERVE_TICK_S = 120                 # "unknown end": the hold is re-decided next tick (hold from now)
+RESERVE_HOLD_MAX_S = 5400            # anti-starvation: a gate hold (noise / loud host) on one head lapses after 90 min
+HOLD_PREFIX = "hold:"                # planner-only token hold:<id>: never free; its region_end is when the hold is re-decided
+
+
+def reservation_mode():
+    m = str(RESERVATION_MODE or "off").strip().lower()
+    return m if m in ("off", "shadow", "enforce") else "off"
+
+
+def reservation_head_ok(c, reserve):
+    """An urgent (rank < URGENT_RANK) candidate that is not failing to arm is the reservation head (plan reserve=True)."""
+    return bool(reserve) and float(c["rank"]) < URGENT_RANK and not int(c.get("arm_fails") or 0)
+
+
+def reservation_start(c, free, now, region_ends=None):
+    """T of an urgent head: over its options, the earliest time every missing token is free (region_ends; a token with no
+    known end - foreign hold, open-ended claim - holds from now: now + RESERVE_TICK_S). Never before now + RESERVE_TICK_S."""
+    best = None
+    for o in c["options"]:
+        ends = [(region_ends or {}).get(t) for t in (o - free)]
+        s = max([now + RESERVE_TICK_S if e is None else float(e) for e in ends] or [now])
+        best = s if best is None else min(best, s)
+    return max(best if best is not None else now, now + RESERVE_TICK_S)
+
+
+def _loud_row(d, c):
+    return not gpu_lane_cand(c) and (bandwidth_heavy(d) or quiet_sensitive(d))
+
+
+def reservation_cands(flags, pre, post, grants, allrows, qlines=None, now=None, hold_since=None):
+    """-> (cands, region_ends additions {hold token: end}, new hold_since {rid: first held}). post = the candidates every gate
+    kept, annotated quiet/loud; every URGENT row of `pre` a gate dropped comes back holding hold:<id> (root cause B); every
+    urgent quiet row whose smoke is pending or whose owner STOP is set enters as a phantom (root cause A)."""
+    now = time.time() if now is None else now
+    hold_since = dict(hold_since or {})
+
+    def man(rid):
+        return allrows.get(rid) or load_json(ready_path(flags, rid)) or load_json(os.path.join(dry_dir(flags, rid), "unpublished.json")) or {}
+
+    def ann(c):
+        d = man(c["id"])
+        return dict(c, quiet=bool(quiet_sensitive(d) or c.get("shape") == "quiet-host") and not gpu_lane_cand(c), loud=_loud_row(d, c))
+    out = [ann(c) for c in post]
+    have = {c["id"] for c in out}
+    ends, seen = {}, {}
+    loud_end = None
+    for g in grants:   # the host is loud until the last loud grant ends (non-light build claims, heavy or quiet rows)
+        if g["id"].startswith(BUILD_PREFIX):
+            loud = not is_light_build(flags, g["id"])
+        else:
+            loud = _loud_row(man(g["id"]), {"options": [set(g.get("holds") or ())], "lane": man(g["id"]).get("lane")})
+        e = iso_epoch(g.get("end"))
+        if loud and e and e > now:
+            loud_end = e if loud_end is None else max(loud_end, e)
+
+    def hold(c, end, why):
+        rid = c["id"]
+        since = float(hold_since.get(rid) or now)
+        seen[rid] = since
+        if now - since > RESERVE_HOLD_MAX_S:
+            return None
+        tok = HOLD_PREFIX + rid
+        ends[tok] = max(float(end), now + RESERVE_TICK_S)
+        return dict(ann(c), options=[frozenset(set(o) | {tok}) for o in c["options"]], hold=why)
+    for c in pre:
+        if c["id"] in have or float(c["rank"]) >= URGENT_RANK:
+            continue
+        why = str((qlines or {}).get(c["id"]) or "gate")
+        h = hold(c, loud_end if (loud_end and ann(c)["quiet"]) else now + RESERVE_TICK_S, why)
+        if h:
+            out.append(h); have.add(c["id"])
+    try:
+        pend = urgent_quiet_pending(flags, grants, now)
+    except Exception:  # noqa: BLE001 - an unreadable smoke record never stops allocation
+        pend = []
+    try:
+        sup = superseded_index(flags)
+    except Exception:  # noqa: BLE001
+        sup = {}
+    G = os.path.join(flags, "grants")
+    for rid, rank, since, budget in pend:
+        if rid in have or now - since > (2 * budget if budget else QUIET_URGENT_PENDING_DEFAULT_S):
+            continue
+        if sup.get(rid) or any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete")):
+            continue   # a STOPped predecessor that ended or was superseded will never run: it reserves nothing
+        d = man(rid)
+        try:
+            k = contract_of(d, flags=flags)
+        except Exception:  # noqa: BLE001 - an unparsable pending row reserves nothing
+            continue
+        c = {"id": rid, "kind": "grant", "lane": d.get("lane") or "cpu", "rank": rank, "lane_count": 0, "gib": int(d.get("gib") or 0),
+             "bench": k["bench"], "options": k["options"], "shape": k["shape"], "window_s": int(d.get("window_s") or 0),
+             "estimate_s": int(d.get("estimate_s") or 0), "min_window_s": int(d.get("min_window_s") or 0), "book_s": int(book_s(d)),
+             "since": since, "ports": list(d.get("ports") or []), "arm_fails": 0, "busy_fraction": d.get("busy_fraction"),
+             "threads": k["threads"], "explicit": bool(k["explicit_cpus"]), "cpu_only": bool(k.get("cpu_only")), "phantom": True}
+        h = hold(c, since + (budget or SMOKE_HOLD_S), "smoke pending / owner STOP")
+        if h:
+            out.append(h); have.add(rid)
+    return out, ends, seen
+
+
+def reservation_record(head, T, need, mode, now=None):
+    """The persisted head (state_dir/reservation.json): what claims and status read."""
+    now = time.time() if now is None else now
+    if head is None:
+        return {"mode": mode, "ts": now, "id": None}
+    return {"mode": mode, "ts": now, "id": head["id"], "rank": float(head["rank"]), "T": float(T),
+            "T_iso": dt.datetime.fromtimestamp(float(T), dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
+            "tokens": compress({t for t in need if not t.startswith(HOLD_PREFIX) and t != GPU_BLOCKED}), "quiet": bool(head.get("quiet")),
+            "hold": head.get("hold") or "", "phantom": bool(head.get("phantom"))}
+
+
+def reservation_needs_text(rec):
+    toks = set(rec.get("tokens") or ())
+    return ",".join(compress(toks)) + (" +host-quiet" if rec.get("quiet") else "")
+
+
+def reservation_refusal(flags, tokens, end, light=False, now=None):
+    """None, or 'RESERVED-FOR <id> until <T>' when a NEW claim on `tokens` ending at `end` would delay the persisted head:
+    it overlaps the head's tokens, or (quiet head) it is a non-light claim anywhere - and it ends after T."""
+    now = time.time() if now is None else now
+    rec = load_json(os.path.join(state_dir(flags), RESERVATION_STATE)) or {}
+    if not rec.get("id") or now - float(rec.get("ts") or 0) > RESERVATION_FRESH_S:
+        return None
+    T = float(rec.get("T") or 0)
+    if T <= now or float(end) <= T:
+        return None
+    hit = expand(set(tokens)) & expand(set(rec.get("tokens") or ()))
+    if hit or (rec.get("quiet") and not light):
+        return f"RESERVED-FOR {rec['id']} until {rec.get('T_iso')}"
+    return None
+
+
+def claim_reservation_check(flags, tokens, minutes, light, owner, cpus, now=None):
+    """Claim path (root cause E): enforce -> raise Refused('REFUSED: RESERVED-FOR ...'); shadow -> log WOULD-REFUSE only."""
+    mode = reservation_mode()
+    if mode == "off":
+        return
+    now = time.time() if now is None else now
+    why = reservation_refusal(flags, tokens, now + 60 * int(minutes), light=light, now=now)
+    if not why:
+        return
+    if mode == "enforce":
+        msg = f"{why} ({'light' if light else 'build'} claim {owner} cpus={cpus} for {minutes} min ends after it)"
+        _keeper_log_line(flags, "REFUSED: " + msg)
+        raise Refused(msg)
+    rec = load_json(os.path.join(state_dir(flags), RESERVATION_STATE)) or {}
+    _keeper_log_line(flags, f"CLAIM-SHADOW {owner} cpus={cpus} {minutes} min would wait for {rec.get('T_iso') or '?'} behind "
+                            f"{rec.get('id') or '?'} ({why}; shadow: granted now)")
+
+
+def reservation_log(flags, drain, backfills, sfx, log, persist=True):
+    """RESERVE<sfx> <id> at <T> needs <resources> once per change; BACKFILL<sfx> <id> ends <t> <= <T> (or: off the head's
+    resources) once per row and head."""
+    cur, bf = {}, {}
+    if drain:
+        c, T = drain
+        need = set().union(*c["options"]) if c.get("options") else set()
+        rec = reservation_record(c, T, need, "")
+        why = (" (" + ("phantom: smoke pending / owner STOP" if c.get("phantom") else f"hold: {str(c.get('hold'))[:120]}") + ")"
+               if c.get("phantom") or c.get("hold") else "")
+        if float(T) - time.time() <= RESERVE_TICK_S + 30:   # held from now: T moves with the clock, the line does not repeat
+            cur[f"{c['id']}@now"] = f"RESERVE{sfx} {c['id']} at now (held from now, re-decided each tick) needs {reservation_needs_text(rec)}{why}"
+        else:
+            cur[f"{c['id']}@{rec['T_iso']}"] = f"RESERVE{sfx} {c['id']} at {rec['T_iso']} needs {reservation_needs_text(rec)}{why}"
+        Ti = rec["T_iso"]
+        for x, end, _T, touches in backfills:
+            e = dt.datetime.fromtimestamp(end, dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
+            bf[f"{x['id']}@{c['id']}"] = (f"BACKFILL{sfx} {x['id']} ends {e} <= {Ti}" if touches or end <= _T + 60
+                                          else f"BACKFILL{sfx} {x['id']} ends {e}: uses none of {c['id']}'s resources")
+    log_transition(flags, "reserve" + sfx.lower(), cur, log, persist=persist)
+    log_transition(flags, "backfill" + sfx.lower(), bf, log, persist=persist)
+
+
+# CLAIM QUEUE (operator-confirmed 2026-11-24, enforce only): `claim --build [--light]` writes a REQUEST
+# grants/requests/<req id>.json and waits; the allocator ranks requests with rows in ONE plan (same plan_order, same head
+# reservation T, same backfill test now + minutes <= T or disjoint, never a pre-emption) and grants a placed one through
+# claim_build(queued=True) under grants/.claim.lock, writing requests/<req id>.result.json. The CLI prints the grant line as
+# before; on --wait timeout it prints REFUSED: QUEUED-TIMEOUT position <n> behind <id> and withdraws its request.
+CLAIM_REQ_DIR = "requests"
+CLAIM_REQ_PREFIX = "req-"
+CLAIM_RANK_DEFAULT = 50
+CLAIM_WAIT_DEFAULT_S = 900
+CLAIM_POLL_S = 2.0
+
+
+def claim_req_dir(flags):
+    p = os.path.join(flags, "grants", CLAIM_REQ_DIR)
+    os.makedirs(p, exist_ok=True)
+    return p
+
+
+def request_claim(flags, owner, cpus, minutes, light=False, rank=None, pid=None, now=None):
+    """Write a claim REQUEST (validated like a claim: owner, cpus syntax, minutes bound). Returns the request id."""
+    need(owner and re.fullmatch(r"[\w.-]+", owner), "claim --build needs --owner <roster id>")
+    lim = LIGHT_MAX_MINUTES if light else BUILD_MAX_MINUTES
+    need(isinstance(minutes, int) and 1 <= minutes <= lim, f"--minutes must be 1..{lim}")
+    s = str(cpus).strip()
+    need(re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", s), f"--cpus {s!r}: a count or a literal cpu list")
+    if light:
+        need(build_cpu_set(s) <= LIGHT_CORES and len(build_cpu_set(s)) <= LIGHT_MAX_CPUS, f"--cpus {s}: a light claim is <= 4 cores within 84-87")
+    now = time.time() if now is None else now
+    rid = f"{CLAIM_REQ_PREFIX}{owner}-{dt.datetime.fromtimestamp(now, dt.timezone.utc):%Y%m%dT%H%M%SZ}-{os.urandom(3).hex()}"
+    rec = {"id": rid, "owner": owner, "cpus": s, "minutes": int(minutes), "light": bool(light),
+           "rank": float(CLAIM_RANK_DEFAULT if rank is None else rank), "requested_at": now,
+           "requested_iso": dt.datetime.fromtimestamp(now, dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+           "pid": int(pid if pid is not None else os.getpid())}
+    atomic_json(os.path.join(claim_req_dir(flags), rid + ".json"), rec)
+    _keeper_log_line(flags, f"CLAIM-REQUEST {rid} cpus={s} {minutes} min rank={rec['rank']:g}{' light' if light else ''}")
+    return rid
+
+
+def claim_requests(flags, prune=False):
+    """Pending requests (no result yet), oldest first. prune: a request whose waiting pid is dead is withdrawn."""
+    out = []
+    for p in sorted(glob.glob(os.path.join(claim_req_dir(flags), CLAIM_REQ_PREFIX + "*.json"))):
+        if p.endswith(".result.json"):
+            continue
+        r = load_json(p) or {}
+        if not r.get("id") or os.path.exists(p[:-5] + ".result.json"):
+            continue
+        if prune and r.get("pid") and not _pid_live(int(r["pid"])):
+            _rm(p)
+            _keeper_log_line(flags, f"CLAIM-WITHDRAWN {r['id']}: requesting pid {r['pid']} is gone")
+            continue
+        out.append(r)
+    return sorted(out, key=lambda r: (float(r.get("requested_at") or 0), r["id"]))
+
+
+def request_options(r):
+    """Planner options of a request: a literal list -> its tokens; a count -> each whole quarter q0-q2 (+ the q3 pocket when
+    it fits there)."""
+    s = str(r["cpus"])
+    if re.fullmatch(r"\d+", s):
+        n = int(s)
+        opts = [frozenset({q}) for q in QUARTERS[:3]]
+        if n <= BUILD_Q3_POCKET_CORES:
+            opts.append(frozenset({f"c{k}" for k in range(72, 72 + n)} | {f"t{k + 96}" for k in range(72, 72 + n)}))
+        return opts
+    return [frozenset(cpu_tokens(s))]
+
+
+def request_cand(r, lane_count=0):
+    m = int(r["minutes"]) * 60
+    return {"id": r["id"], "kind": "claim", "lane": "cpu", "rank": float(r.get("rank") or CLAIM_RANK_DEFAULT), "lane_count": lane_count,
+            "gib": 0, "bench": False, "options": request_options(r), "shape": "claim", "window_s": m, "estimate_s": m,
+            "min_window_s": m, "book_s": m, "since": r.get("requested_at"), "ports": [], "arm_fails": 0,   # never capped short
+            "busy_fraction": 1.0, "threads": None, "explicit": True, "cpu_only": True,
+            "loud": not r.get("light"), "quiet": False, "request": r}
+
+
+def grant_request(flags, r, opt, log=print):
+    """Grant placed request r on planner option opt via claim_build(queued=True); writes requests/<id>.result.json."""
+    qs = [q for q in QUARTERS if q in opt]
+    cpus = ",".join(cpu_list(q) for q in qs) if qs else compress_cpus({int(t[1:]) for t in opt if re.fullmatch(r"c\d+", t)})
+    gid, line = claim_build(flags, r["owner"], cpus, int(r["minutes"]), log=log, light=bool(r.get("light")), queued=True)
+    atomic_json(os.path.join(claim_req_dir(flags), r["id"] + ".result.json"), {"id": r["id"], "gid": gid, "line": line, "at": now_iso()})
+    _rm(os.path.join(claim_req_dir(flags), r["id"] + ".json"))
+    return gid, line
+
+
+def claim_queue_position(flags, rid):
+    """(1-based position among pending requests by rank then age, the head row id or the request ahead) for a timeout line."""
+    reqs = claim_requests(flags)
+    order = sorted(reqs, key=lambda r: (float(r.get("rank") or CLAIM_RANK_DEFAULT), float(r.get("requested_at") or 0)))
+    ids = [r["id"] for r in order]
+    pos = ids.index(rid) + 1 if rid in ids else len(ids) + 1
+    rec = load_json(os.path.join(state_dir(flags), RESERVATION_STATE)) or {}
+    ahead = rec.get("id") or (ids[pos - 2] if pos >= 2 else "-")
+    return pos, ahead
+
+
+def claim_wait(flags, owner, cpus, minutes, light=False, rank=None, wait_s=CLAIM_WAIT_DEFAULT_S, pid=None):
+    """CLI side of the queue (enforce): request, then wait for the keeper's grant. Returns (gid, line); raises Refused."""
+    rid = request_claim(flags, owner, cpus, minutes, light=light, rank=rank, pid=pid)
+    res = os.path.join(claim_req_dir(flags), rid + ".result.json")
+    t_end = time.time() + max(0, int(wait_s))
+    while True:
+        r = load_json(res)
+        if r and r.get("gid"):
+            _rm(res)
+            return r["gid"], r.get("line", "")
+        if time.time() >= t_end:
+            pos, ahead = claim_queue_position(flags, rid)
+            _rm(os.path.join(claim_req_dir(flags), rid + ".json"))
+            r = load_json(res)   # granted in the last instant: keep it
+            if r and r.get("gid"):
+                _rm(res)
+                return r["gid"], r.get("line", "")
+            _keeper_log_line(flags, f"CLAIM-TIMEOUT {rid}: position {pos} behind {ahead}; withdrawn")
+            raise Refused(f"QUEUED-TIMEOUT position {pos} behind {ahead}")
+        time.sleep(CLAIM_POLL_S)
+
+
+def withdraw_request(flags, rid, by):
+    """release <req id>: the owner withdraws a pending request -> ('WITHDRAWN', None); granted meanwhile -> (None, gid)."""
+    p = os.path.join(claim_req_dir(flags), rid + ".json")
+    r = load_json(p)
+    if not r:
+        res = load_json(os.path.join(claim_req_dir(flags), rid + ".result.json"))
+        need(res, f"release {rid}: no pending claim request")
+        return None, res.get("gid")
+    need(str(r.get("owner")) == str(by), f"release {rid}: owner is {r.get('owner')}, caller is {by}; only the owner may withdraw")
+    _rm(p)
+    _keeper_log_line(flags, f"CLAIM-WITHDRAWN {rid} by {by}")
+    return "WITHDRAWN", None
+
+
 def allocate(flags, keeper_log=None, log=print, dry=False):
     """dry=True: snapshot + plan only (PLAN lines); nothing healed, armed, granted or started."""
     keeper_log = keeper_log or os.path.join(flags, "ws58-calendar-keeper.log")
@@ -8580,6 +8966,15 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             placed_smokes = place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows),
                                          drain_reserved=frozenset(d_res), gpu_queued=gpu_queued,
                                          demand_reserved=frozenset(dem))
+    rmode = reservation_mode()   # RESERVATION: off | shadow | enforce (see the RESERVATION block above allocate)
+    if rmode == "enforce":   # CLAIM QUEUE (claims were never gated by a disk pause / HOLD-ADMISSIONS; they still are not): pending claim requests are candidates like rows
+        try:
+            cands = cands + [request_cand(r, counts["cpu"]) for r in claim_requests(flags, prune=not dry)]
+        except Exception as e:  # noqa: BLE001 - an unreadable request never stops allocation
+            log(f"CLAIM-QUEUE read failed: {type(e).__name__}: {e}")
+    pre_gates = list(cands)
+    qlines = {}
+    res_base, res_qlines = None, {}   # shadow: the candidates (and gate lines) the enforce path's gates would keep
     quiet_ok = quiet_ok_now(flags)
     if quiet_ok:
         smoke_live = quiet_host_smoke_live(flags, placed_smokes)
@@ -8591,25 +8986,42 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     lane, _lk = build_lane_open(flags)
     if lane:   # BUILD LANE: no NEW quiet row is granted (running ones are never pre-empted)
         hold = [c for c in cands if quiet_required(allrows.get(c["id"])) or c.get("shape") == "quiet-host"]
+        hold_res = [c for c in hold if float(c["rank"]) >= URGENT_RANK]   # RESERVATION: the lane never holds the urgent head
+        if rmode == "enforce":
+            hold = hold_res
+        elif rmode == "shadow":
+            res_base = [c for c in cands if c not in hold_res]
         log_transition(flags, "build-lane", {"lane": f"BUILD-LANE open for {lane}: no new quiet row granted ({','.join(c['id'] for c in hold[:5]) or '-'} held)"},
                        log, persist=not dry)
         cands = [c for c in cands if c not in hold]
     else:
         log_transition(flags, "build-lane", {}, log, persist=not dry)
     cands, fwaits = foreign_server_gate(flags, cands, grants, log, dry=dry)
+    if rmode == "shadow":
+        try:
+            res_base, _ = foreign_server_gate(flags, list(cands) if res_base is None else res_base, grants, lambda m: None, dry=True)
+        except Exception:  # noqa: BLE001 - shadow never stops allocation
+            res_base = list(cands)
     smoke_waits = fwaits + smoke_waits   # named in this tick's IDLE-WHY lines for the regions the row needs
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
     ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
     r_ends = region_end_map(flags, grants, busy)
     out, excluded, plan_free, ram = [], set(), set(free), mem_available_gib()
     util = measure_util()
+    reqc = [c for c in cands if c.get("kind") == "claim"]   # CLAIM QUEUE: claims keep their own quiet checks (claim_build)
+    cands = [c for c in cands if c.get("kind") != "claim"]
     try:   # PM-KEEPER3 #1: quiet-host rows only onto quiet quarters, never beside whole-host / bandwidth-heavy rows
         qres = {"now": time.time(), "max_s": quiet_reserve_max_s(flags)}
         qst_p = os.path.join(state_dir(flags), QUIET_RESERVE_STATE)
         qst = load_json(qst_p) or {}
         qres["since"] = qst.get("since") if qst.get("active") else None
         pre_quiet = cands
-        cands, qwaits, qlines = quiet_gate(cands, allrows, grants, util, flags, reserve=qres)
+        if rmode == "shadow":   # the enforce path's quiet gate: no QUIET-RESERVE (subsumed by the quiet head), silent
+            try:
+                res_base, _, res_qlines = quiet_gate(res_base, allrows, grants, util, flags, reserve=None)
+            except Exception:  # noqa: BLE001 - the shadow never changes the live gate
+                res_base, res_qlines = None, {}
+        cands, qwaits, qlines = quiet_gate(cands, allrows, grants, util, flags, reserve=None if rmode == "enforce" else qres)
         for line in qlines.values():
             log(line)
         if not dry:
@@ -8622,12 +9034,14 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         smoke_waits = qwaits + smoke_waits
         uw_p = os.path.join(state_dir(flags), QUIET_URGENT_WAITING_STATE)
         uwait, uw_state = urgent_quiet_waiting(pre_quiet, cands, qlines, allrows, load_json(uw_p) or {}, flags=flags)
+        if rmode == "enforce":   # RESERVATION: QUIET-URGENT-PENDING / -WAITING are subsumed by the urgent head reservation
+            uwait, uw_state = [], {}
         if not dry:
             try:
                 atomic_json(uw_p, uw_state)
             except Exception:  # noqa: BLE001
                 pass
-        cands, uwaits, ulines, uexp = quiet_urgent_hold(cands, allrows, uwait + urgent_quiet_pending(flags, grants),
+        cands, uwaits, ulines, uexp = quiet_urgent_hold(cands, allrows, uwait + ([] if rmode == "enforce" else urgent_quiet_pending(flags, grants)),
                                                         flags=flags)
         for line in ulines:
             log(line)
@@ -8646,6 +9060,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 log(line)
     except Exception as e:  # noqa: BLE001 - a gate fault never stops allocation
         log(f"QUIET-GATE failed: {type(e).__name__}: {e}")
+    cands = cands + reqc
     idle_now = idle_held(flags, grants, holders, util, log, seen)
     if not dry:
         scratch_over(flags, grants, log)
@@ -8670,17 +9085,71 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             contamination_sample(flags, grants, log)
         except Exception as e:  # noqa: BLE001
             log(f"CONTAMINATION check failed: {type(e).__name__}: {e}")
+    res_extra, res_rec, sh = {}, None, None
+    if rmode != "off":
+        try:
+            rst_p = os.path.join(state_dir(flags), RESERVATION_STATE)
+            rst = load_json(rst_p) or {}
+            base = cands if rmode == "enforce" else res_base if res_base is not None else cands
+            rq = qlines if rmode == "enforce" else res_qlines
+            rc, res_extra, hsince = reservation_cands(flags, pre_gates, base, grants, allrows, rq, hold_since=rst.get("hold_since"))
+            if rmode == "enforce":
+                cands = rc
+            else:   # SHADOW: the reservation plan on this snapshot; its decisions are logged, never applied
+                rprev = {rst["id"]: rst["T"]} if rst.get("id") and rst.get("T") else {}
+                sa, _si, _sp = plan(set(free), rc, mem_available_gib(), gpu_open, grant_ends=[e for e in ends if e], quiet_ok=quiet_ok,
+                                    held_ports=held_ports, drain_prev=rprev, region_ends=dict(r_ends, **res_extra),
+                                    region_holders=holders, gpu_queued=gpu_queued, build_waiting=bool(build_waiters(flags, rowids=set(allrows))),
+                                    build_policy=build_pocket_policy(flags), stopping=stopping_tokens(flags, grants, allrows),
+                                    gap_rows=gap_rows, reserve=True)
+                sh = {"assigned": {c["id"] for c, _ in sa}, "drain": plan.last_drain, "backfills": list(plan.backfills)}
+            if not dry:
+                hd = sh["drain"] if sh else None
+                res_rec = reservation_record(hd[0] if hd else None, hd[1] if hd else 0,
+                                             set().union(*hd[0]["options"]) if hd else set(), rmode)
+                res_rec["hold_since"] = hsince
+                if rmode == "shadow":
+                    atomic_json(rst_p, res_rec)
+        except Exception as e:  # noqa: BLE001 - the reservation never stops allocation
+            log(f"RESERVATION failed: {type(e).__name__}: {e}")
+            sh, res_extra = None, {}
+            if rmode == "enforce":
+                cands = [c for c in cands if not c.get("phantom") and not c.get("hold")]
     # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions
     # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
+    claim_skips, res_head = {}, None
     for _pass in range(len(cands) + 1):
         bpol = build_pocket_policy(flags)
         bw = build_waiters(flags, rowids=set(allrows), log=log)
         assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
                                         grant_ends=[e for e in ends if e], quiet_ok=quiet_ok, held_ports=held_ports,
-                                        drain_prev=drain_prev, region_ends=r_ends, region_holders=holders,
-                                        gpu_queued=gpu_queued, build_waiting=bool(bw), build_policy=bpol,
-                                        stopping=stopping_tokens(flags, grants, allrows), gap_rows=gap_rows)
+                                        drain_prev=drain_prev, region_ends=dict(r_ends, **res_extra) if rmode == "enforce" else r_ends,
+                                        region_holders=holders, gpu_queued=gpu_queued, build_waiting=bool(bw), build_policy=bpol,
+                                        stopping=stopping_tokens(flags, grants, allrows), gap_rows=gap_rows,
+                                        reserve=rmode == "enforce")
+        if rmode == "enforce" and _pass == 0:
+            if not dry:
+                try:
+                    hd = plan.last_drain
+                    rec = reservation_record(hd[0] if hd else None, hd[1] if hd else 0,
+                                             set().union(*hd[0]["options"]) if hd else set(), rmode)
+                    rec["hold_since"] = (res_rec or {}).get("hold_since") or {}
+                    atomic_json(os.path.join(state_dir(flags), RESERVATION_STATE), rec)
+                except Exception as e:  # noqa: BLE001
+                    log(f"RESERVATION state write failed: {type(e).__name__}: {e}")
+            reservation_log(flags, plan.last_drain, plan.backfills, "", log, persist=not dry)
+            res_head = plan.last_drain
+        if rmode == "shadow" and _pass == 0 and sh is not None:
+            reservation_log(flags, sh["drain"], sh["backfills"], "-SHADOW", log, persist=not dry)
+            live = {c["id"] for c, _ in assigned}
+            hd = sh["drain"]
+            why = (f"RESERVED-FOR {hd[0]['id']} until {dt.datetime.fromtimestamp(hd[1], dt.timezone.utc):%Y-%m-%dT%H:%MZ}"
+                   if hd else "the reservation plan places other rows")
+            log_transition(flags, "would-refuse", {rid: f"WOULD-REFUSE {rid}: {why}" for rid in sorted(live - sh["assigned"])},
+                           log, persist=not dry)
+            log_transition(flags, "would-grant", {rid: f"WOULD-GRANT {rid} (reservation plan; shadow)"
+                                                  for rid in sorted(sh["assigned"] - live)}, log, persist=not dry)
         _srl = {}
         for lc, hc, res in plan.stop_reserves:
             _srl.setdefault(hc["id"], set()).update(res)
@@ -8723,6 +9192,22 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']} {hostutil.line(util)}")
         failed = []
         for c, opt in assigned:
+            if c.get("kind") == "claim":   # CLAIM QUEUE (enforce): a placed request is granted as a build/light claim
+                if dry:
+                    log(f"PLAN claim {c['id']} holds={','.join(compress(opt))} rank={c['rank']:g}"); continue
+                try:
+                    gid, _line = grant_request(flags, c["request"], opt, log=lambda m: None)
+                    log(f"CLAIM-GRANT {c['id']} -> {gid} holds={','.join(compress(opt))} rank={c['rank']:g}")
+                    plan_free -= expand(set(opt))
+                except Refused as e:   # the claim's own refusal (e.g. a running quiet row): it stays queued
+                    claim_skips[c["id"]] = f"CLAIM-SKIP {c['id']}: {e}"
+                    failed.append(c["id"])
+                except Exception as e:  # noqa: BLE001
+                    log(f"ERROR {c['id']}: {type(e).__name__}: {e}")
+                    failed.append(c["id"])
+                continue
+            if c.get("phantom") or c.get("hold"):
+                continue   # never placeable (hold token); defensive
             rid, d = c["id"], allrows[c["id"]]
             regions = grant_regions(d, opt)
             if dry:
@@ -8796,6 +9281,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if not any(c["id"] not in excluded for c in pending):
             break
         log(f"RE-PLAN same tick: {','.join(sorted(failed))} failed to arm/launch; free={','.join(compress(plan_free)) or '-'}")
+    if rmode == "enforce":
+        log_transition(flags, "claim-skip", claim_skips, log, persist=not dry)
     # pipeline audit 2026-11-10 #2: a row that failed to arm/launch this tick may have just parked (its MAX_FAILS-th
     # refusal, or a precond refusal); runnable() is asked again so it is never reported as "fits but was not placed".
     tried = excluded | set(failed)
@@ -8819,8 +9306,17 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     for r, why in idle_partial_quarters(flags, free, busy, grants, holders).items():   # idle CPU quarters too
         log(f"IDLE-WHY {r}: {why}")
     left = plan_free - expand(set().union(*[o for _, o in assigned])) if assigned else plan_free
+    res_held = set()   # RESERVATION (enforce): rows the head reservation keeps off free regions on purpose are no idle violation
+    if res_head:
+        hneed = set().union(*res_head[0]["options"])
+        for c in pending:
+            fo = [o for o in c["options"] if o <= left]
+            if c["id"] != res_head[0]["id"] and fo and (all(o & hneed for o in fo) or (res_head[0].get("quiet") and c.get("loud"))):
+                res_held.add(c["id"])
     iv = []
     for c in pending:
+        if c["id"] in res_held:
+            continue
         if c["kind"] == "grant" and any(o <= left for o in c["options"]) and not (c.get("bench") and gpu_open):
             seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(compress(free))} but was not placed")
             iv.append(c)
@@ -8847,7 +9343,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 notify.escalate_stale(flags, lambda k, m, ev: route_alert(f"{k}-{ev['key']}", m, ev, log), log=log)
         except Exception as e:  # noqa: BLE001
             log(f"ALERT-UNACKED check failed: {type(e).__name__}: {e}")
-        idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log, util=util)
+        idle_violation(flags, free, [c for c in cands if c["id"] not in res_held], out, mem_available_gib(), gpu_open, held_ports, log, util=util)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         try:
             build_idle_release(flags, holders, log)
@@ -9442,6 +9938,8 @@ def status_text(st):
         u = st.get("util") or {}
         L.append("util:    " + (" ".join(f"{r}={hostutil.pct(u.get(r))}" for r in st["held"]) or "-") + f"  (held {','.join(st['held']) or '-'}, grant {st.get('grant_age_s', '?')}s old, measured now)")
     L.append(f"blocker: {st.get('blocker') or '-'}")
+    if st.get("reservation"):
+        L.append(f"reserve: {st['reservation']}")
     L.append(f"next:    {st.get('next', '-')}")
     L.append(f"logs:    {st.get('logs', '-')}")
     return "\n".join(L)
@@ -9470,6 +9968,9 @@ def main(argv=None):
     s.add_argument("--build", action="store_true", required=True); s.add_argument("--owner", required=True)
     s.add_argument("--cpus", required=True); s.add_argument("--minutes", type=int, required=True)
     s.add_argument("--wait-pid", type=int, default=None, help="pid whose liveness keeps a refused claim's build-wait record live (default: the invoking parent)")
+    s.add_argument("--rank", type=float, default=None, help=f"CLAIM QUEUE (RESERVATION_MODE enforce): the request's priority_rank (default {CLAIM_RANK_DEFAULT})")
+    s.add_argument("--wait", type=int, default=CLAIM_WAIT_DEFAULT_S, help="CLAIM QUEUE (enforce): seconds to wait for the keeper's grant; "
+                   "then REFUSED: QUEUED-TIMEOUT position <n> behind <id> (request withdrawn)")
     s.add_argument("--light", action="store_true", help="LIGHT test claim: --cpus a subset of 84-87 (<= 4 cores), --minutes <= 15, one light claim host-wide, "
                    "not bandwidth-heavy (never blocks a quiet row); refused while a running quiet row logged a contended launch in the last 10 min. "
                    "ADVISORY contract (not enforced): " + "; ".join(LIGHT_ADVISORY).replace("%", "%%"))
@@ -9542,7 +10043,10 @@ def main(argv=None):
             supersede(a.flags, row)
             return 0
         if a.cmd == "claim":
-            gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes, wait_pid=a.wait_pid, light=a.light)
+            if reservation_mode() == "enforce":   # CLAIM QUEUE: the keeper grants it in rank order; the output is unchanged
+                gid, line = claim_wait(a.flags, a.owner, a.cpus, a.minutes, light=a.light, rank=a.rank, wait_s=a.wait)
+            else:
+                gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes, wait_pid=a.wait_pid, light=a.light)
             print(f"BUILD-GRANT {gid} {line}")
             return 0
         if a.cmd == "build-window":
@@ -9554,8 +10058,15 @@ def main(argv=None):
             return 0 if r in ("WITHDRAWN", "PENDING", "TERMINAL") else 2
         if a.cmd == "release":
             by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
-            r = release_grant(a.flags, a.id, by, a.reason, a.regions)
-            print(f"{r} {a.id}")
+            rid = a.id
+            if rid.startswith(CLAIM_REQ_PREFIX):   # CLAIM QUEUE: a pending request is withdrawn; a granted one is released
+                r, gid = withdraw_request(a.flags, rid, by)
+                if r:
+                    print(f"{r} {rid}")
+                    return 0
+                rid = gid
+            r = release_grant(a.flags, rid, by, a.reason, a.regions)
+            print(f"{r} {rid}")
             return 0
         if a.cmd == "resume":
             by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
@@ -9580,6 +10091,13 @@ def main(argv=None):
             allrows = rows(a.flags)
             util = measure_util()
             print(hostutil.line(util))
+            rec = load_json(os.path.join(state_dir(a.flags), RESERVATION_STATE)) or {}
+            if rec.get("id"):
+                print(f"RESERVATION ({rec.get('mode')}) head {rec['id']} rank={rec.get('rank', 0):g} until {rec.get('T_iso')} "
+                      f"needs {reservation_needs_text(rec)}")
+            for n, r in enumerate(sorted(claim_requests(a.flags), key=lambda r: (float(r.get("rank") or CLAIM_RANK_DEFAULT),
+                                                                                 float(r.get("requested_at") or 0))), 1):
+                print(f"claim-request   #{n} rank={r.get('rank', 0):g} {r['id']} cpus={r['cpus']} {r['minutes']} min since {r.get('requested_iso')}")
             for rid in sorted(allrows, key=lambda r: row_rank(allrows[r])):
                 st = status(a.flags, rid, allrows, util=util)
                 u = " ".join(f"{r}={hostutil.pct(v)}" for r, v in (st.get("util") or {}).items())

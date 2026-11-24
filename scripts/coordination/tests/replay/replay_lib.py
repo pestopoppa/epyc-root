@@ -610,6 +610,21 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
         sb.materialize(tick, rf)
         if tick.get("build_window_min") and hasattr(rf, "build_window"):   # {"build_window_min": N}: `rowflow build-window` opens at this tick
             rf.build_window(sb.flags, int(tick["build_window_min"]), "replay", "replay-build-lane", now=W.t, log=lambda m: None)
+        if tick.get("reservation_mode") and hasattr(rf, "RESERVATION_MODE"):   # {"reservation_mode": off|shadow|enforce} from this tick on
+            rf.RESERVATION_MODE = tick["reservation_mode"]
+        pre_lines = []
+        for cl in tick.get("claims") or []:   # [{owner, cpus, minutes, light?, rank?}]: a `claim --build` issued at this tick
+            try:
+                if hasattr(rf, "reservation_mode") and rf.reservation_mode() == "enforce":
+                    rid = rf.request_claim(sb.flags, cl["owner"], cl["cpus"], int(cl["minutes"]), light=bool(cl.get("light")),
+                                           rank=cl.get("rank"), pid=0, now=W.t)
+                    pre_lines.append(f"CLAIM-REQUEST {rid} cpus={cl['cpus']}")
+                else:
+                    gid, _ = rf.claim_build(sb.flags, cl["owner"], cl["cpus"], int(cl["minutes"]), light=bool(cl.get("light")),
+                                            log=lambda m: None)
+                    pre_lines.append(f"CLAIM-ONSPOT {gid} cpus={cl['cpus']}")
+            except Exception as e:  # noqa: BLE001 - a refused claim is a decision too
+                pre_lines.append(f"CLAIM-REFUSED {cl['owner']} cpus={cl['cpus']}: {e}")
         W.admit = {rid: b["admit"] for rid, b in tick["rows"].items() if isinstance(b.get("admit"), dict)}
         for rid, s_ in sb.sim.items():   # blob["kfd_own"]: the granted row's own poller is a KFD client (a working GPU job)
             b = tick["rows"].get(rid) or {}
@@ -617,7 +632,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
                 W.kfd[int(s_["pid"])] = int(b.get("kfd_own_vram") or (2 << 30))
         open_before = {rid: dict(s) for rid, s in sb.sim.items()}
         kills0, fails0 = len(W.kills), set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json")))
-        lines, err = [], None
+        lines, err = list(pre_lines), None
         real0 = _real_time.time()
         buf = io.StringIO()
         try:
@@ -662,7 +677,8 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             "kills": W.kills[kills0:], "fails_new": sorted(set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json"))) - fails0),
             "running_json": running, "cands": int(mc.group(1)) if mc else None, "assigned": int(mc.group(2)) if mc else None,
             "snapshot_busy": mb.group(1) if mb else "",
-            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD", "HOLD-ORPHAN", "SHORT-ROW"))][:400],
+            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD", "HOLD-ORPHAN", "SHORT-ROW",
+                                                                                "CLAIM", "RESERVE", "BACKFILL", "WOULD-", "RESERVATION"))][:400],
             "foreign": tick.get("foreign") or {},
         })
     with open(os.path.join(out_dir, "decisions.jsonl"), "w") as f:

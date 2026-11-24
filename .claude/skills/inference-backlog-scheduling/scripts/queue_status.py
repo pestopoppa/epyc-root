@@ -282,6 +282,32 @@ def _toolroot_banner():
         pass
 
 
+def reservation_view(flags):
+    """RESERVATION head (ws58-keeper-state/allocator/reservation.json) + pending CLAIM QUEUE requests (grants/requests/),
+    read-only: {"head": {...} | None, "requests": [{id, rank, cpus, minutes, since, position}]}."""
+    head = None
+    try:
+        with open(os.path.join(flags, "ws58-keeper-state", "allocator", "reservation.json")) as f:
+            rec = json.load(f)
+        if rec.get("id"):
+            head = rec
+    except (OSError, ValueError):
+        pass
+    reqs = []
+    for p in sorted(glob.glob(os.path.join(flags, "grants", "requests", "req-*.json"))):
+        if p.endswith(".result.json") or os.path.exists(p[:-5] + ".result.json"):
+            continue
+        try:
+            with open(p) as f:
+                reqs.append(json.load(f))
+        except (OSError, ValueError):
+            continue
+    reqs.sort(key=lambda r: (float(r.get("rank") or 50), float(r.get("requested_at") or 0)))
+    out = [{"id": r.get("id"), "rank": r.get("rank"), "cpus": r.get("cpus"), "minutes": r.get("minutes"),
+            "since": r.get("requested_iso"), "position": n} for n, r in enumerate(reqs, 1)]
+    return {"head": head, "requests": out}
+
+
 def main(argv=None) -> int:
     _toolroot_banner()
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -318,7 +344,7 @@ def main(argv=None) -> int:
         json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "buckets": buckets,
                    "idle": r["keeper"]["idle_why"], "snapshot": r["keeper"]["snapshot"],
                    "unfiled_ended": r["UNFILED-ENDED"],
-                   "campaign_status": campaign_status(a.flags)}, sys.stdout, indent=1)
+                   "campaign_status": campaign_status(a.flags), "reservation": reservation_view(a.flags)}, sys.stdout, indent=1)
         print()
         return 0
     print(f"QUEUE STATUS {now.strftime('%H:%M')}Z {now.date()}  (read-only; rowflow state in {a.flags})")
@@ -342,6 +368,14 @@ def main(argv=None) -> int:
     print(f"\nPARKED/BLOCKED ({len(r['PARKED']) + len(r['BLOCKED'])})")
     for x in sorted(r["PARKED"] + r["BLOCKED"], key=lambda x: x["id"]):
         print(f"  {ow(x):<18} {x['id']:<44} {x.get('reason','')}")
+    rv = reservation_view(a.flags)
+    h = rv["head"]
+    print(f"\nRESERVATION ({(h or {}).get('mode') or 'none'})")
+    if h:
+        print(f"  head {h['id']} rank={h.get('rank')} starts by {h.get('T_iso')} needs {','.join(h.get('tokens') or [])[:120]}"
+              + (" +host-quiet" if h.get("quiet") else ""))
+    for q in rv["requests"]:
+        print(f"  claim-request #{q['position']} {q['id']} rank={q['rank']} cpus={q['cpus']} {q['minutes']} min since {q['since']}")
     k = r["keeper"]
     print(f"\nIDLE (keeper snapshot {k['snapshot_at'] or 'none'})")
     for res, why in sorted(k["idle_why"].items()):
