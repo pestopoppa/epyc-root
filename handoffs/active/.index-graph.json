@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T07:01:23Z",
+  "generated_at": "2026-11-24T07:32:57Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1379,14 +1379,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 976,
-      "dispatchable": 121,
+      "dispatchable": 122,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-24",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 121,
+      "open": 122,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1478,7 +1478,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 22,
+          "dispatchable": 23,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1486,7 +1486,7 @@
           ],
           "line": 7554,
           "name": "autokernel-unified-surface-program",
-          "open": 22,
+          "open": 23,
           "readiness": "blocked"
         },
         {
@@ -1497,7 +1497,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10821,
+          "line": 10824,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1531,7 +1531,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11068,
+          "line": 11071,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1981,7 +1981,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1932,
+          "line": 1933,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2060,
+          "line": 2061,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2392,
+          "line": 2393,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2493,
+          "line": 2494,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3047,
+          "line": 3048,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2029,7 +2029,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3185,
+          "line": 3186,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3192,
+          "line": 3193,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3235,18 +3235,18 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 359,
-      "dispatchable": 6,
+      "closed": 361,
+      "dispatchable": 11,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-21",
+      "last_advanced": "2026-11-24",
       "next_action": "FM-4 Phase C: collect 30 prospective dispatch_with_gate records per arm plus one native canary; futility check 2026-12-03; then close and move to completed/",
-      "open": 6,
+      "open": 11,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3271,18 +3271,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 10,
           "gates": [],
           "line": 21,
           "name": "coordination-and-churn-pipeline",
-          "open": 5,
+          "open": 10,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2489,
+          "line": 2519,
           "name": "churn-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -3291,7 +3291,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2497,
+          "line": 2527,
           "name": "dashboard-architecture-restructure",
           "open": 0,
           "readiness": "no_open"
@@ -3300,7 +3300,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2969,
+          "line": 2999,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3316,7 +3316,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3414,
+          "line": 3444,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0,
           "readiness": "no_open"
@@ -3333,7 +3333,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4930,
+          "line": 4960,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
@@ -3350,7 +3350,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5590,
+          "line": 5620,
           "name": "fleet-fanout-measurement",
           "open": 1,
           "readiness": "blocked"
@@ -3367,7 +3367,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5798,
+          "line": 5828,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3376,7 +3376,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6354,
+          "line": 6384,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
@@ -3649,7 +3649,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 941,
+          "line": 942,
           "name": "qwen-chat-template-evaluation",
           "open": 6,
           "readiness": "ready"
@@ -3662,7 +3662,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1722,
+          "line": 1723,
           "name": "harness-improvement-loop",
           "open": 9,
           "readiness": "blocked"
@@ -3675,7 +3675,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2431,
+          "line": 2432,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3696,7 +3696,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2520,
+          "line": 2521,
           "name": "repl-embedding-retrieval",
           "open": 16,
           "readiness": "blocked"
@@ -3711,7 +3711,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2999,
+          "line": 3000,
           "name": "agentic-serving-harness-fixes",
           "open": 28,
           "readiness": "blocked"
@@ -3722,7 +3722,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3942,
+          "line": 3943,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"
