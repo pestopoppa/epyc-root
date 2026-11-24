@@ -702,10 +702,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T23:59:57Z",
+  "generated_at": "2026-11-24T00:10:38Z",
   "nodes": [
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [],
       "closed": 133,
@@ -1046,7 +1046,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
@@ -1134,7 +1134,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 139,
@@ -1210,7 +1210,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 216,
@@ -1332,7 +1332,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 485,
@@ -1375,7 +1375,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 975,
@@ -1539,7 +1539,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 248,
@@ -1654,7 +1654,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
@@ -1775,15 +1775,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 279,
-      "dispatchable": 35,
+      "closed": 280,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
-      "last_advanced": "2026-11-23",
+      "last_advanced": "2026-11-24",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 37,
+      "open": 36,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1826,20 +1826,20 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 25,
+          "dispatchable": 24,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 973,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 26,
+          "open": 25,
           "readiness": "blocked"
         }
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 119,
@@ -1920,7 +1920,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 251,
@@ -2049,7 +2049,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 157,
@@ -2140,7 +2140,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2181,7 +2181,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 19,
       "blocked_by": [],
       "closed": 121,
@@ -2231,7 +2231,7 @@
       ]
     },
     {
-      "age_days": 16,
+      "age_days": 17,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2290,7 +2290,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2377,7 +2377,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2403,7 +2403,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 16,
+      "age_days": 17,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2429,7 +2429,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 0,
       "blocked_by": [],
       "closed": 149,
@@ -2526,7 +2526,7 @@
       ]
     },
     {
-      "age_days": 20,
+      "age_days": 21,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2626,7 +2626,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 305,
@@ -2857,7 +2857,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 209,
@@ -2970,7 +2970,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 184,
@@ -3114,7 +3114,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3140,7 +3140,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 312,
@@ -3235,7 +3235,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 359,
@@ -3384,7 +3384,7 @@
       ]
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3500,7 +3500,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 6,
       "blocked_by": [],
       "closed": 445,
@@ -3575,7 +3575,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 270,
@@ -3730,7 +3730,7 @@
       ]
     },
     {
-      "age_days": 51,
+      "age_days": 52,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
