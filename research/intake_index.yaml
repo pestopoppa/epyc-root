@@ -415686,12 +415686,16 @@
   - intake-2812
   - handoffs/active/model-evaluation-queue.md (INK2-MINI-1, INK2-PORT-1, INK2-MEAS-1)
   - handoffs/active/deepseek-v41-flash-evaluation.md (draft-dspark, DS41-C2d)
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'model-evaluation-queue.md boxes INK2-PORT-2d (refines INK2-PORT-2c), INK2-MI210-PLACE-1, INK2-MEAS-2; H5/H6 kept as trigger prose in INK2-MI210-PLACE-1 and INK2-MEAS-1.'
   verification: dive-verified
   read_depth: PARTIAL
   lane_head: 8f49b151a4e4300f3018e864e53769754e2e4f93
-  dive_corrections: '2026-11-24 Stage 2 (read FULL from disk at fb69fff: bench-inkling-metal.py, inkling2-dspark.cpp
+  dive_corrections: '2026-11-24 Stage 2b: both dive-surfaced sources ingested and dived by operator decision, as intake-2865 (PR #31233) and intake-2866 (model card); intake-2866 overturns H4 for AD-IQ2_M (KLD 0.130). 2026-11-24 Stage 2 (read FULL from disk at fb69fff: bench-inkling-metal.py, inkling2-dspark.cpp
     head, common/speculative.cpp L1395-1450, llama-expert-store.cpp L150-410/L1277-1310, llama-atomic.h
     L50-60, llama-inkling-core-banks.h head). (1) H1 RESOLVED: the README 33.7 -> 105.7 tok/s ratio is NOT
     an engine speedup. server_command() gives the stock arm no -md/--spec-type at all (budget None returns
@@ -415955,3 +415959,291 @@
   notes: 'Read at HEAD fda968e7fc1996aa23c67139c755fe541c9d4be0 (MIT), retrieved 2026-11-24 from a local clone; SKILL.md sha256 6932c1dc8b2c. Read: README, PROMPT.md, SKILL.md, references/methodology.md, references/gotchas.md, bench.py docstring and looping() at L100. Not read: levers.md, ceilings.md, publishing.md, ceiling.py, queue.sh, mem.sh. Stage-1 comparison against the AK loop (grep of autokernel-loop.md and autokernel-akx-program.md on origin/main): AK already has interleaved AB/BA order control with VOID windows, a contention preflight (AK-EVAL-QUARTERS), a diminishing-returns escape (AKX-AUTO-2), roofline caps and abstention history, so most patterns are already integrated; candidates not yet seen are the both-neighbour acceptance rule, the explicit 3-in-noise plateau with a ranked-remaining-levers STATUS, the rerun-needs-a-new-reason rule, and progressive-disclosure references as an actor context diet. Operator objective 2026-11-24: distill learnings for AutoKernel loop infrastructure. Same author org as intake-183 (vllm-studio) and the local-studio entry.'
   novelty_justification: Hill-climb discipline is well covered in our measurement constitution and AK loop; the agent-skill packaging and a few loop rules are new to the index.
   verdict_justification: adopt_patterns for AK loop infrastructure; the harness itself targets OpenAI-compatible servers on single machines and is not adopted.
+- id: intake-2865
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/31233
+  source_type: repo
+  title: 'llama.cpp PR #31233: moe-cache LRFU/MQ-like hybrid cache, ClassLRU'
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2863
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - sanmai
+  key_claims:
+  - Replaces the MoE cache's SLRU eviction with eight LRU classes ranked by a decaying combined recency-frequency
+    (CRF) score with a 128-token half-life, kept after eviction.
+  - 'Author-measured with a warm cache: +6% decode on QFN and +7% on GLM versus SLRU, with 8% fewer uploads.'
+  techniques:
+  - class-LRU / MQ eviction
+  - LRFU CRF decay score
+  - 'MoE device expert cache (llama_moe_cache, PR #30966)'
+  reported_results:
+  - +6% decode QFN, +7% GLM vs SLRU, 8% fewer uploads (author, warm cache, hardware not stated in the
+    body).
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+  - intake-2863
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Settles H6 of intake-2863: the class-LRU device expert cache is merged upstream
+    (2026-11-06, merge c4fb5796); kept as trigger prose in model-evaluation-queue.md INK2-MI210-PLACE-1,
+    no box.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  lane_head: 96beac8919e25cd22ad2e9d568889cfa78f8d982
+  dive_corrections: '2026-11-24 Stage 2b (intake-2863 wave 1): read PR body and metadata via gh at head
+    515064f5, merged 2026-11-06T09:32:55Z as c4fb5796. Confirms the atomic-engine inkling-loop-age policy
+    is this upstream ClassLRU with a 512 half-life. The cache is the CUDA llama_moe_cache path (#30966);
+    a HIP path was not checked. Diff not read.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: read in PR body
+  - claim_index: 1
+    effect: unaffected
+    note: author self-report; hardware not named
+  depends_on: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: exact substring of https://github.com/ggml-org/llama.cpp/pull/31233
+    quote: we introduce eight classes
+    quote_sha256: 37ce299cbd74ea31e50592cb5525a734d01332e072a9cd3d6b9337f0c4b730ae
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8, found: true}
+    source: https://github.com/ggml-org/llama.cpp/pull/31233
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/31233
+    observed_revision: sha256:b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/31233
+      requested_url: https://github.com/ggml-org/llama.cpp/pull/31233
+      effective_url: https://github.com/ggml-org/llama.cpp/pull/31233
+      retrieved_at_utc: '2026-11-24T10:40:27.343358Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8
+      relative_path: sha256/b8/b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8.raw
+      raw_sha256: b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8
+      byte_length: 982783
+  - claim_index: 1
+    kind: page-and-quote
+    locator: exact substring of https://github.com/ggml-org/llama.cpp/pull/31233
+    quote: With a warm cache, I measured +6% decode on QFN and +7% on GLM versus SLRU, with 8% fewer uploads.
+    quote_sha256: e77f7af1e9d89741e861f410b4ffe3a6fe56f4f2e613c7ed387c437377b4c5e7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8, found: true}
+    source: https://github.com/ggml-org/llama.cpp/pull/31233
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/31233
+    observed_revision: sha256:b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/31233
+      requested_url: https://github.com/ggml-org/llama.cpp/pull/31233
+      effective_url: https://github.com/ggml-org/llama.cpp/pull/31233
+      retrieved_at_utc: '2026-11-24T10:40:27.343358Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8
+      relative_path: sha256/b8/b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8.raw
+      raw_sha256: b8d7fc4ef63cd488d2230bdfc7d00633d3a61d1708d42a20fed47f97bcebcda8
+      byte_length: 982783
+  notes: Retrieved 2026-11-24. Upstream merged; the frozen v10 tree and our branches carry MoE-cache commits
+    (git log --all shows moe cache commits) but whether ClassLRU and a HIP path are present was not checked.
+  novelty_justification: No prior index entry for the MoE cache eviction policy.
+  verdict_justification: Relevant only if Inkling or another MoE needs a device expert cache on the MI210.
+- id: intake-2866
+  arxiv_id: null
+  url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF
+  source_type: repo
+  title: AtomicChat/Inkling-2-Mini-GGUF model card (AD quants, KLD table, DSpark drafter)
+  categories:
+  - quantization
+  - speculative_decoding
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2863
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - AtomicChat
+  key_claims:
+  - Against the publisher's BF16, even Q8_0 matches the top token only 97.7% of the time, so 97-98% top-1
+    is the ceiling for this looped model.
+  - AD-IQ2_M (8.67 GB) keeps expert down in Q2_0 except the 8 busiest layers and scores top-1 85.7%, mean
+    KLD 0.130; AD-IQ3_S 94.2%/0.0205, AD-IQ4_XS 95.8%/0.0101, AD-Q4_K 96.3%/0.0080.
+  - 'On one A100 with three greedy non-repetitive prompts, DSpark (Q8_0 drafter, PR #32218) raised AD-Q4_K
+    decode 46.4 -> 62.7 tok/s (+35.0%) at 44.9% acceptance, and drafter-on output diverged from drafter-off
+    at the same positions for BF16 and Q8_0 drafters.'
+  - Only 4 of the 24 physical layers use full attention; the rest use a 1024-token window.
+  techniques:
+  - per-tensor AD quant recipes with imatrix
+  - Q2_0 on expert down (rows of 1152)
+  - KLD/top-1 vs BF16
+  - DSpark drafter GGUF
+  reported_results:
+  - 'KLD table above (87 chunks x 4096 tokens, 30 languages, llama-perplexity --kl-divergence, PR #32695
+    build).'
+  - 'A100 DSpark: 46.4 -> 62.7 tok/s, 44.9% acceptance (328/730).'
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+  - intake-2863
+  - intake-2798
+  handoffs_updated:
+  - handoffs/active/model-evaluation-queue.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Folded into INK2-MEAS-2 (quant arms chosen by KLD) and INK2-PORT-2d (drafter GGUF, divergence-tolerant equivalence check) in model-evaluation-queue.md.'
+  verification: dive-verified
+  read_depth: FULL
+  lane_head: 96beac8919e25cd22ad2e9d568889cfa78f8d982
+  dive_corrections: '2026-11-24 Stage 2b (intake-2863 wave 1): card read in full at repo commit 30950984.
+    (1) AD-IQ2_M is a large quality loss (top-1 85.7%, KLD 0.130), so the H4 hypothesis that AD-IQ2_M
+    is a near-lossless candidate is OVERTURNED; the sub-4-bit arms worth measuring are AD-IQ4_XS and AD-IQ3_S.
+    (2) DSpark gains +35% on non-repetitive greedy prompts, which bounds the intake-2863 105.7 tok/s repetitive
+    figure from below. (3) Drafter-on greedy output diverges from drafter-off, so a token-for-token equivalence
+    done-when would fail on numerics; compare logits at the first divergence instead. (4) Q2_0 type exists
+    in the frozen v10 ggml.h. Publisher-measured, not independent.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: read verbatim in card
+  - claim_index: 1
+    effect: unaffected
+    note: read verbatim in card
+  - claim_index: 2
+    effect: unaffected
+    note: read verbatim in card
+  - claim_index: 3
+    effect: unaffected
+    note: read verbatim in card
+  depends_on: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: exact substring of https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    quote: Even Q8_0 matches the BF16's top token only 97.7% of the time on this model
+    quote_sha256: 5c714b27de979352274f20680fb2a63bf51f1c8126c44deb5a53a38e72bc964b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7, found: true}
+    source: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    source_revision: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    observed_revision: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+    source_artifact:
+      entry_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF
+      requested_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      effective_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      retrieved_at_utc: '2026-11-24T10:40:27.491068Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      relative_path: sha256/91/9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7.raw
+      raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      byte_length: 10394
+  - claim_index: 1
+    kind: page-and-quote
+    locator: exact substring of https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    quote: expert down Q2_0 except the 8 busiest layers
+    quote_sha256: 612ae4f02ca3134bc802f0fa66b378a94cdf5b71914e76150266b4cd1bd22ab3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7, found: true}
+    source: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    source_revision: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    observed_revision: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+    source_artifact:
+      entry_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF
+      requested_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      effective_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      retrieved_at_utc: '2026-11-24T10:40:27.491068Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      relative_path: sha256/91/9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7.raw
+      raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      byte_length: 10394
+  - claim_index: 2
+    kind: page-and-quote
+    locator: exact substring of https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    quote: DSpark increased decode throughput by 35.0% for AtomicChat and 16.1% for Unsloth.
+    quote_sha256: 1313761cec1fe5a4df373376c37275d291577b8cabe15e58948f436183872d1b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7, found: true}
+    source: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    source_revision: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    observed_revision: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+    source_artifact:
+      entry_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF
+      requested_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      effective_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      retrieved_at_utc: '2026-11-24T10:40:27.491068Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      relative_path: sha256/91/9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7.raw
+      raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      byte_length: 10394
+  - claim_index: 2
+    kind: page-and-quote
+    locator: exact substring of https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    quote: both diverged from the run without DSpark at the same positions
+    quote_sha256: 008fe71197ed4a9e5190b37015ffb44456a17a857bff58feb8e091e283937544
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7, found: true}
+    source: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    source_revision: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    observed_revision: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+    source_artifact:
+      entry_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF
+      requested_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      effective_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      retrieved_at_utc: '2026-11-24T10:40:27.491068Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      relative_path: sha256/91/9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7.raw
+      raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      byte_length: 10394
+  - claim_index: 3
+    kind: page-and-quote
+    locator: exact substring of https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    quote: only 4 of the 24 layers use full attention, the rest a 1024-token window
+    quote_sha256: 76700aedb476c43233947f2ef686bfc9759e233dae4af34165cab4525c4259ee
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7, found: true}
+    source: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    source_revision: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+    observed_revision: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+    source_artifact:
+      entry_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF
+      requested_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      effective_url: https://huggingface.co/AtomicChat/Inkling-2-Mini-GGUF/raw/309509848b3151419aa26d069eb03db57fd29a00/README.md
+      retrieved_at_utc: '2026-11-24T10:40:27.491068Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      relative_path: sha256/91/9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7.raw
+      raw_sha256: 9174d2b2d34a3c7f077a3808944904ae1c51163950a0f32a16527fc9cdcde8f7
+      byte_length: 10394
+  notes: Retrieved 2026-11-24 from huggingface raw README at commit 309509848b3151419aa26d069eb03db57fd29a00
+    (sha256 9174d2b2d34a). Metrics dataset AtomicChat/Inkling-2-Mini-GGUF-metrics not read.
+  novelty_justification: First KLD-backed quant ladder for Inkling 2 Mini in the index.
+  verdict_justification: Directly chooses INK2-MEAS-2 arms and corrects INK2-PORT-2d's acceptance check.
