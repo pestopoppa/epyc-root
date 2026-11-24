@@ -32,6 +32,37 @@
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
 ### Backlog
+- [ ] **AK-EVAL-FUT — futility-only interim looks in bench.compare and serving matched A/B** [non-inference]
+      Add `loop/futility.py` (pure), checked after each complete pair from pair 2: stop as `measured_null`
+      (`stop_reason: futility`) when mean pair log-ratio + z·σ_pair/√k < bar, σ_pair from the surface's stored
+      A/A calibration. Plan records `stopping: fixed_pairs+futility_only.v1`, `pairs_run`, z, min_pairs.
+      Never stops on answer (formal-gate rule: futility-only until OP-ABSEQ/OP-PQP/OP-ALPHAWIN).
+      Audit: /mnt/raid0/llm/tmp/ak-loop-eval-audit-20261124/AUDIT.md §P4.
+      · done when: a replay test over the recorded DS41, Q38FN and loop-memory per-pair samples reproduces
+        ≥ 28 % pairs saved with 0 above-floor DS41/Q38FN winners stopped, `comparison_instrument_matches`
+        accepts the new plan, and a futile stop can never reach the keep path (test). [no-belief: planning]
+- [ ] **AK-EVAL-KEEPTIME — measure the keep path, then gate reprofile on changed hotspots** [non-inference]
+      Run `keep_timing.summarize` on the first campaign store with ≥ 3 timed keeps. Then in `_reprofile`
+      (run.py:3817) reuse the retained observation when the keep's changed paths miss the profiled hotspot
+      symbols, recording the skip via KeepTimer. Guard-A/A conditionality is a separate operator decision
+      (run-18 "a guard that can be turned off is not a guard"), not in this box.
+      · done when: a per-stage keep-path breakdown from real kept rows is filed, and a test shows reprofile
+        skipped (with reason) on a disjoint-hotspot keep and run on an overlapping one. [no-belief: planning]
+- [ ] **AK-EVAL-NPLAN — pre-register pairs from stored noise and the hypothesis's target effect** [non-inference]
+      `loop/sample_size.py`: smallest n in [n_min, n_max] whose `noise_floor_pct(surface, n)` is below the
+      hypothesis's declared target effect (n_min when none); fixed before measurement, recorded as
+      `pairs_basis` on the plan; refuses on uncalibrated surfaces. Depends on AK-EVAL-FUT landing first.
+      · done when: tests show n chosen per surface/effect from the calibration rows, the matched plan still
+        validates as predeclared, and no N changes after the first pair. [no-belief: planning]
+- [ ] **AK-EVAL-QUARTERS — concurrent quarter-scoped A/B streams with a contention preflight** [code then inference]
+      cpu_screen takes an explicit region and rewrites --interleave=all to --cpunodebind/--membind for that
+      node; new `loop/contention_preflight.py` (solo vs concurrent per-quarter read BW; ≥ 95 % of solo →
+      q0+q1+q2, else q0+q2, else q0); pipeline measures quarter-scoped candidates concurrently, one stream per
+      admitted quarter, build/commit still serialized. Each new (quarter, numa_policy) condition needs its own
+      A/A floor before it can carry a calibrated keep.
+      · done when: unit tests cover the region/numa rewrite and the 3/2/1 fallback, and one dry-run plus one
+        granted calibration row shows ≥ 2 concurrent streams each within 95 % of solo bandwidth.
+        [no-belief: planning]
 - [x] **AK-ASM-H11-UNIQ** [inference] Add an op-level test that the gfx90a AITER topksoftmax asm and the topk-moe fusion emit unique expert IDs on rows with exact ties, -inf and NaN logits, because the C14 MUL_MAT_ID helper silently drops duplicate slots (intake-2719).
       · done when: test-backend-ops cases for tie/-inf/NaN router rows exist and a ROCm0 run reports PASS (unique IDs) or a filed FAIL with the offending kernel
       · gate: none
