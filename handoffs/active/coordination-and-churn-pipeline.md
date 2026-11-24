@@ -2475,11 +2475,11 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · gate: none
       · owner: pipeline-mgmt
   - 2026-11-24: fail-closed rule fixes ef1181d43 are live; reaper light-pocket (84-87, nice 19, ionice idle) plus REAP-DEFER-QUIET d3e35a502 + 5fc893040 verified live 2026-11-24 05:26:59Z. Not ticked: the reapsim re-run over the LIVE-but-idle-7d set is not yet recorded.
-- [ ] **PM-PII-CAPSULE-RATIFY** [operator-decision] Operator signs the PII capture capsule diet and 2-day retention package RATIFY-PII-CAPSULE-20261123 (custody_format 2; capsule 29.9 MB/4222 files to 1.6 MB/14 files; hook 9.1 s to 0.45 s), then drains the backlog with the prune command in its README
+- [x] **PM-PII-CAPSULE-RATIFY** [operator-decision] Operator signs the PII capture capsule diet and 2-day retention package RATIFY-PII-CAPSULE-20261123 (custody_format 2; capsule 29.9 MB/4222 files to 1.6 MB/14 files; hook 9.1 s to 0.45 s), then drains the backlog with the prune command in its README ✅ 2026-11-24 [no-belief: software] operator applied, landed 5082c73be; capsule 2.4 MB, prune removed 51; custody_format 2 on main; pytest -k pii 152 passed
       · done when: scripts/hooks/pii_staged_capture.py on origin/main carries custody_format 2 and 'pytest scripts/hooks/tests -k pii' passes
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-BUILDLANE-DEPLOY-VERIFY** [non-inference] Finish and verify the live deploy of rowflow BUILD LANE 658c64cec (deploy_rowflow log /mnt/raid0/llm/tmp/pm-deploy-buildlane.log; unit tests 1188 passed, replay gate was running at wrap-up)
+- [x] **PM-BUILDLANE-DEPLOY-VERIFY** [non-inference] Finish and verify the live deploy of rowflow BUILD LANE 658c64cec (deploy_rowflow log /mnt/raid0/llm/tmp/pm-deploy-buildlane.log; unit tests 1188 passed, replay gate was running at wrap-up) ✅ 2026-11-24 [no-belief: software] deploy_rowflow OK, 658c64cec live, rc=0 (pm-deploy-buildlane.log); superseded by later live deploys
       · done when: deploy_rowflow reports success for sha 658c64cec and the live keeper process start time postdates the deploy
       · gate: none
       · owner: pipeline-mgmt
