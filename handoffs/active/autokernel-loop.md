@@ -11797,3 +11797,32 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
 ## History
 
 - 2026-11-20 compacted 402 ticked box(es) older than 30 d -> [autokernel-loop-history-2026-11-20.md](../archived/autokernel-loop-history-2026-11-20.md) (handoff_compact.py)
+
+## Track: autokernel-roofline-surface-loop
+<!-- gate: INF-06 -->
+
+**Purpose (operator 2026-11-24)**: one loop for every kernel campaign. The loop works, unattended, the op family with the largest recoverable served time summed over every served model (equal weight per model by default; a campaign that targets a model raises that model's weight, and that weights setting is the only thing that defines a campaign). Candidates are built for an op family over a declared shape range, not per model. Serving knobs (AK-SURFACE-SERVING-1) join the same list once screened.
+**Owner**: autokernel · **Builder**: workspace-f2 · Loop-infra code: not under the AK hold (loop launches are).
+**Plan audit**: Fable audit 2026-11-24 (workspace-f2 session); R0 and R6 were added from it, and so was the census-fork finding. The run-end inbox write in R2 is an operator-directed exception to census_update.py's "never a run-end write" rule; the committed seed file stays the reviewed record.
+
+- [ ] **RSL-R0 CENSUS-RECONCILE** [non-inference] Make one census of record. The live hook state (/mnt/raid0/llm/tmp/ak-bw-census/mi210_bandwidth_census.json, 55 records) and the committed loop/census/mi210_bandwidth_census.json (93 records) have forked both ways, because ak_runend.py:112-116 seeds the live file only when it is missing and merge_static (census_update.py:733-747) never merges records, applied or seeds. The planner surfaces block (loop.py:210-233) is rendered from the stale live fork.
+      · done when: records and applied are unioned idempotently by RESULT sha; a test on the two real files proves live ⊇ committed applied shas after one hook run; the planner surfaces block renders from the union; check_regrowth_guards stays at 0 violations
+      · owner: autokernel
+- [ ] **RSL-R1 COVERAGE** [non-inference] Derive the served set from model_registry.yaml server_mode: model_role, device / numa_instances, slots, and draft_max, which gives the served n-set. Write a `coverage` key into the census. Cross-check each parity op's `served` flag against the registry: today a3b-mtp-mi210 is marked served, but A3B serves on CPU only. Replace the hand-typed SERVED_N {1,3,4,8,16} in census_extract.py:12 with the derived n-set. Show the count of uncovered ops on the /loop census node. New module loop/census_coverage.py.
+      · done when: a registry-fixture test fails when a served (model, device) has zero census records, and fails when a parity op claims served for a path absent from the registry; SERVED_N is derived, not typed
+      · owner: autokernel
+- [ ] **RSL-R2 INBOX-AUTOMATION** [non-inference] After RSL-R0, ak_runend installs BWS-*.md stubs into <store>/inbox and removes them. Only measured, ownerless, open surfaces get a stub. A stub is deduped on target_surface against the inbox and the candidate spool's hypothesis_id, and it is removed once its surface is covered. New module loop/census_inbox.py. This takes effect only from research origin/main, because the hook runs a git archive of main.
+      · done when: a fixture run writes N stubs, a rerun writes 0, and a surface that turns covered loses its stub; a planner_only context assembly shows a BWS- id, with the canary artifact path recorded
+      · owner: autokernel
+- [ ] **RSL-R3 OP-PERF SCREEN** [non-inference] Add a new chain stage, op-perf, before ab-timing. Its grid is served_shape_cases.lane_served_shapes × the registry n-set, derived from GGUF plus registry, not from the census. Each cell gets a futility-only check against its own paired floor. The decision is on the served-weighted aggregate, with weights = census calls_per_round × share. It is a screen, never a gate. The candidate gains `shape_class`. Core module loop/op_perf_screen.py.
+      · done when: a unit test rejects a one-cell win paired with a regression elsewhere; the 27B grid equals GGUF shapes × the registry n-set; --test-mode runs no binary; the stage emits a polar RESULT
+      · owner: autokernel
+- [ ] **RSL-R4 FAMILY RANK** [non-inference] Add an op_family key on OP_MAP and parity ops. score(family) = Σ_m w_m × saving_ms_per_step(family, m). w_m defaults to 1, and a campaign overrides it through `model_weights`. Serving-knob arms are listed with saving=None, status=unpriced until screened. New module loop/census_families.py.
+      · done when: a fixture test pins the family sum across two paths, and a model_weights override that reorders the rank; the surfaces block and /loop carry family and family rank; no number is invented for knob arms
+      · owner: autokernel
+- [ ] **RSL-R5 WIRED + BELIEF** [non-inference] Add a Vidya adapter README row and a vidya-belief-substrate-program task for epyc.autokernel.bw_census.v1. Write the planning-context canary per agent-loop-design.md "Wired is a canary result".
+      · done when: the README row and the task exist; the canary file shows a census-derived seed in the assembled context and a shape_class in a cand.json
+      · owner: autokernel
+- [ ] **RSL-R6 PER-MODEL TIMING GATE** [non-inference] The chain times only 27B: TIMING_MODEL in stage_bodies.py:58-59 and :214-224, and KLD policy covers only q38_27b and q38fn. A3B, the busiest server, has no chain gate. The fix: take the timing model from the candidate's path, and mark surfaces with no gate as `ungated`.
+      · done when: stage_bodies timing takes timing_model from the candidate's path; A3B surfaces show their gate or `ungated`
+      · owner: autokernel
