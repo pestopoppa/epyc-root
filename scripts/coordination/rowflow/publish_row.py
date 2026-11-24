@@ -1222,6 +1222,8 @@ def rank_only_change(spec, flags):
             return None
     else:   # smoke-pending row: manifest in dryrun/<id>/unpublished.json, no PASS yet
         row = rf.load_json(unpublished_path(flags, rid))
+        if row and rf.smoke_failed_line(flags, rid):
+            return None   # failed smoke: not pending; the normal publish path decides
     if not row or os.path.exists(os.path.join(flags, "grants", rid + ".grant")):
         return None
     if str(row.get("owner") or "") != str(spec.get("owner") or ""):

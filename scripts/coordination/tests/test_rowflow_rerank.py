@@ -222,3 +222,45 @@ def test_pending_republish_rank_only_routes(pflags, monkeypatch):
     assert pr.route_rerank(dict(spec, priority_rank=15), pflags, log=lambda s: None) == (100, 15)
     assert rf.load_json(_up(pflags))["priority_rank"] == 15
     assert pr.route_rerank(dict(spec, priority_rank=5, estimate_s=9), pflags, log=lambda s: None) is None
+
+
+def test_pending_failed_smoke_refused_and_family_skips(pflags):
+    dd = rf.dry_dir(pflags, PID)
+    open(os.path.join(dd, "ended"), "w").write("rc=3 smoke failed\n")
+    with pytest.raises(rf.Refused, match=r"refused: smoke FAILED \(rc=3 smoke failed\); fix and republish"):
+        rf.rerank_row(pflags, PID, 1, "autokernel", "x", log=lambda s: None)
+    assert rf.load_json(_up(pflags))["priority_rank"] == 100
+    logs = []
+    other = "ak-pending-ok"
+    wj(os.path.join(rf.dry_dir(pflags, other), "unpublished.json"),
+       {"schema": rf.SCHEMA, "id": other, "owner": "autokernel", "lane": "gpu", "priority_rank": 100})
+    res = rf.rerank_family(pflags, "ak-pending", 7, "autokernel", "fam", log=logs.append)
+    assert res[other] == (100, 7) and str(res[PID]).startswith("SKIP: refused: smoke FAILED")
+    assert any(l.startswith("RERANK-SKIP " + PID) for l in logs)
+
+
+def test_pending_fail_json_needs_newer_queue_marker(pflags):
+    dd = rf.dry_dir(pflags, PID)
+    fj, qm = os.path.join(dd, "FAIL-1.json"), os.path.join(dd, "GPU-SMOKE-QUEUED.json")
+    wj(fj, {})
+    os.utime(fj, (1000, 1000))
+    with pytest.raises(rf.Refused, match="smoke FAILED"):
+        rf.rerank_row(pflags, PID, 1, "autokernel", "x", log=lambda s: None)
+    wj(qm, {})
+    os.utime(qm, (2000, 2000))
+    assert rf.rerank_row(pflags, PID, 1, "autokernel", "x", log=lambda s: None) == (100, 1)
+
+
+def test_failed_smoke_not_rank_only_routed(pflags, monkeypatch):
+    import publish_row as pr
+    launcher = os.path.join(pflags, "l.sh")
+    monkeypatch.setattr(rf, "job_sha", lambda p: "jobsha")
+    open(launcher, "w").write("#!/bin/bash\necho hi\n")
+    spec = {"id": PID, "owner": "autokernel", "launcher": launcher, "priority_rank": 100}
+    d = rf.load_json(_up(pflags))
+    d["launcher"] = {"path": launcher}
+    d["smoke_identity"] = pr.smoke_identity(spec, d)
+    d["spec_sha256_norank"] = pr.norank_sha(spec)
+    rf.atomic_json(_up(pflags), d)
+    open(os.path.join(rf.dry_dir(pflags, PID), "ended"), "w").write("rc=3\n")
+    assert pr.route_rerank(dict(spec, priority_rank=15), pflags, log=lambda s: None) is None

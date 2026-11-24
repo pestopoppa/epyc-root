@@ -9248,6 +9248,30 @@ def claim_wait(flags, owner, cpus, minutes, light=False, rank=None, wait_s=CLAIM
 RERANK_OPERATOR = "operator"   # operator 2026-11-24: the operator's priority overrides the owner's (logged RERANK-OPERATOR)
 
 
+def smoke_failed_line(flags, rid):
+    """The ended line (or FAIL-N message) when a smoke-pending row's smoke already FAILED, else None: dryrun/<id>/ended exists,
+    or a FAIL-*.json exists with no newer queued marker (SMOKE-QUEUED.json / GPU-SMOKE-QUEUED.json). A failed row needs a fix and a
+    republish; reranking its unpublished.json made the keeper raise QUEUED-SMOKE-ORPHANED (ak-c22-i8pc-gate-gpu-20261124-r3)."""
+    dd = dry_dir(flags, rid)
+    ended = os.path.join(dd, "ended")
+    if os.path.exists(ended):
+        try:
+            return (open(ended).readline().strip() or "ended")
+        except OSError:
+            return "ended"
+    fails = fail_paths(flags, rid)
+    if not fails:
+        return None
+    try:
+        tq = max([os.path.getmtime(q) for q in (os.path.join(dd, "SMOKE-QUEUED.json"), os.path.join(dd, "GPU-SMOKE-QUEUED.json"))
+                  if os.path.exists(q)] or [0])
+        if os.path.getmtime(fails[-1]) > tq:
+            return os.path.basename(fails[-1])
+    except OSError:
+        return os.path.basename(fails[-1])
+    return None
+
+
 def rerank_row(flags, rid, rank, by, reason, log=print, via=None):
     """`rowflow.py rerank <id> <rank> --by <owner> --reason R` (operator 2026-11-24, AK verify-attention to the head of the
     GPU queue): change ONLY priority_rank of ready/<id>.json - no re-smoke; PASS.json / smoke state are untouched (a
@@ -9278,6 +9302,8 @@ def rerank_row(flags, rid, rank, by, reason, log=print, via=None):
             rp = os.path.join(dry_dir(flags, rid), "unpublished.json")
             d = load_json(rp)
             pending = bool(d)
+            bad = smoke_failed_line(flags, rid) if pending else None
+            need(not bad, f"refused: smoke FAILED ({bad}); fix and republish")
         need(d, f"rerank {rid}: no ready/{rid}.json or dryrun/{rid}/unpublished.json (only a queued or smoke-pending row can be reranked)")
         owner = str(d.get("owner") or "")
         need((owner and owner == by) or by == RERANK_OPERATOR, f"rerank {rid}: owner is {owner or '(unknown)'}, caller is {by}; "
