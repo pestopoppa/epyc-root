@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T20:06:42Z",
+  "generated_at": "2026-11-24T20:28:17Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1219,15 +1219,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 230,
-      "dispatchable": 47,
+      "closed": 232,
+      "dispatchable": 46,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "last_advanced": "2026-11-24",
       "next_action": "Retain EV-PROTO and live calibration acceptance",
-      "open": 48,
+      "open": 47,
       "priority": 0.5376,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
@@ -1328,11 +1328,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 11,
           "gates": [],
           "line": 3103,
           "name": "scoring-infra-standardization",
-          "open": 12,
+          "open": 11,
           "readiness": "ready"
         }
       ]
