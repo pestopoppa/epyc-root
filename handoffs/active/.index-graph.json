@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T21:42:39Z",
+  "generated_at": "2026-11-24T21:53:09Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1385,14 +1385,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 998,
-      "dispatchable": 127,
+      "dispatchable": 128,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-24",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 127,
+      "open": 128,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1546,13 +1546,13 @@
           "blocked_by": [
             "INF-06"
           ],
-          "dispatchable": 7,
+          "dispatchable": 8,
           "gates": [
             "INF-06"
           ],
           "line": 11801,
           "name": "autokernel-roofline-surface-loop",
-          "open": 7,
+          "open": 8,
           "readiness": "blocked"
         }
       ]
