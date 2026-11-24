@@ -1,0 +1,135 @@
+From 00ef9f47993e94aa8b2195f03f9364f5e37806b2 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Tue, 24 Nov 2026 06:50:57 +0000
+Subject: [PATCH] backend: carry role generation_defaults
+ top_p/top_k/min_p/presence_penalty/repeat_penalty onto the wire
+ (OFFICIAL-SAMPLING-20261124, unapplied lane)
+
+Unset fields keep the legacy constants (40/0.95/unset/unset/1.1), so behaviour is unchanged
+until the research registry lane declares vendor values.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01F1v5qCZ3QJbHavUMsZnzEM
+---
+ src/backends/llama_server.py          | 27 +++++++++++++++++++++------
+ src/registry/registry_loader.py       | 11 +++++++++++
+ tests/unit/test_tap_sampler_params.py | 16 ++++++++++++++++
+ 3 files changed, 48 insertions(+), 6 deletions(-)
+
+diff --git a/src/backends/llama_server.py b/src/backends/llama_server.py
+index 7ace50de..e29e7514 100644
+--- a/src/backends/llama_server.py
++++ b/src/backends/llama_server.py
+@@ -135,8 +135,9 @@ def resolve_sampler_params(role_config: Any, request: Any) -> dict[str, Any]:
+     (SPEC-DTREE-DICE step 1) records the same dict on its START event, so the logged
+     values cannot drift from the sent ones. Temperature precedence: explicit request
+     override -> role acceleration override -> role generation_defaults -> 0.0. A
+-    negative temperature is not sent (``None``). ``min_p`` is never sent by this
+-    backend today, so it is ``None``; the key is reserved. ``speculative_n_max`` is the
++    negative temperature is not sent (``None``). ``top_k``/``top_p``/``min_p``/``presence_penalty``/
++    ``repeat_penalty`` come from role generation_defaults when declared, else the legacy
++    constants (40/0.95/unset/unset/1.1). ``speculative_n_max`` is the
+     per-request / in-context ``speculative.n_max`` (``None`` = key omitted, the server's
+     launch default applies) and ``speculative_requested`` is ``n_max > 0`` (``None`` when
+     unspecified). Pure: no I/O, never reads ``self``.
+@@ -152,11 +153,21 @@ def resolve_sampler_params(role_config: Any, request: Any) -> dict[str, Any]:
+     if n_max is None:
+         n_max = spec_policy.current_override()
+     n_max = max(0, int(n_max)) if isinstance(n_max, (int, float)) and not isinstance(n_max, bool) else None
++    gd = role_config.generation_defaults
++
++    def _gd(name: str, legacy: Any) -> Any:
++        # OFFICIAL-SAMPLING-20261124: role generation_defaults (vendor-recommended values,
++        # cited in the registry) beat the legacy backend constants; a request override wins.
++        v = getattr(gd, name, None) if gd is not None else None
++        return legacy if v is None else v
++
+     return {
+         "temperature": temp if temp >= 0 else None,
+-        "top_k": request.top_k if request.top_k is not None else 40,
+-        "top_p": request.top_p if request.top_p is not None else 0.95,
+-        "min_p": None,
++        "top_k": request.top_k if request.top_k is not None else _gd("top_k", 40),
++        "top_p": request.top_p if request.top_p is not None else _gd("top_p", 0.95),
++        "min_p": _gd("min_p", None),
++        "presence_penalty": _gd("presence_penalty", None),
++        "repeat_penalty": _gd("repeat_penalty", 1.1),
+         "speculative_n_max": n_max,
+         "speculative_requested": None if n_max is None else n_max > 0,
+     }
+@@ -1775,7 +1786,11 @@ class LlamaServerBackend(ModelBackend):
+             payload["temperature"] = sampler["temperature"]
+         payload["top_k"] = sampler["top_k"]
+         payload["top_p"] = sampler["top_p"]
+-        payload["repeat_penalty"] = 1.1
++        payload["repeat_penalty"] = sampler["repeat_penalty"]
++        if sampler["min_p"] is not None:
++            payload["min_p"] = sampler["min_p"]
++        if sampler["presence_penalty"] is not None:
++            payload["presence_penalty"] = sampler["presence_penalty"]
+         seed = getattr(request, "seed", None)
+         payload["seed"] = seed if isinstance(seed, int) else _DETERMINISTIC_SAMPLING_SEED
+ 
+diff --git a/src/registry/registry_loader.py b/src/registry/registry_loader.py
+index 1c083c55..d137a945 100644
+--- a/src/registry/registry_loader.py
++++ b/src/registry/registry_loader.py
+@@ -165,6 +165,12 @@ class GenerationDefaults:
+     n_tokens: int = 512
+     temperature: float | None = None  # None = use global default
+     context_length: int | None = None
++    # OFFICIAL-SAMPLING-20261124: vendor-recommended sampler fields. None = backend legacy default.
++    top_p: float | None = None
++    top_k: int | None = None
++    min_p: float | None = None
++    presence_penalty: float | None = None
++    repeat_penalty: float | None = None
+ 
+ 
+ @dataclass
+@@ -478,6 +484,11 @@ class RegistryLoader:
+                 n_tokens=gen_data.get("n_tokens", 512),
+                 temperature=gen_data.get("temperature"),
+                 context_length=gen_data.get("context_length"),
++                top_p=gen_data.get("top_p"),
++                top_k=gen_data.get("top_k"),
++                min_p=gen_data.get("min_p"),
++                presence_penalty=gen_data.get("presence_penalty"),
++                repeat_penalty=gen_data.get("repeat_penalty"),
+             )
+ 
+         # Build backend config
+diff --git a/tests/unit/test_tap_sampler_params.py b/tests/unit/test_tap_sampler_params.py
+index a69211fa..aefe45aa 100644
+--- a/tests/unit/test_tap_sampler_params.py
++++ b/tests/unit/test_tap_sampler_params.py
+@@ -46,6 +46,8 @@ def test_request_override_wins(tmp_path):
+         "top_k": 10,
+         "top_p": 0.5,
+         "min_p": None,
++        "presence_penalty": None,
++        "repeat_penalty": 1.1,
+         "speculative_n_max": None,
+         "speculative_requested": None,
+     }
+@@ -95,3 +97,17 @@ def test_key_absent_without_role_config(tmp_path):
+     """Backward compatible: no role_config -> no ``sampler`` key (reads as 'predates the hook')."""
+     meta = _build_tap_metadata(_req(), role="coder", backend_url="u", port=1, task_id="t")
+     assert "sampler" not in meta
++
++
++def test_official_sampling_from_generation_defaults():
++    """OFFICIAL-SAMPLING-20261124: declared vendor fields reach the resolved sampler and the wire."""
++    gen = SimpleNamespace(temperature=1.0, top_p=0.95, top_k=20, min_p=0.0,
++                          presence_penalty=1.5, repeat_penalty=1.0)
++    role = SimpleNamespace(acceleration=SimpleNamespace(temperature=None), generation_defaults=gen)
++    s = resolve_sampler_params(role, _req())
++    assert (s["temperature"], s["top_p"], s["top_k"], s["min_p"]) == (1.0, 0.95, 20, 0.0)
++    assert (s["presence_penalty"], s["repeat_penalty"]) == (1.5, 1.0)
++    assert resolve_sampler_params(role, _req(top_k=5))["top_k"] == 5
++    payload: dict = {}
++    LlamaServerBackend._apply_deterministic_sampling(None, payload, role, SimpleNamespace(**{**vars(_req()), "seed": None}))  # type: ignore[arg-type]
++    assert payload["min_p"] == 0.0 and payload["presence_penalty"] == 1.5 and payload["repeat_penalty"] == 1.0
+-- 
+2.56.0
+

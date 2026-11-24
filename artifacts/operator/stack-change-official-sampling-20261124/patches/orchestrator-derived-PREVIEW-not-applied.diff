@@ -1,0 +1,273 @@
+diff --git a/docs/generated/current_stack_summary.md b/docs/generated/current_stack_summary.md
+index 6a63d673..7a435efa 100644
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,9 +9,9 @@ uv run python scripts/registry/stack_change_pipeline.py update
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `4abd85d72997a78ab2d8a7f7844a91e4c521f2add5db4cb6b2c2d29e4ae0037d`
+-- orchestration/model_registry.yaml: `8555352739cd01d7ae04e3363750cc6513ae11630d4fbbfabbfc29bc09e0a24d`
+-- orchestration/model_descriptors.yaml: `c7d9964cfa1296ad03f091b9cd9dce895eb7d2f18cdfcc13ebff25d2db45d4f8`
++- orchestration/derived/stack_priors.yaml: `8d7498e90832885331d2f368ab57460044a006d29154304a3b4e3344b9f938dd`
++- orchestration/model_registry.yaml: `c99d7b941aaec4b05bc2236ed923012f00d114320b8e9fd4870599e0c7185890`
++- orchestration/model_descriptors.yaml: `3577ebe0a6565277d8c6b489f081b044eac8e6520a7d451b3d4a45d0f3ea7680`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index 67d9036f..4819feb0 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,47 +48,47 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-11-23T19:00:44Z'
++compiled_at: '2026-11-24T06:50:07Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: 8555352739cd01d7ae04e3363750cc6513ae11630d4fbbfabbfc29bc09e0a24d
+-    repo_commit: 3421892f
++    sha256: c99d7b941aaec4b05bc2236ed923012f00d114320b8e9fd4870599e0c7185890
++    repo_commit: 2a04aaf7
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: c7d9964cfa1296ad03f091b9cd9dce895eb7d2f18cdfcc13ebff25d2db45d4f8
+-    repo_commit: 3421892f
++    sha256: 3577ebe0a6565277d8c6b489f081b044eac8e6520a7d451b3d4a45d0f3ea7680
++    repo_commit: 2a04aaf7
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+     sha256: 8329d81f8a7435f0e1cfce1e3a32e4a8635d0e80bc92fcf21100fd2e813b9143
+-    repo_commit: 3421892f
++    repo_commit: 2a04aaf7
+   stack_numa:
+     path: scripts/server/stack_numa.py
+     sha256: edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32
+-    repo_commit: 3421892f
++    repo_commit: 2a04aaf7
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+     sha256: 8ebd0f7e92b5d27b252211bf7e7c912775711db9f0ee8701c908ba96712b4583
+-    repo_commit: 3421892f
++    repo_commit: 2a04aaf7
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+     sha256: 15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1
+-    repo_commit: 3421892f
++    repo_commit: 2a04aaf7
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+     sha256: 9cb73f6aae3d24ab6e84aacc3df905d3de5da7216af1f90864f468792c3e975a
+-    repo_commit: 3421892f
++    repo_commit: 2a04aaf7
+   stack_paths:
+     path: scripts/server/stack_paths.py
+     sha256: 85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5
+-    repo_commit: 3421892f
++    repo_commit: 2a04aaf7
+   stack_runtime:
+     path: scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: 3421892f
++    repo_commit: 2a04aaf7
+ roles:
+   architect_critic:
+     role: architect_critic
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index 42a8b5db..d9b52117 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-11-23T19:00:44Z'
++compiled_at: '2026-11-24T06:50:06Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+-    repo_commit: 3421892f
+-    sha256: 8555352739cd01d7ae04e3363750cc6513ae11630d4fbbfabbfc29bc09e0a24d
++    repo_commit: 2a04aaf7
++    sha256: c99d7b941aaec4b05bc2236ed923012f00d114320b8e9fd4870599e0c7185890
+   research:
+-    path: origin/main:orchestration/model_registry.yaml
+-    repo_commit: 707bd2a6e
+-    sha256: 787d88a3097c083a581a3364fbf0549ae5a54a4422f74d059c89cf5888fa3088
++    path: /mnt/raid0/llm/epyc-inference-research/.worktrees/sc-official-sampling-20261124/orchestration/model_registry.yaml
++    repo_commit: fb4dca72e
++    sha256: 1cff88a2a4bca3d9d7579df78668723ac24f988865f5ac1951b1a6d618033e8d
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index 174fa648..f81c2299 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -2,8 +2,9 @@
+ # AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+ #
+ # This file is compiled at every `orchestrator_stack.py start` from the master
+-# master registry materialized from research origin/main:orchestration/model_registry.yaml
+-# with drafter selection from /mnt/raid0/llm/epyc-orchestrator/.worktrees/sc-a3b-pmin075-apply/orchestration/stack_topology.yaml
++# noncanonical master input at /mnt/raid0/llm/epyc-inference-research/.worktrees/sc-official-sampling-20261124/orchestration/model_registry.yaml
++# canonical source of truth: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
++# with drafter selection from orchestration/stack_topology.yaml
+ # by src/registry/registry_compiler.py.
+ #
+ # Runtime stack truth lives in the MASTER registry. The next start detects master
+@@ -12,8 +13,8 @@
+ # To temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-11-23T19:00:43+00:00
+-# Cache key:   7187790942c2f939...
++# Compiled at: 2026-11-24T06:50:06+00:00
++# Cache key:   b99ace32d7d50ecd...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -2256,7 +2257,12 @@ roles:
+       - data
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.3
++      temperature: 0.7
++      top_p: 0.8
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 1.5
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Provide clear, user-friendly explanations.
+ 
+       Elaborate on specialist outputs when presenting to users.
+@@ -2341,7 +2347,12 @@ roles:
+     benchmark_date: null
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.2
++      temperature: 1.0
++      top_p: 0.95
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 0.0
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Output code only. No explanations unless requested.
+ 
+       Include minimal inline comments. No boilerplate or filler.
+@@ -2409,7 +2420,12 @@ roles:
+       pinned: true
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.2
++      temperature: 1.0
++      top_p: 0.95
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 0.0
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Synthesize key points from the provided documents.
+ 
+       Use structured headings for organization.
+@@ -2511,7 +2527,12 @@ roles:
+       reason: 87 GiB model is memory-bound, benefits from block prefetching
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.1
++      temperature: 1.0
++      top_p: 0.95
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 0.0
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Be maximally concise. Use bullet points, not prose.
+ 
+       Output structured plans, not narrative.
+@@ -2607,7 +2628,12 @@ roles:
+       reason: '2026-07-31: the 69GB host-RAM-bandwidth rationale was the 122B''s. The 27B is VRAM-resident under -ngl all; revisit only with GPU-side evidence.'
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.1
++      temperature: 1.0
++      top_p: 0.95
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 0.0
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Attack the plan, do not improve it.
+ 
+       Name fatal flaws and unstated assumptions, not stylistic objections.
+@@ -2690,7 +2716,12 @@ roles:
+       - write_file
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.3
++      temperature: 0.7
++      top_p: 0.8
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 1.5
++      repeat_penalty: 1.0
+   worker_math:
+     tier: C
+     description: Edge cases, invariants, property-test generation
+@@ -2736,11 +2767,24 @@ roles:
+       pinned: true
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.0
++      temperature: 0.7
++      top_p: 0.8
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 1.5
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Output final answer on last line.
+ 
+       '
+   worker_vision:
++    generation_defaults:
++      n_tokens: -1
++      temperature: 0.7
++      top_p: 0.8
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 0.0
++      repeat_penalty: 1.0
+     tier: C
+     port: 8086
+     description: Vision + agentic vision — Qwen3-VL-30B-A3B-Instruct Q4_K_M on MI210 (ROCm0); single unified server, vision_escalation is an alias on this process
+@@ -2959,7 +3003,12 @@ roles:
+       '
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.2
++      temperature: 0.7
++      top_p: 0.8
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 1.5
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Produce concise summaries. Focus on key points.
+ 
+       For document QA, cite specific sections.
+@@ -3011,7 +3060,12 @@ roles:
+       pinned: true
+     generation_defaults:
+       n_tokens: -1
+-      temperature: 0.2
++      temperature: 0.7
++      top_p: 0.8
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 1.5
++      repeat_penalty: 1.0
+     system_prompt_suffix: 'Summarize tool output briefly. Focus on actionable results.
+ 
+       Propose next command if appropriate.
