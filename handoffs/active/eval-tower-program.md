@@ -3200,6 +3200,9 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [ ] **AEI-RERUN-ATTEST** [non-inference] Make the paired-comparison attestation and ledger writer record the rerun arm R summary.json ref and the verdict grammar 'rerun-flip f/n_AR' and 'rerun <ref>' required by the ratified P-AB-1/P-PAIRED rerun-arm amendment
       · done when: a paired attestation written with an R arm carries the rerun ref and rerun-flip string, and one without R is refused for decision use, proven by a unit test
       · gate: AEI-RERUN-FLIP-CODE
+- [ ] **AEI-AP-RERUN-ARM** [inference] Make the autopilot T1/T2 accept gate run a same-configuration rerun arm and pass it to paired_stats verdict_from_result, so autopilot A/B keeps count as decisions under the ratified rerun-arm rule
+      · done when: autopilot accept-gate code passes rerun to verdict_from_result, a unit test covers RerunArmMissingError on that path, and one live accept decision carries a rerun flip rate
+      · gate: AEI-RERUN-FLIP-CODE
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
