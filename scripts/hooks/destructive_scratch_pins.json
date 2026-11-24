@@ -24,7 +24,7 @@
     "approval": "operator 2026-10-31: 'Approve pin + deploy' - keeper v7e = v7d + LOOP-23 reap gate (every id complete + filing-done receipt; REAP_DAYS default 1)"
   },
   "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v13.sh": {
-    "sha256": "5d00f437d152565d344a007d69de2320215b7493360a8297798768d90369c4dd",
+    "sha256": "ecaacb39bd1b39843fc758ec999f2b8a51f72cef30d0b2af1f09cb4bab61a2a3",
     "approval": "operator 2026-11-21: keeper v13 swap for vault-churn fix 263ff22b1 (per-root vault keys; same delete scope)"
   }
 }
