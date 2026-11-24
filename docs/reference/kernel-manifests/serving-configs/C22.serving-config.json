@@ -137,7 +137,7 @@
             "n_max": 7,
             "tokens_per_verify_step": 3.73,
             "drafted_per_step": 6.86,
-            "accepted_fraction": 0.40,
+            "accepted_fraction": 0.4,
             "verify_step_ms_approx": 270,
             "n_requests": 192,
             "basis": "autokernel 2026-11-24 from results.jsonl (sha256 a0c3a72a2fd9519754e51528d7d060be3ba164a983ebdfb491dd6390bcb001fd); verify step ~= per-slot 14 tok/s / 3.73 with 4 slots plus concurrent 3.8k prefill at ub 512",
@@ -191,6 +191,78 @@
             "result_sha256": "beafc07e4c54d0796942838c8049d71e747b7e0d874ad0fb5ac1efe2571c88cd",
             "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-4f2e5618e-c22-df2pm-bsamp",
             "verdict": "OFF/OFF2 arms (backend sampling off); store as recorded in the RESULT, not C21"
+          }
+        },
+        {
+          "id": "single-stream-np1-t1.0-f16kv-ub2048-c21",
+          "config": "evidence:np1-f16kv-ub2048",
+          "throughput_tok_s": 117.8,
+          "throughput_basis": "arm L decode tok/s (L2 119.4), np1, 8 short prompts, max_tokens 1024, T 1.0 top_k 20 top_p 0.95, f16 KV, -b/-ub 2048, -c 16384, ~47 ms/round",
+          "itl_p50_ms": null,
+          "itl_p95_ms": null,
+          "temperature": 1.0,
+          "acceptance": null,
+          "memory_gib": null,
+          "unmeasured": {
+            "itl_p50_ms": "the row reports tok/s, not inter-token latency",
+            "itl_p95_ms": "the row reports tok/s, not inter-token latency",
+            "acceptance": "not carried into this table yet; see the row's RESULT",
+            "memory_gib": "the row records no VRAM sample"
+          },
+          "note": "Pure C21. The served recipe (q8_0 KV, -ub 512, -c 32768) gives up ~20% single-stream to KV type plus ubatch; q8_0 KV is the operator's 2026-11-24 decision and stays, ub is being swept. cross-reference /mnt/raid0/llm/tmp/27b-decode-speed-xref-20261124.md (autokernel 2026-11-24)",
+          "provenance": {
+            "row_id": "ak-c21-tree-official-gpu-20261124",
+            "result_json": "/mnt/raid0/llm/tmp/ak-c21-tree-official-gpu-20261124/out/RESULT.json",
+            "result_sha256": "761bd094aa71a8a2d58555de070210625abb1f37e52c1e71172353c8cf1bd7f0",
+            "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-98ff8a42a-c21"
+          }
+        },
+        {
+          "id": "single-stream-np1-t1.0-f16kv-ub2048-tailfuse-off",
+          "config": "evidence:np1-f16kv-ub2048",
+          "throughput_tok_s": 122.146,
+          "throughput_basis": "OFF arm decode tok/s (OFF2 119.945), same recipe as the C21 tree-official linear arm",
+          "itl_p50_ms": null,
+          "itl_p95_ms": null,
+          "temperature": 1.0,
+          "acceptance": null,
+          "memory_gib": null,
+          "unmeasured": {
+            "itl_p50_ms": "the row reports tok/s, not inter-token latency",
+            "itl_p95_ms": "the row reports tok/s, not inter-token latency",
+            "acceptance": "not carried into this table yet; see the row's RESULT",
+            "memory_gib": "the row records no VRAM sample"
+          },
+          "note": "C21-equivalent with its knobs off (store is the tail-fuse build, not C21). cross-reference /mnt/raid0/llm/tmp/27b-decode-speed-xref-20261124.md (autokernel 2026-11-24)",
+          "provenance": {
+            "row_id": "ak-27b-tail-fuse-gate-gpu-20261124-r2",
+            "result_json": "/mnt/raid0/llm/tmp/ak-27b-tail-fuse-gate-gpu-20261124-r2/out/RESULT.json",
+            "result_sha256": "2cb65eb27a67ca789df863ea6ea0f27fa27b5ba6447bba2867932bd5b4ed7405",
+            "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-24a348720-27b-tail-fuse"
+          }
+        },
+        {
+          "id": "single-stream-np1-greedy-14k-c21",
+          "config": "evidence:np1-greedy-14k",
+          "throughput_tok_s": 88.33,
+          "throughput_basis": "C21 D1 cell decode tok/s, mean of 2 valid visits (87.9-88.8), greedy temp 0 top_k 1, code16k prompt_n 14089, 256 tokens, q8_0 KV, n-max 8",
+          "itl_p50_ms": null,
+          "itl_p95_ms": null,
+          "temperature": 0.0,
+          "acceptance": null,
+          "memory_gib": null,
+          "unmeasured": {
+            "itl_p50_ms": "the row reports tok/s, not inter-token latency",
+            "itl_p95_ms": "the row reports tok/s, not inter-token latency",
+            "acceptance": "not carried into this table yet; see the row's RESULT",
+            "memory_gib": "the row records no VRAM sample"
+          },
+          "note": "Row verdict is FAIL(CORRECTNESS) on the C19 spec arm; the C21 speed figure is evidence only. cross-reference /mnt/raid0/llm/tmp/27b-decode-speed-xref-20261124.md (autokernel 2026-11-24)",
+          "provenance": {
+            "row_id": "c21-fold-gpu-20261124-r2",
+            "result_json": "/mnt/raid0/llm/tmp/c21-fold-gpu-20261124-r2/out/RESULT.json",
+            "result_sha256": "e37d52e9d67787b712eb0cac93e6718f73970dfdc020b9bc94cd6527d5ef5ec0",
+            "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-98ff8a42a-c21"
           }
         }
       ]
