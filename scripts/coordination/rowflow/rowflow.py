@@ -4178,7 +4178,9 @@ SMOKE_MEASURE_ENFORCE = False
 
 def smoke_measure_paths(d, dry_dir_path):
     root = str(d.get("scratch_root") or "")
-    paths = [os.path.join(dry_dir_path, "smoke_measure.json"), os.path.join(root, "out-smoke", "smoke_measure.json")]
+    # out/smoke/ is where AK's SPEC-PIT and calibration jobs write it (2026-11-24 06:46Z SMOKE-NO-MEASURE false FAILs)
+    paths = [os.path.join(dry_dir_path, "smoke_measure.json"), os.path.join(root, "out-smoke", "smoke_measure.json"),
+             os.path.join(root, "out", "smoke", "smoke_measure.json")]
     basis = d.get("estimate_basis") or {}
     if isinstance(basis, dict):
         declared = basis.get("rebook_from") or basis.get("smoke_measure")
