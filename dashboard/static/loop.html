@@ -3305,9 +3305,10 @@ function bwcParity(p){if(!p)return '<p class="count">no parity section in this c
  const rows=p.rows||[];if(!rows.length)return '<p class="count">parity section has no ops</p>';
  const h=['op','ours %','ref %','ref status','gap pp','share','score','covered by','C21 refresh'].map(l=>'<th>'+l+'</th>').join('');
  const tr=rows.map(r=>{const meas=r.ref_status==='measured';
-  const tip=bwcEsc((r.ref||'')+' - '+(r.ref_basis||'')+' - '+(r.ref_cite||''));
+  const br=r.ref_bracket_pct?' - brackets (end-to-end, not a ref): '+Object.entries(r.ref_bracket_pct).map(([k,v])=>k+' '+v+'%').join(', '):'';
+  const tip=bwcEsc((r.ref||'')+' - '+(r.ref_basis||'')+' - '+(r.ref_cite||'')+br);
   return '<tr'+(r.served?'':' style="opacity:.6"')+'><td>'+bwcEsc(r.op)+' <span class="count">'+bwcEsc(r.path)+(r.served?'':' (not served)')+'</span></td>'+
-   '<td>'+bwcPct(r.ours_pct)+'</td><td>'+bwcPct(r.ref_pct)+' <span class="count">'+bwcEsc(r.ref)+'</span></td>'+
+   '<td>'+bwcPct(r.ours_pct)+'</td><td>'+(r.ref_pct==null?'<span class="count" title="'+tip+'" style="cursor:help">no published measurement</span>':bwcPct(r.ref_pct))+' <span class="count">'+bwcEsc(r.ref)+'</span></td>'+
    '<td title="'+tip+'" style="cursor:help;color:'+(meas?'#3fb950':'#d29922')+';font-weight:700">'+(meas?'● ':'○ ')+bwcEsc(r.ref_status)+'</td>'+
    '<td>'+(r.gap_pp==null?'-':r.gap_pp)+'</td><td>'+(r.share_of_step==null?'-':(r.share_of_step*100).toFixed(1)+'%')+'</td>'+
    '<td>'+(r.score==null?'-':r.score)+'</td><td>'+(r.covered_by?bwcEsc(r.covered_by):'<b>none</b>')+'</td><td>'+(r.refresh_c21?'yes':'-')+'</td></tr>';}).join('');

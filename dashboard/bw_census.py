@@ -145,12 +145,13 @@ def shape_parity(doc: dict) -> Optional[dict]:
         if ours is None and gb is not None and roof:
             ours = 100.0 * gb / roof
         ref_pct = _num(ref.get("pct"))
-        gap = None if ours is None else max(0.0, (ref_pct or 0.0) - ours)
+        # a null reference (no published measurement) has no gap and no score; never treat it as 0%
+        gap = None if ours is None or ref_pct is None else max(0.0, ref_pct - ours)
         share = _num(o.get("share_of_step"))
         rows.append({
             "op": o.get("op"), "path": o.get("path"), "served": bool(o.get("served")),
             "ours_pct": None if ours is None else round(ours, 1),
-            "ref": o.get("ref"), "ref_pct": ref_pct,
+            "ref": o.get("ref"), "ref_pct": ref_pct, "ref_bracket_pct": ref.get("bracket_pct"),
             "ref_status": ref.get("status") or "recalled, not re-verified",
             "ref_cite": ref.get("cite"), "ref_basis": ref.get("basis"),
             "gap_pp": None if gap is None else round(gap, 1),

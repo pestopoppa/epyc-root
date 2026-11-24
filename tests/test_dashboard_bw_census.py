@@ -131,6 +131,18 @@ class CensusTests(unittest.TestCase):
         self.census.write_text(json.dumps(FIXTURE))   # no parity section -> null, panel still fine
         self.assertIsNone(S.bw_census_payload(self.census, self.grants)["parity"])
 
+    def test_null_ref_pct_has_no_gap_or_score(self):
+        doc = {**FIXTURE, "parity": {"note": "n", "refs": {"n": {"pct": None, "status": "no-published-measurement",
+                                                                 "cite": "c", "bracket_pct": {"x": 80}}},
+                                     "ops": [{"op": "a", "ref": "n", "ours_pct": 35, "share_of_step": 0.5,
+                                              "served": True, "path": "p"}]}}
+        self.census.write_text(json.dumps(doc))
+        r = S.bw_census_payload(self.census, self.grants)["parity"]["rows"][0]
+        self.assertEqual((r["ref_pct"], r["gap_pp"], r["score"], r["ref_bracket_pct"]), (None, None, None, {"x": 80}))
+        page = (REPO / "dashboard/static/loop.html").read_text()
+        for needle in ("no published measurement", "ref_bracket_pct"):
+            self.assertIn(needle, page)
+
     def test_parity_dom_on_page(self):
         page = (REPO / "dashboard/static/loop.html").read_text()
         for needle in ('id="bwc-parity"', 'id="bwc-batch"', "bwcParity", "ref_status", "C21 refresh"):
