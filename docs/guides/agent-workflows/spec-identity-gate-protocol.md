@@ -27,9 +27,42 @@ Exact token identity is a valid check only when **all** of these hold:
 - one request at a time (concurrency 1; no np4, no batched slots);
 - the same verify-width class on both arms, or `LLAMA_SPEC_EXACT=serial` / `GGML_ROWEXACT_N` on both
   (pinning one kernel backend does not remove verify-path divergence, intake-2842#04);
-- a configuration measured as deterministic across launches.
+- a configuration measured as deterministic across launches;
+- the same cache state and KV provenance on both arms (preconditions checklist below).
 
-Measured (SPEC-ID-NOISE-1, 2026-11-23, CPU `cbccfef9c`, GPU `a260774b3`):
+### Preconditions checklist (SPEC-ID-GATE-2 (b), (c))
+
+Tick every line for both arms before comparing tokens. A line that cannot be ticked puts the comparison
+outside the exact-identity regime (use §3/§4), or makes it INCONCLUSIVE.
+
+| # | Precondition | Both arms |
+|---|---|---|
+| P1 | `cache_prompt: false` on every request | same value |
+| P2 | `--cache-ram 0` (or a verified identical prefix-cache state, logged as `cache_n` per request) | same value |
+| P3 | prefill ubatch `-ub` (and `-b`) | identical |
+| P4 | KV dtype `-ctk` / `-ctv` | identical |
+| P5 | spec width / verify-width class (`--spec-draft-n-max`, p-min, or `LLAMA_SPEC_EXACT=serial` on both) | identical |
+| P6 | fresh decode, not redecode or resume (redecode and resume reuse verify-written KV/GDN state) | fresh |
+| P7 | np, concurrency, sampler chain, BOS/EOS, penalties (config dump equal across builds) | identical |
+
+Floors measured with P1+P2 hold are labelled **cache-off**; the SPEC-ID-NOISE-1 floors below are
+cache-off. A cache-hit path needs its own floor (PFXC-ID-REPLICA-1).
+
+### Cache-hit path template (PFXC-ID-REPLICA-1)
+
+A cached request breaks P1/P2 by design, so it is judged against the cold path, never against a
+cache-off floor alone:
+
+1. Per launch L (>= 3 launches, served flags, `cache_prompt: true`, `--cache-ram` as served), per prompt:
+   COLD_L = the target request with `cache_prompt: false`; then a priming request (same prompt, 1 token,
+   `cache_prompt: true`); then HIT_L = the target request with `cache_prompt: true`. Log `timings.cache_n`
+   on every request; a HIT with `cache_n` = 0 is a cache miss and is reported, not judged.
+2. Per-path floors: `replica_floor([COLD_1..n])` and `replica_floor([HIT_1..n])` (largest pair).
+3. Gate: `identity_replica_gate(HIT_k, [COLD_1..n], margins=...)` for every k. Any FAIL, or any HIT-vs-COLD
+   count above the larger per-path floor, marks cached requests **outside the exact regime** for that
+   device and recipe; record it here. All PASS: the cache-hit path is within the cold-path floor.
+
+Measured (SPEC-ID-NOISE-1, 2026-11-23, CPU `cbccfef9c`, GPU `a260774b3`; all floors **cache-off**):
 
 - CPU (Q38FN + MTP, C19): spec-off and MTP at concurrency 1 are bit-deterministic across launches
   (0/64 divergences, w1 delta-logit exactly 0). **Floor 0.**
@@ -45,6 +78,21 @@ A change in draft width (p-min, adaptive width) changes the verify batch shape, 
 
 Never import a literature exact-match rate as a threshold (intake-2844#record). The floor is what our
 same-run A/A arm measures.
+
+### Replica table (SPEC-ID-GATE-2 (a))
+
+A floor is the **largest pair** over all pairs of reference launches of the unchanged config, never a
+single A/A pair. At least one launch is reordered (prompt order permuted) or np-shuffled.
+
+| Use | Reference launches | Pairs | Floor |
+|---|---|---|---|
+| ordinary gate | >= 3 | all C(n,2) (3 for n=3) | largest pair divergence count |
+| promotion gate | >= 5 | all C(n,2) (10 for n=5) | largest pair divergence count |
+| fewer launches | < 3 (< 5 for promotion) | - | none: **INCONCLUSIVE** |
+
+Code: `replica_floor` and `identity_replica_gate` in `spec_dist_gate.py`. The candidate's count is its
+largest count against any reference launch; it fails above the floor or on any non-NOISE first divergence
+(§3), and with no retained margins it is INCONCLUSIVE.
 
 ## 3. Margin classes: classify every first divergence
 
@@ -71,6 +119,9 @@ per-class value is measured. `classify_divergence` verdicts:
 - `DEFECT_CANDIDATE`: margin > tau; or **any** divergence inside the exact-identity regime (floor 0).
 - `UNCLASSIFIABLE`: no logprobs retained. Re-run with top-k logprobs; do not judge by count.
 
+Margin classes are only comparable between arms that pass the §2 preconditions P1-P6; a class tau measured
+cache-off does not transfer to a cache-hit or resumed path.
+
 A gate run must therefore retain top-2 logprobs at every emitted position (or at least at first
 divergences). A run that kept only tokens can say "identical" or "not identical", and nothing more.
 
@@ -82,6 +133,24 @@ d = divergences(arm vs ref) − divergences(A/A). `paired_count_test` gives a on
 95% t interval for mean d. A count is excess only if p < 0.05 and the CI excludes 0. Even then, the
 margin classes of §3 decide whether the excess is a defect (`gt0.5` / DEGEN) or a larger number of
 near-tie flips. Single triples or one-off counts (for example ON 7 vs OFF 0) decide nothing.
+
+The A/A side of the count uses the replica floor (§2 replica table), not one pair. Where a scored corpus
+exists, report graded flips beside the count (SPEC-ID-GATE-2 (e)): worse, better, wrong-to-wrong, and net.
+
+### RESULT.json fields (SPEC-ID-GATE-2 (d))
+
+Every identity or margin-class gate RESULT.json carries:
+
+| Field | Content |
+|---|---|
+| `env_knobs` | every kernel-selection env var set for each arm (`GGML_HIP_*`, `GGML_ROWEXACT_N`, `LLAMA_SPEC_EXACT`, `GGML_IQK*`, ...), unset ones listed as null |
+| `route_histogram` | per verify width: count of calls per kernel route |
+| `binary_sha256` | SHA-256 of `llama-server` and each loaded `libggml*.so`, per arm |
+| `config_dump` | sampler chain, BOS/EOS, penalties, prefix-cache state (`cache_prompt`, `--cache-ram`), np, `-ub`, `-ctk`/`-ctv`, spec width |
+| `config_dump_equal` | true/false; a cross-build row with false is not judged |
+| `replica_floor` | `replica_floor()` output: launches, pair list, largest pair |
+| `cache_label` | `cache-off` or `cache-hit` |
+| `graded_flips` | worse / better / wrong-to-wrong / net, when a scored corpus exists |
 
 ## 5. T > 0: the SPEC-PIT.1 distribution gate
 
@@ -124,3 +193,7 @@ For any champion fold (C-build) touching the spec or verify path:
    margin class. A cross-server count without A/A is not evidence.
 5. Every fold-gate run retains top-2 logprobs. Without them the result is UNCLASSIFIABLE, and the gate
    is INCONCLUSIVE rather than PASS.
+6. **Replicas and preconditions (SPEC-ID-GATE-2):** the A/A floor in steps 2 and 4 is the largest pair
+   over >= 3 reference launches (>= 5 for a promotion gate); with fewer, `identity_replica_gate` returns
+   INCONCLUSIVE. Tick the §2 preconditions checklist for both arms, write the §4 RESULT.json fields, and
+   prove `config_dump_equal` before judging a cross-build row.
