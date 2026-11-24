@@ -1,0 +1,203 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-24T14:06:57Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "2b03cf51adf7c0ed07111c7cd5f43f46c418bf29",
+  "git_head_before": "2b03cf51adf7c0ed07111c7cd5f43f46c418bf29",
+  "operator": "Daniele",
+  "protocol_id": "P-AB-1",
+  "ratification_id": "RATIFY-AEI-RERUN-ARM-OD-20261124",
+  "ratify_script": {
+    "exists": true,
+    "path": "/mnt/raid0/llm/tmp/rerun-arm-amendment-v2/ratify_aei_rerun_arm_20261124.sh",
+    "sha256": "2b3b9ef283a03a4f121dcb7fe0ec7d446cacc602e2034d929f5ecc07ed2a868e"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/workspace",
+  "sections": {
+    "coherence": {
+      "data": {
+        "MEASUREMENT.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        },
+        "measurement/protocols/quality-eval.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: protocol-text adoption; no new measurement. Decision AEI-RERUN-ARM-OD option (a), 2026-11-24; provenance intake-2934#record; patch sha256 f6a75eefebb144fcf31d44989fab8d01b68e3006fc8260e7824f98c3c3bb7a38"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-AB-1 present in MEASUREMENT.md",
+        "anchor present in measurement/protocols/quality-eval.md: **Rerun arm \u2014 the same-configuration noise floor** *(AEI-RERUN-ARM-OD;",
+        "anchor present in measurement/protocols/quality-eval.md: - **Rerun arm** *(AEI-RERUN-ARM-OD; operator-ratified 2026-11-24, opti",
+        "anchor present in MEASUREMENT.md: - **2026-11-24 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-AB-1` and `P-PAIRED`)"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 11,
+      "lines_after": 760,
+      "lines_before": 749,
+      "lines_removed": 0,
+      "path": "MEASUREMENT.md",
+      "sha256_after": "53e04ad15dd635a6b463e6446e8ab58764ad97be66166793189120f8527dc745",
+      "sha256_before": "e75e0d43146be5b34933000217342581743454e985b27421a842d210aa4ac9c9",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/MEASUREMENT.md",
+        "+++ b/MEASUREMENT.md",
+        "@@ -349,6 +349,17 @@",
+        " ",
+        " ## CHANGELOG",
+        " ",
+        "+- **2026-11-24 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-AB-1` and `P-PAIRED`): every quality-eval comparison",
+        "+  whose claimed effect is a scaffold, harness, prompt, routing, feature or reviewer-arm effect gains a",
+        "+  **same-configuration rerun arm** (the baseline arm executed a second time, identical configuration and",
+        "+  seed policy, fresh run, same tasks). The rerun **flip rate** (tasks whose binary correctness differs",
+        "+  between the baseline and its rerun, with directional counts and a 95% Wilson interval) is reported",
+        "+  beside the effect, and an effect no larger than the flip rate (`|\u0394| \u2264 flip_rate`) is NOT claimed. A",
+        "+  comparison without a rerun arm is an observation. Adds a requirement only: prospective, no earlier",
+        "+  verdict, baseline or number is edited or relabelled, no threshold is derived from the source's 13%",
+        "+  median. Extends the `P-PAIRED` verdict grammar by an appended `rerun-flip` field and `rerun` ref.",
+        "+  Decision AEI-RERUN-ARM-OD, operator option (a), 2026-11-24; provenance `intake-2934#record`.",
+        "+",
+        " - **2026-11-24 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-PAIRED` and `P-CAL`): SUPERSEDES the E7c `P-PAIRED`",
+        "   era anchor and the sentence that called E7c P-PAIRED verdicts \"NOT affected\" by the scorer. The anchor",
+        "   (worker_general vs worker_math, b=61, c=58, p\u22480.855, \"indistinguishable\") used v1 `math_verify` labels,"
+      ]
+    },
+    {
+      "lines_added": 51,
+      "lines_after": 400,
+      "lines_before": 349,
+      "lines_removed": 0,
+      "path": "measurement/protocols/quality-eval.md",
+      "sha256_after": "480c11ece338e00e9e21f5c6a232c0e0ef6d3ade4d54ae167a358eeaa4d045e1",
+      "sha256_before": "8e97a93735ba9ccb337242ae2f3eec15ed81ba365e907d8c9cfba15bd2084034",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/quality-eval.md",
+        "+++ b/measurement/protocols/quality-eval.md",
+        "@@ -39,6 +39,43 @@",
+        " reason (backend outage / timeout / empty / genuine \u2014 `feedback_classify_eval_failures_by_reason`)",
+        " with infra-failure rate reported next to the effect; flag-state attestation across all workers",
+        " in the run header (the 1-of-6-worker lesson).",
+        "+",
+        "+**Rerun arm \u2014 the same-configuration noise floor** *(AEI-RERUN-ARM-OD; operator-ratified",
+        "+2026-11-24, option (a); PROSPECTIVE: it governs comparisons opened after this block landed)*.",
+        "+Run-to-run variation of an UNCHANGED configuration is a measured quantity, never an assumption.",
+        "+Provenance only: the source (`intake-2934#record`) reports reruns flipping a median 13% of tasks,",
+        "+about as many as a harness swap. That is the source's own figure on its own tasks, not a",
+        "+measurement of this stack, and no number in this block is derived from it.",
+        "+",
+        "+- **Scope.** Every P-AB-1 or P-PAIRED comparison whose claimed effect is a scaffold, harness,",
+        "+  prompt, routing, feature or reviewer-arm effect carries a rerun arm R. A comparison with no R",
+        "+  is an observation and is never a claim.",
+        "+- **Definition of R.** R is a second, independent execution of the BASELINE arm A (the arm the",
+        "+  effect is measured against) under the IDENTICAL declared configuration: same model and serving",
+        "+  identity, flags, prompt, harness, `dataset_sha256`, `test_profile`, scoring and sampling",
+        "+  parameters, and the SAME seed policy as A (the same seed value, or the same per-task",
+        "+  derivation rule). R is never re-seeded to manufacture variation and never given a different",
+        "+  seed to avoid it. R is a fresh run: a new process and session, with no cached completion, tool",
+        "+  result or retrieval state carried over from A. **n:** R runs on every task A and B were scored",
+        "+  on (n_R = n of the comparison). A fixed subset is allowed only when declared before any arm is",
+        "+  scored and with n_R \u2265 100; its smaller n and wider interval are reported.",
+        "+- **Flip rate.** Over the tasks scored in BOTH A and R (a task that is infra-failed or",
+        "+  scoring-failed in either run is excluded and counted, per the failure classification above), a",
+        "+  flip is a task whose binary correctness under the comparison's own scoring differs between A",
+        "+  and R. With f_AR = A correct and R wrong, f_RA = A wrong and R correct, and n_AR the tasks",
+        "+  scored in both: `flip_rate = (f_AR + f_RA) / n_AR`. Report `rerun-flip f/n_AR = x%` with both",
+        "+  directional counts and a 95% Wilson interval. Report beside it, in the same unit (fraction of",
+        "+  tasks), the effect `|\u0394| = |pass_rate(B) \u2212 pass_rate(A)|` and the A-versus-B discordant rate",
+        "+  `(b + c) / n`, so gross churn and net effect are not conflated.",
+        "+- **No-claim rule.** An effect with `|\u0394| \u2264 rerun flip_rate` is NOT claimed. It is reported as",
+        "+  `within rerun noise [P-AB-1, rerun-flip f/n_AR, YYYY-MM-DD]` and gates nothing. A tie is",
+        "+  no-claim. The rule applies identically to scaffold, harness and reviewer-arm effects and to",
+        "+  an effect measured on a subset. An effect above the flip rate is claimable only through the",
+        "+  rest of this protocol (N, pairing, failure classification, P-PAIRED where used); clearing the",
+        "+  rerun rule is necessary, never sufficient.",
+        "+- **Not retroactive.** This block adds a requirement. It edits no earlier verdict, baseline or",
+        "+  number, and earlier P-AB-1 / P-PAIRED results with no R are not relabelled; a decision that",
+        "+  must still rest on one needs a rerun arm first.",
+        " ",
+        " ## P-SMOKE-1 \u2014 Sanity check (non-decision-gating)",
+        " ",
+        "@@ -161,6 +198,20 @@",
+        "   mismatched provenance, never upgrades a single-arm accuracy delta, never gates outside",
+        "   E7-eval-instrument+. Grammar:",
+        "   `verdict [P-PAIRED, n_discordant/method, YYYY-MM-DD, attest <summary.json ref>]`.",
+        "+- **Rerun arm** *(AEI-RERUN-ARM-OD; operator-ratified 2026-11-24, option (a); prospective)*.",
+        "+  The rerun arm R, its seed policy, n, the flip rate and the no-claim rule are defined in",
+        "+  P-AB-1 and apply to every P-PAIRED comparison. R is the same-configuration rerun of arm A. The",
+        "+  flip rate is the McNemar discordant count of A against R (`mcnemar_from_vectors(A, R)`:",
+        "+  b' + c'), divided by the tasks scored in both. For a verdict, `|\u0394| = |b \u2212 c| / n`. A verdict",
+        "+  of \"a_better\"/\"b_better\" with `|\u0394| \u2264 rerun flip_rate` is reported and gated as",
+        "+  \"indistinguishable\" with reason `within_rerun_noise`; its p-value stays on record. A pair",
+        "+  with no R is refused for decision use exactly as a mismatched pair is (observation only), and",
+        "+  the R `summary.json` ref is mandatory in the attestation. Grammar for comparisons opened after",
+        "+  ratification, which supersedes the Grammar tail above for them and no other text:",
+        "+  `verdict [P-PAIRED, n_discordant/method, rerun-flip f/n_AR, YYYY-MM-DD, attest <summary.json ref>, rerun <R summary.json ref>]`.",
+        "+  Instrument note (observation, not a claim): `paired_stats.py` does not yet compute the",
+        "+  rerun flip rate or the downgrade; until that code lands the rate is computed from the",
+        "+  per-task vectors with the existing `mcnemar_from_vectors` and attested by hand.",
+        " - **Baseline (era anchor)**: E7c math re-baseline",
+        "   (`orchestration/reports/eval_tower_math_rebaseline_E7c/summary.json`), worker_general vs",
+        "   worker_math, seed 42: b=61, c=58, n_discordant=119 \u2192 normal_approx, p \u2248 0.855 \u2192"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "bash scripts/validate/check_claims_grammar.sh --files measurement/protocols/quality-eval.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "check_claims_grammar: 5 line(s) look like uncited claims (need [P-<ID>, n, date, attest] or an observation marker):",
+        "measurement/protocols/quality-eval.md:38:(the X-MAS lesson: a 20pp effect at N=25 collapsed to 4pp at N=100); every failure classified by",
+        "measurement/protocols/quality-eval.md:144:- **Baselines (era anchors)**: code ECE 0.2532/0.3216, AUROC 0.6337/0.5751 (frontdoor/",
+        "measurement/protocols/quality-eval.md:154:  0.0279, AUROC 0.4639 (Hanley-McNeil 95% about 0.38-0.55); worker_math n=1628, accuracy 0.9631",
+        "measurement/protocols/quality-eval.md:155:  (60 negatives), ECE 0.0369, AUROC 0.4686 (about 0.39-0.54). `-tokens_generated` AUROC 0.5958 /",
+        "measurement/protocols/quality-eval.md:218:  \"indistinguishable\" (the ~0.2pp delta is inside the noise band). Ledger row:"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

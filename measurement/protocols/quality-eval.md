@@ -40,6 +40,43 @@ reason (backend outage / timeout / empty / genuine — `feedback_classify_eval_f
 with infra-failure rate reported next to the effect; flag-state attestation across all workers
 in the run header (the 1-of-6-worker lesson).
 
+**Rerun arm — the same-configuration noise floor** *(AEI-RERUN-ARM-OD; operator-ratified
+2026-11-24, option (a); PROSPECTIVE: it governs comparisons opened after this block landed)*.
+Run-to-run variation of an UNCHANGED configuration is a measured quantity, never an assumption.
+Provenance only: the source (`intake-2934#record`) reports reruns flipping a median 13% of tasks,
+about as many as a harness swap. That is the source's own figure on its own tasks, not a
+measurement of this stack, and no number in this block is derived from it.
+
+- **Scope.** Every P-AB-1 or P-PAIRED comparison whose claimed effect is a scaffold, harness,
+  prompt, routing, feature or reviewer-arm effect carries a rerun arm R. A comparison with no R
+  is an observation and is never a claim.
+- **Definition of R.** R is a second, independent execution of the BASELINE arm A (the arm the
+  effect is measured against) under the IDENTICAL declared configuration: same model and serving
+  identity, flags, prompt, harness, `dataset_sha256`, `test_profile`, scoring and sampling
+  parameters, and the SAME seed policy as A (the same seed value, or the same per-task
+  derivation rule). R is never re-seeded to manufacture variation and never given a different
+  seed to avoid it. R is a fresh run: a new process and session, with no cached completion, tool
+  result or retrieval state carried over from A. **n:** R runs on every task A and B were scored
+  on (n_R = n of the comparison). A fixed subset is allowed only when declared before any arm is
+  scored and with n_R ≥ 100; its smaller n and wider interval are reported.
+- **Flip rate.** Over the tasks scored in BOTH A and R (a task that is infra-failed or
+  scoring-failed in either run is excluded and counted, per the failure classification above), a
+  flip is a task whose binary correctness under the comparison's own scoring differs between A
+  and R. With f_AR = A correct and R wrong, f_RA = A wrong and R correct, and n_AR the tasks
+  scored in both: `flip_rate = (f_AR + f_RA) / n_AR`. Report `rerun-flip f/n_AR = x%` with both
+  directional counts and a 95% Wilson interval. Report beside it, in the same unit (fraction of
+  tasks), the effect `|Δ| = |pass_rate(B) − pass_rate(A)|` and the A-versus-B discordant rate
+  `(b + c) / n`, so gross churn and net effect are not conflated.
+- **No-claim rule.** An effect with `|Δ| ≤ rerun flip_rate` is NOT claimed. It is reported as
+  `within rerun noise [P-AB-1, rerun-flip f/n_AR, YYYY-MM-DD]` and gates nothing. A tie is
+  no-claim. The rule applies identically to scaffold, harness and reviewer-arm effects and to
+  an effect measured on a subset. An effect above the flip rate is claimable only through the
+  rest of this protocol (N, pairing, failure classification, P-PAIRED where used); clearing the
+  rerun rule is necessary, never sufficient.
+- **Not retroactive.** This block adds a requirement. It edits no earlier verdict, baseline or
+  number, and earlier P-AB-1 / P-PAIRED results with no R are not relabelled; a decision that
+  must still rest on one needs a rerun arm first.
+
 ## P-SMOKE-1 — Sanity check (non-decision-gating)
 
 A lightweight pass/fail sufficient to **unblock work**, **insufficient to gate any decision**.
@@ -161,6 +198,20 @@ after auditing the cited implementation.*
   mismatched provenance, never upgrades a single-arm accuracy delta, never gates outside
   E7-eval-instrument+. Grammar:
   `verdict [P-PAIRED, n_discordant/method, YYYY-MM-DD, attest <summary.json ref>]`.
+- **Rerun arm** *(AEI-RERUN-ARM-OD; operator-ratified 2026-11-24, option (a); prospective)*.
+  The rerun arm R, its seed policy, n, the flip rate and the no-claim rule are defined in
+  P-AB-1 and apply to every P-PAIRED comparison. R is the same-configuration rerun of arm A. The
+  flip rate is the McNemar discordant count of A against R (`mcnemar_from_vectors(A, R)`:
+  b' + c'), divided by the tasks scored in both. For a verdict, `|Δ| = |b − c| / n`. A verdict
+  of "a_better"/"b_better" with `|Δ| ≤ rerun flip_rate` is reported and gated as
+  "indistinguishable" with reason `within_rerun_noise`; its p-value stays on record. A pair
+  with no R is refused for decision use exactly as a mismatched pair is (observation only), and
+  the R `summary.json` ref is mandatory in the attestation. Grammar for comparisons opened after
+  ratification, which supersedes the Grammar tail above for them and no other text:
+  `verdict [P-PAIRED, n_discordant/method, rerun-flip f/n_AR, YYYY-MM-DD, attest <summary.json ref>, rerun <R summary.json ref>]`.
+  Instrument note (observation, not a claim): `paired_stats.py` does not yet compute the
+  rerun flip rate or the downgrade; until that code lands the rate is computed from the
+  per-task vectors with the existing `mcnemar_from_vectors` and attested by hand.
 - **Baseline (era anchor)**: E7c math re-baseline
   (`orchestration/reports/eval_tower_math_rebaseline_E7c/summary.json`), worker_general vs
   worker_math, seed 42: b=61, c=58, n_discordant=119 → normal_approx, p ≈ 0.855 →

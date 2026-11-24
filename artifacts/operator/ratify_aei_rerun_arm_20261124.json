@@ -1,0 +1,32 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "AEI-RERUN-ARM-OD",
+  "option": "a",
+  "gate_id": "RATIFY-AEI-RERUN-ARM-OD-20261124",
+  "ratified_at": "2026-11-24T14:06:57Z",
+  "applied_at": "2026-11-24T14:06:57Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "protocol_ids": [
+    "P-AB-1",
+    "P-PAIRED"
+  ],
+  "annex": "Q",
+  "patch_sha256": "f6a75eefebb144fcf31d44989fab8d01b68e3006fc8260e7824f98c3c3bb7a38",
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "e75e0d43146be5b34933000217342581743454e985b27421a842d210aa4ac9c9",
+      "sha256_after": "53e04ad15dd635a6b463e6446e8ab58764ad97be66166793189120f8527dc745"
+    },
+    "measurement/protocols/quality-eval.md": {
+      "sha256_before": "8e97a93735ba9ccb337242ae2f3eec15ed81ba365e907d8c9cfba15bd2084034",
+      "sha256_after": "480c11ece338e00e9e21f5c6a232c0e0ef6d3ade4d54ae167a358eeaa4d045e1"
+    }
+  },
+  "scope": "Protocol text only, prospective. Adds a same-configuration rerun arm, its flip rate and a no-claim rule (|effect| <= rerun flip rate). No earlier verdict, baseline or number edited or relabelled.",
+  "consolidated_receipt": "artifacts/operator/ratify_aei_rerun_arm_20261124.receipt.json",
+  "provenance": {
+    "source": "intake-2934#record",
+    "note": "13% median rerun flip rate is the source's figure, not a project measurement; no threshold derived from it"
+  }
+}

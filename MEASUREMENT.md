@@ -349,6 +349,17 @@ confers no authority beyond its own enumeration.
 
 ## CHANGELOG
 
+- **2026-11-24 (v2.x)** — AMENDMENT (Annex Q, `P-AB-1` and `P-PAIRED`): every quality-eval comparison
+  whose claimed effect is a scaffold, harness, prompt, routing, feature or reviewer-arm effect gains a
+  **same-configuration rerun arm** (the baseline arm executed a second time, identical configuration and
+  seed policy, fresh run, same tasks). The rerun **flip rate** (tasks whose binary correctness differs
+  between the baseline and its rerun, with directional counts and a 95% Wilson interval) is reported
+  beside the effect, and an effect no larger than the flip rate (`|Δ| ≤ flip_rate`) is NOT claimed. A
+  comparison without a rerun arm is an observation. Adds a requirement only: prospective, no earlier
+  verdict, baseline or number is edited or relabelled, no threshold is derived from the source's 13%
+  median. Extends the `P-PAIRED` verdict grammar by an appended `rerun-flip` field and `rerun` ref.
+  Decision AEI-RERUN-ARM-OD, operator option (a), 2026-11-24; provenance `intake-2934#record`.
+
 - **2026-11-24 (v2.x)** — AMENDMENT (Annex Q, `P-PAIRED` and `P-CAL`): SUPERSEDES the E7c `P-PAIRED`
   era anchor and the sentence that called E7c P-PAIRED verdicts "NOT affected" by the scorer. The anchor
   (worker_general vs worker_math, b=61, c=58, p≈0.855, "indistinguishable") used v1 `math_verify` labels,
