@@ -1124,6 +1124,13 @@ Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/kn
 ## Track: colbert-reranker-web-research
 <!-- gate: none -->
 
+### Backlog
+- [ ] **AEI-KB-BREADCRUMB-AB** [inference] Build a side kb-search index whose encoded chunk text is prefixed with the file path and full heading breadcrumb, and compare it with the production index on the K7 70-case pool (recall@10) plus an in-document subset, with the production index unchanged (intake-2924#record claims 0-2, intake-2936#record, intake-2912#record).
+      · done when: verdict tick records recall@3/5/10 for both indexes on the K7 pool and the in-document subset with the keep/drop decision under the stop rule
+      · gate: none        · inputs: `repos/epyc-orchestrator/src/retrieval/kb_rag.py` `repos/epyc-orchestrator/src/retrieval/markdown_chunker.py` `repos/epyc-orchestrator/scripts/kb_rag/eval_k7.py`
+      · model GTE-ModernColBERT ONNX · harness scripts/kb_rag/eval_k7.py · metric recall@10 higher · region CPU quarter · est from the K7 build (18,010 chunks)
+      · stop rule: keep only if recall@10 rises more than the 2-pt K7 noise band and the in-document subset does not fall; drop inside the band; production index unchanged either way
+
 > Folded from `handoffs/active/colbert-reranker-web-research.md` @ `ccf37cd0b6a4` on 2026-11-02 (BRF-T1-F8, route 1a, operator D1/D5; retired row PIP-01 → PIP-04). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### ColBERT Reranker for web_research Pipeline

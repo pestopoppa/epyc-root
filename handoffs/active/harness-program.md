@@ -1831,6 +1831,20 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
       · section: HIL-1 accepted home classification
 
 > Folded from `handoffs/active/harness-improvement-loop.md` @ `d221498dc150` on 2026-11-03 (BRF-T7-F6, route 1b, operator D1/D5; retired row UFH-08 → UFH-01). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **AEI-CT18-ARMD-PREP** [non-inference] Prepare CT-18 arm D, a tool-output sanitizer in front of the agent: D-1 a detect-and-extract guardrail prompt run on the local worker role, D-2 the released DataFilter Llama-3.1-8B weights converted to GGUF with its special tokens checked, both given the trusted task and applied per JSON key (intake-2927#record, intake-2932#record, intake-2933#record).
+      · done when: fixture-harness dry run on 3 IB2 items prints D-1 and D-2 sanitized outputs, and the GGUF tokenizer test shows the DataFilter special tokens round-trip
+      · gate: none
+- [ ] **AEI-CT18-ARMD-RUN** [inference] Run CT-18 arms D-1 and D-2 on the IB2 24x3 fixtures with the worker and architect roles and report static-attack ASR, aligned-twin compliance, clean task_ok and clean-output false-removal rate per arm against arms A-C, worded per CT-20 (intake-2927#record claims 0-3, intake-2931#record).
+      · done when: verdict tick records ASR, aligned-twin compliance, task_ok and false-removal rate for D-1 and D-2 beside arms A-C on IB2 24x3, worded static-attack ASR on fixture set IB2
+      · gate: AEI-CT18-ARMD-PREP
+      · model CT-18 worker and architect roles + DataFilter-8B GGUF · harness CT-18 fixture harness · metric ASR lower, task_ok higher, false-removal lower · region CT-18 substrate split, DataFilter on MI210 · est from CT-18.1 timings
+      · stop rule: question = does D-1 or D-2 cut static ASR below arms A-C with clean task_ok within 5 pts; checkpoint after the worker role; futility if both within 5 pts of arm A; answer opens M6
+- [ ] **AEI-BOUNDARY-LAUNDER-LINT** [non-inference] Add a static test that flags any delegation call site where a value from the untrusted-source list (tool output, worker output, doc text, retrieved chunk, report) is interpolated into a child role's natural-language instruction instead of a separate data field (intake-2928#record claims 0-1).
+      · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_boundary_laundering_lint.py -q passes and lists each current call site as clean or allowlisted with a reason
+      · gate: none
+- [ ] **AEI-HTTPPOST-GUARD** [non-inference] Apply the SEC-EXEC-3 web_guard destination check to http_post (orchestration/tools/web.py), which today posts to any URL while roles holding the web category also read untrusted pages (intake-2907#record discovery; intake-2928#record context).
+      · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_web_guard_http_post.py -q passes, refusing private and metadata destinations for http_post
+      · gate: none        · inputs: `repos/epyc-orchestrator/orchestration/tools/web.py` `repos/epyc-orchestrator/src/repl_environment/web_guard.py`
 
 ### Harness Improvement Loop — self-improvement for orchestrator-side harness features
 
@@ -3269,6 +3283,12 @@ REPL-EMB has no inlining path (search returns pointers; reads go through `get`/`
     - **Result:** 100% byte-exact survival: 122 failed-action lines and 324 pointers, 0 missing.
     - **Extractor gaps found and fixed:** the pre-fix baseline missed 8 failed lines and 129 pointers. The fixes cover `LOOP HALTED` as a failed action; root-level, relative and bare file paths; and 64-char sha256 digests pinned whole. The test file now has 21 passing tests.
     - **Caveat:** the 50/200 caps never bound on this corpus. [belief: cc]
+- [ ] **AEI-CHAT-FINISH-REASON** [non-inference] Carry the backend completion_reason into the /chat response as finish_reason plus a truncated flag, so a length-cut answer is returned marked truncated instead of as a complete final answer (intake-2907#record discovery; gap at src/api/models/responses.py @ 1cc2043, no finish_reason field).
+      · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_chat_finish_reason.py -q passes, covering stop, length and context_limit
+      · gate: none        · inputs: `repos/epyc-orchestrator/src/api/models/responses.py` `repos/epyc-orchestrator/src/backends/llama_server.py`
+- [ ] **AEI-TRUNC-NOTICE** [non-inference] Make the three '[... truncated at N chars]' markers in src/llm_primitives/primitives.py say how to get the rest (the spilled file path with peek/grep, or a narrower request), matching the REPL spill footer (intake-2911#record claim 1).
+      · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_truncation_notice.py -q passes and grep -c 'truncated at' src/llm_primitives/primitives.py shows every marker carries a narrowing hint
+      · gate: none        · inputs: `repos/epyc-orchestrator/src/llm_primitives/primitives.py` `repos/epyc-orchestrator/src/repl_environment/environment.py`
 
 ### Agentic serving harness fixes — demonstrate on the 27B, generalize, then audit
 

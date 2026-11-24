@@ -918,7 +918,20 @@ pinned commit). RA-13b exists because of that gap, and RA-13b gates RA-13a's cit
 ## Track: reviewer-model-ablations
 <!-- gate: REV-02#glm52-reviewer-capability-gates -->
 
+### Backlog
+- [ ] **AEI-REV-FLIPS** [non-inference] Add per-arm fix and break counts (worker-wrong to reviewer-reject, worker-right to reviewer-reject) and a Kamoi-style fairness line (initial-prompt strength, no oracle stop, matched-token baseline present or absent) to the RM-2 arm report, computed offline from decisions already in the review ledger (intake-2930#record claims 1-2, intake-2929#record claim 4).
+      · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_reviewer_calibration_flips.py -q passes and the RM-2 report for the A1 48-row slice prints the new columns
+      · gate: none        · inputs: `repos/epyc-orchestrator/scripts/analysis/reviewer_calibration_report.py`
+
 > Folded from `handoffs/active/reviewer-model-ablations.md` @ `28b488861d1f` on 2026-11-03 (BRF-T7-F15, route 1b, operator D1/D5; retired row REV-07 → REV-02). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **AEI-REV-A1-PRECHECK** [non-inference] Record two facts about the A1 self-review runner before any further A1 arm: whether the worker patch reaches the reviewer as user-role or assistant-role content, and whether the C-CRAB rows of the 48-row slice carry a gold defect location usable as an oracle hint (intake-2939#record, intake-2940#record).
+      · done when: a sub-bullet under this box names the runner file:line for the message role and the count of the 48 rows with a gold defect location
+      · gate: none
+- [ ] **AEI-REV-A1-LOCATE-PROBE** [inference] Run one bounded diagnostic on the 48-row A1 slice with the incumbent A1 reviewer: arm L gives the gold defect location, arm P uses a comprehensive single-pass review prompt; report FA, FR and AUC per arm against the A1 baseline, then close A1 as a negative control unless arm L lifts (intake-2940#record claims, intake-2937#record).
+      · done when: verdict tick records FA/FR/AUC for arms L and P on the 48 rows with the pass/close decision under the stop rule
+      · gate: AEI-REV-A1-PRECHECK
+      · model Qwen3.5-122B (incumbent A1) · build production-consolidated-v10 · harness RM-2 runner · metric FA/FR lower, AUC higher · region CPU host quarter · est ~2200 s per arm from the A1 48-row run
+      · stop rule: question = does location (L) or a comprehensive prompt (P) lift A1; n=48 resolves AUC +0.15 or FA+FR -20 pts; checkpoint 24 rows; futility if L not better than A1 on FA+FR at 24; answer routes to M7 (L lifts) or closes A1 (neither)
 
 ### Reviewer Control Plane — Registry-Driven Model-Role Ablation Tournament (H5)
 

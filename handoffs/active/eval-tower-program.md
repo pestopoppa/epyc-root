@@ -3123,15 +3123,31 @@ Structural change → **implement in a follow-on pass** (not in this design task
   - [ ] **SCORER-MV-GOLDWRAP** [non-inference] Wrap a bare-LaTeX gold in `$...$` before `math_verify.parse` in `_score_math_verify`, then investigate the 2 residual prefix-collision cases. This moves every math verdict, so it lands at a declared era boundary, with the golden scorer corpus and the math-suite baselines re-pinned.
       · done when: the fix is committed behind an era boundary, the fuzz is re-run showing FNR 0 and coverage of 0.99 or better on MATH-500, and the golden corpus and baselines are re-pinned
       · gate: operator era-boundary decision        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
-  - [ ] **SCORER-MV-STRICT-FINAL** [non-inference] Require exactly one distinct `\boxed` final in `math_verify` scoring, rejecting prose-only and contradictory completions. Bundle it with SCORER-MV-GOLDWRAP at the same era boundary.
+    - 2026-11-24, operator: land all four fixes now as a new era.
+    - Code is done in orchestrator `4110ed1c`:
+      - A bare-LaTeX gold is wrapped in `$...$` before parse.
+      - Fuzz v2 (cases `502c54e2869e`) on MATH-500: FNR 0.114 → 0, coverage 0.88 → 1.000, prefix-collision FPR 8/8 → 0/6. The 2 residuals were fuzz mislabels (a unit or base suffix), now reclassified as `format_variants/suffix_dropped`.
+      - The scorer version is `strict_finals_v2_20261124`.
+      - The B7 golden pin shows 0 verdict changes.
+      - The E7c math baseline was replayed over its saved answers (`orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2`). worker_general goes 0.7301 → 0.8999 and worker_math 0.6982 → 0.8620. The v1 scorer ignored `<answer>` tags, so it understated these baselines by about 17 points.
+    - **Still open:** the era row `E21-eval-scorer-semantics-v2-quality` is human-only. It waits on the operator running `scripts/operator/ratify_scorer_semantics_v2_era_20261124.sh` (`--show`, then `--dry-run`, then `--apply`). [belief: cc]
+  - [x] **SCORER-MV-STRICT-FINAL** [non-inference] Require exactly one distinct `\boxed` final in `math_verify` scoring, rejecting prose-only and contradictory completions. Bundle it with SCORER-MV-GOLDWRAP at the same era boundary.
       · done when: the fuzz shows FPR 0 for partial_answer, missing_marker and contradictory_finals under math_verify
       · gate: SCORER-MV-GOLDWRAP        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
-  - [ ] **SCORER-EM-CONTRADICTORY** [non-inference] Make `exact_match` reject conflicting finals, and make the first-tag and last-boxed rules consistent.
+    - 2026-11-24 done (orchestrator `4110ed1c`, same era).
+      - math_verify now requires a committed final (`\boxed{}`, `<answer>` or `####`), and every final must verify against the gold.
+      - FPR → 0 on both sources for partial_answer (was 1.00), missing_marker (was 1.00/0.989) and contradictory_finals (was 0.50). wrong_then_correct FNR 0.50 → 0. [belief: cc]
+  - [x] **SCORER-EM-CONTRADICTORY** [non-inference] Make `exact_match` reject conflicting finals, and make the first-tag and last-boxed rules consistent.
       · done when: the fuzz shows exact_match contradictory_finals FPR 0 on every template
       · gate: operator era-boundary decision        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
-  - [ ] **SCORER-EM-FLOAT-TOL** [non-inference] Replace the 1e-6 absolute tolerance in `exact_match` with a relative tolerance sized to the gold's stated precision.
+    - 2026-11-24 done (orchestrator `4110ed1c`, same era). exact_match collects every structured final and scores any disagreement False. contradictory_finals FPR 0.50 → 0 on all 4 templates. The bare-last-line fallback is unchanged, by design. [belief: cc]
+  - [x] **SCORER-EM-FLOAT-TOL** [non-inference] Replace the 1e-6 absolute tolerance in `exact_match` with a relative tolerance sized to the gold's stated precision.
       · done when: the fuzz shows 1e-7 drift rejected with no new FNR on the gold fixture
       · gate: operator era-boundary decision        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
+    - 2026-11-24 done (orchestrator `4110ed1c`, same era).
+      - Numbers must now match exactly at the gold's stated precision; the only tolerance is relative 1e-15, for float64 rendering noise.
+      - drift_1e-7 FPR 1.00 → 0, with no new FNR.
+      - Deviation from the box text: a tolerance sized to the gold's precision was rejected, because it would accept 1e-3 drift on an integer gold. [belief: cc]
 
 > Folded from `handoffs/active/scoring-infra-standardization.md` @ `c4b6d1388716` on 2026-11-02 (BRF-T1-F2, route 1a, operator D1/D5; retired row EVL-42 → EVL-14). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 - [ ] **EV-JUDGE-FPR-1** [inference] Audit the LLM judges for exploitable false positives before anything optimises against them (intake-2877, intake-2886, intake-2904, intake-2888). String set: the ten One-token master keys plus 3-5 paraphrases each, and the 13 Huang Table 8 families with their 'Final Decision: Yes' strings re-targeted to each judge's verdict format (exact strings and prompts from the hkust-nlp/RL-Verifier-Robustness repo). Run every string individually, with Wilson intervals, on a fixed math problem set against the architect_critic, coherence and credibility judges, each with the production prompt, a no-question arm (the Huang-comparable arm) and a no-CoT arm. Scan journaled generator outputs with the same detectors for propensity (zero inference) and report exposure = propensity x FPR, also as a secondary EV-29 column. The futility threshold is a local pre-registered choice. Model: the three judge configs as served; build: production v10 stores (read-only use); region one CPU quarter; estimate ~3 h; metric FPR per string. Stop-on-answer per judge when every string has an FPR; stop-on-futility when no string is accepted in the first 100 items for a judge.
@@ -3141,8 +3157,19 @@ Structural change → **implement in a follow-on pass** (not in this design task
     - **Strings and prompts:** 83 strings. The Huang prompts come from the repo at `f2460fff`. The repo lacks the Table 8 strings, so those come from the paper text; the gibberish and Mixed Language strings are generated or reconstructed and tagged as such.
     - **Not yet run:** the live run would be about 186k short judge calls before the futility stop (architect_critic 37,209; coherence and credibility 74,418 each). The ~3 h estimate needs about 17 calls per second on one quarter and is likely optimistic, so cap `--n-items` or rely on the futility stop.
     - **Blocked:** the credibility judge is a cloud judge, so its live arm needs an operator egress clearance. [no-belief: no measurement yet]
+    - 2026-11-24, operator: cloud egress for the credibility judge is CLEARED. Book the full three-judge live run once the stack is up, with `--n-items` capped as needed.
 - Monitor (intake-ak-1124 M11, operator-approved 2026-11-24, no checkbox): The harness accept gate (BSV-2 family) is not activated until an A/A floor from >= 3 replicas exists for its metric, per SPEC-ID-GATE-2 rule (a) (intake-2872).
 - Monitor (intake-ak-1124 M7, operator-approved 2026-11-24, no checkbox): If EV-JUDGE-FPR-1 finds a judge that gates a decision with any master-key FPR >= 1%: compare a no-question prompt fix with a trained robust judge (Master-RM-style, 20k truncation negatives) before that judge gates an optimiser (intake-2886).
+- [ ] **AEI-DROPS-MANIFEST** [non-inference] Emit a drops manifest (n scheduled, n scored, n dropped by reason) and graded_fraction = n_scored / n_attempted per arm with every eval-tower aggregate beside EV-18's ITT fields, and flag a quality delta whose two arms' graded fractions differ by more than 5 points (intake-2921#record claims 0-1, intake-2935#record).
+      · done when: cd /mnt/raid0/llm/epyc-orchestrator && python -m pytest tests/unit/test_eval_tower_drops_manifest.py -q passes, including a fixture where unequal graded fractions raise the flag
+      · gate: none        · inputs: `repos/epyc-orchestrator/scripts/autopilot/eval_tower.py` `repos/epyc-orchestrator/scripts/benchmark/debug_scorer.py`
+- [ ] **AEI-TOKEN-SPAN-RATIO** [non-inference] Check orchestrator token accounting for nested-span double counting: for one stored run per serving path (CPU llama-server role, MI210 role, streaming), compare summed per-call tokens against root-request tokens and record the ratio, fixing the aggregation if any ratio is not 1.0 (intake-2921#record claim 2).
+      · done when: progress/2026-11 note or handoff sub-bullet records the all-span/root-span token ratio for each of the three paths, and any ratio other than 1.0 has a linked fix commit
+      · gate: none        · inputs: `repos/epyc-orchestrator/src/backends/llama_server.py`
+- [ ] **AEI-RERUN-ARM-OD** [operator-decision] Decide whether measurement/protocols/quality-eval.md P-AB-1 and P-PAIRED add a same-configuration rerun arm and report the rerun flip rate beside any scaffold, harness or reviewer-arm effect (intake-2934#record: reruns flipped 13% of tasks at the median, as many as a harness swap).
+      · done when: operator decision recorded in this box's tick verdict, and if adopted a ratified protocol amendment exists
+      · gate: none        · inputs: `measurement/protocols/quality-eval.md`
+  - 2026-11-24, operator: option (a), a rerun arm for ALL comparisons. The box stays open until the human-only amendment to `measurement/protocols/quality-eval.md` is ratified; the owning session prepares the amendment text for the operator.
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
