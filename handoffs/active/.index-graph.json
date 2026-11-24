@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T17:15:53Z",
+  "generated_at": "2026-11-24T17:58:39Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1384,15 +1384,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 997,
-      "dispatchable": 119,
+      "closed": 998,
+      "dispatchable": 118,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-24",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 119,
+      "open": 118,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1429,7 +1429,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 59,
+          "dispatchable": 58,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1438,14 +1438,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 59,
+          "open": 58,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5493,
+          "line": 5494,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1454,7 +1454,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5578,
+          "line": 5579,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1473,7 +1473,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5759,
+          "line": 5760,
           "name": "autokernel-rebuild-program",
           "open": 7,
           "readiness": "blocked"
@@ -1490,7 +1490,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7644,
+          "line": 7645,
           "name": "autokernel-unified-surface-program",
           "open": 24,
           "readiness": "blocked"
@@ -1503,7 +1503,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10925,
+          "line": 10926,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1537,7 +1537,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11172,
+          "line": 11173,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1666,15 +1666,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 308,
-      "dispatchable": 5,
+      "closed": 309,
+      "dispatchable": 4,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-24",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 5,
+      "open": 4,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1709,13 +1709,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [
             "EVL-47"
           ],
           "line": 60,
           "name": "rocm-verify-profile-backend",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         },
         {
@@ -1728,7 +1728,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1204,
+          "line": 1205,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1743,7 +1743,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2350,
+          "line": 2351,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1752,7 +1752,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2725,
+          "line": 2726,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1761,7 +1761,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3161,
+          "line": 3162,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1770,7 +1770,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3256,
+          "line": 3257,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1837,7 +1837,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 1000,
+          "line": 1002,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 17,
           "readiness": "blocked"
@@ -1929,15 +1929,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 271,
-      "dispatchable": 29,
+      "closed": 273,
+      "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-24",
       "next_action": "C19 27B ASan diagnostic for the test-dtree-device-accept heap corruption; then assemble C20 (Q0_RM4, GDNPROJ_FUSE, SPEC-DISTS-TRUNC)",
-      "open": 29,
+      "open": 27,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1971,7 +1971,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 28,
+          "dispatchable": 26,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1980,14 +1980,14 @@
           ],
           "line": 22,
           "name": "autokernel-champion-aggregate",
-          "open": 28,
+          "open": 26,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1970,
+          "line": 1972,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1996,7 +1996,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2098,
+          "line": 2100,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2005,7 +2005,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2430,
+          "line": 2432,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2014,7 +2014,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2531,
+          "line": 2533,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2023,7 +2023,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3085,
+          "line": 3087,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2035,7 +2035,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3223,
+          "line": 3225,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2047,7 +2047,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3230,
+          "line": 3232,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
