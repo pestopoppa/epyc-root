@@ -6734,7 +6734,7 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
             if queued:
                 raise
             try:
-                record_build_refusal(flags, owner, cpus, now)
+                record_build_refusal(flags, owner, cpus, now, minutes=minutes)
             except Exception:  # noqa: BLE001 - bookkeeping never changes the refusal
                 pass
             raise
@@ -6781,7 +6781,8 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
     need(not qrun, f"BUILD-REFUSED: quiet-host row {','.join(qrun)} is running (DRAM-wide quiet needed); a build claim is "
                    "bandwidth-heavy - retry when it ends")
     lane, _lk = build_lane_open(flags, now)
-    qres_rows = [] if (lane or queued) else quiet_reserve_blocks_build(flags)   # BUILD LANE / CLAIM QUEUE: no QUIET-RESERVE refusal
+    inter = build_interstice_open_for(flags, owner, now)   # BUILD-INTERSTICE: the keeper picked this build for a quiet gap
+    qres_rows = [] if (lane or queued or inter) else quiet_reserve_blocks_build(flags)   # BUILD LANE / CLAIM QUEUE: no QUIET-RESERVE refusal
     if lane and not queued:
         _keeper_log_line(flags, f"BUILD-LANE open for {lane}: QUIET-RESERVE does not refuse build claim {owner} {cpus}")
     need(not qres_rows, f"BUILD-REFUSED: QUIET-RESERVE - quiet-host row(s) {','.join(qres_rows)} wait for a quiet host; a build claim is "
@@ -7629,7 +7630,7 @@ def _build_key(owner, cpus):
     return f"{owner}|{str(cpus).strip()}"
 
 
-def record_build_refusal(flags, owner, cpus, now=None):
+def record_build_refusal(flags, owner, cpus, now=None, minutes=None):
     """A refused non-light build claim: remember when this owner+cpus first (continuously) asked."""
     now = time.time() if now is None else now
     p = os.path.join(state_dir(flags), BUILD_REFUSALS)
@@ -7639,6 +7640,8 @@ def record_build_refusal(flags, owner, cpus, now=None):
     if not e or now - float(e.get("last_at") or 0) > BUILD_LANE_STALE_S:
         e = {"owner": owner, "cpus": str(cpus).strip(), "first_at": now, "refusals": 0}
     e["last_at"], e["refusals"] = now, int(e.get("refusals") or 0) + 1
+    if minutes:   # BUILD-INTERSTICE: the declared duration
+        e["minutes"] = int(minutes)
     st[k] = e
     atomic_json(p, st)
 
@@ -7886,6 +7889,142 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
         _quiet_reserve(cands, kept, waits, lines, man, reserve)
         kept = [c for c in kept if c["id"] not in reserve.get("held", ())]
     return kept, waits, lines
+
+
+# BUILD-INTERSTICE (AutoKernel 2026-11-24): QUIET-SERIAL + QUIET-RESERVE + "a full build claim is loud" left a queued 4-min
+# build claim waiting hours behind back-to-back quiet rows (AK hand-paused 3 quiet rows to slot one build). When a quiet row's
+# grant ends (this tick or the previous one) and a build claim is queued whose duration (declared minutes, else its owner's
+# measured history, else BUILD_INTERSTICE_MAX_S) + BUILD_INTERSTICE_MARGIN_S fits BUILD_INTERSTICE_MAX_S, the keeper grants
+# that ONE build (oldest first) before the next quiet row: non-urgent quiet candidates wait until the build grant ends or is
+# released. One build per gap; an urgent quiet head (rank < URGENT_RANK) still goes first; a build that overruns is never
+# killed (the quiet rows just wait); the build keeps its normal regions (never 88-95).
+BUILD_INTERSTICE = True
+BUILD_INTERSTICE_MAX_S = 900
+BUILD_INTERSTICE_MARGIN_S = 60
+BUILD_INTERSTICE_PENDING_S = 300   # a picked build that is not granted within this is abandoned (the gap is spent)
+BUILD_INTERSTICE_STATE = "build_interstice.json"
+
+
+def _interstice_quiet(d, c=None):
+    d = d or {}
+    return (quiet_sensitive(d) or quiet_required(d) or (c or {}).get("shape") == "quiet-host"
+            or str(d.get("shape") or "") == "quiet-host")
+
+
+def build_interstice_dur(b, history):
+    """Seconds a queued build is expected to hold: declared minutes, else its owner's measured median, else the cap."""
+    if b.get("minutes"):
+        return float(b["minutes"]) * 60.0
+    h = sorted(float(x) for x in (history or {}).get(str(b.get("owner") or ""), []) if x)
+    return h[len(h) // 2] if h else float(BUILD_INTERSTICE_MAX_S)
+
+
+def build_interstice_step(state, running_quiet, build_grants, queued, quiet_cands, now, enabled=None):
+    """PURE. -> (new state, hold ids, line or None).
+    state: last tick's record. running_quiet: ids of running quiet grants. build_grants: [(gid, owner, granted_epoch)] open now.
+    queued: [{key, owner, since, minutes?}] queued build claims. quiet_cands: [(id, rank, est_s)] quiet candidates this tick.
+    hold ids: the non-urgent quiet candidates that wait for the interstice build."""
+    enabled = BUILD_INTERSTICE if enabled is None else enabled
+    st = dict(state or {})
+    hist = {k: list(v)[-9:] for k, v in (st.get("history") or {}).items()}
+    prev = set(st.get("quiet_running") or ())
+    cur = set(running_quiet)
+    out = {"quiet_running": sorted(cur), "history": hist, "gap": st.get("gap"), "active": st.get("active")}
+    if cur:   # a running quiet row closes any gap (QUIET-SERIAL holds everything else anyway)
+        out["gap"] = None
+    if prev - cur:
+        out["gap"] = {"at": now, "ended": sorted(prev - cur), "used": False, "ticks": 0}
+    elif out["gap"]:
+        out["gap"] = dict(out["gap"], ticks=int(out["gap"].get("ticks") or 0) + 1)
+    act = out["active"]
+    urgent = [q for q in quiet_cands if float(q[1]) < URGENT_RANK]
+    if act:
+        mine = [g for g in build_grants if g[1] == act["owner"] and float(g[2]) >= float(act["picked_at"]) - 5]
+        if act.get("gid") is None and mine:
+            act = dict(act, gid=mine[0][0], granted_at=float(mine[0][2]))
+        if act.get("gid"):
+            if not any(g[0] == act["gid"] for g in build_grants):   # ended or released: quiet placement resumes
+                hist.setdefault(act["owner"], []).append(max(1.0, now - float(act.get("granted_at") or act["picked_at"])))
+                hist[act["owner"]] = hist[act["owner"]][-9:]
+                act = None
+        elif now - float(act["picked_at"]) > BUILD_INTERSTICE_PENDING_S:
+            act = None
+        out["active"] = act
+    if not enabled:
+        out["active"] = None
+        return out, set(), None
+    line = None
+    gap = out["gap"]
+    if (not out["active"] and gap and not gap.get("used") and int(gap.get("ticks") or 0) <= 1 and not cur
+            and quiet_cands and not urgent and queued):
+        fit = [b for b in sorted(queued, key=lambda b: (float(b.get("since") or 0), str(b.get("key"))))
+               if build_interstice_dur(b, hist) + BUILD_INTERSTICE_MARGIN_S <= BUILD_INTERSTICE_MAX_S]
+        if fit:
+            b = fit[0]
+            nxt = min(quiet_cands, key=lambda q: (float(q[2]) if q[2] else float("inf"), float(q[1]), q[0]))[0]
+            dur = build_interstice_dur(b, hist)
+            out["active"] = {"key": b["key"], "owner": b["owner"], "picked_at": now, "dur_s": dur, "before": nxt,
+                             "gid": None, "until": now + dur + BUILD_INTERSTICE_MARGIN_S}
+            out["gap"] = dict(gap, used=True)
+            line = f"BUILD-INTERSTICE grant {b['key']} before {nxt}"
+    act = out["active"]
+    if not act or urgent:
+        return out, set(), line
+    if act.get("gid") and now > float(act.get("until") or 0):   # overrun: never killed; quiet rows keep waiting for it
+        act["until"] = now + RESERVE_TICK_S
+    return out, {q[0] for q in quiet_cands}, line
+
+
+def queued_builds(flags, reqc, now=None):
+    """Queued build claims: pending CLAIM QUEUE requests (enforce) and live refused-claim records (build_refusals.json)."""
+    now = time.time() if now is None else now
+    out = []
+    for c in reqc or ():
+        r = c.get("request") or {}
+        if not r.get("light"):
+            out.append({"key": c["id"], "owner": str(r.get("owner") or ""), "since": float(r.get("requested_at") or now),
+                        "minutes": r.get("minutes")})
+    st = load_json(os.path.join(state_dir(flags), BUILD_REFUSALS)) or {} if flags else {}
+    for k, e in st.items():
+        if now - float(e.get("last_at") or 0) <= BUILD_LANE_STALE_S:
+            out.append({"key": k, "owner": str(e.get("owner") or ""), "since": float(e.get("first_at") or now),
+                        "minutes": e.get("minutes")})
+    return out
+
+
+def apply_build_interstice(flags, cands, res_base, pre_quiet, reqc, grants, allrows, log, dry=False, now=None):
+    """Keeper side of BUILD-INTERSTICE: step the state, drop the held quiet candidates. -> (cands, res_base, info|None)."""
+    now = time.time() if now is None else now
+    def man(rid):
+        return allrows.get(rid) or load_json(ready_path(flags, rid)) or {}
+    running_quiet = [g["id"] for g in grants if not g["id"].startswith(BUILD_PREFIX) and _interstice_quiet(man(g["id"]))]
+    bg = [(g["id"], _grant_owner(flags, g["id"]), _grant_epoch(flags, g["id"])) for g in grants
+          if g["id"].startswith(BUILD_PREFIX) and not is_light_build(flags, g["id"])]
+    qc = [(c["id"], float(c["rank"]), c.get("estimate_s") or man(c["id"]).get("estimate_s"))
+          for c in pre_quiet if not gpu_lane_cand(c) and _interstice_quiet(man(c["id"]), c)]
+    sp = os.path.join(state_dir(flags), BUILD_INTERSTICE_STATE)
+    new, hold, line = build_interstice_step(load_json(sp) or {}, running_quiet, bg, queued_builds(flags, reqc, now), qc, now)
+    if line:
+        log(line)
+    if not dry:
+        atomic_json(sp, new)
+    if not hold:
+        return cands, res_base, None
+    a = new["active"]
+    for c in cands:
+        if c["id"] in hold:
+            log(f"BUILD-INTERSTICE {c['id']} waits for build {a.get('gid') or a['key']}")
+    keep = [c for c in cands if c["id"] not in hold]
+    rb = None if res_base is None else [c for c in res_base if c["id"] not in hold]
+    return keep, rb, {"hold": hold, "until": float(a.get("until") or now)}
+
+
+def build_interstice_open_for(flags, owner, now=None):
+    """True when the keeper picked `owner`'s build for an interstice that is not granted yet (claim_build: no QUIET-RESERVE refusal)."""
+    now = time.time() if now is None else now
+    a = (load_json(os.path.join(state_dir(flags), BUILD_INTERSTICE_STATE)) or {}).get("active") or {}
+    return bool(BUILD_INTERSTICE and a and a.get("owner") == owner and not a.get("gid")
+                and now - float(a.get("picked_at") or 0) <= BUILD_INTERSTICE_PENDING_S)
 
 
 # QUIET-URGENT-PENDING (2026-11-24): c21-fold-cpu-20261124-r2 (rank 9, quiet, q0-q2) was in smoke 10:03-10:10Z when q0
@@ -8891,11 +9030,12 @@ def replan_option_key(o):
     return (GPU not in o and bool(o & Q3_GUARD), GPU not in o and bool(o & qcores("q3")), len(o), sorted(o))
 
 
-def replan_items(cands, man, grants, free, region_ends, now, gpu_open=False, gpu_q3=False, light_ids=()):
+def replan_items(cands, man, grants, free, region_ends, now, gpu_open=False, gpu_q3=False, light_ids=(), interstice=None):
     """PURE. Keeper snapshot -> replan.solve inputs (items, running, busy). man(rid) -> manifest dict. Options are expanded
     and GPU-Q3-GUARDed exactly as plan() does; a running grant ends at its ESTIMATE (start + book_s, capped at its grant
     end; past it: + REPLAN_OVERRUN_S); a busy token no running grant holds (live smoke, B's hold:<id>, foreign hold) frees
-    at its region_ends entry (None = unknown: next tick)."""
+    at its region_ends entry (None = unknown: next tick). interstice {hold, until}: BUILD-INTERSTICE-held quiet rows are
+    released at `until` (the live keeper holds them until the interstice build ends)."""
     free = set(free)
     items, used = [], set()
     # a GATE-held urgent head (B's hold:<id>, cand "hold") is re-decided next tick: C models the loud / quiet grants that
@@ -8917,6 +9057,8 @@ def replan_items(cands, man, grants, free, region_ends, now, gpu_open=False, gpu
         if c.get("phantom"):
             hold_end = (region_ends or {}).get(HOLD_PREFIX + c["id"])
             rel = float(hold_end) if hold_end else None
+        if interstice and c["id"] in interstice.get("hold", ()):   # BUILD-INTERSTICE: released when the build ends
+            rel = max(rel or 0.0, float(interstice.get("until") or now + RESERVE_TICK_S))
         it = {"id": c["id"], "kind": "claim" if c.get("kind") == "claim" else "row", "lane": "gpu" if gpu_lane_cand(c) else "cpu",
               "rank": float(c["rank"]), "options": opts, "dur": max(60.0, float(book_s(c) or hold_s(c) or 60.0)),
               "since": float(c.get("since") or now), "rel": rel, "gib": float(c.get("gib") or 0),
@@ -8959,12 +9101,14 @@ def replan_items(cands, man, grants, free, region_ends, now, gpu_open=False, gpu
     return items, running, busy
 
 
-def replan_solve(flags, rcands, grants, allrows, free, region_ends, ram, now, gpu_open=False, gpu_q3=False, live_assigned=None):
+def replan_solve(flags, rcands, grants, allrows, free, region_ends, ram, now, gpu_open=False, gpu_q3=False, live_assigned=None,
+                 interstice=None):
     """One C solve on this tick's snapshot. -> result (replan.solve) with ok (usable for enforce) and _live info."""
     def man(rid):
         return allrows.get(rid) or load_json(ready_path(flags, rid)) or load_json(os.path.join(dry_dir(flags, rid), "unpublished.json")) or {}
     light = {g["id"] for g in grants if g["id"].startswith(BUILD_PREFIX) and is_light_build(flags, g["id"])}
-    items, running, busy = replan_items(rcands, man, grants, free, region_ends, now, gpu_open=gpu_open, gpu_q3=gpu_q3, light_ids=light)
+    items, running, busy = replan_items(rcands, man, grants, free, region_ends, now, gpu_open=gpu_open, gpu_q3=gpu_q3, light_ids=light,
+                                        interstice=interstice)
     st = load_json(os.path.join(state_dir(flags), REPLAN_STATE)) or {}
     live_now = None
     if live_assigned is not None:
@@ -9343,6 +9487,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     out, excluded, plan_free, ram = [], set(), set(free), mem_available_gib()
     util = measure_util()
     reqc = [c for c in cands if c.get("kind") == "claim"]   # CLAIM QUEUE: claims keep their own quiet checks (claim_build)
+    inter_info = None   # BUILD-INTERSTICE {hold, until} for the REPLAN shadow
     cands = [c for c in cands if c.get("kind") != "claim"]
     try:   # PM-KEEPER3 #1: quiet-host rows only onto quiet quarters, never beside whole-host / bandwidth-heavy rows
         qres = {"now": time.time(), "max_s": quiet_reserve_max_s(flags)}
@@ -9366,6 +9511,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             except Exception:  # noqa: BLE001
                 pass
         smoke_waits = qwaits + smoke_waits
+        try:   # BUILD-INTERSTICE: one short queued build before the next quiet row
+            cands, res_base, inter_info = apply_build_interstice(flags, cands, res_base, pre_quiet, reqc, grants, allrows, log, dry=dry)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"BUILD-INTERSTICE failed: {type(e).__name__}: {e}")
         uw_p = os.path.join(state_dir(flags), QUIET_URGENT_WAITING_STATE)
         uwait, uw_state = urgent_quiet_waiting(pre_quiet, cands, qlines, allrows, load_json(uw_p) or {}, flags=flags)
         if rmode == "enforce":   # RESERVATION: QUIET-URGENT-PENDING / -WAITING are subsumed by the urgent head reservation
@@ -9466,7 +9615,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if rpmode == "enforce":   # C first: its start-now set replaces the live plan's below (fallback: the live plan)
             try:
                 rp = replan_solve(flags, rp_base, grants, allrows, free, dict(r_ends, **rp_extra), ram, time.time(),
-                                  gpu_open=gpu_open, gpu_q3=rp_gpu_q3)
+                                  gpu_open=gpu_open, gpu_q3=rp_gpu_q3, interstice=inter_info)
             except Exception as e:  # noqa: BLE001
                 log(f"REPLAN failed: {type(e).__name__}: {e}; live plan used")
                 rp = None
@@ -9509,7 +9658,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             build_hot = build_lane_now or bool(bw)
             try:
                 rp = replan_solve(flags, rp_base, grants, allrows, free, dict(r_ends, **rp_extra), ram, time.time(),
-                                  gpu_open=gpu_open, gpu_q3=rp_gpu_q3, live_assigned=assigned)
+                                  gpu_open=gpu_open, gpu_q3=rp_gpu_q3, live_assigned=assigned,
+                                  interstice=inter_info)
                 replan_report(flags, rp, assigned, "shadow", log, dry=dry, build_hot=build_hot)
             except Exception as e:  # noqa: BLE001 - the shadow never stops allocation
                 try:
