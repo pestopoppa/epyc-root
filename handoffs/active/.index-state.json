@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 563
+      "open": 570
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -104,7 +104,7 @@
       "closed": 998,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 120,
+      "open": 127,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1118,
+      "total": 1125,
       "tracks": [
         {
           "blocked": 0,
@@ -214,6 +214,18 @@
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [
+            "INF-06"
+          ],
+          "guarded": 0,
+          "line": 11801,
+          "markers": 1,
+          "name": "autokernel-roofline-surface-loop",
+          "open": 7
         }
       ]
     },
