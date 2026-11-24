@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(_TESTS), "rowflow"))
 import rowflow as rf  # noqa: E402
 
 NOW = 1_800_000_000.0
-Q012N = frozenset({"q0", "q1", "q2"} | set(rf.Q3_NARROW))
+Q012N = frozenset({"q0", "q1", "q2"} | set(rf.Q3_NARROW))   # the pre-LIGHT-POCKET host booking (planner fixtures only)
 
 
 def cand(rid, rank, opts, est=3600, **kw):

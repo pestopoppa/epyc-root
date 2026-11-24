@@ -25,7 +25,9 @@ class QuietHostCpuOnly(Fx):
         ex = rf.expand(o)
         self.assertNotIn(rf.GPU, o)
         self.assertFalse(ex & rf.Q3_GUARD, "88-95 / 184-191 stay with the GPU")
-        self.assertTrue({"q0", "q1", "q2"} <= set(o) and rf.Q3_NARROW <= ex)
+        self.assertTrue({"q0", "q1", "q2"} <= set(o) and rf.HOST_Q3_CPU <= ex)
+        # LIGHT-POCKET 2026-11-24: never the light-claim pocket 84-87 / 180-183
+        self.assertFalse(ex & ({f"c{n}" for n in range(84, 88)} | {f"t{n}" for n in range(180, 184)}))
 
     def test_bandwidth_heavy_declaration_keeps_the_gpu(self):
         k = rf.contract_of(self.mk("e5b", bandwidth_heavy=True), flags=self.flags)

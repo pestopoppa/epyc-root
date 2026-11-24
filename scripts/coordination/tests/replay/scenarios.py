@@ -1586,8 +1586,10 @@ def sc_res_1135_rank_skip(path):
 
 
 def _ticks_light():
-    """11:13-11:43Z: pm-lc.sh light claims on 84-87 (15 min each, retried) kept c21-r3 (needs 72-87) unplaceable. Tick 0: one
-    claim is granted on the spot (today's path); then a new 15-min request arrives every tick, queued (enforce)."""
+    """11:13-11:43Z: pm-lc.sh light claims on 84-87 (15 min each, retried) kept c21-r3 (then booked 72-87) unplaceable. Tick 0:
+    one claim is granted on the spot (today's path); then a new 15-min request arrives every tick, queued (enforce). Since
+    LIGHT-POCKET (16:5xZ, draftwin-r2 held 84-87 until 22:48Z) the host booking is 0-83: c21 starts at once BESIDE the claim,
+    and claims keep flowing beside it (light = not loud)."""
     c21 = _c21("c21-fold-cpu-r3")
     lc = [{"owner": "pipeline-mgmt", "cpus": "84-87", "minutes": 15, "light": True}]
     ticks = [({}, _util(claims=lc, reservation_mode="shadow"))]
@@ -1601,11 +1603,14 @@ def sc_res_light_claim_84_87(path):
         h = _first(d, "c21-fold-cpu-r3")
         if h is None:
             return ["c21-r3 never granted: light claims on 84-87 kept it out"]
-        for i, l in _lines(d, "CLAIM-GRANT") + _lines(d, "CLAIM-ONSPOT"):
-            if 0 < i <= h:
-                out.append(f"tick {i}: a light claim on 84-87 was granted while c21-r3 (needs 72-87) waited: {l[:90]}")
-        if h > 9:   # the tick-0 claim ends at 15 min = 7.5 ticks; the head starts on the next tick
-            out.append(f"c21-r3 granted only at tick {h}")
+        if h > 1:   # LIGHT-POCKET: the host booking leaves 84-87 free, so the tick-0 light claim never delays the head
+            out.append(f"c21-r3 granted only at tick {h} (a light claim on 84-87 delayed the whole-host head)")
+        for x in d:
+            for g in x["grants"]:
+                if g["id"] == "c21-fold-cpu-r3" and set(g["holds"]) & {"c84", "c85", "c86", "c87", "t180", "t181", "t182", "t183"}:
+                    out.append(f"tick {x['i']}: the host grant holds the light pocket 84-87: {sorted(g['holds'])[:6]}")
+        if not [i for i, _ in _lines(d, "CLAIM-GRANT") if i > h]:
+            out.append("no light claim granted beside the running quiet host row (light claims are not loud)")
         return out + _no_double_book(d)
     return write(path, _ticks_light()), check
 

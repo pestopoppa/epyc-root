@@ -1887,6 +1887,8 @@ WHOLE_HOST_THREADS = 48   # operator 2026-11-05: production CPU serving across a
 # rows beside a GPU timing run. This REPLACES the rule that a GPU timing run holds all of q3; a timing row that really
 # needs a quieter neighbourhood declares it (explicit regions, or shape_override).
 GPU_Q3_TOKENS = frozenset({GPU} | {f"c{k}" for k in range(88, 96)} | {f"t{k}" for k in range(184, 192)})   # gpu-quiet + 88-95 + 184-191
+HOST_Q3_CPU = frozenset({f"c{n}" for n in range(72, 84)} | {f"t{n}" for n in range(168, 180)})   # q3 part of a CPU-only host row
+HOST_CPU_CORES = 84   # cores 0-83: the CPU-only host booking (LIGHT-POCKET: 84-87 stay free for light claims)
 GPU_TIMING_NEVER_HELD = frozenset({"q3"} | {f"c{n}" for n in range(72, 88)} | {f"t{n}" for n in range(168, 184)})   # q3 cores 72-87 + siblings
 QUARTER_RAM_GIB = 256   # a quarter's share of the bookable RAM (1069 GiB / 4, rounded): a bigger model is multi-quarter
 SUB_CORES = 4           # a <= SUB_CORES-thread job is a SUB_CORES-core row (any aligned block of one quarter)
@@ -2189,9 +2191,13 @@ def contract_of(d, o=None, flags=None):
         # takes the GPU and its host threads (88-95 / 184-191) only when it declares bandwidth_heavy: true or uses the GPU. The
         # E5 r8 drain (02:19-04:44Z, ran 5 min) held gpu-quiet + q3 for 145 GPU-min. Only for an engine that locks the grant's
         # own lock= cpus (CONTRACT_LOCK): a legacy engine locks its --claim-cpus (0-95) whatever the grant says.
+        # LIGHT-POCKET (coordinator 2026-11-24 16:5xZ: draftwin-r2's quiet-host grant held 72-87 + 168-183, so every light claim
+        # was refused until 22:48Z - deploys and tests included): the CPU-only host booking never holds the light pocket 84-87 /
+        # 180-183. Light claims are not loud (quiet_gate ignores them), so the quiet rule does not need those cores; 72-83 stay
+        # in the booking as CAPACITY (a <= 84-thread job), not for quietness. A row needing 85-88 threads books the whole host.
         if (honours and not gpu_row and not gpu_work_evidence(d, o) and not _kfd_capable(d, o) and d.get("bandwidth_heavy") is not True
-                and (threads is None or threads <= 88)):
-            opts, gpu_tok, cpu_only = [frozenset(set(QUARTERS[:3]) | Q3_NARROW)], set(), True
+                and (threads is None or threads <= HOST_CPU_CORES)):
+            opts, gpu_tok, cpu_only = [frozenset(set(QUARTERS[:3]) | HOST_Q3_CPU)], set(), True
     else:
         pinned = bool(decl_cpus) and not (cpu_tokens(decl_cpus) & set(QUARTERS))   # concrete sub-quarter regions
         legacy = len(_cpu_set(cc) & set(range(96))) if (cc and not honours) else 0
