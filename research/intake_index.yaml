@@ -430451,12 +430451,137 @@
   authors:
   - William Hu
   key_claims:
-  - Always-on agents sleep between brief runs; every event source writes to a durable inbox that one worker drains instead of calling the agent directly.
-  - 'Inbox rules: acknowledge fast, the inbox is the source of truth, deduplicate by source ids, one active worker per inbox, batch pending events.'
-  - Timers (agent follow-ups and recurring schedules) live in a separate store; a scheduler polls it and adds events to the inbox.
-  - A deferred tool call ends the run and saves the session mid-call; the answer returns as an inbox event that resumes it.
-  - Memory holds only what cannot be looked up again; a per-task progress file lets any new run resume where the last one stopped.
-  - A run ends by sending to the outbox, sending nothing, or deferring; agents should start quiet.
+  - Event sources never call the agent directly; they append to a durable inbox that a worker drains, because direct calls cause competing runs and lost events on crash.
+  - The inbox is the source of truth, so a replacement worker can retry an event after the first worker dies mid-run.
+  - An inbox has exactly one active worker at a time; inboxes are split (one per user by default) only for parallelism.
+  - Events can be deduplicated by unique source identifiers and the inbox tracks per-event status.
+  - A mid-run event is pushed to the next run, folded into the current run, or interrupts and restarts it; pending events are batched.
+  - Timers live in their own durable store; a scheduler finds due timers, marks follow-ups done or advances schedules, then adds an event to the inbox.
+  - A deferred tool call ends the run and saves the session mid-call; the answer comes back as an inbox event that starts a run resuming that session.
+  - Memory belongs on durable storage that outlives the worker.
+  - Each ongoing task keeps a progress file; any new run reads it and continues from where the previous run stopped.
+  - Compaction and new sessions both lose detail, so anything that must persist is written to memory during the run.
+  - A formal outbox and dispatcher are needed only to pace messages or recover from errors; a send tool is enough otherwise.
+  - Agents should start quiet and earn attention, tuned with evals.
+  - Opus 5.5 cost 78% less per solved task than Opus 5 on one long-horizon coding benchmark.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Event inbox [CONFIRMED]
+    quote: Instead of calling the agent, every source sends an event to an inbox, where a worker picks it up
+    quote_sha256: 2e76839e21421b48fe09972153e9d7de2ec4bded6d36c2708de69a9fe9bfbb14
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: &sa_2942 {"byte_length": 575058, "effective_url": "https://claude.com/resources/articles/building-always-on-agents", "entry_url": "https://claude.com/resources/articles/building-always-on-agents", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a", "relative_path": "sha256/98/9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a.raw", "requested_url": "https://claude.com/resources/articles/building-always-on-agents", "retrieved_at_utc": "2026-11-24T15:58:48.514561Z", "schema_version": 1, "snapshot_id": "sha256:9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Event inbox (best practices) [CONFIRMED]
+    quote: The inbox should be the source of truth
+    quote_sha256: 57e5ebdb96781c10c27648ac99914a4ff8f8bc06b38a2c60a7eb77b8569c2903
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Event inbox (best practices) [PARTIAL]
+    quote: An inbox should only have one active worker at a time
+    quote_sha256: dc09213dbb01fdeece0ad2c8cce8d6bbe23b7b9f60677933b7510696743bda9a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Event inbox [PARTIAL]
+    quote: events can be deduplicated based on unique identifiers from the source
+    quote_sha256: 560aac8ccb03b74b726c73f6eec221261fbd1fe3eae6375a004851b708bbff60
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Event inbox (best practices) [CONFIRMED]
+    quote: you can either push it to the next run, fold it into the current run, or interrupt and restart
+    quote_sha256: 7a239e202c8167a40a2c400767a4464eca33b7328954975be57696594a9fd1a3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Timers [CONFIRMED]
+    quote: Timers live in their own durable store, usually another database table, separate from the inbox
+    quote_sha256: 9a573b54a5348aa33ac777f175f53d2969a180316a294f430b220ab3333b7ab7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Permissions (Deferred tool calls) [CONFIRMED]
+    quote: When a call is deferred, the run ends and the session is saved mid-call
+    quote_sha256: 631a082caacc9b21969430efa285fc2b5cf4f2494c9ddb6f23cbc53f4659ce0d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Memory [CONFIRMED]
+    quote: For an always-on agent, the directories should map to durable storage, usually a database or an object store.
+    quote_sha256: 4d6cedf90f41fc1000489d24b7a0117fdffe72a726a02836c4d34cf73efcdfe3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 8
+    kind: page-and-quote
+    locator: Memory (Task progress) [CONFIRMED]
+    quote: Any new run can then read that file and pick up where the previous run left off.
+    quote_sha256: 046418e74f0a17f674ef84450f692b55de9be5a227daf532e2d22b9f33147f8d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 9
+    kind: page-and-quote
+    locator: Inside the context window [CONFIRMED]
+    quote: Both approaches lose detail, so anything that needs to persist should be saved to memory along the way.
+    quote_sha256: 04981e8c6c6d7d8037f7e0644ab9b5bed2bf2ccfcbbee405c8ab1efbb860633c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 10
+    kind: page-and-quote
+    locator: Outbox [CONFIRMED]
+    quote: You only need a formal outbox when you want to pace your agent’s messages or allow your agent to recover from errors
+    quote_sha256: a7337b88b6ceb89e001800d58737642f0b6d9fdb2012cb6395a52a24a86304c1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 11
+    kind: page-and-quote
+    locator: Outbox [PARTIAL]
+    quote: In practice, it’s better for the agent to start quiet and then earn more of the user’s attention over time
+    quote_sha256: 4bd7edfda0007c2583ba2995398bf45e8ba960cbe8cd994b1c1c4ecf12424a28
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 12
+    kind: page-and-quote
+    locator: Introduction [PARTIAL]
+    quote: Opus 5.5 cost 78% less per solved task than Opus 5, compared with 40% less on typical workloads
+    quote_sha256: 4be739f6c7f1e4ead9a7a4e52b1ae77e3cf752d0dfc8d92c79d835c0fa219776
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9875760bd85483898c3e1fdaab80cca193c12500cd815fb4cb263b6326c9215a, found: true}
+    source_revision: https://claude.com/resources/articles/building-always-on-agents
+    source_artifact: *sa_2942
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - durable event inbox with a single worker
   - dedup by source event id
@@ -430488,11 +430613,56 @@
     - intake-1113
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
+  verification: dive-verified
   notes: 'Primary source, fetched 2026-11-24T15:57Z (raw HTML sha256 9472980d614d for the curl copy; the anchor snapshot is the retained artifact). Vendor best-practice guide with no
     measurements apart from the Opus cost figure. Its run cycle maps onto our stack: the session bus is already an inbox (per-agent files, byte cursors, id dedup, ack nudge); rowflow
-    resume and the keeper are the scheduler; taskflow and the Codex lanes lack the deferred-call/resume half. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended
-    entry for up to two Stage-2 waves.'
+    resume and the keeper are the scheduler; taskflow and the Codex lanes lack the deferred-call/resume half.'
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Inbox-not-direct-call confirmed verbatim and corroborated by intake-2952.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Event inbox (best practices). No retry cap, attempt count or dead-letter state is given.
+  - claim_index: 2
+    effect: narrowed
+    note: One active worker is stated without any lease, expiry or fencing; it is a rule, not a mechanism.
+  - claim_index: 3
+    effect: narrowed
+    note: Dedup is optional ('can be') and stops at the inbox; downstream idempotency is absent.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED verbatim at Event inbox (best practices). Options listed without a recommendation or measurement.
+  - claim_index: 5
+    effect: unaffected
+    note: CONFIRMED verbatim at Timers. Durable execution engines are named as an alternative to a hand-built scheduler.
+  - claim_index: 6
+    effect: unaffected
+    note: Deferred-call resume path confirmed verbatim; matches the hooks reference (intake-2948).
+  - claim_index: 7
+    effect: unaffected
+    note: CONFIRMED verbatim at Memory. Design guidance only.
+  - claim_index: 8
+    effect: unaffected
+    note: CONFIRMED verbatim at Memory (Task progress). Assumes the run writes progress along the way, not only at a final wrap-up.
+  - claim_index: 9
+    effect: unaffected
+    note: CONFIRMED verbatim at Inside the context window. No numbers.
+  - claim_index: 10
+    effect: unaffected
+    note: 'CONFIRMED verbatim at Outbox. A run ends in one of three ways: send, nothing to send, deferred call.'
+  - claim_index: 11
+    effect: narrowed
+    note: Start-quiet is an unsupported recommendation.
+  - claim_index: 12
+    effect: narrowed
+    note: Cost figure is a vendor self-report on an unnamed benchmark; it is quotable only as such.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dives A and D, sonnet, FULL read from the retained snapshot): 13 claims; 9 CONFIRMED, 4 PARTIAL (single worker has no lease; dedup optional
+    and stops at the inbox; start-quiet unsupported; the 78% Opus cost figure is a vendor self-report on an unnamed benchmark). Independent corroboration of the inbox shape and fast
+    ack: intake-2952 (2020, pre-agent) and intake-2951. Live-lesson tests: L1 agrees (deferred call and progress file both make every run end resumable); L2 and L3 agree as a pattern
+    (one inbox, one worker, everything through it is the single-reservation shape; rowflow.py L8405-L8428 @ 3b11e6c records five patch rules a shadow reservation planner subsumes); L4
+    silent; L5 silent.'
 - id: intake-2943
   arxiv_id: null
   url: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
@@ -430511,11 +430681,87 @@
   authors:
   - Addy Osmani
   key_claims:
-  - End-to-end, property and differential tests are the three test types worth investing in for agent-written code.
-  - A change must not be able to modify the check that judges it.
-  - New gates start in observe mode (off, observe, enforce) with an escape valve after repeated blocks.
-  - Failing checks escalate to a human after a bounded number of fix rounds.
-  - Verifiers are graded against past incidents, with a tuning set split from a fixed test set.
+  - End-to-end, property and differential tests are the three types worth investing in, and end-to-end is the one to pick if only one.
+  - The rules that judge a change live where the change cannot edit them (read from the base branch).
+  - A new commit gate starts in observe mode, logging what it would have blocked so false positives can be reviewed; after two blocks in a session the next commit passes.
+  - After three failed fix rounds the agent stops and brings in a human.
+  - Verifier quality is measured with a tuning set kept apart from a fixed test set.
+  - Each commit is stamped with how it was verified, including none.
+  - Property tests keep agents honest because their edge cases do not share the authoring agent's bias.
+  - Test suites, verification steps and instruction files are pruned on a routine because they only grow.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Not all tests are created equal [CONFIRMED]
+    quote: If you have to focus on one test type, pick end-to-end.
+    quote_sha256: e1ebb44c9b3c6416141344bcc7415cedd1b347d60670627a0f57da5f71d0e106
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: &sa_2943 {"byte_length": 106462, "effective_url": "https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/", "entry_url": "https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600", "relative_path": "sha256/66/66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600.raw", "requested_url": "https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/", "retrieved_at_utc": "2026-11-24T15:58:55.150868Z", "schema_version": 1, "snapshot_id": "sha256:66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Changes can’t modify their own checks [CONFIRMED]
+    quote: If a change can modify the check that judges it, the check is broken.
+    quote_sha256: 68febd3cefbef1456c1a971f900ef849e5226ff95e664af24dba15a99fcd414b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: *sa_2943
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Start a new gate in observe mode [CONFIRMED]
+    quote: Observe mode will log what would have been blocked, so that we can review any false positives and ensure no one is impacted.
+    quote_sha256: b462f855e1495cb522945ad7bfa85ade1bd7798a86ef993858e5849521ed2815
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: *sa_2943
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Failing tests require human attention [CONFIRMED]
+    quote: If a check is still failing after three rounds, Claude stops and brings in a human.
+    quote_sha256: 6eb3270020ce9255ae3ac8653b64ba775538e898d249091497a336f434f81b06
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: *sa_2943
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Test your checks on what actually matters [PARTIAL]
+    quote: Their tuning set is split out from the fixed test set they use to evaluate their system.
+    quote_sha256: 521927b92489ec31d8285ef07457cbe25ac5cedaf552d06c25414185e9ed7fd3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: *sa_2943
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Changes can’t modify their own checks [CONFIRMED]
+    quote: In our own repos, we stamp each commit with how it was verified.
+    quote_sha256: d3827d420fbe4c8615be162f1d84275fe3e6020d7f0060aaa60d181c7eaafe8e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: *sa_2943
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Not all tests are created equal [CONFIRMED]
+    quote: Property libraries are a great way to keep agents honest by using edge cases that aren’t created with the same bias as the agent that created the original code.
+    quote_sha256: 283eef2cd89e9cef9bea9b4d6983edcd8b33d03d586d0f4aa64495ce42fabaf1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: *sa_2943
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Rule pruning [CONFIRMED]
+    quote: Test suites, verification steps and .md files only grow if you let them, so we tidy them up on a routine.
+    quote_sha256: c001aa0d97482d6e6070355f189312830d155511dfd771accfb0d8cde021b05b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 66c9a29cc8b7cffa16063047972b60cdc04f7a891a1a590652dbafb653e3d600, found: true}
+    source_revision: https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/
+    source_artifact: *sa_2943
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - off/observe/enforce gate modes
   - block-twice-then-allow escape valve
@@ -430543,9 +430789,43 @@
     - intake-2944
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Linked from intake-2942 Related articles. Vendor engineering post by the Claude Code team. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for
-    up to two Stage-2 waves.'
+  verification: dive-verified
+  notes: Linked from intake-2942 Related articles. Vendor engineering post by the Claude Code team.
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim at Not all tests are created equal. No measurement behind the ranking.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Changes can’t modify their own checks. Design principle without incident data.
+  - claim_index: 2
+    effect: unaffected
+    note: Observe mode and the two-block escape valve confirmed verbatim.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim at Failing tests require human attention. A cap on a fix loop, not a resume driver.
+  - claim_index: 4
+    effect: reattributed
+    note: The tuning/test split, merged-and-stable control and per-stage recall this post attributes to its linked code review post are not in that post as fetched (intake-2955); only
+      the incident answer key and a clean control are.
+  - claim_index: 5
+    effect: unaffected
+    note: CONFIRMED verbatim at Changes can’t modify their own checks. A queryable record independent of the agent's own account.
+  - claim_index: 6
+    effect: unaffected
+    note: CONFIRMED verbatim at Not all tests are created equal. No measurement.
+  - claim_index: 7
+    effect: unaffected
+    note: CONFIRMED verbatim at Rule pruning. New rules also need a promotion bar (seen in two PRs, survives three disprover agents, human approval).
+  depends_on:
+  - entry: intake-2955
+    why: Claim 4 (verifier quality is measured) restates the Code Review evaluation; a retraction there would change it.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive B, sonnet, FULL): 8 claims, 7 CONFIRMED, 1 PARTIAL (verifier grading is summarised from intake-2955, dived in wave 2). Live-lesson
+    tests: L4 agrees directly (observe mode before enforce) and adds a bounded-block escape valve that PM-RULES-WARN-FIRST lacks; L5 agrees (checks the change cannot edit; a per-commit
+    verification stamp) and exposes a gap in our own interim driver: drive.sh and drive2.sh stop on the LANE-STATUS line the Codex lane writes itself (drive.sh L14, L23-L24), contrary
+    to README-INTERIM''s acceptance-from-artifacts rule; L1 agrees on capped fix rounds; L3 adds routine pruning of accreted rules. Wave 2 (intake-2955) reattributes claim 4: the split
+    and per-stage recall it describes are not in the post it cites. Dive-surfaced source: the linked code review post ingested and dived in wave 2 (intake-2955).'
 - id: intake-2944
   arxiv_id: null
   url: https://claude.dev/blog/automating-eval-design-and-hillclimbing/
@@ -430563,11 +430843,57 @@
   authors:
   - Lance Martin
   key_claims:
-  - Hillclimbing needs a train/test split; if train improves and test is flat, revert.
-  - Failures are never pasted into the prompt and answers are kept structurally out of reach.
-  - Noise must be smaller than the smallest improvement worth acting on; a gain within noise is not merged.
-  - Graders are validated by reading transcripts and re-running the grader on the same output.
-  - A supervised hillclimb took a support benchmark from 74.4% at 4.6 cents to 98.9% at 1 cent per ticket.
+  - Each round proposes one patch; train up with test flat means suspected overfitting and a revert.
+  - Failures are never pasted into the prompt.
+  - Noise is checked before the first round, and a gain within noise is reported as such with a recommendation against merging.
+  - Graders are validated by a human reading sampled scored cases and by running the grader twice on the same output.
+  - On 14 held-out tickets the search never saw, the final configuration scored 90.5% versus 78.6% at about one fifth of the cost.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: /claude-api hillclimb [CONFIRMED]
+    quote: Claude suspects overfitting and reverts the patch.
+    quote_sha256: f6ea02ef25f5cf732c393b1e2d1e0d4e5e702e95a1e199ec75146bbe379057ac
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000, found: true}
+    source_revision: https://claude.dev/blog/automating-eval-design-and-hillclimbing/
+    source_artifact: &sa_2944 {"byte_length": 228062, "effective_url": "https://claude.dev/blog/automating-eval-design-and-hillclimbing/", "entry_url": "https://claude.dev/blog/automating-eval-design-and-hillclimbing/", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000", "relative_path": "sha256/df/df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000.raw", "requested_url": "https://claude.dev/blog/automating-eval-design-and-hillclimbing/", "retrieved_at_utc": "2026-11-24T15:58:55.512941Z", "schema_version": 1, "snapshot_id": "sha256:df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Overfitting [CONFIRMED]
+    quote: Never paste failures into the prompt .
+    quote_sha256: 695c4ad13ddb82c9bb89df647721e271ee6ce7147e24a09bcea97933e2379a1a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000, found: true}
+    source_revision: https://claude.dev/blog/automating-eval-design-and-hillclimbing/
+    source_artifact: *sa_2944
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: /claude-api hillclimb [CONFIRMED]
+    quote: If the gain is within noise, it says so and recommends against merging.
+    quote_sha256: 21889eb35479ab44b826e0678596a4b92851340bd6e1527df6b6fa1b30fd7c10
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000, found: true}
+    source_revision: https://claude.dev/blog/automating-eval-design-and-hillclimbing/
+    source_artifact: *sa_2944
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Validating the grader [CONFIRMED]
+    quote: Claude grades a handful of cases and asks whether you would have scored any of them differently
+    quote_sha256: 7f7646f9d292b97ccb48fbe2a904d548c6108cb87915643c7291e17c3be72886
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000, found: true}
+    source_revision: https://claude.dev/blog/automating-eval-design-and-hillclimbing/
+    source_artifact: *sa_2944
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'Examples: Hillclimbing for cost reduction [PARTIAL]'
+    quote: On the 14 held-out tickets that the search never saw, the final configuration scored 90.5% against the original setup&#x27;s 78.6%, at about one fifth of the cost.
+    quote_sha256: 1a5ed9358063795408db3538564aa48c0848befee19639edbe4065c4093acc67
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: df34f6bb81ac858acf3a2a6dad04aadab1c1b39713ba97c65516dfa66e9ec000, found: true}
+    source_revision: https://claude.dev/blog/automating-eval-design-and-hillclimbing/
+    source_artifact: *sa_2944
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - train/test split hillclimb, one patch per round
   - revert on train up and test flat
@@ -430592,9 +430918,28 @@
     - intake-2943
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Linked from intake-2942 (the ''building evals'' link in the Outbox section). Vendor post. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for
-    up to two Stage-2 waves.'
+  verification: dive-verified
+  notes: Linked from intake-2942 (the 'building evals' link in the Outbox section). Vendor post.
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim at /claude-api hillclimb. The kept code is the version that did best on the test set.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Overfitting. Plus split cases and answers kept structurally out of reach; no further reward-hacking mechanism.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED verbatim at /claude-api hillclimb. No method for estimating noise is given.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim at Validating the grader. The LLM judge must not be the model under test.
+  - claim_index: 4
+    effect: narrowed
+    note: Stage-1 headline 98.9% is the search-set score; the held-out result is 78.6% to 90.5% on 14 tickets.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive B, sonnet, FULL): 5 claims, 4 CONFIRMED, 1 PARTIAL (the 98.9% headline is the search set; held-out is 78.6% to 90.5%, n=14). Live-lesson
+    tests: L5 adds. AutoKernel already accepts from measured artifacts (paired A/B against a calibrated floor, then a serving gate: accumulate.py, bench.py @ 82d5822); the bench-versus-serving
+    split is the train/test split, and the documented bench +5.958% versus serving -2.18% divergence is the overfitting symptom the source describes.'
 - id: intake-2945
   arxiv_id: null
   url: https://claude.dev/blog/chaos-loop-claude-docs-launch/
@@ -430614,11 +430959,57 @@
   authors:
   - Vivek Nair
   key_claims:
-  - A two-week autonomous load-test and fix loop on staging hardened the service, giving 60 server errors across billions of requests.
-  - Telemetry legibility (Rust, few dependencies) let the agent close the loop.
-  - Hard-to-undo decisions were reserved for the human; the rest was autonomous.
-  - The loop works because frontier models no longer drift across long runs.
-  - The effort cost about $125,000 of inference.
+  - The launch saw 60 server errors across 2 billion requests with no rollback.
+  - The service was built so every number the agent measured traced back to the team's own code.
+  - Before the loop, the human named the decisions needing approval (irreversible ones); everything else ran autonomously.
+  - Invariants held across many compactions without being repeated.
+  - The effort used about $125,000 of inference at list price.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Introduction [PARTIAL]
+    quote: Across 2 billion requests we saw only 60 server errors, and we never had to roll back.
+    quote_sha256: 391ddd0455a74bcfb1d86fb5fcb90193fb7c695864f57af2937450f5bb1cea5b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172, found: true}
+    source_revision: https://claude.dev/blog/chaos-loop-claude-docs-launch/
+    source_artifact: &sa_2945 {"byte_length": 109756, "effective_url": "https://claude.dev/blog/chaos-loop-claude-docs-launch/", "entry_url": "https://claude.dev/blog/chaos-loop-claude-docs-launch/", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172", "relative_path": "sha256/4c/4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172.raw", "requested_url": "https://claude.dev/blog/chaos-loop-claude-docs-launch/", "retrieved_at_utc": "2026-11-24T15:58:55.336210Z", "schema_version": 1, "snapshot_id": "sha256:4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Making the service legible to Claude [CONFIRMED]
+    quote: We wanted any number Claude measured to trace back to code we wrote.
+    quote_sha256: 99f46b6de3b8575fabb8629b8637d5026c8c849719f17b76b0d8580536a60bfd
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172, found: true}
+    source_revision: https://claude.dev/blog/chaos-loop-claude-docs-launch/
+    source_artifact: *sa_2945
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: The chaos loop [CONFIRMED]
+    quote: Before the loop started, I told Claude which decisions needed my approval
+    quote_sha256: 48f09d815e64736e26e421a3ef7d77d164d6e84f94ae4b8f9460604cd90a3328
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172, found: true}
+    source_revision: https://claude.dev/blog/chaos-loop-claude-docs-launch/
+    source_artifact: *sa_2945
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Why this works now [PARTIAL]
+    quote: Claude held all of our invariants across many compactions, and I never had to repeat them.
+    quote_sha256: c7047f4591075f4defcb93ac7cfa9b456a2b4fa4f45a303b9b23b5560cbcfc47
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172, found: true}
+    source_revision: https://claude.dev/blog/chaos-loop-claude-docs-launch/
+    source_artifact: *sa_2945
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: What it cost [CONFIRMED]
+    quote: I used roughly $125,000 of inference from the end of August to launch day.
+    quote_sha256: 9a3de4b233fa8176ff380dbb3fd2405681ca32bdbddf796a874e7693978b31c0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4cd8006fbb8596a72f670760e665e6574c5f01df15fb6813f63d0f3b591c6172, found: true}
+    source_revision: https://claude.dev/blog/chaos-loop-claude-docs-launch/
+    source_artifact: *sa_2945
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - coordinator plus sub-agents loop
   - scenario-driven saturation harness
@@ -430642,9 +431033,28 @@
     - intake-2942
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Linked from intake-2942 Related articles. Single anecdotal campaign; credibility low. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for up
-    to two Stage-2 waves.'
+  verification: dive-verified
+  notes: Linked from intake-2942 Related articles. Single anecdotal campaign; credibility low.
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 60 errors over 2 billion launch-week requests, uncontrolled; the loop's causal share is not shown.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Making the service legible to Claude. Rust was a hypothesis, not a bake-off.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED verbatim at The chaos loop. Fixes shipped behind runtime flags.
+  - claim_index: 3
+    effect: narrowed
+    note: Goal persistence is one anecdote on an internal model.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED verbatim at What it cost. The $3,000 to $10,000 small-stack figure is an unrun estimate.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive B, sonnet, FULL): 5 claims, 3 CONFIRMED, 2 PARTIAL. The headline is uncontrolled and the model internal. Live-lesson tests: L1 adds
+    context (no resume mechanism; it relied on one persistent coordinator session); L2 silent (dedicated staging cluster, no shared-host contention). The up-front approval list for irreversible
+    decisions is already our Act-Don''t-Defer admission test.'
 - id: intake-2946
   arxiv_id: null
   url: https://www.anthropic.com/research/components-of-agent-memory
@@ -430664,11 +431074,77 @@
   authors:
   - Lance Martin
   key_claims:
-  - Memory should hold only what the agent cannot look up again; store pointers, not copies.
-  - Load a small index at session start and keep details in lower layers read on demand.
-  - Dreaming (offline reflection over transcripts) corrects, curates and restructures memory.
-  - Stronger models should be told memory exists, not how to use it.
-  - Memory notes go stale and a wrong note propagates to every session.
+  - Strategy, plans and tested rules exist only if the agent works them out and writes them down; state readable each turn need not be stored.
+  - The top memory layer is injected every session and must stay small; Claude Code loads only the first 200 lines or 25 KB of MEMORY.md.
+  - Dreaming can correct a wrong note by checking it against the original transcript.
+  - 'Wikis built by dreaming help most when paired with search: 13% to 48% of graded criteria from 2 to 128 sessions on 25 questions.'
+  - For stronger models, freedom to judge salience beat fixed rules set in advance.
+  - Concurrent writers to one shared page lost facts; one writer per page fixed it.
+  - Logging notes in the moment distracts from the main task, while background dreaming is not immediately available.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Claude has learned to judge salience [CONFIRMED]
+    quote: memory files about strategy, plans, and tested rules exist only if Claude works them out, and they disappear unless Claude writes them down.
+    quote_sha256: 48f091d07a0b9fe1df1a6b2ef1653341b444f89d6e7c27c19956460a18a39004
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4, found: true}
+    source_revision: https://www.anthropic.com/research/components-of-agent-memory
+    source_artifact: &sa_2946 {"byte_length": 252634, "effective_url": "https://www.anthropic.com/research/components-of-agent-memory", "entry_url": "https://www.anthropic.com/research/components-of-agent-memory", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4", "relative_path": "sha256/42/428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4.raw", "requested_url": "https://www.anthropic.com/research/components-of-agent-memory", "retrieved_at_utc": "2026-11-24T15:58:56.064390Z", "schema_version": 1, "snapshot_id": "sha256:428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Dreaming can promote notes up the memory hierarchy [CONFIRMED]
+    quote: It loads only the first 200 lines or 25 KB of MEMORY.md .
+    quote_sha256: 3660342f056028c76317b5d67570a5280cba1ec494b40cf21914ceae942f6a70
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4, found: true}
+    source_revision: https://www.anthropic.com/research/components-of-agent-memory
+    source_artifact: *sa_2946
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Dreaming can correct memory [PARTIAL]
+    quote: The transcript gave Claude a ground truth to validate its memory against.
+    quote_sha256: cfd590039785044bdbfee34e6594c6e9e08d60820329733b63d0d52f6acf4766
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4, found: true}
+    source_revision: https://www.anthropic.com/research/components-of-agent-memory
+    source_artifact: *sa_2946
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Dreaming can build new memory representations [CONFIRMED]
+    quote: As we scaled dreaming from two sessions to 128, performance on the 25 questions grew from 13% to 48% of graded criteria
+    quote_sha256: 11994f36a90353fb7ed3f08b7d53eadb255fc192319a3093b0316abb662edca0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4, found: true}
+    source_revision: https://www.anthropic.com/research/components-of-agent-memory
+    source_artifact: *sa_2946
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Steering Claude to write memory [CONFIRMED]
+    quote: For stronger models, giving them freedom to judge salience was more effective than setting fixed rules in advance
+    quote_sha256: 278f21d037ac6cea4a105197114fa98decaac158cfd632549417f9f4fe16baba
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4, found: true}
+    source_revision: https://www.anthropic.com/research/components-of-agent-memory
+    source_artifact: *sa_2946
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Dreaming can focus memory on a specific goal [CONFIRMED]
+    quote: because agents had overwritten one another’s work
+    quote_sha256: 77534afdd12f682aca2bc4be252e47bb0340d8ac41351ba1308f0544095cd3c5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4, found: true}
+    source_revision: https://www.anthropic.com/research/components-of-agent-memory
+    source_artifact: *sa_2946
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Thinking backward, looking forward [CONFIRMED]
+    quote: logging notes in the moment inevitably draws Claude’s attention away from its main task.
+    quote_sha256: 63ba0026c893184a2218a77c254398f414ed7bee07acc5a23f96e613b24289a0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 428d74191588d8169e2a6138095321ae0a072274cd7856e736d0fc91e95a5cd4, found: true}
+    source_revision: https://www.anthropic.com/research/components-of-agent-memory
+    source_artifact: *sa_2946
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - small injected index with lower layers on demand
   - 'dreaming: offline curation against transcripts'
@@ -430693,10 +431169,36 @@
     - intake-819
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
+  verification: dive-verified
   notes: 'Linked from intake-2942 as ''our post on agent memory''. Sleep-time compute (intake-819) is the independent paper behind dreaming. Integrator check 2026-11-24: the operator''s
-    auto-memory index is 97 lines and 20,039 bytes, inside the 200-line and 25 KB load window this post states. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended
-    entry for up to two Stage-2 waves.'
+    auto-memory index is 97 lines and 20,039 bytes, inside the 200-line and 25 KB load window this post states.'
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED verbatim at Claude has learned to judge salience. Evidence is one run per model (Sonnet 3.7: 413 files in 225 folders, 1 badge; Fable 5: nine files, 4 badges).'
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Dreaming can promote notes up the memory hierarchy. The threshold is stated, not measured.
+  - claim_index: 2
+    effect: narrowed
+    note: Transcript-grounded correction rests on one anecdote.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim at Dreaming can build new memory representations. Search plus wiki 54% to 61% versus 53% search alone; no gain where one document sufficed.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED verbatim at Steering Claude to write memory. The per-model gains are in figures and not in the text.
+  - claim_index: 5
+    effect: unaffected
+    note: CONFIRMED verbatim at Dreaming can focus memory on a specific goal. 41 of 57 facts survived versus 57 of 57 after the fix.
+  - claim_index: 6
+    effect: unaffected
+    note: CONFIRMED verbatim at Thinking backward, looking forward. Stated tradeoff, no measurement.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive D, sonnet, FULL): 7 claims, 6 CONFIRMED, 1 PARTIAL. Live-lesson tests: L1 adds (in-the-moment progress logging distracts the worker;
+    a harness- or coordinator-side writer that derives progress from artifacts avoids that); L5 agrees (validate memory against recorded artifacts, n=1); L3 weakly agrees (one writer
+    per page). The memory-index size check the dive proposed was settled by the integrator: 97 lines, 20,039 bytes, inside the stated window, so no action. Dive-surfaced source: Sleep-time
+    compute (arXiv 2504.13171) is already indexed as intake-819; cross-reference only, not re-ingested.'
 - id: intake-2947
   arxiv_id: null
   url: https://www.anthropic.com/research/claude-code-auto-mode
@@ -430714,10 +431216,48 @@
   authors:
   - John Hughes
   key_claims:
-  - A two-stage classifier replaces human approval prompts with a very low false-positive rate.
-  - Auto mode catches dangerous actions the user did not authorize.
-  - When blocked, the agent retries a safer path instead of halting.
-  - 'The classifier is reasoning-blind: it sees only user messages and tool calls.'
+  - The full two-stage pipeline has a 0.4% false-positive rate on 10,000 real internal tool calls.
+  - 'Recall is weaker than the headline: 17% false negatives on real overeager actions (n=52), which the post calls the honest number.'
+  - A block returns to the agent with its reason so it tries a safer path; 3 consecutive or 20 total denials stop the model and escalate, and headless mode terminates.
+  - The classifier strips assistant text and tool results so the agent cannot argue it into a bad call.
+  - Evaluation was offline on three datasets; no staged, shadow or warn-first rollout of the classifier is described.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Results [CONFIRMED]
+    quote: Stage 1->Stage 2 (full pipeline) 0.4% FPR 17% FNR 5.7% FNR
+    quote_sha256: d3acea4bc6646ba9cf51ecec43aee43e51bbe6f5b0cc761b78c9e8f7c9bc55a3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 625e7d3deece74d5e90e3b95b3acd76ffd69e79037dc67c576cae947605e5b8d, found: true}
+    source_revision: https://www.anthropic.com/research/claude-code-auto-mode
+    source_artifact: &sa_2947 {"byte_length": 219776, "effective_url": "https://www.anthropic.com/research/claude-code-auto-mode", "entry_url": "https://www.anthropic.com/research/claude-code-auto-mode", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "625e7d3deece74d5e90e3b95b3acd76ffd69e79037dc67c576cae947605e5b8d", "relative_path": "sha256/62/625e7d3deece74d5e90e3b95b3acd76ffd69e79037dc67c576cae947605e5b8d.raw", "requested_url": "https://www.anthropic.com/research/claude-code-auto-mode", "retrieved_at_utc": "2026-11-24T15:58:56.356289Z", "schema_version": 1, "snapshot_id": "sha256:625e7d3deece74d5e90e3b95b3acd76ffd69e79037dc67c576cae947605e5b8d"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Results [PARTIAL]
+    quote: The 17% false-negative rate on real overeager actions is the honest number.
+    quote_sha256: 5f6cf88385bc1bf7789ac53317cd0ee68e7d629d5fda342c4c4469d5960919aa
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 625e7d3deece74d5e90e3b95b3acd76ffd69e79037dc67c576cae947605e5b8d, found: true}
+    source_revision: https://www.anthropic.com/research/claude-code-auto-mode
+    source_artifact: *sa_2947
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Design decisions (Deny-and-continue) [CONFIRMED]
+    quote: If a session accumulates 3 consecutive denials or 20 total, we stop the model and escalate to the human.
+    quote_sha256: 3d90306d8413cf461f3903bb32f7e9eea782849485ae8bf38a81e3ab2d5c8049
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 625e7d3deece74d5e90e3b95b3acd76ffd69e79037dc67c576cae947605e5b8d, found: true}
+    source_revision: https://www.anthropic.com/research/claude-code-auto-mode
+    source_artifact: *sa_2947
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Design decisions (Why we strip assistant text and tool results) [CONFIRMED]
+    quote: We strip assistant text so the agent can&#x27;t talk the classifier into making a bad call.
+    quote_sha256: 943a5ef0a21b994fa4a7ce729f2d197a942d7acb7fc89e8cb8dfac42a98069e7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 625e7d3deece74d5e90e3b95b3acd76ffd69e79037dc67c576cae947605e5b8d, found: true}
+    source_revision: https://www.anthropic.com/research/claude-code-auto-mode
+    source_artifact: *sa_2947
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - two-stage classifier (cheap recall-tuned filter, then reasoning on flagged calls)
   - reasoning-blind action gating
@@ -430739,9 +431279,29 @@
     - intake-2948
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Linked from intake-2942 Permissions section. Vendor research post; all datasets internal. Stage 1 (2026-11-24): operator pre-authorised dives on every recommended entry for
-    up to two Stage-2 waves.'
+  verification: dive-verified
+  notes: Linked from intake-2942 Permissions section. Vendor research post; all datasets internal.
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim at Results. Stage 1 alone is 8.5% FPR. Anthropic-internal traffic only.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Catches most, not all, dangerous actions: 17% FNR on n=52.'
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED verbatim at Design decisions (Deny-and-continue). A false positive costs one retry.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim at Design decisions (Why we strip assistant text and tool results). Including them lowered performance; no figure given.
+  - claim_index: 4
+    effect: overturned
+    note: A first reader might infer a staged rollout; none is described.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive C, sonnet, FULL): 5 claims, 3 CONFIRMED, 1 PARTIAL, 1 NOT-FOUND-IN-SOURCE (no warn-first or shadow rollout of the classifier). Live-lesson
+    tests: L1 adds (a refusal is a retry signal bounded by a counter: 3 consecutive or 20 total, then escalate; the Codex lane cx10 treated a refused light claim as a stop and was resumed
+    by a hand-written continue message with no counter); L4 neither supports nor contradicts (offline FPR/FNR before trusting a gate is the measurement analogue of PM-RULES-WARN-FIRST''s
+    would-fail count); L5 agrees (judge what the agent did, not what it says).'
 - id: intake-2948
   arxiv_id: null
   url: https://code.claude.com/docs/en/hooks
@@ -430759,9 +431319,37 @@
   authors:
   - Anthropic
   key_claims:
-  - A PreToolUse hook can return defer to pause a headless run at a tool call and resume it later.
-  - asyncRewake lets a background hook wake an idle session.
-  - Hooks can block (exit 2 or deny) or only inform.
+  - A defer decision ends the turn with stop_reason tool_deferred and keeps the pending call in the transcript; the caller resumes with claude -p --resume and the hook fires again.
+  - An asyncRewake hook that exits 2 wakes an idle session and shows its stderr as a system reminder.
+  - Async hooks cannot block; blocking needs a synchronous hook with exit 2 or a deny decision.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Defer a tool call for later [CONFIRMED]
+    quote: 'The turn ends with a result carrying stop_reason: "tool_deferred" , and the pending tool call stays in the transcript.'
+    quote_sha256: 2390f54ff8beaa81663aa3cf597618e805febbedcbb1080fd74e61907a39c066
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0a48310aeb846b8fb7ae7232179a7fe8f58c495fbed01de3203528629d455267, found: true}
+    source_revision: https://code.claude.com/docs/en/hooks
+    source_artifact: &sa_2948 {"byte_length": 2595259, "effective_url": "https://code.claude.com/docs/en/hooks", "entry_url": "https://code.claude.com/docs/en/hooks", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0a48310aeb846b8fb7ae7232179a7fe8f58c495fbed01de3203528629d455267", "relative_path": "sha256/0a/0a48310aeb846b8fb7ae7232179a7fe8f58c495fbed01de3203528629d455267.raw", "requested_url": "https://code.claude.com/docs/en/hooks", "retrieved_at_utc": "2026-11-24T15:58:56.840172Z", "schema_version": 1, "snapshot_id": "sha256:0a48310aeb846b8fb7ae7232179a7fe8f58c495fbed01de3203528629d455267"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Run hooks in the background [CONFIRMED]
+    quote: 'Exception: an asyncRewake hook that exits with code 2 wakes Claude immediately even when the session is idle.'
+    quote_sha256: 8758ff88b5abd0dce774d0891fbc6d5bf9f9a55522ef4056db14312c72bcda15
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0a48310aeb846b8fb7ae7232179a7fe8f58c495fbed01de3203528629d455267, found: true}
+    source_revision: https://code.claude.com/docs/en/hooks
+    source_artifact: *sa_2948
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Run hooks in the background [PARTIAL]
+    quote: 'Async hooks can’t block or control Claude’s behavior: response fields like decision , permissionDecision , and continue have no effect'
+    quote_sha256: cb5bf9aefca67c8c36f489014b79174f744293dd9cfc4c228db6ba4d47a607c4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0a48310aeb846b8fb7ae7232179a7fe8f58c495fbed01de3203528629d455267, found: true}
+    source_revision: https://code.claude.com/docs/en/hooks
+    source_artifact: *sa_2948
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - PreToolUse defer plus claude -p --resume
   - asyncRewake wake on exit 2
@@ -430780,9 +431368,24 @@
     - intake-2947
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Linked from intake-2942 (''a hook can defer a tool call''). Documentation page; credibility_score null by rubric. The page is about 1.3M characters including a JS bundle. Stage
-    1 (2026-11-24): operator pre-authorised dives on every recommended entry for up to two Stage-2 waves.'
+  verification: dive-verified
+  notes: Linked from intake-2942 ('a hook can defer a tool call'). Documentation page; credibility_score null by rubric. The page is about 1.3M characters including a JS bundle.
+  read_depth: PARTIAL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim at Defer a tool call for later. Headless -p only, single tool call per turn, no timeout; session kept until cleanupPeriodDays (30 days default); permission
+      mode is not restored on resume.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Run hooks in the background. Matches our own WS-4 spike GO of 2026-11-19.
+  - claim_index: 2
+    effect: narrowed
+    note: Only the async paragraphs were read; Stop-hook decision semantics are not covered by this entry.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive C, sonnet, PARTIAL: read the defer section, the async and asyncRewake paragraphs, the PreToolUse decision table and the SubagentStop
+    input; not read: the Stop, TeammateIdle and TaskCompleted decision bodies, other events, prompt/agent/http hook types and the bundled JS). 3 claims, 2 CONFIRMED, 1 PARTIAL. Live-lesson
+    test: L1 adds a documented suspend-and-resume path for claude -p actors. It does not apply to taskflow workers (opencode on local models) or Codex lanes, and no deferred-call-to-inbox-to-resume
+    path exists in taskflow dispatch.py.'
 - id: intake-2949
   arxiv_id: null
   url: https://claude.dev/blog/building-effective-agent-automations/
@@ -430802,10 +431405,47 @@
   - Lance Martin
   - CJ Avilla
   key_claims:
-  - Scheduled agents read from per-source bookmarks rather than fixed windows.
-  - A failed source read is reported as unreadable, not as a quiet day.
-  - An action counts as done only after external confirmation, and only then is the ledger updated.
-  - Preferences are re-read each run from a store the agent cannot edit.
+  - A per-source bookmark replaces fixed time windows.
+  - A down source looks like an empty one, so the agent must name what it could not read instead of reporting nothing new.
+  - A post counts as sent only on explicit confirmation from the destination, and the ledger updates only after that.
+  - If the preferences store cannot be read the run stops rather than using defaults; a run that hits its budget pauses with a budget_reached reason.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sources (Read from where you left off) [CONFIRMED]
+    quote: Instead, give the agent a bookmark per source.
+    quote_sha256: b525409797135848d473848b582283cad552828e2c1f701dd4f6bcedd8d92e07
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fe12eaddd071473e18a570e00e8d18897640879d12699b5200147d35277bd5bb, found: true}
+    source_revision: https://claude.dev/blog/building-effective-agent-automations/
+    source_artifact: &sa_2949 {"byte_length": 138775, "effective_url": "https://claude.dev/blog/building-effective-agent-automations/", "entry_url": "https://claude.dev/blog/building-effective-agent-automations/", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "fe12eaddd071473e18a570e00e8d18897640879d12699b5200147d35277bd5bb", "relative_path": "sha256/fe/fe12eaddd071473e18a570e00e8d18897640879d12699b5200147d35277bd5bb.raw", "requested_url": "https://claude.dev/blog/building-effective-agent-automations/", "retrieved_at_utc": "2026-11-24T15:58:55.750723Z", "schema_version": 1, "snapshot_id": "sha256:fe12eaddd071473e18a570e00e8d18897640879d12699b5200147d35277bd5bb"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sources (Don't mistake a failed read for a quiet day) [CONFIRMED]
+    quote: the agent sees nothing from that source and reports "nothing new."
+    quote_sha256: 0893b4d461a36bc4203a594fff343f16d6cce754ebfd5829970f29bc9d8b75f6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fe12eaddd071473e18a570e00e8d18897640879d12699b5200147d35277bd5bb, found: true}
+    source_revision: https://claude.dev/blog/building-effective-agent-automations/
+    source_artifact: *sa_2949
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Destination (Confirm the post landed before recording it) [CONFIRMED]
+    quote: 'Second, the post counts as sent only if Slack returns "ok": true and a message ts.'
+    quote_sha256: e680d792b3dbdb4a1f0e11c02b1caaaaa52ad4d2b811d908ea41574a6761b3ff
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fe12eaddd071473e18a570e00e8d18897640879d12699b5200147d35277bd5bb, found: true}
+    source_revision: https://claude.dev/blog/building-effective-agent-automations/
+    source_artifact: *sa_2949
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Memory and Guardrails [CONFIRMED]
+    quote: If it can&#x27;t read the file, it should stop and say so instead of running on defaults.
+    quote_sha256: 443d75bd26d35f47272f8efb37edfb37b608d856158aef02bea7725d6beca379
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fe12eaddd071473e18a570e00e8d18897640879d12699b5200147d35277bd5bb, found: true}
+    source_revision: https://claude.dev/blog/building-effective-agent-automations/
+    source_artifact: *sa_2949
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - bookmark per source
   - write-ahead run record (posting, posted, maybe posted)
@@ -430826,9 +431466,25 @@
     - intake-2616
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Linked from intake-2942 (''build them from the ground up''). Vendor post tied to the Managed Agents product (intake-2616). Stage 1 (2026-11-24): operator pre-authorised dives
-    on every recommended entry for up to two Stage-2 waves.'
+  verification: dive-verified
+  notes: Linked from intake-2942 ('build them from the ground up'). Vendor post tied to the Managed Agents product (intake-2616).
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim at Sources (Read from where you left off). Knowledge-only for us.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Sources (Don't mistake a failed read for a quiet day). Same class as our fail-open and vacuous-verification lessons.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmation-before-ledger confirmed verbatim.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim at Memory and Guardrails. No measurements anywhere in the post.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive C, sonnet, FULL): 4 claims, all CONFIRMED. Live-lesson test: L5 agrees (completion judged from an external artifact, ledger updated
+    afterwards; taskflow verify.py already works this way, and the maybe-posted state matches its unchecked verdict). The write-ahead record is a design note for PM-PUBLISH-REHEARSAL.
+    Dive-surfaced source: anthropic.com/research/managed-agents is already indexed as intake-2616; cross-reference only.'
 - id: intake-2950
   arxiv_id: null
   url: https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake
@@ -430845,10 +431501,57 @@
   authors:
   - RAZ Team (edited by Mihan Tilakaratne)
   key_claims:
-  - Vendor webhooks drop a delivery after three failed attempts, so they cannot be the inbox.
-  - A filter in front of the inbox decides cost (41 of 645 alerts reached an agent).
-  - Models are poor clocks and cache expiry makes frequent wake-ups expensive (103.7 million tokens in ten days).
-  - Deferred calls have no timeout and expire with the session after 30 days, so every parked question needs a follow-up timer.
+  - Anthropic's hosted-agent webhook docs say a delivery is attempted three times and then dropped without a signal.
+  - A filter in front of the inbox sets much of the cost; in one report 41 of 645 alerts reached the agent.
+  - 'Models are poor clocks: on AgentTime one model stopped at about the right moment in 4% of runs and the best in 63%.'
+  - A fifteen-minute check used 103.7 million tokens in ten days because the cache lapsed between wakes.
+  - Every parked question needs a follow-up timer so that silence also becomes an event.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: The inbox [PARTIAL]
+    quote: a delivery is attempted up to three times and then dropped, with no signal that it was lost
+    quote_sha256: 1115595db07dfa8e8889a7cda6618f82f53d7af58b6369564d179d1c03adbb9b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd, found: true}
+    source_revision: https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake
+    source_artifact: &sa_2950 {"byte_length": 60895, "effective_url": "https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake", "entry_url": "https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd", "relative_path": "sha256/1e/1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd.raw", "requested_url": "https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake", "retrieved_at_utc": "2026-11-24T15:59:25.501449Z", "schema_version": 1, "snapshot_id": "sha256:1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: The inbox [PARTIAL]
+    quote: 41 of 645 alerts reached the agent
+    quote_sha256: 4fd13c40c61909afa5d5b35765aca88de9cb3650a920c842d16873eb6ae8e269
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd, found: true}
+    source_revision: https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake
+    source_artifact: *sa_2950
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: The clock [PARTIAL]
+    quote: one model stopped at about the right moment in 4% of runs and the best managed 63%
+    quote_sha256: 1e92c660bc0d822d0e627ca24bf973ce1621429591cde269c31188a6a733d655
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd, found: true}
+    source_revision: https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake
+    source_artifact: *sa_2950
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: The clock [PARTIAL]
+    quote: a single fifteen-minute check had used 103.7 million tokens in ten days
+    quote_sha256: f3d4aa13acbbb419e8f32147e977984df3ff128c743aefd913b848a2841b1f38
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd, found: true}
+    source_revision: https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake
+    source_artifact: *sa_2950
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: The parked question [CONFIRMED]
+    quote: a follow-up timer beside every parked question, so that silence becomes an event too
+    quote_sha256: 7cfc89cf0c1cbeafc3cb9eef1293ceb51a99e47af51851b8e7e80ecb08dfda34
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ef497b0691f5c9186703477638494fc61ed539117d12c396aec7f7d9d386fcd, found: true}
+    source_revision: https://www.realaization.com/blog/an-always-on-agent-is-mostly-asleep-so-what-s-awake
+    source_artifact: *sa_2950
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - own the inbox table even when the vendor offers webhooks
   - filter before the inbox
@@ -430869,9 +431572,33 @@
     - intake-2953
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Found by the Stage-1 Tier-2b contradiction search on intake-2942 (query: always-on agents event inbox single worker criticism). Commentary site, single post. Stage 1 (2026-11-24):
-    operator pre-authorised dives on every recommended entry for up to two Stage-2 waves.'
+  verification: dive-verified
+  notes: 'Found by the Stage-1 Tier-2b contradiction search on intake-2942 (query: always-on agents event inbox single worker criticism). Commentary site, single post.'
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Unverified secondary report of vendor docs.
+  - claim_index: 1
+    effect: narrowed
+    note: Uncited anecdote.
+  - claim_index: 2
+    effect: narrowed
+    note: Figures exact but they measure following a requested duration, and Astra's 63% plus the elapsed-time oracle contradict the blanket 'poor clocks' reading (intake-2953).
+  - claim_index: 3
+    effect: narrowed
+    note: Uncited anecdote.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED verbatim at The parked question. The critique's own contribution; intake-2942 offers timers but does not tie them to deferrals.
+  depends_on:
+  - entry: intake-2942
+    why: The post is a critique of intake-2942; its parked-question claim extends that article's deferred-call design and would change if that design were retracted.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive A, sonnet, FULL): 5 claims, 1 CONFIRMED, 4 PARTIAL. None of its numbers has a linked primary source; its design points stand on their
+    own logic. Live-lesson test: L1 adds a follow-up timer per parked question; our session bus already redelivers an unacknowledged requires_ack message as a nudge (BUS_PROTOCOL.md
+    L28-L31 @ 3b11e6c), but nothing produces a resume event for a worker that ended early. The AgentTime figure was taken to wave 2 (intake-2953). Wave 2 (intake-2953) checked the AgentTime
+    figures: exact, but they measure duration-following. Dive-surfaced sources: AgentTime and TicToc ingested in wave 2 (intake-2953, intake-2954); Anthropic hosted-agent webhook documentation
+    declined (no locator in the post, and its conclusion that the builder must own the inbox is independently supported by intake-2951 and intake-2952).'
 - id: intake-2951
   arxiv_id: null
   url: https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html
@@ -430889,10 +431616,47 @@
   authors:
   - Anirudh Negi
   key_claims:
-  - Webhook intake is a durable inbox with a dedupe key written before agent work; acknowledge after durable intake.
-  - Claim work with explicit states and a lease (claimed_by, claimed_until), not a boolean flag; expired leases are re-claimable.
-  - Inbox dedup is not enough; downstream side effects need idempotency keys too.
-  - Redis-only dedupe with expiring keys is weak.
+  - Acknowledge after durable intake, not after the work completes.
+  - Use explicit states and lease-style claims with an expiry; a row whose lease expired can be claimed again.
+  - Inbox dedup is necessary but not sufficient; downstream effects need idempotency keys.
+  - Expiring-key dedupe alone is fragile.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Pitfalls and best-practices [CONFIRMED]
+    quote: acknowledge after durable intake, not after business completion
+    quote_sha256: 9afe90ae147f09b6b92f75cec94969f6e2715f94b9e390db663f496589991fe3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7a657a0ea8356d429bb08a2b5fb9d997f59c8cb5335eea9dd32286cf73770b03, found: true}
+    source_revision: https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html
+    source_artifact: &sa_2951 {"byte_length": 46099, "effective_url": "https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html", "entry_url": "https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "7a657a0ea8356d429bb08a2b5fb9d997f59c8cb5335eea9dd32286cf73770b03", "relative_path": "sha256/7a/7a657a0ea8356d429bb08a2b5fb9d997f59c8cb5335eea9dd32286cf73770b03.raw", "requested_url": "https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html", "retrieved_at_utc": "2026-11-24T15:59:25.602168Z", "schema_version": 1, "snapshot_id": "sha256:7a657a0ea8356d429bb08a2b5fb9d997f59c8cb5335eea9dd32286cf73770b03"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Implementation details 2 [CONFIRMED]
+    quote: Use explicit states and lease-style claiming instead
+    quote_sha256: c5ad827cb8a2f9e3ae6663f6c98d8860fb3ccd9eddf0c91bf4f1f9fb9c01203b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7a657a0ea8356d429bb08a2b5fb9d997f59c8cb5335eea9dd32286cf73770b03, found: true}
+    source_revision: https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html
+    source_artifact: *sa_2951
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Implementation details 3 [CONFIRMED]
+    quote: Inbox dedupe is necessary, but it is not sufficient
+    quote_sha256: 51a2d95d935d0ee5eb9550408d770cde1d62bf11a43a529af4d240be926e247c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7a657a0ea8356d429bb08a2b5fb9d997f59c8cb5335eea9dd32286cf73770b03, found: true}
+    source_revision: https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html
+    source_artifact: *sa_2951
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Tradeoff table [CONFIRMED]
+    quote: Redis dedupe only
+    quote_sha256: 22ad90f5f081e3835b8b81fe17deb78d9d09622db76fdec2be6696eae9e8c4df
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7a657a0ea8356d429bb08a2b5fb9d997f59c8cb5335eea9dd32286cf73770b03, found: true}
+    source_revision: https://negiadventures.github.io/blog/webhook-inboxes-ai-agents.html
+    source_artifact: *sa_2951
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - inbox ledger unique on provider and dedupe key
   - lease claim with claimed_until and skip-locked
@@ -430911,9 +431675,26 @@
     - intake-2952
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  notes: 'Found by the Stage-1 Tier-2b search on intake-2942. Single-author design blog; corroborated in substance by intake-2952. Stage 1 (2026-11-24): operator pre-authorised dives
-    on every recommended entry for up to two Stage-2 waves.'
+  verification: dive-verified
+  notes: Found by the Stage-1 Tier-2b search on intake-2942. Single-author design blog; corroborated in substance by intake-2952.
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim at Pitfalls and best-practices. Agrees with intake-2942's fast acknowledgement.
+  - claim_index: 1
+    effect: unaffected
+    note: Lease claim confirmed verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED verbatim at Implementation details 3. Adds what intake-2942 omits.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim at Tradeoff table. Assertion without measurement.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive A, sonnet, FULL): 4 claims, all CONFIRMED (design sketch, no data). Live-lesson test: L2 is already covered for expiry. The dive
+    first read our light claim''s expiry as advisory; main review overturned that: reap_build_grants ends every build or light grant past its end= on the keeper tick (rowflow.py L6771-L6787
+    @ 3b11e6c), and the advisory rules are only the nice/taskset usage contract (L6455-L6457). The real gap was that claims never consulted the planner (rowflow.py L8419, root cause
+    E), which the reservation addresses.'
 - id: intake-2952
   arxiv_id: null
   url: https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/
@@ -430930,9 +431711,37 @@
   authors:
   - Oskar Dudycz
   key_claims:
-  - The inbox saves the event and then acknowledges; the outbox stores outgoing messages for a background sender; both give at-least-once delivery.
-  - At-least-once delivery requires idempotent handling via a unique message id stored in the same transaction.
-  - Scaling is by per-consumer offsets and partitions, with ordering only within a partition.
+  - The inbox first saves the event and then acknowledges the queue; an outbox-like process runs the handlers later.
+  - At-least-once delivery means consumers must defend themselves with idempotency.
+  - A per-consumer offset row enables locking and competing consumers, with ordering held only within a partition.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Inbox Pattern [CONFIRMED]
+    quote: Contrary to outbox pattern, we first save the event in the database, then we’re returning ACK to queue
+    quote_sha256: 13e50e96a58c1bd8f5e4f437e6e705c6103f2d23ee606a446480a5ab8be38b3a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2151f021eb7d3693fda8586eaab76eefa56c07cf27ce4db88f6fe3f54d4b54d4, found: true}
+    source_revision: https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/
+    source_artifact: &sa_2952 {"byte_length": 73902, "effective_url": "https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/", "entry_url": "https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "2151f021eb7d3693fda8586eaab76eefa56c07cf27ce4db88f6fe3f54d4b54d4", "relative_path": "sha256/21/2151f021eb7d3693fda8586eaab76eefa56c07cf27ce4db88f6fe3f54d4b54d4.raw", "requested_url": "https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/", "retrieved_at_utc": "2026-11-24T15:59:26.773711Z", "schema_version": 1, "snapshot_id": "sha256:2151f021eb7d3693fda8586eaab76eefa56c07cf27ce4db88f6fe3f54d4b54d4"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Delivery guarantees [CONFIRMED]
+    quote: We have to defend ourselves through correct idempotency handling
+    quote_sha256: dfbe73ba9afa40b65ad3abe00f4ff9c44f410d2fe2c17302b7b228d825a4953d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2151f021eb7d3693fda8586eaab76eefa56c07cf27ce4db88f6fe3f54d4b54d4, found: true}
+    source_revision: https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/
+    source_artifact: *sa_2952
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Outbox Pattern (parallelisation) [CONFIRMED]
+    quote: It allows for easier locking and implementing competing consumers
+    quote_sha256: 072911998c6ed837f2cf17477d5fb6e971a99186ebad53ba6ffbcf8dc1161987
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2151f021eb7d3693fda8586eaab76eefa56c07cf27ce4db88f6fe3f54d4b54d4, found: true}
+    source_revision: https://event-driven.io/en/Outbox_Inbox_patterns_and_delivery_guarantees_explained/
+    source_artifact: *sa_2952
+    verified_by: research-intake/stage2 (intake-always-on-1124)
   techniques:
   - transactional outbox
   - inbox table
@@ -430952,7 +431761,384 @@
     - intake-2951
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
+  verification: dive-verified
   notes: 'Found by the Stage-1 Tier-2b search on intake-2942. Independent distributed-systems source predating agent use. Our session bus already implements this design: per-agent append-only
-    files, byte-offset cursors, id dedup over retained history and redelivery nudges (BUS_PROTOCOL.md L28-L37, session_bus.py L1666-L1672 @ 3b11e6c). Stage 1 (2026-11-24): operator pre-authorised
-    dives on every recommended entry for up to two Stage-2 waves.'
+    files, byte-offset cursors, id dedup over retained history and redelivery nudges (BUS_PROTOCOL.md L28-L37, session_bus.py L1666-L1672 @ 3b11e6c).'
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Inbox save-then-ack confirmed verbatim.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Delivery guarantees. intake-2942 never states a delivery guarantee.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED verbatim at Outbox Pattern (parallelisation). The general form of intake-2942's inbox per user.
+  dive_corrections: '2026-11-24 Stage-2 wave 1 (dive A, sonnet, FULL): 3 claims, all CONFIRMED. Independent corroboration of intake-2942, adding the at-least-once contract it omits.
+    Live-lesson test: L2 agrees; the session bus is already this design, so it needs no change.'
+- id: intake-2953
+  arxiv_id: '2610.09944'
+  url: https://arxiv.org/abs/2610.09944v2
+  source_type: paper
+  title: 'AgentTime: Can Agents Estimate and Control Their Own Runtime?'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2950
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - Michael Ofengenden
+  - Maksym Andriushchenko
+  key_claims:
+  - Asked to work for a requested duration, GPT-6 Astra in Codex ends 63% of runs within 5% of it, GPT-5.6 Sol 39% and Fable 5.1 in Claude Code 4%.
+  - With an elapsed-time tool, agents' retrospective estimates of time spent are almost exact.
+  - Agents' forecasts of their own natural runtime are mostly too high.
+  - Fable 5.1 returns early on 55% of runs and on 89% of the longest requests, at a median of 0.3 of the requested time.
+  - The controller never resumes or coaches an agent that returns early.
+  - 'Being on time is not the same as working: most on-time Astra runs re-checked or slept after appearing to finish.'
+  - More requested time rarely changes the score, with occasional exceptions.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 4.1 Duration-Following [PARTIAL]
+    quote: GPT-6 Astra ends 63% of its runs within 5% of the requested duration, GPT-5.6 Sol 39%, and Fable 5.1 only 4%
+    quote_sha256: 04aae47c318e874266aa21f0ca453bae84d77b659d6bb16280a5463423c4dd73
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc, found: true}
+    source_revision: https://arxiv.org/html/2610.09944v2
+    source_artifact: &sa_2953 {"byte_length": 689504, "effective_url": "https://arxiv.org/html/2610.09944v2", "entry_url": "https://arxiv.org/abs/2610.09944v2", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc", "relative_path": "sha256/e2/e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc.raw", "requested_url": "https://arxiv.org/html/2610.09944v2", "retrieved_at_utc": "2026-11-24T16:05:46.512702Z", "schema_version": 1, "snapshot_id": "sha256:e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 4.3 Estimating Time Spent [CONFIRMED]
+    quote: In Oracle , an elapsed-time tool makes estimates almost exact.
+    quote_sha256: cf233d56d77b2a14401bef85c805bc418f6a5d87af0a5a3aa9bda0b794fd1f39
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc, found: true}
+    source_revision: https://arxiv.org/html/2610.09944v2
+    source_artifact: *sa_2953
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 4.2 Forecasting Natural Runtimes [CONFIRMED]
+    quote: 'Most forecasts are too high: 83% of GPT-5.6 Sol’s, 66% of GPT-6 Astra’s and 63% of Fable 5.1’s'
+    quote_sha256: 6205b40bd154cb62f090d37870dc64fe4fe5f2ebc3d45de9aba364d9170b0c13
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc, found: true}
+    source_revision: https://arxiv.org/html/2610.09944v2
+    source_artifact: *sa_2953
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 4.1 Duration-Following [CONFIRMED]
+    quote: On the longest request it stops early 89% of the time, at a median of 0.3 times.
+    quote_sha256: 1e67aee06c2f0e4ca59adad370aef975872da1ea5e16a6a6879b386f9a1d3859
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc, found: true}
+    source_revision: https://arxiv.org/html/2610.09944v2
+    source_artifact: *sa_2953
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 4.1 Setup [CONFIRMED]
+    quote: A naturally early return remains an observed outcome; the controller does not resume or coach the agent to fill the interval.
+    quote_sha256: dcaa694da56054a00434958122d0851c5c5c466f01c17cd9c0a1f7348a8c9886
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc, found: true}
+    source_revision: https://arxiv.org/html/2610.09944v2
+    source_artifact: *sa_2953
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 4.1 Being on time is not the same as working [CONFIRMED]
+    quote: In the other 38 Astra runs, 24 re-checked earlier work and 14 explicitly slept after appearing to finish.
+    quote_sha256: 72a38f34da09e627851614640c0189bb9b30eca6aabf41044823261a61365d1d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc, found: true}
+    source_revision: https://arxiv.org/html/2610.09944v2
+    source_artifact: *sa_2953
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 6
+    kind: page-and-quote
+    locator: 4.1 More time rarely changes the score [PARTIAL]
+    quote: on OSWorld task 038, Fable stopped at a score of 36% when asked for 15 minutes and reached 100% when asked for 60.
+    quote_sha256: 51974395dbc24d1892376d137fd8d60b2adf5d73b88e1c5f468019de8f91d471
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e2b9b5bea1d036e7d4529f4f12ac038cca43585075d21ba5b4524a84478556cc, found: true}
+    source_revision: https://arxiv.org/html/2610.09944v2
+    source_artifact: *sa_2953
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  techniques:
+  - external monotonic timer outside the sandbox with a hidden cutoff
+  - duration instruction appended to the prompt, no resume
+  - 'transcript labels: working, re-check, explicit sleep'
+  - elapsed-time oracle tool
+  reported_results:
+  - 'Table 3 on time / early / late / deviation: Fable 5.1 4% / 55% / 41% / 2.86x (659 runs); GPT-5.6 Sol 39% / 13% / 48% / 1.77x (666); GPT-6 Astra 63% / 3% / 34% / 1.18x (666).'
+  - 'Harness swap (98 runs): Fable in Codex 1% on time; Astra in Claude Code 27%.'
+  - Forecasts too high for 83% (Sol), 66% (Astra) and 63% (Fable) of tasks.
+  credibility_score: 3
+  contradicting_evidence:
+  - One run per task per duration with no repeats (stated by the authors); three agents from two labs.
+  - Astra's 63% on time and the oracle-tool result contradict the blanket reading that models are poor clocks (intake-2950).
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    intake_entries:
+    - intake-2950
+    - intake-2942
+    - intake-2954
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: Stage-2b wave 2, surfaced by the intake-2950 dive (the critique cites AgentTime without a link). arXiv HTML v2 read from the retained snapshot; title matches the arXiv API record
+    for 2610.09944v2.
+  read_depth: PARTIAL
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The 4% and 63% figures are exact, but they measure following a requested duration, not stopping at the right moment unprompted.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at 4.3 Estimating Time Spent. Misses of 2 to 5 times appear only when time cues are stripped.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED verbatim at 4.2 Forecasting Natural Runtimes. Median forecast 15 min versus natural medians of 6, 10 and 13 min.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim at 4.1 Duration-Following. Sol returns early 13% and Astra 3%; Table 3.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED verbatim at 4.1 Setup. So the paper has no data on whether a resume loop fixes early exit.
+  - claim_index: 5
+    effect: unaffected
+    note: CONFIRMED verbatim at 4.1 Being on time is not the same as working. 11 of 49 on-time agentic Astra runs met the working rule.
+  - claim_index: 6
+    effect: narrowed
+    note: 'PARTIAL: One anecdote; scores were unchanged for 62 to 64% of tasks.'
+  dive_corrections: '2026-11-24 Stage-2b wave 2 (dive E, sonnet, PARTIAL: body sections 1-7 read in full from the arXiv v2 HTML; not read: second half of Appendix B, Appendices C-F,
+    references). 7 claims, 5 CONFIRMED, 2 PARTIAL. It settles intake-2950 claim 2: the figures are exact but describe duration-following, and Astra plus the oracle tool contradict ''models
+    are poor clocks''. Live-lesson tests: L1 agrees that early return is common and model-dependent without a resume loop (Fable returns early 55%), and the paper never resumes, so it
+    gives no evidence on the fix; L5 adds that self-declared completion and elapsed time are both unreliable signals. Dive-surfaced sources declined at the two-wave cap: arXiv 2604.00010,
+    github.com/michaelofengenden/agenttimebench, arXiv 2601.16486, arXiv 2606.00198.'
+- id: intake-2954
+  arxiv_id: '2510.23853'
+  url: https://arxiv.org/abs/2510.23853v3
+  source_type: paper
+  title: 'Your LLM Agents are Temporally Blind: The Misalignment Between Tool Use Decisions and Human Time Perception'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  novelty: medium
+  relevance: low
+  discovered_via: search
+  expanded_from: intake-2950
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - Yize Cheng
+  - Arshia Soltani Moakhar
+  - Chenrui Fan
+  - Parsa Hosseini
+  - Kazem Faghih
+  - Zahra Sodagar
+  - Wenxiao Wang
+  - Soheil Feizi
+  key_claims:
+  - TicToc tests whether agents refresh stale context with a tool call or answer directly, over 3016 retained preference samples.
+  - With timestamps in context no model exceeds a 65% normalized alignment rate; without them models are near chance.
+  - A generic time-awareness reminder had little to no effect; DPO on open models up to 8B helped.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 3.5 Preference collection and aggregation [CONFIRMED]
+    quote: This filtering results in 3016 retained samples
+    quote_sha256: 51baed9b9c8a34c74084592c51a20b03efa90d10b8d4a2e8c56f703c0d4f2d7b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8b56ecc87f4308118444dfd6d632715062179e78f4b21538ca59c45b9f01ef0d, found: true}
+    source_revision: https://arxiv.org/html/2510.23853v3
+    source_artifact: &sa_2954 {"byte_length": 351026, "effective_url": "https://arxiv.org/html/2510.23853v3", "entry_url": "https://arxiv.org/abs/2510.23853v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "8b56ecc87f4308118444dfd6d632715062179e78f4b21538ca59c45b9f01ef0d", "relative_path": "sha256/8b/8b56ecc87f4308118444dfd6d632715062179e78f4b21538ca59c45b9f01ef0d.raw", "requested_url": "https://arxiv.org/html/2510.23853v3", "retrieved_at_utc": "2026-11-24T16:05:47.404808Z", "schema_version": 1, "snapshot_id": "sha256:8b56ecc87f4308118444dfd6d632715062179e78f4b21538ca59c45b9f01ef0d"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Abstract and 4.1 [CONFIRMED]
+    quote: with no model achieving a normalized alignment rate better than 65% when given time stamp information
+    quote_sha256: f3314212098b669a6a1adda6d25bb5ff528d9858a036879f41467602dccd2859
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8b56ecc87f4308118444dfd6d632715062179e78f4b21538ca59c45b9f01ef0d, found: true}
+    source_revision: https://arxiv.org/html/2510.23853v3
+    source_artifact: *sa_2954
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 4.4 Alignment efforts [PARTIAL]
+    quote: This intervention had little to no effect.
+    quote_sha256: e4b7b46cf046e8f9880d619d172933054dc6e65027d3d55d911b1fca6a877484
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8b56ecc87f4308118444dfd6d632715062179e78f4b21538ca59c45b9f01ef0d, found: true}
+    source_revision: https://arxiv.org/html/2510.23853v3
+    source_artifact: *sa_2954
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  techniques:
+  - ISO-8601 timestamp prefix per message
+  - DPO with a dynamic margin on human tool-versus-direct preferences
+  - few-shot refresh-rule prompt
+  reported_results:
+  - No model above 65% NAR with timestamps; just above 55% at best without.
+  - Timestamps appear in under 4% of Qwen3 reasoning traces.
+  - Krippendorff alpha 0.8574 on human labels.
+  credibility_score: 3
+  contradicting_evidence:
+  - Trajectories and timestamps are synthetic (GPT-4o generated, GPT-4.1 filtered) and labels are hypothetical human preferences, not task success.
+  cross_references:
+    chapters: []
+    handoffs: []
+    intake_entries:
+    - intake-2953
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Stage-2b wave 2, found by the AgentTime search (query: AgentTime benchmark LLM agents stop at the right moment time awareness). arXiv v3 HTML; title matches the arXiv API record.'
+  read_depth: PARTIAL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED verbatim at 3.5 Preference collection and aggregation. Narrower than the title: refresh decisions, not runtime or stopping.'
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim at Abstract and 4.1. NAR is balanced accuracy, 50% is chance.
+  - claim_index: 2
+    effect: narrowed
+    note: 'PARTIAL: The DPO gains are only in figures; the test set is held-out scenarios from the same synthetic distribution.'
+  dive_corrections: '2026-11-24 Stage-2b wave 2 (dive E, sonnet, PARTIAL: body sections 1-5 read; appendices A-D and references not read). 3 claims, 2 CONFIRMED, 1 PARTIAL. Low relevance:
+    it concerns stale-context refresh decisions, which no EPYC agent makes from elapsed time (scheduling is deterministic in taskflow dispatch.py and the session bus). No actionable.'
+- id: intake-2955
+  arxiv_id: null
+  url: https://claude.dev/blog/solving-code-review-at-anthropic/
+  source_type: blog
+  title: How the Claude Code team does code review (Addy Osmani, Morgan Westlee Lunt, Qing Wang, Anthropic, 2026-10-15)
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2943
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Addy Osmani
+  - Morgan Westlee Lunt
+  - Qing Wang
+  key_claims:
+  - The reviewer evaluation is built from past PRs that caused incidents, with their fix-forwards and reverts, each bug confirmed by engineers who know the code, and it runs daily.
+  - A known-clean PR control counts how often the reviewer would have led someone to a harmful change.
+  - The only A/B test described is of the finding filters on the team's own PRs; no tuning/test split of the incident set is described.
+  - Recall is tracked alongside rounds-to-pass, but no recall value or measured stage is reported.
+  - 'Reviewer noise is measured by how the PR author responded to each comment: fixed, wrong, intentional, or did not matter.'
+  - Revert and incident rates are guardrails on claimed human-time savings; circuit breakers that tighten approval do not exist yet.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: How we make the reviewer better [CONFIRMED]
+    quote: The team collected past PRs that caused incidents, with their fix-forwards and reverts, and had engineers who know that code confirm each bug and where it lived. The reviewer
+      runs against that set daily.
+    quote_sha256: 8da2a7118d207d73d07d7530edfc10019a622a0a4e975b3e7dbcb6e5bd892e82
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83, found: true}
+    source_revision: https://claude.dev/blog/solving-code-review-at-anthropic/
+    source_artifact: &sa_2955 {"byte_length": 222687, "effective_url": "https://claude.dev/blog/solving-code-review-at-anthropic/", "entry_url": "https://claude.dev/blog/solving-code-review-at-anthropic/", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83", "relative_path": "sha256/ce/ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83.raw", "requested_url": "https://claude.dev/blog/solving-code-review-at-anthropic/", "retrieved_at_utc": "2026-11-24T16:05:47.566778Z", "schema_version": 1, "snapshot_id": "sha256:ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83"}
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: How we make the reviewer better [PARTIAL]
+    quote: We also run the reviewer on PRs we know are clean and count how often it reports something that would have led someone to make a harmful change.
+    quote_sha256: 60ee5b2a11d265079d856ab2003ba301310ae35df46736b347d72038f806c04c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83, found: true}
+    source_revision: https://claude.dev/blog/solving-code-review-at-anthropic/
+    source_artifact: *sa_2955
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: AI review on every pull request [CONFIRMED]
+    quote: We A/B tested those filters on our own PRs before keeping them.
+    quote_sha256: 59dc447db1be310165df70d23ced0927ac310fa69da358bc2a374a7f405c1d02
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83, found: true}
+    source_revision: https://claude.dev/blog/solving-code-review-at-anthropic/
+    source_artifact: *sa_2955
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: How we make the reviewer better [PARTIAL]
+    quote: The team now tracks rounds-to-pass alongside recall, and changed re-review
+    quote_sha256: 2d02430ea9e7897eaaefc69c921b16e0b9baed6fbdaaec8078e63d4f5f243ee2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83, found: true}
+    source_revision: https://claude.dev/blog/solving-code-review-at-anthropic/
+    source_artifact: *sa_2955
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: How we make the reviewer better [CONFIRMED]
+    quote: 'We sort every comment the reviewer leaves by how the person on the PR responded: they fixed it, said it was wrong, said the behavior was intentional, or decided it didn&#x27;t
+      matter.'
+    quote_sha256: 339860e87422d3e4f0870f1275e462b0f4596edeea0c1712153db5fb5569cf4d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83, found: true}
+    source_revision: https://claude.dev/blog/solving-code-review-at-anthropic/
+    source_artifact: *sa_2955
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  - claim_index: 5
+    kind: page-and-quote
+    locator: The scarce resource [PARTIAL]
+    quote: 'Revert and incident rates are the guardrail: if they rise, we haven&#x27;t saved human time, we&#x27;ve only moved it.'
+    quote_sha256: 64265fec82331d4bbbaa6940b0e2abb8a6c1bb567ee66141d4d906d8128c303c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ce00867c5d5a4e135770d60fb7fcfaa8c5715104c0c157ff81c62f91bb6a1f83, found: true}
+    source_revision: https://claude.dev/blog/solving-code-review-at-anthropic/
+    source_artifact: *sa_2955
+    verified_by: research-intake/stage2 (intake-always-on-1124)
+  techniques:
+  - incident and revert derived answer key, expert-confirmed, rerun on every reviewer change
+  - known-clean PR control
+  - parallel bug hunters plus a verifier vote
+  - round cap of 3 with diff-only re-review
+  - agent approval never fills a human review slot
+  reported_results:
+  - Merged PRs more than doubled June to September while the reverted share fell by more than 40% (no control).
+  - 'Review convergence before to after: pass after one round 65% to 78%; five or more rounds 8.9% to 1.5%; mean reviews to pass 2.08 to 1.32.'
+  - Share of internal PRs with substantive review comments 16% to 54%.
+  credibility_score: 2
+  contradicting_evidence:
+  - 'No held-out split: the incident set accepts or rejects reviewer changes and is also the score.'
+  - intake-2943 attributes a tuning/test split, a merged-and-stable control and per-stage recall to this post; none of these appears in the linked post as fetched 2026-11-24.
+  cross_references:
+    chapters: []
+    handoffs:
+    - coordination-and-churn-pipeline.md
+    - autokernel-loop.md
+    intake_entries:
+    - intake-2943
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: Stage-2b wave 2, surfaced by the intake-2943 dive; it is the 'code review post' that intake-2943 links (href verified in the fetched HTML). Vendor self-report.
+  read_depth: FULL
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim at How we make the reviewer better. Set size, case count and scores are not given.
+  - claim_index: 1
+    effect: narrowed
+    note: 'PARTIAL: Size-matching and how clean is established are not stated.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed by absence: no train/test language anywhere in the text.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'PARTIAL: No recall number, denominator or pipeline stage.'
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED verbatim at How we make the reviewer better. Author response is a noisy label, especially when the author is an agent.
+  - claim_index: 5
+    effect: narrowed
+    note: 'PARTIAL: The 40% fall in reverted share is a before/after with no control.'
+  dive_corrections: '2026-11-24 Stage-2b wave 2 (dive F, sonnet, FULL): 6 claims, 3 CONFIRMED, 3 PARTIAL. It narrows intake-2943 claim 4: the incident-derived answer key and the clean
+    control are real, but the tuning/test split, size-matching and per-stage recall that intake-2943 describes are not in this post. Live-lesson test: L5 agrees (mechanical evidence
+    first; an agent''s approval never counts as a person''s). Gap it exposes in-house: none of our verifiers (the taskflow reviewer fall-through in verify.py, the AutoKernel keep gate,
+    the intake second reader) is graded against past reverts or incidents. Dive-surfaced source declined at the two-wave cap: the Code Review announcement post (no URL in the text);
+    intake-2943 is its parent, already dived.'

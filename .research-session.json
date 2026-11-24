@@ -1,9 +1,9 @@
 {
  "session_id": "intake-always-on-1124",
  "started_at": "2026-11-24T15:55:00Z",
- "last_checkpoint": "2026-11-24T16:40:00Z",
- "stage": "stage1-complete",
- "phase": "stage1-persisted",
+ "last_checkpoint": "2026-11-24T17:40:00Z",
+ "stage": "stage2-complete",
+ "phase": "stage2-closeout-closed",
  "lane": "intake/always-on-1124 (worktree /mnt/raid0/llm/worktrees/intake-always-on-1124)",
  "owner": "research-intake subagent for pipeline-mgmt (Opus 5.5)",
  "urls_processed": [
@@ -20,10 +20,13 @@
   "intake-2949",
   "intake-2950",
   "intake-2951",
-  "intake-2952"
+  "intake-2952",
+  "intake-2953",
+  "intake-2954",
+  "intake-2955"
  ],
  "entries_remaining": [],
- "next_intake_id": 2953,
+ "next_intake_id": 2956,
  "expansion": {
   "stage1_expansion": 10,
   "via_reference": 7,
@@ -52,8 +55,30 @@
   "declines": [],
   "note": "Every entry is relevance >= medium, so all 11 are recommended; under operator pre-authorisation they form Stage-2 wave 1."
  },
- "stage2_dived": [],
- "stage2b_waves": [],
+ "stage2_dived": [
+  "intake-2942",
+  "intake-2943",
+  "intake-2944",
+  "intake-2945",
+  "intake-2946",
+  "intake-2947",
+  "intake-2948",
+  "intake-2949",
+  "intake-2950",
+  "intake-2951",
+  "intake-2952"
+ ],
+ "stage2b_waves": [
+  {
+   "wave": 2,
+   "entries": [
+    "intake-2953",
+    "intake-2954",
+    "intake-2955"
+   ],
+   "selected_by": "operator pre-authorisation (two Stage-2 waves)"
+  }
+ ],
  "steering_ledger": [
   {
    "seq": 1,
@@ -112,7 +137,7 @@
  ],
  "actionable_ledger": [],
  "plan_file": "research/deep-dives/intake-always-on-1124/stage3-plan.md",
- "lane_head": "3b11e6c8244897cc9db02d366d8f63a885f62d0d",
+ "lane_head": "a290df6f69661edf14dd9097f38ba74341efecab",
  "previous_session": {
   "session_id": "intake-ak-1124",
   "started_at": "2026-11-24T09:00:00Z",
@@ -13395,5 +13420,41 @@
    "notes": "K1-K4",
    "note": "box writes run by the main session under the operator approval (\"YES APPROVE WRITES\"); briefs rewritten by the intake subagent; IDs renumbered +4 to intake-2867..2906 against origin/main"
   }
+ },
+ "stage2_dispatch": {
+  "lane_head": "3b11e6c8244897cc9db02d366d8f63a885f62d0d",
+  "preflight": "dive_preflight.py OK",
+  "wave1": "4 sonnet dives (groups A-D)",
+  "wave2": "2 sonnet dives (groups E-F)"
+ },
+ "second_reader": {
+  "model": "haiku",
+  "anchors": 78,
+  "found": 78,
+  "yes": 66,
+  "partial": 11,
+  "no": 1,
+  "no_rows": [
+   "intake-2947[4] absence claim: anchor dropped"
+  ],
+  "partial_itemised": [
+   "intake-2942[5]",
+   "intake-2946[3]",
+   "intake-2946[5]",
+   "intake-2949[3]",
+   "intake-2950[2]"
+  ],
+  "disposition": "carried to the Stage-3 plan; none auto-overturned"
+ },
+ "closeout": {
+  "declined_sources": [
+   "Anthropic hosted-agent webhook docs (no URL) -> intake-2950",
+   "arXiv 2604.00010, github.com/michaelofengenden/agenttimebench, arXiv 2601.16486, arXiv 2606.00198 -> intake-2953 (two-wave cap)",
+   "Code Review announcement post (no URL) -> intake-2955 (two-wave cap)"
+  ],
+  "already_indexed": [
+   "arXiv 2504.13171 = intake-819",
+   "anthropic.com/research/managed-agents = intake-2616"
+  ]
  }
 }
