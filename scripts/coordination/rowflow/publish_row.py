@@ -57,6 +57,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import rowflow as rf  # noqa: E402
 import ak_row_lint  # noqa: E402
+import supersedes_check  # noqa: E402  - AK RCA 2026-11-24 item 4: computed supersedes
 try:
     import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
 except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
@@ -795,6 +796,19 @@ def _churn_mod(name):
     return __import__(name)
 
 
+def check_supersedes(spec, flags):
+    """AK RCA 2026-11-24 item 4: WARN (SUPERSEDES_ENFORCE: refuse) when spec.supersedes omits a live lower -rN of its family."""
+    try:
+        missing, msg = supersedes_check.check(spec, flags)
+    except Exception as e:  # noqa: BLE001 - a scan error never blocks a publish while warn-first
+        print(f"WARN supersedes check: {type(e).__name__}: {e}")
+        return {}
+    if msg:
+        rf.need(not supersedes_check.SUPERSEDES_ENFORCE, msg)
+        _warn(spec, msg)
+    return missing
+
+
 def _warn(spec, w):
     print(f"WARN {w}")
     pw = list(spec.get("publish_warnings") or [])
@@ -1196,7 +1210,7 @@ def record_smoke_outcome(flags, rid, verdict, msg):
     failure_sha = f"{fails[-1]}:{rf.sha256(fails[-1])}" if fails else None
     if failure_sha and failure_sha == rec.get("failure_sha256"):
         return  # another caller observed the same locked smoke verdict
-    n = 0 if verdict == "PASS" else int(rec.get("count") or 0) + 1
+    n = 0 if verdict in ("PASS", "RESULT") else int(rec.get("count") or 0) + 1   # RESULT: a terminal smoke verdict, no strike
     reason = f"PARKED-3STRIKE: {n} consecutive smoke failures; owner can clear with rowflow.py unpark {rid}" if n >= 3 else ""
     rf.atomic_json(smoke_strikes_path(flags, rid), {"id": rid, "count": n, "updated_epoch": time.time(),
                                                    "reason": reason, "last_failure": msg if n else None,
@@ -1371,7 +1385,7 @@ def run_gpu_queue(flags, max_smoke_s=None):
                 print(f"GPU-SMOKE REQUEUED {rid}: WAIT {k}/{QUEUED_WAIT_MAX}; marker kept")
                 continue
             msg = f"{msg} (WAIT in {k} batches)"
-        if v not in ("PASS", "WITHDRAWN"):
+        if v not in ("PASS", "WITHDRAWN", "RESULT"):   # RESULT already notified smoke-result
             alert_queued_nonpass(flags, rid, v, msg)
         os.remove(q)
     return n
@@ -1669,6 +1683,9 @@ def publish_smoked(spec, flags, source, queue_cpu=False, identity_spec=None):
         if file_if_complete(flags, rid, row):
             return None
         return row
+    if v == "RESULT":   # AK RCA 2026-11-24 item 2: the smoke decided the row; file it, never "fix and republish"
+        print(f"SMOKE RESULT {rid} on {regions}: {msg} (record: {rf.smoke_result_path(flags, rid)})")
+        return None
     if v == "WAIT" and spec.get("lane") != "gpu":   # waiting for a lock / a held host is never a failure: the keeper retries
         queue_cpu_smoke(flags, rid, spec, smoke_s, f" (WAIT: {msg[:160]})")
         return None
@@ -1790,6 +1807,7 @@ def main(argv=None):
         check_task_lint(spec)
         for note in lint(spec):
             print(f"LINT {note}")
+        check_supersedes(spec, a.flags)
         preflight(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)   # pipeline audit 2026-11-10 #4: before anything is published or queued
         row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now, identity_spec=identity_spec)
         if row:

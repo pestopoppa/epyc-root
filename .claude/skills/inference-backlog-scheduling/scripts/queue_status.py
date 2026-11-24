@@ -308,6 +308,48 @@ def reservation_view(flags):
     return {"head": head, "requests": out}
 
 
+ROWFLOW_REL = "scripts/coordination/rowflow/rowflow.py"
+
+
+def _git(repo, *args):
+    import subprocess  # noqa: PLC0415
+    r = subprocess.run(["git", "-C", repo, *args], capture_output=True, text=True, timeout=20)
+    return r.stdout if r.returncode == 0 else None
+
+
+def keeper_stale(flags, repo=None):
+    """AK RCA 2026-11-24 item 1 (F8 deploy-parity gate): 'KEEPER-STALE deployed=<sha> head=<sha> (<n> lines differ)' when
+    bin/rowflow/DEPLOYED.json's sha predates origin/main's last rowflow.py commit, else None. Local git only (no fetch);
+    repo = the clone this script runs from. Unknown (no DEPLOYED.json / no git) is None: this gate never guesses."""
+    import difflib  # noqa: PLC0415
+    try:
+        with open(os.path.join(flags, "bin", "rowflow", "DEPLOYED.json")) as f:
+            dep = str(json.load(f).get("sha") or "")
+    except (OSError, ValueError, AttributeError):
+        return None
+    repo = repo or (_git(os.path.dirname(os.path.abspath(__file__)), "rev-parse", "--show-toplevel") or "").strip()
+    if not dep or not repo:
+        return None
+    try:
+        head = (_git(repo, "rev-parse", "origin/main") or "").strip()
+        last = (_git(repo, "log", "-1", "--format=%H", "origin/main", "--", ROWFLOW_REL) or "").strip()
+        if not head or not last:
+            return None
+        if _git(repo, "merge-base", "--is-ancestor", last, dep) is not None:
+            return None   # the deployed sha already contains origin/main's last rowflow.py change
+        src = (_git(repo, "show", f"origin/main:{ROWFLOW_REL}") or "").splitlines()
+        try:
+            with open(os.path.join(flags, "bin", "rowflow", "rowflow.py")) as f:
+                live = f.read().splitlines()
+        except OSError:
+            live = (_git(repo, "show", f"{dep}:{ROWFLOW_REL}") or "").splitlines()
+        n = sum(1 for x in difflib.unified_diff(live, src, lineterm="", n=0)
+                if x[:1] in "+-" and not x.startswith(("+++", "---")))
+    except Exception:  # noqa: BLE001 - read-only status: never crash the report
+        return None
+    return f"KEEPER-STALE deployed={dep[:9]} head={head[:9]} ({n} lines differ)"
+
+
 def main(argv=None) -> int:
     _toolroot_banner()
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -344,11 +386,15 @@ def main(argv=None) -> int:
         json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "buckets": buckets,
                    "idle": r["keeper"]["idle_why"], "snapshot": r["keeper"]["snapshot"],
                    "unfiled_ended": r["UNFILED-ENDED"],
+                   "keeper_stale": keeper_stale(a.flags),
                    "campaign_status": campaign_status(a.flags), "reservation": reservation_view(a.flags)}, sys.stdout, indent=1)
         print()
         return 0
     print(f"QUEUE STATUS {now.strftime('%H:%M')}Z {now.date()}  (read-only; rowflow state in {a.flags})")
     print(hu.line(util) if util else "util: unavailable (hostutil could not read /proc/stat or sysfs)")
+    ks = keeper_stale(a.flags)
+    if ks:
+        print(ks)
     ow = lambda x: str(x.get("owner") or "?")[:18]  # noqa: E731
     print(f"\nRUNNING ({len(r['RUNNING'])})")
     for x in sorted(r["RUNNING"], key=lambda x: x["id"]):

@@ -24,6 +24,9 @@ bin/rowflow/run_direct.sh            scripts/coordination/rowflow/run_direct.sh 
 bin/rowflow/ak_row_harness.py        scripts/coordination/rowflow/ak_row_harness.py       hot
 bin/rowflow/ak_row_lint.py           scripts/coordination/rowflow/ak_row_lint.py          hot
 bin/rowflow/mk_ak_row.py             scripts/coordination/rowflow/mk_ak_row.py            hot
+bin/rowflow/smoke_verdict.py         scripts/coordination/rowflow/smoke_verdict.py        hot
+bin/rowflow/supersedes_check.py      scripts/coordination/rowflow/supersedes_check.py     hot
+bin/rowflow/owner_watch.py           scripts/coordination/rowflow/owner_watch.py          hot
 bin/rowflow/task_lint.py             scripts/handoffs/task_lint.py                        hot
 bin/rowflow/task_lint_core.py        scripts/handoffs/task_lint_core.py                   hot
 bin/rowflow/handoff_ref.py           scripts/coordination/handoff_ref.py                  hot

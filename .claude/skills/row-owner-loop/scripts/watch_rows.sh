@@ -144,7 +144,12 @@ scan() {
   return 1
 }
 
+# AK RCA 2026-11-24 item 6b: liveness heartbeat, one touch per loop; the keeper alerts OWNER-WATCHER-DEAD <owner> when an
+# owner with live rows has a heartbeat older than 10 min.
+HB_DIR=$FLAGS/state/owner-watch
+mkdir -p "$HB_DIR" 2>/dev/null || true
 while true; do
+  touch "$HB_DIR/$OWNER.hb" 2>/dev/null || true
   if scan; then exit 0; fi
   [ "$ONCE" = 1 ] && { echo "$(date -u +%FT%TZ) NO-EVENT"; exit 1; }
   sleep "$INTERVAL"

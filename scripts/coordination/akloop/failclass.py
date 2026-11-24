@@ -142,8 +142,28 @@ def _launcher_blob(fail, launcher_text):
     return "\n".join(parts)
 
 
+_TERMINAL = re.compile(r"^(FUTILITY_[A-Z0-9_]+|FAIL_[A-Z0-9_]+|PASS[A-Z0-9_]*)$")
+
+
+def smoke_terminal(fail: dict):
+    """AK RCA 2026-11-24 item 2: a record whose smoke wrote complete:true + a terminal verdict (rowflow SMOKE-RESULT.json,
+    or a FAIL record carrying smoke_result) was DECIDED by its smoke. Returns the verdict or None."""
+    sr = fail.get("smoke_result") if isinstance(fail.get("smoke_result"), dict) else fail
+    v = str(sr.get("verdict") or "").strip().upper() if sr.get("result_path") else ""
+    return v if _TERMINAL.match(v) else None
+
+
 def classify_fail(fail: dict, launcher_text: str | None = None) -> Classification:
     reason = str(fail.get("reason") or "")
+    tv = smoke_terminal(fail)
+    if tv:   # before reason:partial-native-incomplete / reason:job-rc-no-text-rule: a verdict, never a harness defect
+        side, klass = (("ok", "pass") if tv.startswith("PASS") else
+                       ("candidate", "correctness_gate" if "CORRECT" in tv else "timing_loss" if "TIM" in tv or "SPEED" in tv
+                        else "candidate_verdict"))
+        c = _c(side, klass, "result:smoke-terminal-verdict", tv)
+        c.row_id = str(fail.get("id") or "")
+        c.source = "fail"
+        return c
     for rx, side, klass, rule in _FAIL_REASON:
         if rx.search(reason):
             c = _c(side, klass, rule, reason)

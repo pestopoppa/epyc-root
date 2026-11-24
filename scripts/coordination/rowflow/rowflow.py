@@ -97,6 +97,10 @@ import hostutil  # noqa: E402  - measured CPU%/GPU% for every status surface (20
 import diskpause  # noqa: E402  - disk floor = pause with hysteresis + HOLD-ADMISSIONS (operator 2026-11-07)
 import notify  # noqa: E402  - push every terminal event / smoke FAIL / disk-floor crossing (incident 2026-11-04)
 try:
+    import smoke_verdict  # noqa: E402  - AK RCA 2026-11-24 item 2: a terminal smoke verdict is a RESULT
+except ImportError:  # a deploy that predates the module: old behaviour (FAIL-N)
+    smoke_verdict = None
+try:
     import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
 except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
     sys.path.insert(0, os.path.dirname(_HERE))
@@ -3501,6 +3505,9 @@ def _status_raw(flags, rid, allrows=None):
     run = load_json(running_path(flags, rid))
     if run and alive(run.get("pid")):
         out.update(state="dryrun-running", reason=f"dry run pid {run.get('pid')} since {run.get('started')}"); return out
+    sr = load_json(smoke_result_path(flags, rid))
+    if sr and sr.get("launcher_sha256") == cur:   # AK RCA 2026-11-24 item 2: the smoke's terminal verdict is the result
+        out.update(state="done", reason=f"smoke RESULT {sr.get('verdict')} ({sr.get('result_path')})"); return out
     p = load_json(pass_path(flags, rid))
     fails = [load_json(x) or {} for x in fail_paths(flags, rid)]
     last_fail = fails[-1] if fails else None
@@ -3890,10 +3897,14 @@ def measured_busy(samples, claimed, until=None):
     return round(th, 3), round(min(1.0, th / max(1, claimed)), 3)
 
 
-def busy_flag(declared, measured, gpu=False):
+def busy_flag(declared, measured, gpu=False, elapsed_s=None, first_progress_s=None, progressed=True):
     """OVER-DECLARED busy_fraction line, or None. Never for a row that holds the GPU token - its CPU share is LOW by
-    design (the device does the work); the dry run judges such a row by VRAM residency / the rc78 vacuous-fence test."""
+    design (the device does the work); the dry run judges such a row by VRAM residency / the rc78 vacuous-fence test.
+    Never for a run that ended inside its first-progress budget without progressing (AK RCA 2026-11-24 item 6a: a 10 s
+    crash of ak-c21-census-refresh-cpu is not an over-declaration; a smoke that progressed early is still judged)."""
     if gpu:
+        return None
+    if not progressed and elapsed_s is not None and first_progress_s and elapsed_s < first_progress_s:
         return None
     if measured is None or declared < 0.5 or declared < OVERDECLARED_RATIO * max(measured, 1e-3):
         return None
@@ -4599,7 +4610,9 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
     claimed = claimed_cpus(d.get("regions"), (parse_launcher(lp) if os.path.isfile(lp) else {}).get("claim_cpus"), str(d.get("shape") or "quarter"))
     mt, mb = measured_busy(cpu_samples, claimed, until=stop_requested)
     rec.update(measured_threads=mt, measured_busy_fraction=mb, measured_claimed_cpus=claimed)
-    flag = busy_flag(row_busy(d), mb, gpu=GPU in holds or gpu_declared(d))   # GPU-token rows are never OVER-DECLARED by CPU %
+    flag = busy_flag(row_busy(d), mb, gpu=GPU in holds or gpu_declared(d), elapsed_s=rec["elapsed_s"],
+                     first_progress_s=d.get("first_progress_s") or timeout,
+                     progressed=bool(first_unit_at or progress))   # GPU-token rows are never OVER-DECLARED by CPU %
     if flag:
         rec["busy_flag"] = flag
         with open(os.path.join(dd, "launcher.out"), "a") as lo:
@@ -4622,9 +4635,36 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
         for fp in fail_paths(flags, rid):
             pass  # history stays; status() prefers a current PASS
     else:
+        tr = smoke_verdict.terminal_smoke_result(d, env.get("FILLER_SMOKE_T0")) if smoke_s and smoke_verdict else None
+        if tr:   # AK RCA 2026-11-24 item 2: the smoke decided the row - file it, no FAIL-N, no "fix and republish"
+            return record_smoke_result(flags, rid, d, tr, reason, rec, lsha)
         record_fail(flags, rid, d, reason, rec)
         write_escalation(flags, rid, allrows)
     return verdict, reason
+
+
+def smoke_result_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-RESULT.json")
+
+
+def record_smoke_result(flags, rid, d, tr, reason, rec, lsha):
+    """A smoke whose RESULT says complete:true + a terminal verdict (FUTILITY_*/FAIL_*/PASS*) is the row's RESULT:
+    dryrun/<id>/SMOKE-RESULT.json (status: done while the launcher is unchanged) + a `smoke-result` notify whose task is
+    to FILE the verdict. Returns ("RESULT", msg). Regression: ak-gvfattn-q4kv-gpu-20261124 (FUTILITY_CORRECTNESS, 37 s)."""
+    out = {"id": rid, "at": now_iso(), "launcher_sha256": lsha, "verdict": tr["verdict"], "result_path": tr["path"],
+           "result_sha256": tr["sha256"], "job_exit": reason, "elapsed_s": rec.get("elapsed_s"), "regions": rec.get("regions"),
+           "file_task": f"file {rid}: smoke ended {tr['verdict']} (complete:true) in {tr['path']}; this is the row's result, "
+                        "do not republish"}
+    atomic_json(smoke_result_path(flags, rid), out)
+    msg = f"smoke terminal verdict {tr['verdict']} (complete:true) in {tr['path']}; filed as the row's RESULT"
+    with open(os.path.join(dry_dir(flags, rid), "launcher.out"), "a") as lo:
+        lo.write(f"==== dry run RESULT: {msg} ({now_iso()})\n")
+    try:
+        notify.emit(flags, "smoke-result", rid, tr["sha256"][:16], f"row {rid} smoke RESULT {tr['verdict']}: {tr['path']}",
+                    "info", str(d.get("owner") or ""), {"result_path": tr["path"], "verdict": tr["verdict"],
+                                                         "file_task": out["file_task"]})
+    except Exception as e:  # noqa: BLE001
+        print(f"notify smoke-result {rid}: {type(e).__name__}: {e}", file=sys.stderr)
+    return "RESULT", msg
 
 
 def lane_counts(flags, allrows):
@@ -9343,6 +9383,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 notify.escalate_stale(flags, lambda k, m, ev: route_alert(f"{k}-{ev['key']}", m, ev, log), log=log)
         except Exception as e:  # noqa: BLE001
             log(f"ALERT-UNACKED check failed: {type(e).__name__}: {e}")
+        try:  # AK RCA 2026-11-24 item 6b: OWNER-WATCHER-DEAD (owner_watch.py)
+            import owner_watch  # noqa: PLC0415
+            owner_watch.check(flags, allrows, notify_mod=notify, log=log)
+        except Exception as e:  # noqa: BLE001
+            log(f"OWNER-WATCHER check failed: {type(e).__name__}: {e}")
         idle_violation(flags, free, [c for c in cands if c["id"] not in res_held], out, mem_available_gib(), gpu_open, held_ports, log, util=util)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         try:
