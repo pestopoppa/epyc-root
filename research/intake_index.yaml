@@ -415907,3 +415907,51 @@
   notes: 'Read at engine-development HEAD fb69fff02101b048a0a165a3b502712dd2ca978f, retrieved 2026-11-24 (README sha256 761012de71c1, docs/moe-cache.md a3e8a88499d9). Read: README, docs/moe-cache.md head, docs/atomic-engine-inkling-low-bit-metal.json, src/llama-expert-executor.cpp L195-215 and L1320-1365. The executor throws for any device other than CPU and MTL0 (L196-197), and Inkling acceleration is gated on Metal, so no HIP path exists; that is a porting cost, not a decline. Not read: bench script, docs PNG figures, the DSpark implementation files, TurboQuant parts. Repo also carries many DFlash/flash-next experiment JSONs for other models. Operator steering 2026-11-24: likely no immediate AutoKernel action, but hypotheses for an eventual Inkling 2 Mini evaluation.'
   novelty_justification: Inkling 2 Mini itself is covered (intake-2798/2805/2812, INK2-* boxes); the new part is a loop-aware expert-residency executor and a llama.cpp DSpark path for Inkling, neither in the index.
   verdict_justification: Gives testable hypotheses for INK2-MEAS-1 and later MI210 placement; our host holds the whole model in RAM or HBM, so streaming itself is not a current need.
+- id: intake-2864
+  arxiv_id: null
+  url: https://github.com/sybil-solutions/inference-optimisation-skill
+  source_type: repo
+  title: 'inference-optimisation: an agent skill for hill-climbing local LLM server speed (Sybil Solutions)'
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  - agent_architecture
+  - inference_serving
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-24'
+  authors:
+  - Sybil Solutions (0xSero)
+  key_claims:
+  - 'A SKILL.md-style agent skill encodes a hill-climb loop: compute theoretical ceilings first, change one thing per experiment, measure against interleaved controls, log every result including failures, gate each new best on long-context retrieval, then qualify a pinned clean build.'
+  - A candidate is accepted only if it beats BOTH neighbouring controls (control, candidate, control) on its target metric with at least 6 samples and medians, and regresses nothing by more than about 3%; a single surprising win is repeated.
+  - Three consecutive levers inside noise declares a plateau; the agent writes a STATUS section (best vs baseline vs ceiling, limiting evidence, ranked remaining levers with cost), then either hands back or continues at a slower cadence moving to profiling and kernel levers.
+  - The harness refuses to run, or voids a run, when environment state (power source, performance profile, other GPU jobs) differs from the start, serializes GPU jobs through a lock queue, enforces a memory cap with a watchdog, and flags looping output, failed requests and an idle GPU because a suspiciously fast result is usually broken output.
+  - Never rerun an experiment the PLAN.md log already rejected without a new reason; references are split into files loaded only when the procedure points to them.
+  techniques:
+  - ceiling-first target check
+  - control-candidate-control acceptance rule
+  - three-in-noise plateau stop with STATUS section
+  - environment-state void rule
+  - looping-output flag (repeated shingles)
+  - rejected-experiment rerun ban
+  - progressive-disclosure skill references
+  reported_results:
+  - 'README table, self-reported, no independent replication: e.g. Intel Arc B390 Ornith-1.5-35B-A3B EXL3 decode c1 43.6 -> 53 tok/s median; methodology.md reports a 117 tok/s "record" that was looping output and the same config drifting 53.8 -> 49.5 an hour apart.'
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+  - intake-183
+  - handoffs/active/autokernel-loop.md
+  - handoffs/active/autokernel-akx-program.md
+  - epyc-inference-research scripts/kernel_rnd/autokernel/loop/ (actor_context.py, bench.py, anchor.py, call_budget.py)
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: PARTIAL
+  notes: 'Read at HEAD fda968e7fc1996aa23c67139c755fe541c9d4be0 (MIT), retrieved 2026-11-24 from a local clone; SKILL.md sha256 6932c1dc8b2c. Read: README, PROMPT.md, SKILL.md, references/methodology.md, references/gotchas.md, bench.py docstring and looping() at L100. Not read: levers.md, ceilings.md, publishing.md, ceiling.py, queue.sh, mem.sh. Stage-1 comparison against the AK loop (grep of autokernel-loop.md and autokernel-akx-program.md on origin/main): AK already has interleaved AB/BA order control with VOID windows, a contention preflight (AK-EVAL-QUARTERS), a diminishing-returns escape (AKX-AUTO-2), roofline caps and abstention history, so most patterns are already integrated; candidates not yet seen are the both-neighbour acceptance rule, the explicit 3-in-noise plateau with a ranked-remaining-levers STATUS, the rerun-needs-a-new-reason rule, and progressive-disclosure references as an actor context diet. Operator objective 2026-11-24: distill learnings for AutoKernel loop infrastructure. Same author org as intake-183 (vllm-studio) and the local-studio entry.'
+  novelty_justification: Hill-climb discipline is well covered in our measurement constitution and AK loop; the agent-skill packaging and a few loop rules are new to the index.
+  verdict_justification: adopt_patterns for AK loop infrastructure; the harness itself targets OpenAI-compatible servers on single machines and is not adopted.
