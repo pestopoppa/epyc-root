@@ -130,3 +130,45 @@ def test_census_update_passes_merge_static_every_run(tmp_path):
     (loop / "census_update.py").write_text("# old\n")  # snapshot predating the flag must not receive it
     AR.census_update("r", str(res), kernel_rnd=str(kr), state=str(state), run=fake)
     assert "--merge-static-from" not in seen[1]
+
+
+def _kr_with_inbox(tmp_path, present=True):
+    loop = tmp_path / "kr" / "autokernel" / "loop"
+    loop.mkdir(parents=True)
+    if present:
+        (loop / "census_inbox.py").write_text("# RSL-R2\n")
+    return str(tmp_path / "kr")
+
+
+def test_census_inbox_tolerates_module_absent_from_the_snapshot(tmp_path):
+    boom = lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not run"))
+    assert AR.census_inbox("r", kernel_rnd=_kr_with_inbox(tmp_path, present=False), run=boom) == "-"
+
+
+def test_census_inbox_runs_the_module_against_the_live_census_and_store(tmp_path):
+    seen = []
+
+    def fake(argv, **kw):
+        seen.append((argv, kw))
+        return type("R", (), {"stdout": 'BW-INBOX {"written": 2}', "stderr": "", "returncode": 0})()
+
+    out = AR.census_inbox("r", kernel_rnd=_kr_with_inbox(tmp_path), state="/s", store="/st", run=fake)
+    argv, kw = seen[0]
+    assert out == 'BW-INBOX {"written": 2}' and "autokernel.loop.census_inbox" in argv
+    assert argv[argv.index("--census") + 1] == "/s/mi210_bandwidth_census.json" and argv[argv.index("--store") + 1] == "/st"
+    assert kw["cwd"].endswith("kr")
+
+
+def test_inbox_follows_the_census_step_and_never_fails_the_runend(tmp_path):
+    flags = _row(tmp_path, "ak-x-op-gpu-20261122", {"complete": True, "verdict": "OP_PASS"})
+    got = []
+    rep = AR.handle("ak-x-op-gpu-20261122", flags, notify_mod=FakeNotify(), census=lambda r, p: "BW-CENSUS {}",
+                    inbox=lambda r: got.append(r) or "BW-INBOX {}")
+    assert got == ["ak-x-op-gpu-20261122"] and AR.line(rep).endswith("inbox=BW-INBOX {}")
+    bad = AR.handle("ak-x-op-gpu-20261122", flags, notify_mod=FakeNotify(), census=lambda r, p: "BW-CENSUS {}",
+                    inbox=lambda r: 1 / 0)
+    assert bad["inbox"].startswith("error ZeroDivisionError") and bad["class"]["side"]  # the run-end still completed
+    got.clear()
+    AR.handle("ak-x-op-gpu-20261122", flags, notify_mod=FakeNotify(), census=lambda r, p: "-", inbox=got.append)
+    AR.handle("ak-x-op-gpu-20261122", flags, notify_mod=FakeNotify(), census=lambda r, p: "BW-CENSUS {}")  # injected census: live store untouched
+    assert got == []

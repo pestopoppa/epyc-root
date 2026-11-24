@@ -14,6 +14,8 @@
      `autokernel/loop/census_update.py`, from the same origin/main snapshot) re-ranks the MI210 served-kernel census
      in CENSUS_STATE (census JSON seeded from the committed copy, generated table, journal lines, seed stubs).
      Idempotent per RESULT sha256; a session folds CENSUS_STATE back into the research repo (no shared-clone writes here).
+  5. after step 4 (RSL-R2): research `autokernel/loop/census_inbox.py` (same snapshot; "-" while absent there) installs/removes
+     BWS-*.md stubs in LOOP_STORE/inbox for measured, ownerless, open surfaces. Fail-soft: an error is shown as `inbox=error ...`.
 
 Prints ONE line (`AK-RUNEND <id> filed=[...] class=<side>/<klass> lineage=<dir|->`). Exit 0 always: a watcher hook
 reports, it never blocks the watcher. --dry-run prints what it would run and runs nothing.
@@ -38,6 +40,7 @@ RESEARCH_REPO = "/mnt/raid0/llm/epyc-inference-research"
 RESEARCH_CACHE = "/mnt/raid0/llm/tmp/akchain-research"
 LINEAGE_OUT = "/mnt/raid0/llm/tmp/akchain-lineage"
 CENSUS_STATE = "/mnt/raid0/llm/tmp/ak-bw-census"
+LOOP_STORE = "/mnt/raid0/llm/autokernel/loop-memory"  # the loop's store; its inbox/ is what the planner reads
 COMPOSITE_RX = re.compile(r"^c\d+-(fold|composite)-")
 sys.path.insert(0, HERE)
 
@@ -128,8 +131,21 @@ def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, 
     return ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
 
 
+def census_inbox(rid: str, *, kernel_rnd: str | None = None, state: str = CENSUS_STATE, store: str = LOOP_STORE,
+                 run=subprocess.run) -> str:
+    """RSL-R2: sync BWS-*.md stubs in the loop inbox from the live census (research `loop/census_inbox.py`, same snapshot).
+    The snapshot is a git archive of research origin/main, so the module is absent until RSL-R2 lands there: "-"."""
+    kr = kernel_rnd or research_snapshot()
+    if not os.path.exists(os.path.join(kr, "autokernel", "loop", "census_inbox.py")):
+        return "-"
+    r = run([sys.executable, "-s", "-B", "-m", "autokernel.loop.census_inbox", "--census",
+             os.path.join(state, "mi210_bandwidth_census.json"), "--store", store], cwd=kr, capture_output=True,
+            text=True, timeout=120)
+    return ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
+
+
 def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=subprocess.run,
-           lineage=lineage_generate, notify_mod=None, census=census_update) -> dict:
+           lineage=lineage_generate, notify_mod=None, census=census_update, inbox=None) -> dict:
     man = manifest(flags, rid)
     rep: dict = {"row": rid}
     if rid.startswith("akc-"):
@@ -161,13 +177,20 @@ def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=su
             rep["census"] = census(rid, rp, spec_path=sp) if census is census_update else census(rid, rp)
         except Exception as e:  # noqa: BLE001
             rep["census"] = f"error {type(e).__name__}: {e}"
+        inbox = inbox or (census_inbox if census is census_update else None)  # an injected census never touches the live store
+        if inbox and str(rep["census"]).startswith("BW-CENSUS"):
+            try:
+                rep["inbox"] = inbox(rid)
+            except Exception as e:  # noqa: BLE001 -- fail-soft: an inbox error is logged on the AK-RUNEND line, never fails the run-end
+                rep["inbox"] = f"error {type(e).__name__}: {e}"
     return rep
 
 
 def line(rep: dict) -> str:
     c = rep.get("class") or {}
     return (f"AK-RUNEND {rep['row']} filed=[{rep.get('filed', '-')}] class={c.get('side')}/{c.get('klass')}"
-            f"{' routed' if c.get('routed') else ''} lineage={rep.get('lineage', '-')} census={rep.get('census', '-')}")
+            f"{' routed' if c.get('routed') else ''} lineage={rep.get('lineage', '-')} census={rep.get('census', '-')}"
+            f"{' inbox=' + str(rep['inbox']) if 'inbox' in rep else ''}")
 
 
 def main(argv=None) -> int:
