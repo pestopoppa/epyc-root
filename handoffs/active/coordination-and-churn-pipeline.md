@@ -2469,20 +2469,50 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: each of B1-B14 is a landed rowflow commit with a unit test or a written decline appended to /mnt/raid0/llm/tmp/ak-failure-audit-20261123/REPORT.md
       · gate: none
       · owner: pipeline-mgmt
+  - 2026-11-24: B1-B4, B8, B12-B14 landed in 4b48a8ed2..929ac6acf (HOLD-ORPHAN skips unstarted grants 77fa04d51), live via d172d9eed; B8 auto-requeue reverted to opt-in 4814a9b70 (OWNER_STOP_REQUEUE=False). B7 SMOKE-NO-MEASURE is warn-only (eca36d583, 290799730, f9d96affb). Not ticked: B5/B6, B7 enforcement, B9, B10 and B11 have neither a pipeline-mgmt rowflow commit nor a written decline in REPORT.md yet.
 - [ ] **PM-REAPER-RULES** [non-inference] Fix the disk-reaper rules found by the 2026-11-23 tmp stale sweep (reaper pins only on unfiled ready rows, FILLERS rows, claims and dryrun logs; 397 LIVE-but-idle-7d dirs / 65 GB pinned) so FILED and STALE-ORPHAN dirs are reaped per each row's declared keep list (IN PROGRESS 2026-11-23, branch pm/reaper-rules-20261123)
       · done when: reaper simulation (/mnt/raid0/llm/tmp/tmp-stale-sweep-20261123/reapsim.py) shows the LIVE-but-idle-7d pinned set reaped except KEEP-marked dirs, with unit tests, deployed
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-PII-CAPSULE-RATIFY** [operator-decision] Operator signs the PII capture capsule diet and 2-day retention package RATIFY-PII-CAPSULE-20261123 (custody_format 2; capsule 29.9 MB/4222 files to 1.6 MB/14 files; hook 9.1 s to 0.45 s), then drains the backlog with the prune command in its README
+  - 2026-11-24: fail-closed rule fixes ef1181d43 are live; reaper light-pocket (84-87, nice 19, ionice idle) plus REAP-DEFER-QUIET d3e35a502 + 5fc893040 verified live 2026-11-24 05:26:59Z. Not ticked: the reapsim re-run over the LIVE-but-idle-7d set is not yet recorded.
+- [x] **PM-PII-CAPSULE-RATIFY** [operator-decision] Operator signs the PII capture capsule diet and 2-day retention package RATIFY-PII-CAPSULE-20261123 (custody_format 2; capsule 29.9 MB/4222 files to 1.6 MB/14 files; hook 9.1 s to 0.45 s), then drains the backlog with the prune command in its README ✅ 2026-11-24 [no-belief: software] operator applied, landed 5082c73be; capsule 2.4 MB, prune removed 51; custody_format 2 on main; pytest -k pii 152 passed
       · done when: scripts/hooks/pii_staged_capture.py on origin/main carries custody_format 2 and 'pytest scripts/hooks/tests -k pii' passes
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-BUILDLANE-DEPLOY-VERIFY** [non-inference] Finish and verify the live deploy of rowflow BUILD LANE 658c64cec (deploy_rowflow log /mnt/raid0/llm/tmp/pm-deploy-buildlane.log; unit tests 1188 passed, replay gate was running at wrap-up)
+- [x] **PM-BUILDLANE-DEPLOY-VERIFY** [non-inference] Finish and verify the live deploy of rowflow BUILD LANE 658c64cec (deploy_rowflow log /mnt/raid0/llm/tmp/pm-deploy-buildlane.log; unit tests 1188 passed, replay gate was running at wrap-up) ✅ 2026-11-24 [no-belief: software] deploy_rowflow OK, 658c64cec live, rc=0 (pm-deploy-buildlane.log); superseded by later live deploys
       · done when: deploy_rowflow reports success for sha 658c64cec and the live keeper process start time postdates the deploy
       · gate: none
       · owner: pipeline-mgmt
 - [ ] **PM-CX8-SPECPIT-PUSH** [non-inference] Land Codex cx8 SPEC-PIT.1 temperature-gate integration (research local branch cx8-epyc-inference-research bfd15695b, root cx8-epyc-root 14dd32bfc); push is blocked by check_regrowth_guards: 127623 code lines vs the protected 127259 total ceiling (origin/main already 338 over; the change adds 26), so reduce loop code by at least 364 lines or get the operator-signed ceiling corrected; never edit the baseline
       · done when: check_regrowth_guards.py exits 0 on the branch and cx8 commits are PUSH VERIFIED on origin/main
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-ROWFLOW-RELEASE-BUILD** [non-inference] Make rowflow.py release accept build claims recorded only as grants/<id>.build.json instead of refusing with no open grant (AK report 2026-11-24 07:0xZ)
+      · done when: pytest scripts/coordination/tests -k release_build passes
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-SMOKE-ENFORCE-REENABLE** [non-inference] Set SMOKE_MEASURE_ENFORCE=True again once AutoKernel confirms every queued AK row writes smoke_measure.json
+      · done when: rowflow.py on origin/main has SMOKE_MEASURE_ENFORCE = True and is deployed live with zero queued rows failing SMOKE-NO-MEASURE
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-KEEPER-REAP-QH-TESTS** [non-inference] Fix the pre-existing QH unbound variable failures in test_keeper_reap_ws58_disk.py (5 tests) and test_keeper_reap_oob::test_measure_excludes_pidfile_tree
+      · done when: pytest scripts/coordination/tests/test_keeper_reap_ws58_disk.py scripts/coordination/tests/test_keeper_reap_oob.py passes
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-PUBLISH-REHEARSAL** [non-inference] Add a publish-time rehearsal that runs the row's real launcher in a no-compute mode (checksums, paths, env, whether the server would start) and refuses publish on failure (operator complaint 2026-11-23 ~21:45Z)
+      · done when: publish_row refuses a fixture row with a missing model path via the rehearsal, covered by a unit test
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-RULES-WARN-FIRST** [non-inference] Make every new keeper rule land warn-only with a count of queued rows it would fail, enforced only once that count is zero, with a rule freeze during AK pushes
+      · done when: rowflow has a rule registry where each rule carries mode warn|enforce and the keeper SNAPSHOT reports would-fail counts, covered by a unit test
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-SHARED-CLONE-SYNC** [operator-decision] Operator approves syncing the /workspace shared clone, 230 commits behind origin/main, whose stale rowflow/queue_status lost requires_quiet_host and reported false IDLE-HELD
+      · done when: git -C /workspace rev-list --count HEAD..origin/main prints 0
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-SCRATCH-PINS-DRIFT** [operator-decision] Operator decides whether to remove the destructive_scratch_pins.json sha drift (operator record)
+      · done when: verdict text: operator decision recorded and the pins sha check reports no drift
       · gate: none
       · owner: pipeline-mgmt
 
