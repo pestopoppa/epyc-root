@@ -8019,6 +8019,171 @@ def apply_build_interstice(flags, cands, res_base, pre_quiet, reqc, grants, allr
     return keep, rb, {"hold": hold, "until": float(a.get("until") or now)}
 
 
+# SLOT-KEEP (pipeline-mgmt 2026-11-24): a row briefly off the grant table kept its slot from nobody. 18:30Z AK paused quiet row
+# ak-c21-census-refresh-cpu-20261124-r4 (rank 42) with build-window; the keeper granted q1 to tf1-cpu-r8h-canary (rank 100,
+# bandwidth_heavy, ~3.5 h), whose load then blocked census-r4 and draftwin-r3 (rank 40) until its owner STOPped it at 18:56Z.
+# 18:21Z cdr (rank 45) took q0 while census-r4 was republished (smoke pending). B's phantoms reserve only rank < URGENT_RANK.
+# A held row is a phantom head at its OWN rank, any rank: (a) a published row paused by its owner (STOP file, not keeper-
+# written, not final; or a resumable rc=75 stopped/released-early end), (b) a successor whose smoke is pending and that names a
+# predecessor (`supersedes`, or another row of the same id family). While held, no LOWER-ranked candidate is granted onto its
+# regions, nor (quiet-host held row) any loud / bandwidth-heavy row anywhere. Bounds: a pause lasts until the build window
+# ends + SLOT_KEEP_GRACE_S (no window: from the pause), a successor its smoke budget; both capped at SLOT_KEEP_CAP_S.
+SLOT_KEEP = True
+SLOT_KEEP_CAP_S = 1800
+SLOT_KEEP_GRACE_S = 300
+
+
+def _slot_keep_held(flags, rid, d, rank, since, until, why):
+    try:
+        k = contract_of(d, flags=flags)
+    except Exception:  # noqa: BLE001 - an unparsable row holds nothing
+        return None
+    toks = set()
+    for o in k["options"]:
+        toks |= expand(set(o))
+    toks = {t for t in toks if not str(t).startswith(HOLD_PREFIX) and t != GPU_BLOCKED}
+    return {"id": rid, "rank": float(rank), "since": float(since), "until": float(until), "why": why, "tokens": toks,
+            "quiet": bool(quiet_sensitive(d) or k.get("shape") == "quiet-host")}
+
+
+def slot_keep_holds(flags, grants, allrows=None, now=None, enabled=None):
+    """-> [hold {id, rank, since, until, why, tokens, quiet}] of rows briefly off the grant table (see SLOT-KEEP above)."""
+    enabled = SLOT_KEEP if enabled is None else enabled
+    if not enabled:
+        return []
+    now = time.time() if now is None else now
+    allrows = allrows or {}
+    granted = {g["id"] for g in grants}
+    G = os.path.join(flags, "grants")
+    try:
+        sup = superseded_index(flags)
+    except Exception:  # noqa: BLE001
+        sup = {}
+    w = load_json(os.path.join(state_dir(flags), BUILD_WINDOW)) or {}
+    w_until = float(w.get("until") or 0)
+    out, seen = [], set()
+
+    def rank_of(d):
+        try:
+            return float(d.get("priority_rank", 100))
+        except (TypeError, ValueError):
+            return None
+
+    def dead(rid):
+        return rid in granted or sup.get(rid) or os.path.exists(os.path.join(G, rid + ".complete"))
+    # (a) owner pause, still resumable
+    for mp in sorted(glob.glob(os.path.join(flags, "ready", "*.json"))):
+        rid = os.path.basename(mp)[:-5]
+        if dead(rid):
+            continue
+        d = allrows.get(rid) or load_json(mp) or {}
+        rank = rank_of(d)
+        if rank is None:
+            continue
+        since = None
+        sf = resolve_stop_path(d)
+        try:
+            if sf and os.path.exists(sf) and not keeper_stop_file(d) and not stop_final_marker(d):
+                since = os.path.getmtime(sf)
+            else:
+                ep = os.path.join(G, rid + ".ended")
+                first = (_ended_text(flags, rid) or "").splitlines()[0:1]
+                first = first[0] if first else ""
+                if (d.get("resumable") and os.path.exists(ep) and re.search(r"(^|\s)rc=75(\s|$)", first)
+                        and re.search(r"(^|\s)reason=(stopped|released-early)(\s|$)", first) and not stop_final_marker(d)
+                        and not keeper_stop_file(d)):
+                    since = os.path.getmtime(ep)
+        except OSError:
+            since = None
+        if since is None:
+            continue
+        cap = since + SLOT_KEEP_CAP_S
+        until = min(w_until + SLOT_KEEP_GRACE_S, cap) if w_until >= since - 60 else cap
+        if until <= now:
+            continue
+        h = _slot_keep_held(flags, rid, d, rank, since, until, "build-window pause" if w_until >= since - 60 else "owner pause")
+        if h:
+            out.append(h); seen.add(rid)
+    # (b) a successor whose smoke is pending
+    stems = {}
+    for p in glob.glob(os.path.join(flags, "ready", "*.json")) + glob.glob(os.path.join(G, "*.ended")):
+        r = os.path.basename(p).rsplit(".", 1)[0]
+        stems.setdefault(id_stem(r), set()).add(r)
+    for dd in sorted(glob.glob(os.path.join(flags, "dryrun", "*"))):
+        rid = os.path.basename(dd)
+        if rid in seen or dead(rid):
+            continue
+        marks = [os.path.join(dd, m) for m in _SMOKE_PENDING_MARKERS if os.path.exists(os.path.join(dd, m))]
+        if not marks or fail_paths(flags, rid):
+            continue
+        d = allrows.get(rid) or load_json(ready_path(flags, rid)) or load_json(os.path.join(dd, "unpublished.json")) or {}
+        rank = rank_of(d)
+        if rank is None:
+            continue
+        preds = [p for p in _supersedes_list(d) if p != rid] or sorted(stems.get(id_stem(rid), set()) - {rid})
+        if not preds:
+            continue
+        try:
+            if smoke_passed(flags, rid, d):
+                continue
+            since = min(os.path.getmtime(m) for m in marks)
+        except (OSError, Exception):  # noqa: BLE001
+            continue
+        sq = load_json(smoke_queued_path(flags, rid)) or {}
+        try:
+            budget = float(sq.get("smoke_s") or d.get("smoke_s") or SMOKE_HOLD_S)
+        except (TypeError, ValueError):
+            budget = float(SMOKE_HOLD_S)
+        until = since + min(budget, SLOT_KEEP_CAP_S)
+        if until <= now:
+            continue
+        h = _slot_keep_held(flags, rid, d, rank, since, until, f"successor of {preds[0]} smoke pending")
+        if h:
+            out.append(h); seen.add(rid)
+    return sorted(out, key=lambda h: (h["rank"], h["id"]))
+
+
+def slot_keep_filter(holds, cands, allrows=None, flags=None):
+    """PURE (given holds). -> (kept cands, {key: log line}). A candidate ranked LOWER (larger rank) than a held row loses every
+    option touching the held row's tokens; when the held row is quiet, a loud candidate is refused outright. Claims, the held
+    rows themselves and better-or-equal ranked candidates pass untouched."""
+    if not holds:
+        return list(cands), {}
+    allrows = allrows or {}
+    hid = {h["id"] for h in holds}
+    kept, lines = [], {}
+    for c in cands:
+        if c.get("kind") == "claim" or c["id"] in hid or c.get("phantom") or c.get("hold"):
+            kept.append(c); continue
+        r = float(c["rank"])
+        opts = list(c.get("options") or [])
+        refuse = None
+        for h in holds:
+            if r <= h["rank"]:
+                continue
+            if h["quiet"]:
+                loud = c["loud"] if "loud" in c else _loud_row(allrows.get(c["id"]) or {}, c)
+                if loud:
+                    refuse = h; opts = []; break
+            nopts = [o for o in opts if not (expand(set(o)) & h["tokens"])]
+            if not nopts:
+                refuse = h; opts = []; break
+            opts = nopts
+        if refuse:
+            lines[f"{refuse['id']}|{c['id']}"] = (f"SLOT-KEEP hold {refuse['id']} rank={refuse['rank']:g} refuse {c['id']} "
+                                                  f"(rank {r:g}; {refuse['why']}; until "
+                                                  f"{dt.datetime.fromtimestamp(refuse['until'], dt.timezone.utc):%H:%MZ})")
+            continue
+        kept.append(c if len(opts) == len(c.get("options") or []) else dict(c, options=opts))
+    return kept, lines
+
+
+def apply_slot_keep(flags, holds, cands, allrows, log, dry=False, kind="slot-keep"):
+    kept, lines = slot_keep_filter(holds, cands, allrows, flags)
+    log_transition(flags, kind, lines, log, persist=not dry)
+    return kept
+
+
 def build_interstice_open_for(flags, owner, now=None):
     """True when the keeper picked `owner`'s build for an interstice that is not granted yet (claim_build: no QUIET-RESERVE refusal)."""
     now = time.time() if now is None else now
@@ -9488,6 +9653,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     util = measure_util()
     reqc = [c for c in cands if c.get("kind") == "claim"]   # CLAIM QUEUE: claims keep their own quiet checks (claim_build)
     inter_info = None   # BUILD-INTERSTICE {hold, until} for the REPLAN shadow
+    sk_holds = []       # SLOT-KEEP holds (live plan and REPLAN shadow)
     cands = [c for c in cands if c.get("kind") != "claim"]
     try:   # PM-KEEPER3 #1: quiet-host rows only onto quiet quarters, never beside whole-host / bandwidth-heavy rows
         qres = {"now": time.time(), "max_s": quiet_reserve_max_s(flags)}
@@ -9515,6 +9681,14 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             cands, res_base, inter_info = apply_build_interstice(flags, cands, res_base, pre_quiet, reqc, grants, allrows, log, dry=dry)
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"BUILD-INTERSTICE failed: {type(e).__name__}: {e}")
+        try:   # SLOT-KEEP: a paused / republished row keeps its slot from lower-ranked rows (bounded)
+            sk_holds = slot_keep_holds(flags, grants, allrows)
+            cands = apply_slot_keep(flags, sk_holds, cands, allrows, log, dry=dry)
+            if res_base is not None:
+                res_base = slot_keep_filter(sk_holds, res_base, allrows, flags)[0]
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            sk_holds = []
+            log(f"SLOT-KEEP failed: {type(e).__name__}: {e}")
         uw_p = os.path.join(state_dir(flags), QUIET_URGENT_WAITING_STATE)
         uwait, uw_state = urgent_quiet_waiting(pre_quiet, cands, qlines, allrows, load_json(uw_p) or {}, flags=flags)
         if rmode == "enforce":   # RESERVATION: QUIET-URGENT-PENDING / -WAITING are subsumed by the urgent head reservation
@@ -9611,6 +9785,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             except Exception as e:  # noqa: BLE001 - the shadow never stops allocation
                 log(f"REPLAN candidate set failed: {type(e).__name__}: {e}; using the live candidates")
                 rp_base, rp_extra = list(cands), {}
+        try:   # SLOT-KEEP: C's shadow takes the same holds as the live plan, so its diffs stay meaningful
+            rp_base = slot_keep_filter(sk_holds, rp_base, allrows, flags)[0]
+        except Exception as e:  # noqa: BLE001
+            log(f"REPLAN SLOT-KEEP failed: {type(e).__name__}: {e}")
         rp_gpu_q3 = bool(gpu_queued) or any(gpu_lane_cand(c) for c in rp_base)
         if rpmode == "enforce":   # C first: its start-now set replaces the live plan's below (fallback: the live plan)
             try:
