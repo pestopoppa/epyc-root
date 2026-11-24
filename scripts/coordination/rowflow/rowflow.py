@@ -5448,6 +5448,9 @@ def autorequeue_decision(flags, rid):
         return None, ""
     if capcut_closed(flags, rid):
         return None, ""
+    cr = smoke_verdict.complete_result(d) if smoke_verdict else None
+    if cr:   # AK 2026-11-24: complete:true + polar is a finished result to FILE, whatever the verdict text
+        return "complete", f"result {cr['path']} complete verdict={cr['verdict']} polar={cr['polar']}"
     if not OWNER_STOP_REQUEUE:
         # 2026-11-23 23:56Z rollback of B8: AK paused quiet rows with STOP to protect a rank-5 gate row; B8 requeued and
         # re-granted one within the same tick, beside the gate row. An owner STOP is a PAUSE again; `rowflow resume` ends it.
@@ -5527,6 +5530,8 @@ def autorequeue(flags, log=print, now=None, emit=None):
             elif kind == "blocked":
                 summary = (f"AUTOREQUEUE-BLOCKED {rid}: ended {head!r}, job declared a persistent blocker ({why}); "
                            f"not requeued - owner: clear the blocker and republish")
+            elif kind == "complete":
+                summary, sev = f"NO-REQUEUE-COMPLETE {rid}: {why}; filed as a finished result", "info"
             else:
                 summary, sev = f"AUTOREQUEUE-END {rid}: {why}; ends normally", "info"
             log(summary)

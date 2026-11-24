@@ -67,3 +67,30 @@ def terminal_smoke_result(d: dict, t0: float | None) -> dict | None:
                 continue
             return {"path": p, "sha256": sha, "verdict": str(v).strip(), "at": r.get("at")}
     return None
+
+
+def is_decided(r) -> bool:
+    """A RESULT that decided: complete is True AND it carries a "polar" field, whatever the verdict text
+    (CEILING_OPEN, ANSWERED, ...); or complete with a terminal verdict. AK bug 2026-11-24 (rc=75 on CEILING_OPEN)."""
+    if not isinstance(r, dict) or r.get("complete") is not True:
+        return False
+    return "polar" in r or is_terminal(r.get("verdict") or r.get("status"))
+
+
+def complete_result(d: dict) -> dict | None:
+    """{path, verdict, polar} for the row's real (non-smoke) RESULT that is complete with a polar field; else None.
+    Looks at <scratch_root|workdir>/out/RESULT.json, then a literal .json result_path. Never raises."""
+    d = d or {}
+    paths = [os.path.join(str(r), "out", n) for r in (d.get("scratch_root"), d.get("workdir")) if r for n in RESULT_NAMES]
+    rp = str(d.get("result_path") or "")
+    if rp.endswith(".json") and not glob.has_magic(rp):
+        paths.append(rp if os.path.isabs(rp) or not d.get("workdir") else os.path.join(str(d["workdir"]), rp))
+    for p in dict.fromkeys(paths):
+        try:
+            with open(p) as f:
+                r = json.load(f)
+        except (OSError, ValueError, TypeError):
+            continue
+        if isinstance(r, dict) and r.get("complete") is True and "polar" in r and r.get("smoke") is not True:
+            return {"path": p, "verdict": str(r.get("verdict") or ""), "polar": r.get("polar")}
+    return None
