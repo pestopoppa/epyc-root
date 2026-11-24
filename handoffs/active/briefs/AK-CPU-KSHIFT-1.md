@@ -1,8 +1,8 @@
 ---
 schema: epyc.brief.v1
 id: AK-CPU-KSHIFT-1
-box_text_sha: t:3db37d81678306ce
-author: intake
+box_text_sha: t:6d294901373f3557
+author: planning
 written: '2026-11-24'
 accepted: auto
 where:
