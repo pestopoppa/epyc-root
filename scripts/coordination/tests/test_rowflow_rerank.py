@@ -153,3 +153,72 @@ def test_queue_status_shows_rerank_history():
     import queue_status as QS
     assert QS._rerank_note({}) == ""
     assert QS._rerank_note({"rerank_history": [{"old": 50, "new": 0, "by": "operator"}]}) == " reranked[50->0 by operator]"
+
+
+# --- smoke-pending rows (2026-11-24): manifest lives in dryrun/<id>/unpublished.json until PASS moves it to ready/ ---
+PID = "ak-pending-x"
+
+
+@pytest.fixture
+def pflags(tmp_path):
+    f = str(tmp_path)
+    os.makedirs(os.path.join(f, "grants"))
+    wj(os.path.join(rf.dry_dir(f, PID), "unpublished.json"),
+       {"schema": rf.SCHEMA, "id": PID, "owner": "autokernel", "lane": "gpu", "priority_rank": 100})
+    return f
+
+
+def _up(f):
+    return os.path.join(rf.dry_dir(f, PID), "unpublished.json")
+
+
+def test_pending_rerank(pflags):
+    logs = []
+    assert rf.rerank_row(pflags, PID, 15, "autokernel", "edit", log=logs.append) == (100, 15)
+    d = rf.load_json(_up(pflags))
+    assert d["priority_rank"] == 15 and d["rerank_history"][-1]["old"] == 100
+    assert logs[0].startswith("RERANK-PENDING " + PID)
+    assert not os.path.exists(rf.ready_path(pflags, PID))
+    assert rf.rerank_family(pflags, "ak-pending", 7, "autokernel", "fam", log=lambda s: None)[PID] == (15, 7)
+
+
+def test_pending_rank_survives_pass_promotion(pflags):
+    rf.rerank_row(pflags, PID, 15, "autokernel", "edit", log=lambda s: None)
+    os.makedirs(os.path.dirname(rf.ready_path(pflags, PID)), exist_ok=True)
+    os.replace(_up(pflags), rf.ready_path(pflags, PID))   # publish_row's PASS promotion (run_queued_smoke / GPU batch)
+    d = rf.load_json(rf.ready_path(pflags, PID))
+    assert d["priority_rank"] == 15 and len(d["rerank_history"]) == 1
+
+
+def test_pending_owner_check(pflags):
+    with pytest.raises(rf.Refused, match="only the row owner"):
+        rf.rerank_row(pflags, PID, 1, "pipeline-mgmt", "x", log=lambda s: None)
+    assert rf.load_json(_up(pflags))["priority_rank"] == 100
+    assert rf.rerank_row(pflags, PID, 1, "operator", "x", log=lambda s: None) == (100, 1)
+
+
+def test_pending_open_grant_refused(pflags):
+    open(os.path.join(pflags, "grants", PID + ".grant"), "w").write("x\n")
+    with pytest.raises(rf.Refused, match="grant is open"):
+        rf.rerank_row(pflags, PID, 1, "autokernel", "x", log=lambda s: None)
+    open(os.path.join(pflags, "grants", PID + ".grant"), "w").close()
+    os.remove(os.path.join(pflags, "grants", PID + ".grant"))
+    open(os.path.join(pflags, "grants", PID + ".ended"), "w").close()
+    with pytest.raises(rf.Refused, match="terminal"):
+        rf.rerank_row(pflags, PID, 1, "autokernel", "x", log=lambda s: None)
+
+
+def test_pending_republish_rank_only_routes(pflags, monkeypatch):
+    import publish_row as pr
+    launcher = os.path.join(pflags, "l.sh")
+    monkeypatch.setattr(rf, "job_sha", lambda p: "jobsha")
+    open(launcher, "w").write("#!/bin/bash\necho hi\n")
+    spec = {"id": PID, "owner": "autokernel", "launcher": launcher, "priority_rank": 100}
+    d = rf.load_json(_up(pflags))
+    d["launcher"] = {"path": launcher}
+    d["smoke_identity"] = pr.smoke_identity(spec, d)
+    d["spec_sha256_norank"] = pr.norank_sha(spec)
+    rf.atomic_json(_up(pflags), d)
+    assert pr.route_rerank(dict(spec, priority_rank=15), pflags, log=lambda s: None) == (100, 15)
+    assert rf.load_json(_up(pflags))["priority_rank"] == 15
+    assert pr.route_rerank(dict(spec, priority_rank=5, estimate_s=9), pflags, log=lambda s: None) is None
