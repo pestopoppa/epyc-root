@@ -43,3 +43,21 @@ PM-RULES-WARN-FIRST, PM-SHARED-CLONE-SYNC (operator-decision), PM-SCRATCH-PINS-D
 PM-AKAUDIT-B1-B14 stays open (B5/B6, B7 enforcement, B9-B11 neither landed by pipeline-mgmt nor declined);
 PM-REAPER-RULES stays open (reapsim re-run not recorded); PM-CX8-SPECPIT-PUSH blocked on the code-budget
 ceiling (operator decision).
+
+## Operator /wrap-up 2026-11-24 — filing audit of the day's pipeline-mgmt work
+
+All SHAs below verified reachable from origin/main (root unless noted).
+
+| Item | Box | Status | SHA |
+|---|---|---|---|
+| Keeper/rowflow fixes (QUIET-SERIAL urgent-first, no grant onto build claim, keeper re-pin, EASY-backfill reservation + replay fixtures, LIGHT-POCKET, smoke_verdict/supersedes_check/owner_watch, rc75 NO-REQUEUE-COMPLETE, BUILD-INTERSTICE, SLOT-KEEP, complete_check, rerank, GPU-HOST-FOREIGN) | PM-KEEPER-FIXES-1124 (new) | filed + ticked | 929ac6acf 3f1101c71 ce08516f3 5fc893040 1cd1d5cb8 eb643ac37 49f6a9f17 20a74f6ff d5d0f3450 460e0696b 544ca0b4a 513ef7a02 f95b97193 fd1e4001c 4a0d5a2f9 04d40f485 a281def6b 1527a5a02 ed53a2c2f 2fc1818a5 (live) |
+| Row preflight lane, 12 checks | PM-PREFLIGHT-12 (new) | filed + ticked | bb5c756d0 2099822d9 8835cc392 |
+| Re-planning scheduler C (shadow) | PM-REPLAN-C-SOAK | noted, open (7-day soak) | 5851284db, design afddb8c5e, vidya 9544bddd0 |
+| Codex lane driver | PM-CODEX-LANE-VERDICT | noted, open: done-when `-k codex_lane_verdict` selects 0 tests; test_codex_lane_drive.py 7 passed | 5908a883f |
+| TF-R8G-PATHSPEC-LRANGE / REVIEWER-CONTROL | churn-pipeline.md | verified ticked with belief tags | fc6f16336 (fix 3b11e6c82) |
+| TF-R8G-REFUSAL-HINT | churn-pipeline.md | noted, open (r8h owner-STOPped, after AK CPU queue) | 3b11e6c82 |
+| churn.loop.json | — | landed | cc6647e03 b7948fa3e |
+| Intakes always-on 2942-2955 Stage 4, 2863, 2864 | — | landed | 9db462df8 8bc550ef5 |
+| Research (AK spool / UTF-8 encoding) | — | landed (research repo) | 0403f49a7 9d180ad29 |
+
+In flight: Codex cx12 TF-EARLY-END-CENSUS reports DONE on branch `cx12-census` ab5e9f6e7 (verdict DECLINE, 0/50 early ends), not pushed. Quiet-model package waits on AK rows ak-pernuma-contam-cpu-20261124 and ak-gpu-cpuload-contam-20261124.

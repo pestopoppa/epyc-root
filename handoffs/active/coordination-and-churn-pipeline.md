@@ -2520,6 +2520,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: a soak report shows 7 shadow days meeting all six criteria of docs/design/rowflow-replanning-scheduler.md section 11, and rowflow.py on origin/main has REPLAN_MODE = "enforce" with the live keeper start time after that deploy
       · gate: none        · inputs: `docs/design/rowflow-replanning-scheduler.md` `scripts/coordination/rowflow/rowflow.py`
       · owner: pipeline-mgmt
+  - 2026-11-24: scheduler C shipped in SHADOW 5851284db (design afddb8c5e, vidya source 9544bddd0); 7-day soak starts at that deploy. Stays open.
 - [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once PM-REPLAN-C-SOAK has enforced scheduler C, delete the hand-coded reservation rules C subsumes (docs/design/rowflow-replanning-scheduler.md section 11: RANK-HOLD, RANK-SKIP, QUIET-RESERVE, QUIET-URGENT-PENDING, BACKFILL-IF-FITS, and rank_reservation/DRAIN except what B's fallback path still calls) and keep one replay test per original starvation case A-E (listed in the RESERVATION comment block of rowflow.py), so one plan is the only path (intake-2942, intake-2943)
       · done when: none of the subsumed rules remains in rowflow.py on origin/main outside B's fallback path and pytest scripts/coordination/tests -k reservation passes with one named test per case A-E
       · gate: PM-REPLAN-C-SOAK        · inputs: `scripts/coordination/rowflow/rowflow.py` `docs/design/rowflow-replanning-scheduler.md`
@@ -2527,6 +2528,15 @@ This verifies local installation only. A client-side hook can be bypassed and do
 - [ ] **PM-CODEX-LANE-VERDICT** [non-inference] Take the interim Codex lane driver's stop decision off the lane's self-written LANE-STATUS line (drive.sh and drive2.sh stop on its first line): commit the loop as scripts/coordination/codex_lane.py whose DONE is computed from artifacts (each reported box's branch and sha exist and pass the static checks; for pushed lanes, reachable from origin/main and box ticked), treat LANE-STATUS as a hint, stop as STALLED after 3 consecutive rounds with no new commit, and log rounds and wall seconds per lane (intake-2943, intake-2947#02, intake-2953)
       · done when: pytest scripts/coordination/tests -k codex_lane_verdict passes on origin/main and covers a DONE line with a missing branch (refused), a BLOCKED line with new commits (resumed) and three no-commit rounds (STALLED)
       · gate: none        · inputs: `scripts/coordination/taskflow/verify.py`
+      · owner: pipeline-mgmt
+  - 2026-11-24: driver landed 5908a883f as scripts/coordination/codex_lane/drive.py (artifact-judged DONE, STALLED after 3 no-commit rounds, wall per round); scripts/coordination/tests/test_codex_lane_drive.py 7 passed. Not ticked: the done-when selector `-k codex_lane_verdict` matches 0 tests (only an unrelated skip), so refine the done-when to that test file (or rename the tests) before ticking.
+- [ ] **PM-PREFLIGHT-12** [non-inference] Land the D9-acked row preflight lane: 12 checks, store/ports/append FAIL and the rest WARN (mk_ak_row v2 contracts, HOST-SHAPE-OVERLAPS-GPU, effective argv[0] store, arm-scoped served deltas)
+      · done when: preflight commits bb5c756d0, 2099822d9 and 8835cc392 are reachable from origin/main
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-KEEPER-FIXES-1124** [non-inference] Land and deploy the 2026-11-24 keeper/rowflow fixes: QUIET-SERIAL urgent-first, no grant onto a build claim, keeper re-pin, EASY-backfill reservation, LIGHT-POCKET, smoke_verdict/supersedes_check/owner_watch, rc75 NO-REQUEUE-COMPLETE, BUILD-INTERSTICE, SLOT-KEEP, rerank, GPU-HOST-FOREIGN
+      · done when: every listed commit is reachable from origin/main and the live keeper runs 2fc1818a5 or later
+      · gate: none
       · owner: pipeline-mgmt
 
 ## Track: churn-pipeline
