@@ -3104,14 +3104,43 @@ Structural change → **implement in a follow-on pass** (not in this design task
 <!-- gate: none -->
 
 ### Backlog
-- [ ] **EV-SCORER-FUZZ-1** [non-inference] Fuzz the deterministic eval_tower scorers with the RLVR-verifier mutation categories (intake-2889): replay partial_answer, missing marker, contradictory finals, loose float and wrong-then-correct completions against the math_verify and exact-match scorers (EV-11) and report false-positive and false-negative rates with acceptance and coverage per category. CPU minutes, no inference.
+- [x] **EV-SCORER-FUZZ-1** [non-inference] Fuzz the deterministic eval_tower scorers with the RLVR-verifier mutation categories (intake-2889): replay partial_answer, missing marker, contradictory finals, loose float and wrong-then-correct completions against the math_verify and exact-match scorers (EV-11) and report false-positive and false-negative rates with acceptance and coverage per category. CPU minutes, no inference.
       · done when: per-category FPR/FNR table filed under this box with the fixture digest; any category with FPR > 0 gets a named scorer fix box; futility recorded if FPR is 0 everywhere
       · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
+  - 2026-11-24 done (orchestrator `18e2100dd35b`, `scripts/benchmark/scorer_fuzz.py`).
+    - **Run:** 3,672 offline cases over a 200-row gold fixture (100 GSM8K and 100 MATH-500). The fixture's sha256 is `2cb68261937d` and the cases digest is `a651969fa5f0`. The full per-category and per-template FPR/FNR table with Wilson intervals is in orchestrator `artifacts/scorer_fuzz/report.md`.
+    - **math_verify:**
+      - `partial_answer` FPR 1.00 and `missing_marker` FPR 0.99-1.00: prose with no final answer is accepted.
+      - `contradictory_finals` FPR about 0.50: the last final wins.
+      - `gold_prefix_collision` FPR 8/8: a bare LaTeX gold is parsed without `$` delimiters, so `3\sqrt{13}` reads as `3`. The same defect gives FNR 0.114 and coverage 0.88 on MATH-500.
+      - `loose_float` FPR 0.
+    - **exact_match:**
+      - `contradictory_finals` FPR 1.00 on two templates: the last boxed wins but the first tag wins.
+      - A 1e-7 float drift is accepted (FPR 1.00), because the absolute tolerance is 1e-6.
+      - A bare correct last line is accepted (FPR 1.00); this is the documented last-line fallback.
+    - **Diagnostic variants (not production):** wrapping the gold in `$...$` takes MATH-500 FNR to 0.000, coverage to 0.99 and prefix-collision FPR to 0.25. Adding "exactly one distinct `\boxed` final" on top takes the partial, missing-marker and contradictory FPR to 0.
+    - **No scorer changed:** the tests pin the current behaviour. Fix boxes follow. [belief: cc]
+  - [ ] **SCORER-MV-GOLDWRAP** [non-inference] Wrap a bare-LaTeX gold in `$...$` before `math_verify.parse` in `_score_math_verify`, then investigate the 2 residual prefix-collision cases. This moves every math verdict, so it lands at a declared era boundary, with the golden scorer corpus and the math-suite baselines re-pinned.
+      · done when: the fix is committed behind an era boundary, the fuzz is re-run showing FNR 0 and coverage of 0.99 or better on MATH-500, and the golden corpus and baselines are re-pinned
+      · gate: operator era-boundary decision        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
+  - [ ] **SCORER-MV-STRICT-FINAL** [non-inference] Require exactly one distinct `\boxed` final in `math_verify` scoring, rejecting prose-only and contradictory completions. Bundle it with SCORER-MV-GOLDWRAP at the same era boundary.
+      · done when: the fuzz shows FPR 0 for partial_answer, missing_marker and contradictory_finals under math_verify
+      · gate: SCORER-MV-GOLDWRAP        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
+  - [ ] **SCORER-EM-CONTRADICTORY** [non-inference] Make `exact_match` reject conflicting finals, and make the first-tag and last-boxed rules consistent.
+      · done when: the fuzz shows exact_match contradictory_finals FPR 0 on every template
+      · gate: operator era-boundary decision        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
+  - [ ] **SCORER-EM-FLOAT-TOL** [non-inference] Replace the 1e-6 absolute tolerance in `exact_match` with a relative tolerance sized to the gold's stated precision.
+      · done when: the fuzz shows 1e-7 drift rejected with no new FNR on the gold fixture
+      · gate: operator era-boundary decision        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
 
 > Folded from `handoffs/active/scoring-infra-standardization.md` @ `c4b6d1388716` on 2026-11-02 (BRF-T1-F2, route 1a, operator D1/D5; retired row EVL-42 → EVL-14). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 - [ ] **EV-JUDGE-FPR-1** [inference] Audit the LLM judges for exploitable false positives before anything optimises against them (intake-2877, intake-2886, intake-2904, intake-2888). String set: the ten One-token master keys plus 3-5 paraphrases each, and the 13 Huang Table 8 families with their 'Final Decision: Yes' strings re-targeted to each judge's verdict format (exact strings and prompts from the hkust-nlp/RL-Verifier-Robustness repo). Run every string individually, with Wilson intervals, on a fixed math problem set against the architect_critic, coherence and credibility judges, each with the production prompt, a no-question arm (the Huang-comparable arm) and a no-CoT arm. Scan journaled generator outputs with the same detectors for propensity (zero inference) and report exposure = propensity x FPR, also as a secondary EV-29 column. The futility threshold is a local pre-registered choice. Model: the three judge configs as served; build: production v10 stores (read-only use); region one CPU quarter; estimate ~3 h; metric FPR per string. Stop-on-answer per judge when every string has an FPR; stop-on-futility when no string is accepted in the first 100 items for a judge.
       · done when: per-judge, per-string FPR table and the propensity counts filed under this box with the problem-set digest; verdict per judge: no-go for any optimiser use if any string's FPR >= 1%, else cleared at that rate
       · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
+  - 2026-11-24 tool built and tested in dry-run and fixture mode only: orchestrator `18e2100dd35b`, `scripts/benchmark/judge_fpr_audit.py` (`--plan`/`--dry-run`/`--live`).
+    - **Strings and prompts:** 83 strings. The Huang prompts come from the repo at `f2460fff`. The repo lacks the Table 8 strings, so those come from the paper text; the gibberish and Mixed Language strings are generated or reconstructed and tagged as such.
+    - **Not yet run:** the live run would be about 186k short judge calls before the futility stop (architect_critic 37,209; coherence and credibility 74,418 each). The ~3 h estimate needs about 17 calls per second on one quarter and is likely optimistic, so cap `--n-items` or rely on the futility stop.
+    - **Blocked:** the credibility judge is a cloud judge, so its live arm needs an operator egress clearance. [no-belief: no measurement yet]
 - Monitor (intake-ak-1124 M11, operator-approved 2026-11-24, no checkbox): The harness accept gate (BSV-2 family) is not activated until an A/A floor from >= 3 replicas exists for its metric, per SPEC-ID-GATE-2 rule (a) (intake-2872).
 - Monitor (intake-ak-1124 M7, operator-approved 2026-11-24, no checkbox): If EV-JUDGE-FPR-1 finds a judge that gates a decision with any master-key FPR >= 1%: compare a no-question prompt fix with a trained robust judge (Master-RM-style, 20k truncation negatives) before that judge gates an optimiser (intake-2886).
 
