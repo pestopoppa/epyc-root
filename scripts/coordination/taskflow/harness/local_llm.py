@@ -128,20 +128,53 @@ WORKER_DENIED_TOOLS = ("opencode_worktree_remove", "opencode_worktree_create", "
 
 
 SHELL_DENIAL_HINT = (" Allowed shell forms: the ALLOWED COMMANDS, read-only helpers (ls cat head tail wc grep sed -n find git diff/status/log), "
-                     "`bash <row>/orch-py.sh -c \"<python>\"`, `bash <row>/orch-py.sh <relative .py>`, `rm <relative path>`, "
+                     "`bash <row>/orch-py.sh -m pytest <test>`, `bash <row>/orch-py.sh -c \"<python>\"`, `bash <row>/orch-py.sh <relative .py>`, `rm <relative path>`, "
                      "`mv <relative src> <relative dst>`. Bare `python3`, `cd`, `&&` and `>` are not allowed; use orch-py.sh -c.")
 
 
+def _annotate_text(c: str, hint: str) -> str | None:
+    """The hinted text, or None when `c` is not a denial or already carries the hint. r8h (TF-R8G-REFUSAL-HINT): opencode
+    sends the denial as JSON, `{"error":{"type":"permission.rejected","message":"Permission denied: shell"},"content":[]}`,
+    so the r8g `startswith("Permission denied")` match never fired (16/16 bare denials). The hint goes into
+    error.message so the content stays valid JSON."""
+    if "Permission denied" not in c:
+        return None
+    try:
+        d = json.loads(c)
+    except ValueError:
+        d = None
+    if isinstance(d, dict) and isinstance(d.get("error"), dict) and "Permission denied" in str(d["error"].get("message", "")):
+        msg = str(d["error"]["message"])
+        if hint in msg:   # idempotency on the DECODED message: inside JSON the hint is escaped, so `hint in c` misses it
+            return None
+        d["error"]["message"] = msg.rstrip() + hint
+        return json.dumps(d, ensure_ascii=False, separators=(",", ":"))
+    if hint in c:
+        return None
+    return c.rstrip() + hint
+
+
 def annotate_denials(body: dict, hint: str = SHELL_DENIAL_HINT) -> int:
-    """Proxy guard (r8g fix 4): opencode's refusal text is just `Permission denied: shell`, which names no alternative.
-    Append the allowed forms to every such tool result in the request history. Deterministic and idempotent, so the
-    rewritten history is byte-identical on the next request (prefix cache). Returns the number of messages touched."""
+    """Proxy guard (r8g fix 4, r8h): opencode's refusal names no alternative. Append the allowed forms to every denial
+    tool result in the request history (plain text, opencode's JSON error shape, or text content parts). Deterministic and
+    idempotent, so the rewritten history is byte-identical on the next request (prefix cache). Returns messages touched."""
     n = 0
     for m in body.get("messages") or []:
+        if m.get("role") != "tool":
+            continue
         c = m.get("content")
-        if m.get("role") == "tool" and isinstance(c, str) and c.startswith("Permission denied") and hint not in c:
-            m["content"] = c.rstrip() + hint
-            n += 1
+        hit = False
+        if isinstance(c, str):
+            new = _annotate_text(c, hint)
+            if new is not None:
+                m["content"], hit = new, True
+        elif isinstance(c, list):
+            for part in c:
+                if isinstance(part, dict) and isinstance(part.get("text"), str):
+                    new = _annotate_text(part["text"], hint)
+                    if new is not None:
+                        part["text"], hit = new, True
+        n += hit
     return n
 
 

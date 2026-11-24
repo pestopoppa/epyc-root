@@ -38,6 +38,9 @@ def changed_paths(lane: Path, base_ref: str) -> list[str]:
     return [p for p in _git(lane, "diff", "--name-only", f"{base_ref}..HEAD").splitlines() if p.strip()]
 
 
+_LRANGE = re.compile(r"#L\d+(?:-\d+)?$")   # the `#L<a>(-<b>)?` where-range suffix brief._WHERE accepts
+
+
 def brief_paths(task: dict) -> set[str]:
     """Paths the brief's `where` names in THIS task's repo (`repo:path::symbol` -> path)."""
     out = set()
@@ -45,7 +48,7 @@ def brief_paths(task: dict) -> set[str]:
         w = str(w)
         repo, _, rest = w.partition(":") if ":" in w.split("::")[0] else (task.get("repo"), "", w)
         if repo == task.get("repo") and rest:
-            out.add(rest.split("::")[0])
+            out.add(_LRANGE.sub("", rest.split("::")[0]))   # r8h: `path#L<a>-<b>` names `path` (r8g WS4)
     return out
 
 
@@ -257,6 +260,39 @@ def vacuity_hits(diff: str) -> list[str]:
     return hits
 
 
+_CONTROL_LINE = re.compile(r"\bcontrol\b|pytest\.raises|\bfails? on\b", re.I)
+_SKIP_LINE = re.compile(r"\bskip(?:s|ped|ping)?\b", re.I)
+
+
+def reviewer_context(task: dict) -> tuple[list[str], list[str]]:
+    """r8h (TF-R8G-REVIEWER-CONTROL, r8g think TU-GR-1): the done-when CONTROL tests (they pass by asserting the failure
+    mode) and the packet-SANCTIONED skips (with their reasons). Explicit brief fields `control_tests` /
+    `sanctioned_skips` first; otherwise the approach sentences that define them."""
+    ctl = [str(x) for x in task.get("control_tests") or []]
+    skp = [str(x) for x in task.get("sanctioned_skips") or []]
+    sents = [c.strip() for c in re.split(r"(?<=[.;])\s+|\n", str(task.get("approach") or "")) if c.strip()]
+    if not ctl:
+        ctl = [c for c in sents if _CONTROL_LINE.search(c) and not _SKIP_LINE.search(c)]
+    if not skp:
+        skp = [c for c in sents if _SKIP_LINE.search(c)]
+    return ctl, skp
+
+
+REVIEW_CONTROL_RULE = ("A CONTROL test passes by asserting the failure mode (e.g. `pytest.raises(X)`): when it PASSES, the "
+                       "'fails on ...' clause it covers IS met; do not read it as 'did not fail'. A skip listed under "
+                       "SANCTIONED SKIPS whose reason carries a real errno / OS message (e.g. EPERM 'Operation not "
+                       "permitted') is allowed by the packet and is NOT a reason for not_done; any other skip still is.")
+
+
+def _control_block(task: dict) -> str:
+    ctl, skp = reviewer_context(task)
+    if not (ctl or skp):
+        return ""
+    return ("\n\n## CONTROL TESTS (pass by asserting the failure mode)\n" + ("\n".join(f"- {c}" for c in ctl) or "(none)")
+            + "\n\n## SANCTIONED SKIPS (allowed by the packet, with reasons)\n" + ("\n".join(f"- {c}" for c in skp) or "(none)")
+            + "\n\nRULE: " + REVIEW_CONTROL_RULE)
+
+
 def review_prompt(task: dict, diff: str) -> str:
     """Reviewer input (P4, §7): verbatim box + done-when + acceptance and its result + non-goals + the diff."""
     acc = task.get("acceptance")
@@ -280,6 +316,7 @@ def review_prompt(task: dict, diff: str) -> str:
             + "\n\n## ACCEPTANCE\n" + (str(acc) if acc else "(no brief acceptance)")
             + "\n\n## ACCEPTANCE RESULT\n" + res_txt
             + "\n\n## NON-GOALS\n" + ("\n".join(f"- {g}" for g in ng) if ng else "(none stated)")
+            + _control_block(task)
             + ("\n\n## MUST NOT PASS VACUOUSLY (from the approach)\n" + "\n".join(f"- {g}" for g in guards)
                if guards else "")
             + "\n\n## DIFF\n" + diff[:12000])

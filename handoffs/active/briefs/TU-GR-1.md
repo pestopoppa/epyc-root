@@ -25,6 +25,10 @@ approach: 'Add epyc-orchestrator scripts/autopilot/evals/dtap/harness/isolation.
   in the isolation test.
 
   '
+control_tests:
+- 'test_reachable_grader_is_flagged: passes by asserting GraderReachable is raised; a PASS is the done-when "fails on a deliberately reachable grader"'
+sanctioned_skips:
+- 'test_isolated_launch_denies: pytest.skip when unshare is not permitted, carrying the errno (e.g. "unshare: write failed /proc/self/uid_map: Operation not permitted" under kernel.apparmor_restrict_unprivileged_userns=1)'
 acceptance: cd /workspace/repos/epyc-orchestrator && python3 -m pytest -q scripts/autopilot/evals/dtap/tests/test_grader_isolation.py
 new_tests:
 - epyc-orchestrator:scripts/autopilot/evals/dtap/tests/test_grader_isolation.py

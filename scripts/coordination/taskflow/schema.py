@@ -221,7 +221,7 @@ def unsupported(task: dict) -> str | None:
 
 BRIEF_KEYS = ("where", "approach", "acceptance", "non_goals", "inputs_ext", "brief_state", "stale", "brief_accepted",
               "brief_author", "brief_review", "acceptance_matches_done_when", "blast_radius", "brief_path",
-              "verify_scope")
+              "verify_scope", "control_tests", "sanctioned_skips")   # r8h: reviewer context (TF-R8G-REVIEWER-CONTROL)
 
 
 def merge_brief(task: dict, root: Path) -> dict:
@@ -230,7 +230,7 @@ def merge_brief(task: dict, root: Path) -> dict:
     empty = {"where": [], "approach": None, "acceptance": None, "non_goals": [], "inputs_ext": [],
              "brief_state": "none", "stale": [], "brief_accepted": None, "brief_author": None, "brief_review": None,
              "acceptance_matches_done_when": False, "blast_radius": {}, "brief_path": None,
-             "verify_scope": None}
+             "verify_scope": None, "control_tests": [], "sanctioned_skips": []}
     task.update(empty)
     bid = task.get("id")
     if not bid:
@@ -259,7 +259,9 @@ def merge_brief(task: dict, root: Path) -> dict:
         task.update(where=[str(w) for w in doc.get("where") or []], approach=(doc.get("approach") or "").strip() or None,
                     acceptance=(str(doc["acceptance"]).strip() if doc.get("acceptance") else None),
                     non_goals=[str(x) for x in doc.get("non_goals") or []],
-                    verify_scope=(str(doc["verify_scope"]).strip() if doc.get("verify_scope") else None))
+                    verify_scope=(str(doc["verify_scope"]).strip() if doc.get("verify_scope") else None),
+                    control_tests=[str(x) for x in doc.get("control_tests") or []],
+                    sanctioned_skips=[str(x) for x in doc.get("sanctioned_skips") or []])
     return task
 
 

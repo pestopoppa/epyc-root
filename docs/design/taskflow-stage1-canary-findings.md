@@ -287,6 +287,7 @@ Per-arm keys in the job `CONFIG.json` (`arms[]`), read by `job.py` and `schema.p
 Row `tf1-cpu-r8g-canary-35b-q0q2-20261123`, rc=0 complete 2026-11-24T00:24:45Z, 2 stints (stopped for quiet-host rows, resumed),
 Qwen3.6-35B-A3B-MTP-Q8_0, np1, 5 tasks x 2 arms, 0 timeouts. Verdict file `/mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8g-20261123/out/verdict.json`.
 **Reported: canary-nothink 3/5, canary-think 3/5 = 6/10. Audited: 6/10 = 0.6.**
+OBSERVATION, not an improvement claim: r8f audited 4/10 and r8g 6/10, but there is no same-config rerun arm R (P-AB-1 / P-PAIRED, root ae2d53e1f), so the r8f→r8g difference is not a decision. The FIX-HARNESS verdict below rests on r8g's own failure classes.
 Perf: decode median 17.2 / 14.9 tok/s, prefill median 116 / 99 tok/s, MTP acceptance 0.91 / 0.85, prefix hit 0.93 / 0.94,
 task wall median 503 / 692 s.
 
