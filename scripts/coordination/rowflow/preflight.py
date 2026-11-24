@@ -28,6 +28,10 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
   append    9  results are appended per unit (append-mode writes / ledger helper), not written once per group
   witness  10  a verdict that rests on a debug/log line declares it in spec.witness_lines [{line, needs, cap}]; the line
                must be in the store's strings and needs <= cap (gvfattn-served-r2: an 8-line debug cap)
+  served   11  spec.served_ref {registry_role, argv_delta} -> the registry server_mode entry's serving_shape, diffed
+               against the job's llama-server argv; any delta not declared in argv_delta (with a reason) fails (RCA F2)
+  (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
+   row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
 
 Usage: preflight.py <row_dir|spec.json> [...]   |   preflight.py --report [--flags DIR] [--json]
 """
@@ -45,12 +49,13 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`
     sys.path.insert(0, _HERE)
 
-CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness")
+CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served")
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
-PREFLIGHT_ENFORCE.update(store=True, estimate=True, ports=True, append=True)
-DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness")   # re-run at grant time (code is sealed at publish)
+PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True)
+# estimate: on the operator's 0-fail list, but the RCA F5 tightening (2026-11-24) re-stages it warn-first; flip at 0 fails.
+DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness", "served")   # re-run at grant time (code is sealed at publish)
 
 _LLM = "/mnt/raid0/llm/"
 TMP_ROOT = _LLM + "tmp"
@@ -711,63 +716,194 @@ def _row_spec_by_id(rid, flags):
     return None
 
 
+def argv_hash(row):
+    """sha256 over the sorted server-argv tokens (paths reduced to basenames, ports dropped): the measured cell."""
+    toks = []
+    for _f, _ln, a in server_argvs(row):
+        a = [t for y in a for t in str(y).split()]
+        skip = False
+        for x in a:
+            if skip:
+                skip = False
+                continue
+            if x == "--port":
+                skip = True
+                continue
+            toks.append(os.path.basename(x) if x.startswith("/") else x)
+    return hashlib.sha256("\x00".join(sorted(toks)).encode()).hexdigest()
+
+
+def cell_identity(row):
+    """(models, lane, declared_threads, argv hash): rows sharing it measure the same cell (RCA F5)."""
+    models = tuple(sorted(SHARD_RX.sub(".gguf", os.path.basename(p)) for p in model_files(row)))
+    return models, row.spec.get("lane"), row.spec.get("declared_threads"), argv_hash(row)
+
+
+BASIS_FIELDS = ("smoke_measure", "sha256", "units", "unit_s", "loads_s", "margin")
+HISTORY_OFF_X = 1.5
+_HIST = {}
+
+
+def _history(flags, rid, units):
+    try:
+        import estimate_history as EH
+    except ImportError:
+        return None
+    fl = flags or EH.FLAGS
+    if fl not in _HIST:
+        try:
+            _HIST[fl] = EH.samples(fl)
+        except Exception:  # noqa: BLE001
+            _HIST[fl] = []
+    try:
+        return EH.suggest(rid, units=units, flags=fl, recs=_HIST[fl])
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def check_estimate(row, ctx):
+    """RCA F5 (2026-11-24): estimate_basis cites a measurement {smoke_measure, sha256, units, unit_s, loads_s, margin}
+    from this row or from a row of identical (model, lane, declared_threads, argv hash); the arithmetic holds; the
+    family history (estimate_history.suggest) is within 1.5x."""
     out = []
     b = row.spec.get("estimate_basis")
     est = row.spec.get("estimate_s")
+    if not est:
+        return out
     if not isinstance(b, dict):
-        return [("WARN", "NO-BASIS", "no estimate_basis (units x measured unit_s)")] if est else []
-    units = b.get("units")
-    unit_s = b.get("unit_s")
-    src = "estimate_basis.unit_s"
+        return [("FAIL", "NO-BASIS", "no estimate_basis: cite {smoke_measure, sha256, units, unit_s, loads_s, margin}")]
+    miss = [k for k in BASIS_FIELDS if b.get(k) in (None, "")]
+    sm = b.get("smoke_measure") or b.get("rebook_from")
+    smp = (sm if os.path.isabs(str(sm)) else os.path.join(row.dir, str(sm))) if sm else None
+    if miss:
+        lvl = "WARN" if b.get("provisional") and not (smp and os.path.isfile(smp)) else "FAIL"
+        out.append((lvl, "BASIS-INCOMPLETE", f"estimate_basis lacks {miss}" +
+                    (" (provisional before the smoke; rebook at PASS)" if lvl == "WARN" else "")))
+    if smp and os.path.isfile(smp):
+        m = _load_json(smp) or {}
+        if b.get("sha256") and _sha256(smp) != str(b["sha256"]).lower():
+            out.append(("FAIL", "BASIS-SHA", f"{smp} sha256 differs from estimate_basis.sha256 (re-measured since)"))
+        mu = m.get("unit_s")
+        if isinstance(mu, (int, float)) and isinstance(b.get("unit_s"), (int, float)) and mu > 0 \
+                and abs(b["unit_s"] - mu) > 0.01 * mu:
+            out.append(("FAIL", "BASIS-MISMATCH", f"basis unit_s {b['unit_s']} != measured {mu} in {smp}"))
+        own = os.path.realpath(smp).startswith(os.path.realpath(row.dir) + os.sep)
+        if not own:
+            src = next(iter(ROWID_RX.findall(smp)), None)
+            other = _row_spec_by_id(src, ctx.get("flags")) if src else None
+            if not other:
+                out.append(("FAIL", "BORROWED-BASIS", f"{smp} is not this row's and its row cannot be resolved"))
+            else:
+                orow = Row(other, os.path.join(TMP_ROOT, src) if not other.get("launcher") else None)
+                a, o = cell_identity(row), cell_identity(orow)
+                if a != o:
+                    diff = [n for n, x, y in zip(("model", "lane", "declared_threads", "argv"), a, o) if x != y]
+                    out.append(("FAIL", "BORROWED-BASIS", f"basis measured on {src}, which differs in {diff}"))
+    elif sm and not b.get("provisional"):
+        out.append(("FAIL", "BASIS-MISSING", f"estimate_basis.smoke_measure {sm} does not exist"))
+    else:   # prose-only basis naming another row (c21-gpu27b-identity r1)
+        refs = set(ROWID_RX.findall(str(b.get("reason") or ""))) - {row.id}
+        for rid in sorted(refs):
+            other = _row_spec_by_id(rid, ctx.get("flags"))
+            if other:
+                orow = Row(other, os.path.join(TMP_ROOT, rid) if not other.get("launcher") else None)
+                diff = [n for n, x, y in zip(("model", "lane", "declared_threads", "argv"), cell_identity(row),
+                                             cell_identity(orow)) if x != y]
+                out.append(("FAIL" if diff else "WARN", "BORROWED-BASIS",
+                            f"timing borrowed from {rid}" + (f", which differs in {diff}" if diff else
+                                                              " (same cell); cite its smoke_measure + sha256")))
     try:
-        import rowflow as rf
-        paths = rf.smoke_measure_paths(row.spec, rf.dry_dir(ctx.get("flags") or rf.FLAGS, row.id))
-    except Exception:  # noqa: BLE001
-        paths = [os.path.join(row.dir, "out-smoke", "smoke_measure.json")]
-    for p in paths if not unit_s else []:   # a declared unit_s wins; a plumbing smoke's unit is not a run unit
-        m = _load_json(p)
-        if m and isinstance(m.get("unit_s"), (int, float)) and m["unit_s"] > 0:
-            unit_s, src = m["unit_s"], p
-            b = dict(b, loads_s=m.get("loads_s", b.get("loads_s")))
-            break
-    own_root = os.path.realpath(row.dir)
-    refs = set()
-    for p in paths if src != "estimate_basis.unit_s" else []:
-        if not os.path.realpath(p).startswith(own_root + os.sep):
-            refs |= set(ROWID_RX.findall(p))
-    if src == "estimate_basis.unit_s":
-        refs |= set(ROWID_RX.findall(str(b.get("reason") or "") + " " + str(b.get("rebook_from") or "")))
-    refs.discard(row.id)
-    mine_models = {SHARD_RX.sub(".gguf", os.path.basename(p)) for p in model_files(row)}
-    mine_shape = row.spec.get("shape") or row.spec.get("declared_shape")
-    for rid in sorted(refs):
-        other = _row_spec_by_id(rid, ctx.get("flags"))
-        if not other:
-            continue
-        orow = Row(other, os.path.join(TMP_ROOT, rid) if not other.get("launcher") else None)
-        om = {SHARD_RX.sub(".gguf", os.path.basename(p)) for p in model_files(orow)}
-        oshape = other.get("shape") or other.get("declared_shape")
-        why = []
-        if mine_models and om and not (mine_models & om):
-            why.append(f"model {sorted(om)[:2]} vs {sorted(mine_models)[:2]}")
-        if mine_shape and oshape and oshape != mine_shape:
-            why.append(f"shape {oshape} vs {mine_shape}")
-        mt, ot = row.spec.get("declared_threads"), other.get("declared_threads")
-        if isinstance(mt, int) and isinstance(ot, int) and mt != ot:
-            why.append(f"declared_threads {ot} vs {mt}")
-        if why:
-            out.append(("FAIL", "BORROWED-BASIS", f"estimate basis borrowed from {rid}, which differs: {'; '.join(why)}"))
-        elif src == "estimate_basis.unit_s":
-            out.append(("WARN", "BORROWED-BASIS", f"unit_s borrowed from {rid} (same model/shape); re-book from this row's "
-                                                  "own smoke_measure.json"))
-    if src == "estimate_basis.unit_s" and unit_s and not refs and b.get("provisional"):
-        out.append(("WARN", "BASIS-PROVISIONAL", "unit_s is provisional (no smoke measurement on disk yet)"))
-    if isinstance(units, (int, float)) and isinstance(unit_s, (int, float)) and units > 0 and unit_s > 0 and est:
+        units, unit_s = float(b["units"]), float(b["unit_s"])
         implied = (units * unit_s + float(b.get("loads_s") or 0)) * float(b.get("margin") or 1.25)
-        r = float(est) / implied if implied else 0
-        if r > EST_OFF_X or (r and r < 1 / EST_OFF_X):
-            out.append(("WARN", "ESTIMATE-OFF", f"estimate_s {est} is {r:.1f}x the basis ({units} x {unit_s:g} s from {src})"))
+        mg = max(1.0, float(b.get("margin") or 1.25))
+        if implied > 0 and not (implied / mg <= float(est) <= implied * mg + 60):
+            out.append(("FAIL", "ESTIMATE-ARITH", f"estimate_s {est} vs (units x unit_s + loads_s) x margin = {implied:.0f}"))
+    except (KeyError, TypeError, ValueError):
+        pass
+    if ctx.get("history", True):
+        h = _history(ctx.get("flags"), row.id, b.get("units") if isinstance(b.get("units"), int) else None)
+        if h and h.get("estimate_s"):
+            r = float(est) / float(h["estimate_s"])
+            if r > HISTORY_OFF_X or r < 1 / HISTORY_OFF_X:
+                out.append(("WARN", "ESTIMATE-HISTORY", f"estimate_s {est} is {r:.2f}x the family history "
+                                                        f"({h.get('estimate_justification')})"))
+    return out
+
+
+# ---------------------------------------------------------------- 11 served argv (RCA F2)
+REGISTRY = os.environ.get("PREFLIGHT_REGISTRY", _LLM + "epyc-orchestrator/orchestration/model_registry.yaml")
+_REG = {}
+FLAG_ALIASES = {"-c": ("-c", "--ctx-size"), "-np": ("-np", "--parallel"), "-ctk": ("-ctk", "--cache-type-k"),
+                "-ctv": ("-ctv", "--cache-type-v"), "--no-mmap": ("--no-mmap",), "--cache-ram": ("--cache-ram", "-cram"),
+                "--ctx-checkpoints": ("--ctx-checkpoints",)}
+
+
+def served_expect(entry):
+    """{flag: value or True} the registry server_mode entry implies for llama-server."""
+    sh = entry.get("serving_shape") or {}
+    e = {}
+    if sh.get("n_ctx"):
+        e["-c"] = str(sh["n_ctx"])
+    slots = entry.get("slots")
+    if slots:
+        e["-np"] = str(slots)
+    kv = sh.get("kv_quant") or {}
+    if kv.get("k"):
+        e["-ctk"] = str(kv["k"])
+    if kv.get("v"):
+        e["-ctv"] = str(kv["v"])
+    if entry.get("no_mmap"):
+        e["--no-mmap"] = True
+    if entry.get("cache_ram") is not None:
+        e["--cache-ram"] = str(entry["cache_ram"])
+    if entry.get("ctx_checkpoints") is not None:
+        e["--ctx-checkpoints"] = str(entry["ctx_checkpoints"])
+    return e
+
+
+def _registry(path):
+    if path not in _REG:
+        try:
+            import yaml
+            with open(path) as f:
+                _REG[path] = yaml.safe_load(f) or {}
+        except Exception:  # noqa: BLE001
+            _REG[path] = None
+    return _REG[path]
+
+
+def check_served(row, ctx):
+    ref = row.spec.get("served_ref")
+    argvs = server_argvs(row)
+    if not ref:
+        return [("WARN", "SERVED-REF-MISSING", "server row with no spec.served_ref {registry_role, argv_delta}: its argv "
+                                               "is not tied to a served shape")] if argvs else []
+    if not isinstance(ref, dict) or not ref.get("registry_role"):
+        return [("FAIL", "SERVED-REF-SPEC", "served_ref must be {registry_role, port?, argv_delta: [{flag, reason}]}")]
+    reg = _registry(ctx.get("registry") or REGISTRY)
+    if reg is None:
+        return [("WARN", "SERVED-REGISTRY", f"registry {ctx.get('registry') or REGISTRY} unreadable")]
+    entry = (reg.get("server_mode") or {}).get(ref["registry_role"])
+    if not isinstance(entry, dict):
+        return [("FAIL", "SERVED-ROLE", f"registry has no server_mode.{ref['registry_role']}")]
+    declared = {}
+    for dlt in ref.get("argv_delta") or []:
+        if isinstance(dlt, dict) and dlt.get("flag") and str(dlt.get("reason") or "").strip():
+            declared[dlt["flag"]] = dlt["reason"]
+    have_flags = argv_flags(argvs)
+    out = []
+    for flag, want in served_expect(entry).items():
+        names = FLAG_ALIASES.get(flag, (flag,))
+        if any(n in declared for n in names):
+            continue
+        if want is True:
+            if not any(n in have_flags for n in names):
+                out.append(("FAIL", "SERVED-DELTA", f"{flag} (registry {ref['registry_role']}) missing from the argv"))
+            continue
+        vals = set(argv_value(argvs, *names))
+        if want not in vals:
+            out.append(("FAIL", "SERVED-DELTA", f"{flag} {sorted(vals) or 'absent'} != registry {ref['registry_role']} "
+                                                f"{want}; declare it in served_ref.argv_delta with a reason"))
     return out
 
 
@@ -868,7 +1004,7 @@ def check_witness(row, ctx):
 
 CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_flags, "model": check_model,
              "lane": check_lane, "smoke": check_smoke, "estimate": check_estimate, "ports": check_ports,
-             "append": check_append, "witness": check_witness}
+             "append": check_append, "witness": check_witness, "served": check_served}
 
 
 # ---------------------------------------------------------------- runners

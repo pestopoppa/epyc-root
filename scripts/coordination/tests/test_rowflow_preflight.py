@@ -84,7 +84,7 @@ def _cache(tmp_path, monkeypatch):
 # ---------------------------------------------------------------- the switch
 def test_enforce_table_all_false_and_one_entry_per_check():
     assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS)
-    assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "estimate", "ports", "append"}
+    assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "ports", "append"}
     assert set(P.DRIFT_CHECKS) <= set(P.CHECKS)
 
 
@@ -218,24 +218,75 @@ def test_smoke_measure_path_and_stale_out(tmp_path):
     assert "STALE-OUT" in codes(run(s, d, "smoke"), level="FAIL")
 
 
-# ---------------------------------------------------------------- 7 estimate
-def test_estimate_accurate_off_and_borrowed(tmp_path):
-    st = make_store(tmp_path)
-    m = make_model(tmp_path, "Qwen3.8-27B-Q8_0.gguf")
-    basis = {"units": 10, "unit_s": 100, "loads_s": 0, "margin": 1.25, "reason": "own smoke"}
-    d, s = make_row(tmp_path, "zz-est-20261124", job=server_job(st, m),
-                    spec={"estimate_s": 1250, "estimate_basis": basis, "shape": "q0"})
-    assert not codes(run(s, d, "estimate"))
+# ---------------------------------------------------------------- 7 estimate (RCA F5)
+def _measure(d, unit_s=100.0):
+    p = d / "out-smoke" / "smoke_measure.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"unit_s": unit_s, "units_measured": 1, "loads_s": 0}))
+    return p
+
+
+def test_estimate_cites_measurement_and_arithmetic(tmp_path, monkeypatch):
+    monkeypatch.setattr(P, "_history", lambda *a: None)
+    st, m = make_store(tmp_path), make_model(tmp_path)
+    d, s = make_row(tmp_path, "zz-est-20261124", job=server_job(st, m))
+    mp = _measure(d)
+    basis = {"smoke_measure": str(mp), "sha256": _sha(mp), "units": 10, "unit_s": 100.0, "loads_s": 0, "margin": 1.25}
+    s.update(estimate_s=1250, estimate_basis=basis)
+    assert not codes(run(s, d, "estimate"), level="FAIL")
     s["estimate_s"] = 5000
-    assert "ESTIMATE-OFF" in codes(run(s, d, "estimate"), level="WARN")
-    other_m = make_model(tmp_path, "Qwen3.6-35B-A3B-Q8_0.gguf")
-    make_row(tmp_path, "zz-src-20261123", job=server_job(st, other_m), spec={"shape": "q0"})
-    s.update(estimate_s=1250, estimate_basis=dict(basis, reason="unit_s from zz-src-20261123 per-unit timing"))
+    assert "ESTIMATE-ARITH" in codes(run(s, d, "estimate"), level="FAIL")
+    s["estimate_s"] = 1250
+    s["estimate_basis"] = dict(basis, sha256="0" * 64)
+    assert "BASIS-SHA" in codes(run(s, d, "estimate"), level="FAIL")
+    s["estimate_basis"] = {"units": 10, "unit_s": 100, "reason": "prose"}
+    assert "BASIS-INCOMPLETE" in codes(run(s, d, "estimate"), level="FAIL")
+    s["estimate_basis"] = dict(basis, unit_s=50.0)
+    assert "BASIS-MISMATCH" in codes(run(s, d, "estimate"), level="FAIL")
+
+
+def test_estimate_borrowed_needs_identical_cell(tmp_path, monkeypatch):
+    monkeypatch.setattr(P, "_history", lambda *a: None)
+    st, m = make_store(tmp_path), make_model(tmp_path, "Qwen3.8-27B-Q8_0.gguf")
+    d, s = make_row(tmp_path, "zz-bor-20261124", job=server_job(st, m), spec={"declared_threads": 8})
+    same, _ = make_row(tmp_path, "zz-same-20261123", job=server_job(st, m), spec={"declared_threads": 8})
+    mp = _measure(same)
+    s.update(estimate_s=1250, estimate_basis={"smoke_measure": str(mp), "sha256": _sha(mp), "units": 10, "unit_s": 100.0,
+                                              "loads_s": 0, "margin": 1.25})
+    assert "BORROWED-BASIS" not in codes(run(s, d, "estimate"))
+    other, _ = make_row(tmp_path, "zz-oth-20261123", job=server_job(st, make_model(tmp_path, "Qwen3.6-35B-A3B.gguf")),
+                        spec={"declared_threads": 8})
+    mp2 = _measure(other)
+    s["estimate_basis"] = dict(s["estimate_basis"], smoke_measure=str(mp2), sha256=_sha(mp2))
     assert "BORROWED-BASIS" in codes(run(s, d, "estimate"), level="FAIL")
-    make_row(tmp_path, "zz-same-20261123", job=server_job(st, m), spec={"shape": "q0"})
-    s["estimate_basis"] = dict(basis, reason="unit_s from zz-same-20261123")
-    assert "BORROWED-BASIS" in codes(run(s, d, "estimate"), level="WARN")
-    assert "BORROWED-BASIS" not in codes(run(s, d, "estimate"), level="FAIL")
+
+
+def test_estimate_history_warns_over_1p5x(tmp_path, monkeypatch):
+    monkeypatch.setattr(P, "_history", lambda *a: {"estimate_s": 500, "estimate_justification": "h"})
+    d, s = make_row(tmp_path, "zz-hist-20261124")
+    mp = _measure(d)
+    s.update(estimate_s=1250, estimate_basis={"smoke_measure": str(mp), "sha256": _sha(mp), "units": 10,
+                                              "unit_s": 100.0, "loads_s": 0, "margin": 1.25})
+    assert "ESTIMATE-HISTORY" in codes(run(s, d, "estimate"), level="WARN")
+
+
+# ---------------------------------------------------------------- 11 served argv (RCA F2)
+def test_served_argv_against_registry(tmp_path, monkeypatch):
+    reg = tmp_path / "reg.yaml"
+    reg.write_text("server_mode:\n  worker:\n    no_mmap: true\n    slots: 2\n    serving_shape:\n      n_ctx: 32768\n"
+                   "      kv_quant: {k: q8_0, v: q8_0}\n")
+    monkeypatch.setattr(P, "REGISTRY", str(reg))
+    P._REG.clear()
+    st, m = make_store(tmp_path), make_model(tmp_path)
+    good = '"-c", "32768", "-np", "2", "-ctk", "q8_0", "-ctv", "q8_0", "--no-mmap"'
+    d, s = make_row(tmp_path, "zz-srv-20261124", job=server_job(st, m, good), spec={"served_ref": {"registry_role": "worker"}})
+    assert not codes(run(s, d, "served"))
+    (d / "job.py").write_text(server_job(st, m, good.replace('"32768"', '"36864"')))
+    assert "SERVED-DELTA" in codes(run(s, d, "served"), level="FAIL")
+    s["served_ref"]["argv_delta"] = [{"flag": "-c", "reason": "fits the 32k prompt"}]
+    assert not codes(run(s, d, "served"))
+    s.pop("served_ref")
+    assert "SERVED-REF-MISSING" in codes(run(s, d, "served"), level="WARN")
 
 
 # ---------------------------------------------------------------- 8 ports
@@ -276,8 +327,9 @@ def test_witness_undeclared_cap_and_binary(tmp_path):
 
 
 # ---------------------------------------------------------------- regression incidents
-def test_regression_c21_gpu27b_identity(tmp_path):
+def test_regression_c21_gpu27b_identity(tmp_path, monkeypatch):
     """Flash-Next declared as 27b; 8 host threads under expert offload; timing borrowed from a different-shaped row."""
+    monkeypatch.setattr(P, "_history", lambda *a: None)
     st = make_store(tmp_path)
     fn = make_model(tmp_path, "Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00001.gguf")
     argv = '"-t", "8", "-tb", "8", "--n-cpu-moe", "48"'
