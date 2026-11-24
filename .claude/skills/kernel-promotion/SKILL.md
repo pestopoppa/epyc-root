@@ -277,14 +277,25 @@ scripts/package.sh --candidate <sha> --out <pkg.json> --evidence <dir> \
     --serving-config docs/reference/kernel-manifests/serving-configs/<champion>.serving-config.json
 ```
 
-Step 5 emits three sections into the package: `serving_config` (path + sha256), `registry_diff`
-(every master `server_mode.<role>` knob, `serving_shape` entry and alternate it changes, each with the
-value it replaces and its provenance) and `registry_dry_run` (the diff applied to a COPY of the master in
-a scratch dir, then `stack_change_pipeline.py update` + `check` on a scratch repo copy; the live registry
-digest is compared before and after). `package.sh --check` fails if the artifact is missing, changed since
-assembly, or the dry-run is not `pass`. The pipeline's live-host steps (`runtime_attestation`,
-`declared_env_attestation`) are recorded as `host_state_failures` and do not fail the dry-run: another
-session's server on a stack port says nothing about a registry diff.
+Step 5 emits three sections into the package: `serving_config` (path + sha256), `registry_diff` and
+`registry_dry_run`. `package.sh` validates the artifact with
+`scripts/champion/serving_config/validate_serving_config.py` (the one parser; the orchestrator script loads
+it too and also checks `registry_serving_shape` for drift against the master). Only MEASURED entries are
+written: a measured `optimal.config` maps onto `server_mode.<role>` knobs (`np` -> `slots`,
+`cache_ram_mib` -> `cache_ram`, `ctx_checkpoints`, `serving_shape.{n_ctx,batch,ubatch,kv_unified,kv_quant}`;
+a value equal to the registry's is not an op, so an optimum that is the served recipe yields an empty
+diff), and a measured alternate becomes `serving_shape.alternates.<name>`. PENDING entries are skipped,
+never written, and listed in `registry_diff.skipped_pending` so the package shows what the signature does
+not cover. `registry_dry_run` is the diff applied to a COPY of the master in a scratch dir, then
+`stack_change_pipeline.py update` + `check` on a scratch repo copy, with the live registry digest compared
+before and after. `package.sh --check` fails if the artifact is missing, invalid, changed since assembly, or
+the dry-run is not `pass` or lacks its `host_state_carve_out` record.
+
+**Host-state carve-out (explicit, operator-visible).** The pipeline's live-host steps
+(`runtime_attestation`, `declared_env_attestation`) read listeners on the declared stack ports, not the
+registry under test; another session's server there fails them on the unmodified master too. The dry-run
+therefore does not fail on them, but records `registry_dry_run.host_state_carve_out` (excluded steps, the
+failures actually excluded in this run, rationale) and `package.sh` prints it on every assemble and check.
 
 Step 8 makes the SIGNED diff's edits in the master (research registry) and commits them there. The master
 is hand-commented YAML, so that is a text edit of exactly the lines `serving_config_registry.py diff`

@@ -112,12 +112,28 @@ def store_facts() -> dict:
 
 
 ROOT = Path(os.environ["ROOT"])
+VALIDATOR = ROOT / "scripts/champion/serving_config/validate_serving_config.py"
 DIFF_SCHEMA = "epyc.registry_serving_diff.v1"
 
 
 def _artifact_path(raw: str) -> Path:
     p = Path(raw)
     return p if p.is_absolute() else ROOT / p
+
+
+def _validate_artifact(art: Path) -> list[str]:
+    """Run the root validator (scripts/champion/serving_config/validate_serving_config.py) on the artifact."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_serving_config_validator", str(VALIDATOR))
+    if spec is None or spec.loader is None or not VALIDATOR.is_file():
+        return [f"serving-config validator not found at {VALIDATOR}"]
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    try:
+        rep = mod.validate(json.loads(art.read_text()))
+    except ValueError as exc:
+        return [f"serving-config artifact {art} is not valid JSON: {exc}"]
+    return [f"serving-config artifact fails validate_serving_config.py: {e}" for e in rep.errors]
 
 
 def validate_serving(pkg: dict) -> list[str]:
@@ -138,6 +154,7 @@ def validate_serving(pkg: dict) -> list[str]:
             problems.append(f"serving-config artifact {sc['path']!r} does not exist")
         else:
             sc_sha = sha256(art)
+            problems.extend(_validate_artifact(art))
             if sc.get("sha256") != sc_sha:
                 problems.append(
                     f"serving-config artifact {sc['path']!r} changed since the package recorded "
@@ -162,6 +179,11 @@ def validate_serving(pkg: dict) -> list[str]:
         problems.append(
             f"registry_dry_run status={dry.get('status')!r}, not pass"
             + (f" ({dry['error']})" if dry.get("error") else "")
+        )
+    elif not isinstance(dry.get("host_state_carve_out"), dict):
+        problems.append(
+            "registry_dry_run carries no host_state_carve_out record: the package must state "
+            "explicitly which live-host pipeline steps the dry-run excludes and which failed"
         )
     return problems
 
@@ -259,7 +281,8 @@ else:
                 sect_out = Path(td) / "sections.json"
                 cmd = [os.environ["ORCH_PY"],
                        str(Path(os.environ["ORCH"]) / "scripts/registry/serving_config_registry.py"),
-                       "section", "--config", str(cfg_path), "--out", str(sect_out)]
+                       "section", "--config", str(cfg_path), "--out", str(sect_out),
+                       "--validator", str(VALIDATOR)]
                 if os.environ.get("MASTER"):
                     cmd += ["--master", os.environ["MASTER"]]
                 if os.environ.get("NODRY"):
@@ -285,5 +308,11 @@ if problems:
     for p in problems:
         print("  " + p)
     sys.exit(1)
+carve = (pkg.get("registry_dry_run") or {}).get("host_state_carve_out") or {}
+print("\nREGISTRY DRY-RUN CARVE-OUT: excluded steps "
+      f"{carve.get('excluded_steps')}; failures excluded in this run: {carve.get('failures_excluded')}")
+skipped = (pkg.get("registry_diff") or {}).get("skipped_pending") or []
+print(f"REGISTRY DIFF: {len((pkg.get('registry_diff') or {}).get('ops') or [])} op(s); "
+      f"{len(skipped)} pending entr(ies) skipped, never written")
 print("\nPACKAGE COMPLETE -- present it for signature; do not move anything yourself")
 PY

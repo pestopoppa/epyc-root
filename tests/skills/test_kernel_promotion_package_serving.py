@@ -22,20 +22,26 @@ PACKAGE_SH = SKILL / "scripts" / "package.sh"
 GATES = yaml.safe_load((SKILL / "promotion_gates.yaml").read_text())
 REQUIRED = sorted(k for k, v in GATES["gates"].items() if isinstance(v, dict) and v.get("required"))
 STORE = Path("/mnt/raid0/llm/kernels/production")
+#: the REAL artifact (CHAMPION-SERVING-CONFIG-1); fixtures are copies of its shape, not a second schema
+REAL_ARTIFACT = SKILL.parents[2] / "docs/reference/kernel-manifests/serving-configs/C22.serving-config.json"
 
 STUB = textwrap.dedent('''\
     import argparse, hashlib, json, os, sys
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd"); ap.add_argument("--config"); ap.add_argument("--out")
     ap.add_argument("--master"); ap.add_argument("--no-dry-run", action="store_true")
+    ap.add_argument("--validator", required=True)  # package.sh must hand over the root validator
     a = ap.parse_args()
+    assert a.validator.endswith("scripts/champion/serving_config/validate_serving_config.py")
     sha = hashlib.sha256(open(a.config, "rb").read()).hexdigest()
     json.dump({
         "serving_config": {"path": a.config, "sha256": sha, "champion": "fixture"},
         "registry_diff": {"schema": "epyc.registry_serving_diff.v1", "ops": [{"op": "set"}],
                           "serving_config_sha256": sha},
         "registry_dry_run": ({"status": "skipped"} if a.no_dry_run
-                             else {"status": os.environ.get("STUB_DRY", "pass")}),
+                             else {"status": os.environ.get("STUB_DRY", "pass"),
+                                   "host_state_carve_out": {"excluded_steps": ["runtime_attestation"],
+                                                            "failures_excluded": ["runtime_attestation"]}}),
     }, open(a.out, "w"))
 ''')
 
@@ -53,7 +59,7 @@ def _run(args: list[str], env: dict | None = None) -> subprocess.CompletedProces
 @pytest.fixture()
 def artifact(tmp_path: Path) -> Path:
     p = tmp_path / "fixture.serving-config.json"
-    p.write_text(json.dumps({"schema": "epyc.champion.serving_config.v1", "champion": "fixture"}))
+    p.write_text(REAL_ARTIFACT.read_text())
     return p
 
 
@@ -71,7 +77,9 @@ def _package(artifact: Path | None, **over) -> dict:
         sha = _sha(artifact)
         pkg["serving_config"] = {"path": str(artifact), "sha256": sha, "champion": "fixture"}
         pkg["registry_diff"] = {"schema": "epyc.registry_serving_diff.v1", "ops": [], "serving_config_sha256": sha}
-        pkg["registry_dry_run"] = {"status": "pass"}
+        pkg["registry_dry_run"] = {"status": "pass",
+                                   "host_state_carve_out": {"excluded_steps": ["runtime_attestation"],
+                                                            "failures_excluded": []}}
     pkg.update(over)
     return pkg
 
@@ -109,6 +117,29 @@ def test_check_fails_when_artifact_changed_after_assembly(tmp_path, artifact):
     assert r.returncode == 1 and "changed since the package recorded it" in r.stdout
 
 
+def test_check_fails_when_the_artifact_does_not_validate(tmp_path, artifact):
+    doc = json.loads(artifact.read_text())
+    doc["servers"][0]["optimal"]["provenance"].pop("result_sha256")
+    artifact.write_text(json.dumps(doc))
+    r = _check(tmp_path, _package(artifact))
+    assert r.returncode == 1 and "fails validate_serving_config.py" in r.stdout
+
+
+def test_check_fails_without_an_explicit_host_state_carve_out_record(tmp_path, artifact):
+    pkg = _package(artifact, registry_dry_run={"status": "pass"})
+    r = _check(tmp_path, pkg)
+    assert r.returncode == 1 and "host_state_carve_out" in r.stdout
+
+
+def test_check_prints_the_carve_out_and_skipped_pending(tmp_path, artifact):
+    pkg = _package(artifact)
+    pkg["registry_dry_run"]["host_state_carve_out"]["failures_excluded"] = ["runtime_attestation"]
+    r = _check(tmp_path, pkg)
+    assert r.returncode == 0
+    assert "CARVE-OUT" in r.stdout and "runtime_attestation" in r.stdout
+    assert "pending entr" in r.stdout
+
+
 def test_check_fails_when_diff_not_derived_from_the_artifact(tmp_path, artifact):
     pkg = _package(artifact)
     pkg["registry_diff"]["serving_config_sha256"] = "0" * 64
@@ -126,7 +157,7 @@ def test_check_resolves_a_relative_artifact_path_against_the_repo_root(tmp_path)
     rel = Path("docs/reference/kernel-manifests/serving-configs/__test_fixture__.serving-config.json")
     target = root / rel
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text('{"x": 1}')
+    target.write_text(REAL_ARTIFACT.read_text())
     try:
         pkg = _package(target)
         pkg["serving_config"]["path"] = str(rel)
