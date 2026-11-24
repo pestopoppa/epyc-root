@@ -1520,7 +1520,9 @@ def pub_npd1_step5(root):
     spec = {"id": "npd1-step5-20261105", "owner": "ws58", "launcher": lp, "lane": "gpu", "regions": "mi210_0,0-95",
             "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "replay publish fixture",
             "estimate_s": 3000, "handoff_task": "handoffs/active/mi210-serving-program.md:NPD1-STEP5", "ram_gib": 130,
-            "first_progress_s": 900, "priority_rank": 40}
+            "first_progress_s": 900, "priority_rank": 40,
+            "estimate_basis": {"provisional": True, "reason": "replay fixture", "units": 1,
+                               "rebook_from": "out-smoke/smoke_measure.json"}}
 
     def check(row, err):
         if err is not None:
@@ -1559,7 +1561,9 @@ def pub_inf75_helper_omp(root):
                         "--complete-cmd \"true\" --stop \"$D/STOP\" --workdir \"$D\"\n")
     spec = {"id": rid, "owner": "inf22", "launcher": lp, "lane": "gpu", "regions": "mi210_0,48-95,144-191",
             "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "replay publish fixture",
-            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:INF75", "ram_gib": 64, "first_progress_s": 900}
+            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:INF75", "ram_gib": 64, "first_progress_s": 900,
+            "estimate_basis": {"provisional": True, "reason": "replay fixture", "units": 1,
+                               "rebook_from": "out-smoke/smoke_measure.json"}}
 
     def check(row, err):
         if err is not None:
@@ -1771,7 +1775,9 @@ def pub_gpu_wj_q0(root):
     spec = {"id": "gpu-wj", "owner": "t", "launcher": lp, "lane": "gpu", "regions": "mi210_0,0-23,72-87,184-191",
             "result_path": os.path.join(d, "out", "r.json"), "decision_rule": "replay publish fixture", "estimate_s": 3000,
             "handoff_task": "handoffs/active/x.md:GPU", "first_progress_s": 600,
-            "width_justification": "correctness reference runs on the ggml CPU backend and needs a quarter"}
+            "width_justification": "correctness reference runs on the ggml CPU backend and needs a quarter",
+            "estimate_basis": {"provisional": True, "reason": "replay fixture", "units": 1,
+                               "rebook_from": "out-smoke/smoke_measure.json"}}
 
     def check(row, err, rf):
         if err is not None:
