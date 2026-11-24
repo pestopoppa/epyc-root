@@ -1056,6 +1056,13 @@ def preflight(spec, flags, rerun=False, identity_spec=None):
     warn_filed_replay(spec, flags, identity_spec)
 
 
+def row_preflight(spec, flags):
+    """D9-ack 2026-11-24 deterministic preflight (preflight.py, every owner): WARN-first; only a check switched on in
+    preflight.PREFLIGHT_ENFORCE refuses. Findings land in publish_warnings like every other publish warning."""
+    import preflight as PF
+    PF.publish_check(spec, flags, warn=lambda w: _warn(spec, w))
+
+
 def smoke_cpus_of(spec):
     """D9 2026-11-18 SMOKE-CPUS: the spec's optional smoke_cpus (an int SMOKE_CPUS..SMOKE_CPUS_MAX), default SMOKE_CPUS.
     Big-model smokes should test plumbing only (latency pre-check plus one answered request), not the full workload;
@@ -1809,6 +1816,7 @@ def main(argv=None):
             print(f"LINT {note}")
         check_supersedes(spec, a.flags)
         preflight(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)   # pipeline audit 2026-11-10 #4: before anything is published or queued
+        row_preflight(spec, a.flags)   # D9-ack 2026-11-24: deterministic preflight, warn-first
         row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now, identity_spec=identity_spec)
         if row:
             print(rf.published_line(row, a.flags))

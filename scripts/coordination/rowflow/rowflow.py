@@ -4785,6 +4785,25 @@ def operator_holds(flags):
     return out
 
 
+def preflight_hold(flags, rid, d, log=print):
+    """D9-ack 2026-11-24: re-run preflight.DRIFT_CHECKS just before rid's grant. WARN-first: findings are logged; only a
+    check enforced in preflight.PREFLIGHT_ENFORCE holds the grant (an arm failure, parked after MAX_FAILS). Never raises."""
+    try:
+        here = os.path.dirname(os.path.abspath(__file__))
+        if here not in sys.path:
+            sys.path.insert(0, here)
+        import preflight as PF
+        why, lines = PF.grant_check(flags, rid, d, queued=PF.queued_rows(flags))
+    except Exception as e:  # noqa: BLE001 - a preflight defect never blocks a grant
+        log(f"PREFLIGHT {rid}: skipped ({type(e).__name__}: {e})")
+        return None
+    for ln in lines[:8]:
+        log(f"PREFLIGHT {rid}: {ln[:300]}")
+    if why:
+        record_arm_fail(flags, rid, d, "arm", why, log)
+    return why
+
+
 def arm_one(flags, rid, d, regions=None, log=print):
     """Start the row's poller (the exact launcher through its engine, polling grants/<id>.grant). Regions are NOT
     resolved here: the grant the allocator writes later carries them."""
@@ -9276,6 +9295,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                         failed.append(rid); continue
                 else:
                     pid = a["pid"]
+                if preflight_hold(flags, rid, d, log):   # D9-ack 2026-11-24: drift checks at grant time (warn-first)
+                    failed.append(rid); continue
                 end_cap = plan.hard_end.get(rid)
                 win = capped_window(d["window_s"], end_cap)
                 ok, line = admit(flags, rid, d, pid, regions, win)
@@ -10023,6 +10044,9 @@ def main(argv=None):
     s.add_argument("--minutes", type=int, required=True); s.add_argument("--by", required=True); s.add_argument("--reason", required=True)
     s = sub.add_parser("deploy-guard", help="deploy_rowflow step 3: rc 75 when a changed engine file would reach LEGACY open grants")
     s.add_argument("--changed", nargs="*", default=[]); s.add_argument("--allow-open-grants", action="store_true")
+    s = sub.add_parser("preflight", help="D9 deterministic preflight: --report = per check, how many queued rows would FAIL "
+                                         "it and which (the evidence for flipping preflight.PREFLIGHT_ENFORCE)")
+    s.add_argument("--report", action="store_true"); s.add_argument("--json", action="store_true"); s.add_argument("rows", nargs="*")
     sub.add_parser("legacy-grants", help="ids of open grants whose poller still reads the live engine path (one per line)")
     sub.add_parser("gpu-batch", help="run the queued GPU smokes now if the GPU is free (any session; the allocator does the same every tick)")
     s = sub.add_parser("alerts", help="read the inference mailbox (<flags>/notify/inbox/inference.jsonl); --ack <key> marks one handled")
@@ -10132,6 +10156,11 @@ def main(argv=None):
             st = status(a.flags, a.id, util=measure_util())
             print(json.dumps(st, indent=1) if a.json else status_text(st))
             return 0 if st["state"] != "unknown" else 2
+        if a.cmd == "preflight":
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            import preflight as PF
+            return PF.main((["--report"] if a.report or not a.rows else []) + (["--json"] if a.json else [])
+                           + ["--flags", a.flags] + list(a.rows))
         if a.cmd == "list":
             allrows = rows(a.flags)
             util = measure_util()
