@@ -415954,8 +415954,179 @@
   - epyc-inference-research scripts/kernel_rnd/autokernel/loop/ (actor_context.py, bench.py, anchor.py, call_budget.py)
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  read_depth: PARTIAL
+  verification: dive-verified
+  read_depth: FULL
+  lane_head: 8459ddf433edcd6d6ba28282c214b78e2c98e9d7
+  dive_corrections: '2026-11-24 Stage 2 (operator: dive it): read FULL from disk at fda968e: SKILL.md, PROMPT.md,
+    references/methodology.md, gotchas.md, levers.md, ceilings.md, scripts/bench.py, queue.sh. Compared
+    with epyc-inference-research scripts/kernel_rnd/autokernel/loop @ 3ab8362e5 (shared clone read-only)
+    and autokernel-loop.md / autokernel-akx-program.md on origin/main. (1) Acceptance rule PRESENT and stronger
+    in AK: alternating pairs with a measured A/A floor, MIN_PAIRS 5 and a warmup pair (bench.py L113-117),
+    non-regression refusals (keep_screen.py L24-29), MAD outlier guard (serving.py L2543). (2) Plateau PARTIAL:
+    per-family diminishing-returns escape is live (actors.py L3305-3330, 3 failures newer than the family
+    keep), the same-state abstention stop is live (same_state_stop.py), but the campaign-level PLATEAU_STOP
+    specified at autokernel-loop.md L2107 appears only in test_journal.py, with no producer and no status
+    block giving best vs anchor vs ceiling plus ranked remaining families; exploration_policy_replay.py
+    L163 replays a plateau stop offline only. (3) Rerun-needs-new-reason PRESENT: do_not_repeat structural-target
+    gate (dispatch_guard.py L207-260) and refused_at_formation counted toward exhaustion (actors.py L3268-3285).
+    (4) Progressive-disclosure context PRESENT: actor_context.py L9-60 moves sections to files with a table
+    of contents and keeps a short inline set. (5) Output sanity PARTIAL: correctness gates exist (graph
+    KLD policy, numerics gates), and keep_lesson refuses asserted roofline caps (autokernel-loop.md L4094),
+    but no gate flags a measured speedup that exceeds the target op''s roofline headroom as suspect before
+    a keep. The looping-output n-gram flag itself is serving-level and AK''s kernel keeps are checked by
+    numerics, so it does not transfer directly. A PACEvolve plateau pack was declined 2026-11-03 (autokernel-loop.md
+    L4184); the plateau box below is narrower (implement the already-specified stop).'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: read verbatim in source
+  - claim_index: 1
+    effect: unaffected
+    note: read verbatim in source
+  - claim_index: 2
+    effect: unaffected
+    note: read verbatim in source
+  - claim_index: 3
+    effect: unaffected
+    note: read verbatim in source
+  - claim_index: 4
+    effect: unaffected
+    note: read verbatim in source
+  depends_on: []
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: skills/inference-optimisation/SKILL.md @ fda968e
+    quote: Accept only if the candidate beats both neighbouring controls on its target metric and regresses
+      nothing by more than ~3%.
+    quote_sha256: 6a460d58e56c36da5da8bbb95af4b3a1aaaa8bd6dbc093d202a9274267535194
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c, found: true}
+    source: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    source_revision: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    observed_revision: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+    source_artifact:
+      entry_url: https://github.com/sybil-solutions/inference-optimisation-skill
+      requested_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      effective_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      retrieved_at_utc: '2026-11-24T10:56:30.728034Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      relative_path: sha256/69/6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c.raw
+      raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      byte_length: 10064
+  - claim_index: 2
+    kind: page-and-quote
+    locator: skills/inference-optimisation/SKILL.md @ fda968e
+    quote: Declare a plateau when three consecutive levers land inside noise.
+    quote_sha256: f6d6571f5455a58a50809f97f2feaa71c87f1d22402c4e63d75206a51186aefb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c, found: true}
+    source: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    source_revision: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    observed_revision: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+    source_artifact:
+      entry_url: https://github.com/sybil-solutions/inference-optimisation-skill
+      requested_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      effective_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      retrieved_at_utc: '2026-11-24T10:56:30.728034Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      relative_path: sha256/69/6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c.raw
+      raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      byte_length: 10064
+  - claim_index: 4
+    kind: page-and-quote
+    locator: skills/inference-optimisation/SKILL.md @ fda968e
+    quote: Never rerun a rejected experiment without a new reason.
+    quote_sha256: 9b973efac8accf9367cbc920e5fa0004bf34f11331ccc2ab36914dd2c26d6c58
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c, found: true}
+    source: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    source_revision: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    observed_revision: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+    source_artifact:
+      entry_url: https://github.com/sybil-solutions/inference-optimisation-skill
+      requested_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      effective_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      retrieved_at_utc: '2026-11-24T10:56:30.728034Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      relative_path: sha256/69/6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c.raw
+      raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      byte_length: 10064
+  - claim_index: 3
+    kind: page-and-quote
+    locator: skills/inference-optimisation/SKILL.md @ fda968e
+    quote: A suspiciously fast result is usually broken output.
+    quote_sha256: b04fa2d3a67eaf95f4c0ae65ca1b1be14818869de8d833d5c57c458d4fa3578a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c, found: true}
+    source: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    source_revision: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    observed_revision: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+    source_artifact:
+      entry_url: https://github.com/sybil-solutions/inference-optimisation-skill
+      requested_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      effective_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      retrieved_at_utc: '2026-11-24T10:56:30.728034Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      relative_path: sha256/69/6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c.raw
+      raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      byte_length: 10064
+  - claim_index: 3
+    kind: page-and-quote
+    locator: skills/inference-optimisation/scripts/bench.py @ fda968e
+    quote: 'Degenerate-output flag: share of repeated word n-grams.'
+    quote_sha256: 76664925bfcc6e678e34cd3fe70e1d173fa373687ebabe2d1adbc9ab9662e224
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: acca9912c0013afa2bdfd47acbdc6417e079ae5b29596732029b897b3ba872ef, found: true}
+    source: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/scripts/bench.py
+    source_revision: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/scripts/bench.py
+    observed_revision: sha256:acca9912c0013afa2bdfd47acbdc6417e079ae5b29596732029b897b3ba872ef
+    source_artifact:
+      entry_url: https://github.com/sybil-solutions/inference-optimisation-skill
+      requested_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/scripts/bench.py
+      effective_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/scripts/bench.py
+      retrieved_at_utc: '2026-11-24T10:56:31.007678Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:acca9912c0013afa2bdfd47acbdc6417e079ae5b29596732029b897b3ba872ef
+      relative_path: sha256/ac/acca9912c0013afa2bdfd47acbdc6417e079ae5b29596732029b897b3ba872ef.raw
+      raw_sha256: acca9912c0013afa2bdfd47acbdc6417e079ae5b29596732029b897b3ba872ef
+      byte_length: 12779
+  - claim_index: 0
+    kind: page-and-quote
+    locator: skills/inference-optimisation/SKILL.md @ fda968e
+    quote: Report progress as a percentage of the practical ceiling.
+    quote_sha256: 30552044e96d0bbe5d88b9944b618aa52175e7555a88f2c29320283649727498
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c, found: true}
+    source: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    source_revision: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+    observed_revision: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+    source_artifact:
+      entry_url: https://github.com/sybil-solutions/inference-optimisation-skill
+      requested_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      effective_url: https://raw.githubusercontent.com/sybil-solutions/inference-optimisation-skill/fda968e7fc1996aa23c67139c755fe541c9d4be0/skills/inference-optimisation/SKILL.md
+      retrieved_at_utc: '2026-11-24T10:56:30.728034Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      relative_path: sha256/69/6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c.raw
+      raw_sha256: 6932c1dc8b2c588f0303333b0772d5d0c062d86180a46e26a040eb0899cb548c
+      byte_length: 10064
   notes: 'Read at HEAD fda968e7fc1996aa23c67139c755fe541c9d4be0 (MIT), retrieved 2026-11-24 from a local clone; SKILL.md sha256 6932c1dc8b2c. Read: README, PROMPT.md, SKILL.md, references/methodology.md, references/gotchas.md, bench.py docstring and looping() at L100. Not read: levers.md, ceilings.md, publishing.md, ceiling.py, queue.sh, mem.sh. Stage-1 comparison against the AK loop (grep of autokernel-loop.md and autokernel-akx-program.md on origin/main): AK already has interleaved AB/BA order control with VOID windows, a contention preflight (AK-EVAL-QUARTERS), a diminishing-returns escape (AKX-AUTO-2), roofline caps and abstention history, so most patterns are already integrated; candidates not yet seen are the both-neighbour acceptance rule, the explicit 3-in-noise plateau with a ranked-remaining-levers STATUS, the rerun-needs-a-new-reason rule, and progressive-disclosure references as an actor context diet. Operator objective 2026-11-24: distill learnings for AutoKernel loop infrastructure. Same author org as intake-183 (vllm-studio) and the local-studio entry.'
   novelty_justification: Hill-climb discipline is well covered in our measurement constitution and AK loop; the agent-skill packaging and a few loop rules are new to the index.
   verdict_justification: adopt_patterns for AK loop infrastructure; the harness itself targets OpenAI-compatible servers on single machines and is not adopted.
