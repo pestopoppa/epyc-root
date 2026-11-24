@@ -11,7 +11,7 @@ Source: `/mnt/raid0/llm/tmp/autokernel-session-audit-20261119.md`.
 6. Reporting "published/queued" from an exit code, or "GPU idle/held" from `queue_status` text —
    prove with `ls ready/<id>.json` and `rocm-smi`.
 7. Trusting a subagent's "smoke PASSed" or "pushed" — verify in hand-back triage.
-8. Copying `estimate_s`, predicates or `check_complete` from a predecessor row — `row_scaffold.py --lint` flags it.
+8. Copying `estimate_s`, predicates or `check_complete` from a predecessor row — generate the row with `mk_ak_row.py` instead (`polar --lint` flags copies).
 9. Booking three quarters or the whole quiet host for a 48-thread bench — width from literal threads.
 10. Prose fallbacks for decisions when hook 19 misfires — use the decision tool; report the hook.
 11. Waiting for the operator to ask for `/wrap-up` — wrap up at every filed result.

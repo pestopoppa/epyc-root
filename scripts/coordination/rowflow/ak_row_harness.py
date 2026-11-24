@@ -400,6 +400,109 @@ def end_smoke(verdict, rc, reason, out_dir="out", extra=None, stream=None):
     return rc
 
 
+# ------------------------------------------------------------------------------------------------------------ F1 helpers
+# RCA ak-row-robustness-rca-20261124 F1: every cloned row re-implemented these; they live here once.
+RESULTS_JSONL = "results.jsonl"
+
+
+def append_unit(rec, out_dir="out", name=RESULTS_JSONL):
+    """Append ONE unit record to <out_dir>/results.jsonl and fsync it (a killed row keeps every finished unit)."""
+    p = Path(out_dir) / name
+    p.parent.mkdir(parents=True, exist_ok=True)
+    line = json.dumps(dict(rec, utc=rec.get("utc") or now()), sort_keys=True) + "\n"
+    fd = os.open(str(p), os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
+    try:
+        os.write(fd, line.encode())
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    return str(p)
+
+
+def parse_cpus(text):
+    """'0-3,8,10-11' -> [0, 1, 2, 3, 8, 10, 11]; anything non-numeric raises ValueError."""
+    out = []
+    for part in str(text or "").replace(" ", "").split(","):
+        if not part:
+            continue
+        a, _, b = part.partition("-")
+        out.extend(range(int(a), int(b or a) + 1))
+    return sorted(set(out))
+
+
+def grant_cpus(env=None, default=None):
+    """The granted cpus, from ONE env source: WS58_CPUS (the grant), then FILLER_CPUS; `default` only when neither is
+    set (selftest / dry). Never parsed out of WS58_REGIONS (CLAIM-PARSE)."""
+    env = os.environ if env is None else env
+    for k in ("WS58_CPUS", "FILLER_CPUS"):
+        v = str(env.get(k) or "").strip()
+        if v:
+            return parse_cpus(v)
+    if default is not None:
+        return parse_cpus(default) if isinstance(default, str) else sorted(set(default))
+    raise RuntimeError("no granted cpus: neither WS58_CPUS nor FILLER_CPUS is set (run under a grant)")
+
+
+def bench_json(path_or_text):
+    """llama-bench `-o json`/`-o jsonl` output, robust to stderr lines interleaved in the same stream: every JSON
+    value is recovered with raw_decode from each '[' or '{', non-JSON text is skipped. Returns a flat list of the
+    result dicts (a top-level list is flattened). Accepts a path or the text itself."""
+    text = path_or_text
+    if isinstance(path_or_text, (str, Path)) and "\n" not in str(path_or_text) and os.path.exists(str(path_or_text)):
+        text = Path(path_or_text).read_text(errors="replace")
+    dec, out, i, n = json.JSONDecoder(), [], 0, len(text)
+    while i < n:
+        j = min([k for k in (text.find("{", i), text.find("[", i)) if k >= 0], default=-1)
+        if j < 0:
+            break
+        try:
+            v, end = dec.raw_decode(text, j)
+        except ValueError:
+            i = j + 1
+            continue
+        if isinstance(v, list):
+            out.extend(x for x in v if isinstance(x, dict))
+        elif isinstance(v, dict):
+            out.append(v)
+        i = end
+    return out
+
+
+def require_grant(env=None, stream=None, exit=sys.exit):
+    """Exit 64 unless this process runs under the keeper (FILLER_ID) or its dry run (FILLER_DRYRUN). A hand-run smoke
+    is structurally impossible (RCA F11). `--selftest` never calls this."""
+    env = os.environ if env is None else env
+    if env.get("FILLER_ID") or env.get("FILLER_DRYRUN"):
+        return True
+    print("REFUSED: no FILLER_ID/FILLER_DRYRUN - rows run only under a rowflow grant (publish, never run by hand)",
+          file=stream or sys.stderr, flush=True)
+    exit(64)
+    return False
+
+
+TBO_HEAD_RX = re.compile(r"^\s*(?P<op>[A-Z][A-Z0-9_]+)\((?P<args>.*)\):\s*(?P<rest>.*)$")
+
+
+def tbo_cases(text):
+    """test-backend-ops output split per case: each case runs from one `OP(args): ...` header line to the next, so a
+    case's own NMSE/err/FAIL lines (and interleaved backend logs) stay with it. Returns
+    [{op, args, ok (True/False/None), lines}]; ok is from the last OK/FAIL token in the case."""
+    cases, cur = [], None
+    for ln in str(text).splitlines():
+        m = TBO_HEAD_RX.match(ln)
+        if m:
+            cur = {"op": m.group("op"), "args": m.group("args"), "ok": None, "lines": [ln]}
+            cases.append(cur)
+        elif cur is not None:
+            cur["lines"].append(ln)
+        else:
+            continue
+        toks = re.findall(r"\b(OK|FAIL)\b", m.group("rest") if m else ln)
+        if toks:
+            cur["ok"] = toks[-1] == "OK"
+    return cases
+
+
 PROVISIONAL_TAG = "ESTIMATE-PROVISIONAL"
 
 

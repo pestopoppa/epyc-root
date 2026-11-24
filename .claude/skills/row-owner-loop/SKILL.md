@@ -11,7 +11,7 @@ Canonical protocol (do not restate it): `docs/guides/agent-workflows/compute-fil
 job side, publishing), `docs/guides/agent-workflows/backlog-churn-flow.md` (flow, the one rule no
 gate may break), `.claude/skills/inference-backlog-scheduling/` (bins, keeper, STATUS/ETA format).
 Every STATUS/ETA or run-end report to the operator uses `.claude/skills/report-format/` (template, jargon rule, `Next:` line); re-probe a repeated blocker with `scripts/session/recheck_blocker.py` and queue operator-only commands with `scripts/session/pending_operator_cmds.py add`.
-`S=/workspace/.claude/skills/row-owner-loop/scripts` below. What not to do: `references/stop-doing.md`.
+`S=/workspace/.claude/skills/row-owner-loop/scripts` and `M=/workspace/scripts/coordination/rowflow/mk_ak_row.py` below. What not to do: `references/stop-doing.md`.
 
 ## 0. Session start
 Confirm your roster id (`scripts/coordination/session_bus.py drain --agent <id> --triage` must not
@@ -20,11 +20,22 @@ churn tools from a current tree (the hub view `/mnt/raid0/llm/views/epyc-root-ma
 `origin/main` worktree), never the stale shared clone. Exactly ONE owner watcher (step 3).
 
 ## 1. Prepare a row
-New row: `python3 $S/row_scaffold.py new <row-id> --handoff <file.md> --box <ID> --lane cpu|gpu
---regions <list> --threads N --units N --unit-s S --model "<model: …>"`. It writes spec/job/launch/
+**One generator (RCA F1, 2026-11-24):** every row dir is created by
+`scripts/coordination/rowflow/mk_ak_row.py` ($M below) — never hand-copied from another row. AK measurement rows use
+the native profile: `python3 $M --id <row-id> --task <file.md>:<ID> --model "…" --rule "KEEP iff …" --lane cpu|gpu
+[--knob GGML_X] [--served-ref <registry-role>]`. job.py is stamped `GENERATED-BY: mk_ak_row.py v2`, uses the harness
+helpers (`H.append_unit`, `H.grant_cpus`, `H.bench_json`, `H.tbo_cases`, `H.require_grant` — exit 64 outside a
+grant, so a smoke is never run by hand), and its `smoke()` starts the production server and runs ONE real
+`measure_unit()`; `--selftest` drives `smoke()` against a stub. `--served-ref ROLE` derives `SERVER_ARGV` from the
+orchestrator registry (serving_shape + canonical recipe, via the launcher's own `build_server_command`) and records
+`spec.served_ref`; the port and slot dir are the only `argv_delta`. Default smoke predicate: `TERMINAL-smoke.json`
+`ok:true` and mtime ≥ `$FILLER_SMOKE_T0`. Re-seal + lint after editing: `python3 $M --reseal <dir>`.
+Polar/akloop rows: `python3 $M polar new <row-id> --handoff <file.md> --box <ID> --lane cpu|gpu
+--regions <list> --threads N --units N --unit-s S --model "<model: …>"` (`$S/row_scaffold.py` is now a retired
+shim over exactly this and keeps working). It writes spec/job/launch/
 check_complete stubs with `estimate_s = units × unit_s × 1.25` and the arithmetic in the spec. Fill
 QUESTION/RULE/STOP in `job.py` (written BEFORE any run), then seal `SOURCE.sha256` last. Existing
-row, or after any edit: `python3 $S/row_scaffold.py --lint <dir>` must print `LINT OK`. It refuses a
+row, or after any edit: `python3 $M polar --lint <dir>` (or the shim `$S/row_scaffold.py --lint`) must print `LINT OK`. It refuses a
 predicate/check path outside the row dir (copied predicates gave a false smoke PASS, §2.6), CPU
 regions touching 88-95/184-191, width wider than the literal threads, a stale seal, and box text
 without bold ID / `model:` / stop rule / `est N s`. Never copy `estimate_s`, predicates or
@@ -60,7 +71,7 @@ RESULT but could not decide. `file_result.py` and `gate_eval` apply this by defa
 measured FAIL is still a fail. Zero-LLM filing: `python3 $S/runend.py <row> --gate-eval --file`
 files at once when the evaluator marks the verdict `policy_decided` (policy gate, lifecycle,
 no-result rule, polar token) and otherwise leaves the draft and exits 4 for owner review.
-Row templates (`row_scaffold.py`) write one polar token per row — `"polar": "PASS"|"FAIL"` beside the
+Polar-profile templates (`mk_ak_row.py polar`) write one polar token per row — `"polar": "PASS"|"FAIL"` beside the
 named answer — and split futility as `FUTILITY_HARNESS_<WHY>` (inconclusive) vs
 `FUTILITY_CANDIDATE_<WHY>` (fail); `check_complete.py` refuses a RESULT without one.
 

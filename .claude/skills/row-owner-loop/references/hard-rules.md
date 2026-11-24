@@ -11,7 +11,7 @@ HARD-RULES v1 (row-owner-loop, 2026-11-19)
 5. Write targets are literal paths (the containment hook refuses `$VAR/...`; a refused compound command skips everything after it), one write per command, verify by content.
 6. No inference or timing runs outside a published row or a granted region; no local compiles without a region-lock claim or a booked build row (see BUILD below).
 7. Never hand-write records under `compute-flags/grants/`, `ready/` or `operator-ratify/`; never apply a ratify bundle for real — the operator signs.
-8. Rows: no copied `estimate_s`, `smoke_predicate` or `check_complete` from another row; reseal `SOURCE.sha256` after every edit; run `row_scaffold.py --lint` before publish.
+8. Rows: no copied `estimate_s`, `smoke_predicate` or `check_complete` from another row; reseal `SOURCE.sha256` after every edit; every row dir comes from `mk_ak_row.py` (never a hand copy); run `mk_ak_row.py --reseal` / `polar --lint` before publish; never run a row or its smoke by hand (`H.require_grant`).
 9. Commit messages end with the session's Co-Authored-By / Claude-Session trailer lines.
 10. Before hand-back: stop every background task you started (TaskStop / kill your own pid); report only what you verified.
 <!-- HARD-RULES-END -->

@@ -29,7 +29,7 @@ belief tag, and briefs/verifies subagents that build kernels or rows.
 - Outputs: a published row, one armed zero-token watcher, `verdict.json`, a filed result, a ticked box with `[belief: …]`.
 
 ## Bundled resources
-`scripts/` (`row_scaffold.py`, `brief.py`, `runend.py`, `watch_rows.sh`), `references/` (hard rules, hand-back checklist, program plan, ratify prep, stop-doing).
+`scripts/` (`row_scaffold.py` — retired shim over `scripts/coordination/rowflow/mk_ak_row.py`, the one row generator; `brief.py`, `runend.py`, `watch_rows.sh`), `references/` (hard rules, hand-back checklist, program plan, ratify prep, stop-doing).
 
 ## Safety and limits
 - Never kills processes by name pattern; only PIDs it captured.
