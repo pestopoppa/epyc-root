@@ -3215,9 +3215,12 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [x] **HF-DECORATOR-PARITY** [non-inference] Check test_ev5_launcher_guard_parity::test_every_preexisting_function_keeps_exact_decorators against a clean origin/main and fix the decorator drift in tests/unit/test_eval_verifier_mode.py if it is pre-existing — (orch d7ac6ea9: pre-existing since 75e6d978, baseline refreshed) [no-belief: test fixture fix, no measurement]
       · done when: the test passes on origin/main
       · gate: none
-- [ ] **RPK-READER** [non-inference] Make the runtime read the six ORCHESTRATOR_DELEGATION_* review-plane env variables that the numeric_swarm review_plane surface applies, so a review_plane trial changes delegator behaviour
+- [x] **RPK-READER** [non-inference] Make the runtime read the six ORCHESTRATOR_DELEGATION_* review-plane env variables that the numeric_swarm review_plane surface applies, so a review_plane trial changes delegator behaviour — (orch 4632ed77 reader; consumers 1c66fb62 majority_k, 8a095405 evidence budget + multiplier cap, 38eb0213 multiplier bound 5.0) [no-belief: code wiring, unit-tested, no measurement]
       · done when: a unit test shows each env variable changes the value the review plane uses, and defaults are unchanged with none set
       · gate: RPK-SURFACE
+- [ ] **RPK-NEAR-BAND** [non-inference] Define the review decision band so review_majority_k fans out only on near-band reviews, as orchestration/review_plane_knobs.yaml describes; today k applies to every review
+      · done when: a unit test shows k>1 runs extra passes only for a review inside the defined band, and a far-band review runs one pass
+      · gate: RPK-READER
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
