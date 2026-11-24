@@ -1,0 +1,191 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-24T13:54:37Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "fe676554bd9b52bd64704feb7a5b3a776a337523",
+  "git_head_before": "fe676554bd9b52bd64704feb7a5b3a776a337523",
+  "operator": "Daniele",
+  "protocol_id": "P-PAIRED",
+  "ratification_id": "RATIFY-PPAIRED-V2-SCORER-20261124",
+  "ratify_script": {
+    "exists": true,
+    "path": "/mnt/raid0/llm/tmp/ppaired-v2-amendment/ratify_ppaired_v2_20261124.sh",
+    "sha256": "c581d8c6284a72fd30c99d8e5475b5782ebd1c74aff40c0c10d38a9091663174"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/workspace",
+  "sections": {
+    "coherence": {
+      "data": {
+        "MEASUREMENT.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        },
+        "measurement/protocols/quality-eval.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: protocol-text supersession; no new measurement. Zero-inference replay of banked E7c answers through scorer strict_finals_v2_20261124 (epyc-orchestrator 4110ed1c, orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl); patch sha256 bd33ead75e406bedb33bf2f168161750d2ce8e90e3223662be0561de44dc09fe / 539db5e22aae72d5c91f3e10a4f5d6f02f9911d94f46b240bf70b8f85d72ddab"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-PAIRED present in MEASUREMENT.md",
+        "anchor present in measurement/protocols/quality-eval.md: - **SUPERSEDED 2026-11-24 \u2014 the era anchor above is a v1-scorer value*",
+        "anchor present in measurement/protocols/quality-eval.md: - **E7c math re-scored under scorer v2 (2026-11-24; OBSERVATION, never",
+        "anchor present in measurement/protocols/quality-eval.md: so \"NOT affected\" no longer holds for the E7c anchor.",
+        "anchor present in MEASUREMENT.md: - **2026-11-24 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-PAIRED` and `P-CAL`):"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 9,
+      "lines_after": 749,
+      "lines_before": 740,
+      "lines_removed": 0,
+      "path": "MEASUREMENT.md",
+      "sha256_after": "e75e0d43146be5b34933000217342581743454e985b27421a842d210aa4ac9c9",
+      "sha256_before": "258147f7ee517dce04e338797ac4962134ea1be8a891aacd6e994263242b926a",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/MEASUREMENT.md",
+        "+++ b/MEASUREMENT.md",
+        "@@ -349,6 +349,15 @@",
+        " ",
+        " ## CHANGELOG",
+        " ",
+        "+- **2026-11-24 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-PAIRED` and `P-CAL`): SUPERSEDES the E7c `P-PAIRED`",
+        "+  era anchor and the sentence that called E7c P-PAIRED verdicts \"NOT affected\" by the scorer. The anchor",
+        "+  (worker_general vs worker_math, b=61, c=58, p\u22480.855, \"indistinguishable\") used v1 `math_verify` labels,",
+        "+  which ignored `<answer>` tags; replayed through scorer semantics `strict_finals_v2_20261124` with no",
+        "+  inference (same 1,583 rows, `paired_stats.mcnemar_verdict`) it is b=12, c=2, exact p=0.0129, \"a_better\".",
+        "+  The E7c math `P-CAL` ECE/AUROC and the length-confounding reading are re-scored under v2 and recorded as",
+        "+  an observation, never a baseline. No earlier number is deleted; v1 stays as history. Evidence:",
+        "+  `orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl`.",
+        "+",
+        " - **2026-11-22 (v2.x)** \u2014 AMENDMENT: **Annex V** (`measurement/protocols/divergence.md`) created as a",
+        "   **seventh** annex holding `P-KLD-1`, the protocol for any KL-divergence, perplexity or top-1",
+        "   agreement number used to compare two artifacts, kernels, routes or configurations of one model."
+      ]
+    },
+    {
+      "lines_added": 32,
+      "lines_after": 349,
+      "lines_before": 318,
+      "lines_removed": 1,
+      "path": "measurement/protocols/quality-eval.md",
+      "sha256_after": "8e97a93735ba9ccb337242ae2f3eec15ed81ba365e907d8c9cfba15bd2084034",
+      "sha256_before": "12a91574b5b1b238801cdd0bf1fcd90a2a1adddd692995efe18f3742bb0a78be",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/quality-eval.md",
+        "+++ b/measurement/protocols/quality-eval.md",
+        "@@ -71,7 +71,10 @@",
+        "   - **Suspended decision uses, until EV-CONF-2 reports**: (a) the rlvr_tiers RLVR code-reward",
+        "     calibration/discrimination components, and (b) the EV-5/EV-7 verifier-promotion gate, may not",
+        "     gate on any P-CAL ECE or AUROC value; the math cross-arm ECE stability check is suspended",
+        "-    likewise. P-PAIRED verdicts on E7c are correctness-scored and are NOT affected.",
+        "+    likewise. P-PAIRED verdicts on E7c are correctness-scored, so the speculative-decoding",
+        "+    contamination does not reach them; but their v1 `math_verify` labels are superseded",
+        "+    (2026-11-24, scorer semantics v2: see the superseding note under the P-PAIRED era anchor),",
+        "+    so \"NOT affected\" no longer holds for the E7c anchor.",
+        "   - **Re-baseline rule (standing)**: a confidence metric (ECE, AUROC, or anything computed from",
+        "     token probabilities) is admissible under P-CAL only from (i) a spec-off run (no draft model,",
+        "     no MTP head, no n-gram/lookup drafting; serving identity recorded in the row), or (ii) a run",
+        "@@ -105,6 +108,22 @@",
+        "   worker_general, EV-4c); math ECE 0.2114/0.2199, AUROC 0.4013/0.4114 observation-only",
+        "   (worker_general/worker_math, E7c). Ledger rows: EV-4-calibration-baseline,",
+        "   EV-11-math-rebaseline (2026-07-23).",
+        "+- **E7c math re-scored under scorer v2 (2026-11-24; OBSERVATION, never a baseline; amendment",
+        "+  block, edits no historical number).** The E7c math values above used v1 `math_verify` labels,",
+        "+  which ignored `<answer>` tags (orchestrator `4110ed1c`, `strict_finals_v2_20261124`). Re-scored",
+        "+  with no inference from the sidecars (`confidence`, `tokens_generated`) plus the v2 labels in",
+        "+  `orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl`, over the",
+        "+  rows with a confidence value: worker_general n=1684, accuracy 0.9721 (47 negatives), ECE",
+        "+  0.0279, AUROC 0.4639 (Hanley-McNeil 95% about 0.38-0.55); worker_math n=1628, accuracy 0.9631",
+        "+  (60 negatives), ECE 0.0369, AUROC 0.4686 (about 0.39-0.54). `-tokens_generated` AUROC 0.5958 /",
+        "+  0.6765 (v1 labels, same recompute: 0.5802 / 0.5911). Reading: the ECE fall is accuracy rising",
+        "+  at saturated confidence (1528/1684 and 1485/1628 at >= 0.999999), not better calibration; the",
+        "+  v2 AUROC interval spans 0.5, so \"anti-discriminative\" is not demonstrated, and the",
+        "+  \"length confounding\" mechanism is unestablished under v2. The 2026-09-16 suspension rests on",
+        "+  label-independent placeholder evidence and stands unchanged. Recompute note: ECE reproduces",
+        "+  the recorded value exactly, but the v1 AUROC recomputed from the sidecars is 0.4373 / 0.4432,",
+        "+  not the recorded 0.4013 / 0.4114 (unexplained). Under the re-baseline rule these rows are an",
+        "+  observation, permanently.",
+        " ",
+        " ## P-PAIRED \u2014 Paired A/B significance verdict (McNemar) [STAGED 2026-07-23; operator-apply]",
+        " ",
+        "@@ -148,6 +167,18 @@",
+        "   \"indistinguishable\" (the ~0.2pp delta is inside the noise band). Ledger row:",
+        "   EV-11-math-rebaseline (2026-07-23). Tests: `tests/unit/test_paired_stats.py`,",
+        "   `tests/unit/test_eval_tower_paired_significance.py`.",
+        "+- **SUPERSEDED 2026-11-24 \u2014 the era anchor above is a v1-scorer value** (amendment block; it",
+        "+  deletes and edits no historical number). Its labels came from v1 `math_verify`, which ignored",
+        "+  `<answer>` tags (orchestrator `4110ed1c`, `scorer_semantics_version` `strict_finals_v2_20261124`;",
+        "+  v1 is demote-to-prior). Replaying the banked answers through v2 with no inference",
+        "+  (`orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl`), joined on",
+        "+  `question_id` over the 1,583 rows scored in BOTH arms (the anchor's own population), and",
+        "+  verdicted with `paired_stats.mcnemar_verdict`: **b=12, c=2, n_discordant=14 \u2192 exact_binomial,",
+        "+  p = 0.01293945 \u2192 \"a_better\"** (worker_general 0.9722 vs worker_math 0.9659). The same join",
+        "+  reproduces the v1 anchor exactly (b=61, c=58, p = 0.8545, \"indistinguishable\"). Current anchor",
+        "+  for `strict_finals_v2_20261124` and later: the v2 verdict; the v1 figure stays as history and",
+        "+  must not be cited as evidence of equivalence, and v1 and v2 pairs are never compared across the",
+        "+  boundary. 14 discordant pairs is a thin base: read \"a_better\" for this dataset+profile only.",
+        " ",
+        " ## P-SERVE-SEL-1 \u2014 Text-LLM serving-selection load-sweep A/B (RATIFIED 2026-09-26)",
+        " "
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "bash scripts/validate/check_claims_grammar.sh --files measurement/protocols/quality-eval.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "check_claims_grammar: 5 line(s) look like uncited claims (need [P-<ID>, n, date, attest] or an observation marker):",
+        "measurement/protocols/quality-eval.md:38:(the X-MAS lesson: a 20pp effect at N=25 collapsed to 4pp at N=100); every failure classified by",
+        "measurement/protocols/quality-eval.md:107:- **Baselines (era anchors)**: code ECE 0.2532/0.3216, AUROC 0.6337/0.5751 (frontdoor/",
+        "measurement/protocols/quality-eval.md:117:  0.0279, AUROC 0.4639 (Hanley-McNeil 95% about 0.38-0.55); worker_math n=1628, accuracy 0.9631",
+        "measurement/protocols/quality-eval.md:118:  (60 negatives), ECE 0.0369, AUROC 0.4686 (about 0.39-0.54). `-tokens_generated` AUROC 0.5958 /",
+        "measurement/protocols/quality-eval.md:167:  \"indistinguishable\" (the ~0.2pp delta is inside the noise band). Ledger row:"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

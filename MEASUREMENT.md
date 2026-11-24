@@ -349,6 +349,15 @@ confers no authority beyond its own enumeration.
 
 ## CHANGELOG
 
+- **2026-11-24 (v2.x)** — AMENDMENT (Annex Q, `P-PAIRED` and `P-CAL`): SUPERSEDES the E7c `P-PAIRED`
+  era anchor and the sentence that called E7c P-PAIRED verdicts "NOT affected" by the scorer. The anchor
+  (worker_general vs worker_math, b=61, c=58, p≈0.855, "indistinguishable") used v1 `math_verify` labels,
+  which ignored `<answer>` tags; replayed through scorer semantics `strict_finals_v2_20261124` with no
+  inference (same 1,583 rows, `paired_stats.mcnemar_verdict`) it is b=12, c=2, exact p=0.0129, "a_better".
+  The E7c math `P-CAL` ECE/AUROC and the length-confounding reading are re-scored under v2 and recorded as
+  an observation, never a baseline. No earlier number is deleted; v1 stays as history. Evidence:
+  `orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl`.
+
 - **2026-11-22 (v2.x)** — AMENDMENT: **Annex V** (`measurement/protocols/divergence.md`) created as a
   **seventh** annex holding `P-KLD-1`, the protocol for any KL-divergence, perplexity or top-1
   agreement number used to compare two artifacts, kernels, routes or configurations of one model.

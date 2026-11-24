@@ -71,7 +71,10 @@ required before any keep/revert/deploy/promote decision.
   - **Suspended decision uses, until EV-CONF-2 reports**: (a) the rlvr_tiers RLVR code-reward
     calibration/discrimination components, and (b) the EV-5/EV-7 verifier-promotion gate, may not
     gate on any P-CAL ECE or AUROC value; the math cross-arm ECE stability check is suspended
-    likewise. P-PAIRED verdicts on E7c are correctness-scored and are NOT affected.
+    likewise. P-PAIRED verdicts on E7c are correctness-scored, so the speculative-decoding
+    contamination does not reach them; but their v1 `math_verify` labels are superseded
+    (2026-11-24, scorer semantics v2: see the superseding note under the P-PAIRED era anchor),
+    so "NOT affected" no longer holds for the E7c anchor.
   - **Re-baseline rule (standing)**: a confidence metric (ECE, AUROC, or anything computed from
     token probabilities) is admissible under P-CAL only from (i) a spec-off run (no draft model,
     no MTP head, no n-gram/lookup drafting; serving identity recorded in the row), or (ii) a run
@@ -105,6 +108,22 @@ required before any keep/revert/deploy/promote decision.
   worker_general, EV-4c); math ECE 0.2114/0.2199, AUROC 0.4013/0.4114 observation-only
   (worker_general/worker_math, E7c). Ledger rows: EV-4-calibration-baseline,
   EV-11-math-rebaseline (2026-07-23).
+- **E7c math re-scored under scorer v2 (2026-11-24; OBSERVATION, never a baseline; amendment
+  block, edits no historical number).** The E7c math values above used v1 `math_verify` labels,
+  which ignored `<answer>` tags (orchestrator `4110ed1c`, `strict_finals_v2_20261124`). Re-scored
+  with no inference from the sidecars (`confidence`, `tokens_generated`) plus the v2 labels in
+  `orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl`, over the
+  rows with a confidence value: worker_general n=1684, accuracy 0.9721 (47 negatives), ECE
+  0.0279, AUROC 0.4639 (Hanley-McNeil 95% about 0.38-0.55); worker_math n=1628, accuracy 0.9631
+  (60 negatives), ECE 0.0369, AUROC 0.4686 (about 0.39-0.54). `-tokens_generated` AUROC 0.5958 /
+  0.6765 (v1 labels, same recompute: 0.5802 / 0.5911). Reading: the ECE fall is accuracy rising
+  at saturated confidence (1528/1684 and 1485/1628 at >= 0.999999), not better calibration; the
+  v2 AUROC interval spans 0.5, so "anti-discriminative" is not demonstrated, and the
+  "length confounding" mechanism is unestablished under v2. The 2026-09-16 suspension rests on
+  label-independent placeholder evidence and stands unchanged. Recompute note: ECE reproduces
+  the recorded value exactly, but the v1 AUROC recomputed from the sidecars is 0.4373 / 0.4432,
+  not the recorded 0.4013 / 0.4114 (unexplained). Under the re-baseline rule these rows are an
+  observation, permanently.
 
 ## P-PAIRED — Paired A/B significance verdict (McNemar) [STAGED 2026-07-23; operator-apply]
 
@@ -148,6 +167,18 @@ after auditing the cited implementation.*
   "indistinguishable" (the ~0.2pp delta is inside the noise band). Ledger row:
   EV-11-math-rebaseline (2026-07-23). Tests: `tests/unit/test_paired_stats.py`,
   `tests/unit/test_eval_tower_paired_significance.py`.
+- **SUPERSEDED 2026-11-24 — the era anchor above is a v1-scorer value** (amendment block; it
+  deletes and edits no historical number). Its labels came from v1 `math_verify`, which ignored
+  `<answer>` tags (orchestrator `4110ed1c`, `scorer_semantics_version` `strict_finals_v2_20261124`;
+  v1 is demote-to-prior). Replaying the banked answers through v2 with no inference
+  (`orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl`), joined on
+  `question_id` over the 1,583 rows scored in BOTH arms (the anchor's own population), and
+  verdicted with `paired_stats.mcnemar_verdict`: **b=12, c=2, n_discordant=14 → exact_binomial,
+  p = 0.01293945 → "a_better"** (worker_general 0.9722 vs worker_math 0.9659). The same join
+  reproduces the v1 anchor exactly (b=61, c=58, p = 0.8545, "indistinguishable"). Current anchor
+  for `strict_finals_v2_20261124` and later: the v2 verdict; the v1 figure stays as history and
+  must not be cited as evidence of equivalence, and v1 and v2 pairs are never compared across the
+  boundary. 14 discordant pairs is a thin base: read "a_better" for this dataset+profile only.
 
 ## P-SERVE-SEL-1 — Text-LLM serving-selection load-sweep A/B (RATIFIED 2026-09-26)
 

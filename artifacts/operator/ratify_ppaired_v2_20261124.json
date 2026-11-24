@@ -1,0 +1,35 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "PPAIRED-V2-SCORER",
+  "gate_id": "RATIFY-PPAIRED-V2-SCORER-20261124",
+  "ratified_at": "2026-11-24T13:54:36Z",
+  "applied_at": "2026-11-24T13:54:36Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "protocol_ids": [
+    "P-PAIRED",
+    "P-CAL"
+  ],
+  "annex": "Q",
+  "apply_state": "A",
+  "patch_sha256": {
+    "quality-eval": "bd33ead75e406bedb33bf2f168161750d2ce8e90e3223662be0561de44dc09fe",
+    "MEASUREMENT.md": "539db5e22aae72d5c91f3e10a4f5d6f02f9911d94f46b240bf70b8f85d72ddab"
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "258147f7ee517dce04e338797ac4962134ea1be8a891aacd6e994263242b926a",
+      "sha256_after": "e75e0d43146be5b34933000217342581743454e985b27421a842d210aa4ac9c9"
+    },
+    "measurement/protocols/quality-eval.md": {
+      "sha256_before": "12a91574b5b1b238801cdd0bf1fcd90a2a1adddd692995efe18f3742bb0a78be",
+      "sha256_after": "8e97a93735ba9ccb337242ae2f3eec15ed81ba365e907d8c9cfba15bd2084034"
+    }
+  },
+  "scope": "Supersedes the v1-scorer E7c P-PAIRED era anchor (v2: b=12 c=2 exact p=0.01293945 a_better), rewrites the 'NOT affected' sentence, marks E7c math P-CAL as an observation re-scored under strict_finals_v2_20261124. No number deleted.",
+  "consolidated_receipt": "artifacts/operator/ratify_ppaired_v2_20261124.receipt.json",
+  "provenance": {
+    "scorer": "epyc-orchestrator 4110ed1c",
+    "replay": "orchestration/reports/eval_tower_math_rebaseline_E7c_replay_scorer_v2/replay.jsonl"
+  }
+}
