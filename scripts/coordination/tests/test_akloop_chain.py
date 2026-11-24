@@ -144,12 +144,13 @@ def test_gpu_candidate_unchanged_by_serving_path(tmp_path, cand):
 def test_candidate_json_carries_serving_path_and_shape_class(tmp_path, cand):
     """The research op-perf stage refuses a candidate with no shape_class and resolves its path from candidate.json
     (default = the 27B pin): CAND_FIELDS must carry both through to every stage's row."""
-    assert {"serving_path", "shape_class"} <= set(C.CAND_FIELDS)
+    assert {"serving_path", "shape_class", "journal_key"} <= set(C.CAND_FIELDS)
     sc = {"op_family": "MUL_MAT", "dims": {"k": [5120]}}
-    rep = _chain(tmp_path, dict(cand, serving_path="a3b-q8_0-cpu|cpu", shape_class=sc))
+    jk = {"family": "mul-mat-q8", "device": "cpu", "shape_class": {"k": "4096-8192"}}   # R7 key (research journal_keys)
+    rep = _chain(tmp_path, dict(cand, serving_path="a3b-q8_0-cpu|cpu", shape_class=sc, journal_key=jk))
     for st, spec in _specs(rep).items():
         cj = json.load(open(os.path.join(str(tmp_path / "rows"), spec["id"], "candidate.json")))
-        assert cj["serving_path"] == "a3b-q8_0-cpu|cpu" and cj["shape_class"] == sc, st
+        assert cj["serving_path"] == "a3b-q8_0-cpu|cpu" and cj["shape_class"] == sc and cj["journal_key"] == jk, st
 
 
 def test_gpu_path_oracle_kld_keeps_its_gpu_plain_shape(tmp_path, cand):

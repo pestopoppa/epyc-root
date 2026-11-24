@@ -307,7 +307,7 @@ def render_box(cand: dict[str, Any], stage: Stage, est: int, gate: list[str], ow
 
 CAND_FIELDS = ("id", "base_sha", "patch_sha", "hypothesis_id", "predicted_effect", "paths", "rebase_of",
                "skip_stages", "champion_ref", "op", "geomean_min", "pairs", "timing_model", "anchor_build",
-               "llama_repo", "serving_path", "shape_class", "stages",
+               "llama_repo", "serving_path", "shape_class", "journal_key", "stages",
                "kind", "mechanism_id", "server", "delta", "delta_digest", "base_recipe_hash", "registry_base_digest", "argv",
                "argv_delta", "screening_only", "steady_results", "arm_map", "burst_results", "floor_result", "test_outcomes", "test_refs", "test_parents", "test_fixture_repo",
                "test_lineage_log")
