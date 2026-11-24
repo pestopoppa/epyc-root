@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -33,13 +34,23 @@ class HealDoubleBook(unittest.TestCase):
         with open(os.path.join(self.G, name), "w") as fh:
             fh.write(text)
 
-    def build(self, at="2026-11-24T10:03:23Z"):
-        self.put(BID + ".grant", "regions=q0 start=2026-11-24T10:03Z end=2026-11-24T11:33Z holds=q0\n")
+    # Timestamps are relative to now: the original fixed 2026-11-24T10:03Z claim (90 min) expired at 11:33Z, after which
+    # the keeper correctly treated it as ended and test_row_grant_refused_onto_build_json_only failed (a time bomb).
+    T0 = time.time() - 600
+
+    @staticmethod
+    def iso(t, minute=False):
+        return time.strftime("%Y-%m-%dT%H:%MZ" if minute else "%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+
+    def build(self, at=None):
+        at = at or self.iso(self.T0)
+        self.put(BID + ".grant", f"regions=q0 start={self.iso(self.T0, True)} end={self.iso(self.T0 + 5400, True)} holds=q0\n")
         self.put(BID + ".build.json", json.dumps({"id": BID, "owner": "autokernel", "kind": "build", "quarters": ["q0"],
                                                   "cpus": "0-23,96-119", "minutes": 90, "at": at}))
 
-    def row(self, at="2026-11-24T10:03:42Z"):
-        self.put(RID + ".grant", "regions=0-23 start=2026-11-24T10:03Z end=2026-11-24T12:00Z holds=q0\n")
+    def row(self, at=None):
+        at = at or self.iso(self.T0 + 19)
+        self.put(RID + ".grant", f"regions=0-23 start={self.iso(self.T0, True)} end={self.iso(self.T0 + 7020, True)} holds=q0\n")
         rf.atomic_json(rf.granted_path(self.f, RID), {"id": RID, "at": at})
 
     # fix 1: the allocator's write re-checks on-disk claims under the claim lock
@@ -73,7 +84,7 @@ class HealDoubleBook(unittest.TestCase):
         self.assertEqual([(a[0], a[1]) for a in self.alerts], [("heal-conflict", RID)])
 
     def test_heal_withdraws_later_build_and_alerts_owner(self):
-        self.row(at="2026-11-24T10:00:00Z"); self.build()
+        self.row(at=self.iso(self.T0 - 203)); self.build()
         kept = rf.heal_grants(self.f, rf.open_grants(self.f), {"q0": ("HELD", f"filler-{RID}")}, self.log.append, set())
         self.assertEqual([g["id"] for g in kept], [RID])
         self.assertFalse(os.path.exists(os.path.join(self.G, BID + ".grant")))
@@ -83,7 +94,7 @@ class HealDoubleBook(unittest.TestCase):
         self.assertTrue(bj.get("heal_withdrawn"))
 
     def test_release_heal_withdrawn_build_idempotent(self):
-        self.row(at="2026-11-24T10:00:00Z"); self.build()
+        self.row(at=self.iso(self.T0 - 203)); self.build()
         rf.heal_grants(self.f, rf.open_grants(self.f), {"q0": ("HELD", f"filler-{RID}")}, self.log.append, set())
         rel = lambda: rf.release_grant(self.f, BID, "autokernel", "heal-withdrawn", log=self.log.append)
         self.assertEqual(rel(), "RELEASED")
