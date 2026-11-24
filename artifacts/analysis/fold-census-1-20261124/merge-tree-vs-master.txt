@@ -1,0 +1,491 @@
+411d5746226c6f575ffdcde8d76efd3138b3b5e0
+common/arg.cpp
+common/chat-diff-analyzer.cpp
+common/chat.cpp
+common/common.cpp
+common/common.h
+common/download.cpp
+common/download.h
+common/jinja/value.cpp
+common/sampling.cpp
+common/speculative.cpp
+common/speculative.h
+conversion/__init__.py
+conversion/base.py
+conversion/deepseek.py
+conversion/laguna.py
+conversion/qwen.py
+conversion/qwen4exp.py
+convert_hf_to_gguf_update.py
+docs/speculative.md
+examples/speculative-simple/speculative-simple.cpp
+examples/speculative/speculative.cpp
+ggml/include/ggml-rpc.h
+ggml/include/ggml.h
+ggml/src/ggml-backend-meta.cpp
+ggml/src/ggml-cpu/ggml-cpu.c
+ggml/src/ggml-cpu/ggml-cpu.cpp
+ggml/src/ggml-cpu/ops.cpp
+ggml/src/ggml-cpu/ops.h
+ggml/src/ggml-cpu/repack.cpp
+ggml/src/ggml-cpu/vec.cpp
+ggml/src/ggml-cpu/vec.h
+ggml/src/ggml-cuda/argmax.cu
+ggml/src/ggml-cuda/common.cuh
+ggml/src/ggml-cuda/dsv4-hc.cu
+ggml/src/ggml-cuda/dsv4-hc.cuh
+ggml/src/ggml-cuda/fattn-common.cuh
+ggml/src/ggml-cuda/fattn-mma-f16.cuh
+ggml/src/ggml-cuda/fattn-tile.cuh
+ggml/src/ggml-cuda/fattn-vec.cuh
+ggml/src/ggml-cuda/fattn-wmma-f16.cu
+ggml/src/ggml-cuda/fattn.cu
+ggml/src/ggml-cuda/gated_delta_net.cu
+ggml/src/ggml-cuda/ggml-cuda.cu
+ggml/src/ggml-cuda/mmq-load-tiles.cuh
+ggml/src/ggml-cuda/mmq.cu
+ggml/src/ggml-cuda/mmq.cuh
+ggml/src/ggml-cuda/mmvf.cu
+ggml/src/ggml-cuda/mmvq.cu
+ggml/src/ggml-cuda/norm.cu
+ggml/src/ggml-cuda/quantize.cu
+ggml/src/ggml-cuda/rope.cu
+ggml/src/ggml-cuda/ssm-scan.cu
+ggml/src/ggml-cuda/top-k.cu
+ggml/src/ggml-cuda/topk-moe.cu
+ggml/src/ggml-cuda/vecdotq.cuh
+ggml/src/ggml-cuda/vendors/hip.h
+ggml/src/ggml-hip/CMakeLists.txt
+ggml/src/ggml-metal/ggml-metal-device.m
+ggml/src/ggml-metal/ggml-metal.metal
+ggml/src/ggml-vulkan/ggml-vulkan.cpp
+ggml/src/ggml-vulkan/vulkan-shaders/ssm_scan.comp
+ggml/src/ggml.c
+gguf-py/gguf/constants.py
+gguf-py/gguf/gguf_writer.py
+gguf-py/gguf/lazy.py
+gguf-py/gguf/tensor_mapping.py
+include/llama.h
+models/templates/poolside-Laguna-S-2.1.jinja
+src/CMakeLists.txt
+src/llama-arch.cpp
+src/llama-arch.h
+src/llama-batch.cpp
+src/llama-context.cpp
+src/llama-context.h
+src/llama-cparams.h
+src/llama-ext.h
+src/llama-graph.cpp
+src/llama-graph.h
+src/llama-hparams.cpp
+src/llama-hparams.h
+src/llama-kv-cache-dsv4.cpp
+src/llama-kv-cache-dsv4.h
+src/llama-kv-cache.cpp
+src/llama-kv-cache.h
+src/llama-kv-cells.h
+src/llama-memory-hybrid-idx.cpp
+src/llama-memory-hybrid-idx.h
+src/llama-memory-recurrent.cpp
+src/llama-memory-recurrent.h
+src/llama-model-loader.cpp
+src/llama-model-loader.h
+src/llama-model-saver.cpp
+src/llama-model.cpp
+src/llama-model.h
+src/llama-quant.cpp
+src/llama-sampler.cpp
+src/llama-vocab.h
+src/llama.cpp
+src/models/cohere2moe.cpp
+src/models/deepseek32.cpp
+src/models/deepseek4.cpp
+src/models/deepseek41.cpp
+src/models/delta-net-base.cpp
+src/models/dflash.cpp
+src/models/gemma-embedding2.cpp
+src/models/gemma4-assistant.cpp
+src/models/glm-dsa.cpp
+src/models/hy-v3.cpp
+src/models/laguna.cpp
+src/models/mamba-base.cpp
+src/models/models.h
+src/models/nemotron-h.cpp
+src/models/qwen2.cpp
+src/models/qwen35.cpp
+src/models/qwen35moe.cpp
+src/models/qwen4exp.cpp
+src/models/step35.cpp
+tests/CMakeLists.txt
+tests/test-backend-ops.cpp
+tests/test-chat-auto-parser.cpp
+tests/test-chat.cpp
+tests/test-llama-archs.cpp
+tests/test-recurrent-state-rollback.cpp
+tests/test-sampling.cpp
+tools/CMakeLists.txt
+tools/cli/README.md
+tools/completion/README.md
+tools/llama-bench/llama-bench.cpp
+tools/mtmd/CMakeLists.txt
+tools/mtmd/clip-model.h
+tools/mtmd/clip.cpp
+tools/mtmd/models/models.h
+tools/mtmd/models/nemotron-omni.cpp
+tools/server/CMakeLists.txt
+tools/server/README.md
+tools/server/server-common.cpp
+tools/server/server-common.h
+tools/server/server-context.cpp
+tools/server/server-schema.cpp
+tools/server/server-task.cpp
+tools/server/server-task.h
+tools/server/tests/unit/test_slot_save.py
+tools/server/tests/unit/test_speculative.py
+tools/server/tests/utils.py
+
+Auto-merging CMakeLists.txt
+Auto-merging common/CMakeLists.txt
+Auto-merging common/arg.cpp
+CONFLICT (content): Merge conflict in common/arg.cpp
+Auto-merging common/chat-auto-parser-generator.cpp
+Auto-merging common/chat-auto-parser.h
+Auto-merging common/chat-diff-analyzer.cpp
+CONFLICT (content): Merge conflict in common/chat-diff-analyzer.cpp
+Auto-merging common/chat.cpp
+CONFLICT (content): Merge conflict in common/chat.cpp
+Auto-merging common/chat.h
+Auto-merging common/common.cpp
+CONFLICT (content): Merge conflict in common/common.cpp
+Auto-merging common/common.h
+CONFLICT (content): Merge conflict in common/common.h
+Auto-merging common/console.cpp
+Auto-merging common/download.cpp
+CONFLICT (content): Merge conflict in common/download.cpp
+Auto-merging common/download.h
+CONFLICT (content): Merge conflict in common/download.h
+Auto-merging common/jinja/value.cpp
+CONFLICT (content): Merge conflict in common/jinja/value.cpp
+Auto-merging common/sampling.cpp
+CONFLICT (content): Merge conflict in common/sampling.cpp
+Auto-merging common/sampling.h
+Auto-merging common/speculative.cpp
+CONFLICT (content): Merge conflict in common/speculative.cpp
+Auto-merging common/speculative.h
+CONFLICT (content): Merge conflict in common/speculative.h
+Auto-merging conversion/__init__.py
+CONFLICT (content): Merge conflict in conversion/__init__.py
+Auto-merging conversion/base.py
+CONFLICT (content): Merge conflict in conversion/base.py
+Auto-merging conversion/deepseek.py
+CONFLICT (content): Merge conflict in conversion/deepseek.py
+Auto-merging conversion/laguna.py
+CONFLICT (add/add): Merge conflict in conversion/laguna.py
+Auto-merging conversion/qwen.py
+CONFLICT (content): Merge conflict in conversion/qwen.py
+Auto-merging conversion/qwen4exp.py
+CONFLICT (add/add): Merge conflict in conversion/qwen4exp.py
+Auto-merging convert_hf_to_gguf_update.py
+CONFLICT (content): Merge conflict in convert_hf_to_gguf_update.py
+Auto-merging docs/speculative.md
+CONFLICT (content): Merge conflict in docs/speculative.md
+Auto-merging examples/simple/simple.cpp
+Auto-merging examples/speculative-simple/speculative-simple.cpp
+CONFLICT (content): Merge conflict in examples/speculative-simple/speculative-simple.cpp
+Auto-merging examples/speculative/speculative.cpp
+CONFLICT (content): Merge conflict in examples/speculative/speculative.cpp
+Auto-merging ggml/CMakeLists.txt
+Auto-merging ggml/include/ggml-cpu.h
+Auto-merging ggml/include/ggml-rpc.h
+CONFLICT (content): Merge conflict in ggml/include/ggml-rpc.h
+Auto-merging ggml/include/ggml.h
+CONFLICT (content): Merge conflict in ggml/include/ggml.h
+Auto-merging ggml/src/ggml-alloc.c
+Auto-merging ggml/src/ggml-backend-meta.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-backend-meta.cpp
+Auto-merging ggml/src/ggml-backend.cpp
+Auto-merging ggml/src/ggml-blas/ggml-blas.cpp
+Auto-merging ggml/src/ggml-common.h
+Auto-merging ggml/src/ggml-cpu/CMakeLists.txt
+Auto-merging ggml/src/ggml-cpu/arch/x86/quants.c
+Auto-merging ggml/src/ggml-cpu/common.h
+Auto-merging ggml/src/ggml-cpu/ggml-cpu-impl.h
+Auto-merging ggml/src/ggml-cpu/ggml-cpu.c
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ggml-cpu.c
+Auto-merging ggml/src/ggml-cpu/ggml-cpu.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ggml-cpu.cpp
+Auto-merging ggml/src/ggml-cpu/llamafile/sgemm.cpp
+Auto-merging ggml/src/ggml-cpu/ops.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ops.cpp
+Auto-merging ggml/src/ggml-cpu/ops.h
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/ops.h
+Auto-merging ggml/src/ggml-cpu/repack.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/repack.cpp
+Auto-merging ggml/src/ggml-cpu/unary-ops.cpp
+Auto-merging ggml/src/ggml-cpu/vec.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/vec.cpp
+Auto-merging ggml/src/ggml-cpu/vec.h
+CONFLICT (content): Merge conflict in ggml/src/ggml-cpu/vec.h
+Auto-merging ggml/src/ggml-cuda/argmax.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/argmax.cu
+Auto-merging ggml/src/ggml-cuda/common.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/common.cuh
+Auto-merging ggml/src/ggml-cuda/convert.cu
+Auto-merging ggml/src/ggml-cuda/convert.cuh
+Auto-merging ggml/src/ggml-cuda/dsv4-hc.cu
+CONFLICT (add/add): Merge conflict in ggml/src/ggml-cuda/dsv4-hc.cu
+Auto-merging ggml/src/ggml-cuda/dsv4-hc.cuh
+CONFLICT (add/add): Merge conflict in ggml/src/ggml-cuda/dsv4-hc.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-common.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-common.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-mma-f16.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-mma-f16.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-tile.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-tile.cuh
+Auto-merging ggml/src/ggml-cuda/fattn-vec.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn-vec.cuh
+CONFLICT (modify/delete): ggml/src/ggml-cuda/fattn-wmma-f16.cu deleted in origin/master and modified in 98ff8a42a.  Version 98ff8a42a of ggml/src/ggml-cuda/fattn-wmma-f16.cu left in tree.
+Auto-merging ggml/src/ggml-cuda/fattn.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/fattn.cu
+Auto-merging ggml/src/ggml-cuda/gated_delta_net.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/gated_delta_net.cu
+Auto-merging ggml/src/ggml-cuda/gated_delta_net.cuh
+Auto-merging ggml/src/ggml-cuda/ggml-cuda.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/ggml-cuda.cu
+Auto-merging ggml/src/ggml-cuda/lightning-indexer.cu
+Auto-merging ggml/src/ggml-cuda/mmq-load-tiles.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/mmq-load-tiles.cuh
+Auto-merging ggml/src/ggml-cuda/mmq-vec-dot.cuh
+Auto-merging ggml/src/ggml-cuda/mmq.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/mmq.cu
+Auto-merging ggml/src/ggml-cuda/mmq.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/mmq.cuh
+Auto-merging ggml/src/ggml-cuda/mmvf.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/mmvf.cu
+Auto-merging ggml/src/ggml-cuda/mmvq.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/mmvq.cu
+Auto-merging ggml/src/ggml-cuda/norm.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/norm.cu
+Auto-merging ggml/src/ggml-cuda/quantize.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/quantize.cu
+Auto-merging ggml/src/ggml-cuda/rope.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/rope.cu
+Auto-merging ggml/src/ggml-cuda/ssm-conv.cu
+Auto-merging ggml/src/ggml-cuda/ssm-scan.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/ssm-scan.cu
+Auto-merging ggml/src/ggml-cuda/top-k.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/top-k.cu
+Auto-merging ggml/src/ggml-cuda/topk-moe.cu
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/topk-moe.cu
+Auto-merging ggml/src/ggml-cuda/topk-moe.cuh
+Auto-merging ggml/src/ggml-cuda/unary.cu
+Auto-merging ggml/src/ggml-cuda/vecdotq.cuh
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/vecdotq.cuh
+Auto-merging ggml/src/ggml-cuda/vendors/hip.h
+CONFLICT (content): Merge conflict in ggml/src/ggml-cuda/vendors/hip.h
+Auto-merging ggml/src/ggml-et/ggml-et-ops.cpp
+Auto-merging ggml/src/ggml-hip/CMakeLists.txt
+CONFLICT (content): Merge conflict in ggml/src/ggml-hip/CMakeLists.txt
+Auto-merging ggml/src/ggml-metal/ggml-metal-device.m
+CONFLICT (content): Merge conflict in ggml/src/ggml-metal/ggml-metal-device.m
+Auto-merging ggml/src/ggml-metal/ggml-metal-impl.h
+Auto-merging ggml/src/ggml-metal/ggml-metal-ops.cpp
+CONFLICT (modify/delete): ggml/src/ggml-metal/ggml-metal.metal deleted in origin/master and modified in 98ff8a42a.  Version 98ff8a42a of ggml/src/ggml-metal/ggml-metal.metal left in tree.
+Auto-merging ggml/src/ggml-quants.c
+Auto-merging ggml/src/ggml-vulkan/ggml-vulkan.cpp
+CONFLICT (content): Merge conflict in ggml/src/ggml-vulkan/ggml-vulkan.cpp
+Auto-merging ggml/src/ggml-vulkan/vulkan-shaders/ssm_scan.comp
+CONFLICT (content): Merge conflict in ggml/src/ggml-vulkan/vulkan-shaders/ssm_scan.comp
+Auto-merging ggml/src/ggml-webgpu/ggml-webgpu.cpp
+Auto-merging ggml/src/ggml-webgpu/wgsl-shaders/ssm_scan.wgsl
+Auto-merging ggml/src/ggml.c
+CONFLICT (content): Merge conflict in ggml/src/ggml.c
+Auto-merging gguf-py/gguf/constants.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/constants.py
+Auto-merging gguf-py/gguf/gguf_writer.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/gguf_writer.py
+Auto-merging gguf-py/gguf/lazy.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/lazy.py
+Auto-merging gguf-py/gguf/tensor_mapping.py
+CONFLICT (content): Merge conflict in gguf-py/gguf/tensor_mapping.py
+Auto-merging include/llama.h
+CONFLICT (content): Merge conflict in include/llama.h
+Auto-merging models/templates/poolside-Laguna-S-2.1.jinja
+CONFLICT (add/add): Merge conflict in models/templates/poolside-Laguna-S-2.1.jinja
+Auto-merging src/CMakeLists.txt
+CONFLICT (content): Merge conflict in src/CMakeLists.txt
+Auto-merging src/llama-arch.cpp
+CONFLICT (content): Merge conflict in src/llama-arch.cpp
+Auto-merging src/llama-arch.h
+CONFLICT (content): Merge conflict in src/llama-arch.h
+Auto-merging src/llama-batch.cpp
+CONFLICT (content): Merge conflict in src/llama-batch.cpp
+Auto-merging src/llama-batch.h
+Auto-merging src/llama-context.cpp
+CONFLICT (content): Merge conflict in src/llama-context.cpp
+Auto-merging src/llama-context.h
+CONFLICT (content): Merge conflict in src/llama-context.h
+Auto-merging src/llama-cparams.h
+CONFLICT (content): Merge conflict in src/llama-cparams.h
+Auto-merging src/llama-ext.h
+CONFLICT (content): Merge conflict in src/llama-ext.h
+Auto-merging src/llama-graph.cpp
+CONFLICT (content): Merge conflict in src/llama-graph.cpp
+Auto-merging src/llama-graph.h
+CONFLICT (content): Merge conflict in src/llama-graph.h
+Auto-merging src/llama-hparams.cpp
+CONFLICT (content): Merge conflict in src/llama-hparams.cpp
+Auto-merging src/llama-hparams.h
+CONFLICT (content): Merge conflict in src/llama-hparams.h
+Auto-merging src/llama-kv-cache-dsv4.cpp
+CONFLICT (content): Merge conflict in src/llama-kv-cache-dsv4.cpp
+Auto-merging src/llama-kv-cache-dsv4.h
+CONFLICT (content): Merge conflict in src/llama-kv-cache-dsv4.h
+Auto-merging src/llama-kv-cache-iswa.cpp
+Auto-merging src/llama-kv-cache.cpp
+CONFLICT (content): Merge conflict in src/llama-kv-cache.cpp
+Auto-merging src/llama-kv-cache.h
+CONFLICT (content): Merge conflict in src/llama-kv-cache.h
+Auto-merging src/llama-kv-cells.h
+CONFLICT (content): Merge conflict in src/llama-kv-cells.h
+Auto-merging src/llama-memory-hybrid-idx.cpp
+CONFLICT (add/add): Merge conflict in src/llama-memory-hybrid-idx.cpp
+Auto-merging src/llama-memory-hybrid-idx.h
+CONFLICT (add/add): Merge conflict in src/llama-memory-hybrid-idx.h
+Auto-merging src/llama-memory-hybrid-iswa.cpp
+Auto-merging src/llama-memory-hybrid.cpp
+Auto-merging src/llama-memory-hybrid.h
+Auto-merging src/llama-memory-recurrent.cpp
+CONFLICT (content): Merge conflict in src/llama-memory-recurrent.cpp
+Auto-merging src/llama-memory-recurrent.h
+CONFLICT (content): Merge conflict in src/llama-memory-recurrent.h
+Auto-merging src/llama-memory.h
+Auto-merging src/llama-mmap.cpp
+Auto-merging src/llama-mmap.h
+Auto-merging src/llama-model-loader.cpp
+CONFLICT (content): Merge conflict in src/llama-model-loader.cpp
+Auto-merging src/llama-model-loader.h
+CONFLICT (content): Merge conflict in src/llama-model-loader.h
+Auto-merging src/llama-model-saver.cpp
+CONFLICT (content): Merge conflict in src/llama-model-saver.cpp
+Auto-merging src/llama-model-saver.h
+Auto-merging src/llama-model.cpp
+CONFLICT (content): Merge conflict in src/llama-model.cpp
+Auto-merging src/llama-model.h
+CONFLICT (content): Merge conflict in src/llama-model.h
+Auto-merging src/llama-quant.cpp
+CONFLICT (content): Merge conflict in src/llama-quant.cpp
+Auto-merging src/llama-sampler.cpp
+CONFLICT (content): Merge conflict in src/llama-sampler.cpp
+Auto-merging src/llama-vocab.cpp
+Auto-merging src/llama-vocab.h
+CONFLICT (content): Merge conflict in src/llama-vocab.h
+Auto-merging src/llama.cpp
+CONFLICT (content): Merge conflict in src/llama.cpp
+Auto-merging src/models/bailingmoe2.cpp
+Auto-merging src/models/cohere2moe.cpp
+CONFLICT (content): Merge conflict in src/models/cohere2moe.cpp
+Auto-merging src/models/deepseek32.cpp
+CONFLICT (content): Merge conflict in src/models/deepseek32.cpp
+Auto-merging src/models/deepseek4.cpp
+CONFLICT (content): Merge conflict in src/models/deepseek4.cpp
+Auto-merging src/models/deepseek41.cpp
+CONFLICT (add/add): Merge conflict in src/models/deepseek41.cpp
+Auto-merging src/models/delta-net-base.cpp
+CONFLICT (content): Merge conflict in src/models/delta-net-base.cpp
+Auto-merging src/models/dflash.cpp
+CONFLICT (content): Merge conflict in src/models/dflash.cpp
+Auto-merging src/models/dream.cpp
+Auto-merging src/models/exaone-moe.cpp
+Auto-merging src/models/gemma-embedding2.cpp
+CONFLICT (add/add): Merge conflict in src/models/gemma-embedding2.cpp
+Auto-merging src/models/gemma4-assistant.cpp
+CONFLICT (content): Merge conflict in src/models/gemma4-assistant.cpp
+Auto-merging src/models/gemma4.cpp
+Auto-merging src/models/glm-dsa.cpp
+CONFLICT (content): Merge conflict in src/models/glm-dsa.cpp
+Auto-merging src/models/glm4-moe.cpp
+Auto-merging src/models/glm4.cpp
+Auto-merging src/models/hy-v3.cpp
+CONFLICT (content): Merge conflict in src/models/hy-v3.cpp
+Auto-merging src/models/laguna.cpp
+CONFLICT (add/add): Merge conflict in src/models/laguna.cpp
+Auto-merging src/models/mamba-base.cpp
+CONFLICT (content): Merge conflict in src/models/mamba-base.cpp
+Auto-merging src/models/mimo2.cpp
+Auto-merging src/models/models.h
+CONFLICT (content): Merge conflict in src/models/models.h
+Auto-merging src/models/nemotron-h.cpp
+CONFLICT (content): Merge conflict in src/models/nemotron-h.cpp
+Auto-merging src/models/plamo2.cpp
+Auto-merging src/models/qwen2.cpp
+CONFLICT (content): Merge conflict in src/models/qwen2.cpp
+Auto-merging src/models/qwen35.cpp
+CONFLICT (content): Merge conflict in src/models/qwen35.cpp
+Auto-merging src/models/qwen35moe.cpp
+CONFLICT (content): Merge conflict in src/models/qwen35moe.cpp
+Auto-merging src/models/qwen3next.cpp
+Auto-merging src/models/qwen4exp.cpp
+CONFLICT (add/add): Merge conflict in src/models/qwen4exp.cpp
+Auto-merging src/models/step35.cpp
+CONFLICT (content): Merge conflict in src/models/step35.cpp
+Auto-merging tests/CMakeLists.txt
+CONFLICT (content): Merge conflict in tests/CMakeLists.txt
+Auto-merging tests/test-backend-ops.cpp
+CONFLICT (content): Merge conflict in tests/test-backend-ops.cpp
+Auto-merging tests/test-chat-auto-parser.cpp
+CONFLICT (content): Merge conflict in tests/test-chat-auto-parser.cpp
+Auto-merging tests/test-chat.cpp
+CONFLICT (content): Merge conflict in tests/test-chat.cpp
+Auto-merging tests/test-llama-archs.cpp
+CONFLICT (content): Merge conflict in tests/test-llama-archs.cpp
+CONFLICT (modify/delete): tests/test-recurrent-state-rollback.cpp deleted in origin/master and modified in 98ff8a42a.  Version 98ff8a42a of tests/test-recurrent-state-rollback.cpp left in tree.
+Auto-merging tests/test-sampling.cpp
+CONFLICT (content): Merge conflict in tests/test-sampling.cpp
+Auto-merging tools/CMakeLists.txt
+CONFLICT (content): Merge conflict in tools/CMakeLists.txt
+Auto-merging tools/cli/README.md
+CONFLICT (content): Merge conflict in tools/cli/README.md
+Auto-merging tools/cli/cli-context.cpp
+Auto-merging tools/completion/README.md
+CONFLICT (content): Merge conflict in tools/completion/README.md
+Auto-merging tools/llama-bench/README.md
+Auto-merging tools/llama-bench/llama-bench.cpp
+CONFLICT (content): Merge conflict in tools/llama-bench/llama-bench.cpp
+Auto-merging tools/mtmd/CMakeLists.txt
+CONFLICT (content): Merge conflict in tools/mtmd/CMakeLists.txt
+CONFLICT (modify/delete): tools/mtmd/clip-model.h deleted in origin/master and modified in 98ff8a42a.  Version 98ff8a42a of tools/mtmd/clip-model.h left in tree.
+CONFLICT (modify/delete): tools/mtmd/clip.cpp deleted in origin/master and modified in 98ff8a42a.  Version 98ff8a42a of tools/mtmd/clip.cpp left in tree.
+Auto-merging tools/mtmd/models/models.h
+CONFLICT (content): Merge conflict in tools/mtmd/models/models.h
+Auto-merging tools/mtmd/models/nemotron-omni.cpp
+CONFLICT (add/add): Merge conflict in tools/mtmd/models/nemotron-omni.cpp
+Auto-merging tools/mtmd/mtmd-cli.cpp
+Auto-merging tools/mtmd/mtmd-impl.h
+Auto-merging tools/mtmd/mtmd.cpp
+Auto-merging tools/perplexity/perplexity.cpp
+Auto-merging tools/server/CMakeLists.txt
+CONFLICT (content): Merge conflict in tools/server/CMakeLists.txt
+Auto-merging tools/server/README.md
+CONFLICT (content): Merge conflict in tools/server/README.md
+Auto-merging tools/server/server-common.cpp
+CONFLICT (content): Merge conflict in tools/server/server-common.cpp
+Auto-merging tools/server/server-common.h
+CONFLICT (content): Merge conflict in tools/server/server-common.h
+Auto-merging tools/server/server-context.cpp
+CONFLICT (content): Merge conflict in tools/server/server-context.cpp
+Auto-merging tools/server/server-context.h
+Auto-merging tools/server/server-schema.cpp
+CONFLICT (content): Merge conflict in tools/server/server-schema.cpp
+Auto-merging tools/server/server-task.cpp
+CONFLICT (content): Merge conflict in tools/server/server-task.cpp
+Auto-merging tools/server/server-task.h
+CONFLICT (content): Merge conflict in tools/server/server-task.h
+Auto-merging tools/server/server.cpp
+Auto-merging tools/server/tests/unit/test_chat_completion.py
+Auto-merging tools/server/tests/unit/test_slot_save.py
+CONFLICT (content): Merge conflict in tools/server/tests/unit/test_slot_save.py
+Auto-merging tools/server/tests/unit/test_speculative.py
+CONFLICT (content): Merge conflict in tools/server/tests/unit/test_speculative.py
+Auto-merging tools/server/tests/utils.py
+CONFLICT (content): Merge conflict in tools/server/tests/utils.py
