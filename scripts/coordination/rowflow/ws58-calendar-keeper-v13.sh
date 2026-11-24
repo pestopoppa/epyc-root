@@ -515,7 +515,7 @@ VAULT_NOTE = ['']
 VAULT_KEEP = int(E.get('REAP_VAULT_KEEP', '2'))   # policy data: newest N versions kept per vault key
 def vault(name, root, files, filed_at):
     """returns (ok, msg). dry: only sizes."""
-    if quiet_defer(): return False, 'deferred: quiet-sensitive grant held (REAP-DEFER-QUIET)'
+    if globals().get('quiet_defer', bool)(): return False, 'deferred: quiet-sensitive grant held (REAP-DEFER-QUIET)'
     name = vault_key(name, root)
     tot = 0; big = []
     for f in files:
@@ -727,7 +727,7 @@ def take_budget(tag, b):
         out('DEFER', tag, 'per-pass cap (%d dirs / %s) reached; %s waits for the next pass' % (MAXDIRS, gib(MAXB), gib(b))); return False
     budget['n'] += 1; budget['b'] += b; return True
 def really_delete(tag, root, dels, dbytes, note=''):
-    if quiet_defer(): out('DEFERRED', tag, 'quiet-sensitive grant held; delete waits for the next pass'); return
+    if globals().get('quiet_defer', bool)(): out('DEFERRED', tag, 'quiet-sensitive grant held; delete waits for the next pass'); return
     # re-check right before delete (a process may have started since the snapshot)
     chk = subprocess.run(['bash', '-c', 'for q in /proc/[0-9]*; do tr "\\0" " " < $q/cmdline 2>/dev/null | grep -qF "$0/" && exit 3; ls -l $q/fd 2>/dev/null | grep -qF "$0/" && exit 3; done; exit 0', root]).returncode
     if chk != 0: out('BLOCKED', tag, 'process appeared at delete time'); return

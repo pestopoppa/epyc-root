@@ -62,8 +62,8 @@ class QuietHolders(unittest.TestCase):
 class HeavyWorkGated(unittest.TestCase):
     def test_every_heavy_site_checks_quiet(self):
         src = open(rules.KEEPER).read()
-        for needle in ("    if quiet_defer(): return False, 'deferred",            # vault copies
-                       "    if quiet_defer(): out('DEFERRED', tag",                  # really_delete
+        for needle in ("    if globals().get('quiet_defer', bool)(): return False, 'deferred",            # vault copies
+                       "    if globals().get('quiet_defer', bool)(): out('DEFERRED', tag",                  # really_delete
                        "    if not PRESSURE or quiet_defer(): return (0, name)",     # du-scan sort
                        "  if quiet_defer(): break",                                  # group pass
                        "        if quiet_defer(): break",                            # idle + worktree pass
