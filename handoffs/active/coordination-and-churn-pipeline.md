@@ -2530,6 +2530,13 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · gate: none        · inputs: `scripts/coordination/taskflow/verify.py`
       · owner: pipeline-mgmt
   - 2026-11-24: driver landed 5908a883f as scripts/coordination/codex_lane/drive.py (artifact-judged DONE, STALLED after 3 no-commit rounds, wall per round); scripts/coordination/tests/test_codex_lane_drive.py 7 passed. Not ticked: the done-when selector `-k codex_lane_verdict` matches 0 tests (only an unrelated skip), so refine the done-when to that test file (or rename the tests) before ticking.
+      · ❄ frozen until: PM-CODEX-LANE-VERDICT-R2 (superseded by PM-CODEX-LANE-VERDICT-R2)
+- [ ] **PM-CODEX-LANE-VERDICT-R2** [non-inference] Take the interim Codex lane driver's stop decision off the lane's self-written LANE-STATUS line: commit the loop as scripts/coordination/codex_lane/drive.py whose DONE is computed from artifacts, treat LANE-STATUS as a hint, stop as STALLED after 3 consecutive rounds with no new commit, and log rounds and wall seconds per lane (intake-2943, intake-2947#02, intake-2953)
+      · done when: python3 -m pytest scripts/coordination/tests/test_codex_lane_drive.py passes on origin/main
+      · gate: none        · inputs: `scripts/coordination/codex_lane/drive.py`
+      · owner: pipeline-mgmt
+      · supersedes: PM-CODEX-LANE-VERDICT
+      · previous_task_text: **PM-CODEX-LANE-VERDICT** [non-inference] Take the interim Codex lane driver's stop decision off the lane's self-written LANE-STATUS line (drive.sh and drive2.sh stop on its first line): commit the loop as scripts/coordination/codex_lane.py whose DONE is computed from artifacts (each reported box's branch and sha exist and pass the static checks; for pushed lanes, reachable from origin/main and box ticked), treat LANE-STATUS as a hint, stop as STALLED after 3 consecutive rounds with no new commit, and log rounds and wall seconds per lane (intake-2943, intake-2947#02, intake-2953)
 - [x] **PM-PREFLIGHT-12** [non-inference] Land the D9-acked row preflight lane: 12 checks, store/ports/append FAIL and the rest WARN (mk_ak_row v2 contracts, HOST-SHAPE-OVERLAPS-GPU, effective argv[0] store, arm-scoped served deltas) ✅ 2026-11-24 [no-belief: software] preflight bb5c756d0 2099822d9 8835cc392 on origin/main; 12 checks (store/ports/append FAIL, rest WARN)
       · done when: preflight commits bb5c756d0, 2099822d9 and 8835cc392 are reachable from origin/main
       · gate: none

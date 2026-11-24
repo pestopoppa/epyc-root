@@ -373,3 +373,10 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: a census table (unit, end reason, diff lines, re-dispatched yes or no) for every r8a-r8g unit and a one-line build-or-decline decision are appended to docs/design/taskflow-stage1-canary-findings.md on origin/main
       · gate: none        · inputs: `scripts/coordination/taskflow/dispatch.py` `docs/design/taskflow-stage1-canary-findings.md`
       · owner: pipeline-mgmt
+      · ❄ frozen until: TF-EARLY-END-CENSUS-R2 (superseded by TF-EARLY-END-CENSUS-R2)
+- [ ] **TF-EARLY-END-CENSUS-R2** [non-inference] Count the taskflow units in canaries r8a-r8g whose worker ended before its wall cap with an empty or partial diff and no verified verdict, and how many were re-run by hand, then apply the brief's build-or-decline rule (census doc docs/design/taskflow-early-end-census-20261124.md)
+      · done when: test -f docs/design/taskflow-early-end-census-20261124.md
+      · gate: none
+      · owner: pipeline-mgmt
+      · supersedes: TF-EARLY-END-CENSUS
+      · previous_task_text: **TF-EARLY-END-CENSUS** [non-inference] Count the taskflow units in canaries r8a-r8g whose worker ended before its wall cap with an empty or partial diff and no verified verdict, and how many were re-run by hand, then apply the brief's build-or-decline rule to a typed resumable end state in dispatch.py that select.py re-admits (intake-2942 deferred-call resume, intake-2950 timer per parked unit, intake-2946 progress written by the harness rather than the worker)
