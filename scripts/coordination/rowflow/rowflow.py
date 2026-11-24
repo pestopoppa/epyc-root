@@ -9132,6 +9132,55 @@ def claim_wait(flags, owner, cpus, minutes, light=False, rank=None, wait_s=CLAIM
         time.sleep(CLAIM_POLL_S)
 
 
+def rerank_row(flags, rid, rank, by, reason, log=print):
+    """`rowflow.py rerank <id> <rank> --by <owner> --reason R` (operator 2026-11-24, AK verify-attention to the head of the
+    GPU queue): change ONLY priority_rank of ready/<id>.json - no re-smoke; PASS.json / smoke state are untouched (a
+    republish would refuse: the smoke predicate already exits 0). Refused unless by == the manifest owner, the row is in
+    ready/ with no open grant / live direct or dry run, and rank is a number >= 0. Written with atomic_json under
+    grants/.claim.lock (the lock write_row_grant_locked holds), so it never races a grant write. Logs
+    RERANK <id> <old> -> <new> by <owner>: <reason> and appends rerank_history. Returns (old, new)."""
+    reason = re.sub(r"\s+", "_", str(reason or "").strip())
+    by = str(by or "").strip()
+    need(reason, "rerank: --reason is required")
+    need(by, "rerank: --by <owner> is required (or EPYC_AGENT_ID in the environment)")
+    try:
+        new = float(rank)
+    except (TypeError, ValueError):
+        raise Refused(f"rerank {rid}: rank {rank!r} is not a number")
+    need(new == new and new != float("inf") and new >= 0, f"rerank {rid}: rank must be a number >= 0, got {rank!r}")
+    if new == int(new):
+        new = int(new)
+    G = os.path.join(flags, "grants")
+    os.makedirs(G, exist_ok=True)
+    fd = os.open(os.path.join(G, ".claim.lock"), os.O_CREAT | os.O_RDWR, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        rp = ready_path(flags, rid)
+        d = load_json(rp)
+        need(d, f"rerank {rid}: no ready/{rid}.json (only a queued ready row can be reranked)")
+        owner = str(d.get("owner") or "")
+        need(owner and owner == by, f"rerank {rid}: owner is {owner or '(unknown)'}, caller is {by}; only the row owner may rerank")
+        need(not os.path.exists(os.path.join(G, rid + ".grant")), f"rerank {rid}: grants/{rid}.grant is open (granted/running)")
+        for t in (".ended", ".complete"):
+            need(not os.path.exists(os.path.join(G, rid + t)), f"rerank {rid}: grants/{rid}{t} exists (terminal)")
+        need(direct_run(flags, rid) is None, f"rerank {rid}: a direct run is live")
+        old = d.get("priority_rank", 100)
+        rec = {"at": now_iso(), "by": by, "old": old, "new": new, "reason": reason}
+        sp = d.get("published_from") if isinstance(d.get("published_from"), str) else ""
+        spec_rank = (load_json(sp) or {}).get("priority_rank") if sp.endswith(".json") else None
+        if spec_rank is not None:
+            rec["spec_priority_rank"] = spec_rank   # recorded, never required to match
+        d["priority_rank"] = new
+        d["rerank_history"] = list(d.get("rerank_history") or []) + [rec]
+        atomic_json(rp, d)
+    finally:
+        os.close(fd)
+    line = f"RERANK {rid} {old} -> {new} by {by}: {reason}"
+    _keeper_log_line(flags, line)
+    log(line)
+    return old, new
+
+
 def withdraw_request(flags, rid, by):
     """release <req id>: the owner withdraws a pending request -> ('WITHDRAWN', None); granted meanwhile -> (None, gid)."""
     p = os.path.join(claim_req_dir(flags), rid + ".json")
@@ -10685,6 +10734,8 @@ def main(argv=None):
     s.add_argument("id"); s.add_argument("--reason", required=True)
     s = sub.add_parser("release", help="owner-only: end an idle/finished grant early, or shrink it with --regions q2,..; refused while its job runs (never kills)")
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True); s.add_argument("--regions")
+    s = sub.add_parser("rerank", help="owner-only: change priority_rank of a queued ready/<id>.json in place (no re-smoke; PASS kept); refused once granted")
+    s.add_argument("id"); s.add_argument("rank"); s.add_argument("--by"); s.add_argument("--reason", required=True)
     s = sub.add_parser("resume", help="owner-only: requeue a STOPPED / released-early resumable row under the SAME id (clears STOP + the terminal end, back to ready/, no new smoke)")
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True)
     s = sub.add_parser("unpark", help="operator: a parked row (precond refusal / arming failures) is grantable again next tick; its "
@@ -10799,6 +10850,10 @@ def main(argv=None):
                 rid = gid
             r = release_grant(a.flags, rid, by, a.reason, a.regions)
             print(f"{r} {rid}")
+            return 0
+        if a.cmd == "rerank":
+            by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
+            rerank_row(a.flags, a.id, a.rank, by, a.reason)
             return 0
         if a.cmd == "resume":
             by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")

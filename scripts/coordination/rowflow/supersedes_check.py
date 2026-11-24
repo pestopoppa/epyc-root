@@ -47,15 +47,31 @@ def _done(flags, rid):
                                             os.path.join(flags, "dryrun", rid, "SMOKE-RESULT.json")))
 
 
+def _pending_dryrun(flags, rid):
+    """A dry run assigned/placed/running and not yet ended (dryrun/<id>/RUNNING.json or SMOKE-PLACED.json, no `ended`)."""
+    dd = os.path.join(flags, "dryrun", rid)
+    if os.path.exists(os.path.join(dd, "ended")):
+        return False
+    return any(os.path.exists(os.path.join(dd, n)) for n in ("RUNNING.json", "SMOKE-PLACED.json"))
+
+
 def live_ids(flags) -> dict:
-    """{row id: why-live} over ready/*.json, dryrun/*/unpublished.json, dryrun/*/*SMOKE-QUEUED.json, dryrun/*/PASS.json;
-    a row that is done (ended/complete/FILED/smoke RESULT) is not live."""
+    """{row id: why-live}. A row is live only with a ready/<id>.json manifest, a queued smoke marker
+    (dryrun/<id>/*SMOKE-QUEUED.json), an open grants/<id>.grant, or a pending dry run. A bare dryrun/<id>/unpublished.json
+    or PASS.json is NOT live on its own: a smoke that FAILed leaves unpublished.json + dryrun/<id>/ended behind
+    (ak-gvfattn-served-gpu-20261124-r2, ak-gvfattn-q4kv-gpu-20261124{,-r2}: withdraw said ABSENT yet publish called them
+    queued live predecessors, 2026-11-24). A row that is done (ended/complete/FILED/smoke RESULT) is not live."""
     out = {}
     for p in glob.glob(os.path.join(flags, "ready", "*.json")):
         out.setdefault(os.path.basename(p)[:-5], "manifest")
-    for pat, why in (("unpublished.json", "queued"), ("*SMOKE-QUEUED.json", "queued"), ("PASS.json", "PASS")):
-        for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
-            out.setdefault(os.path.basename(os.path.dirname(p)), why)
+    for p in glob.glob(os.path.join(flags, "dryrun", "*", "*SMOKE-QUEUED.json")):
+        out.setdefault(os.path.basename(os.path.dirname(p)), "queued")
+    for p in glob.glob(os.path.join(flags, "grants", "*.grant")):
+        out.setdefault(os.path.basename(p)[:-len(".grant")], "granted")
+    for p in glob.glob(os.path.join(flags, "dryrun", "*", "unpublished.json")) + glob.glob(os.path.join(flags, "dryrun", "*", "PASS.json")):
+        r = os.path.basename(os.path.dirname(p))
+        if r not in out and _pending_dryrun(flags, r):
+            out[r] = "dryrun"
     return {r: w for r, w in out.items() if not _done(flags, r)}
 
 
