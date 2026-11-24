@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T14:57:31Z",
+  "generated_at": "2026-11-24T15:18:46Z",
   "nodes": [
     {
       "age_days": 2,
@@ -3126,14 +3126,14 @@
         "RTG-34"
       ],
       "closed": 94,
-      "dispatchable": 49,
+      "dispatchable": 52,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-23",
       "next_action": "Resume taskflow canary r8g (rowflow resume, CPU q0-q2; fixes 1-6 landed) \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
-      "open": 49,
+      "open": 52,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
@@ -3149,7 +3149,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 313,
+      "closed": 317,
       "dispatchable": 87,
       "domain": "routing-and-optimization",
       "guarded": 0,
