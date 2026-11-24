@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T14:04:22Z",
+  "generated_at": "2026-11-24T14:36:34Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1219,15 +1219,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 222,
-      "dispatchable": 48,
+      "closed": 225,
+      "dispatchable": 46,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "last_advanced": "2026-11-24",
       "next_action": "Retain EV-PROTO and live calibration acceptance",
-      "open": 49,
+      "open": 47,
       "priority": 0.5376,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
@@ -1328,11 +1328,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 13,
+          "dispatchable": 11,
           "gates": [],
           "line": 3103,
           "name": "scoring-infra-standardization",
-          "open": 13,
+          "open": 11,
           "readiness": "ready"
         }
       ]
@@ -1837,7 +1837,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 994,
+          "line": 995,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 19,
           "readiness": "blocked"
@@ -1929,15 +1929,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 269,
-      "dispatchable": 31,
+      "closed": 270,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-24",
       "next_action": "C19 27B ASan diagnostic for the test-dtree-device-accept heap corruption; then assemble C20 (Q0_RM4, GDNPROJ_FUSE, SPEC-DISTS-TRUNC)",
-      "open": 31,
+      "open": 30,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1971,7 +1971,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 30,
+          "dispatchable": 29,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1980,7 +1980,7 @@
           ],
           "line": 22,
           "name": "autokernel-champion-aggregate",
-          "open": 30,
+          "open": 29,
           "readiness": "blocked"
         },
         {

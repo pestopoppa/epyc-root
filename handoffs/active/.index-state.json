@@ -4,7 +4,7 @@
       "blocked": 24,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 560
+      "open": 559
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-19",
-      "open": 256
+      "open": 254
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -937,10 +937,10 @@
     },
     "eval-tower-program.md": {
       "blocked": 0,
-      "closed": 222,
+      "closed": 225,
       "guarded": 1,
       "last_advanced": "2026-11-24",
-      "open": 48,
+      "open": 46,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -949,7 +949,7 @@
       },
       "row_id": "EVL-14",
       "state": "active",
-      "total": 271,
+      "total": 272,
       "tracks": [
         {
           "blocked": 0,
@@ -1043,13 +1043,13 @@
         },
         {
           "blocked": 0,
-          "closed": 36,
+          "closed": 39,
           "gates": [],
           "guarded": 0,
           "line": 3103,
           "markers": 1,
           "name": "scoring-infra-standardization",
-          "open": 13
+          "open": 11
         }
       ]
     },
@@ -1180,10 +1180,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 0,
-      "closed": 269,
+      "closed": 270,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 31,
+      "open": 30,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1196,7 +1196,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 224,
+          "closed": 225,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1207,7 +1207,7 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 30
+          "open": 29
         },
         {
           "blocked": 0,
@@ -2386,7 +2386,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 994,
+          "line": 995,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18
