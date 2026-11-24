@@ -9,14 +9,20 @@ What every scaffolded row gets (ak-failure-audit-20261123/REPORT.md A2-A12; chec
     the smoke ends through ak_row_harness.end_smoke(verdict, rc, reason) (SMOKE-FAIL-SILENT) after
     write_smoke_measure(...) (SMOKE-NO-MEASURE); a knob row must record RESULT["witness"] proving the knob took effect,
     otherwise the verdict is FUTILITY_WITNESS (NO-WITNESS); `--selftest` runs the pure logic with no compute.
+  * servers: ONE server per arm/condition, many requests; request() sends cache_prompt:false on every request so no
+    slot/prompt-cache state carries over. A fresh server per visit only with --fresh-server-reason (spec
+    fresh_server_per_visit=true + fresh_server_reason; else ak_row_lint FRESH-SERVER-UNJUSTIFIED).
   * ak_row_harness.py vendored and sealed; SOURCE.sha256 never lists spec.json (SEALED-SPEC); no out/ or out-smoke/.
+  * spec.json: explicit requires_quiet_host (true for CPU timing rows, false for GPU rows), exclusive_cpu only with
+    --exclusive-cpu (gate rows); a CPU row has no --claim-cpus (the grant's cpus).
+  * the publish hint printed at the end names the DEPLOYED publish_row.py (compute-flags/bin/rowflow), never a checkout.
   * ak_row_lint runs (incl. job.py --selftest) BEFORE spec.json is written; any FAIL aborts with no spec.json.
 
 The scaffold is a starting point: fill measure_unit() / decide() in job.py, re-run with --reseal to re-seal and re-lint.
 Usage:
   mk_ak_row.py --id ak-x-cpu-20261124 --task file.md:TASK --model "..." --rule "KEEP iff ..." [--knob GGML_X]...
                [--lane cpu|gpu] [--claim "any-of q0,q1,q2"] [--servers 1] [--threads 24] [--estimate-s 3600]
-               [--min-window 1800] [--root /mnt/raid0/llm/tmp]
+               [--min-window 1800] [--root /mnt/raid0/llm/tmp] [--exclusive-cpu] [--no-quiet-host]
   mk_ak_row.py --reseal <row_dir>        re-seal (without spec.json) and lint an edited scaffold
 """
 import argparse
@@ -34,6 +40,7 @@ import ak_row_lint as LINT  # noqa: E402
 
 ROOT = "/mnt/raid0/llm/tmp"
 FILLER = "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh"
+PUBLISH = "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py"   # the deployed copy (deploy_rowflow.sh)
 CLAIM_RX = re.compile(r"^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$")
 SEALED = ("job.py", "check_complete.py", "launch.sh", "ak_row_harness.py")
 
@@ -71,6 +78,9 @@ import ak_row_harness as H  # noqa: E402
 ROW_ID = {id!r}
 KNOBS = {knob_list!r}
 N_SERVERS = {servers}
+# fresh server starts per arm (only when spec fresh_server_per_visit): at most this many process samples, the remaining
+# requests reuse those servers with cache_prompt:false (D9 2026-11-24)
+FRESH_SERVER_STARTS = {fresh_starts}
 OUT = os.path.join(D, "out")
 OUT_SMOKE = os.path.join(D, "out-smoke")
 SMOKE = os.environ.get("FILLER_SMOKE") == "1" or os.environ.get("FILLER_DRYRUN") == "1"
@@ -105,6 +115,16 @@ def start_server(argv, log_path, env=None):
     p = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, env=env)   # same session/pgrp as the job: the keeper attributes GPU/KFD use to the grant
     _SERVERS.append(p)
     return p
+
+
+def request(port, payload, timeout=1800):
+    """POST one completion to the arm's (reused) server. cache_prompt is forced False: no slot/prompt-cache carry-over."""
+    import urllib.request
+    body = dict(payload, cache_prompt=False)
+    req = urllib.request.Request(f"http://127.0.0.1:{{port}}/completion", data=json.dumps(body).encode(),
+                                 headers={{"Content-Type": "application/json"}})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.load(r)
 
 
 def measure_unit(port, unit):
@@ -158,7 +178,9 @@ def main():
         return smoke()
     try:
         units, witness = [], {{}}
-        # TODO: start servers, loop units (H.run_quiet for CPU quiet-host rows), fill witness from the server's own output.
+        # TODO: start ONE server per arm/condition (start_server), then loop units against it via request() (cache_prompt
+        # False); H.run_quiet for CPU quiet-host rows; fill witness from the server's own output. A server per unit needs
+        # spec fresh_server_per_visit + fresh_server_reason (mk_ak_row --fresh-server-reason).
         finish(units, witness)
         return 0
     finally:
@@ -247,7 +269,7 @@ def scaffold(a):
     os.chmod(os.path.join(d, "launch.sh"), 0o755)
     with open(os.path.join(d, "job.py"), "w") as f:
         f.write(JOB.format(id=a.id, task=a.task, rule=a.rule, knobs=", ".join(a.knob) or "none", knob_list=list(a.knob),
-                           servers=a.servers))
+                           servers=a.servers, fresh_starts=a.fresh_server_starts))
     with open(os.path.join(d, "check_complete.py"), "w") as f:
         f.write(CHECK.format(result=os.path.join(d, "out", "RESULT.json")))
     shutil.copy(os.path.join(HERE, "ak_row_harness.py"), os.path.join(d, "ak_row_harness.py"))
@@ -259,7 +281,14 @@ def scaffold(a):
             "min_window_s": a.min_window, "declared_threads": a.threads, "handoff_task": a.task, "model": a.model,
             "smoke_predicate": "/usr/bin/test -s " + os.path.join(d, "out", H.TERMINAL_SMOKE),
             "decision_rule": a.rule + (" | knobs: " + ", ".join(a.knob) if a.knob else ""),
+            "requires_quiet_host": bool(a.lane == "cpu" and not a.no_quiet_host),
             "notes": "scaffolded by mk_ak_row.py; estimate_basis: add after the smoke (ak_row_harness.estimate_from_smoke)"}
+    if a.exclusive_cpu:
+        spec["exclusive_cpu"] = True
+    spec["fresh_server_per_visit"] = bool(a.fresh_server_reason)
+    if a.fresh_server_reason:
+        spec["fresh_server_reason"] = a.fresh_server_reason
+        spec["fresh_server_starts"] = a.fresh_server_starts
     return d, spec
 
 
@@ -278,6 +307,11 @@ def main(argv=None):
     ap.add_argument("--estimate-s", type=int, default=3600)
     ap.add_argument("--min-window", type=int, default=1800)
     ap.add_argument("--root", default=ROOT)
+    ap.add_argument("--exclusive-cpu", action="store_true", help="gate rows: spec exclusive_cpu=true")
+    ap.add_argument("--fresh-server-reason", default="",
+                    help="only when a server per visit is required (load-time kernel selection, per-process effects)")
+    ap.add_argument("--fresh-server-starts", type=int, default=3, help="cap of fresh server starts per arm")
+    ap.add_argument("--no-quiet-host", action="store_true", help="CPU row that is not a timing row")
     a = ap.parse_args(argv)
     if a.reseal:
         seal(a.reseal)
@@ -292,6 +326,7 @@ def main(argv=None):
     with open(os.path.join(d, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
     print(f"mk_ak_row: scaffolded {d} (lint clean, spec.json written last; fill job.py then --reseal)")
+    print(f"mk_ak_row: publish with the DEPLOYED tool: /usr/bin/python3 {PUBLISH} {os.path.join(d, 'spec.json')}")
     return 0
 
 

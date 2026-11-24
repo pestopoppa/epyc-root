@@ -124,18 +124,85 @@ def test_quiet_guard_regex_ignores_contended_verdict_names(tmp_path):
     assert "QUIET-NO-BACKOFF" in codes(d, "FAIL")
 
 
-def test_smoke_warns(tmp_path):
-    d = _row(tmp_path, job="import os\nS = os.environ.get('FILLER_SMOKE')\n")
-    assert {"SMOKE-FAIL-SILENT", "SMOKE-NO-MEASURE"} <= codes(d, "WARN")
+SELFTEST_OK = "import sys\nif __name__ == '__main__':\n    sys.exit(0 if '--selftest' in sys.argv[1:] else 1)\n"
+
+
+def test_smoke_fails(tmp_path):
+    d = _row(tmp_path, job="import os\nS = os.environ.get('FILLER_SMOKE')\n# end_smoke( write_smoke_measure(\n")
+    assert {"SMOKE-FAIL-SILENT", "SMOKE-NO-MEASURE"} <= codes(d, "FAIL")      # comments do not count
     (d / "job.py").write_text("import os\nS = os.environ.get('FILLER_SMOKE')\nH.write_smoke_measure(o, 1, 1, 0)\n"
                               "H.end_smoke('PASS', 0, 'ok', o)\n")
     assert not codes(d) & {"SMOKE-FAIL-SILENT", "SMOKE-NO-MEASURE"}
 
 
+def test_smoke_measure_path_must_match_keeper(tmp_path):
+    hdr = "import os, sys\nD = os.path.dirname(os.path.abspath(__file__))\nS = os.environ.get('FILLER_SMOKE')\n"
+    end = "H.end_smoke('PASS', 0, 'ok', os.path.join(D, 'out'))\n"
+    d = _row(tmp_path, job=hdr + "H.write_smoke_measure(os.path.join(D, 'out', 'smoke'), 1, 1, 0)\n" + end)
+    assert "SMOKE-MEASURE-PATH" in codes(d, "FAIL")                    # SPEC-PIT: out/smoke/ is never read
+    (d / "job.py").write_text(hdr + "OUT_SMOKE = os.path.join(D, 'out-smoke')\nH.write_smoke_measure(OUT_SMOKE, 1, 1, 0)\n" + end)
+    assert "SMOKE-MEASURE-PATH" not in codes(d)
+    (d / "job.py").write_text(hdr + "from pathlib import Path\nR = Path(__file__).resolve().parent\n"
+                              "(R / 'out' / 'smoke' / 'smoke_measure.json').write_text('{}')\n" + end)
+    assert "SMOKE-MEASURE-PATH" in codes(d, "FAIL")                    # literal write, same mismatch
+    (d / "spec.json").write_text(json.dumps({"id": d.name, "estimate_basis": {"smoke_measure": "out/smoke/smoke_measure.json",
+                                                                              "provisional": True, "reason": "r"}}))
+    assert "SMOKE-MEASURE-PATH" not in codes(d)                        # declared path: the keeper reads it
+
+
+def test_selftest_missing(tmp_path):
+    d = _row(tmp_path, rid="ak-st-20261124", job="def selftest():\n    return 0\n\ndef main():\n    return 0\n\nmain()\n")
+    assert "SELFTEST-MISSING" in codes(d, "FAIL")                      # a function named selftest is not a handler
+    (d / "job.py").write_text("import sys\nif '--selftest' in sys.argv:\n    print('x')\nmain()\n")
+    assert "SELFTEST-MISSING" in codes(d, "FAIL")                      # handler that does not exit
+    (d / "job.py").write_text("import sys\ndef selftest(): return 0\ndef main(): return 0\n"
+                              "if __name__ == '__main__':\n    sys.exit(selftest() if '--selftest' in sys.argv[1:] else main())\n")
+    assert "SELFTEST-MISSING" not in codes(d)
+    (d / "job.py").write_text("import sys\nif '--selftest' in sys.argv:\n    sys.exit(0)\n")
+    assert "SELFTEST-MISSING" not in codes(d)
+    o = _row(tmp_path, rid="other-row-20261124", job="x = 1\n")
+    assert "SELFTEST-MISSING" not in codes(o)                          # non-AK rows are not judged
+
+
+def test_fresh_server_unjustified(tmp_path):
+    job = ("def start_server(a, l):\n    pass\n\ndef unit(u):\n    s = start_server(['llama-server'], 'l')\n\n"
+           "for u in range(4):\n    unit(u)\n")
+    d = _row(tmp_path, job=job)
+    assert "FRESH-SERVER-UNJUSTIFIED" in codes(d, "WARN")
+    (d / "spec.json").write_text(json.dumps({"id": d.name, "fresh_server_per_visit": True}))
+    assert "FRESH-SERVER-UNJUSTIFIED" in codes(d, "WARN")              # the reason is required too
+    (d / "spec.json").write_text(json.dumps({"id": d.name, "fresh_server_per_visit": True,
+                                             "fresh_server_reason": "load-time kernel selection"}))
+    assert "FRESH-SERVER-UNJUSTIFIED" not in codes(d)
+    assert "FRESH-SERVER-UNCAPPED" in codes(d, "WARN")                 # justified but uncapped
+    (d / "job.py").write_text("FRESH_SERVER_STARTS = 3\n" + job)
+    assert "FRESH-SERVER-UNCAPPED" not in codes(d)
+    (d / "spec.json").write_text(json.dumps({"id": d.name, "fresh_server_per_visit": True, "fresh_server_starts": 8,
+                                             "fresh_server_reason": "load-time kernel selection"}))
+    assert "FRESH-SERVER-UNCAPPED" in codes(d, "WARN")                 # > 3 needs its own reason
+    (d / "job.py").write_text("def start_server(a, l):\n    pass\n\ns = start_server(['llama-server'], 'l')\n"
+                              "for u in range(4):\n    request(8080, {'prompt': 'x'})\n")
+    (d / "spec.json").write_text(json.dumps({"id": d.name}))
+    assert "FRESH-SERVER-UNJUSTIFIED" not in codes(d)                  # one server, many requests
+    assert "cache_prompt=False" in MK.JOB and "FRESH_SERVER_STARTS = {fresh_starts}" in MK.JOB and 'spec["fresh_server_per_visit"]' in open(MK.__file__).read()
+
+
+def test_wall_stop_past(tmp_path):
+    d = _row(tmp_path, job="DEADLINE_UTC = '2026-11-20T06:00:00Z'\n")
+    assert "WALL-STOP-PAST" in codes(d, "FAIL")
+    (d / "job.py").write_text("WALL_STOP = 1700000000\n")
+    assert "WALL-STOP-PAST" in codes(d, "FAIL")
+    (d / "job.py").write_text("import time\nDEADLINE = time.time() + 3600\nSTOP_AT = '2099-01-01T00:00:00Z'\n"
+                              "# deadline = '2020-01-01T00:00'\n")
+    assert "WALL-STOP-PAST" not in codes(d)
+    (d / "run.sh").write_text("#!/bin/bash\nUNTIL=\"2026-01-01 00:00\"\n")
+    assert "WALL-STOP-PAST" in codes(d, "FAIL")
+
+
 def test_no_witness_and_replay_baseline(tmp_path):
     d = _row(tmp_path, rid="ak-rsreplay-t-20261123", spec={"decision_rule": "KEEP iff GGML_HIP_FOO=1 is faster"})
     assert {"NO-WITNESS", "REPLAY-NO-BASELINE"} <= codes(d, "WARN")
-    (d / "job.py").write_text("res = {'witness': w, 'baseline_ok': b}\n")
+    (d / "job.py").write_text("res = {'witness': w, 'baseline_ok': b}\n" + SELFTEST_OK)
     assert not codes(d) & {"NO-WITNESS", "REPLAY-NO-BASELINE"}
     assert LINT.main(["--no-selftest", str(d)]) == 0                  # WARN never fails the exit code
 
@@ -162,6 +229,25 @@ def test_mk_ak_row_scaffold_is_lint_clean(tmp_path):
     assert ",".join(map(str, H.expected_ports(rid, 2))) in launch
     # estimate_basis comes from the smoke, so ESTIMATE-UNMEASURED is the only expected FAIL before it
     assert [r[1] for r in LINT.lint_dir(str(d)) if r[0] == "FAIL"] == ["ESTIMATE-UNMEASURED"]   # incl. --selftest
+
+
+@pytest.mark.parametrize("lane", ["cpu", "gpu"])
+def test_mk_ak_row_both_lanes_pass_new_lint(tmp_path, lane):
+    rid = f"ak-mk-{lane}-tpl-20261124"
+    assert MK.main(["--id", rid, "--task", "x.md:T", "--rule", "KEEP iff faster", "--lane", lane, "--root", str(tmp_path)]
+                   + (["--exclusive-cpu"] if lane == "cpu" else [])) == 0
+    d = tmp_path / rid
+    spec = json.loads((d / "spec.json").read_text())
+    assert spec["requires_quiet_host"] is (lane == "cpu")
+    assert spec["fresh_server_per_visit"] is False
+    assert not [r for r in LINT.lint_dir(str(d), selftest=False) if r[1] == "FRESH-SERVER-UNJUSTIFIED"]
+    assert spec.get("exclusive_cpu") is (True if lane == "cpu" else None)
+    launch, job = (d / "launch.sh").read_text(), (d / "job.py").read_text()
+    assert ("--claim-cpus" in launch) is (lane == "gpu")
+    assert "start_new_session" not in job and "H.kill_tree(p)" in job and 'cd "$D"' in launch
+    fails = [r for r in LINT.lint_dir(str(d)) if r[0] == "FAIL" and r[1] != "ESTIMATE-UNMEASURED"]
+    assert fails == []                                                 # incl. --selftest, SMOKE-*, SELFTEST-MISSING
+    assert not LINT.selftest_missing(job)
 
 
 def test_mk_ak_row_cpu_default_has_no_claim(tmp_path):

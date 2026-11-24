@@ -148,7 +148,9 @@ def test_estimate_and_spec_check(tmp_path):
 def _row(tmp_path, rid, job, launch, spec):
     d = tmp_path / rid
     d.mkdir()
-    (d / "job.py").write_text(job)
+    # D9: every AK job.py needs a --selftest argv handler (SELFTEST-MISSING); fixtures here test the other checks
+    (d / "job.py").write_text("import sys as _s\nif __name__ == '__main__' and '--selftest' in _s.argv[1:]:\n"
+                              "    _s.exit(0)\n" + job)
     (d / "launch.sh").write_text(launch)
     (d / "spec.json").write_text(json.dumps(dict(spec, id=rid)))
     return str(d)

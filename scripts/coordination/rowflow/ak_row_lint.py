@@ -19,8 +19,23 @@ would mass-fail; tighten once mk_ak_row.py rows dominate):
   SELFTEST           FAIL  job.py --selftest (when job.py supports it) exits non-zero or exceeds 60 s
   CLAIM-PARSE        FAIL  launch.sh parses WS58_REGIONS with tr/grep/paste/sed/awk, or its --claim-cpus / C= default is not a
                            digit/comma/dash list; use C=${WS58_CPUS:-<digits>} or omit both (CPU rows: grant's cpus)
-  SMOKE-FAIL-SILENT  WARN  smoke code with no ak_row_harness.end_smoke(verdict, rc, reason)
-  SMOKE-NO-MEASURE   WARN  smoke code with no ak_row_harness.write_smoke_measure(...)
+  SMOKE-FAIL-SILENT  FAIL  smoke code with no ak_row_harness.end_smoke(verdict, rc, reason[, out_dir]) CALL (AST, not grep)
+  SMOKE-NO-MEASURE   FAIL  smoke code with no write_smoke_measure(...) call and no literal smoke_measure.json write
+  SMOKE-MEASURE-PATH FAIL  the smoke writes smoke_measure.json somewhere the keeper never reads. rowflow.smoke_measure_paths
+                           reads exactly: <scratch_root>/out-smoke/smoke_measure.json, spec estimate_basis.rebook_from /
+                           .smoke_measure, and <flags>/dryrun/<id>/smoke_measure.json (not exported to jobs). E.g.
+                           out/smoke/smoke_measure.json is never read -> SMOKE-NO-MEASURE at the smoke, 5-20 min later.
+  SELFTEST-MISSING   FAIL  (autokernel rows) job.py has no `--selftest` argv handler that exits before main()
+  WALL-STOP-PAST     FAIL  a hard-coded absolute wall-clock deadline (deadline/stop/until/cutoff/... = ISO time or epoch)
+                           that is already in the past: the row can only stop at once
+D9 (operator 2026-11-24): SMOKE-NO-MEASURE / SMOKE-FAIL-SILENT were WARN, now FAIL: a row certain to fail its smoke is
+refused at publish.
+  FRESH-SERVER-UNJUSTIFIED WARN  a server is started per loop iteration (per request/unit/visit) and spec.json does not set
+                           "fresh_server_per_visit": true with a "fresh_server_reason" (default: one server per arm,
+                           many requests, cache_prompt:false on every request; D9 2026-11-24)
+  FRESH-SERVER-UNCAPPED WARN  fresh_server_per_visit=true but the job never reads its cap (FRESH_SERVER_STARTS /
+                           fresh_server_starts, default 3 starts per arm; the rest of the requests reuse those servers), or
+                           spec fresh_server_starts > 3 with no fresh_server_starts_reason
   NO-WITNESS         WARN  the decision rule names a GGML_/LLAMA_ knob and no row code records a witness key
   REPLAY-NO-BASELINE WARN  a replay row with no baseline validation (baseline_ok / validate_baseline / replay_baseline)
 Usage: ak_row_lint.py [--no-selftest] <row_dir> [<row_dir> ...]   (read-only, except job.py --selftest when present)
@@ -32,7 +47,9 @@ import os
 import re
 import subprocess
 import sys
+import time
 import tokenize
+from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ak_row_harness as H  # noqa: E402
@@ -170,6 +187,16 @@ def _const(node, env, seen=()):
     """Statically evaluate a str/Path expression from literals and module-level constants; None when not resolvable."""
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value
+    rowdir = env.get("__rowdir__")
+    if rowdir is not None and _is_file_dir(node):
+        return rowdir.value
+    if isinstance(node, ast.Attribute) and node.attr == "parent" and rowdir is not None:
+        inner = node.value
+        if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Attribute) and inner.func.attr in ("resolve", "absolute"):
+            inner = inner.func.value
+        if isinstance(inner, ast.Call) and ast.unparse(inner.func) in ("Path", "pathlib.Path") and \
+                len(inner.args) == 1 and isinstance(inner.args[0], ast.Name) and inner.args[0].id == "__file__":
+            return rowdir.value
     if isinstance(node, ast.Name) and node.id in env and node.id not in seen:
         return _const(env[node.id], env, seen + (node.id,))
     if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Div)):
@@ -191,6 +218,231 @@ def _const(node, env, seen=()):
     return None
 
 
+def _is_file_dir(node):
+    """os.path.dirname(os.path.abspath|realpath(__file__)) / os.path.dirname(__file__)."""
+    if not (isinstance(node, ast.Call) and ast.unparse(node.func) == "os.path.dirname" and len(node.args) == 1):
+        return False
+    a = node.args[0]
+    if isinstance(a, ast.Call) and ast.unparse(a.func) in ("os.path.abspath", "os.path.realpath") and len(a.args) == 1:
+        a = a.args[0]
+    return isinstance(a, ast.Name) and a.id == "__file__"
+
+
+def _env(tree, d):
+    """Name -> value node for every simple assignment (module level wins), plus the row dir for __file__ idioms."""
+    env = {}
+    for n in tree.body:
+        if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+            env.setdefault(n.targets[0].id, n.value)
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+            env.setdefault(n.targets[0].id, n.value)
+    env["__rowdir__"] = ast.Constant(d)
+    return env
+
+
+def _callname(n):
+    f = n.func
+    return f.attr if isinstance(f, ast.Attribute) else (f.id if isinstance(f, ast.Name) else "")
+
+
+def _cands(node, env, seen=()):
+    """Every statically resolvable value of a path expression (both arms of an `a if c else b`)."""
+    if isinstance(node, ast.IfExp):
+        return _cands(node.body, env, seen) + _cands(node.orelse, env, seen)
+    if isinstance(node, ast.Name) and node.id in env and node.id not in seen and isinstance(env[node.id], ast.IfExp):
+        return _cands(env[node.id], env, seen + (node.id,))
+    v = _const(node, env)
+    return [v] if v is not None else []
+
+
+def keeper_measure_rels(spec, d):
+    """The smoke_measure.json paths rowflow.smoke_measure_paths reads, relative to the row's scratch_root."""
+    root = str(spec.get("scratch_root") or d)
+    rels = {os.path.join("out-smoke", H.SMOKE_MEASURE)}
+    b = spec.get("estimate_basis")
+    if isinstance(b, dict):
+        decl = b.get("rebook_from") or b.get("smoke_measure")
+        if isinstance(decl, str) and decl:
+            rels.add(os.path.normpath(os.path.relpath(decl, root) if os.path.isabs(decl) else decl))
+    return rels
+
+
+def smoke_checks(d, spec, own):
+    """SMOKE-FAIL-SILENT / SMOKE-NO-MEASURE / SMOKE-MEASURE-PATH over real call sites (AST), not text matches."""
+    out = []
+    ends, writes, unresolved = 0, [], []
+    for f, t in sorted(own.items()):
+        try:
+            tree = ast.parse(t)
+        except (SyntaxError, ValueError):
+            continue
+        env = _env(tree, d)
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Call):
+                nm = _callname(n)
+                if nm == "end_smoke" and len(n.args) + len(n.keywords) >= 3:
+                    ends += 1
+                if nm == "write_smoke_measure":
+                    arg = n.args[0] if n.args else next((k.value for k in n.keywords if k.arg == "out_dir"), None)
+                    vs = _cands(arg, env) if arg is not None else []
+                    if vs:
+                        writes += [(f, n.lineno, os.path.join(v, H.SMOKE_MEASURE)) for v in vs]
+                    else:
+                        unresolved.append((f, n.lineno, ast.unparse(arg) if arg is not None else "?"))
+            lit = isinstance(n, ast.Constant) and isinstance(n.value, str) and n.value.endswith(H.SMOKE_MEASURE)
+            if isinstance(n, (ast.Call, ast.BinOp)) and not (isinstance(n, ast.Call) and _callname(n) == "write_smoke_measure"):
+                parts = n.args if isinstance(n, ast.Call) else [n.right]
+                if any(isinstance(x, ast.Constant) and x.value == H.SMOKE_MEASURE for x in parts):
+                    v = _const(n, env)
+                    if v is not None:
+                        writes.append((f, n.lineno, v))
+            elif lit and n.value != H.SMOKE_MEASURE and "/" in n.value:
+                writes.append((f, n.lineno, n.value))
+    if not ends:
+        out.append(("FAIL", "SMOKE-FAIL-SILENT", "smoke path with no ak_row_harness.end_smoke(verdict, rc, reason, out_dir) "
+                                                 "call: a failed smoke leaves no reason"))
+    if not writes and not unresolved:
+        out.append(("FAIL", "SMOKE-NO-MEASURE", "smoke path with no ak_row_harness.write_smoke_measure(...) call: the keeper "
+                                                "refuses the smoke PASS (SMOKE-NO-MEASURE) and the estimate cannot be derived"))
+        return out
+    rels = keeper_measure_rels(spec, d)
+    dn = os.path.normpath(d)
+    got = []
+    for f, ln, p in writes:
+        p = os.path.normpath(p if os.path.isabs(p) else os.path.join(d, p))
+        got.append((f, ln, os.path.relpath(p, dn)))
+    if any(r in rels for _, _, r in got):
+        return out
+    if unresolved and not got:
+        alltxt = "\n".join(own.values())
+        if "out-smoke" in alltxt:
+            return out                                  # dynamic out_dir built from an out-smoke literal: not judged
+        f, ln, a = unresolved[0]
+        out.append(("FAIL", "SMOKE-MEASURE-PATH", f"{f}:{ln}: write_smoke_measure({a}, ...) path is not statically "
+                                                  f"resolvable and names no out-smoke dir; the keeper reads only "
+                                                  f"{sorted(rels)} (relative to scratch_root)"))
+        return out
+    f, ln, r = got[0]
+    out.append(("FAIL", "SMOKE-MEASURE-PATH", f"{f}:{ln}: smoke writes {r} but the keeper reads only {sorted(rels)} "
+                                              "(relative to scratch_root; rowflow.smoke_measure_paths): write to out-smoke/ "
+                                              "or declare estimate_basis.smoke_measure"))
+    return out
+
+
+SELFTEST_FLAG = "--selftest"
+
+
+def _mentions_selftest(node):
+    for x in ast.walk(node):
+        if isinstance(x, ast.Constant) and x.value == SELFTEST_FLAG:
+            return True
+        if isinstance(x, ast.Attribute) and x.attr == "selftest":
+            return True
+    return False
+
+
+def _reads_argv(node):
+    return any((isinstance(x, ast.Attribute) and x.attr == "argv") or (isinstance(x, ast.Name) and x.id in ("argv", "args", "a", "ns", "opts"))
+               or isinstance(x, ast.Attribute) and x.attr == "selftest" for x in ast.walk(node))
+
+
+def _exits(stmts):
+    for s in stmts:
+        for x in ast.walk(s):
+            if isinstance(x, (ast.Return, ast.Raise)):
+                return True
+            if isinstance(x, ast.Call) and (_callname(x) in ("exit", "_exit", "SystemExit", "quit")):
+                return True
+    return False
+
+
+def selftest_missing(job):
+    """SELFTEST-MISSING: True unless job.py has an argv `--selftest` branch that exits (or selects selftest() over main())."""
+    try:
+        tree = ast.parse(job)
+    except (SyntaxError, ValueError):
+        return False                                     # PY-COMPILE reports it
+    has_flag = any(isinstance(x, ast.Constant) and x.value == SELFTEST_FLAG for x in ast.walk(tree))
+    if not has_flag:
+        return True
+    for n in ast.walk(tree):
+        if isinstance(n, ast.IfExp) and _mentions_selftest(n.test) and _reads_argv(n.test):
+            return False
+        if isinstance(n, ast.If) and _mentions_selftest(n.test) and _reads_argv(n.test) and _exits(n.body):
+            return False
+    return True
+
+
+DEADLINE_RX = re.compile(r"\b(\w*(?:deadline|wall_?stop|stop_?(?:at|utc|by|epoch|ts|time)|hard_?stop|until|cutoff|not_?after|"
+                         r"end_?by|expires?(?:_at)?)\w*)\b[\"']?\s*[:=]\s*(?:[\w.]+\()?\s*[\"']?"
+                         r"(\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?::\d\d)?(?:Z|[+-]00:?00)?|1[7-9]\d{8}|2[01]\d{8})\b", re.I)
+
+
+def _abs_time(v):
+    if v.isdigit():
+        return float(v)
+    v = v.replace(" ", "T").rstrip("Z")
+    v = re.sub(r"[+-]00:?00$", "", v)
+    for fmt in ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M"):
+        try:
+            return datetime.strptime(v, fmt).replace(tzinfo=timezone.utc).timestamp()
+        except ValueError:
+            pass
+    return None
+
+
+def wall_stop_past(texts, clock=time.time):
+    """WALL-STOP-PAST: a deadline-named variable bound to an absolute time (ISO / epoch) that is already past."""
+    out, t_now = [], clock()
+    for f, t in sorted(texts.items()):
+        for ln_no, ln in enumerate(t.splitlines(), 1):
+            s = ln.lstrip()
+            if s.startswith("#"):
+                continue
+            for m in DEADLINE_RX.finditer(ln):
+                ts = _abs_time(m.group(2))
+                if ts is not None and ts < t_now:
+                    out.append(("FAIL", "WALL-STOP-PAST", f"{f}:{ln_no}: {m.group(1)} = {m.group(2)} is already in the past; "
+                                                          "derive the deadline from the grant start (time.time() + budget)"))
+    return out
+
+
+SERVER_CTOR_RX = re.compile(r"(?:^|_)(?:srv|server)$", re.I)
+
+
+def _starts_server(fn_node):
+    """A node whose subtree starts a server: start_server(...), Server/Srv(...) construction, or a Popen of a server binary."""
+    for x in ast.walk(fn_node):
+        if isinstance(x, ast.Call):
+            nm = _callname(x)
+            if nm == "start_server" or SERVER_CTOR_RX.search(nm or ""):
+                return True
+            if nm == "Popen" and SERVER_RX.search(ast.unparse(x)):
+                return True
+    return False
+
+
+def fresh_server_per_iter(code):
+    """FRESH-SERVER-UNJUSTIFIED: (file, line) of a loop that starts a server per iteration, directly or via a function."""
+    hits = []
+    for f, t in sorted(code.items()):
+        if f in VENDORED:
+            continue
+        try:
+            tree = ast.parse(t)
+        except (SyntaxError, ValueError):
+            continue
+        starters = {n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and _starts_server(n)}
+        for n in ast.walk(tree):
+            if not isinstance(n, (ast.For, ast.While, ast.AsyncFor)):
+                continue
+            body = ast.Module(body=n.body, type_ignores=[])
+            if _starts_server(body) or any(isinstance(x, ast.Call) and _callname(x) in starters for x in ast.walk(body)):
+                hits.append((f, n.lineno))
+    return hits
+
+
 def sha_cwd_py(d, code):
     """SHA-CWD (job.py): subprocess `sha256sum --check <list>` run with cwd=X; FAIL when the list's entries do not resolve
     from X (e.g. cwd=BIN with `bin/llama-server` entries); WARN when the paths cannot be resolved statically."""
@@ -206,6 +458,7 @@ def sha_cwd_py(d, code):
         for n in tree.body:
             if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
                 env.setdefault(n.targets[0].id, n.value)
+        env["__rowdir__"] = ast.Constant(d)
         for n in ast.walk(tree):
             if not (isinstance(n, ast.Call) and n.args and isinstance(n.args[0], (ast.List, ast.Tuple))):
                 continue
@@ -370,12 +623,28 @@ def lint_dir(d, selftest=True):
     own = {f: t for f, t in code.items() if f not in VENDORED}
     allc = "\n".join(own.values())
     if SMOKE_RX.search(allc):
-        if "end_smoke(" not in allc:
-            out.append(("WARN", "SMOKE-FAIL-SILENT", "smoke path with no ak_row_harness.end_smoke(verdict, rc, reason): "
-                                                     "a failed smoke leaves no reason"))
-        if "write_smoke_measure(" not in allc:
-            out.append(("WARN", "SMOKE-NO-MEASURE", "smoke path with no ak_row_harness.write_smoke_measure(...): the "
-                                                    "estimate cannot be derived"))
+        out += smoke_checks(d, spec, own)
+    is_ak = str(spec.get("owner") or "").startswith("autokernel") or str(rid).startswith("ak-")
+    if is_ak and "job.py" in code and selftest_missing(code["job.py"]):
+        out.append(("FAIL", "SELFTEST-MISSING", "job.py has no `--selftest` argv handler that exits before main() "
+                                                "(e.g. sys.exit(selftest() if '--selftest' in sys.argv[1:] else main())); "
+                                                "a function named selftest alone does not count"))
+    sh = {f: _read(os.path.join(d, f)) for f in sorted(os.listdir(d)) if f.endswith(".sh")}
+    out += wall_stop_past(dict(own, **sh))
+    if not (spec.get("fresh_server_per_visit") is True and str(spec.get("fresh_server_reason") or "").strip()):
+        for f, ln in fresh_server_per_iter(code)[:1]:
+            out.append(("WARN", "FRESH-SERVER-UNJUSTIFIED", f"{f}:{ln}: a server is started per loop iteration; default is one "
+                                                            "server per arm/condition with cache_prompt:false on every request, "
+                                                            "or set spec fresh_server_per_visit=true + fresh_server_reason"))
+    elif fresh_server_per_iter(code):
+        cap = spec.get("fresh_server_starts", 3)
+        if not re.search(r"fresh_server_starts", allc, re.I):
+            out.append(("WARN", "FRESH-SERVER-UNCAPPED", f"fresh_server_per_visit=true but no code reads the cap "
+                                                         f"(FRESH_SERVER_STARTS / spec fresh_server_starts = {cap} per arm): "
+                                                         "starts beyond the cap must reuse a server with cache_prompt:false"))
+        if isinstance(cap, int) and cap > 3 and not str(spec.get("fresh_server_starts_reason") or "").strip():
+            out.append(("WARN", "FRESH-SERVER-UNCAPPED", f"fresh_server_starts={cap} > 3 per arm with no "
+                                                         "fresh_server_starts_reason"))
     rule = " ".join(str(spec.get(k) or "") for k in ("decision_rule", "notes"))
     knobs = sorted(set(KNOB_RX.findall(rule)))
     if knobs and not WITNESS_RX.search(allc):
