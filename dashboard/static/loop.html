@@ -327,24 +327,57 @@
   .akx-class.unknown{color:var(--muted)}.akx-class.inert{color:var(--accent)}
   .akx-evidence{padding:6px 10px 10px;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
   /* AK flow panel: same visual grammar as the handoff page's #pipeline-sec flowchart */
-  #akflow-sec{--det-f:#10264a;--det-s:#60a5fa;--ai-f:#3a1d0a;--ai-s:#fb923c;--line:#30363d;--card:#161b22}
-  #akflow-sec .akf-h3{font-size:14px;margin:14px 0 4px}
-  #akflow-sec svg{width:100%;height:auto;background:var(--card);border:1px solid var(--line)}
-  #akflow-sec svg text{fill:var(--text);font:12px system-ui,sans-serif}#akflow-sec svg .sub{fill:var(--muted);font-size:10px}
-  #akflow-sec svg .cnt{font-weight:700;font-size:15px}#akflow-sec svg .badge{font-size:9px;font-weight:700}
-  #akflow-sec svg .det{fill:var(--det-f);stroke:var(--det-s);stroke-width:1.6}
-  #akflow-sec svg .ai{fill:var(--ai-f);stroke:var(--ai-s);stroke-width:1.6;stroke-dasharray:5 3}
-  #akflow-sec svg .bd-DET{fill:var(--det-s)}#akflow-sec svg .bd-AI{fill:var(--ai-s)}
-  #akflow-sec svg .edge{stroke:var(--muted);stroke-width:1.3;fill:none}#akflow-sec svg .edge.dash{stroke-dasharray:4 3}
-  #akflow-sec svg .grp{fill:none;stroke:var(--line);stroke-dasharray:3 4}
-  #akflow-sec svg g.node{cursor:pointer}#akflow-sec svg g.node.idle{opacity:.6}
-  #akflow-sec svg g.node.active rect{stroke-width:3}#akflow-sec svg g.node.sel rect{stroke:var(--good);stroke-width:3}
-  #akflow-sec .akf-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:4px 0}
-  #akflow-sec .akf-sw{display:inline-block;width:24px;height:12px;vertical-align:middle;margin-right:5px}
-  #akflow-sec .akf-sw.d{background:var(--det-f);border:2px solid var(--det-s)}#akflow-sec .akf-sw.a{background:var(--ai-f);border:2px dashed var(--ai-s);border-radius:8px}
-  #akflow-sec .akf-tiles{display:flex;gap:8px;flex-wrap:wrap}#akflow-sec .akf-tile{border:1px solid var(--line);background:var(--card);padding:6px 12px;min-width:140px}
-  #akflow-sec .akf-tile b{font-size:20px;display:block}#akflow-sec table{border-collapse:collapse;width:100%;font-size:12px}
-  #akflow-sec td,#akflow-sec th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
+  .akf{--det-f:#10264a;--det-s:#60a5fa;--ai-f:#3a1d0a;--ai-s:#fb923c;--line:#30363d;--card:#161b22}
+  .akf .akf-h3{font-size:14px;margin:14px 0 4px}
+  .akf svg{width:100%;height:auto;background:var(--card);border:1px solid var(--line)}
+  .akf svg text{fill:var(--text);font:12px system-ui,sans-serif}.akf svg .sub{fill:var(--muted);font-size:10px}
+  .akf svg .cnt{font-weight:700;font-size:15px}.akf svg .badge{font-size:9px;font-weight:700}
+  .akf svg .det{fill:var(--det-f);stroke:var(--det-s);stroke-width:1.6}
+  .akf svg .ai{fill:var(--ai-f);stroke:var(--ai-s);stroke-width:1.6;stroke-dasharray:5 3}
+  .akf svg .bd-DET{fill:var(--det-s)}.akf svg .bd-AI{fill:var(--ai-s)}
+  .akf svg .edge{stroke:var(--muted);stroke-width:1.3;fill:none}.akf svg .edge.dash{stroke-dasharray:4 3}
+  .akf svg .grp{fill:none;stroke:var(--line);stroke-dasharray:3 4}
+  .akf svg g.node{cursor:pointer}.akf svg g.node.idle{opacity:.6}
+  .akf svg g.node.active rect{stroke-width:3}.akf svg g.node.sel rect{stroke:var(--good);stroke-width:3}
+  .akf .akf-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:4px 0}
+  .akf .akf-sw{display:inline-block;width:24px;height:12px;vertical-align:middle;margin-right:5px}
+  .akf .akf-sw.d{background:var(--det-f);border:2px solid var(--det-s)}.akf .akf-sw.a{background:var(--ai-f);border:2px dashed var(--ai-s);border-radius:8px}
+  .akf .akf-tiles{display:flex;gap:8px;flex-wrap:wrap}.akf .akf-tile{border:1px solid var(--line);background:var(--card);padding:6px 12px;min-width:140px}
+  .akf .akf-tile b{font-size:20px;display:block}.akf table{border-collapse:collapse;width:100%;font-size:12px}
+  .akf td,.akf th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
+  /* 2026-11-24 layout: two columns >=1100px, one below; DOM order is the narrow order. */
+  main{grid-template-columns:minmax(0,1fr)}
+  main > *{min-width:0}
+  @media(min-width:1100px){
+    main{grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      grid-template-areas:"health health" "champ gate" "needs run" "bw bw" "out batch" "det det"}
+    #sec-health{grid-area:health}.c-champ{grid-area:champ}.c-gate{grid-area:gate}.c-needs{grid-area:needs}
+    .c-run{grid-area:run}.c-bw{grid-area:bw}.c-out{grid-area:out}.c-batch{grid-area:batch}#sec-details{grid-area:det}
+    .dgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  }
+  .dgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:0 0 14px}
+  .dgrid > *{min-width:0}.dgrid > .full,.dgrid > footer{grid-column:1/-1}
+  #sec-details{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:0 14px}
+  #sec-details > summary{cursor:pointer;padding:12px 2px;font-size:13px}
+  #sec-details > summary .count{color:var(--muted);font-weight:400}
+  .infolinks{margin-left:auto;font-weight:400;font-size:11px;color:var(--muted);white-space:nowrap}
+  h2 .badge + .infolinks{margin-left:6px}
+  .scroll{max-height:360px;overflow:auto}
+  .pad.tight{padding-top:4px;padding-bottom:4px;margin:0}
+  section > h2{flex-wrap:wrap}
+  .hs-row{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline}
+  .hs-state{font-size:15px;font-weight:650}
+  .hs-feed{font-size:12px;color:var(--muted)}.hs-feed b{color:var(--text);font-weight:600}
+  .hs-feed.stale b,.hs-feed.absent b{color:var(--bad)}.hs-feed.aging b{color:var(--amber)}
+  .ch-big{font-size:26px;font-weight:700;letter-spacing:.01em}
+  .ch-big.nm{color:var(--muted)}
+  .rq{width:100%;font-size:12px}.rq td,.rq th{padding:4px 8px}
+  .gate-line{padding:6px 0;border-bottom:1px solid var(--border)}.gate-line:last-child{border-bottom:none}
+  .tbl-wrap{overflow-x:auto}
+  #sec-details{overflow:hidden}.dgrid > section{overflow-x:auto}
+  #bwc-surfaces,#akflow-items,#needs-you,#run-queue,#last-outcomes,#aks-cards,#bwc-batch,#health-strip{overflow-x:auto}
+  .rq td{word-break:break-word}
+  @media(max-width:600px){main{padding:12px 16px}header{padding:10px 16px}.ch-big{font-size:22px}}
 </style>
 </head>
 <body>
@@ -362,189 +395,158 @@
 <script defer src="/nav.js"></script>
 
 <main>
-  <div id="banner"></div>
-  <!-- AK parallel-loop live flow (audit docs/design/ak-dashboard-audit-20261121.md, fixes 1-3).
-       Data contract epyc.akloop.flow.v1 lives with akloop (scripts/coordination/akloop/flow_status.py);
-       this page only draws it. Styling reuses the handoff page's pipeline flowchart (DET box / AI dashed pill). -->
-  <section id="akflow-sec">
-    <h2>At a glance <span class="count">AutoKernel rows under rowflow · decisions needed · live loop flow</span>
-      <span id="akflow-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="akflow-badgetxt">…</span></span></h2>
-    <div id="akflow-glance" class="pad">Loading…</div>
-    <h3 class="akf-h3">Loop flow <span class="count">click a node for its items · data <a href="/api/akflow">/api/akflow</a> · probe <a href="/api/akflow/health">/api/akflow/health</a> · refresh 30 s</span></h3>
-    <div class="akf-legend"><span><span class="akf-sw d"></span><b>DET</b> deterministic: code decides (rowflow, gate evaluator, filing, lineage, failure routing, decisions detector)</span><span><span class="akf-sw a"></span><b>AI</b> an LLM does the work (planner, critic, author in each lane)</span></div>
-    <div id="akflow-svg"></div>
-    <div id="akflow-items" class="pad"></div>
-    <!-- Per-surface accumulator card (AKU-18). Contract epyc.autokernel.accumulator_surfaces.v1 lives with
-         AutoKernel; this page only draws it. A product-of-solos figure is always labelled ESTIMATE. -->
-    <h3 class="akf-h3">Accumulator by surface <span class="count">per-surface serving-gate fire decision · data <a href="/api/accumulator_surfaces">/api/accumulator_surfaces</a> · probe <a href="/api/accumulator_surfaces/health">/api/accumulator_surfaces/health</a> · refresh 60s</span>
-      <span id="aks-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="aks-badgetxt">…</span></span></h3>
+  <!-- 2026-11-24 operator-approved redesign (workspace-f2): two columns >=1100px,
+       one below. Decision surfaces first; everything an agent reads lives in the
+       collapsed "Details for agents" at the foot. The legacy serial loop feed
+       (/api/loop's `loop` body) is RETIRED: under the AutoKernel hold no campaign
+       window exists, so the health strip says so and loop-only panels take one line. -->
+  <section id="sec-health" class="full akf">
+    <h2>Health <span class="count">Is the kernel loop working, and are its feeds current?</span>
+      <span id="akflow-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="akflow-badgetxt">…</span></span>
+      <span class="infolinks">ⓘ data <a href="/api/akflow">flow</a> · <a href="/api/loop/health">probe</a></span></h2>
+    <div id="health-strip" class="pad">Loading…</div>
+    <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
+      Operator-attention alarm (R24-8) state UNKNOWN — awaiting a loop status report.
+    </div>
+  </section>
+
+  <section id="sec-headline" class="c-champ">
+    <h2>Champion vs production <span class="count">How much faster is the champion kernel than production?</span>
+      <span class="infolinks">ⓘ data <a href="/api/loop?lite=1">loop</a></span></h2>
+    <div id="champ-headline" class="pad">Loading…</div>
+    <details class="pad tight" id="sec-capabilities"><summary>Champion capabilities and workload cells</summary>
+      <div id="champion-capabilities"></div></details>
+  </section>
+
+  <section id="sec-needs" class="c-needs akf">
+    <h2>Needs you <span class="count">What must the operator decide now?</span>
+      <span class="infolinks">ⓘ data <a href="/api/akflow">decisions</a></span></h2>
+    <div id="needs-you" class="pad scroll">Loading…</div>
+  </section>
+
+  <section id="akflow-sec" class="c-run akf">
+    <h2>Running and queued <span class="count">Which AutoKernel rows hold compute or wait for it?</span>
+      <span class="infolinks">ⓘ data <a href="/api/akflow">flow</a> · <a href="/api/akflow/health">probe</a></span></h2>
+    <div id="run-queue" class="pad">Loading…</div>
+  </section>
+
+  <section id="sec-gate" class="c-gate akf">
+    <h2>Serving gate <span class="count">Will each surface's bundle fire the serving test?</span>
+      <span id="aks-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="aks-badgetxt">…</span></span>
+      <span class="infolinks">ⓘ data <a href="/api/accumulator_surfaces">surfaces</a> · <a href="/api/accumulator_surfaces/health">probe</a></span></h2>
     <div id="aks-cards" class="pad">Loading…</div>
   </section>
 
-  <!-- The page opens with THE headline (operator note, 2026-08-31: no scope
-       lecture above it — the /kernel-retirement pointer lives in one line in
-       the footer). Nothing on this page fetches /api/kernel: the retired
-       surface must not become a data dependency of the live one.
-
-       Operator ruling, 2026-08-30: "the champion headline number shown should
-       JUST BE THE COLLECTIVE PERFORMANCE GAIN VS FROZEN PRODUCTION KERNEL",
-       with the capabilities that tree enables listed beside it.
-
-       The slot is allowed to be empty: whenever no direct A/B exists for the
-       current champion, it says NOT MEASURED and names what would fill it —
-       the per-iteration effects further down are marginals against an
-       advancing anchor, and composing them would manufacture a measurement no
-       run ever took. An empty slot that says why beats a number nobody took. -->
-  <section id="sec-trajectory">
-    <h2>Champion performance trajectory
-      <span class="count">identity · active progress · retained gain · production epochs · experiment events</span>
-    </h2>
-    <div id="trajectory"></div>
-    <p class="muted">Retained reports:
-      <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/champion-max-performance-20260908.md">maximum-performance measurements</a>
-      &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">validation and close-out</a>
-    </p>
-  </section>
-
-  <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
-    R24-8 alarm state UNKNOWN — awaiting a loop status report.
-  </div>
-
-  <div class="trajectory-support">
-    <section id="sec-capabilities"><h2>Champion Capabilities
-      <span class="count">attributed to the champion lineage</span></h2>
-      <div id="champion-capabilities"></div>
-    </section>
-    <section id="sec-accumulator">
-      <h2>Accumulator &mdash; compound-then-gate
-        <span class="count">retained keeps · cumulative estimate · serving gate</span>
-      </h2>
-      <div id="accumulator"></div>
-    </section>
-  </div>
-
-  <section id="sec-akx-keep-screen">
-    <h2>Cross-workload keep screen
-      <span class="count">per retained keep · structural class · independent freshness</span>
-    </h2>
-    <div id="akx-keep-screen"></div>
-  </section>
-
-  <section id="sec-serial" hidden>
-    <h2>Serial target routing <span class="count">routing is not measurement progress</span></h2>
-    <div id="serial"></div>
-    <div id="serial-controls"></div>
-  </section>
-
-  <section id="sec-runtime-preparation" hidden>
-    <h2>Runtime preparation <span class="count">owner-reported progress</span></h2>
-    <div id="runtime-preparation"></div>
-  </section>
-
-  <!-- ACCUMULATOR (R23-44 two-tier champion). The loop banks CHEAP llama-bench
-       keeps into a bundle against the last serving-demonstrated champion (the
-       "champion of record", what the headline shows). The EXPENSIVE llama-server
-       serving gate fires on EITHER trigger: the bundle's compounded bench gain
-       clearing fire_threshold_pct = fire_multiple (2.5x) x serving_floor_pct, OR
-       R23-54's mandatory every-4-keeps cadence (operator 2026-09-08 — the bench
-       proxy said +5.958% where serving said -2.18%, so the estimate no longer
-       decides the schedule alone). This card shows how many keeps are in the
-       current bundle, which ones, the compounded %, a progress bar toward the fire
-       threshold, the k/N cadence counter, and WHICH trigger fired — highlighted
-       once it will fire next iteration. Rides the loop-status contract's
-       `accumulator` object; null (and this card says so) on a run with no serving
-       tier. -->
-  <!-- A FOURTH producer (2026-08-31): the loop's accumulated knowledge, read
-       from its own memory store (experiments.db, sqlite, opened read-only).
-       ALL RUNS, not this run: the Dispositions card above is one run's report;
-       this card is what the program KNOWS — every attempt ever, the mechanisms
-       explored, and what each attempt settled. Its own four-valued envelope
-       from the store's mtime; a missing store renders ABSENT with the standard
-       wording, never as zeros — a missing count is not a zero. -->
-  <section id="sec-knowledge">
-    <details>
-      <summary><strong>Accumulated knowledge</strong>
-        <span class="count">all runs &middot; producer: the loop's memory store &middot; expand for full ledger</span>
-        <span id="know-badge" class="badge absent" style="margin-left:auto">
-          <span class="dot"></span><span id="know-badgetxt">…</span></span>
-      </summary>
-      <section id="sec-disp">
-        <h2>Dispositions <span class="count" id="disp-count"></span></h2>
-        <div id="disp"></div>
-      </section>
-      <div id="know"></div>
-    </details>
-  </section>
-
-  <section id="sec-recent">
-    <h2>Recent iterations <span class="count">newest first &middot; negatives included</span></h2>
-    <div id="recent"></div>
-  </section>
-
-  <section id="sec-gpu">
-    <h2>GPU &mdash; held vs busy</h2>
-    <div id="gpu"></div>
-  </section>
-
-  <section id="sec-hot">
-    <h2>Hotspots <span class="count" id="hot-count"></span></h2>
-    <div id="hot"></div>
-  </section>
-
-  <!-- Moved off /kernel (2026-08-30), and moved BELOW the champion headline
-       (2026-08-30, same day) because side by side they were unreadable.
-       This card's +48.9% is a DIFFERENT producer answering a DIFFERENT question
-       against a DIFFERENT anchor: aggregate decode throughput of a speculative
-       serving path at 2 in-flight, versus production's measured ceiling for one
-       model — not the kernel's cumulative single-stream gain over frozen v9.
-       The operator read the two together and reasonably asked why the champion
-       said +48.9% when they had been told +9%. Nothing here is retracted; it is
-       relocated, re-scoped in words, and made to name its own baseline.
-
-       It keeps its own badge, its own verdict line and its own evidence path:
-       the loop's freshness says nothing about this bundle, and this bundle's
-       says nothing about the loop. A shared header badge would let either one
-       certify the other's silence. -->
-  <section id="sec-opgate">
-    <h2>Operator-gated serving-path evidence
-      <span class="count">manual research &middot; separate producer &middot; different question</span>
-      <span id="opgate-badge" class="badge absent" style="margin-left:auto">
-        <span class="dot"></span><span id="opgate-badgetxt">…</span></span>
-    </h2>
-    <div id="opgate-scope" class="muted"></div>
-    <div id="opgate"></div>
-  </section>
-
-  <section id="sec-campaign">
-    <h2>Unified campaign supervisor
-      <span class="count">management projection only &middot; execution_authorized:false</span>
-      <span id="campaign-badge" class="badge absent" style="margin-left:auto">
-        <span class="dot"></span><span id="campaign-badgetxt">…</span></span>
-    </h2>
-    <div id="campaign"></div>
-    <div id="campaign-controls" class="campaign-controls"></div>
-  </section>
-
-  <section id="sec-ident">
-    <h2>Identity &amp; gate</h2>
-    <div class="pad"><dl class="kv" id="ident"></dl></div>
-  </section>
-  <section>
-    <h2>Discovery funnel and lane observations</h2>
-    <div id="discovery-progression"><div class="empty">Waiting for the independent discovery projection.</div></div>
-  </section>
-  <!-- AK bandwidth census. Contract mi210_bandwidth_census.json is owned by AutoKernel
-       (census_update.py); this page only draws /api/bw_census. -->
-  <section id="bwc-sec">
-    <h2>Bandwidth surfaces <span class="count">open bandwidth-optimization surfaces for the AutoKernel loop, ranked by saving ms/step · data <a href="/api/bw_census">/api/bw_census</a> · probe <a href="/api/bw_census/health">/api/bw_census/health</a> · refresh 60 s</span>
-      <span id="bwc-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="bwc-badgetxt">…</span></span></h2>
-    <div id="bwc-note" class="pad"></div>
+  <section id="bwc-sec" class="full c-bw akf">
+    <h2>Bandwidth surfaces <span class="count">Where would kernel bandwidth work save the most time?</span>
+      <span id="bwc-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="bwc-badgetxt">…</span></span>
+      <span class="infolinks">ⓘ data <a href="/api/bw_census">census</a> · <a href="/api/bw_census/health">probe</a></span></h2>
+    <div id="bwc-summary" class="pad"></div>
     <div id="bwc-filter" class="pad"></div>
     <div id="bwc-surfaces" class="pad">Loading…</div>
-    <h3 class="akf-h3">Reference batch dependence</h3><div id="bwc-batch" class="pad"></div>
+    <details class="pad tight"><summary>How saving is computed, ceilings and caveats</summary><div id="bwc-note"></div></details>
   </section>
-</main>
 
+  <section id="sec-outcomes" class="c-out akf">
+    <h2>Last outcomes <span class="count">Which rows were filed most recently, and with what result?</span>
+      <span class="infolinks">ⓘ data <a href="/api/akflow">flow</a></span></h2>
+    <div id="last-outcomes" class="pad">Loading…</div>
+  </section>
+
+  <section id="sec-batch" class="c-batch akf">
+    <h2>Reference batch dependence <span class="count">Which reference efficiency applies at our batch size?</span></h2>
+    <p class="pad tight muted">Published kernels reach a different % of peak bandwidth at different batch sizes, so compare like with like.</p>
+    <div id="bwc-batch" class="pad"></div>
+  </section>
+
+  <details id="sec-details" class="full">
+    <summary><strong>Details for agents</strong> <span class="count">loop flow, screens, evidence, identity, knowledge, contracts</span></summary>
+    <div id="details-note" class="pad muted">The ~1.2 MB knowledge ledger, trajectory and progression load when this is opened.</div>
+    <div class="dgrid">
+      <section class="akf">
+        <h2>Loop flow <span class="count">Where is each candidate in the loop?</span>
+          <span class="infolinks">ⓘ data <a href="/api/akflow">flow</a></span></h2>
+        <div class="akf-legend pad"><span><span class="akf-sw d"></span><b>DET</b> (deterministic): code decides</span><span><span class="akf-sw a"></span><b>AI</b>: a language model does the work</span></div>
+        <div id="akflow-svg"></div>
+        <div id="akflow-glance" class="pad"></div>
+      </section>
+      <section class="akf">
+        <h2>Node items <span class="count">What is inside the selected flow node?</span></h2>
+        <div id="akflow-items" class="pad scroll"></div>
+      </section>
+      <section id="sec-akx-keep-screen">
+        <h2>Cross-workload keep screen <span class="count">Does each retained keep hold on other workloads?</span></h2>
+        <div id="akx-keep-screen"></div>
+      </section>
+      <section>
+        <h2>Discovery funnel <span class="count">How far did discovery candidates get per lane?</span></h2>
+        <div id="discovery-progression"><div class="empty">Opens with Details: the discovery projection loads on demand.</div></div>
+      </section>
+      <section id="sec-opgate">
+        <h2>Operator-gated serving-path evidence
+          <span class="count">What did manual serving-path research measure?</span>
+          <span id="opgate-badge" class="badge absent" style="margin-left:auto">
+            <span class="dot"></span><span id="opgate-badgetxt">…</span></span>
+        </h2>
+        <div id="opgate-scope" class="muted"></div>
+        <div id="opgate"></div>
+      </section>
+      <section id="sec-ident">
+        <h2>Identity &amp; gate <span class="count">Which loop report and store does this page read?</span></h2>
+        <div id="banner"></div>
+        <div class="pad"><dl class="kv" id="ident"></dl></div>
+      </section>
+      <section id="sec-trajectory" class="full">
+        <h2>Champion performance trajectory <span class="count">How has the champion improved over time?</span></h2>
+        <div id="trajectory"><div class="empty">Opens with Details: the trajectory loads on demand.</div></div>
+        <p class="muted pad tight">Retained reports:
+          <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/champion-max-performance-20260908.md">maximum-performance measurements</a>
+          &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">validation and close-out</a></p>
+      </section>
+      <section id="sec-knowledge" class="full">
+        <details>
+          <summary><strong>Accumulated knowledge</strong>
+            <span class="count">What has every loop run tried, and what did it settle?</span>
+            <span id="know-badge" class="badge absent" style="margin-left:auto">
+              <span class="dot"></span><span id="know-badgetxt">…</span></span>
+          </summary>
+          <section id="sec-disp">
+            <h2>Dispositions <span class="count" id="disp-count"></span></h2>
+            <div id="disp"></div>
+          </section>
+          <div id="know"></div>
+        </details>
+      </section>
+      <section id="sec-recent" class="full">
+        <h2>Recent iterations <span class="count">What did the legacy serial loop last try?</span></h2>
+        <div id="recent"></div>
+      </section>
+      <section id="sec-serial" class="full" hidden>
+        <h2>Serial target routing <span class="count">Which target is the serial launcher routing?</span></h2>
+        <div id="serial"></div>
+        <div id="serial-controls"></div>
+      </section>
+      <section id="sec-runtime-preparation" class="full" hidden>
+        <h2>Runtime preparation <span class="count">How far has the owner prepared the runtime?</span></h2>
+        <div id="runtime-preparation"></div>
+      </section>
+      <section id="sec-gpu" class="full" hidden>
+        <h2>GPU held vs busy <span class="count">Is the held GPU actually computing?</span></h2>
+        <div id="gpu"></div>
+      </section>
+      <section id="sec-campaign" class="full" hidden>
+        <h2>Unified campaign supervisor
+          <span class="count">What is the campaign supervisor doing? (projection only)</span>
+          <span id="campaign-badge" class="badge absent" style="margin-left:auto">
+            <span class="dot"></span><span id="campaign-badgetxt">…</span></span>
+        </h2>
+        <div id="campaign"></div>
+        <div id="campaign-controls" class="campaign-controls"></div>
+      </section>
+      <!-- Retired from view 2026-11-24: the legacy compound-then-gate card (replaced by
+           the per-surface Serving gate card) and Hotspots. Their renderers still run
+           against these hidden hosts so the DOM contract and their tests hold. -->
+      <div id="retired-hosts" hidden><div id="accumulator"></div><span id="hot-count"></span><div id="hot"></div></div>
 <footer>
   Observation is read-only at the hub; optional management commands go directly to the selected
   campaign gateway. Producer clocks remain independent.
@@ -568,13 +570,20 @@
   <a href="/api/loop/health"><code>/api/loop/health</code></a> (three-valued: is
   what this page shows still true?) — it answers for the <em>loop</em> producer;
   the other three envelopes travel in the bodies they date, on their cards
-  above. <code>/health</code> is transport-only and stays green over all of
+  in this section. <code>/health</code> is transport-only and stays green over all of
   them being dead. <code>/kernel</code> redirects here — retired 2026-08-30,
   all of its producers (incl. the superseded discovery controller
   <code>gpu-discovery-champion-v37</code>) dead or frozen; history is in git,
   the handoffs and the artifacts.
   Auto-refresh 20s.
 </footer>
+      <div class="full pad muted">ⓘ raw data: <a href="/api/loop">/api/loop</a> (full, ~1.2 MB) · <a href="/api/loop?lite=1">lite</a> · <a href="/api/akflow">/api/akflow</a> · <a href="/api/accumulator_surfaces">/api/accumulator_surfaces</a> · <a href="/api/bw_census">/api/bw_census</a> · probes: <a href="/api/loop/health">loop</a> · <a href="/api/akflow/health">flow</a> · <a href="/api/accumulator_surfaces/health">gate</a> · <a href="/api/bw_census/health">census</a> · refresh: loop 20 s, flow 30 s, gate and census 60 s</div>
+    </div>
+  </details>
+</main>
+
+
+
 
 <script>
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => (
@@ -1742,19 +1751,19 @@ function renderOperatorAttention(d){
     host.textContent=message;
   };
   if(!d.loop){
-    unknown("R24-8 alarm state UNKNOWN — no readable loop report.");
+    unknown("Operator-attention alarm (R24-8) state UNKNOWN — no readable loop report.");
     return;
   }
   const attention=d.loop.operator_attention;
   if(!attention || attention.mode!=="observe_only" ||
      typeof attention.operator_attention_required!=="boolean" ||
      !Array.isArray(attention.alarms)){
-    unknown("R24-8 alarm state UNKNOWN — this producer report does not carry the alarm fields.");
+    unknown("Operator-attention alarm (R24-8) state UNKNOWN — this producer report does not carry the alarm fields.");
     return;
   }
   const active=attention.operator_attention_required;
   if(active !== (attention.alarms.length>0)){
-    unknown("R24-8 alarm state UNKNOWN — the producer's alarm flag and alarm list disagree.");
+    unknown("Operator-attention alarm (R24-8) state UNKNOWN — the producer's alarm flag and alarm list disagree.");
     return;
   }
   if(!active){
@@ -1766,7 +1775,7 @@ function renderOperatorAttention(d){
   host.textContent=typeof attention.planner_evidence_line==="string" &&
     attention.planner_evidence_line
       ? attention.planner_evidence_line
-      : "R24-8 operator attention is active; alarm details were not reported.";
+      : "Operator-attention alarm (R24-8) is active; alarm details were not reported.";
 }
 
 /* THE CHAMPION HEADLINE.
@@ -1862,6 +1871,45 @@ function renderChampion(d){
   }
   capHtml += `</div>`;
   capsHost.innerHTML = capHtml;
+}
+
+/* Champion vs production headline (2026-11-24 layout). Shows a measured figure only
+   from the champion_vs_production bundle, or a labelled comparison pair when the bundle
+   carries one (`comparison`: {label, a, b, date, metric, direction, cells:[{cell,
+   geomean_ratio, ci_low, ci_high}]}). Never composes marginals into a headline. Pure. */
+const CH_NEXT = "Next numbers: C21 (champion generation 21) vs C18 per cell, geomean ratio with confidence interval, " +
+  "from rows c21-fold-cpu-20261124-r3 and c21-fold-gpu-20261124-r2. The production v10 comparison comes with the promotion A/B (side-by-side benchmark).";
+function chPairHtml(p){
+  const cells = Array.isArray(p.cells) ? p.cells : [];
+  const ratio = v => num(v) ? v.toFixed(3) + "×" : "—";
+  return `<div><b>${esc(p.label || "comparison")}</b>: ${esc(p.a || "?")} vs ${esc(p.b || "?")}` +
+    ` <span class="muted">· ${esc(p.metric || "throughput")}, ${esc(p.direction || "higher is better")} · measured ${esc(p.date || "date not stated")}</span></div>` +
+    (cells.length ? `<div class="tbl-wrap"><table class="rq"><tr><th>cell</th><th>geomean ratio (${esc(p.a || "a")} ÷ ${esc(p.b || "b")})</th><th>95% CI</th></tr>` +
+      cells.map(c => `<tr><td class="mono">${esc(c.cell)}</td><td>${ratio(c.geomean_ratio)}</td><td>${num(c.ci_low) && num(c.ci_high) ? esc(c.ci_low.toFixed(3) + "–" + c.ci_high.toFixed(3)) : "—"}</td></tr>`).join("") +
+      `</table></div>` : "");
+}
+function chHeadlineHtml(c){
+  c = c || {};
+  const base = (c.baseline || {}).label || (c.production || {}).label || "production";
+  const f = c.freshness || {};
+  let h = "";
+  if(c.measured && num(c.effect_fraction)){
+    const pct = (c.effect_fraction * 100);
+    h += `<div class="ch-big">${pct >= 0 ? "+" : ""}${esc(pct.toFixed(2))}%</div>` +
+      `<div>${esc(c.metric || "throughput")} of champion <code>${esc(String((c.champion || {}).measured_commit || "?").slice(0, 10))}</code> vs ${esc(base)}, ${esc(c.metric_direction || "higher is better")}` +
+      ` <span class="muted">· measured ${esc(f.generated_at || "date not stated")} · ${esc(String(f.state || "unknown").toUpperCase())}</span></div>`;
+    if(f.state && f.state !== "fresh" && CH_BANNERS[f.state]) h += `<div class="warn">${esc(CH_BANNERS[f.state].hd)}</div>`;
+  } else {
+    h += `<div class="ch-big nm">NOT MEASURED</div>` +
+      `<div>No champion-vs-${esc(base)} A/B (side-by-side benchmark) is published.</div>`;
+    if(f.state === "malformed") h += `<div class="warn">${esc(CH_BANNERS.malformed.hd)}</div>`;
+  }
+  if(c.comparison && typeof c.comparison === "object") h += chPairHtml(c.comparison);
+  if(!c.measured) h += `<div class="muted" style="margin-top:6px">${esc(CH_NEXT)}</div>`;
+  return h;
+}
+function renderChampionHeadline(d){
+  document.getElementById("champ-headline").innerHTML = chHeadlineHtml(d.champion_vs_production);
 }
 
 function renderAccumulator(d){
@@ -3089,7 +3137,12 @@ function render(d){
   // Independent first surface: sibling renderers cannot leave the headline
   // plot blank, and champion/progress faults report inside their own relocated
   // hosts rather than aborting the rest of the page.
-  renderImprovementTrajectorySafely(d);
+  // Lazy load (2026-11-24): the every-poll read is /api/loop?lite=1, which omits
+  // the ~1 MB trajectory/ledger and the progression. Their panels live in the
+  // collapsed Details and are drawn only from a full body.
+  const heavy = !d.lite;
+  if(heavy) renderImprovementTrajectorySafely(d);
+  try{renderChampionHeadline(d)}catch(err){document.getElementById("champ-headline").innerHTML=`<div class="warn">Champion headline unavailable: ${esc(err&&err.message?err.message:String(err))}</div>`}
   try{renderChampion(d)}catch(err){document.getElementById("champion-capabilities").innerHTML=`<div class="warn">Capabilities unavailable: ${esc(err&&err.message?err.message:String(err))}</div>`}
   setFreshBadge(d.freshness_state, d.age_s, d.notice);
   document.getElementById("hdr-step").textContent =
@@ -3113,14 +3166,44 @@ function render(d){
   // Third and fourth producers, rendered unconditionally for the same reason.
   // None of the four dates any of the others.
   renderOperatorGate(d);
-  renderDiscoveryProgression(d);
-  renderKnowledge(d);
+  if(heavy){ renderDiscoveryProgression(d); renderKnowledge(d); }
   renderCampaign(d);
+  // A campaign supervisor that is not configured renders nothing at all.
+  document.getElementById("sec-campaign").hidden = !(d.campaign && d.campaign.configured);
   renderDispositions(detail);
   renderRecent(detail);
   renderGpu(detail);
+  const g = detail.derived && detail.derived.gpu;
+  document.getElementById("sec-gpu").hidden = !(g && g.reported);
   renderHotspots(detail);
   renderIdentity(detail);
+  renderLoopRetirement(d);
+}
+
+/* The legacy serial loop feed is RETIRED (AutoKernel answer, 2026-11-24): under the
+   operator's AK hold no campaign window exists, and the hub's current-serial-run
+   pointer was once overwritten by a pytest sandbox. A report that is not fresh, or
+   that comes from a test sandbox, is never drawn as the current loop. Pure. */
+const LOOP_SANDBOX_RE = /\/pytest-of-|\/tmp\/pytest/;
+function loopRetiredReason(d){
+  if(!d) return "no loop report";
+  const sel = d.run_selection || {};
+  if(sel.kind === "refused_sandbox_pointer" || LOOP_SANDBOX_RE.test(String(d.evidence||"")+" "+String(d.store_root||"")))
+    return "its last status came from a test sandbox, not a live run";
+  if(d.freshness_state === "absent") return "no loop status is published";
+  if(d.freshness_state !== "fresh") return `its last status is ${String(d.freshness_state||"unknown").toLowerCase()} (${age(d.age_s)} old)`;
+  return null;
+}
+function renderLoopRetirement(d){
+  const why = loopRetiredReason(d);
+  if(typeof hsSet === "function") hsSet("loop", {why, state: d.freshness_state, step: d.display_step,
+                                                  loopState: d.loop && d.loop.state});
+  if(!why) return;
+  const line = `<div class="empty">Legacy serial loop feed retired: ${esc(why)}. Producer <code>autokernel.loop.status.write</code>; a new AutoKernel campaign window fills it.</div>`;
+  for(const id of ["recent", "disp", "serial", "runtime-preparation"]) document.getElementById(id).innerHTML = line;
+  document.getElementById("serial-controls").innerHTML = "";
+  document.getElementById("disp-count").textContent = "";
+  document.getElementById("sec-recent").hidden = false;
 }
 
 function renderFetchFailure(err){
@@ -3179,7 +3262,7 @@ function renderFetchFailure(err){
 
 async function tick(){
   try{
-    const res = await fetch("/api/loop", {cache: "no-store"});
+    const res = await fetch("/api/loop" + (loopDetailsOpen() ? "" : "?lite=1"), {cache: "no-store"});
     if(!res.ok) throw new Error(`/api/loop responded ${res.status}`);
     render(await res.json());
   }catch(err){
@@ -3187,8 +3270,44 @@ async function tick(){
   }
 }
 
+function loopDetailsOpen(){
+  const el = document.getElementById("sec-details");
+  return !!(el && el.open);
+}
+{
+  const det = document.getElementById("sec-details");
+  if(det && det.addEventListener) det.addEventListener("toggle", () => { if(det.open) tick(); });
+}
 tick();
 setInterval(tick, 20000);
+</script>
+<script>
+"use strict";
+// Health strip (2026-11-24). hsStripHtml is pure; hsSet/hsPaint are the DOM code.
+// Feeds: loop (/api/loop, retired legacy feed), flow (/api/akflow), gate
+// (/api/accumulator_surfaces), census (/api/bw_census). Each keeps its own clock.
+const HS = {loop: null, flow: null, gate: null, census: null};
+function hsEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function hsAge(s){if(s==null)return 'unknown age';s=Math.round(s);return s<120?s+' s':s<7200?Math.round(s/60)+' min':s<172800?Math.round(s/3600)+' h':Math.round(s/86400)+' d';}
+function hsStripHtml(h){
+  const L = h.loop;
+  let state;
+  if(!L) state = '<span class="hs-state">Loop state loading…</span>';
+  else if(L.why) state = `<span class="hs-state">Loop idle — AutoKernel hold (no campaign window)</span> <span class="muted">The legacy loop feed is retired: ${hsEsc(L.why)}.</span>`;
+  else state = `<span class="hs-state">Loop running: ${hsEsc(L.loopState || L.state)}</span> <span class="muted">${hsEsc(L.step || '')}</span>`;
+  const feed = (name, f, what) => {
+    if(!f) return `<span class="hs-feed absent">${name} <b>loading</b></span>`;
+    const cls = f.present === false ? 'absent' : (f.cls || 'absent');
+    const txt = f.present === false ? 'ABSENT' : `${String(cls).toUpperCase()} · ${hsAge(f.age_s)} old`;
+    return `<span class="hs-feed ${hsEsc(cls)}" title="${hsEsc(what)}">${name} <b>${hsEsc(txt)}</b></span>`;
+  };
+  return `<div class="hs-row">${state}</div><div class="hs-row" style="margin-top:4px">` +
+    feed('flow', h.flow, 'newest AutoKernel loop event (/api/akflow)') +
+    feed('gate', h.gate, 'per-surface serving-gate record (/api/accumulator_surfaces)') +
+    feed('census', h.census, 'bandwidth census file (/api/bw_census)') + `</div>`;
+}
+function hsSet(k, v){HS[k] = v; hsPaint();}
+function hsPaint(){const el = document.getElementById('health-strip'); if(el) el.innerHTML = hsStripHtml(HS);}
 </script>
 <script>
 "use strict";
@@ -3242,6 +3361,40 @@ function akfItems(d,id){
  if(n.count>n.items.length)h+=`<p class="muted">showing ${n.items.length} of ${akfEsc(n.count)} (newest first)</p>`;
  return h;
 }
+// Operator decisions. `gate-unknown` and `supersede-dead-end` are bookkeeping for
+// agents (they stay in Details); an `operator_actionable` boolean on an event, when
+// present, overrides the kind filter either way.
+const AKF_NOT_OPERATOR=new Set(['gate-unknown','supersede-dead-end']);
+const AKF_KIND_WORDS={'gate-open':'blocked by an unresolved gate','hold-hit':'an operator hold is in force','futility':'futility stop reached','gate-unknown':'gate names nothing known','supersede-dead-end':'superseded with no successor'};
+function akfActionable(e){return (e&&typeof e.operator_actionable==='boolean')?e.operator_actionable:!AKF_NOT_OPERATOR.has(e&&e.kind);}
+function akfNeeds(d){
+ if(!d||d.present===false)return `<p class="warn">Decisions unavailable: the flow feed (/api/akflow) is absent; akloop/decisions.py fills it.</p>`;
+ const dec=d.decisions||{};
+ if(!dec.present)return `<p class="warn">Decisions unavailable: akloop/decisions.py did not report (${akfEsc(dec.error||'no error given')}).</p>`;
+ const all=dec.events||[],ev=all.filter(akfActionable),rest=all.length-ev.length;
+ if(!ev.length)return `<p class="muted">Nothing needs an operator decision${rest?` (${rest} agent bookkeeping item(s) are in Details)`:''}.</p>`;
+ const by={};for(const e of ev)(by[e.kind]=by[e.kind]||[]).push(e);
+ return `<details open><summary><b>${ev.length} decision(s)</b> <span class="muted">${Object.entries(by).map(([k,v])=>akfEsc(v.length+' '+(AKF_KIND_WORDS[k]||k))).join(' · ')}</span></summary>`+
+  `<div class="tbl-wrap"><table class="rq"><tr><th>what</th><th>box / row</th><th>why</th></tr>${ev.map(e=>`<tr><td>${akfEsc(AKF_KIND_WORDS[e.kind]||e.kind)}</td><td><code>${akfEsc(e.subject)}</code></td><td>${akfEsc(e.summary)}</td></tr>`).join('')}</table></div></details>`+
+  (rest?`<p class="muted">${rest} agent bookkeeping item(s) (unknown gate refs, dead-end supersessions) are listed in Details.</p>`:'');
+}
+function akfRunQueue(d){
+ if(!d||d.present===false)return `<p class="warn">Run queue unavailable: the flow feed (/api/akflow) is absent; rowflow grants and ready flags fill it.</p>`;
+ const g=d.glance||{},run=g.running||[],q=g.queued||[];
+ const tbl=(rows,empty)=>rows.length?`<div class="scroll" style="max-height:220px"><table class="rq"><tr><th>row</th><th>stage</th><th>since</th><th>ETA</th></tr>${rows.map(r=>`<tr><td><code>${akfEsc(r.id)}</code></td><td>${akfEsc(r.stage||'—')}</td><td>${akfEsc(r.at||'—')}</td><td>${akfEsc(r.eta||'')}</td></tr>`).join('')}</table></div>`:`<p class="muted">${empty}</p>`;
+ return `<h3 class="akf-h3">RUNNING ${akfEsc(g.running_n==null?run.length:g.running_n)}</h3>${tbl(run,'No AutoKernel row holds a grant.')}`+
+  `<h3 class="akf-h3">QUEUED ${akfEsc(g.queued_n==null?q.length:g.queued_n)}</h3>${tbl(q,'No AutoKernel row is waiting for a grant.')}`+
+  `<p class="muted">ETA stays empty until the scheduler supplies one.</p>`;
+}
+function akfOutcomes(d){
+ const n=d&&d.nodes&&d.nodes.file;
+ if(!n)return `<p class="warn">No filing data: the flow feed's "file" node is absent; rowflow filing-done flags fill it.</p>`;
+ const it=(n.items||[]).slice(0,5);
+ if(!it.length)return `<p class="muted">No row was filed in the ${akfEsc(d.window_h)} h window.</p>`;
+ const anyV=it.some(i=>i.verdict!=null);
+ return `<div class="tbl-wrap"><table class="rq"><tr><th>row</th><th>filed (UTC)</th><th>last stage</th><th>verdict</th></tr>${it.map(i=>`<tr><td><code>${akfEsc(i.id)}</code></td><td>${akfEsc(i.at||'—')}</td><td>${akfEsc(i.detail||'—')}</td><td>${i.verdict!=null?akfEsc(i.verdict):'<span class="muted">not in feed</span>'}</td></tr>`).join('')}</table></div>`+
+  (anyV?'':`<details class="tight"><summary class="muted">Why no verdict?</summary><p class="muted">The flow feed's filing items carry the row and stage only; each row's verdict.json holds the verdict.</p></details>`);
+}
 let akfData=null,akfSel=null;
 function akfPaint(){
  const sv=document.getElementById('akflow-svg');sv.innerHTML=akfSvg(akfData,akfSel);
@@ -3254,6 +3407,10 @@ async function akfLoad(){
  const b=document.getElementById('akflow-badge');b.className='badge '+({fresh:'fresh',aging:'malformed',stale:'stale'}[cls]||'absent');
  document.getElementById('akflow-badgetxt').textContent=`${String(cls).toUpperCase()} · last loop event ${akfAge(d.last_event_age_s)} ago`;
  document.getElementById('akflow-glance').innerHTML=akfGlance(d);akfData=d;akfPaint();
+ document.getElementById('needs-you').innerHTML=akfNeeds(d);
+ document.getElementById('run-queue').innerHTML=akfRunQueue(d);
+ document.getElementById('last-outcomes').innerHTML=akfOutcomes(d);
+ if(typeof hsSet==='function')hsSet('flow',{present:d.present!==false,cls:cls,age_s:d.last_event_age_s});
 }
 akfLoad();setInterval(akfLoad,30000);
 </script>
@@ -3265,21 +3422,20 @@ function aksPct(v){return (typeof v==='number'&&isFinite(v))?(v>=0?'+':'')+v.toF
 function aksCard(s){
  const f=s.fire||{},g=s.figure||{};
  const tag={fire:'FIRES NEXT',accumulate:'ACCUMULATING',cannot_decide:'CANNOT DECIDE'}[f.decision]||String(f.decision).toUpperCase();
- const fig=g.kind==='none'?aksEsc(g.label):`<strong>${aksPct(g.pct)}</strong> <span class="muted">${aksEsc(g.label)}</span>`;
- const fe=(s.fold_estimates||[]).map(e=>`<tr><td class="mono">${aksEsc(e.recipe)}</td><td>${aksEsc(e.n_keeps)} keeps</td><td><strong>${aksPct(e.pct)}</strong> <span class="muted">${aksEsc(e.label)}</span></td><td>${aksEsc(e.provisional_keeps)} provisional</td></tr>`).join('');
- return `<div class="akf-tile" style="min-width:300px;flex:1"><strong>${aksEsc(s.surface)} &middot; ${aksEsc(tag)}</strong>`+
-  `<div>${fig}</div>`+
-  `<div class="muted">${aksEsc(s.n_keeps)} keeps in bundle &middot; ${aksEsc(s.keeps_since_serving_gate)}/${aksEsc(s.every_keeps)} to the mandatory cadence &middot; floor ${s.floor_pct==null?'<strong>uncalibrated</strong>':aksEsc(s.floor_pct)+'%'} &middot; validity <span class="mono">${aksEsc(s.measurement_validity)}</span></div>`+
-  `<div class="muted">${aksEsc(f.reason)}${f.trigger?' ('+aksEsc(f.trigger)+')':''}</div>`+
-  (fe?`<table><tr><th>CPU fold recipe</th><th></th><th>product of solo keeps</th><th></th></tr>${fe}</table>`:'')+`</div>`;}
+ const fig=g.kind==='none'?`<span class="muted">${aksEsc(g.label)}</span>`:`measured <strong>${aksPct(g.pct)}</strong> bench gain, tip vs champion of record (higher is better)`;
+ const fe=(s.fold_estimates||[]).map(e=>`<tr><td class="mono">${aksEsc(e.recipe)}</td><td>${aksEsc(e.n_keeps)} keeps</td><td><strong>${aksPct(e.pct)}</strong> ESTIMATE</td><td>${aksEsc(e.provisional_keeps)} provisional</td></tr>`).join('');
+ return `<div class="gate-line"><strong>${aksEsc(String(s.surface).toUpperCase())}</strong> · ${fig} · ${aksEsc(s.keeps_since_serving_gate)} of ${aksEsc(s.every_keeps)} keeps since the last serving gate · <b>${aksEsc(tag)}</b>`+
+  `<div class="muted">${f.decision==='fire'?'Fires because: ':'Why not: '}${aksEsc(f.reason)}${f.trigger?' ('+aksEsc(f.trigger)+')':''}</div>`+
+  (fe?`<details class="tight"><summary class="muted">${(s.fold_estimates||[]).length} fold estimate(s) — ESTIMATE (product of solo keep effects, not a measurement of the bundle)</summary><div class="tbl-wrap"><table class="rq"><tr><th>CPU fold recipe</th><th></th><th>product of solo keeps</th><th></th></tr>${fe}</table></div></details>`:'')+`</div>`;}
 let aksData=null;
 function aksRender(){const d=aksData||{},f=d._freshness||{},cls=f.staleness_class||'absent';
  const b=document.getElementById('aks-badge'),t=document.getElementById('aks-badgetxt');
  b.className='badge '+({fresh:'fresh',aging:'malformed',stale:'stale'}[cls]||'absent');
  t.textContent=String(cls).toUpperCase()+(d.generated_at?' · record '+d.generated_at:'');
+ if(typeof hsSet==='function')hsSet('gate',{present:d.present!==false,cls:cls,age_s:f.age_s});
  const host=document.getElementById('aks-cards');
  if(d.present===false){host.innerHTML=`<p class="warn">Per-surface accumulator ABSENT: ${aksEsc(d.error||'')}. ${aksEsc(f.absence_means||'')}</p>`;return;}
- host.innerHTML=`<div class="akf-tiles">${(d.surfaces||[]).map(aksCard).join('')}</div>`;}
+ host.innerHTML=(d.surfaces||[]).length?(d.surfaces||[]).map(aksCard).join(''):'<p class="muted">The gate record lists no surfaces; accumulator_surfaces.py fills it from the per-surface bundles.</p>';}
 async function aksLoad(){try{aksData=await (await fetch('/api/accumulator_surfaces')).json();}catch(e){aksData={present:false,error:'/api/accumulator_surfaces unreachable: '+e};}aksRender();}
 aksLoad();setInterval(aksLoad,60000);
 // Bandwidth surfaces panel (/api/bw_census). bwcSurfaces is pure; bwcLoad is the DOM/fetch code.
@@ -3323,15 +3479,22 @@ function bwcGroups(gs){return (gs||[]).map(g=>'<p class="warn">Roll-up <b>'+bwcE
 function bwcFilter(){return ['all','mi210','cpu'].map(v=>`<button class="akf-btn" style="${v===bwcDev?'font-weight:700;text-decoration:underline':''}" onclick="bwcSetDev('${v}')">${{all:'all',mi210:'MI210',cpu:'CPU'}[v]}</button>`).join(' ');}
 function bwcSetDev(v){bwcDev=v;bwcRender();}
 function bwcToggle(k){bwcOpen.has(k)?bwcOpen.delete(k):bwcOpen.add(k);bwcRender();}
-function bwcBatch(p){const b=p&&p.batch_dependence;if(!b)return '';
- return '<p class="count">'+bwcEsc(b.note)+' Source: '+bwcEsc(b.source)+'</p><div style="overflow-x:auto"><table class="akx-table"><thead><tr><th>kernel</th><th>% of peak</th><th>batch</th></tr></thead><tbody>'+
-  (b.rows||[]).map(x=>'<tr><td>'+bwcEsc(x.kernel)+'</td><td>'+bwcEsc(x.pct)+'</td><td>'+bwcEsc(x.batch)+'</td></tr>').join('')+'</tbody></table></div>';}
+function bwcBatch(p){const b=p&&p.batch_dependence;if(!b)return '<p class="muted">No batch-dependence table: the census parity block (census_update.py) has none yet.</p>';
+ return '<div style="overflow-x:auto"><table class="akx-table"><thead><tr><th>kernel</th><th>% of peak bandwidth</th><th>batch</th></tr></thead><tbody>'+
+  (b.rows||[]).map(x=>'<tr><td>'+bwcEsc(x.kernel)+'</td><td>'+bwcEsc(x.pct)+'</td><td>'+bwcEsc(x.batch)+'</td></tr>').join('')+'</tbody></table></div>'+
+  '<details class="tight"><summary class="count">Note and source</summary><p class="count">'+bwcEsc(b.note)+' Source: '+bwcEsc(b.source)+'</p></details>';}
+function bwcTop(rows){const r=(rows||[]).filter(x=>typeof x.saving_ms_per_step==='number'&&x.saving_ms_per_step>0).sort((a,b)=>b.saving_ms_per_step-a.saving_ms_per_step).slice(0,3);
+ if(!r.length)return '<p class="muted">No surface has a positive estimated saving in this census.</p>';
+ return '<p><b>Top estimated savings</b> (ms per decode step, lower step time is better): '+r.map(x=>'<b>'+bwcEsc(x.saving_ms_per_step.toFixed(1))+' ms</b> '+bwcEsc(x.op)+' <span class="muted">('+bwcEsc(x.path)+', '+bwcEsc(x.status)+')</span>').join(' · ')+'</p>';}
 function bwcResort(k){bwcSort[1]=bwcSort[0]===k?-bwcSort[1]:-1;bwcSort[0]=k;bwcRender();}
 function bwcRender(){const d=bwcData||{},f=d._freshness||{};
  const b=document.getElementById('bwc-badge'),t=document.getElementById('bwc-badgetxt');
  const cls=d.present===false?'absent':(f.staleness_class||'absent');b.className='badge '+cls;t.textContent=cls+(f.age_s!=null?' · '+Math.round(f.age_s/60)+' min':'');
+ if(typeof hsSet==='function')hsSet('census',{present:d.present!==false,cls:cls,age_s:f.age_s});
  if(d.present===false){document.getElementById('bwc-note').innerHTML=`<p class="warn">Census ABSENT: ${bwcEsc(d.error||'')}. ${bwcEsc(f.absence_means||'')}</p>`;
-  for(const i of ['bwc-filter','bwc-surfaces','bwc-batch'])document.getElementById(i).innerHTML='';return;}
+  for(const i of ['bwc-filter','bwc-surfaces','bwc-batch'])document.getElementById(i).innerHTML='';
+  document.getElementById('bwc-summary').innerHTML=`<p class="warn">Census ABSENT: census_update.py writes it at each AutoKernel row end.</p>`;return;}
+ document.getElementById('bwc-summary').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+bwcTop(d.surfaces);
  const cc=(d.cpu||{}).ceiling_gbps||{};
  document.getElementById('bwc-note').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+
   `<span class="count">Ceilings: MI210 ${bwcEsc(d.ceiling_gbps)} GB/s · CPU quarter-24t ${bwcEsc(cc['quarter-24t'])} GB/s · CPU full host ${bwcEsc(cc['full-host'])} GB/s · target ${bwcEsc(d.target_pct)}% of ceiling · saving = step ms × share × max(0, 1 − ours%/target%) · applied rows ${bwcEsc(d.applied_count)} · click a row for its census runs</span>`+bwcGroups(d.surface_groups);

@@ -455,11 +455,15 @@ def test_trajectory_is_first_surface_and_absorbs_redundant_panels() -> None:
     main = page.split("<main>", 1)[1]
     assert '<section id="sec-champion"' not in main
     assert '<section id="sec-tiles"' not in main
-    # akflow-sec (AK at-a-glance, 9fd8dc351) opens the page; trajectory follows.
-    assert main.index('id="akflow-sec"') < main.index('id="sec-trajectory"')
-    assert main.index('id="sec-trajectory"') < main.index('id="sec-capabilities"')
-    assert main.index('id="sec-capabilities"') < main.index('id="sec-accumulator"')
-    assert main.index('id="sec-accumulator"') < main.index('id="sec-serial"')
+    # 2026-11-24 operator-approved layout: health strip, then the champion
+    # headline (capabilities folded into it); the trajectory lives in the
+    # collapsed "Details for agents" and the legacy accumulator card is gone.
+    assert main.index('id="sec-health"') < main.index('id="sec-headline"')
+    assert main.index('id="sec-headline"') < main.index('id="sec-capabilities"')
+    assert main.index('id="sec-details"') < main.index('id="sec-trajectory"')
+    assert main.index('id="sec-trajectory"') < main.index('id="sec-serial"')
+    assert 'id="sec-accumulator"' not in main
+    assert 'id="sec-hot"' not in main
     trajectory = main[main.index('id="sec-trajectory"'):]
     trajectory = trajectory[:trajectory.index('</section>')]
     assert 'id="trajectory"' in trajectory

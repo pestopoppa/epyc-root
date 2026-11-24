@@ -166,6 +166,15 @@ def store_root() -> Path:
     return Path(os.environ.get(STORE_ROOT_ENV) or DEFAULT_STORE_ROOT)
 
 
+def _test_sandbox_reason(state_dir: str) -> Optional[str]:
+    """Why ``state_dir`` is a test sandbox, or ``None`` when it is not one."""
+    text = str(state_dir)
+    if "/pytest-of-" in text or text.startswith("/tmp/pytest") or "/tmp/pytest" in text:
+        return (f"current-run pointer names a pytest sandbox ({text}); a test "
+                "overwrote the production pointer, so no live run is selected")
+    return None
+
+
 def _selected_live_root() -> tuple[Path, dict]:
     """Prefer the serial launcher's durable current-run pointer over a stale hub env.
 
@@ -186,6 +195,14 @@ def _selected_live_root() -> tuple[Path, dict]:
                 or not isinstance(record.get("generated_at"), str)):
             raise ValueError("current-run pointer has an unsupported shape")
         root = Path(record["state_dir"])
+        sandbox = _test_sandbox_reason(record["state_dir"])
+        if sandbox:
+            # A test wrote the production pointer (2026-10-27: a pytest sandbox
+            # under .../pytest-of-node/... became "the live run"). Never fall
+            # back to an older store either: report ABSENT, with the reason.
+            return (fallback / ".refused-sandbox-pointer",
+                    {"kind": "refused_sandbox_pointer", "evidence": str(pointer),
+                     "pointer_error": sandbox, "pointer_evidence": str(pointer)})
         if not root.is_absolute() or ".." in root.parts:
             raise ValueError("current-run state_dir is not an absolute, normalized path")
         trusted = Path(os.environ.get(CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV)

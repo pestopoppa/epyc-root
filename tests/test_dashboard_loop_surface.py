@@ -1221,5 +1221,76 @@ class ActorHealthHeader(unittest.TestCase):
         self.assertIn("a.failing", src)
 
 
+class SandboxPointerAndLitePayload(unittest.TestCase):
+    """2026-11-24: a test overwrote the production current-serial-run pointer
+    with a pytest sandbox, and /loop rendered that sandbox as the live run."""
+
+    def _pointer(self, base: Path, state_dir: Path) -> Path:
+        state_dir.mkdir(parents=True)
+        (state_dir / loop_status.STATUS_FILENAME).write_text("{}", encoding="utf-8")
+        pointer = base / "current-serial-run.json"
+        pointer.write_text(json.dumps({
+            "schema": loop_status.CURRENT_SERIAL_RUN_SCHEMA,
+            "state_dir": str(state_dir),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }), encoding="utf-8")
+        return pointer
+
+    def test_pytest_sandbox_pointer_is_refused_and_reads_absent(self):
+        with tempfile.TemporaryDirectory(prefix="loop-pointer-") as tmp:
+            base = Path(tmp)
+            sandbox = base / "run" / "tmp" / "pytest-of-node" / "pytest-0" / "t1" / "router"
+            pointer = self._pointer(base, sandbox)
+            env = {loop_status.CURRENT_SERIAL_RUN_ENV: str(pointer),
+                   loop_status.CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV: str(base),
+                   loop_status.STORE_ROOT_ENV: str(base / "canonical")}
+            with patch.dict(os.environ, env):
+                root, prov = loop_status._selected_live_root()
+                self.assertEqual(prov["kind"], "refused_sandbox_pointer")
+                self.assertIn("pytest sandbox", prov["pointer_error"])
+                self.assertNotEqual(root, sandbox)
+                self.assertFalse(loop_status.read(root)["artifact_present"])
+
+    def test_a_normal_run_dir_is_still_selected(self):
+        with tempfile.TemporaryDirectory(prefix="loop-pointer-") as tmp:
+            base = Path(tmp)
+            run = base / "runs" / "r1"
+            pointer = self._pointer(base, run)
+            env = {loop_status.CURRENT_SERIAL_RUN_ENV: str(pointer),
+                   loop_status.CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV: str(base)}
+            with patch.dict(os.environ, env):
+                root, prov = loop_status._selected_live_root()
+            self.assertEqual(root, run)
+            self.assertEqual(prov["kind"], "current_serial_run_pointer")
+
+    def test_sandbox_reason_patterns(self):
+        self.assertTrue(loop_status._test_sandbox_reason("/x/tmp/pytest-of-node/p/r"))
+        self.assertTrue(loop_status._test_sandbox_reason("/tmp/pytest-12/r"))
+        self.assertIsNone(loop_status._test_sandbox_reason("/mnt/raid0/llm/tmp/ak-run-1"))
+
+    def test_lite_payload_omits_heavy_blocks_and_names_them(self):
+        heavy = {"improvement_trajectory": {"x": 1}, "ledger": {"y": 2}, "attempts": 3}
+        def snap():
+            return ({"knowledge": dict(heavy), "freshness_state": "absent"}, {})
+        with patch.object(S.loop_status, "snapshot", side_effect=snap), \
+                patch.object(S, "_panel_envelope", return_value={}), \
+                patch.object(S, "_read_operator_gate_bundle", return_value={}), \
+                patch.object(S, "progression_payload", return_value={"data": "big"}) as prog:
+            lite = S.loop_payload(lite=True)
+            self.assertEqual(lite["knowledge"], {"attempts": 3})
+            self.assertIsNone(lite["progression"])
+            self.assertIn("knowledge.ledger", lite["lite"]["omitted"])
+            prog.assert_not_called()
+            full = S.loop_payload()
+            self.assertEqual(full["progression"], {"data": "big"})
+            self.assertIn("ledger", full["knowledge"])
+            self.assertNotIn("lite", full)
+
+    def test_lite_query_flag(self):
+        self.assertTrue(S._query_flag("lite=1", "lite"))
+        self.assertFalse(S._query_flag("", "lite"))
+        self.assertFalse(S._query_flag("lite=0", "lite"))
+
+
 if __name__ == "__main__":
     unittest.main()

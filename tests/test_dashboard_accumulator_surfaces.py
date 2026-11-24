@@ -88,17 +88,19 @@ class SurfaceCardTests(unittest.TestCase):
         self.assertIn("/api/accumulator_surfaces/health", S.PANEL_HEALTH_ROUTES)
         code, body = S.accumulator_surfaces_health()
         self.assertIn(code, (200, 503))
-        sec = PAGE[PAGE.index('<section id="akflow-sec">'):]
+        # 2026-11-24 layout: the per-surface cards ARE the "Serving gate" panel,
+        # beside the champion headline (the akflow node list moved to Details).
+        sec = PAGE[PAGE.index('<section id="sec-gate"'):]
         sec = sec[:sec.index("</section>")]
         self.assertIn('id="aks-cards"', sec)
-        self.assertLess(sec.index('id="akflow-items"'), sec.index('id="aks-cards"'))
+        self.assertIn('id="aks-badge"', sec)
 
     def test_page_renders_estimate_label_and_adds_no_section_before_trajectory(self):
         self.assertIn("aksCard", PAGE)
         self.assertIn("/api/accumulator_surfaces", PAGE)
         body = PAGE[PAGE.index("<main>"):]
         self.assertEqual(re.findall(r'<section id="([a-z-]+)"', body)[:2],
-                         ["akflow-sec", "sec-trajectory"])
+                         ["sec-health", "sec-headline"])
 
 
 if __name__ == "__main__":

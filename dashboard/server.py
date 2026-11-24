@@ -1983,7 +1983,7 @@ def health_payload() -> dict:
     }
 
 
-def loop_payload() -> dict:
+def loop_payload(lite: bool = False) -> dict:
     """``/api/loop`` — the rebuilt loop's status plus its panel envelope.
 
     ``loop`` is ``null``, never ``{}``, when nothing readable was found: ``[]``
@@ -2015,9 +2015,30 @@ def loop_payload() -> dict:
     payload, observation = loop_status.snapshot()
     payload["_freshness"] = _panel_envelope("autokernel_loop", observation)
     payload["operator_gates"] = _read_operator_gate_bundle()
-    payload["progression"] = progression_payload()
+    if lite:
+        # ``/api/loop?lite=1`` — the page's every-poll read. The ~1 MB
+        # improvement trajectory + ledger and the ~100 KB progression are only
+        # drawn inside the collapsed "Details for agents"; the page fetches the
+        # full body when that is opened. Omitted keys are named, never zeroed.
+        know = payload.get("knowledge")
+        if isinstance(know, dict):
+            payload["knowledge"] = {k: v for k, v in know.items()
+                                    if k not in LOOP_LITE_KNOWLEDGE_OMIT}
+        payload["progression"] = None
+        payload["lite"] = {"omitted": ["progression"] +
+                           [f"knowledge.{k}" for k in LOOP_LITE_KNOWLEDGE_OMIT],
+                           "full": "/api/loop"}
+    else:
+        payload["progression"] = progression_payload()
     payload["now"] = time.time()
     return payload
+
+
+LOOP_LITE_KNOWLEDGE_OMIT = ("improvement_trajectory", "ledger")
+
+
+def _query_flag(query: str, name: str) -> bool:
+    return (parse_qs(query).get(name) or [""])[0] in ("1", "true", "yes")
 
 
 def progression_payload() -> dict:
@@ -2516,6 +2537,8 @@ class _Handler(BaseHTTPRequestHandler):
             elif route in ASSET_ROUTES:
                 content_type, build = ASSET_ROUTES[route]
                 self._send_asset(content_type, build())
+            elif route == "/api/loop" and _query_flag(parsed.query, "lite"):
+                self._send_json(loop_payload(lite=True))
             elif route in API_ROUTES:
                 self._send_json(API_ROUTES[route]())
             elif route in API_ROUTES_WITH_STATUS:

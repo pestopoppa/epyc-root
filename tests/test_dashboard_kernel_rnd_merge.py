@@ -619,16 +619,14 @@ class TestThePageOpensWithTheHeadline(unittest.TestCase):
                          "the producer-taxonomy lecture is still rendered")
         main = html.split("<main>", 1)[1]
         ids = re.findall(r'<section[^>]*id="([A-Za-z0-9_-]+)"', main)
-        # Operator ruling (pipeline-mgmt 9fd8dc351): the AK at-a-glance strip
-        # opens the page; the champion trajectory is the first section after it.
-        self.assertEqual(ids[:2], ["akflow-sec", "sec-trajectory"],
-                         "the page no longer opens with akflow then the unified champion trajectory")
-        # Nothing VISIBLE sits between the (empty-by-default) freshness banner
-        # and the headline section.
-        between = main.split('id="banner"', 1)[1].split("<section", 1)[0]
-        self.assertEqual(_strip_html_comments(between).replace("></div>", "")
-                         .strip(), "",
-                         "visible content sits above the headline")
+        # 2026-11-24 operator-approved layout: the health strip opens the page;
+        # the champion-vs-production headline is the first panel after it.
+        self.assertEqual(ids[:2], ["sec-health", "sec-headline"],
+                         "the page no longer opens with the health strip then the champion headline")
+        # Nothing VISIBLE sits above the health strip.
+        between = main.split("<section", 1)[0]
+        self.assertEqual(_strip_html_comments(between).strip(), "",
+                         "visible content sits above the health strip")
 
     def test_the_retirement_pointer_survives_at_the_bottom(self):
         html = LOOP_PAGE.read_text(encoding="utf-8")

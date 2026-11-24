@@ -1492,12 +1492,13 @@ class Wiring(unittest.TestCase):
         html = PAGE.read_text(encoding="utf-8")
         body = html[html.index("<main>"):]
         ids = re.findall(r'<section id="([a-z-]+)"', body)
-        # akflow-sec (AK at-a-glance, 9fd8dc351) is the operator-ruled first
-        # slot; the trajectory is the first champion section after it.
-        self.assertEqual(ids[:2], ["akflow-sec", "sec-trajectory"])
-        self.assertLess(body.index('id="sec-trajectory"'),
+        # 2026-11-24 operator-approved layout: the health strip opens the page and
+        # the champion-vs-production headline is the first panel after it. The
+        # trajectory moved into "Details for agents" (it needs the lazy 1 MB body).
+        self.assertEqual(ids[:2], ["sec-health", "sec-headline"])
+        self.assertLess(body.index('id="sec-headline"'),
                         body.index('id="sec-opgate"'),
-                        "the operator-gated card outranks the champion trajectory")
+                        "the operator-gated card outranks the champion headline")
 
 
 if __name__ == "__main__":
