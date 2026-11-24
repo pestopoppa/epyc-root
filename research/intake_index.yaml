@@ -430611,8 +430611,13 @@
     - intake-2951
     - intake-2952
     - intake-1113
-  handoffs_updated: []
+  handoffs_updated:
+  - coordination-and-churn-pipeline.md
+  - churn-pipeline.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P1 PM-REPLAN-C-SOAK, PM-RESERVE-RETIRE-PATCHES; P3 TF-EARLY-END-CENSUS"
   verification: dive-verified
   notes: 'Primary source, fetched 2026-11-24T15:57Z (raw HTML sha256 9472980d614d for the curl copy; the anchor snapshot is the retained artifact). Vendor best-practice guide with no
     measurements apart from the Opus cost figure. Its run cycle maps onto our stack: the session bus is already an inbox (per-agent files, byte cursors, id dedup, ack nudge); rowflow
@@ -430787,8 +430792,12 @@
     - intake-2942
     - intake-2955
     - intake-2944
-  handoffs_updated: []
+  handoffs_updated:
+  - coordination-and-churn-pipeline.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P2 PM-CODEX-LANE-VERDICT; P1 PM-RESERVE-RETIRE-PATCHES"
   verification: dive-verified
   notes: Linked from intake-2942 Related articles. Vendor engineering post by the Claude Code team.
   read_depth: FULL
@@ -430916,8 +430925,12 @@
     intake_entries:
     - intake-2942
     - intake-2943
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P4 AK-KEEP-ANSWER-KEY (held-out split)"
   verification: dive-verified
   notes: Linked from intake-2942 (the 'building evals' link in the Outbox section). Vendor post.
   read_depth: FULL
@@ -431033,6 +431046,9 @@
     - intake-2942
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): Approval-list pattern already the Act, Don't Defer admission test; headline uncontrolled (AON-B5)"
   verification: dive-verified
   notes: Linked from intake-2942 Related articles. Single anecdotal campaign; credibility low.
   read_depth: FULL
@@ -431167,8 +431183,12 @@
     intake_entries:
     - intake-2942
     - intake-819
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P3 TF-EARLY-END-CENSUS (harness-side progress); MEMORY.md window check settled at intake (AON-D2)"
   verification: dive-verified
   notes: 'Linked from intake-2942 as ''our post on agent memory''. Sleep-time compute (intake-819) is the independent paper behind dreaming. Integrator check 2026-11-24: the operator''s
     auto-memory index is 97 lines and 20,039 bytes, inside the 200-line and 25 KB load window this post states.'
@@ -431277,8 +431297,12 @@
     intake_entries:
     - intake-2942
     - intake-2948
-  handoffs_updated: []
+  handoffs_updated:
+  - coordination-and-churn-pipeline.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P2 PM-CODEX-LANE-VERDICT (no-progress counter)"
   verification: dive-verified
   notes: Linked from intake-2942 Permissions section. Vendor research post; all datasets internal.
   read_depth: FULL
@@ -431368,6 +431392,9 @@
     - intake-2947
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): No claude -p worker asks questions; AutoKernel actors are one-shot and the loop resumes from its store (AON-C1, AON-C5)"
   verification: dive-verified
   notes: Linked from intake-2942 ('a hook can defer a tool call'). Documentation page; credibility_score null by rubric. The page is about 1.3M characters including a JS bundle.
   read_depth: PARTIAL
@@ -431466,6 +431493,9 @@
     - intake-2616
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): Confirmation-before-ledger already how taskflow verify.py works (AON-C4)"
   verification: dive-verified
   notes: Linked from intake-2942 ('build them from the ground up'). Vendor post tied to the Managed Agents product (intake-2616).
   read_depth: FULL
@@ -431570,8 +431600,12 @@
     intake_entries:
     - intake-2942
     - intake-2953
-  handoffs_updated: []
+  handoffs_updated:
+  - churn-pipeline.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P3 TF-EARLY-END-CENSUS (timer per parked unit)"
   verification: dive-verified
   notes: 'Found by the Stage-1 Tier-2b contradiction search on intake-2942 (query: always-on agents event inbox single worker criticism). Commentary site, single post.'
   read_depth: FULL
@@ -431675,6 +431709,9 @@
     - intake-2952
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): Lease expiry already implemented by reap_build_grants (AON-A3 declined)"
   verification: dive-verified
   notes: Found by the Stage-1 Tier-2b search on intake-2942. Single-author design blog; corroborated in substance by intake-2952.
   read_depth: FULL
@@ -431761,6 +431798,9 @@
     - intake-2951
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): The session bus already implements at-least-once delivery with id dedup (AON-A4)"
   verification: dive-verified
   notes: 'Found by the Stage-1 Tier-2b search on intake-2942. Independent distributed-systems source predating agent use. Our session bus already implements this design: per-agent append-only
     files, byte-offset cursors, id dedup over retained history and redelivery nudges (BUS_PROTOCOL.md L28-L37, session_bus.py L1666-L1672 @ 3b11e6c).'
@@ -431887,8 +431927,12 @@
     - intake-2950
     - intake-2942
     - intake-2954
-  handoffs_updated: []
+  handoffs_updated:
+  - coordination-and-churn-pipeline.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P2 PM-CODEX-LANE-VERDICT (wall seconds per round)"
   verification: dive-verified
   notes: Stage-2b wave 2, surfaced by the intake-2950 dive (the critique cites AgentTime without a link). arXiv HTML v2 read from the retained snapshot; title matches the arXiv API record
     for 2610.09944v2.
@@ -431994,6 +432038,9 @@
     - intake-2953
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): No EPYC consumer makes refresh decisions from elapsed time (AON-E3)"
   verification: dive-verified
   notes: 'Stage-2b wave 2, found by the AgentTime search (query: AgentTime benchmark LLM agents stop at the right moment time awareness). arXiv v3 HTML; title matches the arXiv API record.'
   read_depth: PARTIAL
@@ -432113,8 +432160,12 @@
     - autokernel-loop.md
     intake_entries:
     - intake-2943
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-always-on-1124 Stage 4 (operator-approved plan, Revision 1): P4 AK-KEEP-ANSWER-KEY"
   verification: dive-verified
   notes: Stage-2b wave 2, surfaced by the intake-2943 dive; it is the 'code review post' that intake-2943 links (href verified in the fetched HTML). Vendor self-report.
   read_depth: FULL

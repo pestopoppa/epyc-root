@@ -5257,6 +5257,11 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92鈥
       路 done when: the replay over recorded keeps flags any keep above its ceiling as SUSPECT, with zero false holds on verified keeps, and the change committed with its SHA and the replay table filed under this box
       路 gate: none        路 inputs: `handoffs/active/autokernel-loop.md`
       路 tier: sonnet
+- [ ] **AK-KEEP-ANSWER-KEY** [non-inference] Build a labelled answer key of past AutoKernel keeps from the journal and keep receipts (each keep labelled held, or failed by a later serving gate, a neutral or negative leave-one-out arm, or a failed replication), split it by date into a tuning half and a later test half, and report the current keep gate's false-keep rate on the test half, so every later keep-gate change is scored against it (intake-2955, intake-2944)
+      路 done when: the answer key and a report giving the false-keep rate on the test half are committed under epyc-inference-research scripts/kernel_rnd/autokernel/loop/, or the report shows fewer than 10 failed keeps and closes the box as futile
+      路 gate: none        路 inputs: `handoffs/active/autokernel-loop.md`
+      路 owner: autokernel
+  - 2026-11-24 note (intake-2944; intake-always-on-1124 K2): the bench-then-serving gate is this loop's train/test split; the documented bench +5.958% against serving -2.18% divergence (this file, FLOOR-UNIT note near L6701) is the overfitting signature the hill-climbing post describes. [no-belief: planning]
 
 
 ### Done

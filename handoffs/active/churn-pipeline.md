@@ -366,3 +366,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · gate: none
       · owner: pipeline-mgmt
       · progress: 2026-11-23 code landed: root 8b37ae880 (akloop/decisions.py read-only detector, 6 signal kinds, drafts per-owner 3-option packages, never sends; tests; docs/design/autokernel-parallel-loop-p6.md). OPEN on the sole clause: "each AskUserQuestion in a week traces to a detector event" needs a week of live observation with the detector in use, plus a trace check of the AskUserQuestions sent in it. Known gap: publish-time hold refusals are not persisted, so the hold signal is derived from holds.yaml.
+- [ ] **TF-EARLY-END-CENSUS** [non-inference] Count the taskflow units in canaries r8a-r8g whose worker ended before its wall cap with an empty or partial diff and no verified verdict, and how many were re-run by hand, then apply the brief's build-or-decline rule to a typed resumable end state in dispatch.py that select.py re-admits (intake-2942 deferred-call resume, intake-2950 timer per parked unit, intake-2946 progress written by the harness rather than the worker)
+      · done when: a census table (unit, end reason, diff lines, re-dispatched yes or no) for every r8a-r8g unit and a one-line build-or-decline decision are appended to docs/design/taskflow-stage1-canary-findings.md on origin/main
+      · gate: none        · inputs: `scripts/coordination/taskflow/dispatch.py` `docs/design/taskflow-stage1-canary-findings.md`
+      · owner: pipeline-mgmt

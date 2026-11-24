@@ -2507,6 +2507,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: rowflow has a rule registry where each rule carries mode warn|enforce and the keeper SNAPSHOT reports would-fail counts, covered by a unit test
       · gate: none
       · owner: pipeline-mgmt
+  - 2026-11-24 note (intake-2943, intake-2947#00; intake-always-on-1124 K1): the warn-then-enforce design matches the Claude Code commit gate (off/observe/enforce). The registry should absorb the existing ad-hoc instances RESERVATION_MODE, SMOKE_MEASURE_ENFORCE and commit-hygiene Rule G. Their block-twice-then-allow escape valve was declined for keeper rules: a keeper rule refuses a row, not a working agent. [no-belief: planning]
 - [ ] **PM-SHARED-CLONE-SYNC** [operator-decision] Operator approves syncing the /workspace shared clone, 230 commits behind origin/main, whose stale rowflow/queue_status lost requires_quiet_host and reported false IDLE-HELD
       · done when: git -C /workspace rev-list --count HEAD..origin/main prints 0
       · gate: none
@@ -2514,6 +2515,18 @@ This verifies local installation only. A client-side hook can be bypassed and do
 - [ ] **PM-SCRATCH-PINS-DRIFT** [operator-decision] Operator decides whether to remove the destructive_scratch_pins.json sha drift (operator record)
       · done when: verdict text: operator decision recorded and the pins sha check reports no drift
       · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-REPLAN-C-SOAK** [non-inference] Soak re-planning scheduler C (REPLAN_MODE=shadow) and enforce when docs/design/rowflow-replanning-scheduler.md criteria hold: 0 violations, solver p99 <1 s, weighted work ≥ greedy, urgent wait ≤0.7× greedy, ≤1 build-lane collision/day, no row past the 12 h pin (operator 2026-11-24; reservation B stays RESERVATION_MODE=shadow; intake-2942, intake-2952)
+      · done when: a soak report shows 7 shadow days meeting all six criteria of docs/design/rowflow-replanning-scheduler.md section 11, and rowflow.py on origin/main has REPLAN_MODE = "enforce" with the live keeper start time after that deploy
+      · gate: none        · inputs: `docs/design/rowflow-replanning-scheduler.md` `scripts/coordination/rowflow/rowflow.py`
+      · owner: pipeline-mgmt
+- [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once PM-REPLAN-C-SOAK has enforced scheduler C, delete the hand-coded reservation rules C subsumes (docs/design/rowflow-replanning-scheduler.md section 11: RANK-HOLD, RANK-SKIP, QUIET-RESERVE, QUIET-URGENT-PENDING, BACKFILL-IF-FITS, and rank_reservation/DRAIN except what B's fallback path still calls) and keep one replay test per original starvation case A-E (listed in the RESERVATION comment block of rowflow.py), so one plan is the only path (intake-2942, intake-2943)
+      · done when: none of the subsumed rules remains in rowflow.py on origin/main outside B's fallback path and pytest scripts/coordination/tests -k reservation passes with one named test per case A-E
+      · gate: PM-REPLAN-C-SOAK        · inputs: `scripts/coordination/rowflow/rowflow.py` `docs/design/rowflow-replanning-scheduler.md`
+      · owner: pipeline-mgmt
+- [ ] **PM-CODEX-LANE-VERDICT** [non-inference] Take the interim Codex lane driver's stop decision off the lane's self-written LANE-STATUS line (drive.sh and drive2.sh stop on its first line): commit the loop as scripts/coordination/codex_lane.py whose DONE is computed from artifacts (each reported box's branch and sha exist and pass the static checks; for pushed lanes, reachable from origin/main and box ticked), treat LANE-STATUS as a hint, stop as STALLED after 3 consecutive rounds with no new commit, and log rounds and wall seconds per lane (intake-2943, intake-2947#02, intake-2953)
+      · done when: pytest scripts/coordination/tests -k codex_lane_verdict passes on origin/main and covers a DONE line with a missing branch (refused), a BLOCKED line with new commits (resumed) and three no-commit rounds (STALLED)
+      · gate: none        · inputs: `scripts/coordination/taskflow/verify.py`
       · owner: pipeline-mgmt
 
 ## Track: churn-pipeline
