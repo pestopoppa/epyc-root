@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 555
+      "open": 557
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2356,7 +2356,7 @@
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "open": 27,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2365,7 +2365,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 324,
+      "total": 326,
       "tracks": [
         {
           "blocked": 2,
@@ -2389,7 +2389,7 @@
           "line": 1002,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 15
+          "open": 17
         }
       ]
     },
