@@ -48,6 +48,8 @@ if _HERE not in sys.path:   # the keeper runs `python3 -I`
 CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness")
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
+# Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
+PREFLIGHT_ENFORCE.update(store=True, estimate=True, ports=True, append=True)
 DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness")   # re-run at grant time (code is sealed at publish)
 
 _LLM = "/mnt/raid0/llm/"

@@ -83,13 +83,14 @@ def _cache(tmp_path, monkeypatch):
 
 # ---------------------------------------------------------------- the switch
 def test_enforce_table_all_false_and_one_entry_per_check():
-    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS) and not any(P.PREFLIGHT_ENFORCE.values())
+    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS)
+    assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "estimate", "ports", "append"}
     assert set(P.DRIFT_CHECKS) <= set(P.CHECKS)
 
 
 def test_effective_demotes_unless_enforced():
     raw = [("ports", "FAIL", "PORT-CLASH", "x"), ("lane", "WARN", "THREADS-DECLARED", "y")]
-    assert [f[1] for f in P.effective(raw)] == ["WARN", "WARN"]
+    assert [f[1] for f in P.effective(raw, {})] == ["WARN", "WARN"]
     assert [f[1] for f in P.effective(raw, {"ports": True})] == ["FAIL", "WARN"]
 
 
@@ -305,6 +306,7 @@ def test_regression_c21_cpu_r2_interleave_contention(tmp_path):
 
 # ---------------------------------------------------------------- hooks + report
 def test_publish_check_warns_then_refuses_only_when_enforced(tmp_path, monkeypatch):
+    monkeypatch.setitem(P.PREFLIGHT_ENFORCE, "ports", False)
     d, s = make_row(tmp_path, "zz-pub-20261124", spec={"ports": [28001]})
     q = {"zz-b-20261124": {"id": "zz-b-20261124", "ports": [28001]}}
     seen = []
@@ -316,6 +318,7 @@ def test_publish_check_warns_then_refuses_only_when_enforced(tmp_path, monkeypat
 
 
 def test_grant_check_drift_only_and_hold_when_enforced(tmp_path, monkeypatch):
+    monkeypatch.setitem(P.PREFLIGHT_ENFORCE, "ports", False)
     d, s = make_row(tmp_path, "zz-grant-20261124", job="main()\n", spec={"ports": [28001]})
     q = {"zz-b-20261124": {"id": "zz-b-20261124", "ports": [28001]}}
     why, lines = P.grant_check(str(tmp_path), s["id"], s, queued=q)
