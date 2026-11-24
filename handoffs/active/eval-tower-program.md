@@ -3194,9 +3194,12 @@ Structural change → **implement in a follow-on pass** (not in this design task
   - 2026-11-24, operator: option (a), a rerun arm for ALL comparisons. The box stays open until the human-only amendment to `measurement/protocols/quality-eval.md` is ratified; the owning session prepares the amendment text for the operator.
     - The amendment is prepared and rehearsed in `/mnt/raid0/llm/tmp/rerun-arm-amendment/`. It changes MEASUREMENT.md's CHANGELOG plus quality-eval.md P-AB-1 and P-PAIRED: rerun arm R, `flip_rate = (f_AR + f_RA) / n_AR` with a Wilson interval, and a no-claim rule (`|Δ|` at or below the flip rate is not claimed). It is prospective only.
     - The operator runs `ratify_aei_rerun_arm_20261124.sh` (`--show`, then `--dry-run`, then `RATIFY_OPERATOR=... --apply`, then `--verify`).
-  - [ ] **AEI-RERUN-FLIP-CODE** [non-inference] Make `paired_stats.py` compute the A-versus-R rerun flip rate (McNemar discordant count of A against R over the tasks scored in both) and downgrade an `a_better`/`b_better` verdict to `indistinguishable` (reason `within_rerun_noise`) when `|Δ|` is at or below the flip rate. Refuse a pair that has no R for decision use.
+  - [x] **AEI-RERUN-FLIP-CODE** [non-inference] Make `paired_stats.py` compute the A-versus-R rerun flip rate (McNemar discordant count of A against R over the tasks scored in both) and downgrade an `a_better`/`b_better` verdict to `indistinguishable` (reason `within_rerun_noise`) when `|Δ|` is at or below the flip rate. Refuse a pair that has no R for decision use. ✅ 2026-11-24 [no-belief: build/landing] orch 08642801: flip rate + Wilson CI + downgrade-to-indistinguishable; 43 tests pass; attestation grammar split to AEI-RERUN-ATTEST
       · done when: unit tests over a fixture pair with and without R pass, covering the downgrade and the refusal
       · gate: AEI-RERUN-ARM-OD        · inputs: `measurement/protocols/quality-eval.md`
+- [ ] **AEI-RERUN-ATTEST** [non-inference] Make the paired-comparison attestation and ledger writer record the rerun arm R summary.json ref and the verdict grammar 'rerun-flip f/n_AR' and 'rerun <ref>' required by the ratified P-AB-1/P-PAIRED rerun-arm amendment
+      · done when: a paired attestation written with an R arm carries the rerun ref and rerun-flip string, and one without R is refused for decision use, proven by a unit test
+      · gate: AEI-RERUN-FLIP-CODE
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
