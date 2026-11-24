@@ -431650,8 +431650,8 @@
   authors:
   - Anirudh Negi
   key_claims:
-  - Acknowledge after durable intake, not after the work completes.
-  - Use explicit states and lease-style claims with an expiry; a row whose lease expired can be claimed again.
+  - The post says to acknowledge after durable intake, not after the work completes.
+  - The post recommends explicit states and lease-style claims with an expiry, so a row whose lease expired can be claimed again.
   - Inbox dedup is necessary but not sufficient; downstream effects need idempotency keys.
   - Expiring-key dedupe alone is fragile.
   claim_anchors:
