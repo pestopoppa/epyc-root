@@ -2530,11 +2530,11 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · gate: none        · inputs: `scripts/coordination/taskflow/verify.py`
       · owner: pipeline-mgmt
   - 2026-11-24: driver landed 5908a883f as scripts/coordination/codex_lane/drive.py (artifact-judged DONE, STALLED after 3 no-commit rounds, wall per round); scripts/coordination/tests/test_codex_lane_drive.py 7 passed. Not ticked: the done-when selector `-k codex_lane_verdict` matches 0 tests (only an unrelated skip), so refine the done-when to that test file (or rename the tests) before ticking.
-- [ ] **PM-PREFLIGHT-12** [non-inference] Land the D9-acked row preflight lane: 12 checks, store/ports/append FAIL and the rest WARN (mk_ak_row v2 contracts, HOST-SHAPE-OVERLAPS-GPU, effective argv[0] store, arm-scoped served deltas)
+- [x] **PM-PREFLIGHT-12** [non-inference] Land the D9-acked row preflight lane: 12 checks, store/ports/append FAIL and the rest WARN (mk_ak_row v2 contracts, HOST-SHAPE-OVERLAPS-GPU, effective argv[0] store, arm-scoped served deltas) ✅ 2026-11-24 [no-belief: software] preflight bb5c756d0 2099822d9 8835cc392 on origin/main; 12 checks (store/ports/append FAIL, rest WARN)
       · done when: preflight commits bb5c756d0, 2099822d9 and 8835cc392 are reachable from origin/main
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-KEEPER-FIXES-1124** [non-inference] Land and deploy the 2026-11-24 keeper/rowflow fixes: QUIET-SERIAL urgent-first, no grant onto a build claim, keeper re-pin, EASY-backfill reservation, LIGHT-POCKET, smoke_verdict/supersedes_check/owner_watch, rc75 NO-REQUEUE-COMPLETE, BUILD-INTERSTICE, SLOT-KEEP, rerank, GPU-HOST-FOREIGN
+- [x] **PM-KEEPER-FIXES-1124** [non-inference] Land and deploy the 2026-11-24 keeper/rowflow fixes: QUIET-SERIAL urgent-first, no grant onto a build claim, keeper re-pin, EASY-backfill reservation, LIGHT-POCKET, smoke_verdict/supersedes_check/owner_watch, rc75 NO-REQUEUE-COMPLETE, BUILD-INTERSTICE, SLOT-KEEP, rerank, GPU-HOST-FOREIGN ✅ 2026-11-24 [no-belief: software] 20 keeper/rowflow commits 929ac6acf..2fc1818a5 on origin/main; live keeper 2fc1818a5
       · done when: every listed commit is reachable from origin/main and the live keeper runs 2fc1818a5 or later
       · gate: none
       · owner: pipeline-mgmt
