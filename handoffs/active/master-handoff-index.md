@@ -122,9 +122,9 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 13 | 535 | 23 | 2026-11-07 |
+| inference-research | 13 | 539 | 23 | 2026-11-07 |
 | pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
-| research-evaluation | 4 | 249 | 2 | 2026-11-19 |
+| research-evaluation | 4 | 251 | 2 | 2026-11-19 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
 | routing-and-optimization | 9 | 484 | 12 | 2026-11-05 |
 | user-facing-harness | 2 | 108 | 1 | 2026-10-03 |
