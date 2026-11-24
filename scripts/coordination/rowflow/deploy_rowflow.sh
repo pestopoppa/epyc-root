@@ -2,7 +2,7 @@
 # deploy_rowflow.sh - the ONLY sanctioned way to install rowflow into compute-flags/bin/rowflow/ (operator 2026-11-05,
 # "Harness first, then class fixes"; keeper-friction review P2.4 #3/#4).
 #
-#   deploy_rowflow.sh [--ref origin/main] [--repo /workspace] [--check-only] [--allow-open-grants] [--no-rollback]
+#   deploy_rowflow.sh [--ref origin/main] [--repo /workspace] [--check-only] [--allow-open-grants] [--no-rollback] [--keep-stage]
 #   deploy_rowflow.sh --parity [--ref origin/main] [--repo /workspace]
 #   Takes a deploy flock (<flags>/.deploy_rowflow.lock; a second deploy is refused, rc 79) and a LIGHT claim on 84-87 (--by <owner>,
 #   default $USER; retried every 60 s up to 15 tries) under which both test gates run (nice -n 19 taskset -c 84-87); released on exit.
@@ -14,7 +14,10 @@
 #           everything is SAME, 1 on any DIFF or MISSING. Stages nothing, runs no gate, touches nothing.
 #
 # 1. stage    a detached `git worktree add` of <ref> in a fresh scratch dir (never the shared working tree: what is
-#             tested is exactly what is installed); removed on exit
+#             tested is exactly what is installed); this run's stage (and the replay scratch inside it, $STAGE/.replay-scratch)
+#             is removed on EVERY exit (2026-11-24; logs deploy-<ts>-{unit,replay}.log live beside it and are kept). A non-zero
+#             exit keeps ONLY the newest stage as deploy-<ts>-REFUSED-keep (an older REFUSED-keep is replaced);
+#             --keep-stage keeps this run's stage. Removal is `git worktree remove` only, never rm.
 # 2. test     the staged tree's unit tests (tests/test_rowflow*.py, test_allocator.py, test_churn_*.py, test_auto_file.py,
 #             test_install_manifest.py, test_handoff_ref.py) AND the replay gate
 #             (tests/replay/test_replay_gate.py from THIS script's tree, run against the staged rowflow/). Any failure
@@ -42,7 +45,7 @@ REPO=/workspace
 FLAGS=${ROWFLOW_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
 BIN="$FLAGS/bin/rowflow"
 LOG="$FLAGS/ws58-calendar-keeper.log"
-CHECK_ONLY=0; PARITY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
+KEEP_STAGE=0; CHECK_ONLY=0; PARITY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
 BY=${DEPLOY_BY:-${USER:-pipeline-mgmt}}; NO_LIGHT=${DEPLOY_NO_LIGHT:-0}; SELFTEST_CLAIM=0
 LOCK_FILE=${DEPLOY_LOCK_FILE:-$FLAGS/.deploy_rowflow.lock}
 FROZEN=(bin/rowflow/filler_run15.sh)   # operator 2026-11-10: rowflow.py/publish_row.py unfrozen
@@ -54,6 +57,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --ref) REF=$2; shift 2 ;;
     --repo) REPO=$2; shift 2 ;;
+    --keep-stage) KEEP_STAGE=1; shift ;;
     --check-only) CHECK_ONLY=1; shift ;;
     --parity) PARITY=1; shift ;;
     --allow-open-grants) ALLOW_OPEN=1; shift ;;
@@ -125,7 +129,28 @@ SHA=$(git -C "$REPO" rev-parse --verify "$REF^{commit}")
 echo "deploy_rowflow: ref=$REF sha=$SHA stage=$STAGE"
 rmdir "$STAGE"
 git -C "$REPO" worktree add --detach -q "$STAGE" "$SHA"
-trap 'git -C "$REPO" worktree remove --force "$STAGE" >/dev/null 2>&1 || true; release_light' EXIT
+cleanup_stage() {
+  local rc=$?
+  trap - EXIT
+  release_light
+  if [ "$KEEP_STAGE" = 1 ]; then
+    echo "deploy_rowflow: --keep-stage: stage left at $STAGE" >&2
+  elif [ "$rc" != 0 ] && [ -d "$STAGE" ]; then
+    local old
+    for old in "$SCRATCH"/deploy-*-REFUSED-keep; do      # only the previous REFUSED-keep is replaced; no other deploy's path is matched
+      [ -d "$old" ] && { git -C "$REPO" worktree remove --force "$old" >/dev/null 2>&1 || true; }
+    done
+    if git -C "$REPO" worktree move "$STAGE" "$SCRATCH/deploy-$TS-REFUSED-keep" >/dev/null 2>&1; then
+      echo "deploy_rowflow: refused (rc $rc); newest stage kept at $SCRATCH/deploy-$TS-REFUSED-keep" >&2
+    else
+      git -C "$REPO" worktree remove --force "$STAGE" >/dev/null 2>&1 || true
+    fi
+  else
+    git -C "$REPO" worktree remove --force "$STAGE" >/dev/null 2>&1 || true
+  fi
+  exit "$rc"
+}
+trap cleanup_stage EXIT
 take_light
 CAND="$STAGE/scripts/coordination/rowflow"
 [ -f "$CAND/rowflow.py" ] || { echo "REFUSED: $SHA has no scripts/coordination/rowflow/rowflow.py" >&2; exit 65; }
@@ -174,7 +199,7 @@ for pub in "${ENTRIES[@]}"; do
   fi
 done
 echo "deploy_rowflow: replay gate (harness $REPLAY_DIR)"
-if ! ROWFLOW_CANDIDATE="$CAND" REPLAY_SCRATCH="$SCRATCH/deploy-$TS-replay" "${GATE_PREFIX[@]}" python3 -m pytest -q -p no:cacheprovider "$REPLAY_DIR/test_replay_gate.py" > "$SCRATCH/deploy-$TS-replay.log" 2>&1; then
+if ! ROWFLOW_CANDIDATE="$CAND" REPLAY_SCRATCH="$STAGE/.replay-scratch" "${GATE_PREFIX[@]}" python3 -m pytest -q -p no:cacheprovider "$REPLAY_DIR/test_replay_gate.py" > "$SCRATCH/deploy-$TS-replay.log" 2>&1; then
   sed -n "/^\(FAILED\|E  \)/p" "$SCRATCH/deploy-$TS-replay.log" | sed -n 1,30p; echo "REFUSED: replay gate failed ($SCRATCH/deploy-$TS-replay.log); nothing installed" >&2; exit 1
 fi
 tail -1 "$SCRATCH/deploy-$TS-replay.log"
