@@ -49,6 +49,7 @@ def _fixture(root: Path):
     (flags / "filing-done" / "akc-h1-rbdeadbee-ab-timing-20261121.verdict.json").write_text(json.dumps(
         {"answer": "FAIL timing", "row_verdict": "fail", "filed_at": _iso(NOW - 100)}))
     (flags / "filing-done" / "akc-h1-rbdeadbee-ab-timing-20261121.FILED").write_text("")
+    row("akc-h1-op-perf-20261121")                                  # queued op-perf screen (RSL-R3)
     row("someone-else-build-20261121", owner="pipeline-mgmt")       # not AK: ignored
     row("ak-misc-thing-20261121")                                   # AK, no stage
     (lin / "20261121T000000Z-composite-c17-fold-x").mkdir(parents=True)
@@ -64,7 +65,7 @@ class FlowContract(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         self.flags, self.spool, self.lin = _fixture(self.tmp)
-        self.d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=_detect, holds=os.devnull, inbox=str(self.flags / "no-inbox"), census=str(self.flags / "no-census.json"))
+        self.d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=_detect, holds=os.devnull, inbox=str(self.flags / "no-inbox"), census=str(self.flags / "no-census.json"), path_gates=str(self.flags / "no-gates.json"))
 
     def tearDown(self):
         shutil.rmtree(self.tmp)
@@ -87,6 +88,7 @@ class FlowContract(unittest.TestCase):
         n = self.d["nodes"]
         self.assertEqual((n["build"]["in_flight"], n["build"]["state"]), (1, "active"))
         self.assertEqual(n["oracle-kld"]["queued"], 1)
+        self.assertEqual((n["op-perf"]["queued"], n["op-perf"]["count"]), (1, 1))   # a chain op-perf row has its own node
         self.assertEqual(n["ab-timing"]["done"], 1)
         self.assertEqual(n["rebase"]["count"], 1)
         self.assertEqual(n["gate_eval"]["items"][0]["state"], "fail")
@@ -98,9 +100,29 @@ class FlowContract(unittest.TestCase):
 
     def test_glance(self):
         g = self.d["glance"]
-        self.assertEqual((g["running_n"], g["queued_n"], g["chain_rows"]), (1, 2, 3))
+        self.assertEqual((g["running_n"], g["queued_n"], g["chain_rows"]), (1, 3, 4))
         self.assertEqual(g["other_rows"]["queued"], 1)          # ak-misc, never the pipeline-mgmt row
         self.assertEqual(g["decisions_n"], 1)
+
+    def test_op_perf_sits_between_oracle_and_timing(self):
+        e = [tuple(x) for x in self.d["edges"]]
+        self.assertIn(("oracle-kld", "op-perf"), e)
+        self.assertIn(("op-perf", "ab-timing"), e)
+        self.assertNotIn(("oracle-kld", "ab-timing"), e)
+        self.assertEqual(FS.stage_of("ak-x-op-perf-20261121")[0], "op-perf")
+
+    def test_serving_screen_rows_have_a_node_and_never_reach_fold(self):
+        self.assertEqual(FS.stage_of("akc-k1-serving-screen-20261124"), ("serving-screen", True, False))
+        self.assertEqual(FS.stage_of("ak-k1-serving-screen-20261124")[0], "serving-screen")
+        self.assertIn("serving-screen", self.d["nodes"])
+        self.assertIn(("candidate", "serving-screen"), [tuple(e) for e in self.d["edges"]])
+        self.assertFalse([e for e in self.d["edges"] if e[0] == "serving-screen"])   # nothing consumes it: no fold input
+
+    def test_path_gates_absent_is_unknown_never_gated(self):
+        pg = self.d["path_gates"]
+        self.assertFalse(pg["present"])
+        self.assertEqual(pg["paths"], [])
+        self.assertIn("unknown", self.d["nodes"]["op-perf"]["note"])
 
     def test_decisions_as_of_does_not_date_the_loop(self):
         self.assertLess(FS._epoch(self.d["last_event"]), NOW + 1800)
@@ -108,7 +130,7 @@ class FlowContract(unittest.TestCase):
     def test_detector_failure_is_stated(self):
         def boom(*a, **k):
             raise RuntimeError("x")
-        d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=boom, holds=os.devnull, inbox=str(self.flags / "no-inbox"), census=str(self.flags / "no-census.json"))
+        d = FS.build(str(self.flags), str(self.spool), str(self.lin), now=NOW, detect=boom, holds=os.devnull, inbox=str(self.flags / "no-inbox"), census=str(self.flags / "no-census.json"), path_gates=str(self.flags / "no-gates.json"))
         self.assertFalse(d["decisions"]["present"])
         self.assertIsNone(d["nodes"]["decisions"]["count"])
 
@@ -142,7 +164,7 @@ class RenderSmoke(unittest.TestCase):
     def test_render_fixture(self):
         tmp = Path(tempfile.mkdtemp())
         try:
-            d = FS.build(*map(str, _fixture(tmp)), now=NOW, detect=_detect, holds=os.devnull, inbox=os.path.join(str(tmp), "ib"), census=os.path.join(str(tmp), "c.json"))
+            d = FS.build(*map(str, _fixture(tmp)), now=NOW, detect=_detect, holds=os.devnull, inbox=os.path.join(str(tmp), "ib"), census=os.path.join(str(tmp), "c.json"), path_gates=os.path.join(str(tmp), "pg.json"))
         finally:
             shutil.rmtree(tmp)
         page = (REPO / "dashboard/static/loop.html").read_text()
@@ -150,10 +172,13 @@ class RenderSmoke(unittest.TestCase):
         start = page.index("const AKF_POS="); end = page.index(";", page.index("decisions:[", start)) + 1
         js = page[start:end] + "\n" + page[page.index("const AKF_DASH="):page.index("\n", page.index("const AKF_DASH="))] + "\n" + \
             "".join(_extract_function(page, f) + "\n" for f in
-                    ("akfEsc", "akfAge", "akfGlance", "akfClip", "akfSvg", "akfItems"))
+                    ("akfEsc", "akfAge", "akfGlance", "akfPathGates", "akfClip", "akfSvg", "akfItems"))
+        d["path_gates"] = {"present": True, "ungated_n": 1, "paths": [
+            {"key": "a3b|cpu", "device": "cpu", "timing": "ungated", "quality": "quality-ungated", "op_perf": "grid",
+             "status": "ungated+quality-ungated", "gaps": ["ungated", "quality-ungated"]}]}
         js += f"const d={json.dumps(d)};\n"
         js += ("process.stdout.write(JSON.stringify({g:akfGlance(d),s:akfSvg(d,'build'),i:akfItems(d,'build'),"
-               "none:akfItems(d,null),abs:akfGlance({present:false,error:'gone'})}));")
+               "none:akfItems(d,null),abs:akfGlance({present:false,error:'gone'}),nopg:akfPathGates({present:false,error:'no report'})}));")
         out = json.loads(subprocess.run(["node", "-e", js], check=True, capture_output=True, text=True,
                                         timeout=30).stdout)
         self.assertEqual(out["s"].count('class="node'), len(FS.NODES))
@@ -162,12 +187,48 @@ class RenderSmoke(unittest.TestCase):
         self.assertIn('class="ai"', out["s"]); self.assertIn('class="det"', out["s"])
         self.assertIn("akc-h1-build-20261121", out["i"])
         self.assertIn("Decisions needed (1)", out["g"])
+        self.assertIn("quality-ungated", out["g"]); self.assertIn("Per-path gates", out["g"])
         self.assertIn("ABSENT", out["abs"])
+        self.assertIn("UNKNOWN", out["nopg"])
         self.assertIn("Click a node", out["none"])
         art = os.environ.get("AKFLOW_RENDER_OUT")
         if art:
             Path(art).write_text("<!doctype html><meta charset=utf-8><body style='background:#0d1117;color:#c9d1d9'>"
                                  + out["g"] + out["s"] + out["i"] + "</body>")
+
+
+class PathGates(unittest.TestCase):
+    REP = {"27b-q8_0|mi210": {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated", "op_perf": "grid"},
+           "a3b-q8_0|cpu": {"status": "live", "device": "cpu", "timing": "ungated", "quality": "quality-ungated",
+                            "op_perf": "ungated"},
+           "x|cpu": {"status": "planned", "device": "cpu", "timing": "cell", "quality": "quality-ungated", "op_perf": "grid"},
+           "y|cpu": {"status": "live", "device": "cpu", "timing": None, "quality": "gated", "op_perf": "grid"}}
+
+    def test_per_path_status_and_node_items(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "pg.json"
+            p.write_text(json.dumps({"at": 1.0, "report": self.REP}))
+            d = FS.build(str(Path(tmp) / "f"), str(Path(tmp) / "s"), str(Path(tmp) / "l"), now=NOW, detect=_detect,
+                         holds=os.devnull, inbox=str(Path(tmp) / "ib"), census=str(Path(tmp) / "c.json"), path_gates=str(p))
+        by = {x["key"]: x for x in d["path_gates"]["paths"]}
+        self.assertEqual(by["27b-q8_0|mi210"]["status"], "gated")
+        self.assertEqual(by["a3b-q8_0|cpu"]["status"], "ungated+quality-ungated+op-perf-ungated")
+        self.assertEqual(by["x|cpu"]["status"], "quality-ungated")
+        self.assertEqual(by["y|cpu"]["gaps"], ["timing-unknown"])      # a null cell is unknown, not ok
+        self.assertEqual(d["path_gates"]["ungated_n"], 3)
+        self.assertEqual([i["id"] for i in d["nodes"]["op-perf"]["items"]], sorted(self.REP))
+        self.assertEqual(d["nodes"]["op-perf"]["count"], 0)             # path rows are not op-perf rows
+
+    def test_errored_or_unreadable_report_is_unknown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "pg.json"
+            p.write_text(json.dumps({"at": 1.0, "error": "RuntimeError: registry unreadable"}))
+            self.assertIn("registry unreadable", FS.read_path_gates(str(p))["error"])
+            self.assertFalse(FS.read_path_gates(str(p))["present"])
+            p.write_text("{not json")
+            self.assertFalse(FS.read_path_gates(str(p))["present"])
+            p.write_text(json.dumps({"report": {}}))
+            self.assertFalse(FS.read_path_gates(str(p))["present"])
 
 
 class HoldAndCensus(unittest.TestCase):
@@ -178,7 +239,7 @@ class HoldAndCensus(unittest.TestCase):
             (t / "ib").mkdir(); (t / "ib" / "01-x.md").write_text("x")
             (t / "c.json").write_text(json.dumps({"surfaces": [{"id": "a", "saving_ms_per_step": 2.0}, {"id": "b", "stale": True, "saving_ms_per_step": 1.0}], "applied": ["s1"]}))
             d = FS.build(str(t / "f"), str(t / "s"), str(t / "l"), now=NOW, detect=_detect,
-                         holds=str(t / "holds.yaml"), inbox=str(t / "ib"), census=str(t / "c.json"))
+                         holds=str(t / "holds.yaml"), inbox=str(t / "ib"), census=str(t / "c.json"), path_gates=str(t / "pg.json"))
             self.assertEqual(d["nodes"]["planner"]["state"], "held")
             self.assertEqual(d["glance"]["hold"]["id"], "akagg")
             self.assertEqual(d["nodes"]["inbox"]["done"], 1)
@@ -187,7 +248,7 @@ class HoldAndCensus(unittest.TestCase):
             self.assertIn(["file", "census"], d["edges"])
             # an unreadable holds file fails closed: lanes read held, never "free"
             d2 = FS.build(str(t / "f"), str(t / "s"), str(t / "l"), now=NOW, detect=_detect,
-                          holds=str(t / "missing.yaml"), inbox=str(t / "ib"), census=str(t / "c.json"))
+                          holds=str(t / "missing.yaml"), inbox=str(t / "ib"), census=str(t / "c.json"), path_gates=str(t / "pg.json"))
             self.assertEqual(d2["nodes"]["planner"]["state"], "held")
 
 

@@ -39,12 +39,14 @@ SPOOL = "/mnt/raid0/llm/tmp/akchain-spool"
 LINEAGE = "/mnt/raid0/llm/tmp/akchain-lineage"
 INBOX = "/mnt/raid0/llm/autokernel/loop-memory/inbox"
 CENSUS = "/mnt/raid0/llm/tmp/ak-bw-census/mi210_bandwidth_census.json"
+#: per-served-path gate report (research stage_bodies.coverage_report), written by ak_runend.write_path_gates beside the census
+PATH_GATES = "/mnt/raid0/llm/tmp/ak-bw-census/path-gates.json"
 HOLDS = os.path.normpath(os.path.join(HERE, "..", "..", "..", "handoffs", "active", "holds.yaml"))
 AK_HOLD_SESSIONS = ("autokernel-all-devices-all-dimensions", "autokernel-rebuild", "akagg")
 OWNER = "autokernel"
 ITEM_CAP = 40
-CHAIN_RX = re.compile(r"^akc-(?P<hyp>.+?)(?P<rb>-rb[0-9a-f]{7})?-(?P<stage>build|oracle-kld|ab-timing|fold-check)-\d{8}")
-STAGE_NAMES = ("build", "oracle-kld", "ab-timing", "fold-check")
+CHAIN_RX = re.compile(r"^akc-(?P<hyp>.+?)(?P<rb>-rb[0-9a-f]{7})?-(?P<stage>build|oracle-kld|op-perf|ab-timing|fold-check|serving-screen)-\d{8}")
+STAGE_NAMES = ("build", "oracle-kld", "op-perf", "ab-timing", "fold-check", "serving-screen")
 
 # Node spec: the ONE place the flowchart's topology is declared (the page draws positions, not semantics).
 NODES = (
@@ -53,8 +55,10 @@ NODES = (
     ("critic", "AI", "critic", "reviews plan and patch (bounded rounds)"),
     ("author", "AI", "author", "writes the patch in the lane worktree"),
     ("candidate", "DET", "candidate record", "spool: base sha, patch sha, hypothesis"),
+    ("serving-screen", "DET", "serving screen", "serving-knob arms; screen only, never a keep"),
     ("build", "DET", "build", "CPU quarter q0-q2, NUMA-bound"),
     ("oracle-kld", "DET", "oracle + KLD", "correctness gate, GPU quiet-only"),
+    ("op-perf", "DET", "op-perf screen", "served-shape op perf; screen only, never a keep"),
     ("ab-timing", "DET", "A/B timing", "pre-registered pairs, futility looks"),
     ("fold-check", "DET", "fold check", "C-fold step, keep-path timing"),
     ("gate_eval", "DET", "gate evaluator", "RESULT -> verdict, no LLM"),
@@ -65,8 +69,8 @@ NODES = (
     ("census", "DET", "bandwidth census", "re-ranks surfaces; writes seed stubs"),
     ("decisions", "DET", "decisions detector", "operator/owner decisions needed"),
 )
-EDGES = (("inbox", "planner"), ("file", "census"), ("census", "planner"), ("planner", "critic"), ("critic", "author"), ("author", "candidate"), ("candidate", "build"),
-         ("build", "oracle-kld"), ("oracle-kld", "ab-timing"), ("ab-timing", "fold-check"),
+EDGES = (("inbox", "planner"), ("file", "census"), ("census", "planner"), ("planner", "critic"), ("critic", "author"), ("author", "candidate"), ("candidate", "build"), ("candidate", "serving-screen"),
+         ("build", "oracle-kld"), ("oracle-kld", "op-perf"), ("op-perf", "ab-timing"), ("ab-timing", "fold-check"),
          ("fold-check", "gate_eval"), ("gate_eval", "file"), ("file", "lineage"),
          ("lineage", "rebase"), ("rebase", "build"), ("gate_eval", "failclass"), ("file", "decisions"))
 
@@ -106,7 +110,7 @@ def stage_of(rid: str) -> tuple[str | None, bool, bool]:
         return m.group("stage"), True, bool(m.group("rb"))
     try:
         import chain as C
-        for st in C.STAGES:
+        for st in C.STAGE_BY_NAME.values():
             if re.search(st.history, rid):
                 return st.name, False, False
     except Exception:  # noqa: BLE001 -- chain import failure degrades to "unmapped", stated in sources
@@ -164,6 +168,42 @@ def ak_hold(holds: str = HOLDS) -> dict | None:
     return None
 
 
+def path_gate_status(row: dict) -> dict:
+    """One served path's gate status from a coverage_report row: which of its gates are `cell`/`grid`/`gated`, which are
+    `ungated` / `quality-ungated`. A path is `gated` only when every gate is present; anything missing is named, never
+    folded into an "ok"."""
+    timing, quality, op = row.get("timing"), row.get("quality"), row.get("op_perf")
+    gaps = []
+    if timing != "cell":
+        gaps.append("ungated" if timing == "ungated" else "timing-unknown")
+    if quality != "gated":
+        gaps.append("quality-ungated" if quality == "quality-ungated" else "quality-unknown")
+    if op != "grid":
+        gaps.append("op-perf-ungated" if op == "ungated" else "op-perf-unknown")
+    return {"status": "gated" if not gaps else "+".join(gaps), "timing": timing, "quality": quality, "op_perf": op,
+            "gaps": gaps}
+
+
+def read_path_gates(path: str) -> dict:
+    """The per-path gate report, as ak_runend wrote it. Absent / unreadable / errored is stated, never an empty "all gated"."""
+    d = _load(path)
+    if not isinstance(d, dict):
+        return {"present": False, "path": path, "paths": [],
+                "error": "no path-gates.json (ak_runend writes it at each AK row end)" if not os.path.exists(path)
+                else "path-gates.json unreadable"}
+    if d.get("error"):
+        return {"present": False, "path": path, "paths": [], "at": d.get("at"), "error": str(d["error"])[:300]}
+    rep = d.get("report")
+    if not isinstance(rep, dict) or not rep:
+        return {"present": False, "path": path, "paths": [], "at": d.get("at"), "error": "path-gates report empty"}
+    paths = []
+    for key in sorted(rep):
+        row = rep[key] if isinstance(rep[key], dict) else {}
+        paths.append({"key": key, "path_status": row.get("status"), "device": row.get("device"), **path_gate_status(row)})
+    return {"present": True, "path": path, "at": d.get("at"), "paths": paths,
+            "ungated_n": sum(1 for p in paths if p["gaps"])}
+
+
 def _node(owner, label, sub):
     return {"owner": owner, "label": label, "sub": sub, "count": 0, "in_flight": 0, "queued": 0,
             "done": 0, "last_event": None, "age_s": None, "state": "idle", "note": None, "items": []}
@@ -182,7 +222,7 @@ def _item(n, it):
 
 def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: float | None = None,
           window_h: float = 168.0, detect=None, inbox: str = INBOX, census: str = CENSUS,
-          holds: str = HOLDS) -> dict:
+          holds: str = HOLDS, path_gates: str = PATH_GATES) -> dict:
     now = time.time() if now is None else now
     lo = now - window_h * 3600
     nodes = {nid: _node(o, lab, sub) for nid, o, lab, sub in NODES}
@@ -221,6 +261,19 @@ def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: f
                        "at": None, "detail": f"saves {x.get('saving_ms_per_step')} ms/step"})
         _touch(cn, _mtime(census))
         sources["census"]["surfaces"] = len(surf)
+
+    # per-path gates (RSL-R6/R8): timing cell / ungated, quality gated / quality-ungated, op-perf grid / ungated
+    pg = read_path_gates(path_gates)
+    sources["path_gates"] = {"path": path_gates, "present": pg["present"], "error": pg.get("error")}
+    on, pg_items = nodes["op-perf"], []   # path rows are listed after the op-perf rows; they are not counted as rows
+    if pg["present"]:
+        pg_items = [{"id": p["key"], "state": p["status"], "at": pg.get("at"),
+                     "detail": f"timing {p['timing']} · quality {p['quality']} · op-perf {p['op_perf']}"}
+                    for p in pg["paths"]]
+        on["note"] = (f"{pg['ungated_n']} of {len(pg['paths'])} served path(s) have a gate gap "
+                      "(ungated / quality-ungated); counts are op-perf rows")
+    else:
+        on["note"] = f"per-path gate status unknown: {pg['error']}"
 
     # candidate spool
     cands = sorted(glob.glob(os.path.join(spool, "cand-*.json")))
@@ -299,6 +352,9 @@ def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: f
                 _item(n2, {"id": r["id"], "state": fc["side"], "at": r["at"], "detail": f"{fc['klass']} ({fc['rule']})"})
                 _touch(n2, r["_ts"])
     sources["rowflow"]["rows_in_window"] = len(rows)
+    for it in pg_items:   # per-path gate rows follow the op-perf rows, within ITEM_CAP
+        if len(on["items"]) < ITEM_CAP:
+            on["items"].append(it)
 
     # lineage
     lin = sorted(glob.glob(os.path.join(lineage, "*-composite-*")))
@@ -353,6 +409,7 @@ def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: f
                        "other_rows": other, "candidates": nodes["candidate"]["count"],
                        "decisions_n": len(decisions["events"]),
                        "hold": hold},
+            "path_gates": pg,
             "decisions": decisions, "sources": sources}
 
 
@@ -361,10 +418,11 @@ def main(argv=None) -> int:
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--spool", default=SPOOL)
     ap.add_argument("--lineage", default=LINEAGE)
+    ap.add_argument("--path-gates", default=PATH_GATES)
     ap.add_argument("--window-h", type=float, default=168.0)
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
-    rep = build(a.flags, a.spool, a.lineage, window_h=a.window_h)
+    rep = build(a.flags, a.spool, a.lineage, window_h=a.window_h, path_gates=a.path_gates)
     if a.json:
         print(json.dumps(rep, indent=1))
     else:

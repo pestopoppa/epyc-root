@@ -141,13 +141,68 @@ def test_gpu_candidate_unchanged_by_serving_path(tmp_path, cand):
     assert cj["serving_path"] == "27b-q8_0|mi210"
 
 
+def test_candidate_json_carries_serving_path_and_shape_class(tmp_path, cand):
+    """The research op-perf stage refuses a candidate with no shape_class and resolves its path from candidate.json
+    (default = the 27B pin): CAND_FIELDS must carry both through to every stage's row."""
+    assert {"serving_path", "shape_class"} <= set(C.CAND_FIELDS)
+    sc = {"op_family": "MUL_MAT", "dims": {"k": [5120]}}
+    rep = _chain(tmp_path, dict(cand, serving_path="a3b-q8_0-cpu|cpu", shape_class=sc))
+    for st, spec in _specs(rep).items():
+        cj = json.load(open(os.path.join(str(tmp_path / "rows"), spec["id"], "candidate.json")))
+        assert cj["serving_path"] == "a3b-q8_0-cpu|cpu" and cj["shape_class"] == sc, st
+
+
+def test_gpu_path_oracle_kld_keeps_its_gpu_plain_shape(tmp_path, cand):
+    specs = _specs(_chain(tmp_path, dict(cand, serving_path="a3b-mtp-mi210|mi210")))
+    assert specs["oracle-kld"]["lane"] == "gpu" and specs["oracle-kld"]["regions"] == C.GPU_PLAIN_REGIONS
+    assert specs["oracle-kld"]["resumable"] is True and "requires_quiet_host" not in specs["oracle-kld"]
+
+
+def _knob(cand, **kw):
+    """A serving-knob candidate (research serving_knobs.emit_candidate shape): a served-recipe delta, no source change, so
+    base == patch == the champion sha it rides."""
+    return dict(cand, kind="serving-knob", server="frontdoor-27b", mechanism_id="serving-knob:S1:a1", delta_digest="d" * 64,
+                screening_only=True, steady_results="/x/steady.jsonl", arm_map={"A": "a1"},
+                burst_results={"a1": "/x/burst.jsonl"}, floor_result="/x/floor.json", **kw)
+
+
+@pytest.mark.parametrize("path,lane", [("27b-q8_0|mi210", "gpu"), ("a3b-q8_0-cpu|cpu", "cpu")])
+def test_serving_knob_candidate_chain_is_one_screen_only_stage(tmp_path, cand, path, lane):
+    kc = _knob(cand, serving_path=path)
+    assert [s.name for s in C.chain_stages(kc)] == ["serving-screen"]
+    rep = _chain(tmp_path, kc)
+    assert [r["stage"] for r in rep["rows"]] == ["serving-screen"] and rep["lint_clean"], rep["rows"][0]["lint"]
+    s = _specs(rep)["serving-screen"]
+    assert s["lane"] == lane and s["serving_path"] == path and s["gate"] == [] and s["gate_ids"]
+    if lane == "gpu":
+        assert s["regions"] == C.GPU_PLAIN_REGIONS and "timing" not in s
+    else:
+        assert s["regions"] == "q0,q1,q2,q3" and s["requires_quiet_host"] is True and s["shape"] == "host"
+    d = os.path.dirname(s["launcher"])
+    cj = json.load(open(os.path.join(d, "candidate.json")))     # the measurement refs reach the stage driver
+    assert cj["kind"] == "serving-knob" and cj["steady_results"] == "/x/steady.jsonl" and cj["arm_map"] == {"A": "a1"}
+    assert cj["burst_results"] == {"a1": "/x/burst.jsonl"} and cj["floor_result"] == "/x/floor.json"
+    box = open(rep["box_file"]).read()
+    assert "never a PASS" in box and "serving-screen" in box and "polar PASS/FAIL" not in box
+
+
+def test_serving_screen_is_never_a_fold_input_or_for_other_candidates(cand):
+    assert "serving-screen" not in [s.name for s in C.STAGES]
+    for stages in (["build", "serving-screen", "fold-check"], ["serving-screen"]):
+        with pytest.raises(ValueError):
+            C.chain_stages(dict(cand, stages=stages))
+    with pytest.raises(ValueError):
+        C.chain_stages(_knob(cand, stages=["build", "oracle-kld", "fold-check"]))
+    assert "serving-screen" in C.SCREEN_STAGE_NAMES and "op-perf" in C.SCREEN_STAGE_NAMES
+
+
 @pytest.mark.parametrize("path", ["q38fn-ud-iq4xs-cpu|cpu", "a3b-q8_0-cpu|cpu"])
-def test_cpu_path_ab_timing_and_op_perf_are_whole_host_quiet_cpu_rows(tmp_path, cand, path):
+def test_cpu_path_oracle_op_perf_and_ab_timing_are_whole_host_quiet_cpu_rows(tmp_path, cand, path):
     rep = _chain(tmp_path, dict(cand, serving_path=path))
     assert not [_own_lint(r) for r in rep["rows"] if _own_lint(r)], [r["lint"] for r in rep["rows"]]
     specs = _specs(rep)
     assert list(specs) == ["build", "oracle-kld", "op-perf", "ab-timing", "fold-check"]
-    for st in ("op-perf", "ab-timing"):
+    for st in ("oracle-kld", "op-perf", "ab-timing"):
         s = specs[st]
         # the published whole-host quiet CPU shape (ak-q38fn-cpu-aa-floor / ak-a3b-cpu-aa-floor rows), never gpu-q3
         assert s["lane"] == "cpu" and s["regions"] == "q0,q1,q2,q3" and s["claim_cpus"] == "any-of q0,q1,q2"
@@ -169,10 +224,15 @@ def test_cpu_path_ab_timing_and_op_perf_are_whole_host_quiet_cpu_rows(tmp_path, 
     assert "usable runs < 3" in specs["ab-timing"]["estimate_justification"]
     assert specs["ab-timing"]["estimate_s"] == C.CPU_PATH_FALLBACK_S["ab-timing"]
     assert specs["op-perf"]["estimate_s"] == C.CPU_PATH_FALLBACK_S["op-perf"]
-    # gates still chain in order; the other three stages keep today's lanes
+    # oracle-kld on a CPU path is a whole-host quiet cpu row so the path's own CPU KLD clauses can run (no population yet:
+    # a stated provisional fallback, never a GPU-oracle borrow)
+    assert specs["oracle-kld"]["estimate_s"] == C.CPU_PATH_FALLBACK_S["oracle-kld"]
+    assert specs["oracle-kld"]["estimate_basis"]["provisional"] is True
+    assert specs["oracle-kld"]["gate"] == [rep["rows"][0]["box"]]
+    # gates still chain in order; build and fold-check keep today's lanes
     assert specs["ab-timing"]["gate"] == [rep["rows"][2]["box"]] and specs["op-perf"]["gate"] == [rep["rows"][1]["box"]]
     assert specs["build"]["lane"] == "cpu" and specs["build"]["regions"] == "any-of q0,q1,q2"
-    assert specs["oracle-kld"]["lane"] == "gpu" and specs["fold-check"]["lane"] == "gpu"
+    assert specs["fold-check"]["lane"] == "gpu"
     assert specs["fold-check"]["regions"] == C.GPU_TIMING_REGIONS
     box = open(rep["box_file"]).read()
     assert f"served path {path}" in box
@@ -184,6 +244,7 @@ def test_cpu_path_narrowed_chain_and_bad_paths(tmp_path, cand):
     ab = dict(cand, serving_path="a3b-q8_0-cpu|cpu", stages=["build", "op-perf", "ab-timing", "fold-check"])
     assert [(s.name, s.lane) for s in C.chain_stages(ab)] == [("build", "cpu"), ("op-perf", "cpu"), ("ab-timing", "cpu"),
                                                              ("fold-check", "gpu")]
+    assert [(s.name, s.lane) for s in C.chain_stages(narrowed)][1] == ("oracle-kld", "cpu")
     for bad in ("a3b-q8_0-cpu", "a3b|gpu", "|cpu", "A3B|cpu"):
         with pytest.raises(ValueError):
             C.chain_stages(dict(cand, serving_path=bad))

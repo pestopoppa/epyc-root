@@ -44,8 +44,8 @@ if RT:
     sys.path.insert(0, str(Path(RT) / "scripts" / "kernel_rnd"))
 
 REF = "ak/champion/llama-cpp-ffc1bac82eec"
-DUR = {"build": 600, "oracle-kld": 300, "ab-timing": 900, "fold-check": 120}
-RANK = {"fold-check": 50, "ab-timing": 60, "oracle-kld": 70, "build": 100}   # champion-fold outranks exploration
+DUR = {"build": 600, "oracle-kld": 300, "op-perf": 600, "ab-timing": 900, "fold-check": 120}
+RANK = {"fold-check": 50, "ab-timing": 60, "op-perf": 65, "oracle-kld": 70, "build": 100}   # champion-fold outranks exploration
 HARNESS = {"gpu_common.py": b"# gpu_common stub\n", "gpuproof_row.py": b"# gpuproof stub\n"}
 
 
@@ -113,12 +113,18 @@ class Sim:
             prev = r["id"]
         return rep
 
+    def dep_met(self, dep):
+        """A stage's predecessor passed. op-perf is a SCREEN (RSL-R3): a clean screen files FUTILITY with screen_pass and
+        lets its successor run; only a polar FAIL stops the chain (fold-check itself never reads op-perf)."""
+        f = self.filed.get(dep, {})
+        return f.get("verdict") == "PASS" or bool(f.get("result", {}).get("screen_pass"))
+
     def runnable(self, t):
         out = []
         for r in self.rows.values():
             if r["state"] != "waiting":
                 continue
-            if r["dep"] and self.filed.get(r["dep"], {}).get("verdict") != "PASS":
+            if r["dep"] and not self.dep_met(r["dep"]):
                 continue
             out.append(r)
         return out
@@ -150,7 +156,9 @@ class Sim:
                        env={k: v for k, v in os.environ.items() if k != "PYTHONPATH"})
         res = json.load(open(os.path.join(r["rowdir"], "out", "RESULT.json")))
         v = gate_eval.evaluate(res, ended={"rc": "0", "reason": "complete"}, row=rid)
-        assert gate_eval.policy_decided(v), (rid, v)            # zero LLM turns: runend --gate-eval --file path
+        # zero LLM turns: runend --gate-eval --file path. The one exception is a CLEAN op-perf screen: filed FUTILITY
+        # (screen only, never a keep), which gate_eval leaves undecided by design (RSL-R3)
+        assert gate_eval.policy_decided(v) or (r["stage"] == "op-perf" and res.get("screen_pass")), (rid, v)
         self.filed[rid] = {"verdict": v["verdict"], "gate": v["gate_id"], "result": res}
         if r["stage"] == "fold-check":
             self.after_fold(r, res, t)
@@ -191,6 +199,8 @@ class Sim:
 
 def _rec(cid_hyp, base, patch, paths, **kw):
     from autokernel.loop import tailsplit
+    # shape_class: the op-perf stage refuses a candidate without one (stage_bodies.stage_op_perf); CAND_FIELDS must carry it
+    kw.setdefault("shape_class", {"op_family": "MUL_MAT", "dims": {"k": [5120]}})
     return tailsplit.candidate_record(base=base, patch=patch, hypothesis={"mechanism_id": cid_hyp}, paths=paths,
                                       lane="sim", predicted_effect="+2%", **kw)
 

@@ -217,6 +217,38 @@ class CensusTests(unittest.TestCase):
                        "Family rank", "Coverage unknown"):
             self.assertIn(needle, page)
 
+    def test_coverage_status_defaults_to_unknown_never_ok(self):
+        self.census.write_text(json.dumps({**FIXTURE, "coverage": {"paths": {}}}))   # producer wrote no status
+        self.assertEqual(S.bw_census_payload(self.census, self.grants)["coverage"]["status"], "unknown")
+
+    def test_inbox_state_is_read_from_the_hook_state_file(self):
+        self.census.write_text(json.dumps(FIXTURE))
+        inbox = self.census.parent / "inbox-state.json"
+        d = S.bw_census_payload(self.census, self.grants)
+        self.assertEqual(d["inbox"]["status"], "unknown")             # no record yet is never "ok"
+        inbox.write_text(json.dumps({"at": 5.0, "row": "ak-x-20261124", "status": "error",
+                                     "detail": "error rc=2 boom"}))
+        i = S.bw_census_payload(self.census, self.grants)["inbox"]
+        self.assertEqual((i["status"], i["row"], i["detail"]), ("error", "ak-x-20261124", "error rc=2 boom"))
+        inbox.write_text(json.dumps({"status": "fine-ish"}))          # an unknown vocabulary value is not passed as ok
+        self.assertEqual(S.bw_census_payload(self.census, self.grants)["inbox"]["status"], "unknown")
+        inbox.write_text("{nope")
+        self.assertEqual(S.bw_census_payload(self.census, self.grants)["inbox"]["status"], "unreadable")
+        page = (REPO / "dashboard/static/loop.html").read_text()
+        for needle in ("bwcInbox", "Census inbox step"):
+            self.assertIn(needle, page)
+
+    def test_event_stale_reason_names_the_event_not_the_mtime(self):
+        now = time.time()
+        self._write(now - 3600)
+        self._ended("akx-late-row", now - 60)                        # akx-* rows count (defect 1 routes them to the hook)
+        env = S.bw_census_payload(self.census, self.grants, now=now)["_freshness"]
+        self.assertTrue(env["event_stale"])
+        status, why = panels.panel_verdict(env)
+        self.assertEqual(status, panels.STATUS_DEGRADED)
+        self.assertIn("akx-late-row", why)
+        self.assertIn("did not run at their row end", why)
+
     def test_trend(self):
         self.assertEqual(bw_census.trend(None), "")
         self.assertTrue(bw_census.trend([["a", 2], ["b", 1]]).endswith("↓"))

@@ -15,7 +15,12 @@
      in CENSUS_STATE (census JSON seeded from the committed copy, generated table, journal lines, seed stubs).
      Idempotent per RESULT sha256; a session folds CENSUS_STATE back into the research repo (no shared-clone writes here).
   5. after step 4 (RSL-R2): research `autokernel/loop/census_inbox.py` (same snapshot; "-" while absent there) installs/removes
-     BWS-*.md stubs in LOOP_STORE/inbox for measured, ownerless, open surfaces. Fail-soft: an error is shown as `inbox=error ...`.
+     BWS-*.md stubs in LOOP_STORE/inbox for measured, ownerless, open surfaces. Fail-soft: an error is shown as `inbox=error ...`
+     AND recorded in CENSUS_STATE/inbox-state.json, which the hub reads (/api/bw_census `inbox`, the census panel).
+  6. (/loop path gates) research `stage_bodies.coverage_report` (same snapshot, same registry extract) -> CENSUS_STATE/path-gates.json:
+     per served path timing `cell`/`ungated`, quality `gated`/`quality-ungated`, op-perf `grid`/`ungated`. flow_status reads it.
+  7. census/inbox/coverage read the serving registry from research-side env EPYC_ORCH_REGISTRY, which this hook points at a
+     file extracted from orchestrator origin/main (`git show`), never the shared clone's uncommitted working tree.
 
 Prints ONE line (`AK-RUNEND <id> filed=[...] class=<side>/<klass> lineage=<dir|->`). Exit 0 always: a watcher hook
 reports, it never blocks the watcher. --dry-run prints what it would run and runs nothing.
@@ -40,6 +45,20 @@ RESEARCH_REPO = "/mnt/raid0/llm/epyc-inference-research"
 RESEARCH_CACHE = "/mnt/raid0/llm/tmp/akchain-research"
 LINEAGE_OUT = "/mnt/raid0/llm/tmp/akchain-lineage"
 CENSUS_STATE = "/mnt/raid0/llm/tmp/ak-bw-census"
+ORCH_REPO = "/mnt/raid0/llm/epyc-orchestrator"
+ORCH_REGISTRY_REL = "orchestration/model_registry.yaml"
+ORCH_REGISTRY_CACHE = "/mnt/raid0/llm/tmp/akchain-orch-registry"
+INBOX_STATE_FILE = "inbox-state.json"
+PATH_GATES_FILE = "path-gates.json"
+_PATH_GATES_PY = """
+import json, sys
+from autokernel.loop import census_coverage as cc, stage_bodies as sb
+pol = json.load(open(sys.argv[1]))
+reg = cc.load_registry()
+if not reg:
+    raise SystemExit("registry unreadable")
+print(json.dumps(sb.coverage_report(reg, pol, {})))
+"""
 LOOP_STORE = "/mnt/raid0/llm/autokernel/loop-memory"  # the loop's store; its inbox/ is what the planner reads
 COMPOSITE_RX = re.compile(r"^c\d+-(fold|composite)-")
 sys.path.insert(0, HERE)
@@ -92,6 +111,88 @@ def research_snapshot(repo: str = RESEARCH_REPO, ref: str = "origin/main", cache
     return kr
 
 
+def registry_snapshot(repo: str = ORCH_REPO, ref: str = "origin/main", cache: str = ORCH_REGISTRY_CACHE,
+                      run=subprocess.run) -> str | None:
+    """Path of the serving registry as committed on orchestrator `ref`, extracted once per commit with `git show`
+    (read-only on the clone; its uncommitted working tree is never read). None when it cannot be extracted -- the
+    research side then falls back to its own default and reports that on the census coverage status."""
+    try:
+        remote, _, branch = ref.partition("/")
+        run(["git", "-C", repo, "fetch", "-q", remote, branch], capture_output=True, timeout=120)
+        commit = run(["git", "-C", repo, "rev-parse", f"{ref}^{{commit}}"], capture_output=True, text=True,
+                     check=True).stdout.strip()
+        dst = os.path.join(cache, commit, "model_registry.yaml")
+        if not os.path.exists(dst):
+            blob = run(["git", "-C", repo, "show", f"{commit}:{ORCH_REGISTRY_REL}"], capture_output=True,
+                       check=True).stdout
+            if not blob:
+                return None
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            tmp = dst + f".tmp{os.getpid()}"
+            with open(tmp, "wb") as f:
+                f.write(blob)
+            os.replace(tmp, dst)
+        return dst
+    except Exception:  # noqa: BLE001 -- fail-soft: a hook reports, it never blocks
+        return None
+
+
+def _registry_env(registry: str | None, *, live: bool = True) -> dict | None:
+    """Child env with EPYC_ORCH_REGISTRY set to the origin/main extract; None = inherit (no extract available).
+    `live` False (an injected `run`, i.e. a test) never touches the orchestrator clone unless `registry` is given."""
+    reg = registry if registry is not None else (registry_snapshot() if live else None)
+    return {**os.environ, "EPYC_ORCH_REGISTRY": reg} if reg else None
+
+
+def path_gates(*, kernel_rnd: str | None = None, state: str = CENSUS_STATE, registry: str | None = None,
+               run=subprocess.run, now: float | None = None) -> str:
+    """Write CENSUS_STATE/path-gates.json from research coverage_report (read-only on every input). Returns a one-token
+    summary; a failure is RECORDED in the file (`error`) so /loop reads "unknown", never a stale all-gated report."""
+    kr = kernel_rnd or research_snapshot()
+    pol = os.path.join(kr, "autokernel", "loop", "graph_kld_policy.json")
+    rec: dict = {"schema": "epyc.ak.path_gates.v1", "at": now if now is not None else time.time()}
+    try:
+        if not os.path.exists(os.path.join(kr, "autokernel", "loop", "stage_bodies.py")):
+            raise RuntimeError("snapshot has no stage_bodies.py")
+        r = run([sys.executable, "-s", "-B", "-c", _PATH_GATES_PY, pol], cwd=kr, capture_output=True, text=True,
+                timeout=120, env=_registry_env(registry, live=run is subprocess.run))
+        if r.returncode != 0:
+            raise RuntimeError(f"rc={r.returncode} {(r.stderr or '').strip().splitlines()[-1:] or ''}")
+        rec["report"] = json.loads((r.stdout or "").strip().splitlines()[-1])
+    except Exception as e:  # noqa: BLE001 -- fail-soft, but recorded where the hub reads it
+        rec["error"] = f"{type(e).__name__}: {e}"[:300]
+    os.makedirs(state, exist_ok=True)
+    p = os.path.join(state, PATH_GATES_FILE)
+    tmp = p + f".tmp{os.getpid()}"
+    with open(tmp, "w") as f:
+        json.dump(rec, f, indent=1, sort_keys=True)
+    os.replace(tmp, p)
+    return f"error {rec['error']}"[:200] if "error" in rec else f"paths={len(rec['report'])}"
+
+
+def inbox_status(line: str) -> str:
+    """ok | absent | error, from the census_inbox line (`-` = module absent from the snapshot)."""
+    t = str(line or "").strip()
+    if t == "-":
+        return "absent"
+    if t.startswith("error") or t.startswith("rc=") or not t:
+        return "error"
+    return "ok"
+
+
+def write_inbox_state(state: str, rid: str, line: str, *, now: float | None = None) -> str:
+    """Record the inbox step's outcome where the hub can see it: CENSUS_STATE/inbox-state.json (atomic replace)."""
+    os.makedirs(state, exist_ok=True)
+    rec = {"schema": "epyc.ak.census_inbox_state.v1", "at": now if now is not None else time.time(),
+           "row": rid, "status": inbox_status(line), "detail": str(line)[:300]}
+    p = os.path.join(state, INBOX_STATE_FILE)
+    tmp = p + f".tmp{os.getpid()}"
+    with open(tmp, "w") as f:
+        json.dump(rec, f, indent=1, sort_keys=True)
+    os.replace(tmp, p)
+    return p
+
+
 def lineage_generate(rid: str, *, kernel_rnd: str | None = None, out_root: str = LINEAGE_OUT,
                      run=subprocess.run) -> str:
     kr = kernel_rnd or research_snapshot()
@@ -105,7 +206,7 @@ def lineage_generate(rid: str, *, kernel_rnd: str | None = None, out_root: str =
 
 
 def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, state: str = CENSUS_STATE,
-                  run=subprocess.run, spec_path: str | None = None) -> str:
+                  run=subprocess.run, spec_path: str | None = None, registry: str | None = None) -> str:
     """Deterministic census step (no LLM). Returns the updater's BW-CENSUS line."""
     if not result_path or not os.path.exists(result_path):
         return "-"
@@ -127,12 +228,12 @@ def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, 
                  os.path.join(kr, "autokernel", "loop", "census_update.py")).read() else []),  # KEEP-stale target fallback
              *(["--merge-static-from", seed] if os.path.exists(seed) and "merge-static-from" in open(
                  os.path.join(kr, "autokernel", "loop", "census_update.py")).read() else [])],  # committed parity/time_only -> live, every run
-            cwd=kr, capture_output=True, text=True, timeout=120)
+            cwd=kr, capture_output=True, text=True, timeout=120, env=_registry_env(registry, live=run is subprocess.run))
     return ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
 
 
 def census_inbox(rid: str, *, kernel_rnd: str | None = None, state: str = CENSUS_STATE, store: str = LOOP_STORE,
-                 run=subprocess.run) -> str:
+                 run=subprocess.run, registry: str | None = None) -> str:
     """RSL-R2: sync BWS-*.md stubs in the loop inbox from the live census (research `loop/census_inbox.py`, same snapshot).
     The snapshot is a git archive of research origin/main, so the module is absent until RSL-R2 lands there: "-"."""
     kr = kernel_rnd or research_snapshot()
@@ -140,12 +241,15 @@ def census_inbox(rid: str, *, kernel_rnd: str | None = None, state: str = CENSUS
         return "-"
     r = run([sys.executable, "-s", "-B", "-m", "autokernel.loop.census_inbox", "--census",
              os.path.join(state, "mi210_bandwidth_census.json"), "--store", store], cwd=kr, capture_output=True,
-            text=True, timeout=120)
-    return ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
+            text=True, timeout=120, env=_registry_env(registry, live=run is subprocess.run))
+    last = ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
+    # a nonzero exit is never reported as the success line it may have printed before failing (it was discarded before)
+    return last if r.returncode == 0 else f"error rc={r.returncode} {last}"[:300]
 
 
 def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=subprocess.run,
-           lineage=lineage_generate, notify_mod=None, census=census_update, inbox=None) -> dict:
+           lineage=lineage_generate, notify_mod=None, census=census_update, inbox=None, state: str | None = None,
+           gates=None) -> dict:
     man = manifest(flags, rid)
     rep: dict = {"row": rid}
     if rid.startswith("akc-"):
@@ -183,6 +287,18 @@ def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=su
                 rep["inbox"] = inbox(rid)
             except Exception as e:  # noqa: BLE001 -- fail-soft: an inbox error is logged on the AK-RUNEND line, never fails the run-end
                 rep["inbox"] = f"error {type(e).__name__}: {e}"
+            if state is not None or census is census_update:  # an injected census never touches the live state dir
+                try:
+                    write_inbox_state(state or CENSUS_STATE, rid, rep["inbox"])
+                except Exception as e:  # noqa: BLE001
+                    rep["inbox"] = f"{rep['inbox']} (inbox-state write failed: {type(e).__name__}: {e})"
+        live = state is not None or census is census_update
+        gates = gates or (path_gates if census is census_update else None)
+        if gates and live:   # fail-soft; refreshed at every AK run end so /loop's per-path gate status tracks the registry
+            try:
+                rep["gates"] = gates(state=state or CENSUS_STATE) if gates is path_gates else gates(rid)
+            except Exception as e:  # noqa: BLE001
+                rep["gates"] = f"error {type(e).__name__}: {e}"
     return rep
 
 
@@ -190,7 +306,8 @@ def line(rep: dict) -> str:
     c = rep.get("class") or {}
     return (f"AK-RUNEND {rep['row']} filed=[{rep.get('filed', '-')}] class={c.get('side')}/{c.get('klass')}"
             f"{' routed' if c.get('routed') else ''} lineage={rep.get('lineage', '-')} census={rep.get('census', '-')}"
-            f"{' inbox=' + str(rep['inbox']) if 'inbox' in rep else ''}")
+            f"{' inbox=' + str(rep['inbox']) if 'inbox' in rep else ''}"
+            f"{' gates=' + str(rep['gates']) if 'gates' in rep else ''}")
 
 
 def main(argv=None) -> int:

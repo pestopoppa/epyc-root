@@ -26,7 +26,9 @@ CENSUS_PATH = Path(os.environ.get(
     "AK_BW_CENSUS_JSON", "/mnt/raid0/llm/tmp/ak-bw-census/mi210_bandwidth_census.json"))
 GRANTS_DIR = Path(os.environ.get(
     "AK_BW_CENSUS_GRANTS_DIR", "/mnt/raid0/llm/tmp/compute-flags/grants"))
-AK_ROW_PREFIXES = ("ak-", "akc-")
+AK_ROW_PREFIXES = ("ak-", "akx-", "akc-")
+INBOX_STATE_NAME = "inbox-state.json"
+INBOX_STATE_PATH = os.environ.get("AK_BW_CENSUS_INBOX_STATE")  # default: beside the census file
 
 
 def ak_rows_ended_after(grants_dir: Path, census_mtime: float) -> list[dict]:
@@ -216,7 +218,8 @@ def shape_coverage(doc: dict) -> Optional[dict]:
         paths.append({"key": key, "path": v.get("path"), "status": v.get("status") or "live",
                       "planned": v.get("status") == "planned", "n": v.get("n") or [],
                       "uncovered_count": len(ops), "uncovered_ops": ops})
-    return {"status": cov.get("status") or "ok", "paths": paths, "mismatch": cov.get("mismatch") or [],
+    # a producer that wrote no status is "unknown", never "ok": an absent status must not read as a clean registry join
+    return {"status": cov.get("status") or "unknown", "paths": paths, "mismatch": cov.get("mismatch") or [],
             "unmapped": cov.get("unmapped") or [], "uncovered_total": sum(p["uncovered_count"] for p in paths)}
 
 
@@ -229,6 +232,26 @@ def shape_family_rank(doc: dict) -> list[dict]:
                         "status": "priced" if _num(r.get("score")) is not None else "unpriced"})
     out.sort(key=lambda r: (r["score"] is None, -(r["score"] or 0.0), str(r["family"])))
     return out
+
+
+def read_inbox_state(census_path: Path, path: Optional[Path] = None) -> dict:
+    """The run-end hook's census-inbox outcome (ak_runend.write_inbox_state), read-only.
+
+    Always a dict with a ``status`` of ok | absent | error | unknown | unreadable: a missing file is "unknown" (the
+    hook has not recorded one yet), never "ok"; an unreadable one says so rather than reading as healthy."""
+    p = Path(path or INBOX_STATE_PATH or (Path(census_path).parent / INBOX_STATE_NAME))
+    try:
+        rec = json.loads(p.read_text())
+        if not isinstance(rec, dict):
+            raise ValueError("inbox state root is not an object")
+    except FileNotFoundError:
+        return {"status": "unknown", "detail": "no inbox-state.json yet (run-end hook has not recorded an inbox step)",
+                "evidence": str(p)}
+    except (OSError, ValueError) as exc:
+        return {"status": "unreadable", "detail": f"{type(exc).__name__}: {exc}", "evidence": str(p)}
+    st = rec.get("status")
+    return {"status": st if st in ("ok", "absent", "error") else "unknown", "at": _num(rec.get("at")),
+            "row": rec.get("row"), "detail": str(rec.get("detail") or "")[:300], "evidence": str(p)}
 
 
 def build(census_path: Path = None, grants_dir: Path = None) -> dict:
@@ -265,6 +288,7 @@ def build(census_path: Path = None, grants_dir: Path = None) -> dict:
         "parity": shape_parity(doc),
         "coverage": shape_coverage(doc),
         "family_rank": shape_family_rank(doc),
+        "inbox": read_inbox_state(census_path),
         "event_stale": bool(ended),
         "ak_rows_ended_after_census": ended[:20],
     }

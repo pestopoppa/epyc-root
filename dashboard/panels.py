@@ -1324,6 +1324,9 @@ def panel_verdict(env: Mapping) -> tuple:
                     f"[{env.get('absence_means')}]")
         return (STATUS_ABSENT,
                 f"{panel}: no producer reported — {env.get('absence_means')}")
+    if env.get("staleness_class") == CLASS_STALE and env.get("event_stale") and env.get("detail"):
+        # an EVENT-arm stale (a row ended after the artifact) names that event, not the file's age
+        return STATUS_DEGRADED, f"{panel}: stale by event - {env['detail']}"
     if env.get("staleness_class") == CLASS_STALE:
         missing = (f"; section(s) {sorted(env['unreported'])} have no producer"
                    if env.get("unreported") else "")

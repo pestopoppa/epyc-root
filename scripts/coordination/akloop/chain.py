@@ -19,9 +19,12 @@ Region shapes (keeper packing rules, inference-backlog-scheduling skill):
     op-perf     gpu timing row like ab-timing (GPU path): shape gpu-q3, admission block-timing-quiet
     ab-timing   gpu timing row: shape gpu-q3 (mi210_0, 88-95 held, 184-191), admission block-timing-quiet
     fold-check  gpu timing row like ab-timing, resumable (per-step checkpoints)
-PATH STAGES (op-perf, ab-timing) follow the candidate's `serving_path` ("model|device", default 27b-q8_0|mi210,
+    serving-screen  OPTIONAL, only for a candidate of kind "serving-knob" (a served-recipe delta, no source change): the
+                served path's lane (gpu: mi210_0 + 184-191; cpu: whole host). SCREEN ONLY (AK-SURFACE-SERVING-1): polar FAIL
+                or FUTILITY_SCREEN_ONLY_NO_KEEP, never a polar PASS; never a fold input. Its chain is that one stage.
+PATH STAGES (oracle-kld, op-perf, ab-timing, serving-screen) follow the candidate's `serving_path` ("model|device", default 27b-q8_0|mi210,
 research stage_bodies.DEFAULT_PATH). A `|cpu` path (q38fn-ud-iq4xs-cpu|cpu, a3b-q8_0-cpu|cpu) runs them on the CPU
-lane as a WHOLE-HOST QUIET row, never the gpu-q3 shape: Q38FN is one NUMA_FULL instance and A3B two concurrent
+lane as a WHOLE-HOST QUIET row (oracle-kld too, so the path's own CPU KLD clauses can run), never the gpu-q3 shape: Q38FN is one NUMA_FULL instance and A3B two concurrent
 NUMA-half instances, both spanning all 96 physical cores (research cpu_timing_runner reads the instance list from the
 registry + stack_numa). Shape copied from the published ak-{q38fn,a3b}-cpu-aa-floor / ak-opperf-cal-q38fn-cpu rows:
 regions q0,q1,q2,q3, claim_cpus "any-of q0,q1,q2", shape host, declared_threads 96, requires_quiet_host, role bench.
@@ -84,7 +87,11 @@ BUILD_REGIONS = "any-of q0,q1,q2"
 #: Research stage_bodies.DEFAULT_PATH: a candidate without `serving_path` is the 27B on the MI210 (the legacy chain).
 DEFAULT_SERVING_PATH = "27b-q8_0|mi210"
 #: Stages whose device is the candidate PATH's (research stage_bodies.PATH_STAGES).
-PATH_STAGE_NAMES = ("op-perf", "ab-timing")
+PATH_STAGE_NAMES = ("oracle-kld", "op-perf", "ab-timing", "serving-screen")
+#: Stages that are SCREENS: they can fail a candidate (polar FAIL) or file FUTILITY_SCREEN_ONLY_NO_KEEP, never PASS a gate.
+SCREEN_STAGE_NAMES = ("op-perf", "serving-screen")
+#: Candidate kind whose chain is the single screen stage (no source change, so no build / fold-check).
+SERVING_KNOB_KIND = "serving-knob"
 #: Whole-host CPU quiet booking (a CPU path's served topology spans all 96 physical cores). `regions` is the published
 #: precedent spelling; the polar scaffolder refuses a cpu-lane row touching 88-95, so scaffold_stage books q0,q1,q2 into
 #: the scaffolder and writes this over the spec (see CPU_WHOLE_HOST_SPEC).
@@ -148,7 +155,18 @@ STAGES: tuple[Stage, ...] = (
           "on-answer: every fold step measured. on-futility: an invalid run twice.",
           3600, timing="bench", shape="gpu-q3"),
 )
-STAGE_BY_NAME = {s.name: s for s in STAGES}
+#: Optional stage (never in STAGES, never a fold input): see chain_stages. GPU path: plain mi210 regions like oracle-kld
+#: (not a timing row; nothing here is timed). CPU path: stage_for turns it into the whole-host quiet row.
+SERVING_SCREEN = Stage(
+    "serving-screen", "gpu", GPU_PLAIN_REGIONS, 8, False, r"^(ak|akx|c\d+)-.*-serving-screen(-|$)",
+    ("declared.polar", "declared.futility_harness"),
+    "Does a serving-knob arm beat its control on the served best case (steady state) without breaking the worst case "
+    "(burst: fits memory, ITL p95 within +20%, correct output)? SCREEN ONLY: it can reject an arm, never keep one.",
+    "FAIL (polar) if the arm is rejected on a worst-case guard rail; a clean screen is FUTILITY_SCREEN_ONLY_NO_KEEP and "
+    "never a polar PASS; FUTILITY_HARNESS_* on invalid measurements. polar FAIL only.",
+    "on-answer: both cases screened once (research serving_knob_measure.screen_stage). on-futility: invalid measurements.",
+    300)
+STAGE_BY_NAME = {s.name: s for s in (*STAGES, SERVING_SCREEN)}
 
 #: Spec fields of a CPU-path whole-host quiet row (copied from the published ak-q38fn-cpu-aa-floor-20261124 /
 #: ak-a3b-cpu-aa-floor-20261124 / ak-opperf-cal-q38fn-cpu-20261124 specs; placement itself is the runner's, from the
@@ -166,7 +184,10 @@ CPU_WHOLE_HOST_SPEC = {
 }
 #: History population / fallback of a CPU-path stage: its own (GPU rows are not its samples); measured on the
 #: 24-pair calibration rows (Q38FN floor 14700 s, A3B floor 10000 s, Q38FN op-perf cal 10800 s) scaled to a screen/A-B run.
-CPU_PATH_FALLBACK_S = {"ab-timing": 7200, "op-perf": 4800}
+#: oracle-kld on a CPU path has NO measured population yet (the CPU KLD clauses have not run as a row): its fallback is a
+#: PROVISIONAL stated guess, re-booked from the row's smoke_measure.json (spec.estimate_basis.provisional). serving-screen
+#: is a parse of already-measured rows, so it books the 300 s row minimum.
+CPU_PATH_FALLBACK_S = {"ab-timing": 7200, "op-perf": 4800, "oracle-kld": 3600, "serving-screen": 300}
 _PATH_RX = re.compile(r"^[a-z0-9][a-z0-9_.+-]*\|(mi210|cpu)$")
 
 
@@ -184,8 +205,8 @@ def path_lane(cand: dict[str, Any]) -> str:
 
 
 def stage_for(cand: dict[str, Any], st: Stage) -> Stage:
-    """`st` as this candidate's path runs it: a GPU path keeps today's stage; a CPU path's op-perf / ab-timing is a
-    cpu-lane whole-host quiet row (never the gpu-q3 timing shape, never an MI210 grant)."""
+    """`st` as this candidate's path runs it: a GPU path keeps today's stage; a CPU path's oracle-kld / op-perf /
+    ab-timing / serving-screen is a cpu-lane whole-host quiet row (never the gpu-q3 timing shape, never an MI210 grant)."""
     if st.name not in PATH_STAGE_NAMES or path_lane(cand) == "gpu":
         return st
     return dataclasses.replace(st, lane="cpu", regions=CPU_WHOLE_HOST_REGIONS, threads=96, resumable=False,
@@ -278,7 +299,7 @@ def render_box(cand: dict[str, Any], stage: Stage, est: int, gate: list[str], ow
     lines = [f"- [ ] **{box_id(cand, stage)}** [inference] {text}",
              f"      · done when: row `{row_id(cand, stage, '<date>')}` filed by gate_eval on "
              f"{', '.join(stage.gate_ids)} "
-             f"({'screen only: polar FAIL or FUTILITY_SCREEN_ONLY_NO_KEEP, never a PASS' if stage.name == 'op-perf' else 'polar PASS/FAIL'}).",
+             f"({'screen only: polar FAIL or FUTILITY_SCREEN_ONLY_NO_KEEP, never a PASS' if stage.name in SCREEN_STAGE_NAMES else 'polar PASS/FAIL'}).",
              f"      · gate: {', '.join(gate) if gate else 'none'}",
              f"      · owner: {owner}"]
     return "\n".join(lines)
@@ -286,7 +307,9 @@ def render_box(cand: dict[str, Any], stage: Stage, est: int, gate: list[str], ow
 
 CAND_FIELDS = ("id", "base_sha", "patch_sha", "hypothesis_id", "predicted_effect", "paths", "rebase_of",
                "skip_stages", "champion_ref", "op", "geomean_min", "pairs", "timing_model", "anchor_build",
-               "llama_repo", "serving_path", "stages", "test_outcomes", "test_refs", "test_parents", "test_fixture_repo",
+               "llama_repo", "serving_path", "shape_class", "stages",
+               "kind", "mechanism_id", "server", "delta", "delta_digest", "base_recipe_hash", "registry_base_digest", "argv",
+               "argv_delta", "screening_only", "steady_results", "arm_map", "burst_results", "floor_result", "test_outcomes", "test_refs", "test_parents", "test_fixture_repo",
                "test_lineage_log")
 
 
@@ -412,8 +435,7 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
             spec[k] = v
     if whole_host:
         spec.update(json.loads(json.dumps(stage.extra)))
-        spec["baseline_ref"] = (f"arm A = base build {str(cand['base_sha'])[:9]}, arm B = patch "
-                                f"{str(cand['patch_sha'])[:9]} (same store, same env, interleaved pairs)")
+        spec["baseline_ref"] = BASELINE_REF[stage.name](cand)
     spec["estimate_basis"] = {"provisional": True, "rebook_from": os.path.join(d, "out", "smoke_measure.json"),
                               "reason": (f"chain stage {stage.name}: estimate from the stage table/history ({just}); "
                                          f"re-book from this row's smoke_measure.json after the smoke")}
@@ -426,6 +448,18 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
     return {"stage": stage.name, "id": rid, "rowdir": d, "box": box_id(cand, stage), "estimate_s": est,
             "regions": spec["regions"], "lane": stage.lane, "serving_path": serving_path(cand), "resumable": stage.resumable, "gate": list(gate),
             "gate_ids": list(stage.gate_ids), "supersedes": supersedes}
+
+
+BASELINE_REF = {
+    "ab-timing": lambda c: (f"arm A = base build {str(c['base_sha'])[:9]}, arm B = patch {str(c['patch_sha'])[:9]} "
+                            f"(same store, same env, interleaved pairs)"),
+    "op-perf": lambda c: (f"arm A = base build {str(c['base_sha'])[:9]}, arm B = patch {str(c['patch_sha'])[:9]} "
+                          f"(same store, same env, interleaved pairs over the served-shape grid)"),
+    "oracle-kld": lambda c: (f"anchor = base build {str(c['base_sha'])[:9]}, candidate = patch {str(c['patch_sha'])[:9]} "
+                             f"(same GGUF, same chunks, the path's own KLD clauses)"),
+    "serving-screen": lambda c: (f"control arm vs the knob arms of one served recipe ({c.get('server', '?')}), "
+                                 f"delta {str(c.get('delta_digest', ''))[:12] or 'unstated'}; no source change"),
+}
 
 
 def _is_whole_host(spec: dict[str, Any]) -> bool:
@@ -484,11 +518,19 @@ def research_head(repo: str = RS.RESEARCH_REPO, ref: str = "origin/main") -> str
 def chain_stages(cand: dict[str, Any]) -> tuple[Stage, ...]:
     """The stages this candidate's chain runs: all five, or the record's `stages` (a rebase-and-recheck chain is
     build + oracle-kld [+ op-perf + ab-timing only when the measured path moved] + fold-check), each as the
-    candidate's `serving_path` runs it (stage_for)."""
+    candidate's `serving_path` runs it (stage_for). A candidate of kind "serving-knob" changes the served recipe, not
+    the source: its chain is the ONE optional `serving-screen` stage (a screen, never a fold input), and no other
+    candidate may name that stage."""
+    if cand.get("kind") == SERVING_KNOB_KIND:
+        names = cand.get("stages") or ["serving-screen"]
+        if list(names) != ["serving-screen"]:
+            raise ValueError(f"a serving-knob candidate's chain is exactly ['serving-screen']; got {list(names)}")
+        return (stage_for(cand, SERVING_SCREEN),)
     names = cand.get("stages") or [s.name for s in STAGES]
-    bad = [n for n in names if n not in STAGE_BY_NAME]
+    bad = [n for n in names if n not in STAGE_BY_NAME or n == SERVING_SCREEN.name]
     if bad or names[-1] != "fold-check" or names[0] != "build":
-        raise ValueError(f"chain stages must run build .. fold-check from {[s.name for s in STAGES]}; got {names}")
+        raise ValueError(f"chain stages must run build .. fold-check from {[s.name for s in STAGES]}; got {names}"
+                         + (" (serving-screen is only for kind serving-knob)" if "serving-screen" in names else ""))
     return tuple(stage_for(cand, STAGE_BY_NAME[n]) for n in names)
 
 

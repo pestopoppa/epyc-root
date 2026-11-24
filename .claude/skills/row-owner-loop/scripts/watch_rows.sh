@@ -98,6 +98,14 @@ scan() {
           # AKPL-P3: zero-LLM run end for AK chain / fold rows (gate_eval --file, failclass routing, lineage)
           ak=$(python3 "$AKLOOP/ak_runend.py" "$id" --flags "$FLAGS" 2>&1 | tail -n 1 | cut -c1-240 || true)
           reason="$reason ak=[$ak]";;
+        ak-*|akx-*)
+          # plain AK rows: the same zero-LLM hook (failclass, census, inbox) AND the gate-eval draft the `*)` arm gave them
+          ak=$(python3 "$AKLOOP/ak_runend.py" "$id" --flags "$FLAGS" 2>&1 | tail -n 1 | cut -c1-240 || true)
+          reason="$reason ak=[$ak]"
+          if [ "$GATE_EVAL" = 1 ]; then
+            gv=$(python3 "$(dirname "$0")/runend.py" "$id" --gate-eval 2>&1 | tail -n 1 | cut -c1-160 || true)
+            reason="$reason gate=[$gv]"
+          fi;;
         *)
           if [ "$GATE_EVAL" = 1 ]; then
             gv=$(python3 "$(dirname "$0")/runend.py" "$id" --gate-eval 2>&1 | tail -n 1 | cut -c1-160 || true)

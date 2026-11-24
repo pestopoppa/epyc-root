@@ -3316,10 +3316,10 @@ function hsPaint(){const el = document.getElementById('health-strip'); if(el) el
 "use strict";
 // AK flow panel. Pure render functions (akfGlance/akfSvg/akfItems) are tested under Node
 // (tests/test_akflow.py); akfLoad is the only DOM/fetch code.
-const AKF_POS={inbox:[40,60],planner:[250,60],critic:[460,60],author:[670,60],candidate:[890,60],
- build:[40,210],'oracle-kld':[250,210],'ab-timing':[460,210],'fold-check':[670,210],gate_eval:[890,210],
+const AKF_POS={inbox:[20,60],planner:[215,60],critic:[410,60],author:[605,60],candidate:[800,60],'serving-screen':[995,60],
+ build:[20,210],'oracle-kld':[215,210],'op-perf':[410,210],'ab-timing':[605,210],'fold-check':[800,210],gate_eval:[995,210],
  file:[890,350],lineage:[670,350],rebase:[460,350],census:[40,480],failclass:[890,480],decisions:[670,480]};
-const AKF_DASH={'census>planner':1,'file>census':1,'gate_eval>failclass':1,'file>decisions':1,'lineage>rebase':1,'rebase>build':1};
+const AKF_DASH={'candidate>serving-screen':1,'census>planner':1,'file>census':1,'gate_eval>failclass':1,'file>decisions':1,'lineage>rebase':1,'rebase>build':1};
 function akfEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function akfAge(s){if(s==null)return '-';s=Math.round(s);return s<120?s+' s':s<7200?Math.round(s/60)+' min':s<172800?Math.round(s/3600)+' h':Math.round(s/86400)+' d';}
 function akfGlance(d){
@@ -3329,17 +3329,23 @@ function akfGlance(d){
  let h=`<div class="akf-tiles">${tile(g.running_n,'AK rows running','grant held, not ended')}${tile(g.queued_n,'AK rows queued','published, not yet granted')}${tile(g.candidates,'candidates emitted','lane candidate records in window')}${tile(dec.present?g.decisions_n:null,'decisions needed','akloop/decisions.py (P6)')}${tile(d.last_event_age_s==null?null:akfAge(d.last_event_age_s),'since last loop event',d.last_event||'')}</div>`;
  h+=`<p class="muted">Window ${akfEsc(d.window_h)} h · ${akfEsc(g.chain_rows)} parallel-loop chain row(s) (akc-*) · rows with no chain stage: ${akfEsc(o.running||0)} running, ${akfEsc(o.queued||0)} queued, ${akfEsc(o.filed||0)} filed. The legacy single-process loop's cards further down have their own banners; when they read STALE, this strip is the current state.</p>`;
  if((g.running||[]).length)h+=`<p><b>Running:</b> ${g.running.map(r=>`<code>${akfEsc(r.id)}</code>${r.stage?' ('+akfEsc(r.stage)+')':''}`).join(' · ')}</p>`;
+ h+=akfPathGates(d.path_gates);
  if(dec.present&&(dec.events||[]).length){h+=`<details><summary><b>Decisions needed (${dec.events.length})</b> <span class="muted">${Object.entries(dec.counts||{}).map(([k,v])=>akfEsc(k)+' '+akfEsc(v)).join(' · ')}</span></summary><table><tr><th>kind</th><th>subject</th><th>why</th></tr>${dec.events.map(e=>`<tr><td>${akfEsc(e.kind)}</td><td><code>${akfEsc(e.subject)}</code></td><td>${akfEsc(e.summary)}</td></tr>`).join('')}</table></details>`;}
  else if(!dec.present)h+=`<p class="warn">decisions detector unavailable: ${akfEsc(dec.error||'')}</p>`;
  return h;
 }
+function akfPathGates(pg){
+ if(!pg||pg.present===false)return `<p class="warn" title="written by akloop/ak_runend.py at each AK row end">Per-path gate status UNKNOWN: ${akfEsc((pg&&pg.error)||'no report')}. No path is shown as gated until a report exists.</p>`;
+ const cell=(v,good)=>`<td class="${v===good?'':'warn'}">${akfEsc(v==null?'unknown':v)}</td>`;
+ return `<details open class="tight"><summary><b>Per-path gates</b> <span class="muted">${akfEsc(pg.ungated_n)} of ${akfEsc((pg.paths||[]).length)} path(s) with a gap · timing cell/ungated · quality gated/quality-ungated · op-perf grid/ungated</span></summary><div class="tbl-wrap"><table class="rq"><tr><th>path</th><th>device</th><th>timing</th><th>quality</th><th>op-perf</th><th>status</th></tr>${(pg.paths||[]).map(p=>`<tr><td><code>${akfEsc(p.key)}</code>${p.path_status==='planned'?' <span class="muted">(planned)</span>':''}</td><td>${akfEsc(p.device||'-')}</td>${cell(p.timing,'cell')}${cell(p.quality,'gated')}${cell(p.op_perf,'grid')}<td class="${p.gaps&&p.gaps.length?'warn':''}"><b>${akfEsc(p.status)}</b></td></tr>`).join('')}</table></div></details>`;
+}
 function akfClip(x1,y1,x2,y2,r){const cx=r[0]+r[2]/2,cy=r[1]+r[3]/2,dx=x1-cx,dy=y1-cy;if(!dx&&!dy)return [cx,cy];const s=Math.min(dx?(r[2]/2)/Math.abs(dx):1e9,dy?(r[3]/2)/Math.abs(dy):1e9);return [cx+dx*s,cy+dy*s];}
 function akfSvg(d,sel){
  if(!d||!d.nodes)return '';
- const W=180,H=74,box=id=>{const p=AKF_POS[id]||[0,0];return [p[0],p[1],W,H];};
- let s='<svg viewBox="0 0 1110 580" role="img" aria-label="AutoKernel loop flowchart"><defs><marker id="akar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b949e"/></marker></defs>';
- s+='<rect class="grp" x="235" y="35" width="640" height="112"/><text x="30" y="28" style="font-weight:700">LLM LANES (per candidate)</text>';
- s+='<rect class="grp" x="25" y="185" width="1060" height="112"/><text x="30" y="178" style="font-weight:700">ROW CHAIN on rowflow (deterministic)</text>';
+ const W=170,H=74,box=id=>{const p=AKF_POS[id]||[0,0];return [p[0],p[1],W,H];};
+ let s='<svg viewBox="0 0 1180 580" role="img" aria-label="AutoKernel loop flowchart"><defs><marker id="akar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b949e"/></marker></defs>';
+ s+='<rect class="grp" x="200" y="35" width="590" height="112"/><text x="30" y="28" style="font-weight:700">LLM LANES (per candidate)</text>';
+ s+='<rect class="grp" x="10" y="185" width="1160" height="112"/><text x="30" y="178" style="font-weight:700">ROW CHAIN on rowflow (deterministic)</text>';
  s+='<text x="30" y="330" style="font-weight:700">AFTER THE RUN</text><text x="30" y="460" style="font-weight:700">SIDE PATHS</text>';
  for(const [a,b] of (d.edges||[])){if(!AKF_POS[a]||!AKF_POS[b])continue;const A=box(a),B=box(b);const ac=[A[0]+W/2,A[1]+H/2],bc=[B[0]+W/2,B[1]+H/2];
   const p1=akfClip(bc[0],bc[1],ac[0],ac[1],A),p2=akfClip(ac[0],ac[1],bc[0],bc[1],B);
@@ -3499,6 +3505,8 @@ function bwcFamily(fr){if(!(fr||[]).length)return '<p class="muted">No family ra
   fr.map((r,i)=>{const ps=[...new Set((r.members||[]).map(m=>m.path).filter(Boolean).concat(r.path?[r.path]:[]))].sort();
    return '<tr><td>'+(i+1)+'</td><td><b>'+bwcEsc(r.family)+'</b></td><td>'+bwcEsc(r.kind)+'</td><td>'+(r.score==null?'-':'<b>'+r.score.toFixed(2)+'</b>')+'</td><td>'+bwcEsc(ps.join(', ')||'-')+'</td><td>'+bwcEsc(r.n_unpriced==null?(r.score==null?1:0):r.n_unpriced)+'</td></tr>';}).join('')+'</tbody></table></div></details>';}
 function bwcResort(k){bwcSort[1]=bwcSort[0]===k?-bwcSort[1]:-1;bwcSort[0]=k;bwcRender();}
+function bwcInbox(i){if(!i)return '';const bad=i.status==='error'||i.status==='unreadable',cls=bad?'warn':'count';
+ return '<p class="'+cls+'">Census inbox step (run-end hook): <b>'+bwcEsc(i.status||'unknown')+'</b>'+(i.row?' at '+bwcEsc(i.row):'')+(i.at?' · '+bwcEsc(new Date(i.at*1000).toISOString()):'')+(i.detail?' · '+bwcEsc(i.detail):'')+'</p>';}
 function bwcRender(){const d=bwcData||{},f=d._freshness||{};
  const b=document.getElementById('bwc-badge'),t=document.getElementById('bwc-badgetxt');
  const cls=d.present===false?'absent':(f.staleness_class||'absent');b.className='badge '+cls;t.textContent=cls+(f.age_s!=null?' · '+Math.round(f.age_s/60)+' min':'');
@@ -3506,7 +3514,7 @@ function bwcRender(){const d=bwcData||{},f=d._freshness||{};
  if(d.present===false){document.getElementById('bwc-note').innerHTML=`<p class="warn">Census ABSENT: ${bwcEsc(d.error||'')}. ${bwcEsc(f.absence_means||'')}</p>`;
   for(const i of ['bwc-coverage','bwc-family','bwc-filter','bwc-surfaces','bwc-batch'])document.getElementById(i).innerHTML='';
   document.getElementById('bwc-summary').innerHTML=`<p class="warn">Census ABSENT: census_update.py writes it at each AutoKernel row end.</p>`;return;}
- document.getElementById('bwc-summary').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+bwcTop(d.surfaces);
+ document.getElementById('bwc-summary').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+bwcInbox(d.inbox)+bwcTop(d.surfaces);
  const cc=(d.cpu||{}).ceiling_gbps||{};
  document.getElementById('bwc-note').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+
   `<span class="count">Ceilings: MI210 ${bwcEsc(d.ceiling_gbps)} GB/s · CPU quarter-24t ${bwcEsc(cc['quarter-24t'])} GB/s · CPU full host ${bwcEsc(cc['full-host'])} GB/s · target ${bwcEsc(d.target_pct)}% of ceiling · saving = step ms × share × max(0, 1 − ours%/target%) · applied rows ${bwcEsc(d.applied_count)} · click a row for its census runs</span>`+bwcGroups(d.surface_groups);
