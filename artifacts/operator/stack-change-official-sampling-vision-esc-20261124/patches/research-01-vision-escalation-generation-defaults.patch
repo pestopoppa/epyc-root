@@ -1,0 +1,37 @@
+From 6522e7c0b135293c8a1c55299cf7379d060f80ef Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Tue, 24 Nov 2026 07:14:22 +0000
+Subject: [PATCH] registry: vision_escalation generation_defaults = Qwen3-VL
+ official sampling (OFFICIAL-SAMPLING-20261124 follow-up, unapplied lane)
+
+Same process/weights as worker_vision (:8086), so the same 0.7/0.8/20/min_p 0/presence 0/repeat 1.0. Was absent -> T0.0/top_k 40/repeat 1.1.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01F1v5qCZ3QJbHavUMsZnzEM
+---
+ orchestration/model_registry.yaml | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index a1e21effa..2ba514b6f 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -6838,6 +6838,15 @@ roles:
+       "agentic" (Qwen2.5-VL) and "figure quality" (vision_qwen3_vl_4b) no longer needs two models.
+       OPEN POST-CUTOVER CHECK — see vision_escalation.notes (K35 chart_tanzania).
+   vision_escalation:
++    # OFFICIAL-SAMPLING-20261124 (follow-up, sc-official-sampling-vision-esc): Qwen3-VL-30B-A3B-Instruct generation_config.json (https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct/raw/main/generation_config.json); same process and weights as worker_vision, so the same values. Previously absent -> backend greedy fallback 0.0 / top_k 40 / repeat 1.1
++    generation_defaults:
++      n_tokens: -1
++      temperature: 0.7
++      top_p: 0.8
++      top_k: 20
++      min_p: 0.0
++      presence_penalty: 0.0
++      repeat_penalty: 1.0
+     # 2026-07-31: ALIAS, not a server. Same process, same port 8086, same Qwen3-VL-30B-A3B
+     # Q4_K_M weights as worker_vision. KEPT (not deleted) so the escalation trigger list below
+     # survives as documentation for a future two-tier VL topology.
+-- 
+2.56.0
+
