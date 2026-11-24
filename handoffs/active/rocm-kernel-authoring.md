@@ -1142,6 +1142,21 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · gate: none        · inputs: `handoffs/active/rocm-kernel-authoring.md`
 - Monitor (intake-ak-1124 M8, operator-approved 2026-11-24, no checkbox): If RKA-BATCH-INV-CENSUS-1 finds 3 or fewer ops need change: implement a default-off invariant audit arm (pinned per-column reduction geometry for n = 1-16, fixed-size KV chunks in vector flash attention) with a bitwise width-1 vs width-8 test (intake-2882).
 
+#### Batch-invariance census of the MI210 verify graph, widths 1-16 (RKA-BATCH-INV-CENSUS-1; code read at `98ff8a4`, no build, no run)
+
+"Invariant" means a column's fp32 result is bitwise the same whether it runs at width 1 or at width n ≤ 16. Atomics make an op non-deterministic even at a fixed width.
+
+| Op | Launch-parameter dependency (file:line @ 98ff8a4) | Invariant? | Change needed | Est. LOC / perf cost |
+|---|---|---|---|---|
+| RMSNorm | `rms_norm_f32_cuda`, `norm.cu:347-372`. Grid `(nrows, nchannels, nsamples)`, one block per row. Block width (384/256/1024) depends on `ncols` only. | yes | none | 0 / 0 |
+| MMVQ | `calc_nwarps(type, ncols_dst, table)`, `mmvq.cu:813-866`. The GCN/CDNA table gives `nwarps` 4 (Q8_0 n=1; 8 in the four-row cell), 2 (n 1-4), 1 (n 5-8+). `nwarps` sets the cross-warp k-split, so the summation order changes with `ncols_dst`. | no | pinned per-column reduction geometry: one `nwarps`/rows-per-block for n 1-16 under an audit flag | ~40 / gives up the bs=1 nwarps 4/8 lever (+4.6 % 27B tg) or slows n 5-8 |
+| skinny Q8 (`q8sk_mul_mat`) | split-K over waves, f32 `unsafeAtomicAdd` flush into a pre-zeroed dst, `mmq-q8-skinny.cu:236-243` (zero `:299`, launch `:301`) | no (non-deterministic across runs) | atomics removed: per-split partial buffer plus a fixed-order reduce kernel | ~100 / one extra launch plus partial traffic (S x M x N x 4 B, small at M ≤ 16) |
+| MMQ / mmq-q8-mf | stream-K partial tiles accumulate with `unsafeAtomicAdd`, `mmq-q8-mf.cu:1450-1455` (`!full`). Full tiles are stored directly. | no (non-deterministic across runs) | fixed-order fixup buffer for the partial tiles (as in upstream stream-K fixup) | ~100 / small (boundary tiles only) |
+| hipBLAS BF16 | rocBLAS picks the GEMM solution from (m, n, k), so the tiling and k-split change with n. Reached via `ggml_cuda_mul_mat_cublas` (`ggml-cuda.cu:2075-2079`, `CUBLAS_PRECHECK` and the F16/BF16 paths). | no | pad src1 to a fixed n = 16 under the audit flag, or pin a rocBLAS solution index | ~20 (pad) or ~60 (solution pin) / up to 16x wasted GEMM work at n=1 |
+| Flash attention | Vector / MMA path: `launch_fattn`, `fattn-common.cuh:1514-1594`. `parallel_blocks` starts from occupancy, then a wave-efficiency search over `nblocks_total = ntiles_dst * parallel_blocks`, and `ntiles_dst` depends on n_q. The split count, and with it the KV chunk boundaries and the LSE merge order, therefore change with width. gv path (`fattn-gqa-verify.cu:768-781`): `n_splits` depends on nsm, n_head_kv, n_seq and n_kv only, so it is width-invariant. But f16 KV routes n_q=1 to the vector kernel (`gv_min_nq` returns 2 for non-q8_0 KV). | q8_0 KV on gv: yes for n 1-16, single sequence. f16 KV: no | fixed-size KV chunks (split count = ceil(n_kv / C)) in the vector kernel, or route f16 n_q=1 through gv (`GGML_CUDA_FA_GQA_VERIFY_MIN_NQ=1`, existing knob) | 0 (knob) to ~50 / f16 n_q=1 decode on gv is 0.93-0.98x (C8-FOLD3) |
+
+**Verdict: 5 of 6 ops need a change** (MMVQ, skinny Q8, mmq-q8-mf, hipBLAS BF16, and flash attention for f16 KV). That is more than 3, so no implementation box is opened. The M8 monitor condition (3 or fewer) is not met. Recorded cost of a full invariant audit arm: ~260-330 LOC across 5 ops. It forfeits the bs=1 MMVQ nwarps lever and adds one reduce launch per skinny/MF GEMM. Only RMSNorm and the q8_0-KV gv attention are batch-invariant as built.
+
 ### Done
 
 - [x] **RVP-AUD-2** ✅ 2026-08-12 —
@@ -1214,6 +1229,22 @@ D. Compile-only or CPU-only smokes prove compilation, not correctness. Separate 
 E. Carry a verdict forward without a re-run only when exported symbols and normalized device ISA are identical (indeterminate counts as differ; `codeobj_diff.py`). Bind evidence to the exact commit and re-derive when HEAD moves.
 
 ROCm-6.2 profiler note (intake-2745#record, intake-2734#record): the amd/skills `flydsl-kernel-trace-analysis` recipe uses rocprofv3 `--advanced_thread_trace`, which does NOT exist on ROCm 6.2. Only `rocprofv2 --plugin att` works there, so only the stall taxonomy and the occupancy math port. Our route is `adapters/att_stall_classes.py` (ROCPROF-ATT-ADAPTER-1). The FlyDSL skills target gfx942/gfx950 on ROCm 7.2 and are not an MI210 execution arm.
+
+#### Input dtypes and rebase triggers (RKA-SRC1-DTYPE-RULE; intake-2869, intake-2899, intake-2900)
+
+Line references are at `98ff8a4` (C21, `llama.cpp-experimental-c21-20261124`).
+
+1. **A new input dtype in a hot in-house kernel is a template parameter, never a runtime flag.** This covers MMVF, `q8mf_pre_i8` (`mmq-q8-mf.cu:187`) and `q8sk_quantize` (`mmq-q8-skinny.cu:294`). The dtype is chosen once at the dispatch site and instantiated, so the inner loop has no per-element branch and the existing F32 instantiation keeps its ISA. Counterexample: upstream #32533 adds the BF16 activation to MMVF as a runtime flag tested inside the kernel. Do not copy that pattern into our forks. Diff the F32 instantiation's code object before and after (checklist rule E) to prove it is unchanged.
+2. **A new src1 dtype requires a review of every in-house route gated on src1 being F32.** At `98ff8a4` these are:
+   - `ggml_cuda_q8ip_mf_handles`, `mmq-q8-mf.cu:1269-1274` (`src1->type == GGML_TYPE_F32`, contiguous f32 strides);
+   - the `MMVF_CHUNK` route, `ggml-cuda.cu:2086-2099` (gate line `:2098`, `src1->type == GGML_TYPE_F32 && dst->type == GGML_TYPE_F32`);
+   - the cuBLAS precheck, `ggml-cuda.cu:2075-2079` (`src1->type != GGML_TYPE_F32` sends the op to `CUBLAS_PRECHECK`).
+
+   A non-F32 src1 silently leaves all three in-house routes and lands on cuBLAS/hipBLAS. The result is still correct, but the speedup disappears and nothing fails. The review must log every route (`ggml_cuda_log_mul_mat_route`) for the new dtype and confirm each one either handles it or refuses it deliberately.
+3. **Rebase-review trigger: an upstream BF16-activation *producer* merged into the graph builder** (a cast node, or a type switch on the activation tensor). The op-coverage series #29675, #32135, #32387 and #32533 does not trigger it. Those PRs teach kernels to accept BF16 but nothing in the graph emits a BF16 activation yet, so our F32-gated routes stay live. When a producer lands, the rebase review checks:
+   - the RMS_NORM fusion gates: `ggml_cuda_can_fuse` RMS_NORM+MUL(+ADD) asserts and requires F32 at `ggml-cuda.cu:3404-3426`, and the dispatch is at `:4265-4271`. A BF16 activation stops the fusion silently;
+   - the ROPE+VIEW+SET_ROWS fusion: `ggml_cuda_should_fuse_rope_set_rows`, `ggml-cuda.cu:2995-3010` (`set_rows->type` must be F32/F16), with the call sites at `:3388` and `:3680`;
+   - the three src1==F32 routes in rule 2.
 
 > Folded from `handoffs/active/agentic-rocm-kernel-authoring.md` @ `779a81fd46b0` on 2026-11-03 (BRF-T7-F13, route 1b, operator D1/D5; retired row INF-03 → INF-48). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 - [x] **ROCK-FLYDSL-GFX90A** [non-inference] Install flydsl into an isolated venv and try to compile one tiny vector-add kernel for gfx90a (IR or code-object only, no launch), recording the compile verdict (intake-2735).
