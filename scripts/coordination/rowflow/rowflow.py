@@ -7502,6 +7502,119 @@ def _owner_roots(flags, grants):
     return roots
 
 
+# GPU-HOST-FOREIGN (operator 2026-11-24 "this must never happen again"): 20:53-20:59Z the MI210 idled with rank-4 rows
+# queued because another session's UNPINNED pytest (affinity 0-191) ran on the GPU host cores 88-95 / 184-191 and the
+# snapshot read them busy. Detection only - nothing is killed or repinned (the keeper's own heavy work is already pinned by
+# hk_heavy to KEEPER_REAP_CPUS): every tick an urgent GPU row is blocked ONLY by busy GPU-host tokens, each foreign process
+# running there is logged `GPU-HOST-FOREIGN <pid> <cmd> <owner-guess> cwd=.. affinity=..`; on the 2nd consecutive sample
+# an alert (rowflow-alerts.jsonl + inbox) names it so its owner is told within a minute or two.
+GPU_HOST_CPUS = frozenset(range(88, 96)) | GPU_HOST_THREADS
+GPU_HOST_TOKENS = frozenset({f"c{k}" for k in range(88, 96)} | {f"t{k}" for k in GPU_HOST_THREADS})
+GPU_HOST_FOREIGN_SAMPLES = 2
+GPU_HOST_FOREIGN_STATE = "gpu-host-foreign.json"
+
+
+def _owner_guess(cwd, cmd):
+    m = re.search(r"/(?:\.worktrees|worktrees)/([^/]+)", f"{cwd} {cmd}")
+    if m:
+        return m.group(1)
+    m = re.search(r"/repos/([^/]+)|/mnt/raid0/llm/([^/]+)", f"{cwd} {cmd}")
+    return (m.group(1) or m.group(2)) if m else "?"
+
+
+def gpu_host_procs(cpus=GPU_HOST_CPUS):
+    """Running (state R) processes whose last CPU is a GPU-host cpu: [{pid, cmd, cwd, affinity, cpu}]. Never raises."""
+    out = []
+    for d in glob.glob("/proc/[0-9]*"):
+        try:
+            pid = int(os.path.basename(d))
+            st = open(os.path.join(d, "stat")).read()
+            f = st[st.rindex(")") + 2:].split()
+            state, cpu = f[0], int(f[36])
+            if state != "R" or cpu not in cpus or pid == os.getpid():
+                continue
+            cmd = open(os.path.join(d, "cmdline"), "rb").read().replace(b"\0", b" ").decode(errors="replace").strip()
+            if not cmd:
+                continue   # kernel thread
+            try:
+                cwd = os.readlink(os.path.join(d, "cwd"))
+            except OSError:
+                cwd = "?"
+            try:
+                aff = compress_cpus(set(os.sched_getaffinity(pid)))
+            except OSError:
+                aff = "?"
+            out.append({"pid": pid, "cmd": cmd, "cwd": cwd, "affinity": aff, "cpu": cpu})
+        except (OSError, ValueError, IndexError):
+            continue
+    return out
+
+
+def _crank(c):
+    return float(c["rank"]) if c.get("rank") is not None else row_rank(c)
+
+
+def gpu_host_foreign(flags, cands, free, grants, granted, log, dry=False, procs=None, roots=None, parent=None, emit=None):
+    """Detection only. Returns {row id: [foreign proc]} for urgent GPU rows blocked only by busy GPU-host tokens."""
+    urgent = []
+    for c in cands:
+        if c["id"] in granted or _crank(c) >= URGENT_RANK:
+            continue
+        gopts = [o for o in c.get("options") or [] if GPU in o]
+        if not gopts:
+            continue
+        blocking = set(gopts[0]) - set(free)
+        if blocking and blocking <= GPU_HOST_TOKENS:
+            urgent.append(c)
+    sp = os.path.join(flags, GPU_HOST_FOREIGN_STATE)
+    prev = load_json(sp) or {}
+    if not urgent:
+        if prev and not dry:
+            atomic_json(sp, {})
+        return {}
+    procs = gpu_host_procs() if procs is None else procs
+    if roots is None:
+        try:
+            roots = _owner_roots(flags, grants)
+        except Exception:  # noqa: BLE001
+            roots = set()
+    parent = parent or (lambda pid: (_proc_stat(pid) or (0,))[0])
+
+    def owned(pid):
+        cur = pid
+        for _ in range(64):
+            if cur in roots:
+                return True
+            cur = int(parent(cur) or 0)
+            if cur <= 1:
+                return False
+        return False
+    foreign = [p for p in procs if not owned(p["pid"])]
+    emit = emit or notify.emit
+    state, out = {}, {}
+    for c in urgent:
+        n = int((prev.get(c["id"]) or {}).get("n") or 0) + 1 if foreign else 0
+        state[c["id"]] = {"n": n, "pids": [p["pid"] for p in foreign]}
+        out[c["id"]] = foreign
+        for p in foreign[:8]:
+            log(f"GPU-HOST-FOREIGN {p['pid']} {p['cmd'][:120]} {_owner_guess(p['cwd'], p['cmd'])} cwd={p['cwd']} "
+                f"affinity={p['affinity']} cpu={p['cpu']} blocks {c['id']} (rank {_crank(c):g}) sample {n}/{GPU_HOST_FOREIGN_SAMPLES}")
+        if foreign and n == GPU_HOST_FOREIGN_SAMPLES and not dry:
+            owner = str((load_json(ready_path(flags, c["id"])) or {}).get("owner") or "")
+            who = "; ".join(f"pid {p['pid']} ({_owner_guess(p['cwd'], p['cmd'])}) `{p['cmd'][:80]}` affinity={p['affinity']}" for p in foreign[:4])
+            try:
+                emit(flags, "gpu-host-foreign", c["id"], ",".join(str(p["pid"]) for p in foreign[:8]),
+                     f"urgent GPU row {c['id']} (rank {_crank(c):g}) not granted: foreign process(es) run on the MI210 host "
+                     f"cores 88-95/184-191 outside every grant: {who}. Pin them off (taskset -c 84-87 or a granted region); "
+                     "the keeper never kills or repins them.", "warning", owner,
+                     {"procs": [{k: p[k] for k in ("pid", "cmd", "cwd", "affinity")} for p in foreign[:8]]})
+            except Exception as ex:  # noqa: BLE001 - an alert failure never stops allocation
+                log(f"GPU-HOST-FOREIGN {c['id']}: notify failed: {type(ex).__name__}: {ex}")
+    if not dry:
+        atomic_json(sp, state)
+    return out
+
+
 def foreign_inference_servers(flags, grants, procs=None, stack=None, parent=None):
     """The inference servers no open grant, live smoke or stack service owns: [{pid, birth, comm, cmd, ...}]. Owned = its
     own pid or process group is an owner root, or any ancestor is one (harness_tree walked upwards, which also covers
@@ -10089,6 +10202,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if gone:
             cands = [c for c in cands if c["id"] not in gone]
             pending = [c for c in pending if c["id"] not in gone]
+    try:   # GPU-HOST-FOREIGN: detection only
+        gpu_host_foreign(flags, cands, free, grants, {x[1] for x in out if x and x[0] == "grant"}, log, dry=dry)
+    except Exception as e:  # noqa: BLE001 - never stops allocation
+        log(f"GPU-HOST-FOREIGN scan failed: {type(e).__name__}: {e}")
     for r, why in idle.items():
         if r == GPU and held_back:
             continue   # already reported above with the actual reason; the planner never saw these rows
