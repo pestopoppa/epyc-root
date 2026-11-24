@@ -123,6 +123,48 @@ def shape_rows(doc: dict) -> dict:
     return tables
 
 
+def shape_parity(doc: dict) -> Optional[dict]:
+    """Roofline-parity view over ``doc['parity']`` (None when the census has none).
+
+    Derived on read with the producer's published formula (ours % vs reference %,
+    gap = max(0, ref - ours), score = gap x share_of_step, in pp); the hub never
+    imports the producer. Ref status defaults to "recalled, not re-verified" so an
+    unlabelled reference is never drawn as measured.
+    """
+    par = doc.get("parity")
+    if not isinstance(par, dict):
+        return None
+    refs = par.get("refs") if isinstance(par.get("refs"), dict) else {}
+    rows = []
+    for o in par.get("ops") or []:
+        if not isinstance(o, dict):
+            continue
+        ref = refs.get(o.get("ref")) if isinstance(refs.get(o.get("ref")), dict) else {}
+        ours = _num(o.get("ours_pct"))
+        gb, roof = _num(o.get("ours_gbps")), _num(o.get("roofline_gbps"))
+        if ours is None and gb is not None and roof:
+            ours = 100.0 * gb / roof
+        ref_pct = _num(ref.get("pct"))
+        gap = None if ours is None else max(0.0, (ref_pct or 0.0) - ours)
+        share = _num(o.get("share_of_step"))
+        rows.append({
+            "op": o.get("op"), "path": o.get("path"), "served": bool(o.get("served")),
+            "ours_pct": None if ours is None else round(ours, 1),
+            "ref": o.get("ref"), "ref_pct": ref_pct,
+            "ref_status": ref.get("status") or "recalled, not re-verified",
+            "ref_cite": ref.get("cite"), "ref_basis": ref.get("basis"),
+            "gap_pp": None if gap is None else round(gap, 1),
+            "share_of_step": share,
+            "score": None if gap is None or share is None else round(gap * share, 2),
+            "covered_by": o.get("covered_by") or "",
+            "refresh_c21": bool(o.get("refresh_c21")),
+            "source": o.get("source"),
+        })
+    rows.sort(key=lambda r: (not r["served"], -(r["score"] if r["score"] is not None else -1), str(r["op"])))
+    return {"note": par.get("note"), "rows": rows, "refs": refs,
+            "batch_dependence": par.get("batch_dependence")}
+
+
 def build(census_path: Path = None, grants_dir: Path = None) -> dict:
     """Read the census; return the payload body (no envelope)."""
     census_path = Path(census_path or CENSUS_PATH)
@@ -150,6 +192,7 @@ def build(census_path: Path = None, grants_dir: Path = None) -> dict:
         "cpu": doc.get("cpu"),
         "applied_count": len(doc.get("applied") or []),
         "tables": shape_rows(doc),
+        "parity": shape_parity(doc),
         "event_stale": bool(ended),
         "ak_rows_ended_after_census": ended[:20],
     }

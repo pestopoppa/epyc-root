@@ -104,6 +104,38 @@ class CensusTests(unittest.TestCase):
         for needle in ('id="bwc-sec"', "/api/bw_census", "MI210", "Zen 5 EPYC 9655"):
             self.assertIn(needle, page)
 
+    def test_parity_table_and_batch_block(self):
+        doc = {**FIXTURE, "parity": {
+            "note": "n", "refs": {
+                "m": {"pct": 88, "status": "measured", "cite": "c1", "basis": "b"},
+                "r": {"pct": 85, "cite": "c2", "basis": "b"}},
+            "batch_dependence": {"note": "bn", "source": "src",
+                                 "rows": [{"kernel": "k", "pct": "85-89", "batch": ">=8"}]},
+            "ops": [
+                {"op": "a", "ref": "m", "ours_gbps": 819.2, "roofline_gbps": 1638.4, "share_of_step": 0.1,
+                 "served": True, "covered_by": "", "refresh_c21": True, "path": "p"},
+                {"op": "b", "ref": "r", "ours_pct": 35, "share_of_step": 0.5, "served": True,
+                 "covered_by": "box", "refresh_c21": False, "path": "p"},
+                {"op": "c", "ref": "m", "ours_pct": 99, "share_of_step": 0.9, "served": False, "path": "p"}]}}
+        self.census.write_text(json.dumps(doc))
+        d = S.bw_census_payload(self.census, self.grants)
+        rows = d["parity"]["rows"]
+        self.assertEqual([r["op"] for r in rows], ["b", "a", "c"])  # served first, score desc
+        b, a, c = rows
+        self.assertEqual((b["gap_pp"], b["score"], b["ref_status"]), (50.0, 25.0, "recalled, not re-verified"))
+        self.assertEqual((a["ours_pct"], a["gap_pp"], a["score"], a["ref_status"]), (50.0, 38.0, 3.8, "measured"))
+        self.assertEqual(a["ref_cite"], "c1")
+        self.assertTrue(a["refresh_c21"])
+        self.assertEqual(c["gap_pp"], 0.0)
+        self.assertEqual(d["parity"]["batch_dependence"]["rows"][0]["pct"], "85-89")
+        self.census.write_text(json.dumps(FIXTURE))   # no parity section -> null, panel still fine
+        self.assertIsNone(S.bw_census_payload(self.census, self.grants)["parity"])
+
+    def test_parity_dom_on_page(self):
+        page = (REPO / "dashboard/static/loop.html").read_text()
+        for needle in ('id="bwc-parity"', 'id="bwc-batch"', "bwcParity", "ref_status", "C21 refresh"):
+            self.assertIn(needle, page)
+
     def test_trend(self):
         self.assertEqual(bw_census.trend(None), "")
         self.assertTrue(bw_census.trend([["a", 2], ["b", 1]]).endswith("↓"))

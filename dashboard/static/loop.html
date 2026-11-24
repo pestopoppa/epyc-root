@@ -541,6 +541,8 @@
     <div id="bwc-note" class="pad"></div>
     <h3 class="akf-h3">MI210</h3><div id="bwc-mi210" class="pad">Loading…</div>
     <h3 class="akf-h3">Zen 5 EPYC 9655</h3><div id="bwc-cpu" class="pad">Loading…</div>
+    <h3 class="akf-h3">Roofline parity <span class="count">ours vs best reference, gap x share of step</span></h3><div id="bwc-parity" class="pad">Loading…</div>
+    <h3 class="akf-h3">Reference batch dependence</h3><div id="bwc-batch" class="pad"></div>
   </section>
 </main>
 
@@ -3298,16 +3300,33 @@ function bwcTable(key,rows){const [sk,dir]=bwcSort[key];
  if(!rows.length)return '<p class="count">no records for this device</p>';
  const h=BWC_COLS.map(([k,l])=>`<th style="cursor:pointer" onclick="bwcResort('${key}','${k}')">${bwcEsc(l)}${k===sk?(dir<0?' ▼':' ▲'):''}</th>`).join('');
  return `<div style="overflow-x:auto"><table class="akx-table"><thead><tr>${h}</tr></thead><tbody>${rows.map(r=>'<tr>'+BWC_COLS.map(([k])=>`<td>${bwcCell(k,r)}</td>`).join('')+'</tr>').join('')}</tbody></table></div>`;}
+function bwcPct(v){return v==null?'-':Math.round(v*10)/10+'%';}
+function bwcParity(p){if(!p)return '<p class="count">no parity section in this census</p>';
+ const rows=p.rows||[];if(!rows.length)return '<p class="count">parity section has no ops</p>';
+ const h=['op','ours %','ref %','ref status','gap pp','share','score','covered by','C21 refresh'].map(l=>'<th>'+l+'</th>').join('');
+ const tr=rows.map(r=>{const meas=r.ref_status==='measured';
+  const tip=bwcEsc((r.ref||'')+' - '+(r.ref_basis||'')+' - '+(r.ref_cite||''));
+  return '<tr'+(r.served?'':' style="opacity:.6"')+'><td>'+bwcEsc(r.op)+' <span class="count">'+bwcEsc(r.path)+(r.served?'':' (not served)')+'</span></td>'+
+   '<td>'+bwcPct(r.ours_pct)+'</td><td>'+bwcPct(r.ref_pct)+' <span class="count">'+bwcEsc(r.ref)+'</span></td>'+
+   '<td title="'+tip+'" style="cursor:help;color:'+(meas?'#3fb950':'#d29922')+';font-weight:700">'+(meas?'● ':'○ ')+bwcEsc(r.ref_status)+'</td>'+
+   '<td>'+(r.gap_pp==null?'-':r.gap_pp)+'</td><td>'+(r.share_of_step==null?'-':(r.share_of_step*100).toFixed(1)+'%')+'</td>'+
+   '<td>'+(r.score==null?'-':r.score)+'</td><td>'+(r.covered_by?bwcEsc(r.covered_by):'<b>none</b>')+'</td><td>'+(r.refresh_c21?'yes':'-')+'</td></tr>';}).join('');
+ return (p.note?'<p class="count">'+bwcEsc(p.note)+'</p>':'')+'<div style="overflow-x:auto"><table class="akx-table"><thead><tr>'+h+'</tr></thead><tbody>'+tr+'</tbody></table></div>';}
+function bwcBatch(p){const b=p&&p.batch_dependence;if(!b)return '';
+ return '<p class="count">'+bwcEsc(b.note)+' Source: '+bwcEsc(b.source)+'</p><div style="overflow-x:auto"><table class="akx-table"><thead><tr><th>kernel</th><th>% of peak</th><th>batch</th></tr></thead><tbody>'+
+  (b.rows||[]).map(x=>'<tr><td>'+bwcEsc(x.kernel)+'</td><td>'+bwcEsc(x.pct)+'</td><td>'+bwcEsc(x.batch)+'</td></tr>').join('')+'</tbody></table></div>';}
 function bwcResort(key,k){const s=bwcSort[key];bwcSort[key]=[k,s[0]===k?-s[1]:-1];bwcRender();}
 function bwcRender(){const d=bwcData||{},f=d._freshness||{};
  const b=document.getElementById('bwc-badge'),t=document.getElementById('bwc-badgetxt');
  const cls=d.present===false?'absent':(f.staleness_class||'absent');b.className='badge '+cls;t.textContent=cls+(f.age_s!=null?' · '+Math.round(f.age_s/60)+' min':'');
  if(d.present===false){document.getElementById('bwc-note').innerHTML=`<p class="warn">Census ABSENT: ${bwcEsc(d.error||'')}. ${bwcEsc(f.absence_means||'')}</p>`;
-  document.getElementById('bwc-mi210').innerHTML='';document.getElementById('bwc-cpu').innerHTML='';return;}
+  for(const i of ['bwc-mi210','bwc-cpu','bwc-parity','bwc-batch'])document.getElementById(i).innerHTML='';return;}
  document.getElementById('bwc-note').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+
   `<span class="count">GPU floor ${bwcEsc(d.floor_gbps)} · target ${bwcEsc(d.target_gbps)} · ceiling ${bwcEsc(d.ceiling_gbps)} GB/s · CPU ceilings ${bwcEsc(JSON.stringify((d.cpu||{}).ceiling_gbps||{}))} · applied rows ${bwcEsc(d.applied_count)}</span>`;
  document.getElementById('bwc-mi210').innerHTML=bwcTable('mi210',(d.tables||{}).mi210);
- document.getElementById('bwc-cpu').innerHTML=bwcTable('cpu',(d.tables||{}).cpu);}
+ document.getElementById('bwc-cpu').innerHTML=bwcTable('cpu',(d.tables||{}).cpu);
+ document.getElementById('bwc-parity').innerHTML=bwcParity(d.parity);
+ document.getElementById('bwc-batch').innerHTML=bwcBatch(d.parity);}
 async function bwcLoad(){try{bwcData=await (await fetch('/api/bw_census')).json();}catch(e){bwcData={present:false,error:'/api/bw_census unreachable: '+e};}bwcRender();}
 bwcLoad();setInterval(bwcLoad,60000);
 </script>
