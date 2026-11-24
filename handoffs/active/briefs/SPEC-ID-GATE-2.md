@@ -1,8 +1,8 @@
 ---
 schema: epyc.brief.v1
 id: SPEC-ID-GATE-2
-box_text_sha: t:6d486cd2e1e61c8c
-author: intake
+box_text_sha: t:7da0d0f9246cf76d
+author: planning
 written: '2026-11-24'
 accepted: auto
 where:
@@ -20,5 +20,5 @@ tier: local
 grounded:
   at: '2026-11-24'
   blobs:
-    epyc-root:docs/guides/agent-workflows/spec-identity-gate-protocol.md: 87bf34d839085838c42cc7461dba3774dd3384a2
+    epyc-root:docs/guides/agent-workflows/spec-identity-gate-protocol.md: e93776398676ded76fe1204418822b2b90370037
 ---

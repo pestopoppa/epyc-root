@@ -1,8 +1,8 @@
 ---
 schema: epyc.brief.v1
 id: PFXC-ID-REPLICA-1
-box_text_sha: t:123f2cd82257a35c
-author: intake
+box_text_sha: t:f0e1c880e716f8e6
+author: planning
 written: '2026-11-24'
 accepted: auto
 where:

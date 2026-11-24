@@ -1,8 +1,8 @@
 ---
 schema: epyc.brief.v1
 id: SPEC-ID-NOISE-2
-box_text_sha: t:91fc381f4fded670
-author: intake
+box_text_sha: t:b54b900d580e94d3
+author: planning
 written: '2026-11-24'
 accepted: auto
 where:

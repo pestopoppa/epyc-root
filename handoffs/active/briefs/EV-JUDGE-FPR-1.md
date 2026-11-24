@@ -1,10 +1,10 @@
 ---
 schema: epyc.brief.v1
 id: EV-JUDGE-FPR-1
-box_text_sha: t:f894f2ca8c91d9c1
-author: intake
+box_text_sha: t:13550705d30c9b00
+author: planning
 written: '2026-11-24'
-accepted: owner
+accepted: auto
 where:
 - epyc-orchestrator:src
 approach: 'Clone hkust-nlp/RL-Verifier-Robustness to read Table 8''s strings and the Figure 6 prompts. Build a string x problem
@@ -14,7 +14,7 @@ approach: 'Clone hkust-nlp/RL-Verifier-Robustness to read Table 8''s strings and
 
   '
 acceptance: 'per-judge, per-string FPR table and the propensity counts filed under this box with the problem-set digest; verdict
-  per judge: no-go for any optimiser use if the FPR of any string is >= 1%, else cleared at that rate'
+  per judge: no-go for any optimiser use if the FPR of any string >= 1%, else cleared at that rate'
 non_goals: []
 tier: local
 grounded:
