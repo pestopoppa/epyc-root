@@ -9,10 +9,25 @@
 # makes every later package fail until it carries one.
 #
 #   package.sh --candidate <sha> --out <file> [--evidence <dir>]
+#               --serving-config <file> [--master-registry <file>] [--no-dry-run]
 #       assemble: derives store/digest/scope/rewind facts, folds in any
 #       <evidence>/<gate>.json, then validates. Exits non-zero naming every missing gate.
 #   package.sh --check <file>
 #       validate an existing package (or a previous promotion's qualification artifact).
+#
+# SERVING CONFIG (operator 2026-11-24, PROMOTION-REGISTRY-SERVING-1): the promotion carries the
+# champion serving-config artifact (docs/reference/kernel-manifests/serving-configs/
+# <champion>.serving-config.json). A package without it is INCOMPLETE -- both on assemble and on
+# --check (the artifact must exist at its recorded path and still match its recorded sha256).
+# Assembling with it emits three sections into the package:
+#   serving_config     path + sha256 + champion of the artifact
+#   registry_diff      the master-registry edits (serving_shape knobs + alternates) it implies
+#   registry_dry_run   the diff applied to a COPY of the master in a scratch dir, then
+#                      `stack_change_pipeline.py update` + `check` on that copy; must be `pass`
+# The registry logic lives in the orchestrator (scripts/registry/serving_config_registry.py);
+# EPYC_ORCH (default /mnt/raid0/llm/epyc-orchestrator) and EPYC_ORCH_PY pick the checkout and its
+# interpreter. Without --master-registry the master is research origin/main. The live registry is
+# never written: step 8 applies the signed diff; this script only emits and rehearses it.
 #
 # It never moves a symlink, cuts a branch or edits a verifier. That is step 7, after the
 # signature.
@@ -20,19 +35,26 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GATES="$HERE/../promotion_gates.yaml"
 [ -f "$GATES" ] || { echo "FAIL: no promotion_gates.yaml beside this script"; exit 1; }
-CAND=""; OUT=""; EVID=""; CHECK=""
+CAND=""; OUT=""; EVID=""; CHECK=""; SERVCFG=""; MASTER=""; NODRY=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --candidate) CAND="$2"; shift 2 ;;
     --out) OUT="$2"; shift 2 ;;
     --evidence) EVID="$2"; shift 2 ;;
     --check) CHECK="$2"; shift 2 ;;
+    --serving-config) SERVCFG="$2"; shift 2 ;;
+    --master-registry) MASTER="$2"; shift 2 ;;
+    --no-dry-run) NODRY=1; shift ;;
     *) echo "FAIL: unknown argument $1"; exit 2 ;;
   esac
 done
 [ -n "$CHECK" ] || [ -n "$CAND" ] || { echo "FAIL: pass --candidate <sha> or --check <file>"; exit 2; }
 
+ORCH="${EPYC_ORCH:-/mnt/raid0/llm/epyc-orchestrator}"
+ORCH_PY="${EPYC_ORCH_PY:-$ORCH/.venv/bin/python}"
 GATES="$GATES" CAND="$CAND" OUT="$OUT" EVID="$EVID" CHECK="$CHECK" \
+SERVCFG="$SERVCFG" MASTER="$MASTER" NODRY="$NODRY" ORCH="$ORCH" ORCH_PY="$ORCH_PY" \
+ROOT="$(cd "$HERE/../../../.." && pwd)" \
 python3 - <<'PY'
 import hashlib, json, os, subprocess, sys
 from pathlib import Path
@@ -89,6 +111,61 @@ def store_facts() -> dict:
     return out
 
 
+ROOT = Path(os.environ["ROOT"])
+DIFF_SCHEMA = "epyc.registry_serving_diff.v1"
+
+
+def _artifact_path(raw: str) -> Path:
+    p = Path(raw)
+    return p if p.is_absolute() else ROOT / p
+
+
+def validate_serving(pkg: dict) -> list[str]:
+    """The package must carry the champion serving config, its registry diff and a passing dry-run."""
+    problems = []
+    sc = pkg.get("serving_config")
+    sc_sha = None
+    if not isinstance(sc, dict) or not sc.get("path"):
+        problems.append(
+            "missing the champion serving-config artifact (serving_config.path). A promotion "
+            "carries its serving config -- docs/reference/kernel-manifests/serving-configs/"
+            "<champion>.serving-config.json -- so a package without it is incomplete "
+            "(SKILL.md step 8; pass --serving-config)."
+        )
+    else:
+        art = _artifact_path(sc["path"])
+        if not art.is_file():
+            problems.append(f"serving-config artifact {sc['path']!r} does not exist")
+        else:
+            sc_sha = sha256(art)
+            if sc.get("sha256") != sc_sha:
+                problems.append(
+                    f"serving-config artifact {sc['path']!r} changed since the package recorded "
+                    f"it (recorded sha256 {str(sc.get('sha256'))[:12]}, now {sc_sha[:12]}); "
+                    "re-assemble so the signature covers what will be applied"
+                )
+    diff = pkg.get("registry_diff")
+    if not isinstance(diff, dict) or diff.get("schema") != DIFF_SCHEMA or not isinstance(diff.get("ops"), list):
+        problems.append(
+            f"missing registry_diff ({DIFF_SCHEMA}): the package must show the registry edits "
+            "the signature covers (serving_shape knobs and alternates)"
+        )
+    elif sc_sha and diff.get("serving_config_sha256") != sc_sha:
+        problems.append("registry_diff was not derived from the recorded serving-config artifact")
+    dry = pkg.get("registry_dry_run")
+    if not isinstance(dry, dict):
+        problems.append(
+            "missing registry_dry_run: the diff must be applied to a COPY of the registry and "
+            "stack_change_pipeline check run on it before the operator signs"
+        )
+    elif dry.get("status") != "pass":
+        problems.append(
+            f"registry_dry_run status={dry.get('status')!r}, not pass"
+            + (f" ({dry['error']})" if dry.get("error") else "")
+        )
+    return problems
+
+
 def validate(pkg: dict) -> list[str]:
     problems = []
     got = pkg.get("gates") or {}
@@ -117,6 +194,7 @@ def validate(pkg: dict) -> list[str]:
                     problems.append(
                         f"gate {gate!r} (recorded as {name!r}) status={row['status']!r}, "
                         "not pass/waived")
+    problems.extend(validate_serving(pkg))
     for key in ("candidate", "incumbent", "store", "rollback", "scope"):
         if not pkg.get(key):
             problems.append(f"missing required section {key!r}")
@@ -165,6 +243,35 @@ else:
     if evid:
         for f in sorted(Path(evid).glob("*.json")):
             pkg["gates"][f.stem] = json.loads(f.read_text())
+    servcfg = os.environ.get("SERVCFG")
+    if servcfg:
+        cfg_path = Path(servcfg)
+        try:
+            shown = str(cfg_path.resolve().relative_to(ROOT))
+        except ValueError:
+            shown = str(cfg_path.resolve())
+        if not cfg_path.is_file():
+            # recorded as given; validate_serving() reports the missing file by name
+            pkg["serving_config"] = {"path": shown, "sha256": None}
+        else:
+            import tempfile
+            with tempfile.TemporaryDirectory() as td:
+                sect_out = Path(td) / "sections.json"
+                cmd = [os.environ["ORCH_PY"],
+                       str(Path(os.environ["ORCH"]) / "scripts/registry/serving_config_registry.py"),
+                       "section", "--config", str(cfg_path), "--out", str(sect_out)]
+                if os.environ.get("MASTER"):
+                    cmd += ["--master", os.environ["MASTER"]]
+                if os.environ.get("NODRY"):
+                    cmd += ["--no-dry-run"]
+                res = subprocess.run(cmd, capture_output=True, text=True)
+                if res.returncode != 0 or not sect_out.exists():
+                    print("FAIL: serving-config registry sections could not be built:\n"
+                          + (res.stderr or res.stdout).strip()[-1500:])
+                    sys.exit(1)
+                sections = json.loads(sect_out.read_text())
+            sections["serving_config"]["path"] = shown
+            pkg.update(sections)
     problems = validate(pkg)
     out = os.environ.get("OUT")
     if out:

@@ -268,6 +268,31 @@ stack-change preflight on it. The one operator signature in step 6 covers both t
 registry write; there is no second signature. A package without the artifact is incomplete.
 Implementation: PROMOTION-REGISTRY-SERVING-1 in `handoffs/active/kernel-champion-and-promotion.md`.
 
+Mechanics (all of it lives in `package.sh` and the orchestrator's
+`scripts/registry/serving_config_registry.py`; the registry slot is `serving_shape.alternates:
+{<name>: {argv_delta, provenance}}`, validated by `compile_lean`):
+
+```bash
+scripts/package.sh --candidate <sha> --out <pkg.json> --evidence <dir> \
+    --serving-config docs/reference/kernel-manifests/serving-configs/<champion>.serving-config.json
+```
+
+Step 5 emits three sections into the package: `serving_config` (path + sha256), `registry_diff`
+(every master `server_mode.<role>` knob, `serving_shape` entry and alternate it changes, each with the
+value it replaces and its provenance) and `registry_dry_run` (the diff applied to a COPY of the master in
+a scratch dir, then `stack_change_pipeline.py update` + `check` on a scratch repo copy; the live registry
+digest is compared before and after). `package.sh --check` fails if the artifact is missing, changed since
+assembly, or the dry-run is not `pass`. The pipeline's live-host steps (`runtime_attestation`,
+`declared_env_attestation`) are recorded as `host_state_failures` and do not fail the dry-run: another
+session's server on a stack port says nothing about a registry diff.
+
+Step 8 makes the SIGNED diff's edits in the master (research registry) and commits them there. The master
+is hand-commented YAML, so that is a text edit of exactly the lines `serving_config_registry.py diff`
+prints (one `path: old -> new` line per op); `serving_config_registry.py apply --diff <diff> --out <copy>`
+(data only, comments dropped, refuses a master that drifted from the diff's recorded olds) is the
+cross-check that the edited master equals the rehearsed one. Then run the `update` / `check` above on the
+live tree. The diff, not the artifact, is what the operator signed.
+
 The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
 
 The derived layer pins a resolved `binary_dir`/`binary_path`/`ld_library_path` PER ROLE, so it goes
