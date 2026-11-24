@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T21:10:58Z",
+  "generated_at": "2026-11-24T21:32:05Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1667,14 +1667,14 @@
         "INF-48#rocm-verify-profile-backend"
       ],
       "closed": 309,
-      "dispatchable": 6,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-24",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 6,
+      "open": 7,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1709,13 +1709,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [
             "EVL-47"
           ],
           "line": 60,
           "name": "rocm-verify-profile-backend",
-          "open": 4,
+          "open": 5,
           "readiness": "blocked"
         },
         {
@@ -1728,7 +1728,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1211,
+          "line": 1214,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1743,7 +1743,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2357,
+          "line": 2360,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1752,7 +1752,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2732,
+          "line": 2735,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1761,7 +1761,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3168,
+          "line": 3171,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1770,7 +1770,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3263,
+          "line": 3266,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1782,14 +1782,14 @@
       "blocked": 3,
       "blocked_by": [],
       "closed": 293,
-      "dispatchable": 29,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-24",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 32,
+      "open": 33,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1820,11 +1820,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 13,
           "gates": [],
           "line": 15,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 14,
+          "open": 15,
           "readiness": "ready"
         },
         {
@@ -1837,7 +1837,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 1002,
+          "line": 1006,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18,
           "readiness": "blocked"
@@ -2309,14 +2309,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 153,
-      "dispatchable": 46,
+      "dispatchable": 47,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-24",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
-      "open": 47,
+      "open": 48,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2346,7 +2346,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 9,
+          "dispatchable": 10,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2354,7 +2354,7 @@
           ],
           "line": 21,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 9,
+          "open": 10,
           "readiness": "blocked"
         },
         {
@@ -2375,7 +2375,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 824,
+          "line": 830,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 38,
           "readiness": "blocked"
