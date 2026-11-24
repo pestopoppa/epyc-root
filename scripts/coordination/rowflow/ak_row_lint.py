@@ -38,6 +38,9 @@ or owner autokernel*) and stay WARN for every other owner: a row certain to fail
                            spec fresh_server_starts > 3 with no fresh_server_starts_reason
   NO-WITNESS         WARN  the decision rule names a GGML_/LLAMA_ knob and no row code records a witness key
   REPLAY-NO-BASELINE WARN  a replay row with no baseline validation (baseline_ok / validate_baseline / replay_baseline)
+  CPUS-IN-ARGV       WARN  a cpus() / grant_cpus() call placed directly inside an argv list/tuple literal or a `+` concatenation
+                           with no cpu_str() / ",".join around it (a list of ints in an argv: subprocess TypeError, seen twice
+                           2026-11-24). CPUS_IN_ARGV_LEVEL flips it to FAIL once no queued row hits it.
 Usage: ak_row_lint.py [--no-selftest] <row_dir> [<row_dir> ...]   (read-only, except job.py --selftest when present)
 """
 import ast
@@ -564,6 +567,29 @@ def py_compile_and_selftest(d, code, selftest=True, timeout=SELFTEST_TIMEOUT_S):
     return out
 
 
+CPUS_IN_ARGV_LEVEL = "WARN"
+_CPU_CALLS = {"cpus", "grant_cpus"}
+
+
+def cpus_in_argv(code):
+    """CPUS-IN-ARGV: cpus()/grant_cpus() as a direct element of a list/tuple literal or operand of `+` (AST)."""
+    out = []
+    for f, t in sorted(code.items()):
+        try:
+            tree = ast.parse(t)
+        except (SyntaxError, ValueError):
+            continue
+        for par in ast.walk(tree):
+            kids = (par.elts if isinstance(par, (ast.List, ast.Tuple)) else
+                    [par.left, par.right] if isinstance(par, ast.BinOp) and isinstance(par.op, ast.Add) else [])
+            for k in kids:
+                if isinstance(k, ast.Call) and _callname(k) in _CPU_CALLS:
+                    out.append((CPUS_IN_ARGV_LEVEL, "CPUS-IN-ARGV",
+                                f"{f}:{k.lineno}: {ast.unparse(k)} is a list of ints placed in an argv/concatenation; "
+                                "wrap it in cpu_str() (or \",\".join(map(str, ...)))"))
+    return out
+
+
 def lint_dir(d, selftest=True):
     out = []
     spec = {}
@@ -634,6 +660,7 @@ def lint_dir(d, selftest=True):
                                                 "a function named selftest alone does not count"))
     sh = {f: _read(os.path.join(d, f)) for f in sorted(os.listdir(d)) if f.endswith(".sh")}
     out += wall_stop_past(dict(own, **sh))
+    out += cpus_in_argv(own)
     if not (spec.get("fresh_server_per_visit") is True and str(spec.get("fresh_server_reason") or "").strip()):
         for f, ln in fresh_server_per_iter(code)[:1]:
             out.append(("WARN", "FRESH-SERVER-UNJUSTIFIED", f"{f}:{ln}: a server is started per loop iteration; default is one "

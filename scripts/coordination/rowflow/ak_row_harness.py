@@ -430,6 +430,19 @@ def parse_cpus(text):
     return sorted(set(out))
 
 
+def cpu_str(cpus):
+    """cpu list (or an already-compact string) -> compact `taskset -c` string: [0..23,48..71] -> '0-23,48-71'."""
+    xs = parse_cpus(cpus) if isinstance(cpus, str) else sorted({int(c) for c in cpus})
+    out, i = [], 0
+    while i < len(xs):
+        j = i
+        while j + 1 < len(xs) and xs[j + 1] == xs[j] + 1:
+            j += 1
+        out.append(str(xs[i]) if i == j else f"{xs[i]}-{xs[j]}")
+        i = j + 1
+    return ",".join(out)
+
+
 def grant_cpus(env=None, default=None):
     """The granted cpus, from ONE env source: WS58_CPUS (the grant), then FILLER_CPUS; `default` only when neither is
     set (selftest / dry). Never parsed out of WS58_REGIONS (CLAIM-PARSE)."""

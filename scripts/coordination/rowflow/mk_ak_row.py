@@ -123,6 +123,12 @@ def cpus():
     return H.grant_cpus()
 
 
+def cpu_str():
+    """The granted cpus as a compact taskset/numactl string ('0-23,48-71'). cpus() is a LIST of ints: never put it in an
+    argv (subprocess TypeError); use cpu_str() for `taskset -c` / `numactl --physcpubind`."""
+    return H.cpu_str(cpus())
+
+
 def ports():
     env = [int(x) for x in os.environ.get("FILLER_PORTS", "").split(",") if x.strip().isdigit()]
     return env[:N_SERVERS] if len(env) >= N_SERVERS else H.alloc_ports(ROW_ID, N_SERVERS)
