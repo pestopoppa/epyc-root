@@ -16,6 +16,7 @@ bin/rowflow/publish_and_clean.sh     scripts/coordination/rowflow/publish_and_cl
 bin/rowflow/notify.py                scripts/coordination/rowflow/notify.py               engine
 bin/rowflow/diskpause.py             scripts/coordination/rowflow/diskpause.py            engine
 bin/rowflow/hostutil.py              scripts/coordination/rowflow/hostutil.py             hot
+bin/rowflow/replan.py                scripts/coordination/rowflow/replan.py               hot
 bin/rowflow/grant_ok_launcher.py     scripts/coordination/rowflow/grant_ok_launcher.py    hot
 bin/rowflow/filler_run15.sh          scripts/coordination/rowflow/filler_run15.sh         engine
 bin/rowflow/filler_lib.sh            scripts/coordination/rowflow/filler_lib.sh           engine

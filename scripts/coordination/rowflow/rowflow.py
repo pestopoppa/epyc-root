@@ -101,6 +101,10 @@ try:
 except ImportError:  # a deploy that predates the module: old behaviour (FAIL-N)
     smoke_verdict = None
 try:
+    import replan as _replan  # noqa: E402  - re-planning scheduler C (operator 2026-11-24 "Keep B shadow, build C")
+except Exception:  # noqa: BLE001 - a deploy without the module: REPLAN is off, the keeper is unchanged
+    _replan = None
+try:
     import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
 except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
     sys.path.insert(0, os.path.dirname(_HERE))
@@ -8831,6 +8835,241 @@ def withdraw_request(flags, rid, by):
     return "WITHDRAWN", None
 
 
+# ---------------------------------------------------------------- REPLAN "C" (operator 2026-11-24 "Keep B shadow, build C")
+# The re-planning knapsack of docs/design/rowflow-replanning-scheduler.md: every tick replan.solve() places EVERY not-started
+# item of B's candidate set (rows, the phantom / hold urgent heads, queued claim requests) over a 6 h horizon under the
+# keeper's own hard constraints (tokens, GPU token + host cores, RAM, QUIET-SERIAL, quiet-host vs loud, EXCLUSIVE-CPU-HOLD,
+# ports, no pre-emption), maximising rank-weighted work, and commits only what starts NOW.
+# shadow (now): the plan is computed after the live plan and only logged - REPLAN-SHADOW place <id> at <t> regions=<...>,
+#   REPLAN-SHADOW diff live=<id> plan=<id> when the live decision differs, REPLAN-SHADOW solve <ms> ... - plus
+#   replan-plan.json (latest plan), replan-state.json (incumbent order, bumps, pins) and replan-metrics.jsonl (one record per
+#   UTC day with the enforce criteria). Placement is NEVER changed.
+# enforce (operator decision after the shadow soak, criteria in the doc section 11): C's start-now set, each row on C's
+#   option, goes through B's admission path (plan(reserve=True): caps, ports, packing) and replaces the live plan's set;
+#   any solver error, timeout (> REPLAN_TIMEOUT_S) or verify() violation falls back to the live plan (B when
+#   RESERVATION_MODE=enforce) for that tick.
+REPLAN_MODE = "shadow"          # off | shadow | enforce
+REPLAN_STATE = "replan-state.json"
+REPLAN_PLAN = "replan-plan.json"
+REPLAN_METRICS = "replan-metrics.jsonl"
+REPLAN_BUDGET_S = 1.0           # solver wall budget per tick (0.8 % of the 120 s tick)
+REPLAN_TIMEOUT_S = 1.5          # a solve slower than this is a timeout: enforce falls back to the live plan
+REPLAN_OVERRUN_S = 900          # a running row past its estimated end is assumed to need 15 more minutes (capped at its grant end)
+REPLAN_LOG_PLACES = 16          # place lines per tick (the first by start)
+
+
+def replan_mode():
+    if _replan is None:
+        return "off"
+    m = str(REPLAN_MODE or "off").strip().lower()
+    return m if m in ("off", "shadow", "enforce") else "off"
+
+
+def replan_flags(d, c):
+    """Constraint classes of a candidate / running grant, as the live gates derive them (quiet_gate, exclusive_cpu_holder):
+    quiet = QUIET-SERIAL class, qh = needs a loud-free host, loud = disturbs a quiet-host row, excl = EXCLUSIVE-CPU-HOLD."""
+    d = d or {}
+    if c.get("kind") == "claim":
+        return {"quiet": False, "qh": False, "loud": bool(c.get("loud")), "excl": False}
+    shape = str(d.get("shape") or c.get("shape") or "")
+    if gpu_lane_cand(c) or d.get("lane") == "gpu" or shape in ("gpu", "gpu-q3"):
+        return {"quiet": False, "qh": False, "loud": False, "excl": False}
+    qs = quiet_sensitive(d)
+    whole = any(set(QUARTERS) <= option_quarters(o) for o in (c.get("options") or ()))
+    try:
+        rank = float(c.get("rank") if c.get("rank") is not None else d.get("priority_rank", 100))
+    except (TypeError, ValueError):
+        rank = 100.0
+    return {"quiet": bool(qs and shape not in ("host", "quiet-host")),
+            "qh": bool(quiet_required(d) or shape == "quiet-host"),
+            "loud": bool(bandwidth_heavy(d) or shape in ("host", "quiet-host") or whole),
+            "excl": bool(d.get("exclusive_cpu") is True and rank <= EXCLUSIVE_CPU_MAX_RANK and qs)}
+
+
+def replan_option_key(o):
+    """plan()'s option preference (q0-q2 before q3, nothing on the MI210 host cores, smallest first), deterministic."""
+    return (GPU not in o and bool(o & Q3_GUARD), GPU not in o and bool(o & qcores("q3")), len(o), sorted(o))
+
+
+def replan_items(cands, man, grants, free, region_ends, now, gpu_open=False, gpu_q3=False, light_ids=()):
+    """PURE. Keeper snapshot -> replan.solve inputs (items, running, busy). man(rid) -> manifest dict. Options are expanded
+    and GPU-Q3-GUARDed exactly as plan() does; a running grant ends at its ESTIMATE (start + book_s, capped at its grant
+    end; past it: + REPLAN_OVERRUN_S); a busy token no running grant holds (live smoke, B's hold:<id>, foreign hold) frees
+    at its region_ends entry (None = unknown: next tick)."""
+    free = set(free)
+    items, used = [], set()
+    # a GATE-held urgent head (B's hold:<id>, cand "hold") is re-decided next tick: C models the loud / quiet grants that
+    # B's hold end (the latest loud grant END) stands for itself, from their estimated ends; a phantom keeps its smoke end
+    own_ends = {HOLD_PREFIX + c["id"]: now + RESERVE_TICK_S for c in cands if c.get("hold") and not c.get("phantom")}
+    for c in cands:
+        if int(c.get("arm_fails") or 0) > 0:
+            continue
+        d = man(c["id"]) if c.get("kind") != "claim" else {}
+        opts = [frozenset(expand(set(o))) for o in (c.get("options") or ()) if o]
+        if gpu_q3:
+            opts = gpu_q3_guard(dict(c, options=opts))
+        if c.get("bench") and gpu_open and not c.get("cpu_only"):
+            opts = [o for o in opts if not (o & expand({"q3"}))]
+        opts = sorted({o for o in opts if o}, key=replan_option_key)
+        if not opts:
+            continue
+        rel = None
+        if c.get("phantom"):
+            hold_end = (region_ends or {}).get(HOLD_PREFIX + c["id"])
+            rel = float(hold_end) if hold_end else None
+        it = {"id": c["id"], "kind": "claim" if c.get("kind") == "claim" else "row", "lane": "gpu" if gpu_lane_cand(c) else "cpu",
+              "rank": float(c["rank"]), "options": opts, "dur": max(60.0, float(book_s(c) or hold_s(c) or 60.0)),
+              "since": float(c.get("since") or now), "rel": rel, "gib": float(c.get("gib") or 0),
+              "ports": [int(p) for p in (c.get("ports") or [])], "resumable": bool(c.get("resumable") or d.get("resumable")),
+              "phantom": bool(c.get("phantom")), "hold": bool(c.get("hold"))}
+        it.update(replan_flags(d, dict(c, options=opts)))
+        items.append(it)
+        for o in opts:
+            used |= o
+    running, held = [], set()
+    for g in grants:
+        toks = frozenset(expand(set(g.get("holds") or ())))
+        held |= toks
+        gid = g["id"]
+        if gid.startswith(BUILD_PREFIX):
+            d, fl = {}, {"quiet": False, "qh": False, "loud": gid not in set(light_ids), "excl": False}
+            lane = "cpu"
+        else:
+            d = man(gid) or {}
+            gc = {"id": gid, "lane": d.get("lane"), "shape": d.get("shape"), "options": [toks],
+                  "rank": d.get("priority_rank", 100)}
+            fl = replan_flags(d, gc)
+            lane = "gpu" if gpu_lane_cand(gc) else "cpu"
+        st, en = iso_epoch(g.get("start")), iso_epoch(g.get("end"))
+        bs = book_s(d) if d.get("estimate_s") or d.get("book_s") else 0
+        est = (st + bs) if (st and bs) else en
+        if est is None:
+            est = now + RESERVE_TICK_S
+        elif est <= now:
+            est = now + REPLAN_OVERRUN_S
+        if en is not None:
+            est = min(est, en) if en > now else now + RESERVE_TICK_S
+        running.append(dict(fl, id=gid, tokens=toks, end=est, lane=lane, gib=float(d.get("gib") or 0),
+                            ports=[int(p) for p in (d.get("ports") or [])]))
+    busy = {}
+    for t in used:
+        if t in free or t in held:
+            continue
+        busy[t] = own_ends[t] if t in own_ends else (region_ends or {}).get(t)
+    return items, running, busy
+
+
+def replan_solve(flags, rcands, grants, allrows, free, region_ends, ram, now, gpu_open=False, gpu_q3=False, live_assigned=None):
+    """One C solve on this tick's snapshot. -> result (replan.solve) with ok (usable for enforce) and _live info."""
+    def man(rid):
+        return allrows.get(rid) or load_json(ready_path(flags, rid)) or load_json(os.path.join(dry_dir(flags, rid), "unpublished.json")) or {}
+    light = {g["id"] for g in grants if g["id"].startswith(BUILD_PREFIX) and is_light_build(flags, g["id"])}
+    items, running, busy = replan_items(rcands, man, grants, free, region_ends, now, gpu_open=gpu_open, gpu_q3=gpu_q3, light_ids=light)
+    st = load_json(os.path.join(state_dir(flags), REPLAN_STATE)) or {}
+    live_now = None
+    if live_assigned is not None:
+        live_now = {c["id"]: frozenset(expand(set(o))) for c, o in live_assigned if not c.get("phantom") and not c.get("hold")}
+    res = _replan.solve(items, running, busy, now, ram, state=st.get("solver"), live_now=live_now, budget_s=REPLAN_BUDGET_S,
+                        ram_margin=RAM_MARGIN_GIB)
+    res["ok"] = not res["violations"] and float(res["solve_ms"]) <= REPLAN_TIMEOUT_S * 1000.0
+    res["_items"] = {it["id"]: it for it in items}
+    return res
+
+
+def replan_live_info(res, live_assigned):
+    """{id: {rank, size, dur, quiet, since}} of the rows the live keeper starts this tick (metrics)."""
+    out = {}
+    its = (res or {}).get("_items") or {}
+    for c, o in live_assigned:
+        if c.get("phantom") or c.get("hold"):
+            continue
+        it = its.get(c["id"]) or {}
+        toks = expand(set(o))
+        size = 3.0 if gpu_lane_cand(c) else max(len([t for t in toks if re.fullmatch(r"c\d+", t)]) / 24.0, 1.0 / 6.0)
+        out[c["id"]] = {"rank": float(c["rank"]), "size": size, "dur": float(it.get("dur") or book_s(c) or 0),
+                        "quiet": bool(it.get("quiet") or it.get("qh")), "since": float(c.get("since") or time.time())}
+    return out
+
+
+def replan_report(flags, res, live_assigned, mode, log, dry=False, build_hot=False, error=None, fallback=False, now=None):
+    """Log the tick's C plan (place / diff / solve / violation lines), persist state + latest plan, fold the day metrics and
+    append a finished day to replan-metrics.jsonl. Never raises into allocate()."""
+    now = time.time() if now is None else now
+    sfx = "-SHADOW" if mode == "shadow" else ""
+    sd = state_dir(flags)
+    st_p = os.path.join(sd, REPLAN_STATE)
+    st = load_json(st_p) or {}
+    live = replan_live_info(res, live_assigned or [])
+    acc, done = _replan.metrics_tick(st.get("metrics"), now, res, live, error=error, build_hot=build_hot, fallback=fallback)
+    if res is None:
+        log(f"REPLAN{sfx} failed: {type(error).__name__ if error else '?'}: {error}; no plan this tick"
+            + (" (enforce: live plan used)" if mode == "enforce" else ""))
+    else:
+        places = {}
+        for e in res["plan"][:REPLAN_LOG_PLACES]:
+            toks = {t for t in e["tokens"] if not t.startswith(HOLD_PREFIX) and t != GPU_BLOCKED}
+            regs = ",".join(compress(toks)) or "-"
+            soon = e["start"] <= now + RESERVE_TICK_S + 30
+            key = f"{e['id']}@" + ("now" if soon else str(int(e["start"] // _replan.HYST_S)))
+            when = "now" if e["now"] else (_replan.iso(e["start"]) + (" (held from now)" if soon else ""))
+            src = (res.get("_items") or {}).get(e["id"]) or {}
+            tag = "".join(t for f, t in ((e.get("urgent"), " urgent"), (e.get("pinned"), " pinned"),
+                                         (src.get("phantom"), " phantom (smoke pending / owner STOP)"),
+                                         (src.get("hold") and not src.get("phantom"), " gate-held")) if f)
+            places[key] = f"REPLAN{sfx} place {e['id']} at {when} regions={regs} rank={e['rank']:g}{tag}"
+        log_transition(flags, "replan-place" + sfx.lower(), places, log, persist=not dry)
+        if mode == "shadow":
+            lv = sorted(live, key=lambda r: (live[r]["rank"], r))
+            pl = {e["id"]: e for e in res["plan"]}
+            sn = sorted(res["start_now"], key=lambda r: (pl[r]["rank"], r))
+            lo, po = [r for r in lv if r not in sn], [r for r in sn if r not in lv]
+            diffs = {}
+            for i in range(max(len(lo), len(po))):
+                a = lo[i] if i < len(lo) else "-"
+                b = po[i] if i < len(po) else "-"
+                why = ""
+                if a != "-" and a in pl:
+                    why = f" (C plans {a} at {_replan.iso(pl[a]['start'])})"
+                elif a != "-":
+                    why = f" (C defers {a})" if a in (res.get("_items") or {}) else " (not in C's candidate set)"
+                diffs[f"{a}|{b}"] = f"REPLAN-SHADOW diff live={a} plan={b}{why}"
+            log_transition(flags, "replan-diff", diffs, log, persist=not dry)
+        log_transition(flags, "replan-violation" + sfx.lower(),
+                       {v: f"REPLAN{sfx} VIOLATION {v}" for v in res["violations"][:10]}, log, persist=not dry)
+        lvv = res.get("live_value")
+        log(f"REPLAN{sfx} solve {res['solve_ms']:.0f} ms items={res['items']} evals={res['evals']}"
+            f"{' BUDGET-HIT' if res.get('budget_hit') else ''}{' kept-incumbent' if res.get('hysteresis_kept') else ''} "
+            f"value={res['value']:.1f}" + (f" live={lvv:.1f}" if lvv is not None else "")
+            + f" start-now={','.join(res['start_now']) or '-'} pinned={len(res['pinned'])} violations={len(res['violations'])}"
+            + (" FALLBACK" if fallback else ""))
+    if dry:
+        return acc
+    try:
+        rec = {"solver": res["state"] if res is not None else (st.get("solver") or {}), "metrics": acc}
+        atomic_json(st_p, rec)
+        if res is not None:
+            atomic_json(os.path.join(sd, REPLAN_PLAN), {k: v for k, v in res.items() if k not in ("state", "_items")})
+        if done is not None:
+            with open(os.path.join(sd, REPLAN_METRICS), "a") as f:
+                f.write(json.dumps(done, sort_keys=True) + "\n")
+            log(f"REPLAN{sfx} day {done['day']}: enforce_ready_today={done['enforce_ready_today']} "
+                f"{json.dumps(done['enforce_criteria'], sort_keys=True)}")
+    except Exception as e:  # noqa: BLE001 - persistence never stops allocation
+        log(f"REPLAN state write failed: {type(e).__name__}: {e}")
+    return acc
+
+
+def replan_idle(idle, res, now):
+    """enforce: an idle region C holds for a planned row is named (instead of 'no runnable row needs it')."""
+    out = dict(idle)
+    for r in list(out):
+        e = next((e for e in (res or {}).get("plan") or [] if not e["now"] and r in set(e["tokens"])), None)
+        if e is not None:
+            out[r] = (f"REPLAN holds {r} for {e['kind']} {e['id']} (rank {e['rank']:g}) planned at {_replan.iso(e['start'])}; "
+                      + out[r])
+    return out
+
+
 def allocate(flags, keeper_log=None, log=print, dry=False):
     """dry=True: snapshot + plan only (PLAN lines); nothing healed, armed, granted or started."""
     keeper_log = keeper_log or os.path.join(flags, "ws58-calendar-keeper.log")
@@ -9078,6 +9317,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 log(f"QUIET-HOST-WAIT smoke(s) live in pockets ({','.join(smoke_live[:5])}): no quiet-host grant this tick")
     # E5 fix A 2026-11-23: no quiet-host / whole-host grant while a foreign inference server runs (never kills it)
     lane, _lk = build_lane_open(flags)
+    build_lane_now = bool(lane)   # REPLAN metrics: a quiet row C would start while the lane is open is a BUILD-LANE collision
     if lane:   # BUILD LANE: no NEW quiet row is granted (running ones are never pre-empted)
         hold = [c for c in cands if quiet_required(allrows.get(c["id"])) or c.get("shape") == "quiet-host"]
         hold_res = [c for c in hold if float(c["rank"]) >= URGENT_RANK]   # RESERVATION: the lane never holds the urgent head
@@ -9180,6 +9420,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001
             log(f"CONTAMINATION check failed: {type(e).__name__}: {e}")
     res_extra, res_rec, sh = {}, None, None
+    rp_base = None   # REPLAN: B's candidate set (gate-kept rows + phantom / hold urgent heads + claim requests)
     if rmode != "off":
         try:
             rst_p = os.path.join(state_dir(flags), RESERVATION_STATE)
@@ -9187,6 +9428,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             base = cands if rmode == "enforce" else res_base if res_base is not None else cands
             rq = qlines if rmode == "enforce" else res_qlines
             rc, res_extra, hsince = reservation_cands(flags, pre_gates, base, grants, allrows, rq, hold_since=rst.get("hold_since"))
+            rp_base = rc
             if rmode == "enforce":
                 cands = rc
             else:   # SHADOW: the reservation plan on this snapshot; its decisions are logged, never applied
@@ -9209,6 +9451,25 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             sh, res_extra = None, {}
             if rmode == "enforce":
                 cands = [c for c in cands if not c.get("phantom") and not c.get("hold")]
+    # REPLAN (C): B's candidate set; with RESERVATION_MODE off (or failed) it is built here on the live gate's survivors
+    rpmode, rp, rp_extra = replan_mode(), None, dict(res_extra)
+    rp_gpu_q3 = False
+    if rpmode != "off":
+        if rp_base is None:
+            try:
+                rp_base, rp_extra, _ = reservation_cands(flags, pre_gates, res_base if res_base is not None else cands, grants,
+                                                         allrows, res_qlines or qlines)
+            except Exception as e:  # noqa: BLE001 - the shadow never stops allocation
+                log(f"REPLAN candidate set failed: {type(e).__name__}: {e}; using the live candidates")
+                rp_base, rp_extra = list(cands), {}
+        rp_gpu_q3 = bool(gpu_queued) or any(gpu_lane_cand(c) for c in rp_base)
+        if rpmode == "enforce":   # C first: its start-now set replaces the live plan's below (fallback: the live plan)
+            try:
+                rp = replan_solve(flags, rp_base, grants, allrows, free, dict(r_ends, **rp_extra), ram, time.time(),
+                                  gpu_open=gpu_open, gpu_q3=rp_gpu_q3)
+            except Exception as e:  # noqa: BLE001
+                log(f"REPLAN failed: {type(e).__name__}: {e}; live plan used")
+                rp = None
     # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions
     # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
@@ -9244,6 +9505,38 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                            log, persist=not dry)
             log_transition(flags, "would-grant", {rid: f"WOULD-GRANT {rid} (reservation plan; shadow)"
                                                   for rid in sorted(sh["assigned"] - live)}, log, persist=not dry)
+        if rpmode == "shadow" and _pass == 0:   # REPLAN-SHADOW: C on this snapshot beside the live decision; never applied
+            build_hot = build_lane_now or bool(bw)
+            try:
+                rp = replan_solve(flags, rp_base, grants, allrows, free, dict(r_ends, **rp_extra), ram, time.time(),
+                                  gpu_open=gpu_open, gpu_q3=rp_gpu_q3, live_assigned=assigned)
+                replan_report(flags, rp, assigned, "shadow", log, dry=dry, build_hot=build_hot)
+            except Exception as e:  # noqa: BLE001 - the shadow never stops allocation
+                try:
+                    replan_report(flags, None, assigned, "shadow", log, dry=dry, build_hot=build_hot, error=e)
+                except Exception as e2:  # noqa: BLE001
+                    log(f"REPLAN-SHADOW failed: {type(e).__name__}: {e}; report failed: {type(e2).__name__}: {e2}")
+        elif rpmode == "enforce":   # C's start-now set through B's admission path; any fault -> the live plan stands
+            use = rp is not None and rp.get("ok")
+            if use:
+                try:
+                    sn = {e["id"]: e for e in rp["plan"] if e["now"] and e["kind"] in ("row", "claim")}
+                    pc = [dict(c, options=[frozenset(sn[c["id"]]["tokens"])]) for c in rp_base
+                          if c["id"] in sn and c["id"] not in excluded and not c.get("phantom") and not c.get("hold")]
+                    assigned, _ri, _rpend = plan(plan_free, pc, ram, gpu_open, grant_ends=[e for e in ends if e], quiet_ok=quiet_ok,
+                                                 held_ports=held_ports, region_ends=dict(r_ends, **rp_extra), region_holders=holders,
+                                                 gpu_queued=gpu_queued, build_waiting=False, build_policy=bpol,
+                                                 stopping=stopping_tokens(flags, grants, allrows), gap_rows=gap_rows, reserve=True)
+                    idle = replan_idle(idle, rp, time.time())
+                except Exception as e:  # noqa: BLE001
+                    log(f"REPLAN admission failed: {type(e).__name__}: {e}; live plan used")
+                    use = False
+            if _pass == 0:
+                try:
+                    replan_report(flags, rp, assigned, "enforce", log, dry=dry, build_hot=build_lane_now or bool(bw),
+                                  fallback=not use, error=None if rp is not None else RuntimeError("no solve"))
+                except Exception as e:  # noqa: BLE001
+                    log(f"REPLAN report failed: {type(e).__name__}: {e}")
         _srl = {}
         for lc, hc, res in plan.stop_reserves:
             _srl.setdefault(hc["id"], set()).update(res)

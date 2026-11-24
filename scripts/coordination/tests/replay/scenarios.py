@@ -1615,7 +1615,71 @@ def sc_res_light_claim_84_87(path):
     return write(path, _ticks_light()), check
 
 
+# REPLAN "C" (operator 2026-11-24 "Keep B shadow, build C"): the same 10:27 / 11:20 / 11:39Z incidents through the full
+# allocate() in SHADOW (RESERVATION_MODE and REPLAN_MODE shadow, the deployed modes). Placement must stay today's (the low row
+# IS granted ahead of c21 as the live keeper did), and C's would-place decisions must show the fix: a REPLAN-SHADOW place line
+# for the head, a REPLAN-SHADOW diff naming the low row the live keeper started, C's start-now never holding a low row while
+# the head waits, no solver failure / violation, every solve under the 1 s budget. (15:51Z GPU and 16:19Z draftwin are
+# replayed on the pure solver in test_rowflow_replan.py: the GPU quiet-device gate and live smokes are not in this harness.)
+def _replan_check(head, lows, live_low=True):
+    import re as _re
+
+    def check(d):
+        out = []
+        h = _first(d, head)
+        if live_low and not any(_granted(d, lo) and (h is None or _first(d, lo) < h) for lo in lows):
+            out.append(f"shadow changed placement: no low row of {lows} was granted ahead of {head} as the live keeper does")
+        if not _lines(d, f"REPLAN-SHADOW place {head} at"):
+            out.append(f"no REPLAN-SHADOW place line for {head}")
+        early = [lo for lo in lows if _granted(d, lo) and (h is None or _first(d, lo) < h)]
+        for lo in early:   # every low row the live keeper started ahead of the head is a named diff
+            if not [l for _, l in _lines(d, f"REPLAN-SHADOW diff live={lo} ")]:
+                out.append(f"no REPLAN-SHADOW diff line naming the live low row {lo}")
+        solves = _lines(d, "REPLAN-SHADOW solve ")
+        if len(solves) < len(d):
+            out.append(f"REPLAN-SHADOW solve on {len(solves)} of {len(d)} ticks")
+        for i, l in solves:
+            m = _re.search(r"start-now=(\S+)", l)
+            sn = set(m.group(1).split(",")) if m else set()
+            if (h is None or i < h) and sn & set(lows):
+                out.append(f"tick {i}: C would start {sorted(sn & set(lows))} while {head} waits: {l[:160]}")
+            ms = _re.search(r"solve (\d+) ms", l)
+            if ms and int(ms.group(1)) >= 1000:
+                out.append(f"tick {i}: solve {ms.group(1)} ms >= 1 s budget")
+        for pre in ("REPLAN-SHADOW failed", "REPLAN-SHADOW VIOLATION", "REPLAN candidate set failed"):
+            out += [f"tick {i}: {l[:160]}" for i, l in _lines(d, pre)]
+        return out
+    return check
+
+
+def sc_replan_1027_calib_a3b(path):
+    """10:27Z: c21 gate-dropped (foreign busy on q0); live 10:27Z granted calib-a3b (rank 60) - in this fixture today's later
+    QUIET-URGENT-WAITING patch already holds it. C: c21 planned first (gate-held, re-decided next tick), the low row never in
+    C's start-now while c21 waits."""
+    low = _ak_q("ak-cpu-aa-calibration-q-a3b", 60, 16560, quiet=False, sensitive=True)
+    return (write(path, _mode(_ticks_noise(low, "ak-cpu-aa-calibration-q-a3b", {"q0": 50.0}), "shadow")),
+            _replan_check("c21-fold-cpu-r3", ["ak-cpu-aa-calibration-q-a3b"], live_low=False))
+
+
+def sc_replan_1120_specpit_r4(path):
+    """11:20Z: c21 gate-dropped (unclaimed pytest 31% on q3); live 11:20Z granted specpit-r4 (rank 40, 7.7 h) - held here by
+    today's QUIET-URGENT-WAITING. C: c21 planned first, specpit never in C's start-now while c21 waits."""
+    low = _ak_q("ak-specpit1-t1p100-r4", 40, 28020)
+    return (write(path, _mode(_ticks_noise(low, "ak-specpit1-t1p100-r4", {"q3": 31.0}), "shadow")),
+            _replan_check("c21-fold-cpu-r3", ["ak-specpit1-t1p100-r4"], live_low=False))
+
+
+def sc_replan_1139_rank_skip(path):
+    """11:35/11:39Z: RANK-SKIP with T = the GPU grant's end -> live GRANT calib-c18 / specpit-t1p095 ahead of c21-r3 (the low
+    rows plain quarter rows, as in the shadow twin above); C plans c21-r3 at its own regions' end, never the 3 h GPU end."""
+    return (write(path, _mode(_ticks_1135(plain_low=True), "shadow")),
+            _replan_check("c21-fold-cpu-r3", ["ak-cpu-aa-calibration-q-c18-r3", "ak-specpit1-t1p095"]))
+
+
 SCENARIOS = {
+    "replan-1027-calib-a3b-shadow": sc_replan_1027_calib_a3b,
+    "replan-1120-specpit-r4-shadow": sc_replan_1120_specpit_r4,
+    "replan-1139-rank-skip-shadow": sc_replan_1139_rank_skip,
     "res-1003-gdn-vs-c21-r2-smoke-pending": sc_res_1003_gdn_vs_c21_r2,
     "res-1026-calib-a3b-gate-dropped-head": sc_res_1026_calib_a3b,
     "res-1120-specpit-r4-noise-dropped-head": sc_res_1120_specpit_r4,
