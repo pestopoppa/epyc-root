@@ -415644,3 +415644,52 @@
   - claim_index: 3
     effect: unaffected
     note: Wave-1 finding re-confirmed at loop.py:280-288.
+- id: intake-2863
+  arxiv_id: null
+  url: https://github.com/AtomicBot-ai/atomic-engine
+  source_type: repo
+  title: 'Atomic Engine: llama.cpp fork with a memory-budgeted expert-streaming executor (Inkling 2 Mini on Apple Silicon)'
+  categories:
+  - moe_optimization
+  - local_inference
+  - speculative_decoding
+  - kv_cache
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-24'
+  authors:
+  - AtomicBot-ai
+  key_claims:
+  - A llama.cpp fork that runs a model inside a user-set memory budget shared by weights, session state and compute buffers, streaming MoE expert weights from the original GGUF on demand.
+  - For the looped Inkling 2 Mini (arch inkling2_loop) the executor prioritises keeping the repeated core layers' expert weights resident, with selectable cache policies class-lru and inkling-loop-age.
+  - The standard Metal profile pairs an AD-IQ2_M target with a small Q8_0 DSpark drafter (--spec-type draft-dspark) under a 14 GiB budget plus 100 MiB KV and reports 105.71 tok/s decode on a 48 GB M4 Max.
+  - A separate MoE cache keeps hot experts on the device when experts live in host memory, and --moe-cache-cpu-share lets the CPU compute a share of cache misses instead of uploading them.
+  - KV and weight compression build on the TurboQuant llama.cpp fork by TheTom.
+  techniques:
+  - memory-budgeted expert streaming from GGUF
+  - loop-aware expert residency (inkling-loop-age, class-lru)
+  - device expert cache with CPU share of misses
+  - DSpark drafter in llama.cpp (draft-dspark)
+  - q4_0 KV for target and draft
+  reported_results:
+  - 'M4 Max 48 GB, 4000-token prompt, 64 generated tokens, greedy: stock llama.cpp e412c6f46 decode 33.7 tok/s (AD-IQ2_M) vs Atomic Engine 68.2 (8 GiB) to 106.1 (16 GiB); AD-IQ3_S 32.2 stock vs 47.8-75.7; all runs report matches_stock true.'
+  - 4 GiB budget, SSD-streamed experts, 912-token prompt: TTFT 3.60 s, decode 18.26 tok/s (README prose).
+  credibility_score: null
+  contradicting_evidence:
+  - 'Provisional, from the published JSON: the Atomic Engine arms run with the DSpark drafter while the stock arm appears to run without one, so the headline ratio confounds speculative decoding with the engine; and the recorded 64-token greedy output repeats a short id cycle, which inflates draft acceptance. Both unverified until a dive reads tools/expert-source/bench-inkling-metal.py.'
+  cross_references:
+  - intake-2798
+  - intake-2805
+  - intake-2812
+  - handoffs/active/model-evaluation-queue.md (INK2-MINI-1, INK2-PORT-1, INK2-MEAS-1)
+  - handoffs/active/deepseek-v41-flash-evaluation.md (draft-dspark, DS41-C2d)
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: PARTIAL
+  notes: 'Read at engine-development HEAD fb69fff02101b048a0a165a3b502712dd2ca978f, retrieved 2026-11-24 (README sha256 761012de71c1, docs/moe-cache.md a3e8a88499d9). Read: README, docs/moe-cache.md head, docs/atomic-engine-inkling-low-bit-metal.json, src/llama-expert-executor.cpp L195-215 and L1320-1365. The executor throws for any device other than CPU and MTL0 (L196-197), and Inkling acceleration is gated on Metal, so no HIP path exists; that is a porting cost, not a decline. Not read: bench script, docs PNG figures, the DSpark implementation files, TurboQuant parts. Repo also carries many DFlash/flash-next experiment JSONs for other models. Operator steering 2026-11-24: likely no immediate AutoKernel action, but hypotheses for an eventual Inkling 2 Mini evaluation.'
+  novelty_justification: Inkling 2 Mini itself is covered (intake-2798/2805/2812, INK2-* boxes); the new part is a loop-aware expert-residency executor and a llama.cpp DSpark path for Inkling, neither in the index.
+  verdict_justification: Gives testable hypotheses for INK2-MEAS-1 and later MI210 placement; our host holds the whole model in RAM or HBM, so streaming itself is not a current need.
