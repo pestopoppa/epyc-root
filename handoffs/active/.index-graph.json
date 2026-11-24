@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T16:33:16Z",
+  "generated_at": "2026-11-24T16:54:57Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1779,17 +1779,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 2,
+      "blocked": 3,
       "blocked_by": [],
-      "closed": 288,
-      "dispatchable": 32,
+      "closed": 292,
+      "dispatchable": 28,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-24",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 34,
+      "open": 31,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1820,11 +1820,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 12,
           "gates": [],
           "line": 15,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 15,
+          "open": 14,
           "readiness": "ready"
         },
         {
@@ -1832,14 +1832,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 18,
+          "dispatchable": 16,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 995,
+          "line": 1000,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19,
+          "open": 17,
           "readiness": "blocked"
         }
       ]
@@ -2055,18 +2055,18 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 157,
-      "dispatchable": 40,
+      "closed": 158,
+      "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
-      "last_advanced": "2026-11-22",
+      "last_advanced": "2026-11-24",
       "next_action": "Q38P-1 r4 on C13 queued (profiler path inside Landlock fence); XFER-4b prefill A/B + task eval; G2-CONC on candidate; WRAP-8 rerun",
-      "open": 40,
+      "open": 39,
       "priority": 0.9191,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): G2-CONC \u2014 BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
@@ -2134,13 +2134,13 @@
           "blocked_by": [
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 9,
+          "dispatchable": 8,
           "gates": [
             "INF-70#cpu-decode-roofline-program"
           ],
           "line": 5941,
           "name": "moe-routing-tap-and-locality-measurement",
-          "open": 9,
+          "open": 8,
           "readiness": "blocked"
         }
       ]
@@ -2308,15 +2308,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 152,
-      "dispatchable": 43,
+      "closed": 153,
+      "dispatchable": 42,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-24",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
-      "open": 44,
+      "open": 43,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2366,7 +2366,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 36,
+          "dispatchable": 35,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2377,7 +2377,7 @@
           ],
           "line": 812,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 37,
+          "open": 36,
           "readiness": "blocked"
         }
       ]
