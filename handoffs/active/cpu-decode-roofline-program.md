@@ -2031,6 +2031,7 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
       · done when: tok/s per arm with A/A floor and the attention share filed under this box with verdict KEEP (>= 5% tok/s and the KVQ-ROT-KLD-1 CPU-arm KLD gate passing) or FUTILITY (attention < 10% of the step)
       · gate: KVQ-ROT-KLD-1        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
   - 2026-11-24 (autokernel) row cdr-a3b-q4kv-32k-cpu-20261124 published (quiet quarter, priority_rank 45, C21 CPU store; llama-bench Q8/Q4 KV at -d 32768 plus a -d 0 arm for the attention share, 3 interleaved launches each). [no-belief: row published]
+  - 2026-11-24 (autokernel) NOT TICKED (neither KEEP nor FUTILITY), row `cdr-a3b-q4kv-32k-cpu-20261124` filed inconclusive NO_GAIN (`/mnt/raid0/llm/tmp/cdr-a3b-q4kv-32k-cpu-20261124/out/RESULT.json`, C21 98ff8a42a CPU store, 3 launches per arm): q4_0 KV vs q8_0 KV at d32768 mean 13.457 vs 13.572 tok/s = -0.85% (q8 12.01/15.15/13.55, q4 13.72/13.59/13.06, q8 A/A spread 0.2315); d0 25.54 tok/s; step 73.68 ms at 32k vs 39.16 ms at d0, attention share of the 32k step 0.4685 (>= 10%, so not FUTILITY_ATTN_LT_10). Q4 KV gives no CPU decode gain at 32k (needs >= +5%); KLD gate not measured. The 23% q8 launch spread is wide, so the -0.85% is bounded by noise, not a tight negative. [belief: cc]
 
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
