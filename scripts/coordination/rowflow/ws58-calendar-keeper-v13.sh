@@ -918,6 +918,10 @@ if [ "$REAPONLY" = job ]; then reap_job; exit 0; fi
 if [ "$REAPONLY" = launch ]; then reap_launch; echo "reap-now: pass launched out of band (REAP-START/END/SKIP in $KLOG)"; exit 0; fi
 log "keeper v12 start pid=$$ (no expiry; rowflow allocate)"; echo $$ > ${F}ws58-calendar-keeper.pid  # main-loop pid for ws58-keeper-watchdog.sh
 while [ "$(date -u +%s)" -lt "$STOP_AT" ]; do
+  # KEEPER-SELF-PIN (pipeline-mgmt 2026-11-24): the keeper itself ran at affinity 0-191, so its per-tick un-hk'd children
+  # (rowflow allocate, 99% on core 88 13:48-13:56Z) landed on the MI210 host cores, and its own region-busy check then
+  # refused the GPU row for ~8 min. Re-pin every thread of this shell each tick so every child inherits the housekeeping set.
+  taskset -acp "$KEEPER_HOUSEKEEPING_CPUS" $$ >/dev/null 2>&1 || log "KEEPER-SELF-PIN failed rc=$?"
   tick || log "tick error rc=$?"
   # v12 (ws58 2026-11-02): wake at once when a run ends or a row becomes ready (short rows must not leave a quarter
   # idle until the next 2-min tick); 120 s stays the fallback.
