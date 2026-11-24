@@ -3120,7 +3120,7 @@ Structural change → **implement in a follow-on pass** (not in this design task
       - A bare correct last line is accepted (FPR 1.00); this is the documented last-line fallback.
     - **Diagnostic variants (not production):** wrapping the gold in `$...$` takes MATH-500 FNR to 0.000, coverage to 0.99 and prefix-collision FPR to 0.25. Adding "exactly one distinct `\boxed` final" on top takes the partial, missing-marker and contradictory FPR to 0.
     - **No scorer changed:** the tests pin the current behaviour. Fix boxes follow. [belief: cc]
-  - [ ] **SCORER-MV-GOLDWRAP** [non-inference] Wrap a bare-LaTeX gold in `$...$` before `math_verify.parse` in `_score_math_verify`, then investigate the 2 residual prefix-collision cases. This moves every math verdict, so it lands at a declared era boundary, with the golden scorer corpus and the math-suite baselines re-pinned.
+  - [x] **SCORER-MV-GOLDWRAP** [non-inference] Wrap a bare-LaTeX gold in `$...$` before `math_verify.parse` in `_score_math_verify`, then investigate the 2 residual prefix-collision cases. This moves every math verdict, so it lands at a declared era boundary, with the golden scorer corpus and the math-suite baselines re-pinned. ✅ 2026-11-24 [no-belief: operator-ratification] era E21 ratified orch b1b5e00b; fuzz FNR 0, coverage 1.000
       · done when: the fix is committed behind an era boundary, the fuzz is re-run showing FNR 0 and coverage of 0.99 or better on MATH-500, and the golden corpus and baselines are re-pinned
       · gate: operator era-boundary decision        · inputs: orchestrator `artifacts/scorer_fuzz/report.md`
     - 2026-11-24, operator: land all four fixes now as a new era.
@@ -3188,7 +3188,7 @@ Structural change → **implement in a follow-on pass** (not in this design task
         - the stream path doesn't call `bind_request_usage`, so call-row keys may not match; check this on the first live stream;
         - the mock, plan-review-abort and legacy inline stream paths are unhooked;
         - a client disconnect writes no row. [no-belief: build/landing]
-- [ ] **AEI-RERUN-ARM-OD** [operator-decision] Decide whether measurement/protocols/quality-eval.md P-AB-1 and P-PAIRED add a same-configuration rerun arm and report the rerun flip rate beside any scaffold, harness or reviewer-arm effect (intake-2934#record: reruns flipped 13% of tasks at the median, as many as a harness swap).
+- [x] **AEI-RERUN-ARM-OD** [operator-decision] Decide whether measurement/protocols/quality-eval.md P-AB-1 and P-PAIRED add a same-configuration rerun arm and report the rerun flip rate beside any scaffold, harness or reviewer-arm effect (intake-2934#record: reruns flipped 13% of tasks at the median, as many as a harness swap). ✅ 2026-11-24 [no-belief: operator-ratification] operator option (a) rerun arm for all comparisons; amendment ratified root ae2d53e1f
       · done when: operator decision recorded in this box's tick verdict, and if adopted a ratified protocol amendment exists
       · gate: none        · inputs: `measurement/protocols/quality-eval.md`
   - 2026-11-24, operator: option (a), a rerun arm for ALL comparisons. The box stays open until the human-only amendment to `measurement/protocols/quality-eval.md` is ratified; the owning session prepares the amendment text for the operator.
