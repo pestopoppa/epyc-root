@@ -7614,6 +7614,74 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
     return kept, waits, lines
 
 
+# QUIET-URGENT-PENDING (2026-11-24): c21-fold-cpu-20261124-r2 (rank 9, quiet, q0-q2) was in smoke 10:03-10:10Z when q0
+# freed; QUIET-SERIAL only sees grantable rows, so ak-cpu-gdn-state-fwd-20261123-r2 (rank 100) took q0 until 14:55Z and the
+# urgent row waited ~4.5 h. While an urgent quiet row is in dry run / smoke-queued / smoking, no NEW non-urgent quiet row is
+# granted. Bounded: 2x the smoke budget (else QUIET_URGENT_PENDING_DEFAULT_S) from its first smoke marker.
+QUIET_URGENT_PENDING_DEFAULT_S = 45 * 60
+_SMOKE_PENDING_MARKERS = ("unpublished.json", "SMOKE-QUEUED.json", "SMOKE.lock", "RUNNING.json", "SMOKE-PLACED.json")
+
+
+def urgent_quiet_pending(flags, grants=(), now=None):
+    """[(rid, rank, since_epoch, budget_s)] of quiet-sensitive rows with priority_rank < URGENT_RANK whose smoke is pending
+    (a marker in dryrun/<id>/, no PASS for the current launcher, no FAIL, no grant)."""
+    out, granted = [], {g["id"] for g in grants}
+    for dd in glob.glob(os.path.join(flags, "dryrun", "*")):
+        rid = os.path.basename(dd)
+        if rid in granted:
+            continue
+        marks = [os.path.join(dd, m) for m in _SMOKE_PENDING_MARKERS if os.path.exists(os.path.join(dd, m))]
+        if not marks or fail_paths(flags, rid):
+            continue
+        d = load_json(ready_path(flags, rid)) or load_json(os.path.join(dd, "unpublished.json")) or {}
+        try:
+            rank = float(d.get("priority_rank", 100))
+        except (TypeError, ValueError):
+            continue
+        if rank >= URGENT_RANK or not quiet_sensitive(d) or smoke_passed(flags, rid, d):
+            continue
+        try:
+            since = min(os.path.getmtime(m) for m in marks)
+        except OSError:
+            continue
+        sq = load_json(smoke_queued_path(flags, rid)) or {}
+        budget = sq.get("smoke_s") or d.get("smoke_s")
+        try:
+            budget = float(budget) if budget else None
+        except (TypeError, ValueError):
+            budget = None
+        out.append((rid, rank, since, budget))
+    return sorted(out, key=lambda x: (x[1], x[0]))
+
+
+def quiet_urgent_hold(cands, allrows, pending, now=None, flags=None):
+    """PURE. -> (kept cands, [(row, reason)], [log lines]). Drops NEW non-urgent quiet-sensitive candidates while an unexpired
+    urgent quiet row's smoke is pending. Non-quiet, GPU and urgent candidates pass untouched."""
+    now = time.time() if now is None else now
+    logs, live = [], []
+    for rid, rank, since, budget in pending:
+        lim = 2 * budget if budget else QUIET_URGENT_PENDING_DEFAULT_S
+        if now - since > lim:
+            logs.append(f"QUIET-URGENT-PENDING-EXPIRED {rid}: smoke pending {int(now - since)}s > {int(lim)}s; hold released")
+        else:
+            live.append(rid)
+    if not live:
+        return list(cands), [], logs
+
+    def man(rid):
+        return allrows.get(rid) or (load_json(ready_path(flags, rid)) if flags else None) or {}
+    kept, waits = [], []
+    for c in cands:
+        d = man(c["id"])
+        if c["id"] in live or gpu_lane_cand(c) or float(c["rank"]) < URGENT_RANK or not quiet_sensitive(d):
+            kept.append(c)
+            continue
+        logs.append(f"QUIET-URGENT-PENDING {live[0]} holds {c['id']}")
+        waits.append((c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT: "
+                         f"QUIET-URGENT-PENDING {live[0]} (urgent quiet row in smoke)"))
+    return kept, waits, logs
+
+
 def _quiet_reserve(cands, kept, waits, lines, man, reserve):
     kept_ids = {c["id"] for c in kept}
     # reservers: quiet rows held back by the gate, AND quiet rows grantable this very tick (the heavy row must not be placed
@@ -8341,6 +8409,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             except Exception:  # noqa: BLE001
                 pass
         smoke_waits = qwaits + smoke_waits
+        cands, uwaits, ulines = quiet_urgent_hold(cands, allrows, urgent_quiet_pending(flags, grants), flags=flags)
+        for line in ulines:
+            log(line)
+        smoke_waits = uwaits + smoke_waits
         noisy = {m.group(1) for line in qlines.values() for m in [re.search(r"foreign busy \S+ on (q\d)", line)] if m}
         if noisy and not dry:
             noise = quiet_noise(flags, noisy, grants)

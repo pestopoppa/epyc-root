@@ -103,5 +103,78 @@ class ExclusiveCpu(unittest.TestCase):
         self.assertEqual([c["id"] for c in kept], ["n"])
 
 
+
+class QuietUrgentPending(unittest.TestCase):
+    """QUIET-URGENT-PENDING (2026-11-24 incident): c21-fold-cpu-20261124-r2 (rank 9) in smoke; q0 freed at 10:03:42Z and
+    ak-cpu-gdn-state-fwd-20261123-r2 (rank 100) was granted until 14:55Z."""
+    def setUp(self):
+        self.flags = tempfile.mkdtemp()
+        os.makedirs(os.path.join(self.flags, "ready"))
+        rf._QUIET_SCAN.clear()
+
+    def urgent(self, rid="c21-fold-cpu-20261124-r2", age=60, smoke_s=None, **extra):
+        dd = os.path.join(self.flags, "dryrun", rid)
+        os.makedirs(dd, exist_ok=True)
+        with open(os.path.join(dd, "unpublished.json"), "w") as f:
+            json.dump({"id": rid, "priority_rank": 9, "requires_quiet_host": True, "owner": "autokernel"}, f)
+        if smoke_s:
+            with open(os.path.join(dd, "SMOKE-QUEUED.json"), "w") as f:
+                json.dump({"smoke_s": smoke_s}, f)
+        for k, v in extra.items():
+            with open(os.path.join(dd, k), "w") as f:
+                f.write(v)
+        t = __import__("time").time() - age
+        for n in os.listdir(dd):
+            os.utime(os.path.join(dd, n), (t, t))
+        return rid
+
+    ROWS = {"ak-cpu-gdn-state-fwd-20261123-r2": {"quiet_sensitive": True, "priority_rank": 100},
+            "plain": {"priority_rank": 100, "requires_quiet_host": False},
+            "gpuq": {"lane": "gpu", "shape": "gpu", "quiet_sensitive": True},
+            "urg2": {"quiet_sensitive": True, "priority_rank": 5}}
+
+    def cands(self):
+        return [cand("ak-cpu-gdn-state-fwd-20261123-r2", [{"q0"}], rank=100), cand("plain", [{"q1"}], rank=100),
+                dict(cand("gpuq", [{"q3"}], rank=100, shape="gpu"), lane="gpu"), cand("urg2", [{"q2"}], rank=5)]
+
+    def test_incident_replay(self):
+        self.urgent()
+        pend = rf.urgent_quiet_pending(self.flags)
+        self.assertEqual([p[0] for p in pend], ["c21-fold-cpu-20261124-r2"])
+        kept, waits, logs = rf.quiet_urgent_hold(self.cands(), self.ROWS, pend)
+        ids = {c["id"] for c in kept}
+        self.assertNotIn("ak-cpu-gdn-state-fwd-20261123-r2", ids)
+        self.assertTrue({"plain", "urg2"} <= ids)
+        self.assertIn("QUIET-URGENT-PENDING c21-fold-cpu-20261124-r2 holds ak-cpu-gdn-state-fwd-20261123-r2", logs)
+        self.assertEqual(len(waits), 1)
+
+    def test_pass_releases(self):
+        self.urgent(**{"PASS.json": "{\"verdict\": \"PASS\"}"})
+        self.assertEqual(rf.urgent_quiet_pending(self.flags), [])
+
+    def test_fail_releases(self):
+        self.urgent(**{"FAIL-1.json": "{}"})
+        self.assertEqual(rf.urgent_quiet_pending(self.flags), [])
+
+    def test_granted_not_pending(self):
+        self.urgent()
+        self.assertEqual(rf.urgent_quiet_pending(self.flags, [{"id": "c21-fold-cpu-20261124-r2"}]), [])
+
+    def test_expired_default_and_budget(self):
+        self.urgent(age=46 * 60)
+        kept, _, logs = rf.quiet_urgent_hold(self.cands(), self.ROWS, rf.urgent_quiet_pending(self.flags))
+        self.assertIn("ak-cpu-gdn-state-fwd-20261123-r2", {c["id"] for c in kept})
+        self.assertTrue(any(l.startswith("QUIET-URGENT-PENDING-EXPIRED") for l in logs))
+        self.urgent(rid="u-b", age=500, smoke_s=200)   # 500 > 2*200
+        self.assertTrue(all("holds" not in l for l in
+                            rf.quiet_urgent_hold(self.cands(), self.ROWS, rf.urgent_quiet_pending(self.flags))[2]))
+
+    def test_non_urgent_smoke_no_hold(self):
+        dd = os.path.join(self.flags, "dryrun", "slow")
+        os.makedirs(dd)
+        with open(os.path.join(dd, "unpublished.json"), "w") as f:
+            json.dump({"priority_rank": 50, "quiet_sensitive": True}, f)
+        self.assertEqual(rf.urgent_quiet_pending(self.flags), [])
+
 if __name__ == "__main__":
     unittest.main()
