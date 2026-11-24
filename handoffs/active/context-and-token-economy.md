@@ -1394,7 +1394,7 @@ consumes/drops it before the template — while `chat_template_kwargs: {reasonin
 renders the steering instruction (225 B). The static tree-wide zero-occurrence finding and the live
 behaviour now agree: the only working channel is `chat_template_kwargs`.
 
-- Monitor (intake-kspec-20261120, operator-approved): if a local GRPO/RLVR weights run is ever planned, pre-register stronger KL or lower truncation exposure plus a multi-budget evaluation (intake-2728#record).
+- Monitor (intake-kspec-20261120, operator-approved): if a local GRPO/RLVR weights run is ever planned, pre-register stronger KL or lower truncation exposure plus a multi-budget evaluation (intake-2728#record). Addendum (intake-ak-1124 M1, operator-approved 2026-11-24): Append to the existing pre-RL monitor line (track per-request-reasoning-budget, the 'if a local GRPO/RLVR weights run is ever planned' line): the plan also pre-registers a judge exposure audit (propensity x judge FPR per exploit string, from EV-JUDGE-FPR-1), an independent unhackable audit run (no write access, hidden tests), within-group reward-contrast logging, and KL-slope tracking over log-spaced checkpoints (intake-2877, intake-2887, intake-2888, intake-2890).
 
 ## Track: rao-redel-substrate-spike
 <!-- gate: none -->
@@ -3145,6 +3145,9 @@ to the operator, not an edit.
 - [ ] **UTM-B2-RECOVERY-POINTERS** [non-inference] Make compaction and tool-result clearing leave recovery pointers (verbatim log path, byte offset and length) and mention grep_history when it is registered, behind the same flags (intake-2729).
       · done when: tests assert the cleared-output placeholder carries a peek pointer matching the recorded byte offset and that compaction text names grep_history only when registered; flags-off output is byte-identical
       · gate: UTM-B2-GREP-HISTORY
+- [ ] **CTE-CFAB-A8** [non-inference] Write the CF-AB-1 frame's arm A8, design text only (intake-2874, intake-2875): a digest catalog of every past turn plus agent-selected unfold under a declared history budget (autoresearch context folding), with a variant that uses a second-role compressor and pinned-pointer restoration (DMC-5). It runs only when TOC-SP-5 shows binding windows, like A3-A7.
+      · done when: the A8 arm text in the CF-AB-1 frame names the digest format, the unfold surface, the budget and the delivery-path precondition, with the commit SHA recorded under this box
+      · gate: none        · inputs: `handoffs/active/context-and-token-economy.md`
 
 ### Tool Token Optimization — Output Compression + Definition Reduction
 

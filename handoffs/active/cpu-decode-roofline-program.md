@@ -2027,6 +2027,9 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
       · stop rule: question = is CPU sampling a lever? expected small (the round is 87-90% target forward); checkpoint after one pass; stop-on-answer after the pass; stop-on-futility if the whole non-forward share is < 3%
 
 - K1 knowledge-only (intake-lpr-20261122, operator-approved 2026-11-22): IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793#record; no IQ3_XXS model served.
+- [ ] **CDR-A3B-Q4KV-32K** [inference] Measure 35B-A3B MTP CPU decode at 32k context with q4_0 vs q8_0 KV on one quarter (C21 CPU store), with the attention share of the step from the existing per-op profile (intake-2870). Model 35B-A3B Q8_0 MTP; build C21 98ff8a4 CPU store; region one CPU quarter; estimate ~1.5 h. Stop-on-answer on KEEP or FUTILITY; stop-on-futility when attention is under 10% of the step.
+      · done when: tok/s per arm with A/A floor and the attention share filed under this box with verdict KEEP (>= 5% tok/s and the KVQ-ROT-KLD-1 CPU-arm KLD gate passing) or FUTILITY (attention < 10% of the step)
+      · gate: KVQ-ROT-KLD-1        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
 
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
@@ -5977,6 +5980,10 @@ MoE-Spec Phase 0
   - [x] Prepare RT-10 DS41 trace and RT-6/RT-7 analysis, including model-free verification ✅ 2026-10-27 [no-belief: preparation/fixture only]. Frozen C5 tool build `c72ec82f5417bb2937310326120f149b665e8400` completed 19:29:56Z; two native CTests and selftest passed. Private packet `/mnt/raid0/llm/tmp/refactor-01a16fc3/rt10-ds41-tap-ready/` seals trace manifest `91416a25024b180b56929b1e7acc5a7d7a856760723c7faf074e40665ea5e245` / PF `ef8451aed20891288d40c26af477f748a93fdd08b1de7c32` and analysis manifest `eca3cf8142692343af7bfd8c8317669bafae09121ecb7a1e236d3b9b34110dd3` / PF `ac5c7a6602831009323ca05342929ca8247aade5b56461cf`; normal admit and validator 0/0. Synthetic trace → native verification → original same-attempt binding → existing RT6/RT7 belief writer and partial/corpus/hash/missing/gap refusals passed. Capture binds raw and effective prompt hashes, including C5 `-f` removal of one trailing LF. Actual trace remains HELD pending DS41-1017 HOLD lift and a whole-host grant (739 GiB plus 64 GiB margin); analysis additionally requires a real COMPLETE trace and grant. No model, GPU or inference was used; trunk-only capture makes no DSpark/MTP or throughput claim. Prospective integration and canary remain open under VB-MOE-RT10-CAPTURE-LINK.
 
 > Folded from `handoffs/active/moe-routing-tap-and-locality-measurement.md` @ `e424d56114f9` on 2026-11-03 (BRF-T7-F9, route 1b, operator D1/D5; retired row INF-72 → INF-70). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **CDR-RT9-COVER-1** [non-inference] Close the A3B expert-residency question from the existing RT-9 traces (intake-2876, intake-2895): run skew_report.py on the saved Qwen3.6-35B-A3B frontdoor traces and report per-layer top-12.5% expert coverage, same-domain and cross-domain. RT-9 already shows top-25% share 0.68-0.74 at prefill, so coverage >= 0.6 at <= 12.5% residency is not expected.
+      · done when: per-layer coverage table filed under this box with the trace digest and verdict: CLOSE the resident-expert drafter idea if same-domain coverage at 12.5% is below 0.6, else record the coverage for the operator's HBM allotment decision
+      · gate: none        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
+- Monitor (intake-ak-1124 M10, operator-approved 2026-11-24, no checkbox): Fires when the second GPU is installed and A3B is placed GPU-resident (operator 2026-11-24: A3B GPU will be served on the 2nd GPU): design a GPU-resident expert-subset drafter for A3B, using CDR-RT9-COVER-1's same-domain coverage at <= 12.5% residency (>= 0.6 makes a resident subset worth drafting from) as a design input (intake-2876).
 
 ### MoE per-token routing tap and locality measurement (INF-72)
 

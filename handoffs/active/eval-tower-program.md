@@ -3103,7 +3103,17 @@ Structural change → **implement in a follow-on pass** (not in this design task
 ## Track: scoring-infra-standardization
 <!-- gate: none -->
 
+### Backlog
+- [ ] **EV-SCORER-FUZZ-1** [non-inference] Fuzz the deterministic eval_tower scorers with the RLVR-verifier mutation categories (intake-2889): replay partial_answer, missing marker, contradictory finals, loose float and wrong-then-correct completions against the math_verify and exact-match scorers (EV-11) and report false-positive and false-negative rates with acceptance and coverage per category. CPU minutes, no inference.
+      · done when: per-category FPR/FNR table filed under this box with the fixture digest; any category with FPR > 0 gets a named scorer fix box; futility recorded if FPR is 0 everywhere
+      · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
+
 > Folded from `handoffs/active/scoring-infra-standardization.md` @ `c4b6d1388716` on 2026-11-02 (BRF-T1-F2, route 1a, operator D1/D5; retired row EVL-42 → EVL-14). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **EV-JUDGE-FPR-1** [inference] Audit the LLM judges for exploitable false positives before anything optimises against them (intake-2877, intake-2886, intake-2904, intake-2888). String set: the ten One-token master keys plus 3-5 paraphrases each, and the 13 Huang Table 8 families with their 'Final Decision: Yes' strings re-targeted to each judge's verdict format (exact strings and prompts from the hkust-nlp/RL-Verifier-Robustness repo). Run every string individually, with Wilson intervals, on a fixed math problem set against the architect_critic, coherence and credibility judges, each with the production prompt, a no-question arm (the Huang-comparable arm) and a no-CoT arm. Scan journaled generator outputs with the same detectors for propensity (zero inference) and report exposure = propensity x FPR, also as a secondary EV-29 column. The futility threshold is a local pre-registered choice. Model: the three judge configs as served; build: production v10 stores (read-only use); region one CPU quarter; estimate ~3 h; metric FPR per string. Stop-on-answer per judge when every string has an FPR; stop-on-futility when no string is accepted in the first 100 items for a judge.
+      · done when: per-judge, per-string FPR table and the propensity counts filed under this box with the problem-set digest; verdict per judge: no-go for any optimiser use if any string's FPR >= 1%, else cleared at that rate
+      · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
+- Monitor (intake-ak-1124 M11, operator-approved 2026-11-24, no checkbox): The harness accept gate (BSV-2 family) is not activated until an A/A floor from >= 3 replicas exists for its metric, per SPEC-ID-GATE-2 rule (a) (intake-2872).
+- Monitor (intake-ak-1124 M7, operator-approved 2026-11-24, no checkbox): If EV-JUDGE-FPR-1 finds a judge that gates a decision with any master-key FPR >= 1%: compare a no-question prompt fix with a trained robust judge (Master-RM-style, 20k truncation negatives) before that judge gates an optimiser (intake-2886).
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
