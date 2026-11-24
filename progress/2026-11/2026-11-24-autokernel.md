@@ -83,3 +83,73 @@ SPEC-STALE-1 and AK-GVFATTN-LONGCTX (open work remains). Already ticked by their
 AK-A3B-VERIFY-CHUNK-SERVED, SPEC-DRAFT-SHARPEN, CAFE-3-CTRL-CPU.
 
 Next: autokernel. Verify the C21 gate rows and the official-sampling confirmation row when the stack is back up.
+
+---
+
+# Second wrap-up, 07:20Z to evening (operator-invoked /wrap-up)
+
+Hashes are root or research `origin/main` unless marked (llama = fork branch in `/mnt/raid0/llm/llama.cpp`).
+
+## C21 gates (filed this wrap-up through `file_result.py`)
+
+| Row | Verdict | Numbers |
+|---|---|---|
+| `c21-fold-cpu-20261124-r4` | PASS | geomean 1.011 [0.995, 1.028], 8 pairs, 3 concurrent membind streams; quality reused from r2 (27B KLD 0, Q38FN KLD 0, CH-33 NO_DEFECT) |
+| `c21-fold-gpu-20261124-r4` | FAIL as filed (CORRECTNESS REAL_DEFECT, Flash-Next hybrid cell), read as no regression | speed not run in r4; reused r2 speed is PASS: greedy np1 tok/s C21/C18 P2 1.132, P3 1.121, D1 1.016, geomean 1.089; 27B KLD -0.0, top-1 100 % |
+| `c21-nospec-determinism-gpu-20261124` | FUTILITY_NO_REGRESSION | 6 reps per arm, P3 code28k: C21 A/A median first-divergence pos 120, C18 110; C18 forks as much as C21, nothing to bisect. Box `C21-NOSPEC-DETERMINISM` ticked |
+| `c21-fold-gpu-27b-stepc-20261124-r3` | PASS | 27B at the registry :8083 argv: 0/36 hard forks (0/15 in A/A), both builds deterministic |
+| `c21-gpu27b-identity-r3-20261124` | PASS | Q38FN hybrid logits and fast paths; divergent units C21 18 vs C18 19 (Fisher p 0.794) |
+
+Limit worth stating plainly: no served-config C21-vs-C18 speed number exists. Every speed visit is greedy np1.
+`c21-fold-a3b-gpu-20261124` has not run (smoke only), so `C19-FOLD-GATES` (retitled to the C21 gates) stays open.
+
+Operator rulings:
+
+- No separate C21 promotion. All lever keeps go into one C22 consolidation, then a single fold gate, then the promotion
+  package, then the reboot. The AK hold stays until after the reboot.
+- Futility looks on every row. No training until roofline parity. No C22 advancement until every lever row is filed.
+- Decisions: q8_0 KV for the 27B (q4_0 revisited after its row); the 27B gate stays at KLD <= 0.003; the anchor guard
+  stays unconditional; the R18-D 27B re-run keeps the clock band (`7f464d857`).
+
+## Lever rows
+
+17 rows (`/mnt/raid0/llm/tmp/ak-lever-rows-20261124.txt`) built, published and queued, no verdicts yet: 27B tail fuse, A3B router
+fuse, MMVF fixes, i8gemm SOL, 27B attn-KV concat, 27B actquant fuse, stochastic-accept gap, MMID N10 and UB ceiling, gvfattn
+served r4, SPEC-STALE-1 DF2 np2 bands, DF2 np4 parity reuse, Q38FN draft window (CPU), fold KLD floor, DF2 point mass,
+SPEC-BSAMP, GDN pscale ROCm tests. Fork branches (llama): `llama.cpp-experimental-c22-*` (mmvf-fixes, qkv-concat, mmq-h3,
+mmids, actquant-fuse, cpu-levers, df2pm-bsamp, draftwin, stoch-accept), `...-27b-tail-fuse-20261124`,
+`...-a3b-router-fuse-20261124`, `ak/cpu-nt-weight-stream-20261124` (`325ca8e8e`).
+
+## Row-robustness RCA
+
+`/mnt/raid0/llm/tmp/ak-row-robustness-rca-20261124/RCA.md`: 20 of 22 rows were hand-copied `job.py`, and nothing bound a row's
+server argv to the served registry (stepc took three publishes to reach the :8083 recipe). F1/F2 landed as `a89b7a151`
+(`mk_ak_row` v2: one generator, harness helpers, registry-derived argv) under the operator's D9 ack. Pipeline-mgmt keeper
+fixes live at `04d7dff44`; the reservation queue (EASY backfill) ships in shadow at `49f6a9f17` / `eb643ac37`.
+
+## Intake and loop
+
+- intake-ak-1124 Stage 4 `801631795`: 27 boxes, 40 entries intake-2867..2906. Census parity references are sourced
+  (`266658d9f`, `56b522bcd`); seeds 20 to 26 are committed (`167862d26`, `0172069d6`, `5dc1f5817`) and NOT installed.
+- Loop evaluator (research): futility looks default on (`3b9903ca2`, `8ede9ee20`), NPLAN (`87d620544`), KEEPTIME
+  (`9da82199c`), QUARTERS membind plus concurrent streams (`1dbdf2572`, `e86b805ae`, `94f8a4078`). Loop code budget raised,
+  signed (`c5517782a`).
+- Fold-gate STEP C replaces the first-divergence floor (`fe7847609`); census and bandwidth surfaces (`4694d7c35`,
+  `928172ab7`); FOLD-CENSUS-1 merge-tree census (`4a65c11f5`).
+
+## Process lessons (memories)
+
+- Existing, confirmed present: `feedback_no_c22_fold_until_all_rows_filed`, `project_ak_hold_until_c22_and_reboot`,
+  `feedback_publish_successor_before_stopping`, `feedback_no_training_until_kernels_at_roofline_parity`.
+- New: `feedback_check_served_registry_argv_before_any_row`, `feedback_quiet_whole_host_row_blocked_by_any_load`.
+  Updated: `feedback_watch_smoke_failures_not_just_ends` (re-arm the smoke-FAIL watcher after each batch; verify its list file is not empty).
+
+## Checkbox sync (this wrap-up)
+
+Result ticks: 1 (`C21-NOSPEC-DETERMINISM`, `[belief: cc]`, FUTILITY_NO_REGRESSION). Result notes without a tick under
+`C19-FOLD-GATES` (retitled C21 gates): cpu-r4 PASS, gpu-r4, stepc-r3 PASS, identity-r3 PASS; the box's done-when (all gate
+rows filed) is not met because the A3B row has not run. Already ticked earlier today by their owners and not touched:
+`FOLD-GATE-SPEC-CORRECTNESS-V2`, `FOLD-CENSUS-1`, `C19-SPEC-STALE-1-FOLD`, `SPEC-DRAFT-SHARPEN`, `CAFE-3-CTRL-CPU`.
+The 17 lever rows have no verdicts, so no lever box is ticked.
+
+Next: autokernel. File each lever row as it ends (futility looks on), then C22 consolidation only after every lever row is filed.
