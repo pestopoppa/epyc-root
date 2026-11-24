@@ -154,3 +154,23 @@ def test_publish_failure_after_ready_write_withdraws_new_manifest(tmp_path, monk
         pr.publish_smoked({"id": rid}, flags, "src")
     assert not Path(pr.rf.ready_path(flags, rid)).exists()
     assert pr.rf.load_json(pr.rf.pass_path(flags, rid)) == old
+
+
+def test_reuse_binds_submitted_spec_not_derived_warnings(tmp_path, monkeypatch):
+    flags, rid = str(tmp_path), "row-raw"
+    launcher = tmp_path / "launch.sh"
+    launcher.write_text("code")
+    submitted = {"id": rid, "launcher": str(launcher), "lane": "cpu"}
+    normalized = dict(submitted, publish_warnings=["host state changed"])
+    row = {"id": rid, "launcher": {"path": str(launcher)}}
+    monkeypatch.setattr(pr.rf, "job_sha", lambda p: pr.rf.sha256(p))
+    def publish(s, f, source=None):
+        pr.rf.atomic_json(pr.rf.ready_path(f, rid), row)
+        return dict(row)
+    monkeypatch.setattr(pr.rf, "publish", publish)
+    monkeypatch.setattr(pr, "supersede_prior_attempts", lambda *a: None)
+    monkeypatch.setattr(pr.rf, "supersede", lambda *a: None)
+    monkeypatch.setattr(pr, "file_if_complete", lambda *a: False)
+    pr.rf.atomic_json(pr.rf.pass_path(flags, rid), {"smoke_identity": pr.smoke_identity(submitted, row),
+                                                  "smoke_measure": "/measured"})
+    assert pr.publish_smoked(normalized, flags, "src", queue_cpu=True, identity_spec=submitted)["id"] == rid

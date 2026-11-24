@@ -80,6 +80,9 @@ class Fixture:
              "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "score >= 1",
              "estimate_s": 600, "handoff_task": "handoffs/active/test.md:T-1", "priority_rank": 5, "dryrun_timeout_s": 60}
         s.update(kw)
+        if s.get("lane") == "gpu" and "estimate_basis" not in s:
+            s["estimate_basis"] = {"provisional": True, "reason": "fixture", "units": 1,
+                                   "rebook_from": os.path.join(d, "out-smoke", "smoke_measure.json")}
         return s
 
     def cleanup(self):

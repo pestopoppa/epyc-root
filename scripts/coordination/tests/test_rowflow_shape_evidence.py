@@ -41,6 +41,9 @@ class Fx(unittest.TestCase):
         s = {"id": rid, "owner": "t", "launcher": lp, "lane": "cpu", "result_path": os.path.join(self.root, rid, "r.jsonl"),
              "decision_rule": "x", "estimate_s": 600, "handoff_task": "handoffs/active/x.md:T1"}
         s.update(kw)
+        if s.get("lane") == "gpu" and "estimate_basis" not in s:
+            s["estimate_basis"] = {"provisional": True, "reason": "fixture", "units": 1,
+                                   "rebook_from": os.path.join(self.root, rid, "out-smoke", "smoke_measure.json")}
         return s
 
 

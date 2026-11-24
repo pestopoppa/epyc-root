@@ -239,6 +239,12 @@ def test_provisional_estimate_basis(tmp_path):
     (d / "out-smoke" / "smoke_measure.json").write_text("{}")
     assert "ESTIMATE-UNMEASURED" in codes(d, "FAIL")
     assert "ESTIMATE-PROVISIONAL" not in codes(d)
+    # GPU publication rebooks from a fresh smoke or an identity-bound PASS, not this old file.
+    gpu = {"id": "ak-t-20261123", "lane": "gpu", "estimate_s": 2400, "estimate_basis": prov}
+    assert H.check_spec_estimate(gpu, base_dir=str(d))[1][0].startswith("ESTIMATE-PROVISIONAL")
+    (d / "spec.json").write_text(json.dumps(gpu))
+    assert "ESTIMATE-PROVISIONAL" in codes(d, "WARN")
+    assert "ESTIMATE-UNMEASURED" not in codes(d, "FAIL")
     # missing reason / rebook_from fails
     d2 = _row(tmp_path, rid="ak-t2-20261123", spec={"estimate_s": 5, "estimate_basis": {"provisional": True}})
     assert "ESTIMATE-UNMEASURED" in codes(d2, "FAIL")

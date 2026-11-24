@@ -70,7 +70,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction", "handoff_task_sha",
              "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
-             "kernel_store", "kernel_store_sha256", "resumable", "max_window_s", "expects_created", "quiet_guard_regions", "scratch_gb", "reclaimable", "declared_threads", "shape_widen", "autorequeue_max",
+             "kernel_store", "kernel_store_sha256", "estimate_basis", "resumable", "max_window_s", "expects_created", "quiet_guard_regions", "scratch_gb", "reclaimable", "declared_threads", "shape_widen", "autorequeue_max",
              "requires_quiet_host", "bandwidth_heavy", "quiet_sensitive", "exclusive_cpu")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
@@ -968,10 +968,10 @@ def path_provenance_refusal(spec, cmds, warn=None, flags=None):
     return None
 
 
-def warn_filed_replay(spec, flags):
+def warn_filed_replay(spec, flags, identity_spec=None):
     launcher = str(spec.get("launcher") or "")
     row = {"launcher": {"path": launcher}}
-    identity = smoke_identity(spec, row)
+    identity = smoke_identity(identity_spec if identity_spec is not None else spec, row)
     if not identity:
         return
     row["smoke_identity"] = identity
@@ -981,7 +981,7 @@ def warn_filed_replay(spec, flags):
         rf._keeper_log_line(flags, warning)
 
 
-def preflight(spec, flags, rerun=False):
+def preflight(spec, flags, rerun=False, identity_spec=None):
     """Run once each, bounded (PREFLIGHT_TIMEOUT_S), before anything is published: the decision-rule parse, the smoke
     predicate, the engine's --complete-cmd and --precond-cmd (in the engine's --workdir, with preflight_env), and the
     env-cleaning scan. Refuses: a prose rule without verdict_by agent; a smoke_predicate that already exits 0; a
@@ -1039,7 +1039,7 @@ def preflight(spec, flags, rerun=False):
                                  "(build or fetch it in your turn), then re-run publish_row.py")
         if rc is None:
             _warn(spec, f"preflight: --precond-cmd {out}; not judged (the gate admits a timed-out precond too)")
-    warn_filed_replay(spec, flags)
+    warn_filed_replay(spec, flags, identity_spec)
 
 
 def smoke_cpus_of(spec):
@@ -1564,7 +1564,7 @@ def archive_held_pass(flags, rid, held):
     os.replace(held, os.path.join(folder, "PASS.json"))
 
 
-def publish_smoked(spec, flags, source, queue_cpu=False):
+def publish_smoked(spec, flags, source, queue_cpu=False, identity_spec=None):
     """Publish, then THE dry run (rowflow.dryrun_run writes PASS.json or the FAIL memo). queue_cpu=True (the CLI default,
     operator 2026-11-05): a CPU row's smoke is QUEUED for the keeper (returns None). A GPU row whose GPU is busy is QUEUED
     for the next GPU gap. An immediate CPU smoke with no free cores in the keeper's snapshot is queued too.
@@ -1600,7 +1600,7 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
                 archive_held_pass(flags, rid, held_pass)
         raise
     rid = row["id"]
-    identity = smoke_identity(spec, row)
+    identity = smoke_identity(identity_spec if identity_spec is not None else spec, row)
     if identity:
         row["smoke_identity"] = identity
         rf.atomic_json(rf.ready_path(flags, rid), row)
@@ -1617,6 +1617,19 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     vram = previous_pass.get("vram_used_max_bytes")
     gpu_proof = (isinstance(evidence, dict) and bool(evidence.get("kfd_pids"))) or (
         isinstance(vram, (int, float)) and not isinstance(vram, bool) and vram > 0)
+    if (spec.get("lane") == "gpu" and gpu_proof and measured_pass and identity
+            and previous_pass.get("smoke_identity") == identity):
+        # Recompute the booking only from the exact measurement sealed in the prior PASS.
+        try:
+            measured_pass = (bool(previous_pass.get("smoke_measure_sha256")) and
+                             rf.sha256(previous_pass["smoke_measure"]) == previous_pass["smoke_measure_sha256"])
+            if measured_pass:
+                row = rf.rebook_gpu_smoke(row, previous_pass["smoke_measure"])
+                rf.need(rf.sha256(previous_pass["smoke_measure"]) == previous_pass["smoke_measure_sha256"],
+                        "smoke measurement changed while rebooking")
+                rf.atomic_json(rf.ready_path(flags, rid), row)
+        except (OSError, rf.Refused, ValueError, TypeError, KeyError, OverflowError):
+            measured_pass = False
     if held_pass and identity and previous_pass.get("smoke_identity") == identity and measured_pass and (spec.get("lane") != "gpu" or gpu_proof):
         if os.path.exists(rf.pass_path(flags, rid)):
             archive_held_pass(flags, rid, held_pass)
@@ -1650,6 +1663,7 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     if v == "WAIT" and SMOKE_BUSY_MARK in msg:
         raise rf.Refused(f"smoke already in flight for {rid}: {msg}; the row stays as that smoke leaves it")
     if v == "PASS":
+        row = rf.load_json(rf.ready_path(flags, rid)) or row
         print(f"SMOKE PASS {rid} on {regions}: {msg}")
         rf.supersede(flags, row)   # refinement 5: a PASSed successor withdraws its predecessors
         if file_if_complete(flags, rid, row):
@@ -1766,6 +1780,8 @@ def main(argv=None):
         rf.need(spec, f"{a.spec} is not a JSON object")
         if a.migrate:
             spec = rf.spec_from_legacy(spec, a.flags)
+        # Lint/preflight add derived fields and warnings; bind reuse to the submitted spec instead.
+        identity_spec = json.loads(json.dumps(spec))
         rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
         check_operator_gate(spec, a.flags)
         check_owner_roster(spec, a.flags)
@@ -1774,8 +1790,8 @@ def main(argv=None):
         check_task_lint(spec)
         for note in lint(spec):
             print(f"LINT {note}")
-        preflight(spec, a.flags, rerun=a.rerun)   # pipeline audit 2026-11-10 #4: before anything is published or queued
-        row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now)
+        preflight(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)   # pipeline audit 2026-11-10 #4: before anything is published or queued
+        row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now, identity_spec=identity_spec)
         if row:
             print(rf.published_line(row, a.flags))
         return 0

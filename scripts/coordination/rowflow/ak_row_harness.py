@@ -425,9 +425,11 @@ def check_spec_estimate(spec, base_dir=None):
         rp = Path(rebook)
         if not rp.is_absolute():
             rp = Path(root) / rp
-        if rp.exists():
+        if rp.exists() and spec.get("lane") != "gpu":
             raise ValueError(f"provisional estimate_basis but {rp} exists: re-book estimate_s from it "
                              "(estimate_basis = {smoke_measure, units})")
+        # GPU publication rebooks from a fresh smoke or an identity-bound PASS;
+        # an old file alone is never accepted as that smoke's measurement.
         return None, [f"{PROVISIONAL_TAG}: estimate_s {spec.get('estimate_s')} is provisional ({reason}); "
                       f"re-book from {rebook} after the smoke"]
     path = b.get("smoke_measure")
@@ -435,9 +437,15 @@ def check_spec_estimate(spec, base_dir=None):
         m = json.loads(Path(path).read_text())
     except (OSError, TypeError, ValueError) as e:
         raise ValueError(f"estimate_basis.smoke_measure {path!r} unreadable: {e}")
-    loads = max(float(m.get("loads_s") or 0), float(b.get("loads_s") or 0))
-    derived = estimate_from_smoke(m.get("unit_s"), int(b.get("units") or 0), loads, float(b.get("margin") or 1.25))
-    est = int(spec.get("estimate_s") or 0)
+    if not isinstance(m, dict):
+        raise ValueError(f"estimate_basis.smoke_measure {path!r} must contain a JSON object")
+    try:
+        loads = max(float(m.get("loads_s") or 0), float(b.get("loads_s") or 0))
+        derived = estimate_from_smoke(float(m.get("unit_s") or 0), int(b.get("units") or 0), loads,
+                                      float(b.get("margin") or 1.25))
+        est = int(spec.get("estimate_s") or 0)
+    except (TypeError, OverflowError) as e:
+        raise ValueError(f"invalid estimate_basis measurement: {e}") from e
     if est < derived:
         raise ValueError(f"estimate_s {est} < {derived} derived from the smoke measurement ({m.get('unit_s')} s/unit x "
                          f"{b.get('units')} + {loads} s loads) x {b.get('margin') or 1.25}")

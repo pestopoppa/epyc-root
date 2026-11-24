@@ -872,6 +872,16 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(str(spec.get("kind", "compute")).lower() not in FETCH_KINDS,
          "prepare inputs before publishing: fetching/copying data is session preparation, not a compute row")
     need(spec["lane"] in ("cpu", "gpu"), "lane must be cpu or gpu")
+    if spec["lane"] == "gpu":
+        basis = spec.get("estimate_basis")
+        need(isinstance(basis, dict) and bool(basis), "ESTIMATE-BASIS: GPU rows must declare estimate_basis")
+        try:
+            import ak_row_harness as harness
+            harness.check_spec_estimate(spec, base_dir=spec.get("scratch_root"))
+            units = int(basis.get("units") or spec.get("total_units") or 0)
+            need(units > 0, "ESTIMATE-BASIS: GPU estimate_basis needs positive units (or total_units) for rebooking")
+        except (ImportError, OSError, ValueError, TypeError, AttributeError, OverflowError) as e:
+            raise Refused(f"ESTIMATE-BASIS: {e}")
     if spec.get("admission_class") is not None:
         need(isinstance(spec["admission_class"], str) and spec["admission_class"] in ADMISSION_CLASSES,
              "admission_class must be one of " + ", ".join(sorted(ADMISSION_CLASSES)))
@@ -1035,7 +1045,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "kernel_store", "kernel_store_sha256", "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen", "autorequeue_max"):
+              "kernel_store", "kernel_store_sha256", "estimate_basis", "max_window_s", "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen", "autorequeue_max"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -4159,15 +4169,20 @@ def gpu_residency_required(d, regions):
     return "mi210_0" in regions and (d or {}).get("gpu_use") != "quiet-only"
 
 
-# 2026-11-23 (pipeline-mgmt): SMOKE-NO-MEASURE is WARN-only (kfd residency stays enforced) until every AK row writes smoke_measure.json.
-# Queued rows whose job never writes one (c20-fold-*, ak-cpu-aa-calibration-q-*, rka-a3b-d-remeasure-q-*-r3,
-# ak-ea-pool-screen-gpu-*-r6) would FAIL every re-smoke. Casualty: c20-fold-cpu-20261123-r3 22:39:55Z. Enforce after AK rows write smoke_measure.json: set True.
-SMOKE_MEASURE_ENFORCE = False
+# The 2026-11-23 failure-audit instruction requires a fresh measurement for every smoke PASS.
+# Rows without one must fix their smoke; a warning alone cannot admit them.
+SMOKE_MEASURE_ENFORCE = True
 
 
 def smoke_measure_paths(d, dry_dir_path):
-    return [os.path.join(dry_dir_path, "smoke_measure.json"),
-            os.path.join(str(d.get("scratch_root") or ""), "out-smoke", "smoke_measure.json")]
+    root = str(d.get("scratch_root") or "")
+    paths = [os.path.join(dry_dir_path, "smoke_measure.json"), os.path.join(root, "out-smoke", "smoke_measure.json")]
+    basis = d.get("estimate_basis") or {}
+    if isinstance(basis, dict):
+        declared = basis.get("rebook_from") or basis.get("smoke_measure")
+        if isinstance(declared, str) and declared:
+            paths.append(declared if os.path.isabs(declared) else os.path.join(root, declared))
+    return list(dict.fromkeys(paths))
 
 
 def smoke_measure_stamp(path):
@@ -4195,6 +4210,33 @@ def fresh_smoke_measure(d, dry_dir_path, before):
         except (OSError, KeyError, TypeError, ValueError, OverflowError):
             continue
     return None
+
+
+def rebook_gpu_smoke(row, measure_path):
+    """Never book less than either the declaration or the fresh measured estimate."""
+    basis = row.get("estimate_basis") or {}
+    if row.get("lane") != "gpu" or not basis:
+        return row
+    import ak_row_harness as harness
+    measure = load_json(measure_path) or {}
+    units = int(basis.get("units") or row.get("total_units") or 0)
+    margin = float(basis.get("margin") or 1.25)
+    loads = max(float(measure.get("loads_s") or 0), float(basis.get("loads_s") or 0))
+    derived = harness.estimate_from_smoke(float(measure["unit_s"]), units, loads, margin)
+    new = max(int(row["estimate_s"]), derived)
+    minimum = int(row.get("min_window_s") or 0)
+    window = max(int(row.get("window_s") or 0), -(-max(minimum + 300, int(new * 1.2) + 300) // 60) * 60)
+    if row.get("max_window_s") is not None:
+        window = min(window, int(row["max_window_s"]))
+    need(row.get("resumable") or new <= window,
+         f"SMOKE-ESTIMATE: measured estimate {new}s exceeds capped window {window}s; increase max_window_s")
+    measured_basis = dict(basis)
+    measured_basis.pop("provisional", None)
+    measured_basis.pop("rebook_from", None)
+    measured_basis.update(smoke_measure=measure_path, units=units)
+    row.update(estimate_s=new, window_s=window, book_s=min(window, max(new, compute_book_s(new, minimum, window))),
+               smoke_measured_estimate_s=derived, estimate_basis=measured_basis)
+    return row
 
 
 SMOKE_LOCK_NAME = "SMOKE.lock"   # F2 (AK audit B2, D9 2026-11-20): one smoke runner per row id
@@ -4487,6 +4529,15 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
             warning = f"{warning}; WARN {nm}" if warning else f"WARN {nm}"
             with open(os.path.join(dd, "launcher.out"), "a") as log:
                 log.write(f"==== dry run WARN: {nm} (warn-only, SMOKE_MEASURE_ENFORCE=False) ({now_iso()})\n")
+    measure_sha = None
+    if verdict == "PASS" and smoke_s and d.get("lane") == "gpu" and d.get("estimate_basis"):
+        try:
+            measure_sha = sha256(measure)
+            d = rebook_gpu_smoke(d, measure)
+            need(sha256(measure) == measure_sha, "smoke measurement changed while rebooking")
+            atomic_json(ready_path(flags, rid), d)
+        except (Refused, OSError, ValueError, TypeError, KeyError, OverflowError) as e:
+            verdict, reason = "FAIL", f"SMOKE-ESTIMATE: could not rebook from the fresh measurement: {e}"
     cur_sha = sha256(lp) if os.path.isfile(lp) else None
     if verdict == "PASS" and cur_sha != lsha:
         verdict, reason = "FAIL", "launcher changed while the dry run was running"
@@ -4494,6 +4545,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
            "result_format": result_format, "first_unit_at": first_unit_at, "first_progress": progress,
            "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max,
            "residency_evidence": {"kfd_pids": sorted(kfd_seen)} if kfd_seen else None, "smoke_measure": measure,
+           "smoke_measure_sha256": measure_sha,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     # refinement 1: what the job actually used (before the harness's stop), against the row's declared claim

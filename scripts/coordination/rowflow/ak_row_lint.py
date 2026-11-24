@@ -339,7 +339,10 @@ def lint_dir(d, selftest=True):
 
     if spec.get("estimate_s") is not None:
         try:
-            _, w = H.check_spec_estimate(spec, base_dir=d)
+            estimate_spec = spec
+            if not spec.get("lane") and re.search(r"--class[ =]+(?:gpu|cpu\+gpu)(?:\s|$)", launch):
+                estimate_spec = dict(spec, lane="gpu")
+            _, w = H.check_spec_estimate(estimate_spec, base_dir=d)
             for x in w:
                 if x.startswith("ESTIMATE-PROVISIONAL"):
                     out.append(("WARN", "ESTIMATE-PROVISIONAL", x))
