@@ -73,6 +73,14 @@ class Derived(unittest.TestCase):
         self.assertEqual(sorted(c["id"] for c in kept), ["b", "n"])
         self.assertEqual(lines["a"], "QUIET-SERIAL a waits for running quiet b")
 
+    def test_urgent_rank_beats_shortest(self):
+        """2026-11-24 deadlock: a shorter non-urgent row won QUIET-SERIAL while QUIET-RESERVE held it for the urgent one."""
+        rows = {"u": {"requires_quiet_host": True}, "s": {"requires_quiet_host": True}}
+        cs = [cand("u", [{"q0"}], est=20000, rank=5), cand("s", [{"q1"}], est=600, rank=40)]
+        kept, _, lines = rf.quiet_gate(cs, rows, [], UTIL)
+        self.assertIn("u", [c["id"] for c in kept])
+        self.assertEqual(lines["s"], "QUIET-SERIAL s waits for running quiet u")
+
 
 class ExclusiveCpu(unittest.TestCase):
     def rows(self, **kw):

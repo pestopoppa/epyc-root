@@ -7598,7 +7598,9 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
         def est(c):
             e = c.get("estimate_s") or man(c["id"]).get("estimate_s")
             return float(e) if e else float("inf")
-        win = min(qk, key=lambda c: (est(c), float(c["rank"]), c["id"]))
+        # 2026-11-24: an urgent row (priority_rank < URGENT_RANK) wins first. Shortest-first alone picked a non-urgent
+        # multi-quarter row that QUIET-RESERVE then held for the urgent one: q0-q2 idled 07:08-09:15Z with 17 rows queued.
+        win = min(qk, key=lambda c: (0 if float(c["rank"]) < URGENT_RANK else 1, est(c), float(c["rank"]), c["id"]))
         for c in qk:
             if c is not win:
                 lines[c["id"]] = f"QUIET-SERIAL {c['id']} waits for running quiet {win['id']}"
