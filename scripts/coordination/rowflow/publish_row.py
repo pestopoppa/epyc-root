@@ -1217,7 +1217,12 @@ def rank_only_change(spec, flags):
     if not rid:
         return None
     row = rf.load_json(rf.ready_path(flags, rid))
-    if not row or os.path.exists(os.path.join(flags, "grants", rid + ".grant")) or not os.path.exists(rf.pass_path(flags, rid)):
+    if row:
+        if not os.path.exists(rf.pass_path(flags, rid)):
+            return None
+    else:   # smoke-pending row: manifest in dryrun/<id>/unpublished.json, no PASS yet
+        row = rf.load_json(unpublished_path(flags, rid))
+    if not row or os.path.exists(os.path.join(flags, "grants", rid + ".grant")):
         return None
     if str(row.get("owner") or "") != str(spec.get("owner") or ""):
         return None

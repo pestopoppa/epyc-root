@@ -9273,7 +9273,12 @@ def rerank_row(flags, rid, rank, by, reason, log=print, via=None):
         fcntl.flock(fd, fcntl.LOCK_EX)
         rp = ready_path(flags, rid)
         d = load_json(rp)
-        need(d, f"rerank {rid}: no ready/{rid}.json (only a queued ready row can be reranked)")
+        pending = False
+        if not d:   # smoke-pending row (2026-11-24): its manifest is dryrun/<id>/unpublished.json until PASS moves it to ready/
+            rp = os.path.join(dry_dir(flags, rid), "unpublished.json")
+            d = load_json(rp)
+            pending = bool(d)
+        need(d, f"rerank {rid}: no ready/{rid}.json or dryrun/{rid}/unpublished.json (only a queued or smoke-pending row can be reranked)")
         owner = str(d.get("owner") or "")
         need((owner and owner == by) or by == RERANK_OPERATOR, f"rerank {rid}: owner is {owner or '(unknown)'}, caller is {by}; "
              f"only the row owner (or --by {RERANK_OPERATOR}) may rerank")
@@ -9291,10 +9296,13 @@ def rerank_row(flags, rid, rank, by, reason, log=print, via=None):
             rec["spec_priority_rank"] = spec_rank   # recorded, never required to match
         d["priority_rank"] = new
         d["rerank_history"] = list(d.get("rerank_history") or []) + [rec]
+        need(os.path.exists(rp), f"rerank {rid}: manifest moved during the rerank (smoke PASS/FAIL); retry")
         atomic_json(rp, d)
     finally:
         os.close(fd)
     tag = "RERANK-OPERATOR" if by == RERANK_OPERATOR and by != owner else "RERANK"
+    if pending:
+        tag = "RERANK-PENDING"
     line = f"{tag} {rid} {old} -> {new} by {by}: {reason}"
     _keeper_log_line(flags, line)
     log(line)
@@ -9308,14 +9316,15 @@ def rerank_family(flags, prefix, rank, by, reason, log=print):
     prefix = str(prefix or "").strip()
     need(prefix, "rerank --family: prefix is required")
     out = {}
-    for mp in sorted(glob.glob(os.path.join(flags, "ready", prefix + "*.json"))):
-        rid = os.path.basename(mp)[:-5]
+    ids = {os.path.basename(mp)[:-5] for mp in glob.glob(os.path.join(flags, "ready", prefix + "*.json"))}
+    ids |= {os.path.basename(os.path.dirname(mp)) for mp in glob.glob(os.path.join(flags, "dryrun", prefix + "*", "unpublished.json"))}
+    for rid in sorted(ids):
         try:
             out[rid] = rerank_row(flags, rid, rank, by, reason, log=log, via="family:" + prefix)
         except Refused as e:
             out[rid] = f"SKIP: {e}"
             log(f"RERANK-SKIP {rid}: {e}")
-    need(out, f"rerank --family {prefix}: no ready/{prefix}*.json")
+    need(out, f"rerank --family {prefix}: no ready/{prefix}*.json or pending unpublished row")
     return out
 
 
