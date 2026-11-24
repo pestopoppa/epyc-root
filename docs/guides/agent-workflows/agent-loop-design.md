@@ -547,6 +547,16 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
   speeds one model and slows another, as DS41 keeps did to Qwen3.8-Flash-Next prefill, prefer model-specific
   dispatch keyed on shape, type or architecture. Keep both fast rather than drop the gain. The objective is the
   fastest serving for every production model in our operating environment, not one kernel for all models.
+- **Build now or seed: the +3% threshold** (operator, 2026-11-20 and 2026-11-24).
+  - **The rule.** A lever with an expected end-to-end gain of +3% or more on a served operating point is built
+    directly as a directed row. Below +3% it becomes an AutoKernel hypothesis seed instead.
+  - **Compounded gain.** If a small lever unblocks a bigger program, judge it on the compounded gain: the lever
+    plus what it unlocks. Build it now if that total clears +3%. Seeding a small enabler stalls the larger win
+    it unlocks.
+  - **What counts as evidence.** A speed-of-light ceiling counts only for the part a real kernel is expected to
+    reach, not the full ceiling.
+  - **Not a futility line.** +3% is NOT a futility line. A row's futility gate is separate: it stops a
+    measurement once its answer can no longer change. Never call the +3% threshold "futility".
 - **Keep it pragmatic.** "Don't over engineer it. Keeping work focused and pragmatic is of utmost importance"
   (2026-10-03). Coordinate GPU windows with the session that owns the stack.
 - **Hold a live run's watchdog before any risky infrastructure change** (a cleanup, a checkout refresh, a stack
