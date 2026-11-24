@@ -3203,6 +3203,18 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [ ] **AEI-AP-RERUN-ARM** [inference] Make the autopilot T1/T2 accept gate run a same-configuration rerun arm and pass it to paired_stats verdict_from_result, so autopilot A/B keeps count as decisions under the ratified rerun-arm rule
       · done when: autopilot accept-gate code passes rerun to verdict_from_result, a unit test covers RerunArmMissingError on that path, and one live accept decision carries a rerun flip rate
       · gate: AEI-RERUN-FLIP-CODE
+- [ ] **HF-THINK-CAPS-2** [non-inference] Extend thinking_budget_headroom to the llm_call paths with fixed caps that can run on a thinking role: the 2048-token escalation cap in stages.py and the 1024-token streamed-reply cap in stream_adapter.py
+      · done when: a unit test shows both paths clamp or refuse a thinking budget at or above max_tokens minus the answer floor with the flag on, and are unchanged with it off
+      · gate: none
+- [ ] **RPK-SURFACE** [non-inference] Add a review_plane surface to numeric_swarm SURFACES from orchestration/review_plane_knobs.yaml with delegation.* apply keys, and refresh that yaml's stale not-wired header
+      · done when: the swarm can propose and apply_params can apply a delegation.max_review_iterations trial, covered by a unit test
+      · gate: none
+- [ ] **HF-TIMEOUT-GENEXC** [non-inference] Give eval_tower generation-exception timeouts a failure provenance so timeout_contention_class labels them too
+      · done when: a unit test shows a generation-exception timeout row carries contention_class with the flag on
+      · gate: none
+- [ ] **HF-DECORATOR-PARITY** [non-inference] Check test_ev5_launcher_guard_parity::test_every_preexisting_function_keeps_exact_decorators against a clean origin/main and fix the decorator drift in tests/unit/test_eval_verifier_mode.py if it is pre-existing
+      · done when: the test passes on origin/main
+      · gate: none
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
