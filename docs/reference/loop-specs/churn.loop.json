@@ -278,16 +278,6 @@
      "meaning": "WRAPPED sha not on origin/main; re-prompted with PUSH_PROMPT"
     },
     {
-     "id": "retry",
-     "kind": "wait",
-     "meaning": "transient engine error; 'go on' after backoff"
-    },
-    {
-     "id": "failed",
-     "kind": "fail",
-     "meaning": "transient retries exhausted"
-    },
-    {
      "id": "done",
      "kind": "done",
      "terminal": true,
@@ -315,31 +305,7 @@
      "to": "unpushed",
      "on": "WRAPPED sha not on origin/main",
      "log": "UNPUSHED",
-     "reason": "UNPUSHED",
-     "thresholds": [
-      "MAX_PUSH_RETRIES"
-     ]
-    },
-    {
-     "from": "live",
-     "to": "retry",
-     "on": "turn ended with a transient error and no wrap-up",
-     "log": "TRANSIENT",
-     "reason": "TRANSIENT",
-     "thresholds": [
-      "TRANSIENT_BACKOFF_S"
-     ]
-    },
-    {
-     "from": "retry",
-     "to": "live",
-     "on": "backoff elapsed; GO_ON_PROMPT"
-    },
-    {
-     "from": "retry",
-     "to": "failed",
-     "on": "backoff schedule exhausted",
-     "reason": "RETRIES-EXHAUSTED"
+     "reason": "UNPUSHED"
     },
     {
      "from": "unpushed",
@@ -401,15 +367,6 @@
      "on": "last task not wrapped: no new work",
      "log": "UNWRAPPED",
      "reason": "UNWRAPPED"
-    },
-    {
-     "from": "live",
-     "to": "suspended",
-     "on": "session replies IDLE: <reason>; re-asked later",
-     "reason": "SELF-IDLE",
-     "thresholds": [
-      "IDLE_REPORT_COOLDOWN_S"
-     ]
     }
    ]
   },
@@ -548,25 +505,18 @@
    "meaning": "pause interval"
   },
   {
-   "id": "IDLE_COOLDOWN_S",
-   "value": 2700,
+   "id": "BACKOFF_S",
+   "value": "21600,43200,86400",
    "unit": "s",
-   "source": "scripts/coordination/handoff_sessions.py:IDLE_COOLDOWN_S",
-   "meaning": "cooldown after an idle pass"
+   "source": "scripts/coordination/handoff_sessions.py:BACKOFF_S",
+   "meaning": "engine pause when the usage-limit reset time is unknown: 6 h -> 12 h -> 24 h"
   },
   {
-   "id": "IDLE_REPORT_COOLDOWN_S",
+   "id": "RESUME_STALL_S",
    "value": 1800,
    "unit": "s",
-   "source": "scripts/coordination/handoff_sessions.py:IDLE_REPORT_COOLDOWN_S",
-   "meaning": "a session that said IDLE: <reason> is re-asked after this long"
-  },
-  {
-   "id": "MAX_PUSH_RETRIES",
-   "value": 6,
-   "unit": "re-prompts",
-   "source": "scripts/coordination/handoff_sessions.py:MAX_PUSH_RETRIES",
-   "meaning": "unpushed wrap-up re-prompts"
+   "source": "scripts/coordination/handoff_sessions.py:RESUME_STALL_S",
+   "meaning": "RESUME-STALL alarm: queued events but no RESUME for this long"
   },
   {
    "id": "MAX_REQUEUE",
@@ -574,20 +524,6 @@
    "unit": "redeliveries",
    "source": "scripts/coordination/handoff_sessions.py:MAX_REQUEUE",
    "meaning": "run-end event redelivered at most this often without filing-done/<id>.FILED"
-  },
-  {
-   "id": "TRANSIENT_BACKOFF_S",
-   "value": "120,240,480",
-   "unit": "s",
-   "source": "scripts/coordination/handoff_sessions.py:TRANSIENT_BACKOFF_S",
-   "meaning": "'go on' retries after a transient engine error"
-  },
-  {
-   "id": "DRYRUN_EVENT_MAX_AGE_S",
-   "value": 1800,
-   "unit": "s",
-   "source": "scripts/coordination/handoff_sessions.py:DRYRUN_EVENT_MAX_AGE_S",
-   "meaning": "older dry-run results are not events (restart safety)"
   },
   {
    "id": "CANDIDATE_WEIGHT",
@@ -722,25 +658,7 @@
    "id": "UNPUSHED",
    "kind": "wait",
    "machine": "session",
-   "condition": "WRAPPED sha not on origin/main",
-   "thresholds": [
-    "MAX_PUSH_RETRIES"
-   ]
-  },
-  {
-   "id": "TRANSIENT",
-   "kind": "wait",
-   "machine": "session",
-   "condition": "engine turn ended with a transient error and no wrap-up",
-   "thresholds": [
-    "TRANSIENT_BACKOFF_S"
-   ]
-  },
-  {
-   "id": "RETRIES-EXHAUSTED",
-   "kind": "fail",
-   "machine": "session",
-   "condition": "transient backoff schedule exhausted"
+   "condition": "WRAPPED sha not on origin/main"
   },
   {
    "id": "REFUSED-CWD",
@@ -749,20 +667,13 @@
    "condition": "spawn cwd not /workspace or one of its worktrees"
   },
   {
-   "id": "SELF-IDLE",
-   "kind": "pause",
-   "machine": "session",
-   "condition": "session replied IDLE: <reason>",
-   "clears_when": "re-asked after IDLE_REPORT_COOLDOWN_S",
-   "thresholds": [
-    "IDLE_REPORT_COOLDOWN_S"
-   ]
-  },
-  {
    "id": "USAGE-LIMIT",
    "kind": "wait",
    "machine": "session",
-   "condition": "engine output matches the usage/rate-limit pattern (USAGE_RX)"
+   "condition": "engine output matches the usage/rate-limit pattern (USAGE_RX)",
+   "thresholds": [
+    "BACKOFF_S"
+   ]
   }
  ]
 }
