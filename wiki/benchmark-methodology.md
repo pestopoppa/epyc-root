@@ -7949,3 +7949,15 @@ Sources: [progress 2026-11-23 autokernel](../progress/2026-11/2026-11-23-autoker
 
 #### Source References (2026-11-24, pipeline-mgmt wrap-up)
 - [pipeline-mgmt progress 2026-11-24](../progress/2026-11/2026-11-24-pipeline-mgmt.md), [wrap-up tick log](../progress/2026-11/2026-11-24-handoff-pipeline-mgmt-wrapup-20261124.md), [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)
+
+### Compiled Update — 2026-11-24 (operator wiki sweep, autokernel slice): noise floors, build-config diffs and the in-row band rule
+
+- **Bands come from the reference build, in the same row.** C18 diverged from itself at the same rate as C20 (7/8 vs 7/8, p 0.77), so fixed 0.19/0.38 nat bands were rejected; the lesson is recorded as a memory ([progress](../progress/2026-11/2026-11-24-autokernel.md)).
+- **Replica floors.** Ordinary gates need >= 3 reference launches with at least one reordered; promotion gates >= 5; the floor is the largest pair, and the candidate fails above it or on any non-NOISE first divergence ([protocol](../docs/guides/agent-workflows/spec-identity-gate-protocol.md)).
+- **Literature patterns adopted, magnitudes not.** Largest-pair floor and ratio reporting (intake-2893#record), reduction-order A/A as a measured denominator (intake-2901#record), floor-then-equivalence with a zero-floor control (intake-2872#record), and record engine build, flags and prefix-cache state in every cross-build comparison (intake-2884#record; its 16.6 and 4.00 point figures are cross-engine H100 FP16 and are not tolerances for C21 vs production).
+- **Overturned entries are discussion-only.** intake-2883#record, intake-2888#record and intake-2894#record were re-pointed to record form after the dive overturned or narrowed them; none supports a threshold.
+- **Measured-efficiency labels.** The five unmeasured census `ref` rows (dense GEMV, MoE, GDN scan, fused tail, CPU AVX-512 GEMV) keep their "recalled, not re-verified" labels ([stage-3 plan](../research/deep-dives/intake-ak-1124/stage3-plan.md)).
+
+#### Source References (2026-11-24, operator wiki sweep, autokernel slice)
+- [protocol](../docs/guides/agent-workflows/spec-identity-gate-protocol.md), [progress 2026-11-24](../progress/2026-11/2026-11-24-autokernel.md), [stage-3 plan](../research/deep-dives/intake-ak-1124/stage3-plan.md)
+- [qnoise dive](../research/deep-dives/intake-ak-1124/intake-2893-qnoise.md), [exactpaper dive](../research/deep-dives/intake-ak-1124/intake-2872-exactpaper.md), [digest 2867-2904](../research/deep-dives/intake-digests/2026-11-24-ids-2867-2904.md)
