@@ -577,7 +577,9 @@ STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"
 hub_newest_source_mtime() {
   resolve_hub_spec
   [[ -n "${HUB_SRC}" ]] || return 0
-  find "${HUB_SRC}/dashboard" -name '*.py' -newermt '@0' -printf '%T@\n' 2>/dev/null \
+  # dashboard/ plus the producer dirs the hub imports IN-PROCESS (plane rule: a contract lives with
+  # its subsystem, so its code is outside dashboard/). Missing dirs are skipped by find's 2>/dev/null.
+  find "${HUB_SRC}/dashboard" "${HUB_SRC}/scripts/coordination/akloop" -name '*.py' -newermt '@0' -printf '%T@\n' 2>/dev/null \
     | cut -d. -f1 | sort -n | tail -1
 }
 

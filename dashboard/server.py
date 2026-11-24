@@ -1519,11 +1519,29 @@ _akflow_cache_ts = 0.0
 _akflow_lock = threading.Lock()
 
 
+_akflow_mod_mtime: float | None = None
+
+
 def _akflow_module():
+    """The producer, re-imported when its file changes on disk.
+
+    The hub imports flow_status once per process, and the supervisor restarts the hub only on a
+    dashboard/*.py change -- so a producer-only commit (1c5782858, 2026-11-24) reached the view
+    and never the served payload. Reloading on the producer's mtime closes that without a restart.
+    """
+    global _akflow_mod_mtime
     d = str(REPO / "scripts" / "coordination" / "akloop")
     if d not in sys.path:
         sys.path.insert(0, d)
+    import importlib  # noqa: PLC0415
     import flow_status  # noqa: PLC0415 -- the producer lives with the subsystem (plane rule)
+    try:
+        mt = os.path.getmtime(flow_status.__file__)
+    except OSError:
+        return flow_status
+    if _akflow_mod_mtime is not None and mt != _akflow_mod_mtime:
+        flow_status = importlib.reload(flow_status)
+    _akflow_mod_mtime = mt
     return flow_status
 
 
