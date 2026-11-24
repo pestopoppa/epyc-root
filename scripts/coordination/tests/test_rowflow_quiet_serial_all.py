@@ -141,7 +141,7 @@ class QuietUrgentPending(unittest.TestCase):
         self.urgent()
         pend = rf.urgent_quiet_pending(self.flags)
         self.assertEqual([p[0] for p in pend], ["c21-fold-cpu-20261124-r2"])
-        kept, waits, logs = rf.quiet_urgent_hold(self.cands(), self.ROWS, pend)
+        kept, waits, logs, _ = rf.quiet_urgent_hold(self.cands(), self.ROWS, pend)
         ids = {c["id"] for c in kept}
         self.assertNotIn("ak-cpu-gdn-state-fwd-20261123-r2", ids)
         self.assertTrue({"plain", "urg2"} <= ids)
@@ -162,9 +162,9 @@ class QuietUrgentPending(unittest.TestCase):
 
     def test_expired_default_and_budget(self):
         self.urgent(age=46 * 60)
-        kept, _, logs = rf.quiet_urgent_hold(self.cands(), self.ROWS, rf.urgent_quiet_pending(self.flags))
+        kept, _, logs, exp = rf.quiet_urgent_hold(self.cands(), self.ROWS, rf.urgent_quiet_pending(self.flags))
         self.assertIn("ak-cpu-gdn-state-fwd-20261123-r2", {c["id"] for c in kept})
-        self.assertTrue(any(l.startswith("QUIET-URGENT-PENDING-EXPIRED") for l in logs))
+        self.assertTrue(exp["c21-fold-cpu-20261124-r2"].startswith("QUIET-URGENT-PENDING-EXPIRED"))
         self.urgent(rid="u-b", age=500, smoke_s=200)   # 500 > 2*200
         self.assertTrue(all("holds" not in l for l in
                             rf.quiet_urgent_hold(self.cands(), self.ROWS, rf.urgent_quiet_pending(self.flags))[2]))
@@ -185,16 +185,55 @@ class QuietUrgentPending(unittest.TestCase):
         cs = [cand("calib-a3b", [{"q0"}], rank=60)]
         pend = rf.urgent_quiet_pending(self.flags)
         self.assertEqual([p[0] for p in pend], ["c21-fold-cpu-r2"])
-        kept, _, logs = rf.quiet_urgent_hold(cs, rows, pend)
+        kept, _, logs, _ = rf.quiet_urgent_hold(cs, rows, pend)
         self.assertEqual(kept, [])
         self.assertIn("QUIET-URGENT-PENDING c21-fold-cpu-r2 holds calib-a3b", logs)
         t = __import__("time").time() - 46 * 60
         os.utime(sf, (t, t))
-        kept, _, logs = rf.quiet_urgent_hold(cs, rows, rf.urgent_quiet_pending(self.flags))
+        kept, _, logs, exp = rf.quiet_urgent_hold(cs, rows, rf.urgent_quiet_pending(self.flags))
         self.assertEqual([c["id"] for c in kept], ["calib-a3b"])
-        self.assertTrue(any("EXPIRED" in l for l in logs))
+        self.assertIn("c21-fold-cpu-r2", exp)
         os.remove(sf)
         self.assertEqual(rf.urgent_quiet_pending(self.flags), [])
+
+    def test_stale_over_one_day_ignored(self):
+        self.urgent(rid="ak-q38fn-relianceproof-c10-20261110-r5", age=1100000)
+        self.assertEqual(rf.urgent_quiet_pending(self.flags), [])
+
+    def test_waiting_incident_replay(self):
+        """11:20Z: c21-r3 (rank 9, quiet-host) GRANTABLE but foreign busy on q0 (rka-r5); specpit-r4 (rank 40) got q0."""
+        rows = {"c21-fold-cpu-20261124-r3": {"requires_quiet_host": True, "priority_rank": 9, "shape": "quiet-host"},
+                "specpit-r4": {"quiet_sensitive": True, "priority_rank": 40}, "plain": {"requires_quiet_host": False}}
+        pre = [cand("c21-fold-cpu-20261124-r3", [{"q0", "q1", "q2"}], rank=9, shape="quiet-host"),
+               cand("specpit-r4", [{"q0"}], rank=40), cand("plain", [{"q1"}], rank=100)]
+        util = {"q0": 90.0, "q1": 1.0, "q2": 1.0, "q3": 1.0}
+        post, _, qlines = rf.quiet_gate(pre, rows, [], util)
+        self.assertNotIn("c21-fold-cpu-20261124-r3", {c["id"] for c in post})
+        self.assertIn("specpit-r4", {c["id"] for c in post})   # the hole
+        pend, st = rf.urgent_quiet_waiting(pre, post, qlines, rows, {}, now=1000.0)
+        self.assertEqual([p[0] for p in pend], ["c21-fold-cpu-20261124-r3"])
+        kept, _, logs, exp = rf.quiet_urgent_hold(post, rows, pend, now=1000.0)
+        self.assertEqual([c["id"] for c in kept], ["plain"])
+        self.assertIn("QUIET-URGENT-WAITING c21-fold-cpu-20261124-r3 holds specpit-r4", logs)
+        pend, st = rf.urgent_quiet_waiting(pre, post, qlines, rows, st, now=1000.0 + 46 * 60)
+        self.assertEqual(st, {"c21-fold-cpu-20261124-r3": 1000.0})
+        kept, _, _, exp = rf.quiet_urgent_hold(post, rows, pend, now=1000.0 + 46 * 60)
+        self.assertIn("specpit-r4", {c["id"] for c in kept})
+        self.assertTrue(exp["c21-fold-cpu-20261124-r3"].startswith("QUIET-URGENT-WAITING-EXPIRED"))
+        _, st = rf.urgent_quiet_waiting(pre, pre, {}, rows, st)   # granted / placeable -> state cleared
+        self.assertEqual(st, {})
+
+    def test_light_claim_refused_for_urgent_whole_host(self):
+        self.assertIsNone(rf.urgent_whole_host_quiet(self.flags, [], {}))
+        os.makedirs(rf.state_dir(self.flags), exist_ok=True)
+        with open(os.path.join(rf.state_dir(self.flags), rf.QUIET_URGENT_WAITING_STATE), "w") as f:
+            json.dump({"c21-fold-cpu-20261124-r3": __import__("time").time() - 60}, f)
+        rows = {"c21-fold-cpu-20261124-r3": {"shape": "quiet-host", "priority_rank": 9, "requires_quiet_host": True}}
+        self.assertEqual(rf.urgent_whole_host_quiet(self.flags, [], rows), "c21-fold-cpu-20261124-r3")
+        with self.assertRaises(rf.Refused) as cm:
+            rf._claim_light_locked(self.flags, "pipeline-mgmt", "84-87", 10, grants=[], allrows=rows, free=set())
+        self.assertIn("LIGHT-REFUSED urgent-quiet-pending c21-fold-cpu-20261124-r3", str(cm.exception))
+        self.assertIsNone(rf.urgent_whole_host_quiet(self.flags, [{"id": "c21-fold-cpu-20261124-r3"}], rows))
 
 if __name__ == "__main__":
     unittest.main()
