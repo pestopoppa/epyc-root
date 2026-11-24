@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-24T20:28:17Z",
+  "generated_at": "2026-11-24T21:00:53Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1667,14 +1667,14 @@
         "INF-48#rocm-verify-profile-backend"
       ],
       "closed": 309,
-      "dispatchable": 4,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-24",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 4,
+      "open": 6,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1709,13 +1709,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 2,
+          "dispatchable": 4,
           "gates": [
             "EVL-47"
           ],
           "line": 60,
           "name": "rocm-verify-profile-backend",
-          "open": 2,
+          "open": 4,
           "readiness": "blocked"
         },
         {
@@ -1728,7 +1728,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1205,
+          "line": 1211,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1743,7 +1743,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2351,
+          "line": 2357,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1752,7 +1752,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2726,
+          "line": 2732,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1761,7 +1761,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3162,
+          "line": 3168,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1770,7 +1770,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3257,
+          "line": 3263,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
