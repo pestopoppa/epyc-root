@@ -600,6 +600,16 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "every verdict, A/A flag, control pattern and summary count is re-derived from the "
                 "rep digests and refused if it differs; two count tuples per (route, nth)",
            task="VB-AKX-ALL-26-CELLS-WIRE"),
+    Source("ak-bw-census", "autokernel_bw_census",
+           _files("mi210_bandwidth_census.json", "**/mi210_bandwidth_census.json"),
+           default=Path("/mnt/raid0/llm/tmp/ak-bw-census/mi210_bandwidth_census.json"),
+           note="AutoKernel served-kernel bandwidth census (`mi210_bandwidth_census.json`, schema "
+                "`epyc.autokernel.bw_census.v1`, written by research census_update.py): one BASELINE "
+                "observation per record, warrant = source_row + result_sha256 + measured_at; a record "
+                "missing any of the three is dropped as UNKNOWN, gbps re-derived from bytes/us, "
+                "result_sha256 cross-checked against the census `applied` ledger; n is the matmul "
+                "batch width, never reps; no protocol, so Judged/Located",
+           task="VB-AK-BW-CENSUS-WIRE"),
     Source("gpu-cpu-noise", "gpu_cpu_noise", _run_dirs("RUN_RECORD.json"),
            default=Path("/mnt/raid0/llm/tmp/gpu-cpu-noise-20261021/runs"),
            note="U4-NOISE-1 session dirs (RUN_RECORD.json, schedule.json, reps.jsonl, END.json, "

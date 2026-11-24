@@ -12,7 +12,7 @@ approach: 'Add a census adapter under scripts/vidya/adapters that reads mi210_ba
   warrant field.
 
   '
-acceptance: python3 -m pytest scripts/vidya/tests -q -k bw_census
+acceptance: python3 -m pytest -q scripts/vidya/tests/test_bw_census_adapter.py
 non_goals: []
 tier: local
 grounded:

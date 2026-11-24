@@ -360,6 +360,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # Strict re-derivation, refusals and grading on fixture trees: test_autokernel_width_dimension.py
         # (HIP) and test_autokernel_width_cells_cpu.py (CPU, plus the real stored record).
         "ak-width-dimension", "ak-width-cells-cpu",
+        # Census fixture, warrant drops, re-derivation refusals and temp-ledger ingest: scripts/vidya/tests/test_bw_census_adapter.py.
+        "ak-bw-census",
         # Strict re-derivation over the real U4-NOISE-1 sessions, tamper refusals on a tmp copy and the
         # CLI dispatch count: test_gpu_cpu_noise_adapter.py. v1 readings + pre-hook dumps, refusals and the
         # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.
