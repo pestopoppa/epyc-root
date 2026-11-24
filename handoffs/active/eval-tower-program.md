@@ -3197,24 +3197,27 @@ Structural change → **implement in a follow-on pass** (not in this design task
   - [x] **AEI-RERUN-FLIP-CODE** [non-inference] Make `paired_stats.py` compute the A-versus-R rerun flip rate (McNemar discordant count of A against R over the tasks scored in both) and downgrade an `a_better`/`b_better` verdict to `indistinguishable` (reason `within_rerun_noise`) when `|Δ|` is at or below the flip rate. Refuse a pair that has no R for decision use. ✅ 2026-11-24 [no-belief: build/landing] orch 08642801: flip rate + Wilson CI + downgrade-to-indistinguishable; 43 tests pass; attestation grammar split to AEI-RERUN-ATTEST
       · done when: unit tests over a fixture pair with and without R pass, covering the downgrade and the refusal
       · gate: AEI-RERUN-ARM-OD        · inputs: `measurement/protocols/quality-eval.md`
-- [ ] **AEI-RERUN-ATTEST** [non-inference] Make the paired-comparison attestation and ledger writer record the rerun arm R summary.json ref and the verdict grammar 'rerun-flip f/n_AR' and 'rerun <ref>' required by the ratified P-AB-1/P-PAIRED rerun-arm amendment
+- [x] **AEI-RERUN-ATTEST** [non-inference] Make the paired-comparison attestation and ledger writer record the rerun arm R summary.json ref and the verdict grammar 'rerun-flip f/n_AR' and 'rerun <ref>' required by the ratified P-AB-1/P-PAIRED rerun-arm amendment — (orch 40ea1b98) [no-belief: code change, unit-tested, no measurement]
       · done when: a paired attestation written with an R arm carries the rerun ref and rerun-flip string, and one without R is refused for decision use, proven by a unit test
       · gate: AEI-RERUN-FLIP-CODE
 - [ ] **AEI-AP-RERUN-ARM** [inference] Make the autopilot T1/T2 accept gate run a same-configuration rerun arm and pass it to paired_stats verdict_from_result, so autopilot A/B keeps count as decisions under the ratified rerun-arm rule
       · done when: autopilot accept-gate code passes rerun to verdict_from_result, a unit test covers RerunArmMissingError on that path, and one live accept decision carries a rerun flip rate
       · gate: AEI-RERUN-FLIP-CODE
-- [ ] **HF-THINK-CAPS-2** [non-inference] Extend thinking_budget_headroom to the llm_call paths with fixed caps that can run on a thinking role: the 2048-token escalation cap in stages.py and the 1024-token streamed-reply cap in stream_adapter.py
+- [x] **HF-THINK-CAPS-2** [non-inference] Extend thinking_budget_headroom to the llm_call paths with fixed caps that can run on a thinking role: the 2048-token escalation cap in stages.py and the 1024-token streamed-reply cap in stream_adapter.py — (orch 93048745) [no-belief: code change, unit-tested, no measurement]
       · done when: a unit test shows both paths clamp or refuse a thinking budget at or above max_tokens minus the answer floor with the flag on, and are unchanged with it off
       · gate: none
-- [ ] **RPK-SURFACE** [non-inference] Add a review_plane surface to numeric_swarm SURFACES from orchestration/review_plane_knobs.yaml with delegation.* apply keys, and refresh that yaml's stale not-wired header
+- [x] **RPK-SURFACE** [non-inference] Add a review_plane surface to numeric_swarm SURFACES from orchestration/review_plane_knobs.yaml with delegation.* apply keys, and refresh that yaml's stale not-wired header — (orch 633602b5; runtime reader gap filed as RPK-READER) [no-belief: code wiring, no measurement]
       · done when: the swarm can propose and apply_params can apply a delegation.max_review_iterations trial, covered by a unit test
       · gate: none
-- [ ] **HF-TIMEOUT-GENEXC** [non-inference] Give eval_tower generation-exception timeouts a failure provenance so timeout_contention_class labels them too
+- [x] **HF-TIMEOUT-GENEXC** [non-inference] Give eval_tower generation-exception timeouts a failure provenance so timeout_contention_class labels them too — (orch 0a5565ce) [no-belief: code change, unit-tested, no measurement]
       · done when: a unit test shows a generation-exception timeout row carries contention_class with the flag on
       · gate: none
-- [ ] **HF-DECORATOR-PARITY** [non-inference] Check test_ev5_launcher_guard_parity::test_every_preexisting_function_keeps_exact_decorators against a clean origin/main and fix the decorator drift in tests/unit/test_eval_verifier_mode.py if it is pre-existing
+- [x] **HF-DECORATOR-PARITY** [non-inference] Check test_ev5_launcher_guard_parity::test_every_preexisting_function_keeps_exact_decorators against a clean origin/main and fix the decorator drift in tests/unit/test_eval_verifier_mode.py if it is pre-existing — (orch d7ac6ea9: pre-existing since 75e6d978, baseline refreshed) [no-belief: test fixture fix, no measurement]
       · done when: the test passes on origin/main
       · gate: none
+- [ ] **RPK-READER** [non-inference] Make the runtime read the six ORCHESTRATOR_DELEGATION_* review-plane env variables that the numeric_swarm review_plane surface applies, so a review_plane trial changes delegator behaviour
+      · done when: a unit test shows each env variable changes the value the review plane uses, and defaults are unchanged with none set
+      · gate: RPK-SURFACE
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
