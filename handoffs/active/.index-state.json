@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-19",
-      "open": 255
+      "open": 259
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -940,7 +940,7 @@
       "closed": 225,
       "guarded": 1,
       "last_advanced": "2026-11-24",
-      "open": 47,
+      "open": 51,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -949,7 +949,7 @@
       },
       "row_id": "EVL-14",
       "state": "active",
-      "total": 273,
+      "total": 277,
       "tracks": [
         {
           "blocked": 0,
@@ -1049,7 +1049,7 @@
           "line": 3103,
           "markers": 1,
           "name": "scoring-infra-standardization",
-          "open": 12
+          "open": 16
         }
       ]
     },
