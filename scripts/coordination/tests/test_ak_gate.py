@@ -9,6 +9,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 
 import pytest
 
@@ -22,6 +23,11 @@ import mk_ak_row as MK  # noqa: E402
 import preflight as P  # noqa: E402
 
 FIX = os.path.join(_TESTS, "fixtures", "ak_gate")
+_BIN_TMP = tempfile.TemporaryDirectory(prefix="ak-gate-test-bin-")
+FIX_BIN = _BIN_TMP.name
+for _name in ("llama-server", "llama-perplexity", "test-backend-ops", "test-dflash-dev-inject", "test-q8ip-two-ctx"):
+    os.symlink("/bin/true", os.path.join(FIX_BIN, _name))
+
 Q8MC_ARMED = "ggml_cuda_q8_mc: GGML_HIP_Q8MC=1 multi-column Q8_0 GEMV armed"
 TF2 = {"GGML_CUDA_AK_ADD_RMS_NORM": "AK-RF-27B-TAIL-FUSE G1 add+rms_norm+mul fused path ran",
        "GGML_HIP_ACTQ_FUSE": "q8sk zero-fold ran",
@@ -47,7 +53,7 @@ def spec(knobs=None, arms=None, expect=None, argv=None, **kw):
     exp = expect or {a: {k: ("present" if k in s else "absent") for k in knobs} for a, s in arms.items()}
     s = {"row_id": "ak-t-gate-gpu-20261125", "task": "x.md:T", "knobs": knobs, "arms": arms, "expect": exp,
          "baseline": [a for a in arms if not arms[a]],
-         "server": {"argv": argv or ["/x/bin/llama-server", "--port", "{PORT}"], "env": {}, "warmup": 1,
+         "server": {"argv": argv or [os.path.join(FIX_BIN, "llama-server"), "--port", "{PORT}"], "env": {}, "warmup": 1,
                     "ready_timeout_s": 30},
          "workload": {"prompts": ["hello there"], "n_predict": 8}, "metric": {"name": "tok_s", "higher_is_better": True},
          "keep": {"threshold": 1.01, "n_blocks": 4, "look_blocks": 2}, "correctness": None,
@@ -115,7 +121,7 @@ def test_tailfuse2_real_log_six_knobs_names_only_g5():
 def test_q8mc_real_perplexity_log_without_lv_is_a_named_loglevel_miss():
     sp = spec()
     txt = G.read_log(os.path.join(FIX, "q8mc", "k-on-u8.log"))
-    w = G.witness_for(sp, "ON", txt, ["/s/bin/llama-perplexity", "-m", "m.gguf", "-f", "inputs/kld_text.txt"])
+    w = G.witness_for(sp, "ON", txt, [os.path.join(FIX_BIN, "llama-perplexity"), "-m", "m.gguf", "-f", "inputs/kld_text.txt"])
     assert not w["GGML_HIP_Q8MC"]["ok"] and "argv log level none < required 4" in w["GGML_HIP_Q8MC"]["note"]
     assert G.witness_for(sp, "ON", txt)["GGML_HIP_Q8MC"]["note"].startswith("no 'verbosity = N' banner")
     tbo = G.read_log(os.path.join(FIX, "q8mc", "c-tbo-on.log"))
@@ -123,12 +129,12 @@ def test_q8mc_real_perplexity_log_without_lv_is_a_named_loglevel_miss():
 
 
 def test_ensure_lv_on_every_llama_binary():
-    assert G.ensure_lv(["/s/bin/llama-perplexity", "-m", "x"], 4)[-2:] == ["-lv", "4"]
+    assert G.ensure_lv([os.path.join(FIX_BIN, "llama-perplexity"), "-m", "x"], 4)[-2:] == ["-lv", "4"]
     assert G.ensure_lv(["/s/bin/llama-server", "-lv", "2"], 4) == ["/s/bin/llama-server", "-lv", "4"]
     assert G.ensure_lv(["/s/bin/llama-bench", "--verbosity=1"], 5) == ["/s/bin/llama-bench", "--verbosity=5"]
     assert G.ensure_lv(["/s/bin/llama-cli", "-lv", "6"], 4) == ["/s/bin/llama-cli", "-lv", "6"]
-    assert G.ensure_lv(["/s/bin/test-backend-ops", "test"], 4) == ["/s/bin/test-backend-ops", "test"]
-    assert G.ensure_lv(["/s/bin/test-dflash-dev-inject"], 4)[-2:] == ["-lv", "4"]
+    assert G.ensure_lv([os.path.join(FIX_BIN, "test-backend-ops"), "test"], 4) == [os.path.join(FIX_BIN, "test-backend-ops"), "test"]
+    assert G.ensure_lv([os.path.join(FIX_BIN, "test-dflash-dev-inject")], 4)[-2:] == ["-lv", "4"]
     assert G.ensure_lv(["/usr/bin/taskset", "-c", "1", "/s/bin/llama-server"], 4)[-2:] == ["-lv", "4"]
     assert G.argv_lv(["llama-server", "--log-verbose"]) == 99
 
@@ -299,7 +305,7 @@ def test_identity_baseline_aa_difference_is_nondet_not_the_knob(tmp_path):
 
 # ------------------------------------------------------------------------------------------------ smoke
 def test_smoke_makes_dirs_and_checks_inputs_first(tmp_path):
-    sp = spec(argv=["/nonexistent/bin/llama-server", "--port", "{PORT}", "--slot-save-path", "{SLOTDIR}"],
+    sp = spec(argv=[os.path.join(FIX_BIN, "llama-server"), "--port", "{PORT}", "--slot-save-path", "{SLOTDIR}"],
               inputs={"inputs/kld_text.txt": None}, dirs=["out/prof"])
     g = G.Gate(sp, str(tmp_path / "row"), env={"FILLER_PORTS": "1", "FILLER_SMOKE": "1"}, stream=QUIET)
     assert g.smoke() == 3
@@ -336,8 +342,8 @@ def _prior(tmp_path, name, units=(), logs=()):
 
 
 def test_replay_q8mc_kld_unit_without_lv_is_futility_witness(tmp_path):
-    sp = spec(correctness={"kind": "kld", "argv": ["/s/bin/llama-perplexity", "-m", "m", "-f", "inputs/kld_text.txt"]})
-    noflag = ["/s/bin/llama-perplexity", "-m", "m", "-f", "inputs/kld_text.txt"]
+    sp = spec(correctness={"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity"), "-m", "m", "-f", "inputs/kld_text.txt"]})
+    noflag = [os.path.join(FIX_BIN, "llama-perplexity"), "-m", "m", "-f", "inputs/kld_text.txt"]
     units = [{"unit_id": "c-kld-base-OFF", "kind": "c-kld", "arm": "OFF", "mode": "base", "argv": noflag, "rc": 0,
               "log": "logs/c-kld-base-OFF.log"},
              {"unit_id": "c-kld-OFF2", "kind": "c-kld", "arm": "OFF2", "mode": "kld", "argv": noflag, "rc": 0,
@@ -370,7 +376,7 @@ def test_replay_tailfuse2_logs_only_six_vs_five_knobs(tmp_path):
 
 def test_replay_devhandoff_draft_diff_output_equal(tmp_path):
     """r5: drafts differ at round 9 OFF vs ON (separate processes) with identical accepted counts and output."""
-    c = {"kind": "identity", "mode": "cmd", "argv": ["/s/bin/test-dflash-dev-inject"], "n_prompts": 1,
+    c = {"kind": "identity", "mode": "cmd", "argv": [os.path.join(FIX_BIN, "test-dflash-dev-inject")], "n_prompts": 1,
          "arms": ["OFF", "OFF2", "ON"]}
     sp = spec(knobs={"LLAMA_DFLASH_DEV_INJECT": {"marker": INJ, "level": 4}},
               arms={"OFF": {}, "OFF2": {}, "ON": {"LLAMA_DFLASH_DEV_INJECT": "1"}}, correctness=c)
@@ -390,6 +396,7 @@ def make_store(base, knobs_and_markers):
     root = base / "kernels" / "builds" / "gpu-20261125-abcdef123-gate"
     (root / "bin").mkdir(parents=True)
     (root / "bin" / "llama-server").write_text("\n".join(["-m", "--port", "-lv", "-np", "-c", "-ngl"]) + "\n")
+    (root / "bin" / "llama-server").chmod(0o755)
     (root / "bin" / "libggml-hip.so").write_text("\n".join(knobs_and_markers) + "\n")
     rels = ["bin/llama-server", "bin/libggml-hip.so"]
     import hashlib
@@ -460,14 +467,14 @@ def test_gate_cli_parse_knob_and_model_inference(tmp_path):
     rc = MK.main(["gate", "new", "--no-rehearse", "--id", "ak-x-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
                   "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_A=1", "--metric",
                   "tok_s", "--keep-rule", "ci_lower>1.01", "--server-argv-json",
-                  '["/s/bin/llama-server", "-m", "/m/Qwen3.8-27B-Q8_0.gguf", "--port", "{PORT}"]', "--prompt", "p"])
+                  json.dumps([os.path.join(FIX_BIN, "llama-server"), "-m", "/m/Qwen3.8-27B-Q8_0.gguf", "--port", "{PORT}"]), "--prompt", "p"])
     assert rc == 0 and json.loads((tmp_path / "ak-x-gpu-20261125" / "spec.json").read_text())["model"] == "Qwen3.8-27B-Q8_0"
     with pytest.raises(G.SpecError, match="unknown key"):
         MK.main(["gate", "new", "--no-rehearse", "--id", "ak-y-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
                  "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_A=1", "--metric",
                  "tok_s", "--keep-rule", "ci_lower>1.01", "--server-argv-json",
-                 '["/s/bin/llama-server", "-m", "/m/x.gguf", "--port", "{PORT}"]', "--prompt", "p",
-                 "--correctness", '{"kind": "kld", "argv": ["/s/bin/llama-perplexity"], "max_kl": 0.01}'])
+                 json.dumps([os.path.join(FIX_BIN, "llama-server"), "-m", "/m/x.gguf", "--port", "{PORT}"]), "--prompt", "p",
+                 "--correctness", json.dumps({"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")], "max_kl": 0.01})])
 
 
 # ------------------------------------------------------------------------------------------------ R1 receipt / R4 replay
@@ -642,7 +649,7 @@ def q8ip_spec(argv):
 def test_a_selftest_bin_replay_on_the_real_bisect_log(tmp_path):
     """ak-27b-second-ctx-nondet-bisect smoke-0.log (AA, 4/4 MISMATCH, V5I on): BASE reports it, FIX gates on 0."""
     real = open(os.path.join(FIX, "q8ip", "aa-base-smoke-0.log")).read()
-    sp = q8ip_spec(["/s/bin/test-q8ip-two-ctx", "-lv", "4"])
+    sp = q8ip_spec([os.path.join(FIX_BIN, "test-q8ip-two-ctx"), "-lv", "4"])
 
     def prior(name, fix_log):
         units, logs = [], []
@@ -691,9 +698,9 @@ def test_a_selftest_bin_live_fresh_processes_and_mapped_keep(tmp_path):
 
 # ------------------------------------------------------------------------------------------------ B: several correctness kinds
 def q8mc_b_spec(max_kld=0.0001, k=3.0, ops_min=(37, 44)):
-    tbo = {"kind": "tbo", "argv": ["/s/bin/test-backend-ops", "test", "-b", "ROCm0"], "witness": True,
+    tbo = {"kind": "tbo", "argv": [os.path.join(FIX_BIN, "test-backend-ops"), "test", "-b", "ROCm0"], "witness": True,
            "ops": {"OFF": "MUL_MAT", "ON": "MUL_MAT,Q8MC"}, "min_cases": {"OFF": ops_min[0], "ON": ops_min[1]}}
-    kld = {"kind": "kld", "argv": ["/s/bin/llama-perplexity", "-m", "m", "-f", "inputs/kld_text.txt"], "max_kld": max_kld}
+    kld = {"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity"), "-m", "m", "-f", "inputs/kld_text.txt"], "max_kld": max_kld}
     if k is not None:
         kld["max_kld_noise_k"] = k
     return spec(correctness=[tbo, kld],
@@ -709,7 +716,7 @@ def q8mc_b_prior(tmp_path, name):
     for uid, kind, arm, ex in G.plan_correctness(q8mc_b_spec()):
         shutil.copy(os.path.join(FIX, "q8mc", src[uid]), row / "out" / "logs" / f"{uid}.log")
         H.append_unit({"unit_id": uid, "kind": kind, "arm": arm, "rc": 0, "log": f"logs/{uid}.log",
-                       "argv": ["/s/bin/llama-perplexity", "-lv", "4"] if kind == "c-kld" else None, "gate_unit": True,
+                       "argv": [os.path.join(FIX_BIN, "llama-perplexity"), "-lv", "4"] if kind == "c-kld" else None, "gate_unit": True,
                        **ex}, str(row / "out"))
     return row
 
@@ -750,9 +757,9 @@ def test_b_per_arm_ops_argv_scoped_witness_and_validation(tmp_path):
 
 
 def test_b_generator_emits_one_argv_literal_per_correctness_kind(tmp_path):
-    corr = [{"kind": "tbo", "argv": ["/s/bin/test-backend-ops", "test"], "ops": {"OFF": "A", "ON": "A,B"},
+    corr = [{"kind": "tbo", "argv": [os.path.join(FIX_BIN, "test-backend-ops"), "test"], "ops": {"OFF": "A", "ON": "A,B"},
              "min_cases": {"OFF": 2, "ON": 3}},
-            {"kind": "kld", "argv": ["/s/bin/llama-perplexity", "-m", "m"], "max_kld": 0.003, "max_kld_noise_k": 3}]
+            {"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity"), "-m", "m"], "max_kld": 0.003, "max_kld_noise_k": 3}]
     d, spec_ = gen_row(tmp_path, extra=["--correctness", json.dumps(corr),
                                         "--expect-by-unit", '{"kld": {"ON": {"GGML_HIP_Q8MC": "ignore"}}}'])
     job = (d / "job.py").read_text()
@@ -767,7 +774,7 @@ if __name__ == "__main__":
 
 # ------------------------------------------------------------------------------------------------ generator gaps (2026-11-25)
 GAP_CORR = [{"kind": "selftest_bin", "runs": 2, "arms": ["ON", "OFF", "OFF2"], "timeout_s": 60, "env": {"GGML_HIP_Q8_SKINNY": "0"},
-             "argv": ["/s/bin/test-q8ip-two-ctx", "-m", "/m/x.gguf"],
+             "argv": [os.path.join(FIX_BIN, "test-q8ip-two-ctx"), "-m", "/m/x.gguf"],
              "mismatch_rx": r"summary: prompts=\d+ mismatches=(\d+)", "max_mismatch": {"ON": 0}}]
 
 
@@ -796,7 +803,7 @@ def test_cpu_gate_row_keeps_its_bare_claim(tmp_path):
 def test_direction_flags_assert_the_metric_direction(tmp_path):
     base = ["gate", "new", "--no-rehearse", "--task", "x.md:T", "--root", str(tmp_path), "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm",
             "OFF2:", "--arm", "ON:GGML_A=1", "--keep-rule", "ci_lower>1.01", "--prompt", "p", "--server-argv-json",
-            '["/s/bin/llama-server", "-m", "/m/x.gguf", "--port", "{PORT}"]']
+            json.dumps([os.path.join(FIX_BIN, "llama-server"), "-m", "/m/x.gguf", "--port", "{PORT}"])]
     assert MK.main(base + ["--id", "ak-d1-gpu-20261125", "--metric", "ms_per_round", "--lower-is-better"]) == 0
     assert MK.main(base + ["--id", "ak-d2-gpu-20261125", "--metric", "tok_s", "--higher-is-better"]) == 0
     with pytest.raises(SystemExit, match="contradicts"):
@@ -854,7 +861,7 @@ def test_q8wt_tbo_unit_without_lv_is_exempt_from_witness_but_server_unit_still_f
 
 
 def test_tbo_return_code_default_and_explicit_opt_out(capsys):
-    c = {"kind": "tbo", "argv": ["test-backend-ops"]}
+    c = {"kind": "tbo", "argv": [os.path.join(FIX_BIN, "test-backend-ops")]}
     u = {"arm": "ON", "rc": 0, "n_cases": 1, "n_ok": 1, "n_fail": 0}
     assert G.tbo_pass(c, u)
     assert not G.tbo_pass(c, dict(u, rc=139))
@@ -998,6 +1005,7 @@ def test_decide_exception_writes_result(tmp_path, monkeypatch):
 def _reuse_rows(tmp_path):
     binary = tmp_path / "kernel"
     binary.write_text("kernel v1")
+    binary.chmod(0o755)
     sp = spec(argv=[str(binary), "--port", "{PORT}"],
               correctness={"kind": "tbo", "argv": [str(binary)], "min_cases": 1})
     rows = []
@@ -1089,7 +1097,7 @@ def test_smoke_reuse_and_no_timing_reuse(tmp_path):
 
 def test_kld_noise_arm_is_report_only_and_sets_floor():
     arms = {"OFF": {}, "OFF2": {}, "ON": {"GGML_HIP_Q8MC": "1"}, "NOISE": {}}
-    kld = {"kind": "kld", "argv": ["llama-perplexity"], "arms": ["OFF", "OFF2", "ON"],
+    kld = {"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")], "arms": ["OFF", "OFF2", "ON"],
            "max_kld": 0.001, "max_kld_noise_k": 3, "noise_arm": "NOISE"}
     identity = {"kind": "identity", "arms": list(arms)}
     sp = spec(arms=arms, baseline=["OFF", "OFF2"], candidates=["ON", "NOISE"], correctness=[kld, identity])
@@ -1124,6 +1132,48 @@ def test_kld_noise_arm_is_report_only_and_sets_floor():
 
 @pytest.mark.parametrize("noise", ["MISSING", "OFF", "OFF2"])
 def test_kld_noise_arm_must_be_declared_nonbaseline(noise):
-    sp = spec(correctness={"kind": "kld", "argv": ["llama-perplexity"], "noise_arm": noise})
+    sp = spec(correctness={"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")], "noise_arm": noise})
     with pytest.raises(G.SpecError, match="noise_arm"):
+        G.validate_spec(sp)
+
+
+@pytest.mark.parametrize("wrapper", [[], ["env", "A=1"], ["taskset", "-c", "84-87"],
+                                     ["numactl", "--membind=0", "--", "env", "A=1"]])
+def test_validate_executable_server_and_correctness(tmp_path, wrapper):
+    binary = tmp_path / "missing"
+    sp = spec(argv=wrapper + [str(binary), "--port", "{PORT}"],
+              correctness={"kind": "kld", "argv": wrapper + [str(binary)]})
+    with pytest.raises(G.SpecError) as exc:
+        G.validate_spec(sp)
+    msg = str(exc.value)
+    assert "server:" in msg and "correctness kld:" in msg and str(binary) in msg
+    assert msg.count("FIX: point argv[0] at an existing binary in the store") == 2
+    binary.write_text("stub")
+    with pytest.raises(G.SpecError):
+        G.validate_spec(sp)
+    binary.chmod(0o755)
+    assert G.validate_spec(sp)
+
+
+def test_selftest_excludes_noise_arm_from_keep(tmp_path):
+    import io
+    arms = {"OFF": {}, "OFF2": {}, "ON": {"GGML_HIP_Q8MC": "1"}, "NOISE": {}}
+    sp = spec(arms=arms, baseline=["OFF", "OFF2"],
+              correctness={"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")], "noise_arm": "NOISE"})
+    output = io.StringIO()
+    assert G.selftest(sp, str(tmp_path), stream=output) == 0
+    assert "KEEP_ON" in output.getvalue() and "NOISE" not in output.getvalue()
+
+
+def test_generated_declaration_rejects_missing_correctness_binary(tmp_path):
+    missing = str(tmp_path / "missing-perplexity")
+    with pytest.raises(G.SpecError, match="correctness kld.*missing-perplexity.*FIX: point argv"):
+        gen_row(tmp_path, extra=["--correctness", json.dumps({"kind": "kld", "argv": [missing]})])
+
+
+def test_validate_command_uses_path_and_load_override(tmp_path, monkeypatch):
+    monkeypatch.setenv("PATH", FIX_BIN)
+    assert G.validate_spec(spec(argv=["llama-server", "--port", "{PORT}"]))
+    sp = spec(units=[{"kind": "load", "arms": ["ON"], "argv": ["env", "X=1", str(tmp_path / "missing"), "{PORT}"]}])
+    with pytest.raises(G.SpecError, match="load unit server.*missing.*FIX: point argv"):
         G.validate_spec(sp)

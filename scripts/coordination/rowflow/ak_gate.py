@@ -188,6 +188,48 @@ def marker_colon_refusal(name, marker):
     return None
 
 
+def command_binary(argv):
+    """Find the command behind supported placement and environment wrappers."""
+    if not isinstance(argv, (list, tuple)) or not argv:
+        return "<missing>"
+    args = list(argv)
+    while args and isinstance(args[0], str) and os.path.basename(args[0]) in ("env", "taskset", "numactl"):
+        wrapper = os.path.basename(args.pop(0))
+        valued = {"env": {"-u", "--unset", "-C", "--chdir"},
+                  "taskset": {"-c", "--cpu-list"},
+                  "numactl": {"-m", "--membind", "-N", "--cpunodebind", "-C", "--physcpubind",
+                              "-i", "--interleave", "-p", "--preferred", "--preferred-many"}}[wrapper]
+        taskset_cpu = False
+        while args and isinstance(args[0], str):
+            token = args[0]
+            if token == "--":
+                args.pop(0)
+                break
+            if wrapper == "env" and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", token):
+                args.pop(0)
+            elif token in valued:
+                taskset_cpu = wrapper == "taskset"
+                args = args[2:]
+            elif token.startswith("-"):
+                if wrapper == "taskset" and (token.startswith("--cpu-list=") or token.startswith("-c")):
+                    taskset_cpu = True
+                args.pop(0)
+            elif wrapper == "taskset" and not taskset_cpu:
+                args.pop(0)  # positional CPU mask
+                break
+            else:
+                break
+    return str(args[0]) if args else "<missing>"
+
+
+def executable_error(argv, unit):
+    binary = command_binary(argv)
+    path = shutil.which(binary) if os.path.dirname(binary) == "" else binary
+    if not path or not os.path.isfile(path) or not os.access(path, os.X_OK):
+        return f"{unit}: argv[0] {binary!r}: FIX: point argv[0] at an existing binary in the store"
+    return None
+
+
 def validate_spec(spec):
     """Raise SpecError naming every defect of the declaration (selftest and every entry point call this first)."""
     errs = []
@@ -263,6 +305,8 @@ def validate_spec(spec):
             errs.append(f"arm_env names unknown arm {a}")
     srv = spec.get("server") or {}
     argv = srv.get("argv") or []
+    if error := executable_error(argv, "server"):
+        errs.append(error)
     if not argv or "{PORT}" not in [str(x) for x in argv]:
         errs.append("server.argv must be the production argv with a '{PORT}' placeholder")
     for k, v in knobs.items():
@@ -275,6 +319,8 @@ def validate_spec(spec):
     if len(kinds) != len(set(kinds)):
         errs.append(f"correctness: one unit per kind (got {kinds})")
     for c in corr_list(spec):
+        if c.get("argv") and (error := executable_error(c["argv"], f"correctness {c.get('kind')}")):
+            errs.append(error)
         if c.get("kind") in ("identity", "kld", "tbo", "selftest_bin") and c.get("arms"):
             for baseline in b:
                 if baseline not in c["arms"]:
@@ -351,6 +397,8 @@ def validate_spec(spec):
         if not isinstance(u, dict) or u.get("kind") != "load":
             errs.append("units: only kind load is supported")
             continue
+        if u.get("argv") and (error := executable_error(u["argv"], "load unit server")):
+            errs.append(error)
         if "sampler" in u:
             check_sampler(u["sampler"], "load unit")
         if not u.get("arms") or any(a not in arms for a in u["arms"]):
@@ -1780,7 +1828,7 @@ def selftest(spec, row_dir, stream=None):
             for pos, a in enumerate(block_order(spec, b)):
                 seen.setdefault(a, []).append(pos)
         assert all(sorted(v) == sorted(list(range(k)) * 2) for v in seen.values()), seen
-    sp = dict(spec, correctness=None, inputs={}, workload={"prompts": ["p"]}, dirs=[])
+    sp = dict(spec, correctness=None, candidates=candidate_arms(spec), inputs={}, workload={"prompts": ["p"]}, dirs=[])
     quiet = open(os.devnull, "w")
     verdicts = {}
     with tempfile.TemporaryDirectory() as t:
