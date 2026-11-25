@@ -321,11 +321,16 @@ def test_smoke_fake_server_passes_and_writes_measure(tmp_path):
     row = tmp_path / "row"
     g = G.Gate(sp, str(row), env={"FILLER_PORTS": str(free_port()), "FILLER_SMOKE": "1"}, stream=QUIET)
     assert g.smoke() == 0, (row / "out" / H.TERMINAL_SMOKE).read_text()
-    assert json.loads((row / "out-smoke" / H.SMOKE_MEASURE).read_text())["unit_s"] > 0
+    measure = json.loads((row / "out-smoke" / H.SMOKE_MEASURE).read_text())
+    assert measure["unit_s"] > 0
+    assert set(measure["arm_load_s"]) == {"OFF", "OFF2", "ON"}
+    assert all(v >= 0 for v in measure["arm_load_s"].values())
     assert [u["arm"] for u in G.load_units(str(row / "out-smoke"))] == ["OFF", "OFF2", "ON"]   # every declared arm
     sp["server"]["env"]["FAKE_MARKERS"] = "{}"                                   # knob never prints -> smoke FAIL, named
     g = G.Gate(sp, str(tmp_path / "row2"), env={"FILLER_PORTS": str(free_port()), "FILLER_SMOKE": "1"}, stream=QUIET)
     assert g.smoke() == 3
+    failed_measure = json.loads((tmp_path / "row2" / "out-smoke" / H.SMOKE_MEASURE).read_text())
+    assert set(failed_measure["arm_load_s"]) == {"OFF", "OFF2", "ON"}
     r = json.loads((tmp_path / "row2" / "out" / H.TERMINAL_SMOKE).read_text())["reason"]
     assert "knob GGML_HIP_Q8MC arm ON unit smoke-ON: expected present, observed absent" in r
 

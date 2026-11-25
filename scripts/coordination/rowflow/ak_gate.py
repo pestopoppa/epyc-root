@@ -1843,6 +1843,10 @@ class Gate:
                                                    ready, kind="smoke"))
                 H.append_unit(u, self.out)
                 units.append(u)
+                arm_load_s = {x["arm"]: x["load_s"] for x in units if x.get("load_s") is not None}
+                H.write_smoke_measure(self.out_smoke, max((time.time() - u0) / len(units), 0.001),
+                                      len(units), u0 - t0, unit_name="arm visit",
+                                      extra={"gate": "ak_gate", "arm_load_s": arm_load_s})
                 H.append_unit(dict(u, smoke=True, smoke_shape="full", smoke_run_id=smoke_run_id), self.out_smoke)
                 d = decide_smoke(self.spec, units)
                 if d["verdict"] != "SMOKE_PASS":
@@ -1898,7 +1902,7 @@ class Gate:
                 self.current_unit = {}
             unit_s = max((time.time() - u0) / len(units), 0.001)
             H.write_smoke_measure(self.out_smoke, unit_s, len(units), u0 - t0,
-                                  unit_name="arm visit", extra={"gate": "ak_gate"})
+                                  unit_name="arm visit", extra={"gate": "ak_gate", "arm_load_s": arm_load_s})
             result_path = os.path.join(self.out, "RESULT.json")
 
             if time.time() - t0 > float(sm["budget_s"]):

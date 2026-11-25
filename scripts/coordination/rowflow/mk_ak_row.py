@@ -45,6 +45,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -829,6 +830,11 @@ def gate_scaffold(a, served=None):
               "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
                                              "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
               "inputs": inputs, "dirs": list(a.dir)}
+    if a.smoke_budget_s is None:
+        a.smoke_budget_s = derive_smoke_budget(a, spec_g)
+        spec_g["smoke"]["budget_s"] = a.smoke_budget_s
+    else:
+        print(f"smoke budget: {a.smoke_budget_s} s (explicit --smoke-budget-s)")
     if a.sampler:
         points = []
         for raw in a.sampler:
@@ -940,6 +946,60 @@ def gate_scaffold(a, served=None):
     return d, spec
 
 
+def smoke_load_estimate(root, model, supersedes):
+    """Newest usable per-arm load measurement from a predecessor or same-model row."""
+    candidates = []
+    predecessors = {x.strip() for x in (supersedes or "").split(",") if x.strip()}
+    try:
+        rows = list(os.scandir(root))
+    except OSError:
+        rows = []
+    for row in rows:
+        if not row.is_dir(follow_symlinks=False):
+            continue
+        try:
+            with open(os.path.join(row.path, "spec.json")) as f:
+                same_model = json.load(f).get("model") == model
+        except (OSError, ValueError, AttributeError):
+            same_model = False
+        if row.name not in predecessors and not same_model:
+            continue
+        for directory, filename in (("out-smoke", H.SMOKE_MEASURE), ("out", H.TERMINAL_SMOKE)):
+            path = os.path.join(row.path, directory, filename)
+            try:
+                with open(path) as f:
+                    record = json.load(f)
+                values = record.get("arm_load_s", {})
+                values = values.values() if isinstance(values, dict) else values if isinstance(values, list) else []
+                values = [float(v) for v in values if isinstance(v, (int, float)) and not isinstance(v, bool)
+                          and 0 < float(v) < float("inf")]
+                if values:
+                    candidates.append((os.stat(path).st_mtime_ns, max(values), path))
+            except (OSError, ValueError, TypeError, AttributeError):
+                continue
+    if candidates:
+        _, seconds, path = max(candidates)
+        return seconds, path
+    return 150, "conservative default"
+
+
+def derive_smoke_budget(a, gate_spec):
+    load_s, source = smoke_load_estimate(a.root, a.model, getattr(a, "supersedes", None))
+    reduced = G.smoke_spec(gate_spec)
+    costs = []
+    for _, kind, _, _ in G.plan_correctness(reduced):
+        c = G.corr_of(reduced, kind)
+        # A correctness process has its own timeout; served units also load the model.
+        cost = float(c.get("timeout_s") or 150)
+        if kind == "c-sq" or (kind == "c-id" and c.get("mode", "server") == "server"):
+            cost = max(cost, load_s)
+        costs.append(cost)
+    budget = math.ceil(load_s * len(gate_spec["arms"]) + sum(costs) + 120)
+    print(f"smoke budget: {load_s:g} s/arm x {len(gate_spec['arms'])} arms + "
+          f"{sum(costs):g} s correctness ({len(costs)} units) + 120 s = {budget} s; load source: {source}")
+    return budget
+
+
 def gate_sha():
     return _sha(os.path.join(HERE, "ak_gate.py"))
 
@@ -1002,7 +1062,7 @@ def gate_main(argv=None):
     n.add_argument("--smoke-arm")
     n.add_argument("--smoke-prompt-chars", type=int, default=2000)
     n.add_argument("--smoke-n-predict", type=int, default=32)
-    n.add_argument("--smoke-budget-s", type=int, default=300)
+    n.add_argument("--smoke-budget-s", type=int, default=None)
     n.add_argument("--first-progress-s", type=int, help="keeper first-progress deadline in seconds")
     n.add_argument("--claim")
     n.add_argument("--threads", type=int, default=8)
@@ -1170,8 +1230,6 @@ def print_box_stub(a):
 # (RCA ak-row-robustness-rca-20261124 F1: ONE generator). row_scaffold.py is now a shim over these names.
 # CLI: mk_ak_row.py polar new|--lint|--seal ...  (same arguments as the old row_scaffold.py)
 # ======================================================================================================================
-import math  # noqa: E402
-
 GPU_HOST = set(range(88, 96)) | set(range(184, 192))
 PATH_RE = re.compile(r"/mnt/raid0/llm/tmp/[A-Za-z0-9._/-]+")
 ALLOWED_OUTSIDE = ("/mnt/raid0/llm/tmp/compute-flags/",)

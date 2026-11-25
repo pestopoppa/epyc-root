@@ -336,3 +336,42 @@ def test_gate_deadline_refused_in_rehearsal_and_publish(env, monkeypatch):
         assert rc_chk == 2 and rc_pub != 0
         assert "FIX: --first-progress-s 960" in chk and "FIX: --first-progress-s 960" in pub
         assert not os.path.exists(rf.ready_path(str(env["flags"]), rid))
+
+
+def test_auto_smoke_budget_uses_latest_eligible_measure_and_correctness(env):
+    old = env["rows"] / "predecessor"
+    (old / "out-smoke").mkdir(parents=True)
+    (old / "out-smoke" / "smoke_measure.json").write_text(json.dumps({"arm_load_s": {"OFF": 105, "ON": 110}}))
+    other = env["rows"] / "same-model"
+    (other / "out").mkdir(parents=True)
+    (other / "spec.json").write_text(json.dumps({"model": "Qwen3.8-27B-Q8_0"}))
+    (other / "out" / "TERMINAL-smoke.json").write_text(json.dumps({"arm_load_s": {"OFF": 120}}))
+    rid = "ak-r-auto-20261125"
+    corr = json.dumps({"kind": "tbo", "argv": [env["argv"][0], "test"],
+                       "arms": ["OFF", "OFF2", "ON"], "ops": "MUL_MAT", "timeout_s": 40})
+    rc, out = run(decl(env, rid, extra=["--supersedes", "predecessor", "--correctness", corr]))
+    assert rc == 0, out
+    assert "120 s/arm x 3 arms + 120 s correctness (3 units) + 120 s = 600 s" in out
+    assert "same-model/out/TERMINAL-smoke.json" in out
+    spec = json.loads((env["rows"] / rid / "spec.json").read_text())
+    assert spec["first_progress_s"] == 720
+    assert "'budget_s': 600" in (env["rows"] / rid / "job.py").read_text()
+
+
+def test_auto_smoke_budget_default_and_explicit_override(env):
+    rc, out = run(decl(env, "ak-r-gate-gpu-20261125-autodefault"))
+    assert rc == 0, out
+    assert "150 s/arm x 3 arms + 0 s correctness (0 units) + 120 s = 570 s" in out
+    rc, out = run(decl(env, "ak-r-auto-explicit-20261125", extra=["--smoke-budget-s", "300"]))
+    assert rc == 0 and "300 s (explicit --smoke-budget-s)" in out
+
+
+def test_auto_budget_accounts_for_served_quality_load(env):
+    import argparse
+    row = env["rows"] / "prior"
+    (row / "out-smoke").mkdir(parents=True)
+    (row / "out-smoke" / "smoke_measure.json").write_text(json.dumps({"arm_load_s": {"OFF": 200}}))
+    args = argparse.Namespace(root=str(env["rows"]), model="model", supersedes="prior")
+    spec = {"arms": {"OFF": {}, "OFF2": {}, "ON": {"K": "1"}}, "baseline": ["OFF", "OFF2"],
+            "correctness": {"kind": "served_quality", "noise_arm": "OFF2", "timeout_s": 10}}
+    assert MK.derive_smoke_budget(args, spec) == 1320
