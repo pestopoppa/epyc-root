@@ -906,13 +906,14 @@ def quality_decision(spec, c, units):
     n = len(base)
     acc = sum(truth) / n
     noise_acc = sum(r["correct"] for r in by[noise]) / n
-    bound = max(float(c.get("abs_floor_items", 1)) / n, float(c.get("k", 3)) * abs(noise_acc - acc))
+    allowed_items = max(float(c.get("abs_floor_items", 1)), float(c.get("k", 3)) * abs(sum(r["correct"] for r in by[noise]) - sum(truth)))
+    bound = allowed_items / n
     details, failed = {}, []
     for arm, rows in by.items():
         values = [r["correct"] for r in rows]
         p, bad, good = mcnemar_bad_p(truth, values)
         accuracy = sum(values) / n
-        passed = accuracy >= acc - bound and not (bad > good and p < 0.05)
+        passed = sum(truth) - sum(values) <= allowed_items and not (bad > good and p < 0.05)
         if arm in candidate_arms(spec) and not passed:
             failed.append(arm)
         details[arm] = {"accuracy": accuracy, "correct": sum(values), "mcnemar_p_bad": p,

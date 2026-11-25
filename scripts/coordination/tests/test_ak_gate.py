@@ -1543,6 +1543,7 @@ def test_served_quality_scores_and_isolates_code(tmp_path):
     item["test"] = f"def check(f):\n    open({str(target)!r}, 'w').write('bad')"
     assert not G.score_quality(item, "    return a+b", 2)
     assert target.read_text() == "intact"
+    item["test"] = "def check(f):\n    f(1, 2)"
     assert not G.score_quality(item, "    while True: pass", .1)
 
 
