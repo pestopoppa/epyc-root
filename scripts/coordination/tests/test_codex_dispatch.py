@@ -77,7 +77,7 @@ def env(tmp_path, monkeypatch):
 
 def rec(bid, **kw):
     r = {"id": bid, "state": "open", "class": "non-inference", "file": "handoffs/active/churn-pipeline.md", "line": 10,
-         "text": f"- [ ] **{bid}** [non-inference] do the thing", "done_when": "it is done", "brief": "unverified",
+         "text": f"- [ ] **{bid}** [non-inference] do the thing in r", "done_when": "it is done", "brief": "unverified",
          "holds": [], "gate": [], "gate_open": False, "gate_unknown": [], "inputs_missing": [], "lint": {"ok": True},
          "needs_brief": False, "needs_owner": False, "frozen_until": None, "outside_backlog": False,
          "proposed_by": None, "row_rank": 1, "pos_in_backlog": 1}
@@ -340,7 +340,7 @@ def test_quiet_hold_grants_and_latest_idle(tmp_path):
 
 def test_quiet_hold_prevents_lane(env, monkeypatch, capsys):
     calls = []
-    rows, _ = go(env, doc(rec("BX-1")), "blocked", monkeypatch, run_limit_s=0.01,
+    rows, _ = go(env, doc(rec("BX-1")), "blocked", monkeypatch, run_limit_s=0.2,
                  hooks={"quiet_hold": lambda flags: "quiet-host", "sleep": lambda n: calls.append(n)})
     assert not rows and calls and "QUIET-HOLD" in capsys.readouterr().out
 
@@ -370,3 +370,49 @@ def test_grant_file_and_ready_manifest(tmp_path):
     (tmp_path / "grants/row.grant").write_text("end=2999-01-01T00:00Z\n")
     (tmp_path / "ready/row.json").write_text('{"shape":"host"}')
     assert "grant" in CX.quiet_hold(tmp_path)
+
+
+def test_target_repo_selection_and_ambiguity(env):
+    repos = {"epyc-root": str(env["clone"]), "epyc-orchestrator": "/other"}
+    _brief(env, "BX-1", ["epyc-orchestrator:src/features.py"])
+    assert CX.target_repo(rec("BX-1", text="fix features"), env["root"], repos) == "epyc-orchestrator"
+    assert CX.target_repo(rec("BX-1", text="also edit epyc-root"), env["root"], repos) is None
+    _brief(env, "BX-1", ["unknown-repo:src/x.py"])
+    assert CX.target_repo(rec("BX-1", text="fix features"), env["root"], repos) is None
+    _brief(env, "BX-1", ["src/x.py"])
+    assert CX.target_repo(rec("BX-1", text="fix features"), env["root"], repos) is None
+    assert CX.target_repo(rec("BX-1", text="fix epyc-root code"), env["root"], repos) == "epyc-root"
+    chosen, hist = CX.select(doc(rec("BX-1", text="fix features")), env["root"], repos=repos)
+    assert not chosen and hist["multi-or-unknown-repo"] == 1
+
+
+def test_cross_repo_lane_and_verification(env, monkeypatch):
+    other_origin = env["root"].parent / "other.git"
+    other = env["root"].parent / "other"
+    _git("init", "-q", "--bare", "-b", "main", str(other_origin))
+    _git("clone", "-q", str(other_origin), str(other))
+    (other / "OTHER").write_text("target\n")
+    _git("add", "OTHER", cwd=other)
+    _git("-c", "user.name=f", "-c", "user.email=f@x", "commit", "-qm", "init", cwd=other)
+    _git("push", "-q", "origin", "HEAD:main", cwd=other)
+    _brief(env, "BX-1", ["epyc-orchestrator:src/features.py"])
+    monkeypatch.setenv("FAKE_MODE", "done")
+    monkeypatch.setenv("FAKE_REPO", "epyc-orchestrator")
+    seen = []
+    rows = CX.dispatch(root=env["root"], root_repo=env["clone"], out=env["out"], doc=doc(rec("BX-1", text="fix features")),
+                       codex=env["fake"], repos={"epyc-root": str(env["clone"]), "epyc-orchestrator": str(other)},
+                       hooks={"quiet_hold": lambda flags: None, "rerun": lambda repo, *a: (seen.append(repo) or 0, "ok"),
+                              "remove": lambda *a: {"removed": True}})
+    assert rows[0]["verdict"] == "DONE", rows
+    assert seen == [other]
+    assert _git("show", "origin/main:t_ok.py", cwd=other)
+    assert subprocess.run(["git", "-C", str(env["clone"]), "cat-file", "-e", "origin/main:t_ok.py"], capture_output=True).returncode != 0
+    prompt = next(env["out"].glob("*.prompt")).read_text()
+    assert "BX-1 epyc-orchestrator" in prompt
+
+
+def test_judge_rejects_other_repo(env):
+    sha = _git("rev-parse", "HEAD", cwd=env["clone"])
+    report = f"LANE-STATUS: DONE\nBX-1 wrong main {sha}\nTEST: pytest x.py\nPUSH VERIFIED\n"
+    verdict = CX.judge(report, "BX-1", {"wrong": str(env["clone"])}, {}, expected_repo="/different")
+    assert not verdict["done"] and "different repository" in verdict["why"]

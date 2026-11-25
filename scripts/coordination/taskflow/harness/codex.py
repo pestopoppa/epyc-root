@@ -115,6 +115,22 @@ def brief_where(root: Path, bid: str) -> tuple[list[str], str]:
     return where, (a.group(1) if a else "")
 
 
+def target_repo(rec: dict, root: Path, repos: dict[str, str]) -> str | None:
+    """Resolve exactly one configured repo; explicit unknown or conflicting names fail closed."""
+    where, approach = brief_where(root, str(rec.get("id") or ""))
+    names = set()
+    for entry in where:
+        m = re.match(r"^([\w.-]+):", entry)
+        if m:
+            names.add(m.group(1))
+    hay = " ".join([str(rec.get("text") or ""), str(rec.get("done_when") or ""), approach, *where])
+    names.update(re.findall(r"(?<![\w-])epyc-[\w-]+(?![\w-])", hay))
+    for name in repos:
+        if re.search(rf"(?<![\w-]){re.escape(name)}(?![\w-])", hay):
+            names.add(name)
+    return next(iter(names)) if len(names) == 1 and next(iter(names)) in repos else None
+
+
 def handoff_edit_match(rec: dict, root: Path) -> str | None:
     """The pattern (as `kind:regex`) that marks this box as editing handoff/brief/index files, or None."""
     bid = str(rec.get("id") or "")
@@ -123,7 +139,7 @@ def handoff_edit_match(rec: dict, root: Path) -> str | None:
     for kind, pat, rx in _HANDOFF_RE:
         if kind == "id" and rx.fullmatch(bid):
             return f"{kind}:{pat}"
-        if kind == "where" and any(rx.fullmatch(w) for w in where):
+        if kind == "where" and any(rx.fullmatch(re.sub(r"^[\w.-]+:", "", w)) for w in where):
             return f"{kind}:{pat}"
         if kind == "bulk" and rx.search(f"{text} {approach}"):
             return f"{kind}:{pat}"
@@ -328,7 +344,8 @@ def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_sta
 
 
 def select(doc: dict, root: Path, files=DEFAULT_FILES, done_ids: set[str] = frozenset(), n: int = 3,
-           base_state=None, recent_messages: tuple[str, ...] = (), scope: str = "default") -> tuple[list[tuple[str, dict]], dict]:
+           base_state=None, recent_messages: tuple[str, ...] = (), scope: str = "default",
+           repos: dict[str, str] | None = None) -> tuple[list[tuple[str, dict]], dict]:
     """(chosen [(key, rec)] in select.py order, skip histogram). One box per handoff file per run is NOT enforced:
     independent lanes may work on boxes from the same handoff."""
     from taskflow import select as S
@@ -346,6 +363,8 @@ def select(doc: dict, root: Path, files=DEFAULT_FILES, done_ids: set[str] = froz
         elif files and rec.get("file") not in files:
             continue
         why = codex_skip(rec, root, done_ids, base_state if len(out) < n else None, recent_messages)
+        if why is None and repos is not None and target_repo(rec, root, repos) is None:
+            why = "multi-or-unknown-repo"
         if why is None and len(out) >= n:
             why = "over-limit"
         hist[why or "chosen"] = hist.get(why or "chosen", 0) + 1
@@ -458,7 +477,7 @@ def rerun_test(repo: Path, argv: list[str], tag: str, runner=None) -> tuple[int,
             print(f"[codex] verify worktree kept (remove refused): {wt}: {rm.stderr.strip()[-160:]}", file=sys.stderr)
 
 
-def judge(report_text: str, box_id: str, repos: dict[str, str], base_heads: dict[str, str], rerun=None) -> dict:
+def judge(report_text: str, box_id: str, repos: dict[str, str], base_heads: dict[str, str], rerun=None, expected_repo: str | None = None) -> dict:
     """{done: bool, why, sha, repo, test_rc}. DONE only from artifacts; the lane's LANE-STATUS line is a hint."""
     status, detail, boxes = D.parse_report(report_text)
     if status != "DONE":
@@ -468,7 +487,11 @@ def judge(report_text: str, box_id: str, repos: dict[str, str], base_heads: dict
         return {"done": False, "why": f"report names {len(mine)} commit lines for {box_id}"}
     _, rname, branch, sha = mine[0]
     rpath = repos.get(rname, rname)
-    git(rpath, "fetch", "-q", "origin")
+    if expected_repo is not None and rpath != expected_repo:
+        return {"done": False, "why": "report names a different repository"}
+    fetch = git(rpath, "fetch", "-q", "origin")
+    if fetch.returncode:
+        return {"done": False, "why": "cannot fetch target origin/main"}
     bad = D.commit_check(rpath, branch, sha, push=True)
     if bad:
         return {"done": False, "why": bad, "sha": sha}
@@ -596,10 +619,10 @@ def tag_needs_owner(rec: dict, why: str, lane: str, root_repo: Path, trailers: l
 
 
 # ---------------------------------------------------------------------------------------------------------- run
-def run_lane(lane: str, d: Path, codex: str, max_rounds: int, runner=None) -> int:
+def run_lane(lane: str, d: Path, codex: str, max_rounds: int, runner=None, repo: str = "/workspace") -> int:
     """codex_lane/drive.py --push for one lane, pinned 84-87 / nice 19 / ionice 3 (drive's own nice is disabled)."""
     cmd = PIN + [sys.executable, str(ROOT / "scripts/coordination/codex_lane/drive.py"), lane, "--dir", str(d),
-                 "--max", str(max_rounds), "--push", "--codex", codex, "--watch", f"/workspace:{lane}"]
+                 "--max", str(max_rounds), "--push", "--codex", codex, "--watch", f"{repo}:{lane}"]
     env = dict(os.environ, CODEX_LANE_NO_NICE="1", HIP_VISIBLE_DEVICES="-1")
     with (d / f"{lane}-drive.out").open("a") as o:
         return (runner or subprocess.run)(cmd, stdout=o, stderr=subprocess.STDOUT, env=env).returncode
@@ -634,36 +657,47 @@ def dispatch(*, root: Path = ROOT, root_repo: Path | None = None, out: Path = OU
         import box_index
         sys.path.pop(0)
         doc = box_index.load(root)
+    repos = dict(repos or D.DEFAULT_REPOS)
     def base_state(r):
         st = origin_box_state(r, root_repo)
-        if not dry_run and st == "open" and (hooks.get("already_done") or (lambda x: already_done(x, root_repo)))(r):
-            return "landed"
+        target = target_repo(r, root, repos)
+        if not dry_run and st == "open" and target:
+            target_path = Path(repos[target])
+            if hooks.get("already_done"):
+                landed = hooks["already_done"](r)
+            else:
+                landed = (git(target_path, "fetch", "-q", "origin").returncode == 0
+                          and already_done(r, target_path))
+            if landed:
+                return "landed"
         return st
     messages = recent_commit_messages(root_repo)
-    chosen, hist = select(doc, root, files, attempted(out), n, base_state=base_state, recent_messages=messages, scope=scope)
+    chosen, hist = select(doc, root, files, attempted(out), n, base_state=base_state, recent_messages=messages, scope=scope, repos=repos)
     print(f"[codex] chosen: {[k for k, _ in chosen]}  skips: {hist}")
     if dry_run:
         return [{"box": k, "file": r["file"], "line": r["line"], "dry_run": True} for k, r in chosen]
-    repos = dict(repos or D.DEFAULT_REPOS)
     rows = []
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M")
     def execute(key, rec):
         lane = lane_name(rec["id"], stamp)
         report = out / f"{lane}-REPORT.md"
-        base_heads = {}
-        for p in {str(v) for v in repos.values()} | {str(root_repo)}:
-            if Path(p).exists():
-                git(p, "fetch", "-q", "origin")
-                base_heads[p] = git(p, "rev-parse", "origin/main").stdout.strip()
-        (out / f"{lane}.prompt").write_text(build_prompt(rec, root, lane, report, trailers=trailers, env_ack=env_ack))
+        repo_name = target_repo(rec, root, repos)
+        repo_path = str(repos[repo_name])
+        (out / f"{lane}.prompt").write_text(build_prompt(rec, root, lane, report, repo=repo_name, trailers=trailers, env_ack=env_ack))
         row = {"at": now(), "box": rec["id"], "file": rec["file"], "line": rec["line"], "lane": lane, "apply": apply}
         t0 = time.time()
         wt = WT_ROOT / f"{lane}-wt"
         try:
-            (hooks.get("mklane") or (lambda: sparse_worktree(root_repo, wt, lane)))()
-            row["drive_rc"] = (hooks.get("lane") or run_lane)(lane, out, codex, max_rounds)
+            fetch = git(repo_path, "fetch", "-q", "origin")
+            head = git(repo_path, "rev-parse", "--verify", "origin/main")
+            if fetch.returncode or head.returncode:
+                raise RuntimeError(f"cannot fetch target origin/main: {fetch.stderr or head.stderr}")
+            base_heads = {repo_path: head.stdout.strip()}
+            (hooks.get("mklane") or (lambda: sparse_worktree(Path(repo_path), wt, lane)))()
+            row["drive_rc"] = (hooks["lane"](lane, out, codex, max_rounds) if hooks.get("lane") else
+                               run_lane(lane, out, codex, max_rounds, repo=repo_path))
             text = report.read_text(errors="replace") if report.exists() else ""
-            v = judge(text, rec["id"], repos, base_heads, rerun=hooks.get("rerun"))
+            v = judge(text, rec["id"], {repo_name: repo_path, repo_path: repo_path}, base_heads, rerun=hooks.get("rerun"), expected_repo=repo_path)
         except Exception as e:  # noqa: BLE001 - one lane never stops the ledger line
             v = {"done": False, "why": f"dispatcher error {type(e).__name__}: {e}"[:300]}
         row.update(verdict="DONE" if v["done"] else "NOT-DONE", why=v["why"], sha=v.get("sha"), test_rc=v.get("test_rc"),
