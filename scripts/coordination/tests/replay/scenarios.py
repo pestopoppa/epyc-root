@@ -1755,7 +1755,26 @@ def sc_host_drain_1135(path):
     return write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=True, host_after_gpu_queue=False)), check
 
 
+def sc_quiet_drain_ranked_smoke(path):
+    """2026-11-25 19:16Z: a deferred rank-42 quiet host cannot block rank-3 CPU smoke."""
+    h = row("ak-q38fn-served-census-full-cpu-20261125", regions="0-95", claim="0-95",
+            extra="bench -t 96", est=3600, rank=42,
+            man={"shape": "quiet-host", "declared_shape": "quiet-host", "shape_override": "operator: replay fixture"})
+    sid = "ak-q38fn-nongemv-gate-d1k-d32k-cpu-20261125-r5"
+    smoke = row(sid, passed=False, rank=3, extra="python3 x.py --workers 2")
+    smoke["smoke_queued"] = {"id": sid, "queued_at": _iso(T0), "cpus": 4}
+    gpu = row("gpu-queued", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True,
+              role="bench", extra="llama-server -t 8", rank=10, est=3600)
+    rows = {h["manifest"]["id"]: h, sid: smoke, "gpu-queued": gpu}
+    world = {"drain_state": {h["manifest"]["id"]: T0 + 3600}}
+    def check(d):
+        return [] if any(line.startswith((f"SMOKE-PLACE {sid}", f"PLAN smoke {sid}"))
+                         for tick in d for line in tick["lines"]) else ["rank-3 CPU smoke blocked by rank-42 quiet-host drain"]
+    return write(path, [(rows, world)] * 3), check
+
+
 SCENARIOS = {
+    "quiet-drain-ranked-smoke": sc_quiet_drain_ranked_smoke,
     "gpu-grant-sticky-host-drain": sc_gpu_grant_sticky_host_drain,
     "host-after-gpu-queue": sc_host_after_gpu_queue,
     "host-drain-1135": sc_host_drain_1135,

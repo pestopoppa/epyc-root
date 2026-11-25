@@ -7701,12 +7701,14 @@ def drain_state_next(last_drain, drain_prev, live_ids, assigned_ids, now=None):
     return {k: v for k, v in drain_live(drain_prev, now).items() if k in live and k not in done}
 
 
-def quiet_host_drain_target(cands, drain_prev):
-    """The quiet-host candidate the planner is draining for (drain_state.json), or None."""
-    for c in cands:
-        if c.get("shape") == "quiet-host" and c["id"] in (drain_prev or {}):
-            return c["id"]
-    return None
+def quiet_host_drain_target(cands, drain_prev, free, ram, gpu_open=False, held_ports=(), quiet_ok=True):
+    """A startable quiet-host drain, if any. Deferred and GPU-blocked rows reserve no smoke time."""
+    if not quiet_ok:
+        return None
+    eligible = [c for c in cands if c.get("shape") == "quiet-host" and c["id"] in (drain_prev or {})
+                and not c.get("hold") and not c.get("phantom")
+                and placeable(c, free, ram, gpu_open, held_ports)]
+    return min(eligible, key=lambda c: float(c["rank"])) if eligible else None
 
 
 def quiet_host_smoke_live(flags, placed=()):
@@ -9538,7 +9540,7 @@ def pick_smoke_cpus(free, n=SMOKE_CPUS, timing_q=frozenset()):
 
 
 def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), timing_q=frozenset(),
-                 drain_reserved=frozenset(), gpu_queued=False, demand_reserved=frozenset()):
+                 drain_reserved=frozenset(), gpu_queued=False, demand_reserved=frozenset(), quiet_drain=None):
     """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets its record's `cpus` (default n) free
     cores, and its smoke starts detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated
     in place. No free cores is WAIT (logged), never a failure. Returns the placed (rid, cpus).
@@ -9559,6 +9561,10 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
         if smoke_passed(flags, rid):   # a PASS is terminal: never re-smoke a grantable row
             _rm(q)
             log(f"SMOKE-DONE {rid}: PASS already recorded for this launcher; queue record dropped")
+            continue
+        smoke_rank = row_rank(load_json(ready_path(flags, rid)) or (load_json(q) or {}).get("spec"))
+        if quiet_drain and float(quiet_drain["rank"]) < smoke_rank:
+            log(f"SMOKE-WAIT {rid}: quiet-host drain {quiet_drain['id']} has higher priority; stays queued (not a failure)")
             continue
         want = int((load_json(q) or {}).get("cpus") or n)
         gt = gpu_touch(load_json(ready_path(flags, rid)) or {})
@@ -10776,30 +10782,46 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 log(f"WAIT {c['id']}: gpu-quiet EXCLUSIVE needs a quiet device: {gwhy}")
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
-    qh_drain = quiet_host_drain_target(cands, drain_prev)
+    qh_drain = quiet_host_drain_target(
+        cands, drain_prev, free, mem_available_gib(), gpu_open,
+        held_ports={int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])},
+        quiet_ok=quiet_ok_now(flags) and not quiet_host_smoke_live(flags))
+    if qh_drain:
+        # The later grant gates must also allow this row before it can hold a smoke.
+        # Probe without publishing state or alerts; failure leaves smokes runnable.
+        try:
+            lane, _ = build_lane_open(flags)
+            if lane and not (reservation_mode() == "enforce" and float(qh_drain["rank"]) < URGENT_RANK):
+                qh_drain = None
+            else:
+                eligible, _ = foreign_server_gate(flags, [qh_drain], grants, lambda _: None, dry=True)
+                eligible, _, _ = quiet_gate(eligible, allrows, grants, measure_util(), flags, reserve=None)
+                if not eligible or not placeable(eligible[0], free, mem_available_gib(), gpu_open,
+                                                  {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}):
+                    qh_drain = None
+        except Exception as e:  # noqa: BLE001 - uncertainty must not hold smokes
+            log(f"SMOKE-WAIT eligibility check failed: {type(e).__name__}: {e}")
+            qh_drain = None
     placed_smokes = []
     if not admit_hold:
-        if qh_drain:   # QUIET-HOST-SMOKE 2026-11-12: a pocket smoke never starts under a quiet-host drain
-            if glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")):
-                log(f"SMOKE-WAIT quiet-host drain {qh_drain}: no pocket smoke starts until it is granted (not a failure)")
-        else:
-            # D9 2026-11-18 SMOKE-CPUS: a wide smoke never takes the regions of a row being drained for
-            d_res = set()
-            for c in cands:
-                if c["id"] in drain_prev:
-                    for o in c["options"]:
-                        d_res |= set(o)
-            # coordinator 2026-11-18: nor any option of a grantable/armed row that fits the free set this tick
-            efree = expand(set(free))
-            dem = set()
-            for c in cands:
+        # A quiet-host drain holds only lower-priority smokes while it can start now.
+        d_res = set()
+        for c in cands:
+            if c["id"] in drain_prev and c.get("shape") != "quiet-host":
                 for o in c["options"]:
-                    eo = expand(set(o))
-                    if eo <= efree:
-                        dem |= eo
-            placed_smokes = place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows),
-                                         drain_reserved=frozenset(d_res), gpu_queued=gpu_queued,
-                                         demand_reserved=frozenset(dem))
+                    d_res |= set(o)
+        efree = expand(set(free))
+        dem = set()
+        for c in cands:
+            if c.get("shape") == "quiet-host":
+                continue  # its per-smoke priority check above also covers wide smokes
+            for o in c["options"]:
+                eo = expand(set(o))
+                if eo <= efree:
+                    dem |= eo
+        placed_smokes = place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows),
+                                     drain_reserved=frozenset(d_res), gpu_queued=gpu_queued,
+                                     demand_reserved=frozenset(dem), quiet_drain=qh_drain)
     rmode = reservation_mode()   # RESERVATION: off | shadow | enforce (see the RESERVATION block above allocate)
     if rmode == "enforce":   # CLAIM QUEUE (claims were never gated by a disk pause / HOLD-ADMISSIONS; they still are not): pending claim requests are candidates like rows
         try:
