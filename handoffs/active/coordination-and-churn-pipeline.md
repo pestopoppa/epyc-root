@@ -2522,6 +2522,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · gate: none        · inputs: `docs/design/rowflow-replanning-scheduler.md` `scripts/coordination/rowflow/rowflow.py`
       · owner: pipeline-mgmt
   - 2026-11-24: scheduler C shipped in SHADOW 5851284db (design afddb8c5e, vidya source 9544bddd0); 7-day soak starts at that deploy. Stays open.
+      · NEEDS-OWNER: 2026-11-25 codex lane cxd-pm-replan-c-soak-20261125T1436: lane status BLOCKED: docs/design/rowflow-replanning-scheduler.md: 7 consecutive live shadow days and nightly replay evidence are not yet available; deployment is prohibited in this l
 - [ ] **PM-RESERVE-RETIRE-PATCHES** [non-inference] Once PM-REPLAN-C-SOAK has enforced scheduler C, delete the hand-coded reservation rules C subsumes (docs/design/rowflow-replanning-scheduler.md section 11: RANK-HOLD, RANK-SKIP, QUIET-RESERVE, QUIET-URGENT-PENDING, BACKFILL-IF-FITS, and rank_reservation/DRAIN except what B's fallback path still calls) and keep one replay test per original starvation case A-E (listed in the RESERVATION comment block of rowflow.py), so one plan is the only path (intake-2942, intake-2943)
       · done when: none of the subsumed rules remains in rowflow.py on origin/main outside B's fallback path and pytest scripts/coordination/tests -k reservation passes with one named test per case A-E
       · gate: PM-REPLAN-C-SOAK        · inputs: `scripts/coordination/rowflow/rowflow.py` `docs/design/rowflow-replanning-scheduler.md`
