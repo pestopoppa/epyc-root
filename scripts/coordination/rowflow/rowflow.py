@@ -2428,7 +2428,8 @@ SMOKE_HOLD_S = 1200       # a live smoke's cores free within this bound (the dry
 # ONE BOOKING DURATION (pipeline audit 2026-11-10 #3, operator scope "Scheduling model"): every admission question -
 # backfill ahead of a drain target T, a rank hold, the earliest-start reservation - asks `now + book_s <= T`, where
 #     book_s = clamp(estimate_s * BOOK_K, min_window_s, window_s)
-# is computed ONCE at publish and stored in the row (book_s()). window_s stays the grant length (the engine's hard end).
+# is computed at publish and stored in the row (book_s()). Resumed rows may instead use their remaining work for both
+# booking and grant window; other rows retain their published values. window_s is the engine's grant length (hard end).
 # SAFETY kept: a row admitted ahead of T whose window outlasts T gets a grant whose end= is capped at T (plan.hard_end), so
 # the engine's hard-end kill frees the regions at T even when it overruns its booking; a cap that would leave less than
 # min_window_s + the gate margin is never written (that row is not admitted ahead of T).
@@ -2437,6 +2438,7 @@ SMOKE_HOLD_S = 1200       # a live smoke's cores free within this bound (the dry
 # completes incl. sub-2-minute ones: P90 0.43). Owners' estimates are long: the median run uses 14 % of its estimate.
 BOOK_K = 0.75
 CAP_SLACK_S = 300 + 120   # grant_ok_launcher MARGIN_S + the grant's 1-2 min start back-dating / minute flooring
+RESUMABLE_WINDOW_SIZING = True
 
 
 def hold_s(c):
@@ -5332,6 +5334,34 @@ def autorequeue_blocked(text, result=None):
 def autorequeue_history(flags, rid):
     return [float(x) for x in ((load_json(os.path.join(autorequeue_dir(flags), rid + ".history.json")) or {})
                                .get("requeued_at") or [])]
+
+
+def resumable_window_s(flags, rid, d):
+    """Size a resumed grant from elapsed job time in archived autorequeue ends; None keeps the published values."""
+    window = int(d.get("window_s") or 0)
+    if not (RESUMABLE_WINDOW_SIZING and d.get("resumable") and d.get("estimate_s")):
+        return None
+    worked = 0
+    pattern = os.path.join(autorequeue_dir(flags), glob.escape(rid) + ".*.ended")
+    for path in glob.glob(pattern):
+        # Only archives for this exact row and an autorequeue timestamp count.
+        if not re.fullmatch(re.escape(rid) + r"\.\d{8}T\d{6}Z\.ended", os.path.basename(path)):
+            continue
+        try:
+            with open(path, errors="replace") as fh:
+                text = fh.read(8192)
+        except OSError:
+            continue
+        start = re.search(r"(?m)^started=(\S+)", text)
+        end = re.search(r"(?:^|\s)time=(\S+)", text.splitlines()[0] if text else "")
+        t0 = iso_epoch(start.group(1)) if start else None
+        t1 = iso_epoch(end.group(1)) if end else None
+        if t0 is not None and t1 is not None and t1 > t0:
+            worked += t1 - t0
+    if not worked:
+        return None
+    remaining = max(0, float(d["estimate_s"]) - worked)
+    return min(window, int(max(remaining, float(d.get("min_window_s") or 0)) + CAP_SLACK_S))
 
 
 PROGRESS_END_RX = re.compile(r"(^|\s)reason=(partial-native-stopped|released-early|partial-released-early)(\s|$)")
@@ -10205,11 +10235,13 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         # 2026-11-03 session review item 2: UNDERUSED alerts, never blocks (it de-granted r3 for its engine's spin).
         k = contract_of(d, flags=flags)
         since = (load_json(pass_path(flags, rid)) or {}).get("passed_at")
-        window = int(d["window_s"])
+        resumed_window = resumable_window_s(flags, rid, d)
+        window = resumed_window if resumed_window is not None else int(d["window_s"])
+        booking = resumed_window if resumed_window is not None else int(book_s(d))
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": k["bench"], "options": k["options"], "shape": k["shape"], "window_s": window,
                       "estimate_s": int(d.get("estimate_s") or 0), "min_window_s": int(d.get("min_window_s") or 0),
-                      "book_s": int(book_s(d)), "resumable": bool(d.get("resumable")), "whole_host_need": bool(d.get("whole_host_need")),
+                      "book_s": booking, "resumable": bool(d.get("resumable")), "whole_host_need": bool(d.get("whole_host_need")),
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
                       "claim": k["claim"], "threads": k["threads"], "explicit": bool(k["explicit_cpus"]), "cpu_only": bool(k.get("cpu_only"))})
@@ -10737,7 +10769,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 if preflight_hold(flags, rid, d, log):   # D9-ack 2026-11-24: drift checks at grant time (warn-first)
                     failed.append(rid); continue
                 end_cap = plan.hard_end.get(rid)
-                win = capped_window(d["window_s"], end_cap)
+                win = capped_window(c["window_s"], end_cap)
                 ok, line = admit(flags, rid, d, pid, regions, win)
                 if not ok:
                     done = terminal_success(flags, rid) if COMPLETE_BEFORE_RC14 else None
