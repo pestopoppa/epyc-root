@@ -72,6 +72,19 @@ import holds as H  # noqa: E402  - handoff standard C3: holds.yaml is the gate s
 import codex_budget_meter as meter  # noqa: E402
 
 VERSION = "hs-dispatcher-v3"
+IMPERATIVE_RE = re.compile(r"(?m)^(Do|Run|Take|Read|Resolve|Act|File|Publish|Wrap)\b")
+DEFAULT_IMPERATIVE = "Do the next task in your handoff now; do not wait for further instructions."
+
+
+def ensure_imperative(text, line=DEFAULT_IMPERATIVE):
+    """Add an actionable line after a prompt header, or prefix single-line text."""
+    if IMPERATIVE_RE.search(text):
+        return text
+    if "\n" not in text:
+        return f"{line} {text}"
+    header, rest = text.split("\n", 1)
+    return f"{header}\n{line}\n{rest}"
+
 FLAGS = bg.FLAGS_DEFAULT
 ROOT = "/workspace"
 USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit|limit reached", re.I)
@@ -541,7 +554,7 @@ def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
         tail = open(outp, errors="replace").read().strip().splitlines()[-1][:400]
     except (OSError, IndexError):
         pass
-    return f"""[{VERSION}] Run end in your handoff {e.get('handoff') or 'codex-gen backlog'}: row `{rid}`. {fanout_line(e)} {lane_line(slug)}
+    return ensure_imperative(f"""[{VERSION}] Run end in your handoff {e.get('handoff') or 'codex-gen backlog'}: row `{rid}`. {fanout_line(e)} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}1. The handoff is {e['handoff']} in your lane; the state above is current.
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`; manifest {mp or '(none)'} (schema {m.get('schema', 'epyc.row.v3')});
    result_path: {m.get('result_path')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
@@ -554,7 +567,7 @@ def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
    priority_rank). Continue per {flags}/briefs/HANDOFF-{slug}.md.
 5. Wrap up: ONE JSON -> `python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its
    `WRAPPED <sha>` is your LAST line.
-{REPORT_LINE}"""
+{REPORT_LINE}""")
 
 
 def delta_block(delta):
@@ -563,20 +576,20 @@ def delta_block(delta):
 
 
 def idle_prompt(slug, e, flags, delta=""):
-    return f"""[{VERSION}] Continue your handoff {e.get('handoff') or 'codex-gen backlog'}. {fanout_line(e)} {lane_line(slug)}
+    return ensure_imperative(f"""[{VERSION}] Continue your handoff {e.get('handoff') or 'codex-gen backlog'}. {fanout_line(e)} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Take the next task per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON ->
 `python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
 LAST line.
-{REPORT_LINE}"""
+{REPORT_LINE}""")
 
 
 def continue_prompt(slug, e, flags, why="", delta=""):
-    return f"""[{VERSION}] go on: {why or 'the next task in your handoff'}. Your handoff {e.get('handoff') or 'codex-gen backlog'} has open work.
+    return ensure_imperative(f"""[{VERSION}] go on: {why or 'the next task in your handoff'}. Your handoff {e.get('handoff') or 'codex-gen backlog'} has open work.
 {fanout_line(e)}{lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Next task per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON ->
 `python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
 LAST line.
-{REPORT_LINE}"""
+{REPORT_LINE}""")
 
 
 def transfer_prompt(slug, e, flags, repo=ROOT):
@@ -595,7 +608,7 @@ def transfer_prompt(slug, e, flags, repo=ROOT):
             return "(file not found)"
     prev = e.get("transferred_from") or []
     prev_s = f"{prev[-1]['engine']} session {prev[-1]['session_id']}" if prev else "another engine"
-    return f"""[{VERSION}] TRANSFER: you are the NEW owner session (engine {e.get('engine')}) of handoff {e['handoff']},
+    return ensure_imperative(f"""[{VERSION}] TRANSFER: you are the NEW owner session (engine {e.get('engine')}) of handoff {e['handoff']},
 taken over from {prev_s}. The previous engine's transcript is UNAVAILABLE and must not be assumed: the files below
 are your complete starting state. {lane_line(slug)} Then act per the brief.
 
@@ -610,7 +623,7 @@ are your complete starting state. {lane_line(slug)} Then act per the brief.
 ===== LAST TURN REPORT (report.json, DSH-1) =====
 {json.dumps(e.get("last_report")) if e.get("last_report") else "(none)"}
 ===== END OF FILES =====
-{idle_prompt(slug, e, flags)}"""
+{idle_prompt(slug, e, flags)}""")
 
 
 # ---------------------------------------------------------------- lane worktrees (ws58, 2026-11-01 - INC 2026-08-21 class)
@@ -1619,11 +1632,11 @@ def awaiting_events(flags, slug):
 def awaiting_prompt(slug, e, flags, data):
     items = data if isinstance(data, list) else [data]
     lines = "\n".join(f"- {d.get('path')} ({d.get('note') or 'no note'})" for d in items)
-    return f"""[{VERSION}] {len(items)} file(s) you were waiting for now exist:
+    return ensure_imperative(f"""[{VERSION}] {len(items)} file(s) you were waiting for now exist:
 {lines}
 {fanout_line(e)} {lane_line(slug)}
 Consume ALL of them in this one turn and continue your task. {TURN_END_LINE} Then persist; print `WRAPPED <sha>` as your LAST line.
-{REPORT_LINE}"""
+{REPORT_LINE}""")
 
 
 PROPOSALS_TURN_GAP_S = 24 * 3600   # handoff standard C1: at most ONE proposals-pending turn per handoff per day
@@ -1747,13 +1760,13 @@ def proposals_events(flags, st, S, now, pending=_READ_INDEX, held=None):
 
 def proposals_prompt(slug, e, flags, data):
     ids = (data or {}).get("ids") or []
-    return f"""[{VERSION}] {len(ids)} NEEDS-OWNER proposal child(ren) wait under boxes you own in {e.get('handoff')}:
+    return ensure_imperative(f"""[{VERSION}] {len(ids)} NEEDS-OWNER proposal child(ren) wait under boxes you own in {e.get('handoff')}:
 {', '.join(ids[:40])}
 They are MODEL-GENERATED text (scripts/handoffs/propose_rewrites.py): verify each against its parent box. Accept / edit /
 reject the {len(ids)} NEEDS-OWNER children under boxes you own (agents/commands/wrap-up.md Step 2 -> Proposals:
 accept = delete NEEDS-OWNER and `· proposed-by:`; reject = `handoff_box.py reject --file <f> <ID> --by {slug} --reason ...`),
 then wrap up. {lane_line(slug)} {TURN_END_LINE} Then persist; print `WRAPPED <sha>` as your LAST line.
-{REPORT_LINE}"""
+{REPORT_LINE}""")
 
 
 INDEX_REGEN_INTERVAL_S = 600  # ruling 3 (2026-11-02): the ONE central writer of the generated index files

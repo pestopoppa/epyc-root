@@ -118,6 +118,7 @@ if str(REPO_ROOT) not in sys.path:
 # 2026-08-16; the guard test below now fails on any reintroduction.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from session_bus import get_bus_root  # noqa: E402
+from handoff_sessions import ensure_imperative  # noqa: E402
 
 BUS_ROOT = get_bus_root()
 LEDGER = BUS_ROOT / "adapter-ledger.jsonl"      # coordinator-daemon owned
@@ -2326,6 +2327,11 @@ def cmd_nudge(args: argparse.Namespace) -> int:
         print("REFUSING: nudge message is blank once trailing whitespace is dropped, so "
               "submission cannot be verified.", file=sys.stderr)
         return EX_USAGE
+    message = ensure_imperative(args.message)
+    if len(message) > MAX_NUDGE_MESSAGE_CHARS:
+        print(f"REFUSING: nudge message with imperative exceeds {MAX_NUDGE_MESSAGE_CHARS} chars.",
+              file=sys.stderr)
+        return EX_USAGE
     config = load_config()
     p = probe(config, args.agent, args.quiet_s, args.heartbeat_max_age,
               getattr(args, "heartbeat_override_quiet_s", DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S))
@@ -2339,7 +2345,7 @@ def cmd_nudge(args: argparse.Namespace) -> int:
             print(f"  · {b}", file=sys.stderr)
         return EX_BLOCKED
     if args.dry_run:
-        print(f"would send to {p['target']}: {args.message!r}")
+        print(f"would send to {p['target']}: {message!r}")
         return 0
 
     # ---- C51: the composer must be EMPTY BEFORE anything is typed ----
@@ -2381,13 +2387,13 @@ def cmd_nudge(args: argparse.Namespace) -> int:
 
     # C6: message and Enter MUST be separate calls. A single send-keys call can
     # leave the text in a Codex prompt while tmux still returns success.
-    rc, out = _send_message_chunked(p["target"], args.message)
+    rc, out = _send_message_chunked(p["target"], message)
     if rc != 0:
         return _fail_after_typing("nudge", args.agent, p["target"], baseline,
                                   "send-keys message", out, faint_ok)
     settle_s = max(0.0, float(getattr(args, "settle_s", DEFAULT_NUDGE_SETTLE_S)))
     time.sleep(settle_s)
-    fragment = _pending_fragment(args.message)
+    fragment = _pending_fragment(message)
     # BEFORE Enter the composer must END with the message. Wait for it rather
     # than sampling once: a long chunked message can still be rendering.
     pending_state, failure = _await_state(p["target"], fragment, {"text_present"},
@@ -2479,7 +2485,7 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     # heartbeat is the one most worth being able to reconstruct later — if the
     # override ever does interrupt a real generation, this row is the evidence.
     # `record` drops None fields, so an ordinary nudge is unchanged on disk.
-    record("nudge", args.agent, args.message[:200],
+    record("nudge", args.agent, message[:200],
            heartbeat_override=p.get("heartbeat_override_reason")
            if p.get("heartbeat_override_applied") else None,
            window_quiet_for_s=p.get("window_quiet_for_s")
