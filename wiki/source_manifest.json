@@ -5,34 +5,26 @@
     "handoff-blocked": 1,
     "handoff-completed": 382,
     "progress": 1490,
-    "research": 527
+    "research": 538
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 44,
-      "changed": 4,
+      "added": 11,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-24T16:21:01Z",
+    "at": "2026-11-25T12:44:51Z",
     "scope_paths": [
-      "docs/design/mi210-served-kernel-bandwidth-census-20261122.md",
-      "docs/guides/agent-workflows/spec-identity-gate-protocol.md",
-      "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "progress/2026-11/2026-11-24-autokernel.md",
-      "research/deep-dives/intake-2863",
-      "research/deep-dives/intake-2864",
-      "research/deep-dives/intake-ak-1124",
-      "research/deep-dives/intake-digests/2026-11-24-ids-2863-2866.md",
-      "research/deep-dives/intake-digests/2026-11-24-ids-2867-2904.md"
+      "research/deep-dives/intake-kspec-1125/dive-*.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-24T16:21:01Z",
+  "scan_time": "2026-11-25T12:44:51Z",
   "schema_version": 1,
-  "source_set_hash": "d7e85854a45fd12a632d0eb4dbc80a8fbad0a7a64cb965796bd5c8796d08374d",
+  "source_set_hash": "a306ba4a7c4e36c757924b38a45110568e7fcd48ef83c8971c2f7c26748e6ab7",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -6040,6 +6032,94 @@
       "path": "research/deep-dives/intake-digests/2026-11-24-ids-2867-2904.md",
       "size": 190260,
       "title": "Intake dive digest \u2014 2026-11-24, intake-2867#record .. intake-2904#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "3659c482111246f8adfaadb22eb9f1d727f4e775bbe5d901139184ba3a7f8af1",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-K1-streamk-order.md",
+      "size": 16355,
+      "title": "K1-streamk-order: MMQ stream-k column-tile order (PR #32921) and the Stream-K paper",
+      "type": "research"
+    },
+    {
+      "content_hash": "1796a1e5308e570c051451ae73b1d0c2b3136d4a1e0eb48c7cae0d7bb576d2a2",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-K2-shifter-quant.md",
+      "size": 18797,
+      "title": "K2-shifter-quant: Shifter Quantization (SQ / SHI) on gfx90a and Zen 5",
+      "type": "research"
+    },
+    {
+      "content_hash": "8f5a2a8dfcceabd32bdf3c4be7f7b964f5bb32085239d14872f8174d73a81004",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-K3-dpp-roofline.md",
+      "size": 21134,
+      "title": "K3-dpp-roofline: llama.cpp PR #32867 (HIP DPP warp prefix sum) and the LLM roofline-intensity paper",
+      "type": "research"
+    },
+    {
+      "content_hash": "2aca964473655f8aec6ece2225f1ea20b06496e051ea198eaa8a25b65680a503",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-K4-tacpu-mxfp4.md",
+      "size": 14883,
+      "title": "K4-tacpu-mxfp4: TACPU (intake-2959) and MXFP4 PTQ composability (intake-2961)",
+      "type": "research"
+    },
+    {
+      "content_hash": "c1ab743c6f811dddfa27cb86c4e143d0df60c0b247bde883b09fb2d5a36ca8e0",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-M1-perfclaims-date.md",
+      "size": 21073,
+      "title": "M1-perfclaims-date: performance-claim verification (OS-kernel traces) and the hidden system-prompt date",
+      "type": "research"
+    },
+    {
+      "content_hash": "251751a666a62ce03b5c521afb35fdd4d5730e300369b4ec539d9ee4f2236111",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-M2-recap-effort-topk.md",
+      "size": 16116,
+      "title": "M2-recap-effort-topk: RECAP, effort-tier training, limits of Top-K (Stage-2 dive)",
+      "type": "research"
+    },
+    {
+      "content_hash": "a3167c3edac927edd4540f4152432c087c743f412d63f707c173011c9353b913",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-S1-pando-trees.md",
+      "size": 21465,
+      "title": "S1-pando-trees: noise-coupled parallel draft trees, the speed-of-light bound, and UBTree",
+      "type": "research"
+    },
+    {
+      "content_hash": "d3a2e2c12cefc3425b2f2ae67936eca08261d5d7f585995fa0edc777529b25ed",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-S2-draft-calibration.md",
+      "size": 17279,
+      "title": "S2-draft-calibration: draft temperature scaling (intake-2964) with TreeSpark (intake-2975) and ForeSpark (intake-2976)",
+      "type": "research"
+    },
+    {
+      "content_hash": "aa01500eb59a906994690693a1bc4d150c915456293f1714dbc95bb0b5a08f99",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-S3-legospec-gramdelta.md",
+      "size": 9973,
+      "title": "S3-legospec-gramdelta: LEGOSpec / DFlux (intake-2965) and GramDelta (intake-2966)",
+      "type": "research"
+    },
+    {
+      "content_hash": "b60dbf6434e722abe4225ca5c5b2ccc7110ce9c9c62894b99367dd71943470c0",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-W2A-mxfp4scale-agentprs.md",
+      "size": 11378,
+      "title": "W2A-mxfp4scale-agentprs: OAS vs floor/Midmax for MXFP4, and agent perf-PR validation reporting",
+      "type": "research"
+    },
+    {
+      "content_hash": "f1328f761130b0d4545efa5cf485f9945de15df2ed5d4cc65d5c675c878e7c20",
+      "modified": "2026-11-25T12:41:46Z",
+      "path": "research/deep-dives/intake-kspec-1125/dive-W2B-sparse-attn-certs.md",
+      "size": 14588,
+      "title": "W2B-sparse-attn-certs: certificates and bounds for top-k sparse attention",
       "type": "research"
     },
     {
@@ -24227,7 +24307,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3024,
+  "total_new": 3035,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

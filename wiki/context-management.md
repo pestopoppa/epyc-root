@@ -1406,3 +1406,10 @@ Sources: [toc-cmp-4-preregistration](../docs/design/toc-cmp-4-preregistration-20
 #### Source References (2026-11-23, operator wiki sweep)
 - [digest 2026-11-21 ids 2752-2787](../research/deep-dives/intake-digests/2026-11-21-ids-2752-2787.md)
 - [CompAct-Bench](../research/deep-dives/ak-intake-20261121/2611.25673v1.md), [CompAct project page](../research/deep-dives/ak-intake-20261121/compact-page.md), [Aggron](../research/deep-dives/ak-intake-20261121/2611.26435v1.md), [Slipstream](../research/deep-dives/ak-intake-20261121/2605.08580v1.md), [Slipstream repo](../research/deep-dives/ak-intake-20261121/slipstream-repo.md), [CompactionBench](../research/deep-dives/ak-intake-20261121/compactionbench.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, intake-kspec-1125 slice): trained compaction
+
+- **RECAP's gains are real but narrower than headline.** Its compaction trains with the agent policy and the full-context policy as self-teacher; the +4.6 BrowseComp-Plus / +4.3 SWE-bench Verified over GRPO at 32K rest on 150 held-out questions, one training run per method, and a SWE lambda picked from four values near test (others 46.3-49.8 vs 51.1). The summary-reward term alone is -1.5 on BCP; the on-policy self-distillation term carries most of the gain. It also uses fewer tool calls and tokens (intake-2968#record) ([dive M2](../research/deep-dives/intake-kspec-1125/dive-M2-recap-effort-topk.md)).
+
+#### Source References (2026-11-25, intake-kspec-1125 slice)
+- [dive M2](../research/deep-dives/intake-kspec-1125/dive-M2-recap-effort-topk.md)

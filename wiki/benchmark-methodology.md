@@ -7961,3 +7961,11 @@ Sources: [progress 2026-11-23 autokernel](../progress/2026-11/2026-11-23-autoker
 #### Source References (2026-11-24, operator wiki sweep, autokernel slice)
 - [protocol](../docs/guides/agent-workflows/spec-identity-gate-protocol.md), [progress 2026-11-24](../progress/2026-11/2026-11-24-autokernel.md), [stage-3 plan](../research/deep-dives/intake-ak-1124/stage3-plan.md)
 - [qnoise dive](../research/deep-dives/intake-ak-1124/intake-2893-qnoise.md), [exactpaper dive](../research/deep-dives/intake-ak-1124/intake-2872-exactpaper.md), [digest 2867-2904](../research/deep-dives/intake-digests/2026-11-24-ids-2867-2904.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, intake-kspec-1125 slice): verifying agent performance claims
+
+- **Agent-authored performance PRs mostly carry reasoning, not evidence.** 57.3% of 1,343 labelled runtime-performance PRs give reasoning only or none, 31.4% state an effect size; of 82 measured, 32 got faster, 28 unchanged, 22 slower, with the claimed mechanism held in 34. Kernel-trace signals move about 1.7x as often for the claimed mechanism, a ratio of two percentages, and the authors call it consistent with, not proof of, the claim. Threats: single machine, one measurement per PR, Claude models do the labelling, workloads and builds (intake-2958#record) ([dive M1](../research/deep-dives/intake-kspec-1125/dive-M1-perfclaims-date.md)).
+- **Merge is not measurement.** Of 23 re-executed rejected claims 6 held, 4 partly, 13 not at all (no population rate), and 9 of 30 merged fixes gave no gain or regressed; in 16 of 23 the executing agent constructed the workload (intake-2977#record, intake-2979#record). The hidden system-prompt date and model-dating papers were verified in the same dive (intake-2967#record, intake-2972#record) ([dive W2A](../research/deep-dives/intake-kspec-1125/dive-W2A-mxfp4scale-agentprs.md)).
+
+#### Source References (2026-11-25, intake-kspec-1125 slice)
+- [dive M1](../research/deep-dives/intake-kspec-1125/dive-M1-perfclaims-date.md), [dive W2A](../research/deep-dives/intake-kspec-1125/dive-W2A-mxfp4scale-agentprs.md), [stage-3 plan](../research/deep-dives/intake-kspec-1125/stage3-plan.md)
