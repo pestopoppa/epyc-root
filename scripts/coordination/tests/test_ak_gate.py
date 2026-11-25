@@ -1599,6 +1599,15 @@ def test_served_quality_stub_server_fresh_each_arm(tmp_path):
     gate.spec = G.smoke_spec(sp)
     smoke = gate.run_correctness_unit("c-sq-OFF", "c-sq", "OFF", {})
     assert not smoke.get("error") and len(smoke["req"]) == 1
+    gate.spec = sp
+    sp["keep"] = {"threshold": 1.01, "n_blocks": 2, "look_blocks": 2}
+    for u in units:
+        H.append_unit(u, gate.out)
+    assert gate.run() == 0
+    result = json.loads((row / "out" / "RESULT.json").read_text())
+    assert result["correctness"]["served_quality"]["n"] == 2
+    records = G.load_units(gate.out)
+    assert any(u.get("correctness", {}).get("served_quality", {}).get("per_arm") for u in records)
 
 
 def test_mk_row_quality_json_copies_and_pins_input(tmp_path):
