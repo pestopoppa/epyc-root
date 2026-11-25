@@ -1422,3 +1422,57 @@ def test_incomplete_fullsmoke_replay_does_not_reuse_older_arm_records(tmp_path):
     assert replay["mode"] == "full-smoke"
     assert replay["verdict"] == "INCOMPLETE_SMOKE"
     assert not replay["observed"]["terminal"]
+
+
+def test_smoke_runs_selftest_once_per_arm_with_full_parser(tmp_path):
+    sp = q8ip_spec([os.path.join(FIX_BIN, "test-q8ip-two-ctx")])
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    seen = []
+    def run(argv, env, log, timeout):
+        arm = "FIX" if env.get("GGML_HIP_Q8_MF6_DET") else "BASE"
+        seen.append(arm)
+        with open(log, "w") as f:
+            f.write(G._synthetic_log(sp, arm) + "\nsummary: prompts=1 mismatches=0\n")
+        return {"rc": 0, "secs": 0.01}
+    g.run_fn = run
+    assert g.smoke() == 0
+    assert seen == ["BASE", "FIX"]
+    units = G.load_units(g.out_smoke)
+    assert [u["unit_id"] for u in units if u["kind"] == "c-st"] == ["c-st-BASE-r1", "c-st-FIX-r1"]
+
+
+def test_smoke_runs_kld_base_candidate_and_noise(tmp_path):
+    arms = {"OFF": {}, "OFF2": {}, "ON": {"GGML_HIP_Q8MC": "1"}, "NOISE": {}}
+    sp = spec(arms=arms, baseline=["OFF", "OFF2"], candidates=["ON"],
+              correctness={"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")], "noise_arm": "NOISE"})
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    seen = []
+    def run(argv, env, log, timeout):
+        uid = os.path.basename(log).removesuffix(".log")
+        arm = next(a for a in ("NOISE", "OFF2", "ON", "OFF") if uid.endswith("-" + a))
+        seen.append((arm, "--kl-divergence" in argv))
+        with open(log, "w") as f:
+            f.write(G._synthetic_log(sp, arm) + "\nMean KLD: 0.0001\n")
+        return {"rc": 0, "secs": 0.01}
+    g.run_fn = run
+    assert g.smoke() == 0
+    assert seen == [("OFF", False), ("OFF2", True), ("ON", True), ("NOISE", True)]
+
+
+def test_smoke_tbo_uses_one_filter_per_arm(tmp_path):
+    c = {"kind": "tbo", "argv": [os.path.join(FIX_BIN, "test-backend-ops"), "test"],
+         "ops": "MUL_MAT,ADD", "min_cases": 10}
+    sp = spec(correctness=c)
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    seen = []
+    def run(argv, env, log, timeout):
+        seen.append(argv[argv.index("-o") + 1])
+        with open(log, "w") as f:
+            f.write("MUL_MAT(m=1): OK\n")
+        return {"rc": 0, "secs": 0.01}
+    g.run_fn = run
+    assert g.smoke() == 0
+    assert seen == ["MUL_MAT"] * 3
