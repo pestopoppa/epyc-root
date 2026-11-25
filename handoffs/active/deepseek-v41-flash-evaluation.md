@@ -184,8 +184,14 @@ Completed detail: [through 2026-09-24](../completed/deepseek-v41-flash-evaluatio
   (264-byte row = 256 FP8 + 8 scale) table, bit-exact against `inference/engram.py` on sampled
   rows. Decide residency: the host has 1.1 TB RAM, so full-resident mmap is feasible, unlike ds4's
   disk-streaming design, but measure page-cache/NUMA placement rather than assume it.
+  · class: non-inference
+  · done when: Engram FP8-row gather and dequant is bit-exact on sampled reference rows and the residency decision records measured page-cache and NUMA placement.
+  · NEEDS-OWNER: Required brief sidecar cannot be written in this handoff-only lane.
 - [ ] **DS41-W-11** DS41-B4 — Hyper-connections (`hc_*`, 4 streams, 20 Sinkhorn iterations): reuse the
   `deepseek4` ops; confirm V4.1 parity including the MTP blocks' `hc_*`.
+  · class: non-inference
+  · done when: V4.1 hyper-connection parity is verified, including the MTP blocks' `hc_*`.
+  · NEEDS-OWNER: Required brief sidecar cannot be written in this handoff-only lane.
 - [ ] **DS41-W-12** DS41-B5 — Attention deltas: sliding window 128, cross-layer KV sharing, indexer sharing,
   and candidate-block selection. Correctness first; sparse-gather value is INF-31's gate.
 - [x] ~~DS41-B6 — Native 3-layer MTP through `--spec-type draft-mtp`: load `nextn` blocks and~~ (closed 2026-10-29 audit: SUPERSEDED → Premise corrected by DS41-B0 (:74): nextn x3 blocks are the DSpark drafter, wired as draft-dspark in DS41-B13/B13b (Completed table :155-156; 1.56x); draft-mtp path not applicable)
