@@ -9,7 +9,7 @@ fresh_attempt() on every job.py edit; this file is the one counter both paths no
   unpark log <flags>/dryrun/.family/UNPARK.log + the keeper log
 
 R2  record_strike / record_clear (PASS, RESULT) ; park at PARK_AT strikes; publish refuses ; unpark_family resets.
-R3  harness_strike(): a harness-class native verdict or a complete:true run of < MIN_ELAPSED_S with 0 units is a strike.
+R3  harness failures do not strike the candidate family.
 R5  stale_fail_escalations(): a family whose last smoke FAILED and was not republished -> smoke-fail-stale at 2 h / 8 h
     (1 h / 4 h for rank <= 10 or operator_approved), stage 2 repeating every 8 h (4 h). needs_republish() for queue_status.
 R6  GPU smokes per family per UTC day; the (GPU_SMOKE_BUDGET+1)-th is refused at publish unless overridden by the operator.
@@ -265,18 +265,7 @@ def ended_elapsed(flags, rid):
 
 
 def harness_strike(res, cls=None, elapsed_s=None, manifest=None, result_path=None):
-    """PURE. -> (True, why) when a run end is a harness strike, else (False, '')."""
-    res = res if isinstance(res, dict) else {}
-    manifest = manifest or {}
-    v = str(res.get("native_verdict") or res.get("verdict") or "").strip().upper()
-    if HARNESS_VERDICT_RX.match(v) or (v.startswith("FUTILITY") and str((cls or {}).get("side")) == "harness"):
-        return True, f"harness verdict {v}"
-    complete = res.get("complete") is True or str(res.get("complete")).lower() == "true"
-    units = _units(res, result_path)
-    umin = int(manifest.get("units_min") or 1)
-    tmin = float(manifest.get("min_elapsed_s") or MIN_ELAPSED_S)
-    if complete and elapsed_s is not None and elapsed_s < tmin and units < umin:
-        return True, f"no-op complete: {elapsed_s:.0f} s < {tmin:.0f} s with {units} unit(s) < units_min {umin}"
+    """Compatibility no-op: pipeline and harness faults must not strike a candidate family."""
     return False, ""
 
 

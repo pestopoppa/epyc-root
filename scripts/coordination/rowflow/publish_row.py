@@ -1457,10 +1457,19 @@ def record_family_outcome(flags, rid, verdict, msg, failure_sha=None):
         if verdict in ("PASS", "RESULT"):
             fs.record_clear(flags, rid, verdict)
         elif verdict == "FAIL":
-            rec = fs.record_strike(flags, rid, "smoke", msg, key=failure_sha, manifest=m)
-            why = fs.park_reason(flags, fs.stem_of(rid))
-            if why:
-                print(f"PARKED-FAMILY {why} (strikes={rec['count']})")
+            fails = rf.fail_paths(flags, rid)
+            failure = (rf.load_json(fails[-1]) or {}) if fails else {}
+            classification = failure.get("failclass") or {}
+            if isinstance(classification, dict) and classification.get("side") == "harness":
+                print(f"FAMILY-STRIKES {rid}: harness failure; no family strike")
+            else:
+                rec = fs.record_strike(flags, rid, "smoke", msg, key=failure_sha, manifest=m)
+                why = fs.park_reason(flags, fs.stem_of(rid))
+                if why:
+                    print(f"PARKED-FAMILY {why} (strikes={rec['count']})")
+                    rf.notify.emit(flags, "family-parked", rid, failure_sha or rid, why, "warning",
+                                   str(m.get("owner") or rec.get("owner") or ""),
+                                   {"family": fs.stem_of(rid), "count": rec["count"]})
         if verdict in ("PASS", "RESULT", "FAIL") and fs.is_gpu(m):
             fs.record_gpu_smoke(flags, rid, verdict)
     except rf.Refused:

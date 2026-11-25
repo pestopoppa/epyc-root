@@ -14,7 +14,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(_TESTS), "akloop"))
 import rowflow as rf  # noqa: E402
 import family_strikes as fs  # noqa: E402
 import publish_row as pr  # noqa: E402
-import ak_runend  # noqa: E402
 
 NOW = 1_800_000_000.0   # 2027-01-15T08:00:00Z
 BASE = "ak-c22-df2-devhandoff-gate-gpu-20261125"
@@ -127,42 +126,35 @@ class R2Park(Base):
 
 
 class R3Harness(Base):
-    def test_harness_verdict_is_strike(self):
-        hit, why = fs.harness_strike({"native_verdict": "FUTILITY_HARNESS_IDENTITY", "complete": True}, elapsed_s=900)
-        self.assertTrue(hit); self.assertIn("FUTILITY_HARNESS_IDENTITY", why)
+    def test_harness_failures_do_not_strike_family(self):
+        for i in (2, 3):
+            rid = f"{BASE}-r{i}"
+            self.manifest(rid)
+            self.fail(rid, NOW, failclass={"side": "harness"})
+            pr.record_smoke_outcome(self.flags, rid, "FAIL", "pipeline fault")
+        self.assertEqual(fs.load(self.flags, STEM)["count"], 0)
+        self.assertIsNone(fs.park_reason(self.flags, STEM))
+        self.assertEqual(len(fs.gpu_smokes_today(self.flags, STEM)), 2)
+        self.assertEqual(fs.harness_strike({"native_verdict": "FUTILITY_HARNESS_IDENTITY"}), (False, ""))
+        self.assertEqual(fs.harness_strike({"complete": True}, elapsed_s=11), (False, ""))
 
-    def test_sub60_zero_unit_complete_is_strike(self):
-        hit, why = fs.harness_strike({"complete": "True", "verdict": "FUTILITY_ROLLBACK_TEST"}, elapsed_s=11)
-        self.assertTrue(hit); self.assertIn("no-op complete", why)
-        self.assertFalse(fs.harness_strike({"complete": True, "verdict": "KEEP", "units": 4}, elapsed_s=11)[0])
-        self.assertFalse(fs.harness_strike({"complete": True, "verdict": "KEEP"}, elapsed_s=600)[0])
-        self.assertFalse(fs.harness_strike({"complete": True, "verdict": "KEEP"}, elapsed_s=11,
-                                           manifest={"units_min": 0, "min_elapsed_s": 5})[0])
-
-    def test_runend_records_strike_and_holds_filing(self):
-        rid = "akc-np4-parity-gpu-20261124-r2"
-        od = os.path.join(self.flags, "rows", rid, "out")
-        os.makedirs(od)
-        rp = os.path.join(od, "RESULT.json")
-        with open(rp, "w") as f:
-            json.dump({"complete": True, "verdict": "FUTILITY_ROLLBACK_TEST"}, f)
-        self.manifest(rid, result_path=rp)
-        with open(os.path.join(self.flags, "grants", rid + ".ended"), "w") as f:
-            f.write("rc=0 time=2026-11-24T18:00:57Z reason=complete\nstarted=2026-11-24T18:00:46Z\n")
-
-        class N:
-            def __init__(s): s.calls = []
-            def emit(s, *a, **k): s.calls.append(a)
-        n = N()
-        ran = []
-        rep = ak_runend.handle(rid, self.flags, runend_run=lambda *a, **k: ran.append(a), notify_mod=n,
-                               census=lambda *a, **k: "-", lineage=lambda r: "-", gates=lambda r: "-")
-        self.assertIn("no-op complete", rep["harness_strike"])
-        self.assertTrue(rep["filed"].startswith("held: harness strike"))
-        self.assertEqual(ran, [])
-        self.assertEqual(fs.load(self.flags, rf.id_stem(rid))["count"], 1)
-        self.assertTrue(any(c[1] == "ak-harness-failure" for c in n.calls))
-        self.assertIn("HARNESS-STRIKE=", ak_runend.line(rep))
+    def test_candidate_failures_park_and_push_owner_alert(self):
+        import notify
+        with mock.patch.object(notify, "_bus_send", return_value="skipped: test"), \
+                mock.patch.object(notify, "_push_safe") as push:
+            for i in (2, 3):
+                rid = f"{BASE}-r{i}"
+                self.manifest(rid)
+                self.fail(rid, NOW, failclass={"side": "candidate"})
+                pr.record_smoke_outcome(self.flags, rid, "FAIL", "candidate mismatch")
+            self.assertEqual(fs.load(self.flags, STEM)["count"], 2)
+            self.assertIsNotNone(fs.park_reason(self.flags, STEM))
+            self.assertIn("family-parked", notify.PUSH_KINDS)
+            args = push.call_args.args
+            self.assertEqual(args[1]["kind"], "family-parked")
+            self.assertEqual(args[1]["row_id"], rid)
+            self.assertEqual(args[2], "autokernel")
+            self.assertIn("unpark --family", args[1]["summary"])
 
 
 class R5Stale(Base):

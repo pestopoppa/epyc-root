@@ -456,7 +456,7 @@ def _bus_send(rec, owner, action, flags=LIVE_FLAGS):
 # Dedupe: one push per alert key (O_EXCL marker). Rate limit: <= 1 push per owner per PUSH_MIN_INTERVAL_S; the rest queue
 # and leave as ONE batched line at the next allowed moment (push_tick, every keeper tick). Escalation: a pushed key not acked
 # (rowflow.py alerts --ack) after PUSH_ESCALATE_S is pushed once to PUSH_ESCALATE_TO. Every failure is swallowed.
-PUSH_KINDS = frozenset({"smoke-fail", "smoke-fail-stale", "queued-smoke-orphaned", "queued-smoke-dropped", "ak-harness-failure",
+PUSH_KINDS = frozenset({"smoke-fail", "smoke-fail-stale", "queued-smoke-orphaned", "queued-smoke-dropped", "ak-harness-failure", "family-parked",
                         "gpu-host-foreign", "tick-refused"})
 PUSH_MIN_INTERVAL_S = 60
 PUSH_ESCALATE_S = 15 * 60
