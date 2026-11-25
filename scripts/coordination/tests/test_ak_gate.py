@@ -1274,7 +1274,8 @@ def test_fullsmoke_replays_real_identity_and_kld_records(tmp_path):
         assert "correctness[" in terminal["fix"]
 
 
-def test_fullsmoke_real_kld_witness_log(tmp_path):
+@pytest.mark.parametrize("log_name", ["q38-kld.log", "q38-d1k-kld.log"])
+def test_fullsmoke_real_kld_witness_log(tmp_path, log_name):
     marker = "GDN rollback snapshots written in place, no state CPY"
     sp = spec(knobs={"LLAMA_GDN_SNAP_INPLACE": {"marker": marker, "level": 4}},
               arms={"OFF": {}, "OFF2": {}, "ALL_FAST": {"LLAMA_GDN_SNAP_INPLACE": "1"}},
@@ -1283,7 +1284,7 @@ def test_fullsmoke_real_kld_witness_log(tmp_path):
     g.visit_fn = visit_stub(sp, g.out)
     def run(uid, kind, arm, extra):
         if arm == "ALL_FAST":
-            shutil.copy(os.path.join(FIX, "fullsmoke", "q38-kld.log"), os.path.join(g.logs, uid + ".log"))
+            shutil.copy(os.path.join(FIX, "fullsmoke", log_name), os.path.join(g.logs, uid + ".log"))
             return g.finish_correctness({"unit_id": uid, "kind": kind, "arm": arm, "rc": 0,
                                          "argv": ["llama-perplexity", "-lv", "4"], "log": "logs/" + uid + ".log", **extra})
         return {"unit_id": uid, "kind": kind, "arm": arm, "mean_kld": 0.0, **extra}
@@ -1315,3 +1316,83 @@ def test_fullsmoke_replay_uses_correctness_ledger(tmp_path, nondet):
     assert replay["verdict"] == ("FUTILITY_HARNESS_NONDET" if nondet else "SMOKE_PASS")
     if nondet:
         assert "correctness[identity]" in replay["fix"]
+
+
+@pytest.mark.parametrize("version,first_difference", [("r2", 4), ("r3", 1)])
+def test_real_pando_one_prompt_cannot_replay_later_aa_divergence(version, first_difference):
+    row = "ak-dtree-pando-gate-gpu-20261125-" + version
+    records = json.load(open(os.path.join(FIX, "fullsmoke", "pando-aa-records.json")))[row]
+    arms = {"C21T16": {}, "C21T16B": {}, "ON": {"GGML_HIP_Q8MC": "1"}}
+    c = {"kind": "identity", "mode": "server", "n_prompts": 1, "arms": ["C21T16", "C21T16B"]}
+    sp = spec(arms=arms, baseline=["C21T16", "C21T16B"], correctness=c)
+    first = [u for u in records if u["prompt"] == 0]
+    assert G.decide_correctness(G.smoke_spec(sp), first)[0] is None
+    c["n_prompts"] = first_difference + 1
+    assert G.decide_correctness(sp, records)[0] == "FUTILITY_HARNESS_NONDET"
+
+
+def test_real_q8wt_served_witness_replayed_by_smoke(tmp_path):
+    marker = "ggml_cuda_q8ip: in-place Q8_0 stage-contiguous repack enabled"
+    sp = spec(knobs={"V5I_INPLACE": {"kind": "observe", "marker": marker, "level": 4}},
+              arms={"OFF": {}, "OFF2": {}, "ON": {}}, baseline=["OFF", "OFF2"],
+              expect={a: {"V5I_INPLACE": "present"} for a in ("OFF", "OFF2", "ON")})
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    stub = visit_stub(sp, g.out)
+    def visit(uid, arm, *args, **kwargs):
+        u = stub(uid, arm, *args, **kwargs)
+        if arm == "OFF":
+            shutil.copyfile(os.path.join(FIX, "fullsmoke", "q8wt-served.log"), os.path.join(g.out, u["log"]))
+        return u
+    g.visit_fn = visit
+    assert g.smoke() == 3
+    result = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
+    assert result["verdict"] == "FUTILITY_HARNESS_WITNESS"
+    assert "expect.OFF.V5I_INPLACE" in result["fix"]
+    replay = G.replay(sp, str(tmp_path / "new"), str(tmp_path / "row"), stream=QUIET)
+    assert replay["verdict"] == result["verdict"]
+    assert replay["fix"] == result["fix"]
+
+
+def test_real_q8wt_tbo_witness_log_in_smoke(tmp_path):
+    marker = "ggml_cuda_q8ip: in-place Q8_0 stage-contiguous repack enabled"
+    sp = spec(knobs={"V5I_INPLACE": {"kind": "observe", "marker": marker, "level": 4}},
+              arms={"OFF": {}, "OFF2": {}, "ON": {}}, baseline=["OFF", "OFF2"],
+              expect={a: {"V5I_INPLACE": "present"} for a in ("OFF", "OFF2", "ON")},
+              correctness={"kind": "tbo", "argv": [os.path.join(FIX_BIN, "test-backend-ops")], "witness": True},
+              expect_by_unit={"tbo": {a: {"V5I_INPLACE": "present"} for a in ("OFF", "OFF2", "ON")}})
+    # The declaration is rejected before execution, but smoke must persist a classified fix hint.
+    row = tmp_path / "row"
+    assert G.main(sp, str(row), argv=[], env={"FILLER_DRYRUN": "1"}) == 3
+    terminal = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
+    assert terminal["verdict"] == "FUTILITY_HARNESS_WITNESS"
+    assert "expect_by_unit.tbo.OFF.V5I_INPLACE" in terminal["fix"]
+    assert terminal["failclass"]["side"] == "harness"
+    text = G.read_log(os.path.join(FIX, "fullsmoke", "q8wt-tbo.log"))
+    witness = G.witness_for(sp, "OFF", text, None, "logs/c-tbo-OFF.log", "tbo")
+    assert witness["V5I_INPLACE"]["observed"] == "absent"
+    assert "no 'verbosity" in witness["V5I_INPLACE"]["note"]
+
+
+def test_real_q38_missing_kld_output_in_smoke(tmp_path):
+    sp = spec(correctness={"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")]},
+              expect_by_unit={"kld": {a: {"GGML_HIP_Q8MC": "ignore"} for a in ("OFF", "OFF2", "ON")}})
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    def run(uid, kind, arm, extra):
+        shutil.copyfile(os.path.join(FIX, "fullsmoke", "q38-missing-kld.log"), os.path.join(g.logs, uid + ".log"))
+        return g.finish_correctness({"unit_id": uid, "kind": kind, "arm": arm, "rc": 0,
+                                     "argv": ["llama-perplexity", "-lv", "4"], "log": "logs/" + uid + ".log", **extra})
+    g.run_correctness_unit = run
+    assert g.smoke() == 3
+    result = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
+    assert result["verdict"] == "FUTILITY_HARNESS_MISSING_OUTPUT"
+    assert "correctness[kld].argv" in result["fix"]
+
+
+def test_missing_correctness_binary_validation_writes_harness_smoke(tmp_path):
+    sp = spec(correctness={"kind": "kld", "argv": [str(tmp_path / "no-such-perplexity")]})
+    assert G.main(sp, str(tmp_path / "row"), argv=[], env={"FILLER_DRYRUN": "1"}) == 3
+    terminal = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
+    assert terminal["verdict"] == "FUTILITY_HARNESS_MISSING_OUTPUT"
+    assert "correctness kld" in terminal["fix"] and "argv[0]" in terminal["fix"]
+    assert terminal["failclass"]["side"] == "harness"

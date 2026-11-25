@@ -1986,7 +1986,20 @@ def main(spec, row_dir, argv=None, env=None):
             print("DECIDE " + json.dumps(rec), flush=True)
         return 0
     H.require_grant(env)   # no FILLER_ID/FILLER_DRYRUN -> exit 64: never run a row (or its smoke) by hand
-    g = Gate(spec, row_dir, env=env)
+    try:
+        g = Gate(spec, row_dir, env=env)
+    except SpecError as e:
+        if env.get("FILLER_SMOKE") != "1" and env.get("FILLER_DRYRUN") != "1":
+            raise
+        reason = str(e)
+        if "witness scope:" in reason:
+            verdict = "FUTILITY_HARNESS_WITNESS"
+        elif "argv[0]" in reason:
+            verdict = "FUTILITY_HARNESS_MISSING_OUTPUT"
+        else:
+            verdict = "FUTILITY_HARNESS_DECLARATION"
+        return H.end_smoke("FAIL", 3, f"{verdict}: {reason}", os.path.join(row_dir, "out"),
+                           extra={"verdict": verdict, "fix": reason, "failclass": {"side": "harness"}})
     g.install_traps()
     try:
         if env.get("FILLER_SMOKE") == "1" or env.get("FILLER_DRYRUN") == "1":

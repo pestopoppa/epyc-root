@@ -1,0 +1,132 @@
+{
+  "ak-dtree-pando-gate-gpu-20261125-r2": [
+    {
+      "unit_id": "c-id-C21T16-p0",
+      "kind": "c-id",
+      "arm": "C21T16",
+      "prompt": 0,
+      "output_sha": "c2189117dc6964a0",
+      "accepted_sha": "5966abd0cbfc86f9",
+      "draft_sha": "4c970004b0678d43"
+    },
+    {
+      "unit_id": "c-id-C21T16B-p0",
+      "kind": "c-id",
+      "arm": "C21T16B",
+      "prompt": 0,
+      "output_sha": "c2189117dc6964a0",
+      "accepted_sha": "5966abd0cbfc86f9",
+      "draft_sha": "4c970004b0678d43"
+    },
+    {
+      "unit_id": "c-id-C21T16-p1",
+      "kind": "c-id",
+      "arm": "C21T16",
+      "prompt": 1,
+      "output_sha": "715121612306d3ef",
+      "accepted_sha": "802b906a18591ead",
+      "draft_sha": "00328ce57bbc14b3"
+    },
+    {
+      "unit_id": "c-id-C21T16B-p1",
+      "kind": "c-id",
+      "arm": "C21T16B",
+      "prompt": 1,
+      "output_sha": "715121612306d3ef",
+      "accepted_sha": "802b906a18591ead",
+      "draft_sha": "00328ce57bbc14b3"
+    },
+    {
+      "unit_id": "c-id-C21T16-p2",
+      "kind": "c-id",
+      "arm": "C21T16",
+      "prompt": 2,
+      "output_sha": "e04dae66e30527fc",
+      "accepted_sha": "0f4121d0ef1df4c8",
+      "draft_sha": "1c6c0bb2c7ecdc3b"
+    },
+    {
+      "unit_id": "c-id-C21T16B-p2",
+      "kind": "c-id",
+      "arm": "C21T16B",
+      "prompt": 2,
+      "output_sha": "e04dae66e30527fc",
+      "accepted_sha": "0f4121d0ef1df4c8",
+      "draft_sha": "1c6c0bb2c7ecdc3b"
+    },
+    {
+      "unit_id": "c-id-C21T16-p3",
+      "kind": "c-id",
+      "arm": "C21T16",
+      "prompt": 3,
+      "output_sha": "014ddaa502109d03",
+      "accepted_sha": "314f04b30f62e005",
+      "draft_sha": "37c20f19f3272b5c"
+    },
+    {
+      "unit_id": "c-id-C21T16B-p3",
+      "kind": "c-id",
+      "arm": "C21T16B",
+      "prompt": 3,
+      "output_sha": "014ddaa502109d03",
+      "accepted_sha": "314f04b30f62e005",
+      "draft_sha": "37c20f19f3272b5c"
+    },
+    {
+      "unit_id": "c-id-C21T16-p4",
+      "kind": "c-id",
+      "arm": "C21T16",
+      "prompt": 4,
+      "output_sha": "35bc55778b9846ac",
+      "accepted_sha": "5966abd0cbfc86f9",
+      "draft_sha": "a30f4ef42176d28f"
+    },
+    {
+      "unit_id": "c-id-C21T16B-p4",
+      "kind": "c-id",
+      "arm": "C21T16B",
+      "prompt": 4,
+      "output_sha": "35bc55778b9846ac",
+      "accepted_sha": "16badfc6202cb3f8",
+      "draft_sha": "768b84ef05f655d5"
+    }
+  ],
+  "ak-dtree-pando-gate-gpu-20261125-r3": [
+    {
+      "unit_id": "c-id-C21T16-p0",
+      "kind": "c-id",
+      "arm": "C21T16",
+      "prompt": 0,
+      "output_sha": "c2189117dc6964a0",
+      "accepted_sha": "5966abd0cbfc86f9",
+      "draft_sha": "4c970004b0678d43"
+    },
+    {
+      "unit_id": "c-id-C21T16B-p0",
+      "kind": "c-id",
+      "arm": "C21T16B",
+      "prompt": 0,
+      "output_sha": "c2189117dc6964a0",
+      "accepted_sha": "5966abd0cbfc86f9",
+      "draft_sha": "4c970004b0678d43"
+    },
+    {
+      "unit_id": "c-id-C21T16-p1",
+      "kind": "c-id",
+      "arm": "C21T16",
+      "prompt": 1,
+      "output_sha": "715121612306d3ef",
+      "accepted_sha": "802b906a18591ead",
+      "draft_sha": "00328ce57bbc14b3"
+    },
+    {
+      "unit_id": "c-id-C21T16B-p1",
+      "kind": "c-id",
+      "arm": "C21T16B",
+      "prompt": 1,
+      "output_sha": "11ad2e146e7b56ac",
+      "accepted_sha": "d86580a57f7bf542",
+      "draft_sha": "718127812c05853f"
+    }
+  ]
+}
