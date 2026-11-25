@@ -4024,7 +4024,8 @@ def ak_failclass(flags, rid, d, rec):
         fc = _failclass_mod()
         if fc is None:
             return None
-        c = fc.classify_fail(dict(rec, id=rid), "\n".join(rec.get("launcher_out_tail") or []))
+        c = fc.classify_fail(dict(rec, id=rid), "\n".join(rec.get("launcher_out_tail") or []),
+                            fc.row_dir_from_result_path(rec.get("result_path") or (d or {}).get("result_path")))
         out = c.to_dict()
         if c.side == "harness":
             out["routed"] = bool(fc.route(c, flags, notify_mod=notify, rid=rid))

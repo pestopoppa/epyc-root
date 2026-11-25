@@ -111,6 +111,54 @@ def classify_text(text):
     return None
 
 
+# ---- server-log crash override ---------------------------------------------------------------------------------
+# A dropped connection (RemoteDisconnected / "Remote end closed connection" / refused / reset) is usually the SYMPTOM of
+# a llama-server that crashed under the candidate; the server log, not the client text, names the cause.
+_DROP = re.compile(r"RemoteDisconnected|Remote end closed connection|Connection (?:refused|reset)|ConnectionResetError|"
+                   r"ServerDied|server died", re.I)
+_CRASH = re.compile(r"GGML_ASSERT|Segmentation fault|\bAborted\b|core dumped|terminate called|"
+                    r"(?:HIP|ROCm|hipError|HSA)[^\n]{0,60}(?:fatal|error|abort|fault)|Memory access fault", re.I)
+
+
+def scan_server_crash(row_dir):
+    """First crash-marker line in out/logs/*server*.log or out/servers/* under row_dir, as (marker, line, file) or None."""
+    import glob  # noqa: PLC0415
+    if not row_dir:
+        return None
+    paths = sorted(set(glob.glob(os.path.join(row_dir, "out", "logs", "*server*.log")) +
+                       glob.glob(os.path.join(row_dir, "out", "servers", "*")) +
+                       glob.glob(os.path.join(row_dir, "out", "servers", "*", "*"))))
+    for pth in paths:
+        if not os.path.isfile(pth):
+            continue
+        try:
+            with open(pth, errors="replace") as f:
+                for ln in f:
+                    m = _CRASH.search(ln)
+                    if m:
+                        return m.group(0), ln.strip(), pth
+        except OSError:
+            continue
+    return None
+
+
+def row_dir_from_result_path(rp):
+    """<row>/out/RESULT.json -> <row>; None when it does not look like that."""
+    if not rp:
+        return None
+    d = os.path.dirname(os.path.abspath(str(rp)))
+    return os.path.dirname(d) if os.path.basename(d).startswith("out") else d
+
+
+def _crash_override(c, row_dir):
+    if row_dir and c.rule in ("text:pipeline-env", "text:serving-infra") and _DROP.search(c.evidence or ""):
+        hit = scan_server_crash(row_dir)
+        if hit:
+            marker, line, _ = hit
+            return _c("candidate", "candidate_crash", f"server-log:{marker}", line)
+    return c
+
+
 # ---- FAIL-N.json ---------------------------------------------------------------------------------------------
 # Applied to the pipeline's own `reason` string. Ordered.
 FAIL_REASON_RULES = [
@@ -153,7 +201,7 @@ def smoke_terminal(fail: dict):
     return v if _TERMINAL.match(v) else None
 
 
-def classify_fail(fail: dict, launcher_text: str | None = None) -> Classification:
+def classify_fail(fail: dict, launcher_text: str | None = None, row_dir: str | None = None) -> Classification:
     reason = str(fail.get("reason") or "")
     tv = smoke_terminal(fail)
     if tv:   # before reason:partial-native-incomplete / reason:job-rc-no-text-rule: a verdict, never a harness defect
@@ -180,6 +228,7 @@ def classify_fail(fail: dict, launcher_text: str | None = None) -> Classificatio
             c = _c("harness", "smoke_wiring", "reason:smoke-predicate-never-exited", reason)
         else:
             c = classify_text(blob) or _c("unknown", "unmatched", "none", reason)
+    c = _crash_override(c, row_dir)
     c.row_id = str(fail.get("id") or "")
     c.source = "fail"
     return _resolve_unknown(c, {"reason": reason[:600], "tail": _launcher_blob(fail, launcher_text)[-1500:]})
@@ -305,7 +354,7 @@ def _polar(res):
     return None
 
 
-def classify_result(res, launcher_text: str | None = None) -> Classification:
+def classify_result(res, launcher_text: str | None = None, row_dir: str | None = None) -> Classification:
     if not isinstance(res, dict):
         c = _c("unknown", "unparseable", "result:not-an-object")
         return _resolve_unknown(c, {"result": str(res)[:600]})
@@ -345,6 +394,7 @@ def classify_result(res, launcher_text: str | None = None) -> Classification:
         c = _c("unknown", "partial", "result:partial")
     if c is None:
         c = classify_text(launcher_text or "") or _c("unknown", "unmatched", "none")
+    c = _crash_override(c, row_dir)
     c.row_id, c.source = row, "result"
     return _resolve_unknown(c, {"result_keys": sorted(res)[:20], "verdict": str(res.get("verdict"))[:200],
                                 "status": str(res.get("status"))[:200]})
@@ -396,7 +446,8 @@ def main(argv=None):
     lt = _read(a.launcher) if a.launcher else None
     if lt is None and a.fail:
         lt = _read(d.get("dryrun_log") or os.path.join(os.path.dirname(path), "launcher.out"))
-    c = classify_fail(d, lt) if a.fail else classify_result(d, lt)
+    rd = row_dir_from_result_path(d.get("result_path")) if isinstance(d, dict) and d.get("result_path") else os.path.dirname(os.path.abspath(path))
+    c = classify_fail(d, lt, rd) if a.fail else classify_result(d, lt, rd)
     out = c.to_dict()
     if a.route:
         r = route(c, a.flags)

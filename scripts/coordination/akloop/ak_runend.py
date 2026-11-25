@@ -88,7 +88,7 @@ def classify(flags: str, rid: str, man: dict, *, route: bool, notify_mod=None) -
             lt = open(p, errors="replace").read()[-20000:]
         except OSError:
             pass
-    c = FC.classify_result(res, lt) if res is not None else FC.Classification(
+    c = FC.classify_result(res, lt, FC.row_dir_from_result_path(rp)) if res is not None else FC.Classification(
         "harness", "result_contract", "result:missing", f"no RESULT at {rp or '(no result_path)'}", rid, "result")
     out = c.to_dict()
     if route and c.side == "harness":
