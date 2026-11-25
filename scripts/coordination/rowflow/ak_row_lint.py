@@ -82,8 +82,14 @@ CLAIM_PARSE_RX = re.compile(r"WS58_REGIONS[^\n]*\|\s*(?:tr|grep|paste|sed|awk)\b
 SMOKE_RX = re.compile(r"TERMINAL-smoke|FILLER_SMOKE|FILLER_DRYRUN")
 KNOB_RX = re.compile(r"\b(?:GGML|LLAMA)_[A-Z0-9_]{2,}\b")
 WITNESS_RX = re.compile(r"[\"']\w*witness\w*[\"']", re.I)
-SPEED_CLAIM_RX = re.compile(r"\b(?:keep|pass)\b", re.I)
-SPEED_WORD_RX = re.compile(r"speed|faster|tok/?s|t/s|throughput|latency|\bGB/s|bandwidth|speedup|slower|ms\b|\bpp\d*|\btg\d*", re.I)
+# `_` is a word char, so \bkeep\b misses KEEP_CANDIDATE / GATE_PASS: bound on letters only
+SPEED_CLAIM_RX = re.compile(r"(?<![a-z])(?:keep|pass|promote)(?![a-z])", re.I)
+SPEED_WORD_RX = re.compile(
+    r"(?<![a-z])(?:speed|faster|slower|tok/?s|t/s|throughput|latency|bandwidth|geomean|ratio|perf|prefill|decode|e2e|gain|"
+    r"ms|us|pp\d*|tg\d*)(?![a-z])|µs|\bGB/s", re.I)
+# self-declared non-gating rules (diagnostic/census/screening/futility-only) cannot return a keep: no warn
+NONGATING_RX = re.compile(r"diagnostic|never\s+gates|polar\s+None|(?<![a-z])census(?![a-z])|(?<![a-z])screening(?![a-z])|"
+                          r"futility[- ]only|floor[- ](?:only|census|measurement)", re.I)
 MECH_FIELDS = ("counter", "direction", "aa_band")
 
 
@@ -91,6 +97,8 @@ def mech_unwitnessed(spec, allc):
     """AK-MECH-WITNESS-1: WARN-only. [] when the rule cannot return a speed keep/pass or the witness is declared and recorded."""
     rule = " ".join(str(spec.get(k) or "") for k in ("decision_rule", "notes"))
     if not (SPEED_CLAIM_RX.search(rule) and SPEED_WORD_RX.search(rule)):
+        return []
+    if NONGATING_RX.search(str(spec.get("decision_rule") or "")):
         return []
     w = spec.get("mechanism_witness")
     miss = [k for k in MECH_FIELDS if not (isinstance(w, dict) and str(w.get(k) or "").strip())]

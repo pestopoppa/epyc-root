@@ -53,3 +53,24 @@ def test_never_fails(tmp_path):
     for i, spec in enumerate(({"decision_rule": RULE}, {"decision_rule": RULE, "mechanism_witness": WITNESS})):
         d = _row(tmp_path, spec, rid="ak-mw-%d" % i)
         assert all(l == "WARN" for l, m in _mech(d))
+
+
+def test_keep_candidate_toks_warns(tmp_path):
+    r = _mech(_row(tmp_path, {"decision_rule": "KEEP_CANDIDATE iff CI of cand/base tok/s clears the band"}))
+    assert len(r) == 1 and r[0][0] == "WARN"
+
+
+def test_gate_pass_geomean_warns(tmp_path):
+    r = _mech(_row(tmp_path, {"decision_rule": "GATE_PASS iff correctness AND geomean(c6/new) >= 1.10"}))
+    assert len(r) == 1 and r[0][0] == "WARN"
+
+
+def test_arms_diagnostic_polar_pass_no_warn(tmp_path):
+    rule = "DIAGNOSTIC ONLY (never gates, polar None). Two arms BA; polar PASS is recorded, not a keep"
+    assert _mech(_row(tmp_path, {"decision_rule": rule})) == []
+    assert _mech(_row(tmp_path, {"decision_rule": "keep the arms terms claims"}, rid="ak-mw-arms")) == []
+
+
+def test_floor_band_keep_candidate_still_warns(tmp_path):
+    rule = "floor band [0.99, 1.01] either way -> KEEP_CANDIDATE (CI above) | LOSS; tok/s ratio"
+    assert len(_mech(_row(tmp_path, {"decision_rule": rule}))) == 1
