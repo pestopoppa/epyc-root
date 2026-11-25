@@ -74,6 +74,12 @@ class HostDrain(unittest.TestCase):
                                            [NOW + 900, NOW + 1200], now=NOW)
         self.assertNotIn("r28a", {c["id"] for c in kept}); self.assertIn("r28a", lines)
 
+    def test_resumable_backfill_held(self):
+        # 13:21Z recurrence: rank-33 iqk-q8-decode-r3 (resumable, remaining-estimate booking) took q1 until 15:10Z
+        r = dict(quarter("ak-cpu-a3b-iqk-q8-decode-r3", rank=33, book=6540), resumable=True)
+        kept, lines = rf.host_drain_filter([host(), r], FREE_Q1Q2_BUSY, ends(NOW + 900), [NOW + 900], now=NOW)
+        self.assertNotIn(r["id"], {c["id"] for c in kept}); self.assertIn(r["id"], lines)
+
     def test_flag_off_restores_old(self):
         old = rf.HOST_DRAIN_ENFORCE
         rf.HOST_DRAIN_ENFORCE = False
