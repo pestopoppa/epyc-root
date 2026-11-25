@@ -144,8 +144,8 @@ def test_spec_validation_names_every_defect():
         G.validate_spec(spec(arms={"OFF": {}, "ON": {"GGML_HIP_Q8MC": "1"}}))
     with pytest.raises(G.SpecError, match="PORT"):
         G.validate_spec(spec(argv=["/x/bin/llama-server"]))
-    with pytest.raises(G.SpecError, match="fresh_server_starts"):
-        G.validate_spec(spec(fresh_server_starts=2))
+    with pytest.raises(G.SpecError, match=r"unknown key\(s\) \['strict_draft'\]"):   # F7: a typo is never silently ignored
+        G.validate_spec(spec(correctness={"kind": "identity", "mode": "cmd", "argv": ["x"], "strict_draft": True}))
     assert G.validate_spec(spec())
 
 
@@ -328,23 +328,22 @@ def test_replay_q8mc_kld_unit_without_lv_is_futility_witness(tmp_path):
                                                       ("q8mc/k-on-u8.log", "c-kld-ON.log")])
     new = tmp_path / "new"
     new.mkdir()
-    rec = G.replay(sp, str(new), str(prior), flags=str(tmp_path / "flags"), stream=QUIET)
-    assert rec["verdict"] == "FUTILITY_HARNESS_WITNESS" and rec["mode"] == "units"
+    rec = G.replay(sp, str(new), str(prior), stream=QUIET)
+    assert rec["verdict"] == "FUTILITY_HARNESS_WITNESS" and rec["mode"] == "units" and rec["n_witnessed"] == 3
     assert "knob GGML_HIP_Q8MC arm ON unit c-kld-ON" in rec["observed"]["reason"] and "argv log level none" in \
         rec["observed"]["reason"]
-    assert json.loads((new / "out" / G.RECEIPT).read_text())["logs_sha256"] == G.logs_sha256(str(prior))[0]
+    assert rec["mismatch_pairs"] == [("GGML_HIP_Q8MC", "ON")] and not (new / "out").exists()   # replay writes nothing
 
 
 def test_replay_tailfuse2_logs_only_six_vs_five_knobs(tmp_path):
     prior = _prior(tmp_path, "ak-tf2-prior", logs=[("tailfuse2/smoke-ALL-server.log", "smoke-ALL-server.log")])
     six = spec({k: {"marker": m, "level": 4} for k, m in TF2.items()}, {"OFF": {}, "OFF2": {}, "ALL": {k: "1" for k in TF2}})
-    r = G.replay(six, str(tmp_path / "n6"), str(prior), write_receipt=False, stream=QUIET)
+    r = G.replay(six, str(tmp_path / "n6"), str(prior), stream=QUIET)
     assert r["mode"] == "logs-only" and r["verdict"] == "FUTILITY_HARNESS_WITNESS"
     assert [m["knob"] for m in r["witness_mismatches"]] == ["GGML_CUDA_AK_TF2_G5"]
     five = {k: m for k, m in TF2.items() if not k.endswith("G5")}
     r = G.replay(spec({k: {"marker": m, "level": 4} for k, m in five.items()},
-                      {"OFF": {}, "OFF2": {}, "ALL": {k: "1" for k in five}}), str(tmp_path / "n5"), str(prior),
-                 write_receipt=False, stream=QUIET)
+                      {"OFF": {}, "OFF2": {}, "ALL": {k: "1" for k in five}}), str(tmp_path / "n5"), str(prior), stream=QUIET)
     assert r["verdict"] == "SMOKE_PASS", r["observed"]
 
 
@@ -358,10 +357,9 @@ def test_replay_devhandoff_draft_diff_output_equal(tmp_path):
               "rc": 0, "log": f"logs/c-id-{a}-p0.log"} for a in ("OFF", "ON")]
     prior = _prior(tmp_path, "ak-dh-prior", units, [("devhandoff/c-unit-inj-sel-p0-off.log", "c-id-OFF-p0.log"),
                                                     ("devhandoff/c-unit-inj-sel-p0-on.log", "c-id-ON-p0.log")])
-    r = G.replay(sp, str(tmp_path / "n"), str(prior), write_receipt=False, stream=QUIET)
+    r = G.replay(sp, str(tmp_path / "n"), str(prior), stream=QUIET)
     assert r["verdict"] == "INCOMPLETE", r["observed"]                    # correctness passed; no timing units recorded
-    r = G.replay(dict(sp, correctness=dict(c, strict_drafts=True)), str(tmp_path / "n2"), str(prior), write_receipt=False,
-                 stream=QUIET)
+    r = G.replay(dict(sp, correctness=dict(c, strict_drafts=True)), str(tmp_path / "n2"), str(prior), stream=QUIET)
     assert r["verdict"] == "FAIL_CORRECTNESS" and "draft" in r["observed"]["reason"]
 
 
@@ -392,8 +390,8 @@ def gen_row(tmp_path, rid="ak-t-gate-gpu-20261125", extra=()):
     root = tmp_path / "rows"
     root.mkdir(exist_ok=True)
     rc = MK.main(["gate", "new", "--id", rid, "--task", "x.md:T", "--model", "Qwen3.8-27B-Q8_0", "--root", str(root),
-                  "--knob", f"GGML_HIP_Q8MC:{Q8MC_ARMED}:4", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_HIP_Q8MC=1",
-                  "--metric", "ms_per_round", "--lower-is-better", "--keep-rule", "ci_lower>1.01,n=8,look=4,aa=0.02",
+                  "--knob", f"GGML_HIP_Q8MC:{Q8MC_ARMED}::4", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_HIP_Q8MC=1",
+                  "--metric", "ms_per_round", "--keep-rule", "ci_lower>1.01,n=8,look=4,aa=0.02",
                   "--server-argv-json", json.dumps(argv), "--copy-input", f"{text}:inputs/kld_text.txt",
                   "--workload-input", "inputs/kld_text.txt", "--win-chars", "200", "--offsets", "0,100", *extra])
     assert rc == 0
@@ -407,9 +405,8 @@ def test_generated_row_is_a_thin_declaration_and_lints_clean(tmp_path):
     assert "import ak_gate as G" in job and "def " not in job and "G.main(SPEC, D" in job
     assert "SERVER_ARGV = [" in job and "'-lv', '4'" in job and "KNOBS = ['GGML_HIP_Q8MC']" in job
     assert spec_["generator"]["profile"] == "gate" and spec_["resumable"] is True
-    assert spec_["fresh_server_per_visit"] is True and spec_["fresh_server_starts"] == 9
-    assert {"out/logs", "out/prof", "out/servers/*.log"} <= set(spec_["keep"])          # evidence kept on FAIL/FUTILITY
-    assert spec_["evidence"]["verdicts"] == ["FAIL_*", "FUTILITY_*"]
+    assert spec_["fresh_server_per_visit"] is True and "gate" not in spec_ and "evidence" not in spec_
+    assert {"out/logs", "out/results.jsonl", "out-smoke"} <= set(spec_["keep"])         # the replay input stays
     assert "ak_gate.py" in (d / "SOURCE.sha256").read_text() and "inputs/kld_text.txt" in (d / "SOURCE.sha256").read_text()
     fails = [f for f in LINT.lint_dir(str(d)) if f[0] == "FAIL"]
     assert not fails, fails
@@ -434,14 +431,22 @@ def test_generated_row_preflight_zero_fails(tmp_path, monkeypatch):
     assert not any(f[0] in ("replay_decide", "replay_receipt") for f in res)               # no family history: silent
 
 
-def test_gate_cli_refuses_contradicting_metric_direction(tmp_path):
-    with pytest.raises(SystemExit, match="lower-is-better"):
-        MK.main(["gate", "new", "--id", "ak-x-gpu-20261125", "--task", "x.md:T", "--model", "m", "--root", str(tmp_path),
+def test_gate_cli_parse_knob_and_model_inference(tmp_path):
+    # F8: a marker that ends in ':8' is a marker, not a log level; '::N' is the level separator
+    assert MK.parse_knob("LLAMA_X:dflash2_dev_select: chain n_threads:8") == (
+        "LLAMA_X", {"kind": "env", "marker": "dflash2_dev_select: chain n_threads:8", "level": 4, "cap": -1})
+    assert MK.parse_knob("LLAMA_X:dflash2_dev_select: chain enabled::5")[1]["level"] == 5
+    rc = MK.main(["gate", "new", "--id", "ak-x-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
+                  "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_A=1", "--metric",
+                  "tok_s", "--keep-rule", "ci_lower>1.01", "--server-argv-json",
+                  '["/s/bin/llama-server", "-m", "/m/Qwen3.8-27B-Q8_0.gguf", "--port", "{PORT}"]', "--prompt", "p"])
+    assert rc == 0 and json.loads((tmp_path / "ak-x-gpu-20261125" / "spec.json").read_text())["model"] == "Qwen3.8-27B-Q8_0"
+    with pytest.raises(G.SpecError, match="unknown key"):
+        MK.main(["gate", "new", "--id", "ak-y-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
                  "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_A=1", "--metric",
-                 "ms_per_round", "--higher-is-better", "--keep-rule", "ci_lower>1.01", "--server-argv-json",
-                 '["/s/bin/llama-server", "--port", "{PORT}"]', "--prompt", "p"])
-    assert MK.parse_knob("LLAMA_X:dflash2_dev_select: Q8-SERVED chain enabled:5") == (
-        "LLAMA_X", {"kind": "env", "marker": "dflash2_dev_select: Q8-SERVED chain enabled", "level": 5, "cap": -1})
+                 "tok_s", "--keep-rule", "ci_lower>1.01", "--server-argv-json",
+                 '["/s/bin/llama-server", "-m", "/m/x.gguf", "--port", "{PORT}"]', "--prompt", "p",
+                 "--correctness", '{"kind": "kld", "argv": ["/s/bin/llama-perplexity"], "max_kl": 0.01}'])
 
 
 # ------------------------------------------------------------------------------------------------ R1 receipt / R4 replay
@@ -466,56 +471,83 @@ def family(tmp_path, reason="SMOKE FAIL rc=3: FUTILITY_HARNESS_WITNESS: knob GGM
     return flags, prev, prow
 
 
-def test_receipt_required_after_failed_smoke_and_validated(tmp_path, monkeypatch):
+def _armed_log(prow):
+    (prow / "out" / "logs" / "smoke-ON.log").write_text(f"0.0 I cmn verbosity = 4\n0.1 I {Q8MC_ARMED} (M 2..8)\n")
+
+
+def test_receipt_is_the_preflight_replay_and_same_failure_is_refused(tmp_path, monkeypatch):
     monkeypatch.setenv("PREFLIGHT_CACHE", str(tmp_path / "pfcache"))
     flags, prev, prow = family(tmp_path)
     d, spec_ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r2")
     row = P.Row(spec_, str(d))
-    got = P.check_replay_receipt(row, {"flags": str(flags)})
+    got = P.check_replay_receipt(row, {"flags": str(flags)})               # no replay ran in this ctx
     assert [c for _l, c, _m in got] == ["REPLAY-RECEIPT-MISSING"] and "--replay" in got[0][2]
-    # the new declaration replayed on the failed run's out/: same witness miss -> same class -> refused
-    p = subprocess.run([sys.executable, "-I", "-B", str(d / "job.py"), "--replay", str(prow)], capture_output=True,
-                       text=True, env={"PATH": "/usr/bin:/bin", "ROWFLOW_FLAGS": str(flags)})
-    assert p.returncode == 0, p.stderr
-    rec = json.loads((d / "out" / G.RECEIPT).read_text())
-    assert rec["prev_id"] == prev and rec["verdict"] == "FUTILITY_HARNESS_WITNESS"
-    assert rec["prev_fail_sha256"] == P._sha256(str(flags / "dryrun" / prev / "FAIL-1.json"))
-    got = P.check_replay_receipt(P.Row(spec_, str(d)), {"flags": str(flags)})
+    ctx = {"flags": str(flags)}
+    assert [c for _l, c, _m in P.check_replay_decide(row, ctx)] == ["REPLAY-DECIDE-SAME-CLASS"]
+    got = P.check_replay_receipt(row, ctx)
     assert [c for _l, c, _m in got] == ["REPLAY-RECEIPT-SAME-CLASS"] and "does not change the verdict" in got[0][2]
-    # a fixed declaration (the marker the binary really prints) replays to SMOKE_PASS -> accepted
-    (prow / "out" / "logs" / "smoke-ON.log").write_text(f"0.0 I cmn verbosity = 4\n0.1 I {Q8MC_ARMED} (M 2..8)\n")
-    subprocess.run([sys.executable, "-I", "-B", str(d / "job.py"), "--replay", str(prow)], capture_output=True,
-                   env={"PATH": "/usr/bin:/bin", "ROWFLOW_FLAGS": str(flags)}, check=True)
-    assert json.loads((d / "out" / G.RECEIPT).read_text())["verdict"] == "SMOKE_PASS"
-    assert P.check_replay_receipt(P.Row(spec_, str(d)), {"flags": str(flags)}) == []
-    # bound to THIS failure: a changed launcher.out (another failure) makes the receipt stale
-    (flags / "dryrun" / prev / "launcher.out").write_text("something else\n")
-    got = P.check_replay_receipt(P.Row(spec_, str(d)), {"flags": str(flags)})
-    assert "REPLAY-RECEIPT-STALE" in {c for _l, c, _m in got}
-    # out/REPLAY-RECEIPT.json never trips STALE-OUT
-    assert not [f for f in LINT.stale_out(str(d))]
-
-
-def test_replay_decide_preflight_runs_the_new_decide_on_cpus_84_87(tmp_path, monkeypatch):
-    monkeypatch.setenv("PREFLIGHT_CACHE", str(tmp_path / "pfcache"))
-    flags, prev, prow = family(tmp_path)
-    d, spec_ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r2")
+    assert ctx["replay_decide"][spec_["id"]]["observed"]["verdict"] == "FUTILITY_HARNESS_WITNESS"
+    assert "84-87" in " ".join(P.REPLAY_PIN) and not (d / "out").exists()     # --decide-from writes nothing
+    _armed_log(prow)                                                           # a declaration that matches the binary
     ctx = {"flags": str(flags)}
-    got = P.check_replay_decide(P.Row(spec_, str(d)), ctx)
-    assert [c for _l, c, _m in got] == ["REPLAY-DECIDE-SAME-CLASS"]
-    r = ctx["replay_decide"][spec_["id"]]
-    assert r["observed"]["verdict"] == "FUTILITY_HARNESS_WITNESS" and r["prev_id"] == prev
-    assert not (d / "out").exists()                                    # --decide-from writes nothing
-    # the auto replay doubles as the R1 receipt once it reaches a different class
-    (prow / "out" / "logs" / "smoke-ON.log").write_text(f"0.0 I cmn verbosity = 4\n0.1 I {Q8MC_ARMED}\n")
-    ctx = {"flags": str(flags)}
-    assert P.check_replay_decide(P.Row(spec_, str(d)), ctx) == []
-    assert P.check_replay_receipt(P.Row(spec_, str(d)), ctx) == []
-    # through publish_check, the replay lands in spec.preflight.replay_decide
+    assert P.check_replay_decide(row, ctx) == [] and P.check_replay_receipt(row, ctx) == []
     s = dict(spec_)
-    P.publish_check(s, str(flags), warn=lambda w: None, queued={})
+    P.publish_check(s, str(flags), warn=lambda w: None, queued={})              # recorded for the family gate (R2 hook)
     assert s["preflight"]["replay_decide"]["observed"]["verdict"] == "SMOKE_PASS"
-    assert "84-87" in " ".join(P.REPLAY_PIN)
+    p = subprocess.run([sys.executable, "-I", "-B", str(d / "job.py"), "--replay", str(prow)], capture_output=True,
+                       text=True, env={"PATH": "/usr/bin:/bin"})
+    assert p.returncode == 0 and "-> SMOKE_PASS" in p.stdout and not (d / "out").exists()   # the dev fix loop
+
+
+def _judge(tmp_path, units, logs, reason, sp=None):
+    """check_replay_receipt for a replay `units` + `logs` of a failed predecessor whose FAIL said `reason`."""
+    flags, prev, prow = family(tmp_path, reason=reason)
+    shutil.rmtree(prow / "out-smoke")
+    os.remove(prow / "out" / "logs" / "smoke-ON.log")
+    for name, txt in logs.items():
+        (prow / "out" / "logs" / name).write_text(txt)
+    for u in units:
+        H.append_unit(dict(u, gate_unit=True), str(prow / "out"))
+    rec = G.replay(sp or spec(), str(tmp_path / "new"), str(prow), stream=QUIET)
+    row = P.Row({"id": "ak-t-gate-gpu-20261125-r2", "owner": "autokernel"}, str(tmp_path / "new"))
+    rec["prev_id"] = prev
+    return P.check_replay_receipt(row, {"flags": str(flags), "replay_decide": {row.id: rec}}), rec
+
+
+def test_f1_infra_failure_is_not_replayable_and_witness_compares_knob_arm(tmp_path):
+    srv = {"unit_id": "smoke-ON", "kind": "smoke", "arm": "ON", "error": "server not ready within 900 s",
+           "error_class": "SERVER"}
+    got, rec = _judge(tmp_path / "a", [srv], {}, "SMOKE FAIL rc=3: FUTILITY_HARNESS_SERVER: smoke-ON: server not ready")
+    assert rec["verdict"] == "FUTILITY_HARNESS_SERVER" and got == []           # a retry / timeout fix cannot show offline
+    k = {"GGML_A": {"marker": "A path ran", "level": 4}, "GGML_B": {"marker": "B path ran", "level": 4}}
+    sp = spec(k, {"OFF": {}, "OFF2": {}, "ON": {"GGML_A": "1", "GGML_B": "1"}})
+    log = {"smoke-ON.log": "verbosity = 4\nI A path ran\n"}                   # A fixed, B never armed in the old run
+    u = [{"unit_id": "smoke-ON", "kind": "smoke", "arm": "ON", "argv": ["llama-server", "-lv", "4"],
+          "log": "logs/smoke-ON.log", "req": [{"predicted_n": 4, "predicted_ms": 40}]}]
+    got, rec = _judge(tmp_path / "b", u, log, "FUTILITY_HARNESS_WITNESS: knob GGML_A arm ON unit smoke-ON: expected present", sp)
+    assert rec["mismatch_pairs"] == [("GGML_B", "ON")] and got == []             # a different (knob, arm): not the same
+    got, _ = _judge(tmp_path / "c", u, log, "FUTILITY_HARNESS_WITNESS: knob GGML_B arm ON unit smoke-ON: expected present", sp)
+    assert [c for _l, c, _m in got] == ["REPLAY-RECEIPT-SAME-CLASS"]
+
+
+def test_f2_zero_units_and_undeclared_arm_close_the_false_pass(tmp_path):
+    got, rec = _judge(tmp_path / "a", [], {"smoke-ALL-server.log": "I something\n"}, "FUTILITY_HARNESS_WITNESS: x")
+    assert rec["n_units"] == 0 and [c for _l, c, _m in got] == ["REPLAY-RECEIPT-NO-UNITS"]
+    u = [{"unit_id": "smoke-ON1", "kind": "smoke", "arm": "ON1", "argv": ["llama-server", "-lv", "4"],
+          "log": "logs/smoke-ON1.log", "req": [{"predicted_n": 4, "predicted_ms": 40}]}]
+    got, rec = _judge(tmp_path / "b", u, {"smoke-ON1.log": "verbosity = 4\n"},
+                      "FUTILITY_HARNESS_WITNESS: knob GGML_HIP_Q8MC arm ON1 unit smoke-ON1: expected present")
+    assert rec["verdict"] == "FUTILITY_HARNESS_WITNESS" and rec["witness_mismatches"][0]["observed"] == "no-arm"
+
+
+def test_f3_removed_correctness_gate_and_f4_token_before_text(tmp_path):
+    c = {"unit_id": "c-kld-ON", "kind": "visit", "arm": "ON", "block": 1, "argv": ["llama-server", "-lv", "4"],
+         "log": "logs/b1-ON.log", "req": [{"predicted_n": 4, "predicted_ms": 40}]}
+    got, rec = _judge(tmp_path / "a", [c], {"b1-ON.log": f"verbosity = 4\nI {Q8MC_ARMED}\n"},
+                      "FAIL_CORRECTNESS: kld ON 0.01 > 0.003 (argv ... -lv 4 ...)")
+    assert rec["correctness_kind"] is None and [cc for _l, cc, _m in got] == ["REPLAY-RECEIPT-GATE-REMOVED"]
+    assert P._fine_class("FAIL_CORRECTNESS: ... -lv 4 verbosity") == "correctness"     # the token wins over the text
+    assert P._fine_class("FUTILITY_HARNESS_TIMEOUT: c-tbo-ON") == "server"
 
 
 def test_replay_decide_legacy_job_is_warn_and_crash_is_fail(tmp_path, monkeypatch):
@@ -550,12 +582,11 @@ def test_family_gate_receipt_unparks_and_enforce_switch(tmp_path, monkeypatch):
     d, spec_ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r2")
     ok, why = fs.republish_allowed(str(flags), spec_)
     assert not ok and why.startswith("PARKED")
-    (prow / "out" / "logs" / "smoke-ON.log").write_text(f"0.0 I cmn verbosity = 4\n0.1 I {Q8MC_ARMED}\n")
-    subprocess.run([sys.executable, "-I", "-B", str(d / "job.py"), "--replay", str(prow)], capture_output=True,
-                   env={"PATH": "/usr/bin:/bin", "ROWFLOW_FLAGS": str(flags)}, check=True)
-    assert fs.republish_allowed(str(flags), spec_)[0]                  # valid receipt = one attempt past the park
-    os.remove(d / "out" / G.RECEIPT)
-    fs.record_clear(str(flags), prev, "PASS")                          # not parked, no receipt: WARN-first lets it through
+    _armed_log(prow)
+    s = dict(spec_)
+    P.publish_check(s, str(flags), warn=lambda w: None, queued={})      # publish order: row_preflight, then the family gate
+    assert fs.republish_allowed(str(flags), s)[0]                      # valid receipt = one attempt past the park
+    fs.record_clear(str(flags), prev, "PASS")                          # not parked, no replay: WARN-first lets it through
     assert fs.republish_allowed(str(flags), spec_)[0]
     monkeypatch.setitem(P.PREFLIGHT_ENFORCE, "replay_receipt", True)
     ok, why = fs.republish_allowed(str(flags), spec_)

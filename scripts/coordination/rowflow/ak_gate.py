@@ -26,8 +26,8 @@ non-server argv (ak-c22-q8mc: llama-perplexity printed no INFO marker); resident
      out-smoke/smoke_measure.json;
   6. resume: every unit is appended (fsync) to out/results.jsonl; a rerun skips completed unit ids;
   7. replay: `job.py --replay <prior out dir>` runs the WHOLE decision path offline (log re-parse -> witness, A/A,
-     metric, KEEP rule, verdict) on a previous run's real logs/results and writes out/REPLAY-RECEIPT.json;
-     `--decide-from <dir>` does the same and only prints `DECIDE {json}` (preflight R4 replay smoke, no writes);
+     metric, KEEP rule, verdict) on a previous run's real logs/results and prints the verdict (the fix loop);
+     `--decide-from <dir>` prints it as `DECIDE {json}` for the preflight R4 replay (= the R1 receipt). No writes;
   8. a standard out/RESULT.json: complete, verdict, polar, per_arm stats, witness table, A/A, correctness.
 
 Process management: only processes this module started (captured Popen handles) are ever signalled, via
@@ -51,11 +51,7 @@ import ak_row_harness as H  # noqa: E402
 GATE_VERSION = "1"
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
-EVIDENCE_PATHS = ("out/logs", "out/prof", "out/servers/*.log", "out/results.jsonl", "out/RESULT.json",
-                  "out/TERMINAL-smoke.json", "out-smoke")
-EVIDENCE_VERDICTS = ("FAIL_*", "FUTILITY_*")
-RECEIPT = "REPLAY-RECEIPT.json"
-RECEIPT_SCHEMA = "epyc.ak_gate.replay_receipt.v1"
+EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke")
 RESULT_SCHEMA = "epyc.ak_gate.result.v1"
 MIN_LV = 4
 LV_BIN_RX = re.compile(r"^(?:llama-(?:server|perplexity|bench|cli|batched-bench|completion|imatrix)|test-dflash[\w.-]*)$")
@@ -69,6 +65,11 @@ T975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8
 TIMING_FIELDS = ("prompt_n", "prompt_ms", "predicted_n", "predicted_ms", "draft_n", "draft_n_accepted")
 KLD_RX = re.compile(r"Mean\s+KLD:\s+([-\d.eE+]+)")
 SAME_TOP_RX = re.compile(r"Same top p:\s+([\d.]+)")
+CORRECTNESS_KEYS = {
+    "common": {"kind", "argv", "arms", "timeout_s", "apply_flags", "witness", "lv"},
+    "tbo": {"min_cases", "require_rc0"},
+    "kld": {"base_arm", "max_kld", "witness_base"},
+    "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"}}
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
                "draft": r"^\s*single-draft:\s*(.*?)\s*$"}
 
@@ -221,9 +222,6 @@ def validate_spec(spec):
     for k, v in knobs.items():
         if (v.get("kind") or ("flag" if k.startswith("-") else "env")) == "flag" and k in [str(x) for x in argv]:
             errs.append(f"flag knob {k} already in the base server argv (arms add it)")
-    cap = spec.get("fresh_server_starts")
-    if cap is not None and int(cap) < visits_per_arm(spec):
-        errs.append(f"fresh_server_starts {cap} < {visits_per_arm(spec)} visits per arm")
     for rel in (spec.get("inputs") or {}):
         if rel.startswith("/") or ".." in rel.split("/"):
             errs.append(f"input {rel}: must be relative to the row dir")
@@ -231,6 +229,11 @@ def validate_spec(spec):
     if c:
         if c.get("kind") not in ("tbo", "kld", "identity"):
             errs.append(f"correctness.kind {c.get('kind')!r} not tbo|kld|identity")
+        else:
+            bad = sorted(set(c) - CORRECTNESS_KEYS["common"] - CORRECTNESS_KEYS[c["kind"]])
+            if bad:
+                errs.append(f"correctness ({c['kind']}): unknown key(s) {bad}; allowed "
+                            f"{sorted(CORRECTNESS_KEYS['common'] | CORRECTNESS_KEYS[c['kind']])}")
         if c.get("kind") in ("tbo", "kld") and not c.get("argv"):
             errs.append(f"correctness {c.get('kind')}: argv required")
         if c.get("kind") == "identity" and c.get("mode", "server") == "cmd" and not c.get("argv"):
@@ -679,23 +682,6 @@ def sha_bytes(b):
     return hashlib.sha256(b if isinstance(b, bytes) else str(b).encode()).hexdigest()
 
 
-def logs_sha256(row_or_out):
-    """One sha over every file a replay reads: out/logs/**, out/results.jsonl, out-smoke/results.jsonl (path + sha)."""
-    out_dir, row = resolve_prior(row_or_out)
-    files = []
-    for root in (os.path.join(out_dir, "logs"),):
-        for r, _d, fs in os.walk(root):
-            files += [os.path.join(r, f) for f in fs]
-    for p in (os.path.join(out_dir, H.RESULTS_JSONL), os.path.join(row, "out-smoke", H.RESULTS_JSONL),
-              os.path.join(out_dir, H.TERMINAL_SMOKE)):
-        if os.path.isfile(p):
-            files.append(p)
-    h = hashlib.sha256()
-    for p in sorted(files):
-        h.update(f"{os.path.relpath(p, row)}\0{_sha_file(p)}\n".encode())
-    return h.hexdigest(), len(files)
-
-
 def resolve_prior(path):
     """(out_dir, row_dir) for a prior run given its row dir or its out dir."""
     p = os.path.abspath(path)
@@ -792,9 +778,6 @@ class Gate:
                 bad.append(f"input {rel} missing")
             elif want and _sha_file(p) != want:
                 bad.append(f"input {rel} sha256 {_sha_file(p)[:12]} != pinned {str(want)[:12]}")
-        for b in self.spec.get("binaries") or []:
-            if not os.path.exists(b):
-                bad.append(f"binary {b} missing")
         return bad
 
     def port(self):
@@ -1133,7 +1116,7 @@ def result_doc(spec, units, d):
            "n_units": len(units), "n_visits": len(tus),
            "gate": {"module": "ak_gate.py", "version": GATE_VERSION, "sha256": _sha_file(os.path.abspath(__file__))}}
     if str(d["verdict"]).startswith(("FAIL", "FUTILITY")):
-        res["evidence"] = {"keep": list(EVIDENCE_PATHS), "why": "failed gate: logs + units are the replay input"}
+        res["evidence"] = list(EVIDENCE_PATHS)   # spec.keep: the replay input of a failed gate
     return res
 
 
@@ -1179,7 +1162,12 @@ def replay_units(spec, out_dir, row_dir):
             out.append(u)
             continue
         witnessed = u["kind"] in ("visit", "smoke", "log", "c-id", "c-kld") or (u["kind"] == "c-tbo" and c.get("witness"))
-        if witnessed and u.get("arm") in (spec.get("arms") or {}):
+        if witnessed and u.get("arm") not in (spec.get("arms") or {}):
+            # a prior arm the new declaration does not declare cannot be judged: a mismatch, never "unwitnessed"
+            u["witness"] = {"(arm)": {"expected": "a declared arm", "observed": "no-arm", "ok": False, "line": None,
+                                      "lines_scanned": 0, "log": u.get("log"), "argv_lv": None, "log_lv": None,
+                                      "lv_required": MIN_LV, "note": f"prior arm {u.get('arm')!r} is not declared"}}
+        elif witnessed:
             u["witness"] = witness_for(spec, u["arm"], txt, u.get("argv") if u["kind"] != "c-tbo" else None, u.get("log"))
         if u.get("req") is not None:
             u["metric"] = metric_of(spec, u["req"])
@@ -1199,9 +1187,10 @@ def replay_units(spec, out_dir, row_dir):
     return out, mode, skipped
 
 
-def replay(spec, row_dir, prior, write_receipt=True, flags=None, stream=None):
-    """The WHOLE decision path offline over a previous run's real logs + results. Returns the receipt dict; writes
-    <row>/out/REPLAY-RECEIPT.json when write_receipt. No server, no GPU, no network."""
+def replay(spec, row_dir, prior, stream=None):
+    """The WHOLE decision path offline over a previous run's real logs + results (no server, no GPU, no network, no
+    writes). Returns {prev_id, mode, n_units, n_witnessed, skipped_logs, observed, verdict, witness_mismatches,
+    mismatch_pairs, correctness_kind}: what `--decide-from` prints for the preflight R4 replay (which is the R1 receipt)."""
     validate_spec(spec)
     t0 = time.time()
     out_dir, prow = resolve_prior(prior)
@@ -1210,7 +1199,6 @@ def replay(spec, row_dir, prior, write_receipt=True, flags=None, stream=None):
     if mode == "units" and not d["terminal"] and not [u for u in units if u.get("kind") == "visit"] and \
             any(u.get("kind") == "smoke" for u in units):
         d = decide_smoke(spec, units)
-    lsha, nfiles = logs_sha256(prior)
     prev_id = os.path.basename(prow)
     for meta in (os.path.join(prow, "spec.json"), os.path.join(out_dir, "RESULT.json")):
         try:
@@ -1219,36 +1207,16 @@ def replay(spec, row_dir, prior, write_receipt=True, flags=None, stream=None):
             break
         except (OSError, ValueError, AttributeError):
             continue
-    flags = flags or os.environ.get("ROWFLOW_FLAGS") or "/mnt/raid0/llm/tmp/compute-flags"
-    dd = os.path.join(flags, "dryrun", prev_id)
-    fails = sorted((p for p in (os.path.join(dd, f) for f in (os.listdir(dd) if os.path.isdir(dd) else []))
-                    if re.match(r"FAIL-\d+\.json$", os.path.basename(p))), key=lambda p: os.path.getmtime(p))
-    lo = os.path.join(dd, "launcher.out")
-    job = os.path.join(os.path.abspath(row_dir), "job.py")
-    try:
-        cpus = H.cpu_str(sorted(os.sched_getaffinity(0)))
-    except (AttributeError, OSError):
-        cpus = ""
-    rec = {"schema": RECEIPT_SCHEMA, "prev_id": prev_id, "prior_out": out_dir, "mode": mode,
-           "logs_sha256": lsha, "n_files": nfiles, "n_units": len(units), "skipped_logs": skipped[:40],
+    mm = mismatches(units)
+    rec = {"prev_id": prev_id, "prior_out": out_dir, "mode": mode, "n_units": len(units),
+           "n_witnessed": sum(1 for u in units if u.get("witness")), "skipped_logs": skipped[:40],
            "observed": {"verdict": d["verdict"], "polar": d.get("polar"), "terminal": d.get("terminal"),
                         "reason": str(d.get("reason") or "")[:1200], "n_units": len(units)},
-           "verdict": d["verdict"], "witness_mismatches": mismatches(units)[:40],
-           "prev_fail": fails[-1] if fails else None, "prev_fail_sha256": _sha_file(fails[-1]) if fails else None,
-           "prev_launcher_out_sha256": _sha_file(lo) if os.path.isfile(lo) else None,
-           "job_sha256": _sha_file(job) if os.path.isfile(job) else None,
-           "gate_sha256": _sha_file(os.path.abspath(__file__)),
-           "decide_cmd": f"python3 -I -B {job} --replay {out_dir}", "replayed_at": H.now(), "host_cpus": cpus,
-           "elapsed_s": round(time.time() - t0, 3)}
-    prev_term = os.path.join(out_dir, H.TERMINAL_SMOKE)
-    try:
-        rec["prev_smoke"] = {k: v for k, v in json.load(open(prev_term)).items() if k in ("verdict", "rc", "reason")}
-    except (OSError, ValueError):
-        rec["prev_smoke"] = None
-    if write_receipt:
-        atomic_json(os.path.join(os.path.abspath(row_dir), "out", RECEIPT), rec)
-    print(f"REPLAY {prev_id} mode={mode} units={len(units)} -> {d['verdict']} (polar {d.get('polar')}): "
-          f"{str(d.get('reason') or '')[:400]}", file=stream or sys.stdout, flush=True)
+           "verdict": d["verdict"], "witness_mismatches": mm[:40],
+           "mismatch_pairs": sorted({(m["knob"], m["arm"]) for m in mm}),
+           "correctness_kind": (spec.get("correctness") or {}).get("kind"), "elapsed_s": round(time.time() - t0, 3)}
+    print(f"REPLAY {prev_id} mode={mode} units={len(units)} witnessed={rec['n_witnessed']} -> {d['verdict']} "
+          f"(polar {d.get('polar')}): {str(d.get('reason') or '')[:400]}", file=stream or sys.stdout, flush=True)
     return rec
 
 
@@ -1260,10 +1228,6 @@ def _synthetic_log(spec, arm, lv=MIN_LV):
             m = v["marker"]
             lines.append("0.01.000.000 I " + (re.sub(r"[\\^$.*+?()\[\]{}|]", "", m[3:]) if m.startswith("re:") else m))
     return "\n".join(lines) + "\n"
-
-
-def cand_all(spec):
-    return candidate_arms(spec)
 
 
 def stub_visit(spec, out_dir, speed):
@@ -1318,7 +1282,7 @@ def selftest(spec, row_dir, stream=None):
             g.visit_fn = stub_visit(sp, g.out, speed)
             return g
         fast = max(1.10, float(keep_cfg(sp)["threshold"]) * 1.05)
-        for name, speed in (("keep", {a: fast for a in cand_all(sp)}), ("nokeep", {})):
+        for name, speed in (("keep", {a: fast for a in candidate_arms(sp)}), ("nokeep", {})):
             g = gate(name, speed)
             assert g.run() == 0
             res = json.load(open(os.path.join(g.out, "RESULT.json")))
@@ -1327,7 +1291,7 @@ def selftest(spec, row_dir, stream=None):
                 assert res["verdict"].startswith("KEEP") and res["polar"] == "PASS", res["verdict"]
             elif float(keep_cfg(sp)["threshold"]) >= 1.0:
                 assert res["verdict"] in ("NO_KEEP", "FUTILITY_CANDIDATE_BELOW_FLOOR"), res["verdict"]
-            r = replay(sp, g.d, g.out, write_receipt=False, flags=t, stream=quiet)
+            r = replay(sp, g.d, g.out, stream=quiet)
             assert r["verdict"] == res["verdict"], (r["verdict"], res["verdict"])
         if keep_cfg(sp)["aa_max"] is not None:
             g = gate("aa", {baseline_arms(sp)[1]: 1.0 + 3 * float(keep_cfg(sp)["aa_max"])})
@@ -1352,14 +1316,13 @@ def main(spec, row_dir, argv=None, env=None):
         if i + 1 >= len(argv):
             print(f"usage: job.py {flag} <prior row dir | prior out dir>", file=sys.stderr)
             return 2
-        try:
-            rec = replay(spec, row_dir, argv[i + 1], write_receipt=(flag == "--replay" and "--no-receipt" not in argv),
-                         stream=sys.stderr)
+        try:   # --replay: the developer fix loop (REPLAY line on stdout); --decide-from: preflight R4 (DECIDE json)
+            rec = replay(spec, row_dir, argv[i + 1], stream=sys.stdout if flag == "--replay" else sys.stderr)
         except Exception as e:  # noqa: BLE001 - a crashed decide is the R4 finding itself: say so, rc 3
             print("DECIDE " + json.dumps({"error": f"{e.__class__.__name__}: {e}"}), flush=True)
             return 3
-        print("DECIDE " + json.dumps({k: rec[k] for k in ("prev_id", "mode", "n_units", "observed", "logs_sha256",
-                                                          "job_sha256", "gate_sha256")}), flush=True)
+        if flag == "--decide-from":
+            print("DECIDE " + json.dumps(rec), flush=True)
         return 0
     H.require_grant(env)   # no FILLER_ID/FILLER_DRYRUN -> exit 64: never run a row (or its smoke) by hand
     g = Gate(spec, row_dir, env=env)

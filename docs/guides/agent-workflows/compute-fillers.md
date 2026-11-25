@@ -152,7 +152,7 @@ r3-r6). **A knob gate row now declares the gate and nothing else:**
 ```
 python3 scripts/coordination/rowflow/mk_ak_row.py gate new --id ak-c22-x-gate-gpu-20261126 --task file.md:BOX \
   --model Qwen3.8-27B-Q8_0 --served-ref <registry-role> \
-  --knob 'GGML_HIP_X:ggml_cuda_x: GGML_HIP_X=1 path armed:4' \
+  --knob 'GGML_HIP_X:ggml_cuda_x: GGML_HIP_X=1 path armed::4' \
   --arm OFF: --arm OFF2: --arm ON:GGML_HIP_X=1 \
   --metric ms_per_round --keep-rule 'ci_lower>1.01,n=8,look=4,aa=0.02' \
   --copy-input /path/long_ctx.txt:inputs/long_ctx.txt --workload-input inputs/long_ctx.txt --offsets 0,22000 \
@@ -160,7 +160,7 @@ python3 scripts/coordination/rowflow/mk_ak_row.py gate new --id ak-c22-x-gate-gp
 ```
 
 - **The declaration** (job.py: `KNOBS`, `SERVER_ARGV`, `SPEC`) = knobs (env var or `--flag`, witness marker, `re:`
-  for a regex, log level), arms, an explicit `expect[arm][knob] = present|absent` (derived from the arm settings,
+  for a regex, `::LEVEL`), arms, an explicit `expect[arm][knob] = present|absent` (derived from the arm settings,
   `--expect ARM:KNOB=absent` overrides, `--observe` for markers every arm must show), baseline arms (the A/A pair),
   workload, metric (its direction is checked: `tok_s` higher, `ms_per_round` lower), KEEP rule, optional correctness
   (`tbo` | `kld` | `identity`, mode `server` or `cmd`), inputs (copied and sha-pinned), extra dirs.
@@ -172,15 +172,16 @@ python3 scripts/coordination/rowflow/mk_ak_row.py gate new --id ak-c22-x-gate-gp
   `strict_drafts`; an OFF/OFF2 difference is `FUTILITY_HARNESS_NONDET`); the A/A guard (`FUTILITY_HARNESS_AA`); a
   ~5 min smoke on the ON arm (dirs + inputs checked first); per-unit append + resume; `out/RESULT.json`
   (`complete`, `verdict`, `polar`, `per_arm`, `witness`, `aa`, `correctness`).
-- **Evidence:** a `FAIL_*` / `FUTILITY_*` row keeps `out/logs`, `out/prof`, `out/servers/*.log`, results and the smoke
-  outputs (spec `keep` + `evidence`); ak_gate never deletes them.
-- **Republish after a FAILED smoke:** `python3 -I -B <new row>/job.py --replay <prior row dir>` runs the whole decision
-  path offline on the prior run's real logs (logs-only mode for hand-rolled priors) and writes `out/REPLAY-RECEIPT.json`
-  (prior id, FAIL record sha, launcher.out sha, job.py sha, logs sha, verdict). Publish checks `replay_receipt` (R1)
-  and `replay_decide` (R4: preflight runs `job.py --decide-from <prior out>` itself on cpus 84-87) and refuses a replay
-  that reproduces the same failure class: *your fix does not change the verdict on the log it failed on*. A kernel
-  fix the old log cannot show declares `spec.fix_ref {store, reason}`. Both checks are WARN until
-  `PREFLIGHT_ENFORCE` is flipped at 0 queued fails; a valid receipt also counts as the R2 family-park unpark reason.
+- **Evidence:** spec `keep` holds `out/logs`, the results, RESULT.json and the smoke outputs (the replay input); ak_gate
+  never deletes them.
+- **Republish after a FAILED smoke:** preflight replays the new `job.py --decide-from` on the failed run's out/ (cpus
+  84-87, 60 s, no GPU) and that replay IS the receipt (`replay_decide` R4 + `replay_receipt` R1): refused when it judges 0
+  units, drops the correctness unit the old run failed, or reproduces the same failure (*your fix does not change the
+  verdict on the log it failed on*; for a witness failure: a prior (knob, arm) still missing). Server / timeout / stop /
+  residency / input failures are not replayable and never refused (R2 family strikes are the backstop). A kernel fix the
+  old log cannot show declares `spec.fix_ref {store, reason}`. Fix loop: `python3 -I -B job.py --replay <prior row dir>`
+  prints the verdict (writes nothing). Both checks are WARN until `PREFLIGHT_ENFORCE` is flipped at 0 queued fails; a
+  passing replay also counts as the R2 family-park unpark reason.
 
 ## Shared job templates: import, never copy (operator 2026-11-06)
 

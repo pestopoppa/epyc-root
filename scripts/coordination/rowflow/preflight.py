@@ -48,11 +48,12 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
                never copied, found only at smoke).
   replay_decide 17 (R4, waste audit 2026-11-25) a row whose family left a prior out/: `job.py --decide-from <prior out>`
                (nice 19, cpus 84-87, timeout 60; no GPU) must run, return a verdict and not reproduce the prior smoke FAIL's
-               class: REPLAY-DECIDE-CRASH / -NO-VERDICT / -SAME-CLASS; legacy jobs without the entry point WARN. PUBLISH_ONLY.
-  replay_receipt 18 (R1) a republish of a family whose LAST smoke FAILED carries a replay receipt (out/REPLAY-RECEIPT.json
-               from `job.py --replay`, spec.replay_receipt, or replay_decide's own replay) bound to that FAIL (FAIL record
-               sha, launcher.out sha, job.py sha, logs sha) whose verdict is a DIFFERENT failure class; spec.fix_ref
-               {store, reason} naming a new kernel store is the one escape. No job-sha (fresh_attempt) bypass. PUBLISH_ONLY.
+               class: REPLAY-DECIDE-CRASH / -NO-VERDICT / -NO-UNITS / -SAME-CLASS; legacy jobs without the entry point WARN. PUBLISH_ONLY.
+  replay_receipt 18 (R1) a republish of a family whose LAST smoke FAILED needs replay_decide's replay of THAT run's out/ to
+               judge >= 1 witnessed unit and reach a different failure (witness: no prior (knob, arm) still missing;
+               server/timeout/stop/residency/input failures are not replayable, never a refusal): REPLAY-RECEIPT-MISSING /
+               -NO-UNITS / -GATE-REMOVED / -SAME-CLASS. spec.fix_ref {store, reason} naming a new kernel store is the one
+               escape. No job-sha (fresh_attempt) bypass. PUBLISH_ONLY.
   generator 12 WARN only: job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` + spec.generator agree
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
    row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
@@ -1414,7 +1415,8 @@ def check_witness_loglevel_tools(row, ctx):
 
 def check_witness_declared(row, ctx):
     ws = _job_knobs(row)
-    if ws and not row.spec.get("witness_lines"):
+    gate = (row.spec.get("generator") or {}).get("profile") == "gate"   # ak_gate judges every marker (re: ones too) per arm
+    if ws and not row.spec.get("witness_lines") and not gate:
         return [("FAIL", "WITNESS-UNDECLARED", f"knob witness {ws[0]} declared (job.py KNOBS) but spec.witness_lines is absent: "
                                                "declare [{line, needs, cap}] so the cap is checked against the binary")]
     return []
@@ -1490,22 +1492,32 @@ def check_inputs(row, ctx):
 
 
 # ---------------------------------------------------------------- replay gates (R1 receipt, R4 replay smoke)
-# docs/design/ak-waste-audit-20261125.md §3 R1/R4 + pipeline-mgmt gate harness 2026-11-25. A -rN republish of a family whose
-# LAST smoke FAILED must show that the NEW decision path, run offline on the previous run's real out/ (and its FAIL record +
-# launcher.out), reaches a DIFFERENT failure class: "your fix does not change the verdict on the log it failed on" is the
-# refusal. The receipt is out/REPLAY-RECEIPT.json (job.py --replay, ak_gate) or spec.replay_receipt, or the replay this
-# preflight runs itself (R4: job.py --decide-from <prior out>, nice 19, cpus 84-87, timeout 60). A new job sha alone is
-# never evidence (no fresh_attempt bypass here); spec.fix_ref {store, reason} naming a kernel store the failed run did
-# not use is the one escape (the fix is in the binary, so the old log cannot show it).
-REPLAY_PIN = ("/usr/bin/nice", "-n", "19", "/usr/bin/taskset", "-c", "84-87", "/usr/bin/timeout", "60")
-REPLAY_TIMEOUT_S = 90
-FINE_CLASS_RX = (("witness", re.compile(r"WITNESS|witness|-lv\b|log level|verbosity")),
+# docs/design/ak-waste-audit-20261125.md §3 R1/R4 + pipeline-mgmt gate harness 2026-11-25 (trimmed after the Fable review
+# /mnt/raid0/llm/tmp/review-akgate-20261125.md F1-F8). A -rN republish of a family whose LAST smoke FAILED must show that
+# the NEW decision path, run offline on the failed run's real out/, reaches a DIFFERENT failure: "your fix does not change
+# the verdict on the log it failed on" is the refusal. The receipt IS the replay preflight runs itself (R4: job.py
+# --decide-from <prior out>, nice 19, cpus 84-87, 60 s); the agent never writes one (job.py --replay is the local fix loop).
+# Not replayable (never a refusal; R2 family strikes are the backstop): server / timeout / stop / residency / input failures
+# an offline replay cannot witness. A witness failure is the same failure only while a prior (knob, arm) is still missing.
+# A new job sha alone is never evidence (no fresh_attempt bypass); spec.fix_ref {store, reason} naming a kernel store the
+# failed run did not use is the one escape (the fix is in the binary, so the old log cannot show it).
+REPLAY_PIN = ("/usr/bin/nice", "-n", "19", "/usr/bin/taskset", "-c", "84-87")
+REPLAY_TIMEOUT_S = 60
+# ak_gate verdict token -> fine class (read FIRST); the free-text regexes below are the fallback for hand-rolled rows
+TOKEN_CLASS = (("NONDET", "nondet"), ("WITNESS", "witness"), ("CORRECTNESS", "correctness"), ("_AA", "aa"),
+               ("MISSING_INPUT", "input"), ("RESIDENCY", "residency"), ("SERVER", "server"), ("TIMEOUT", "server"),
+               ("STOPPED", "server"), ("MISSING_OUTPUT", "output"))
+VERDICT_TOKEN_RX = re.compile(r"\b((?:FUTILITY|FAIL)_[A-Z0-9_]+)\b")
+NOT_REPLAYABLE = ("server", "input", "residency")
+FINE_CLASS_RX = (("witness", re.compile(r"WITNESS|witness")),
                  ("nondet", re.compile(r"NONDET|nondetermin", re.I)),
                  ("correctness", re.compile(r"CORRECTNESS|MISMATCH|identity|output_eq|\bKLD\b")),
                  ("aa", re.compile(r"_AA\b|\bA/A\b")),
                  ("input", re.compile(r"MISSING_INPUT|input \S+ missing|No such file|INPUT-MISSING")),
                  ("residency", re.compile(r"RESIDENCY|VRAM")),
                  ("server", re.compile(r"not ready|server exited|_SERVER\b|ServerDied|Connection refused")))
+PAIR_RX = re.compile(r"knob ([A-Za-z0-9_.()-]+) arm ([A-Za-z0-9_.-]+)")
+FALSE_KNOB_RX = re.compile(r"['\"]((?:GGML|LLAMA)_[A-Z0-9_]+)['\"]\s*:\s*False")
 
 
 def _is_ak(row):
@@ -1583,7 +1595,19 @@ def family_prior_outs(flags, rid):
     return sorted(out, reverse=True)
 
 
+def _token_class(text):
+    for tok in VERDICT_TOKEN_RX.findall(text or ""):
+        for frag, cls in TOKEN_CLASS:
+            if frag in tok:
+                return cls
+    return None
+
+
 def _fine_class(text):
+    """F4: the ak_gate verdict token is the class; the free-text regex is only the fallback."""
+    tc = _token_class(text)
+    if tc:
+        return tc
     for name, rx in FINE_CLASS_RX:
         if rx.search(text or ""):
             return name
@@ -1598,15 +1622,21 @@ def _failclass_mod():
         return None
 
 
+def prior_pairs(text):
+    """{(knob, arm|None)} a recorded witness failure names: ak_gate 'knob K arm A' lines, else a hand-rolled {'K': False}."""
+    pairs = {(k, a) for k, a in PAIR_RX.findall(text or "")}
+    return pairs or {(k, None) for k in FALSE_KNOB_RX.findall(text or "")}
+
+
 def prev_failure_class(flags, fid, fail_path):
-    """{key: side:klass (akloop/failclass.classify_fail), fine, text} of a recorded smoke FAIL."""
+    """{key: side:klass (akloop/failclass.classify_fail), fine, pairs, text} of a recorded smoke FAIL."""
     import rowflow as rf
     rec = _load_json(fail_path) or {}
     lo = _read(os.path.join(rf.dry_dir(flags, fid), "launcher.out")) or ""
     out = prior_out(flags, fid)
     term = _load_json(os.path.join(out, "TERMINAL-smoke.json")) if out else None
     smoke_lines = "\n".join(ln for ln in lo.splitlines() if "SMOKE FAIL" in ln or "FUTILITY" in ln)[-2000:]
-    text = " ".join([str(rec.get("reason") or ""), str((term or {}).get("reason") or ""), smoke_lines])
+    text = " ".join([str((term or {}).get("reason") or ""), str(rec.get("reason") or ""), smoke_lines])
     key = None
     fc = _failclass_mod()
     if fc is not None:
@@ -1615,12 +1645,14 @@ def prev_failure_class(flags, fid, fail_path):
             key = f"{c.side}:{c.klass}"
         except Exception:  # noqa: BLE001
             key = None
-    return {"key": key, "fine": _fine_class(text), "text": text[:600]}
+    return {"key": key, "fine": _fine_class(text), "pairs": prior_pairs(text), "text": text[:600]}
 
 
-def observed_class(observed):
+def observed_class(observed, pairs=()):
+    """The replayed verdict's class. ok = not a failure (pass / keep / measured NO_KEEP / INCOMPLETE: the replay ran past
+    the prior failure point) OR not replayable offline (server / timeout / stop / residency / input: F1)."""
     v = str((observed or {}).get("verdict") or "")
-    text = v + " " + str((observed or {}).get("reason") or "")
+    fine = _fine_class(v) or _fine_class(str((observed or {}).get("reason") or ""))
     key = None
     fc = _failclass_mod()
     if fc is not None:
@@ -1629,18 +1661,21 @@ def observed_class(observed):
             key = f"{c.side}:{c.klass}"
         except Exception:  # noqa: BLE001
             key = None
-    # not a failure: a pass/keep, a measured NO_KEEP, or INCOMPLETE (the replay ran past the point the prior run failed at
-    # and simply ran out of recorded units)
-    ok = v.startswith(("KEEP", "SMOKE_PASS", "PASS", "NO_KEEP", "INCOMPLETE")) or (observed or {}).get("polar") == "PASS"
-    return {"key": key, "fine": None if ok else _fine_class(text), "ok": ok}
+    passed = v.startswith(("KEEP", "SMOKE_PASS", "PASS", "NO_KEEP", "INCOMPLETE")) or (observed or {}).get("polar") == "PASS"
+    nr = fine in NOT_REPLAYABLE
+    return {"key": key, "fine": None if passed else fine, "ok": passed or nr, "not_replayable": nr and not passed,
+            "pairs": {tuple(p) for p in pairs}}
 
 
 def same_failure_class(prev, obs):
-    """True when the replayed verdict is the SAME failure as the recorded one. A replay that no longer fails never is; a
-    fine class (witness / correctness / nondet / aa / input / residency / server) on both sides decides; otherwise the
-    failclass side:klass keys (unknown never matches)."""
+    """True when the replayed verdict is the SAME failure as the recorded one. A replay that no longer fails (or cannot
+    judge it offline) never is; witness vs witness is the same only while a prior (knob, arm) is still missing; another
+    fine class on both sides decides by equality; otherwise the failclass side:klass keys (unknown never matches)."""
     if obs.get("ok"):
         return False
+    if prev.get("fine") == obs.get("fine") == "witness" and prev.get("pairs"):
+        return any((k, a) in obs["pairs"] or (a is None and any(k == ok for ok, _a in obs["pairs"]))
+                   for k, a in prev["pairs"])
     if prev.get("fine") and obs.get("fine"):
         return prev["fine"] == obs["fine"]
     k1, k2 = prev.get("key"), obs.get("key")
@@ -1653,7 +1688,7 @@ def _job_supports_replay(row):
 
 
 def run_replay_decide(row, prior_out_dir, flags=None, pin=REPLAY_PIN, timeout=REPLAY_TIMEOUT_S):
-    """job.py --decide-from <prior out> under nice/taskset 84-87/timeout: {rc, observed|error, ...} (never raises)."""
+    """job.py --decide-from <prior out> under nice 19 / taskset 84-87, `timeout` s: {rc, ...DECIDE} or {error} (never raises)."""
     job = os.path.join(row.dir, "job.py")
     env = {"PATH": "/usr/bin:/bin", "HIP_VISIBLE_DEVICES": "-1", "ROCR_VISIBLE_DEVICES": "-1"}
     if flags:
@@ -1678,9 +1713,35 @@ def run_replay_decide(row, prior_out_dir, flags=None, pin=REPLAY_PIN, timeout=RE
     return dict(out, **d)
 
 
+def judge_replay(flags, row, r, last, code):
+    """[(level, code, msg)] for a replay result `r` against the family's last smoke `last` (code = REPLAY-DECIDE or
+    REPLAY-RECEIPT): no units, no witnessed unit, a removed correctness gate, or the same failure class."""
+    obs = r.get("observed") or {}
+    prev = prev_failure_class(flags, last["id"], last["path"]) if last and last["kind"] == "FAIL" else None
+    oc = observed_class(obs, r.get("mismatch_pairs") or ())
+    r.update(prev_failclass={k: (sorted(v) if isinstance(v, set) else v) for k, v in (prev or {}).items()} or None,
+             observed_class={k: (sorted(v) if isinstance(v, set) else v) for k, v in oc.items()})
+    if int(r.get("n_units") or 0) == 0:
+        return [("FAIL", f"{code}-NO-UNITS", f"the replay of {r.get('prev_id')}'s out/ judged 0 units (skipped logs "
+                                             f"{(r.get('skipped_logs') or [])[:4]}): an empty replay proves nothing")]
+    if "n_witnessed" in r and int(r["n_witnessed"] or 0) == 0 and not oc["not_replayable"]:
+        return [("FAIL", f"{code}-NO-UNITS", f"the replay of {r.get('prev_id')}'s out/ witnessed 0 of {r.get('n_units')} units")]
+    if not prev:
+        return []
+    if prev.get("fine") == "correctness" and "correctness_kind" in r and not r.get("correctness_kind"):
+        return [("FAIL", f"{code}-GATE-REMOVED", f"{last['id']} failed its correctness unit and the new declaration has no "
+                                                 "correctness unit: removing the gate is not a fix")]
+    if same_failure_class(prev, oc):
+        return [("FAIL", f"{code}-SAME-CLASS", f"replaying the new decide() on {last['id']}'s out/ gives {obs.get('verdict')} "
+                                               f"- the same failure as its smoke FAIL ({prev.get('fine') or prev.get('key')}"
+                                               f"{' ' + str(sorted(prev['pairs'] & oc['pairs'] or prev['pairs'])) if prev.get('pairs') else ''}"
+                                               "): your fix does not change the verdict on the log it failed on")]
+    return []
+
+
 def check_replay_decide(row, ctx):
-    """R4: the new decide() replayed on the family's newest prior out/ must run, name a verdict, and (when that run's smoke
-    FAILED last) not reproduce the same failure class. Legacy jobs with no --decide-from entry point: WARN."""
+    """R4: the new decide() replayed on the family's newest prior out/ must run, judge >= 1 witnessed unit, name a verdict,
+    and (when that run's smoke FAILED last) not reproduce the same failure. Legacy jobs without --decide-from: WARN."""
     flags = ctx.get("flags")
     if not flags or not row.dir or not _is_ak(row) or "job.py" not in row.code:
         return []
@@ -1693,37 +1754,14 @@ def check_replay_decide(row, ctx):
         return [("WARN", "REPLAY-DECIDE-UNSUPPORTED", f"family has a prior out/ ({pick[1]}) but job.py has no --decide-from "
                                                       "entry point (mk_ak_row v2 template / ak_gate rows have one)")]
     r = run_replay_decide(row, pick[2], flags)
-    ctx.setdefault("replay_decide", {})[row.id] = dict(r, prev_id=pick[1])
+    r["prev_id"] = pick[1]
+    ctx.setdefault("replay_decide", {})[row.id] = r
     if r.get("error") or r.get("rc") not in (0,):
         return [("FAIL", "REPLAY-DECIDE-CRASH", f"job.py --decide-from {pick[2]} failed (rc {r.get('rc')}): "
                                                 f"{r.get('error') or r.get('stderr_tail')}"[:400])]
-    obs = r.get("observed") or {}
-    if not str(obs.get("verdict") or "").strip():
+    if not str((r.get("observed") or {}).get("verdict") or "").strip():
         return [("FAIL", "REPLAY-DECIDE-NO-VERDICT", f"job.py --decide-from {pick[2]} returned no verdict")]
-    if last and last["kind"] == "FAIL" and last["id"] == pick[1]:
-        prev, oc = prev_failure_class(flags, last["id"], last["path"]), observed_class(obs)
-        r.update(prev_failclass=prev, observed_class=oc)
-        if same_failure_class(prev, oc):
-            return [("FAIL", "REPLAY-DECIDE-SAME-CLASS", f"replaying the new decide() on {last['id']}'s out/ gives "
-                                                         f"{obs.get('verdict')} - the same failure class as its smoke FAIL "
-                                                         f"({prev.get('fine') or prev.get('key')}): your fix does not change "
-                                                         "the verdict on the log it failed on")]
-    return []
-
-
-def _receipt(row, ctx):
-    rc = row.spec.get("replay_receipt")
-    if isinstance(rc, dict):
-        return rc, "spec.replay_receipt"
-    if isinstance(rc, str) and os.path.isfile(rc):
-        return _load_json(rc), rc
-    p = os.path.join(row.dir, "out", "REPLAY-RECEIPT.json") if row.dir else ""
-    if p and os.path.isfile(p):
-        return _load_json(p), p
-    auto = (ctx.get("replay_decide") or {}).get(row.id)
-    if auto and auto.get("observed"):
-        return dict(auto, auto=True), "preflight replay_decide"
-    return None, None
+    return judge_replay(flags, row, r, last if last and last["id"] == pick[1] else None, "REPLAY-DECIDE")
 
 
 def _fix_ref_ok(row, flags, last):
@@ -1737,8 +1775,9 @@ def _fix_ref_ok(row, flags, last):
 
 
 def check_replay_receipt(row, ctx):
-    """R1: a republish of a family whose LAST smoke FAILED carries a replay receipt that binds to that failure (FAIL record
-    sha, launcher.out sha, the new job.py sha, the prior logs sha) and whose replayed verdict is a different failure class."""
+    """R1: a republish of a family whose LAST smoke FAILED needs a receipt = this preflight's own replay (replay_decide) of
+    that failed run's out/, judged by judge_replay. spec.fix_ref naming a new kernel store is the one escape; a failed run
+    that left no out/ cannot be replayed (WARN; R2 strikes are the backstop)."""
     flags = ctx.get("flags")
     if not flags or not _is_ak(row):
         return []
@@ -1748,49 +1787,16 @@ def check_replay_receipt(row, ctx):
     if _fix_ref_ok(row, flags, last):
         return [("WARN", "REPLAY-RECEIPT-FIXREF", f"family's last smoke FAILED ({last['id']}); accepted on spec.fix_ref "
                                                   f"{row.spec['fix_ref'].get('store')} (a kernel store the failed run did not use)")]
-    rec, src = _receipt(row, ctx)
-    how = (f"python3 -I -B {os.path.join(row.dir or '<row>', 'job.py')} --replay "
-           f"{prior_out(flags, last['id']) or os.path.join(TMP_ROOT, last['id'], 'out')}")
-    if not isinstance(rec, dict):
+    po = prior_out(flags, last["id"])
+    if not po:
+        return [("WARN", "REPLAY-RECEIPT-NO-PRIOR-OUT", f"family's last smoke FAILED ({last['id']}) and left no out/ to replay")]
+    r = (ctx.get("replay_decide") or {}).get(row.id)
+    if not r or r.get("prev_id") != last["id"] or not r.get("observed"):
         return [("FAIL", "REPLAY-RECEIPT-MISSING", f"family's last smoke FAILED ({last['id']}, {os.path.basename(last['path'])}) "
-                                                   f"and this republish carries no replay receipt: run `{how}` (writes "
-                                                   "out/REPLAY-RECEIPT.json) and fix until it reaches a different verdict")]
-    out = []
-    if str(rec.get("prev_id") or "") != last["id"]:
-        out.append(("FAIL", "REPLAY-RECEIPT-STALE", f"{src}: prev_id {rec.get('prev_id')!r} is not the family's last failed "
-                                                    f"run {last['id']}"))
-    if not rec.get("auto"):
-        want = {"prev_fail_sha256": _sha256(last["path"])}
-        import rowflow as rf
-        lo = os.path.join(rf.dry_dir(flags, last["id"]), "launcher.out")
-        if os.path.isfile(lo):
-            want["prev_launcher_out_sha256"] = _sha256(lo)
-        jp = os.path.join(row.dir, "job.py")
-        if os.path.isfile(jp):
-            want["job_sha256"] = _sha256(jp)
-        for k, v in want.items():
-            if rec.get(k) != v:
-                out.append(("FAIL", "REPLAY-RECEIPT-STALE", f"{src}: {k} {str(rec.get(k))[:16]} != on-disk {str(v)[:16]} "
-                                                            "(the receipt is not for this failure / this job.py: re-run --replay)"))
-        po = prior_out(flags, last["id"])
-        if po and rec.get("logs_sha256"):
-            try:
-                import ak_gate
-                if ak_gate.logs_sha256(po)[0] != rec["logs_sha256"]:
-                    out.append(("FAIL", "REPLAY-RECEIPT-STALE", f"{src}: logs_sha256 differs from {po} now"))
-            except Exception:  # noqa: BLE001 - an unreadable prior is reported by the class check below
-                pass
-    obs = rec.get("observed") or {"verdict": rec.get("verdict")}
-    if not str(obs.get("verdict") or "").strip():
-        out.append(("FAIL", "REPLAY-RECEIPT-NO-VERDICT", f"{src}: no observed verdict"))
-    elif not out:
-        prev, oc = prev_failure_class(flags, last["id"], last["path"]), observed_class(obs)
-        if same_failure_class(prev, oc):
-            out.append(("FAIL", "REPLAY-RECEIPT-SAME-CLASS", f"{src}: replay verdict {obs.get('verdict')} is the same failure "
-                                                             f"class as {last['id']}'s smoke FAIL "
-                                                             f"({prev.get('fine') or prev.get('key')}): your fix does not change "
-                                                             "the verdict on the log it failed on"))
-    return out
+                                                   "and no replay of its out/ ran: job.py needs a --decide-from entry point "
+                                                   "(mk_ak_row gate new / v2 rows); fix locally with "
+                                                   f"`python3 -I -B {os.path.join(row.dir or '<row>', 'job.py')} --replay {po}`")]
+    return judge_replay(flags, row, dict(r), last, "REPLAY-RECEIPT")
 
 
 def replay_receipt_verdict(spec, flags, row_dir=None):

@@ -547,9 +547,6 @@ def sealed_spec(d):
     return out
 
 
-REPLAY_RECEIPTS = ("REPLAY-RECEIPT.json",)   # out/REPLAY-RECEIPT.json (ak_gate --replay) is input, not a stale result
-
-
 def stale_out(d):
     seal = [os.path.join(d, n) for n in SEAL_FILES if os.path.exists(os.path.join(d, n))]
     if not seal:
@@ -564,7 +561,7 @@ def stale_out(d):
         for r, dirs, files in os.walk(root):
             dirs[:] = [x for x in dirs if not x.startswith("stale-")]
             old += [os.path.relpath(os.path.join(r, f), d) for f in files
-                    if os.path.getmtime(os.path.join(r, f)) < t_seal and f not in REPLAY_RECEIPTS]
+                    if os.path.getmtime(os.path.join(r, f)) < t_seal]
         if old:
             out.append(("FAIL", "STALE-OUT", f"{len(old)} file(s) in {sub}/ older than the seal ({sorted(old)[:3]}); move "
                                              "them aside (fold_row_guard.move_stale) before publishing"))

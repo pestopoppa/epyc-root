@@ -565,7 +565,7 @@ per-arm witness, correctness first, the OFF/OFF2 A/A guard, the smoke, resume an
 `mk_ak_row.py --reseal <dir>` (re-seal + lint + --selftest).
 RULE: {rule}
 KNOBS (witness required, judged per knob per arm): {knobs}
-REPLAY: python3 -I -B job.py --replay <prior row dir> -> out/REPLAY-RECEIPT.json (publish needs it after a FAILED smoke)"""
+FIX LOOP: python3 -I -B job.py --replay <prior row dir> prints the verdict this declaration reaches on that run's logs"""
 # GENERATED-BY: mk_ak_row.py {gen_version} harness_sha256={harness_sha} gate_sha256={gate_sha} profile=gate
 import os
 import sys
@@ -601,13 +601,13 @@ GATE_FRESH_REASON = ("ak_gate: one fresh server per arm visit (resident-server a
 
 
 def parse_knob(text, kind=None):
-    """'NAME:MARKER[:LEVEL[:CAP]]' -> (name, {kind, marker, level, cap}). The marker may itself contain ':'; trailing
-    ':<int>' fields are LEVEL then CAP."""
+    """'NAME:MARKER[::LEVEL[:CAP]]' -> (name, {kind, marker, level, cap}). The marker may contain ':' (and end in ':8');
+    only a '::' separator introduces LEVEL / CAP."""
     name, sep, rest = str(text).partition(":")
     if not sep or not name.strip() or not rest.strip():
-        raise SystemExit(f"mk_ak_row gate: --knob {text!r}: want NAME:MARKER[:LEVEL[:CAP]]")
+        raise SystemExit(f"mk_ak_row gate: --knob {text!r}: want NAME:MARKER[::LEVEL[:CAP]]")
     level, cap = G.MIN_LV, -1
-    m = re.match(r"^(.*?)(?::(\d+))(?::(-?\d+))?$", rest)
+    m = re.match(r"^(.*?)::(\d+)(?::(-?\d+))?$", rest)
     if m and m.group(1).strip():
         rest, level = m.group(1), int(m.group(2))
         cap = int(m.group(3)) if m.group(3) is not None else -1
@@ -721,10 +721,12 @@ def gate_scaffold(a, served=None):
     m = G.METRICS.get(a.metric)
     if m is None:
         raise SystemExit(f"mk_ak_row gate: --metric {a.metric!r} not one of {sorted(G.METRICS)}")
-    if a.direction and (a.direction == "higher") is not m[1]:
-        raise SystemExit(f"mk_ak_row gate: --metric {a.metric} is {'higher' if m[1] else 'lower'}-is-better; "
-                         f"--{a.direction}-is-better contradicts it")
     keep = parse_keep_rule(a.keep_rule)
+    if not a.model:
+        mp = next((argv[i + 1] for i, t in enumerate(argv[:-1]) if t in ("-m", "--model")), "")
+        a.model = os.path.basename(mp)[:-5] if mp.endswith(".gguf") else os.path.basename(mp)
+        if not a.model:
+            raise SystemExit("mk_ak_row gate: --model not given and the server argv has no -m <gguf>")
     if not a.rule.strip():
         a.rule = (f"KEEP iff {a.metric} ({'higher' if m[1] else 'lower'} is better) speedup CI lower > "
                   f"{keep['threshold']} over the ABBA blocks, witness + correctness + A/A first")
@@ -785,7 +787,7 @@ def gate_scaffold(a, served=None):
               "workload": workload, "metric": {"name": a.metric, "higher_is_better": m[1]}, "keep": keep,
               "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
                                              "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
-              "inputs": inputs, "dirs": list(a.dir), "fresh_server_starts": starts}
+              "inputs": inputs, "dirs": list(a.dir)}
     G.validate_spec(dict(spec_g, server=dict(spec_g["server"], argv=argv),
                          correctness=dict(corr, argv=["x"]) if corr else None))
     body = pprint.pformat(spec_g, width=118, indent=1, sort_dicts=False)
@@ -820,16 +822,10 @@ def gate_scaffold(a, served=None):
             "requires_quiet_host": bool(a.lane == "cpu" and not a.no_quiet_host), "resumable": True,
             "estimate_basis": {"provisional": True, "rebook_from": os.path.join(d, "out-smoke", H.SMOKE_MEASURE),
                                "reason": f"pre-smoke: {visits} fresh-server visits/units; re-book from the smoke"},
-            "fresh_server_per_visit": True, "fresh_server_reason": GATE_FRESH_REASON, "fresh_server_starts": starts,
-            "fresh_server_starts_reason": f"ABBA: {kc['n_blocks']} scored blocks + "
-                                          f"{1 if kc['dummy_block'] else 0} dummy, one fresh server per arm visit",
+            "fresh_server_per_visit": True, "fresh_server_reason": GATE_FRESH_REASON,
             "witness_lines": [{"line": v["marker"][3:] if v["marker"].startswith("re:") else v["marker"], "needs": 1,
                                "cap": v["cap"], "knob": k} for k, v in knobs.items() if not v["marker"].startswith("re:")],
-            "gate": {"module": "ak_gate.py", "gate_sha256": gate_sha(), "arms": list(arms), "baseline": baseline,
-                     "metric": a.metric, "keep": keep, "correctness": (corr or {}).get("kind")},
-            "keep": list(G.EVIDENCE_PATHS),
-            "evidence": {"verdicts": list(G.EVIDENCE_VERDICTS), "paths": list(G.EVIDENCE_PATHS),
-                         "why": "a FAIL_*/FUTILITY_* gate row is diagnosed and replayed from these (job.py --replay)"},
+            "keep": list(G.EVIDENCE_PATHS),   # the replay input of a failed gate; the reaper honours spec.keep
             "notes": "scaffolded by mk_ak_row.py gate new (declared gate row; ak_gate owns the harness)"}
     spec["generator"] = {"tool": "mk_ak_row.py", "version": GEN_VERSION, "profile": "gate",
                          "harness_sha256": harness_sha(), "gate_sha256": gate_sha(), "utc": H.now()}
@@ -854,7 +850,7 @@ def gate_main(argv=None):
     n.add_argument("--id", required=True)
     n.add_argument("--task", required=True, help="handoff file.md:BOX")
     n.add_argument("--rule", default="", help="the pre-registered rule in words (the mechanics come from --keep-rule)")
-    n.add_argument("--model", required=True)
+    n.add_argument("--model", help="default: the -m GGUF of the served / declared argv")
     n.add_argument("--lane", choices=("cpu", "gpu"), default="gpu")
     n.add_argument("--knob", action="append", default=[], metavar="NAME:MARKER[:LEVEL[:CAP]]",
                    help="env var (GGML_/LLAMA_...) or --flag knob with its witness marker ('re:' prefix = regex)")
@@ -865,9 +861,6 @@ def gate_main(argv=None):
                    help="override derived expect cells (default: set -> present, unset -> absent)")
     n.add_argument("--baseline", default="", help="baseline arms, comma list (default: the arms that set no knob)")
     n.add_argument("--metric", required=True, choices=sorted(G.METRICS))
-    dg = n.add_mutually_exclusive_group()
-    dg.add_argument("--higher-is-better", dest="direction", action="store_const", const="higher")
-    dg.add_argument("--lower-is-better", dest="direction", action="store_const", const="lower")
     n.add_argument("--keep-rule", required=True, metavar="ci_lower>X,n=N[,look=L][,aa=A][,dummy=1]")
     n.add_argument("--served-ref", metavar="ROLE")
     n.add_argument("--orch-repo", default=ORCH_REPO)
@@ -910,7 +903,6 @@ def gate_main(argv=None):
     with open(os.path.join(d, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
     print(f"mk_ak_row gate: scaffolded {d} (declaration only; lint + --selftest clean; spec.json written last)")
-    print(f"mk_ak_row gate: after a FAILED smoke in this family: python3 -I -B {d}/job.py --replay <prior row dir>")
     print(f"mk_ak_row gate: publish with the DEPLOYED tool: /usr/bin/python3 {PUBLISH} {os.path.join(d, 'spec.json')}")
     return 0
 
