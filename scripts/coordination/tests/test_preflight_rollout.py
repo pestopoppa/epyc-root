@@ -23,11 +23,15 @@ def test_rollout_counts_rows_and_grandfathers_publish_only(tmp_path, monkeypatch
     monkeypatch.setitem(pf.PREFLIGHT_ENFORCE, "store", True)
     monkeypatch.setitem(pf.CHECK_FNS, "witness_decl", lambda row, ctx: [
         ("FAIL", "ONE", "first"), ("FAIL", "TWO", "second")])
+    for check in ("replay_decide", "replay_receipt"):
+        monkeypatch.setitem(pf.PREFLIGHT_ENFORCE, check, False)
+        monkeypatch.setitem(pf.CHECK_FNS, check, lambda row, ctx: [("FAIL", "REPLAY", "missing")])
     monkeypatch.setitem(pf.CHECK_FNS, "selftest", lambda row, ctx: [("WARN", "ADVICE", "advisory")])
     lines = []
     before = dict(pf.PREFLIGHT_ENFORCE)
     counts = pf.rule_rollout_report(str(flags), out=lines.append)
     assert counts["witness_decl"] == 1  # two findings, one non-grandfathered row
+    assert counts["replay_decide"] == counts["replay_receipt"] == 1
     assert counts["selftest"] == 0  # advisory warnings are not failures
     assert "store" not in counts
     assert set(counts) == {c for c in pf.CHECKS if not before.get(c, False)}
