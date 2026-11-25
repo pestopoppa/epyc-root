@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T06:16:50Z",
+  "generated_at": "2026-11-25T06:48:33Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1445,7 +1445,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5524,
+          "line": 5525,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1454,7 +1454,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5609,
+          "line": 5610,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1473,7 +1473,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5790,
+          "line": 5791,
           "name": "autokernel-rebuild-program",
           "open": 7,
           "readiness": "blocked"
@@ -1490,7 +1490,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7675,
+          "line": 7676,
           "name": "autokernel-unified-surface-program",
           "open": 26,
           "readiness": "blocked"
@@ -1503,7 +1503,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10973,
+          "line": 10978,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1537,7 +1537,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11220,
+          "line": 11225,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1550,7 +1550,7 @@
           "gates": [
             "INF-06"
           ],
-          "line": 11840,
+          "line": 11845,
           "name": "autokernel-roofline-surface-loop",
           "open": 7,
           "readiness": "blocked"
