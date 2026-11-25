@@ -49,3 +49,19 @@
 
 Incident (mine): the intake subagent's unpinned `validate_intake.py` contaminated an AK C22 CPU measurement (re-pinned; policy above).
 Open: AK owns the two folded items and the R2-NOTSERVED decision; unlanded local research commit 84b45a34b (DTREE replay) is AK's.
+
+## Intake status-staleness audit (late afternoon)
+
+Problem: the intake-kspec-1125 dive S2 routed TreeSpark (intake-2975) to "monitor until trees reopen". But at its own pin f19b9028f, the C21 V2 RRS tree was already KEEP at official T1 (ak-c21-tree-official-gpu-20261124: T10 1.0303, T16 1.0352). Root cause: the dive cited the older park/LOSS lines in speculative-decoding.md and missed the newer verdict. Sibling dive S1 had cited it, so the plan was inconsistent within one run. Note: the DTREE-GDN-BATCH box itself is open (its GDN row KEEP is 3.619 ms; the box waits on the C20 fold decision).
+
+A Fable audit covered 8 intake runs from 11-22 to 11-25, with ~135 status-dependent dispositions: 6 were stale when written and 9 superseded since.
+
+| Change | Commit | Result |
+|---|---|---|
+| Dated corrections in the kspec-1125, nanocode, agents-intro and ak-1123 intake records | root 1acdda6b2 | TreeSpark goes to DTREE-HEADROOM-REPLAY; CODEMODE-AB-V2 wording; RM-3 triggers re-pointed to RM-4; DICE/COUPLE-MTP closed; ForeSpark np4 |
+| ak-1123 M6 and kspec M2(b) tree triggers marked FIRED | root 26753a3e6 | |
+| SPEC-GRAM-JSON-1 prior note; operator kept it open | root 2b05743f7 | I first asked with incomplete facts, then re-asked |
+| VKRC bytes check run retroactively on census r2 | none (analysis) | 114 rows, 0 flagged, ratios 1.0007-1.05; Q8-MULTICOL-GEMV-1 premise holds (the 68% row is peak-checked only) |
+| TreeSpark sent to AK (folded, acked) | AK box DTREE-CALIB-SHRINK-REPLAY, row ak-dtree-calib-shrink-replay-cpu-20261125-r2 | FILE_CALIB_AND_SHRINK: Platt +2.4% vs AUTO at T0.3, ~0 at T1.0; shrink nil at np1. AK's bigger lead is the Pando builder (DTREE-PANDO-GATE, waits on ak_gate sampler/load support) |
+
+Lesson: verify a dive's in-house status claims against the current handoff before relaying or routing them.
