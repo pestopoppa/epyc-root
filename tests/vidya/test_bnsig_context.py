@@ -48,3 +48,14 @@ def test_canary_passes_on_fixture(capsys):
     assert receipt["conflict"]["verdict"] == "signature_conflict"
     assert receipt["consistent"]["verdict"] == "consistent"
     assert "| `gemv_q8mf` | issue_bound |" in (out / "planner-context.txt").read_text()
+
+
+@pytest.mark.skipif(not HAS_P2, reason="research checkout lacks AK-BNSIG P2 bnsig_planner.py")
+def test_canary_fails_when_run_py_hook_is_dropped(monkeypatch):
+    import sys
+    sys.path.insert(0, str(RESEARCH / "scripts/kernel_rnd"))
+    from autokernel import bnsig_planner
+    monkeypatch.setattr(bnsig_planner, "context_entry", lambda args, cpu: {})
+    with pytest.raises(ValueError, match="run._build_context carried no observed"):
+        bc.main(["--research", str(RESEARCH), "--census", str(FIXTURE),
+                 "--scratch", "/mnt/raid0/llm/tmp/bnsig-canary-tests"])

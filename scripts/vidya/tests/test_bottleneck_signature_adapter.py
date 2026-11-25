@@ -136,3 +136,17 @@ def test_temp_ledger_ingest_appends_two_observations(tmp_path):
     assert report["rows_projected"] == 2 and not report["refused"] and report["frames_emitted"] > 0
     again = ingest_sources.ingest(ledger, "ak-bottleneck-signature", [path], as_of="2026-11-25T12:00:00Z", dry_run=True)
     assert again["rows_projected"] == 2
+
+
+def test_row_absent_from_signature_applied_is_refused():
+    doc = _doc()
+    doc["signature_applied"] = []
+    got = bn.classify(doc, locator=LOC, sha256="0" * 64)
+    assert got["rows"] == [] and "absent from the census `signature_applied`" in got["refused"][0]["reason"]
+    row = _rows(_doc())["issue_bound"]
+    with pytest.raises(ProjectionError, match="absent"):
+        bn.project(dict(row, applied_sha256=None))
+
+
+def test_applied_bound_is_recorded():
+    assert bn.project(_rows(_doc())["issue_bound"]).extra["applied_bound"] is True

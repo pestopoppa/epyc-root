@@ -12,8 +12,9 @@ no protocol, so `claim_tuple.grade()` says `Judged/Located`: an observation, nev
 No ladder and no grade here.
 
 Warrant: the signature's OWN `source_row`, `result_sha256`, `measured_at` (it may come from a different
-row than the record's timing). Missing any of the three -> UNKNOWN, dropped, never filled. The sha must
-agree with the census `signature_applied` ledger entry for that row, else REFUSED. A signature whose
+row than the record's timing). Missing any of the three -> UNKNOWN, dropped, never filled. The row must
+be in the census `signature_applied` ledger and its sha must agree with that entry, else REFUSED
+(`extra.applied_bound` records the binding). A signature whose
 reference self-check failed (`reference_check.ok` false, classes harness / reference_incoherent) states
 no limiter and is REFUSED by name. `build` is carried when the write side recorded it and is otherwise
 `unknown` -- never invented.
@@ -81,7 +82,10 @@ def _checked(key: str, rec: dict, applied: set[str] | None) -> dict:
         raise ProjectionError(f"signature of {key!r} result_sha256 is not a 64-hex digest")
     if not _ISO_DATE.fullmatch(at):
         raise ProjectionError(f"signature of {key!r} measured_at {at!r} is not an ISO date")
-    if applied is not None and sha not in applied:
+    if not applied:
+        raise ProjectionError(f"signature of {key!r} row {row!r} is absent from the census `signature_applied` "
+                              "ledger: the write side never applied it")
+    if sha not in applied:
         raise ProjectionError(f"signature of {key!r} result_sha256 differs from the census "
                               f"`signature_applied` ledger for row {row!r}")
     if sig.get("schema") not in (None, SIGNATURE_SCHEMA):
@@ -104,7 +108,8 @@ def _checked(key: str, rec: dict, applied: set[str] | None) -> dict:
             "model": rec["model"].strip(), "kernel_class": rec["kernel_class"].strip(),
             "shape": rec["shape"].strip(), "n": rec.get("n"), "device": "mi210",
             "stale_vs_timing": bool(sig.get("stale_vs_timing")),
-            "counter_set_sha256": sig.get("counter_set_sha256"), "refs": sig.get("refs") or {}}
+            "counter_set_sha256": sig.get("counter_set_sha256"), "refs": sig.get("refs") or {},
+            "applied_bound": True}
 
 
 def classify(document: Any, *, locator: str, sha256: str) -> dict:
@@ -200,7 +205,7 @@ def project(native: dict) -> ClaimTuple:
         extra={"source_row": f["row"], "census_key": f["key"], "class": cls, "primary": f["primary"],
                "classes": f["classes"], "marginal": f["marginal"], "ruled_out": f["ruled_out"],
                "build": build, "build_basis": "record" if f["build"] else "unknown",
-               "stale_vs_timing": f["stale_vs_timing"], "counter_set_sha256": f["counter_set_sha256"],
+               "stale_vs_timing": f["stale_vs_timing"], "applied_bound": f["applied_bound"], "counter_set_sha256": f["counter_set_sha256"],
                "census_locator": native["locator"], "census_sha256": native["census_sha256"]},
         applicability=scope, observation={"retrofit": False, "outcome_native": cls})
 

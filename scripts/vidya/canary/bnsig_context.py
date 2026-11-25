@@ -5,7 +5,7 @@ result). Passes only if, against a signed census:
 
 1. the census signatures ingest into a SCRATCH ledger through `cli.py ingest ak-bottleneck-signature`
    (one Judged/Located observation per fired class, nothing refused or dropped);
-2. run.py's own context hook (`bnsig_planner.context_entry`) yields the `bottleneck_signatures` view for
+2. the real planner context builder `run._build_context` (run.py's hook) yields the `bottleneck_signatures` view for
    a GPU target and nothing for a CPU target;
 3. the prompt the planner is given (`actors.render_context`) shows the seeded hotspot with its primary
    class and its ruled-out set, and the CPU prompt does not;
@@ -73,6 +73,34 @@ def expected(census: Path) -> list[dict]:
     return out
 
 
+def build_context(run, census: Path) -> dict:
+    """run._build_context on the legacy GPU path (what AgentPlanner is handed), heavy readers stubbed.
+    No inference, no store writes: the store is a fresh temp dir."""
+    import inspect
+    from unittest import mock
+    store = Path(tempfile.mkdtemp(prefix="bnsig-store-", dir=SCRATCH_ROOT))
+    args = Namespace(store=store, model=Path("canary.gguf"), surface="canary", amdahl_prune="off", gpu_counters=None,
+                     shared_history_root=None, no_measurement_alarm_n=3, keep_rate_alarm_window=5,
+                     frozen_prompts=None, signature_prune="advisory", signature_census=census)
+    kw = {n: mock.MagicMock() for n in inspect.signature(run._build_context).parameters}
+    kw["recipe"].to_dict.return_value = {}
+    kw["planner_backend"].describe.return_value = "canary-planner"
+    kw["critic_backend"].describe.return_value = "canary-critic"
+    kw["feedback"].context.return_value = None
+    kw["census"].quant_label = "Q8_0"
+    kw.update(args=args, pending_view=[()], history_view=[None], cpu_launch=lambda: False, direct_launch=lambda: False,
+              screen_state=None, screen_hint=None, experimental=False, latest=[], hotspot_rows=[], source_instrument=None,
+              longctx_surface=None, operator_unblocks=None, selected_identity=None, runtime_probe_enabled=False)
+    with mock.patch.object(run, "pending_hypotheses_view", return_value=()), \
+            mock.patch.object(run, "history_comparability", return_value=None), \
+            mock.patch.object(run, "prior_experiments", return_value=[]), \
+            mock.patch.object(run, "accumulator_keeps", return_value=None), \
+            mock.patch.object(run.status, "pool_health_signal", return_value=None), \
+            mock.patch.object(run.inbox, "read_inbox", return_value=[]), \
+            mock.patch.object(run.loop, "program_text", return_value="PROGRAM"):
+        return run._build_context(**kw)
+
+
 def replay(research: Path, census: Path) -> dict:
     sys.path[:0] = [str(research / "scripts/kernel_rnd")]
     from autokernel import bnsig_planner
@@ -82,11 +110,13 @@ def replay(research: Path, census: Path) -> dict:
     require(Path(actors.__file__).resolve() == consumer / "loop/actors.py"
             and Path(bnsig_planner.__file__).resolve() == consumer / "bnsig_planner.py",
             "AutoKernel consumer came from a different checkout")
-    args = Namespace(signature_prune="advisory", signature_census=census)
-    gpu_entry, cpu_entry = bnsig_planner.context_entry(args, cpu=False), bnsig_planner.context_entry(args, cpu=True)
+    from autokernel.loop import run
+    gpu_ctx = build_context(run, census)   # the REAL planner context builder; dropping run.py's hook fails here
+    gpu_entry = {k: gpu_ctx[k] for k in (bnsig_planner.CONTEXT_KEY,) if k in gpu_ctx}
+    cpu_entry = bnsig_planner.context_entry(Namespace(signature_prune="advisory", signature_census=census), cpu=True)
     require(cpu_entry == {} and gpu_entry.get(bnsig_planner.CONTEXT_KEY, {}).get("status") == "observed",
-            f"run.py context hook: gpu {gpu_entry} cpu {cpu_entry}")
-    gpu_prompt = actors.render_context({**GPU_CTX, **gpu_entry})
+            f"run._build_context carried no observed bottleneck_signatures (gpu {sorted(gpu_ctx)}), cpu {cpu_entry}")
+    gpu_prompt = actors.render_context(gpu_ctx)
     cpu_prompt = actors.render_context({**GPU_CTX, **CPU_TARGET, **gpu_entry})
 
     planner = actors.AgentPlanner.__new__(actors.AgentPlanner)   # parse path only: no backend, no workspace
@@ -114,6 +144,7 @@ def replay(research: Path, census: Path) -> dict:
             "conflict": conflict, "consistent": consistent,
             "warns": [r.getMessage() for r in records if r.levelno >= logging.WARNING],
             "sources": {str(p): sha(p) for p in (consumer / "loop/actors.py", consumer / "bnsig_planner.py",
+                                                 consumer / "loop/run.py",
                                                  consumer / "loop/actor_render.py")},
             "Hypothesis": actors.Hypothesis}
 
