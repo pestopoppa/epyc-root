@@ -975,6 +975,8 @@ def smoke_spec(spec, identity_count=None):
             sm = spec.get("smoke") or {}
             c["n_predict"] = min(int(c.get("n_predict") or 64), int(sm.get("identity_n_predict", sm.get("n_predict", 32))))
             c["arms"] = baseline_arms(spec)[:2]
+        elif c["kind"] == "served_quality":
+            c["_smoke"] = True  # one example of each type, while retaining the same scorer and token cap
         elif c["kind"] == "selftest_bin":
             c["runs"] = 1
         elif c["kind"] == "tbo":
@@ -1630,6 +1632,9 @@ class Gate:
         if kind == "c-sq":
             try:
                 items = load_quality_items(os.path.join(self.d, c["input"]))
+                if c.get("_smoke"):
+                    items = [next(x for x in items if x["kind"] == kind_name) for kind_name in ("math", "code")
+                             if any(x["kind"] == kind_name for x in items)]
                 self.current_unit = {"sampler": {"temperature": 0.0, "top_k": 1}, "n_probs": c.get("n_probs", 5)}
                 u = self.visit_fn(uid, arm, [x["prompt"] for x in items], int(c.get("n_predict", 512)), 0,
                                   float(self.spec["server"].get("ready_timeout_s") or 900), kind=kind)
