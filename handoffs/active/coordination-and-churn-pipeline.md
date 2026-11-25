@@ -2553,7 +2553,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: pytest scripts/coordination/tests/test_rowflow_resumable_window.py passes
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-HOST-DRAIN-NARROW** [non-inference] Enforce a narrow whole-host drain in rowflow (HOST-DRAIN): a grantable host/quiet-host row waiting over 30 min keeps worse-ranked rows off its regions when they would end after its earliest start (operator 2026-11-25 Narrow drain now)
+- [x] **PM-HOST-DRAIN-NARROW** [non-inference] Enforce a narrow whole-host drain in rowflow (HOST-DRAIN): a grantable host/quiet-host row waiting over 30 min keeps worse-ranked rows off its regions when they would end after its earliest start (operator 2026-11-25 Narrow drain now) ✅ 2026-11-25 [no-belief: software] e0552f74a live in keeper 4a3e4add4; test_rowflow_host_drain 9 passed + 224 regression passed
       · done when: pytest scripts/coordination/tests/test_rowflow_host_drain.py passes and the live keeper runs a sha containing HOST_DRAIN_ENFORCE
       · gate: none
       · owner: pipeline-mgmt
