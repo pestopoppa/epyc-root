@@ -993,3 +993,95 @@ def test_decide_exception_writes_result(tmp_path, monkeypatch):
     res = json.loads((tmp_path / "out" / "RESULT.json").read_text())
     assert res["verdict"] == "FUTILITY_HARNESS_DECIDE"
     assert "ValueError: injected" in res["reason"] and "identity" in res["reason"]
+
+# Predecessor reuse uses the same durable ledger as resume, with a content-bound key.
+def _reuse_rows(tmp_path):
+    binary = tmp_path / "kernel"
+    binary.write_text("kernel v1")
+    sp = spec(argv=[str(binary), "--port", "{PORT}"],
+              correctness={"kind": "tbo", "argv": [str(binary)], "min_cases": 1})
+    rows = []
+    for name in ("old", "new"):
+        row = tmp_path / name
+        row.mkdir()
+        for f in ("ak_gate.py", "ak_row_harness.py"):
+            shutil.copy(os.path.join(_ROWFLOW, f), row / f)
+        (row / "spec.json").write_text(json.dumps({"supersedes": "old"} if name == "new" else {}))
+        gate = G.Gate(sp, str(row), env={}, stream=QUIET)
+        gate.prepare()
+        rows.append(gate)
+    return sp, binary, rows
+
+
+def test_predecessor_exact_match_and_provenance(tmp_path):
+    import io
+    sp, _, (old, new) = _reuse_rows(tmp_path)
+    for uid, kind, arm, extra in G.plan_correctness(sp):
+        u = {"unit_id": uid, "kind": kind, "arm": arm, "rc": 0, "pass": True,
+             "n_cases": 1, "n_ok": 1, "n_fail": 0, "gate_unit": True}
+        old.mark_reusable(u, extra)
+        H.append_unit(u, old.out)
+    calls = []
+    new.stream = io.StringIO()
+    new.run_correctness_unit = lambda *args: pytest.fail("reused unit ran")
+    new.visit_fn = visit_stub(sp, new.out, calls=calls)
+    assert new.run() == 0
+    records = G.load_units(new.out)
+    reused = [u for u in records if u.get("reused_from")]
+    assert len(reused) == 3 and all(u["reused_from"] == "old" for u in reused)
+    assert "UNIT-REUSED c-tbo-ON from old" in new.stream.getvalue()
+    assert len([u for u in json.load(open(os.path.join(new.out, "RESULT.json")))["units"] if u.get("reused_from")]) == 3
+    assert calls  # timing units still execute
+
+
+@pytest.mark.parametrize("change", ["kernel_path", "kernel_sha", "knob", "arm_env", "unit_env", "prompt", "argv", "kind_params", "gate_sha", "harness_sha", "partial", "crash"])
+def test_predecessor_key_mismatch_reruns(tmp_path, change):
+    import copy
+    sp, binary, (old, new) = _reuse_rows(tmp_path)
+    u = {"unit_id": "c-tbo-ON", "kind": "c-tbo", "arm": "ON", "rc": 0, "pass": True,
+         "n_cases": 1, "n_ok": 1, "n_fail": 0, "gate_unit": True}
+    old.mark_reusable(u, {})
+    if change == "partial":
+        u.pop("unit_verdict")
+    if change == "crash":
+        u["rc"] = 139
+    H.append_unit(u, old.out)
+    new.spec = copy.deepcopy(sp)
+    if change == "kernel_path":
+        other = tmp_path / "other"
+        shutil.copy(binary, other)
+        new.spec["server"]["argv"][0] = str(other)
+    elif change == "kernel_sha":
+        binary.write_text("kernel v2")
+    elif change == "knob":
+        new.spec["arms"]["ON"]["GGML_HIP_Q8MC"] = "2"
+    elif change == "arm_env":
+        new.spec["arm_env"] = {"ON": {"X": "2"}}
+    elif change == "unit_env":
+        new.spec["correctness"]["env"] = {"X": "2"}
+    elif change == "prompt":
+        new.spec["workload"]["prompts"] = ["different"]
+    elif change == "argv":
+        new.spec["server"]["argv"].append("--different")
+    elif change == "kind_params":
+        new.spec["correctness"]["min_cases"] = 2
+    elif change in ("gate_sha", "harness_sha"):
+        with open(os.path.join(new.d, "ak_gate.py" if change == "gate_sha" else "ak_row_harness.py"), "a") as f:
+            f.write("# change\n")
+    assert new.reuse_unit("c-tbo-ON", "c-tbo", "ON", {}) is None
+    assert not G.load_units(new.out)
+
+
+def test_smoke_reuse_and_no_timing_reuse(tmp_path):
+    sp, _, (old, new) = _reuse_rows(tmp_path)
+    calls = []
+    old.visit_fn = visit_stub(sp, old.out, calls=calls)
+    assert old.smoke() == 0
+    new.visit_fn = lambda *args, **kwargs: pytest.fail("smoke should reuse")
+    assert new.smoke() == 0
+    assert G.load_units(new.out)[0]["reused_from"] == "old"
+    assert json.load(open(os.path.join(new.out, "RESULT.json")))["units"][0]["reused_from"] == "old"
+    timing = {"unit_id": "b1-ON", "kind": "visit", "arm": "ON", "gate_unit": True,
+              "unit_verdict": "PASS", "reuse_key": "anything"}
+    H.append_unit(timing, old.out)
+    assert new.reuse_unit("b1-ON", "visit", "ON", {}) is None

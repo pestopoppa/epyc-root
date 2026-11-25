@@ -40,6 +40,7 @@ import math
 import os
 import re
 import signal
+import shutil
 import subprocess
 import sys
 import time
@@ -1343,6 +1344,98 @@ class Gate:
         u["gate_unit"] = True
         return u
 
+    def unit_key(self, uid, kind, arm, extra):
+        """Fail closed when any input needed to identify a unit cannot be read."""
+        try:
+            c = corr_of(self.spec, kind) if kind in UNIT_KIND else {}
+            server = self.spec["server"]
+            binaries = [server["argv"][0]]
+            if c.get("argv"):
+                binaries.append(c["argv"][0])
+            inputs = {p: _sha_file(os.path.join(self.d, p)) for p in (self.spec.get("inputs") or {})}
+            w = self.spec.get("workload") or {}
+            if w.get("input"):
+                inputs[w["input"]] = _sha_file(os.path.join(self.d, w["input"]))
+            prompts = workload_prompts(self.spec, self.d)
+            if kind == "c-id":
+                prompts = identity_prompts(self.spec, self.d)
+            base_sha = _sha_file(os.path.join(self.out, "kld-base.bin")) if kind == "c-kld" and extra.get("mode") == "kld" else None
+            key = {"kld_base_sha": base_sha, "unit_id": uid, "kind": kind, "arm": arm, "extra": extra,
+                   "binaries": [(p, _sha_file(p)) for p in binaries],
+                   "harness": {p: _sha_file(os.path.join(self.d, p)) for p in ("ak_gate.py", "ak_row_harness.py")},
+                   "server": server, "knobs": self.spec.get("knobs"), "arms": self.spec.get("arms"),
+                   "arm_env": self.spec.get("arm_env"), "expect": self.spec.get("expect"),
+                   "expect_by_unit": self.spec.get("expect_by_unit"), "correctness": c,
+                   "workload": w, "prompts_sha": sha_bytes(json.dumps(prompts, ensure_ascii=False)),
+                   "inputs": inputs, "sampler": self.spec.get("sampler"), "seed_base": self.spec.get("seed_base"),
+                   "smoke": self.spec.get("smoke") if kind == "smoke" else None,
+                   "metric": self.spec.get("metric") if kind == "smoke" else None}
+            return sha_bytes(json.dumps(key, sort_keys=True, ensure_ascii=False))
+        except (OSError, ValueError, KeyError, TypeError):
+            return None
+
+    def mark_reusable(self, u, extra):
+        kind = u.get("kind")
+        if kind not in UNIT_KIND and kind != "smoke":
+            return u
+        key = self.unit_key(u["unit_id"], kind, u["arm"], extra)
+        if not key or u.get("error") or ("rc" in u and u["rc"] != 0):
+            return u
+        if kind == "c-tbo":
+            verdict = ("PASS" if u["pass"] else "FAIL") if isinstance(u.get("pass"), bool) and u.get("n_cases", 0) > 0 else None
+        elif kind == "c-kld":
+            verdict = "RECORDED" if (extra.get("mode") == "base" and os.path.isfile(os.path.join(self.out, "kld-base.bin"))) or u.get("mean_kld") is not None else None
+        elif kind == "c-st":
+            verdict = "RECORDED" if u.get("mismatches") is not None else None
+        elif kind == "c-id":
+            verdict = "RECORDED" if u.get("output_sha") and u.get("accepted_sha") else None
+        else:
+            verdict = decide_smoke(self.spec, [u])["verdict"] if u.get("req") and u.get("metric") is not None else None
+        if verdict:
+            u.update(reuse_key=key, unit_verdict=verdict)
+            if kind == "c-kld" and extra.get("mode") == "base":
+                u["base_sha256"] = _sha_file(os.path.join(self.out, "kld-base.bin"))
+        return u
+
+    def reuse_unit(self, uid, kind, arm, extra):
+        if kind not in UNIT_KIND and kind != "smoke":
+            return None
+        key = self.unit_key(uid, kind, arm, extra)
+        if not key:
+            return None
+        try:
+            with open(os.path.join(self.d, "spec.json")) as f:
+                pred = json.load(f).get("supersedes") or []
+        except (OSError, ValueError):
+            return None
+        for pid in [pred] if isinstance(pred, str) else pred:
+            if not isinstance(pid, str) or not pid or os.path.basename(pid) != pid or pid in (".", ".."):
+                continue
+            prior = os.path.join(os.path.dirname(self.d), pid, "out")
+            for u in load_units(prior):
+                if (u.get("unit_id") != uid or u.get("kind") != kind or u.get("arm") != arm
+                        or u.get("reuse_key") != key or not u.get("unit_verdict") or u.get("error")
+                        or ("rc" in u and u["rc"] != 0)):
+                    continue
+                try:
+                    if u.get("log"):
+                        rel = u["log"]
+                        if os.path.isabs(rel) or os.path.commonpath([prior, os.path.abspath(os.path.join(prior, rel))]) != prior:
+                            continue
+                        shutil.copyfile(os.path.join(prior, rel), os.path.join(self.out, rel))
+                    if kind == "c-kld" and extra.get("mode") == "base":
+                        base = os.path.join(prior, "kld-base.bin")
+                        if not u.get("base_sha256") or _sha_file(base) != u["base_sha256"]:
+                            continue
+                        shutil.copyfile(base, os.path.join(self.out, "kld-base.bin"))
+                except (OSError, ValueError):
+                    continue
+                u = dict(u, reused_from=pid)
+                H.append_unit(u, self.out)
+                self.log(f"UNIT-REUSED {uid} from {pid}")
+                return u
+        return None
+
     # ------------------------------------------------------------------ modes
     def smoke(self):
         """ON-arm-only smoke under a ~5 min budget: dirs + inputs first, one fresh server, one warm-up, ONE request long
@@ -1357,13 +1450,21 @@ class Gate:
             prompt = (workload_prompts(self.spec, self.d) or ["Hello"])[0][:int(sm["prompt_chars"])]
             ready = min(float(self.spec["server"].get("ready_timeout_s") or 900), float(sm["budget_s"]) - 30)
             u0 = time.time()
-            u = self.finish_unit(self.visit_fn(f"smoke-{sm['arm']}", sm["arm"], [prompt], int(sm["n_predict"]), 1,
-                                               ready, kind="smoke"))
+            uid = f"smoke-{sm['arm']}"
+            u = self.reuse_unit(uid, "smoke", sm["arm"], {})
+            if u is None:
+                u = self.finish_unit(self.visit_fn(uid, sm["arm"], [prompt], int(sm["n_predict"]), 1,
+                                                   ready, kind="smoke"))
+                self.mark_reusable(u, {})
+                H.append_unit(u, self.out)
             unit_s = max(time.time() - u0, 0.001)
             H.append_unit(dict(u, smoke=True), self.out_smoke)
             H.write_smoke_measure(self.out_smoke, unit_s, 1, float(u.get("load_s") or 0.0) + (u0 - t0),
                                   unit_name="arm visit", extra={"arm": sm["arm"], "gate": "ak_gate"})
             d = decide_smoke(self.spec, [u])
+            result_path = os.path.join(self.out, "RESULT.json")
+            if u.get("reused_from") and not os.path.exists(result_path):
+                atomic_json(result_path, dict(result_doc(self.spec, [u], d), smoke=True))
             if time.time() - t0 > float(sm["budget_s"]):
                 return H.end_smoke("FAIL", 3, f"smoke took {time.time() - t0:.0f} s > budget {sm['budget_s']} s "
                                               f"(shorten smoke.prompt_chars / n_predict)", self.out)
@@ -1401,10 +1502,13 @@ class Gate:
             if self.should_stop():
                 return 75
             self.decision_unit, self.decision_arm = uid, arm
-            u = self.run_correctness_unit(uid, kind, arm, extra)
-            if u.get("error_class") == "STOPPED":
-                return 75
-            H.append_unit(u, self.out)
+            u = self.reuse_unit(uid, kind, arm, extra)
+            if u is None:
+                u = self.run_correctness_unit(uid, kind, arm, extra)
+                if u.get("error_class") == "STOPPED":
+                    return 75
+                self.mark_reusable(u, extra)
+                H.append_unit(u, self.out)
             units.append(u)
         d = decide(self.spec, units)
         if d["terminal"]:
@@ -1493,6 +1597,7 @@ def result_doc(spec, units, d):
                   "arms": baseline_arms(spec)[:2]},
            "correctness": d.get("correctness"), "blocks_scored": len(full_blocks(spec, gate_units)),
            "n_units": len(units), "n_visits": len(tus),
+           "units": units,
            "gate": {"module": "ak_gate.py", "version": GATE_VERSION, "sha256": _sha_file(os.path.abspath(__file__))}}
     if spec.get("units") or any(u.get("kind") == "load" or u.get("report_only") for u in units):
         res["report_only"] = [u for u in units if u.get("kind") == "load" or u.get("report_only")]
@@ -1532,7 +1637,7 @@ def replay_units(spec, out_dir, row_dir):
     same functions the live run uses (recorded witness / metric fields are never trusted)."""
     recorded = [u for u in load_units(out_dir) if u.get("gate_unit")]
     units = [u for u in recorded if u.get("kind") != "load" and not u.get("report_only")]
-    mode = "units"
+    mode = "smoke" if units and all(u.get("kind") == "smoke" for u in units) else "units"
     if not units and not recorded:
         units = [u for u in load_units(os.path.join(row_dir, "out-smoke")) if u.get("gate_unit")]
         mode = "smoke"
