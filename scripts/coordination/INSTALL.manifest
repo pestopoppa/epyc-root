@@ -29,6 +29,7 @@ bin/rowflow/preflight.py             scripts/coordination/rowflow/preflight.py  
 bin/rowflow/mk_ak_row.py             scripts/coordination/rowflow/mk_ak_row.py            hot
 bin/rowflow/smoke_verdict.py         scripts/coordination/rowflow/smoke_verdict.py        hot
 bin/rowflow/complete_check.py        scripts/coordination/rowflow/complete_check.py       hot
+bin/rowflow/family_strikes.py        scripts/coordination/rowflow/family_strikes.py       hot
 bin/rowflow/supersedes_check.py      scripts/coordination/rowflow/supersedes_check.py     hot
 bin/rowflow/owner_watch.py           scripts/coordination/rowflow/owner_watch.py          hot
 bin/rowflow/task_lint.py             scripts/handoffs/task_lint.py                        hot
