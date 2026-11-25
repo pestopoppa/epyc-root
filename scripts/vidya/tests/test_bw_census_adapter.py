@@ -169,6 +169,24 @@ def test_projectable_cpu_record_keeps_its_own_device_and_config():
     assert grade(tup)[:2] == ("Judged", "Located")
 
 
+def test_device_gpu_is_an_alias_of_mi210_and_says_so():
+    # N8: the census producer writes device "gpu" on its MI210 records
+    doc = _doc()
+    doc["records"][Q8]["device"] = "gpu"
+    tup = bw.project(_row(doc, Q8))
+    assert tup.applicability["device"] == "mi210" and tup.extra["device_basis"] == "record_alias:gpu"
+    # identity is keyed on the census key + result sha, so the alias does not fork the measurement
+    assert tup.measurement_id == bw.project(_row(_doc(), Q8)).measurement_id
+
+
+def test_unknown_device_word_is_still_refused_by_name():
+    doc = _doc()
+    doc["records"][Q8]["device"] = "tpu"
+    got = bw.classify(doc, locator=f"{bw.LOCATOR_PREFIX}/t/c.json", sha256="0" * 64)
+    (refused,) = got["refused"]
+    assert "'tpu'" in refused["reason"] and "gpu" in refused["reason"]
+
+
 def test_identity_is_stable_and_distinguishes_key_and_result():
     a = bw.project(_row(_doc(), Q8))
     assert a.measurement_id == bw.project(_row(_doc(), Q8)).measurement_id
@@ -220,6 +238,24 @@ def test_ingest_dispatch_appends_to_a_temp_ledger_only(tmp_path):
     # idempotent: same census read again adds nothing new under --only-new
     again = ingest_sources.ingest(ledger, "ak-bw-census", [path], as_of=AS_OF, only_new=True)
     assert again["frames_emitted"] == 0
+
+
+def test_ingest_report_counts_dropped_unknown_and_refused_records(tmp_path):
+    doc = _doc()
+    doc["records"][Q8]["device"] = "tpu"  # one refused record
+    path = _write(tmp_path, doc)
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    report = ingest_sources.ingest(ledger, "ak-bw-census", [path], as_of=AS_OF, dry_run=True)
+    dropped = report["dropped_records"]
+    assert dropped["unknown"] == 7 and dropped["refused"] == 1 and dropped["errors"] == []
+    assert {e["key"] for e in dropped["examples"] if e["kind"] == "refused"} == {Q8}
+    text = ingest_sources.human(report)
+    assert "unknown-warrant=7" in text and "refused=1" in text
+
+
+def test_ingest_report_has_no_dropped_block_for_sources_without_the_hook(tmp_path):
+    assert ingest_sources.SOURCES["ak-bw-census"].dropped == "dropped"
+    assert all(s.dropped == "" for n, s in ingest_sources.SOURCES.items() if n != "ak-bw-census")
 
 
 def test_ingest_dry_run_appends_nothing_and_missing_path_is_reported(tmp_path):

@@ -142,6 +142,9 @@ class Source:
     extra: dict = field(default_factory=dict)
     #: optional safe public locator for a source whose native custody is private.
     report_path: str = ""
+    #: optional adapter function ``(unit) -> {"unknown": [...], "refused": [...]}`` naming the records a
+    #: unit's ``natives`` reader did NOT project; counted in the report as ``dropped_records``.
+    dropped: str = ""
 
     def load(self):
         return importlib.import_module(f"adapters.{self.module}")
@@ -609,7 +612,7 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "missing any of the three is dropped as UNKNOWN, gbps re-derived from bytes/us, "
                 "result_sha256 cross-checked against the census `applied` ledger; n is the matmul "
                 "batch width, never reps; no protocol, so Judged/Located",
-           task="VB-AK-BW-CENSUS-WIRE"),
+           dropped="dropped", task="VB-AK-BW-CENSUS-WIRE"),
     Source("gpu-cpu-noise", "gpu_cpu_noise", _run_dirs("RUN_RECORD.json"),
            default=Path("/mnt/raid0/llm/tmp/gpu-cpu-noise-20261021/runs"),
            note="U4-NOISE-1 session dirs (RUN_RECORD.json, schedule.json, reps.jsonl, END.json, "
@@ -950,6 +953,26 @@ def _only_new_frames(ledger, frames: list[dict], *, as_of: str) -> list[dict]:
     return kept
 
 
+def _count_dropped(report: dict, fn: Callable, unit: Path, report_path: Callable) -> None:
+    """Fold one unit's refused/unknown records into ``report["dropped_records"]`` (counts plus the first keys).
+
+    A reader that projects a subset must say what it left out; counting here keeps a clean-looking
+    ``projected`` total from hiding a producer/contract mismatch. A reader that cannot even say
+    (ProjectionError) is recorded as an error, never as zero."""
+    agg = report.setdefault("dropped_records", {"unknown": 0, "refused": 0, "errors": [], "examples": []})
+    try:
+        got = fn(unit)
+    except ProjectionError as exc:
+        agg["errors"].append({"unit": report_path(unit), "reason": str(exc)})
+        return
+    agg["unknown"] += len(got.get("unknown", []))
+    agg["refused"] += len(got.get("refused", []))
+    for kind in ("unknown", "refused"):
+        for item in got.get(kind, []):
+            if len(agg["examples"]) < 10:
+                agg["examples"].append({"kind": kind, **item})
+
+
 def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
            limit: int | None = None, dry_run: bool = False, only_new: bool = False) -> dict:
     """Project every unit under ``paths`` through source ``name``; append unless dry-run."""
@@ -1007,6 +1030,8 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
                     by_code = report.setdefault("llama_bench_protocol_refused", {})
                     by_code[_code] = by_code.get(_code, 0) + 1
                 continue
+            if src.dropped:
+                _count_dropped(report, getattr(mod, src.dropped), unit, report_path)
             if not got:
                 report["declined"].append(report_path(unit))
                 continue
@@ -1037,6 +1062,13 @@ def human(report: dict) -> str:
         lines.append(f"only-new: skipped {report['frames_skipped']} frames")
     if report["missing"]:
         lines.append(f"missing (no such path): {', '.join(report['missing'])}")
+    dropped = report.get("dropped_records")
+    if dropped is not None:
+        lines.append(f"dropped records (reader did not project): unknown-warrant={dropped['unknown']}  "
+                     f"refused={dropped['refused']}  errors={len(dropped['errors'])}")
+        lines.extend(f"  {e['kind']} {e['key']}: {e.get('reason') or 'missing ' + '/'.join(e.get('missing', []))}"[:130]
+                     for e in dropped["examples"])
+        lines.extend(f"  ERROR {e['unit']}: {e['reason'][:110]}" for e in dropped["errors"])
     if report["refused"]:
         lines.append("refused (strict reader: the record does not re-derive):")
         lines.extend(f"  {r['unit']}: {r['reason'][:110]}" for r in report["refused"][:10])

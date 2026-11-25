@@ -61,6 +61,10 @@ _MAX_BYTES = 64 << 20
 _HEX64 = re.compile(r"[0-9a-f]{64}")
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}(T[0-9:.]+(Z|[+-]\d{2}:\d{2})?)?")
 _DEVICES = frozenset({"mi210", "cpu"})
+# The census producer writes the generic word "gpu" on its MI210 records (the host has exactly one
+# GPU, and the file is mi210_bandwidth_census.json). It is the same device as mi210, so it is
+# normalized to mi210 and the basis says so; any other device word is still refused by name.
+_DEVICE_ALIASES = {"gpu": "mi210"}
 
 
 def read_census(path: str | Path) -> tuple[Any, str]:
@@ -136,14 +140,19 @@ def _checked(key: str, rec: dict, applied_sha: str | None) -> dict:
         if not _text(rec.get(name)):
             raise ProjectionError(f"census record {key!r} names no {name}")
     device = rec.get("device")
+    device_basis = "record" if device else "file_default"
+    if device in _DEVICE_ALIASES:
+        device, device_basis = _DEVICE_ALIASES[device], f"record_alias:{device}"
     if device is not None and device not in _DEVICES:
-        raise ProjectionError(f"census record {key!r} device {device!r} is not a census device")
+        raise ProjectionError(
+            f"census record {key!r} device {device!r} is not a census device "
+            f"(known: {sorted(_DEVICES)}; alias: {_DEVICE_ALIASES})")
     return {"key": key, "source_row": source_row, "sha": sha, "at": at, "gbps": gbps,
             "bytes": nbytes, "us": us, "n": n, "model": rec["model"].strip(),
             "kernel_class": rec["kernel_class"].strip(), "shape": rec["shape"].strip(),
             "arm": _text(rec.get("arm")), "op": _text(rec.get("op")),
             "status": _text(rec.get("status")), "device": device or "mi210",
-            "device_basis": "record" if device else "file_default",
+            "device_basis": device_basis,
             "config": _text(rec.get("config")), "applied_bound": applied_sha is not None,
             "stale": bool(rec.get("stale")), "quiet_host": rec.get("quiet_host")}
 
