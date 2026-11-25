@@ -453,7 +453,8 @@ From the official blog + the open-source `w-winter/dot314` MCP wrapper source (r
   - **Closed 2026-11-23 as SPLIT (operator decision):** the supersession arm is closed on the measured classes (pooled 1.2%, Claude Code 0.74% < 15%); AgentDiet is skipped and its refused extraction is not re-attempted; M2 stays dormant. Re-measurement of the target class waits on TOC-SUPERSEDE-REPL-LOG. [belief: cc]
 - [ ] **TOC-SUPERSEDE-REPL-LOG** [non-inference] Make the orchestrator REPL loop record per-turn tool calls and tool-output text (or its hash plus length) in an existing trajectory sink, behind a default-off, fully wired flag, so TOC-SUPERSEDE-1's classifier (`scripts/analysis/toc_supersede_replay.py`) can replay the orchestrator class. Origin: TOC-SUPERSEDE-1 found no recorded REPL transcript with tool-output text (same gap as CF-AKV-0's empty `trajectory_artifact`).
       · done when: flag landed with tests, and one replay over >= 20 recorded REPL episodes filed here; share >= 15% fires M2
-      · gate: needs REPL traffic after the stack-up reload
+      · gate: none
+      · NEEDS-OWNER: Map the prerequisite REPL traffic after stack-up reload to a gate ID; its brief sidecar is absent.
   - *Trigger (intake-ak-1123 M2, no checkbox):* TOC-SUPERSEDE-1 share >= 15% fires: add a supersession arm and an exploratory step_reduce arm (AgentDiet a=2, b=1) to the full TOC-CMP-4 pre-registration; the frozen pilot96 matrix is untouched.
   - *Trigger (intake-ak-1123 M11, no checkbox):* When RTE-LOG-1 (harness-program.md:519) lands prompt-structure logs: prefix-stability audit over all block kinds and a counterfactual batching B in {1,3,5} for the clearing pass.
   - *Knowledge (intake-ak-1123 K3, no checkbox):* Contexture's +20-73% headline and energy figure are H100/H200 vLLM numbers and do not transfer; only the supersession rule and the cold-commit cost model are used.
