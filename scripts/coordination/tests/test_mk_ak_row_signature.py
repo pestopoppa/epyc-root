@@ -171,6 +171,9 @@ def test_replay_real_census_topn_run(tmp_path):
     J = _job(d)
     J.KERNELS = R.KERNELS
     units = [json.loads(ln) for ln in open(os.path.join(REAL, "out", "results.jsonl")) if ln.strip()]
+    if any(not os.path.isdir(os.path.join(REAL, "out", "prof", u.get("unit_id", "")))
+           for u in units if u.get("kind") in ("trace", "k")):
+        pytest.skip("real run raw profiler directories unavailable; recorded witnesses cannot be re-derived")
     out = []
     for u in units:
         odir = os.path.join(REAL, "out", "prof", u.get("unit_id", ""))
