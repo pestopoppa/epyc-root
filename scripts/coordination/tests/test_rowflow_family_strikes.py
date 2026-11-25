@@ -172,6 +172,8 @@ class R5Stale(Base):
 
     def test_normal_2h_8h(self):
         rid = f"{BASE}-r2"
+        self.manifest(rid, owner="ak")
+        os.utime(rf.ready_path(self.flags, rid), (NOW - 60, NOW - 60))
         self.fail(rid, NOW)
         with open(os.path.join(rf.dry_dir(self.flags, rid), "unpublished.json"), "w") as f:
             json.dump({"id": rid, "owner": "ak", "priority_rank": 50}, f)
@@ -187,6 +189,8 @@ class R5Stale(Base):
 
     def test_urgent_rank_and_operator_approved_1h_4h(self):
         for rid, kw in ((f"a-gpu-20261125-r1", {"priority_rank": 5}), (f"b-gpu-20261125-r1", {"operator_approved": True})):
+            self.manifest(rid, owner="ak", **kw)
+            os.utime(rf.ready_path(self.flags, rid), (NOW - 60, NOW - 60))
             self.fail(rid, NOW)
             p = os.path.join(rf.dry_dir(self.flags, rid), "unpublished.json")
             with open(p, "w") as f:
@@ -198,12 +202,15 @@ class R5Stale(Base):
 
     def test_republish_or_arm_fail_silences(self):
         rid = f"{BASE}-r2"
+        self.manifest(rid)
+        os.utime(rf.ready_path(self.flags, rid), (NOW - 60, NOW - 60))
         self.fail(rid, NOW)
         p = rf.ready_path(self.flags, f"{BASE}-r3")
         with open(p, "w") as f:
             json.dump({"id": f"{BASE}-r3"}, f)
         os.utime(p, (NOW + 600, NOW + 600))
         self.assertEqual(self.run_at(NOW + 9 * 3600), [])
+        self.manifest("other-gpu-20261125")
         self.fail("other-gpu-20261125", NOW, kind="arm")
         self.assertEqual(self.run_at(NOW + 9 * 3600), [])
 

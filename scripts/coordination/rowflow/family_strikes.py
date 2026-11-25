@@ -308,7 +308,19 @@ def _republished_after(flags, stem, t):
 def _withdrawn(flags, rid):
     dd = rf.dry_dir(flags, rid)
     return (os.path.isdir(os.path.join(dd, ".withdrawn")) or os.path.exists(os.path.join(dd, ".superseded"))
-            or os.path.exists(os.path.join(flags, "withdrawn", rid + ".json")))
+            or os.path.exists(os.path.join(flags, "withdrawn", rid + ".json"))
+            or os.path.exists(os.path.join(flags, "ready", ".withdrawn", rid + ".json"))
+            or os.path.exists(os.path.join(flags, "ready", ".withdrawn", rid + ".pending.json")))
+
+
+def _inactive_stale_reason(flags, rid):
+    if _withdrawn(flags, rid):
+        return "withdrawn"
+    if not os.path.isfile(rf.ready_path(flags, rid)):
+        return "absent from queue"
+    if park_reason(flags, stem_of(rid)):
+        return "family parked"
+    return ""
 
 
 def stale_fails(flags, now=None):
@@ -330,7 +342,7 @@ def stale_fails(flags, now=None):
             last[st] = (at, rid)
     out = []
     for st, (at, rid) in sorted(last.items()):
-        if _withdrawn(flags, rid) or _republished_after(flags, st, at + 1):
+        if _inactive_stale_reason(flags, rid) or _republished_after(flags, st, at + 1):
             continue
         m = manifest_of(flags, rid)
         fam = load(flags, st)
@@ -349,6 +361,19 @@ def stale_fail_escalations(flags, log=print, emit=None, now=None):
     if emit is None:
         import notify
         emit = notify.emit
+    # Resolve every outstanding stage, including alerts whose FAIL has aged out or disappeared.
+    try:
+        import notify
+        for alert in notify.read_inbox(flags, unacked=True):
+            rid = str(alert.get("row_id") or "")
+            if alert.get("kind") != "smoke-fail-stale" or not rid:
+                continue
+            reason = _inactive_stale_reason(flags, rid)
+            if reason:
+                notify.ack(flags, str(alert["key"]), by="auto-ack-stale-inactive",
+                           note=f"auto-ack: {reason}")
+    except Exception as ex:  # noqa: BLE001 - notification cleanup must not stop the scan
+        log(f"SMOKE-FAIL-STALE cleanup failed: {type(ex).__name__}: {ex}")
     out = []
     for s in stale_fails(flags, now):
         age = s["age_s"]
