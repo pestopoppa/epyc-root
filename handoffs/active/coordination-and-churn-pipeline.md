@@ -2553,6 +2553,26 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: pytest scripts/coordination/tests/test_rowflow_resumable_window.py passes
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **AKWASTE-R2** [non-inference] AK waste audit R2: two-strike family park keyed by id_stem (family_strikes.py); publish_row refuses PARKED <stem>; rowflow.py unpark --family logged UNPARK resets; fresh_attempt bypass closed
+      · done when: test_rowflow_family_strikes.py R2Park passes and the commit is on origin/main and deployed live
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKWASTE-R3** [non-inference] AK waste audit R3: harness-class verdicts and complete runs under 60 s with 0 units are family strikes; ak_runend flags HARNESS-STRIKE and holds akc auto-filing
+      · done when: test_rowflow_family_strikes.py R3Harness passes and the commit is on origin/main and deployed live
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKWASTE-R5** [non-inference] AK waste audit R5: smoke-fail-stale push escalation at 2 h / 8 h (1 h / 4 h for rank<=10 or operator_approved) and queue_status NEEDS-REPUBLISH lists stale failed smokes with age
+      · done when: test_rowflow_family_strikes.py R5Stale passes and the commit is on origin/main and deployed live
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKWASTE-R6** [non-inference] AK waste audit R6: GPU smoke budget 3 per family per UTC day refused at publish; --smoke-budget-by operator override logged
+      · done when: test_rowflow_family_strikes.py R6Budget passes and the commit is on origin/main and deployed live
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKWASTE-R7** [non-inference] AK waste audit R7: PREEMPT-PROPOSE suppressed for a family with a strike today or FAIL < 2 h; non-resumable proposals carry lost_s
+      · done when: test_rowflow_family_strikes.py R7Preempt passes and the commit is on origin/main and deployed live
+      · gate: none
+      · owner: pipeline-mgmt
 
 ## Track: churn-pipeline
 <!-- gate: none -->
