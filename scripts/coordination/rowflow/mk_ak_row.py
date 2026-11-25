@@ -1464,6 +1464,9 @@ def resolve_futility(a) -> tuple[dict | None, str]:
         return None, f"AK-EVAL-FUT sigma source: {e} (or opt out with --custom-futility \"<reason>\")"
     unit_kind = getattr(a, "unit_kind", None) or "pair"
     pairs = None
+    if not a.units:  # a history-based estimate gives no pair count; run_pairs() would measure nothing
+        return None, ("AK-EVAL-FUT needs the pair count: pass --units (one unit = one pair unless --unit-kind run), "
+                      "or opt out with --custom-futility \"<reason>\"")
     if a.units:
         pairs = a.units if unit_kind == "pair" else a.units // 2
         if pairs < 2 * F.MIN_PAIRS:
