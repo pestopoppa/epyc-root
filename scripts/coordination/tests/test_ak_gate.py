@@ -806,3 +806,21 @@ def test_job_cli_flags_are_not_server_flags_and_vendored_gate_smoke_is_accepted(
     d, _ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r4")
     own = {"job.py": (d / "job.py").read_text() + "\n# TERMINAL-smoke\n"}
     assert LINT.smoke_checks(str(d), {}, own) == []
+
+
+def test_q8wt_tbo_unit_without_lv_is_exempt_from_witness_but_server_unit_still_fails():
+    """ak-c22-q8wt-gate-gpu-20261125: test-backend-ops takes no -lv, so the OFF tbo log can never carry the V5I_INPLACE INFO
+    line; the harness used to call that FUTILITY_HARNESS_WITNESS. A served unit missing its witness must still fail."""
+    k = {"GGML_HIP_Q8_MF": {"marker": "q8wt design 6 throttled packed path ran", "level": 4},
+         "V5I_INPLACE": {"marker": "ggml_cuda_q8ip: in-place Q8_0 stage-contiguous repack enabled", "level": 4}}
+    sp = spec(k, {"OFF": {}, "Q8WT": {"GGML_HIP_Q8_MF": "7"}, "OFF2": {}})
+    sp["expect"] = {"OFF": {"GGML_HIP_Q8_MF": "absent", "V5I_INPLACE": "present"},
+                    "Q8WT": {"GGML_HIP_Q8_MF": "present", "V5I_INPLACE": "present"},
+                    "OFF2": {"GGML_HIP_Q8_MF": "absent", "V5I_INPLACE": "present"}}
+    txt = G.read_log(os.path.join(FIX, "q8wt", "c-tbo-OFF-head.log"))
+    assert G.witness_for(sp, "OFF", txt, None, "c-tbo-OFF.log", "tbo") == {}
+    assert not G.mismatches([{"unit_id": "c-tbo-OFF", "arm": "OFF", "witness": G.witness_for(sp, "OFF", txt, None, "x", "tbo")}])
+    w = G.witness_for(sp, "OFF", txt, ["llama-server", "-lv", "4"], "smoke.log", "served")   # server unit: still a miss
+    assert not w["V5I_INPLACE"]["ok"]
+    sp["expect_by_unit"] = {"tbo": {"OFF": {"V5I_INPLACE": "present"}}}                     # explicit opt-in is honoured
+    assert not G.witness_for(sp, "OFF", txt, None, "x", "tbo")["V5I_INPLACE"]["ok"]

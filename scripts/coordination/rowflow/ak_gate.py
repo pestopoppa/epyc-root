@@ -388,9 +388,20 @@ def expect_of(spec, arm, knob, unit_type="served"):
     return (((spec.get("expect_by_unit") or {}).get(unit_type) or {}).get(arm) or {}).get(knob, e)
 
 
+# test-backend-ops takes no -lv, so it can never print the INFO witness lines: exempt from witness expectations unless
+# the row lists "tbo" in expect_by_unit. kld / identity / selftest_bin run llama binaries at -lv and stay witnessed.
+WITNESS_EXEMPT_UNIT_TYPES = ("tbo",)
+
+
+def witness_exempt(spec, unit_type):
+    return unit_type in WITNESS_EXEMPT_UNIT_TYPES and unit_type not in (spec.get("expect_by_unit") or {})
+
+
 def witness_for(spec, arm, text, argv=None, log=None, unit_type="served"):
     """{knob: {expected, observed, ok, line, lines_scanned, log, argv_lv, log_lv, lv_required, note}} - one entry per knob,
     each judged ALONE against expect[arm][knob]. Never an AND over knobs."""
+    if witness_exempt(spec, unit_type):
+        return {}
     lines = (text or "").splitlines()
     out = {}
     m = LOG_VERBOSITY_RX.findall(text or "")
