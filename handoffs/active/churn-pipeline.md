@@ -247,6 +247,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · gate: none
       · tier: terra   · owner: pipeline-mgmt
   - 2026-11-24: r8h (`tf1-cpu-r8h-canary-35b-q0q2-20261124`) is owner-STOPped and resumable; it reruns after the AK CPU queue drains. Stays open until its Arm F events show the hint.
+      · NEEDS-OWNER: 2026-11-25 codex lane cxd-tf-r8g-refusal-hint-20261125T1436: lane status BLOCKED: r8h canary Arm F events unavailable; handoffs/active/churn-pipeline.md:249 records owner-stopped run and lane prohibits starting models
 - [ ] **HS-STAGE-C** [non-inference] Handoff standard Stage C (spec /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/HANDOFF-STANDARD.md): content rewrites of failing boxes so the lint-OK canary reaches 45 percent (Stage B left it at 21.6), LLM proposals as NEEDS-OWNER children, compaction, generated index rows, ratify package for human-only docs.
       · done when: box_index lint-OK canary reads at least 45 percent on origin/main and the Stage C ratify package is filed for the operator
       · gate: none
