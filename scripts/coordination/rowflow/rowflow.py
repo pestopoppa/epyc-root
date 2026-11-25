@@ -8224,6 +8224,75 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
     return kept, waits, lines
 
 
+# QUIET-YIELD (pipeline-mgmt 2026-11-25): three times on 11-25 a LOW-ranked quiet-host row (rka-a3b-d-remeasure-q-20261123-r5,
+# rank 60) was placed on a quarter, and then the beside-quiet rule in quiet_gate ("bandwidth-heavy row not placed beside the
+# running quiet-host row") refused rank-25/30 bandwidth-heavy rows on every other quarter for up to an hour. Placement-time
+# fix, no pre-emption: a requires_quiet_host candidate Q is held this tick while a better-ranked (lower rank), currently
+# grantable bandwidth-heavy CPU candidate B exists whose options share a NUMA side with Q's (so Q running would block B).
+# Anti-starvation: once Q has been yielding for > QUIET_YIELD_CAP_S since its first yield, it is granted normally. The
+# beside-quiet rule itself is unchanged: a quiet row that is already running stays protected.
+QUIET_YIELD = True
+QUIET_YIELD_CAP_S = 7200
+QUIET_YIELD_STATE = "quiet_yield.json"
+
+
+def quiet_yield_filter(cands, allrows, state, now, flags=None):
+    """PURE (given state). -> (kept cands, {qid: log line}, new state). `state` is {qid: first_yield_ts}."""
+    allrows = allrows or {}
+
+    def man(rid):
+        return allrows.get(rid) or (load_json(ready_path(flags, rid)) if flags else None) or {}
+
+    def sides(c):
+        s = set()
+        for o in c.get("options") or ():
+            s |= numa_side(option_quarters(o))
+        return s
+
+    def is_q(c):
+        d = man(c["id"])
+        return (c.get("kind") != "claim" and quiet_required(d) and c.get("shape") != "quiet-host"
+                and str(d.get("shape") or "") not in ("host", "quiet-host"))
+
+    def is_b(c):
+        d = man(c["id"])
+        return (c.get("kind") != "claim" and not gpu_lane_cand(c) and bandwidth_heavy(d) and not quiet_required(d)
+                and not c.get("phantom") and not c.get("hold"))
+
+    bs = [c for c in cands if is_b(c)]
+    kept, lines, new = [], {}, {}
+    for c in cands:
+        if not is_q(c):
+            kept.append(c); continue
+        r, qs = float(c["rank"]), sides(c)
+        comp = [b for b in bs if float(b["rank"]) < r and sides(b) & qs]
+        if not comp:
+            kept.append(c); continue
+        first = float(state.get(c["id"], now))
+        if now - first > QUIET_YIELD_CAP_S:
+            kept.append(c); continue   # cap reached: granted normally (state dropped, a new competitor restarts the clock)
+        new[c["id"]] = first
+        b = min(comp, key=lambda x: (float(x["rank"]), x["id"]))
+        lines[c["id"]] = (f"QUIET-YIELD {c['id']} to higher-rank {b['id']} (rank {r:g} > {float(b['rank']):g}; "
+                          f"yielding {int(now - first)}s of {QUIET_YIELD_CAP_S}s)")
+    return kept, lines, new
+
+
+def apply_quiet_yield(flags, cands, allrows, log, dry=False, now=None):
+    if not QUIET_YIELD:
+        return cands
+    now = time.time() if now is None else now
+    p = os.path.join(state_dir(flags), QUIET_YIELD_STATE)
+    kept, lines, new = quiet_yield_filter(cands, allrows, load_json(p) or {}, now, flags)
+    log_transition(flags, "quiet-yield", lines, log, persist=not dry)
+    if not dry:
+        try:
+            atomic_json(p, new)
+        except Exception:  # noqa: BLE001
+            pass
+    return kept
+
+
 # BUILD-INTERSTICE (AutoKernel 2026-11-24): QUIET-SERIAL + QUIET-RESERVE + "a full build claim is loud" left a queued 4-min
 # build claim waiting hours behind back-to-back quiet rows (AK hand-paused 3 quiet rows to slot one build). When a quiet row's
 # grant ends (this tick or the previous one) and a build claim is queued whose duration (declared minutes, else its owner's
@@ -10364,6 +10433,13 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             except Exception:  # noqa: BLE001
                 pass
         smoke_waits = qwaits + smoke_waits
+        qy_now = time.time()
+        try:   # QUIET-YIELD: a low-rank quiet-host row yields to a better-ranked bandwidth-heavy row it would block
+            cands = apply_quiet_yield(flags, cands, allrows, log, dry=dry, now=qy_now)
+            if res_base is not None:
+                res_base = quiet_yield_filter(res_base, allrows, load_json(os.path.join(state_dir(flags), QUIET_YIELD_STATE)) or {}, qy_now, flags)[0]
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"QUIET-YIELD failed: {type(e).__name__}: {e}")
         try:   # BUILD-INTERSTICE: one short queued build before the next quiet row
             cands, res_base, inter_info = apply_build_interstice(flags, cands, res_base, pre_quiet, reqc, grants, allrows, log, dry=dry)
         except Exception as e:  # noqa: BLE001 - never stops allocation
@@ -10490,6 +10566,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             rp_base = slot_keep_filter(sk_holds, rp_base, allrows, flags)[0]
         except Exception as e:  # noqa: BLE001
             log(f"REPLAN SLOT-KEEP failed: {type(e).__name__}: {e}")
+        try:   # QUIET-YIELD: C's shadow sees the same yield rule as the live plan
+            if QUIET_YIELD:
+                rp_base = quiet_yield_filter(rp_base, allrows, load_json(os.path.join(state_dir(flags), QUIET_YIELD_STATE)) or {},
+                                             time.time(), flags)[0]
+        except Exception as e:  # noqa: BLE001
+            log(f"REPLAN QUIET-YIELD failed: {type(e).__name__}: {e}")
         rp_gpu_q3 = bool(gpu_queued) or any(gpu_lane_cand(c) for c in rp_base)
         if rpmode == "enforce":   # C first: its start-now set replaces the live plan's below (fallback: the live plan)
             try:
