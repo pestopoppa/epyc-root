@@ -58,6 +58,46 @@ class WithdrawSmokeQueued(Fx):
         self.assertFalse(os.path.exists(rf.withdraw_pending_path(self.flags, RID)))
         self.assertTrue(os.path.exists(os.path.join(rf.withdrawn_dir(self.flags), RID + ".done.json")))
 
+    def test_cpu_queued_withdrawn_even_if_gpu_batch_alive(self):
+        d = self.queue()
+        os.rename(os.path.join(d, "GPU-SMOKE-QUEUED.json"), os.path.join(d, "SMOKE-QUEUED.json"))
+        with mock.patch.object(rf, "gpu_batch_running", return_value=True):
+            self.assertEqual(rf.withdraw(self.flags, RID, "owner", NOLOG), "WITHDRAWN")
+        self.assertFalse(os.path.exists(os.path.join(d, "SMOKE-QUEUED.json")))
+        self.assertTrue(os.path.exists(os.path.join(d, ".withdrawn", "SMOKE-QUEUED.json")))
+        self.assertTrue(os.path.exists(os.path.join(d, "unpublished.json")))
+        self.assertIn("rc=75 reason=owner", self.ended())
+
+    def test_cpu_running_pending_then_finished(self):
+        for marker in ("SMOKE-PLACED.json", "RUNNING.json"):
+            with self.subTest(marker=marker):
+                rid = RID + marker
+                d = self.queue(rid)
+                q = os.path.join(d, "SMOKE-QUEUED.json")
+                os.rename(os.path.join(d, "GPU-SMOKE-QUEUED.json"), q)
+                runner = os.path.join(d, marker)
+                json.dump({"pid": os.getpid()}, open(runner, "w"))
+                with mock.patch.object(rf, "gpu_batch_running", return_value=True):
+                    self.assertEqual(rf.withdraw(self.flags, rid, "owner", NOLOG), "PENDING")
+                    rf.finish_withdrawals(self.flags, log=NOLOG)
+                    self.assertIsNone(self.ended(rid))
+                    os.remove(runner)
+                    rf.finish_withdrawals(self.flags, log=NOLOG)
+                self.assertIn("rc=75 reason=owner", self.ended(rid))
+                self.assertTrue(os.path.exists(os.path.join(d, ".withdrawn", "SMOKE-QUEUED.json")))
+                self.assertTrue(os.path.exists(os.path.join(rf.withdrawn_dir(self.flags), rid + ".done.json")))
+
+    def test_cpu_running_without_queue_marker_finishes(self):
+        d = self.queue()
+        os.remove(os.path.join(d, "GPU-SMOKE-QUEUED.json"))
+        runner = os.path.join(d, "SMOKE-PLACED.json")
+        json.dump({"pid": os.getpid()}, open(runner, "w"))
+        with mock.patch.object(rf, "gpu_batch_running", return_value=True):
+            self.assertEqual(rf.withdraw(self.flags, RID, "owner", NOLOG), "PENDING")
+            os.remove(runner)
+            rf.finish_withdrawals(self.flags, log=NOLOG)
+        self.assertIn("rc=75 reason=owner", self.ended())
+
     def test_batch_alive_counts_as_running(self):
         self.queue()
         with mock.patch.object(rf, "gpu_batch_running", return_value=True):

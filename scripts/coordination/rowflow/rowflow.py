@@ -1233,38 +1233,48 @@ def withdraw(flags, rid, reason, log=print):
 def withdraw_pending_path(flags, rid): return os.path.join(withdrawn_dir(flags), rid + ".pending.json")
 
 
-def smoke_queued_running(flags, rid):
-    """A queued GPU smoke of `rid` is (or may be about to be) running: its dryrun/<id>/RUNNING.json names a live pid, or
-    the detached GPU-SMOKE-BATCH is alive (it snapshots the queue at start, so any queued row may be its next smoke)."""
-    r = load_json(running_path(flags, rid)) or {}
-    if r.get("pid") and proc_alive(r["pid"]):
-        return True
-    return gpu_batch_running(flags)
+def smoke_queued_running(flags, rid, gpu=False):
+    """A live smoke runner, or a GPU batch that may have already snapshotted this row."""
+    for name in ("RUNNING.json", "SMOKE-PLACED.json"):
+        r = load_json(os.path.join(dry_dir(flags, rid), name)) or {}
+        if r.get("pid") and proc_alive(r["pid"]):
+            return True
+    return gpu and gpu_batch_running(flags)
 
 
 def _withdraw_smoke_queued(flags, rid, reason, log):
-    """No ready manifest: a GPU row waiting for its smoke exists only as dryrun/<id>/GPU-SMOKE-QUEUED.json (+ unpublished
-    .json). Also reached by the keeper for a pending withdrawal whose smoke ended without PASS (marker removed by the
-    batch, manifest back in unpublished.json). Running -> PENDING record; not running -> terminal .ended rc=75, marker
-    moved to dryrun/<id>/.withdrawn/ (never deleted). Neither marker nor pending -> ABSENT."""
-    q = os.path.join(dry_dir(flags, rid), "GPU-SMOKE-QUEUED.json")
-    pending = os.path.exists(withdraw_pending_path(flags, rid))
-    if not os.path.exists(q) and not (pending and os.path.exists(os.path.join(dry_dir(flags, rid), "unpublished.json"))):
+    """Withdraw an unpublished CPU or GPU smoke, deferring while its runner is live.
+
+    A pending smoke can lose its queue marker when it ends without PASS; unpublished.json
+    keeps it identifiable until the keeper records the terminal withdrawal.
+    """
+    dd = dry_dir(flags, rid)
+    markers = ("SMOKE-QUEUED.json", "GPU-SMOKE-QUEUED.json")
+    queued = [name for name in markers if os.path.exists(os.path.join(dd, name))]
+    pending_path = withdraw_pending_path(flags, rid)
+    pending = os.path.exists(pending_path)
+    rec = load_json(pending_path) or {}
+    unpublished = os.path.exists(os.path.join(dd, "unpublished.json"))
+    live = smoke_queued_running(flags, rid)
+    if not queued and not (unpublished and (pending or live)):
         return "ABSENT"
+    gpu = "GPU-SMOKE-QUEUED.json" in queued or (pending and rec.get("smoke_kind", "gpu") == "gpu")
     os.makedirs(withdrawn_dir(flags), exist_ok=True)
-    if smoke_queued_running(flags, rid):
+    if live or (gpu and gpu_batch_running(flags)):
         if not pending:
-            atomic_json(withdraw_pending_path(flags, rid), {"id": rid, "reason": reason, "at": now_iso(), "smoke": True})
-        log(f"SUPERSEDE-PENDING {rid}: queued GPU smoke running; withdrawn when the smoke ends (reason={reason})")
+            atomic_json(pending_path, {"id": rid, "reason": reason, "at": now_iso(), "smoke": True,
+                                       "smoke_kind": "gpu" if gpu else "cpu"})
+        log(f"SUPERSEDE-PENDING {rid}: queued smoke running; withdrawn when the smoke ends (reason={reason})")
         return "PENDING"
     G = os.path.join(flags, "grants")
     os.makedirs(G, exist_ok=True)
     with open(os.path.join(G, rid + ".ended"), "w") as f:
         f.write(f"rc=75 reason={reason} at={now_iso()}\n")
-    if os.path.exists(q):
-        wd = os.path.join(dry_dir(flags, rid), ".withdrawn")
+    if queued:
+        wd = os.path.join(dd, ".withdrawn")
         os.makedirs(wd, exist_ok=True)
-        os.replace(q, os.path.join(wd, "GPU-SMOKE-QUEUED.json"))
+        for name in queued:
+            os.replace(os.path.join(dd, name), os.path.join(wd, name))
     log(f"WITHDRAWN-SMOKE-QUEUED {rid} reason={reason}")
     return "WITHDRAWN"
 
