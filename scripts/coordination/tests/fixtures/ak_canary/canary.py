@@ -516,10 +516,16 @@ def main():
             for dst, src in manifest():
                 target = STAGE / dst
                 target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(ROOT / src, target)
+                try:
+                    shutil.copyfile(ROOT / src, target)
+                except OSError:
+                    pass  # C0/C7 report missing files; still execute the other steps.
         sys.path[:0] = sorted({str(STAGE / Path(pub).parent) for pub, _ in manifest()})
-        import ak_gate as G
-        import ak_row_harness as H
+        try:
+            import ak_gate as G
+            import ak_row_harness as H
+        except Exception:
+            G = H = None  # Individual steps report their own failures and continue.
         steps = [('C0 install-imports', install_imports), ('C1 witness-scope', witness_scope),
                  ('C2 tbo-semantics', tbo_semantics), ('C3 server-env-knob', server_env_cli),
                  ('C4 generator-shape', generator_shape), ('C5 all-refusals-once', all_refusals_once),
