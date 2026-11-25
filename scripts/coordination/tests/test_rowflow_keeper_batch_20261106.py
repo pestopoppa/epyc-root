@@ -116,11 +116,9 @@ class RankAcrossQueues(unittest.TestCase):
         self.assertEqual(rf.queued_gpu_min_rank(fx.flags), 8.0)
 
     def test_allocate_holds_back_worse_ranked_gpu_row_while_rank8_smoke_waits(self):
-        src = open(os.path.join(os.path.dirname(_TESTS), "rowflow", "rowflow.py")).read()
-        i = src.index("qr = queued_gpu_min_rank(flags)")
-        block = src[i:i + 600]
-        self.assertIn('c["rank"] > qr', block)       # strictly worse ranks wait; an equal/better ready row is not held
-        self.assertIn("any(GPU in o for o in c[\"options\"])", block)
+        # PM-WFSFIX 2026-11-25: behavioural, via smoke_wait_rows (strictly worse GPU-area rows wait; equal/better do not)
+        g = lambda rid, rank: {"id": rid, "rank": rank, "options": [{rf.GPU}]}
+        self.assertEqual([c["id"] for c in rf.smoke_wait_rows([g("w", 9.0), g("e", 8.0), g("b", 7.0)], 8.0)], ["w"])
 
 
 class ResidencyContract(unittest.TestCase):
