@@ -25,10 +25,12 @@ roster:
   - {id: codex-ak-main-01a11473, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # 2026-11-19 (D9 "Fix all"): the AutoKernel rows' owner slug. Rows are authored owner=autokernel and rowflow notify routes
   # smoke-fail / queued-smoke-dropped to the row owner when it is a roster id; the session-suffixed id above went stale.
-  - {id: autokernel, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
+  # 2026-11-25 operator ("yes to both"): tmux endpoints so `tmux_adapter.py doorbell` (and the keeper alert push, notify.py ca79760b7)
+  # can reach these two live sessions; window names verified via tmux list-panes (agent:@3 %3 "Autokernel", agent:@2 %2 "Pipeline").
+  - {id: autokernel, role: service, lanes: [none], endpoint: "tmux:agent:Autokernel", drain: boundary, schedulable: false}
   # 2026-11-20 operator owner-role decision (agents/{autopilot,pipeline-mgmt,speech}.md): owner slugs for rows/notify routing.
   - {id: autopilot, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
-  - {id: pipeline-mgmt, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
+  - {id: pipeline-mgmt, role: service, lanes: [none], endpoint: "tmux:agent:Pipeline", drain: boundary, schedulable: false}
   - {id: speech, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Operator-authorized non-inference campaign, 2026-10-05; no fleet dispatch or compute authority.
   - {id: codex-ni-main, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}

@@ -16,7 +16,8 @@ REFUSES (only when a target / string literal resolves under a protected root)
   rm with a recursive flag; find ... -delete / -exec rm; rmdir of an existing NON-EMPTY dir;
   shutil.rmtree / os.unlink / os.remove / os.rmdir / .unlink( / .rmdir( inside python -c or a
   heredoc fed to python/bash/sh; and for `python3 FILE` / `bash FILE`, the same primitives
-  found in FILE's contents (<= 2 MiB) together with a protected-root string literal.
+  found in FILE's contents (<= 2 MiB) when the primitive's own statement names a protected
+  root literal or a variable assigned from one (target-scoped since 2026-11-25; see scan_text).
 ALLOWS
   sanctioned tools (guarded_rm.sh, trash-sweep.sh, reclaim_scratch.py, scratch_cleanup.py,
   worktree_gate.py, autokernel_disk_sweep.py) by basename, contents NOT scanned; bare /tmp/**
@@ -190,11 +191,96 @@ def check_targets(targets, cwd, env, rs, what):
     return None
 
 
+# TARGET-SCOPED SCRIPT SCAN (operator 2026-11-25, ratify-hook-narrow-tmux-endpoints-20261125.sh).
+# Until then a script was refused when it held a delete primitive ANYWHERE and a protected-root
+# literal ANYWHERE: runend.py was blocked for os.rmdir() on its own tempfile.mkdtemp() result
+# because an unrelated line named the tmp root. Now a primitive is refused only when its TARGET
+# plausibly names a protected root: the primitive's statement (its line, plus the rest of a
+# call's parenthesised argument when that spans lines) contains the root literal, or contains a
+# name TAINTED by one. A name is tainted when it is assigned (py `x = ...` / `x := ...`, shell
+# `X=...`, `for x in ...`, `with ... as x`) from an expression holding a root literal or another
+# tainted name, to a fixed point. An expression holding mkdtemp/mkstemp/TemporaryDirectory/
+# mktemp yields a TEMP name instead, which never taints, so a temp dir (even one made with
+# dir=ROOT) and anything built under it is not refused. Over-approximates on purpose: any
+# occurrence of a tainted name in the statement counts, whatever the real dataflow.
+TEMP_MAKER = re.compile(r"\bmkdtemp\b|\bmkstemp\b|\bTemporaryDirectory\b|\bNamedTemporaryFile\b|\bmktemp\b")
+ASSIGN = (
+    re.compile(r"^\s*(?:export\s+|local\s+|readonly\s+|declare\s+(?:-\w+\s+)*)?([A-Za-z_]\w*)\s*(?::\s*[^=\n]+)?=(?!=)(.*)$"),
+    re.compile(r"\b([A-Za-z_]\w*)\s*:=(.*)$"),
+    re.compile(r"^\s*for\s+([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s+in\s+(.*)$"),
+    re.compile(r"\bas\s+([A-Za-z_]\w*)\s*[:,)]?(.*)$"),
+)
+
+
+def _assignments(text: str):
+    """(names, rhs) per assignment-like line. `with EXPR as x` carries EXPR as its rhs."""
+    out = []
+    for line in text.split("\n"):
+        for i, rx in enumerate(ASSIGN):
+            m = rx.search(line)
+            if not m:
+                continue
+            names = [n.strip() for n in m.group(1).split(",")]
+            rhs = line[:m.start()] if i == 3 else m.group(2)
+            out.append((names, rhs))
+    return out
+
+
+def _names_in(expr: str, names: set[str]) -> bool:
+    return any(re.search(r"(?<![\w.])" + re.escape(n) + r"(?!\w)", expr) for n in names)
+
+
+def _tainted(text: str, rs: list[str]) -> set[str]:
+    assigns = _assignments(text)
+    temp: set[str] = set()
+    taint: set[str] = set()
+    changed = True
+    while changed:
+        changed = False
+        for names, rhs in assigns:
+            if TEMP_MAKER.search(rhs) or (temp and _names_in(rhs, temp) and not root_literals(rhs, rs)):
+                new = [n for n in names if n not in temp and n not in taint]
+                if new:
+                    temp.update(new); changed = True
+                continue
+            if root_literals(rhs, rs) or (taint and _names_in(rhs, taint)):
+                new = [n for n in names if n not in taint and n not in temp]
+                if new:
+                    taint.update(new); changed = True
+    return taint
+
+
+def _statement(text: str, m: re.Match) -> str:
+    """The primitive's line, extended to the close of its call's parentheses (capped)."""
+    ls = text.rfind("\n", 0, m.start()) + 1
+    le = text.find("\n", m.end())
+    le = len(text) if le < 0 else le
+    op = m.end() - 1 if text[m.end() - 1:m.end()] == "(" else None
+    if op is None:
+        nx = re.compile(r"\s*\(").match(text, m.end())
+        op = nx.end() - 1 if nx else None
+    if op is not None:
+        depth, k, cap = 1, op + 1, min(len(text), op + 4000)
+        while k < cap and depth:
+            depth += {"(": 1, ")": -1}.get(text[k], 0)
+            k += 1
+        le = max(le, k)
+    return text[ls:le]
+
+
 def scan_text(text: str, rs: list[str], origin: str):
-    if PRIMITIVE.search(text):
-        hits = root_literals(text, rs)
+    taint = None
+    for m in PRIMITIVE.finditer(text):
+        stmt = _statement(text, m)
+        hits = root_literals(stmt, rs)
         if hits:
-            return f"{origin} contains a delete primitive and names protected root {hits[0]}"
+            return f"{origin} has a delete primitive whose target names protected root {hits[0]}"
+        if taint is None:
+            taint = _tainted(text, rs)
+        bad = sorted(n for n in taint if _names_in(stmt, {n}))
+        if bad:
+            return (f"{origin} has a delete primitive on {bad[0]!r}, which is assigned from a "
+                    f"protected-root path")
     return None
 
 

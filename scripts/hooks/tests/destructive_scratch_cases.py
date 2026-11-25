@@ -10,7 +10,49 @@ fx, fake = sys.argv[1], sys.argv[2]
 R = "rm"; RF = R + " -" + "rf"; T = "/mnt/raid0/llm/tm" + "p"
 W = "/mnt/raid0/llm/work" + "trees"; TR = "/mnt/raid0/llm/." + "trash"; ST = "/mnt/raid0/llm/sta" + "te"
 RT = "shutil" + ".rmtree"
+RD = "os.rm" + "dir"
+DEL = "-" + "delete"
+
+
+def _fixture(name: str, body: str) -> str:
+    """Write a script fixture into the (mktemp) fixture dir; return its path."""
+    p = f"{fx}/{name}"
+    with open(p, "w") as f:
+        f.write(body)
+    return p
+
+
+# Target-scoped script scan (operator 2026-11-25): the primitive must TARGET a protected root.
+py_root_rmtree = _fixture("tp_rmtree_root.py",
+    f"import shutil\nfrom pathlib import Path\nROOT = Path('{T}')\n{RT}(ROOT / 'old')\n")
+sh_root_rf = _fixture("tp_rf_root.sh", f"#!/bin/bash\necho start\n{RF} {W}/stale\n")
+sh_root_find = _fixture("tp_find_root.sh", f"#!/bin/bash\nfind {TR}/b1 -mtime +7 {DEL}\n")
+py_runend = _fixture("fp_runend_mkdtemp.py",
+    f"import os, tempfile\nTMP = '{T}'\nFLAGS = '{T}/compute-flags'\n"
+    f"def probe():\n    d = tempfile.mkdtemp(prefix='runend-')\n    {RD}(d)\n    return FLAGS\n")
+py_mkdtemp_under_root = _fixture("fp_mkdtemp_dir_root.py",
+    f"import shutil, tempfile, os\nwork = tempfile.mkdtemp(dir='{T}')\nsub = os.path.join(work, 'a')\n"
+    f"{RT}(sub)\n{RT}(work)\n")
+py_tempdir_ctx = _fixture("fp_tempdir_ctx.py",
+    f"import os, tempfile\nOUT = '{ST}/x.json'\nwith tempfile.TemporaryDirectory() as td:\n"
+    f"    p = os.path.join(td, 'f')\n    os.re" + "move(p)\n")
+py_obfuscated = _fixture("tp_obfuscated_two_hop.py",
+    f"import os, shutil\nBASE = '{T}'\n_parts = ['a', 'b']\nmid = os.path.join(BASE, *_parts)\n"
+    f"victim = mid + '/c'\n{RT}(\n    victim,\n    ignore_errors=True,\n)\n")
+sh_obfuscated = _fixture("tp_obfuscated_two_hop.sh",
+    f"#!/bin/bash\nset -euo pipefail\nD={ST}\nE=\"${{D}}/q\"\nfor x in \"$E\"/*; do\n  find \"$x\" {DEL}\ndone\n")
+py_loop_taint = _fixture("tp_for_loop.py",
+    f"from pathlib import Path\nROOT = Path('{T}')\nfor p in ROOT.iterdir():\n    p.unl" + "ink()\n")
 cases = [
+ ("script rmtree ROOT/x", "block", f"python3 {py_root_rmtree}", {}),
+ ("script rf root", "block", f"bash {sh_root_rf}", {}),
+ ("script find root delete", "block", f"bash {sh_root_find}", {}),
+ ("script obfuscated two-hop multi-line rmtree", "block", f"python3 {py_obfuscated}", {}),
+ ("script obfuscated shell two-hop find", "block", f"bash {sh_obfuscated}", {}),
+ ("script for-loop over root unlink", "block", f"python3 {py_loop_taint}", {}),
+ ("script runend mkdtemp+rmdir", "allow", f"python3 {py_runend}", {}),
+ ("script mkdtemp(dir=root) rmtree", "allow", f"python3 {py_mkdtemp_under_root}", {}),
+ ("script TemporaryDirectory remove", "allow", f"python3 {py_tempdir_ctx}", {}),
  # (name, expected, command, env)
  ("rf tmp", "block", f"{RF} {T}/x", {}),
  ("r worktrees", "block", f"{R} -r {W}/foo", {}),
