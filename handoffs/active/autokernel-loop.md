@@ -8823,7 +8823,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       · quant_build: cpu-20261125-fc9756f6b-c22-q38fngemv2 · region: q0-q2 quiet host · metric(dir): served MTP decode tok/s at d1k, higher = better (d32k reported) · est: provisional 9000 s · pilot: n=1 smoke visit per arm, 2 prompts, 15 min
       · done when: the row files per-arm KEEP / DROP / FUTILITY_SPEED / FAIL_DIGEST / FAIL_QUALITY for IQ4NL, DRAFTVOCAB, IQ3REUSE, ALL (DRAFTVOCAB digest must equal OFF; lossy arms KLD <= max(0.003, 3 x A/A floor))
       · stop: stop-on-answer when 12 valid rounds are scored; stop-on-futility on ratio CI upper < 1.002 at the N/2 look, a missing witness, A/A contention, FAIL_DIGEST or FAIL_QUALITY; gate-class = futility-only
-      · gate: ak-q38fn-cpu-gemv2-gate-20261125 (rank 3, N=8 look 4, est 16200 s provisional; replay waived: first ak_gate CPU row)
+      · gate: ak-q38fn-cpu-gemv2-gate-20261125-r3 (quarter-shaped 24t any-of q0-q2, N=8 look 4; fix_ref IQ4_NL out of CPU_REPACK; 72t confirmation in the C22 fold gate)
       · owner: autokernel
 - [ ] **AK-Q38FN-CPU-NONGEMV-GATE** [inference] Served-MTP gate for the Q38FN CPU non-GEMV levers: GDN rollback-snapshot in-place write (LLAMA_GDN_SNAP_INPLACE=1, removes the cache_s_l copy) and indexer top-k select (GGML_CPU_TOPK_SELECT=1 exact, =2 fast tie-order lossy) on branch llama.cpp-experimental-c22-q38fn-nongemv-20261125 @ f3891df49; diagnosis /mnt/raid0/llm/tmp/q38fn-cpu-nongemv-diagnosis-20261125.md; declaration /mnt/raid0/llm/tmp/q38fn-nongemv-gate-decl-20261125.md.
       · model: Qwen3.8-Flash-Next UD-IQ4_XS + MTP shared Q8_0, served architect_general argv (np1, -c 262144, ub2048, f16 KV, draft-mtp n-max 4, p-min 0.5, GGML_IQK=1, greedy), q0q2 72t interleave 0,1,2
