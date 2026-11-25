@@ -889,7 +889,9 @@ def quality_diagnostic(base, other):
     overlaps = []
     for p, q in zip(base["completion_probabilities"][:end], other["completion_probabilities"][:end]):
         def choices(x):
-            return {str(v.get("token", v.get("tok_str"))) for v in (x.get("top_logprobs") or x.get("top_probs") or x.get("probs") or []) if isinstance(v, dict) and ("token" in v or "tok_str" in v)}
+            return {("id", v["id"]) if "id" in v else ("text", v.get("token", v.get("tok_str")))
+                    for v in (x.get("top_logprobs") or x.get("top_probs") or x.get("probs") or [])
+                    if isinstance(v, dict) and any(k in v for k in ("id", "token", "tok_str"))}
         x, y = choices(p), choices(q)
         overlaps.append(len(x & y) / max(len(x), len(y)) if x and y else None)
     return {"first_divergence_token_index": divergence, "top_k_overlap_before_divergence": overlaps}
