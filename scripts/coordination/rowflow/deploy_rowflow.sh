@@ -2,7 +2,7 @@
 # deploy_rowflow.sh - the ONLY sanctioned way to install rowflow into compute-flags/bin/rowflow/ (operator 2026-11-05,
 # "Harness first, then class fixes"; keeper-friction review P2.4 #3/#4).
 #
-#   deploy_rowflow.sh [--ref origin/main] [--repo /workspace] [--check-only] [--allow-open-grants] [--no-rollback] [--keep-stage]
+#   deploy_rowflow.sh [--ref origin/main] [--repo /workspace] [--check-only] [--allow-open-grants] [--allow-rollback] [--no-rollback] [--keep-stage]
 #   deploy_rowflow.sh --parity [--ref origin/main] [--repo /workspace]
 #   Takes a deploy flock (<flags>/.deploy_rowflow.lock; a second deploy is refused, rc 79) and a LIGHT claim on 84-87 (--by <owner>,
 #   default $USER; retried every 60 s up to 15 tries) under which both test gates run (nice -n 19 taskset -c 84-87); released on exit.
@@ -45,7 +45,7 @@ REPO=/workspace
 FLAGS=${ROWFLOW_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
 BIN="$FLAGS/bin/rowflow"
 LOG="$FLAGS/ws58-calendar-keeper.log"
-KEEP_STAGE=0; CHECK_ONLY=0; PARITY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
+KEEP_STAGE=0; CHECK_ONLY=0; PARITY=0; ALLOW_OPEN=0; ALLOW_ROLLBACK=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
 BY=${DEPLOY_BY:-${USER:-pipeline-mgmt}}; NO_LIGHT=${DEPLOY_NO_LIGHT:-0}; SELFTEST_CLAIM=0
 LOCK_FILE=${DEPLOY_LOCK_FILE:-$FLAGS/.deploy_rowflow.lock}
 FROZEN=(bin/rowflow/filler_run15.sh)   # operator 2026-11-10: rowflow.py/publish_row.py unfrozen
@@ -61,6 +61,7 @@ while [ $# -gt 0 ]; do
     --check-only) CHECK_ONLY=1; shift ;;
     --parity) PARITY=1; shift ;;
     --allow-open-grants) ALLOW_OPEN=1; shift ;;
+    --allow-rollback) ALLOW_ROLLBACK=1; shift ;;
     --no-rollback) ROLLBACK=0; shift ;;
     --verify-s) VERIFY_S=$2; shift 2 ;;
     --by) BY=$2; shift 2 ;;
@@ -122,10 +123,46 @@ take_light() {
 trap release_light EXIT
 if [ "$SELFTEST_CLAIM" = 1 ]; then take_light; echo "GATE_PREFIX=${GATE_PREFIX[*]:-}"; exit 0; fi
 
+# Read the live revision under the deploy lock, before staging or running gates.
+SHA=$(git -C "$REPO" rev-parse --verify "$REF^{commit}")
+if LIVE=$(python3 - "$BIN/DEPLOYED.json" <<'PYJSON'
+import json, sys
+try:
+    with open(sys.argv[1]) as f:
+        sha = json.load(f)["sha"]
+    if not isinstance(sha, str) or not sha.strip():
+        raise ValueError("missing sha")
+    print(sha)
+except (OSError, ValueError, KeyError, TypeError):
+    sys.exit(1)
+PYJSON
+); then
+  # A readable record with an unknown commit cannot be verified safely.
+  if ! LIVE_SHA=$(git -C "$REPO" rev-parse --verify "${LIVE}^{commit}" 2>/dev/null); then
+    echo "REFUSED: cannot resolve live sha $LIVE from $BIN/DEPLOYED.json" >&2; exit 81
+  fi
+  if git -C "$REPO" merge-base --is-ancestor "$LIVE_SHA" "$SHA"; then
+    :
+  else
+    rc=$?
+    if [ "$rc" -ne 1 ]; then
+      echo "REFUSED: cannot verify ancestry of live $LIVE and --ref $REF" >&2; exit 81
+    fi
+    if [ "$ALLOW_ROLLBACK" = 1 ]; then
+      echo "ROLLBACK from $LIVE to $REF by $BY"
+    else
+      N=$(git -C "$REPO" rev-list --count "$SHA..$LIVE_SHA")
+      echo "REFUSED: --ref $REF does not contain live $LIVE (would roll back $N commits); deploy origin/main or pass --allow-rollback" >&2
+      exit 81
+    fi
+  fi
+else
+  echo "WARNING: missing or unreadable $BIN/DEPLOYED.json; proceeding without ancestry guard" >&2
+fi
+
 TS=$(date -u +%Y%m%dT%H%M%SZ)
 mkdir -p "$SCRATCH"
 STAGE=$(mktemp -d "$SCRATCH/deploy-$TS-XXXX")
-SHA=$(git -C "$REPO" rev-parse --verify "$REF^{commit}")
 echo "deploy_rowflow: ref=$REF sha=$SHA stage=$STAGE"
 rmdir "$STAGE"
 git -C "$REPO" worktree add --detach -q "$STAGE" "$SHA"
