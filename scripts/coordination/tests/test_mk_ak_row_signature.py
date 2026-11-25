@@ -13,22 +13,39 @@ _ROWFLOW = os.path.join(os.path.dirname(_TESTS), "rowflow")
 sys.path.insert(0, _ROWFLOW)
 import mk_ak_row as MK  # noqa: E402
 
-RESEARCH = "/mnt/raid0/llm/worktrees/f2-bnsig-research/" + MK.SIG_MODULE_PATH
-
-
 def _module():
-    for p in (RESEARCH, os.path.join(MK.RESEARCH_REPO, MK.SIG_MODULE_PATH)):
-        if os.path.isfile(p):
-            return open(p, "rb").read()
-    pytest.skip("bottleneck_signature.py not available on this host")
+    """The classifier bytes via the profile's own fetch (commit resolved once, then `git show <commit>:<path>`), from the
+    shared research clone: origin/main once landed, else the local P1 branch. No worktree path is hardcoded."""
+    for ref in filter(None, (os.environ.get("BNSIG_RESEARCH_REF"), "origin/main", "f2-bnsig")):
+        got = _show_only(ref)
+        if not isinstance(got, str):
+            return got[1]
+    pytest.skip("bottleneck_signature.py not reachable in the research clone")
+
+
+def _show_only(ref):
+    """fetch_signature_module without its `git fetch` (the test never touches the remote)."""
+    import subprocess as sp
+    c = sp.run(["git", "-C", MK.RESEARCH_REPO, "rev-parse", "--verify", ref + "^{commit}"], capture_output=True, text=True)
+    if c.returncode != 0:
+        return "unresolvable"
+    r = sp.run(["git", "-C", MK.RESEARCH_REPO, "show", f"{c.stdout.strip()}:{MK.SIG_MODULE_PATH}"], capture_output=True)
+    return (c.stdout.strip(), r.stdout) if r.returncode == 0 else "missing"
+
+
+def test_fetch_resolves_commit_once():
+    got = MK.fetch_signature_module(MK.RESEARCH_REPO, "f2-bnsig")
+    if isinstance(got, str):
+        pytest.skip(got)
+    assert len(got[0]) == 40 and b"def signature(" in got[1]
 
 
 def _mk(tmp_path, rid="ak-bnsig-test-gpu-20261125", extra=()):
     mod = _module()
     stream = tmp_path / "stream2.hip"
     stream.write_text("// stub stream2 source\n")
-    args = ["--profile", "signature", rid, "--task", "x.md:BOX", "--kernel", "q8mf6_mul_mat:70041600",
-            "--kernel", "q8wt_mul_mat:70041600", "--workload", "/bin/true perf -o MUL_MAT", "--root", str(tmp_path),
+    args = ["--profile", "signature", rid, "--task", "x.md:BOX", "--kernel", "q8mf6_mul_mat:70041600:106496",
+            "--kernel", "q8wt_mul_mat:70041600:26624", "--workload", "/bin/true perf -o MUL_MAT", "--root", str(tmp_path),
             "--stream-src", str(stream), *extra]
     saved = MK.fetch_signature_module
     MK.fetch_signature_module = lambda repo, ref: ("deadbeef", mod)   # routed through main(--profile signature)
@@ -96,6 +113,17 @@ def test_signature_witness_missing_kernel(tmp_path):
     _rc, d = _mk(tmp_path)
     J = _job(d)
     assert J.trace_record(1, 0, [{"Kernel_Name": "other_kernel", "Start_Timestamp": "0", "End_Timestamp": "9"}])["witness"]["ok"] is False
+    wrong = [{"Kernel_Name": "q8wt_mul_mat", "Start_Timestamp": "0", "End_Timestamp": "9", "Grid_Size": "64"}]
+    assert J.trace_record(1, 0, wrong)["witness"]["ok"] is False   # resident but the wrong shape
+
+
+def test_signature_all_unclassified_is_not_a_pass(tmp_path):
+    _rc, d = _mk(tmp_path)
+    J = _job(d)
+    units = [dict(u, gbps=None) if u.get("kind") == "trace" else u
+             for u in J.synth(k=dict(J.V5I, SQ_ACTIVE_INST_ANY=0.05, TA_ADDR_STALLED_BY_TC_CYCLES_sum=0.05))]
+    v = J.decide(units)
+    assert v == "FUTILITY_HARNESS_UNCLASSIFIED" and J.polar(v) is None
     units = [dict(u, witness={"ok": False}) if u.get("kind") == "trace" and u["i"] == 1 else u for u in J.synth()]
     assert J.decide(units) == "FUTILITY_HARNESS_NOT_RESIDENT"
 
@@ -106,10 +134,12 @@ def test_signature_refuses_without_kernel_or_module(tmp_path):
     base = ["ak-bnsig-r-gpu-20261125", "--task", "x.md:B", "--workload", "/bin/true", "--root", str(tmp_path),
             "--stream-src", str(stream)]
     assert MK.signature_main(base, fetch=lambda r, f: ("c", b"")) == 1
-    assert MK.signature_main(base + ["--kernel", "k:1"], fetch=lambda r, f: "missing") == 1
+    assert MK.signature_main(base + ["--kernel", "k:1:64"], fetch=lambda r, f: "missing") == 1
     assert not (tmp_path / "ak-bnsig-r-gpu-20261125").exists()
     with pytest.raises(SystemExit):
         MK.parse_sig_kernel("nobytes")
+    with pytest.raises(SystemExit):
+        MK.parse_sig_kernel("k:100")   # no grid: multi-shape averaging refused
 
 
 if __name__ == "__main__":

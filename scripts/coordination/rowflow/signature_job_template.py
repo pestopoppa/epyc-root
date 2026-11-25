@@ -194,11 +194,16 @@ def unit_ks(uid, pas):
 
 
 def trace_record(i, rc, rows):
-    pat = KERNELS[i]['name']
-    ds = [(int(r['End_Timestamp']) - int(r['Start_Timestamp'])) * 1e-9 for r in rows if pat in (r.get('Kernel_Name') or '')]
+    """Residency + GB/s; witnessed iff >= 1 dispatch and EVERY matching dispatch has the declared grid (one shape: a
+    mixed-grid kernel is refused, never averaged)."""
+    pat, exp = KERNELS[i]['name'], KERNELS[i]['grid']
+    sel = [r for r in rows if pat in (r.get('Kernel_Name') or '')]
+    grids = sorted({int(r.get('Grid_Size_X') or r.get('Grid_Size') or 0) for r in sel})
+    ds = [(int(r['End_Timestamp']) - int(r['Start_Timestamp'])) * 1e-9 for r in sel]
     dur = statistics.mean(ds) if ds else None
     return {'kind': 'trace', 'i': i, 'kernel': pat, 'rc': rc, 'n_dispatch': len(ds), 'dur_us': dur and dur * 1e6,
-            'gbps': (KERNELS[i]['bytes'] / dur / 1e9) if dur else None, 'witness': {'ok': rc == 0 and bool(ds)}}
+            'gbps': (KERNELS[i]['bytes'] / dur / 1e9) if dur else None,
+            'witness': {'ok': rc == 0 and bool(ds) and grids == [exp], 'grids': grids, 'expected_grid': exp}}
 
 
 def unit_trace(uid, i):
@@ -211,7 +216,8 @@ def k_record(i, pas, rc, rows):
     c, nd, meta, fam, grids, _ps = BS.parse_counters(rows, kernel_select(i))
     return {'kind': 'k', 'i': i, 'kernel': KERNELS[i]['name'], 'pass': pas, 'rc': rc, 'requested': list(PASSES[pas]),
             'counters': c, 'n_dispatch': nd, 'meta': meta, 'bytes': KERNELS[i]['bytes'],
-            'witness': {'ok': rc == 0 and nd > 0, 'families': fam, 'grids': grids}}
+            'witness': {'ok': rc == 0 and nd > 0 and grids == [KERNELS[i]['grid']], 'families': fam, 'grids': grids,
+                        'expected_grid': KERNELS[i]['grid']}}
 
 
 def unit_k(uid, i, pas):
@@ -305,6 +311,8 @@ def decide(units):
         return 'FUTILITY_COUNTERS_REJECTED'   # a decisive axis has a missing input (absent, never read as zero)
     if any(x['class'] == 'reference_incoherent' for x in s['signatures'].values()):
         return 'FUTILITY_REFERENCE_INCOHERENT'
+    if all(x['class'] == 'unclassified' for x in s['signatures'].values()):
+        return 'FUTILITY_HARNESS_UNCLASSIFIED'   # nothing answered: never a PASS
     return 'SIGNATURE_CLASSIFIED'
 
 
@@ -450,10 +458,19 @@ def selftest():
     global KERNELS, OUT, OUT_SMOKE, measure_unit
     saved = (KERNELS, OUT, OUT_SMOKE, measure_unit)
     try:
-        KERNELS = KERNELS or [{'name': 'selftest_kernel', 'bytes': 64 << 20}]
+        KERNELS = KERNELS or [{'name': 'selftest_kernel', 'bytes': 64 << 20, 'grid': 26624}]
         assert 'C3' not in PASSES and len(plan()) == 2 + len(PASSES) * (1 + len(KERNELS)) + len(KERNELS)
-        tr = [{'Kernel_Name': KERNELS[0]['name'] + '.kd', 'Start_Timestamp': '0', 'End_Timestamp': '50000'}]
+        g0 = str(KERNELS[0]['grid'])
+        tr = [{'Kernel_Name': KERNELS[0]['name'] + '.kd', 'Start_Timestamp': '0', 'End_Timestamp': '50000', 'Grid_Size': g0}]
         assert trace_record(0, 0, tr)['witness']['ok'] and not trace_record(0, 0, [])['witness']['ok']
+        mixed = tr + [dict(tr[0], Grid_Size='64')]
+        assert not trace_record(0, 0, mixed)['witness']['ok']   # two shapes: refused, never averaged
+        cr = [{'Dispatch_Id': '1', 'Kernel_Name': KERNELS[0]['name'], 'Grid_Size': g, 'Counter_Name': 'TA_BUSY_avr',
+               'Counter_Value': '1'} for g in (g0, '64')]
+        assert k_record(0, 'C7', 0, cr[:1])['witness']['ok'] and not k_record(0, 'C7', 0, cr)['witness']['ok']
+        unc = synth(k=dict(V5I, SQ_ACTIVE_INST_ANY=0.05, TA_ADDR_STALLED_BY_TC_CYCLES_sum=0.05))
+        unc = [dict(u, gbps=None) if u.get('kind') == 'trace' else u for u in unc]
+        assert decide(unc) == 'FUTILITY_HARNESS_UNCLASSIFIED', summary(unc)['classes']
         assert stream_record(0, '{"gbps": 1460.8, "pattern": 0, "wpc": 16, "unroll": 1, "nt": 0}\n'
                                 '{"gbps": 1319.6, "pattern": 0, "wpc": 16, "unroll": 4, "nt": 0}\n')['ok']
         good = synth()

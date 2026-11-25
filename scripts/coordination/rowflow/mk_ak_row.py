@@ -1708,24 +1708,27 @@ def fetch_signature_module(repo: str, ref: str) -> tuple[str, bytes] | str:
     c = subprocess.run(["git", "-C", repo, "rev-parse", "--verify", ref + "^{commit}"], capture_output=True, text=True)
     if c.returncode != 0:
         return f"{ref} not resolvable in {repo}"
-    r = subprocess.run(["git", "-C", repo, "show", f"{ref}:{SIG_MODULE_PATH}"], capture_output=True)
+    commit = c.stdout.strip()   # resolved ONCE: the bytes come from this commit, never from a ref that may move
+    r = subprocess.run(["git", "-C", repo, "show", f"{commit}:{SIG_MODULE_PATH}"], capture_output=True)
     if r.returncode != 0:
-        return f"{ref}:{SIG_MODULE_PATH} missing (land the research bottleneck_signature.py first, or pass --research-ref)"
-    return c.stdout.strip(), r.stdout
+        return f"{commit}:{SIG_MODULE_PATH} missing (land the research bottleneck_signature.py first, or pass --research-ref)"
+    return commit, r.stdout
 
 
 def parse_sig_kernel(text: str) -> dict:
-    """NAME:BYTES -> {'name', 'bytes'}; NAME is a substring of the mangled kernel name, BYTES the bytes read per dispatch."""
-    name, _, b = text.rpartition(":")
-    if not name or not b.isdigit() or int(b) <= 0:
-        raise SystemExit(f"mk_ak_row: --kernel {text!r} must be NAME:BYTES (bytes read per dispatch, > 0)")
-    return {"name": name, "bytes": int(b)}
+    """NAME:BYTES:GRID -> {'name', 'bytes', 'grid'}; NAME is a substring of the mangled kernel name, BYTES the bytes read
+    per dispatch, GRID the expected Grid_Size. One shape per entry: dispatches of any other grid are excluded and a
+    kernel whose selected dispatches show another grid is unwitnessed (no multi-shape averaging)."""
+    parts = text.rsplit(":", 2)
+    if len(parts) != 3 or not parts[0] or not all(x.isdigit() and int(x) > 0 for x in parts[1:]):
+        raise SystemExit(f"mk_ak_row: --kernel {text!r} must be NAME:BYTES:GRID (bytes per dispatch > 0, Grid_Size > 0)")
+    return {"name": parts[0], "bytes": int(parts[1]), "grid": int(parts[2])}
 
 
 def signature_scaffold(a, fetch=None) -> int:
     kernels = [parse_sig_kernel(k) for k in a.kernel]
     if not kernels:
-        print("REFUSED: --kernel NAME:BYTES at least once")
+        print("REFUSED: --kernel NAME:BYTES:GRID at least once")
         return 1
     if not a.workload.strip():
         print("REFUSED: --workload (the command whose dispatches carry the listed kernels) is required")
@@ -1784,7 +1787,7 @@ def signature_main(argv=None, fetch=None) -> int:
     ap = argparse.ArgumentParser(prog="mk_ak_row.py --profile signature", description="bottleneck-signature diag row")
     ap.add_argument("row_id")
     ap.add_argument("--task", required=True, help="handoff.md:BOX")
-    ap.add_argument("--kernel", action="append", default=[], metavar="NAME:BYTES", help="repeatable; top-K hotspots")
+    ap.add_argument("--kernel", action="append", default=[], metavar="NAME:BYTES:GRID", help="repeatable; top-K hotspots, one shape each")
     ap.add_argument("--workload", required=True, help="argv (shell-quoted) whose dispatches carry the kernels")
     ap.add_argument("--store", help="kernel store dir; its bin/ goes first on LD_LIBRARY_PATH")
     ap.add_argument("--model", default="op-level bottleneck signature (no model load)")
