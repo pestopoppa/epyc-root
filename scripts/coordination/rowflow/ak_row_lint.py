@@ -37,6 +37,9 @@ or owner autokernel*) and stay WARN for every other owner: a row certain to fail
                            fresh_server_starts, default 3 starts per arm; the rest of the requests reuse those servers), or
                            spec fresh_server_starts > 3 with no fresh_server_starts_reason
   NO-WITNESS         WARN  the decision rule names a GGML_/LLAMA_ knob and no row code records a witness key
+  MECH-UNWITNESSED   WARN  (AK-MECH-WITNESS-1, D9-ack 2026-11-25; never FAIL) a row whose decision_rule can return a keep/pass on
+                           a speed claim has no spec mechanism_witness {counter, direction, aa_band}, or its row code never
+                           records the declared counter for both arms (intake-2958)
   REPLAY-NO-BASELINE WARN  a replay row with no baseline validation (baseline_ok / validate_baseline / replay_baseline)
   CPUS-IN-ARGV       WARN  a cpus() / grant_cpus() call placed directly inside an argv list/tuple literal or a `+` concatenation
                            with no cpu_str() / ",".join around it (a list of ints in an argv: subprocess TypeError, seen twice
@@ -79,6 +82,28 @@ CLAIM_PARSE_RX = re.compile(r"WS58_REGIONS[^\n]*\|\s*(?:tr|grep|paste|sed|awk)\b
 SMOKE_RX = re.compile(r"TERMINAL-smoke|FILLER_SMOKE|FILLER_DRYRUN")
 KNOB_RX = re.compile(r"\b(?:GGML|LLAMA)_[A-Z0-9_]{2,}\b")
 WITNESS_RX = re.compile(r"[\"']\w*witness\w*[\"']", re.I)
+SPEED_CLAIM_RX = re.compile(r"\b(?:keep|pass)\b", re.I)
+SPEED_WORD_RX = re.compile(r"speed|faster|tok/?s|t/s|throughput|latency|\bGB/s|bandwidth|speedup|slower|ms\b|\bpp\d*|\btg\d*", re.I)
+MECH_FIELDS = ("counter", "direction", "aa_band")
+
+
+def mech_unwitnessed(spec, allc):
+    """AK-MECH-WITNESS-1: WARN-only. [] when the rule cannot return a speed keep/pass or the witness is declared and recorded."""
+    rule = " ".join(str(spec.get(k) or "") for k in ("decision_rule", "notes"))
+    if not (SPEED_CLAIM_RX.search(rule) and SPEED_WORD_RX.search(rule)):
+        return []
+    w = spec.get("mechanism_witness")
+    miss = [k for k in MECH_FIELDS if not (isinstance(w, dict) and str(w.get(k) or "").strip())]
+    if miss:
+        return [("WARN", "MECH-UNWITNESSED", "decision rule can return a keep/pass on a speed claim but spec "
+                 f"mechanism_witness lacks {miss or list(MECH_FIELDS)}; declare {{counter, direction, aa_band}} "
+                 "(the per-row mechanism_prediction.expected_counter_changes)")]
+    c = str(w["counter"]).strip()
+    lines = [ln for ln in allc.splitlines() if c in ln]
+    if not lines or not (len(lines) >= 2 or any(re.search(r"arm|base|cand", ln, re.I) for ln in lines)):
+        return [("WARN", "MECH-UNWITNESSED", f"mechanism_witness.counter {c!r} is not recorded for both arms in the row's "
+                 "RESULT code")]
+    return []
 REPLAY_RX = re.compile(r"replay", re.I)
 BASELINE_RX = re.compile(r"baseline_ok|baseline_valid|validate_baseline|replay_baseline|baseline_check|baseline_match", re.I)
 SELFTEST_TIMEOUT_S = 60
@@ -680,6 +705,7 @@ def lint_dir(d, selftest=True):
     if knobs and not WITNESS_RX.search(allc):
         out.append(("WARN", "NO-WITNESS", f"decision rule names {knobs[:3]} but no RESULT witness key; prove the knob "
                                           "took effect or file FUTILITY_WITNESS"))
+    out += mech_unwitnessed(spec, allc)
     if (REPLAY_RX.search(rid) or REPLAY_RX.search(rule)) and not BASELINE_RX.search(allc):
         out.append(("WARN", "REPLAY-NO-BASELINE", "replay row with no baseline validation (baseline_ok / "
                                                   "validate_baseline): an unvalidated replay baseline is not a control"))
