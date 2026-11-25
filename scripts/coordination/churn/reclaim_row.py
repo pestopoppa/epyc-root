@@ -43,6 +43,7 @@ for _p in (HERE, os.path.join(SCRIPTS, "system"), os.path.join(SCRIPTS, "coordin
     if _p not in sys.path:
         sys.path.insert(0, _p)
 import filing  # noqa: E402  (the end-record / manifest readers)
+import keep_failed  # noqa: E402
 import scratch_guard  # noqa: E402
 import row_worktree as rw  # noqa: E402
 import worktree_gate as wg  # noqa: E402
@@ -323,6 +324,12 @@ def main(argv=None) -> int:
     if raw:
         cutoff, _src = start_cutoff(ep, mp)
         kept = keep_map(root, m, cutoff, [w.path for w in wts], default_names=auto_raw)
+        vd = keep_failed.verdict_of(flags, rid, m)
+        if keep_failed.is_failed(vd) and keep_failed.hold_active(flags, rid, ep):
+            for p in keep_failed.evidence_paths(root, print, rid):
+                kept.setdefault(os.path.realpath(p), "failed-evidence")
+            print(f"RECLAIM-KEEP-FAILED {rid}: logs kept until successor ends")
+            filing.defer_keep_failed(flags, rid, vd)
         kept_anc: dict = {}
         rr = os.path.realpath(root)
         for k, why in kept.items():

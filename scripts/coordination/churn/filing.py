@@ -457,6 +457,19 @@ def defer_reclaim(flags, rid, successor, log=print):
     log(f"RECLAIM-DEFER {rid}: unfiled/fail evidence kept until FILED (and successor {successor} smoke PASS)")
 
 
+def defer_keep_failed(flags, rid, verdict):
+    """Marker for a FAIL*/FUTILITY* row whose logs reclaim_row kept; run_deferred_reclaims re-runs reclaim once the hold ends."""
+    d = deferred_dir(flags)
+    mp = os.path.join(d, rid + ".json")
+    if os.path.exists(mp):
+        return
+    os.makedirs(d, exist_ok=True)
+    tmp = os.path.join(d, f".{rid}.json.tmp{os.getpid()}")
+    with open(tmp, "w") as fh:
+        json.dump({"id": rid, "kind": "keep_failed", "verdict": verdict, "at": now_iso()}, fh)
+    os.replace(tmp, mp)
+
+
 def run_deferred_reclaims(flags, no_reclaim_globs=None, log=print):
     """Reclaim every deferred row whose predecessor is FILED and whose successor's smoke passed (dryrun/<succ>/PASS.json) or
     is itself filed. Never raises. -> list of reclaimed ids."""
@@ -473,7 +486,12 @@ def run_deferred_reclaims(flags, no_reclaim_globs=None, log=print):
                 continue
             if not is_filed(flags, rid):
                 continue
-            if not (succ and (os.path.exists(os.path.join(flags, "dryrun", succ, "PASS.json")) or is_filed(flags, succ))):
+            if rec.get("kind") == "keep_failed":
+                import keep_failed
+                _ep, _rc, _l = load_end(flags, rid)
+                if _ep is not None and keep_failed.hold_active(flags, rid, _ep):
+                    continue
+            elif not (succ and (os.path.exists(os.path.join(flags, "dryrun", succ, "PASS.json")) or is_filed(flags, succ))):
                 continue
             pinned = next((g for g in no_reclaim_globs if fnmatch.fnmatch(rid, g)), None)
             if pinned:
@@ -481,7 +499,7 @@ def run_deferred_reclaims(flags, no_reclaim_globs=None, log=print):
             else:
                 if run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"]):
                     continue   # kept for the next sweep
-                log(f"RECLAIM-DEFERRED-DONE {rid}: predecessor FILED and successor {succ} smoke passed")
+                log(f"RECLAIM-DEFERRED-DONE {rid}: " + ("failed-row hold ended" if rec.get("kind") == "keep_failed" else f"predecessor FILED and successor {succ} smoke passed"))
             try:
                 os.unlink(mp)
             except OSError:
