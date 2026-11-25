@@ -136,7 +136,7 @@ def run_pass(flags, bus_root, dry_run=False, owner_age_s=1800, min_age_s=1200, n
     report = {"filed": [], "failed": [], "queued": [], "owner_live": [], "skipped": [], "alerted": []}
     for row in due_rows(flags):
         rid = row["id"]
-        if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
+        if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")) or filing.withdrawn_no_run(flags, rid):
             continue
         if rid in state or rid in queued:
             # already attempted/queued: the owner still gets its single filing-due alert (dedup is notify.emit's marker)

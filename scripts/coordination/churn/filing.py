@@ -397,6 +397,36 @@ def smoke_complete_ids(flags):
     return out
 
 
+def withdrawn_no_run(flags, rid):
+    """True when rid was withdrawn before its smoke ever ran: _withdraw_smoke_queued wrote grants/<id>.ended (rc=75) and
+    moved the marker to dryrun/<id>/.withdrawn/, with no .complete and no PASS/FAIL record. No evidence exists, so the row
+    is TERMINAL with no FILED receipt owed (WITHDRAWN-NO-RUN)."""
+    g = os.path.join(flags, "grants", rid)
+    d = os.path.join(flags, "dryrun", rid)
+    return (os.path.exists(g + ".ended") and not os.path.exists(g + ".complete") and os.path.isdir(os.path.join(d, ".withdrawn"))
+            and not os.path.exists(os.path.join(d, "PASS.json")) and not glob.glob(os.path.join(d, "FAIL-*.json")))
+
+
+def file_withdrawn_no_run(flags, rid, *, by, dry_run=False, log=print):
+    """FILE a withdrawn-before-smoke row as WITHDRAWN-NO-RUN (no manifest or result needed). -> FILED | NOOP | SKIP:<why>."""
+    if is_filed(flags, rid):
+        return "NOOP"
+    if not withdrawn_no_run(flags, rid):
+        return "SKIP:not a withdrawn-no-run row"
+    if dry_run:
+        log(f"WOULD-FILE {rid}: WITHDRAWN-NO-RUN")
+        return "FILED"
+    ep, rc, endline = load_end(flags, rid)
+    rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "filed_at": now_iso(), "at": now_iso(),
+           "outcome_class": "NO-RESULT", "phase": "filing", "compute_burned": False, "root_cause_family": None,
+           "verdict": {"status": "filed", "kind": "withdrawn", "result": "WITHDRAWN-NO-RUN"}, "row_verdict": "WITHDRAWN-NO-RUN",
+           "rc": rc, "end_line": endline, "end_record": ep, "filed_by": by, "machine_checkable": False}
+    if not write_filed(flags, rid, f"FILED {rid}: WITHDRAWN-NO-RUN rc={rc} by={by}", rec):
+        return "NOOP"
+    log(f"FILED {rid}: WITHDRAWN-NO-RUN")
+    return "FILED"
+
+
 def ended_unfiled(flags):
     """ids with grants/<id>.ended|.complete (or the deprecated smoke-complete fallback) and no FILED."""
     ids = set()
@@ -404,7 +434,7 @@ def ended_unfiled(flags):
         for p in glob.glob(os.path.join(flags, "grants", "*" + suf)):
             ids.add(os.path.basename(p)[:-len(suf)])
     ids.update(rid for rid, _ in smoke_complete_ids(flags))
-    return sorted(i for i in ids if not is_filed(flags, i) and not i.startswith(".") and not capcut_pending(flags, i))
+    return sorted(i for i in ids if not is_filed(flags, i) and not i.startswith(".") and not withdrawn_no_run(flags, i) and not capcut_pending(flags, i))
 
 
 def _end_info(flags, rid):

@@ -54,6 +54,13 @@ def _unfileable(flags_root: Path, run_id: str, row: dict) -> str | None:
     rows with no manifest and a false-complete marker moved to grants/.false-complete-* re-alarmed
     every pass although file_result.py refuses them (exit 2) and their successors were filed.
     """
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent / "churn"))
+        import filing as _filing
+        if _filing.withdrawn_no_run(str(flags_root), run_id):
+            return "withdrawn before its smoke ran (WITHDRAWN-NO-RUN, terminal, no filing owed)"
+    except Exception:  # an unreadable check must not silence the alarm
+        pass
     ended = row.get("ended_file")
     if not isinstance(ended, str) or not ended:
         return None

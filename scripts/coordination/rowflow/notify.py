@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import glob
 import hashlib
 import json
 import os
@@ -191,6 +192,16 @@ def ack(flags, key, by=None, note=None):
     return True
 
 
+def withdrawn_no_run(flags, rid):
+    """True when rid was withdrawn before its smoke ever ran: _withdraw_smoke_queued wrote grants/<id>.ended (rc=75) and
+    moved the marker to dryrun/<id>/.withdrawn/, with no .complete and no PASS/FAIL record. No evidence exists, so the row
+    is TERMINAL with no FILED receipt owed (WITHDRAWN-NO-RUN)."""
+    g = os.path.join(flags, "grants", rid)
+    d = os.path.join(flags, "dryrun", rid)
+    return (os.path.exists(g + ".ended") and not os.path.exists(g + ".complete") and os.path.isdir(os.path.join(d, ".withdrawn"))
+            and not os.path.exists(os.path.join(d, "PASS.json")) and not glob.glob(os.path.join(d, "FAIL-*.json")))
+
+
 def unfiled_ended(flags, key):
     """The row id of inbox alert `key` when that row has ENDED (grants/<id>.ended|.complete) without a
     filing-done/<id>.FILED receipt, else None. An ack of such an alert must not stand in for filing (operator 2026-11-07)."""
@@ -200,7 +211,7 @@ def unfiled_ended(flags, key):
             if not rid:
                 return None
             ended = any(os.path.exists(os.path.join(flags, "grants", rid + s)) for s in (".ended", ".complete"))
-            filed = os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED"))
+            filed = os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")) or withdrawn_no_run(flags, rid)
             return rid if ended and not filed else None
     return None
 

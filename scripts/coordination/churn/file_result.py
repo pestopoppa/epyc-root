@@ -454,6 +454,10 @@ def main(argv=None):
         return correct_filed(flags, rid, a.correct, a.filed_by or "", a.reason or "", a.dry_run)
     if filing.is_filed(flags, rid):
         print(f"NOOP {rid}: already FILED ({filing.filed_path(flags, rid)})"); return 0
+    if filing.withdrawn_no_run(flags, rid) and not a.receipt and not a.verdict_json:
+        r = filing.file_withdrawn_no_run(flags, rid, by=a.filed_by or "file_result", dry_run=a.dry_run)
+        print(r)
+        return 0 if r in ("FILED", "NOOP") else 2
     if a.no_manifest:
         if a.receipt:
             print("ERROR --no-manifest cannot be combined with --receipt", file=sys.stderr); return 2
