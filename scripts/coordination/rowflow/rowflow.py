@@ -327,6 +327,12 @@ def fresh_attempt(flags, rid, allrows, cur):
     a matching (or unrecorded) job sha. The attempt's own FAIL then carries the current shas, so the lineage parks again."""
     if not cur:
         return False
+    try:   # AK waste audit R2: a new job sha is the normal republish, not evidence; a parked FAMILY gets no fresh attempt
+        import family_strikes
+        if family_strikes.park_reason(flags, family_strikes.stem_of(rid)):
+            return False
+    except Exception:  # noqa: BLE001
+        pass
     lin = lineage_of(rid, allrows)
     jcur = None
     for dd in glob.glob(os.path.join(flags, "dryrun", "*")):
@@ -11549,7 +11555,10 @@ def main(argv=None):
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True)
     s = sub.add_parser("unpark", help="operator: a parked row (precond refusal / arming failures) is grantable again next tick; its "
                                       "earlier arming FAIL records no longer count (dryrun/<id>/UNPARK.json)")
-    s.add_argument("id"); s.add_argument("--by"); s.add_argument("--note", default="")
+    s.add_argument("id", nargs="?"); s.add_argument("--by"); s.add_argument("--note", default="")
+    s.add_argument("--family", metavar="STEM", help="AK waste audit R2: clear a two-strike FAMILY park (owner or operator; "
+                                                   "needs --reason; logged UNPARK; resets the family strike count)")
+    s.add_argument("--reason", default="")
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
@@ -11681,7 +11690,14 @@ def main(argv=None):
             by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
             resume_row(a.flags, a.id, by, a.reason)
             return 0
+        if a.cmd == "unpark" and a.family:
+            import family_strikes
+            by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
+            h = family_strikes.unpark_family(a.flags, family_strikes.stem_of(a.family), by, a.reason or a.note)
+            print(f"UNPARKED family {family_strikes.stem_of(a.family)} by={by}; cleared strikes of {h['cleared']}")
+            return 0
         if a.cmd == "unpark":
+            need(a.id, "unpark needs ID or --family STEM")
             known = (a.id in rows(a.flags) or os.path.isdir(dry_dir(a.flags, a.id))
                      or os.path.exists(os.path.join(a.flags, "operator-escalations", a.id + ".md")))
             need(known, f"{a.id}: not a ready/ row, a dryrun/ id or a parked lineage (operator-escalations/<lineage>.md)")

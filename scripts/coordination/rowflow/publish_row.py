@@ -1435,6 +1435,27 @@ def record_smoke_outcome(flags, rid, verdict, msg):
                                                    "unpark_sha256": smoke_unpark_sha(flags, rid), "failure_sha256": failure_sha})
     if reason:
         print(f"{reason}: {msg}")
+    record_family_outcome(flags, rid, verdict, msg, failure_sha)
+
+
+def record_family_outcome(flags, rid, verdict, msg, failure_sha=None):
+    """AK waste audit R2/R6: the FAMILY counter (family_strikes), keyed by id_stem, survives -rN and job sha changes."""
+    try:
+        import family_strikes as fs
+        m = fs.manifest_of(flags, rid)
+        if verdict in ("PASS", "RESULT"):
+            fs.record_clear(flags, rid, verdict)
+        elif verdict == "FAIL":
+            rec = fs.record_strike(flags, rid, "smoke", msg, key=failure_sha, manifest=m)
+            why = fs.park_reason(flags, fs.stem_of(rid))
+            if why:
+                print(f"PARKED-FAMILY {why} (strikes={rec['count']})")
+        if verdict in ("PASS", "RESULT", "FAIL") and fs.is_gpu(m):
+            fs.record_gpu_smoke(flags, rid, verdict)
+    except rf.Refused:
+        raise
+    except Exception as ex:  # noqa: BLE001 - the per-id counter above still holds
+        print(f"FAMILY-STRIKES {rid}: record failed: {type(ex).__name__}: {ex}")
 
 
 SMOKE_BUSY_MARK = "not run twice"   # rowflow.dryrun_run's WAIT text when another runner holds dryrun/<id>/SMOKE.lock
@@ -1448,6 +1469,10 @@ def run_smoke(flags, rid, regions, smoke_s, keep_on_wait=False, wait_s=None):
         strikes = smoke_strikes(flags, rid)
         if int(strikes.get("count") or 0) >= 3:
             return "FAIL", strikes.get("reason") or "PARKED-3STRIKE"
+        import family_strikes as fs
+        fam_why = fs.park_reason(flags, fs.stem_of(rid))
+        if fam_why:
+            return "FAIL", fam_why   # R2: a parked family's queued smoke is not run (and records no new strike)
         row = rf.load_json(rf.ready_path(flags, rid)) or {}
         identity = row.get("smoke_identity")
         v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=smoke_s,
@@ -1828,6 +1853,9 @@ def publish_smoked(spec, flags, source, queue_cpu=False, identity_spec=None):
     rid = str(spec.get("id") or "")
     strikes = smoke_strikes(flags, rid)
     rf.need(int(strikes.get("count") or 0) < 3, strikes.get("reason") or "PARKED-3STRIKE")
+    import family_strikes as fs
+    ok, why = fs.republish_allowed(flags, spec)   # R2 family park + R6 GPU smoke budget; R1 extends republish_allowed
+    rf.need(ok, why)
     want = smoke_cpus_of(spec)   # refused before anything is published
     ready = rf.ready_path(flags, rid)
     old_ready = rf.sha256(ready) if os.path.isfile(ready) else None
