@@ -1,0 +1,38 @@
+# 2026-11-24/25 — workspace-f2 (Assorted / RTG-22 non-inference)
+
+## Programs
+1. **Serving config on the AutoKernel surface** (operator 2026-11-24): AK-SURFACE-SERVING-1, CHAMPION-SERVING-CONFIG-1,
+   PROMOTION-REGISTRY-SERVING-1 — all ticked after Fable gates.
+2. **One standard roofline-surface loop** (operator 2026-11-24): new track `autokernel-roofline-surface-loop` in
+   `handoffs/active/autokernel-loop.md`, boxes RSL-R0..R8. A campaign = a `model_weights` setting; equal weights default.
+   Ticked: R0 (autokernel), R1, R2, R3, R4, R5, R7. Open: R6 (A/A timing floors), R8 (A3B KLD floors).
+3. VB-AK-BW-CENSUS-WIRE (Vidya adapter for the bandwidth census) ticked.
+
+## What changed (all on origin/main)
+| Repo | Area |
+|---|---|
+| research | serving_knobs, serving_knob_measure (single screen, 62 GiB card ceiling, noise-floor-gated best arm), typed_planner, tailsplit knob route, seed serving-knob kind |
+| research | census_reconcile/coverage/families/inbox, journal_keys, census_update annotate + stamps backfill + device normalisation, census_extract (verify-attention ipb, verify-kernel roofline, q0q2 72t) |
+| research | stage_bodies (op-perf, per-path timing/quality, CPU KLD clauses, serving-screen), op_perf_screen/runner (+FLASH_ATTN_EXT), cpu_timing_runner (A3B solo + burst cells) |
+| root | C22 serving-config + validator (strict), kernel-promotion package.sh (registry diff, orch from origin/main), akloop chain.py (op-perf, per-path lanes, serving-screen), ak_runend (census_inbox, path-gates, registry snapshot, scripts/ snapshot), watch_rows ak-*/akx-* routing, /loop census + path-gates panels, fold_row_guard KLD floors (CPU relative x1.5), Vidya adapter |
+| orch | serving_shape.alternates schema + compile, serving_config_registry (strict, value-typed), stack_change_pipeline alternates step |
+
+## Verification
+- Fable plan audit, Fable wiring audit (25 defects), Fable final gate (N1-N12), Fable six-box gate; fixes FX1-FX9, FXA-FXC.
+- Live: run-end hook run once by hand on ak-27b-verify-kernel-roofline-census-gpu-20261124-r2 — census +114 records, 15 BWS
+  inbox stubs, coverage/family_rank/path-gates served by the hub. Canary committed: artifacts/analysis/rsl-r5-canary-20261124/.
+- Found and fixed along the way: GPU ab-timing could never be decisive (fraction stored as percent, no floor passed);
+  |dPPL| clauses never decided (ln_ratio not mapped); op-perf screen could never reject; census CPU records unstamped.
+
+## Incidents (mine)
+- Unpinned `pytest loop` landed on GPU host cores 88-95 and idled the MI210 ~20 min; tests now pinned to 84-87.
+- Pushed twice past failing checks (piped `| tail` masked rc): one pre-existing test, and the loop code ceiling (+25,
+  trimmed back the same hour). Push gating now uses exit codes.
+- Five ~3 GB builder worktrees dropped disk 22 GB; all removed; builders now share per batch.
+
+## Open (owner)
+- autokernel: arm the row watcher (no watch_rows process; hook never fired on its own); publish A/A floors (Q38FN CPU,
+  A3B CPU solo + burst), A3B KLD floor, two op-perf calibrations from current main; fold served_shape_perf_v1 into the champion.
+- loop owner: install the serving-knob seed in the live store; route serving-knob hypotheses past critic/author.
+- operator: A3B registry `recipe` block (stack-change package); host-RAM budget for CPU knob screens; A3B KLD ratification.
+- Vidya: live `ingest ak-bw-census` (needs the canonical-ledger owner flag).
