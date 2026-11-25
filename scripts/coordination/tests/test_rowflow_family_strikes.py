@@ -134,7 +134,7 @@ class R3Harness(Base):
             pr.record_smoke_outcome(self.flags, rid, "FAIL", "pipeline fault")
         self.assertEqual(fs.load(self.flags, STEM)["count"], 0)
         self.assertIsNone(fs.park_reason(self.flags, STEM))
-        self.assertEqual(len(fs.gpu_smokes_today(self.flags, STEM)), 2)
+        self.assertEqual(len(fs.gpu_smokes_today(self.flags, STEM)), 0)
         self.assertEqual(fs.harness_strike({"native_verdict": "FUTILITY_HARNESS_IDENTITY"}), (False, ""))
         self.assertEqual(fs.harness_strike({"complete": True}, elapsed_s=11), (False, ""))
 
@@ -212,6 +212,17 @@ class R5Stale(Base):
 
 
 class R6Budget(Base):
+    def test_harness_failure_does_not_spend_gpu_budget_or_strike(self):
+        rid = f"{BASE}-r2"
+        self.manifest(rid)
+        self.fail(rid, NOW, failclass={"side": "harness"})
+        pr.record_family_outcome(self.flags, rid, "FAIL", "FUTILITY_HARNESS_WITNESS")
+        self.assertEqual(fs.load(self.flags, STEM)["count"], 0)
+        self.assertEqual(fs.gpu_smokes_today(self.flags, STEM), [])
+        self.manifest(f"{BASE}-r3")
+        pr.record_family_outcome(self.flags, f"{BASE}-r3", "PASS", "ok")
+        self.assertEqual(len(fs.gpu_smokes_today(self.flags, STEM)), 1)
+
     def test_fourth_gpu_smoke_refused_operator_override(self):
         for i in (1, 2, 3):
             fs.record_gpu_smoke(self.flags, f"{BASE}-r{i}", "PASS", now=NOW)
