@@ -37,6 +37,24 @@ FREE_Q1Q2_BUSY = set(rf.expand({"q0", "q3"})) | {rf.GPU}
 
 
 class HostDrain(unittest.TestCase):
+    def test_1350z_replay_h_dropped_by_quiet_gate_still_drains(self):
+        # 2026-11-25 13:50Z: H (rank 15, smoke passed > 30 min ago) WAITs `foreign busy 50% on q1` because q1/q2 run the
+        # rank-34 / rank-30 rows granted 13:31Z / 13:40Z; quiet_gate removed H, so zero HOST-DRAIN lines fired.
+        h = dict(host(rank=15, waited=2 * 3600), shape="quiet-host")
+        qwaits = [(h, f"quiet-host row {H} (rank 15) WAIT: foreign busy 50% on q1 (quiet-host needs <15%)")]
+        waiting = [c for c, why in qwaits if any(k in why for k in rf.HOST_DRAIN_WAIT_REASONS)]
+        rend = {**{t: NOW + 5400 for t in rf.expand({"q1"})}, **{t: NOW + 3000 for t in rf.expand({"q2"})}}
+        new = quarter("ak-new-rank30", rank=30, book=7200, qs=("q0", "q3"))
+        kept, lines = rf.host_drain_filter([new], FREE_Q1Q2_BUSY, rend, [NOW + 3000, NOW + 5400], now=NOW, waiting=waiting)
+        self.assertEqual(kept, [])
+        self.assertRegex(lines["ak-new-rank30"], rf"^HOST-DRAIN {H} rank=15 waited=120min: holding ak-new-rank30")
+        # no re-add: H stays out of the kept list (quiet_gate still owns its WAIT)
+        self.assertNotIn(H, [c["id"] for c in kept])
+        # anti-livelock still holds: a STOPped / held / arm-failed H drains nothing
+        for bad in (dict(h, hold=True), dict(h, arm_fails=1)):
+            kept, lines = rf.host_drain_filter([new], FREE_Q1Q2_BUSY, rend, [NOW + 5400], now=NOW, waiting=[bad])
+            self.assertEqual([c["id"] for c in kept], ["ak-new-rank30"])
+
     def test_incident_rank28_held_after_30min(self):
         kept, lines = rf.host_drain_filter([host(), quarter("r28a"), quarter("r28b")], FREE_Q1Q2_BUSY, ends(NOW + 900),
                                            [NOW + 900], now=NOW)

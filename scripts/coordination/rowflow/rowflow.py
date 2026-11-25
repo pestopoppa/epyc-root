@@ -7683,6 +7683,24 @@ GPU_HOST_CPUS = frozenset(range(88, 96)) | GPU_HOST_THREADS
 GPU_HOST_TOKENS = frozenset({f"c{k}" for k in range(88, 96)} | {f"t{k}" for k in GPU_HOST_THREADS})
 GPU_HOST_FOREIGN_SAMPLES = 2
 GPU_HOST_FOREIGN_STATE = "gpu-host-foreign.json"
+# GPU-HOST-FOREIGN-FLOAT (2026-11-25 13:50Z): a firefox -contentproc with affinity 0-191 that merely last ran on cpu 190
+# blocked every GPU grant. A process only counts when it is PINNED into the GPU host cpus (>= GPU_HOST_PIN_FRAC of its
+# affinity inside them) or BUSY (>= GPU_HOST_BUSY_PCT of one core between two keeper samples, ticks kept in the state
+# file); a floating low-usage process is logged `GPU-HOST-FOREIGN-IGNORED` and blocks nothing.
+GPU_HOST_PIN_FRAC = 0.5
+GPU_HOST_BUSY_PCT = 50.0
+
+
+def expand_cpu_list(spec):
+    """'0-3,8' -> {0,1,2,3,8}."""
+    out = set()
+    for part in str(spec).split(","):
+        part = part.strip()
+        if not part:
+            continue
+        lo, _, hi = part.partition("-")
+        out |= set(range(int(lo), int(hi or lo) + 1))
+    return out
 
 
 def _owner_guess(cwd, cmd):
@@ -7715,7 +7733,8 @@ def gpu_host_procs(cpus=GPU_HOST_CPUS):
                 aff = compress_cpus(set(os.sched_getaffinity(pid)))
             except OSError:
                 aff = "?"
-            out.append({"pid": pid, "cmd": cmd, "cwd": cwd, "affinity": aff, "cpu": cpu})
+            out.append({"pid": pid, "cmd": cmd, "cwd": cwd, "affinity": aff, "cpu": cpu,
+                        "ticks": int(f[11]) + int(f[12]), "ts": time.time()})
         except (OSError, ValueError, IndexError):
             continue
     return out
@@ -7760,9 +7779,40 @@ def gpu_host_foreign(flags, cands, free, grants, granted, log, dry=False, procs=
             if cur <= 1:
                 return False
         return False
-    foreign = [p for p in procs if not owned(p["pid"])]
+    hz = os.sysconf("SC_CLK_TCK") if hasattr(os, "sysconf") else 100
+    pticks = prev.get("_ticks") or {}
+    ticks = {}
+
+    def counts(p):
+        """(blocks?, why). Pinned into the GPU host cpus, or busy there; a floating idle-ish process does not count."""
+        try:
+            aff = expand_cpu_list(p["affinity"]) if p.get("affinity") not in (None, "?") else set()
+        except Exception:  # noqa: BLE001
+            aff = set()
+        frac = (len(aff & GPU_HOST_CPUS) / len(aff)) if aff else 1.0
+        if frac >= GPU_HOST_PIN_FRAC:
+            return True, f"pinned {frac:.0%} inside"
+        busy = p.get("busy_pct")
+        if busy is None and p.get("ticks") is not None:
+            ticks[str(p["pid"])] = [p.get("ts") or time.time(), p["ticks"]]
+            old = pticks.get(str(p["pid"]))
+            if old and float(p.get("ts") or time.time()) > float(old[0]):
+                busy = 100.0 * (p["ticks"] - old[1]) / hz / (float(p.get("ts") or time.time()) - float(old[0]))
+        if busy is not None and busy >= GPU_HOST_BUSY_PCT:
+            return True, f"busy {busy:.0f}%"
+        return False, f"floating affinity={p.get('affinity')} busy={'?' if busy is None else f'{busy:.0f}%'}"
+    foreign = []
+    for p in procs:
+        if owned(p["pid"]):
+            continue
+        ok, why = counts(p)
+        if ok:
+            foreign.append(p)
+        else:
+            log(f"GPU-HOST-FOREIGN-IGNORED {p['pid']} {p['cmd'][:80]} cpu={p.get('cpu')}: {why} (< {GPU_HOST_BUSY_PCT:g}% "
+                f"and < {GPU_HOST_PIN_FRAC:.0%} pinned to GPU host cpus)")
     emit = emit or notify.emit
-    state, out = {}, {}
+    state, out = {"_ticks": ticks}, {}
     for c in urgent:
         n = int((prev.get(c["id"]) or {}).get("n") or 0) + 1 if foreign else 0
         state[c["id"]] = {"n": n, "pids": [p["pid"] for p in foreign]}
@@ -8915,7 +8965,14 @@ HOST_DRAIN_ENFORCE = True
 HOST_DRAIN_WAIT_S = 1800
 
 
-def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None):
+# HOST-DRAIN-FIX (2026-11-25 13:50Z): zero HOST-DRAIN lines fired because quiet_gate had already REMOVED H (`foreign busy
+# 50% on q1`, caused by the very rank-30/34 rows the drain exists to stop backfilling). `waiting` = H candidates that
+# quiet_gate held back ONLY for quarter occupancy / foreign busy / a whole-host neighbour; they still head the drain (they
+# are not re-added to the kept list). Anti-livelock exclusions (smoke, STOP, hold, arm fails, GPU held back) still apply.
+HOST_DRAIN_WAIT_REASONS = ("foreign busy", "bandwidth-heavy/whole-host grant")
+
+
+def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None, waiting=()):
     """PURE. -> (kept cands, {key: HOST-DRAIN log line}). See HOST-DRAIN above."""
     if not HOST_DRAIN_ENFORCE:
         return list(cands), {}
@@ -8923,7 +8980,8 @@ def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None):
     free = set(free)
     later = [float(e) for e in grant_ends if e and float(e) > now]
     heads = []
-    for h in cands:
+    seen = {c["id"] for c in cands}
+    for h in list(cands) + [w for w in waiting if w["id"] not in seen]:
         if (h.get("shape") not in ("host", "quiet-host") or h.get("kind") == "claim" or h.get("phantom") or h.get("hold")
                 or int(h.get("arm_fails") or 0) or not h.get("since")):
             continue
@@ -10602,7 +10660,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             except Exception as e:  # noqa: BLE001 - never stops allocation
                 log(f"GPU-URGENT failed: {type(e).__name__}: {e}")
         try:   # HOST-DRAIN: a whole-host row waiting > HOST_DRAIN_WAIT_S keeps worse-ranked rows off its regions past its start
-            cands, hd_lines = host_drain_filter(cands, free, r_ends, ends)
+            hd_wait = [c for c, why in qwaits if any(k in why for k in HOST_DRAIN_WAIT_REASONS)]
+            cands, hd_lines = host_drain_filter(cands, free, r_ends, ends, waiting=hd_wait)
             log_transition(flags, "host-drain", hd_lines, log, persist=not dry)
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"HOST-DRAIN failed: {type(e).__name__}: {e}")
