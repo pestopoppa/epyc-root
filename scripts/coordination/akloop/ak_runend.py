@@ -18,7 +18,8 @@
      BWS-*.md stubs in LOOP_STORE/inbox for measured, ownerless, open surfaces. Fail-soft: an error is shown as `inbox=error ...`
      AND recorded in CENSUS_STATE/inbox-state.json, which the hub reads (/api/bw_census `inbox`, the census panel).
   6. (/loop path gates) research `stage_bodies.coverage_report` (same snapshot, same registry extract) -> CENSUS_STATE/path-gates.json:
-     per served path timing `cell`/`ungated`, quality `gated`/`quality-ungated`, op-perf `grid`/`ungated`. flow_status reads it.
+     per served path timing `cell`/`ungated`, quality `gated`/`quality-ungated`, op-perf `floored`/`grid-no-floor`/`no-lane`
+     (only `floored` is gated; flow_status reads it). The file also records the registry commit used (`registry`).
   7. census/inbox/coverage read the serving registry from research-side env EPYC_ORCH_REGISTRY, which this hook points at a
      file extracted from orchestrator origin/main (`git show`), never the shared clone's uncommitted working tree.
 
@@ -139,11 +140,47 @@ def registry_snapshot(repo: str = ORCH_REPO, ref: str = "origin/main", cache: st
         return None
 
 
+REGISTRY_FAILED = "registry-snapshot-failed"
+
+
+def registry_commit(path: str | None) -> str | None:
+    """The orchestrator commit a snapshot path was extracted from (`<cache>/<commit>/model_registry.yaml`)."""
+    return os.path.basename(os.path.dirname(path)) if path else None
+
+
+def _registry_resolve(registry: str | None, *, live: bool = True) -> dict:
+    """Which registry the research child will read, and why. status: `snapshot` (origin/main extract), `explicit`
+    (caller-supplied path), `registry-snapshot-failed` (live, extract failed), `inherit` (not live: a test's injected run).
+    A failed extract is a NAMED state, never a silent fallback to the shared working tree (final-gate N9)."""
+    if registry is not None:
+        return {"status": "explicit", "path": registry, "commit": registry_commit(registry)}
+    if not live:
+        return {"status": "inherit", "path": None, "commit": None}
+    snap = registry_snapshot()
+    if snap:
+        return {"status": "snapshot", "path": snap, "commit": registry_commit(snap)}
+    return {"status": REGISTRY_FAILED, "path": None, "commit": None}
+
+
+def _env_for(reg: dict) -> dict | None:
+    """Child env for a resolved registry. On a failed extract the child gets NO EPYC_ORCH_REGISTRY (an inherited stale value
+    is stripped too), so nothing here points it at a registry this hook did not prove; None = plain inherit (not live)."""
+    if reg["path"]:
+        return {**os.environ, "EPYC_ORCH_REGISTRY": reg["path"]}
+    if reg["status"] == REGISTRY_FAILED:
+        return {k: v for k, v in os.environ.items() if k != "EPYC_ORCH_REGISTRY"}
+    return None
+
+
 def _registry_env(registry: str | None, *, live: bool = True) -> dict | None:
-    """Child env with EPYC_ORCH_REGISTRY set to the origin/main extract; None = inherit (no extract available).
-    `live` False (an injected `run`, i.e. a test) never touches the orchestrator clone unless `registry` is given."""
-    reg = registry if registry is not None else (registry_snapshot() if live else None)
-    return {**os.environ, "EPYC_ORCH_REGISTRY": reg} if reg else None
+    """Child env with EPYC_ORCH_REGISTRY set to the origin/main extract; no variable on a failed extract; None = inherit
+    (a test's injected `run` never touches the orchestrator clone unless `registry` is given)."""
+    return _env_for(_registry_resolve(registry, live=live))
+
+
+def _flag_registry_failure(line: str, reg: dict) -> str:
+    """Census/inbox status line with the failed-extract state appended (the BW-CENSUS / `-` prefix stays intact)."""
+    return f"{line} [{REGISTRY_FAILED}]" if reg["status"] == REGISTRY_FAILED else line
 
 
 def path_gates(*, kernel_rnd: str | None = None, state: str = CENSUS_STATE, registry: str | None = None,
@@ -153,11 +190,13 @@ def path_gates(*, kernel_rnd: str | None = None, state: str = CENSUS_STATE, regi
     kr = kernel_rnd or research_snapshot()
     pol = os.path.join(kr, "autokernel", "loop", "graph_kld_policy.json")
     rec: dict = {"schema": "epyc.ak.path_gates.v1", "at": now if now is not None else time.time()}
+    reg = _registry_resolve(registry, live=run is subprocess.run)
+    rec["registry"] = {k: reg[k] for k in ("status", "commit", "path")}
     try:
         if not os.path.exists(os.path.join(kr, "autokernel", "loop", "stage_bodies.py")):
             raise RuntimeError("snapshot has no stage_bodies.py")
         r = run([sys.executable, "-s", "-B", "-c", _PATH_GATES_PY, pol], cwd=kr, capture_output=True, text=True,
-                timeout=120, env=_registry_env(registry, live=run is subprocess.run))
+                timeout=120, env=_env_for(reg))
         if r.returncode != 0:
             raise RuntimeError(f"rc={r.returncode} {(r.stderr or '').strip().splitlines()[-1:] or ''}")
         rec["report"] = json.loads((r.stdout or "").strip().splitlines()[-1])
@@ -169,7 +208,9 @@ def path_gates(*, kernel_rnd: str | None = None, state: str = CENSUS_STATE, regi
     with open(tmp, "w") as f:
         json.dump(rec, f, indent=1, sort_keys=True)
     os.replace(tmp, p)
-    return f"error {rec['error']}"[:200] if "error" in rec else f"paths={len(rec['report'])}"
+    if "error" in rec:
+        return f"error {rec['error']}"[:200]
+    return _flag_registry_failure(f"paths={len(rec['report'])}", reg)
 
 
 def inbox_status(line: str) -> str:
@@ -223,6 +264,7 @@ def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, 
     journal = os.path.join(state, "journal.md")
     if not os.path.exists(journal):
         open(journal, "w").write("# AK bandwidth census journal (deterministic; fold into loop/program.md)\n")
+    reg = _registry_resolve(registry, live=run is subprocess.run)
     r = run([sys.executable, "-s", "-B", "-m", "autokernel.loop.census_update", "--result", result_path, "--row", rid,
              "--census", census, "--program", journal, "--doc", os.path.join(state, "census-table.md"),
              "--seeds-out", os.path.join(state, "seed-stubs"),
@@ -230,8 +272,9 @@ def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, 
                  os.path.join(kr, "autokernel", "loop", "census_update.py")).read() else []),  # KEEP-stale target fallback
              *(["--merge-static-from", seed] if os.path.exists(seed) and "merge-static-from" in open(
                  os.path.join(kr, "autokernel", "loop", "census_update.py")).read() else [])],  # committed parity/time_only -> live, every run
-            cwd=kr, capture_output=True, text=True, timeout=120, env=_registry_env(registry, live=run is subprocess.run))
-    return ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
+            cwd=kr, capture_output=True, text=True, timeout=120, env=_env_for(reg))
+    last = ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
+    return _flag_registry_failure(last, reg)
 
 
 def census_inbox(rid: str, *, kernel_rnd: str | None = None, state: str = CENSUS_STATE, store: str = LOOP_STORE,
@@ -241,12 +284,13 @@ def census_inbox(rid: str, *, kernel_rnd: str | None = None, state: str = CENSUS
     kr = kernel_rnd or research_snapshot()
     if not os.path.exists(os.path.join(kr, "autokernel", "loop", "census_inbox.py")):
         return "-"
+    reg = _registry_resolve(registry, live=run is subprocess.run)
     r = run([sys.executable, "-s", "-B", "-m", "autokernel.loop.census_inbox", "--census",
              os.path.join(state, "mi210_bandwidth_census.json"), "--store", store], cwd=kr, capture_output=True,
-            text=True, timeout=120, env=_registry_env(registry, live=run is subprocess.run))
+            text=True, timeout=120, env=_env_for(reg))
     last = ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
     # a nonzero exit is never reported as the success line it may have printed before failing (it was discarded before)
-    return last if r.returncode == 0 else f"error rc={r.returncode} {last}"[:300]
+    return _flag_registry_failure(last, reg) if r.returncode == 0 else f"error rc={r.returncode} {last}"[:300]
 
 
 def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=subprocess.run,

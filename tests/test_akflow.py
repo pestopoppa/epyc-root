@@ -174,7 +174,7 @@ class RenderSmoke(unittest.TestCase):
             "".join(_extract_function(page, f) + "\n" for f in
                     ("akfEsc", "akfAge", "akfGlance", "akfPathGates", "akfClip", "akfSvg", "akfItems"))
         d["path_gates"] = {"present": True, "ungated_n": 1, "paths": [
-            {"key": "a3b|cpu", "device": "cpu", "timing": "ungated", "quality": "quality-ungated", "op_perf": "grid",
+            {"key": "a3b|cpu", "device": "cpu", "timing": "ungated", "quality": "quality-ungated", "op_perf": "floored",
              "status": "ungated+quality-ungated", "gaps": ["ungated", "quality-ungated"]}]}
         js += f"const d={json.dumps(d)};\n"
         js += ("process.stdout.write(JSON.stringify({g:akfGlance(d),s:akfSvg(d,'build'),i:akfItems(d,'build'),"
@@ -198,11 +198,11 @@ class RenderSmoke(unittest.TestCase):
 
 
 class PathGates(unittest.TestCase):
-    REP = {"27b-q8_0|mi210": {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated", "op_perf": "grid"},
+    REP = {"27b-q8_0|mi210": {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated", "op_perf": "floored"},
            "a3b-q8_0|cpu": {"status": "live", "device": "cpu", "timing": "ungated", "quality": "quality-ungated",
                             "op_perf": "ungated"},
-           "x|cpu": {"status": "planned", "device": "cpu", "timing": "cell", "quality": "quality-ungated", "op_perf": "grid"},
-           "y|cpu": {"status": "live", "device": "cpu", "timing": None, "quality": "gated", "op_perf": "grid"}}
+           "x|cpu": {"status": "planned", "device": "cpu", "timing": "cell", "quality": "quality-ungated", "op_perf": "floored"},
+           "y|cpu": {"status": "live", "device": "cpu", "timing": None, "quality": "gated", "op_perf": "floored"}}
 
     def test_per_path_status_and_node_items(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -218,6 +218,36 @@ class PathGates(unittest.TestCase):
         self.assertEqual(d["path_gates"]["ungated_n"], 3)
         self.assertEqual([i["id"] for i in d["nodes"]["op-perf"]["items"]], sorted(self.REP))
         self.assertEqual(d["nodes"]["op-perf"]["count"], 0)             # path rows are not op-perf rows
+
+    def test_only_floored_counts_as_op_perf_gated(self):
+        """N2: a grid with no floor decides nothing, so it is a gap; the legacy bare `grid` is a gap too."""
+        base = {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated"}
+        got = {v: FS.path_gate_status({**base, "op_perf": v}) for v in
+               ("floored", "grid-no-floor", "no-lane", "grid", "ungated", None, "weird")}
+        self.assertEqual((got["floored"]["status"], got["floored"]["gaps"]), ("gated", []))
+        self.assertEqual(got["grid-no-floor"]["status"], "op-perf-no-floor")
+        self.assertEqual(got["no-lane"]["status"], "op-perf-no-lane")
+        self.assertEqual(got["grid"]["status"], "op-perf-floor-unproven")     # old value: never counted as gated
+        self.assertEqual(got["ungated"]["status"], "op-perf-ungated")
+        self.assertEqual(got[None]["gaps"], ["op-perf-unknown"])
+        self.assertEqual(got["weird"]["gaps"], ["op-perf-unknown"])
+        for v in ("grid-no-floor", "no-lane", "grid"):
+            self.assertNotEqual(got[v]["status"], "gated")
+            self.assertEqual(got[v]["op_perf"], v)
+
+    def test_path_gates_counts_unfloored_paths_as_gaps(self):
+        rep = {"a|mi210": {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated", "op_perf": "grid-no-floor"},
+               "b|cpu": {"status": "live", "device": "cpu", "timing": "cell", "quality": "gated", "op_perf": "no-lane"},
+               "c|cpu": {"status": "live", "device": "cpu", "timing": "cell", "quality": "gated", "op_perf": "floored"}}
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "pg.json"
+            p.write_text(json.dumps({"at": 1.0, "report": rep, "registry": {"status": "registry-snapshot-failed"}}))
+            d = FS.build(str(Path(tmp) / "f"), str(Path(tmp) / "s"), str(Path(tmp) / "l"), now=NOW, detect=_detect,
+                         holds=os.devnull, inbox=str(Path(tmp) / "ib"), census=str(Path(tmp) / "c.json"), path_gates=str(p))
+        by = {x["key"]: x["status"] for x in d["path_gates"]["paths"]}
+        self.assertEqual(by, {"a|mi210": "op-perf-no-floor", "b|cpu": "op-perf-no-lane", "c|cpu": "gated"})
+        self.assertEqual(d["path_gates"]["ungated_n"], 2)
+        self.assertIn("registry-snapshot-failed", d["nodes"]["op-perf"]["note"])   # N9: shown, not silent
 
     def test_errored_or_unreadable_report_is_unknown(self):
         with tempfile.TemporaryDirectory() as tmp:

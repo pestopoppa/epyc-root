@@ -168,18 +168,25 @@ def ak_hold(holds: str = HOLDS) -> dict | None:
     return None
 
 
+#: op-perf gate vocabulary (research stage_bodies.coverage_report): only `floored` counts as gated. A grid with no
+#: floor can decide nothing (final-gate N2), so `grid-no-floor` and the legacy bare `grid` (which never checked a floor)
+#: are gaps, as is `no-lane`; `ungated` is the older name of "nothing".
+OP_PERF_GAPS = {"no-lane": "op-perf-no-lane", "grid-no-floor": "op-perf-no-floor", "grid": "op-perf-floor-unproven",
+                "ungated": "op-perf-ungated"}
+
+
 def path_gate_status(row: dict) -> dict:
-    """One served path's gate status from a coverage_report row: which of its gates are `cell`/`grid`/`gated`, which are
-    `ungated` / `quality-ungated`. A path is `gated` only when every gate is present; anything missing is named, never
-    folded into an "ok"."""
+    """One served path's gate status from a coverage_report row: which of its gates are `cell`/`floored`/`gated`, which are
+    `ungated` / `quality-ungated` / an op-perf gap. A path is `gated` only when every gate is present (op-perf only when
+    `floored`); anything missing is named, never folded into an "ok"."""
     timing, quality, op = row.get("timing"), row.get("quality"), row.get("op_perf")
     gaps = []
     if timing != "cell":
         gaps.append("ungated" if timing == "ungated" else "timing-unknown")
     if quality != "gated":
         gaps.append("quality-ungated" if quality == "quality-ungated" else "quality-unknown")
-    if op != "grid":
-        gaps.append("op-perf-ungated" if op == "ungated" else "op-perf-unknown")
+    if op != "floored":
+        gaps.append(OP_PERF_GAPS.get(op, "op-perf-unknown"))
     return {"status": "gated" if not gaps else "+".join(gaps), "timing": timing, "quality": quality, "op_perf": op,
             "gaps": gaps}
 
@@ -201,6 +208,7 @@ def read_path_gates(path: str) -> dict:
         row = rep[key] if isinstance(rep[key], dict) else {}
         paths.append({"key": key, "path_status": row.get("status"), "device": row.get("device"), **path_gate_status(row)})
     return {"present": True, "path": path, "at": d.get("at"), "paths": paths,
+            "registry": d.get("registry") if isinstance(d.get("registry"), dict) else None,
             "ungated_n": sum(1 for p in paths if p["gaps"])}
 
 
@@ -262,16 +270,20 @@ def build(flags: str = FLAGS, spool: str = SPOOL, lineage: str = LINEAGE, now: f
         _touch(cn, _mtime(census))
         sources["census"]["surfaces"] = len(surf)
 
-    # per-path gates (RSL-R6/R8): timing cell / ungated, quality gated / quality-ungated, op-perf grid / ungated
+    # per-path gates (RSL-R6/R8): timing cell / ungated, quality gated / quality-ungated, op-perf floored / grid-no-floor / no-lane
     pg = read_path_gates(path_gates)
-    sources["path_gates"] = {"path": path_gates, "present": pg["present"], "error": pg.get("error")}
+    sources["path_gates"] = {"path": path_gates, "present": pg["present"], "error": pg.get("error"),
+                             "registry": pg.get("registry")}
     on, pg_items = nodes["op-perf"], []   # path rows are listed after the op-perf rows; they are not counted as rows
     if pg["present"]:
         pg_items = [{"id": p["key"], "state": p["status"], "at": pg.get("at"),
                      "detail": f"timing {p['timing']} · quality {p['quality']} · op-perf {p['op_perf']}"}
                     for p in pg["paths"]]
         on["note"] = (f"{pg['ungated_n']} of {len(pg['paths'])} served path(s) have a gate gap "
-                      "(ungated / quality-ungated); counts are op-perf rows")
+                      "(ungated / quality-ungated / op-perf not floored); counts are op-perf rows")
+        reg = pg.get("registry") or {}
+        if reg.get("status") == "registry-snapshot-failed":   # N9: the report was built without a proven origin/main registry
+            on["note"] += "; registry-snapshot-failed: report not bound to orchestrator origin/main"
     else:
         on["note"] = f"per-path gate status unknown: {pg['error']}"
 

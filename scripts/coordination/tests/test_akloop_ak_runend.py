@@ -252,12 +252,70 @@ def test_inbox_outcome_is_written_where_the_hub_reads_it(tmp_path):
     assert bw_census.read_inbox_state(st / "mi210_bandwidth_census.json")["status"] == "ok"
 
 
+def _failed():
+    return {"status": AR.REGISTRY_FAILED, "path": None, "commit": None}
+
+
+def test_failed_registry_snapshot_is_named_and_no_registry_env_is_passed(tmp_path, monkeypatch):
+    """N9: a failed origin/main extract is NOT a silent fallback: the child gets no EPYC_ORCH_REGISTRY (an inherited one is
+    stripped too) and the failure is recorded on the census line and in path-gates.json."""
+    monkeypatch.setenv("EPYC_ORCH_REGISTRY", "/shared/working-tree/model_registry.yaml")
+    monkeypatch.setattr(AR, "registry_snapshot", lambda *a, **k: None)
+    assert AR._registry_resolve(None, live=True) == _failed()
+    assert "EPYC_ORCH_REGISTRY" not in AR._env_for(_failed())
+    assert AR._registry_env(None, live=True) is not None and "EPYC_ORCH_REGISTRY" not in AR._registry_env(None, live=True)
+    kr = tmp_path / "kr"
+    (kr / "autokernel" / "loop").mkdir(parents=True)
+    (kr / "autokernel" / "loop" / "census_update.py").write_text("# x\n")
+    (kr / "autokernel" / "loop" / "stage_bodies.py").write_text("# x\n")
+    res = tmp_path / "r.json"
+    res.write_text("{}")
+    st = tmp_path / "state"
+    st.mkdir()
+    (st / "mi210_bandwidth_census.json").write_text("{}")
+    seen = []
+
+    def fake(argv, **kw):
+        seen.append(kw.get("env"))
+        return type("R", (), {"stdout": "BW-CENSUS ok\n" if "census_update" in " ".join(argv) else json.dumps({"p|cpu": {}}),
+                              "stderr": "", "returncode": 0})()
+
+    monkeypatch.setattr(AR, "_registry_resolve", lambda registry, live=True: _failed())
+    line = AR.census_update("r", str(res), kernel_rnd=str(kr), state=str(st), run=fake)
+    assert line.startswith("BW-CENSUS") and AR.REGISTRY_FAILED in line     # the BW-CENSUS prefix the inbox gate keys on survives
+    assert AR.path_gates(kernel_rnd=str(kr), state=str(st), run=fake, now=1.0).endswith(f"[{AR.REGISTRY_FAILED}]")
+    assert all("EPYC_ORCH_REGISTRY" not in e for e in seen) and len(seen) == 2
+    d = json.load(open(st / "path-gates.json"))
+    assert d["registry"] == {"status": AR.REGISTRY_FAILED, "commit": None, "path": None}
+    import flow_status as FS
+    assert FS.read_path_gates(str(st / "path-gates.json"))["registry"]["status"] == AR.REGISTRY_FAILED
+
+
+def test_path_gates_records_the_registry_commit_used(tmp_path, monkeypatch):
+    snap = {"status": "snapshot", "path": "/c/e6f33a2b/model_registry.yaml", "commit": "e6f33a2b"}
+    monkeypatch.setattr(AR, "_registry_resolve", lambda registry, live=True: snap)
+    kr = tmp_path / "kr"
+    (kr / "autokernel" / "loop").mkdir(parents=True)
+    (kr / "autokernel" / "loop" / "stage_bodies.py").write_text("# x\n")
+    seen = []
+
+    def fake(argv, **kw):
+        seen.append(kw.get("env"))
+        return type("R", (), {"stdout": json.dumps({"p|cpu": {}}), "stderr": "", "returncode": 0})()
+
+    assert AR.path_gates(kernel_rnd=str(kr), state=str(tmp_path / "st"), run=fake, now=1.0) == "paths=1"
+    d = json.load(open(tmp_path / "st" / "path-gates.json"))
+    assert d["registry"]["commit"] == "e6f33a2b" and d["registry"]["status"] == "snapshot"
+    assert seen[0]["EPYC_ORCH_REGISTRY"] == "/c/e6f33a2b/model_registry.yaml"
+    assert AR.registry_commit("/mnt/x/cache/abc123/model_registry.yaml") == "abc123" and AR.registry_commit(None) is None
+
+
 def test_path_gates_report_is_written_and_failures_are_recorded(tmp_path):
     kr = tmp_path / "kr"
     (kr / "autokernel" / "loop").mkdir(parents=True)
     (kr / "autokernel" / "loop" / "stage_bodies.py").write_text("# x\n")
     st = tmp_path / "st"
-    rep = {"27b-q8_0|mi210": {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated", "op_perf": "grid"}}
+    rep = {"27b-q8_0|mi210": {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated", "op_perf": "floored"}}
     ok = lambda argv, **kw: type("R", (), {"stdout": "noise\n" + json.dumps(rep), "stderr": "", "returncode": 0})()
     assert AR.path_gates(kernel_rnd=str(kr), state=str(st), run=ok, now=7.0) == "paths=1"
     assert json.load(open(st / "path-gates.json"))["report"] == rep
