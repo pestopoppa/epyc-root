@@ -1226,7 +1226,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1987,
+          "line": 1988,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 2115,
+          "line": 2116,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2447,
+          "line": 2448,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2548,
+          "line": 2549,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 3102,
+          "line": 3103,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3240,
+          "line": 3241,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3247,
+          "line": 3248,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2364,7 +2364,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 3,
-      "closed": 295,
+      "closed": 297,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-25",
@@ -2377,7 +2377,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 330,
+      "total": 332,
       "tracks": [
         {
           "blocked": 2,
@@ -2392,7 +2392,7 @@
         },
         {
           "blocked": 1,
-          "closed": 158,
+          "closed": 160,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
