@@ -1,9 +1,9 @@
 {
  "session_id": "intake-kspec-1125",
  "started_at": "2026-11-25T00:00:00Z",
- "last_checkpoint": "2026-11-25T01:00:00Z",
- "stage": 1,
- "phase": "stage1-persisted",
+ "last_checkpoint": "2026-11-25T06:00:00Z",
+ "stage": 3,
+ "phase": "stage3-plan-drafted",
  "lane": "intake/kernels-specdec-1125 (worktree /mnt/raid0/llm/worktrees/intake-kernels-specdec-1125)",
  "owner": "research-intake subagent for workspace-f2 (Opus 5.5)",
  "urls_processed": [
@@ -99,165 +99,513 @@
   "note": "Every entry is relevance >= medium, so all 22 are recommended; under operator pre-approval they form Stage-2 wave 1.",
   "subagents": "6 haiku (low)"
  },
- "stage2_dived": [],
- "stage2b_waves": [],
+ "stage2_dived": [
+  "intake-2956",
+  "intake-2957",
+  "intake-2958",
+  "intake-2959",
+  "intake-2960",
+  "intake-2961",
+  "intake-2962",
+  "intake-2963",
+  "intake-2964",
+  "intake-2965",
+  "intake-2966",
+  "intake-2967",
+  "intake-2968",
+  "intake-2969",
+  "intake-2970",
+  "intake-2971",
+  "intake-2972",
+  "intake-2973",
+  "intake-2974",
+  "intake-2975",
+  "intake-2976",
+  "intake-2977"
+ ],
+ "stage2b_waves": [
+  {
+   "wave": 2,
+   "entries": [
+    "intake-2978",
+    "intake-2979",
+    "intake-2980",
+    "intake-2981"
+   ],
+   "selected_by": "operator pre-approval (accept every recommended)",
+   "declined_surfaced": "all sources surfaced by the wave-2 dives were recommended decline; recorded in bearing entries' dive_corrections"
+  }
+ ],
  "steering_ledger": [
   {
    "seq": 1,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "Operator steering (context for Stage 1 ranking and Stage 3 grounding, not authorization to write handoffs):",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 2,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "1. llama.cpp PR #32921 (open): MMQ stream-k makes column tile jt the slowest index so blocks sharing x rows co-run and share L2; NVIDIA-only, dense, J==128, more tiles than blocks; AMD keeps old order. GB10 Qwen3.8 27B Q8_0 pp2048 1.162x @ub256, 1.257x @ub512; single q8_0 8192x512 MUL_MAT 1.96x; mean KLD 0.00070 vs master. Not on gfx90a as-is.\n   Value: gfx90a MMQ prefill/verify for 27B Q8_0; compare with the stream-k notes filed for #32837 in the KB.\n   Extract: the performance principles themselves \u2014 data layout, tiling, wavefront mapping, LDS use, fusion, quant packing and dispatch rules.\n   Check: whether each principle works on the MI210 (gfx90a, CDNA2, wave64, 64 KB LDS, no FP8) or the Zen 5 EPYC CPU (AVX-512, NPS4).\n   Principles: tile-walk order for L2 reuse of x row bands; compile-time order template vs runtime branch (8% loss reported); when tiles > CUs on 104-CU gfx90a.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 3,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "2. Shifter Quantization (arXiv 2611.33080): appends/shifts shared bits to rebuild native-width integer operands so INT8/INT4 MMA spans the whole dot product. SQ2/SHI2 2.71-3.77x llama.cpp Q2_K 4096-token prefill, 6.6-7.8% lower WikiText-2 KL; SQ4 1.43-2.47x NInfer groupwise prefill, 24-40% lower KL; SQ8 +27.4% batch-one prefill, 72.7% lower KL vs vLLM online FP8. RTX 5090, Qwen3.8-27B shapes. Not gfx90a/EPYC-tested.\n   Value: INF-80 quantization-and-low-bit; Q8-W8-GEMV-1 int8-MFMA lane; KLD gates.\n   Extract/Check: as above.\n   Principles: shared-bit packing vs per-group scales; mapping to v_mfma i8 and AVX-512 VNNI; coalescing of packed rows (see the design-4 diagnosis).",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 4,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "3. Below the Stopwatch (arXiv 2611.31460): checks claimed perf mechanisms of 1,343 agent PRs with counters and LTTng traces; of 82 analyzed, 32 faster, 28 no clear change, 22 slower; claimed signal in 34; 42 changed output; kernel signals 1.7x more often for the claimed mechanism, instruction count 1.15x. Hardware-agnostic method.\n   Value: AutoKernel keep gate / akloop failclass (mechanism-witness rows); mirrors the Q8-W8 \"coalescing, not instruction count\" lesson.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 5,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "4. TACPU (arXiv 2610.38809 v3): tiered cache blocking + in-kernel task dispatch for causal prefill attention on CPU; up to 2.01x over PyTorch SDPA, FlexAttention, SGLang; SGLang TTFT up to 1.74x on Llama-3.1-8B. Intel Xeon 6767P (AMX + AVX-512) plus a client platform; not EPYC-tested.\n   Value: INF-70 cpu decode roofline / XFER-4b prefill A/B; NUMA placement (INF-45).\n   Extract/Check: as above.\n   Principles: L1/L2/L3 tile sizing; dispatcher vs static split under NPS4; AMX-GEMM/AVX-512-softmax overlap has no Zen 5 equivalent.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 6,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "5. LLM roofline arithmetic-intensity estimation (arXiv 2611.32975): three LLMs, 179 combinations, four NVIDIA/AMD GPUs incl. MI300X; compiler artifacts raise within-1.20x AI estimates from 8-14% to 26-32%; bound class correct 78-92%; FLOPs within tolerance 59-88% vs device-memory traffic 36-40%; agentic analysis +6.5 pp for one model at 3.6x cost. Not gfx90a.\n   Value: VERIFY-KERNEL-ROOFLINE-CENSUS-1 and AutoKernel census planner (pre-ranking surfaces before rocprofv3 rows).\n   Extract/Check: as above.\n   Principles: ISA/compiler-artifact prompting; cache-dependent traffic as main error source.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 7,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "6. MXFP4 PTQ composability (arXiv 2611.32873): six LLMs, MXFP6/MXFP4/NVFP4; recipes are format-dependent; MXFP4 gains from rotation + error-correcting PTQ; Midmax calibration-free scale selection reduces power-of-two scale clipping; MXFP6 act + MXFP4 weights matches/exceeds in-house BF16 on Llama-3.1-8B. Built for Blackwell/CDNA4 FP4; no FP4 on gfx90a.\n   Value: offline requant choice for E8M0-scaled GGUF types, judged by KLD gates; INF-80.\n   Extract/Check: as above.\n   Principles: Midmax scale rule; Hadamard rotation granularity; INT8/FP16 emulation cost.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 8,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "7. llama.cpp PR #32867 (open): HIP DPP path for warp_prefix_inclusive_sum; CUMSUM f32 ~15-19% faster on MI50 (gfx906) at large ne, up to ~24% on RDNA4 (gfx1200). Not measured on gfx90a.\n   Value: GDN/cumsum paths (gdn-state-fwd, AK-BW-GDN-GATE-FOLD); cheap port candidate.\n   Extract/Check: as above.\n   Principles: DPP row_shr/row_bcast scan vs shuffle; wave64 cross-row steps.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 9,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "8. Pando (arXiv 2611.32269): dynamic draft trees on parallel (DFlash/DSpark) drafters with noise-coupled pruning (target noise drawn before drafting; lossless, no retraining); acceptance length up to +8.4% on Qwen3-8B; 16-node tree 5.3x speedup, 4.2x energy reduction vs AR on an edge device, 25% faster than DSpark's chain, 27% faster than an EAGLE-3 tree; ridge-point roofline normalization. Algorithmic; applies to MI210 and EPYC.\n   Value: INF-50 DFlash2 + DTREE device-side acceptance; DF2 lineup acceptance floor.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 10,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "9. Draft calibration (arXiv 2611.33111): open drafters are underconfident vs target; draft temperature scaling gives up to ~10% acceptance length at almost no cost; Dirichlet scaling generally does not beat it. Hardware-agnostic.\n   Value: SPEC-DISTS-TRUNC; Q38FN drafter acceptance (0.795 -> 0.751 under ROWEXACT).",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 11,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "10. LEGOSpec / DFlux (arXiv 2611.33004): composable draft design; DFlux (conv SWA-GQA hybrid backbone, Residual Corrector, hierarchical supervision) up to +13.7% acceptance length, +34.7% long context across Qwen/Gemma; training throughput up to +79%. Hardware-agnostic.\n   Value: DFlash2 drafter training recipe (INF-50).",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 12,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "11. GramDelta (arXiv 2611.32807): incremental constrained decoding under runtime grammar updates; median first-seen update latency 10.7-11.5x lower; added TPOT over unconstrained cut 53.1-81.9% vs reconstruction. CPU-side mask logic.\n   Value: SPEC-GRAM-JSON-1; llguidance default flip (INF-83 D2).",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 13,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "12. System-prompt date as hidden variable (arXiv 2611.31254): two plausible dates flip a median 6.6% of items across six models/four benchmarks; one-day rerun flips about as many as a batch-size change; GCG-searched dates cost Llama-3.x up to 36.5 points; judge verdicts shift; 15-32% of reproduced jailbreaks undone. None of 11 eval stacks pin the date.\n   Value: eval tower / OFFICIAL-SAMPLING recipes / LLM-as-judge rigor (pin + log date).",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 14,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "13. RECAP (arXiv 2611.31258): RL for agent context compaction via behavior-distortion objective (summary reward + post-compaction self-distillation); Qwen3.5-4B +4.6% BrowseComp-plus, +4.3% SWE-bench Verified over task-reward-only RL.\n   Value: orchestrator context compaction; local Qwen post-training.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 15,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "14. Reasoning-effort training, OPD vs RL (arXiv 2611.32131): length-penalized RL cuts AIME25 thinking 70% with no accuracy loss but collapses tiers jointly; multi-teacher OPD: low/medium use 58%/43% fewer thinking tokens than high, high +3.1 points over reference across 33 benchmarks; one token-level KL anchor on the high tier separates tiers within a single RL stage.\n   Value: thinking budgets / routing-escalation tiers for local Qwen.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 16,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "15. Limits of Top-K attention (arXiv 2611.32324): independent ranking can be unboundedly worse than joint support (133.2x KL in a 4-position construction); exact-singleton Top-4 leaves >=10% improvement in 55/60, 49/60, 60/60 cases (SmolLM2, Gemma, Qwen); SwapCert one-swap audit catches 157/164.\n   Value: INDEXER-TOPK-CPU (INF-82), KV compaction/eviction gates.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   },
   {
    "seq": 17,
    "stage": 1,
    "ts": "2026-11-25T00:00:00Z",
    "verbatim": "Automatically accept every recommended deep dive and literature expansion for up to four Stage 2 sweeps.",
-   "disposition": null,
+   "disposition": "context-only",
    "plan_ref": null,
-   "reason": null
+   "reason": "Recorded verbatim at Stage 1 as context for ranking and grounding (not filing authority); final disposition is carried in the Stage-3 plan reconciliation."
   }
  ],
- "actionable_ledger": [],
- "plan_file": null,
+ "actionable_ledger": [
+  {
+   "ledger_id": "KS-K1-1",
+   "source": "intake-2956 dive K1 (tiles vs 104 blocks and ntx decide stream-k regime)",
+   "action": "File the dense 27B tile census (tiles and ntx per tensor at M=36 and hypothetical ub256/512, plus routing) under AK-MMQ-SK2 step 2 to close its remaining gap",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K1-2",
+   "source": "intake-2956 dive K1 (column-outer reuse needs >=2 column tiles per row band)",
+   "action": "Record that PR #32921 is a no-op on served gfx90a MMQ (ntx=1 at M=36, Q8_0 n>128 on rocBLAS, J==128 absent on CDNA)",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K1-3",
+   "source": "intake-2956 dive K1 (tile-walk order for L2 reuse of x row bands)",
+   "action": "If Q8_0 dense prefill ever routes to MMQ on gfx90a, port the column-outer order with a CDNA J=64 gate as the first cheap lever, wall-clock vetoed",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K1-4",
+   "source": "intake-2971 dive K1 (tile-walk order for x row reuse)",
+   "action": "Note that iqk prefill on EPYC is already x-stationary (per-thread row band, 64-row steps over all Ny); the npt<=16 Ny-split branch reads small-tensor x bands from two possibly cross-NUMA threads",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K2-1",
+   "source": "intake-2957 dive K2 (shared-bit/per-channel packing vs per-group float scales)",
+   "action": "we should add an offline arm to QUANT-ROT-1 comparing per-output-channel INT8 after signed H512 (SQ8 recipe) against Q8_0 per-32 FP16 scales on real 27B rows (weight/output error, dKLD if cheap), no kernel",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K2-2",
+   "source": "intake-2957 dive K2 (mapping to v_mfma i8; per-block scale inside K loop)",
+   "action": "we could record the VALU epilogue share (C.x*dA*dB, mmq-vec-dot.cuh:L197) vs MFMA busy when a counter row next profiles MMQ Q8_0 at ne11 9-128 on CDNA2",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K2-3",
+   "source": "intake-2957 dive K2 (mapping to v_mfma i8 and VNNI)",
+   "action": "record that on gfx90a int8 MFMA (16x16x16i8) has the same per-instruction K as f16 MFMA, so an SQ8-style prefill gain is limited to removing the dequant-to-f16 pass and halving operand bytes",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K2-4",
+   "source": "intake-2957 dive K2 (INT4 products; bandwidth-bound decode)",
+   "action": "record that SHI does not transfer to MI210 (no INT4 MFMA), CPU K-quant dots already use SHI-style integer correction products, and SQ2/SQ4 matter only if EXL3-X0b reopens",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K3-1",
+   "source": "intake-2962 dive K3 (DPP row_shr + row_bcast wave64 scan)",
+   "action": "Record that warp_prefix_inclusive_sum has one caller and CUMSUM is absent from served fused-GDN graphs; do not port the scan",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K3-2",
+   "source": "intake-2962 dive K3 (DPP-based warp_reduce_sum)",
+   "action": "Op-level screen of the PR DPP warp_reduce_sum (incl. lane0-only tail) in the stock GDN recurrent kernel at GDN-VERIFY-BASE shapes; stop-on-futility if reduction share under 3 percent or gain under A/A p95",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K3-5",
+   "source": "intake-2962 dive K3 (DPP row_shr + row_bcast wave64 scan)",
+   "action": "Check whether backend sampling is enabled on any served GPU role; if so run one CUMSUM [vocab,1] op on gfx90a before judging the PR",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K3-3",
+   "source": "intake-2960 dive K3 (Cache-dependent traffic is the dominant estimate error)",
+   "action": "Add a deterministic plausibility check to census post-processing: flag kernel rows whose FETCH_SIZE+WRITE_SIZE-derived GB/s exceeds the measured 1.498 TB/s peak or whose bytes differ from the analytic footprint (tensor bytes x launches) by more than 2x; no LLM",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K3-4",
+   "source": "intake-2960 dive K3 (ISA + instruction-mix prompting for static AI estimates)",
+   "action": "Do not build an LLM/ISA roofline pre-ranker for the census; if the AutoKernel planner wants a prior, use analytic bytes and measured time shares and gate any LLM prior on five-run agreement",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K4-2",
+   "source": "intake-2959 dive K4 (L3/L2 blocking)",
+   "action": "measure prefill attention share at 32K-128K on C21 before any port",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K4-3",
+   "source": "intake-2959 dive K4 (LPT dispatcher, L2 q-group)",
+   "action": "reverse FA chunk order (expensive late rows first), then consider q-group loop inversion with 1 MB L2 sizing",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-K4-1",
+   "source": "intake-2961 dive K4 (Midmax scale rule)",
+   "action": "prototype Midmax in an experimental quantize_row_mxfp4_ref and KLD A/B vs floor when an MXFP4 requant is queued",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S1-1",
+   "source": "intake-2963 dive S1 (parallel-drafter tree vs chain)",
+   "action": "We could replay a Pando-style full best-first tree (k-expansion per level, prune to N by cumulative lattice prob) against the current sibling-of-main builder on the existing 27B DFlash2 capture at T 0.3/1.0 and W 8/12/16 with V1 RRS verify",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S1-3",
+   "source": "intake-2963 dive S1 (noise coupling)",
+   "action": "We should record that noise-coupled or draw-informed tree shapes are lossless only with the target-sample walk; with RRS the tree must be blind to the verifier randomness",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S1-4",
+   "source": "intake-2963 dive S1 (noise coupling)",
+   "action": "We should not build noise coupling on DFlash2 or MTP trees",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S1-2",
+   "source": "intake-2973 dive S1 (node budget vs ridge point)",
+   "action": "We could compute the x03 bound (mu, mu2 -> E[X] at P 8/12/16) per served T from the DICE capture target top-64 logits and compare it with measured tau",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S1-5",
+   "source": "intake-2974 dive S1 (tree verify cost on hybrid GDN models)",
+   "action": "We could check whether the UBTree Qwen3.8-27B selector or checkpoint is released and whether it drops into our DFlash2 lattice path (same low-rank bigram form, precomputed codebooks)",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S1-6",
+   "source": "intake-2974 dive S1 (parallel-drafter tree vs chain)",
+   "action": "At np>1 we should keep load-adaptive tree budgets that shrink to the chain, never a fixed large tree",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S2-1",
+   "source": "intake-2964 dive S2 (draft T_d != T_t is lossless but its gain depends on the target sampler regime)",
+   "action": "cite SPEC-DRAFT-SHARPEN as the in-house answer for intake-2964; do not re-run a 27B DFlash2 draft-temperature sweep",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S2-2",
+   "source": "intake-2964 dive S2 (a lever with an offline replay path is measured before it is built)",
+   "action": "run an offline CPU replay of A3B MTP draft softening/sharpening from the mtp_top top-10 logits in the A3B dice.v1 capture; stop on futility if best-T_d gain CI-upper < 1.02; only on a keep build a served MTP q in C21",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S2-3",
+   "source": "intake-2964 dive S2 (name the lever by its mechanism)",
+   "action": "record that SPEC-DISTS-TRUNC means dists capped to draft length, and the vocabulary truncation lever is the trunc arm of SPEC-DRAFT-SHARPEN",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S2-4",
+   "source": "intake-2975 dive S2 (stop growing the tree when marginal survival falls below the verify price)",
+   "action": "attach the edge-acceptance calibration and price-ladder idea to the DTREE-GDN-BATCH reopen criteria",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S2-5",
+   "source": "intake-2976 dive S2 (spend drafting compute only where verification will use it)",
+   "action": "no action at np<=2; revisit only if we serve DFlash2 at np>=8 or a drafter share above 25% of the round",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S3-1",
+   "source": "intake-2965 dive S3 (consume-upstream-checkpoints)",
+   "action": "Monitor for a released DFlux/LEGOSpec checkpoint matching a served target (Qwen3.8-27B or Qwen3.8-Flash-Next); if one appears, add a DFlash2-vs-DFlux paired acceptance probe at served T on the MI210 under the DF2-CARD-CONFORMANCE-1 recipe.",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S3-2",
+   "source": "intake-2965 dive S3 (recipe-over-architecture)",
+   "action": "Fold the training-recipe findings (hybrid SWA(512)x4+GQA backbone for long context; hierarchical KL(0.2)+D-PAL loss; 1.4M T=1 self-generated samples, Muon) into the DF2-FT-1 design notes as options, not as a plan.",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S3-3",
+   "source": "intake-2965 dive S3 (estimate-port-cost)",
+   "action": "Port-cost note for a future DFlux drafter in llama.cpp: C21 already has dflash conv kernel and selector rank/top_k keys (src/models/dflash.cpp:L141-L144 @ 98ff8a4) and per-layer SWA (src/models/dflash-dspark41.cpp:L164-L332 @ 98ff8a4); missing pieces are per-layer window=512 hybrid layout and the R-Corrector (E-/E+ codebooks, top-16 x top-16 table) as a selector variant.",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S3-4",
+   "source": "intake-2966 dive S3 (static-vs-dynamic-grammar-separation)",
+   "action": "No change to SPEC-GRAM-JSON-1 or the INF-83 D2 flip; add a one-line note that GramDelta (intake-2966) addresses mid-request grammar growth only, which no served role does, and its static K=0 table shows no llguidance-vs-XGrammar steady-state difference.",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-S3-5",
+   "source": "intake-2966 dive S3 (trigger-gated-monitor)",
+   "action": "Re-open only if a role starts discovering tools or schemas progressively inside one request (BFCL-like growing tool list); then price per-update llguidance matcher rebuild (about 50 ms on their GPU harness) against our turn count.",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M1-1",
+   "source": "intake-2958 dive M1 (claimed mechanism must move a named counter; instruction count does not discriminate)",
+   "action": "we should add a claimed-mechanism witness (counter name, direction, A/A band) to AK row specs and ak_row_lint, downgrading KEEP_CANDIDATE to INCONCLUSIVE when it does not move",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M1-2",
+   "source": "intake-2958 dive M1 (retrospective discrimination check)",
+   "action": "we could scan the stored keep and drop rows for stated mechanism versus a counter that would have tested it (zero compute)",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M1-5",
+   "source": "intake-2977 dive M1 (re-execute claims; check behaviour on untested inputs)",
+   "action": "no change; our identity and re-measure gates already cover this lesson",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M1-3",
+   "source": "intake-2967 dive M1 (pin and log the date alongside seed and decoding)",
+   "action": "we should fail the template review gate and registry validation when a served template reads strftime_now, date_string or datetime without a pinned date_string, and record template_date_dependent in eval provenance",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M1-4",
+   "source": "intake-2967 dive M1 (check provider-side injection)",
+   "action": "we should run a zero-compute probe asking the Claude judge path for today date with an empty system prompt",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M1-6",
+   "source": "intake-2972 dive M1 (pin and log the date)",
+   "action": "no extra action beyond KS-M1-perfclaims-date-3 and -4",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M2-1",
+   "source": "intake-2968 dive M2 (behavior preservation as compaction grader)",
+   "action": "build an offline distortion-score grader (summary-vs-full-context sampled-token KL on the same local Qwen) and validate it against TOC-CMP-4 blocked actions with a no-summary arm",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M2-2",
+   "source": "intake-2969 dive M2 (prompt effort tiers must be certified per model and per format)",
+   "action": "add the three printed effort instruction texts and Qwen3.8 native low/medium/xhigh as E-2 rungs and measure tier ordering on REPL/agentic tasks as well as GPQA",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M2-3",
+   "source": "intake-2970 dive M2 (label-free dense-reference KL as quality metric)",
+   "action": "gate any future approximate indexer top-k on teacher-forced KL-vs-exact plus the m^2/2 top-1 certificate beside greedy identity",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M2-4",
+   "source": "intake-2970 dive M2 (KL beside accuracy)",
+   "action": "add dense-reference KL as a second metric in EA-POOL-SCREEN arms",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-M2-5",
+   "source": "intake-2970 dive M2 (one-swap audit)",
+   "action": "use SwapCert as a KV-eviction quality gate",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2A-1",
+   "source": "intake-2978 dive W2A (overflow-aware scale choice)",
+   "action": "add OAS/Midmax or an MSE choice of {e,e+1} to the experimental MXFP4 quantizer and judge by KLD, when a BF16 to MXFP4 requant is scheduled",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2A-2",
+   "source": "intake-2978 dive W2A (overflow-aware scale choice)",
+   "action": "cite OAS and Midmax as one rule; never carry +2.8 as weight-only",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2A-3",
+   "source": "intake-2978 dive W2A (macro block scaling)",
+   "action": "do not pursue MBS or block-16 MXFP4 types now",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2A-4",
+   "source": "intake-2979 dive W2A (required evidence fields)",
+   "action": "consider an ak_row_lint check that a row claiming a mechanism records a counter or A/A key, and an evidence-type enum with an M0 (unnamed gain) catch",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2A-5",
+   "source": "intake-2979 dive W2A (claim vs evidence)",
+   "action": "cite intake-2979 for reporting statistics only",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2B-3",
+   "source": "intake-2980 dive W2B (perturbed-retrieval certification as a kernel change)",
+   "action": "Do not build the certified-sampling kernel now; revisit only if a per-call error guarantee is required",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2B-1",
+   "source": "intake-2981 dive W2B (TV/KL tail-mass identity as a gate)",
+   "action": "Add an offline attention-mass-captured (tau) and tau*||mu_tail-mu_head|| diagnostic to the evidence for any future approximate or lower-precision Q38FN indexer; exact-set greedy identity stays the pass criterion",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2B-2",
+   "source": "intake-2981 dive W2B (TV bound as offline gate for eviction)",
+   "action": "Log tau on held-out queries beside the EA-POOL-SCREEN task scores to separate scorer resolution from eviction mechanics",
+   "terminal_mapping": null
+  },
+  {
+   "ledger_id": "KS-W2B-4",
+   "source": "intake-2981 dive W2B (output-error identity vs joint support)",
+   "action": "Use the head/tail value-mean gap from one dense pass as a first-order screen before paying K(M-K) partial forwards for SwapCert-style joint-support audits",
+   "terminal_mapping": null
+  }
+ ],
+ "plan_file": "research/deep-dives/intake-kspec-1125/stage3-plan.md",
  "lane_head": "f19b9028f73319a2a69964974e73cd77f68dea41",
  "operator_preapproval": "accept every recommended deep dive and literature expansion, up to four Stage 2 sweeps; handoff/index changes wait for plan approval",
  "previous_session": {
@@ -14990,5 +15338,50 @@
    "digest": "research/deep-dives/intake-digests/2026-11-24-ids-2942-2955.md",
    "validators": "validate_intake.sh exit 0; --plan-file/--session-file exit 0; index_state.py --check exit 0; all five briefs compile fresh"
   }
+ },
+ "stage2_dispatch": {
+  "wave1": {
+   "opus": [
+    "K1-streamk-order",
+    "K2-shifter-quant",
+    "S1-pando-trees"
+   ],
+   "sonnet": [
+    "K3-dpp-roofline",
+    "K4-tacpu-mxfp4",
+    "S2-draft-calibration",
+    "S3-legospec-gramdelta",
+    "M1-perfclaims-date",
+    "M2-recap-effort-topk"
+   ]
+  },
+  "wave2": {
+   "sonnet": [
+    "W2A-mxfp4scale-agentprs",
+    "W2B-sparse-attn-certs"
+   ]
+  },
+  "brief": "/mnt/raid0/llm/tmp/dive-kspec-1125/stage2/BRIEF.md",
+  "lane_head": "f19b9028f73319a2a69964974e73cd77f68dea41",
+  "preflight": "dive_preflight.py OK"
+ },
+ "second_reader": {
+  "model": "haiku",
+  "items": 160,
+  "yes": 87,
+  "partial": 67,
+  "no": 6,
+  "dropped_anchors": {
+   "intake-2960": 3,
+   "intake-2962": 2,
+   "intake-2965": 1
+  },
+  "output": "/mnt/raid0/llm/tmp/dive-kspec-1125/stage2/second_reader_out.tsv"
+ },
+ "closeout": {
+  "gate_closed": true,
+  "sweeps_used": 2,
+  "sweeps_permitted": 4,
+  "reason": "every wave-2 surfaced source was recommended decline, so no third sweep"
  }
 }
