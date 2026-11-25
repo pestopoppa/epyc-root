@@ -1936,6 +1936,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - Monitor (intake-ak-1124 M6, operator-approved 2026-11-24, no checkbox): If KV-EVICT-COST-2 records a break-even length for the compressor/agent split on some device: probe a concurrent CPU-quarter compressor with the GPU agent for latency (intake-2875).
 - [ ] **Q8IP-DET2-GATE-1** [inference] Gate DET2, a cheaper deterministic V5 q8ip half-tile reduction, against served atomics
       · done when: row ak-c22-q8ipdet2-gate-gpu-20261125 files KEEP / FAIL_PERF_REGRESS / FAIL_* with mismatch counts and ms/round CI
+      · stop: stop-on-answer when the gate row files PASS_DET2_NOREGRESS / FAIL_DET2_PERF_REGRESS / FAIL_DET2_NONDET; stop-on-futility on FUTILITY_CANDIDATE_BELOW_FLOOR or FUTILITY_HARNESS_*; gate-class = futility-only
       · gate: ak-c22-q8ipdet2-gate-gpu-20261125        · inputs: `/mnt/raid0/llm/tmp/q8ip-second-ctx-mechanism-20261125.md`
       · owner: autokernel
 
