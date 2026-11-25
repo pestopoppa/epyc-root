@@ -186,3 +186,14 @@ def test_server_env_knob_is_refused_by_rehearsal_and_publish(env, monkeypatch):
     row = P.Row(sp)
     row.code["job.py"] = "SPEC = " + repr(gspec)
     assert [f[1] for f in P.check_witness_scope(row, {})] == ["SERVER-ENV-KNOB"]
+
+
+def test_ticked_box_and_missing_model_both_reported_by_publish(env, monkeypatch):
+    """knee-batch-r4: a ticked box AND no model identity on the same box -> one run, both items (no stop at the first)."""
+    p = env["repo"] / "handoffs" / "active" / "akr.md"
+    p.write_text(p.read_text() + "- [x] **AKR-3** [inference] AK gate: measure ms_per_round; est 4200 s; stop-on-answer "
+                 "when CI lower > 1.01; stop-on-futility on A/A > 0.02\n      · done when: verdict filed\n")
+    refusals = PR.rehearse({"handoff_task": "akr.md:AKR-3", "owner": "autokernel"}, str(env["flags"]))
+    box = [it for st, it, _ in refusals if st == "box"]
+    assert any("not open" in x for x in box) and any("identity incomplete" in x for x in box), box
+    assert {st for st, _, _ in refusals} >= {"box", "placement"}     # later stages ran too
