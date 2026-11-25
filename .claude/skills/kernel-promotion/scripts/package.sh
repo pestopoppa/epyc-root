@@ -25,8 +25,12 @@
 #   registry_dry_run   the diff applied to a COPY of the master in a scratch dir, then
 #                      `stack_change_pipeline.py update` + `check` on that copy; must be `pass`
 # The registry logic lives in the orchestrator (scripts/registry/serving_config_registry.py);
-# EPYC_ORCH (default /mnt/raid0/llm/epyc-orchestrator) and EPYC_ORCH_PY pick the checkout and its
-# interpreter. Without --master-registry the master is research origin/main. The live registry is
+# EPYC_ORCH and EPYC_ORCH_PY pick the checkout and its interpreter. EPYC_ORCH defaults to a FRESH
+# READ-ONLY EXTRACT of orchestrator origin/main (`git archive` into a temp dir, removed on exit,
+# commit printed), never the live clone, whose working tree may hold uncommitted or stale registry
+# code (defect 2 of the 2026-11-24 wiring audit). The extract has no venv, so the interpreter
+# defaults to the live clone's (EPYC_ORCH_LIVE, default /mnt/raid0/llm/epyc-orchestrator). Setting
+# EPYC_ORCH uses that tree as given. Without --master-registry the master is research origin/main. The live registry is
 # never written: step 8 applies the signed diff; this script only emits and rehearses it.
 #
 # It never moves a symlink, cuts a branch or edits a verifier. That is step 7, after the
@@ -50,8 +54,28 @@ while [ $# -gt 0 ]; do
 done
 [ -n "$CHECK" ] || [ -n "$CAND" ] || { echo "FAIL: pass --candidate <sha> or --check <file>"; exit 2; }
 
-ORCH="${EPYC_ORCH:-/mnt/raid0/llm/epyc-orchestrator}"
-ORCH_PY="${EPYC_ORCH_PY:-$ORCH/.venv/bin/python}"
+ORCH_LIVE="${EPYC_ORCH_LIVE:-/mnt/raid0/llm/epyc-orchestrator}"
+if [ -n "${EPYC_ORCH:-}" ]; then
+  ORCH="$EPYC_ORCH"
+  ORCH_PY="${EPYC_ORCH_PY:-$ORCH/.venv/bin/python}"
+else
+  ORCH=""
+  ORCH_PY="${EPYC_ORCH_PY:-$ORCH_LIVE/.venv/bin/python}"
+  # only the serving-config assemble path runs orchestrator code; --check and a bare assemble need no extract
+  if [ -n "$SERVCFG" ] && [ -z "$CHECK" ]; then
+    git -C "$ORCH_LIVE" fetch -q origin main \
+      || echo "WARNING: fetch of orchestrator origin/main failed; using the local origin/main ref" >&2
+    ORCH_SHA="$(git -C "$ORCH_LIVE" rev-parse --verify -q 'origin/main^{commit}')" \
+      || { echo "FAIL: orchestrator origin/main not resolvable in $ORCH_LIVE"; exit 1; }
+    ORCH="$(mktemp -d "${TMPDIR:-/tmp}/package-orch-XXXXXXXX")"
+    trap 'rm -rf "$ORCH"' EXIT
+    git -C "$ORCH_LIVE" archive "$ORCH_SHA" | tar -x -C "$ORCH" \
+      || { echo "FAIL: git archive of orchestrator $ORCH_SHA failed"; exit 1; }
+    chmod -R a-w "$ORCH"   # read-only extract: nothing the dry-run does can land in it
+    trap 'chmod -R u+w "$ORCH"; rm -rf "$ORCH"' EXIT
+    echo "orchestrator registry code: fresh read-only extract of origin/main $ORCH_SHA" >&2
+  fi
+fi
 GATES="$GATES" CAND="$CAND" OUT="$OUT" EVID="$EVID" CHECK="$CHECK" \
 SERVCFG="$SERVCFG" MASTER="$MASTER" NODRY="$NODRY" ORCH="$ORCH" ORCH_PY="$ORCH_PY" \
 ROOT="$(cd "$HERE/../../../.." && pwd)" \
