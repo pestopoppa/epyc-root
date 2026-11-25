@@ -192,6 +192,26 @@ def ack(flags, key, by=None, note=None):
     return True
 
 
+def is_filed(flags, rid):
+    return bool(rid) and os.path.exists(os.path.join(flags, "filing-done", str(rid) + ".FILED"))
+
+
+def ack_filed(flags, rid, by="auto-ack-filed", log=print):
+    """Ack every open inbox alert of row `rid` (its FILED receipt resolves them). Best effort: never raises. -> keys acked."""
+    done = []
+    try:
+        acks = acked_keys(flags)
+        for r in read_inbox(flags):
+            k = str(r.get("key"))
+            if str(r.get("row_id") or "") == str(rid) and k not in acks and ack(flags, k, by=by, note="auto-ack: row FILED"):
+                acks.add(k)
+                done.append(k)
+                log(f"AUTO-ACK-FILED {k} {rid}")
+    except Exception as e:  # noqa: BLE001
+        _log(f"ack_filed {rid}: {type(e).__name__}: {e}")
+    return done
+
+
 def withdrawn_no_run(flags, rid):
     """True when rid was withdrawn before its smoke ever ran: _withdraw_smoke_queued wrote grants/<id>.ended (rc=75) and
     moved the marker to dryrun/<id>/.withdrawn/, with no .complete and no PASS/FAIL record. No evidence exists, so the row
@@ -274,6 +294,9 @@ def escalate_stale(flags, route, now=None, after_s=None, log=print):
     now = dt.datetime.now(dt.timezone.utc) if now is None else now
     done = []
     for r in read_inbox(flags, unacked=True):
+        if is_filed(flags, r.get("row_id")):
+            ack_filed(flags, r.get("row_id"), log=log)
+            continue
         if r.get("severity") != "critical":
             continue
         try:
@@ -589,6 +612,9 @@ def push_tick(flags, now=None, deliver=None, log=print):
         except (OSError, ValueError):
             continue
         key = str(m.get("key") or "")
+        if is_filed(flags, m.get("row_id")):
+            ack_filed(flags, m.get("row_id"), log=log)
+            continue
         if (not m.get("pushed_at") or m.get("escalated") or m.get("owner") == PUSH_ESCALATE_TO or key.startswith("pesc-")
                 or key in acked or key.removeprefix("esc-") in acked or now - float(m["pushed_at"]) < PUSH_ESCALATE_S):
             continue

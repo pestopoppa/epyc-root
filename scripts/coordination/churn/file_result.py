@@ -390,6 +390,16 @@ def correct_filed(flags, rid, verdict, by, reason, dry_run=False):
 
 
 
+def ack_row_alerts(flags, rid):
+    """After a successful FILED write, ack the row's open rowflow alerts. Best effort: a failure never fails filing."""
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(HERE), "rowflow"))
+        import notify as _nt
+        _nt.ack_filed(flags, rid, by="file_result")
+    except Exception as e:  # noqa: BLE001
+        print(f"WARN auto-ack of {rid} alerts failed: {type(e).__name__}: {e}", file=sys.stderr)
+
+
 def _default_repo():
     """F5 review S2: config/repo reads go through toolroot.resolve (hub view first), never a stale checkout's copy."""
     own = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
@@ -639,6 +649,7 @@ def main(argv=None):
         summary += f" answer={rec['answer']}"
     if not filing.write_filed(flags, rid, summary, rec):
         print(f"NOOP {rid}: filed concurrently by another filer"); return 0
+    ack_row_alerts(flags, rid)
     if not a.no_reclaim:
         run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
     return 0
