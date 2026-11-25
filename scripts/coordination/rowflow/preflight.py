@@ -9,6 +9,8 @@ cached per store SHA256SUMS digest under <flags>/preflight-cache/).
 WARN FIRST: every check reports a raw level (FAIL = the row would fail it, WARN = advisory). A raw FAIL only refuses
 (publish) or holds the grant (allocator) when PREFLIGHT_ENFORCE[check] is True. All start False. Flip one only when
 `rowflow.py preflight --report` (or `preflight.py --report`) shows zero currently queued rows fail it.
+`rowflow.py preflight --rollout` summarizes the remaining warn-only checks. Freeze rule changes during AK pushes;
+zero failures indicates readiness, not authorization to change a switch during a freeze.
 --report counts only really-queued rows (report_scope: not ended/superseded/STOP-held; excluded rows listed with the reason) and
 grandfathers PUBLISH_ONLY checks (witness_log, witness_decl) on rows whose smoke PASSED. witness_log/witness_decl enforced 2026-11-24.
 
@@ -48,7 +50,7 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
    row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
 
-Usage: preflight.py <row_dir|spec.json> [...]   |   preflight.py --report [--flags DIR] [--json]
+Usage: preflight.py <row_dir|spec.json> [...]   |   preflight.py --report|--rollout [--flags DIR] [--json]
 """
 import ast
 import glob
@@ -1665,16 +1667,34 @@ def report(flags, as_json=False, out=print, queued=None):
     return per
 
 
+def rule_rollout_report(flags, as_json=False, out=print, queued=None):
+    """Count queued raw failures per warn-only check, using report's scope and grandfathering."""
+    per = report(flags, as_json=True, out=lambda _text: None, queued=queued)
+    counts = {c: len(per[c]["fail"]) for c in CHECKS if not PREFLIGHT_ENFORCE.get(c, False)}
+    if as_json:
+        out(json.dumps(counts, indent=1))
+    else:
+        out("PREFLIGHT ROLLOUT (rule changes frozen during AK pushes)")
+        for c, count in counts.items():
+            out(f"{c}: failing={count}" + (" READY TO ENFORCE" if count == 0 else ""))
+    return counts
+
+
 def main(argv=None):
     import argparse
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("rows", nargs="*")
-    ap.add_argument("--report", action="store_true")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--report", action="store_true")
+    mode.add_argument("--rollout", action="store_true")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--flags", default=None)
     a = ap.parse_args(argv)
     import rowflow as rf
     flags = a.flags or rf.FLAGS
+    if a.rollout:
+        rule_rollout_report(flags, as_json=a.json)
+        return 0
     if a.report:
         report(flags, as_json=a.json)
         return 0

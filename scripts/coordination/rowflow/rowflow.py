@@ -11499,7 +11499,9 @@ def main(argv=None):
     s.add_argument("--changed", nargs="*", default=[]); s.add_argument("--allow-open-grants", action="store_true")
     s = sub.add_parser("preflight", help="D9 deterministic preflight: --report = per check, how many queued rows would FAIL "
                                          "it and which (the evidence for flipping preflight.PREFLIGHT_ENFORCE)")
-    s.add_argument("--report", action="store_true"); s.add_argument("--json", action="store_true"); s.add_argument("rows", nargs="*")
+    mode = s.add_mutually_exclusive_group()
+    mode.add_argument("--report", action="store_true"); mode.add_argument("--rollout", action="store_true", help="counts for warn-only checks")
+    s.add_argument("--json", action="store_true"); s.add_argument("rows", nargs="*")
     sub.add_parser("legacy-grants", help="ids of open grants whose poller still reads the live engine path (one per line)")
     sub.add_parser("gpu-batch", help="run the queued GPU smokes now if the GPU is free (any session; the allocator does the same every tick)")
     s = sub.add_parser("alerts", help="read the inference mailbox (<flags>/notify/inbox/inference.jsonl); --ack <key> marks one handled")
@@ -11626,7 +11628,7 @@ def main(argv=None):
         if a.cmd == "preflight":
             sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
             import preflight as PF
-            return PF.main((["--report"] if a.report or not a.rows else []) + (["--json"] if a.json else [])
+            return PF.main((["--rollout"] if a.rollout else ["--report"] if a.report or not a.rows else []) + (["--json"] if a.json else [])
                            + ["--flags", a.flags] + list(a.rows))
         if a.cmd == "list":
             allrows = rows(a.flags)
