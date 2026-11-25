@@ -11,6 +11,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "rowflow"))
 import rowflow as rf  # noqa: E402
@@ -128,6 +129,8 @@ class ArmingFailuresPark(Fixture):
         self.assertEqual(rf.status(self.flags, YARN)["state"], "grantable")
 
 
+# Replay the historical arming behavior independently of the later GPU-queue policy.
+@mock.patch.object(rf, "HOST_AFTER_GPU_QUEUE", False)
 class IncidentReplay(Fixture):
     def setUp(self):
         super().setUp()
@@ -206,6 +209,7 @@ class IdleViolation(Fixture):
             self.assertEqual(rf.idle_violation(self.flags, set(rf.REGIONS), [], [], 1000, log=self.lines.append), 0)
         self.assertFalse(self.lines)
 
+    @mock.patch.object(rf, "HOST_AFTER_GPU_QUEUE", False)
     def test_allocate_raises_it_on_the_pre_fix_deadlock(self):
         # pre-fix behaviour (a failing row still holds the drain and is never parked) -> the alert fires on tick 2.
         # 2026-11-03 item 7: the same-tick re-plan would grant the quiet row after yarn fails; pin it off here so the
@@ -223,6 +227,7 @@ class IdleViolation(Fixture):
             rf.placeable, rf.arm_fails_since_pass = saved_place, saved_af
         self.assertTrue([l for l in self.lines if l.startswith("IDLE-VIOLATION ALERT 2 ticks")])
 
+    @mock.patch.object(rf, "HOST_AFTER_GPU_QUEUE", False)
     def test_same_tick_replan_grants_the_next_row_when_the_first_fails_to_arm(self):
         self.row(YARN, 7, GPU_OPT, "gpu", lane="gpu", regions="mi210_0,88-91")
         self.row("quiet", 30, QUIET_OPT, "quiet-host")
