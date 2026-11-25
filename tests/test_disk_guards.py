@@ -1,5 +1,6 @@
 """Tests for scripts/safety worktree_reaper / pending_refs / build_ttl / trash_reap_tick (operator 2026-11-21 disk guards).
 Real temp git repos with a local bare 'origin'; never touches live repos or compute-flags."""
+import importlib.util
 import os
 import subprocess
 import sys
@@ -10,11 +11,15 @@ import unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SAFETY = os.path.join(ROOT, "scripts", "safety")
 sys.path.insert(0, os.path.join(ROOT, "scripts", "system"))
-sys.path.insert(0, SAFETY)   # scripts/safety/worktree_reaper.py must win over scripts/system/worktree_reaper.py
+sys.path.insert(0, SAFETY)
 import pending_refs  # noqa: E402
-import worktree_reaper as wr  # noqa: E402
 import unregistered_worktrees as uw  # noqa: E402
 import build_ttl  # noqa: E402
+
+spec = importlib.util.spec_from_file_location("safety_worktree_reaper", os.path.join(SAFETY, "worktree_reaper.py"))
+wr = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = wr
+spec.loader.exec_module(wr)
 
 ENV = dict(os.environ, GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t", GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@t")
 

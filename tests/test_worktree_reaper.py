@@ -15,17 +15,18 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/system"))
 
 
-def _load(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / f"scripts/system/{name}.py")
+def _load(name, module_name=None):
+    module_name = module_name or name
+    spec = importlib.util.spec_from_file_location(module_name, ROOT / f"scripts/system/{name}.py")
     mod = importlib.util.module_from_spec(spec)
-    sys.modules[name] = mod
+    sys.modules[module_name] = mod
     spec.loader.exec_module(mod)
     return mod
 
 
 wg = _load("worktree_gate")
 ws = _load("worktree_salvage")
-wr = _load("worktree_reaper")
+wr = _load("worktree_reaper", "system_worktree_reaper")
 
 ENV = dict(GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t", GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@t")
 
