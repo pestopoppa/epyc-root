@@ -2034,6 +2034,8 @@ def main(argv=None):
     ap.add_argument("--regions", help="with --run-smoke: the cpus the keeper assigned")
     ap.add_argument("--rerun", action="store_true", help="publish even though the engine's --complete-cmd already exits 0 "
                     "(the preflight otherwise refuses: nothing to do)")
+    ap.add_argument("--smoke-budget-by", help="R6: operator override of the GPU smoke budget (3/family/UTC day); logged")
+    ap.add_argument("--reason", help="with --smoke-budget-by: why")
     a = ap.parse_args(argv)
     if a.run_smoke:
         rf.need(a.regions, "--run-smoke needs --regions")
@@ -2075,6 +2077,9 @@ def main(argv=None):
         publish_rehearsal(spec, a.flags)
         preflight(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)   # pipeline audit 2026-11-10 #4: before anything is published or queued
         row_preflight(spec, a.flags)   # D9-ack 2026-11-24: deterministic preflight, warn-first
+        if a.smoke_budget_by:
+            import family_strikes as fs
+            fs.override_budget(a.flags, fs.stem_of(spec.get("id")), a.smoke_budget_by, a.reason)
         row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now, identity_spec=identity_spec)
         if row:
             print(rf.published_line(row, a.flags))
