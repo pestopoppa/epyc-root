@@ -1352,6 +1352,16 @@ def superseded_by(flags, rid, index=None):
     return (superseded_index(flags) if index is None else index).get(rid, "")
 
 
+def mark_superseded(flags, st, index=None):
+    """DISPLAY ONLY (list/status/queue_status): a grantable/armed row the allocator refuses (superseded_by) reads state
+    'superseded', not 'grantable'. Reuses superseded_by - the allocator's own rule; status() itself is unchanged."""
+    if st.get("state") in ("grantable", "armed"):
+        by = superseded_by(flags, st.get("id"), index)
+        if by:
+            st = dict(st, state="superseded", reason=f"superseded by {by} (SUPERSEDED-BLOCK): never granted; was {st['state']}")
+    return st
+
+
 def published_line(row, flags):
     return (f"PUBLISHED {row['id']} lane={row['lane']} regions={row['regions']} window_s={row['window_s']} min_window_s={row['min_window_s']} "
             f"book_s={row.get('book_s')} resumable={str(bool(row.get('resumable'))).lower()} gib={row['gib']} ports={row['ports']} result={row['result_path']} ({row['result_format']}) -> {ready_path(flags, row['id'])}")
@@ -11935,7 +11945,7 @@ def main(argv=None):
                 print(f"UNPARKED lineage {a.id} at {rec['at']}; its earlier failed dry runs no longer count; rows in it re-enter the keeper next tick")
             return 0
         if a.cmd == "status":
-            st = status(a.flags, a.id, util=measure_util())
+            st = mark_superseded(a.flags, status(a.flags, a.id, util=measure_util()))
             print(json.dumps(st, indent=1) if a.json else status_text(st))
             return 0 if st["state"] != "unknown" else 2
         if a.cmd == "preflight":
@@ -11954,8 +11964,9 @@ def main(argv=None):
             for n, r in enumerate(sorted(claim_requests(a.flags), key=lambda r: (float(r.get("rank") or CLAIM_RANK_DEFAULT),
                                                                                  float(r.get("requested_at") or 0))), 1):
                 print(f"claim-request   #{n} rank={r.get('rank', 0):g} {r['id']} cpus={r['cpus']} {r['minutes']} min since {r.get('requested_iso')}")
+            sup_idx = superseded_index(a.flags)
             for rid in sorted(allrows, key=lambda r: row_rank(allrows[r])):
-                st = status(a.flags, rid, allrows, util=util)
+                st = mark_superseded(a.flags, status(a.flags, rid, allrows, util=util), sup_idx)
                 u = " ".join(f"{r}={hostutil.pct(v)}" for r, v in (st.get("util") or {}).items())
                 print(f"{st['state']:15} {allrows[rid]['lane']:3} rank={allrows[rid].get('priority_rank')} {rid}  "
                       f"{(u + '  ') if u else ''}{st.get('blocker') or st.get('reason', '')[:100]}")

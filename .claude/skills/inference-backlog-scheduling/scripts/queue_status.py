@@ -181,9 +181,10 @@ def classify(flags, owner=None, now=None):
     now = now or datetime.now(timezone.utc)
     G = os.path.join(flags, "grants")
     out = {k: [] for k in ("RUNNING", "GRANTABLE", "SMOKE-QUEUED", "NEEDS-REPUBLISH", "FAILED", "PARKED", "BLOCKED",
-                           "NOT-A-ROW")}
+                           "NOT-A-ROW", "SUPERSEDED")}
     rf = _rowflow()
     allrows = rf.rows(flags)
+    sup_idx = rf.superseded_index(flags)
     keeper = keeper_state(flags)
     busy = keeper.get("parsed", {}).get("busy", [])
     gpu_busy = [b for b in busy if b.startswith("gpu")]
@@ -223,6 +224,9 @@ def classify(flags, owner=None, now=None):
             if isinstance(m.get("quiet_guard_regions"), list):
                 rec["quiet_guard"] = [t for t in m["quiet_guard_regions"] if isinstance(t, str)]
             out["RUNNING"].append(rec)
+        elif rf.mark_superseded(flags, st, sup_idx)["state"] == "superseded":
+            rec["reason"] = f"superseded by {rf.superseded_by(flags, rid, sup_idx)} (SUPERSEDED-BLOCK): the allocator never grants it"
+            out["SUPERSEDED"].append(rec)
         elif rf.runnable(st):
             rec["gpu_wait"] = (f"waiting on GPU ({', '.join(gpu_busy)})" if gpu_busy else None) if _wants_gpu(m) else None
             out["GRANTABLE"].append(rec)
@@ -402,7 +406,7 @@ def main(argv=None) -> int:
                    "BACKLOG": r["SMOKE-QUEUED"] + r["NEEDS-REPUBLISH"] + r["FAILED"] + r["PARKED"] + r["BLOCKED"],
                    "SMOKE-QUEUED": r["SMOKE-QUEUED"], "NEEDS-REPUBLISH": r["NEEDS-REPUBLISH"],
                    "NOT-A-ROW": r["NOT-A-ROW"], "FAILED": r["FAILED"], "PARKED": r["PARKED"],
-                   "BLOCKED": r["BLOCKED"]}
+                   "BLOCKED": r["BLOCKED"], "SUPERSEDED": r["SUPERSEDED"]}
         json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "buckets": buckets,
                    "idle": r["keeper"]["idle_why"], "snapshot": r["keeper"]["snapshot"],
                    "unfiled_ended": r["UNFILED-ENDED"],
@@ -427,7 +431,8 @@ def main(argv=None) -> int:
         print(f"  {ow(x):<18} {x['id']:<44} shape={x.get('shape')} rank={x.get('rank')}{x.get('reranks') or ''}"
               + (f"\n    GPU: {x['gpu_wait']}" if x.get("gpu_wait") else ""))
     for title, key in (("SMOKE-QUEUED", "SMOKE-QUEUED"), ("NEEDS-REPUBLISH", "NEEDS-REPUBLISH"), ("FAILED", "FAILED"),
-                       ("NOT-A-ROW (keeper ignores)", "NOT-A-ROW")):
+                       ("NOT-A-ROW (keeper ignores)", "NOT-A-ROW"),
+                       ("SUPERSEDED (never granted)", "SUPERSEDED")):
         print(f"\n{title} ({len(r[key])})")
         for x in sorted(r[key], key=lambda x: x["id"]):
             print(f"  {ow(x):<18} {x['id']:<44} {x.get('reason','')}")

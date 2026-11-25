@@ -252,6 +252,14 @@ class SupersedeBlock(unittest.TestCase):
         self.assertEqual(len(self.lines), 1)   # idempotent
         self.assertEqual(rf.superseded_by(self.flags, "r2"), "")
 
+    def test_display_marks_superseded(self):
+        rf.supersede_block(self.flags, {"id": "r2", "supersedes": "r1"}, log=self.lines.append)
+        g = rf.mark_superseded(self.flags, {"id": "r1", "state": "grantable", "reason": "x"})
+        self.assertEqual(g["state"], "superseded")
+        self.assertIn("r2", g["reason"])
+        self.assertEqual(rf.mark_superseded(self.flags, {"id": "r1", "state": "running"})["state"], "running")
+        self.assertEqual(rf.mark_superseded(self.flags, {"id": "r3", "state": "grantable"})["state"], "grantable")
+
     def test_unsmoked_successor_visible(self):
         d = os.path.join(self.flags, "dryrun", "r2")
         os.makedirs(d)
