@@ -2815,7 +2815,7 @@ Proposed as **prose only** — deliberately not written into `coordination/infer
 <!-- gate: none -->
 
 ### Backlog
-- [ ] **EV-DATE-PIN-1** [non-inference] Make the system-prompt date a recorded, pinnable eval input: template_provenance.py (epyc-orchestrator scripts/validate/template_provenance.py @ faa783c7) records template_reads_date true when the effective template references strftime_now, date_string or a datetime value, and registry validation warns on any served or eval role whose template reads the date without a pinned date_string in its request kwargs; llama-server fills date_string from the wall clock (common/chat.cpp L2573-L2581 @ 98ff8a4) and a request can override it through chat_template_kwargs (L2747-L2750), and two plausible dates flip a median 6.6% of items with none of 11 eval stacks pinning it (intake-2967, intake-2972)
+- [x] **EV-DATE-PIN-1** [non-inference] Make the system-prompt date a recorded, pinnable eval input: template_provenance.py (epyc-orchestrator scripts/validate/template_provenance.py @ faa783c7) records template_reads_date true when the effective template references strftime_now, date_string or a datetime value, and registry validation warns on any served or eval role whose template reads the date without a pinned date_string in its request kwargs; llama-server fills date_string from the wall clock (common/chat.cpp L2573-L2581 @ 98ff8a4) and a request can override it through chat_template_kwargs (L2747-L2750), and two plausible dates flip a median 6.6% of items with none of 11 eval stacks pinning it (intake-2967, intake-2972) — (orch 20b75c14; no served role reads the date today; pin key server_mode.<role>.chat_template_kwargs.date_string) [no-belief: code change, unit-tested, no measurement]
       · done when: pytest tests/unit/test_template_provenance_bytes.py in epyc-orchestrator passes on its main and covers a date-reading template (template_reads_date true) and a date-free template (false), and the template plan rows for every served role in the registry carry template_reads_date
       · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
 
@@ -3226,23 +3226,26 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [x] **RPK-NEAR-BAND** [non-inference] Define the review decision band so review_majority_k fans out only on near-band reviews, as orchestration/review_plane_knobs.yaml describes; today k applies to every review — (orch 9de4356f: band = |first-pass score - 0.5| <= review_near_band_width, default 0.5 = every review; midpoint 0.5 is assumed, no score threshold exists in code) [no-belief: code wiring, unit-tested, no measurement]
       · done when: a unit test shows k>1 runs extra passes only for a review inside the defined band, and a far-band review runs one pass
       · gate: RPK-READER
-- [ ] **HF-TOOL-PIN** [non-inference] Pin orchestrator tool/REPL subprocesses (child_lane, code_search, external_access, file_mutation, fence_kernel) to a tool CPU set disjoint from serving roles, behind default-off tool_process_cpu_pin (rowflow lesson 1)
+- [x] **HF-TOOL-PIN** [non-inference] Pin orchestrator tool/REPL subprocesses (child_lane, code_search, external_access, file_mutation, fence_kernel) to a tool CPU set disjoint from serving roles, behind default-off tool_process_cpu_pin (rowflow lesson 1) — (orch f3585904; default 84-87 overlaps NUMA_FULL and NUMA_HALF_B shapes, so startup warns, strict refuse unused) [no-belief: code change, unit-tested, no measurement]
       · done when: a unit test shows child processes get the tool affinity with the flag on, unchanged with it off, and an overlap with a serving cpu_shape is refused
       · gate: none
-- [ ] **HF-CRASH-CLASS** [non-inference] Classify a dropped connection as candidate_crash when the role server log shows GGML_ASSERT or a segfault, behind default-off server_log_crash_class (rowflow lesson 5, rowflow 1a5e58bc0)
+- [x] **HF-CRASH-CLASS** [non-inference] Classify a dropped connection as candidate_crash when the role server log shows GGML_ASSERT or a segfault, behind default-off server_log_crash_class (rowflow lesson 5, rowflow 1a5e58bc0) — (orch d7f3e9fc; candidate_crash is a task_failed disposition) [no-belief: code change, unit-tested, no measurement]
       · done when: a unit test shows an assert in the server log yields candidate_crash and a clean log stays infra, unchanged with the flag off
       · gate: none
-- [ ] **HF-DEPLOY-ANCESTRY** [non-inference] Refuse an API reload to a code ref that is not a descendant of the last-deployed ref, and refuse revert_code_mutation over a moved file, behind default-off deploy_ancestry_guard (rowflow lesson 8)
+- [x] **HF-DEPLOY-ANCESTRY** [non-inference] Refuse an API reload to a code ref that is not a descendant of the last-deployed ref, and refuse revert_code_mutation over a moved file, behind default-off deploy_ancestry_guard (rowflow lesson 8) — (orch 6d943788; deployed ref recorded at logs/deployed_code_ref.json even flag-off) [no-belief: code change, unit-tested, no measurement]
       · done when: unit tests show an older ref is refused unless --allow-rollback, and a moved-file revert is refused, unchanged with the flag off
       · gate: none
-- [ ] **HF-AP-WAKE** [non-inference] Push autopilot health-degraded, smoke-fail and consecutive-failure alerts to a configured owning session with dedupe and rate limit, behind default-off autopilot_alert_push (rowflow lesson 2, rowflow ca79760b7)
+- [x] **HF-AP-WAKE** [non-inference] Push autopilot health-degraded, smoke-fail and consecutive-failure alerts to a configured owning session with dedupe and rate limit, behind default-off autopilot_alert_push (rowflow lesson 2, rowflow ca79760b7) — (orch aecca193 + 8142f68a; sender roster id autopilot, row validated by the real session_bus append on a temp bus; smoke alert exported, no detection site exists) [no-belief: code change, unit-tested, no measurement]
       · done when: a unit test shows one alert per degraded transition, a deduped repeat, and nothing with the flag off
       · gate: none
-- [ ] **HF-PROGRESS-RETRY** [non-inference] Do not charge autopilot retry caps (multitier per-tier attempts, AP55 seed rerun, consecutive_failures blacklist) for an attempt that made progress, behind default-off progress_aware_retry_cap (rowflow lesson 3, rowflow 603fd7099)
+- [x] **HF-PROGRESS-RETRY** [non-inference] Do not charge autopilot retry caps (multitier per-tier attempts, AP55 seed rerun, consecutive_failures blacklist) for an attempt that made progress, behind default-off progress_aware_retry_cap (rowflow lesson 3, rowflow 603fd7099) — (orch 73efa200 + e1de6dc5; exempt only incomplete attempts that scored new qids; AP55 seed rerun and final_t1_attempts stay charged, no signal) [no-belief: code change, unit-tested, no measurement]
       · done when: a unit test shows a progressing attempt is not charged and a non-progressing one is, unchanged with the flag off
       · gate: none
-- [ ] **HF-GPU-DRAIN-INVERSION** [non-inference] Check whether the GPU window executor fixed 600 s drain lets a low-priority holder block a higher-priority window, and add a priority-aware yield if so (rowflow lesson 4, rowflow aab494157)
+- [x] **HF-GPU-DRAIN-INVERSION** [non-inference] Check whether the GPU window executor fixed 600 s drain lets a low-priority holder block a higher-priority window, and add a priority-aware yield if so (rowflow lesson 4, rowflow aab494157) — (no gap: gpu_window_executor has no priority or queue, refuses fail-fast at :208-210, AK is the only holder, drain delays only the requester) [no-belief: code read, no measurement]
       · done when: a finding with file:line is recorded, and if a gap exists a unit test shows a higher-priority request preempts a low-priority drain
+      · gate: none
+- [ ] **HF-TEST-ORDER-DEP** [non-inference] Make tests/integration/test_graph_harness_replay.py and tests/test_config_consolidation.py::TestTimeoutsDefaults pass in shared pytest sessions, not only alone (suspected cached get_config() tmp_dir and registry-timeout fallback to 90)
+      · done when: both pass inside the mixed -k feature/flags selection run, and the cause is named in the commit
       · gate: none
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
