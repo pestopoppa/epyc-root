@@ -61,6 +61,28 @@ AGENT = "pipeline-mgmt"
 WRAPUP_SLUG = "codex-dispatch"
 BRIEF_OK = ("unverified", "fresh", "drift", "stale")     # a brief file exists for this ID (none / orphaned do not count)
 _OPDEC = re.compile(r"operator[- ]decision", re.I)
+# A sandboxed Codex lane cannot produce LIVE observation. One list; matched word-bounded, case-insensitive.
+LIVE_OBSERVATION_PATTERNS = (
+    r"soak", r"canary", r"live", r"queued rows?", r"in production",
+    r"over (?:\d+|a|an) (?:days?|hours?|weeks?)", r"\d+ (?:shadow )?(?:days?|hours?|weeks?)",
+    r"[≥>]=?\s*\d+ (?:iterations?|runs?)", r"observed", r"keeper log shows", r"a week", r"nightly", r"campaign",
+)
+_LIVE_RE = [(p, re.compile(rf"\b(?:{p})\b", re.I)) for p in LIVE_OBSERVATION_PATTERNS]
+# the done-when IS a test command (starts with one); prose that merely names pytest does not count
+_PYTEST_CMD = re.compile(r"^\s*`?(?:(?:nice|taskset|python3?|orch-py\.sh|env|\S+=\S+|-\S+|\d[\d,-]*)\s+)*(?:-m\s+)?pytest\b", re.I)
+
+
+def live_observation_match(rec: dict) -> str | None:
+    """The pattern that marks this box as needing live observation, or None. A literal pytest command in the
+    done-when means the acceptance is a test run, so it is never flagged."""
+    dw = str(rec.get("done_when") or "")
+    if _PYTEST_CMD.search(dw):
+        return None
+    hay = f"{rec.get('text') or ''} {dw}"
+    for pat, rx in _LIVE_RE:
+        if rx.search(hay):
+            return pat
+    return None
 _TEST_LINE = re.compile(r"^\s*TEST:\s*(.+?)\s*$", re.M)
 _WRAP = re.compile(r"^(?:nice\s+-n\s+-?\d+|taskset\s+-c\s+[\d,-]+|ionice\s+-c\s*\d+|env\s+\w+=\S+|\w+=\S+)\s+")
 
@@ -161,6 +183,9 @@ def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_sta
         return "no-brief"
     if _OPDEC.search(" ".join(str(rec.get(k) or "") for k in ("text", "done_when", "class"))):
         return "operator-decision"
+    live = live_observation_match(rec)
+    if live:
+        return f"needs-live-observation:{live}"
     if bid in done_ids:
         return "attempted-before"
     if base_state is not None:

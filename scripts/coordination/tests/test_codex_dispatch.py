@@ -119,6 +119,29 @@ def test_eligibility_filter(env, kw, why):
     assert CX.codex_skip(rec("BX-1"), env["root"]) is None
 
 
+LIVE_DONE_WHENS = {
+    "PM-REPLAN-C-SOAK": 'a soak report shows 7 shadow days meeting all six criteria of docs/design/rowflow-replanning-scheduler.md section 11, and rowflow.py on origin/main has REPLAN_MODE = "enforce" with the live keeper start time after that deploy',
+    "TF-R8G-REFUSAL-HINT": "a test shows a denied worker shell command returns text naming orch-py.sh -m pytest, orch-py.sh -c and rm/mv of untracked lane files, and the next canary's events show that text; code on origin/main",
+    "PM-SMOKE-ENFORCE-REENABLE": "rowflow.py on origin/main has SMOKE_MEASURE_ENFORCE = True and is deployed live with zero queued rows failing SMOKE-NO-MEASURE",
+}
+
+
+@pytest.mark.parametrize("bid", sorted(LIVE_DONE_WHENS))
+def test_live_observation_skipped(env, bid):
+    why = CX.codex_skip(rec("BX-1", done_when=LIVE_DONE_WHENS[bid]), env["root"])
+    assert why and why.startswith("needs-live-observation:")
+
+
+def test_live_observation_names_pattern_word_bounded_case_insensitive(env):
+    assert CX.codex_skip(rec("BX-1", done_when="A SOAK passes"), env["root"]) == "needs-live-observation:soak"
+    assert CX.codex_skip(rec("BX-1", done_when="the alive-check module is renamed"), env["root"]) is None
+
+
+def test_pytest_done_when_not_skipped(env):
+    dw = "nice -n 19 python3 -m pytest scripts/x/tests/test_y.py passes against the live fixture"
+    assert CX.codex_skip(rec("BX-1", done_when=dw), env["root"]) is None
+
+
 def test_no_brief_file_and_attempted_and_ticked(env):
     assert CX.codex_skip(rec("BX-9"), env["root"]) == "no-brief"                # brief state ok, file missing
     assert CX.codex_skip(rec("BX-1"), env["root"], {"BX-1"}) == "attempted-before"
