@@ -279,6 +279,14 @@ def validate_spec(spec):
             if bad:
                 errs.append(f"correctness ({c['kind']}): unknown key(s) {bad}; allowed "
                             f"{sorted(CORRECTNESS_KEYS['common'] | CORRECTNESS_KEYS[c['kind']])}")
+        if c.get("kind") == "identity" and c.get("n_prompts") is not None:
+            n = c["n_prompts"]
+            if type(n) is not int or n < 1:
+                errs.append("correctness identity: n_prompts must be a positive integer")
+            else:
+                available = identity_prompt_count(spec, c)
+                if n > available:
+                    errs.append(identity_prompt_error(n, available))
         if c.get("kind") == "selftest_bin":
             try:
                 if re.compile(str(c.get("mismatch_rx") or "")).groups < 1:
@@ -945,12 +953,29 @@ def atomic_json(path, obj):
 
 
 # ---------------------------------------------------------------------------------------------------- workload
+def identity_prompt_count(spec, c):
+    if c.get("prompts"):
+        return len(c["prompts"])
+    w = spec.get("workload") or {}
+    if w.get("prompts"):
+        return len(w["prompts"])
+    return len(w.get("offsets") or [0]) if w.get("input") else 0
+
+
+def identity_prompt_error(n, available):
+    return (f"correctness identity: n_prompts={n} exceeds available prompts ({available}); "
+            f"FIX: set n_prompts <= {available}")
+
+
 def identity_prompts(spec, row_dir):
     c = corr_of(spec, "c-id")
+    n = c.get("n_prompts")
+    available = identity_prompt_count(spec, c)
+    if n is not None and type(n) is int and n > available:
+        raise SpecError(identity_prompt_error(n, available))
     if c.get("prompts"):
         return list(c["prompts"])
     ps = workload_prompts(spec, row_dir) if row_dir else list((spec.get("workload") or {}).get("prompts") or [])
-    n = c.get("n_prompts")
     return ps[:n] if n else ps
 
 

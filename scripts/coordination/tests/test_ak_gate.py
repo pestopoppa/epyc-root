@@ -149,6 +149,26 @@ def test_spec_validation_names_every_defect():
     assert G.validate_spec(spec())
 
 
+@pytest.mark.parametrize("source", ["workload", "offsets", "identity"])
+def test_identity_prompt_count_validation(source, tmp_path):
+    c = {"kind": "identity", "n_prompts": 6}
+    w = {"prompts": ["a", "b", "c", "d"]}
+    if source == "offsets":
+        w = {"input": "input.txt", "offsets": [0, 1, 2, 3]}
+        (tmp_path / "input.txt").write_text("abcdef")
+    elif source == "identity":
+        c["prompts"] = ["a", "b", "c", "d"]
+    sp = spec(workload=w, correctness=[c])
+    message = r"n_prompts=6 exceeds available prompts \(4\); FIX: set n_prompts <= 4"
+    with pytest.raises(G.SpecError, match=message):
+        G.validate_spec(sp)
+    with pytest.raises(G.SpecError, match=message):
+        G.identity_prompts(sp, str(tmp_path))
+    c["n_prompts"] = 4
+    assert G.validate_spec(sp)
+    assert len(G.identity_prompts(sp, str(tmp_path))) == 4
+
+
 # ------------------------------------------------------------------------------------------------ order / A/A / decide
 def test_abba_order_balances_positions():
     two = spec(arms={"OFF": {}, "ON": {"GGML_HIP_Q8MC": "1"}}, keep={"threshold": 1.0, "n_blocks": 4, "aa_max": None})
@@ -229,6 +249,7 @@ def identity_spec(tmp_path, **c):
     b = fake_bin(tmp_path, "test-dflash-fake", "fake_identity.py")
     sp = spec(knobs={"LLAMA_DFLASH_DEV_INJECT": {"marker": INJ, "level": 4}},
               arms={"OFF": {}, "OFF2": {}, "ON": {"LLAMA_DFLASH_DEV_INJECT": "1"}})
+    sp["workload"]["prompts"] = ["hello there", "second prompt"]
     sp["correctness"] = dict({"kind": "identity", "mode": "cmd", "argv": [b, "--prompt", "{PROMPT_INDEX}"], "n_prompts": 2},
                              **c)
     sp["server"]["env"] = {"FAKE_MARKERS": json.dumps({"LLAMA_DFLASH_DEV_INJECT": INJ}),
