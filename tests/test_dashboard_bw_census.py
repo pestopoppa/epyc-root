@@ -15,7 +15,7 @@ from dashboard import bw_census, panels  # noqa: E402
 from dashboard import server as S  # noqa: E402
 
 FIXTURE = {
-    "schema": "x", "floor_gbps": 1000, "target_gbps": 1200, "ceiling_gbps": 1500,
+    "schema": "x", "floor_gbps": 1000, "target_gbps": 1200, "ceiling_gbps": 1638,
     "cpu": {"flag_frac": 0.75, "target_frac": 0.8,
             "ceiling_gbps": {"half-48t": 259.8}, "ceiling_source": {}},
     "records": {
@@ -53,6 +53,14 @@ class CensusTests(unittest.TestCase):
         p.write_text("")
         os.utime(p, (mtime, mtime))
 
+    def test_lanes_sort_served_then_candidate_then_not_served(self):
+        doc = {"records": {
+            "ns": {"model": "27b", "kernel_class": "vk_dense_q8wv", "gbps": 400.0, "recoverable_ms_per_round": 9.0, "lane": "not_served"},
+            "ca": {"model": "a3b", "kernel_class": "router", "gbps": 18.0, "recoverable_ms_per_round": 5.0, "lane": "candidate"},
+            "sv": {"model": "27b", "kernel_class": "ffn", "gbps": 1100.0, "recoverable_ms_per_round": 1.0}}}
+        mi = bw_census.shape_rows(doc)["mi210"]
+        self.assertEqual([(r["id"], r["lane"]) for r in mi], [("sv", "served"), ("ca", "candidate"), ("ns", "not_served")])
+
     def test_both_tables_render_sorted(self):
         now = time.time()
         self._write(now - 60)
@@ -61,8 +69,8 @@ class CensusTests(unittest.TestCase):
         mi = d["tables"]["mi210"]
         self.assertEqual([r["id"] for r in mi], ["g2", "g1"])  # recoverable ms desc
         self.assertEqual(mi[1]["gap_gbps"], -100.0)
-        self.assertEqual(mi[1]["ceiling_gbps"], 1500)
-        self.assertAlmostEqual(mi[1]["frac_of_ceiling"], 0.6)
+        self.assertEqual(mi[1]["ceiling_gbps"], 1638)
+        self.assertAlmostEqual(mi[1]["frac_of_ceiling"], 900 / 1638, places=4)
         self.assertTrue(mi[1]["trend"].endswith("↑"))
         self.assertIsNone(mi[0]["share_of_round"])
         cpu = d["tables"]["cpu"]

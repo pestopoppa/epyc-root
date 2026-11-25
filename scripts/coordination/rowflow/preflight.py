@@ -630,7 +630,7 @@ def check_store(row, ctx):
         real = store_root(root)
         if not store_manifest(real):
             out.append(("FAIL", "STORE-NO-SUMS", f"{root} has no SHA256SUMS"))
-        else:
+        elif not ctx.get("paths_only"):
             bad = verify_store(real, ctx.get("flags"))
             if bad:
                 out.append(("FAIL", "STORE-SUMS", f"{root}: {bad[0]}" + (f" (+{len(bad) - 1} more)" if len(bad) > 1 else "")))
