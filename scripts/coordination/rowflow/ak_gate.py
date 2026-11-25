@@ -34,6 +34,7 @@ Process management: only processes this module started (captured Popen handles) 
 ak_row_harness.kill_tree. No quiet-host guard here (GPU gate rows); a CPU timing gate declares requires_quiet_host.
 """
 import hashlib
+import concurrent.futures
 import json
 import math
 import os
@@ -298,6 +299,39 @@ def validate_spec(spec):
     for side, m in (spec.get("verdict_map") or {}).items():
         if side not in ("PASS", "FAIL") or not isinstance(m, dict):
             errs.append(f"verdict_map side {side!r}: want {{PASS|FAIL: {{native verdict (prefix): name}}}}")
+    def check_sampler(value, label):
+        if not isinstance(value, dict):
+            errs.append(f"{label}: sampler must be a dict")
+            return
+        for key, val in value.items():
+            if key not in ("temperature", "top_k", "top_p", "min_p") or isinstance(val, bool) or not isinstance(val, (int, float)) or not math.isfinite(val) or val < 0 or (key in ("top_p", "min_p") and val > 1) or (key == "top_k" and not isinstance(val, int)):
+                errs.append(f"{label}: invalid sampler {key}={val!r}")
+    samplers = spec.get("sampler", {})
+    for sm in (samplers if isinstance(samplers, list) else [samplers]):
+        check_sampler(sm, "spec")
+    if isinstance(samplers, list) and not samplers:
+        errs.append("spec sampler list must not be empty")
+    if "seed_base" in spec and (isinstance(spec["seed_base"], bool) or not isinstance(spec["seed_base"], int) or not 0 <= spec["seed_base"] <= 2147483647):
+        errs.append("seed_base must be an integer in 0..2147483647")
+    declared_units = spec.get("units", [])
+    if not isinstance(declared_units, list):
+        errs.append("units must be a list")
+        declared_units = []
+    for u in declared_units:
+        if not isinstance(u, dict) or u.get("kind") != "load":
+            errs.append("units: only kind load is supported")
+            continue
+        if "sampler" in u:
+            check_sampler(u["sampler"], "load unit")
+        if not u.get("arms") or any(a not in arms for a in u["arms"]):
+            errs.append("load unit arms must name declared arms")
+        for key in ("blocks", "concurrency"):
+            if key in u and (type(u[key]) is not int or u[key] < 1):
+                errs.append(f"load unit {key} must be a positive integer")
+        if u.get("metric", "ms_per_round") not in METRICS:
+            errs.append("load unit metric must name a supported metric")
+        if "argv" in u and (not isinstance(u["argv"], list) or "{PORT}" not in u["argv"]):
+            errs.append("load unit argv must be a list containing {PORT}")
     w = spec.get("workload") or {}
     if not (w.get("prompts") or w.get("input")):
         errs.append("workload needs prompts or an input file")
@@ -761,7 +795,21 @@ def polar(verdict):
 def decide(spec, units):
     """_decide() with the row's declared verdict names (spec.verdict_map {PASS|FAIL: {native verdict or prefix: name}}):
     a mapped verdict takes its side as `polar` and keeps the native one in native_verdict."""
-    d = _decide(spec, units)
+    units = [u for u in units if u.get("kind") != "load" and not u.get("report_only")]
+    points = spec.get("sampler")
+    if isinstance(points, list) and len(points) > 1:
+        ds = [_decide(spec, [u for u in units if u.get("kind") != "visit" or u.get("sampler_index") == i])
+              for i in range(len(points))]
+        failures = [d for d in ds if d["terminal"] and d["verdict"].startswith(("FUTILITY_HARNESS", "FAIL_CORRECTNESS"))]
+        if failures:
+            d = failures[0]
+        elif not all(x["terminal"] for x in ds):
+            d = dict(ds[0], verdict="INCOMPLETE", polar=None, terminal=False, reason="sampler points pending")
+        else:
+            d = next((x for x in ds if x.get("polar") == "PASS"), ds[-1])
+        d = dict(d, sampler_decisions=ds)
+    else:
+        d = _decide(spec, units)
     v = str(d.get("verdict") or "")
     for side, m in (spec.get("verdict_map") or {}).items():
         for native, name in m.items():
@@ -906,10 +954,16 @@ def workload_prompts(spec, row_dir):
     return [t[o:o + win] + str(w.get("suffix") or "") for o in offs]
 
 
-def request_body(spec, prompt, n_predict):
+def request_body(spec, prompt, n_predict, sampler=None, prompt_index=0):
     body = {"prompt": prompt, "n_predict": int(n_predict), "temperature": 0.0, "top_k": 1, "seed": 0, "ignore_eos": True,
             "return_tokens": True}
     body.update((spec.get("workload") or {}).get("body") or {})
+    row_sampler = spec.get("sampler", {})
+    if isinstance(row_sampler, list):
+        row_sampler = row_sampler[0]
+    body.update(row_sampler)
+    body.update(sampler or {})
+    body["seed"] = (spec.get("seed_base", 0) + prompt_index) % 2147483648
     body["cache_prompt"] = False   # forced: no slot / prompt-cache state carries across requests
     return body
 
@@ -1091,7 +1145,8 @@ class Gate:
         Returns the unit record (witness from the server's own log)."""
         srv = self.spec["server"]
         port = self.port()
-        argv = self.llama_argv(srv["argv"], arm, port)
+        cfg = getattr(self, "current_unit", {})
+        argv = self.llama_argv(cfg.get("argv", srv["argv"]), arm, port)
         log = os.path.join(self.logs, f"{uid}.log")
         if os.path.exists(log):
             os.replace(log, log + f".prev-{int(time.time())}")
@@ -1107,10 +1162,15 @@ class Gate:
             to = float(srv.get("request_timeout_s") or 1800)
             for _ in range(int(warmup)):
                 self.request(port, request_body(self.spec, "Hello", 16), to)
-            reqs = []
-            for pr in prompts:
-                rec, _res = self.request(port, request_body(self.spec, pr, n_predict), to)
-                reqs.append(rec)
+            def one(item):
+                i, pr = item
+                return self.request(port, request_body(self.spec, pr, n_predict, cfg.get("sampler"), i + cfg.get("prompt_index", 0)), to)[0]
+            concurrency = cfg.get("concurrency", 1)
+            if concurrency > 1:
+                with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:
+                    reqs = list(pool.map(one, enumerate(prompts)))
+            else:
+                reqs = [one(item) for item in enumerate(prompts)]
             u["req"] = reqs
             u["warmup_discarded"] = int(warmup)
             if srv.get("kfd_min_vram_gib"):
@@ -1143,6 +1203,7 @@ class Gate:
         log = os.path.join(self.logs, f"{uid}.log")
         if kind == "c-id" and c.get("mode", "server") == "server":
             pr = identity_prompts(self.spec, self.d)[extra["prompt"]]
+            self.current_unit = {"sampler": {"temperature": 0.0, "top_k": 1}, "prompt_index": extra["prompt"]}
             u = self.visit_fn(uid, arm, [pr], int(c.get("n_predict") or 64), 0,
                               float(self.spec["server"].get("ready_timeout_s") or 900), kind="c-id")
             u["prompt"] = extra["prompt"]
@@ -1265,9 +1326,32 @@ class Gate:
         w = self.spec.get("workload") or {}
         prompts = workload_prompts(self.spec, self.d)
         kc = keep_cfg(self.spec)
+        for j, cfg in enumerate(self.spec.get("units", [])):
+            for b in range(1, cfg.get("blocks", 1) + 1):
+                for arm in cfg["arms"]:
+                    uid = f"load{j}-b{b}-{arm}"
+                    if uid in done:
+                        continue
+                    if self.should_stop():
+                        return 75
+                    self.current_unit = cfg
+                    u = self.visit_fn(uid, arm, prompts, int(cfg.get("n_predict", w.get("n_predict") or 256)),
+                                      int(srv.get("warmup", 1)), float(srv.get("ready_timeout_s") or 900), kind="load")
+                    if u.get("error_class") == "STOPPED":
+                        return 75
+                    u = self.finish_unit(dict(u, kind="load", block=b, report_only=True))
+                    u["metric"] = METRICS[cfg.get("metric", "ms_per_round")][0](u.get("req") or [])
+                    H.append_unit(u, self.out)
+                    units.append(u)
+        points = self.spec.get("sampler", {})
+        points = points if isinstance(points, list) else [points]
         for b in blocks(self.spec):
+          for si, sampler in enumerate(points):
+            self.current_unit = {"sampler": sampler}
+            if len(points) > 1 and _decide(self.spec, [u for u in units if u.get("kind") != "visit" or u.get("sampler_index") == si])["terminal"]:
+                continue
             for arm in block_order(self.spec, b):
-                uid = f"b{b}-{arm}"
+                uid = f"b{b}-{arm}" if len(points) == 1 else f"s{si}-b{b}-{arm}"
                 if uid in done:
                     continue
                 if self.should_stop():
@@ -1276,7 +1360,7 @@ class Gate:
                                   float(srv.get("ready_timeout_s") or 900))
                 if u.get("error_class") == "STOPPED":
                     return 75
-                u = self.finish_unit(dict(u, block=b))
+                u = self.finish_unit(dict(u, block=b, sampler_index=si, sampler=sampler))
                 H.append_unit(u, self.out)
                 units.append(u)
                 d = decide(self.spec, units)
@@ -1308,16 +1392,24 @@ def identity_parse(c, txt):
 
 
 def result_doc(spec, units, d):
-    tus = [u for u in units if u.get("kind") == "visit"]
+    tus = [u for u in units if u.get("kind") == "visit" and not u.get("report_only")]
+    gate_units = [u for u in units if u.get("kind") != "load" and not u.get("report_only")]
     res = {"schema": RESULT_SCHEMA, "complete": bool(d.get("terminal")), "verdict": d["verdict"], "polar": d.get("polar"),
            "native_verdict": d.get("native_verdict", d["verdict"]), "reason": d.get("reason", ""), "row": spec["row_id"], "task": spec.get("task"), "utc": H.now(),
-           "metric": spec["metric"], "keep": keep_cfg(spec), "per_arm": per_arm_stats(spec, units),
-           "witness": witness_table(spec, units), "witness_mismatches": mismatches(units),
-           "aa": {"ratio": aa_ratio(spec, units), "max": keep_cfg(spec)["aa_max"],
+           "metric": spec["metric"], "keep": keep_cfg(spec), "per_arm": per_arm_stats(spec, gate_units),
+           "witness": witness_table(spec, gate_units), "witness_mismatches": mismatches(gate_units),
+           "aa": {"ratio": aa_ratio(spec, gate_units), "max": keep_cfg(spec)["aa_max"],
                   "arms": baseline_arms(spec)[:2]},
-           "correctness": d.get("correctness"), "blocks_scored": len(full_blocks(spec, units)),
+           "correctness": d.get("correctness"), "blocks_scored": len(full_blocks(spec, gate_units)),
            "n_units": len(units), "n_visits": len(tus),
            "gate": {"module": "ak_gate.py", "version": GATE_VERSION, "sha256": _sha_file(os.path.abspath(__file__))}}
+    if spec.get("units") or any(u.get("kind") == "load" or u.get("report_only") for u in units):
+        res["report_only"] = [u for u in units if u.get("kind") == "load" or u.get("report_only")]
+    if d.get("sampler_decisions") is not None:
+        res["sampler_decisions"] = d["sampler_decisions"]
+        res["sampler_results"] = [{"sampler": point, "per_arm": per_arm_stats(spec, [u for u in gate_units if u.get("sampler_index") == i]),
+                                   "aa_ratio": aa_ratio(spec, [u for u in gate_units if u.get("sampler_index") == i])}
+                                  for i, point in enumerate(spec["sampler"])]
     if str(d["verdict"]).startswith(("FAIL", "FUTILITY")):
         res["evidence"] = list(EVIDENCE_PATHS)   # spec.keep: the replay input of a failed gate
     return res
@@ -1347,13 +1439,14 @@ def logs_only_units(spec, out_dir):
 def replay_units(spec, out_dir, row_dir):
     """(units, mode, skipped): the prior run's units with witness + metric RE-DERIVED from its logs / raw timings by the
     same functions the live run uses (recorded witness / metric fields are never trusted)."""
-    units = [u for u in load_units(out_dir) if u.get("gate_unit")]
+    recorded = [u for u in load_units(out_dir) if u.get("gate_unit")]
+    units = [u for u in recorded if u.get("kind") != "load" and not u.get("report_only")]
     mode = "units"
-    if not units:
+    if not units and not recorded:
         units = [u for u in load_units(os.path.join(row_dir, "out-smoke")) if u.get("gate_unit")]
         mode = "smoke"
     skipped = []
-    if not units:
+    if not units and not recorded:
         units, skipped = logs_only_units(spec, out_dir)
         mode = "logs-only"
     out = []

@@ -875,3 +875,54 @@ def test_knee_batch_tbo_not_supported_is_skipped_and_failing_baseline_is_harness
     assert v == "FUTILITY_HARNESS_BASELINE" and done                    # OFF fails -> harness, never FAIL_CORRECTNESS
     v, det, done = G._decide_one(sp, sp["correctness"][0], [dict(okc, unit_id="c-tbo-OFF", arm="OFF"), dict(okc, n_ok=1, n_fail=2)])
     assert v == "FAIL_CORRECTNESS"                                      # candidate fails while OFF passes
+
+
+def test_sampler_request_body_paired_across_arms(tmp_path):
+    sp = spec(sampler={"temperature": 0.3, "top_k": 20, "top_p": 0.95}, seed_base=4242)
+    g = G.Gate(sp, str(tmp_path), env={"FILLER_PORTS": "1"}, stream=QUIET)
+    g.prepare()
+    bodies = []
+    g.start_server = lambda *args: object()
+    g.wait_ready = lambda *args: None
+    g.stop_server = lambda *args: None
+    g.request = lambda port, body, timeout: (bodies.append(body) or {}, {})
+    for arm in ("OFF", "ON"):
+        g._visit(arm, arm, ["first", "second"], 8, 0, 1)
+    assert [b["seed"] for b in bodies] == [4242, 4243, 4242, 4243]
+    assert all((b["temperature"], b["top_k"], b["top_p"]) == (0.3, 20, 0.95) for b in bodies)
+    assert G.request_body(spec(), "x", 1)["top_k"] == 1
+    assert G.request_body(sp, "x", 1, {"temperature": 1.0})["temperature"] == 1.0
+    with pytest.raises(G.SpecError):
+        G.validate_spec(spec(sampler={"top_p": 2}))
+
+
+def test_generator_multi_sampler_and_report_only_load(tmp_path):
+    d, _ = gen_row(tmp_path, extra=["--sampler", "T=0.3,top_k=20,top_p=0.95", "--sampler", "T=1.0,top_k=20",
+                                     "--seed-base", "4242", "--load-unit", '{"arms":["OFF","ON"],"blocks":2,"concurrency":4}'])
+    import importlib.util
+    modspec = importlib.util.spec_from_file_location("gate_sampler_job", str(d / "job.py"))
+    mod = importlib.util.module_from_spec(modspec)
+    sys.path.insert(0, str(d))
+    try:
+        modspec.loader.exec_module(mod)
+    finally:
+        sys.path.remove(str(d))
+        sys.modules.pop("ak_gate_vendored", None)
+    sp = mod.SPEC
+    assert sp["seed_base"] == 4242 and [p["temperature"] for p in sp["sampler"]] == [0.3, 1.0]
+    g = G.Gate(sp, str(d), env={"FILLER_PORTS": "1"}, stream=QUIET)
+    calls = []
+    g.visit_fn = visit_stub(sp, g.out, {"ON": 1.2}, calls)
+    assert g.run() == 0
+    units = G.load_units(g.out)
+    assert {u["sampler_index"] for u in units if u["kind"] == "visit"} == {0, 1}
+    report = [u for u in units if u["kind"] == "load"]
+    assert len(report) == 4 and all(u["report_only"] for u in report)
+    result = json.load(open(os.path.join(g.out, "RESULT.json")))
+    assert len(result["report_only"]) == 4 and len(result["sampler_results"]) == 2
+    bad = dict(report[0], kind="visit", error="broken", report_only=True)
+    assert G.decide(sp, units + [bad])["verdict"] == G.decide(sp, units)["verdict"]
+    replayed, _, _ = G.replay_units(sp, g.out, str(d))
+    assert not any(u.get("report_only") or u["kind"] == "load" for u in replayed)
+    with pytest.raises(G.SpecError):
+        G.validate_spec(dict(sp, units=[{"kind": "load", "arms": ["UNKNOWN"]}]))

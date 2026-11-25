@@ -824,6 +824,25 @@ def gate_scaffold(a, served=None):
               "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
                                              "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
               "inputs": inputs, "dirs": list(a.dir)}
+    if a.sampler:
+        points = []
+        for raw in a.sampler:
+            point = {}
+            for item in raw.split(","):
+                key, sep, value = item.partition("=")
+                key = {"T": "temperature"}.get(key.strip(), key.strip())
+                if not sep:
+                    raise SystemExit(f"mk_ak_row gate: invalid sampler item {item!r}")
+                try:
+                    point[key] = int(value) if key == "top_k" else float(value)
+                except ValueError:
+                    raise SystemExit(f"mk_ak_row gate: invalid sampler value {item!r}")
+            points.append(point)
+        spec_g["sampler"] = points if len(points) > 1 else points[0]
+    if a.seed_base is not None:
+        spec_g["seed_base"] = a.seed_base
+    if a.load_unit:
+        spec_g["units"] = [dict(json.loads(x), kind="load") for x in a.load_unit]
     if a.arm_env:
         spec_g["arm_env"] = {}
         for x in a.arm_env:
@@ -872,7 +891,7 @@ def gate_scaffold(a, served=None):
     for lib in ("ak_row_harness.py", "ak_gate.py"):
         shutil.copy(os.path.join(HERE, lib), os.path.join(d, lib))
     seal(d, extra=sorted(inputs))
-    visits = starts * len(arms) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
+    visits = starts * len(arms) * max(1, len(a.sampler)) + sum(x.get("blocks", 1) * len(x.get("arms", [])) for x in spec_g.get("units", [])) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
     spec = {"owner": "autokernel", "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.id,
             "regions": regions, "claim_cpus": claim, "verdict_by": "agent", "launcher": os.path.join(d, "launch.sh"),
             "result_path": os.path.join(d, "out", "RESULT.json"), "result_format": "json", "scratch_root": d,
@@ -950,6 +969,11 @@ def gate_main(argv=None):
                    "the row's own verdict names; polar = the side")
     n.add_argument("--expect-by-unit", help='JSON {served|kld|tbo|identity|selftest_bin: {ARM: {KNOB: present|absent|'
                    "ignore}}}: a knob's expectation scoped to one unit type (default: --expect for every unit)")
+    n.add_argument("--sampler", action="append", default=[], metavar="T=0.3,top_k=20,top_p=0.95",
+                   help="sampler point; repeat for independent gate unit sets")
+    n.add_argument("--seed-base", type=int, help="paired request seed base (plus prompt index)")
+    n.add_argument("--load-unit", action="append", default=[], metavar="JSON",
+                   help='report-only load unit JSON: {"arms":["OFF","ON"],"blocks":2,"concurrency":4,"argv":[...],"sampler":{...}}')
     n.add_argument("--prompt", action="append", default=[])
     n.add_argument("--workload-input", help="inputs/X (a --copy-input destination) cut into windows")
     n.add_argument("--offsets", default="0")
