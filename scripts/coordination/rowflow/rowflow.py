@@ -9319,6 +9319,48 @@ def qh_smoke_wait_max_s(flags):
         return float(QH_SMOKE_WAIT_MAX_S)
 
 
+SMOKE_WAIT_STARVE_SHAPES = frozenset({"quiet-host", "host"})
+SMOKE_WAIT_GPU_TOKENS = frozenset({GPU, "q3"}) | GPU_HOST_TOKENS
+
+
+def gpu_smoke_blocker(grants, smoke_tokens=()):
+    """-> (holder, end) when the GPU is held by a grant or a running smoke (a queued GPU smoke cannot start), else None."""
+    for g in grants or []:
+        if GPU in (g.get("holds") or ()):
+            e = iso_epoch(g.get("end"))
+            if e is None or e > time.time():
+                return (g.get("id") or "?", g.get("end") or "?")
+    if GPU in set(smoke_tokens or ()):
+        return ("running GPU smoke", "its end")
+    return None
+
+
+def smoke_wait_rows(cands, qr, exempt=(), gpu_holder=None):
+    """-> rows a queued GPU smoke of rank `qr` holds out of planning (WAIT-FOR-SMOKE). PM-WFSFIX 2026-11-25: only rows whose
+    EVERY option needs the GPU or its host threads (q3 / c88-95 / t184-191) wait (keeps q3's MI210 host threads free for the
+    smoke), and none while the GPU itself is held by a grant or running smoke (`gpu_holder`), until that holder ends."""
+    if qr is None or gpu_holder:
+        return []
+    exempt = set(exempt or ())
+    return [c for c in cands if c["rank"] > qr and c["id"] not in exempt and c.get("options")
+            and all(set(o) & SMOKE_WAIT_GPU_TOKENS for o in c["options"])]
+
+
+def smoke_wait_trim(cands, qr, exempt=(), gpu_holder=None):
+    """A worse-ranked row with SOME option clear of the GPU area keeps planning on those options only (never q3's MI210
+    host threads ahead of the queued smoke). -> new cands list; rows are copied, never mutated."""
+    if qr is None or gpu_holder:
+        return cands
+    exempt, out = set(exempt or ()), []
+    for c in cands:
+        opts = c.get("options") or []
+        keep = [o for o in opts if not set(o) & SMOKE_WAIT_GPU_TOKENS]
+        if c["rank"] > qr and c["id"] not in exempt and keep and len(keep) < len(opts):
+            c = dict(c, options=keep)
+        out.append(c)
+    return out
+
+
 def smoke_wait_starved(flags, worse, now=None, persist=True):
     """-> ids of quiet-host rows in `worse` (rows WAIT-FOR-SMOKE would remove) that have waited > qh_smoke_wait_max_s.
     The first-wait epoch per row lives in state/smoke_wait_since.json; a row that stops waiting is forgotten."""
@@ -9327,7 +9369,7 @@ def smoke_wait_starved(flags, worse, now=None, persist=True):
     prev = load_json(sp) or {}
     cur, out, lim = {}, [], qh_smoke_wait_max_s(flags)
     for c in worse:
-        if c.get("shape") != "quiet-host":
+        if c.get("shape") not in SMOKE_WAIT_STARVE_SHAPES:   # PM-WFSFIX 2026-11-25: host rows too, not only quiet-host
             continue
         s0 = float(prev.get(c["id"]) or now)
         cur[c["id"]] = s0
@@ -10541,8 +10583,17 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         # a held quiet-host row is exempt: its smoke-hold already keeps the queued batch off the GPU for it
         _dp = drain_live(load_json(os.path.join(flags, "drain_state.json")))
         # PM-DRAINFIX 2026-11-22: a row with a live drain is exempt too - removing it dropped the drain and its T slid
-        worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr
-                 and not (qh_hold and c["id"] == qh_hold[0]["id"]) and c["id"] not in _dp]
+        # PM-WFSFIX 2026-11-25: only rows that need the GPU or its host threads wait, and nothing waits while the GPU is
+        # held by a grant / running smoke (the queued smoke cannot start before that holder ends)
+        _gh = gpu_smoke_blocker(grants, live_smoke_tokens(flags))
+        if _gh:
+            log_transition(flags, "smoke-gpu-held", {"gpu": f"WAIT-FOR-SMOKE-OFF: GPU held by {_gh[0]} until {_gh[1]}; "
+                           f"queued GPU smoke rank {qr:g} cannot start, no row waits for it"}, log, persist=not dry)
+        else:
+            log_transition(flags, "smoke-gpu-held", {}, log, persist=not dry)
+        _ex = {*(_dp or ()), *([qh_hold[0]["id"]] if qh_hold else [])}
+        worse = smoke_wait_rows(cands, qr, exempt=_ex, gpu_holder=_gh)
+        cands = smoke_wait_trim(cands, qr, exempt=_ex, gpu_holder=_gh)
         # E5 fix B 2026-11-23: a quiet-host row never waits behind queued smokes indefinitely; past the limit its drain forms
         # AK audit B4 SHORT-ROW-SLOT (2026-11-23): the queued smokes could not take the GPU this tick (it is still free after the
         # batch attempt: smoke hold / operator hold / batch refused), so a worse-ranked GPU row whose booking plus margin fits
@@ -10559,7 +10610,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                                f"GPU free with queued smokes not startable; fits the gap until {dt.datetime.fromtimestamp(g_end, dt.timezone.utc):%H:%MZ}"
                                for c in fit}, log, persist=True)
         starved = set(smoke_wait_starved(flags, worse, persist=not dry))
-        log_transition(flags, "smoke-starved", {rid: f"SMOKE-WAIT-LIMIT {rid}: quiet-host row waited > "
+        log_transition(flags, "smoke-starved", {rid: f"SMOKE-WAIT-LIMIT {rid}: host/quiet-host row waited > "
                        f"{int(qh_smoke_wait_max_s(flags))}s behind queued GPU smokes (rank {qr:g}); it enters planning and "
                        "its drain forms; the smokes run after it or inside the drain" for rid in sorted(starved)},
                        log, persist=not dry)
