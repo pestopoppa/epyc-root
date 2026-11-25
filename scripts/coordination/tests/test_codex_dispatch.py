@@ -120,6 +120,8 @@ def test_eligibility_filter(env, kw, why):
 
 
 LIVE_DONE_WHENS = {
+    "AKPL-P0": "≥30 iterations of stage timings and a per-`unit_key` estimate table exist and `row_scaffold.py` can consume it (AK-TAIL-SPLIT GO/NO-GO data is a by-product).",
+    "AKPL-P1": "replay agreement ≥95% with every disagreement explained; new rows file with zero LLM turns.",
     "PM-REPLAN-C-SOAK": 'a soak report shows 7 shadow days meeting all six criteria of docs/design/rowflow-replanning-scheduler.md section 11, and rowflow.py on origin/main has REPLAN_MODE = "enforce" with the live keeper start time after that deploy',
     "TF-R8G-REFUSAL-HINT": "a test shows a denied worker shell command returns text naming orch-py.sh -m pytest, orch-py.sh -c and rm/mv of untracked lane files, and the next canary's events show that text; code on origin/main",
     "PM-SMOKE-ENFORCE-REENABLE": "rowflow.py on origin/main has SMOKE_MEASURE_ENFORCE = True and is deployed live with zero queued rows failing SMOKE-NO-MEASURE",
@@ -135,6 +137,8 @@ def test_live_observation_skipped(env, bid):
 def test_live_observation_names_pattern_word_bounded_case_insensitive(env):
     assert CX.codex_skip(rec("BX-1", done_when="A SOAK passes"), env["root"]) == "needs-live-observation:soak"
     assert CX.codex_skip(rec("BX-1", done_when="the alive-check module is renamed"), env["root"]) is None
+    assert CX.live_observation_match(rec("BX-1", done_when=">=30 iterations of stage timings"))
+    assert CX.live_observation_match(rec("BX-1", done_when="replay agreement >=95%"))
 
 
 def _brief(env, bid, where=None, approach="x"):
@@ -180,6 +184,36 @@ def test_select_order_and_limit(env):
     chosen, hist = CX.select(doc(rec("BX-2", row_rank=2), rec("BX-1"), rec("BX-3", row_rank=3)), env["root"],
                              ("handoffs/active/churn-pipeline.md",), n=2)
     assert [k for k, _ in chosen] == ["BX-1", "BX-2"] and hist["over-limit"] == 1
+
+
+def test_recent_landed_requires_box_id_in_subject_or_body(env):
+    _brief(env, "BX-1", ["scripts/shared.py"])
+    r = rec("BX-1")
+    for msg in ("BX-1: landed", "fix\n\nWork for BX-1 in scripts/shared.py"):
+        assert CX.codex_skip(r, env["root"], recent_messages=(msg,)) == "already-landed"
+    for msg in ("BX-10: landed", "fix scripts/shared.py", "unrelated"):
+        assert CX.codex_skip(r, env["root"], recent_messages=(msg,)) is None
+
+
+def test_recent_messages_origin_main_window_and_one_log(env, monkeypatch):
+    clone = env["clone"]
+    old_env = dict(os.environ, GIT_AUTHOR_DATE="2000-01-01T00:00:00Z", GIT_COMMITTER_DATE="2000-01-01T00:00:00Z")
+    subprocess.run(["git", "-C", str(clone), "-c", "user.name=f", "-c", "user.email=f@x", "commit",
+                    "--allow-empty", "-qm", "BX-2 old"], env=old_env, check=True)
+    _git("-c", "user.name=f", "-c", "user.email=f@x", "commit", "--allow-empty", "-qm", "fix", "-m", "BX-1 landed", cwd=clone)
+    _git("push", "-q", "origin", "HEAD:main", cwd=clone)
+    _git("-c", "user.name=f", "-c", "user.email=f@x", "commit", "--allow-empty", "-qm", "BX-3 local only", cwd=clone)
+    calls = []
+    real_git = CX.git
+    def counting_git(repo, *args, **kwargs):
+        if args[0] == "log":
+            calls.append(args)
+        return real_git(repo, *args, **kwargs)
+    monkeypatch.setattr(CX, "git", counting_git)
+    messages = CX.recent_commit_messages(clone)
+    chosen, hist = CX.select(doc(rec("BX-1"), rec("BX-2"), rec("BX-3")), env["root"], n=3, recent_messages=messages)
+    assert [k for k, _ in chosen] == ["BX-2", "BX-3"]
+    assert hist["already-landed"] == 1 and len(calls) == 1
 
 
 def test_holds_source_missing_fails_closed(env):

@@ -65,9 +65,10 @@ _OPDEC = re.compile(r"operator[- ]decision", re.I)
 LIVE_OBSERVATION_PATTERNS = (
     r"soak", r"canary", r"live", r"queued rows?", r"in production",
     r"over (?:\d+|a|an) (?:days?|hours?|weeks?)", r"\d+ (?:shadow )?(?:days?|hours?|weeks?)",
-    r"[≥>]=?\s*\d+ (?:iterations?|runs?)", r"observed", r"keeper log shows", r"a week", r"nightly", r"campaign",
+    r"(?:≥|>=|>)\s*\d+\s+(?:iterations?|runs?)", r"replay agreement\s*(?:≥|>=|>)\s*\d+\s*%",
+    r"observed", r"keeper log shows", r"a week", r"nightly", r"campaign",
 )
-_LIVE_RE = [(p, re.compile(rf"\b(?:{p})\b", re.I)) for p in LIVE_OBSERVATION_PATTERNS]
+_LIVE_RE = [(p, re.compile(rf"(?<!\w)(?:{p})(?!\w)", re.I)) for p in LIVE_OBSERVATION_PATTERNS]
 # the done-when IS a test command (starts with one); prose that merely names pytest does not count
 _PYTEST_CMD = re.compile(r"^\s*`?(?:(?:nice|taskset|python3?|orch-py\.sh|env|\S+=\S+|-\S+|\d[\d,-]*)\s+)*(?:-m\s+)?pytest\b", re.I)
 
@@ -200,7 +201,8 @@ def brief_path(root: Path, bid: str) -> Path:
     return root / "handoffs" / "active" / "briefs" / f"{bid}.md"
 
 
-def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_state=None) -> str | None:
+def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_state=None,
+               recent_messages: tuple[str, ...] = ()) -> str | None:
     """Why this box is NOT eligible for a Codex lane, or None. `base_state(rec)` -> open|ticked|gone|None at origin/main."""
     sys.path.insert(0, str(ROOT / "scripts" / "handoffs"))
     try:
@@ -237,6 +239,10 @@ def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_sta
         return f"needs-handoff-edit:{edit}"
     if bid in done_ids:
         return "attempted-before"
+    # Require the box ID itself, bounded so BX-1 does not match BX-10. A shared
+    # brief path alone does not establish that this particular box landed.
+    if any(re.search(rf"(?<![\w-]){re.escape(bid)}(?![\w-])", msg, re.I) for msg in recent_messages):
+        return "already-landed"
     if base_state is not None:
         st = base_state(rec)
         if st in ("ticked", "gone"):
@@ -247,7 +253,7 @@ def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_sta
 
 
 def select(doc: dict, root: Path, files=DEFAULT_FILES, done_ids: set[str] = frozenset(), n: int = 3,
-           base_state=None) -> tuple[list[tuple[str, dict]], dict]:
+           base_state=None, recent_messages: tuple[str, ...] = ()) -> tuple[list[tuple[str, dict]], dict]:
     """(chosen [(key, rec)] in select.py order, skip histogram). One box per handoff file per run is NOT enforced:
     the lanes are sequential, so a second box of the same file starts after the first one landed."""
     from taskflow import select as S
@@ -258,7 +264,7 @@ def select(doc: dict, root: Path, files=DEFAULT_FILES, done_ids: set[str] = froz
     for key, rec in sorted((doc.get("boxes") or {}).items(), key=S.order_key):
         if files and rec.get("file") not in files:
             continue
-        why = codex_skip(rec, root, done_ids, base_state if len(out) < n else None)
+        why = codex_skip(rec, root, done_ids, base_state if len(out) < n else None, recent_messages)
         if why is None and len(out) >= n:
             why = "over-limit"
         hist[why or "chosen"] = hist.get(why or "chosen", 0) + 1
@@ -295,6 +301,14 @@ def origin_box_state(rec: dict, repo: Path) -> str | None:
         if m:
             return "open" if m.group(1) not in "xX" else "ticked"
     return state
+
+
+def recent_commit_messages(repo: Path) -> tuple[str, ...]:
+    """Read origin/main's recent subjects and bodies once per dispatch."""
+    r = git(repo, "log", "origin/main", "--since=7 days ago", "--format=%B%x00", timeout=60)
+    if r.returncode:
+        raise RuntimeError(f"cannot read recent origin/main commits: {r.stderr.strip()}")
+    return tuple(r.stdout.split("\0"))
 
 
 # -------------------------------------------------------------------------------------------------------- prompt
@@ -535,7 +549,8 @@ def dispatch(*, root: Path = ROOT, root_repo: Path | None = None, out: Path = OU
         if st == "open" and (hooks.get("already_done") or (lambda x: already_done(x, root_repo)))(r):
             return "landed"
         return st
-    chosen, hist = select(doc, root, files, attempted(out), n, base_state=base_state)
+    messages = recent_commit_messages(root_repo)
+    chosen, hist = select(doc, root, files, attempted(out), n, base_state=base_state, recent_messages=messages)
     print(f"[codex] chosen: {[k for k, _ in chosen]}  skips: {hist}")
     if dry_run:
         return [{"box": k, "file": r["file"], "line": r["line"], "dry_run": True} for k, r in chosen]
