@@ -185,6 +185,8 @@ def classify(flags, owner=None, now=None):
     rf = _rowflow()
     allrows = rf.rows(flags)
     sup_idx = rf.superseded_index(flags)
+    statuses = {rid: rf.status(flags, rid, allrows) for rid in allrows}
+    gpu_ids = rf.host_after_gpu_count(flags, allrows, statuses, rf.open_grants(flags)) if rf.HOST_AFTER_GPU_QUEUE else set()
     keeper = keeper_state(flags)
     busy = keeper.get("parsed", {}).get("busy", [])
     gpu_busy = [b for b in busy if b.startswith("gpu")]
@@ -229,6 +231,14 @@ def classify(flags, owner=None, now=None):
             out["SUPERSEDED"].append(rec)
         elif rf.runnable(st):
             rec["gpu_wait"] = (f"waiting on GPU ({', '.join(gpu_busy)})" if gpu_busy else None) if _wants_gpu(m) else None
+            gpu_count = len(gpu_ids - {rid})
+            if gpu_count:
+                try:
+                    contract = rf.contract_of(m, flags=flags)
+                    if rf.host_after_gpu_deferred(contract):
+                        rec["reason"] = f"DEFERRED-AFTER-GPU-QUEUE ({gpu_count} GPU rows queued)"
+                except (KeyError, ValueError, TypeError, rf.Refused):
+                    pass
             out["GRANTABLE"].append(rec)
         elif state == "dryrun-running":
             out["SMOKE-QUEUED"].append(rec)
@@ -429,7 +439,8 @@ def main(argv=None) -> int:
     print(f"\nGRANTABLE/QUEUED ({len(r['GRANTABLE'])})  (dry run PASSED, waiting for a keeper placement)")
     for x in sorted(r["GRANTABLE"], key=lambda x: (x.get("rank") is None, x.get("rank") or 0, x["id"])):
         print(f"  {ow(x):<18} {x['id']:<44} shape={x.get('shape')} rank={x.get('rank')}{x.get('reranks') or ''}"
-              + (f"\n    GPU: {x['gpu_wait']}" if x.get("gpu_wait") else ""))
+              + (f"\n    GPU: {x['gpu_wait']}" if x.get("gpu_wait") else "")
+              + (f"\n    {x['reason']}" if x.get("reason", "").startswith("DEFERRED-AFTER-GPU-QUEUE") else ""))
     for title, key in (("SMOKE-QUEUED", "SMOKE-QUEUED"), ("NEEDS-REPUBLISH", "NEEDS-REPUBLISH"), ("FAILED", "FAILED"),
                        ("NOT-A-ROW (keeper ignores)", "NOT-A-ROW"),
                        ("SUPERSEDED (never granted)", "SUPERSEDED")):

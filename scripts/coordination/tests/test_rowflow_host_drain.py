@@ -40,6 +40,46 @@ FREE_Q1Q2_BUSY = set(rf.expand({"q0", "q3"})) | {rf.GPU}
 
 
 class HostDrain(unittest.TestCase):
+    def test_gpu_queue_defers_host_and_quarters_backfill_then_host_drains(self):
+        h = host(rank=15, waited=7200)
+        q = quarter("backfill", rank=30, qs=("q0",))
+        kept, waits = rf.host_after_gpu_filter([h, q], 2)
+        self.assertEqual([c["id"] for c in kept], ["backfill"])
+        self.assertIn("DEFERRED-AFTER-GPU-QUEUE (2 GPU rows queued)", waits[0][1])
+        kept, lines = rf.host_drain_filter(kept, FREE_Q1Q2_BUSY, ends(NOW + 900), [NOW + 900], now=NOW)
+        assigned, _, _ = rf.plan(FREE_Q1Q2_BUSY, kept, 512, now=NOW)
+        self.assertEqual([c["id"] for c, _ in assigned], ["backfill"])
+        self.assertFalse(lines)
+        kept, waits = rf.host_after_gpu_filter([h, q], 0)
+        kept, lines = rf.host_drain_filter(kept, FREE_Q1Q2_BUSY, ends(NOW + 900), [NOW + 900], now=NOW)
+        self.assertEqual([c["id"] for c in kept], [H])
+        self.assertIn("backfill", lines)
+        assigned, _, _ = rf.plan(set(HOST) | {rf.GPU}, kept, 512, now=NOW)
+        self.assertEqual([c["id"] for c, _ in assigned], [H])
+        self.assertFalse(waits)
+
+    def test_gpu_rows_counted_once_and_never_defer_themselves(self):
+        with tempfile.TemporaryDirectory() as flags:
+            path = os.path.join(flags, "dryrun", "gpu-smoke")
+            os.makedirs(path)
+            with open(os.path.join(path, "GPU-SMOKE-QUEUED.json"), "w") as f:
+                json.dump({}, f)
+            rows = {"gpu-smoke": {"lane": "gpu"}, "shape-gpu": {"lane": "cpu", "shape": "gpu-q3"}}
+            states = {rid: {"state": "grantable"} for rid in rows}
+            with mock.patch.object(rf, "host_drain_gpu_holds", return_value=[]):
+                ids = rf.host_after_gpu_count(flags, rows, states, [])
+            self.assertEqual(ids, {"gpu-smoke", "shape-gpu"})
+            h = dict(host("shape-gpu"), lane="gpu")
+            self.assertEqual(rf.host_after_gpu_filter([h], {"shape-gpu"})[0], [h])
+            self.assertFalse(rf.host_after_gpu_filter([h], ids)[0])
+
+    def test_only_hosts_requiring_q3_deferred(self):
+        h = dict(host(), shape="quiet-host")
+        off_q3 = dict(h, options=[frozenset(rf.expand({"q0", "q1", "q2"}))])
+        kept, waits = rf.host_after_gpu_filter([h, off_q3, quarter("quarter")], 1)
+        self.assertEqual(kept, [off_q3, quarter("quarter")])
+        self.assertEqual(len(waits), 1)
+
     def test_1350z_replay_h_dropped_by_quiet_gate_still_drains(self):
         # 2026-11-25 13:50Z: H (rank 15, smoke passed > 30 min ago) WAITs `foreign busy 50% on q1` because q1/q2 run the
         # rank-34 / rank-30 rows granted 13:31Z / 13:40Z; quiet_gate removed H, so zero HOST-DRAIN lines fired.

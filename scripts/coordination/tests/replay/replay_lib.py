@@ -610,6 +610,8 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
         sb.materialize(tick, rf)
         if tick.get("build_window_min") and hasattr(rf, "build_window"):   # {"build_window_min": N}: `rowflow build-window` opens at this tick
             rf.build_window(sb.flags, int(tick["build_window_min"]), "replay", "replay-build-lane", now=W.t, log=lambda m: None)
+        if "host_after_gpu_queue" in tick and hasattr(rf, "HOST_AFTER_GPU_QUEUE"):
+            rf.HOST_AFTER_GPU_QUEUE = bool(tick["host_after_gpu_queue"])
         if "host_drain" in tick and hasattr(rf, "HOST_DRAIN_ENFORCE"):   # {"host_drain": bool}: HOST-DRAIN on/off from this tick on
             rf.HOST_DRAIN_ENFORCE = bool(tick["host_drain"])
         if tick.get("reservation_mode") and hasattr(rf, "RESERVATION_MODE"):   # {"reservation_mode": off|shadow|enforce} from this tick on

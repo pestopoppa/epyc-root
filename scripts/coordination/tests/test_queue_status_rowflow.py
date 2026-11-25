@@ -68,6 +68,22 @@ class Fixture(unittest.TestCase):
         self.assertIn("gpu-quiet:run1", g["ready-gpu"]["gpu_wait"])
         self.assertEqual(r["keeper"]["idle_why"], {"q2": "nothing fits"})
 
+    def test_deferred_host_is_visible_in_queue(self):
+        from unittest import mock
+        rf = qs._rowflow()
+        real_contract = rf.contract_of
+        def contract(row, **kw):
+            if row.get("id") == "ready-cpu":
+                return {"shape": "host", "options": [frozenset({"q0", "q1", "q2", "q3"})]}
+            return real_contract(row, **kw)
+        with mock.patch.object(rf, "contract_of", side_effect=contract), mock.patch.object(rf, "host_after_gpu_count", return_value={"gpu-a", "gpu-b"}):
+            rec = next(x for x in qs.classify(self.f)["GRANTABLE"] if x["id"] == "ready-cpu")
+            self.assertEqual(rec["reason"], "DEFERRED-AFTER-GPU-QUEUE (2 GPU rows queued)")
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                self.assertEqual(qs.main(["--flags", self.f]), 0)
+            self.assertIn(rec["reason"], buf.getvalue())
+
     def test_json_and_text(self):
         qs.measure_util = lambda: None
         for argv in (["--flags", self.f, "--json"], ["--flags", self.f]):

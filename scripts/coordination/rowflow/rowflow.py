@@ -3006,6 +3006,56 @@ def gpu_lane_cand(c):
                                       and any(GPU in o for o in c.get("options") or ()))
 
 
+# Operator 2026-11-25: whole-host CPU work follows the GPU queue.
+HOST_AFTER_GPU_QUEUE = True
+
+
+def host_after_gpu_deferred(c):
+    """A whole-host candidate whose every placement needs some of q3."""
+    opts = c.get("options") or ()
+    return (c.get("shape") in ("host", "quiet-host") and bool(opts)
+            and all(expand(set(o)) & expand({"q3"}) for o in opts))
+
+
+def host_after_gpu_count(flags, allrows, statuses, grants, cands=()):
+    """Count distinct GPU rows across the ready queue, grants and smoke queue."""
+    ids = set()
+    for rid, row in allrows.items():
+        st = statuses.get(rid) or {}
+        if st.get("state") not in GPU_QUEUED_STATES or st.get("precond_parked"):
+            continue
+        if row.get("lane") == "gpu" or row.get("shape") == "gpu-q3" or row.get("declared_shape") == "gpu-q3":
+            ids.add(rid)
+            continue
+        try:
+            if contract_of(row, flags=flags)["shape"] == "gpu-q3":
+                ids.add(rid)
+        except (KeyError, ValueError, TypeError, Refused):
+            pass
+    for g in grants:
+        row = allrows.get(g["id"]) or {}
+        if gpu_lane_cand({"lane": row.get("lane"), "shape": row.get("shape"),
+                          "options": [expand(set(g.get("holds") or ())) ]}):
+            ids.add(g["id"])
+    ids.update(os.path.basename(os.path.dirname(p)) for p in
+               glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")))
+    ids.update(gid for gid, _, _ in host_drain_gpu_holds(flags, [], allrows, time.time()))
+    ids.update(c["id"] for c in cands if gpu_lane_cand(c))
+    return ids
+
+
+def host_after_gpu_filter(cands, gpu_count):
+    if not HOST_AFTER_GPU_QUEUE or not gpu_count:
+        return list(cands), []
+    def count_for(c):
+        return len(gpu_count - {c["id"]}) if isinstance(gpu_count, set) else gpu_count
+    deferred = [c for c in cands if host_after_gpu_deferred(c) and count_for(c)]
+    waits = [(c, f"{c['shape']} row {c['id']}: DEFERRED-AFTER-GPU-QUEUE ({count_for(c)} GPU rows queued)")
+             for c in deferred]
+    return [c for c in cands if c not in deferred], waits
+
+
+
 def gpu_q3_guard(c):
     """The options of CPU candidate c under GPU-Q3-GUARD (options already expanded): a q3 whole-quarter option becomes
     Q3_NARROW when c's threads fit Q3_NARROW_CORES, else it is dropped; any other option touching 88-95/184-191 is
@@ -10528,7 +10578,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     gpu_queued = False   # D9 2026-11-18 GPU-Q3-GUARD: a GPU-lane row queued (grantable, armed or awaiting its smoke)
     for rid, d in allrows.items():
         sd = rule_statuses[rid]
-        if d.get("lane") == "gpu" and sd.get("state") in GPU_QUEUED_STATES and not sd.get("precond_parked"):
+        if (d.get("lane") == "gpu" or d.get("shape") == "gpu-q3") and sd.get("state") in GPU_QUEUED_STATES and not sd.get("precond_parked"):
             gpu_queued = True
         if not runnable(sd):
             continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed, unparked rows are granted
@@ -10560,6 +10610,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             cands = idle_violation_hold(flags, cands, grants, allrows, log)
         except Exception as e:  # noqa: BLE001
             log(f"IDLE-VIOLATION-HOLD failed: {type(e).__name__}: {e}")
+    gpu_count = host_after_gpu_count(flags, allrows, rule_statuses, grants, cands)
+    cands, host_gpu_waits = host_after_gpu_filter(cands, gpu_count)
     qh_hold = None
     # 2026-11-21 (GPU idle 05:50-06:0xZ, queued smokes unrun): a DISK-PAUSE set admit_hold and gated the smoke batch too. A
     # queued smoke is not a new admission the pause protects against; only an operator HOLD file stops the batch.
@@ -10607,7 +10659,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             log(f"SMOKE-SLOT check failed: {type(e).__name__}: {e}")
     log_transition(flags, "smoke-slot", slot, log, persist=not dry)
     gap_rows = {}      # B4: {row id: gap end epoch} rows admitted by SHORT-ROW-SLOT (grant end capped at the gap end)
-    smoke_waits = []   # [(row, reason)]: ready rows taken out of the planner by WAIT-FOR-SMOKE; still named in IDLE-WHY
+    smoke_waits = host_gpu_waits   # [(row, reason)]: ready rows taken out of the planner by WAIT-FOR-SMOKE; still named in IDLE-WHY
     qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
     wait_lines = {}
     if qr is not None:

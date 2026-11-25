@@ -807,7 +807,7 @@ def sc_backfill_if_fits(path):
     are granted. A foreign hold with no known end on q1 (tick 1) makes the start UNKNOWN: no reservation at all."""
     rows = _backfill_rows()
     lsa = {k: rows[k] for k in ("lsa-r8-dense", "lsa-r8-pca")}
-    ticks = [(lsa, {})] + [(rows, {})] * 4
+    ticks = [(lsa, {"host_after_gpu_queue": False})] + [(rows, {})] * 4
 
     def check(d):
         out = []
@@ -1067,7 +1067,7 @@ def sc_sticky_drain_e5_overnight(path):
     held = {"busy-q1": q1, "busy-q2": q2}
     first = dict(held, **{"e5-stageb-qh": e5})
     rows = dict(first, **{"ak-gpu-r20-long": ak_long, "ak-gpu-r20-short": ak_short, "lsa-r35-q0": lsa})
-    ticks = [(held, {}), (first, {}), (first, {})] + [(rows, {})] * 50
+    ticks = [(held, {"host_after_gpu_queue": False}), (first, {}), (first, {})] + [(rows, {})] * 50
 
     def check(d):
         out = []
@@ -1147,7 +1147,7 @@ def sc_quiet_host_not_starved_by_smokes(path):
     q2 = row("busy-q2", regions="any-of q2", extra="make -j 24", est=7200, rank=50)
     held = {"busy-q1": q1, "busy-q2": q2}
     rows = dict(held, **{"e5-stageb-qh": e5})
-    world = {"gpu_smoke_queued": {f"ak-smoke-{k}": 20 for k in range(16)}}
+    world = {"gpu_smoke_queued": {f"ak-smoke-{k}": 20 for k in range(16)}, "host_after_gpu_queue": False}
     ticks = [(held, {})] + [(rows, world)] * 16   # 16 ticks x 120 s = 32 min of waiting
 
     def check(d):
@@ -1559,7 +1559,7 @@ def sc_res_1135_shadow_changes_nothing(path):
         if not any(_lines(d, f"WOULD-REFUSE {r}") for r in lows):
             out.append("no WOULD-REFUSE line for the low row")
         return out
-    return write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=False)), check
+    return write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=False, host_after_gpu_queue=False)), check
 
 
 def _ticks_1135(plain_low=False):
@@ -1582,7 +1582,7 @@ def sc_res_1135_rank_skip(path):
     def check(d):
         return (_before_head(d, "c21-fold-cpu-r3", "ak-cpu-aa-calibration-q-c18-r3")
                 + _before_head(d, "c21-fold-cpu-r3", "ak-specpit1-t1p095"))
-    return write(path, _mode(_ticks_1135(), "enforce")), check
+    return write(path, _mode(_ticks_1135(), "enforce", host_after_gpu_queue=False)), check
 
 
 def _ticks_light():
@@ -1672,9 +1672,28 @@ def sc_replan_1120_specpit_r4(path):
 def sc_replan_1139_rank_skip(path):
     """11:35/11:39Z: RANK-SKIP with T = the GPU grant's end -> live GRANT calib-c18 / specpit-t1p095 ahead of c21-r3 (the low
     rows plain quarter rows, as in the shadow twin above); C plans c21-r3 at its own regions' end, never the 3 h GPU end."""
-    return (write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=False)),
+    return (write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=False, host_after_gpu_queue=False)),
             _replan_check("c21-fold-cpu-r3", ["ak-cpu-aa-calibration-q-c18-r3", "ak-specpit1-t1p095"]))
 
+
+
+def sc_host_after_gpu_queue(path):
+    """Whole-host work waits for queued GPU smoke while a quarter backfills, then starts."""
+    h = _c21("c21-fold-cpu-r3")
+    q = _ak_q("gpu-queue-backfill", 60, TICK, quiet=False, sensitive=False)
+    rows = {"c21-fold-cpu-r3": h, "gpu-queue-backfill": q}
+    ticks = [(rows, {"gpu_smoke_queued": {"gpu-smoke": 20}})] + [(rows, {})] * 8
+    def check(d):
+        out = []
+        if not _granted(d, "gpu-queue-backfill") or _first(d, "gpu-queue-backfill") != 0:
+            out.append("quarter did not backfill while GPU smoke was queued")
+        hstart = _first(d, "c21-fold-cpu-r3")
+        if hstart is None or hstart == 0:
+            out.append("host did not wait for the GPU queue to empty and then start")
+        if not any("DEFERRED-AFTER-GPU-QUEUE (1 GPU rows queued)" in line for _, line in _lines(d, "IDLE-WHY")):
+            out.append("no IDLE-WHY explaining GPU queue deferral")
+        return out
+    return write(path, ticks), check
 
 
 def sc_host_drain_1135(path):
@@ -1691,10 +1710,11 @@ def sc_host_drain_1135(path):
         if not _lines(d, "HOST-DRAIN c21-fold-cpu-r3 "):
             out.append("no HOST-DRAIN line for c21-r3")
         return out
-    return write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=True)), check
+    return write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=True, host_after_gpu_queue=False)), check
 
 
 SCENARIOS = {
+    "host-after-gpu-queue": sc_host_after_gpu_queue,
     "host-drain-1135": sc_host_drain_1135,
     "replan-1027-calib-a3b-shadow": sc_replan_1027_calib_a3b,
     "replan-1120-specpit-r4-shadow": sc_replan_1120_specpit_r4,
