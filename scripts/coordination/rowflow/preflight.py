@@ -46,6 +46,13 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
                inputs/kld_text.txt), and any literal `inputs/<file>` path (existence only). Paths outside the row dir
                (GGUFs, stores) are the store/model checks' job. PUBLISH_ONLY (ak-c22-q8wp-op-gpu-20261125: kld_text.txt
                never copied, found only at smoke).
+  replay_decide 17 (R4, waste audit 2026-11-25) a row whose family left a prior out/: `job.py --decide-from <prior out>`
+               (nice 19, cpus 84-87, timeout 60; no GPU) must run, return a verdict and not reproduce the prior smoke FAIL's
+               class: REPLAY-DECIDE-CRASH / -NO-VERDICT / -SAME-CLASS; legacy jobs without the entry point WARN. PUBLISH_ONLY.
+  replay_receipt 18 (R1) a republish of a family whose LAST smoke FAILED carries a replay receipt (out/REPLAY-RECEIPT.json
+               from `job.py --replay`, spec.replay_receipt, or replay_decide's own replay) bound to that FAIL (FAIL record
+               sha, launcher.out sha, job.py sha, logs sha) whose verdict is a DIFFERENT failure class; spec.fix_ref
+               {store, reason} naming a new kernel store is the one escape. No job-sha (fresh_attempt) bypass. PUBLISH_ONLY.
   generator 12 WARN only: job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` + spec.generator agree
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
    row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
@@ -66,7 +73,8 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`
     sys.path.insert(0, _HERE)
 
-CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl", "witness_log_tools", "inputs")
+CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl", "witness_log_tools", "inputs",
+          "replay_decide", "replay_receipt")   # replay_decide BEFORE replay_receipt: R4's replay can serve as the R1 receipt
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
@@ -195,7 +203,7 @@ class Row:
         except OSError:
             names = []
         for f in names:
-            if f.endswith(".py") and f not in ("ak_row_harness.py",):
+            if f.endswith(".py") and f not in ("ak_row_harness.py", "ak_gate.py"):   # vendored, tested harness libraries
                 self.code[f] = _read(os.path.join(self.dir, f))
             elif f.endswith(".sh"):
                 self.sh[f] = _read(os.path.join(self.dir, f))
@@ -1235,6 +1243,8 @@ def check_append(row, ctx):
         own = {f: t for f, t in row.code.items() if f not in LINT.VENDORED or f == "lp_common.py"}
     except ImportError:
         own = row.code
+    if "import ak_gate" in (row.code.get("job.py") or "") and os.path.isfile(os.path.join(row.dir, "ak_gate.py")):
+        return []   # a declared gate row: ak_gate.Gate.run appends every unit via ak_row_harness.append_unit (tested)
     if not own:
         return []
     n_append, n_w, _batch = _append_writes(own)
@@ -1479,19 +1489,332 @@ def check_inputs(row, ctx):
     return out
 
 
+# ---------------------------------------------------------------- replay gates (R1 receipt, R4 replay smoke)
+# docs/design/ak-waste-audit-20261125.md §3 R1/R4 + pipeline-mgmt gate harness 2026-11-25. A -rN republish of a family whose
+# LAST smoke FAILED must show that the NEW decision path, run offline on the previous run's real out/ (and its FAIL record +
+# launcher.out), reaches a DIFFERENT failure class: "your fix does not change the verdict on the log it failed on" is the
+# refusal. The receipt is out/REPLAY-RECEIPT.json (job.py --replay, ak_gate) or spec.replay_receipt, or the replay this
+# preflight runs itself (R4: job.py --decide-from <prior out>, nice 19, cpus 84-87, timeout 60). A new job sha alone is
+# never evidence (no fresh_attempt bypass here); spec.fix_ref {store, reason} naming a kernel store the failed run did
+# not use is the one escape (the fix is in the binary, so the old log cannot show it).
+REPLAY_PIN = ("/usr/bin/nice", "-n", "19", "/usr/bin/taskset", "-c", "84-87", "/usr/bin/timeout", "60")
+REPLAY_TIMEOUT_S = 90
+FINE_CLASS_RX = (("witness", re.compile(r"WITNESS|witness|-lv\b|log level|verbosity")),
+                 ("nondet", re.compile(r"NONDET|nondetermin", re.I)),
+                 ("correctness", re.compile(r"CORRECTNESS|MISMATCH|identity|output_eq|\bKLD\b")),
+                 ("aa", re.compile(r"_AA\b|\bA/A\b")),
+                 ("input", re.compile(r"MISSING_INPUT|input \S+ missing|No such file|INPUT-MISSING")),
+                 ("residency", re.compile(r"RESIDENCY|VRAM")),
+                 ("server", re.compile(r"not ready|server exited|_SERVER\b|ServerDied|Connection refused")))
+
+
+def _is_ak(row):
+    return row.owner.startswith("autokernel") or row.id.startswith("ak-")
+
+
+def _iso_or_mtime(rec, p):
+    try:
+        import rowflow as rf
+        t = rf.iso_epoch((rec or {}).get("at"))
+        if t:
+            return float(t)
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        return os.path.getmtime(p)
+    except OSError:
+        return 0.0
+
+
+def family_ids(flags, rid):
+    """Ids sharing rid's id_stem (rowflow.id_stem: dates / -rN stripped) with a dryrun dir or a ready manifest."""
+    import rowflow as rf
+    stem = rf.id_stem(rid)
+    ids = {rid}
+    for p in glob.glob(os.path.join(flags, "dryrun", "*")) + glob.glob(os.path.join(flags, "ready", "*.json")):
+        oid = os.path.basename(p)[:-5] if p.endswith(".json") else os.path.basename(p)
+        if rf.id_stem(oid) == stem:
+            ids.add(oid)
+    return ids
+
+
+def family_last_smoke(flags, rid):
+    """The newest smoke outcome of rid's family: {kind: PASS|FAIL, id, path, at} or None. Arming/launch FAILs (allocator
+    records, rowflow.is_arm_fail) are not smoke outcomes."""
+    import rowflow as rf
+    recs = []
+    for fid in family_ids(flags, rid):
+        pp = rf.pass_path(flags, fid)
+        if os.path.isfile(pp):
+            recs.append((_iso_or_mtime(_load_json(pp), pp), "PASS", fid, pp))
+        for fp in rf.fail_paths(flags, fid):
+            f = _load_json(fp) or {}
+            if not rf.is_arm_fail(f):
+                recs.append((_iso_or_mtime(f, fp), "FAIL", fid, fp))
+    if not recs:
+        return None
+    t, kind, fid, p = max(recs)
+    return {"kind": kind, "id": fid, "path": p, "at": t}
+
+
+def _manifest(flags, fid):
+    import rowflow as rf
+    return _load_json(rf.ready_path(flags, fid)) or _load_json(os.path.join(rf.dry_dir(flags, fid), "unpublished.json")) or {}
+
+
+def prior_out(flags, fid):
+    """The out/ dir of run `fid` (its manifest scratch_root, else <tmp>/<fid>) when it holds anything a replay reads."""
+    root = str(_manifest(flags, fid).get("scratch_root") or os.path.join(TMP_ROOT, fid))
+    out = os.path.join(root, "out")
+    for p in (os.path.join(out, "results.jsonl"), os.path.join(out, "logs"), os.path.join(root, "out-smoke", "results.jsonl"),
+              os.path.join(out, "TERMINAL-smoke.json")):
+        if os.path.exists(p):
+            return out
+    return None
+
+
+def family_prior_outs(flags, rid):
+    """[(mtime, fid, out_dir)] of the family's OTHER runs that left an out/, newest first."""
+    out = []
+    for fid in family_ids(flags, rid) - {rid}:
+        o = prior_out(flags, fid)
+        if o:
+            out.append((os.path.getmtime(o), fid, o))
+    return sorted(out, reverse=True)
+
+
+def _fine_class(text):
+    for name, rx in FINE_CLASS_RX:
+        if rx.search(text or ""):
+            return name
+    return None
+
+
+def _failclass_mod():
+    try:
+        import rowflow as rf
+        return rf._failclass_mod()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def prev_failure_class(flags, fid, fail_path):
+    """{key: side:klass (akloop/failclass.classify_fail), fine, text} of a recorded smoke FAIL."""
+    import rowflow as rf
+    rec = _load_json(fail_path) or {}
+    lo = _read(os.path.join(rf.dry_dir(flags, fid), "launcher.out")) or ""
+    out = prior_out(flags, fid)
+    term = _load_json(os.path.join(out, "TERMINAL-smoke.json")) if out else None
+    smoke_lines = "\n".join(ln for ln in lo.splitlines() if "SMOKE FAIL" in ln or "FUTILITY" in ln)[-2000:]
+    text = " ".join([str(rec.get("reason") or ""), str((term or {}).get("reason") or ""), smoke_lines])
+    key = None
+    fc = _failclass_mod()
+    if fc is not None:
+        try:
+            c = fc.classify_fail(dict(rec, id=fid), lo)
+            key = f"{c.side}:{c.klass}"
+        except Exception:  # noqa: BLE001
+            key = None
+    return {"key": key, "fine": _fine_class(text), "text": text[:600]}
+
+
+def observed_class(observed):
+    v = str((observed or {}).get("verdict") or "")
+    text = v + " " + str((observed or {}).get("reason") or "")
+    key = None
+    fc = _failclass_mod()
+    if fc is not None:
+        try:
+            c = fc.classify_result({"verdict": v, "polar": (observed or {}).get("polar"), "complete": True})
+            key = f"{c.side}:{c.klass}"
+        except Exception:  # noqa: BLE001
+            key = None
+    # not a failure: a pass/keep, a measured NO_KEEP, or INCOMPLETE (the replay ran past the point the prior run failed at
+    # and simply ran out of recorded units)
+    ok = v.startswith(("KEEP", "SMOKE_PASS", "PASS", "NO_KEEP", "INCOMPLETE")) or (observed or {}).get("polar") == "PASS"
+    return {"key": key, "fine": None if ok else _fine_class(text), "ok": ok}
+
+
+def same_failure_class(prev, obs):
+    """True when the replayed verdict is the SAME failure as the recorded one. A replay that no longer fails never is; a
+    fine class (witness / correctness / nondet / aa / input / residency / server) on both sides decides; otherwise the
+    failclass side:klass keys (unknown never matches)."""
+    if obs.get("ok"):
+        return False
+    if prev.get("fine") and obs.get("fine"):
+        return prev["fine"] == obs["fine"]
+    k1, k2 = prev.get("key"), obs.get("key")
+    return bool(k1 and k2 and k1 == k2 and not k1.startswith("unknown"))
+
+
+def _job_supports_replay(row):
+    job = row.code.get("job.py") or ""
+    return "--decide-from" in job or "import ak_gate" in job
+
+
+def run_replay_decide(row, prior_out_dir, flags=None, pin=REPLAY_PIN, timeout=REPLAY_TIMEOUT_S):
+    """job.py --decide-from <prior out> under nice/taskset 84-87/timeout: {rc, observed|error, ...} (never raises)."""
+    job = os.path.join(row.dir, "job.py")
+    env = {"PATH": "/usr/bin:/bin", "HIP_VISIBLE_DEVICES": "-1", "ROCR_VISIBLE_DEVICES": "-1"}
+    if flags:
+        env["ROWFLOW_FLAGS"] = flags
+    t0 = __import__("time").time()
+    try:
+        p = subprocess.run(list(pin) + [sys.executable, "-I", "-B", job, "--decide-from", prior_out_dir], cwd=row.dir,
+                           env=env, capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return {"rc": None, "error": f"{type(e).__name__}: {e}"}
+    line = next((ln for ln in reversed(p.stdout.splitlines()) if ln.startswith("DECIDE ")), None)
+    out = {"rc": p.returncode, "elapsed_s": round(__import__("time").time() - t0, 2), "prior_out": prior_out_dir,
+           "stderr_tail": (p.stderr or "")[-300:]}
+    if not line:
+        return dict(out, error="no DECIDE line on stdout")
+    try:
+        d = json.loads(line[len("DECIDE "):])
+    except ValueError:
+        return dict(out, error="DECIDE line is not JSON")
+    if d.get("error"):
+        return dict(out, error=d["error"])
+    return dict(out, **d)
+
+
+def check_replay_decide(row, ctx):
+    """R4: the new decide() replayed on the family's newest prior out/ must run, name a verdict, and (when that run's smoke
+    FAILED last) not reproduce the same failure class. Legacy jobs with no --decide-from entry point: WARN."""
+    flags = ctx.get("flags")
+    if not flags or not row.dir or not _is_ak(row) or "job.py" not in row.code:
+        return []
+    priors = family_prior_outs(flags, row.id)
+    if not priors:
+        return []
+    last = family_last_smoke(flags, row.id)
+    pick = next((p for p in priors if last and p[1] == last["id"]), priors[0])
+    if not _job_supports_replay(row):
+        return [("WARN", "REPLAY-DECIDE-UNSUPPORTED", f"family has a prior out/ ({pick[1]}) but job.py has no --decide-from "
+                                                      "entry point (mk_ak_row v2 template / ak_gate rows have one)")]
+    r = run_replay_decide(row, pick[2], flags)
+    ctx.setdefault("replay_decide", {})[row.id] = dict(r, prev_id=pick[1])
+    if r.get("error") or r.get("rc") not in (0,):
+        return [("FAIL", "REPLAY-DECIDE-CRASH", f"job.py --decide-from {pick[2]} failed (rc {r.get('rc')}): "
+                                                f"{r.get('error') or r.get('stderr_tail')}"[:400])]
+    obs = r.get("observed") or {}
+    if not str(obs.get("verdict") or "").strip():
+        return [("FAIL", "REPLAY-DECIDE-NO-VERDICT", f"job.py --decide-from {pick[2]} returned no verdict")]
+    if last and last["kind"] == "FAIL" and last["id"] == pick[1]:
+        prev, oc = prev_failure_class(flags, last["id"], last["path"]), observed_class(obs)
+        r.update(prev_failclass=prev, observed_class=oc)
+        if same_failure_class(prev, oc):
+            return [("FAIL", "REPLAY-DECIDE-SAME-CLASS", f"replaying the new decide() on {last['id']}'s out/ gives "
+                                                         f"{obs.get('verdict')} - the same failure class as its smoke FAIL "
+                                                         f"({prev.get('fine') or prev.get('key')}): your fix does not change "
+                                                         "the verdict on the log it failed on")]
+    return []
+
+
+def _receipt(row, ctx):
+    rc = row.spec.get("replay_receipt")
+    if isinstance(rc, dict):
+        return rc, "spec.replay_receipt"
+    if isinstance(rc, str) and os.path.isfile(rc):
+        return _load_json(rc), rc
+    p = os.path.join(row.dir, "out", "REPLAY-RECEIPT.json") if row.dir else ""
+    if p and os.path.isfile(p):
+        return _load_json(p), p
+    auto = (ctx.get("replay_decide") or {}).get(row.id)
+    if auto and auto.get("observed"):
+        return dict(auto, auto=True), "preflight replay_decide"
+    return None, None
+
+
+def _fix_ref_ok(row, flags, last):
+    fr = row.spec.get("fix_ref")
+    if not isinstance(fr, dict) or not str(fr.get("reason") or "").strip() or not fr.get("store"):
+        return False
+    prev = Row(_manifest(flags, last["id"]))
+    prev_stores = {os.path.realpath(s) for s in row_stores(prev)} if prev.dir else set()
+    st = os.path.realpath(str(fr["store"]))
+    return os.path.isdir(st) and st not in prev_stores
+
+
+def check_replay_receipt(row, ctx):
+    """R1: a republish of a family whose LAST smoke FAILED carries a replay receipt that binds to that failure (FAIL record
+    sha, launcher.out sha, the new job.py sha, the prior logs sha) and whose replayed verdict is a different failure class."""
+    flags = ctx.get("flags")
+    if not flags or not _is_ak(row):
+        return []
+    last = family_last_smoke(flags, row.id)
+    if not last or last["kind"] != "FAIL":
+        return []
+    if _fix_ref_ok(row, flags, last):
+        return [("WARN", "REPLAY-RECEIPT-FIXREF", f"family's last smoke FAILED ({last['id']}); accepted on spec.fix_ref "
+                                                  f"{row.spec['fix_ref'].get('store')} (a kernel store the failed run did not use)")]
+    rec, src = _receipt(row, ctx)
+    how = (f"python3 -I -B {os.path.join(row.dir or '<row>', 'job.py')} --replay "
+           f"{prior_out(flags, last['id']) or os.path.join(TMP_ROOT, last['id'], 'out')}")
+    if not isinstance(rec, dict):
+        return [("FAIL", "REPLAY-RECEIPT-MISSING", f"family's last smoke FAILED ({last['id']}, {os.path.basename(last['path'])}) "
+                                                   f"and this republish carries no replay receipt: run `{how}` (writes "
+                                                   "out/REPLAY-RECEIPT.json) and fix until it reaches a different verdict")]
+    out = []
+    if str(rec.get("prev_id") or "") != last["id"]:
+        out.append(("FAIL", "REPLAY-RECEIPT-STALE", f"{src}: prev_id {rec.get('prev_id')!r} is not the family's last failed "
+                                                    f"run {last['id']}"))
+    if not rec.get("auto"):
+        want = {"prev_fail_sha256": _sha256(last["path"])}
+        import rowflow as rf
+        lo = os.path.join(rf.dry_dir(flags, last["id"]), "launcher.out")
+        if os.path.isfile(lo):
+            want["prev_launcher_out_sha256"] = _sha256(lo)
+        jp = os.path.join(row.dir, "job.py")
+        if os.path.isfile(jp):
+            want["job_sha256"] = _sha256(jp)
+        for k, v in want.items():
+            if rec.get(k) != v:
+                out.append(("FAIL", "REPLAY-RECEIPT-STALE", f"{src}: {k} {str(rec.get(k))[:16]} != on-disk {str(v)[:16]} "
+                                                            "(the receipt is not for this failure / this job.py: re-run --replay)"))
+        po = prior_out(flags, last["id"])
+        if po and rec.get("logs_sha256"):
+            try:
+                import ak_gate
+                if ak_gate.logs_sha256(po)[0] != rec["logs_sha256"]:
+                    out.append(("FAIL", "REPLAY-RECEIPT-STALE", f"{src}: logs_sha256 differs from {po} now"))
+            except Exception:  # noqa: BLE001 - an unreadable prior is reported by the class check below
+                pass
+    obs = rec.get("observed") or {"verdict": rec.get("verdict")}
+    if not str(obs.get("verdict") or "").strip():
+        out.append(("FAIL", "REPLAY-RECEIPT-NO-VERDICT", f"{src}: no observed verdict"))
+    elif not out:
+        prev, oc = prev_failure_class(flags, last["id"], last["path"]), observed_class(obs)
+        if same_failure_class(prev, oc):
+            out.append(("FAIL", "REPLAY-RECEIPT-SAME-CLASS", f"{src}: replay verdict {obs.get('verdict')} is the same failure "
+                                                             f"class as {last['id']}'s smoke FAIL "
+                                                             f"({prev.get('fine') or prev.get('key')}): your fix does not change "
+                                                             "the verdict on the log it failed on"))
+    return out
+
+
+def replay_receipt_verdict(spec, flags, row_dir=None):
+    """Hook for publish_row's family gate (republish_allowed): (ok, [messages]) from the R4 replay + R1 receipt checks."""
+    row = Row(spec, row_dir)
+    ctx = {"flags": flags}
+    res = check_replay_decide(row, ctx) + check_replay_receipt(row, ctx)
+    return not any(l == "FAIL" for l, _c, _m in res), [f"{l} {c}: {m}" for l, c, m in res]
+
+
 CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_flags, "model": check_model,
              "lane": check_lane, "smoke": check_smoke, "estimate": check_estimate, "ports": check_ports,
              "append": check_append, "witness": check_witness, "witness_log": check_witness_loglevel,
              "witness_decl": check_witness_declared, "witness_log_tools": check_witness_loglevel_tools,
              "served": check_served, "inputs": check_inputs,
-             "generator": check_generator}
+             "generator": check_generator, "replay_decide": check_replay_decide,
+             "replay_receipt": check_replay_receipt}
 
 
 # ---------------------------------------------------------------- runners
 # Publish-only checks: they judge what the row DECLARES before its smoke has run. A row whose smoke already PASSED ran the real
 # binary and found the witness, which is stronger evidence, so report / keeper-side use grandfathers it (grandfather=True);
 # publish never does (its new id has no PASS). Operator-adjacent origin: AutoKernel report 2026-11-24 23:2xZ.
-PUBLISH_ONLY = ("witness_log", "witness_decl", "witness_log_tools", "inputs")
+PUBLISH_ONLY = ("witness_log", "witness_decl", "witness_log_tools", "inputs", "replay_decide", "replay_receipt")
 
 
 def smoke_pass_date(flags, spec):
@@ -1517,13 +1840,15 @@ def smoke_pass_date(flags, spec):
 
 
 def run(spec, row_dir=None, flags=None, queued=None, checks=CHECKS, run_selftest=False, nodes=None, vram=None, rebuild=True,
-        grandfather=False):
+        grandfather=False, ctx_out=None):
     """[(check, raw_level, code, msg)] for one row. Never raises: a crashing check is reported as a WARN.
     grandfather=True: PUBLISH_ONLY checks on a row whose smoke PASSED report one PASS line instead of re-judging it."""
     row = Row(spec, row_dir)
     gf = smoke_pass_date(flags, spec) if grandfather else None
     ctx = {"flags": flags, "queued": queued, "run_selftest": run_selftest, "nodes": nodes, "vram": vram, "rebuild": rebuild,
            "history": rebuild}
+    if ctx_out is not None:
+        ctx_out["replay_decide"] = ctx.setdefault("replay_decide", {})   # shared: publish_check records the R4 replay
     out = []
     for c in checks:
         if gf and c in PUBLISH_ONLY:
@@ -1612,7 +1937,10 @@ def publish_check(spec, flags, warn=print, queued=None):
             queued = queued_rows(flags)
         except Exception:  # noqa: BLE001
             queued = {}
-    res = run(spec, flags=flags, queued=queued)
+    ctx_out = {}
+    res = run(spec, flags=flags, queued=queued, ctx_out=ctx_out)
+    if ctx_out.get("replay_decide"):
+        spec.setdefault("preflight", {})["replay_decide"] = ctx_out["replay_decide"].get(str(spec.get("id")))
     eff = effective(res)
     for raw, f in zip(res, eff):
         warn(fmt(f) + (" (would FAIL if enforced; publish continues)" if raw[1] == "FAIL" and f[1] != "FAIL" else ""))
