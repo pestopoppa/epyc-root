@@ -4,6 +4,20 @@
 **Confidence**: inferred
 **Sources**: 254 (249 + 5 added 2026-11-19) native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
 
+## Compiled update — 2026-11-25: always-on agent primitives and agent-engineering references
+
+**Confidence: inferred** (two intake runs, `intake-always-on-1124` and `intake-agents-intro-20261124`, dive-verified; Stage-3 plans propose, they do not change running code).
+
+- **Durable inbox, one worker (`intake-2942#record`).** Event sources append to a durable inbox that one active worker drains; the inbox is the source of truth so a replacement worker can retry after a crash. The one-worker-per-inbox rule and dedup-by-source-id are only partly supported by the source. This is the pattern our session bus and rowflow queue already approximate.
+- **Verification and gates (`intake-2943#record`).** End-to-end, property and differential tests are the three worth funding; judging rules live where the change cannot edit them; a new gate starts in observe mode; after three failed fix rounds the agent stops and brings in a human.
+- **Permissions and deferral (`intake-2947#record`).** The auto-mode classifier reports 0.4% false positives on 10,000 real calls but 17% false negatives on real overeager actions (n = 52), strips assistant text and tool results so the agent cannot argue it into a call, and escalates after 3 consecutive or 20 total denials. Relevant to our act-don't-defer admission test: a denial returns the reason to the agent rather than ending the run.
+- **Memory (`intake-2946#record`).** Only strategy, plans and tested rules need writing down; the top memory layer must stay small (200 lines or 25 KB loaded); wikis built by dreaming help most when paired with search (13% to 48% of graded criteria from 2 to 128 sessions, 25 questions).
+- **Agent time (`intake-2953#record`).** Agents estimate time spent almost exactly when given an elapsed-time tool but forecast their natural runtime too high, and one tested agent returned early on 55% of runs at a median of 0.3 of the requested time. Supports giving loops a clock and a duration contract rather than trusting self-pacing.
+- **Agent-engineering references (agents-intro sweeps 1-3, `intake-2907#record`..`intake-2941#record`).** The reference set covers long-running harnesses, context engineering, agent evals, tool design, contextual retrieval, CaMeL prompt-injection defence, self-correction limits, the Holistic Agent Leaderboard, "don't build multi-agents" and CooperBench; most were already represented in the index (18 of 51 bibliography arXiv ids were duplicates).
+- **Compaction training (`intake-2968#record`).** RECAP trains compaction against a full-context self-teacher; the +4.6 / +4.3 gains are one training run per method, with the SWE lambda picked on 100 problems, and the summary-reward term alone is slightly negative.
+
+Sources: [always-on dive A](../research/deep-dives/intake-always-on-1124/dive-A-inbox-outbox.md), [dive B](../research/deep-dives/intake-always-on-1124/dive-B-verification-loops.md), [dive C](../research/deep-dives/intake-always-on-1124/dive-C-permissions-deferral.md), [dive D](../research/deep-dives/intake-always-on-1124/dive-D-memory-autopilot.md), [dive E](../research/deep-dives/intake-always-on-1124/dive-E-agent-time.md), [always-on Stage-3 plan](../research/deep-dives/intake-always-on-1124/stage3-plan.md), [agents-intro sweep 1](../research/deep-dives/intake-agents-intro-20261124/sweep1-reference-dives.md), [sweep 2](../research/deep-dives/intake-agents-intro-20261124/sweep2-wave1-dives.md), [sweep 3](../research/deep-dives/intake-agents-intro-20261124/sweep3-wave2-dives.md), [agents-intro Stage-3 plan](../research/deep-dives/intake-agents-intro-20261124/stage3-plan.md), [M2 RECAP dive](../research/deep-dives/intake-kspec-1125/dive-M2-recap-effort-topk.md).
+
 ## Latest source review — 2026-10-07
 
 ## Source synthesis — request state, completion and workflow authority

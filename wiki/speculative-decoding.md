@@ -17,6 +17,22 @@ Sources: [speculative-decoding progress](../progress/2026-11/2026-11-02-handoff-
 
 **Sources**: 135 native document references (source review 2026-10-07)
 
+## Compiled update — 2026-11-25: draft-tree and drafter-calibration dives (intake-kspec-1125)
+
+**Confidence: inferred** (literature dives verified against paper text; our MI210 numbers are cited from existing rows, nothing new was measured).
+
+The kspec Stage-2 dives re-read five draft-side papers against our served stack (Qwen3.8-27B GDN hybrid with DFlash2, MI210, mostly T 0.1-0.3). The common pattern: headline gains are real in the paper's regime (T = 1, GPU, modelled latency) and mostly do not transfer to ours.
+
+- **Pando noise-coupled trees (`intake-2963#record`).** The noise-coupling losslessness proof holds only under a target-sampling verifier; it does not carry over to our recursive-rejection tree verifier, where a tree shape that depends on verifier randomness biases output. The effect vanishes at T = 0 and is small at low T, while the paper measures only T = 1. The 5.27x / 4.22x headline is greedy Pando without coupling and is roofline-modelled (only acceptance length is measured). Our own replay of the same idea (SPEC-DTREE-DICE V3) found no gain on A3B or 27B even at T = 1.
+- **The ridge-point cost model does not predict MI210 verify cost.** It predicts 16-node verification within 1.02x of a decode step; we measured a 1.32x round-cost ratio at T16 (W1/8/12/16 = 31.4/43.5/61.3/62.4 ms). Kernel and hybrid-state costs dominate on our hardware; the official C21 T1.0 T16 sampled-tree gain is 1.035x and T0.3 is null.
+- **Concurrency evidence is the load-adaptive-tree paper, not the deterministic-drafting one.** A fixed 64-node tree falls below the chain at C = 32; load-adaptive trees stay 7-16% ahead. The closest external datapoint to our lineup is UBTree on Qwen3.8-27B (tau 7.08, 4.78x) vs DFlash 2 (tau 5.78, 4.24x), TP4 batch 1 on GPU.
+- **Draft temperature scaling (`intake-2964#record`).** Open drafters are underconfident, and one T_d < 1 yields about 5-10% accepted length, but only at T_t = 1 untruncated; a token-adaptive head gains under 1% over the global scalar, and our 27B replay gave +0.47% at best. **TreeSpark (`intake-2975#record`)** beats DDTree by 9-16% at equal budget (greedy) but beats a tuned chain only at batch 1; its load-aware policy shrinks to a chain, consistent with our own results.
+- **LEGOSpec/DFlux (`intake-2965#record`).** The +13.7% (regular) / +34.7% (long) acceptance headlines are scoped: 13.7% is GSM8K on the A3B, 34.7% is against DLite not DFlash2, and matched 80K-sample training shrinks regular gains to about 1.3-7.8%. Nearly all long-context gain comes from the SWA-hybrid plus convolution backbone, not the corrector. Serving numbers are the authors' SGLang port on an unnamed GPU, not comparable to llama.cpp on MI210.
+
+**Operational reading:** none of these changes the draft design on the C21/C22 path. Reusable pieces are the load-adaptive tree-shrinks-to-chain policy (already how we behave) and the matched-data caveat when comparing drafters.
+
+Sources: [S1 Pando dive](../research/deep-dives/intake-kspec-1125/dive-S1-pando-trees.md), [S2 calibration dive](../research/deep-dives/intake-kspec-1125/dive-S2-draft-calibration.md), [S3 LEGOSpec dive](../research/deep-dives/intake-kspec-1125/dive-S3-legospec-gramdelta.md), [kspec Stage-3 plan (draft)](../research/deep-dives/intake-kspec-1125/stage3-plan.md), [digest 2026-11-25](../research/deep-dives/intake-digests/2026-11-25-ids-2956-2981.md).
+
 ## Latest source review — 2026-10-07
 
 ### Adaptive-width measurement prerequisite — 2026-10-07

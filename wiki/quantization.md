@@ -6,6 +6,16 @@
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
 **Sources**: 70 native document references (source review 2026-10-07)
 
+## Compiled update — 2026-11-25: MXFP4 block scaling and 2-bit speed claims
+
+**Confidence: inferred** (derived from dive reductions over paper text and our `ggml-quants.c`; no new measurement).
+
+- **OAS, Midmax and floor are one design axis for MXFP4 (`intake-2978#record`, `intake-2961#record`).** Our `quantize_row_mxfp4_ref` is the OCP floor rule (scaled block max in [4,8)). Overflow-Aware Scaling uses a (3.5,7] window and Midmax rounds the scale up when the floor-scaled max is >= 7.0; they differ only at exactly 7.0, so they are the same rule from two papers. Both trade a 14-21% clamp error on blocks whose max lands in (7,8) for finer small-value resolution; neither is MSE-optimal, and a direct per-block MSE choice is a candidate. About 15% of blocks change; the paper claims +0.5 dB QSNR.
+- **Shifter Quantization (`intake-2957#record`).** The 2-bit prefill speedups (2.71x SQ2, 3.77x SHI2 vs a Q2_K GGUF) pair speed with KL measured at a different activation precision (the SHI2 3.77x configuration has no reported KL), and the llama.cpp baseline's version, ubatch and flags are unstated. SQ8's KL win over vLLM FP8 reflects a per-tensor baseline more than the shifter mechanism. Treat as a design reference, not a Q2_K replacement claim.
+- **Reporting a quantization or kernel perf claim (`intake-2979#record`).** State the claim, the effect size and a mechanism signal; an A/A control is the false-positive check, not proof of mechanism.
+
+Sources: [W2A dive](../research/deep-dives/intake-kspec-1125/dive-W2A-mxfp4scale-agentprs.md), [K2 Shifter dive](../research/deep-dives/intake-kspec-1125/dive-K2-shifter-quant.md), [K4 TACPU/MXFP4 dive](../research/deep-dives/intake-kspec-1125/dive-K4-tacpu-mxfp4.md), [digest 2026-11-25](../research/deep-dives/intake-digests/2026-11-25-ids-2956-2981.md).
+
 ## Latest source review — 2026-10-07
 
 ## Incremental synthesis — 2026-10-07: low-bit admission is a bundle quality contract

@@ -4,6 +4,18 @@
 **Confidence**: inferred
 **Sources**: 210 (206 + 4 added 2026-11-19) native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
 
+## Compiled update — 2026-11-25: AutoKernel waste audit and the re-planning scheduler
+
+**Confidence: verified** for the audit counts (summed from `.ended`, `FAIL`, `PASS` records); **proposal** for the scheduler redesign (offline simulation only, no live file touched).
+
+- **Waste audit, 2026-11-24 11:00Z to 2026-11-25 11:30Z.** About 10 of 24.5 GPU-hours (40%) and 43 of 73.5 CPU quarter-hours (58%) of autokernel-owned rows produced no candidate verdict: 4.6 GPU-h scheduler idle and 4.2 GPU-h of work thrown away by owner STOPs. All eight remediations are refusals or alerts the keeper or `publish_row.py` can emit from data it already has; none relies on an agent remembering.
+- **Why the smoke-fail chain was not parked.** The devselect/devhandoff chain republished six times in about 80 minutes with identical failure text. The 3-strike park was keyed by row id, so every republish reset it, and the lineage-level `MAX_FAILS = 3` park never bit because `fresh_attempt()` grants one more attempt whenever the job sha is new, and each republish rewrites `job.py`. The keeper log has zero `parked` lines in the window. Failed smokes also went unrerun for up to 17 h.
+- **Contamination reruns.** 31 contamination lines on 14 rows; real foreign sources (backup rsync, research-intake python, firefox) and memory pressure from four concurrent 88 GB non-mmap dry runs.
+- **Re-planning scheduler (design, not landed).** The operator's observation that the scheduler never reconsiders placements is correct: `allocate()` is greedy per tick, and owners issued 8 STOPs to undo placements. On exact estimates a depth-1 EASY-backfill reservation cuts one urgent row's wait from 269 to 3.5 minutes, but under +-30% estimate noise it is the worst strategy (urgent mean wait 53 +- 32 min vs 44 for greedy), because reservations from wrong estimates over-hold lanes.
+- **Overnight AutoKernel outcome.** See the [hardware-optimization update](hardware-optimization.md) for the keeps and negatives; the C22 fold was not started, pending all lever rows being filed.
+
+Sources: [AK waste audit](../docs/design/ak-waste-audit-20261125.md), [rowflow re-planning scheduler](../docs/design/rowflow-replanning-scheduler.md), [AutoKernel overnight wrap-up](../progress/2026-11/2026-11-25-autokernel.md).
+
 ## Latest source review — 2026-10-07
 
 ## Incremental synthesis — 2026-10-07: AutoKernel calibrates its inputs, and an epoch binds its configuration

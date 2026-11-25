@@ -4,6 +4,17 @@
 **Confidence**: inferred
 **Sources**: 276 (268 + 8 added 2026-11-19) native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
 
+## Compiled update — 2026-11-25: verifying performance claims and scoping headline numbers
+
+**Confidence: inferred** (dive verdicts over paper text plus our own census documents).
+
+- **Kernel-trace verification of agent performance PRs (`intake-2958#record`, `intake-2977#record`).** Of 1,343 runtime-performance PRs, 57.3% give reasoning only or no evidence and 31.4% state an effect size. Of 82 re-measured (three variants per PR, base/head/base, interleaved, 10 timing runs, hardware counters, LTTng traces), 32 were faster, 28 unchanged, 22 slower, and the claimed mechanism held in 34. The A/A control moved no signal in 1,796 tests. The headline 1.7x "kernel signals move more often for the claimed mechanism" is a ratio of two percentages (48.8% / 28.7%), and the authors call a held mechanism consistent with the claim, not proof. Threats: all labelling and build agents are Claude models, one machine, human check of 300 PRs not yet done.
+- **Verdict grammar for external claims.** The kspec dives apply a fixed scheme (CONFIRMED / PARTIAL / OVERTURNED / NOT-FOUND-IN-SOURCE) and repeatedly find the same narrowing causes: headline measured against a weak or refit baseline, speed and quality measured at different configurations, equal-key rather than equal-byte comparisons, and ratios taken against the best row instead of the typical row. Read any headline number against its regime before it enters a decision.
+- **Eval design lessons from the always-on intake (`intake-2955#record`, `intake-2943#record`).** A reviewer evaluation built from incident PRs with a known-clean control is the right shape, but the published description names no tuning/test split and reports no recall value. Rules that judge a change should live where the change cannot edit them, and a new gate starts in observe mode.
+- **Census before building (`taskflow-early-end-census-20261124`).** A decision rule written before counting (build a resumable end state only if early-ends are at least 25% of failures and two units plausibly finish after one resume) returned DECLINE at 0 of 50 failures across r8a-r8g; the result is scoped to those runs.
+
+Sources: [M1 dive](../research/deep-dives/intake-kspec-1125/dive-M1-perfclaims-date.md), [W2A dive](../research/deep-dives/intake-kspec-1125/dive-W2A-mxfp4scale-agentprs.md), [always-on dive F](../research/deep-dives/intake-always-on-1124/dive-F-code-review-eval.md), [always-on dive B](../research/deep-dives/intake-always-on-1124/dive-B-verification-loops.md), [taskflow early-end census](../docs/design/taskflow-early-end-census-20261124.md).
+
 ## Latest source review — 2026-10-07
 
 ### Standalone paired-report input custody — 2026-10-07
