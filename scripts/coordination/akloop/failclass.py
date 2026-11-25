@@ -217,6 +217,55 @@ def _token(v):
     return base, (_TOKEN_PAREN.search(s).group(1) if _TOKEN_PAREN.search(s) else "")
 
 
+def _single_verdict(v):
+    """Existing single-token mapping (no composite handling): Classification or None when unrecognised."""
+    base, paren = _token(v)
+    if base == "FAIL" and "dup_ids" in paren:
+        return _c("candidate", "correctness_gate", "result:FAIL(dup_ids)", v)
+    if base == "FAIL":
+        return _c("candidate", "correctness_gate", "result:FAIL", v)
+    if base in RESULT_TOKENS:
+        side, klass = RESULT_TOKENS[base]
+        return _c(side, klass, f"result:{base}", v)
+    m = _LEAD_WORD.match(base)
+    if m and m.group(0) in RESULT_TOKENS:
+        side, klass = RESULT_TOKENS[m.group(0)]
+        return _c(side, klass, f"result:{m.group(0)}*", v)
+    if base.startswith("PASS"):
+        return _c("ok", "pass", "result:PASS*", v)
+    return None
+
+
+def _composite_verdict(v):
+    """`gate:X|mtp:Y|...` -> one Classification. Any fail segment -> fail; else any inconclusive / unrecognised /
+    harness segment -> inconclusive (candidate/noise); else all pass/keep -> that value. Per-segment mapping is
+    recorded in the rule (and evidence)."""
+    segs, kinds, first_fail = [], [], None
+    for seg in str(v).split("|"):
+        seg = seg.strip()
+        if not seg:
+            continue
+        val = seg.split(":", 1)[1].strip() if ":" in seg else seg
+        c = _single_verdict(val)
+        if c is None or c.side not in ("ok", "candidate") or c.klass == "noise":
+            kind = "inconclusive"
+        elif c.side == "candidate":
+            kind = "fail"
+            first_fail = first_fail or c
+        else:
+            kind = "keep" if c.klass == "keep" else "pass"
+        kinds.append(kind)
+        segs.append(f"{seg}->{kind}")
+    mapping = ",".join(segs)
+    if "fail" in kinds:
+        return _c(first_fail.side, first_fail.klass, f"result:composite[{mapping}]=fail", mapping)
+    if not kinds or "inconclusive" in kinds:
+        return _c("candidate", "noise", f"result:composite[{mapping}]=inconclusive", mapping)
+    if "keep" in kinds:
+        return _c("ok", "keep", f"result:composite[{mapping}]=keep", mapping)
+    return _c("ok", "pass", f"result:composite[{mapping}]=pass", mapping)
+
+
 def _fail_dups(d):
     return str(d).startswith("FAIL") and "dup_ids" in str(d)
 
@@ -268,7 +317,9 @@ def classify_result(res, launcher_text: str | None = None) -> Classification:
             v = v.get("status") or v.get("verdict")
         if isinstance(v, str) and v.strip():
             base, paren = _token(v)
-            if base == "FAIL" and "dup_ids" in paren:
+            if key == "verdict" and "|" in v:
+                c = _composite_verdict(v)
+            elif base == "FAIL" and "dup_ids" in paren:
                 c = _c("candidate", "correctness_gate", "result:FAIL(dup_ids)", v)  # duplicate unit ids: the patch broke id uniqueness
             elif base == "FAIL":
                 c = _c("candidate", "correctness_gate", "result:FAIL", v)

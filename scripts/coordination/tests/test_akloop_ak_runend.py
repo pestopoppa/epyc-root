@@ -356,3 +356,18 @@ def test_research_snapshot_includes_scripts_lib_for_path_gates(tmp_path):
     assert os.path.isfile(os.path.join(root, "scripts", "lib", "canonical_recipe.py"))
     assert os.path.isdir(os.path.join(kr, "autokernel", "lineage"))
     assert os.path.isfile(os.path.join(root, "scripts", "benchmark", "__init__.py"))
+
+
+def test_composite_verdicts():
+    import failclass as FC
+    k = lambda v: FC.classify_result({"id": "r", "verdict": v, "complete": True})
+    c = k("gate:INCONCLUSIVE|mtp:UNATTRIBUTED|np4mtp:NO_LOSS")
+    assert (c.side, c.klass) == ("candidate", "noise") and c.rule.endswith("=inconclusive")
+    assert "mtp:UNATTRIBUTED->inconclusive" in c.rule
+    c = k("gate:FAIL|x:PASS")
+    assert c.side == "candidate" and c.klass == "correctness_gate" and c.rule.endswith("=fail")
+    c = k("a:PASS|b:PASS")
+    assert (c.side, c.klass) == ("ok", "pass")
+    c = k("INCONCLUSIVE")
+    assert (c.side, c.klass, c.rule) == ("candidate", "noise", "result:INCONCLUSIVE")
+    assert k("DROP").rule == "result:DROP"
