@@ -158,13 +158,13 @@ def test_check_only_on_an_existing_row_and_supersedes_flag(env):
     (lambda s: s.update(handoff_task="akr.md:AKR-2"), "not open"),
     (lambda s: s.update(handoff_task="nope.md:X"), "names no handoffs/active"),
     (lambda s: s.update(priority_rank="high"), "priority_rank must be a number"),
-    (lambda s: s.update(supersedes=["ak-r-gate-gpu-20261125-r5"]), "cannot supersede itself"),
+    (lambda s: s.update(supersedes=["ak-r-gate-gpu-20261125-r6"]), "cannot supersede itself"),
     (lambda s: s["estimate_basis"].update(units=0), "ESTIMATE-BASIS"),
     (lambda s: s.update(estimate_s=60), "under 5 min"),
     (lambda s: None, None),
 ])
 def test_publish_and_rehearsal_agree(env, monkeypatch, mutate, needle):
-    rid = "ak-r-gate-gpu-20261125-r5"
+    rid = "ak-r-gate-gpu-20261125-r6"
     rc, out = run(decl(env, rid))
     assert rc == 0, out
     sp = env["rows"] / rid / "spec.json"

@@ -270,6 +270,10 @@ def validate_spec(spec):
     if len(kinds) != len(set(kinds)):
         errs.append(f"correctness: one unit per kind (got {kinds})")
     for c in corr_list(spec):
+        if c.get("kind") in ("identity", "kld", "tbo", "selftest_bin") and c.get("arms"):
+            for baseline in b:
+                if baseline not in c["arms"]:
+                    errs.append(f"correctness {c['kind']}: FIX: add {baseline} to the unit's arms")
         if c.get("kind") == "tbo" and "require_rc0" in c and not isinstance(c["require_rc0"], bool):
             errs.append("correctness tbo: require_rc0 must be a boolean")
         if c.get("kind") not in ("tbo", "kld", "identity", "selftest_bin"):
@@ -683,7 +687,7 @@ def _plan_one(spec, c):
         return []
     b, cand = baseline_arms(spec), candidate_arms(spec)
     if kind == "tbo":
-        return [(f"c-tbo-{a}", "c-tbo", a, {}) for a in (c.get("arms") or b[:1] + cand)]
+        return [(f"c-tbo-{a}", "c-tbo", a, {}) for a in (c.get("arms") or b + cand)]
     if kind == "selftest_bin":   # N fresh processes per arm, interleaved run by run
         arms = c.get("arms") or b + cand
         return [(f"c-st-{a}-r{r}", "c-st", a, {"run": r}) for r in range(1, int(c.get("runs") or 1) + 1) for a in arms]
@@ -727,10 +731,21 @@ def decide_correctness(spec, units):
 
 
 def _decide_one(spec, c, units):
+    try:
+        return _decide_one_impl(spec, c, units)
+    except Exception as e:
+        return "FUTILITY_HARNESS_DECIDE", {"kind": c.get("kind"), "why":
+                f"{type(e).__name__}: {e}; unit {c.get('kind')} arms {c.get('arms') or list(spec.get('arms') or {})}"}, True
+
+
+def _decide_one_impl(spec, c, units):
     plan = _plan_one(spec, c)
     by = {u.get("unit_id"): u for u in correctness_units(units)}
-    if any(uid not in by for uid, *_ in plan):
-        return None, {"kind": c["kind"], "missing": [uid for uid, *_ in plan if uid not in by]}, False
+    missing = [(uid, arm) for uid, _kind, arm, _extra in plan if not isinstance(by.get(uid), dict)]
+    if missing:
+        uid, arm = next(((uid, arm) for uid, arm in missing if arm in baseline_arms(spec)), missing[0])
+        verdict = "FUTILITY_HARNESS_NO_BASELINE" if arm in baseline_arms(spec) else "FUTILITY_HARNESS_DECIDE"
+        return verdict, {"kind": c["kind"], "why": f"MissingRecord: missing unit {uid} arm {arm}"}, True
     us = [by[uid] for uid, *_ in plan]
     err = [u for u in us if u.get("error")]
     if err:
@@ -779,6 +794,8 @@ def _decide_one(spec, c, units):
         byp.setdefault(u["prompt"], {})[u["arm"]] = u
     for p, arms in sorted(byp.items()):
         r = arms.get(ref)
+        if not isinstance(r, dict):
+            return "FUTILITY_HARNESS_NO_BASELINE", dict(det, why=f"missing baseline record: unit {kind} prompt {p} arm {ref}"), True
         row = {"prompt": p}
         for a, u in arms.items():
             if a == ref:
@@ -811,6 +828,18 @@ def polar(verdict):
 
 
 def decide(spec, units):
+    try:
+        return _decide_public(spec, units)
+    except Exception as e:
+        return decide_error(e, "decision", "unknown")
+
+
+def decide_error(e, unit, arm):
+    return {"verdict": "FUTILITY_HARNESS_DECIDE", "polar": None, "terminal": True,
+            "reason": f"{type(e).__name__}: {e}; unit {unit} arm {arm}"}
+
+
+def _decide_public(spec, units):
     """_decide() with the row's declared verdict names (spec.verdict_map {PASS|FAIL: {native verdict or prefix: name}}):
     a mapped verdict takes its side as `polar` and keeps the native one in native_verdict."""
     units = [u for u in units if u.get("kind") != "load" and not u.get("report_only")]
@@ -837,6 +866,13 @@ def decide(spec, units):
 
 
 def _decide(spec, units):
+    try:
+        return _decide_impl(spec, units)
+    except Exception as e:
+        return decide_error(e, "keep rule", "unknown")
+
+
+def _decide_impl(spec, units):
     """The pre-registered rule, first match wins. Returns {verdict, polar, terminal, reason, ...}; terminal False =
     keep running (or, in a replay, the prior run did not get far enough)."""
     kc = keep_cfg(spec)
@@ -1237,13 +1273,17 @@ class Gate:
         to = float(c.get("timeout_s") or 3600)
         log = os.path.join(self.logs, f"{uid}.log")
         if kind == "c-id" and c.get("mode", "server") == "server":
-            pr = identity_prompts(self.spec, self.d)[extra["prompt"]]
+            prompts = identity_prompts(self.spec, self.d)
+            if not 0 <= extra["prompt"] < len(prompts):
+                return {"unit_id": uid, "kind": kind, "arm": arm, "gate_unit": True,
+                        "error_class": "DECIDE", "error": f"IndexError: prompt {extra['prompt']} unavailable; unit {uid} arm {arm}"}
+            pr = prompts[extra["prompt"]]
             self.current_unit = {"sampler": {"temperature": 0.0, "top_k": 1}, "prompt_index": extra["prompt"]}
             u = self.visit_fn(uid, arm, [pr], int(c.get("n_predict") or 64), 0,
                               float(self.spec["server"].get("ready_timeout_s") or 900), kind="c-id")
             u["prompt"] = extra["prompt"]
             if not u.get("error"):
-                r = (u.get("req") or [{}])[0]
+                r = (u.get("req") or [None])[0] or {}
                 u["output_sha"] = r.get("tokens_sha") or r.get("content_sha")
                 u["accepted_sha"] = sha_bytes(str(r.get("draft_n_accepted")))[:16]
                 u["draft_sha"] = sha_bytes(str(r.get("draft_n")))[:16]
@@ -1337,6 +1377,17 @@ class Gate:
             self.kill_all()
 
     def run(self):
+        try:
+            return self._run()
+        except Exception as e:
+            try:
+                units = load_units(self.out)
+            except Exception:
+                units = []
+            return self.finish(units, decide_error(e, getattr(self, "decision_unit", "run"),
+                                                   getattr(self, "decision_arm", "unknown")))
+
+    def _run(self):
         """The full gate: inputs -> correctness first -> ABBA blocks with fresh servers -> verdict. Resumable."""
         bad = self.prepare()
         if bad:
@@ -1349,6 +1400,7 @@ class Gate:
                 continue
             if self.should_stop():
                 return 75
+            self.decision_unit, self.decision_arm = uid, arm
             u = self.run_correctness_unit(uid, kind, arm, extra)
             if u.get("error_class") == "STOPPED":
                 return 75
@@ -1406,7 +1458,11 @@ class Gate:
         return self.finish(units, decide(self.spec, units))
 
     def finish(self, units, d):
-        res = result_doc(self.spec, units, d)
+        try:
+            res = result_doc(self.spec, units, d)
+        except Exception as e:
+            d = decide_error(e, "result", "unknown")
+            res = {"schema": RESULT_SCHEMA, "complete": True, "row": self.spec.get("row_id"), **d}
         atomic_json(os.path.join(self.out, "RESULT.json"), res)
         self.log(f"RESULT {res['verdict']} (polar {res['polar']}): {res.get('reason', '')[:300]}")
         return 0

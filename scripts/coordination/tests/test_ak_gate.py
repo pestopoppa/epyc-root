@@ -371,13 +371,14 @@ def test_replay_tailfuse2_logs_only_six_vs_five_knobs(tmp_path):
 def test_replay_devhandoff_draft_diff_output_equal(tmp_path):
     """r5: drafts differ at round 9 OFF vs ON (separate processes) with identical accepted counts and output."""
     c = {"kind": "identity", "mode": "cmd", "argv": ["/s/bin/test-dflash-dev-inject"], "n_prompts": 1,
-         "arms": ["OFF", "ON"]}
+         "arms": ["OFF", "OFF2", "ON"]}
     sp = spec(knobs={"LLAMA_DFLASH_DEV_INJECT": {"marker": INJ, "level": 4}},
               arms={"OFF": {}, "OFF2": {}, "ON": {"LLAMA_DFLASH_DEV_INJECT": "1"}}, correctness=c)
     units = [{"unit_id": f"c-id-{a}-p0", "kind": "c-id", "arm": a, "prompt": 0, "argv": ["test-dflash-dev-inject", "-lv", "4"],
-              "rc": 0, "log": f"logs/c-id-{a}-p0.log"} for a in ("OFF", "ON")]
+              "rc": 0, "log": f"logs/c-id-{a}-p0.log"} for a in ("OFF", "OFF2", "ON")]
     prior = _prior(tmp_path, "ak-dh-prior", units, [("devhandoff/c-unit-inj-sel-p0-off.log", "c-id-OFF-p0.log"),
-                                                    ("devhandoff/c-unit-inj-sel-p0-on.log", "c-id-ON-p0.log")])
+                                                    ("devhandoff/c-unit-inj-sel-p0-on.log", "c-id-ON-p0.log"),
+                                                    ("devhandoff/c-unit-inj-sel-p0-off.log", "c-id-OFF2-p0.log")])
     r = G.replay(sp, str(tmp_path / "n"), str(prior), stream=QUIET)
     assert r["verdict"] == "INCOMPLETE", r["observed"]                    # correctness passed; no timing units recorded
     r = G.replay(dict(sp, correctness=dict(c, strict_drafts=True)), str(tmp_path / "n2"), str(prior), stream=QUIET)
@@ -703,7 +704,7 @@ def q8mc_b_prior(tmp_path, name):
     """The real ak-c22-q8mc-gate-gpu-20261124 tbo (OFF 37 / ON 44 cases) and KLD (OFF2 0.000398, ON 0.000412) logs."""
     row = tmp_path / name
     (row / "out" / "logs").mkdir(parents=True)
-    src = {"c-tbo-OFF": "c-tbo-off-head.log", "c-tbo-ON": "c-tbo-on-head.log", "c-kld-base-OFF": "k-off2-u8.log",
+    src = {"c-tbo-OFF": "c-tbo-off-head.log", "c-tbo-OFF2": "c-tbo-off-head.log", "c-tbo-ON": "c-tbo-on-head.log", "c-kld-base-OFF": "k-off2-u8.log",
            "c-kld-OFF2": "k-off2-u8.log", "c-kld-ON": "k-on-u8.log"}
     for uid, kind, arm, ex in G.plan_correctness(q8mc_b_spec()):
         shutil.copy(os.path.join(FIX, "q8mc", src[uid]), row / "out" / "logs" / f"{uid}.log")
@@ -725,7 +726,7 @@ def test_b_tbo_and_kld_all_must_pass_with_noise_floor_bound(tmp_path):
     del sp["expect_by_unit"]
     r = G.replay(sp, str(tmp_path / "n4"), str(prior), stream=QUIET)                  # unscoped: the KLD miss counts
     assert r["verdict"] == "FUTILITY_HARNESS_WITNESS" and r["mismatch_pairs"] == [("GGML_HIP_Q8MC", "ON")]
-    assert [p[0] for p in G.plan_correctness(q8mc_b_spec())][:2] == ["c-tbo-OFF", "c-tbo-ON"]   # tbo first, then KLD
+    assert [p[0] for p in G.plan_correctness(q8mc_b_spec())][:3] == ["c-tbo-OFF", "c-tbo-OFF2", "c-tbo-ON"]   # tbo first, then KLD
 
 
 def test_b_per_arm_ops_argv_scoped_witness_and_validation(tmp_path):
@@ -765,7 +766,7 @@ if __name__ == "__main__":
 
 
 # ------------------------------------------------------------------------------------------------ generator gaps (2026-11-25)
-GAP_CORR = [{"kind": "selftest_bin", "runs": 2, "arms": ["ON", "OFF"], "timeout_s": 60, "env": {"GGML_HIP_Q8_SKINNY": "0"},
+GAP_CORR = [{"kind": "selftest_bin", "runs": 2, "arms": ["ON", "OFF", "OFF2"], "timeout_s": 60, "env": {"GGML_HIP_Q8_SKINNY": "0"},
              "argv": ["/s/bin/test-q8ip-two-ctx", "-m", "/m/x.gguf"],
              "mismatch_rx": r"summary: prompts=\d+ mismatches=(\d+)", "max_mismatch": {"ON": 0}}]
 
@@ -960,3 +961,35 @@ def test_marker_colon_level_typo_is_refused(kind):
     assert MK.parse_knob("GGML_A:path:42 ran::5", kind=kind)[1]["marker"] == "path:42 ran"
     with pytest.raises(SystemExit):
         MK.parse_knob("GGML_A:path:42::5", kind=kind)
+
+
+def test_correctness_arms_require_each_baseline():
+    sp = spec(correctness={"kind": "identity", "arms": ["ON"]})
+    with pytest.raises(G.SpecError, match="FIX: add OFF to the unit's arms"):
+        G.validate_spec(sp)
+
+
+def test_missing_identity_baseline_writes_result(tmp_path):
+    sp = spec(correctness={"kind": "identity", "arms": ["ON"]})
+    units = [{"unit_id": "c-id-ON-p0", "kind": "c-id", "arm": "ON", "prompt": 0}]
+    sp["correctness"]["arms"] = ["OFF", "OFF2", "ON"]
+    g = G.Gate(sp, str(tmp_path), env={"FILLER_PORTS": "1"}, stream=QUIET)
+    sp["correctness"]["arms"] = ["ON"]
+    os.makedirs(g.out, exist_ok=True)
+    g.finish(units, G.decide(sp, units))
+    res = json.loads((tmp_path / "out" / "RESULT.json").read_text())
+    assert res["verdict"] == "FUTILITY_HARNESS_NO_BASELINE"
+    assert "OFF" in res["reason"] and "identity" in res["reason"]
+
+
+def test_decide_exception_writes_result(tmp_path, monkeypatch):
+    sp = spec(correctness={"kind": "identity"})
+    def fail(*args):
+        raise ValueError("injected")
+    monkeypatch.setattr(G, "_plan_one", fail)
+    g = G.Gate(sp, str(tmp_path), env={"FILLER_PORTS": "1"}, stream=QUIET)
+    os.makedirs(g.out, exist_ok=True)
+    g.finish([], G.decide(sp, []))
+    res = json.loads((tmp_path / "out" / "RESULT.json").read_text())
+    assert res["verdict"] == "FUTILITY_HARNESS_DECIDE"
+    assert "ValueError: injected" in res["reason"] and "identity" in res["reason"]

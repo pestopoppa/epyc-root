@@ -282,7 +282,7 @@ def run_generator(args):
 def witness_scope():
     with fixture_environment() as e:
         tbo = [{'kind': 'tbo', 'witness': True, 'argv': [str(e['store'] / 'bin/test-backend-ops')],
-                'arms': ['OFF', 'ON'], 'ops': {'OFF': 'MUL_MAT', 'ON': 'MUL_MAT'},
+                'arms': ['OFF', 'OFF2', 'ON'], 'ops': {'OFF': 'MUL_MAT', 'ON': 'MUL_MAT'},
                 'min_cases': {'OFF': 1, 'ON': 1}}]
         base = declaration(e, 'ak-canary-scope-gpu-20261125', extra=['--check-only', '--correctness', json.dumps(tbo)])
         # Current ak_gate exempts TBO unless the declaration opts into unit witness.
