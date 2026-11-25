@@ -2578,7 +2578,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
 <!-- gate: none -->
 
 ### Backlog
-- [ ] **AKW-R8** [non-inference] AK waste audit R8: GPU smoke hold ends when the smoke ends (batch lock dropped on empty queue, exited-tree SMOKE.lock not an occupant), keeper woken on smoke PASS/FAIL/exit + batch end via ready/ mtime poke, one quiet sample after the keeper's own smoke exit (docs/design/ak-waste-audit-20261125.md R8)
+- [x] **AKW-R8** [non-inference] AK waste audit R8: GPU smoke hold ends when the smoke ends (batch lock dropped on empty queue, exited-tree SMOKE.lock not an occupant), keeper woken on smoke PASS/FAIL/exit + batch end via ready/ mtime poke, one quiet sample after the keeper's own smoke exit (docs/design/ak-waste-audit-20261125.md R8) ✅ 2026-11-25 [no-belief: software] shipped root 8139fc81a, live ac90f161b
       · done when: tests/test_rowflow_gpu_r8_smoke_release.py + gpu/allocator/reservation suites + replay gate pass and deploy_rowflow live line shows the R8 commit
       · gate: none
       · owner: pipeline-mgmt
