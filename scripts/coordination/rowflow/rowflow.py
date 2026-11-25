@@ -10611,7 +10611,49 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001
             log(f"IDLE-VIOLATION-HOLD failed: {type(e).__name__}: {e}")
     gpu_count = host_after_gpu_count(flags, allrows, rule_statuses, grants, cands)
+    # Decide before smoke holds, sticky drains, quiet gates and reservation/replan can
+    # consume a host row. A blocked host cannot start now, so removing it from
+    # those paths does not prevent a grant; it only releases its CPU regions.
+    gpu_holds = host_drain_gpu_holds(flags, grants, allrows, time.time())
+    dfile = os.path.join(flags, "drain_state.json")
+    raw_drain = load_json(dfile) or {}
+    reservation_file = os.path.join(state_dir(flags), RESERVATION_STATE)
+    old_reservation = load_json(reservation_file) or {}
+    drain_candidates = {c["id"]: c for c in cands}
+    for rid in set(raw_drain) | ({old_reservation["id"]} if old_reservation.get("id") else set()):
+        if rid not in drain_candidates and rid in allrows:
+            try:
+                k = contract_of(allrows[rid], flags=flags)
+                drain_candidates[rid] = {"id": rid, "shape": k["shape"], "options": k["options"]}
+            except (KeyError, ValueError, TypeError, Refused):
+                pass
+    def drain_exclusion(c):
+        if not host_after_gpu_deferred(c):
+            return None
+        needed = set().union(*(expand(set(o)) for o in c["options"]))
+        blocker = next(((gid, end) for gid, tokens, end in gpu_holds if needed & set(tokens)), None)
+        if blocker:
+            gid, end = blocker
+            return f"blocked by GPU grant {gid} until {end}"
+        if HOST_AFTER_GPU_QUEUE and (gpu_count - {c["id"]}):
+            return "deferred after GPU queue"
+        return None
+    excluded_drains = {c["id"]: reason for c in drain_candidates.values() if (reason := drain_exclusion(c))}
+    skip_lines = {rid: f"HOST-DRAIN-SKIP {rid}: {reason}" for rid, reason in excluded_drains.items()
+                  if reason.startswith("blocked by GPU grant ")}
+    log_transition(flags, "host-drain-skip", skip_lines, log, persist=not dry)
+    cleared = {rid: reason for rid, reason in excluded_drains.items()
+               if rid in raw_drain or rid == old_reservation.get("id")}
+    for rid, reason in cleared.items():
+        log(f"DRAIN-CLEARED {rid} {reason}")
+    if cleared and not dry:
+        atomic_json(dfile, {rid: t for rid, t in raw_drain.items() if rid not in cleared})
+        if old_reservation.get("id") in cleared:
+            atomic_json(reservation_file, reservation_record(None, 0, set(), old_reservation.get("mode")))
     cands, host_gpu_waits = host_after_gpu_filter(cands, gpu_count)
+    blocked = [c for c in cands if c["id"] in excluded_drains]
+    cands = [c for c in cands if c["id"] not in excluded_drains]
+    host_gpu_waits += [(c, excluded_drains[c["id"]]) for c in blocked]
     qh_hold = None
     # 2026-11-21 (GPU idle 05:50-06:0xZ, queued smokes unrun): a DISK-PAUSE set admit_hold and gated the smoke batch too. A
     # queued smoke is not a new admission the pause protects against; only an operator HOLD file stops the batch.
@@ -10882,7 +10924,16 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 atomic_json(uw_p, uw_state)
             except Exception:  # noqa: BLE001
                 pass
-        cands, uwaits, ulines, uexp = quiet_urgent_hold(cands, allrows, uwait + ([] if rmode == "enforce" else urgent_quiet_pending(flags, grants)),
+        upending = [] if rmode == "enforce" else urgent_quiet_pending(flags, grants)
+        def pending_allowed(p):
+            rid = p[0]
+            d = allrows.get(rid) or load_json(ready_path(flags, rid)) or load_json(os.path.join(dry_dir(flags, rid), "unpublished.json")) or {}
+            try:
+                k = contract_of(d, flags=flags)
+                return not drain_exclusion({"id": rid, "shape": k["shape"], "options": k["options"]})
+            except (KeyError, ValueError, TypeError, Refused):
+                return True
+        cands, uwaits, ulines, uexp = quiet_urgent_hold(cands, allrows, [p for p in uwait + upending if pending_allowed(p)],
                                                         flags=flags)
         for line in ulines:
             log(line)
@@ -10941,6 +10992,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             base = cands if rmode == "enforce" else res_base if res_base is not None else cands
             rq = qlines if rmode == "enforce" else res_qlines
             rc, res_extra, hsince = reservation_cands(flags, pre_gates, base, grants, allrows, rq, hold_since=rst.get("hold_since"))
+            rc = [c for c in rc if not drain_exclusion(c)]
             rp_base = rc
             if rmode == "enforce":
                 cands = rc
@@ -10972,6 +11024,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             try:
                 rp_base, rp_extra, _ = reservation_cands(flags, pre_gates, res_base if res_base is not None else cands, grants,
                                                          allrows, res_qlines or qlines)
+                rp_base = [c for c in rp_base if not drain_exclusion(c)]
             except Exception as e:  # noqa: BLE001 - the shadow never stops allocation
                 log(f"REPLAN candidate set failed: {type(e).__name__}: {e}; using the live candidates")
                 rp_base, rp_extra = list(cands), {}
@@ -11072,7 +11125,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 f"({'; '.join(w['who'] for w in bw)}); declare whole_host_need to opt out")
         if not dry:
             atomic_json(dfile, drain_state_next(plan.last_drain, drain_prev, [c["id"] for c in cands if c["id"] not in excluded]
-                                                + [c["id"] for c, _ in smoke_waits], [c["id"] for c, _ in assigned]))
+                                                + [c["id"] for c, _ in smoke_waits if c["id"] not in excluded_drains], [c["id"] for c, _ in assigned]))
         for hc, bc in plan.drain_held:
             log(f"DRAIN-HELD {hc['id']} (rank {hc['rank']:g}, {hc.get('shape')}): better-ranked {bc['id']} (rank {bc['rank']:g}) wants its regions; no drain")
         for lc in plan.drain_lowbusy:

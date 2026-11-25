@@ -608,6 +608,8 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             _jdump(os.path.join(sb.flags, "dryrun", sid, "GPU-SMOKE-QUEUED.json"), {"id": sid, "spec": {"id": sid, "priority_rank": rank}})
         sb.advance(tick)
         sb.materialize(tick, rf)
+        if "drain_state" in tick:
+            _jdump(os.path.join(sb.flags, "drain_state.json"), tick["drain_state"])
         if tick.get("build_window_min") and hasattr(rf, "build_window"):   # {"build_window_min": N}: `rowflow build-window` opens at this tick
             rf.build_window(sb.flags, int(tick["build_window_min"]), "replay", "replay-build-lane", now=W.t, log=lambda m: None)
         if "host_after_gpu_queue" in tick and hasattr(rf, "HOST_AFTER_GPU_QUEUE"):
@@ -681,6 +683,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             "kills": W.kills[kills0:], "fails_new": sorted(set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json"))) - fails0),
             "running_json": running, "cands": int(mc.group(1)) if mc else None, "assigned": int(mc.group(2)) if mc else None,
             "snapshot_busy": mb.group(1) if mb else "",
+            "drain_state": rf.load_json(os.path.join(sb.flags, "drain_state.json")) or {},
             "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "HOST-DRAIN", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD", "HOLD-ORPHAN", "SHORT-ROW",
                                                                                 "CLAIM", "RESERVE", "BACKFILL", "WOULD-", "RESERVATION",
                                                                                 "REPLAN"))][:400],

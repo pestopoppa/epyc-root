@@ -1048,7 +1048,7 @@ def sc_cpu_quarter_prefers_q0_over_q3(path):
 
 def sc_sticky_drain_e5_overnight(path):
     """PM-DRAINFIX 2026-11-22 (inf45-e5v2-stageb-r7-20261121, rank 25 quiet-host): the drain formed at 21:58Z "until
-    00:01Z", then each better-ranked rank-20 AK GPU row that became placeable dropped it for a tick (DRAIN-HELD), the
+    00:01Z", then a better-ranked rank-20 row that became placeable dropped it for a tick (DRAIN-HELD), the
     drain_state was overwritten with {} and every later drain recomputed T from the newest backfill end: 00:55Z, 01:46Z,
     ... 05:14Z; rank-35 lsa q0-q2 rows were granted in those gaps too. A drain once formed is STICKY: T only moves
     earlier, and every row - better-ranked ones included - that would end after T stays off its regions (gpu-quiet
@@ -1061,12 +1061,13 @@ def sc_sticky_drain_e5_overnight(path):
     q2 = row("busy-q2", regions="any-of q2", extra="make -j 24", est=3600, rank=50)
     ak_long = row("ak-gpu-r20-long", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, role="bench",
                   extra="llama-server -t 8", est=4 * 3600, rank=20, man={"min_window_s": 3 * 3600})
-    ak_short = row("ak-gpu-r20-short", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, role="bench",
-                   extra="llama-server -t 8", est=900, rank=20)
+    # A CPU backfill exercises stickiness without introducing a GPU grant,
+    # which now deliberately clears a blocked host's drain.
+    ak_short = row("ak-cpu-r20-short", regions="any-of q0", extra="make -j 24", est=900, rank=20)
     lsa = row("lsa-r35-q0", regions="any-of q0", extra="make -j 24", est=3 * 3600, rank=35, man={"min_window_s": 3 * 3600})
     held = {"busy-q1": q1, "busy-q2": q2}
     first = dict(held, **{"e5-stageb-qh": e5})
-    rows = dict(first, **{"ak-gpu-r20-long": ak_long, "ak-gpu-r20-short": ak_short, "lsa-r35-q0": lsa})
+    rows = dict(first, **{"ak-gpu-r20-long": ak_long, "ak-cpu-r20-short": ak_short, "lsa-r35-q0": lsa})
     ticks = [(held, {"host_after_gpu_queue": False}), (first, {}), (first, {})] + [(rows, {})] * 50
 
     def check(d):
@@ -1080,8 +1081,8 @@ def sc_sticky_drain_e5_overnight(path):
         for rid in ("ak-gpu-r20-long", "lsa-r35-q0"):
             out += [f"{rid} (ends after the drain target) granted at tick {i}, before the drained row (tick {e5_tick})"
                     for i, _ in _granted(d, rid) if i < e5_tick]
-        if not _granted(d, "ak-gpu-r20-short"):
-            out.append("ak-gpu-r20-short (ends by T) never backfilled")
+        if not _granted(d, "ak-cpu-r20-short"):
+            out.append("ak-cpu-r20-short (ends by T) never backfilled")
         return out
     return write(path, ticks), check
 
@@ -1682,9 +1683,12 @@ def sc_host_after_gpu_queue(path):
     h = _c21("c21-fold-cpu-r3")
     q = _ak_q("gpu-queue-backfill", 60, TICK, quiet=False, sensitive=False)
     rows = {"c21-fold-cpu-r3": h, "gpu-queue-backfill": q}
-    ticks = [(rows, {"gpu_smoke_queued": {"gpu-smoke": 20}})] + [(rows, {})] * 8
+    ticks = [(rows, {"gpu_smoke_queued": {"gpu-smoke": 20}, "drain_state": {"c21-fold-cpu-r3": T0 + 3600},
+                     "reservation_mode": "enforce"})] + [(rows, {})] * 8
     def check(d):
         out = []
+        if "c21-fold-cpu-r3" in d[0]["drain_state"] or not _lines(d, "DRAIN-CLEARED c21-fold-cpu-r3"):
+            out.append("queued GPU did not clear the persisted host drain")
         if not _granted(d, "gpu-queue-backfill") or _first(d, "gpu-queue-backfill") != 0:
             out.append("quarter did not backfill while GPU smoke was queued")
         hstart = _first(d, "c21-fold-cpu-r3")
@@ -1694,6 +1698,44 @@ def sc_host_after_gpu_queue(path):
             out.append("no IDLE-WHY explaining GPU queue deferral")
         return out
     return write(path, ticks), check
+
+
+def sc_gpu_grant_sticky_host_drain(path):
+    """18:18/18:45 incident: a GPU grant blocks a host with an existing drain."""
+    hid = "ak-pernuma-contam-cpu-20261124-r3"
+    gid = "ak-27b-served-ub-deepctx-gpu-20261125-r2"
+    gpu = row(gid, lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True,
+              est=6540, rank=10, extra="ctest --test-dir build-hip", man={"admission_class": "correctness", "timing": "bench"})
+    h = row(hid, regions="q0,q1,q2,q3", claim="0-95", extra="make -j 96", est=5400, rank=15,
+            man={"shape": "host", "declared_shape": "host", "busy_fraction": 1.0, "baseline_ref": "incident replay", "bandwidth_heavy": True})
+    incident = __import__("datetime").datetime.fromisoformat("2026-11-25T18:18:00+00:00").timestamp()
+    h["pass"]["passed_at"] = _iso(incident - 7200)
+    qs = {f"backfill-q{i}": row(f"backfill-q{i}", regions=f"any-of q{i}",
+          extra="make -j 24", est=10800, rank=60) for i in range(3)}
+    rows = {gid: gpu, hid: h, **qs}
+    ticks = [({gid: gpu}, {}), (rows, {"host_after_gpu_queue": False,
+             "drain_state": {hid: incident + 6540}, "reservation_mode": "enforce"}), (rows, {})]
+    def check(d):
+        out = []
+        if not _granted(d, gid):
+            out.append("fixture: GPU grant did not start")
+        if not any(hid in line and gid in line for _, line in _lines(d, "HOST-DRAIN-SKIP")):
+            out.append("missing GPU grant skip")
+        if not any(hid in line for _, line in _lines(d, "DRAIN-CLEARED")):
+            out.append("sticky drain was not cleared")
+        if any(hid in x["drain_state"] for x in d[1:]):
+            out.append("sticky host drain persisted")
+        for q in qs:
+            if not _granted(d, q):
+                out.append(f"{q} did not backfill")
+        if any("draining for host " + hid in line for x in d[1:] for line in x["lines"]):
+            out.append("IDLE-WHY still reports host drain")
+        return out
+    w = TraceWriter(path, "scenario", "2026-11-25 18:18Z GPU grant, 18:45Z sticky drain, ends 20:07Z")
+    for when, (tick_rows, world) in zip((incident, incident + 1620, incident + 1740), ticks):
+        w.tick(when, tick_rows, **world)
+    w.close()
+    return path, check
 
 
 def sc_host_drain_1135(path):
@@ -1714,6 +1756,7 @@ def sc_host_drain_1135(path):
 
 
 SCENARIOS = {
+    "gpu-grant-sticky-host-drain": sc_gpu_grant_sticky_host_drain,
     "host-after-gpu-queue": sc_host_after_gpu_queue,
     "host-drain-1135": sc_host_drain_1135,
     "replan-1027-calib-a3b-shadow": sc_replan_1027_calib_a3b,
