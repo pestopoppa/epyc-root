@@ -31,6 +31,7 @@ bin/rowflow/ak_futility_row.py       scripts/coordination/rowflow/ak_futility_ro
 bin/rowflow/ak_row_lint.py           scripts/coordination/rowflow/ak_row_lint.py          hot
 bin/rowflow/preflight.py             scripts/coordination/rowflow/preflight.py            hot
 bin/rowflow/mk_ak_row.py             scripts/coordination/rowflow/mk_ak_row.py            hot
+bin/rowflow/signature_job_template.py scripts/coordination/rowflow/signature_job_template.py hot
 bin/rowflow/smoke_verdict.py         scripts/coordination/rowflow/smoke_verdict.py        hot
 bin/rowflow/complete_check.py        scripts/coordination/rowflow/complete_check.py       hot
 bin/rowflow/family_strikes.py        scripts/coordination/rowflow/family_strikes.py       hot

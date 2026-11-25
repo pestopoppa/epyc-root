@@ -469,6 +469,9 @@ def install_imports():
                 src_candidate = ROOT / Path(src).parent.joinpath(*parts)
                 if src_candidate.is_file() and str(candidate) not in names:
                     missing.append(f'{pub}: {candidate}')
+        # This is generated job source, not an importable installed module. Its classifier is vendored into each row.
+        if path.name == 'signature_job_template.py':
+            continue
         code = 'import sys;sys.path[:0]=' + repr([str(path.parent)]) + ';import ' + path.stem
         p = subprocess.run([sys.executable, '-I', '-B', '-c', code], env=env, capture_output=True, text=True, timeout=8)
         if p.returncode:

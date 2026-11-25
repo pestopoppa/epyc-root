@@ -71,7 +71,7 @@ SAME_TOP_RX = re.compile(r"Same top p:\s+([\d.]+)")
 CORRECTNESS_KEYS = {
     "common": {"kind", "argv", "arms", "timeout_s", "apply_flags", "witness", "lv", "env"},
     "tbo": {"min_cases", "require_rc0", "ops"},
-    "kld": {"base_arm", "max_kld", "max_kld_noise_k", "witness_base"},
+    "kld": {"base_arm", "max_kld", "max_kld_noise_k", "noise_arm", "witness_base"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
     "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"}}
 UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin"}
@@ -146,11 +146,15 @@ def baseline_arms(spec):
     return list(spec.get("baseline") or [])
 
 
+def noise_arms(spec):
+    return {c["noise_arm"] for c in corr_list(spec) if c.get("kind") == "kld" and isinstance(c.get("noise_arm"), str) and c.get("noise_arm")}
+
+
 def candidate_arms(spec):
     c = spec.get("candidates")
     if c:
-        return list(c)
-    b = set(baseline_arms(spec))
+        return [a for a in c if a not in noise_arms(spec)]
+    b = set(baseline_arms(spec)) | noise_arms(spec)
     return [a for a in spec.get("arms", {}) if a not in b]
 
 
@@ -309,7 +313,10 @@ def validate_spec(spec):
                                                if isinstance(c.get(x), dict) for a in c[x]]:
             if a not in arms:
                 errs.append(f"correctness {c.get('kind')}: arm {a} not declared")
-        if c.get("max_kld_noise_k") is not None and len(baseline_arms(spec)) < 2:
+        noise = c.get("noise_arm") if c.get("kind") == "kld" else None
+        if noise is not None and (not isinstance(noise, str) or noise not in arms or noise in b or noise == c.get("base_arm")):
+            errs.append("correctness kld: noise_arm must be a declared arm distinct from the baseline")
+        if c.get("max_kld_noise_k") is not None and not noise and len(baseline_arms(spec)) < 2:
             errs.append("correctness kld: max_kld_noise_k needs the OFF2 arm (KLD(OFF2 vs OFF) is the noise floor)")
     for ut, by_arm in (spec.get("expect_by_unit") or {}).items():
         if ut not in set(UNIT_TYPE.values()):
@@ -694,11 +701,13 @@ def _plan_one(spec, c):
         return [(f"c-st-{a}-r{r}", "c-st", a, {"run": r}) for r in range(1, int(c.get("runs") or 1) + 1) for a in arms]
     if kind == "kld":
         base = c.get("base_arm") or b[0]
-        arms = c.get("arms") or [x for x in b if x != base] + cand
+        arms = list(c.get("arms") or [x for x in b if x != base] + cand)
+        if c.get("noise_arm") and c["noise_arm"] not in arms:
+            arms.append(c["noise_arm"])
         return [(f"c-kld-base-{base}", "c-kld", base, {"mode": "base"})] + [(f"c-kld-{a}", "c-kld", a, {"mode": "kld"})
                                                                              for a in arms]
     n = int(c.get("n_prompts") or len(identity_prompts(spec, None)) or 1)
-    arms = c.get("arms") or b + cand
+    arms = [a for a in (c.get("arms") or b + cand) if a not in noise_arms(spec)]
     return [(f"c-id-{a}-p{i}", "c-id", a, {"prompt": i}) for i in range(n) for a in arms]
 
 
@@ -771,11 +780,14 @@ def _decide_one_impl(spec, c, units):
         det = {"kind": kind, "mean_kld": kl, "max_kld_abs": mx}
         if any(v is None for v in kl.values()):
             return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why="no 'Mean KLD' in a perplexity log"), True
-        k, noise_arm = c.get("max_kld_noise_k"), baseline_arms(spec)[1:2]
-        if k is not None:   # bound = max(abs, k x KLD(OFF2 vs OFF)): the A/A noise floor of the instrument
-            if not noise_arm or kl.get(noise_arm[0]) is None:
-                return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why="no OFF2 KLD for the noise-floor bound"), True
-            mx = max(mx, float(k) * kl[noise_arm[0]])
+        k = c.get("max_kld_noise_k")
+        noise_arm = c.get("noise_arm") or next(iter(baseline_arms(spec)[1:2]), None)
+        det["kld_floor_source"] = noise_arm if k is not None else None
+        det["noise_kld"] = kl.get(noise_arm) if noise_arm else None
+        if k is not None:
+            if not noise_arm or kl.get(noise_arm) is None:
+                return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why=f"no {noise_arm or 'OFF2'} KLD for the noise-floor bound"), True
+            mx = max(mx, float(k) * kl[noise_arm])
         det["max_kld"] = mx
         bad = [a for a in candidate_arms(spec) if a in kl and kl[a] > mx]
         return ("FAIL_CORRECTNESS", dict(det, failed=bad), True) if bad else (None, det, True)

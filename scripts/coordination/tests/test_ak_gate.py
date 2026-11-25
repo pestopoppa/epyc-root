@@ -1085,3 +1085,45 @@ def test_smoke_reuse_and_no_timing_reuse(tmp_path):
               "unit_verdict": "PASS", "reuse_key": "anything"}
     H.append_unit(timing, old.out)
     assert new.reuse_unit("b1-ON", "visit", "ON", {}) is None
+
+
+def test_kld_noise_arm_is_report_only_and_sets_floor():
+    arms = {"OFF": {}, "OFF2": {}, "ON": {"GGML_HIP_Q8MC": "1"}, "NOISE": {}}
+    kld = {"kind": "kld", "argv": ["llama-perplexity"], "arms": ["OFF", "OFF2", "ON"],
+           "max_kld": 0.001, "max_kld_noise_k": 3, "noise_arm": "NOISE"}
+    identity = {"kind": "identity", "arms": list(arms)}
+    sp = spec(arms=arms, baseline=["OFF", "OFF2"], candidates=["ON", "NOISE"], correctness=[kld, identity])
+    G.validate_spec(sp)
+    assert G.candidate_arms(sp) == ["ON"]
+    assert G.arm_list(sp) == ["OFF", "ON", "OFF2"]
+    plan = G.plan_correctness(sp)
+    assert sum(arm == "NOISE" and kind == "c-kld" for _, kind, arm, _ in plan) == 1
+    assert all(arm != "NOISE" for _, kind, arm, _ in plan if kind == "c-id")
+    units = [dict(unit_id=uid, kind=kind, arm=arm, **extra,
+                  mean_kld={"OFF": 0.0, "OFF2": 0.0, "ON": 0.005, "NOISE": 0.002}.get(arm))
+             for uid, kind, arm, extra in G._plan_one(sp, kld)]
+    verdict, detail, done = G._decide_one(sp, kld, units)
+    assert verdict is None and done
+    assert detail["max_kld"] == 0.006 and detail["noise_kld"] == 0.002
+    assert detail["kld_floor_source"] == "NOISE"
+    doc = G.result_doc(sp, units, {"verdict": "INCOMPLETE", "correctness": detail})
+    assert doc["correctness"]["noise_kld"] == 0.002
+    assert doc["aa"]["arms"] == ["OFF", "OFF2"]
+    kld["max_kld_noise_k"] = 0.25
+    units[-2]["mean_kld"] = 0.0005
+    assert G._decide_one(sp, kld, units)[0] is None  # noise exceeds the floor but is never judged
+    units[-2]["mean_kld"] = 0.005
+    kld["max_kld_noise_k"] = 3
+    units[-1]["mean_kld"] = None
+    assert G._decide_one(sp, kld, units)[0] == "FUTILITY_HARNESS_MISSING_OUTPUT"
+    del kld["noise_arm"]
+    verdict, detail, _ = G._decide_one(sp, kld, units)
+    assert verdict == "FAIL_CORRECTNESS" and detail["kld_floor_source"] == "OFF2"
+    assert detail["noise_kld"] == 0.0 and detail["max_kld"] == 0.001
+
+
+@pytest.mark.parametrize("noise", ["MISSING", "OFF", "OFF2"])
+def test_kld_noise_arm_must_be_declared_nonbaseline(noise):
+    sp = spec(correctness={"kind": "kld", "argv": ["llama-perplexity"], "noise_arm": noise})
+    with pytest.raises(G.SpecError, match="noise_arm"):
+        G.validate_spec(sp)
