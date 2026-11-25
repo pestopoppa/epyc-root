@@ -1,0 +1,3 @@
+0.00.043.390 I cmn  common_param: common_params_print_info: verbosity = 4 (adjust with the `-lv N` CLI arg)
+0.04.987.684 I dflash2_dev_select: Q8-SERVED-DEV-SELECT-1 device selector chain enabled (LLAMA_DFLASH_DEV_SELECT=1)
+0.05.054.896 I set_dflash_dev_inject: DFlash dev inject on: ROCm0 buffer [5120, 512] (10.00 MiB)

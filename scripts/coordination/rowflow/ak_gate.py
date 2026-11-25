@@ -1854,7 +1854,13 @@ def replay(spec, row_dir, prior, stream=None):
     d = decide(spec, units) if mode == "units" else decide_smoke(spec, units)
     if mode == "full-smoke":
         if d["verdict"] == "SMOKE_PASS":
-            d = decide_smoke_correctness(spec, units)
+            visited = {u.get("arm") for u in units if u.get("kind") == "smoke"}
+            missing = [a for a in spec.get("arms", {}) if a not in visited]
+            if missing:
+                d = {"verdict": "INCOMPLETE_SMOKE", "polar": None, "terminal": False,
+                     "reason": f"missing smoke visits for arms {missing}"}
+            else:
+                d = decide_smoke_correctness(spec, units)
         else:
             d["fix"] = smoke_served_fix(d)
     if mode == "units" and not d["terminal"] and not [u for u in units if u.get("kind") == "visit"] and \

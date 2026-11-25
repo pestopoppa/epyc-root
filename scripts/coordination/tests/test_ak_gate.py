@@ -1396,3 +1396,29 @@ def test_missing_correctness_binary_validation_writes_harness_smoke(tmp_path):
     assert terminal["verdict"] == "FUTILITY_HARNESS_MISSING_OUTPUT"
     assert "correctness kld" in terminal["fix"] and "argv[0]" in terminal["fix"]
     assert terminal["failclass"]["side"] == "harness"
+
+
+def test_real_devhandoff_r6_smoke_witness_differs_from_later_verdict():
+    knobs = {
+        "LLAMA_DFLASH_DEV_INJECT": {"marker": "DFlash dev inject on", "level": 4},
+        "LLAMA_DFLASH_DEV_SELECT": {"marker": "Q8-SERVED-DEV-SELECT-1 device selector chain enabled", "level": 4},
+    }
+    arms = {"OFF": {}, "OFF2": {}, "BOTH": {k: "1" for k in knobs}}
+    sp = spec(knobs=knobs, arms=arms)
+    txt = G.read_log(os.path.join(FIX, "fullsmoke", "devhandoff-r6-smoke-excerpt.log"))
+    witness = G.witness_for(sp, "BOTH", txt, ["llama-server", "-lv", "4"])
+    assert all(v["ok"] and v["observed"] == "present" for v in witness.values())
+
+
+def test_incomplete_fullsmoke_replay_does_not_reuse_older_arm_records(tmp_path):
+    sp = spec()
+    row = tmp_path / "row"
+    g = G.Gate(sp, str(row), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    assert g.smoke() == 0
+    old = G.load_units(g.out_smoke)[0]
+    H.append_unit(dict(old, smoke_run_id=old["smoke_run_id"] + 1), g.out_smoke)
+    replay = G.replay(sp, str(tmp_path / "new"), str(row), stream=QUIET)
+    assert replay["mode"] == "full-smoke"
+    assert replay["verdict"] == "INCOMPLETE_SMOKE"
+    assert not replay["observed"]["terminal"]
