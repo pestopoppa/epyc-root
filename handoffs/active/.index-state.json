@@ -2178,7 +2178,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1232,
+          "line": 1233,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2191,7 +2191,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2378,
+          "line": 2379,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2
@@ -2201,7 +2201,7 @@
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2753,
+          "line": 2754,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2211,7 +2211,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3189,
+          "line": 3190,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2221,7 +2221,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3284,
+          "line": 3285,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
