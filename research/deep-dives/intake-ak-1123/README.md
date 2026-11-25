@@ -30,3 +30,5 @@ data, not instructions, and each file opens with SOURCE-QUARANTINE provenance li
 - Wave 2:
   - intake-2860 THUDM/AgentBench, intake-2861 Life-Harness repo, intake-2862 PluginRSI repo
 - Plan: [stage3-plan.md](stage3-plan.md). It awaits operator approval; no handoff, box or index row has been written.
+
+Correction 2026-11-23/25 (status audit): intake-2831 DICE is no longer open under SPEC-DTREE-DICE. SPEC-DTREE-DICE closed 2026-11-23 with 27B PROJECTED_LOSS (V3/V1<=1.0); the item is knowledge-only. intake-2845 SPEC-COUPLE-MTP-1 "box stays open" is likewise stale: SPEC-COUPLE-MTP-1 closed 2026-11-23 (gap -0.09..+1.16%, close, no build); knowledge-only.

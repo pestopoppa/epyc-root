@@ -41,6 +41,7 @@ P3 — Compact vs full code-mode prompt, plus a direct-vs-code-mode hypothesis c
 - Context only: nanocode-ts DECISIONS.md L72 is a self-reported, unpublished claim (no n) that direct tools
   beat Code Mode in TB2.1. It is consistent with our tentative "direct calls win". It is not citable, so no
   task is created from it.
+  Correction 2026-11-25 (status audit): the sentence above is wrong. CODEMODE-AB-V2 closed 2026-11-19 with code mode WINNING (27B 42/42 vs 0.62; 35B 9/10 vs 3/10, p 0.031; harness-program.md CODEMODE-AB-V2), so our "direct calls win" was not the standing result and the nanocode claim is not consistent with it. Outcome (no task created) is unchanged.
 
 P4 — Eval outcome typing, version digests and regression verdict from nanoeval (owner: eval-tower-program.md)
 - Gap: whether our scorers separate infra errors from failures, and pin suite versions, is to be confirmed

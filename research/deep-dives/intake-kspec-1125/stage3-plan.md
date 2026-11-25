@@ -1575,3 +1575,7 @@ Each decline is recorded in its bearing entry's `dive_corrections`.
  ]
 }
 ```
+
+Correction 2026-11-25 (status audit): the "monitor until DTREE-GDN-BATCH reopens" routing for TreeSpark (intake-2975, KS-S2-draft-calibration-4 / KS-S2-4, M2 trigger b) rested on the premise that trees are parked. That was wrong at write time: the C21 sampled tree (V2 RRS) was already KEEP at official T1 (row ak-c21-tree-official-gpu-20261124: T10 1.0303 [1.0223,1.0433], T16 1.0352 [1.0189,1.0614]; progress/2026-11/2026-11-24-handoff-df2.md:45). The DTREE-GDN-BATCH box is open pending the C20 fold decision (its GDN row is KEEP, 3.619 ms), not parked. New disposition: fold TreeSpark's edge-acceptance Platt calibration and load-adaptive shrink-to-chain in as arms of DTREE-HEADROOM-REPLAY (handoffs/active/speculative-decoding.md) instead of a monitor. History above is kept unchanged.
+
+Correction 2026-11-25 (status audit): scope note for VKRC-BYTES-PLAUSIBLE (KS-K3-3): the plausibility check must also be applied retroactively to the already-filed census r2 table (ak-27b-verify-kernel-roofline-census-gpu-20261124-r2), which Q8-MULTICOL-GEMV-1 rests on. The retro-check is being run by workspace-f2.

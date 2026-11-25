@@ -64,3 +64,5 @@ a claim that adds context from elsewhere in the same source (counts, conditions,
 beyond its single anchor quote. No quote contradicts its claim. Per the skill, the disagreements go to
 the operator in stage3-plan and do not auto-overturn anything. The plan quotes no figure that rests
 only on a "partial" claim's extra content.
+
+Correction 2026-11-25 (status audit): the M7 monitor rows w1l-A3, w1l-A4, w1m-A3, w2e-A2, w2g-A2, w2k-A1 trigger on "RM-3 opens", but RM-3 was already open with RM-3a-d ticked 2026-07-19 (handoffs/active/reviewer-control-plane.md, RM-3 block ~L988-992). That trigger is dead. Re-point each of the six to the next unticked RM-3-line sub-box, RM-4 (Confirmation-tier protocol, the next unticked box after RM-3a-d); C-CRAB saturation and a verifiable-reward training lane remain as the other M7 triggers. Rows needing finer placement: re-triage when RM-4 is dispatched.
