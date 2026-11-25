@@ -2549,6 +2549,12 @@ This verifies local installation only. A client-side hook can be bypassed and do
 ## Track: churn-pipeline
 <!-- gate: none -->
 
+### Backlog
+- [ ] **AKW-R8** [non-inference] AK waste audit R8: GPU smoke hold ends when the smoke ends (batch lock dropped on empty queue, exited-tree SMOKE.lock not an occupant), keeper woken on smoke PASS/FAIL/exit + batch end via ready/ mtime poke, one quiet sample after the keeper's own smoke exit (docs/design/ak-waste-audit-20261125.md R8)
+      · done when: tests/test_rowflow_gpu_r8_smoke_release.py + gpu/allocator/reservation suites + replay gate pass and deploy_rowflow live line shows the R8 commit
+      · gate: none
+      · owner: pipeline-mgmt
+
 > **Split out 2026-11-09 (RTG-34, operator decision "Split out churn, trim rest").** The churn-pipeline track (dispatcher, backlog generator, rowflow; every box and ID, verbatim) now lives in [`churn-pipeline.md`](churn-pipeline.md), owner Pipeline. Nothing is kept here; edit the new file.
 
 - [x] **OBS-CHURN-UP** `churn_up.sh` liveness probes (pidfile+argv, exact-path argv over /proc) are registered `unadopted` in `observer_registry.json`: adopt `observer_guard.sh` three-valued state (measured / absent / blind).  *(stays here until the observer registry's `owning_handoff` for `churn_up` is repointed to `churn-pipeline.md`; that file is under D9 and needs operator ack.)*
