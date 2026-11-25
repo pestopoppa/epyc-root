@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 493
+      "open": 490
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -187,7 +187,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 11034,
+          "line": 11035,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -211,7 +211,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11281,
+          "line": 11282,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -223,7 +223,7 @@
             "INF-06"
           ],
           "guarded": 0,
-          "line": 11901,
+          "line": 11902,
           "markers": 1,
           "name": "autokernel-roofline-surface-loop",
           "open": 7
@@ -640,11 +640,11 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 370,
+      "closed": 375,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "open": 15,
+      "open": 12,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -653,25 +653,25 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 386,
+      "total": 388,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 161,
+          "closed": 166,
           "frozen": 1,
           "gates": [],
           "guarded": 0,
           "line": 21,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 14
+          "open": 11
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2577,
+          "line": 2584,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 0
@@ -681,7 +681,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 2591,
+          "line": 2598,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 0
@@ -691,7 +691,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3063,
+          "line": 3070,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -706,7 +706,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3508,
+          "line": 3515,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0
@@ -722,7 +722,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5024,
+          "line": 5031,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -738,7 +738,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5684,
+          "line": 5691,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 1
@@ -754,7 +754,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5892,
+          "line": 5899,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -764,7 +764,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6448,
+          "line": 6455,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1230,7 +1230,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1989,
+          "line": 1990,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1240,7 +1240,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 2117,
+          "line": 2118,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1250,7 +1250,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2449,
+          "line": 2451,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1260,7 +1260,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2550,
+          "line": 2552,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1270,7 +1270,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 3104,
+          "line": 3106,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1280,7 +1280,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3242,
+          "line": 3244,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1290,7 +1290,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3249,
+          "line": 3251,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0

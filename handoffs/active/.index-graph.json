@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T12:38:34Z",
+  "generated_at": "2026-11-25T13:10:30Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1503,7 +1503,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 11034,
+          "line": 11035,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1537,7 +1537,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11281,
+          "line": 11282,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1550,7 +1550,7 @@
           "gates": [
             "INF-06"
           ],
-          "line": 11901,
+          "line": 11902,
           "name": "autokernel-roofline-surface-loop",
           "open": 7,
           "readiness": "blocked"
@@ -2000,7 +2000,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1989,
+          "line": 1990,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2117,
+          "line": 2118,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2018,7 +2018,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2449,
+          "line": 2451,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2027,7 +2027,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2550,
+          "line": 2552,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2036,7 +2036,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3104,
+          "line": 3106,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2048,7 +2048,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3242,
+          "line": 3244,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2060,7 +2060,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3249,
+          "line": 3251,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3257,15 +3257,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 370,
-      "dispatchable": 15,
+      "closed": 375,
+      "dispatchable": 12,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-25",
       "next_action": "FM-4 Phase C: collect 30 prospective dispatch_with_gate records per arm plus one native canary; futility check 2026-12-03; then close and move to completed/",
-      "open": 15,
+      "open": 12,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3290,18 +3290,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 11,
           "gates": [],
           "line": 21,
           "name": "coordination-and-churn-pipeline",
-          "open": 14,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2577,
+          "line": 2584,
           "name": "churn-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -3310,7 +3310,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2591,
+          "line": 2598,
           "name": "dashboard-architecture-restructure",
           "open": 0,
           "readiness": "no_open"
@@ -3319,7 +3319,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3063,
+          "line": 3070,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3335,7 +3335,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3508,
+          "line": 3515,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0,
           "readiness": "no_open"
@@ -3352,7 +3352,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5024,
+          "line": 5031,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
@@ -3369,7 +3369,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5684,
+          "line": 5691,
           "name": "fleet-fanout-measurement",
           "open": 1,
           "readiness": "blocked"
@@ -3386,7 +3386,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5892,
+          "line": 5899,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3395,7 +3395,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6448,
+          "line": 6455,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
