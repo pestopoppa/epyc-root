@@ -1,36 +1,78 @@
 {
   "by_type": {
-    "docs": 596,
+    "docs": 597,
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1491,
+    "progress": 1512,
     "research": 552
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 18,
-      "changed": 1,
+      "added": 22,
+      "changed": 7,
       "removed": 0
     },
-    "at": "2026-11-25T12:46:48Z",
+    "at": "2026-11-25T12:51:41Z",
     "scope_paths": [
+      "docs/design/ak-audit-b5-b11-status-20261124.md",
       "docs/design/ak-waste-audit-20261125.md",
       "docs/design/mi210-served-kernel-bandwidth-census-20261122.md",
       "docs/design/rowflow-replanning-scheduler.md",
       "docs/design/taskflow-early-end-census-20261124.md",
-      "progress/2026-11/2026-11-25-autokernel.md"
+      "docs/design/taskflow-stage1-canary-findings.md",
+      "docs/guides/agent-workflows/agent-loop-design.md",
+      "docs/guides/agent-workflows/compute-fillers.md",
+      "progress/2026-11/2026-11-23-autopilot-backlog-session.md",
+      "progress/2026-11/2026-11-23-handoff-df2.md",
+      "progress/2026-11/2026-11-24-autokernel.md",
+      "progress/2026-11/2026-11-24-autopilot-backlog-session.md",
+      "progress/2026-11/2026-11-24-handoff-batched-decode-measurement.md",
+      "progress/2026-11/2026-11-24-handoff-cpu-decode-roofline.md",
+      "progress/2026-11/2026-11-24-handoff-df2.md",
+      "progress/2026-11/2026-11-24-handoff-pipeline-mgmt-wrapup-20261124.md",
+      "progress/2026-11/2026-11-24-handoff-pipeline-mgmt.md",
+      "progress/2026-11/2026-11-24-handoff-pm-wrapup-20261124.md",
+      "progress/2026-11/2026-11-24-handoff-tick-1124m.md",
+      "progress/2026-11/2026-11-24-handoff-tick-1124n.md",
+      "progress/2026-11/2026-11-24-pipeline-mgmt.md",
+      "progress/2026-11/2026-11-24-workspace-f2.md",
+      "progress/2026-11/2026-11-25-autokernel.md",
+      "progress/2026-11/2026-11-25-autopilot-backlog-session.md",
+      "progress/2026-11/2026-11-25-handoff-df2.md",
+      "progress/2026-11/2026-11-25-handoff-pipeline-mgmt-akwaste.md",
+      "progress/2026-11/2026-11-25-handoff-pm-akw-r8.md",
+      "progress/2026-11/2026-11-25-handoff-pm-codex-lanes-landing.md",
+      "progress/2026-11/2026-11-25-handoff-pm-cx12-census-tick-20261125.md",
+      "progress/2026-11/2026-11-25-handoff-pm-land-cx14-cx15.md",
+      "progress/2026-11/2026-11-25-handoff-workspace-f2-mechwit.md",
+      "progress/2026-11/2026-11-25-handoff-workspace-f2-vkrc.md",
+      "progress/2026-11/2026-11-25-handoff-workspace-f2.md",
+      "progress/2026-11/2026-11-25-intake-kspec-1125.md",
+      "progress/2026-11/2026-11-25-workspace-f2.md",
+      "research/deep-dives/intake-agents-intro-20261124/stage3-plan.md",
+      "research/deep-dives/intake-agents-intro-20261124/sweep1-reference-dives.md",
+      "research/deep-dives/intake-agents-intro-20261124/sweep2-wave1-dives.md",
+      "research/deep-dives/intake-agents-intro-20261124/sweep3-wave2-dives.md",
+      "research/deep-dives/intake-always-on-1124/dive-A-inbox-outbox.md",
+      "research/deep-dives/intake-always-on-1124/dive-B-verification-loops.md",
+      "research/deep-dives/intake-always-on-1124/dive-C-permissions-deferral.md",
+      "research/deep-dives/intake-always-on-1124/dive-D-memory-autopilot.md",
+      "research/deep-dives/intake-always-on-1124/dive-E-agent-time.md",
+      "research/deep-dives/intake-always-on-1124/dive-F-code-review-eval.md",
+      "research/deep-dives/intake-always-on-1124/stage3-plan.md",
+      "research/deep-dives/intake-digests/2026-11-24-ids-2942-2955.md",
+      "research/deep-dives/intake-digests/2026-11-25-ids-2956-2981.md",
+      "research/deep-dives/intake-kspec-1125/stage3-plan.md"
     ],
-    "scope_types": [
-      "research"
-    ]
+    "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-25T12:46:48Z",
+  "scan_time": "2026-11-25T12:51:41Z",
   "schema_version": 1,
-  "source_set_hash": "8618ea4d232319193f1747f28971bc17213dbc8cc3334129ca52ca7f454be51e",
+  "source_set_hash": "a74fc7dc92d5e17beed73d5e81a2e2facbb8d620638cb7505e41459853a9e739",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -4530,7 +4572,7 @@
     },
     {
       "content_hash": "cd6f294e84c23713ea530f54995cb989d1bbf38013d965e9c6b9800e899dd297",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-agents-intro-20261124/stage3-plan.md",
       "size": 146086,
       "title": "Stage-3 plan \u2014 intake-agents-intro-20261124 (\"The Little Book of Agent Engineering\")",
@@ -4538,7 +4580,7 @@
     },
     {
       "content_hash": "5858e1555608ae40448808a8878b01d69641b4c0f27a1b6a3cf907c22f103610",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-agents-intro-20261124/sweep1-reference-dives.md",
       "size": 15091,
       "title": "Sweep 1 \u2014 Stage 1 report and the reference dives (intake-2907..2917)",
@@ -4546,7 +4588,7 @@
     },
     {
       "content_hash": "8b59d4c6de14853a508a5d51bfbfb81fe0687011108ec69c5d1402929ee28e30",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-agents-intro-20261124/sweep2-wave1-dives.md",
       "size": 6953,
       "title": "Sweep 2 \u2014 Stage-2b wave 1 (intake-2918..2930)",
@@ -4554,7 +4596,7 @@
     },
     {
       "content_hash": "0eebfbbbd03549944af5112a9a397c194f2b59c2f4b169223ffdb1c2f1e9a4f7",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-agents-intro-20261124/sweep3-wave2-dives.md",
       "size": 5948,
       "title": "Sweep 3 \u2014 Stage-2b wave 2, final (intake-2931..2941)",
@@ -5202,7 +5244,7 @@
     },
     {
       "content_hash": "93efa3625f5e3b0d98a7e7bef0f0d41c888b671ff8cb4b25dd177c622f21fcd4",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-always-on-1124/dive-A-inbox-outbox.md",
       "size": 10108,
       "title": "Dive A-inbox-outbox (intake run always-on-1124, 2026-11-24)",
@@ -5210,7 +5252,7 @@
     },
     {
       "content_hash": "b51a9faa36af5d9941bb706e6210990bc639e6cc6d4a6fbe94c0e502c13eaf1b",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-always-on-1124/dive-B-verification-loops.md",
       "size": 7963,
       "title": "Dive B-verification-loops (intake run always-on-1124, 2026-11-24)",
@@ -5218,7 +5260,7 @@
     },
     {
       "content_hash": "98a2ac56957982ccfaac61c924c673e9fe2ae9f7a666b6a1c98d5d53b54fc228",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-always-on-1124/dive-C-permissions-deferral.md",
       "size": 6376,
       "title": "Dive C-permissions-deferral (intake run always-on-1124, 2026-11-24)",
@@ -5226,7 +5268,7 @@
     },
     {
       "content_hash": "95ad367b48b8535d1e03c865b7fb1886e7300aba51e20fdeb347529b3ddc599a",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-always-on-1124/dive-D-memory-autopilot.md",
       "size": 3213,
       "title": "Dive D-memory-autopilot (intake run always-on-1124, 2026-11-24)",
@@ -5234,7 +5276,7 @@
     },
     {
       "content_hash": "fcb79b6595b76fa5fc6a9dfafb0b23674d3004166b785c20715188ed14cfc724",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-always-on-1124/dive-E-agent-time.md",
       "size": 4912,
       "title": "Dive E-agent-time (intake run always-on-1124, 2026-11-24)",
@@ -5242,7 +5284,7 @@
     },
     {
       "content_hash": "6df8f74a26ec10943d0f3639a615401054e4b9dc6155d1d335c9d1bf9cec2a13",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-always-on-1124/dive-F-code-review-eval.md",
       "size": 3311,
       "title": "Dive F-code-review-eval (intake run always-on-1124, 2026-11-24)",
@@ -5250,7 +5292,7 @@
     },
     {
       "content_hash": "e47963a98d1104a87177c1301211d2e559dff7aa0086aadded5eac33bd7f32fe",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-always-on-1124/stage3-plan.md",
       "size": 97347,
       "title": "Stage-3 plan: always-on agent primitives against our loops and pipelines (intake-always-on-1124), REVISION 1, APPROVED 2026-11-24 with amendments",
@@ -6130,7 +6172,7 @@
     },
     {
       "content_hash": "67ec02d1dc11133d8380dc6865690200cd16ab9e1f22aa35680756e0d6c272d2",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-digests/2026-11-24-ids-2942-2955.md",
       "size": 49840,
       "title": "Intake dive digest \u2014 2026-11-24, intake-2942#record .. intake-2955#record",
@@ -6138,7 +6180,7 @@
     },
     {
       "content_hash": "2cb579c86690084fffb8d19592634920cbf42b6235240bbe0f87be5a04dc090a",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-digests/2026-11-25-ids-2956-2981.md",
       "size": 112039,
       "title": "Intake dive digest \u2014 2026-11-25, intake-2956#record .. intake-2981#record",
@@ -6234,7 +6276,7 @@
     },
     {
       "content_hash": "0b03c3772e2c6ad511c8079f7d301a4f9c06179b799be6ed5f2f3a6cf780662f",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "research/deep-dives/intake-kspec-1125/stage3-plan.md",
       "size": 127825,
       "title": "Stage-3 plan: kernels, speculative decoding and eval rigor (intake-kspec-1125), DRAFT for operator approval",
@@ -19489,18 +19531,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "bb05f694e413527190aedd8b0609d0de4b3e223504b5ac5f0f2a897b65e15ed5",
-      "modified": "2026-11-23T18:02:41Z",
+      "content_hash": "da65b7b8a1f8eea12345db387e717083661a23f6dc2b0ef670305805a2870d96",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "progress/2026-11/2026-11-23-autopilot-backlog-session.md",
-      "size": 4163,
+      "size": 20922,
       "title": "2026-11-23 autopilot backlog session",
       "type": "progress"
     },
     {
-      "content_hash": "8c9807a20949c6d36b53f1a8271314308e6dec6834a723302b8cb8fd7b9ca1ff",
-      "modified": "2026-11-23T18:10:12Z",
+      "content_hash": "810f4eae3cdf353fa0710385a8d47d32819049f7c5200c1bd97041fc9a43420b",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "progress/2026-11/2026-11-23-handoff-df2.md",
-      "size": 10095,
+      "size": 19703,
       "title": "2026-11-23 \u2014 handoff df2",
       "type": "progress"
     },
@@ -19513,35 +19555,203 @@
       "type": "progress"
     },
     {
-      "content_hash": "ecd8982c633c7e25ff8b50590a2c0f053d62e12a5821cce8f013a7b8926536bb",
-      "modified": "2026-11-24T16:14:37Z",
+      "content_hash": "8276e5305c5597a06f2000240dc506779aace0470dea3f2748c1d2d62ea6d238",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "progress/2026-11/2026-11-24-autokernel.md",
-      "size": 10585,
+      "size": 13122,
       "title": "2026-11-24 autokernel: overnight push, 20:00Z 11-23 to 07:20Z 11-24 (operator-invoked /wrap-up)",
       "type": "progress"
     },
     {
+      "content_hash": "6f1ccbebafd47926633534f0b232f9059077c8d750051b52542dd89a5c615376",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-autopilot-backlog-session.md",
+      "size": 2596,
+      "title": "2026-11-24 autopilot backlog session",
+      "type": "progress"
+    },
+    {
+      "content_hash": "bc4e29a3d003865f7ba8bcd95bc1ff5b9a06157dc534d956bd85c434e2767305",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-handoff-batched-decode-measurement.md",
+      "size": 1114,
+      "title": "2026-11-24 \u2014 handoff batched-decode-measurement",
+      "type": "progress"
+    },
+    {
+      "content_hash": "077b5c6f1c3736d5e49500e81e7a52ebbb189efb8dc55df2d10b0e1c126c891d",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-handoff-cpu-decode-roofline.md",
+      "size": 1037,
+      "title": "2026-11-24 \u2014 handoff cpu-decode-roofline",
+      "type": "progress"
+    },
+    {
+      "content_hash": "77f6e20ad237be5b72c7f35b35b8e32f9d14f137cac47ecdb32f8f4a6831fa33",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-handoff-df2.md",
+      "size": 8332,
+      "title": "2026-11-24 \u2014 handoff df2",
+      "type": "progress"
+    },
+    {
       "content_hash": "e37f1c1d8d3b61d0d3974dc2ca8335f312dca826250a15d99d007a0243a3ba9d",
-      "modified": "2026-11-24T07:19:50Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "progress/2026-11/2026-11-24-handoff-pipeline-mgmt-wrapup-20261124.md",
       "size": 249,
       "title": "2026-11-24 \u2014 handoff pipeline-mgmt-wrapup-20261124",
       "type": "progress"
     },
     {
-      "content_hash": "4d5492eb9411dafa17cc1a67b986774e4a85c33a134b1cfe1d2475f850df687d",
-      "modified": "2026-11-24T07:18:22Z",
+      "content_hash": "99c10e05c17911b19f1d0e80f0e6b01b78976d1b65a5321ba94463b4bc8ebbe8",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-handoff-pipeline-mgmt.md",
+      "size": 330,
+      "title": "2026-11-24 \u2014 handoff pipeline-mgmt",
+      "type": "progress"
+    },
+    {
+      "content_hash": "10274067f4a41d32c05f5219669e50842294076515e6ac2abbe8d4e062d7ab8f",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-handoff-pm-wrapup-20261124.md",
+      "size": 201,
+      "title": "2026-11-24 \u2014 handoff pm-wrapup-20261124",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e9586171677e3c829ce355c6ee60eea9c3ba999d4730fc36e74cfb0c17a9629c",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-handoff-tick-1124m.md",
+      "size": 290,
+      "title": "2026-11-24 \u2014 handoff tick-1124m",
+      "type": "progress"
+    },
+    {
+      "content_hash": "900ee9a378263dd9fe088f60c54c2efe2083b6934d56cad702ec76571d3e4908",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-handoff-tick-1124n.md",
+      "size": 353,
+      "title": "2026-11-24 \u2014 handoff tick-1124n",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2d3db1861e548234ee11284e1bc20c7a7eb213047bde7f3f77838b3ee3542417",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "progress/2026-11/2026-11-24-pipeline-mgmt.md",
-      "size": 3654,
+      "size": 5524,
       "title": "2026-11-24 \u2014 pipeline-mgmt",
       "type": "progress"
     },
     {
+      "content_hash": "8bcb08c81f5e61b705a7e2e743c8c59dbdc4ea65f4021e22650fd0541d1ccb9f",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-24-workspace-f2.md",
+      "size": 2109,
+      "title": "2026-11-24 \u2014 workspace-f2 (RTG-22 non-inference)",
+      "type": "progress"
+    },
+    {
       "content_hash": "0d02c495576afb08fe765a6600d93cb2dee498ed04467ccafb2ab8b54ae2a086",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "progress/2026-11/2026-11-25-autokernel.md",
       "size": 8045,
       "title": "2026-11-25 \u2014 AutoKernel overnight churn (2026-11-24 \u2192 25), wrap-up",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0b2787f662656cb347da69cf73975438882e30a0b11870c0a151707b62ea6c5e",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-autopilot-backlog-session.md",
+      "size": 3116,
+      "title": "2026-11-24/25 \u2014 autopilot-backlog-session",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ab73ffc4a8580a96012e4d4e9a05a5c84a910e43cb773095e8fcd5d1c87a2d47",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-df2.md",
+      "size": 3236,
+      "title": "2026-11-25 \u2014 handoff df2",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3a99fb65bb27d9bd3c03b5163866e92bc8f324bac4b2ff7685679609f11d206a",
+      "modified": "2026-11-25T12:51:38Z",
+      "path": "progress/2026-11/2026-11-25-handoff-pipeline-mgmt-akwaste.md",
+      "size": 276,
+      "title": "2026-11-25 \u2014 handoff pipeline-mgmt-akwaste",
+      "type": "progress"
+    },
+    {
+      "content_hash": "df0d47e33dfc05c261a14dece55fd87de8a9b4a2c550eb02b9bb4d493bfc86d7",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-pm-akw-r8.md",
+      "size": 579,
+      "title": "2026-11-25 \u2014 handoff pm-akw-r8",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c776a8b70b12565238096c9148853900324d49f73e07ff8e34405cd9a4ded54e",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-pm-codex-lanes-landing.md",
+      "size": 268,
+      "title": "2026-11-25 \u2014 handoff pm-codex-lanes-landing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "728e1c20f0d26ce5edf1400df51d9a0719a5c94e86c06dde79b28c16ee1cf80d",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-pm-cx12-census-tick-20261125.md",
+      "size": 315,
+      "title": "2026-11-25 \u2014 handoff pm-cx12-census-tick-20261125",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a47cc9dad782f0407f171599e7ec12020036af0fe11550a2edc1160bdf3bfbbf",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-pm-land-cx14-cx15.md",
+      "size": 463,
+      "title": "2026-11-25 \u2014 handoff pm-land-cx14-cx15",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ab84e5d7731568b8803464444a6236fb180a77e3dd3dd600740d74603a551a43",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-workspace-f2-mechwit.md",
+      "size": 278,
+      "title": "2026-11-25 \u2014 handoff workspace-f2-mechwit",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6208d4d9228b70db66eb4409df92dcd42ef2732f5a295588f938c9dfa2f4400e",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-workspace-f2-vkrc.md",
+      "size": 248,
+      "title": "2026-11-25 \u2014 handoff workspace-f2-vkrc",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c75937392fb96eb0b2ae7b5ff8a413fcced1349f4d383c9dcc4f5e42553b6edd",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-handoff-workspace-f2.md",
+      "size": 606,
+      "title": "2026-11-25 \u2014 handoff workspace-f2",
+      "type": "progress"
+    },
+    {
+      "content_hash": "7ee62793d6ba3765783f7eaaf1c43b1080224714b9ff20ca4a4dd44c5a276034",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-intake-kspec-1125.md",
+      "size": 3740,
+      "title": "2026-11-25 \u2014 research intake intake-kspec-1125 (for workspace-f2)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a1b5418a0f03a77c5b864ea64615c2eba9bd45bc4c0999d454e7a9a24d3ff584",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "progress/2026-11/2026-11-25-workspace-f2.md",
+      "size": 5014,
+      "title": "2026-11-24/25 \u2014 workspace-f2 (Assorted / RTG-22 non-inference)",
       "type": "progress"
     },
     {
@@ -19721,6 +19931,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "e6aab6f24d51273453278e15aded00d1a6090a7d51f0a104a68ad830cc51a124",
+      "modified": "2026-11-25T12:46:05Z",
+      "path": "docs/design/ak-audit-b5-b11-status-20261124.md",
+      "size": 9429,
+      "title": "AutoKernel audit B5\u2013B11 status \u2014 2026-11-24",
+      "type": "docs"
+    },
+    {
       "content_hash": "6021fd237d8723621573a94d8cd9d3fb173f844a7778745603ab394f361b040d",
       "modified": "2026-11-23T18:02:40Z",
       "path": "docs/design/ak-audit-reqs-fixes-20261120.md",
@@ -19746,7 +19964,7 @@
     },
     {
       "content_hash": "651c7a67400c5cb88929f311001e5979d1619bc32bc1fe4b7bb8eb4306f2b6a2",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "docs/design/ak-waste-audit-20261125.md",
       "size": 22551,
       "title": "AutoKernel waste audit \u2014 2026-11-24 11:00Z to 2026-11-25 11:30Z",
@@ -20722,7 +20940,7 @@
     },
     {
       "content_hash": "c85f47c76abe3e5de2672b56fb4c148368b19762a12723056aad0f5c4bacc3b7",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "docs/design/mi210-served-kernel-bandwidth-census-20261122.md",
       "size": 41325,
       "title": "MI210 served-path kernel bandwidth census (2026-11-22)",
@@ -20874,7 +21092,7 @@
     },
     {
       "content_hash": "e071a53a6de6667719fa53e024f4a181a53f2c8dfdb646eb52e51b209b1b5b6b",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "docs/design/rowflow-replanning-scheduler.md",
       "size": 25476,
       "title": "Rowflow re-planning scheduler (dynamic knapsack): design and offline evaluation (2026-11-24)",
@@ -20914,17 +21132,17 @@
     },
     {
       "content_hash": "95949de0f641a1124e40a1d3a647f1f03906af753c26be29558ecc951a0cd614",
-      "modified": "2026-11-25T12:43:28Z",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "docs/design/taskflow-early-end-census-20261124.md",
       "size": 5308,
       "title": "Taskflow early-end census (2026-11-24)",
       "type": "docs"
     },
     {
-      "content_hash": "444948b3a6f50e316705fb72ec2e052b576159388e04e4131976759b9d145613",
-      "modified": "2026-11-23T18:02:40Z",
+      "content_hash": "bc59a428adfcec69fce95c71789b7fb0620cbefbfe12dc2932ec5d7bd736ac13",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "docs/design/taskflow-stage1-canary-findings.md",
-      "size": 30395,
+      "size": 35818,
       "title": "Taskflow Stage 1 canary \u2014 findings (2026-11-20)",
       "type": "docs"
     },
@@ -21209,10 +21427,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "dd2b44536cb4a8ecf6d953b7dff8ddbff6a4c9b932f4e1ade6b5942041f8350b",
-      "modified": "2026-11-23T18:02:40Z",
+      "content_hash": "0c823559be17f5079cf7f8b77357481c8e596fcfd68dd1c761b8c7f99fe02314",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "docs/guides/agent-workflows/agent-loop-design.md",
-      "size": 59506,
+      "size": 63854,
       "title": "Designing an autonomous agent loop",
       "type": "docs"
     },
@@ -21257,10 +21475,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "26e8f932777a2a2f8f287f30170cee6ddb0aa3b236e328b37f07696809d15910",
-      "modified": "2026-11-23T18:02:40Z",
+      "content_hash": "ac85a7ff1d2b5122c9e5350af0d42257f5e6449b2052471f505934f9d39047d9",
+      "modified": "2026-11-25T12:46:05Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 35748,
+      "size": 41719,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -24457,7 +24675,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3053,
+  "total_new": 3075,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

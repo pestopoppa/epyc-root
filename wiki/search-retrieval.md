@@ -1691,3 +1691,12 @@ Sources: [PIP04-KB-INDEX-BREAK box](../handoffs/active/knowledge-pipelines.md) �
 - [agents-intro sweep 2](../research/deep-dives/intake-agents-intro-20261124/sweep2-wave1-dives.md) — ConTEB, Reconstructing Context, late chunking
 - [agents-intro sweep 3](../research/deep-dives/intake-agents-intro-20261124/sweep3-wave2-dives.md) — chunking comparison
 - [always-on dive D](../research/deep-dives/intake-always-on-1124/dive-D-memory-autopilot.md) — memory-plus-search evidence
+
+### Compiled Update — 2026-11-25 (operator wiki sweep 2, contextual-retrieval slice)
+
+- **Contextual retrieval gains ride on fusion and rerank.** The Reconstructing Context result depends on BM25 fusion and reranking over only 50 queries (intake-2923#record). On ConTEB, GTE-ModernColBERT scores 59.4, +late chunking 59.1 and +InSeNT 70.6 (NanoBEIR 67.7 to 59.2), and the Anthropic pipeline costs about 120x the index time (intake-2924#record).
+- **Late chunking is a measured null on ColBERT for us.** The original late-chunking paper is superseded for ColBERT by ConTEB (intake-2925#record); untrained late chunking on GTE-ModernColBERT measured -0.3 nDCG@10. Paragraph or fixed-size chunks win in-corpus, and late chunking helps in-corpus but hurts in-document retrieval; no late-interaction model was tested there (intake-2936#record).
+- **Packet P5.** A zero-LLM heading-breadcrumb prefix side-index A/B for kb-search (AEI-KB-BREADCRUMB-AB), with a structure-chunk baseline and separate in-corpus and in-document metrics; an LLM-written prefix only if the breadcrumb lifts. LumberChunker and proposition chunking were declined (no in-corpus gain at about 1000x lower throughput) ([agents-intro stage-3 plan](../research/deep-dives/intake-agents-intro-20261124/stage3-plan.md), [sweep 2](../research/deep-dives/intake-agents-intro-20261124/sweep2-wave1-dives.md), [sweep 3](../research/deep-dives/intake-agents-intro-20261124/sweep3-wave2-dives.md)).
+
+#### Source References (2026-11-25, operator wiki sweep 2, contextual-retrieval slice)
+- [agents-intro stage-3 plan](../research/deep-dives/intake-agents-intro-20261124/stage3-plan.md), [sweep 2](../research/deep-dives/intake-agents-intro-20261124/sweep2-wave1-dives.md), [sweep 3](../research/deep-dives/intake-agents-intro-20261124/sweep3-wave2-dives.md)

@@ -1366,3 +1366,14 @@ Sources: [kernel champion](../handoffs/active/kernel-champion-and-promotion.md) 
 - [quantization-and-low-bit handoff (M4, M5 monitors)](../handoffs/active/quantization-and-low-bit.md) — trigger conditions
 - [speculative-decoding handoff (G3-KTRACE-LONGCTX)](../handoffs/active/speculative-decoding.md) — q4_0 vs q8_0 timing
 - [kv-cache-program handoff](../handoffs/active/kv-cache-program.md) — KV-quant context
+
+### Compiled Update — 2026-11-25 (operator wiki sweep 2, kspec plan and low-bit slice)
+
+- **Plan outcome for the quantization sources.** None of the quantization papers produced a box. They were closed as knowledge notes and monitor triggers: Shifter Quantization gives an exact full-K integer dot with no per-group float scale, but on gfx90a int8 MFMA has the same K per instruction as f16 so there is no rate gain, SHI needs INT4 MFMA which CDNA2 lacks, and CPU Q2_K x Q8_K dots already use SHI-style integer correction products (intake-2957#record; [stage-3 plan](../research/deep-dives/intake-kspec-1125/stage3-plan.md)).
+- **One MXFP4 scale rule, not two.** Overflow-Aware Scaling rounds the E8M0 scale up when the floor-scaled block max exceeds 7, the same threshold the PDF-only intake-2961 calls Midmax (unverified there), so cite one rule; its gains are W4A4 and not weight-only evidence. Our rule is plain floor (`ggml-quants.c` L368) and the only served MXFP4 model is a lossless repack (intake-2978#record, intake-2961#record).
+- **Neither device has FP4.** INT8/FP16 emulation of FP4 is ALREADY-PRESENT on the dequant path; Hadamard rotation granularity needs online activation rotation and is UNKNOWN-NEEDS-PROBE ([stage-3 plan](../research/deep-dives/intake-kspec-1125/stage3-plan.md)).
+- **Top-k attention identities.** The KL of a kept set equals -log(1 - discarded mass), usable as an offline gate that cannot certify a future query (intake-2981#record); the limits-of-top-k result is about singleton-KL ranking, not learned indexers (intake-2970#record); certified sparse attention needs a 4-bit scan of every key (intake-2980#record).
+- **Served keeps in the low-bit path.** The HIP int8 per-channel GEMM (i8pc) kept at +5.7% served e2e with KLD 0.000919, while the Q8 w8 GEMV designs targeted stock q8wv although production serves V5I at about 62% of peak, and design 4 failed at 0.478x/0.304x ([AK progress 11-25](../progress/2026-11/2026-11-25-autokernel.md)).
+
+#### Source References (2026-11-25, operator wiki sweep 2, quantization slice)
+- [kspec stage-3 plan](../research/deep-dives/intake-kspec-1125/stage3-plan.md), [digest 2956-2981](../research/deep-dives/intake-digests/2026-11-25-ids-2956-2981.md), [AK progress 11-25](../progress/2026-11/2026-11-25-autokernel.md)
