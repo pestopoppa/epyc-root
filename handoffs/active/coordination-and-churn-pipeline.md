@@ -2606,6 +2606,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: F3, F4, F9 each landed with tests; rowflow unit and replay suites pass
       · gate: none
       · owner: pipeline-mgmt
+      · NEEDS-OWNER: 2026-11-25 codex lane cxd-pm-r8-keep-trims-followup-20261125T1428: lane status BLOCKED: scripts/coordination/tests/test_rowflow_idle_after_crash.py and test_rowflow_gpu_fence.py require process termination and builds forbidden by dispatcher
 - [ ] **PM-CODEX-DISPATCH-DETERMINISTIC** [non-inference] Port Codex lane dispatch into the deterministic dispatcher (drive.py artifact verdict, push mode) so backlog boxes are routed to Codex lanes without a Claude driver
       · done when: the dispatcher runs 3 backlog boxes end to end via Codex lanes with PUSH VERIFIED and no Claude edits
       · gate: PM-CODEX-UNASSISTED-DEF
