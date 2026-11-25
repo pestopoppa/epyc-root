@@ -1929,7 +1929,7 @@ def futility_missing(spec):
     futility = spec.get("futility")
     if isinstance(futility, dict) and isinstance(futility.get("rule"), str) and futility["rule"].strip():
         return None
-    return ("measurement missing spec.futility.rule", 'set spec.futility.rule to a non-empty stop-on-futility rule')
+    return ("measurement missing spec.futility.rule", 'add --futility "..."')
 
 
 def check_futility(spec, flags):

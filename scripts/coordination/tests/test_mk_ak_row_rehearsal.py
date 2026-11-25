@@ -102,6 +102,7 @@ def test_clean_declaration_rehearses_then_publishes_with_zero_warnings(env, monk
     sp = env["rows"] / rid / "spec.json"
     spec = json.loads(sp.read_text())
     assert spec["priority_rank"] == 45
+    assert spec["futility"] == {"rule": "stop at look=4 if every candidate ci_upper<1.01"}
     monkeypatch.setattr(PR, "gpu_busy", lambda flags: True)    # queue the smoke; never run it in a test
     rc, pub = run_publish([str(sp), "--flags", str(env["flags"])])
     assert rc == 0, pub
@@ -262,3 +263,16 @@ def test_futility_check_gate_and_diagnostic():
         PR.check_futility(diagnostic, '')
     diagnostic['futility'] = {'rule': 'stop when the witness is absent'}
     assert PR.futility_missing(diagnostic) is None
+
+
+def test_gate_explicit_futility_overrides_default(env):
+    rid = "ak-r-explicit-futility-20261125"
+    rc, out = run(decl(env, rid, extra=["--futility", "stop on witness miss", "--no-rehearse"]))
+    assert rc == 0, out
+    spec = json.loads((env["rows"] / rid / "spec.json").read_text())
+    assert spec["futility"] == {"rule": "stop on witness miss"}
+
+
+def test_missing_futility_hint_names_flag():
+    missing = PR.futility_missing({"owner": "autokernel", "kind": "compute"})
+    assert 'FIX: add --futility "..."' in PR.format_rehearsal([("futility", *missing)], [])

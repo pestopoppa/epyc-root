@@ -94,13 +94,14 @@ def test_gpu_scaffold_regions_pass_publish_check(tmp_path, monkeypatch, profile)
     flags = tmp_path / "flags"
     flags.mkdir()
     if profile == "default":
-        _, spec, _ = _mk(tmp_path, "ak-default-gpu-20261125", ["--lane", "gpu"])
+        _, spec, _ = _mk(tmp_path, "ak-default-gpu-20261125", ["--lane", "gpu", "--futility", "stop on witness miss"])
     else:
         args = ["new", "ak-polar-gpu-20261125", "--handoff", "x.md", "--box", "T", "--lane", "gpu",
                 "--regions", "88-95", "--threads", "8", "--units", "1", "--unit-s", "400", "--model", "X",
-                "--root", str(tmp_path)]
+                "--root", str(tmp_path), "--futility", "stop on witness miss"]
         assert MK.polar_main(args, fetch=lambda *a: ("abc", {"gpu_common.py": b"", "gpuproof_row.py": b""})) == 0
         spec = json.loads((tmp_path / "ak-polar-gpu-20261125" / "spec.json").read_text())
+    assert spec["futility"] == {"rule": "stop on witness miss"}
     assert spec["regions"] == "mi210_0,88-95,184-191"
     assert spec["claim_cpus"] == MK.GPU_HOST_CLAIM
     refusals = PR.rehearse(spec, str(flags))

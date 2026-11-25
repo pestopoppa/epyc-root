@@ -557,6 +557,8 @@ id=a.id, task=a.task, rule=a.rule, knobs=", ".join(a.knob) or "none", knob_list=
             "decision_rule": a.rule + (" | knobs: " + ", ".join(a.knob) if a.knob else ""),
             "requires_quiet_host": bool(a.lane == "cpu" and not a.no_quiet_host),
             "notes": "scaffolded by mk_ak_row.py; estimate_basis: add after the smoke (ak_row_harness.estimate_from_smoke)"}
+    if getattr(a, "futility", None) is not None:
+        spec["futility"] = {"rule": a.futility}
     spec["generator"] = {"tool": "mk_ak_row.py", "version": GEN_VERSION, "harness_sha256": harness_sha(),
                          "utc": H.now()}
     if fix_ref:
@@ -911,6 +913,11 @@ def gate_scaffold(a, served=None):
                                "cap": v["cap"], "knob": k} for k, v in knobs.items() if not v["marker"].startswith("re:")],
             "keep": list(G.EVIDENCE_PATHS),   # the replay input of a failed gate; the reaper honours spec.keep
             "notes": "scaffolded by mk_ak_row.py gate new (declared gate row; ak_gate owns the harness)"}
+    futility = getattr(a, "futility", None)
+    if futility is None and keep.get("look_blocks") is not None:
+        futility = f"stop at look={keep['look_blocks']} if every candidate ci_upper<{keep['threshold']}"
+    if futility is not None:
+        spec["futility"] = {"rule": futility}
     if fix_ref:
         spec["fix_ref"] = fix_ref
     spec["generator"] = {"tool": "mk_ak_row.py", "version": GEN_VERSION, "profile": "gate",
@@ -952,6 +959,7 @@ def gate_main(argv=None):
                    help="override derived expect cells (default: set -> present, unset -> absent)")
     n.add_argument("--baseline", default="", help="baseline arms, comma list (default: the arms that set no knob)")
     n.add_argument("--metric", choices=sorted(G.METRICS))
+    n.add_argument("--futility", help="stop-on-futility rule text")
     n.add_argument("--keep-rule", metavar="ci_lower>X,n=N[,look=L][,aa=A][,dummy=1]")
     dirn = n.add_mutually_exclusive_group()
     dirn.add_argument("--lower-is-better", dest="direction", action="store_const", const="lower",
@@ -1465,6 +1473,8 @@ def polar_scaffold(a, fetch=None) -> int:
             "generator": {"tool": "mk_ak_row.py", "profile": "polar", "version": GEN_VERSION, "utc": H.now()}}
     if fix_ref:
         spec["fix_ref"] = fix_ref
+    if getattr(a, "futility", None) is not None:
+        spec["futility"] = {"rule": a.futility}
     with open(os.path.join(d, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
     polar_seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"] + sorted(harness))
@@ -1491,6 +1501,7 @@ def polar_main(argv=None, fetch=None) -> int:
     n.add_argument("--flags", help="compute-flags root for estimate-from-history (default: the live one)")
     n.add_argument("--model", required=True)
     n.add_argument("--fix-ref", metavar="STORE:REASON", help="new kernel store and reason for the fix")
+    n.add_argument("--futility", help="stop-on-futility rule text")
     n.add_argument("--owner", default="autokernel")
     n.add_argument("--root", default="/mnt/raid0/llm/tmp")
     n.add_argument("--research-repo", default=RESEARCH_REPO, help="gpu lane: repo to fetch the canonical harness from (fetch + show only)")
@@ -1528,6 +1539,7 @@ def main(argv=None):
     ap.add_argument("--task", default="")
     ap.add_argument("--model", default="")
     ap.add_argument("--rule", default="")
+    ap.add_argument("--futility", help="stop-on-futility rule text")
     ap.add_argument("--knob", action="append", default=[])
     ap.add_argument("--lane", choices=("cpu", "gpu"), default="cpu")
     ap.add_argument("--claim")

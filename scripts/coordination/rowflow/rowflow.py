@@ -12038,14 +12038,17 @@ def main(argv=None):
             if a.futility_report:
                 import publish_row as PR
                 findings = []
-                for path in sorted(glob.glob(os.path.join(a.flags, "ready", "*.json"))):
-                    row = load_json(path)
-                    if not isinstance(row, dict):
-                        findings.append({"id": os.path.basename(path), "owner": "unknown", "missing": "unreadable row"})
+                allrows = rows(a.flags)
+                sup = superseded_index(a.flags)
+                for rid, row in sorted(allrows.items()):
+                    if (sup.get(rid) or os.path.exists(withdraw_pending_path(a.flags, rid))
+                            or os.path.exists(os.path.join(withdrawn_dir(a.flags), rid + ".json"))
+                            or glob.glob(os.path.join(a.flags, "filing-done", glob.escape(rid) + "*"))
+                            or not runnable(status(a.flags, rid, allrows))):
                         continue
                     missing = PR.futility_missing(row)
                     if missing:
-                        findings.append({"id": row.get("id", os.path.basename(path)), "owner": row.get("owner", "unknown"), "missing": missing[0]})
+                        findings.append({"id": rid, "owner": row.get("owner", "unknown"), "missing": missing[0]})
                 if a.json:
                     print(json.dumps(findings, indent=1))
                 else:

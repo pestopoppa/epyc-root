@@ -606,12 +606,44 @@ def test_inputs_argv_hex_and_host_not_a_pin(tmp_path):
     assert P.pinned_inputs(P.Row(s, str(d))) == {}
 
 
-def test_futility_report_lists_queued_row(tmp_path, capsys):
+def test_futility_report_lists_only_grantable_rows(tmp_path, capsys):
     import json
     import rowflow as rf
     ready = tmp_path / 'ready'
     ready.mkdir()
-    (ready / 'diagnostic.json').write_text(json.dumps({'id': 'diagnostic', 'owner': 'autokernel', 'kind': 'compute'}))
-    assert rf.main(['--flags', str(tmp_path), 'preflight', '--futility-report']) == 0
+    launcher = tmp_path / 'launch.sh'
+    launcher.write_text('#!/bin/sh\n')
+    for rid in ('queued', 'complete', 'ended', 'filed', 'superseded', 'withdrawn', 'withdraw-pending', 'parked', 'unsmoked'):
+        row = {'schema': rf.SCHEMA, 'id': rid, 'owner': 'autokernel', 'kind': 'compute',
+               'lane': 'cpu', 'launcher': {'path': str(launcher)}}
+        (ready / (rid + '.json')).write_text(json.dumps(row))
+        if rid != 'unsmoked':
+            dry = tmp_path / 'dryrun' / rid
+            dry.mkdir(parents=True)
+            (dry / 'PASS.json').write_text(json.dumps({'launcher_sha256': rf.sha256(str(launcher))}))
+    grants = tmp_path / 'grants'
+    grants.mkdir()
+    for suffix in ('complete', 'ended'):
+        (grants / (suffix + '.' + suffix)).touch()
+    filed = tmp_path / 'filing-done'
+    filed.mkdir()
+    (filed / 'filed.verdict.json').touch()
+    sup = ready / '.superseded'
+    sup.mkdir()
+    (sup / 'superseded.json').write_text(json.dumps({'by': 'successor'}))
+    withdrawn = ready / '.withdrawn'
+    withdrawn.mkdir()
+    (withdrawn / 'withdrawn.json').touch()
+    (withdrawn / 'withdraw-pending.pending.json').touch()
+    original_status = rf.status
+    def status(flags, rid, allrows):
+        if rid == 'parked':
+            return {'state': 'parked'}
+        return original_status(flags, rid, allrows)
+    from unittest.mock import patch
+    with patch.object(rf, 'status', side_effect=status):
+        assert rf.main(['--flags', str(tmp_path), 'preflight', '--futility-report']) == 0
     out = capsys.readouterr().out
-    assert 'diagnostic | autokernel | measurement missing' in out
+    assert '1 queued row(s)' in out
+    assert 'queued | autokernel | measurement missing' in out
+    assert all(rid + ' |' not in out for rid in ('complete', 'ended', 'filed', 'superseded', 'withdrawn', 'withdraw-pending', 'parked', 'unsmoked'))
