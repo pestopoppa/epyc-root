@@ -261,7 +261,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: each of hooks C1-C6 is live in the hook chain on origin/main with a test that trips it, SHAs recorded in AK-REQS-FIXES.md
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **WS4-WAKE-IMPERATIVE** [non-inference] WS-4 caveat: a woken session ignores a wake whose message has no imperative; make dispatcher wake messages and bus nudges always carry an imperative line.
+- [x] **WS4-WAKE-IMPERATIVE** [non-inference] WS-4 caveat: a woken session ignores a wake whose message has no imperative; make dispatcher wake messages and bus nudges always carry an imperative line. ✅ 2026-11-25 [no-belief: software] codex lane cxd-ws4-wake-imperative-20261125T1436: e860dbb3b on origin/main, dispatcher re-ran `-m pytest -q -p no:cacheprovider scripts/coordination/tests/test_
       · done when: a test shows every wake/nudge builder in handoff_sessions.py and session_bus emits an imperative line, and a live woken session acts on one
       · gate: none
       · owner: pipeline-mgmt
