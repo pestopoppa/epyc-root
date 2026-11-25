@@ -5306,6 +5306,7 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92鈥
       路 gate: none        路 inputs: `handoffs/active/autokernel-loop.md`
       路 tier: sonnet
 - [ ] **AK-ROOFLINE-TRIPWIRE-1** [non-inference] Add a pre-keep roofline-plausibility tripwire (intake-2864 learning 5): before a keep, mark as SUSPECT (hold, never reject) any candidate whose measured speedup implies achieved bandwidth above the op measured ceiling; a SUSPECT candidate then needs a correctness and residency re-check. Ceilings come from the census parity ceilings in epyc-inference-research:scripts/kernel_rnd/autokernel/loop/census/mi210_bandwidth_census.json (operator 2026-11-24): GPU 1500 GB/s, CPU quarter 129, CPU full host 520. Include a replay over recorded keeps. [no-belief: planning]
+      路 note (2026-11-25, workspace-f2) [no-belief: annotation]: the MI210 ceiling is now 1638 GB/s everywhere (operator 2026-11-25), superseding the 1500 in this box's text; read it from the census `ceiling_gbps`.
       路 done when: the replay over recorded keeps flags any keep above its ceiling as SUSPECT, with zero false holds on verified keeps, and the change committed with its SHA and the replay table filed under this box
       路 gate: none        路 inputs: `handoffs/active/autokernel-loop.md`
       路 tier: sonnet
