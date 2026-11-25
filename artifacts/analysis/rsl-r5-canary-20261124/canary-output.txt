@@ -1,0 +1,26 @@
+[a] PASS
+    census_update.run report: {"changed": true, "journal_lines": 0, "observations": 0, "row": "r5-canary", "sha256": "38f9f6b2c11b", "surfaces_block_changed": true}
+    coverage.status=ok paths=['27b-q8_0|mi210', 'a3b-q8_0-cpu|cpu', 'a3b-q8_0|mi210', 'q38fn-ud-iq4xs-cpu|cpu']
+    surfaces=25, all carry family: True
+    family_rank rows=11; top3=[('dense-q8-gemv', 'family', 14.685), ('moe-router', 'family', 4.537), ('flash-attn-verify', 'family', 4.005)]
+    surfaces block in scratch journal: True
+[b] PASS
+    census_inbox.sync: {"removed": 0, "skipped": {}, "written": 5}
+    pre-existing inbox files copied: 25; BWS stubs installed: 5
+    first: ['BWS-27B-DF2-GPU-LM-HEAD-248320X5120.md', 'BWS-A3B-MTP-CPU-FULLATTN-PROJ.md', 'BWS-A3B-MTP-CPU-GDN-PROJ.md']
+[c-cpu] PASS
+    {"bws_seen": ["BWS-27B-DF2-GPU-LM-HEAD-248320X5120", "BWS-A3B-MTP-CPU-FULLATTN-PROJ", "BWS-A3B-MTP-CPU-GDN-PROJ", "BWS-A3B-MTP-CPU-LM-HEAD", "BWS-A3B-MTP-CPU-MUL-MAT-ID-EXPS-DOWN"], "chars": 216358, "exit": 0, "family_rank_block": true, "inbox_key": true, "inbox_len": 30, "rank1_row": "| 1 | dense MMVQ (attn, GDN proj, shexp, lm_head) \u00b7 a3b-mtp-mi210 | dense-q8-gemv | 26.8% | 14.9 | 7.56 | AK-BW-CENSUS-MI210-ROWS (C18 A3B trace, attribution) | covered | fixed: A3B C14 busy step |", "top_family": "dense-q8-gemv"}
+    full rendered context: /tmp/claude-1000/-workspace/253d7591-d862-499f-b2dd-7a423b92e2c2/scratchpad/rsl-r5/run3/context-cpu.txt
+[c-gpu] PASS
+    {"bws_seen": ["BWS-27B-DF2-GPU-LM-HEAD-248320X5120", "BWS-A3B-MTP-CPU-FULLATTN-PROJ", "BWS-A3B-MTP-CPU-GDN-PROJ", "BWS-A3B-MTP-CPU-LM-HEAD", "BWS-A3B-MTP-CPU-MUL-MAT-ID-EXPS-DOWN"], "chars": 215349, "exit": 0, "family_rank_block": true, "inbox_key": true, "inbox_len": 30, "rank1_row": "| 1 | dense MMVQ (attn, GDN proj, shexp, lm_head) \u00b7 a3b-mtp-mi210 | dense-q8-gemv | 26.8% | 14.9 | 7.56 | AK-BW-CENSUS-MI210-ROWS (C18 A3B trace, attribution) | covered | fixed: A3B C14 busy step |", "top_family": "dense-q8-gemv"}
+    full rendered context: /tmp/claude-1000/-workspace/253d7591-d862-499f-b2dd-7a423b92e2c2/scratchpad/rsl-r5/run3/context-gpu.txt
+[c-fullloop] STATIC (not executed: _build_context needs a live run state)
+    loop/run.py:[3268] puts inbox in the context unconditionally (CPU and GPU); program_text (surfaces block) at run.py:[3154]
+    loop/planner_only.py: inbox key at :[]; cpu_context [251]..[258]
+[d] PASS
+    cand.json: /tmp/claude-1000/-workspace/253d7591-d862-499f-b2dd-7a423b92e2c2/scratchpad/rsl-r5/run3/cand.json shape_class={'dims': {'k': [5120], 'm': [248320]}, 'op_family': 'MUL_MAT'} hypothesis_id=BWS-27B-DF2-GPU-LM-HEAD-248320X5120
+    build stage rc=0 {"stage": "build", "verdict": "PASS_BUILT", "polar": "PASS"} 
+    op-perf stage rc=0 {"stage": "op-perf", "verdict": "FUTILITY_SCREEN_ONLY_NO_KEEP (op-perf screen passed)", "polar": null} 
+    op-perf verdict=FUTILITY_SCREEN_ONLY_NO_KEEP (op-perf screen passed) cells=None
+[d-derived] shape_class from tailsplit.candidate_record(inbox=store/inbox): {'op_family': 'MUL_MAT', 'dims': {'k': [5120], 'm': [248320]}}; stub key: {'device': 'gpu', 'op_family': 'lm-head-gemv', 'shape_class': {'k': 5120, 'm': 248320}}
+live census/journal unchanged: True

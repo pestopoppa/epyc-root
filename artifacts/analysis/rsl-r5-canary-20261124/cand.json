@@ -1,0 +1,74 @@
+{
+ "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+ "build_root": "/tmp/claude-1000/-workspace/253d7591-d862-499f-b2dd-7a423b92e2c2/scratchpad/rsl-r5/run3/rsl-r5-canary-2nmespyw/d",
+ "champion_ref": "ak/champion/llama-cpp-ffc1bac82eec",
+ "hypothesis_id": "BWS-27B-DF2-GPU-LM-HEAD-248320X5120",
+ "id": "cand-x-bbbbbbbbb",
+ "patch_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+ "seed_surface": {
+  "family": "lm-head-gemv",
+  "op": "lm_head 248320x5120",
+  "path": "27b-df2-mi210"
+ },
+ "serving_path": "27b-q8_0|mi210",
+ "shape_class": {
+  "dims": {
+   "k": [
+    5120
+   ],
+   "m": [
+    248320
+   ]
+  },
+  "op_family": "MUL_MAT"
+ },
+ "stage_results": {},
+ "test_floor_paths": [
+  "27b-q8_0|mi210"
+ ],
+ "test_parents": {
+  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+ },
+ "test_refs": {
+  "ak/champion/llama-cpp-ffc1bac82eec": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+ },
+ "test_registry": {
+  "server_mode": {
+   "architect_critic": {
+    "acceleration": {
+     "draft_max": 7,
+     "spec_type": "draft-mtp"
+    },
+    "device": "ROCm0",
+    "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "model_role": "qwen38_27b_q8_local",
+    "port": 8083,
+    "slots": 4
+   },
+   "architect_general": {
+    "acceleration": {
+     "draft_max": 4,
+     "spec_type": "draft-mtp"
+    },
+    "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+    "model_role": "qwen38_flash_next_ud_iq4xs_local",
+    "port": 8074,
+    "slots": 1
+   },
+   "frontdoor": {
+    "acceleration": {
+     "draft_max": 4,
+     "spec_type": "draft-mtp"
+    },
+    "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "model_role": "qwen36_35b_a3b_mtp_q8_local",
+    "port": 8070,
+    "slots": 4
+   },
+   "worker": {
+    "alias_of": "frontdoor",
+    "model_role": "qwen36_35b_a3b_mtp_q8_local"
+   }
+  }
+ }
+}
