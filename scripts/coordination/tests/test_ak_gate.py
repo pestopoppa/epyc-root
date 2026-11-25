@@ -1177,3 +1177,21 @@ def test_validate_command_uses_path_and_load_override(tmp_path, monkeypatch):
     sp = spec(units=[{"kind": "load", "arms": ["ON"], "argv": ["env", "X=1", str(tmp_path / "missing"), "{PORT}"]}])
     with pytest.raises(G.SpecError, match="load unit server.*missing.*FIX: point argv"):
         G.validate_spec(sp)
+
+
+def test_smoke_residency_floor_reports_measured_footprint(tmp_path):
+    sp = spec()
+    sp["server"]["kfd_min_vram_gib"] = 8
+    row = tmp_path / "row"
+    row.mkdir()
+    g = G.Gate(sp, str(row))
+    stub = visit_stub(sp, str(row / "out"))
+    def visit(*args, **kwargs):
+        return dict(stub(*args, **kwargs), vram_b=2 * (1 << 30))
+    g.visit_fn = visit
+    assert g.smoke() == 3
+    terminal = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
+    assert terminal["verdict"] == "FUTILITY_HARNESS_RESIDENCY"
+    assert "server.kfd_min_vram_gib" in terminal["fix"]
+    assert str(2 * (1 << 30)) in terminal["reason"]
+    assert terminal["failclass"]["side"] == "harness"

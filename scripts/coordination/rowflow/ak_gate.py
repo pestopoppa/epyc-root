@@ -1323,7 +1323,7 @@ class Gate:
                 u["metric"] = metric_of(self.spec, u["req"])
             mv = (self.spec.get("server") or {}).get("kfd_min_vram_gib")
             if mv and u.get("vram_b") is not None and u["vram_b"] < float(mv) * (1 << 30):
-                u.update(error=f"VRAM {u['vram_b']} B < {mv} GiB: the server did not run on the GPU",
+                u.update(error=f"KFD VRAM {u['vram_b']} B < server.kfd_min_vram_gib {mv} GiB; verify GPU residency and lower server.kfd_min_vram_gib to the measured footprint",
                          error_class="RESIDENCY")
         u["gate_unit"] = True
         return u
@@ -1529,7 +1529,10 @@ class Gate:
                 return H.end_smoke("FAIL", 3, f"smoke took {time.time() - t0:.0f} s > budget {sm['budget_s']} s "
                                               f"(shorten smoke.prompt_chars / n_predict)", self.out)
             if d["verdict"] != "SMOKE_PASS":
-                return H.end_smoke("FAIL", 3, f"{d['verdict']}: {d['reason']}", self.out)
+                return H.end_smoke("FAIL", 3, f"{d['verdict']}: {d['reason']}", self.out,
+                                   extra={"verdict": d["verdict"], "fix": ("Verify GPU residency and adjust server.kfd_min_vram_gib to the measured footprint"
+                                          if d["verdict"] == "FUTILITY_HARNESS_RESIDENCY" else "Check the declaration and unit logs"),
+                                          "failclass": {"side": "harness"}})
             return H.end_smoke("PASS", 0, f"arm {sm['arm']}: witness ok for {len(self.spec['knobs'])} knob(s); "
                                           f"{self.spec['metric']['name']}={u.get('metric')}; {unit_s:.1f} s", self.out)
         except Exception as e:  # noqa: BLE001 - the smoke always says why it failed
