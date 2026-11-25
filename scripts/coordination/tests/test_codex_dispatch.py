@@ -137,6 +137,34 @@ def test_live_observation_names_pattern_word_bounded_case_insensitive(env):
     assert CX.codex_skip(rec("BX-1", done_when="the alive-check module is renamed"), env["root"]) is None
 
 
+def _brief(env, bid, where=None, approach="x"):
+    w = "".join(f"- {x}\n" for x in (where or []))
+    (env["root"] / f"handoffs/active/briefs/{bid}.md").write_text(
+        f"---\nid: {bid}\n" + (f"where:\n{w}" if where else "") + f"approach: '{approach}'\n---\n")
+
+
+def test_real_handoff_edit_boxes_skipped(env):
+    _brief(env, "TF-DUPID-HS4", ["handoffs/active/harness-program.md", "scripts/handoffs/box_index.py"])
+    r = rec("TF-DUPID-HS4", text="- [ ] **TF-DUPID-HS4** [non-inference] Resolve the duplicate box ID HS-4 (x3 occurrences) in harness-program: give each a unique ID and fix gate references.", done_when="box_index reports no duplicate id HS-4")
+    assert CX.codex_skip(r, env["root"]).startswith("needs-handoff-edit:id:")
+    _brief(env, "TF-ACCEPT-CD-CLEANUP", ["scripts/handoffs/task_lint_core.py", "scripts/handoffs"], "run it over committed briefs")
+    r = rec("TF-ACCEPT-CD-CLEANUP", text="- [ ] **TF-ACCEPT-CD-CLEANUP** [non-inference] Deterministic cleanup of `cd X &&` acceptances in box briefs: rewrite to worktree-relative commands (86 committed + 56 uncommitted briefs fail rule f).", done_when="task_lint reports zero rule-f failures across committed briefs and a test trips the rewriter")
+    assert CX.codex_skip(r, env["root"]).startswith("needs-handoff-edit:bulk:")
+    _brief(env, "BX-1", ["handoffs/active/x.md"])
+    assert CX.codex_skip(rec("BX-1"), env["root"]).startswith("needs-handoff-edit:where:")
+
+
+def test_handoff_citing_scripts_box_not_skipped(env):
+    _brief(env, "BX-1", ["scripts/foo/bar.py"])
+    r = rec("BX-1", text="- [ ] **BX-1** [non-inference] fix the parser; context in handoffs/active/churn-pipeline.md and fix ids there are NOT in scope")
+    assert CX.codex_skip(r, env["root"]) is None
+
+
+def test_no_where_needs_edit_text(env):
+    assert CX.codex_skip(rec("BX-1", text="- [ ] **BX-1** [non-inference] see handoffs/active/x.md for context, add a helper"), env["root"]) is None
+    assert CX.codex_skip(rec("BX-1", text="- [ ] **BX-1** [non-inference] rename the rows in handoffs/active/x.md"), env["root"]).startswith("needs-handoff-edit:text:")
+
+
 def test_pytest_done_when_not_skipped(env):
     dw = "nice -n 19 python3 -m pytest scripts/x/tests/test_y.py passes against the live fixture"
     assert CX.codex_skip(rec("BX-1", done_when=dw), env["root"]) is None

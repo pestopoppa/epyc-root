@@ -83,6 +83,52 @@ def live_observation_match(rec: dict) -> str | None:
         if rx.search(hay):
             return pat
     return None
+# Lanes must not edit handoffs, index rows or briefs (the owning session applies those). One list; each entry is
+# (kind, regex). `id` is matched on the box ID, `where` on each brief `where:` entry, `bulk` on text+approach+done-when
+# (bulk edits OF briefs/handoffs even when the code lives in scripts/), `text` on the box text only when the brief has
+# no `where:` and the text says edit/rename/fix-IDs about a handoff path.
+HANDOFF_EDIT_PATTERNS = (
+    ("id", r"TF-DUPID-.*"),
+    ("where", r"(?:\./)?handoffs/.*|(?:.*/)?briefs/.*"),
+    ("bulk", r"\b(?:cleanup|clean up|rewrite|rewrites|strip)\b[^.;]*\b(?:in|across|over) (?:the )?(?:committed |all )?(?:box )?(?:briefs|handoffs)\b"),
+    ("text", r"\b(?:edit|edits|rename|renames|fix|fixes|rewrite|renumber|resolve|dedup\w*|assign|give)\b[^.;]*\b(?:ids?|references?|rows?)\b[^.;]*\bhandoffs?/"
+             r"|\b(?:edit|edits|rename|renames|fix|fixes|rewrite|renumber|update)\b[^.;]*\b(?:handoffs?/|briefs?/)"),
+)
+_HANDOFF_RE = [(k, p, re.compile(p, re.I)) for k, p in HANDOFF_EDIT_PATTERNS]
+
+
+def brief_where(root: Path, bid: str) -> tuple[list[str], str]:
+    """(`where:` entries, `approach:` text) of the box's brief front matter; ([], "") when absent."""
+    try:
+        txt = brief_path(root, bid).read_text(errors="replace")
+    except OSError:
+        return [], ""
+    fm = txt.split("---")[1] if txt.startswith("---") and txt.count("---") >= 2 else ""
+    where: list[str] = []
+    m = re.search(r"^where:\s*\n((?:\s*-\s*.+\n?)+)", fm, re.M)
+    if m:
+        where = [ln.strip()[1:].strip().strip("'\"") for ln in m.group(1).splitlines() if ln.strip().startswith("-")]
+    a = re.search(r"^approach:\s*(.*(?:\n[ ]+.*)*)", fm, re.M)
+    return where, (a.group(1) if a else "")
+
+
+def handoff_edit_match(rec: dict, root: Path) -> str | None:
+    """The pattern (as `kind:regex`) that marks this box as editing handoff/brief/index files, or None."""
+    bid = str(rec.get("id") or "")
+    text = f"{rec.get('text') or ''} {rec.get('done_when') or ''}"
+    where, approach = brief_where(root, bid)
+    for kind, pat, rx in _HANDOFF_RE:
+        if kind == "id" and rx.fullmatch(bid):
+            return f"{kind}:{pat}"
+        if kind == "where" and any(rx.fullmatch(w) for w in where):
+            return f"{kind}:{pat}"
+        if kind == "bulk" and rx.search(f"{text} {approach}"):
+            return f"{kind}:{pat}"
+        if kind == "text" and not where and rx.search(text):
+            return f"{kind}:{pat}"
+    return None
+
+
 _TEST_LINE = re.compile(r"^\s*TEST:\s*(.+?)\s*$", re.M)
 _WRAP = re.compile(r"^(?:nice\s+-n\s+-?\d+|taskset\s+-c\s+[\d,-]+|ionice\s+-c\s*\d+|env\s+\w+=\S+|\w+=\S+)\s+")
 
@@ -186,6 +232,9 @@ def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_sta
     live = live_observation_match(rec)
     if live:
         return f"needs-live-observation:{live}"
+    edit = handoff_edit_match(rec, root)
+    if edit:
+        return f"needs-handoff-edit:{edit}"
     if bid in done_ids:
         return "attempted-before"
     if base_state is not None:
