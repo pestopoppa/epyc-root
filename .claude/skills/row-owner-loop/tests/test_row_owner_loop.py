@@ -235,6 +235,27 @@ def test_watch_rows_syntax():
     assert subprocess.run(["bash", "-n", sh]).returncode == 0
 
 
+def _watch_ack(tmp_path, rc, line):
+    fake = tmp_path / "rf.py"
+    fake.write_text("import sys\nprint('ARGS', *sys.argv[1:])\nsys.exit(%d)\n" % rc)
+    sh = os.path.join(HERE, "..", "scripts", "watch_rows.sh")
+    env = dict(os.environ, WATCH_ROWS_ROWFLOW=str(fake), WATCH_ROWS_STATE=str(tmp_path / "st"))
+    return subprocess.run(["bash", sh, "--owner", "t", "--ack", line], capture_output=True, text=True, env=env)
+
+
+ESC = "PUSH 2026-11-25T00:00:00Z alert-unacked row=r cause=UNACKED 40 min: x (ack: rowflow.py alerts --ack abc key=nested) fix_task=- key=esc-abc"
+
+
+def test_watch_rows_ack_extracts_trailing_key(tmp_path):
+    r = _watch_ack(tmp_path, 0, ESC)
+    assert "ARGS" in r.stdout and "alerts --ack esc-abc" in r.stdout and "ACKED PUSH" in r.stdout
+
+
+def test_watch_rows_no_acked_when_keeper_ack_fails(tmp_path):
+    r = _watch_ack(tmp_path, 2, ESC)
+    assert r.returncode == 1 and "ACKED PUSH" not in r.stdout and "KEEPER-ACK-REFUSED" in r.stderr
+
+
 # ---------------------------------------------------------------- runend --gate-eval (AKPL-P1)
 def test_runend_gate_eval_draft_uses_the_evaluator(tmp_path, monkeypatch):
     pkg = tmp_path / "kr" / "autokernel" / "loop"

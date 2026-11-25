@@ -11458,10 +11458,11 @@ def main(argv=None):
                 return 3
             if unfiled:
                 print(f"FORCE-ACK: row {unfiled} acked without a FILED receipt")
-            if not notify.ack(a.flags, a.ack, a.by, a.note):
-                print(f"REFUSED: no alert with key {a.ack} in {notify.inbox_path(a.flags)}")
+            acked_now = notify.ack_any(a.flags, a.ack, a.by, a.note)
+            if not acked_now:
+                print(f"REFUSED: no alert with key {a.ack} in {notify.inbox_path(a.flags)} (nor an escalation record)")
                 return 2
-            print(f"ACKED {a.ack}")
+            print(f"ACKED {' '.join(acked_now)}")
             return 0
         acks = notify.acked_keys(a.flags)
         for r in notify.read_inbox(a.flags, a.since, a.row, a.unacked):

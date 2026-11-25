@@ -192,6 +192,40 @@ def ack(flags, key, by=None, note=None):
     return True
 
 
+def source_key(key):
+    """esc-<k> / pesc-esc-<k> / pesc-<k> escalation keys -> the original alert key <k>."""
+    key = str(key)
+    for pre in ("pesc-", "esc-"):
+        if key.startswith(pre):
+            key = key[len(pre):]
+    return key
+
+
+def _escalation_known(flags, key):
+    """True when `key` names an escalation record: rowflow-alerts.jsonl entry or a push sent/<key>.json marker."""
+    if os.path.exists(_push_dir(flags, "sent", key + ".json")):
+        return True
+    return any(str(r.get("key")) == key for r in _read_jsonl(os.path.join(flags, "rowflow-alerts.jsonl")))
+
+
+def ack_any(flags, key, by=None, note=None):
+    """Ack `key` wherever it lives. An escalation key (esc-<k>) acks itself AND its source alert <k> (found in the
+    inbox); a plain key behaves as ack(). Returns the list of keys acked ([] = unknown, refuse)."""
+    key = str(key)
+    done = []
+    if ack(flags, key, by, note):
+        done.append(key)
+    src = source_key(key)
+    if src != key:
+        if ack(flags, src, by, note):
+            done.append(src)
+        if key not in done and (done or _escalation_known(flags, key)):
+            if key not in acked_keys(flags):
+                _append_line(acks_path(flags), {"key": key, "ts": _now(), "by": by or "", "note": note})
+            done.append(key)
+    return done
+
+
 def is_filed(flags, rid):
     return bool(rid) and os.path.exists(os.path.join(flags, "filing-done", str(rid) + ".FILED"))
 
@@ -225,6 +259,7 @@ def withdrawn_no_run(flags, rid):
 def unfiled_ended(flags, key):
     """The row id of inbox alert `key` when that row has ENDED (grants/<id>.ended|.complete) without a
     filing-done/<id>.FILED receipt, else None. An ack of such an alert must not stand in for filing (operator 2026-11-07)."""
+    key = source_key(key)
     for r in _read_jsonl(inbox_path(flags)):
         if str(r.get("key")) == key:
             rid = str(r.get("row_id") or "")
@@ -471,7 +506,8 @@ def push_line(rec):
     d = rec.get("detail") or {}
     cause = " ".join(str(d.get("cause") or rec.get("summary") or "").split())
     fix = d.get("fix_task") or rec.get("handoff_task") or "-"
-    return f"{rec.get('kind')} row={rec.get('row_id') or '-'} cause={cause} fix_task={fix} key={rec.get('key')}"[:PUSH_LINE_MAX]
+    head, tail = f"{rec.get('kind')} row={rec.get('row_id') or '-'} cause=", f" fix_task={fix} key={rec.get('key')}"
+    return head + cause[:max(0, PUSH_LINE_MAX - len(head) - len(tail))] + tail   # trim the cause, never the key
 
 
 def _push_target(owner):

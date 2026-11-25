@@ -39,11 +39,11 @@ touch "$STATE" "$IDLE"
 # The marker bounds ENDED to records newer than the first arm (or --since 'YYYY-MM-DD HH:MM').
 if [ -n "$SINCE" ]; then touch -d "$SINCE" "$MARK"; elif [ ! -e "$MARK" ]; then touch "$MARK"; fi
 if [ -n "$ACK" ]; then
-  echo "$ACK" >> "$STATE"; echo "ACKED $ACK"
+  echo "$ACK" >> "$STATE"
   # A PUSH line (or bare key=<k>) also acks the underlying keeper alert, else it escalates after 15 min.
   AKEY=""
   case "$ACK" in
-    PUSH\ *|*\ key=*) AKEY=$(echo "$ACK" | sed -n 's/.*\(^\| \)key=\([^ ]*\).*/\2/p');;
+    PUSH\ *|*\ key=*) AKEY=$(echo "$ACK" | sed -n 's/.*\(^\| \)key=\([^ ]*\).*/\2/p');;   # greedy: the LAST key= (it trails the cause)
     key=*) AKEY=${ACK#key=};;
   esac
   if [ -n "$AKEY" ]; then
@@ -52,6 +52,7 @@ if [ -n "$ACK" ]; then
     fi
     echo "$out"
   fi
+  echo "ACKED $ACK"
   exit 0
 fi
 
