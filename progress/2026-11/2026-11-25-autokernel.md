@@ -130,3 +130,42 @@ Next: autokernel — fix the devhandoff d-draft-off witness leak and re-gate; la
 - In flight: smallop-fuse2 r2, q8ipdet2, ub deepctx, dtree-headroom-replay, two contamination r2 rows, iqk-q8-decode r3; q8wt and knee-batch kernels building.
 
 Next: autokernel — file the in-flight rows as they end; fold the C22 keep list once every lever row is filed.
+
+# Wrap-up 4 — ~13:45Z to ~18:10Z (autokernel, subagent)
+
+## Rows filed this window
+| Row | Verdict |
+|---|---|
+| ak-c21-q8ip-nopack-gate-gpu-20261125-r3 | KEEP +2.76 % [1.0190,1.0362], 8/8 blocks, A/A 0.9989, KLD 0.000422, output identical (C22 keep list) |
+| ak-cpu-conv-state-fwd-20261124-r5 | KEEP A3B CPU +0.59 % [1.0033,1.0086], A/A clean, lossless |
+| ak-c22-q8ipdet2-gate-gpu-20261125 | FAIL: DET2/BASE 0.970 [0.960,0.981] deterministic, 0 vs 10 mismatches; DET1 0.938 |
+| ak-c22-q8wt-gate-gpu-20261125-r4 | FAIL below floor: 0.955 [0.943,0.968], op 0.77-0.86x |
+| ak-c22-q8lean-gate-gpu-20261125-r2 | FUTILITY -31 %, stopped by the interim watcher (no verdict.json) |
+| ak-c22-smallop-fuse2-gate-gpu-20261125-r4 | NO_KEEP +0.76 % [0.9996,1.0157] |
+| ak-c22-knee-batch-gate-gpu-20261125-r4 | futile, stopped and withdrawn (no verdict.json; r3 FAIL_CORRECTNESS) |
+| ak-q38fn-cpu-qsplit-min-20261125-r3 / tiny-solo-r3 / ak-cpu-a3b-barrier-elide-20261125-r5 | DROP 1.0025 / FUTILITY 0.959 / DROP 0.9993 |
+| ak-q38fn-cpu-gemv2-gate-20261125-r3 | FAIL_CORRECTNESS, KLD IQ4NL 0.0433 / IQ3REUSE 0.0419 / ALL 0.0429 (bound 0.003) |
+| ak-c22-df2-devhandoff-gate-gpu-20261125-g1 / g3 | FAIL_CORRECTNESS (no A/A arm) / FUTILITY_HARNESS_NONDET (OFF2 vs OFF differs, g3 filed 18:06Z) |
+| ak-dtree-pando-gate-gpu-20261125-r2 | FUTILITY_HARNESS_NONDET, rerun r3 already declared with INPLACE=0 identity |
+| ak-c22-q8wt-op-diag-gpu-20261125 | V5I issue-bound (VALU 29/KB vs stream 9), only marginally over-subscribed |
+| ak-q38fn-served-census-q0q2-cpu-20261125 | ANSWERED: d1k 93.8 ms/step at 18 % of ceiling; d32k 117 ms/step |
+| ak-dtree-calib-shrink-replay-cpu-20261125-r2 + dtree-verify-cost-calibration | Platt stop +2.9..4.0 %, shrink +4..27 % (modelled, np>1 prices sealed hypotheses) |
+
+## Findings
+- V5I is issue-bound: throttling in-flight bytes (q8wt), removing LDS (q8lean) and batching ops (knee-batch) all lose or are flat. Remaining lever is the conversion-heavy core (about 40 VALU per wave per unit, cvt_f32_i32): box Q8-GEMV-CONVCORE-1.
+- DET1/DET2 cost 6 % / 3 %: serve on atomics, DET only in identity/A-A arms.
+- Real served 27B idle is 3.2 ms/step (not 15); about 2-2.5 ms removable via devhandoff (`/mnt/raid0/llm/tmp/27b-step-idle-reconcile-20261125.md`).
+- Q38FN CPU weight GEMVs run at 20-31 % of the ceiling; lm_head is rerun per MTP draft (the DRAFTVOCAB arm targets it); IQ4_NL is excluded from iqk by CPU_REPACK; GEMV2 KLD 0.043 = bf16 activation-scale bug plus IQ3REUSE bug. Non-GEMV: cache_s_l snapshot copy about 8 ms/step, top-k 11.6 ms at d32k.
+- Operator rules recorded: faster at about equal quality beats bit-exact; every row carries a futility look (`/mnt/raid0/llm/tmp/ak-interim-futility-watch.py`).
+- Correction in `/mnt/raid0/llm/tmp/c22-keep-list-20261125.md`: skinny-balance counts 0 % toward served Q38FN speed.
+
+## Journal
+- epyc-inference-research `3735c9e65`: program.md "Learnings 2026-11-25 (autokernel, second window)" + one unkeyed negative `akm-c22-q8-gemv-q8wt-q8lean-kneebatch-det2` (unkeyed 24 = cap); test pins updated (test_journal_keys 24, test_sampling_axis 41 records, plus two stale pre-existing test pins fixed). 119 tests pass.
+
+## Handoffs
+- Ticked (belief cc): Q8-GEMV-Q8WT-1, Q8-GEMV-LEAN-1, Q8-GEMV-KNEE-BATCH-1, Q8IP-DET2-GATE-1, Q8-SERVED-SMALLOP-FUSE-2, AK-CPU-C22-LEVERS (commit 9aeaf736b).
+- Result notes only (boxes stay open): AK-Q38FN-CPU-C22-LEVERS, AK-Q38FN-CPU-GEMV2-GATE (gate -> r4), AK-Q38FN-SERVED-CENSUS, Q8-SERVED-IDLE-1, Q8-SERVED-DEV-SELECT-1 / DEV-INJECT-1 (gate -> g3).
+- Gate pointers fixed: Q8-GEMV-Q8WT-1 r3->r4, KNEE-BATCH r3->r4, SMALLOP-FUSE-2 -> r4; DTREE-PANDO-GATE-R3 and NONGEMV-GATE already current.
+- Added: Q8-GEMV-CONVCORE-1 (rocm-kernel-authoring), Q38FN-CPU-GEMV2-FIX-1 (autokernel-loop), SERVED-27B-UB1024-1 (akx-program, needs-owner, gate SERVED-27B-UB-DEEPCTX-1).
+
+Next: autokernel — next devhandoff row needs the INPLACE=0 output-only identity unit (same fix as Pando r3); fold the C22 keep list once every lever row is filed.

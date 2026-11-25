@@ -33,6 +33,9 @@
       · stop: stop-on-answer when both arms (B512, B2048) have valid units at IAT 25 s and 8 s on a >=250k-cell KV and the row files SCREENED_OK / SCREENED_RISK; stop-on-futility on B512 not launchable or fill timeout, or > 2 invalid units; gate-class = futility-only
       · gate: ak-27b-served-ub-deepctx-gpu-20261125-r2 (r1 smoke failed: smoke residents ended before the unit; fixed)
       · owner: autokernel
+- [ ] **SERVED-27B-UB1024-1** [inference] If ak-27b-served-ub-deepctx-gpu-20261125-r2 files SCREENED_RISK for ub2048 at deep context, screen ub1024 (Poisson arrivals, max stall and >2 s gap count, deep-context KV) as the intermediate served ubatch NEEDS-OWNER
+      · done when: a screen row files max stall, >2 s gap count, p95 ITL and per-user tok/s for B512, B1024, B2048 at IAT 25 s and 8 s on a >=250k-cell KV, or a note records that deepctx filed SCREENED_OK and no ub1024 screen is needed
+      · gate: SERVED-27B-UB-DEEPCTX-1
 
 ### AutoKernel Cross-Workload Keep Gate — census, blast-radius screen, multi-workload non-regression
 
