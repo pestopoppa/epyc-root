@@ -11937,6 +11937,8 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
 - [ ] **AK-BNSIG-CENSUS-TOPN** [inference] Run the bottleneck-signature row ak-bnsig-census-topn-gpu-20261126 over the 27B DF2 V5I served top-5 kernels (q8mf6 anchor, gated_delta_net, q8sk, rms_norm, silu) and apply each signature to the census with census_update.apply_signature
       · done when: row ak-bnsig-census-topn-gpu-20261126 files SIGNATURE_CLASSIFIED or FUTILITY_* and census records carry signature fields for each classified kernel
       · gate: none
+      · stop rule: stop-on-answer when every listed kernel has a signature class or is marked unwitnessed and the S16/S64 reference self-check has passed; stop-on-futility on zero or missing counters, reference_incoherent, kernel not resident, or all kernels unclassified (FUTILITY_HARNESS_*); gate-class = futility-only (diagnostic, never a KEEP)
+      · model: Qwen3.8-27B Q8_0, MI210, store gpu-20261124-98ff8a42a-c21 (V5I env) · region: gpu (mi210_0,184-191) · est: 1700 s (37 units, 30 model loads x ~40 s, x1.25)
 
 **Purpose (operator 2026-11-24)**: one loop for every kernel campaign. The loop works, unattended, the op family with the largest recoverable served time summed over every served model (equal weight per model by default; a campaign that targets a model raises that model's weight, and that weights setting is the only thing that defines a campaign). Candidates are built for an op family over a declared shape range, not per model. Serving knobs (AK-SURFACE-SERVING-1) join the same list once screened.
 **Owner**: autokernel · **Builder**: workspace-f2 · Loop-infra code: not under the AK hold (loop launches are).
