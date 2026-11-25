@@ -116,6 +116,75 @@ def test_signature_witness_missing_kernel(tmp_path):
     assert J.trace_record(1, 0, [{"Kernel_Name": "other_kernel", "Start_Timestamp": "0", "End_Timestamp": "9"}])["witness"]["ok"] is False
     wrong = [{"Kernel_Name": "q8wt_mul_mat", "Start_Timestamp": "0", "End_Timestamp": "9", "Grid_Size": "64"}]
     assert J.trace_record(1, 0, wrong)["witness"]["ok"] is False   # resident but the wrong shape
+    w = J.trace_record(1, 0, wrong)["witness"]
+    assert w["other_grids"] == [64]
+
+
+def test_signature_mixed_grid_is_filtered_not_averaged(tmp_path):
+    _rc, d = _mk(tmp_path)
+    J = _job(d)
+    rows = [{"Kernel_Name": "q8wt_mul_mat", "Start_Timestamp": "0", "End_Timestamp": str(t), "Grid_Size": g}
+            for g, t in (("26624", 1000), ("3840", 900000), ("26624", 3000))]
+    t = J.trace_record(1, 0, rows)
+    assert t["witness"]["ok"] and t["n_dispatch"] == 2 and abs(t["dur_us"] - 2.0) < 1e-9
+    assert t["witness"]["other_grids"] == [3840]
+    pmc = [{"Dispatch_Id": str(n), "Kernel_Name": "q8wt_mul_mat", "Grid_Size": g, "Counter_Name": "TA_BUSY_avr",
+            "Counter_Value": v} for n, (g, v) in enumerate((("26624", "10"), ("3840", "999"), ("26624", "30")))]
+    k = J.k_record(1, "C7", 0, pmc)
+    assert k["witness"]["ok"] and k["counters"] == {"TA_BUSY_avr": 20.0} and k["n_dispatch"] == 2
+
+
+def test_signature_partial_witness_classifies_the_rest(tmp_path):
+    _rc, d = _mk(tmp_path)
+    J = _job(d)
+    units = [dict(u, witness={"ok": False, "expected_grid": 26624, "other_grids": []}) if u.get("i") == 1 else u
+             for u in J.synth()]
+    assert J.decide(units) == "SIGNATURE_CLASSIFIED"
+    s = J.summary(units)
+    assert s["classes"] == {"q8mf6_mul_mat": "issue_bound", "q8wt_mul_mat": "unwitnessed"}
+    assert "q8wt_mul_mat" in s["unwitnessed"] and "name not seen" in s["unwitnessed"]["q8wt_mul_mat"]
+
+
+def test_signature_all_unwitnessed_is_not_resident(tmp_path):
+    _rc, d = _mk(tmp_path)
+    J = _job(d)
+    units = [dict(u, witness={"ok": False}) if u.get("kind") in ("trace", "k") else u for u in J.synth()]
+    assert J.decide(units) == "FUTILITY_HARNESS_NOT_RESIDENT"
+
+
+REAL = "/mnt/raid0/llm/tmp/ak-bnsig-census-topn-gpu-20261126"
+
+
+def test_replay_real_census_topn_run(tmp_path):
+    """Replay decide() on the real run's units, re-deriving the witness from its rocprof CSVs with the fixed selection."""
+    if not os.path.isfile(os.path.join(REAL, "out", "results.jsonl")):
+        pytest.skip("real run not on this host")
+    sys.path.insert(0, REAL)
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("realjob", os.path.join(REAL, "job.py"))
+        R = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(R)
+    finally:
+        sys.path.remove(REAL)
+    _rc, d = _mk(tmp_path)
+    J = _job(d)
+    J.KERNELS = R.KERNELS
+    units = [json.loads(ln) for ln in open(os.path.join(REAL, "out", "results.jsonl")) if ln.strip()]
+    out = []
+    for u in units:
+        odir = os.path.join(REAL, "out", "prof", u.get("unit_id", ""))
+        if u.get("kind") == "trace" and os.path.isdir(odir):
+            u = dict(J.trace_record(u["i"], u.get("rc", 0), J.read_csvs(odir, "kernel_trace.csv")), unit_id=u["unit_id"])
+        elif u.get("kind") == "k" and os.path.isdir(odir):
+            u = dict(J.k_record(u["i"], u["pass"], u.get("rc", 0), J.read_csvs(odir, "counter_collection.csv")),
+                     unit_id=u["unit_id"])
+        out.append(u)
+    bad = J.unwitnessed(out)
+    names = {R.KERNELS[i]["name"] for i in bad}
+    assert names == {n for n in names if "gated_delta_net" in n}, bad   # only GDN (wrong name substring) unwitnessed
+    assert J.decide(out) != "FUTILITY_HARNESS_NOT_RESIDENT"
+    print("REPLAY", J.decide(out), J.summary(out)["classes"])
 
 
 def test_signature_all_unclassified_is_not_a_pass(tmp_path):
@@ -126,7 +195,7 @@ def test_signature_all_unclassified_is_not_a_pass(tmp_path):
     v = J.decide(units)
     assert v == "FUTILITY_HARNESS_UNCLASSIFIED" and J.polar(v) is None
     units = [dict(u, witness={"ok": False}) if u.get("kind") == "trace" and u["i"] == 1 else u for u in J.synth()]
-    assert J.decide(units) == "FUTILITY_HARNESS_NOT_RESIDENT"
+    assert J.decide(units) == "SIGNATURE_CLASSIFIED"   # one unwitnessed kernel is per-kernel, not row-fatal
 
 
 def test_signature_refuses_without_kernel_or_module(tmp_path):

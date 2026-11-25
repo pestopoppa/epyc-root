@@ -136,9 +136,20 @@ def prof_argv(uid, odir, ctrs):
     return argv + [ROCPROF_TRACE_FLAG, '--']
 
 
+def _grid(r):
+    return int(r.get('Grid_Size_X') or r.get('Grid_Size') or 0)
+
+
 def kernel_select(i):
-    pat = KERNELS[i]['name']
-    return lambda r: 'main' if pat in (r.get('Kernel_Name') or '') else 'aux'
+    """'main' = the kernel at its declared grid; the same kernel at another grid is 'other_grid' (filtered out, per
+    dispatch: rocprof rows are per dispatch, so this selects, it never averages shapes)."""
+    pat, exp = KERNELS[i]['name'], KERNELS[i]['grid']
+    return lambda r: ('main' if _grid(r) == exp else 'other_grid') if pat in (r.get('Kernel_Name') or '') else 'aux'
+
+
+def other_grids(i, rows):
+    pat, exp = KERNELS[i]['name'], KERNELS[i]['grid']
+    return sorted({_grid(r) for r in rows if pat in (r.get('Kernel_Name') or '') and _grid(r) != exp})
 
 
 def stream_select(sig):
@@ -194,16 +205,15 @@ def unit_ks(uid, pas):
 
 
 def trace_record(i, rc, rows):
-    """Residency + GB/s; witnessed iff >= 1 dispatch and EVERY matching dispatch has the declared grid (one shape: a
-    mixed-grid kernel is refused, never averaged)."""
+    """Residency + GB/s over the dispatches at the declared grid only; witnessed iff >= 1 such dispatch. Dispatches of the
+    same kernel at other grids are filtered out and recorded as other_grids."""
     pat, exp = KERNELS[i]['name'], KERNELS[i]['grid']
-    sel = [r for r in rows if pat in (r.get('Kernel_Name') or '')]
-    grids = sorted({int(r.get('Grid_Size_X') or r.get('Grid_Size') or 0) for r in sel})
+    sel = [r for r in rows if pat in (r.get('Kernel_Name') or '') and _grid(r) == exp]
     ds = [(int(r['End_Timestamp']) - int(r['Start_Timestamp'])) * 1e-9 for r in sel]
     dur = statistics.mean(ds) if ds else None
     return {'kind': 'trace', 'i': i, 'kernel': pat, 'rc': rc, 'n_dispatch': len(ds), 'dur_us': dur and dur * 1e6,
             'gbps': (KERNELS[i]['bytes'] / dur / 1e9) if dur else None,
-            'witness': {'ok': rc == 0 and bool(ds) and grids == [exp], 'grids': grids, 'expected_grid': exp}}
+            'witness': {'ok': rc == 0 and bool(ds), 'expected_grid': exp, 'other_grids': other_grids(i, rows)}}
 
 
 def unit_trace(uid, i):
@@ -217,7 +227,7 @@ def k_record(i, pas, rc, rows):
     return {'kind': 'k', 'i': i, 'kernel': KERNELS[i]['name'], 'pass': pas, 'rc': rc, 'requested': list(PASSES[pas]),
             'counters': c, 'n_dispatch': nd, 'meta': meta, 'bytes': KERNELS[i]['bytes'],
             'witness': {'ok': rc == 0 and nd > 0 and grids == [KERNELS[i]['grid']], 'families': fam, 'grids': grids,
-                        'expected_grid': KERNELS[i]['grid']}}
+                        'expected_grid': KERNELS[i]['grid'], 'other_grids': other_grids(i, rows)}}
 
 
 def unit_k(uid, i, pas):
@@ -263,11 +273,26 @@ def cells(units):
     return out
 
 
+def unwitnessed(units):
+    """{kernel index: reason} for kernels whose trace or any pmc unit is unwitnessed (per kernel, not row-fatal)."""
+    out = {}
+    for u in units:
+        if u.get('kind') in ('trace', 'k') and not (u.get('witness') or {}).get('ok'):
+            w = u.get('witness') or {}
+            why = (f"{u['unit_id'] if 'unit_id' in u else u['kind']}: rc {u.get('rc')}, no dispatch of "
+                   f"{KERNELS[u['i']]['name']!r} at grid {w.get('expected_grid')}"
+                   + (f" (other grids seen: {w['other_grids']})" if w.get('other_grids') else " (name not seen)"))
+            out.setdefault(u['i'], why)
+    return out
+
+
 def summary(units):
     cs = cells(units)
-    want = [(k, c) for k in ['S16', 'S64'] + [f'k{i}' for i in range(len(KERNELS))] for p in PASSES.values() for c in p]
+    bad = unwitnessed(units)
+    live = [f'k{i}' for i in range(len(KERNELS)) if i not in bad]
+    want = [(k, c) for k in ['S16', 'S64'] + live for p in PASSES.values() for c in p]
     absent = sorted({(k, c) for k, c in want if (cs.get(k) or {}).get('c', {}).get(c) is None})
-    zero = sorted(k for k in ['S16', 'S64'] + [f'k{i}' for i in range(len(KERNELS))]
+    zero = sorted(k for k in ['S16', 'S64'] + live
                   if not any((cs.get(k) or {}).get('c', {}).get(c) for p in PASSES.values() for c in p))
     axes = {k: BS.derive(e['c'], e['bytes']) for k, e in cs.items()}
     st = next((u for u in units if u.get('kind') == 'stream'), {})
@@ -276,12 +301,17 @@ def summary(units):
     frac = round(len(absent) / len(want), 4) if want else None
     sigs = {}
     for i, kd in enumerate(KERNELS):
+        if i in bad:
+            sigs[kd['name']] = {'schema': BS.SCHEMA, 'kernel': kd['name'], 'class': 'unwitnessed', 'primary': 'unwitnessed',
+                                'classes': ['unwitnessed'], 'rule': bad[i]}
+            continue
         sigs[kd['name']] = BS.signature(kd['name'], axes.get(f'k{i}') or {}, axes.get('S16') or {}, axes.get('S64') or {},
                                         refs={'S16_id': 'S16', 'S64_id': 'S64', 'row': ROW_ID},
                                         gbps=(tr.get(i) or {}).get('gbps'), s16_gbps=sg.get('S16'), s64_gbps=sg.get('S64'),
                                         rejected_frac=frac)
     return {'signatures': sigs, 'axes': axes, 'stream_sig_gbps': sg, 'absent_counters': absent, 'rejected_frac': frac,
-            'zero_cells': zero, 'classes': {n: s['class'] for n, s in sigs.items()}}
+            'zero_cells': zero, 'classes': {n: s['class'] for n, s in sigs.items()},
+            'unwitnessed': {KERNELS[i]['name']: why for i, why in sorted(bad.items())}}
 
 
 def harness_fail(units):
@@ -291,8 +321,8 @@ def harness_fail(units):
             return 'FUTILITY_HARNESS_BUILD'
         if u.get('kind') in ('stream', 'ks') and not (u.get('witness') or {}).get('ok'):
             return 'FUTILITY_HARNESS_STREAM'
-        if u.get('kind') in ('trace', 'k') and not (u.get('witness') or {}).get('ok'):
-            return 'FUTILITY_HARNESS_NOT_RESIDENT'
+    if KERNELS and len(unwitnessed(units)) == len(KERNELS):
+        return 'FUTILITY_HARNESS_NOT_RESIDENT'   # only when NO kernel is witnessed; otherwise per-kernel `unwitnessed`
     if not KERNELS or any(uid not in have for uid, _ in plan()):
         return 'FUTILITY_HARNESS_MISSING_INPUT'
     return None
@@ -307,11 +337,12 @@ def decide(units):
         return 'FUTILITY_COUNTERS_ZERO'
     if s['rejected_frac'] is not None and s['rejected_frac'] > BS.REJECT_MAX:
         return 'FUTILITY_COUNTERS_REJECTED'
-    if any(x['class'] == 'harness' for x in s['signatures'].values()):
+    live = {n: x for n, x in s['signatures'].items() if x['class'] != 'unwitnessed'}
+    if any(x['class'] == 'harness' for x in live.values()):
         return 'FUTILITY_COUNTERS_REJECTED'   # a decisive axis has a missing input (absent, never read as zero)
-    if any(x['class'] == 'reference_incoherent' for x in s['signatures'].values()):
+    if any(x['class'] == 'reference_incoherent' for x in live.values()):
         return 'FUTILITY_REFERENCE_INCOHERENT'
-    if all(x['class'] == 'unclassified' for x in s['signatures'].values()):
+    if all(x['class'] == 'unclassified' for x in live.values()):
         return 'FUTILITY_HARNESS_UNCLASSIFIED'   # nothing answered: never a PASS
     return 'SIGNATURE_CLASSIFIED'
 
@@ -330,6 +361,7 @@ def finish(units, witness, extra=None):
            'utc': H.now(), 'schema_signature': BS.SCHEMA, **(extra or {})}
     if not verdict.startswith('FUTILITY_HARNESS'):
         res['summary'] = summary(units)
+    res['unwitnessed'] = {KERNELS[i]['name']: why for i, why in sorted(unwitnessed(units).items())}
     os.makedirs(OUT, exist_ok=True)
     tmp = os.path.join(OUT, 'RESULT.json.tmp')
     with open(tmp, 'w') as f:
@@ -344,7 +376,8 @@ def start_production_server(port):
 
 
 def smoke():
-    """Compile, the stream anchors, ONE stream pmc pass (C7), ONE trace of kernel 0 and ONE pmc pass (C7) of kernel 0."""
+    """Compile, the stream anchors, ONE stream pmc pass (C7), ONE trace and ONE pmc pass (C7) of the ANCHOR kernel
+    (kernel 0). Passes iff the anchor is witnessed: the same per-kernel rule decide() applies."""
     t0 = time.time()
     try:
         start_production_server(None)
@@ -463,11 +496,15 @@ def selftest():
         g0 = str(KERNELS[0]['grid'])
         tr = [{'Kernel_Name': KERNELS[0]['name'] + '.kd', 'Start_Timestamp': '0', 'End_Timestamp': '50000', 'Grid_Size': g0}]
         assert trace_record(0, 0, tr)['witness']['ok'] and not trace_record(0, 0, [])['witness']['ok']
-        mixed = tr + [dict(tr[0], Grid_Size='64')]
-        assert not trace_record(0, 0, mixed)['witness']['ok']   # two shapes: refused, never averaged
+        mixed = tr + [dict(tr[0], Grid_Size='64', End_Timestamp='999999')]
+        mt = trace_record(0, 0, mixed)   # two shapes: the declared grid is selected, the other filtered + recorded
+        assert mt['witness']['ok'] and mt['witness']['other_grids'] == [64] and mt['n_dispatch'] == 1
+        assert not trace_record(0, 0, [dict(tr[0], Grid_Size='64')])['witness']['ok']
         cr = [{'Dispatch_Id': '1', 'Kernel_Name': KERNELS[0]['name'], 'Grid_Size': g, 'Counter_Name': 'TA_BUSY_avr',
                'Counter_Value': '1'} for g in (g0, '64')]
-        assert k_record(0, 'C7', 0, cr[:1])['witness']['ok'] and not k_record(0, 'C7', 0, cr)['witness']['ok']
+        kr = k_record(0, 'C7', 0, cr)
+        assert kr['witness']['ok'] and kr['witness']['other_grids'] == [64] and kr['counters'] == {'TA_BUSY_avr': 1.0}
+        assert not k_record(0, 'C7', 0, cr[1:])['witness']['ok']
         unc = synth(k=dict(V5I, SQ_ACTIVE_INST_ANY=0.05, TA_ADDR_STALLED_BY_TC_CYCLES_sum=0.05))
         unc = [dict(u, gbps=None) if u.get('kind') == 'trace' else u for u in unc]
         assert decide(unc) == 'FUTILITY_HARNESS_UNCLASSIFIED', summary(unc)['classes']
