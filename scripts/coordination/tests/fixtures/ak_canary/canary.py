@@ -415,6 +415,8 @@ def install_imports():
     for pub, src in manifest():
         if pub.endswith('.py'):
             local_modules.setdefault(Path(src).stem, set()).add(pub)
+    source_dirs = {ROOT / Path(src).parent for _, src in manifest()}
+    repo_modules = {path.stem for directory in source_dirs for path in directory.glob('*.py')}
     for pub, src in manifest():
         if not pub.endswith('.py'):
             continue
@@ -437,7 +439,7 @@ def install_imports():
                 modules = [node.args[0].value.split('.')[0]]
             for mod in modules:
                 candidate = str(Path(pub).parent / (mod + '.py'))
-                if mod in local_modules and candidate not in names:
+                if mod in repo_modules and mod not in local_modules:
                     missing.append(f'{pub}: {candidate}')
             if isinstance(node, ast.Call):
                 call = ast.unparse(node.func)
@@ -489,8 +491,7 @@ def install_imports():
                 if source_rel not in {source for _, source in manifest()}:
                     missing.append(f'{pub}: uninstalled reference {source_rel}')
     assert not broken, '; '.join(broken)
-    if missing:
-        raise KnownFailure('I2/I3: ' + '; '.join(missing[:4]))
+    assert not missing, '; '.join(missing)
 
 
 def server_env_cli():

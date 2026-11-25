@@ -12,6 +12,9 @@
 bin/rowflow/rowflow.py               scripts/coordination/rowflow/rowflow.py              hot
 bin/rowflow/build_pocket_policy.json scripts/coordination/rowflow/build_pocket_policy.json hot
 bin/rowflow/publish_row.py           scripts/coordination/rowflow/publish_row.py          hot
+bin/rowflow/box_index.py             scripts/handoffs/box_index.py                        hot
+bin/rowflow/typed_classify.py        scripts/coordination/churn/typed_classify.py         hot
+bin/rowflow/flip_checkbox.py         scripts/coordination/flip_checkbox.py                hot
 bin/rowflow/publish_and_clean.sh     scripts/coordination/rowflow/publish_and_clean.sh    hot
 bin/rowflow/notify.py                scripts/coordination/rowflow/notify.py               engine
 bin/rowflow/diskpause.py             scripts/coordination/rowflow/diskpause.py            engine
@@ -80,6 +83,7 @@ bin/handoffs/task_lint.py            scripts/handoffs/task_lint.py              
 bin/handoffs/task_lint_core.py       scripts/handoffs/task_lint_core.py                   hot
 bin/handoffs/box_index.py            scripts/handoffs/box_index.py                        hot
 bin/handoffs/handoff_box.py          scripts/handoffs/handoff_box.py                      hot
+bin/handoffs/new_handoff.py          scripts/handoffs/new_handoff.py                      hot
 bin/handoffs/flip_checkbox.py        scripts/coordination/flip_checkbox.py                hot
 
 bin/keeper_qual_memo.py              scripts/coordination/keeper_qual_memo.py             hot
@@ -98,3 +102,11 @@ bin/holds.py                         scripts/coordination/holds.py              
 bin/token_guards.py                  scripts/coordination/token_guards.py                 hot
 bin/handoffs/done_when.py            scripts/handoffs/done_when.py                        hot
 bin/codex_budget_meter.py            scripts/coordination/codex_budget_meter.py           hot
+
+# Shared cleanup referenced by the installed wrap-up tool.
+system/scratch_cleanup.py            scripts/system/scratch_cleanup.py                   hot
+system/worktree_gate.py              scripts/system/worktree_gate.py                      hot
+system/scratch_lease.py              scripts/system/scratch_lease.py                      hot
+bin/job_templates/worktree_gate.py   scripts/system/worktree_gate.py                      hot
+bin/job_templates/worktree_salvage.py scripts/system/worktree_salvage.py                   hot
+bin/job_templates/scratch_lease.py   scripts/system/scratch_lease.py                      hot

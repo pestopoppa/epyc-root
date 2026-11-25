@@ -40,31 +40,39 @@ class ManifestTest(unittest.TestCase):
                   "filler_run15.sh", "filler_lib.sh", "run_direct.py", "run_direct.sh"):
             self.assertIn(f"bin/rowflow/{f}", pubs)
 
-    def test_installed_files_import_only_installed_siblings(self):
-        """A module imported by an installed file but absent from the manifest crashes the deployed bin/ with
-        ModuleNotFoundError (complete_check.py; family_strikes.py + estimate_history.py, 2026-11-25)."""
-        es = entries()
-        pubs = {p for p, _, _ in es}
+    def import_problems(self, es):
+        # Search every source directory represented in the install, including modules
+        # omitted from the manifest; ast.walk also sees imports inside functions.
+        source_dirs = {os.path.dirname(os.path.join(REPO, src)) for _, src, _ in es}
+        repo_modules = {f[:-3] for d in source_dirs for f in os.listdir(d) if f.endswith(".py")}
+        installed = {os.path.splitext(os.path.basename(pub))[0] for pub, _, _ in es if pub.endswith(".py")}
         problems = []
-        failsoft = {("bin/rowflow/task_lint.py", "box_index")}  # try/except-guarded import, rule k degrades to a warning
         for pub, src, _ in es:
-            d = os.path.dirname(pub)
-            if d not in ("bin/rowflow", "bin/churn") or not src.endswith(".py"):
+            if not src.endswith(".py"):
                 continue
-            srcdir = os.path.dirname(os.path.join(REPO, src))
-            tree = ast.parse(open(os.path.join(REPO, src)).read(), filename=src)
-            names = set()
-            for node in ast.walk(tree):  # module level AND inside functions
+            with open(os.path.join(REPO, src)) as f:
+                tree = ast.parse(f.read(), filename=src)
+            for node in ast.walk(tree):
+                names = []
                 if isinstance(node, ast.Import):
-                    names.update(a.name.split(".")[0] for a in node.names)
+                    names = [a.name.split(".")[0] for a in node.names]
                 elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
-                    names.add(node.module.split(".")[0])
+                    names = [node.module.split(".")[0]]
                 elif isinstance(node, ast.ImportFrom) and node.level == 1 and not node.module:
-                    names.update(a.name for a in node.names)
-            for name in sorted(names):
-                if (pub, name) not in failsoft and os.path.isfile(os.path.join(srcdir, name + ".py")) and f"{d}/{name}.py" not in pubs:
-                    problems.append(f"{name}.py is imported by {pub} but not installed to {d}/ by INSTALL.manifest")
+                    names = [a.name for a in node.names]
+                for name in names:
+                    if name in repo_modules and name not in installed:
+                        problems.append(f"{pub}:{node.lineno} imports uninstalled repo module {name}")
+        return problems
+
+    def test_installed_files_import_only_installed_repo_modules(self):
+        problems = self.import_problems(entries())
         self.assertEqual(problems, [], "\n".join(problems))
+
+    def test_cross_directory_function_import_missing_is_detected(self):
+        es = [entry for entry in entries() if os.path.basename(entry[0]) != "typed_classify.py"]
+        problems = self.import_problems(es)
+        self.assertTrue(any("bin/rowflow/publish_row.py:" in p and "typed_classify" in p for p in problems), problems)
 
 
 class ParityTest(unittest.TestCase):
