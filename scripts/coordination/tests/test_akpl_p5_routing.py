@@ -23,13 +23,17 @@ def test_smoke_alert_owner_follows_classification(tmp_path, monkeypatch):
     (flags / "dryrun" / rid).mkdir(parents=True)
     d = {"launcher": {"path": str(launcher)}, "owner": "autokernel"}
 
-    for classification, expected in [({"side": "harness", "routed": False}, "pipeline-mgmt"),
-                                     ({"side": "candidate"}, "autokernel"),
-                                     ({"side": "unknown"}, "autokernel"),
-                                     (None, "autokernel")]:
+    # The row owner is ALWAYS told (they must republish); pipeline-mgmt gets a copy only for a
+    # harness failure whose dedicated route did not deliver.
+    for classification, expected in [({"side": "harness", "routed": False}, ["autokernel", "pipeline-mgmt"]),
+                                     ({"side": "harness", "routed": True}, ["autokernel"]),
+                                     ({"side": "candidate"}, ["autokernel"]),
+                                     ({"side": "unknown"}, ["autokernel"]),
+                                     (None, ["autokernel"])]:
+        sent.clear()
         monkeypatch.setattr(rf, "ak_failclass", lambda *args, c=classification: c)
         rf.record_fail(str(flags), rid, d, "failure", {})
-        assert sent[-1][0] == expected
+        assert [o for o, _ in sent] == expected
         assert sent[-1][1].get("failclass") == classification
 
 

@@ -4121,11 +4121,12 @@ def record_fail(flags, rid, d, reason, extra):
     atomic_json(fp, rec)
     poke_keeper(flags)   # R8: event-driven wake on a smoke FAIL
     try:  # push, not wait-to-be-noticed (2026-11-04); never blocks the FAIL record
-        # A classified AK harness failure belongs to pipeline-mgmt even if the
-        # dedicated alert could not be delivered. Keep the ordinary FAIL alert
-        # as a second delivery path without waking the candidate owner.
-        owner = "pipeline-mgmt" if (fc or {}).get("side") == "harness" else str(d.get("owner") or "")
-        notify.smoke_fail(flags, rid, fp, rec, owner=owner)
+        # The row owner always gets the ordinary FAIL alert: they must republish. A classified
+        # harness failure ALSO reaches pipeline-mgmt via fc.route (ak_failclass); if that route
+        # failed, send pipeline-mgmt a copy here so the harness owner still hears.
+        notify.smoke_fail(flags, rid, fp, rec, owner=str(d.get("owner") or ""))
+        if (fc or {}).get("side") == "harness" and not (fc or {}).get("routed"):
+            notify.smoke_fail(flags, rid, fp, rec, owner="pipeline-mgmt")
     except Exception as e:  # noqa: BLE001
         print(f"notify smoke-fail {rid}: {type(e).__name__}: {e}", file=sys.stderr)
     return rec
