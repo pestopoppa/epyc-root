@@ -432193,3 +432193,1138 @@
     first; an agent''s approval never counts as a person''s). Gap it exposes in-house: none of our verifiers (the taskflow reviewer fall-through in verify.py, the AutoKernel keep gate,
     the intake second reader) is graded against past reverts or incidents. Dive-surfaced source declined at the two-wave cap: the Code Review announcement post (no URL in the text);
     intake-2943 is its parent, already dived.'
+- id: intake-2956
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/32921
+  source_type: repo
+  title: 'llama.cpp PR #32921: CUDA: walk MMQ stream-k column tiles outermost (open, head 5bc67fe5d273)'
+  categories:
+  - hardware_optimization
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - am17an (port of tetherto/qvac-fabric-llm.cpp#586 by Pratik Narola)
+  key_claims:
+  - When a stream-k block owns several tiles, the PR makes the column tile index the slowest-varying one so blocks that share rows of x run together and reuse them in L2; NVIDIA dense
+    MMQ with J == 128 only, compiled out for HIP and MUSA.
+  - On GB10 (48 SMs) Qwen3.8 27B Q8_0 pp2048 rises 1.257x at ub 512 and 1.162x at ub 256; ub 1024 and 2048 are flat.
+  - A single q8_0 8192x512 MUL_MAT (256 tiles) runs 1.96x faster on GB10 while 12288x512 (384 tiles) is unchanged; RTX PRO 6000 (188 SMs) is within noise.
+  - A runtime branch in tile decode cost up to 8% on the Q8_0 J=128 kernel, so the order is a template parameter; a kernel per J would raise MMQ compile time 38%.
+  - 'Output is not bit-exact: KLD vs master 0.00070 on Qwen3.5 4B Q8_0 (measured on an earlier, broader-reordering version).'
+  techniques:
+  - MMQ stream-k work partition
+  - column-tile-outermost tile walk (template enum)
+  - stream-k fixup
+  - J=128 compile-time specialization
+  reported_results:
+  - GB10 Qwen3.8 27B Q8_0 pp2048 ub512 917 -> 1160 t/s (1.257x); ub256 794 -> 923 (1.162x)
+  - GB10 MUL_MAT q8_0 8192x512 1320 -> 673 us (1.96x)
+  - test-backend-ops MUL_MAT 2728/2728, MUL_MAT_ID 1077/1077 on GB10
+  credibility_score: 2
+  contradicting_evidence:
+  - 'No contradiction surfaced in a bounded search (provisional). The PR author mentions an unspecified regression in an earlier version. In-house prior: G17 gfx90a WGM launch-order
+    locality (autokernel-loop.md) was CLOSED_NO_GO 2026-08-11, every nonzero mapping regressed and TCC hit rate fell.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-loop.md
+    - rocm-kernel-authoring.md
+    - kernel-champion-and-promotion.md
+    intake_entries:
+    - intake-2824
+    intake_entry_notes:
+    - 'intake-2824 (PR #32837 CDNA1 MMQ config without stream-k; AK-MMQ-SK2 CLOSE 2026-11-24)'
+  recommended_actions:
+  - 'Dive: check the L2-sharing mechanism against our G17 WGM negative and AK-MMQ-SK2, and whether gfx90a stream-k has more tiles than its 104 blocks on 27B prefill/verify shapes.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Stage 1 read the PR body, review thread and diff at head 5bc67fe5d273 (retrieved 2026-11-25). NVIDIA-only as written.
+- id: intake-2957
+  arxiv_id: '2611.33080'
+  url: https://arxiv.org/abs/2611.33080v1
+  source_type: paper
+  title: 'Shifter Quantization: Compact Representations for Native Integer Computation'
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Yufeng Huang
+  key_claims:
+  - Shifter Quantization (SQ) rebuilds native INT8/INT4 operands from low-bit codes by appending shared group bits, a grouped shift and truncation, so integer MMA spans the whole reduction
+    with no float group scale.
+  - Shifter Integer (SHI) keeps the main product in INT4 and adds grouped weight and activation corrections as shorter integer products.
+  - On RTX 5090 a Qwen3.8-27B down projection at 4,096 tokens runs 2.77x faster than Q2_K with SQ2 on INT8 and 4.55x with SHI2 on INT4.
+  - Released 2-bit checkpoints prefill 4,096 tokens 2.71x (SQ2) and 3.77x (SHI2) faster than a Q2_K GGUF with lower WikiText-2 KL.
+  - SQ8 beats vLLM FP8 W8A8 on Qwen3.8-27B in prefill throughput with lower KL.
+  techniques:
+  - shared-bit append and grouped shift
+  - INT8/INT4 MMA with full-K accumulation
+  - grouped correction products
+  - Hadamard rotation
+  - static activation clipping
+  reported_results:
+  - RTX 5090 projection SQ2 INT8 1,504.74 us vs Q2_K 4,162.47 us
+  - checkpoint prefill SQ2 8,378.4 tok/s, SHI2 11,662.4 tok/s vs Q2_K 3,090.7 tok/s
+  - SQ8 prefill 9,206.3 vs vLLM FP8 7,226.8 tok/s; KL 0.00211 vs 0.00774
+  credibility_score: 1
+  contradicting_evidence:
+  - No contradiction surfaced in a bounded search (provisional). The paper itself says SHI4 stays slower than native NVFP4 in its serving configs.
+  cross_references:
+    chapters: []
+    handoffs:
+    - quantization-and-low-bit.md
+    - rocm-kernel-authoring.md
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: the operand-rebuild math, whether it maps to v_mfma_i32_*_i8 and AVX-512 VNNI, and how packed rows load (coalescing, per the Q8-W8 design-4 lesson).'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: RTX 5090 and other NVIDIA GPUs only. Read from arXiv HTML v1.
+- id: intake-2958
+  arxiv_id: '2611.31460'
+  url: https://arxiv.org/abs/2611.31460v1
+  source_type: paper
+  title: 'Below the Stopwatch: Checking the Performance Claims of Coding Agents in the Kernel'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-25'
+  authors:
+  - Yuvraj Sehgal
+  - Sneh Patel
+  - Mahsa Panahandeh
+  - Naser Ezzati-Jivan
+  key_claims:
+  - Most of 1,343 agent-authored runtime-performance PRs give only reasoning or no evidence, and few state an effect size.
+  - Of 82 analyzed PRs, 32 ran faster, 28 showed no clear change and 22 ran slower; the claimed mechanism held in 34.
+  - OS-kernel trace signals separate claimed from unclaimed mechanisms better than instruction counts do.
+  - A base-against-base A/A control moved no signal in any test.
+  - A blind build agent that never sees the PR claim builds and runs each PR.
+  techniques:
+  - LTTng kernel traces
+  - perf hardware counters
+  - claim-to-signal mapping
+  - A/A control
+  - blind build agent
+  reported_results:
+  - '82 PRs: 32 faster, 28 no clear change, 22 slower; mechanism held in 34'
+  - 'A/A: 0 of 1,796 tests moved'
+  credibility_score: 1
+  contradicting_evidence:
+  - No contradiction surfaced in a bounded search (provisional). 'Kernel' here is the OS kernel, not GPU kernels.
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-loop.md
+    - autokernel-akx-program.md
+    intake_entries:
+    - intake-1104
+    - intake-1240
+    intake_entry_notes:
+    - intake-1104 (Are performance-optimization benchmarks reliably measuring coding agents?)
+    - intake-1240 (GPU Forecasters)
+  recommended_actions:
+  - 'Dive: whether a claimed-mechanism witness (counter moved in the claimed direction, with A/A) fits the AutoKernel keep gate.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Python PRs on Google Cloud C4 VMs; the method is hardware-agnostic.
+- id: intake-2959
+  arxiv_id: '2610.38809'
+  url: https://arxiv.org/abs/2610.38809v3
+  source_type: paper
+  title: Tiered Cache Blocking and In-Kernel Task Dispatch for Long-Context Prefill Attention on CPU (TACPU)
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Kwun Fung Lau
+  - Frost Mitchell
+  - Kanya Mo
+  - Emani Ashok
+  key_claims:
+  - A causal prefill attention kernel for CPU with L3-blocked K/V groups, L2 query-block groups and an in-kernel cost-prioritized task queue beats PyTorch SDPA, FlexAttention and SGLang
+    kernels by up to 2.01x.
+  - Integrated in SGLang it cuts Llama-3.1-8B TTFT up to 1.74x with accuracy preserved.
+  - Cost-prioritized (longest-first) scheduling over a shared queue beats FIFO and static splits on causal workloads.
+  - Group sizes come from an analytic cache-capacity formula rather than per-CPU tuning.
+  - The kernel reads far fewer DRAM bytes than the baselines at 128K.
+  techniques:
+  - L3 K/V cache blocking
+  - L2 q-block grouping
+  - LPT-style shared work queue
+  - AMX GEMM with AVX-512 softmax overlap
+  - GQA-aware causal tile skipping
+  reported_results:
+  - 'Xeon 6767P 128K: TACPU 3170.23 ms vs SDPA 6376.64 ms'
+  - SGLang TTFT up to 1.74x at 128K
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - numa-placement-and-contention.md
+    intake_entries:
+    - intake-2421
+    - intake-2457
+  recommended_actions:
+  - 'Dive: which pieces transfer to Zen 5 (no AMX, NPS4) and to llama.cpp''s CPU flash-attention prefill path.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Intel Xeon 6767P and Core Ultra 7 265K only; Intel authors. Read from arXiv HTML v3.
+- id: intake-2960
+  arxiv_id: '2611.32975'
+  url: https://arxiv.org/abs/2611.32975v1
+  source_type: paper
+  title: Estimating GPU Roofline Arithmetic Intensity with Off-the-Shelf LLMs and Compiler Artifacts
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Gregory Bolet
+  - Giorgis Georgakoudis
+  - Konstantinos Parasyris
+  - Harshitha Menon
+  - Niranjan Hasabnis
+  - Kirk W. Cameron
+  - et al.
+  key_claims:
+  - Giving an LLM the compiled ISA raises the share of arithmetic-intensity estimates within 1.20x of measured well above source-only prompting.
+  - FLOP counts are estimated far better than device-memory traffic; traffic is the main error source.
+  - Bound-class (bandwidth vs compute) labels are mostly right, above a majority-class baseline.
+  - Agentic sandbox analysis helps one model by a few points at several times the cost.
+  techniques:
+  - zero-shot LLM estimate from source
+  - ISA plus instruction-mix prompting
+  - agentic sandbox analysis
+  - multiplicative tolerance scoring
+  - roofline bound classification
+  reported_results:
+  - 179 kernel-variant-GPU cases, 3 models, 8,055 runs
+  - within-1.20x RAI accuracy 8-14% source-only vs 26-32% with ISA
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - rocm-kernel-authoring.md
+    - autokernel-loop.md
+    intake_entries:
+    - intake-1246
+  recommended_actions:
+  - 'Dive: whether ISA-based pre-ranking can order VERIFY-KERNEL-ROOFLINE-CENSUS-1 candidates before rocprofv3 rows, given that traffic is the weak estimate.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: A10, A100, H100 and MI300X; no gfx90a. intake-1246 is the AutoKernel paper it cites.
+- id: intake-2961
+  arxiv_id: '2611.32873'
+  url: https://arxiv.org/abs/2611.32873v1
+  source_type: paper
+  title: 'MXFP4 for LLM Inference: Complementary Post-Training Quantization Techniques and Their Interactions'
+  categories:
+  - quantization
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Natalia Frumkin
+  - Alireza Khodamoradi
+  - Kristof Denolf
+  - Eric Dellinger
+  - Stuart Biles
+  key_claims:
+  - 'Which PTQ recipe helps depends on the format: MXFP4 gains a lot from rotation plus error-correcting PTQ, NVFP4 less from rotation.'
+  - Midmax, a calibration-free rule for choosing power-of-two block scales, beats floor-based scale selection in most configurations.
+  - MXFP6 activations with MXFP4 weights recover most of the 4-bit loss.
+  - A per-tensor macroscale on MXFP4 does not improve average accuracy.
+  techniques:
+  - MX block formats (E2M1, E8M0 scales)
+  - NVFP4
+  - block Hadamard rotation
+  - GPTQ-style PTQ
+  - Midmax scale selection
+  reported_results:
+  - six LLMs, MXFP6/MXFP4/NVFP4; numbers not yet read from the PDF
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - quantization-and-low-bit.md
+    intake_entries:
+    - intake-2479
+    - intake-2493
+  recommended_actions:
+  - 'Dive: the Midmax rule and whether it applies to offline requantization of E8M0-scaled GGUF types (MXFP4) judged by KLD.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: AMD Research authors. No arXiv HTML rendering exists for v1 (html 404, ar5iv falls back to the abs page), so this entry can only be read from the PDF (sha256 f515f1c2cc2a9308).
+- id: intake-2962
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/32867
+  source_type: repo
+  title: 'llama.cpp PR #32867: HIP: implement a dpp path for warp_prefix_inclusive_sum (open, head 46f9316db490)'
+  categories:
+  - hardware_optimization
+  - ssm_hybrid
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - thelittlefireman
+  key_claims:
+  - Adds a HIP DPP warp inclusive prefix sum for float, with a row_bcast branch for GCN and CDNA and a permlanex16/readlane branch for RDNA.
+  - CUMSUM f32 on MI50 (gfx906) is about 14-19% faster at large sizes.
+  - CUMSUM f32 on RX 9060 XT (gfx1200) is up to about 23% faster at large sizes.
+  - Shapes under about 1024 elements are neutral.
+  - 'The PR is to be merged after #32215.'
+  techniques:
+  - DPP row_shr / row_bcast scan
+  - permlanex16 plus readlane
+  - warp_prefix_inclusive_sum HIP specialization
+  reported_results:
+  - MI50 CUMSUM [2000000,1,1,1] 5260.37 -> 4428.40 us
+  - RX 9060 XT CUMSUM [2000000,1,1,1] 1214.40 -> 938.03 us
+  credibility_score: 1
+  contradicting_evidence:
+  - No contradiction surfaced in a bounded search (provisional).
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-loop.md
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: whether our served 27B/A3B GDN path calls CUMSUM or warp_prefix_inclusive_sum on gfx90a at all, and at what sizes.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Not measured on gfx90a. Read PR body and diff at head 46f9316db490 (retrieved 2026-11-25).
+- id: intake-2963
+  arxiv_id: '2611.32269'
+  url: https://arxiv.org/abs/2611.32269v1
+  source_type: paper
+  title: 'Pando: Noise-Coupled Parallel Draft Trees for Efficient Edge Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Joren Dumoulin
+  - Hyoukjun Kwon
+  - Subhankar Pal
+  - Steven Li
+  - Vignesh Vivekraja
+  - Marian Verhelst
+  key_claims:
+  - Parallel drafters such as DFlash and DSpark are used as chains capped at their block length; Pando builds a dynamic draft tree on top of a parallel drafter.
+  - Noise-coupled pruning draws the target's Gumbel-max sampling noise before drafting and uses it to rank branches, losslessly and without retraining.
+  - Noise coupling raises acceptance length by up to 8.4% on Qwen3-8B.
+  - A 16-node Pando tree reaches 5.3x speedup and 4.2x energy reduction over autoregressive decoding on a modelled edge device.
+  - Speedups are normalised with an operator-level roofline against the device ridge point.
+  techniques:
+  - parallel-drafter draft tree
+  - noise-coupled (pre-drawn Gumbel) pruning
+  - roofline ridge-point normalisation
+  reported_results:
+  - acceptance +8.4% on Qwen3-8B
+  - 16-node tree 5.27x speedup, 4.22x energy (modelled)
+  - 25% faster than DSpark chain, 27% faster than EAGLE-3 tree
+  credibility_score: 2
+  contradicting_evidence:
+  - 'No direct contradiction (provisional). Related: tree drafting is reported to lose value at high concurrency (arXiv 2512.11718, 2609.39972); in-house SPEC-DTREE-ACCEPT-GAP found
+    no sampled-tree gain on A3B and a loss on 27B.'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding.md
+    - autokernel-loop.md
+    intake_entries:
+    - intake-738
+    - intake-158
+    - intake-737
+  recommended_actions:
+  - 'Dive: whether noise coupling is lossless under our verify rule and how it relates to SPEC-DTREE-DICE pre-sampled randomness and the DFlash2 lineup.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Latency and energy are modelled; acceptance is measured on a GPU. Stage-1 read covered about 49k of 78.5k characters.
+- id: intake-2964
+  arxiv_id: '2611.33111'
+  url: https://arxiv.org/abs/2611.33111v1
+  source_type: paper
+  title: 'Draft Calibration for Speculative Decoding: Accelerating LLM Serving by Matching Draft and Target Distributions'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Yuxing Liu
+  - Wei Zuo
+  - Walid Krichene
+  - Tong Zhang
+  - Li Zhang
+  key_claims:
+  - 'Open drafters (EAGLE-3, DFlash, DSpark) rank the top candidate well but are underconfident: their distributions are flatter than the target''s.'
+  - Scaling the draft distribution with one temperature below 1 raises accepted length by roughly 5-10% at almost no cost.
+  - Dirichlet scaling and diagonal search add little over temperature scaling.
+  - A token-adaptive temperature head does not beat a global temperature.
+  - The study covers chain drafting only.
+  techniques:
+  - draft temperature scaling
+  - Dirichlet scaling
+  - token-adaptive temperature head
+  - trajectory replay for screening
+  reported_results:
+  - Qwen3.6-35B-A3B DFlash accepted length 5.275 -> 5.773
+  - GPT-OSS-120B EAGLE-3 C=16 throughput +9.92%
+  credibility_score: 2
+  contradicting_evidence:
+  - No direct contradiction (provisional). In-house SPEC-DISTS-TRUNC served A/B was NULL, a related but different truncation lever.
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-738
+    - intake-158
+    - intake-737
+    intake_entry_notes:
+    - intake-738 (DSpark)
+    - intake-158 (DFlash)
+    - intake-737 (DeepSpec framework)
+  recommended_actions:
+  - 'Dive: whether draft temperature changes the output law under our rejection verify, and whether the retained DICE capture can replay a temperature sweep offline.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: SGLang on GPUs. Stage-1 read covered about 48k of 86.8k characters.
+- id: intake-2965
+  arxiv_id: '2611.33004'
+  url: https://arxiv.org/abs/2611.33004v1
+  source_type: paper
+  title: 'LEGOSpec: A Composable and Efficient Framework for Speculative Draft Design and Training'
+  categories:
+  - speculative_decoding
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Hanzhen Wang
+  - Jiaming Xu
+  - Guohao Dai
+  key_claims:
+  - LEGOSpec splits a draft model into Context, Backbone, Proposal and Objective components on one training stack for controlled comparison.
+  - The DFlux draft (hybrid SWA-GQA backbone with block-local convolution, a Residual Corrector and hierarchical supervision) raises acceptance length up to 13.7% on regular and 34.7%
+    on long-context workloads.
+  - Scheduling and asynchronous execution raise draft-training throughput up to 79% over SpecForge.
+  - At batch 1 on Qwen3.6-35B-A3B DFlux beats DFlash2 in tokens per second.
+  - Compact SWA, GDN and MLA history state shrinks the draft cache.
+  techniques:
+  - SWA-GQA hybrid draft backbone
+  - block-local convolution
+  - Residual Corrector
+  - hierarchical KL plus block loss
+  - async supervision pipeline
+  reported_results:
+  - Qwen3.6-35B-A3B GSM8K acceptance 6.89 vs DFlash2 6.06
+  - batch-1 Alpaca 353 vs DFlash2 298 TPS
+  credibility_score: 2
+  contradicting_evidence:
+  - No contradiction surfaced in a bounded search (provisional).
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-738
+    - intake-158
+    - intake-737
+  recommended_actions:
+  - 'Dive: whether DFlux checkpoints are released for a target we serve, and what our llama.cpp DFlash2 path would need to run its backbone.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: 'Trained on 16 H800; repo named in the paper: github.com/SJTU-DAI-Sys/LEGOSpec (not checked in Stage 1).'
+- id: intake-2966
+  arxiv_id: '2611.32807'
+  url: https://arxiv.org/abs/2611.32807v1
+  source_type: paper
+  title: 'From Grammar Deltas to Token Masks: Incremental Constrained Decoding under Runtime Grammar Evolution (GramDelta)'
+  categories:
+  - inference_serving
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Hantao Hua
+  - Jiming Su
+  - Yonggang Che
+  - Feng Zhu
+  key_claims:
+  - GramDelta keeps parse state over the committed prefix and propagates only the effect of newly added grammar rules instead of replaying the prefix.
+  - Under sustained runtime grammar updates it cuts median first-seen update latency about an order of magnitude below the best reconstruction baseline.
+  - It removes most of the extra time per output token that constrained decoding adds over unconstrained decoding.
+  - Without updates its overhead is negligible and its token masks equal full reconstruction.
+  techniques:
+  - incremental Earley closure over append-only grammar deltas
+  - factorized token projection with a speculative trie
+  reported_results:
+  - 'Qwen3-8B BFCL: update latency 3.817 ms vs llguidance 49.437 ms; TPOT overhead 7.8% vs llguidance 37.8%'
+  credibility_score: 1
+  contradicting_evidence:
+  - No contradiction surfaced in a bounded search (provisional).
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding.md
+    - v11-promotion-checklist.md
+    intake_entries:
+    - intake-138
+  recommended_actions:
+  - 'Dive: whether any served role changes its grammar mid-request; if not, which steady-state mask cost result still bears on SPEC-GRAM-JSON-1 and the llguidance flip.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Single RTX PRO 6000 Blackwell; mask logic is CPU-side.
+- id: intake-2967
+  arxiv_id: '2611.31254'
+  url: https://arxiv.org/abs/2611.31254v1
+  source_type: paper
+  title: 'The Date You Didn''t Set: The System-Prompt Date as a Hidden Variable in LLM Evaluation'
+  categories:
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-25'
+  authors:
+  - Noureldin Zahran
+  - Mohammed E. Fouda
+  - Khaled N. Khasawneh
+  key_claims:
+  - Changing only the system-prompt date between two plausible values flips a median 6.6% of items across six models and four benchmarks.
+  - A grammar-constrained GCG search over dates finds dates that cost Llama-3.x models up to 36.5 points.
+  - Another plausible date undoes 15-32% of reproduced jailbreaks on Llama-3.2-3B and shifts LLM-judge verdicts.
+  - None of eleven audited evaluation stacks pins the date; with the date fixed, reruns reproduce byte for byte.
+  - The paper recommends pinning, logging and reporting the date.
+  techniques:
+  - chat-template date injection audit
+  - GCG date search
+  - per-item churn analysis
+  reported_results:
+  - median 6.6% items flipped
+  - up to 36.5 points (adversarial date)
+  - 15-32% jailbreaks undone
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Corroborated, not contradicted: arXiv 2609.36931 reports the same effect independently (expansion entry).'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - eval-tower-program.md
+    - benchmark-suites.md
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: which of our chat templates inject a date and whether our eval and judge harness pins it.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: A100 runs with Transformers.
+- id: intake-2968
+  arxiv_id: '2611.31258'
+  url: https://arxiv.org/abs/2611.31258v1
+  source_type: paper
+  title: 'RECAP: Training Long-horizon LLM Agents with Context Compaction'
+  categories:
+  - context_management
+  - training_distillation
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Yulun Jiang
+  - Maria Brbic
+  - Michael Moor
+  key_claims:
+  - RECAP trains compaction with the agent policy, using the full-context policy as a self-teacher and rewarding summaries for low behavior distortion.
+  - The distortion gradient splits into a summary reward and on-policy self-distillation of post-compaction actions, with no extra rollouts.
+  - On Qwen3.5-4B with a 32K working context it beats task-reward-only GRPO by 4.6 points on BrowseComp-Plus and 4.3 on SWE-bench Verified.
+  - Both gradient terms contribute in the ablation.
+  - Trajectories use fewer tool calls and tokens than the GRPO baseline.
+  techniques:
+  - learned context compaction
+  - behavior-distortion (KL) objective
+  - on-policy self-distillation
+  - GRPO
+  reported_results:
+  - '32K compaction: RECAP 62.8 / 51.1 vs GRPO 58.2 / 46.8 (BrowseComp-Plus / SWE-bench Verified)'
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - context-and-token-economy.md
+    - harness-program.md
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: whether the behavior-distortion score (KL of next actions under summary vs full context) can grade our compaction without training.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Stage-1 read covered the main text only; training hardware not read.
+- id: intake-2969
+  arxiv_id: '2611.32131'
+  url: https://arxiv.org/abs/2611.32131v1
+  source_type: paper
+  title: 'Rethinking Reasoning Effort Training in Large Language Models: On-Policy Distillation or Reinforcement Learning?'
+  categories:
+  - training_distillation
+  - cost_aware_routing
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Tianliang Lv
+  - Hao Li
+  - Xinchao Xu
+  - Zhengkun Zhang
+  - Ju Huo
+  key_claims:
+  - Length-penalized RL shortens one policy's thinking and the shortening transfers, but training low/medium/high effort tiers jointly with sparse rewards collapses the tiers.
+  - Multi-teacher on-policy distillation gives ordered effort tiers.
+  - Tier separation from distillation can collapse on unseen agentic formats unless agentic trajectories are added.
+  - A dense token-level KL anchor on the high tier keeps tiers apart inside one RL stage; natural-language effort descriptions in the prompt separate tiers faster.
+  techniques:
+  - reasoning-effort tiers
+  - multi-teacher on-policy distillation
+  - length-penalized GRPO
+  - token-level KL anchor
+  - prompt effort descriptions
+  reported_results:
+  - 'GLM-4.5-Air distillation: high tier 71.0 vs 67.9 reference'
+  - Qwen3-8B AIME25 length-penalized RL curves
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - routing-program.md
+    - harness-program.md
+    - eval-tower-program.md
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: whether any result needs no training (prompt effort descriptions), and how it bears on our thinking budgets and escalation tiers.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Baidu ERNIE team. Stage-1 read covered about 45k of 160k characters.
+- id: intake-2970
+  arxiv_id: '2611.32324'
+  url: https://arxiv.org/abs/2611.32324v1
+  source_type: paper
+  title: 'When Exact Token Importance Is Not Enough: Limits of Top-K Selection in LLM Attention'
+  categories:
+  - kv_cache
+  - context_extension
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Irmaan Mirzanejad
+  key_claims:
+  - Independent Top-K over exact singleton-deletion KL scores does not optimise the jointly renormalised support; a 4-position example gives 133.2x the optimal KL and a family makes
+    the ratio unbounded.
+  - Which of two positions is better to keep can flip depending on the other retained positions, for every K >= 2.
+  - Exhaustive audits at M=24, K=4 on SmolLM2, Gemma-2-2B and Qwen3.5-4B find that exact-singleton Top-4 leaves at least 10% headroom in most prompt-head cells.
+  - SwapCert, a same-budget one-swap audit, flags most oracle-positive supports.
+  - At K=128/256 on 2,048-token inputs, attention-score supports beat recent-token and sink-plus-recent supports.
+  techniques:
+  - singleton-deletion KL scoring
+  - fixed-budget support selection
+  - one-swap audit (SwapCert)
+  - KL-margin top-1 certificate
+  reported_results:
+  - toy ratio 133.2x
+  - headroom >= 0.10 in 55/60, 49/60, 60/60 cells
+  - SwapCert 157/164
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-akx-program.md
+    - kv-cache-program.md
+    - long-context-program.md
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: what this means for the DSA-style indexer TOP_K on CPU (INDEXER-TOPK-CPU, exact-order requirement) and for our KV eviction gates.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Single author; small models; Stage-1 read covered about 48k of 77k characters.
+- id: intake-2971
+  arxiv_id: '2301.03598'
+  url: https://arxiv.org/abs/2301.03598v1
+  source_type: paper
+  title: 'Stream-K: Work-centric Parallel Decomposition for Dense Matrix-Matrix Multiplication on the GPU'
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2956
+  verdict: already_integrated
+  ingested_date: '2026-11-25'
+  authors:
+  - Muhammad Osama
+  - Duane Merrill
+  - Cris Cecka
+  - Michael Garland
+  - John D. Owens
+  key_claims:
+  - Stream-K gives each processor an even share of the total MAC-loop iterations instead of whole output tiles.
+  - Split tiles are fixed up afterwards; the number of seams is bounded by the processor count, not the problem size.
+  - One tile configuration per precision replaces heuristic kernel ensembles.
+  - The paper reports large peak speedups over CUTLASS and cuBLAS across many GEMM shapes.
+  techniques:
+  - Stream-K decomposition
+  - split-tile fixup
+  - hybrid data-parallel plus stream-K
+  reported_results:
+  - 32,824 GEMM geometries
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-loop.md
+    intake_entries:
+    - intake-309
+    - intake-2824
+  recommended_actions:
+  - 'Dive: what the paper says about tile order and cache reuse for split work, as the reference design behind PR #32921.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125 expansion; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: 'Reference chased from the stream-k comment in mmq.cuh shown in the PR #32921 diff. ggml MMQ already implements stream-k.'
+- id: intake-2972
+  arxiv_id: '2609.36931'
+  url: https://arxiv.org/abs/2609.36931v1
+  source_type: paper
+  title: 'Dating the Model: Hidden Dates in System Prompts Affect LLM Evaluation'
+  categories:
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2967
+  verdict: adopt_patterns
+  ingested_date: '2026-11-25'
+  authors:
+  - Mario Sanz-Guerrero
+  - Minh Duc Bui
+  - Manuel Mager
+  - Katharina von der Wense
+  key_claims:
+  - The current date that chat templates inject into the system prompt changes daily, users cannot control it, and it changes evaluation results.
+  - Across 9 models and 6 datasets the date effect reshuffles rankings and exceeds batch-size or numerical-precision variance.
+  - Chain-of-thought and few-shot prompting do not remove the sensitivity.
+  - The authors recommend removing the date from the template, or fixing and reporting it.
+  techniques:
+  - system-prompt date ablation
+  - chat-template audit
+  reported_results:
+  - up to 6% MCQA, 14% math, 7% pass@1 code, 2.84 BLEU
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - eval-tower-program.md
+    intake_entries:
+    - intake-2967
+  recommended_actions:
+  - 'Dive: as independent corroboration of intake-2967 and for the list of templates that inject dates.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125 expansion; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Found by the Stage-1 Tier-2b search on intake-2967 (AACL 2026 short paper per search result, not checked).
+- id: intake-2973
+  arxiv_id: '2512.11718'
+  url: https://arxiv.org/abs/2512.11718v1
+  source_type: paper
+  title: 'Speculative Decoding Speed-of-Light: Optimal Lower Bounds via Branching Random Walks'
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2963
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Sergey Pankratov
+  - Dan Alistarh
+  key_claims:
+  - The paper bounds the runtime of any deterministic speculative generation algorithm using branching random walks.
+  - The bound on expected tokens per verify grows with the log of verifier capacity and depends on the entropy of the verifier output.
+  - It analyses optimal draft-tree selection under basic assumptions.
+  techniques:
+  - branching random walk analysis
+  - optimal deterministic draft-tree selection
+  reported_results:
+  - theoretical bound; compared to EAGLE-3 in experiments (not read)
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2963
+  recommended_actions:
+  - 'Dive: whether the bound gives a usable ceiling for our DTREE acceptance from measured target entropy.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125 expansion; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Found by the Stage-1 Tier-2b search on intake-2963.
+- id: intake-2974
+  arxiv_id: '2609.39972'
+  url: https://arxiv.org/abs/2609.39972v2
+  source_type: paper
+  title: 'UBTree: Parallel Tree Drafting via Unigram and Bigram Models for Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2963
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Chumeng Liang
+  - Linxuan Wang
+  - Xinyu Peng
+  - Huabin Liu
+  - Xiaoxu Guo
+  - Yuxin Chen
+  - et al.
+  key_claims:
+  - A unigram proposer gives per-position candidates and a bigram selector links them into a draft tree.
+  - Tree-native training supervises beyond the greedy path.
+  - The paper reports large average speedups over autoregressive decoding on Qwen3-4B and Qwen3-8B and wins all comparisons against DARTree.
+  - A serving evaluation on SGLang compares against DSpark.
+  techniques:
+  - unigram proposer
+  - bigram selector
+  - tree-native training
+  reported_results:
+  - 5.84x-6.94x average speedup over AR (Qwen3-4B/8B)
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2963
+    - intake-738
+  recommended_actions:
+  - 'Dive: how the tree-drafting gain behaves with concurrency and against DSpark, as a check on intake-2963.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125 expansion; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Found by the Stage-1 Tier-2b search on intake-2963.
+- id: intake-2975
+  arxiv_id: '2609.22098'
+  url: https://arxiv.org/abs/2609.22098v1
+  source_type: paper
+  title: 'TreeSpark: Calibrated, Load-Adaptive Draft Trees for Semi-Autoregressive Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2964
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Huapeng Zhou
+  - Huayu Wang
+  - Xinyu Wang
+  key_claims:
+  - TreeSpark reads a parent-conditioned distribution from a DSpark-style Markov head and calibrates it to an edge-acceptance estimate.
+  - It beats DDTree at equal verification budget and a tuned chain on the same drafter.
+  - A load-aware policy shrinks the tree back to a chain as load rises.
+  - Sampling without replacement with matching residuals keeps decoding lossless at any temperature.
+  techniques:
+  - parent-conditioned best-first expansion
+  - two-scalar edge calibration
+  - load-adaptive tree shaping
+  reported_results:
+  - 9-16% over DDTree at equal budget; 8-14% faster single-request than a tuned chain
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-738
+    - intake-737
+  recommended_actions:
+  - 'Dive: its calibration step versus intake-2964''s temperature scaling, and its load-adaptive rule versus our DTREE losses on 27B.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125 expansion; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Found by the Stage-1 Tier-2b search on intake-2964.
+- id: intake-2976
+  arxiv_id: '2611.13442'
+  url: https://arxiv.org/abs/2611.13442v2
+  source_type: paper
+  title: 'ForeSpark: Joint Draft and Verification Budget Scheduling for Parallel Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2964
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - Jaeyong Song
+  - Daniel Wang
+  - Pratyush Patel
+  - Jonny Kong
+  - Preyas Shah
+  - Shobhit Kanaujia
+  key_claims:
+  - At high serving load drafting takes a large share of step time and most drafted tokens are discarded unverified.
+  - Work-conserving speculation allocates per-request draft and verification budgets jointly.
+  - A vLLM prototype raises throughput over DSpark and over autoregressive decoding.
+  techniques:
+  - work-conserving speculation
+  - pre-draft acceptance estimator
+  - joint draft-verify budget scheduler
+  reported_results:
+  - up to 1.77x over DSpark (vLLM)
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-738
+  recommended_actions:
+  - 'Dive: whether its draft-temperature or estimator use bears on intake-2964 and on our np>1 DFlash2 serving.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125 expansion; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Found by the Stage-1 Tier-2b search on intake-2964.
+- id: intake-2977
+  arxiv_id: '2609.37985'
+  url: https://arxiv.org/abs/2609.37985v1
+  source_type: paper
+  title: 'Merged, Not Measured: An Empirical Study of Performance Issues Fixed by Coding Agents'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2958
+  verdict: worth_investigating
+  ingested_date: '2026-11-25'
+  authors:
+  - (author block not read in Stage 1)
+  key_claims:
+  - The study codes 1,262 performance issues fixed by six coding agents in 582 repositories.
+  - Most rejected performance PRs give no stated reason, and few re-executed rejected claims held.
+  - Merge acceptance tracks the agent's and repository's track record more than the content of the fix.
+  - Some merged fixes showed no significant gain or regressed when re-executed.
+  techniques:
+  - codebook coding of agent PRs
+  - re-execution of claimed speedups
+  reported_results:
+  - 57% of closed fixes merged; 9 of 30 re-executed merged fixes no gain or regressed
+  credibility_score: 1
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-loop.md
+    intake_entries:
+    - intake-2958
+    - intake-1104
+  recommended_actions:
+  - 'Dive: as the predecessor study of intake-2958 and for its re-execution protocol.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 intake-kspec-1125 expansion; operator pre-approved a Stage-2 dive.
+  reader_should_conclude: 'Unverified Stage-1 entry: do not cite any figure until a dive promotes it.'
+  notes: Reference chased from intake-2958's bibliography.
