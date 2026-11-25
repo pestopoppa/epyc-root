@@ -1083,6 +1083,7 @@ def test_predecessor_key_mismatch_reruns(tmp_path, change):
 def test_smoke_reuse_and_no_timing_reuse(tmp_path):
     sp, _, (old, new) = _reuse_rows(tmp_path)
     calls = []
+    old.run_correctness_unit = new.run_correctness_unit = lambda uid, kind, arm, extra: {"unit_id": uid, "kind": kind, "arm": arm, "rc": 0, "n_cases": 1, "n_ok": 1, "gate_unit": True}
     old.visit_fn = visit_stub(sp, old.out, calls=calls)
     assert old.smoke() == 0
     new.visit_fn = lambda *args, **kwargs: pytest.fail("smoke should reuse")
@@ -1215,3 +1216,35 @@ def test_smoke_checks_witness_on_each_arm(tmp_path):
     assert result["verdict"] == "FUTILITY_HARNESS_WITNESS"
     assert "OFF2" in result["reason"]
     assert "expect." in result["fix"]
+
+
+def test_smoke_identity_aa_uses_full_judge(tmp_path):
+    sp = spec(correctness={"kind": "identity", "mode": "server", "n_prompts": 2})
+    sp["workload"]["prompts"] = ["one", "two"]
+    row = tmp_path / "row"
+    g = G.Gate(sp, str(row), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    seen = []
+    def correctness(uid, kind, arm, extra):
+        seen.append((arm, extra["prompt"]))
+        return {"unit_id": uid, "kind": kind, "arm": arm, "prompt": extra["prompt"],
+                "output_sha": "different" if arm == "OFF2" else "same", "accepted_sha": "a", "draft_sha": "d"}
+    g.run_correctness_unit = correctness
+    assert g.smoke() == 3
+    result = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
+    assert result["verdict"] == "FUTILITY_HARNESS_NONDET"
+    assert "correctness.identity" in result["fix"]
+    assert seen == [("OFF", 0), ("OFF2", 0), ("ON", 0)]
+
+
+def test_smoke_kld_missing_binary_is_harness_failure(tmp_path):
+    sp = spec(correctness={"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")]})
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    def missing(*args):
+        raise FileNotFoundError("missing binary")
+    g.run_fn = missing
+    assert g.smoke() == 3
+    result = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
+    assert result["verdict"] == "FUTILITY_HARNESS_MISSING_OUTPUT"
+    assert "correctness.<kind>.argv" in result["fix"]

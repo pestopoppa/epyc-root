@@ -34,6 +34,7 @@ Process management: only processes this module started (captured Popen handles) 
 ak_row_harness.kill_tree. No quiet-host guard here (GPU gate rows); a CPU timing gate declares requires_quiet_host.
 """
 import hashlib
+import copy
 import concurrent.futures
 import json
 import math
@@ -759,6 +760,27 @@ def _plan_one(spec, c):
     return [(f"c-id-{a}-p{i}", "c-id", a, {"prompt": i}) for i in range(n) for a in arms]
 
 
+def smoke_spec(spec):
+    """Reduce repetitions while retaining each declared correctness arm and the full judge."""
+    reduced = copy.deepcopy(spec)
+    for c in corr_list(reduced):
+        if c["kind"] == "identity":
+            c["n_prompts"] = 1
+            c["n_predict"] = min(int(c.get("n_predict") or 64), int((spec.get("smoke") or {}).get("n_predict", 32)))
+            arms = list(c.get("arms") or baseline_arms(spec) + candidate_arms(spec))
+            c["arms"] = list(dict.fromkeys(baseline_arms(spec)[:2] + arms))
+        elif c["kind"] == "selftest_bin":
+            c["runs"] = 1
+        elif c["kind"] == "tbo":
+            ops = c.get("ops")
+            if isinstance(ops, dict):
+                c["ops"] = {a: str(v).split(",")[0] for a, v in ops.items()}
+            elif ops:
+                c["ops"] = str(ops).split(",")[0]
+            c["min_cases"] = 1
+    return reduced
+
+
 def tbo_pass(c, u):
     """rc 0, zero explicit FAIL cases, every case that ran OK, and at least the arm's min_cases ran (a crash or a too-short
     -o list is not a pass). "not supported" cases are skipped (n_skipped), never failures; n_cases counts cases that ran."""
@@ -1204,6 +1226,8 @@ class Gate:
     def _run_proc(self, argv, env, log, timeout):
         os.makedirs(os.path.dirname(log), exist_ok=True)
         t0 = time.time()
+        if getattr(self, "smoke_deadline", None):
+            timeout = min(timeout, max(0.001, self.smoke_deadline - t0))
         with open(log, "wb") as lf:
             p = subprocess.Popen(argv, stdout=lf, stderr=subprocess.STDOUT, env=env, cwd=self.d)
             self.procs.append(p)
@@ -1292,6 +1316,8 @@ class Gate:
             if why:
                 return dict(u, error=why, error_class="STOPPED" if why == "stopped" else "SERVER")
             to = float(srv.get("request_timeout_s") or 1800)
+            if getattr(self, "smoke_deadline", None):
+                to = min(to, max(0.001, self.smoke_deadline - time.time()))
             for _ in range(int(warmup)):
                 self.request(port, request_body(self.spec, "Hello", 16), to)
             def one(item):
@@ -1363,11 +1389,14 @@ class Gate:
         else:   # identity, cmd mode: every (arm, prompt) in its OWN process
             argv = self.llama_argv(c["argv"], arm, flags=bool(c.get("apply_flags")),
                                    extra={"{PROMPT_INDEX}": str(extra["prompt"])}, force_lv=c.get("lv", True))
-        r = self.run_fn(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0], c.get("env")), log, to)
+        try:
+            r = self.run_fn(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0], c.get("env")), log, to)
+        except OSError as e:
+            r = {"rc": None, "error": f"{type(e).__name__}: {e}"}
         u = {"unit_id": uid, "kind": kind, "arm": arm, "argv": argv, "log": os.path.relpath(log, self.out),
              "rc": r.get("rc"), "secs": r.get("secs"), **extra}
         if r.get("error"):
-            u.update(error=r["error"], error_class="STOPPED" if r["error"] == "stopped" else "TIMEOUT")
+            u.update(error=r["error"], error_class="STOPPED" if r["error"] == "stopped" else ("MISSING_OUTPUT" if r["error"].startswith(("FileNotFoundError", "PermissionError")) else "TIMEOUT"))
         return self.finish_correctness(u)
 
     def finish_correctness(self, u):
@@ -1503,6 +1532,7 @@ class Gate:
         sm = dict({"arm": candidate_arms(self.spec)[0], "prompt_chars": 2000, "n_predict": 32, "budget_s": 300},
                   **(self.spec.get("smoke") or {}))
         t0 = time.time()
+        self.smoke_deadline = t0 + float(sm["budget_s"])
         try:
             bad = self.prepare()
             if bad:
@@ -1531,6 +1561,35 @@ class Gate:
                            "Check expect.<arm>.<knob>, expect_by_unit.served, knobs.<knob>.marker and server.argv")
                     return H.end_smoke("FAIL", 3, f"{d['verdict']}: {d['reason']}", self.out,
                                        extra={"verdict": d["verdict"], "fix": fix, "failclass": {"side": "harness"}})
+            # Run the same correctness units and judge as the full run, against a reduced plan.
+            original_spec = self.spec
+            self.spec = smoke_spec(original_spec)
+            correctness = []
+            try:
+                for uid, kind, arm, extra in plan_correctness(self.spec):
+                    remaining = self.smoke_deadline - time.time()
+                    if remaining <= 0:
+                        return H.end_smoke("FAIL", 3, "smoke budget exceeded; adjust smoke.budget_s", self.out)
+                    c = corr_of(self.spec, kind)
+                    c["timeout_s"] = min(float(c.get("timeout_s") or 3600), remaining)
+                    self.spec["server"]["ready_timeout_s"] = min(float(self.spec["server"].get("ready_timeout_s") or 900), remaining)
+                    u = self.run_correctness_unit(uid, kind, arm, extra)
+                    correctness.append(u)
+                    H.append_unit(dict(u, smoke=True), self.out_smoke)
+                verdict, detail, _ = decide_correctness(self.spec, correctness)
+                if verdict:
+                    reason = json.dumps(detail, sort_keys=True)[:1200]
+                    fix = {"FUTILITY_HARNESS_WITNESS": "Check correctness.<kind>.argv, knobs.<knob>.marker and expect_by_unit.<kind>.<arm>.<knob>",
+                           "FUTILITY_HARNESS_NONDET": "Fix correctness.identity sampler/argv and baseline arm settings to make A/A deterministic",
+                           "FUTILITY_HARNESS_MISSING_OUTPUT": "Fix correctness.<kind>.argv executable path and output flags"}.get(
+                               verdict, "Check correctness.<kind>.argv and unit logs")
+                    extra = {"verdict": verdict, "fix": fix}
+                    if verdict.startswith("FUTILITY_HARNESS_"):
+                        extra["failclass"] = {"side": "harness"}
+                    return H.end_smoke("FAIL", 3, f"{verdict}: {reason}", self.out, extra=extra)
+            finally:
+                self.spec = original_spec
+                self.current_unit = {}
             unit_s = max((time.time() - u0) / len(units), 0.001)
             H.write_smoke_measure(self.out_smoke, unit_s, len(units), u0 - t0,
                                   unit_name="arm visit", extra={"gate": "ak_gate"})
@@ -1544,6 +1603,7 @@ class Gate:
         except Exception as e:  # noqa: BLE001 - the smoke always says why it failed
             return H.end_smoke("FAIL", 3, f"{e.__class__.__name__}: {e}", self.out)
         finally:
+            self.smoke_deadline = None
             self.kill_all()
 
     def run(self):
