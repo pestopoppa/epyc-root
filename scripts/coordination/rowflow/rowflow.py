@@ -8812,6 +8812,7 @@ def preempt_propose(flags, grants, allrows, log, now=None, emit=None, dry=False,
     sp = os.path.join(state_dir(flags), PREEMPT_PROPOSED)
     st = load_json(sp) or {}
     st = {k: v for k, v in st.items() if now - float(v or 0) <= 2 * 86400}
+    suppressed = {}
     for g in grants:
         rid = g["id"]
         if rid.startswith(BUILD_PREFIX) or g.get("dryrun"):
@@ -8833,20 +8834,27 @@ def preempt_propose(flags, grants, allrows, log, now=None, emit=None, dry=False,
             k = f"{p['id']}|{rid}"
             if k in st:
                 continue
+            if _family_striking(flags, p["id"], now):   # AK waste audit R7: a striking family has not earned a slot
+                suppressed[k] = (f"PREEMPT-SUPPRESSED urgent={p['id']} running={rid}: family {id_stem(p['id'])} "
+                                 "has a smoke strike today / a FAIL < 2 h")
+                continue
             if resumable:
                 stop = resolve_stop_path(d) or "<its STOP file>"
                 how = (f"It is resumable: `touch {stop}`, let {p['id']} run, then "
                        f"`python3 scripts/coordination/rowflow/rowflow.py resume {rid} --by {owner or '<owner>'} "
                        f"--reason preempted-by-{p['id']}`.")
             else:
-                how = "It is NOT resumable: stopping it loses its partial work; weigh that against the urgent row's wait."
+                lost_s = int(now - (iso_epoch(g.get("start")) or now)) if g.get("start") else None
+                how = ("It is NOT resumable: stopping it loses its partial work; weigh that against the urgent row's wait. "
+                       f"lost_s={lost_s if lost_s is not None else '?'} (elapsed seconds lost if stopped now).")
             msg = (f"PREEMPT-PROPOSAL: urgent GPU row {p['id']} (rank {p['rank']:g}, {p['state']}) waits behind your running "
                    f"{rid} (rank {rank:g}, {left} min left). {how} Advisory: the keeper does not stop anything")
             try:
                 if not dry:
                     emit(flags, "preempt-proposal", rid, p["id"], msg, "warning", owner,
                          {"urgent": p["id"], "urgent_rank": p["rank"], "running": rid, "running_rank": rank,
-                          "left_s": int(end - now), "resumable": resumable})
+                          "left_s": int(end - now), "resumable": resumable,
+                          "lost_s": None if resumable or not g.get("start") else int(now - (iso_epoch(g.get("start")) or now))})
             except Exception as ex:  # noqa: BLE001
                 log(f"PREEMPT-PROPOSE {p['id']}|{rid}: notify failed: {type(ex).__name__}: {ex}")
                 continue
@@ -8856,7 +8864,16 @@ def preempt_propose(flags, grants, allrows, log, now=None, emit=None, dry=False,
                 f"resumable={resumable}")
     if out and not dry:
         atomic_json(sp, st)
+    log_transition(flags, "preempt-suppressed", suppressed, log, persist=not dry)
     return out
+
+
+def _family_striking(flags, rid, now=None):
+    try:
+        import family_strikes
+        return family_strikes.strike_today(flags, family_strikes.stem_of(rid), now)
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def urgent_smoke_ahead_filter(pending, cands, now=None):
