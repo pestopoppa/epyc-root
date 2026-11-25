@@ -87,7 +87,7 @@ DEFAULT_BASE_FOR = {f"{wg.LLM}/llama.cpp": "origin/master"}   # its remote main 
 def reap(*, roots: list[str], ttl_clean: float, ttl_dirty: float, salvage_dir: str, apply: bool,
          max_actions: int, base: str, repos: list[str] | None = None, probe: wg.Probe | None = None,
          now: float | None = None, trash_root: str | None = None, guarded_rm: str | None = None,
-         emit=print, base_for: dict[str, str] | None = None) -> dict:
+         emit=print, base_for: dict[str, str] | None = None, scratch_only: bool = False) -> dict:
     tag = "WT-REAP" if apply else "WT-REAP-DRYRUN"
     base_for = dict(DEFAULT_BASE_FOR if base_for is None else base_for)
     now = time.time() if now is None else now
@@ -127,6 +127,8 @@ def reap(*, roots: list[str], ttl_clean: float, ttl_dirty: float, salvage_dir: s
                 counts["kept"] += 1
                 line(wt.path, "-", "-", "SKIP", f"repo {repo} {ferr}", "untouched (fail closed)")
                 continue
+            if scratch_only and not wg.is_scratch(wt.path):
+                continue   # per-tick mode: marked scratch trees only; everything else is the under-floor rule's
             sr = _skip_reason(wt, real, root)
             if sr:
                 counts["kept"] += 1
@@ -147,6 +149,10 @@ def reap(*, roots: list[str], ttl_clean: float, ttl_dirty: float, salvage_dir: s
                 continue
             if v in (wg.REMOVABLE, "RECENT"):
                 ttl, act = ttl_clean, "REMOVE"
+            elif scratch_only:
+                counts["kept"] += 1
+                line(wt.path, v, idle, f"KEEP-{v}", reason, "untouched (scratch-only: never salvage)")
+                continue
             elif v in ("DIRTY", "UNLANDED"):
                 ttl, act = ttl_dirty, "SALVAGE"
             else:
@@ -221,6 +227,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--base", default=wg.DEFAULT_BASE)
     ap.add_argument("--base-for", action="append", default=[], metavar="REPO=BASE",
                     help="per-repo landed base (default: /mnt/raid0/llm/llama.cpp=origin/master)")
+    ap.add_argument("--scratch-only", action="store_true",
+                    help="act only on trees carrying .scratch-worktree (REMOVE only, never salvage); used by host_hygiene_tick every tick")
     ap.add_argument("--json", action="store_true", help="also print the JSON result at the end")
     try:
         a = ap.parse_args(argv)
@@ -243,7 +251,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         res = reap(roots=a.roots, ttl_clean=a.ttl_clean_days, ttl_dirty=a.ttl_dirty_days,
                    salvage_dir=a.salvage_dir, apply=a.apply, max_actions=a.max, base=a.base, emit=emit,
-                   base_for=dict(DEFAULT_BASE_FOR, **dict(x.split("=", 1) for x in a.base_for if "=" in x)))
+                   base_for=dict(DEFAULT_BASE_FOR, **dict(x.split("=", 1) for x in a.base_for if "=" in x)),
+                   scratch_only=a.scratch_only)
     finally:
         if logf:
             logf.close()

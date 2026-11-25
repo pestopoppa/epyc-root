@@ -799,6 +799,26 @@ def workspace_sync(t: Tick, repo: str = WORKSPACE_CLONE, check=None) -> None:
 
 
 # --------------------------------------------------------------------------- main
+def reap_scratch_trees(t: Tick, root: Path = CODE_ROOT) -> dict | None:
+    """EVERY tick, whatever the free space (operator 2026-11-25): remove ONLY worktrees carrying `.scratch-worktree`
+    that are clean, landed and idle >= 30 min, through worktree_gate.remove_one (never --force). Unmarked trees keep
+    the under-floor-only rule in reclaim_under_floor. Each removal is logged. Deterministic, no LLM."""
+    argv = ["python3", str(root / "scripts" / "system" / "worktree_reaper.py"), "--scratch-only",
+            "--ttl-clean-days", "0.0208", "--max", "50"]
+    if not t.dry_run:
+        argv.append("--apply")
+    cp = run(["nice", "-n", "19", "ionice", "-c3", *argv], timeout=1800)
+    if cp is None:
+        t.log("scratch-reap: no result (timeout or spawn failure)")
+        return None
+    lines = (cp.stdout or "").splitlines()
+    removed = [ln for ln in lines if "action=REMOVE" in ln]
+    for ln in removed:
+        t.log(f"scratch-reap {ln.strip()[:300]}")
+    t.log(f"scratch-reap: rc={cp.returncode} removed={len(removed)} ({'dry-run' if t.dry_run else 'apply'})")
+    return {"rc": cp.returncode, "removed": len(removed)}
+
+
 def reclaim_under_floor(t: Tick, free: int | None = None, root: Path = CODE_ROOT, floor: float | None = None) -> list[dict]:
     """Free space < RECLAIM_FLOOR (250 GB): run the worktree reaper, build TTL and trash reaper (--apply unless dry-run), log what each did.
 
@@ -842,6 +862,7 @@ def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STA
     t = Tick(dry_run=dry_run, state_dir=state_dir)
     try:
         disk_free(t)
+        reap_scratch_trees(t)
         reclaim_under_floor(t)
         keeper(t)
         backups(t)

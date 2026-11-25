@@ -450,3 +450,62 @@ def test_reclaim_defers_under_quiet_host_unless_critical(tmp_path, calls, monkey
     t = hh.Tick(dry_run=False, state_dir=tmp_path / "state")
     assert hh.reclaim_under_floor(t, free=200 * hh.GB) == [] and calls == []
     assert len(hh.reclaim_under_floor(t, free=100 * hh.GB)) == 3
+
+
+# ---- per-tick scratch reap (operator 2026-11-25) ----
+def test_tick_reaps_marked_scratch_trees_at_280gb_free_and_only_those(tmp_path, calls, monkeypatch):
+    monkeypatch.setattr(hh.quiet_host, "quiet_host_grant", lambda *a, **k: None)
+    t = hh.Tick(dry_run=False, state_dir=tmp_path / "state")
+    r = hh.reap_scratch_trees(t)
+    assert r is not None
+    flat = [" ".join(c) for c in calls]
+    assert len(flat) == 1 and "worktree_reaper.py" in flat[0] and "--scratch-only" in flat[0] and "--apply" in flat[0]
+    # 280 GB free is above the 250 GB floor: the unmarked-tree reclaim (worktree-reaper without --scratch-only) stays off
+    assert hh.reclaim_under_floor(t, free=280 * hh.GB) == [] and len(calls) == 1
+
+
+def test_scratch_only_reaper_removes_marked_and_leaves_unmarked(tmp_path, monkeypatch):
+    import importlib.util as iu
+    sys.path.insert(0, str(ROOT / "scripts/system"))
+    spec = iu.spec_from_file_location("wr_scratch", ROOT / "scripts/system/worktree_reaper.py")
+    wr = iu.module_from_spec(spec)
+    spec.loader.exec_module(wr)
+    wg = wr.wg
+    monkeypatch.setattr(wg, "REFERENCE_SOURCES", [])
+    monkeypatch.setattr(wg, "REFERENCE_FILES", [])
+    monkeypatch.setattr(wg, "REFERENCE_GLOB_FILES", [])
+    env = dict(os.environ, GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t", GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@t")
+
+    def g(cwd, *a):
+        subprocess.run(["git", *a], cwd=cwd, check=True, capture_output=True, env=env)
+
+    origin = tmp_path / "o.git"
+    g(tmp_path, "init", "--bare", "-b", "main", str(origin))
+    main = tmp_path / "main"
+    g(tmp_path, "clone", str(origin), str(main))
+    (main / "a").write_text("a")
+    g(main, "add", "a"); g(main, "commit", "-m", "i"); g(main, "push", "origin", "HEAD:main"); g(main, "fetch", "origin")
+    root = tmp_path / "wts"
+    root.mkdir()
+    made = {}
+    for name, marked in (("m", True), ("u", False)):
+        p = root / name
+        g(main, "worktree", "add", "-b", f"b/{name}", str(p), "origin/main")
+        if marked:
+            (p / ".scratch-worktree").write_text("{}")
+            (main / ".git" / "info").mkdir(exist_ok=True)
+            with open(main / ".git" / "info" / "exclude", "a") as fh:
+                fh.write("/.scratch-worktree\n")
+        t0 = time.time() - 3 * 3600
+        gd = Path(subprocess.run(["git", "rev-parse", "--path-format=absolute", "--git-dir"], cwd=p, capture_output=True, text=True).stdout.strip())
+        for q in (p, gd / "HEAD", gd / "index", gd / "logs" / "HEAD"):
+            if q.exists():
+                os.utime(q, (t0, t0))
+        made[name] = p
+    out = []
+    monkeypatch.setattr(wr, "_fetch", lambda repo: None)
+    wr.reap(roots=[str(root)], ttl_clean=3.0, ttl_dirty=7.0, salvage_dir=str(tmp_path / "salv"), apply=True,
+            max_actions=10, base="origin/main", repos=[str(main)], probe=wg.Probe(), emit=out.append,
+            base_for={}, scratch_only=True)
+    assert not made["m"].exists() and made["u"].exists()
+    assert any("action=REMOVE" in ln and str(made["m"]) in ln for ln in out)
