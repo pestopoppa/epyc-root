@@ -83,8 +83,8 @@ def _cache(tmp_path, monkeypatch):
 
 # ---------------------------------------------------------------- the switch
 def test_enforce_table_all_false_and_one_entry_per_check():
-    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS) and len(P.CHECKS) == 15
-    assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "ports", "append", "witness_log", "witness_decl", "witness_log_tools"}
+    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS) and len(P.CHECKS) == 16
+    assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "ports", "append", "witness_log", "witness_decl", "witness_log_tools", "inputs"}
     assert set(P.DRIFT_CHECKS) <= set(P.CHECKS)
 
 
@@ -550,3 +550,49 @@ def test_report_counts_fail_rows(tmp_path):
     per = P.report(str(tmp_path), out=lines.append, queued={s["id"]: s for s in (s1, s2, s3)})
     assert sorted(per["ports"]["fail"]) == ["zz-r1-20261124", "zz-r2-20261124"]
     assert any(x.startswith("ports") and "fail=  2" in x for x in lines)
+
+
+# ---------------------------------------------------------------- inputs (2026-11-25, q8wp: kld_text.txt never copied)
+KLD_SHA_JOB = SELFTEST_OK + "TEXT_SHA = %r\nTEXT = HERE + '/inputs/kld_text.txt'\n"
+
+
+def _inputs_row(tmp_path, body=b"corpus", pin=None, put=True, rid="inp-row-20261125"):
+    sha = hashlib.sha256(b"corpus").hexdigest() if pin is None else pin
+    d, s = make_row(tmp_path, rid, job=KLD_SHA_JOB % sha)
+    if put:
+        (d / "inputs").mkdir()
+        (d / "inputs" / "kld_text.txt").write_bytes(body)
+    return d, s
+
+
+def test_inputs_missing_fails(tmp_path):
+    d, s = _inputs_row(tmp_path, put=False)
+    r = run(s, d, "inputs")
+    assert codes(r, "inputs", "FAIL") == {"INPUT-MISSING"} and "inputs/kld_text.txt" in r[0][3]
+
+
+def test_inputs_wrong_sha_fails(tmp_path):
+    d, s = _inputs_row(tmp_path, body=b"other")
+    assert codes(run(s, d, "inputs"), "inputs", "FAIL") == {"INPUT-SHA"}
+
+
+def test_inputs_present_right_sha_passes(tmp_path):
+    d, s = _inputs_row(tmp_path)
+    assert run(s, d, "inputs") == []
+
+
+def test_inputs_sha256sums_pin(tmp_path):
+    d, s = make_row(tmp_path, "inp-sums-20261125")
+    (d / "data.bin").write_bytes(b"x")
+    (d / "SHA256SUMS").write_text(f"{hashlib.sha256(b'x').hexdigest()}  data.bin\n{'0' * 64}  gone.txt\n")
+    r = run(s, d, "inputs")
+    assert codes(r, "inputs", "FAIL") == {"INPUT-MISSING"} and len(r) == 1
+
+
+def test_inputs_none_pinned_no_check(tmp_path):
+    d, s = make_row(tmp_path, "inp-none-20261125")
+    assert run(s, d, "inputs") == []
+
+
+def test_inputs_publish_only_grandfathered():
+    assert "inputs" in P.PUBLISH_ONLY

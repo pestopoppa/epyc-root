@@ -39,6 +39,11 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
                llama-cli, ...): the e2e server had -lv 4 but unit_kld ran llama-perplexity without it (ak-c22-q8mc-gate-gpu-20261124).
                WITNESS-LOGLEVEL-TOOL. Separate switch from witness_log (the server part) so it can be WARN while the server part enforces.
   witness_decl 14  a row declaring job.py KNOBS but no spec.witness_lines: WITNESS-UNDECLARED
+  inputs   16  every input file the row PINS exists in the row dir with the pinned sha256: INPUT-MISSING / INPUT-SHA. Pins =
+               SHA256SUMS / SOURCE.sha256 lines, a 64-hex literal in job code next to a relative path (TEXT_SHA beside
+               inputs/kld_text.txt), and any literal `inputs/<file>` path (existence only). Paths outside the row dir
+               (GGUFs, stores) are the store/model checks' job. PUBLISH_ONLY (ak-c22-q8wp-op-gpu-20261125: kld_text.txt
+               never copied, found only at smoke).
   generator 12 WARN only: job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` + spec.generator agree
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
    row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
@@ -59,12 +64,13 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`
     sys.path.insert(0, _HERE)
 
-CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl", "witness_log_tools")
+CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl", "witness_log_tools", "inputs")
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
 PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True, witness_log=True, witness_decl=True,
-                         witness_log_tools=True)   # 2026-11-25: --report showed 0 queued non-grandfathered fails
+                         witness_log_tools=True,
+                         inputs=True)   # 2026-11-25: --report showed 0 queued non-grandfathered fails (inputs: 0 of 14)
 # estimate: on the operator's 0-fail list, but the RCA F5 tightening (2026-11-24) re-stages it warn-first; flip at 0 fails.
 DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness", "served")   # re-run at grant time (code is sealed at publish)
 
@@ -1402,11 +1408,75 @@ def check_witness_declared(row, ctx):
     return []
 
 
+HEX64_RX = re.compile(r"(?<![0-9A-Fa-f])([0-9a-f]{64})(?![0-9A-Fa-f])")
+_STR_RX = re.compile(r"[\"']([^\"'\n]{1,300})[\"']")
+INPUTS_JOIN_RX = re.compile(r"[\"']inputs[\"']\s*,\s*[\"']([A-Za-z0-9._+-]+(?:/[A-Za-z0-9._+-]+)*)[\"']")
+INPUTS_LIT_RX = re.compile(r"[\"']/?(inputs/[A-Za-z0-9._+/-]+)[\"']")
+PIN_PATH_RX = re.compile(r"^[A-Za-z0-9._+-]+(?:/[A-Za-z0-9._+-]+)*$")
+
+
+def _rel_ok(rel):
+    return bool(rel) and not rel.startswith(("/", "..", "-")) and ".." not in rel.split("/") and bool(PIN_PATH_RX.match(rel)) \
+        and not rel.endswith(".gguf")
+
+
+def pinned_inputs(row):
+    """{rel_path: sha256 or None} the row pins, all relative to the row dir (see the `inputs` check)."""
+    pins = {}
+    for name in ("SHA256SUMS", "SOURCE.sha256"):
+        t = _read(os.path.join(row.dir, name)) if row.dir else ""
+        for ln in (t or "").splitlines():
+            m = re.match(r"^\s*([0-9a-fA-F]{64})\s+\*?(\S+)\s*$", ln)
+            if m and _rel_ok(m.group(2).lstrip("./") if m.group(2).startswith("./") else m.group(2)):
+                pins[m.group(2)[2:] if m.group(2).startswith("./") else m.group(2)] = m.group(1).lower()
+    def _pathlit(txt):
+        for sm in reversed(list(_STR_RX.finditer(txt))):
+            rel = sm.group(1)
+            rel = rel[1:] if rel.startswith("/inputs/") else rel   # HERE + "/inputs/x"
+            if _rel_ok(rel) and ("/" in rel or re.search(r"\.[A-Za-z0-9]{1,6}$", rel)) and not HEX64_RX.fullmatch(rel):
+                return rel
+        return None
+
+    for t in row.code.values():
+        for ln in t.splitlines():
+            hm = HEX64_RX.search(ln)
+            if not hm:
+                continue
+            nm = re.match(r"\s*([A-Za-z_]\w*?)_SHA(?:256)?\w*\s*=", ln)
+            rel = None
+            if nm:   # TEXT_SHA = '<hex>' pairs with TEXT / TEXT_PATH / TEXT_FILE = <path literal>
+                pm = re.search(r"^\s*%s(?:_PATH|_FILE)?\s*=\s*(.*)$" % re.escape(nm.group(1)), t, re.M)
+                rel = _pathlit(pm.group(1)) if pm else None
+            rel = rel or _pathlit(ln[:hm.start()] + " " + ln[hm.end():])   # same line, e.g. ("inputs/x.txt", "<hex>")
+            if rel:
+                pins.setdefault(rel, hm.group(1))
+    for t in list(row.code.values()) + list(row.sh.values()):
+        for rx in (INPUTS_LIT_RX,):
+            for m in rx.finditer(t):
+                pins.setdefault(m.group(1), None)
+        for m in INPUTS_JOIN_RX.finditer(t):
+            pins.setdefault("inputs/" + m.group(1), None)
+    return pins
+
+
+def check_inputs(row, ctx):
+    out = []
+    if not row.dir:
+        return out
+    for rel, want in sorted(pinned_inputs(row).items()):
+        p = os.path.join(row.dir, rel)
+        if not os.path.isfile(p):
+            out.append(("FAIL", "INPUT-MISSING", f"{rel}: pinned input is absent in the row dir {row.dir} (copy it in before publish)"))
+        elif want and _sha256(p) != want:
+            out.append(("FAIL", "INPUT-SHA", f"{rel}: sha256 {str(_sha256(p))[:16]} != pinned {want[:16]}"))
+    return out
+
+
 CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_flags, "model": check_model,
              "lane": check_lane, "smoke": check_smoke, "estimate": check_estimate, "ports": check_ports,
              "append": check_append, "witness": check_witness, "witness_log": check_witness_loglevel,
              "witness_decl": check_witness_declared, "witness_log_tools": check_witness_loglevel_tools,
-             "served": check_served,
+             "served": check_served, "inputs": check_inputs,
              "generator": check_generator}
 
 
@@ -1414,7 +1484,7 @@ CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_fl
 # Publish-only checks: they judge what the row DECLARES before its smoke has run. A row whose smoke already PASSED ran the real
 # binary and found the witness, which is stronger evidence, so report / keeper-side use grandfathers it (grandfather=True);
 # publish never does (its new id has no PASS). Operator-adjacent origin: AutoKernel report 2026-11-24 23:2xZ.
-PUBLISH_ONLY = ("witness_log", "witness_decl", "witness_log_tools")
+PUBLISH_ONLY = ("witness_log", "witness_decl", "witness_log_tools", "inputs")
 
 
 def smoke_pass_date(flags, spec):
