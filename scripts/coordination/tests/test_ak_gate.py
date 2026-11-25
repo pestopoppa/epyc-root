@@ -1292,3 +1292,26 @@ def test_fullsmoke_real_kld_witness_log(tmp_path):
     terminal = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
     assert terminal["verdict"] == "FUTILITY_HARNESS_WITNESS"
     assert "expect_by_unit.kld" in terminal["fix"]
+
+
+@pytest.mark.parametrize("nondet", [True, False])
+def test_fullsmoke_replay_uses_correctness_ledger(tmp_path, nondet):
+    sp = spec(correctness={"kind": "identity", "mode": "server", "n_prompts": 1})
+    row = tmp_path / "row"
+    g = G.Gate(sp, str(row), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    def correctness(uid, kind, arm, extra):
+        log = os.path.join(g.logs, uid + ".log")
+        with open(log, "w") as f:
+            f.write(G._synthetic_log(sp, arm))
+        return {"unit_id": uid, "kind": kind, "arm": arm, "prompt": extra["prompt"],
+                "log": "logs/" + uid + ".log", "argv": ["llama-server", "-lv", "4"],
+                "output_sha": "different" if nondet and arm == "OFF2" else "same",
+                "accepted_sha": "same", "draft_sha": "same", "gate_unit": True}
+    g.run_correctness_unit = correctness
+    assert g.smoke() == (3 if nondet else 0)
+    replay = G.replay(sp, str(tmp_path / "new"), str(row), stream=QUIET)
+    assert replay["mode"] == "full-smoke"
+    assert replay["verdict"] == ("FUTILITY_HARNESS_NONDET" if nondet else "SMOKE_PASS")
+    if nondet:
+        assert "correctness[identity]" in replay["fix"]

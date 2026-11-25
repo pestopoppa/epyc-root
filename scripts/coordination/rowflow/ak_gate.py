@@ -1022,6 +1022,33 @@ def decide_smoke(spec, units):
             "reason": f"{len(us)} unit(s); every knob witnessed as expected"}
 
 
+def smoke_served_fix(decision):
+    if decision["verdict"] == "FUTILITY_HARNESS_RESIDENCY":
+        return "Verify GPU residency and adjust server.kfd_min_vram_gib to the measured footprint"
+    if decision.get("witness_mismatches"):
+        mismatch = decision["witness_mismatches"][0]
+        return f"Check expect.{mismatch['arm']}.{mismatch['knob']}, expect_by_unit.served.{mismatch['arm']}.{mismatch['knob']}, knobs.{mismatch['knob']}.marker and server.argv"
+    return "Check server.argv, smoke.n_predict and smoke.budget_s"
+
+
+def decide_smoke_correctness(spec, units):
+    """Judge a reduced smoke correctness plan using the full-run correctness judge."""
+    verdict, detail, _ = decide_correctness(smoke_spec(spec), units)
+    if not verdict:
+        return {"verdict": "SMOKE_PASS", "polar": "PASS", "terminal": True, "reason": "correctness units passed"}
+    kind = detail.get("kind", "unknown")
+    fix = {"FUTILITY_HARNESS_WITNESS": f"Check correctness[{kind}].argv and expect_by_unit.{kind} for the named arm and knob",
+           "FUTILITY_HARNESS_NONDET": "Fix correctness[identity].argv or server.argv and baseline arm settings to make A/A deterministic",
+           "FUTILITY_HARNESS_MISSING_OUTPUT": f"Fix correctness[{kind}].argv executable path and output flags"}.get(
+               verdict, f"Check correctness[{kind}].argv and unit logs")
+    if detail.get("witness_mismatches"):
+        mismatch = detail["witness_mismatches"][0]
+        fix = f"Check expect_by_unit.{kind}.{mismatch['arm']}.{mismatch['knob']}, knobs.{mismatch['knob']}.marker and correctness[{kind}].argv"
+    return {"verdict": verdict, "polar": polar(verdict), "terminal": True,
+            "reason": json.dumps(detail, sort_keys=True)[:1200], "fix": fix,
+            "witness_mismatches": detail.get("witness_mismatches", [])}
+
+
 # ---------------------------------------------------------------------------------------------------- io helpers
 def load_units(out_dir, name=H.RESULTS_JSONL):
     """Unit records of a results.jsonl; the LAST record of a unit id wins (a resumed run may re-append)."""
@@ -1539,6 +1566,7 @@ class Gate:
                   **(self.spec.get("smoke") or {}))
         t0 = time.time()
         self.smoke_deadline = t0 + float(sm["budget_s"])
+        smoke_run_id = time.time_ns()
         try:
             bad = self.prepare()
             if bad:
@@ -1556,15 +1584,10 @@ class Gate:
                                                    ready, kind="smoke"))
                 H.append_unit(u, self.out)
                 units.append(u)
-                H.append_unit(dict(u, smoke=True), self.out_smoke)
+                H.append_unit(dict(u, smoke=True, smoke_shape="full", smoke_run_id=smoke_run_id), self.out_smoke)
                 d = decide_smoke(self.spec, units)
                 if d["verdict"] != "SMOKE_PASS":
-                    fix = ("Verify GPU residency and adjust server.kfd_min_vram_gib to the measured footprint"
-                           if d["verdict"] == "FUTILITY_HARNESS_RESIDENCY" else
-                           "Check expect.<arm>.<knob>, expect_by_unit.served, knobs.<knob>.marker and server.argv")
-                    if d.get("witness_mismatches"):
-                        mismatch = d["witness_mismatches"][0]
-                        fix = f"Check expect.{mismatch['arm']}.{mismatch['knob']}, expect_by_unit.served.{mismatch['arm']}.{mismatch['knob']}, knobs.{mismatch['knob']}.marker and server.argv"
+                    fix = smoke_served_fix(d)
                     return H.end_smoke("FAIL", 3, f"{d['verdict']}: {d['reason']}", self.out,
                                        extra={"verdict": d["verdict"], "fix": fix, "failclass": {"side": "harness"}})
             # Run the same correctness units and judge as the full run, against a reduced plan.
@@ -1581,22 +1604,13 @@ class Gate:
                     self.spec["server"]["ready_timeout_s"] = min(float(self.spec["server"].get("ready_timeout_s") or 900), remaining)
                     u = self.run_correctness_unit(uid, kind, arm, extra)
                     correctness.append(u)
-                    H.append_unit(dict(u, smoke=True), self.out_smoke)
-                verdict, detail, _ = decide_correctness(self.spec, correctness)
-                if verdict:
-                    reason = json.dumps(detail, sort_keys=True)[:1200]
-                    kind = detail.get("kind", "unknown")
-                    fix = {"FUTILITY_HARNESS_WITNESS": f"Check correctness[{kind}].argv and expect_by_unit.{kind} for the named arm and knob",
-                           "FUTILITY_HARNESS_NONDET": "Fix correctness[identity].argv or server.argv and baseline arm settings to make A/A deterministic",
-                           "FUTILITY_HARNESS_MISSING_OUTPUT": f"Fix correctness[{kind}].argv executable path and output flags"}.get(
-                               verdict, f"Check correctness[{kind}].argv and unit logs")
-                    if detail.get("witness_mismatches"):
-                        mismatch = detail["witness_mismatches"][0]
-                        fix = f"Check expect_by_unit.{kind}.{mismatch['arm']}.{mismatch['knob']}, knobs.{mismatch['knob']}.marker and correctness[{kind}].argv"
-                    extra = {"verdict": verdict, "fix": fix}
-                    if verdict.startswith("FUTILITY_HARNESS_"):
+                    H.append_unit(dict(u, smoke=True, smoke_shape="full", smoke_run_id=smoke_run_id), self.out_smoke)
+                decision = decide_smoke_correctness(original_spec, correctness)
+                if decision["verdict"] != "SMOKE_PASS":
+                    extra = {"verdict": decision["verdict"], "fix": decision["fix"]}
+                    if decision["verdict"].startswith("FUTILITY_HARNESS_"):
                         extra["failclass"] = {"side": "harness"}
-                    return H.end_smoke("FAIL", 3, f"{verdict}: {reason}", self.out, extra=extra)
+                    return H.end_smoke("FAIL", 3, f"{decision['verdict']}: {decision['reason']}", self.out, extra=extra)
             finally:
                 self.spec = original_spec
                 self.current_unit = {}
@@ -1777,9 +1791,16 @@ def replay_units(spec, out_dir, row_dir):
     same functions the live run uses (recorded witness / metric fields are never trusted)."""
     recorded = [u for u in load_units(out_dir) if u.get("gate_unit")]
     units = [u for u in recorded if u.get("kind") != "load" and not u.get("report_only")]
-    mode = "smoke" if units and all(u.get("kind") == "smoke" for u in units) else "units"
+    smoke_units = [u for u in load_units(os.path.join(row_dir, "out-smoke")) if u.get("gate_unit")]
+    shaped = [u for u in smoke_units if u.get("smoke_shape") == "full" and isinstance(u.get("smoke_run_id"), int)]
+    if shaped and not any(u.get("kind") == "visit" for u in units):
+        latest = max(u["smoke_run_id"] for u in shaped)
+        units = [u for u in shaped if u["smoke_run_id"] == latest]
+        mode = "full-smoke"
+    else:
+        mode = "smoke" if units and all(u.get("kind") == "smoke" for u in units) else "units"
     if not units and not recorded:
-        units = [u for u in load_units(os.path.join(row_dir, "out-smoke")) if u.get("gate_unit")]
+        units = smoke_units
         mode = "smoke"
     skipped = []
     if not units and not recorded:
@@ -1800,7 +1821,7 @@ def replay_units(spec, out_dir, row_dir):
             u["witness"] = {"(arm)": {"expected": "a declared arm", "observed": "no-arm", "ok": False, "line": None,
                                       "lines_scanned": 0, "log": u.get("log"), "argv_lv": None, "log_lv": None,
                                       "lv_required": MIN_LV, "note": f"prior arm {u.get('arm')!r} is not declared"}}
-        elif witnessed:
+        elif witnessed and not (u["kind"] == "c-kld" and u.get("mode") == "base" and c.get("witness_base") is False):
             u["witness"] = witness_for(spec, u["arm"], txt, u.get("argv") if u["kind"] != "c-tbo" else None, u.get("log"),
                                        UNIT_TYPE.get(u["kind"], "served"))
         if u.get("req") is not None:
@@ -1831,6 +1852,11 @@ def replay(spec, row_dir, prior, stream=None):
     out_dir, prow = resolve_prior(prior)
     units, mode, skipped = replay_units(spec, out_dir, prow)
     d = decide(spec, units) if mode == "units" else decide_smoke(spec, units)
+    if mode == "full-smoke":
+        if d["verdict"] == "SMOKE_PASS":
+            d = decide_smoke_correctness(spec, units)
+        else:
+            d["fix"] = smoke_served_fix(d)
     if mode == "units" and not d["terminal"] and not [u for u in units if u.get("kind") == "visit"] and \
             any(u.get("kind") == "smoke" for u in units):
         d = decide_smoke(spec, units)
@@ -1848,7 +1874,7 @@ def replay(spec, row_dir, prior, stream=None):
            "observed": {"verdict": d["verdict"], "native_verdict": d.get("native_verdict", d["verdict"]),
                         "polar": d.get("polar"), "terminal": d.get("terminal"),
                         "reason": str(d.get("reason") or "")[:1200], "n_units": len(units)},
-           "verdict": d["verdict"], "witness_mismatches": mm[:40],
+           "verdict": d["verdict"], "fix": d.get("fix"), "witness_mismatches": mm[:40],
            "mismatch_pairs": sorted({(m["knob"], m["arm"]) for m in mm}),
            "correctness_kind": "+".join(c["kind"] for c in corr_list(spec)) or None, "elapsed_s": round(time.time() - t0, 3)}
     print(f"REPLAY {prev_id} mode={mode} units={len(units)} witnessed={rec['n_witnessed']} -> {d['verdict']} "
