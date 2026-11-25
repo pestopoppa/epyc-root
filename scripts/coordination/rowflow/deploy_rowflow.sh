@@ -2,7 +2,7 @@
 # deploy_rowflow.sh - the ONLY sanctioned way to install rowflow into compute-flags/bin/rowflow/ (operator 2026-11-05,
 # "Harness first, then class fixes"; keeper-friction review P2.4 #3/#4).
 #
-#   deploy_rowflow.sh [--ref origin/main] [--repo /workspace] [--check-only] [--allow-open-grants] [--allow-rollback] [--no-rollback] [--keep-stage]
+#   deploy_rowflow.sh [--ref origin/main] [--repo /workspace] [--check-only] [--allow-open-grants] [--allow-rollback] [--no-rollback] [--keep-stage] [--allow-stale-script]
 #   deploy_rowflow.sh --parity [--ref origin/main] [--repo /workspace]
 #   Takes a deploy flock (<flags>/.deploy_rowflow.lock; a second deploy is refused, rc 79) and a LIGHT claim on 84-87 (--by <owner>,
 #   default $USER; retried every 60 s up to 15 tries) under which both test gates run (nice -n 19 taskset -c 84-87); released on exit.
@@ -20,7 +20,7 @@
 #             --keep-stage keeps this run's stage. Removal is `git worktree remove` only, never rm.
 # 2. test     the staged tree's unit tests (tests/test_rowflow*.py, test_allocator.py, test_churn_*.py, test_auto_file.py,
 #             test_install_manifest.py, test_handoff_ref.py) AND the replay gate
-#             (tests/replay/test_replay_gate.py from THIS script's tree, run against the staged rowflow/). Any failure
+#             (tests/replay/test_replay_gate.py from the staged ref, run against the staged rowflow/). Any failure
 #             refuses the deploy; nothing under bin/ is touched.
 # 3. guard    an engine file a running poller re-reads (filler_run15.sh, filler_lib.sh, notify.py, diskpause.py) is never
 #             swapped while LEGACY grants are open (pollers on the live path) unless --allow-open-grants; snapshot-launched
@@ -38,15 +38,14 @@
 # they deploy through the unit + replay gates with a D9-ack on the commit and no per-change emergency override.
 set -euo pipefail
 
-HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-REPLAY_DIR=$(cd "$HERE/../tests/replay" && pwd)
+ARGS=("$@")
 REF=origin/main
 REPO=/workspace
 FLAGS=${ROWFLOW_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
 BIN="$FLAGS/bin/rowflow"
 LOG="$FLAGS/ws58-calendar-keeper.log"
 KEEP_STAGE=0; CHECK_ONLY=0; PARITY=0; ALLOW_OPEN=0; ALLOW_ROLLBACK=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
-BY=${DEPLOY_BY:-${USER:-pipeline-mgmt}}; NO_LIGHT=${DEPLOY_NO_LIGHT:-0}; SELFTEST_CLAIM=0
+BY=${DEPLOY_BY:-${USER:-pipeline-mgmt}}; NO_LIGHT=${DEPLOY_NO_LIGHT:-0}; SELFTEST_CLAIM=0; ALLOW_STALE_SCRIPT=0
 LOCK_FILE=${DEPLOY_LOCK_FILE:-$FLAGS/.deploy_rowflow.lock}
 FROZEN=(bin/rowflow/filler_run15.sh)   # operator 2026-11-10: rowflow.py/publish_row.py unfrozen
 FROZEN_AT=9218dffd131008117a5f341848dce572b4669486
@@ -58,6 +57,7 @@ while [ $# -gt 0 ]; do
     --ref) REF=$2; shift 2 ;;
     --repo) REPO=$2; shift 2 ;;
     --keep-stage) KEEP_STAGE=1; shift ;;
+    --allow-stale-script) ALLOW_STALE_SCRIPT=1; shift ;;
     --check-only) CHECK_ONLY=1; shift ;;
     --parity) PARITY=1; shift ;;
     --allow-open-grants) ALLOW_OPEN=1; shift ;;
@@ -74,11 +74,38 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+# DEPLOY-FROM-REF bootstrap protocol v1
+# Pin the ref once and run its deploy script before acquiring locks or touching live state.
+# A stale bootstrap must opt in explicitly; it is never used for the deploy itself.
+if [ -z "${ROWFLOW_DEPLOY_PINNED_SHA:-}" ]; then
+  PINNED_SHA=$(git -C "$REPO" rev-parse --verify "$REF^{commit}")
+  BOOTSTRAP=$(mktemp "${TMPDIR:-/tmp}/deploy-rowflow.XXXXXXXX")
+  trap 'rm -f -- "$BOOTSTRAP"' EXIT
+  if ! git -C "$REPO" show "$PINNED_SHA:scripts/coordination/rowflow/deploy_rowflow.sh" > "$BOOTSTRAP"; then
+    echo "REFUSED: $REF has no deploy_rowflow.sh" >&2; exit 65
+  fi
+  if ! grep -Fxq "# DEPLOY-FROM-REF bootstrap protocol v1" "$BOOTSTRAP"; then
+    echo "REFUSED: $REF deploy script lacks staged-ref bootstrap support" >&2; exit 65
+  fi
+  if ! cmp -s "$0" "$BOOTSTRAP" && [ "$ALLOW_STALE_SCRIPT" != 1 ]; then
+    echo "REFUSED: invoking deploy_rowflow.sh differs from $REF; pass --allow-stale-script to run the ref version" >&2; exit 65
+  fi
+  set +e
+  ROWFLOW_DEPLOY_PINNED_SHA="$PINNED_SHA" bash "$BOOTSTRAP" "${ARGS[@]}"
+  rc=$?
+  set -e
+  exit "$rc"
+fi
+# Do not allow an inherited internal variable to bypass the ref script check.
+if ! cmp -s "$0" <(git -C "$REPO" show "$ROWFLOW_DEPLOY_PINNED_SHA:scripts/coordination/rowflow/deploy_rowflow.sh"); then
+  echo "REFUSED: deploy script does not match pinned ref" >&2; exit 65
+fi
+
 # manifest_entries <manifest file>: "published source class" per non-comment line
 manifest_entries() { sed -e 's/#.*//' "$1" | awk 'NF >= 2 {print $1, $2, ($3 == "" ? "hot" : $3)}'; }
 
 if [ "$PARITY" = 1 ]; then
-  PSHA=$(git -C "$REPO" rev-parse --verify "$REF^{commit}")
+  PSHA=$ROWFLOW_DEPLOY_PINNED_SHA
   PMAN=$(git -C "$REPO" show "$PSHA:$MANIFEST_REL") || { echo "PARITY: $REF has no $MANIFEST_REL" >&2; exit 65; }
   DRIFT=0
   while read -r pub src _cls; do
@@ -124,7 +151,7 @@ trap release_light EXIT
 if [ "$SELFTEST_CLAIM" = 1 ]; then take_light; echo "GATE_PREFIX=${GATE_PREFIX[*]:-}"; exit 0; fi
 
 # Read the live revision under the deploy lock, before staging or running gates.
-SHA=$(git -C "$REPO" rev-parse --verify "$REF^{commit}")
+SHA=$ROWFLOW_DEPLOY_PINNED_SHA
 if LIVE=$(python3 - "$BIN/DEPLOYED.json" <<'PYJSON'
 import json, sys
 try:
@@ -235,6 +262,7 @@ for pub in "${ENTRIES[@]}"; do
     echo "REFUSED: $src would be blocked by the NIB2-108 hook (delete primitive + literal scratch root); reword it or pin $FLAGS/$pub in scripts/hooks/destructive_scratch_pins.json; nothing installed" >&2; exit 78
   fi
 done
+REPLAY_DIR="$STAGE/scripts/coordination/tests/replay"
 echo "deploy_rowflow: replay gate (harness $REPLAY_DIR)"
 if ! ROWFLOW_CANDIDATE="$CAND" REPLAY_SCRATCH="$STAGE/.replay-scratch" "${GATE_PREFIX[@]}" python3 -m pytest -q -p no:cacheprovider "$REPLAY_DIR/test_replay_gate.py" > "$SCRATCH/deploy-$TS-replay.log" 2>&1; then
   sed -n "/^\(FAILED\|E  \)/p" "$SCRATCH/deploy-$TS-replay.log" | sed -n 1,30p; echo "REFUSED: replay gate failed ($SCRATCH/deploy-$TS-replay.log); nothing installed" >&2; exit 1
