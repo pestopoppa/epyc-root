@@ -222,8 +222,20 @@ def file_row(row: str, owner: str, run=subprocess.run) -> int:
     return 0
 
 
+def stop_parked(row: str) -> bool:
+    """Use the keeper's decision so owner pauses are never sent to the evaluator."""
+    sys.path.insert(0, os.path.realpath(os.path.join(CHURN, "..", "rowflow")))
+    import rowflow
+    if rowflow.autorequeue_decision(FLAGS, row)[0] == "stop-parked":
+        print(f"STOP-PARKED {row} (resumable; owner stop); not filed")
+        return True
+    return False
+
+
 def auto_file(row: str, owner: str, force: bool = False, draft_fn=None, file_fn=None) -> int:
     """`--gate-eval --file`: zero-LLM filing of a policy-decided verdict; anything else -> draft + exit 4."""
+    if stop_parked(row):
+        return 0
     v = (draft_fn or gate_eval_draft)(row)
     vpath = os.path.join(row_dir(row), "verdict.json")
     if os.path.exists(vpath) and not force:
@@ -278,6 +290,8 @@ def main(argv=None) -> int:
         return auto_file(a.row, a.owner, a.force_draft)
     if a.file:
         return file_row(a.row, a.owner)
+    if a.gate_eval and stop_parked(a.row):
+        return 0
     vpath = os.path.join(row_dir(a.row), "verdict.json")
     if os.path.exists(vpath) and not a.force_draft:
         print(f"{vpath} exists; review it or pass --force-draft")

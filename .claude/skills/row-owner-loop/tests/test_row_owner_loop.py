@@ -4,6 +4,8 @@ import os
 import subprocess
 import sys
 
+import pytest
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "scripts"))
 
@@ -280,6 +282,7 @@ def _gdraft(verdict, decided, gate="graph_kld.gpu.q38_27b"):
 
 
 def test_runend_gate_eval_file_autofiles_policy_decided(tmp_path, monkeypatch):
+    monkeypatch.setattr(runend, "FLAGS", str(tmp_path / "flags"))
     monkeypatch.setattr(runend, "TMP", str(tmp_path))
     (tmp_path / "row-a").mkdir()
     filed = []
@@ -289,6 +292,7 @@ def test_runend_gate_eval_file_autofiles_policy_decided(tmp_path, monkeypatch):
 
 
 def test_runend_gate_eval_file_refuses_non_policy_decided(tmp_path, monkeypatch):
+    monkeypatch.setattr(runend, "FLAGS", str(tmp_path / "flags"))
     monkeypatch.setattr(runend, "TMP", str(tmp_path))
     (tmp_path / "row-b").mkdir()
     filed = []
@@ -441,3 +445,46 @@ def test_watch_rows_ack_refusal_surfaced(tmp_path):
 def test_watch_rows_ack_ended_unchanged(tmp_path):
     r, calls, st = _ack(tmp_path, "ENDED r1", 0)
     assert r.returncode == 0 and calls == "" and "ENDED r1" in st
+
+
+@pytest.mark.parametrize("reason,stop,resumable,units,park", [
+    ("stopped", False, True, 0, True),
+    ("partial-owner-stopped", True, True, 0, True),
+    ("partial-owner-stopped", False, True, 0, False),
+    ("stopped", True, False, 0, False),
+    ("stopped", True, True, 1, False),
+    ("partial-deadline", True, True, 0, False),
+])
+@pytest.mark.parametrize("file_result", [False, True])
+def test_gate_eval_parks_only_keeper_owner_stops(tmp_path, monkeypatch, capsys, reason, stop, resumable, units, park, file_result):
+    row = "row-stop"
+    flags = tmp_path / "flags"
+    work = tmp_path / row
+    (work / "out").mkdir(parents=True)
+    (flags / "ready").mkdir(parents=True)
+    (flags / "grants").mkdir()
+    result = work / "out" / "results.jsonl"
+    result.write_text('{"value": 1}\n' if units else '')
+    stop_file = work / "STOP"
+    if stop:
+        stop_file.touch()
+    manifest = {"id": row, "resumable": resumable, "workdir": str(work),
+                "result_path": str(result), "result_format": "jsonl", "stop_file": str(stop_file)}
+    ready = flags / "ready" / (row + ".json")
+    ready.write_text(json.dumps(manifest))
+    ended = flags / "grants" / (row + ".ended")
+    ended.write_text(f"rc=75 reason={reason}\n")
+    monkeypatch.setattr(runend, "FLAGS", str(flags))
+    monkeypatch.setattr(runend, "TMP", str(tmp_path))
+    calls = []
+    monkeypatch.setattr(runend, "gate_eval_draft", lambda r: calls.append("evaluate") or _gdraft("fail", True)(r))
+    monkeypatch.setattr(runend, "file_row", lambda r, o: calls.append("file") or 0)
+    args = [row, "--gate-eval"] + (["--file"] if file_result else [])
+    assert runend.main(args) == 0
+    if park:
+        assert capsys.readouterr().out.strip() == f"STOP-PARKED {row} (resumable; owner stop); not filed"
+        assert calls == [] and not (work / "verdict.json").exists()
+        assert ready.exists() and ended.exists() and result.read_text() == ""
+    else:
+        assert calls == (["evaluate", "file"] if file_result else ["evaluate"])
+        assert (work / "verdict.json").exists()
