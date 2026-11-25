@@ -329,7 +329,7 @@ def main(argv=None) -> int:
             for p in keep_failed.evidence_paths(root, print, rid):
                 kept.setdefault(os.path.realpath(p), "failed-evidence")
             print(f"RECLAIM-KEEP-FAILED {rid}: logs kept until successor ends")
-            filing.defer_keep_failed(flags, rid, vd)
+            filing.defer_reclaim(flags, rid, kind="keep_failed", verdict=vd)
         kept_anc: dict = {}
         rr = os.path.realpath(root)
         for k, why in kept.items():

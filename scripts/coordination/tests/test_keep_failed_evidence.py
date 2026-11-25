@@ -42,7 +42,9 @@ class T(unittest.TestCase):
             Path(sr, f).write_text(json.dumps({"verdict": verdict}))
         m = {"schema": "epyc.row.v3", "id": rid, "scratch_root": sr, "result_path": os.path.join(sr, "RESULT.json"),
              "published_at": "2026-11-25T00:00:00Z"}
-        Path(self.flags, "ready", rid + ".json").write_text(json.dumps(m))
+        manifest = Path(self.flags, "ready", rid + ".json")
+        manifest.write_text(json.dumps(m))
+        os.utime(manifest, (time.time() - 3600, time.time() - 3600))
         self.end(rid, end_age_h)
         Path(self.flags, "filing-done", rid + ".verdict.json").write_text(json.dumps({"row_verdict": verdict}))
         Path(self.flags, "filing-done", rid + ".FILED").write_text("FILED\n")
@@ -118,13 +120,34 @@ class T(unittest.TestCase):
 
     def test_deferred_marker_released_only_after_hold(self):
         self.mk("kf-r1", "FAIL_X")
-        filing.defer_keep_failed(self.flags, "kf-r1", "FAIL_X")
+        filing.defer_reclaim(self.flags, "kf-r1", kind="keep_failed", verdict="FAIL_X")
         calls = []
         with patch.object(reclaim_row, "main", lambda argv: calls.append(argv) or 0):
             self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lambda *_: None), [])
             self.end("kf-r2")
             self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lambda *_: None), ["kf-r1"])
         self.assertEqual(len(calls), 1)
+
+    def test_legacy_markers_and_single_index_per_sweep(self):
+        for rid in ("one-r1", "two-r1"):
+            self.mk(rid, "FAIL_X")
+            self.end(rid.replace("r1", "r2"))
+        marker_dir = Path(self.flags, "reclaim-deferred")
+        marker_dir.mkdir()
+        for rid in ("one-r1", "two-r1"):
+            (marker_dir / (rid + ".json")).write_text(json.dumps(
+                {"id": rid, "kind": "keep_failed", "verdict": "FAIL_X"}))
+        with patch.object(keep_failed, "ended_successor_index", wraps=keep_failed.ended_successor_index) as index, \
+                patch.object(reclaim_row, "main", return_value=0):
+            self.assertEqual(filing.run_deferred_reclaims(self.flags, log=lambda *_: None), ["one-r1", "two-r1"])
+            self.assertEqual(index.call_count, 1)
+
+    def test_keep_marker_does_not_replace_existing_deferral(self):
+        filing.defer_reclaim(self.flags, "kf-r1", "kf-r2", log=lambda *_: None)
+        marker = Path(self.flags, "reclaim-deferred", "kf-r1.json")
+        original = marker.read_text()
+        filing.defer_reclaim(self.flags, "kf-r1", kind="keep_failed", verdict="FAIL_X")
+        self.assertEqual(marker.read_text(), original)
 
 
 if __name__ == "__main__":

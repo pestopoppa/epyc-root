@@ -55,20 +55,27 @@ def is_failed(verdict):
     return str(verdict or "").upper().startswith(("FAIL", "FUTILITY"))
 
 
-def successor_ended(flags, rid):
-    """True when a row with the same id_stem and a higher -rN has grants/<id>.ended|.complete."""
-    stem, n = _stem(rid), _attempt(rid)
+def ended_successor_index(flags):
+    """Map each ended lineage to its highest attempt for one sweep."""
+    ended = {}
     for suf in (".ended", ".complete"):
         for p in glob.glob(os.path.join(flags, "grants", "*" + suf)):
-            o = os.path.basename(p)[:-len(suf)]
-            if o != rid and _stem(o) == stem and _attempt(o) > n:
-                return True
-    return False
+            rid = os.path.basename(p)[:-len(suf)]
+            stem = _stem(rid)
+            ended[stem] = max(ended.get(stem, 0), _attempt(rid))
+    return ended
 
 
-def hold_active(flags, rid, end_record, now=None):
+def successor_ended(flags, rid, ended_index=None):
+    """True when a higher attempt in the same lineage has ended or completed."""
+    if ended_index is None:
+        ended_index = ended_successor_index(flags)
+    return ended_index.get(_stem(rid), 0) > _attempt(rid)
+
+
+def hold_active(flags, rid, end_record, now=None, ended_index=None):
     """True while the evidence must be kept: no ended successor and the end record is younger than HOLD_HOURS."""
-    if successor_ended(flags, rid):
+    if successor_ended(flags, rid, ended_index):
         return False
     try:
         age = (now or time.time()) - os.path.getmtime(end_record)

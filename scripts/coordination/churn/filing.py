@@ -445,35 +445,31 @@ def deferred_dir(flags):
     return os.path.join(flags, "reclaim-deferred")
 
 
-def defer_reclaim(flags, rid, successor, log=print):
-    """AK 2026-11-24 (r5 logs lost at r6 publish): a superseded row's evidence is NOT reclaimed at supersede time. Record a marker;
-    run_deferred_reclaims reclaims once rid is FILED and the successor's smoke has passed."""
-    d = deferred_dir(flags)
-    os.makedirs(d, exist_ok=True)
-    tmp = os.path.join(d, f".{rid}.json.tmp{os.getpid()}")
-    with open(tmp, "w") as fh:
-        json.dump({"id": rid, "successor": successor, "at": now_iso()}, fh)
-    os.replace(tmp, os.path.join(d, rid + ".json"))
-    log(f"RECLAIM-DEFER {rid}: unfiled/fail evidence kept until FILED (and successor {successor} smoke PASS)")
-
-
-def defer_keep_failed(flags, rid, verdict):
-    """Marker for a FAIL*/FUTILITY* row whose logs reclaim_row kept; run_deferred_reclaims re-runs reclaim once the hold ends."""
+def defer_reclaim(flags, rid, successor=None, log=print, *, kind="superseded", verdict=None):
+    """Record deferred reclaim; keep-failed markers never overwrite an existing deferral."""
     d = deferred_dir(flags)
     mp = os.path.join(d, rid + ".json")
-    if os.path.exists(mp):
+    if kind == "keep_failed" and os.path.exists(mp):
         return
     os.makedirs(d, exist_ok=True)
     tmp = os.path.join(d, f".{rid}.json.tmp{os.getpid()}")
+    rec = {"id": rid, "kind": kind, "at": now_iso()}
+    if kind == "keep_failed":
+        rec["verdict"] = verdict
+    else:
+        rec["successor"] = successor
     with open(tmp, "w") as fh:
-        json.dump({"id": rid, "kind": "keep_failed", "verdict": verdict, "at": now_iso()}, fh)
+        json.dump(rec, fh)
     os.replace(tmp, mp)
+    if kind != "keep_failed":
+        log(f"RECLAIM-DEFER {rid}: unfiled/fail evidence kept until FILED (and successor {successor} smoke PASS)")
 
 
 def run_deferred_reclaims(flags, no_reclaim_globs=None, log=print):
     """Reclaim every deferred row whose predecessor is FILED and whose successor's smoke passed (dryrun/<succ>/PASS.json) or
     is itself filed. Never raises. -> list of reclaimed ids."""
     done = []
+    ended_index = None
     try:
         if no_reclaim_globs is None:
             no_reclaim_globs = read_no_reclaim(flags)
@@ -489,7 +485,9 @@ def run_deferred_reclaims(flags, no_reclaim_globs=None, log=print):
             if rec.get("kind") == "keep_failed":
                 import keep_failed
                 _ep, _rc, _l = load_end(flags, rid)
-                if _ep is not None and keep_failed.hold_active(flags, rid, _ep):
+                if _ep is not None and ended_index is None:
+                    ended_index = keep_failed.ended_successor_index(flags)
+                if _ep is not None and keep_failed.hold_active(flags, rid, _ep, ended_index=ended_index):
                     continue
             elif not (succ and (os.path.exists(os.path.join(flags, "dryrun", succ, "PASS.json")) or is_filed(flags, succ))):
                 continue
