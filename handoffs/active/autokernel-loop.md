@@ -5326,6 +5326,7 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92鈥
   - *Trigger (intake-kspec-1125 M3, no checkbox):* once AK-MECH-WITNESS-1 lands, scan the stored keep and drop rows for a stated mechanism and the counter that would have tested it, before any decision to enforce the witness (intake-2958).
 - [ ] **AK-GATE-HELD-DECLS-1** [inference] Generate the held gate rows from their declarations with ak_gate / mk_ak_row gate new once the gate features they need land
       路 done when: each of q38fn-hostdepth-gate, q8ip-ctxfix-gate, vattn-rf7-gate, ak-cpu-aa-calibration-q-a3b and ak-fused-decode-negctl-cpu declarations is a published row or declined with a reason under this box
+      路 stop: stop-on-answer when the gate row files every listed declaration is a published row or declined with a reason; stop-on-futility on a declaration the ak_gate harness cannot express after two harness releases (report the gap); gate-class = futility-only
       路 gate: none        路 inputs: `/mnt/raid0/llm/tmp/q38fn-hostdepth-gate-decl-20261125.md` `/mnt/raid0/llm/tmp/q8ip-ctxfix-gate-decl-20261125.md` `/mnt/raid0/llm/tmp/vattn-rf7-gate-decl-20261125.md` `/mnt/raid0/llm/tmp/ak-cpu-aa-calibration-q-a3b-20261124-decl.md` `/mnt/raid0/llm/tmp/ak-fused-decode-negctl-cpu-20261124-decl.md`
       路 owner: autokernel
 
