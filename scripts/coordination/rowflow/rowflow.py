@@ -11256,8 +11256,10 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
         if not own_exit and ls_.get("ids") and n >= 1 and not sm:
             exits = [iso_epoch((load_json(smoke_exited_path(flags, i)) or {}).get("exited_at")) for i in ls_["ids"]]
             seen_kfd = iso_epoch(last_kfd) if last_kfd else None
-            own_exit = all(e is not None for e in exits) and not any(proc_alive(x) for x in ls_.get("pids") or []) and (
+            own_exit = all(e is not None and time.time() - e <= SMOKE_EXIT_FRESH_S for e in exits) and not any(proc_alive(x) for x in ls_.get("pids") or []) and (
                 seen_kfd is None or seen_kfd <= max(exits))
+            if own_exit and n == 1:
+                log(f"GPU-QUIET one sample after own smoke {','.join(ls_['ids'])}")
         need = 1 if own_exit else GPU_QUIET_SAMPLES
         keep = {"last_owner": lo} if lo and 1 <= n < need else {}
         if sm:

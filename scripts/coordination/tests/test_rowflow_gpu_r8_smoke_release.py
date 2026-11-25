@@ -152,12 +152,12 @@ class R8Tests(unittest.TestCase):
             self.assertIn(rid, rf.running_smoke_gpu_occupants(self.flags, {"pids": {os.getpid(): 1}}))
 
     # ---- (5) quiet sampling after the keeper's own smoke
-    def _gate(self, occ, sm):
+    def _gate(self, occ, sm, log=lambda m: None):
         with mock.patch.object(rf, "gpu_occupancy", return_value=occ), \
                 mock.patch.object(rf, "running_smoke_gpu_occupants", return_value=sm), \
                 mock.patch.object(rf, "gpu_foreign", return_value=([], 0)), \
                 mock.patch.object(rf, "state_dir", return_value=self.flags):
-            return rf.gpu_quiet_gate(self.flags, [], {}, lambda m: None, set())
+            return rf.gpu_quiet_gate(self.flags, [], {}, log, set())
 
     def test_one_sample_after_own_smoke_exit(self):
         rid = "s1"
@@ -166,6 +166,18 @@ class R8Tests(unittest.TestCase):
         self.assertIn("held by smoke", self._gate({"pids": {dead: 1}}, {rid: {"pids": [dead], "until": None}}))
         time.sleep(1.1)
         rf.atomic_json(rf.smoke_exited_path(self.flags, rid), {"id": rid, "exited_at": rf.now_iso()})
+        messages = []
+        self.assertIsNone(self._gate({"pids": {}}, {}, messages.append))
+        self.assertIn("GPU-QUIET one sample after own smoke s1", messages)
+
+    def test_stale_smoke_exit_requires_two_samples(self):
+        rid = "s-stale"
+        os.makedirs(rf.dry_dir(self.flags, rid))
+        self._gate({"pids": {123: 1}}, {rid: {"pids": [123], "until": None}})
+        rf.atomic_json(rf.smoke_exited_path(self.flags, rid), {"id": rid, "exited_at": "2000-01-01T00:00:00Z"})
+        messages = []
+        self.assertIn("device quiet 1/2", self._gate({"pids": {}}, {}, messages.append))
+        self.assertFalse(any("one sample after own smoke" in m for m in messages))
         self.assertIsNone(self._gate({"pids": {}}, {}))
 
     def test_two_samples_without_exit_receipt(self):
