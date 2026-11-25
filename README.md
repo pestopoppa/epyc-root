@@ -33,9 +33,9 @@ The codebase is split across four sibling repos; this one is governance-only.
 | [epyc-orchestrator](https://github.com/pestopoppa/epyc-orchestrator) | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration: multi-model llama-server fleet, AutoPilot, routing, REPL, MemRL |
 | [epyc-inference-research](https://github.com/pestopoppa/epyc-inference-research) | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, 79K-question eval pool across 38 suites, model registry |
 | [epyc-web](https://github.com/pestopoppa/epyc-web) | `/mnt/raid0/llm/epyc-web` | AMD AI Lab website and GitHub Pages publication |
-| [llama.cpp](https://github.com/pestopoppa/llama.cpp) (fork) | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork — production branch `production-consolidated-v9`, **frozen** at `0db32c06e` |
+| [llama.cpp](https://github.com/pestopoppa/llama.cpp) (fork) | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork — production branch `production-consolidated-v10`, **frozen** at `ffc1bac82` (served from the kernel store `kernels/production/{cpu,gpu}`) |
 
-Production runs **one** kernel. `production-consolidated-v9` is frozen and is never patched in place — new kernel work happens on `llama.cpp-experimental` branches and is promoted as a new version. `scripts/session/verify_llama_cpp.sh` enforces the current production branch, commit, version, and binary digests.
+Production runs **one** kernel. `production-consolidated-v10` is frozen and is never patched in place — new kernel work happens on `llama.cpp-experimental` branches and is promoted as a new version. `scripts/session/verify_llama_cpp.sh` enforces the current production branch, commit, version, and binary digests.
 
 `scripts/clone-repos.sh` sets up `/workspace/repos/<name>` symlinks pointing to the canonical paths above.
 
@@ -47,6 +47,7 @@ The two most recent months. The running record is [`progress/`](progress/); what
 
 | Date | Win | Where to read |
 |---|---|---|
+| 2026-09-22 | **`production-consolidated-v10` frozen** at `ffc1bac82` (version `10303`) — the first production kernel served from the kernel store rather than the tree's own build dirs; v9 is the rollback anchor | [final freeze attestation](artifacts/operator/ratify_v10_final_freeze_20260922.json) |
 | 2026-08-11 | **`production-consolidated-v9` frozen** at `0db32c06e` (version `10125`) after complete v8 comparison, production-named GPU certification, and exact Q8 DSpark cap-0/cap-3 parity. The Qwen3.6-27B Q8 DFlash lane remains disabled: 2.458× speed but 35.954% acceptance, below its 60% lineup floor | [final freeze attestation](artifacts/operator/ratify_v9_final_freeze_20260811.json) |
 | 2026-07-26 | **`production-consolidated-v8` frozen** at `67a433bf4` (`llama-server` version `10107`) — a *capability* release (Laguna arch, iqk IQ2/IQ3, DFlash thread-safety), not a performance one. Paired quality gate: worker and architect each ran 200 MMLU-Pro + 195 GPQA on v7 and v8 with zero errors; both exact ties | [progress/2026-07/2026-07-26.md](progress/2026-07/2026-07-26.md) |
 | 2026-07-21 | **Eval instrument overhaul** — question pool rebuilt from 53k questions / 21 suites to 79k / 41; B7 scorer ratified; real-confidence gating landed | [handoffs/active/eval-tower-architecture-audit-2026-07-20.md](handoffs/active/eval-tower-architecture-audit-2026-07-20.md) |
