@@ -296,7 +296,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: `pytest -q tests/coordination/test_taskflow_needs_brief_tag.py`
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **GNX-REINDEX** [non-inference] Keep the gitnexus index fresh: scripts/gitnexus-reindex.py publishes keeper rows (host / q3-pocket options) when the index is stale
+- [x] **GNX-REINDEX** [non-inference] Keep the gitnexus index fresh: scripts/gitnexus-reindex.py publishes keeper rows (host / q3-pocket options) when the index is stale ✅ 2026-11-25 [no-belief: software] codex lane cxd-gnx-reindex-20261125T1444: 0ca0e62bb on origin/main, dispatcher re-ran `-m pytest -q -p no:cacheprovider tests/gitnexus/test_gitnexus_reindex.` r
       · done when: python3 scripts/gitnexus-reindex.py check reports fresh after a keeper-run reindex
       · gate: none
       · tier: sonnet   · owner: pipeline-mgmt
