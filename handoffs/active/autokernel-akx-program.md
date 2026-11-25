@@ -28,6 +28,10 @@
       · gate: none
 
 > Folded from `handoffs/active/autokernel-cross-workload-keep-gate.md` @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5; retired row INF-75 → INF-65). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **SERVED-27B-UB-DEEPCTX-1** [inference] Decide whether ub2048 is safe for the served 27B at deep context, given its worse max stall (6.87 vs 3.87 s, 127 vs 6 gaps > 2 s)
+      · done when: row ak-27b-served-ub-deepctx-gpu-20261125 files its verdict under this box with max stall, >2 s gap count, p95 ITL and per-user tok/s per arm
+      · gate: ak-27b-served-ub-deepctx-gpu-20261125
+      · owner: autokernel
 
 ### AutoKernel Cross-Workload Keep Gate — census, blast-radius screen, multi-workload non-regression
 

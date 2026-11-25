@@ -1934,6 +1934,10 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · done when: both columns added to the table under KV-EVICT-COST-1 with per-device break-even length or NO-GO recorded under this box
       · gate: KV-EVICT-COST-1        · inputs: `handoffs/active/kv-cache-program.md`
 - Monitor (intake-ak-1124 M6, operator-approved 2026-11-24, no checkbox): If KV-EVICT-COST-2 records a break-even length for the compressor/agent split on some device: probe a concurrent CPU-quarter compressor with the GPU agent for latency (intake-2875).
+- [ ] **Q8IP-DET2-GATE-1** [inference] Gate DET2, a cheaper deterministic V5 q8ip half-tile reduction, against served atomics
+      · done when: row ak-c22-q8ipdet2-gate-gpu-20261125 files KEEP / FAIL_PERF_REGRESS / FAIL_* with mismatch counts and ms/round CI
+      · gate: ak-c22-q8ipdet2-gate-gpu-20261125        · inputs: `/mnt/raid0/llm/tmp/q8ip-second-ctx-mechanism-20261125.md`
+      · owner: autokernel
 
 
 ## Track: heterogeneous-slot-fabric-residency

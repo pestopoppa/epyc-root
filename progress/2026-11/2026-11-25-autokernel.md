@@ -97,3 +97,36 @@ C22 keep inputs: `/mnt/raid0/llm/tmp/c22-keep-list-20261125.md`. No fold was sta
 - **Not filed (no RESULT):** `ak-opperf-cal-27b-gpu-20261125-r3` ended without a RESULT. The other unfiled rows have not ended yet.
 
 Next: autokernel — fix the devhandoff d-draft-off witness leak and re-gate; land the host-depth get_prev_tokens fix and its gate.
+
+---
+
+# Wrap-up 3 — ~11:15Z onward (autokernel, subagent)
+
+## Rows filed this window
+| Row | Verdict |
+|---|---|
+| ak-q38fn-cpu-skinny-balance-greedy-20261125 | KEEP +0.4 % [1.0006, 1.0074], digests identical (C22 keep list, not folded) |
+| ak-q38fn-cpu-upgate-slab-greedy / -mtp, ak-q38fn-cpu-skinny-balance-mtp | DROP (CIs straddle 1) |
+| ak-q38fn-cpu-conv-state-fwd-20261125 | DROP by rule, effectively inconclusive (sd 0.128, host contention) |
+| ak-cpu-a3b-barrier-elide-20261125-r5 | DROP 0.9993 [0.9962, 1.0024]: old +0.6-0.8 % was harness arm bias |
+| ak-27b-tail-fuse2-gate-gpu-20261124-r4 | FUTILITY_WITNESS (row witness-parser bug); lever paused (two-strike) |
+| ak-c22-q8ip-det-gate-gpu-20261125-r2 | FAIL_PERF_REGRESS: 0 vs 9 mismatches but -6.1 % |
+| ak-27b-served-ub-arrival-sweep-gpu-20261125-r2 | SCREENED, ub2048 wins Poisson headlines; replay: max stall 6.87 vs 3.87 s, 127 vs 6 gaps > 2 s; do NOT apply pending ak-27b-served-ub-deepctx-gpu-20261125 |
+| ak-q8-hbm-knee-map-gpu-20261125 | LEVER_THROTTLE_NEEDS_KERNEL: knee 16 KB/CU, 89 % at 67 MB, WG count does not help |
+| ak-q38fn-cpu-hostdepth-perf-20261125 | ATTRIBUTED to get_prev_tokens (O(context)) |
+
+## Findings
+- V5 nondeterminism = float atomics with >= 3 contributors (`/mnt/raid0/llm/tmp/q8ip-second-ctx-mechanism-20261125.md`); "second context" was a red herring. DET for identity/AA arms only.
+- HBM knee and the q8wt / knee-batch road: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md`.
+- Gate-harness lesson: hand-built rows failed most smokes; shared `ak_gate` + `mk_ak_row gate new` now generates gate rows.
+
+## Journal
+- epyc-inference-research `a289cbcb6`: `scripts/kernel_rnd/autokernel/loop/program.md` "Learnings 2026-11-25" + 12 unkeyed negatives in `seeds/negatives.json` (unkeyed cap 12 -> 24, operator-approved).
+
+## Handoffs
+- Ticked (belief cc): AK-CPU-A3B-BARRIER-ELIDE, Q38FN-CPU-MOE-GEMV-1, SERVED-27B-UB-ARRIVAL-SWEEP, Q8-GEMV-85PCT-1, GPU-27B-SECOND-CONTEXT-NONDET.
+- Added: Q8-GEMV-Q8WT-1, Q8-GEMV-KNEE-BATCH-1 (rocm-kernel-authoring), Q8IP-DET2-GATE-1 (kv-cache-program), SERVED-27B-UB-DEEPCTX-1 (akx-program), AK-GATE-HELD-DECLS-1 (autokernel-loop).
+- Stale gates fixed: DEV-SELECT-1 / DEV-INJECT-1 gate r6 -> r7; tail-fuse2 note now names r4 and the pause.
+- In flight: smallop-fuse2 r2, q8ipdet2, ub deepctx, dtree-headroom-replay, two contamination r2 rows, iqk-q8-decode r3; q8wt and knee-batch kernels building.
+
+Next: autokernel — file the in-flight rows as they end; fold the C22 keep list once every lever row is filed.
