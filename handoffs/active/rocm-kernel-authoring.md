@@ -1242,11 +1242,13 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · done when: a pytest under epyc-inference-research scripts/kernel_rnd/autokernel/loop/ passes on origin/main and covers an over-peak row (flagged), a row with bytes 3x the analytic footprint (flagged) and a plausible row (not flagged), using the existing testdata/census/verify_roofline.RESULT.json fixture
       · gate: none        · inputs: `handoffs/active/rocm-kernel-authoring.md`
 - [ ] **Q8-GEMV-Q8WT-1** [inference] Build and gate the design-6 q8wt served 27B Q8_0 weight GEMV that holds 16 KB/CU in flight per workgroup (the measured HBM knee)
+      · est: 5400 s (provisional, re-booked from the smoke)
       · done when: row verdict (KEEP_Q8WT / NO_KEEP / FAIL_* / FUTILITY_*) filed under this box with op GB/s and % of 1638 vs V5I, KLD and e2e ms/round CI
       · stop: stop-on-answer when the gate row files KEEP_Q8WT / NO_KEEP / FAIL_CORRECTNESS; stop-on-futility on FUTILITY_BELOW_FLOOR (look at block 4, every CI upper < 1.0) or FUTILITY_HARNESS_*; gate-class = futility-only
       · gate: ak-c22-q8wt-gate-gpu-20261125-r3        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md`
       · owner: autokernel
 - [ ] **Q8-GEMV-KNEE-BATCH-1** [inference] Build and gate the knee-batch q8 GEMV variant that batches GEMV-sized launches to reach the >= 67 MB buffer regime (89 % of 1638)
+      · model: Qwen3.8-27B Q8_0 + DFlash2-Q8_0 (served V5I) · quant_build: gpu-20261125-fbeb23c45-c22kneebatch · est: 4200 s (provisional, re-booked from the smoke)
       · done when: row verdict (KEEP / NO_KEEP / FAIL_* / FUTILITY_*) filed under this box with op GB/s, % of 1638, KLD and run path
       · stop: stop-on-answer when the gate row files a KEEP_<arm> / NO_KEEP / FAIL_CORRECTNESS verdict; stop-on-futility on FUTILITY_BELOW_FLOOR at the 3-block look or FUTILITY_HARNESS_*; gate-class = futility-only
       · gate: ak-c22-knee-batch-gate-gpu-20261125-r3        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md`
