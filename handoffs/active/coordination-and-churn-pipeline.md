@@ -2599,7 +2599,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: 5 consecutive Codex lanes each record their own done-when test rc (cores 84-87) and a serialized_push PUSH VERIFIED in the lane receipt, with no Claude test/push step
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-REPLAY-RECEIPT-ENFORCE** [non-inference] Flip PREFLIGHT_ENFORCE replay_receipt to enforcing and update the 3 tests in test_ak_gate.py that assert it is off
+- [x] **PM-REPLAY-RECEIPT-ENFORCE** [non-inference] Flip PREFLIGHT_ENFORCE replay_receipt to enforcing and update the 3 tests in test_ak_gate.py that assert it is off ✅ 2026-11-25 [no-belief: software] 458afc89e preflight replay_receipt=True; test_ak_gate/test_rowflow_preflight/family_strikes pass on main (pipeline-mgmt rerun 125 passed)
       · done when: pytest scripts/coordination/tests/test_ak_gate.py passes with replay_receipt enforcing
       · gate: none
       · owner: pipeline-mgmt
