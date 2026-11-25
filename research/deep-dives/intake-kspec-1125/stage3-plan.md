@@ -189,7 +189,7 @@ Brief: where `epyc-orchestrator:scripts/validate/template_provenance.py`, `epyc-
 - **`handoffs/active/autokernel-loop.md`**, after the AK-MMQ-SK2 *Knowledge (intake-ak-1123 K2, no checkbox)* line:
 
 ```text
-  - *Knowledge (intake-kspec-1125 K1, no checkbox):* PR #32921's column-tile-outermost stream-k walk (intake-2956) is a no-op on served gfx90a shapes: np4 verify M=36 picks J=48, so each tensor has one column tile and the new order equals the old; Q8_0 above 128 columns goes to rocBLAS (mmq.cu L346-L362 @ 98ff8a4); its J == 128 gate cannot fire on CDNA. G17's WGM remap moved the other way (more weight bands live at once), so its negative does not predict this lever. On EPYC, iqk already sweeps all activation columns per 64-row weight step. The HIP DPP scan of PR #32867 (intake-2962) has no served consumer: its one caller is CUMSUM, which the fused GDN ops do not emit.
+  - *Knowledge (intake-kspec-1125 K1, no checkbox):* PR #32921's column-tile-outermost stream-k walk (intake-2956) is a no-op on served gfx90a shapes: np4 verify M=36 picks J=48, so each tensor has one column tile and the new order equals the old; Q8_0 above 128 columns goes to rocBLAS (mmq.cu L346-L362 @ 98ff8a4); its J == 128 gate cannot fire on CDNA. G17's WGM remap moved the other way (more weight bands live at once), so its negative does not predict this lever. On EPYC, iqk already sweeps all activation columns per 64-row weight step. The HIP DPP scan of PR #32867 (intake-2962#00) has no served consumer: its one caller is CUMSUM, which the fused GDN ops do not emit.
 ```
 
 - **`handoffs/active/quantization-and-low-bit.md`**, after the QUANT-ROT-1 box block:
@@ -207,7 +207,7 @@ Brief: where `epyc-orchestrator:scripts/validate/template_provenance.py`, `epyc-
 - **M1, `handoffs/active/rocm-kernel-authoring.md`**, after the VERIFY-KERNEL-ROOFLINE-CENSUS-1 result note:
 
 ```text
-  - *Trigger (intake-kspec-1125 M1, no checkbox):* (a) if Q8_0 dense prefill is ever routed to MMQ on gfx90a, port PR #32921's column-outer order behind a CDNA J=64 gate as the first lever, judged on wall clock, not on L2 hit rate (intake-2956); (b) when a counter row next profiles MMQ Q8_0 at 9-128 columns on CDNA2, record the VALU share of the per-32 scale epilogue (mmq-vec-dot.cuh L197 @ 98ff8a4) against MFMA busy (intake-2957); (c) if this census shows the stock GDN recurrent kernel's reductions at 3% of the step or more, screen PR #32867's DPP warp_reduce_sum there, and if backend sampling is turned on for a GPU role, time CUMSUM over the vocabulary on gfx90a first (intake-2962).
+  - *Trigger (intake-kspec-1125 M1, no checkbox):* (a) if Q8_0 dense prefill is ever routed to MMQ on gfx90a, port PR #32921's column-outer order behind a CDNA J=64 gate as the first lever, judged on wall clock, not on L2 hit rate (intake-2956); (b) when a counter row next profiles MMQ Q8_0 at 9-128 columns on CDNA2, record the VALU share of the per-32 scale epilogue (mmq-vec-dot.cuh L197 @ 98ff8a4) against MFMA busy (intake-2957); (c) if this census shows the stock GDN recurrent kernel's reductions at 3% of the step or more, screen PR #32867's DPP warp_reduce_sum there, and if backend sampling is turned on for a GPU role, time CUMSUM over the vocabulary on gfx90a first (intake-2962#00).
 ```
 
 - **M1, `handoffs/active/quantization-and-low-bit.md`**, after the K1 note under QUANT-ROT-1:
