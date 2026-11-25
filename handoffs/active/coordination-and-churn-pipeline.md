@@ -2504,7 +2504,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: publish_row refuses a fixture row with a missing model path via the rehearsal, covered by a unit test
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-RULES-WARN-FIRST** [non-inference] Make every new keeper rule land warn-only with a count of queued rows it would fail, enforced only once that count is zero, with a rule freeze during AK pushes
+- [x] **PM-RULES-WARN-FIRST** [non-inference] Make every new keeper rule land warn-only with a count of queued rows it would fail, enforced only once that count is zero, with a rule freeze during AK pushes ✅ 2026-11-25 [no-belief: software] codex lane cxd-pm-rules-warn-first-20261125T1428: c36bd54a4 on origin/main, dispatcher re-ran `-m pytest -q -p no:cacheprovider scripts/coordination/tests -k ru
       · done when: rowflow has a rule registry where each rule carries mode warn|enforce and the keeper SNAPSHOT reports would-fail counts, covered by a unit test
       · gate: none
       · owner: pipeline-mgmt
