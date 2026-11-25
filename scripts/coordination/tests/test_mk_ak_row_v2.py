@@ -102,8 +102,9 @@ def test_gpu_scaffold_regions_pass_publish_check(tmp_path, monkeypatch, profile)
         assert MK.polar_main(args, fetch=lambda *a: ("abc", {"gpu_common.py": b"", "gpuproof_row.py": b""})) == 0
         spec = json.loads((tmp_path / "ak-polar-gpu-20261125" / "spec.json").read_text())
     assert spec["futility"] == {"rule": "stop on witness miss"}
-    assert spec["regions"] == "mi210_0,88-95,184-191"
-    assert spec["claim_cpus"] == MK.GPU_HOST_CLAIM
+    claim = "184-191" if profile == "default" else MK.GPU_HOST_CLAIM
+    assert spec["regions"] == "mi210_0," + claim
+    assert spec["claim_cpus"] == claim
     refusals = PR.rehearse(spec, str(flags))
     assert not any("gpu regions must name mi210_0" in item for _, item, _ in refusals)
 

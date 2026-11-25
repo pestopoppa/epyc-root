@@ -525,7 +525,7 @@ def scaffold(a, served=None):
     if a.claim is not None and not CLAIM_RX.match(a.claim):
         raise SystemExit(f"mk_ak_row: --claim {a.claim!r} must be a digit/range list like 184-191 or 0-3,8")
     # CPU lane without an explicit --claim: no C= and no --claim-cpus, so the launcher defaults to the grant's cpus
-    claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else GPU_HOST_CLAIM)
+    claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else "184-191")
     regions = "mi210_0," + claim if a.lane == "gpu" else claim
     pin = a.claim is not None or a.lane != "cpu"
     claim_line = "C=${WS58_CPUS:-%s}\n" % claim if pin else ""
@@ -623,7 +623,7 @@ sys.exit(0 if r.get("complete") is True and v and "polar" in r and not v.startsw
          else 1)
 '''
 
-GPU_HOST_CLAIM = "88-95,184-191"   # the MI210's host threads (SMT pair): spec.regions = "mi210_0," + this, as published GPU rows
+GPU_HOST_CLAIM = "88-95,184-191"   # timing rows reserve the MI210 host threads and their SMT pair
 
 
 GATE_FRESH_REASON = ("ak_gate: one fresh server per arm visit (resident-server arm bias: the first OFF arm ran slow; "
@@ -1588,7 +1588,7 @@ def polar_scaffold(a, fetch=None) -> int:
         print(f"REFUSED: {just}")
         return 1
     os.makedirs(os.path.join(d, "out"))
-    claim = GPU_HOST_CLAIM if a.lane == "gpu" else a.regions
+    claim = (GPU_HOST_CLAIM if cpus(a.regions) & set(range(88, 96)) else "184-191") if a.lane == "gpu" else a.regions
     regions = "mi210_0," + claim if a.lane == "gpu" else claim
     fmt = dict(id=a.row_id, owner=a.owner, handoff=a.handoff, box=a.box, threads=a.threads, dir=d,
                regions=claim, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units or '?', unit_s=a.unit_s or '?', gpu_block="",
