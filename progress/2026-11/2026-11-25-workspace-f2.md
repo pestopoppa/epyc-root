@@ -36,3 +36,16 @@
 - loop owner: install the serving-knob seed in the live store; route serving-knob hypotheses past critic/author.
 - operator: A3B registry `recipe` block (stack-change package); host-RAM budget for CPU knob screens; A3B KLD ratification.
 - Vidya: live `ingest ak-bw-census` (needs the canonical-ledger owner flag).
+
+## 2026-11-25 (later) — intake routing, 1638 GB/s ceiling, two code boxes
+| Item | Commits | Result |
+|---|---|---|
+| Research intake intake-kspec-1125 (15 sources + 11 expansions, 11 dives) | root 65c5bee6e, aa0954a96, 4216f6b16, d4838a312, df2b2a07c | operator-approved Stage 4: 5 boxes, notes, 6 declines |
+| Routing (operator) | — | AK: AK-MMQ-SK2-CENSUS, DTREE-HEADROOM-REPLAY (fold into queue); Autopilot (workspace-bb): EV-DATE-PIN-1 building; seeds: research dd36a3dcd (7 low-ROI) |
+| MI210 ceiling 1638 GB/s (operator via pipeline-mgmt ~10:40Z) + AK-BW-CENSUS-GPU-SERVED-BASELINE | research 82030c59b, 649633226, 507a32254; root 231cf50a0, 6f1d4e98e, edcc382f3, bf4c5b531, 7f8d16b3d | ticked (Fable 4/4); committed census reconciled to live (94 -> 244); follow-ups AK-BW-CENSUS-27B-STEP-REBASE, AK-BW-CENSUS-R2-NOTSERVED-CLASSES |
+| AK-MECH-WITNESS-1 (D9 approved) | root 847a191fa, 0f358fe03, b506e2d78; tick 4ea0eb292 | ticked after 3 Fable rounds; sweep 353/625 warn, explicit-keep missed 1/294 |
+| VKRC-BYTES-PLAUSIBLE | research e182d4688, bd2694353, 04405da00; tick 86e1b5b8d | ticked after 3 Fable rounds; r2 BYTES-CHECK 114 rows, 0 flagged, 69 unknown |
+| Policy: subagents pin every command to 84-87 under load | root a4c4bdb02 (Operator-Ratified) | in OPERATING_CONSTRAINTS |
+
+Incident (mine): the intake subagent's unpinned `validate_intake.py` contaminated an AK C22 CPU measurement (re-pinned; policy above).
+Open: AK owns the two folded items and the R2-NOTSERVED decision; unlanded local research commit 84b45a34b (DTREE replay) is AK's.
