@@ -552,6 +552,12 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
   - **Lever gates.** A gate that advances the champion runs on the standard harness: one request at a
     time on an np1 server, greedy decoding (temperature 0, top_k 1), the candidate store against the
     current champion store, and N sized from single-request noise.
+  - **Quarter-shaped and concurrent.** Paired interleaved lever gates run quarter-shaped and concurrent;
+    `requires_quiet_host` is reserved for absolute floors/calibrations (operator 2026-11-25). Each row books
+    one quarter: taskset on its 24 cores plus their SMT siblings, `numactl --membind` to its node, and `-t 24`.
+    It runs with no DRAM-wide quiet guard. Neighbour contention hits every arm in a block alike, so it cancels
+    out of the paired ratio. The A/A arm measures what is left: contention ends a row only when the A/A arm
+    drifts by more than twice the CI half-width.
   - **Served-config rows.** Rows that run the served recipe (np4, official sampling, the registry
     argv) are a separate track. They collect serving specs: floors, served tok/s and recipe tuning.
     Never use them, or the noise they measure, to size or judge a lever gate.
