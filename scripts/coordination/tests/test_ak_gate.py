@@ -1249,7 +1249,8 @@ def test_smoke_identity_aa_uses_full_judge(tmp_path):
     result = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
     assert result["verdict"] == "FUTILITY_HARNESS_NONDET"
     assert "correctness[identity]" in result["fix"]
-    assert seen == [("OFF", 0), ("OFF2", 0), ("ON", 0)]
+    assert seen == [("OFF", 0), ("OFF2", 0), ("OFF", 1), ("OFF2", 1)]
+    assert result["nondet_prompts_checked"] == "2/2"
 
 
 def test_smoke_kld_missing_binary_is_harness_failure(tmp_path):
@@ -1334,16 +1335,22 @@ def test_fullsmoke_replay_uses_correctness_ledger(tmp_path, nondet):
 
 
 @pytest.mark.parametrize("version,first_difference", [("r2", 4), ("r3", 1)])
-def test_real_pando_one_prompt_cannot_replay_later_aa_divergence(version, first_difference):
+def test_real_pando_smoke_detects_later_aa_divergence(version, first_difference):
     row = "ak-dtree-pando-gate-gpu-20261125-" + version
     records = json.load(open(os.path.join(FIX, "fullsmoke", "pando-aa-records.json")))[row]
     arms = {"C21T16": {}, "C21T16B": {}, "ON": {"GGML_HIP_Q8MC": "1"}}
     c = {"kind": "identity", "mode": "server", "n_prompts": 1, "arms": ["C21T16", "C21T16B"]}
     sp = spec(arms=arms, baseline=["C21T16", "C21T16B"], correctness=c)
+    for arm in ("C21T16", "C21T16B"):
+        excerpt = open(os.path.join(FIX, "fullsmoke", "pando-timing", f"{version}-{arm}.log")).read()
+        assert G.re.search(r"eval time.* /\s+256 tokens", excerpt)
+        accepted = G.re.search(r"\(\s*(\d+) accepted /", excerpt).group(1)
+        unit = next(u for u in records if u["arm"] == arm and u["prompt"] == first_difference)
+        assert unit["accepted_sha"] == G.sha_bytes(accepted)[:16]
     first = [u for u in records if u["prompt"] == 0]
     assert G.decide_correctness(G.smoke_spec(sp), first)[0] is None
     c["n_prompts"] = first_difference + 1
-    assert G.decide_correctness(sp, records)[0] == "FUTILITY_HARNESS_NONDET"
+    assert G.decide_smoke_correctness(sp, records)["verdict"] == "FUTILITY_HARNESS_NONDET"
 
 
 def test_real_q8wt_served_witness_replayed_by_smoke(tmp_path):
@@ -1491,3 +1498,31 @@ def test_smoke_tbo_uses_one_filter_per_arm(tmp_path):
     g.run_fn = run
     assert g.smoke() == 0
     assert seen == ["MUL_MAT"] * 3
+
+
+def test_smoke_identity_budget_limits_complete_pairs(tmp_path, monkeypatch):
+    sp = spec(correctness={"kind": "identity", "mode": "server", "n_prompts": 4, "n_predict": 64})
+    sp["workload"]["prompts"] = ["x"] * 4
+    sp["smoke"].update(budget_s=10, identity_n_predict=8)
+    now = [100.0]
+    monkeypatch.setattr(G.time, "time", lambda: now[0])
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    visit = visit_stub(sp, g.out)
+    def timed_visit(*args, **kwargs):
+        now[0] += 1
+        return visit(*args, **kwargs)
+    g.visit_fn = timed_visit
+    seen = []
+    def correctness(uid, kind, arm, extra):
+        seen.append((arm, extra["prompt"], G.corr_of(g.spec, kind)["n_predict"]))
+        now[0] += 1
+        return {"unit_id": uid, "kind": kind, "arm": arm, "prompt": extra["prompt"],
+                "output_sha": "same", "accepted_sha": "same", "draft_sha": "same"}
+    g.run_correctness_unit = correctness
+    assert g.smoke() == 0
+    result = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
+    assert result["nondet_prompts_checked"] == "2/4"
+    assert seen == [("OFF", 0, 8), ("OFF2", 0, 8), ("OFF", 1, 8), ("OFF2", 1, 8)]
+    assert G.smoke_spec(sp)["correctness"]["n_predict"] == 8
+    sp["smoke"]["identity_n_predict"] = 100
+    assert G.smoke_spec(sp)["correctness"]["n_predict"] == 64

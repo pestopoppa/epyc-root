@@ -86,3 +86,12 @@ renamed `HOLD_ADMISSIONS.lifted-symlink` still matched the keeper's `HOLD_*` glo
 Tests: `tests/test_rowflow_nohold_deploy.py` (a real poller on its snapshot survives a broken live engine set; hold
 names), `tests/test_rowflow_backfill_if_fits.py`; replay scenarios `backfill-*` (a strict reservation fails the LSA /
 whole-host incident scenario).
+
+Identity smoke checks the baseline and its repeat for each correctness prompt, subject to
+`smoke.budget_s`. `TERMINAL-smoke.json` reports completed pairs as
+`nondet_prompts_checked` (`checked/total`); incomplete coverage is not evidence that
+unchecked prompts are deterministic. The server identity check normally uses
+`smoke.n_predict` (default 32), capped by correctness `n_predict`. Set the positive
+integer `smoke.identity_n_predict` to request a longer identity check, up to the full
+correctness limit. Longer checks can reduce prompt coverage within the budget. Command-mode
+identity uses its declared command arguments; authors control its token limit there.

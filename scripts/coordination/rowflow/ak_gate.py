@@ -53,7 +53,7 @@ import ak_row_harness as H  # noqa: E402
 
 GATE_VERSION = "1"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 1
+UNIT_SEMANTICS_VERSION = 2
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
 EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke")
@@ -321,6 +321,9 @@ def validate_spec(spec):
     kinds = [c.get("kind") for c in corr_list(spec)]
     if len(kinds) != len(set(kinds)):
         errs.append(f"correctness: one unit per kind (got {kinds})")
+    identity_limit = (spec.get("smoke") or {}).get("identity_n_predict")
+    if identity_limit is not None and (type(identity_limit) is not int or identity_limit < 1):
+        errs.append("smoke.identity_n_predict must be a positive integer")
     for c in corr_list(spec):
         if c.get("argv") and (error := executable_error(c["argv"], f"correctness {c.get('kind')}")):
             errs.append(error)
@@ -764,15 +767,18 @@ def _plan_one(spec, c):
     return [(f"c-id-{a}-p{i}", "c-id", a, {"prompt": i}) for i in range(n) for a in arms]
 
 
-def smoke_spec(spec):
+def smoke_spec(spec, identity_count=None):
     """Reduce repetitions while retaining each declared correctness arm and the full judge."""
     reduced = copy.deepcopy(spec)
     for c in corr_list(reduced):
         if c["kind"] == "identity":
-            c["n_prompts"] = 1
-            c["n_predict"] = min(int(c.get("n_predict") or 64), int((spec.get("smoke") or {}).get("n_predict", 32)))
-            arms = list(c.get("arms") or baseline_arms(spec) + candidate_arms(spec))
-            c["arms"] = list(dict.fromkeys(baseline_arms(spec)[:2] + arms))
+            if identity_count is not None:
+                c["n_prompts"] = identity_count
+            elif not c.get("n_prompts"):
+                c["n_prompts"] = identity_prompt_count(spec, c) or 1
+            sm = spec.get("smoke") or {}
+            c["n_predict"] = min(int(c.get("n_predict") or 64), int(sm.get("identity_n_predict", sm.get("n_predict", 32))))
+            c["arms"] = baseline_arms(spec)[:2]
         elif c["kind"] == "selftest_bin":
             c["runs"] = 1
         elif c["kind"] == "tbo":
@@ -1035,9 +1041,12 @@ def smoke_served_fix(decision):
     return "Check server.argv, smoke.n_predict and smoke.budget_s"
 
 
-def decide_smoke_correctness(spec, units):
+def decide_smoke_correctness(spec, units, identity_count=None):
     """Judge a reduced smoke correctness plan using the full-run correctness judge."""
-    verdict, detail, _ = decide_correctness(smoke_spec(spec), units)
+    reduced = smoke_spec(spec, identity_count)
+    if identity_count == 0:
+        reduced["correctness"] = [c for c in corr_list(reduced) if c["kind"] != "identity"]
+    verdict, detail, _ = decide_correctness(reduced, units)
     if not verdict:
         return {"verdict": "SMOKE_PASS", "polar": "PASS", "terminal": True, "reason": "correctness units passed"}
     kind = detail.get("kind", "unknown")
@@ -1600,8 +1609,24 @@ class Gate:
             original_spec = self.spec
             self.spec = smoke_spec(original_spec)
             correctness = []
+            identity = next((c for c in corr_list(self.spec) if c["kind"] == "identity"), None)
+            total_prompts = int(identity.get("n_prompts") or len(identity_prompts(self.spec, self.d)) or 1) if identity else 0
+            checked = 0
             try:
-                for uid, kind, arm, extra in plan_correctness(self.spec):
+                plan = plan_correctness(self.spec)
+                plan.sort(key=lambda item: item[1] == "c-id")
+                visit_s = max((time.time() - u0) / len(units), 0.001)
+                generation_s = max((float(r.get("predicted_ms") or 0) / 1000
+                                    for u in units for r in (u.get("req") or [])), default=0)
+                ratio = max(1, identity["n_predict"] / int(sm["n_predict"])) if identity else 1
+                pair_estimate = 2 * (visit_s + min(visit_s, generation_s) * (ratio - 1))
+                for uid, kind, arm, extra in plan:
+                    if kind == "c-id" and arm == baseline_arms(self.spec)[0]:
+                        if len(baseline_arms(self.spec)) < 2:
+                            break
+                        if self.smoke_deadline - time.time() < pair_estimate:
+                            break
+                        pair_start = time.time()
                     remaining = self.smoke_deadline - time.time()
                     if remaining <= 0:
                         return H.end_smoke("FAIL", 3, "smoke budget exceeded; adjust smoke.budget_s", self.out)
@@ -1610,10 +1635,17 @@ class Gate:
                     self.spec["server"]["ready_timeout_s"] = min(float(self.spec["server"].get("ready_timeout_s") or 900), remaining)
                     u = self.run_correctness_unit(uid, kind, arm, extra)
                     correctness.append(u)
+                    if kind == "c-id" and arm == baseline_arms(self.spec)[1]:
+                        checked += 1
+                        pair_estimate = max(pair_estimate, time.time() - pair_start)
                     H.append_unit(dict(u, smoke=True, smoke_shape="full", smoke_run_id=smoke_run_id), self.out_smoke)
-                decision = decide_smoke_correctness(original_spec, correctness)
+                coverage = f"{checked}/{total_prompts}"
+                if identity:
+                    H.append_unit({"kind": "smoke-coverage", "gate_unit": True, "smoke_shape": "full",
+                                   "smoke_run_id": smoke_run_id, "nondet_prompts_checked": coverage}, self.out_smoke)
+                decision = decide_smoke_correctness(original_spec, correctness, checked if identity else None)
                 if decision["verdict"] != "SMOKE_PASS":
-                    extra = {"verdict": decision["verdict"], "fix": decision["fix"]}
+                    extra = {"verdict": decision["verdict"], "fix": decision["fix"], "nondet_prompts_checked": coverage}
                     if decision["verdict"].startswith("FUTILITY_HARNESS_"):
                         extra["failclass"] = {"side": "harness"}
                     return H.end_smoke("FAIL", 3, f"{decision['verdict']}: {decision['reason']}", self.out, extra=extra)
@@ -1628,7 +1660,8 @@ class Gate:
             if time.time() - t0 > float(sm["budget_s"]):
                 return H.end_smoke("FAIL", 3, f"smoke took {time.time() - t0:.0f} s > budget {sm['budget_s']} s "
                                               f"(shorten smoke.prompt_chars / n_predict)", self.out)
-            return H.end_smoke("PASS", 0, f"{len(units)} arms: {d['reason']}; {time.time() - t0:.1f} s", self.out)
+            return H.end_smoke("PASS", 0, f"{len(units)} arms: {d['reason']}; {time.time() - t0:.1f} s", self.out,
+                               extra={"nondet_prompts_checked": coverage})
         except Exception as e:  # noqa: BLE001 - the smoke always says why it failed
             return H.end_smoke("FAIL", 3, f"FUTILITY_HARNESS_SERVER: {e.__class__.__name__}: {e}", self.out,
                                extra={"verdict": "FUTILITY_HARNESS_SERVER", "fix": "Check server.argv and smoke.budget_s",
@@ -1866,7 +1899,9 @@ def replay(spec, row_dir, prior, stream=None):
                 d = {"verdict": "INCOMPLETE_SMOKE", "polar": None, "terminal": False,
                      "reason": f"missing smoke visits for arms {missing}"}
             else:
-                d = decide_smoke_correctness(spec, units)
+                coverage = next((u.get("nondet_prompts_checked") for u in units if u.get("kind") == "smoke-coverage"), None)
+                count = int(coverage.split("/")[0]) if coverage else None
+                d = decide_smoke_correctness(spec, units, count)
         else:
             d["fix"] = smoke_served_fix(d)
     if mode == "units" and not d["terminal"] and not [u for u in units if u.get("kind") == "visit"] and \

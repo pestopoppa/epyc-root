@@ -1,0 +1,3 @@
+0.10.955.394 I slot print_timing: id  0 | task 0 | prompt eval time =     516.05 ms /   163 tokens (    3.17 ms per token,   315.86 tokens per second)
+0.10.955.398 I slot print_timing: id  0 | task 0 |        eval time =    2842.46 ms /   256 tokens (   11.10 ms per token,    90.06 tokens per second)
+0.10.955.409 I slot print_timing: id  0 | task 0 | draft acceptance = 0.74825 (  214 accepted /   286 generated), mean len =  6.22
