@@ -1247,6 +1247,12 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · stop: stop-on-answer when the gate row files KEEP_Q8WT / NO_KEEP / FAIL_CORRECTNESS; stop-on-futility on FUTILITY_BELOW_FLOOR (look at block 4, every CI upper < 1.0) or FUTILITY_HARNESS_*; gate-class = futility-only
       · gate: ak-c22-q8wt-gate-gpu-20261125-r3        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md`
       · owner: autokernel
+- [ ] **Q8-GEMV-LEAN-1** [inference] Build and gate the instruction-lean V5I variant (GGML_HIP_Q8_MF=8: no LDS staging, SGPR+immediate addressing, packed scale math; same grid/occupancy/load depth as V5I) for the served 27B Q8_0 weight GEMV, motivated by ak-c22-q8wt-op-diag-gpu-20261125 (V5I issue-bound: issue 0.46, wait_inst 0.51, VALU 29/KB, LDS 11/KB; near over-subscription). Branch llama.cpp-experimental-c22-q8lean-20261125 @ b3365430c; ISA note /mnt/raid0/llm/tmp/q8lean-isa-breakdown-20261125.md.
+      · model: Qwen3.8-27B Q8_0 + DFlash2-Q8_0 (served V5I) · quant_build: store from b3365430c (to build) · est: 5400 s (provisional)
+      · done when: a gate row files KEEP_LEAN / NO_KEEP / FAIL_CORRECTNESS / FUTILITY_* with tbo, KLD and served ms/round CI vs V5I
+      · stop: stop-on-answer when the row files its verdict at block 8; stop-on-futility on the block-4 look (CI upper < 1.01), a witness failure or FUTILITY_HARNESS_*; gate-class = futility-only
+      · gate: none
+      · owner: autokernel
 - [ ] **Q8-GEMV-KNEE-BATCH-1** [inference] Build and gate the knee-batch q8 GEMV variant that batches GEMV-sized launches to reach the >= 67 MB buffer regime (89 % of 1638)
       · model: Qwen3.8-27B Q8_0 + DFlash2-Q8_0 (served V5I) · quant_build: gpu-20261125-fbeb23c45-c22kneebatch · est: 4200 s (provisional, re-booked from the smoke)
       · done when: row verdict (KEEP / NO_KEEP / FAIL_* / FUTILITY_*) filed under this box with op GB/s, % of 1638, KLD and run path
