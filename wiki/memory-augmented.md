@@ -1632,3 +1632,14 @@ Sources: [memory-program M-12k](../handoffs/active/memory-program.md), [custody 
 - [handoffs/active/memory-program.md](../handoffs/active/memory-program.md)
 - [handoffs/active/autopilot-program.md](../handoffs/active/autopilot-program.md)
 - [progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md](../progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md), [2026-11-20-handoff-episodic-memory-integrity.md](../progress/2026-11/2026-11-20-handoff-episodic-memory-integrity.md), [2026-11-19-handoff-repl-session-memory-maturity.md](../progress/2026-11/2026-11-19-handoff-repl-session-memory-maturity.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep 2, agent-memory slice)
+
+- **Memory is what the agent works out and writes down.** Strategy, plans and tested rules exist only if written; state readable each turn need not be stored. For stronger models, freedom to judge salience beat fixed rules set in advance (one run per model, so anecdotal) (intake-2946#00, intake-2946#04).
+- **The injected top layer stays small.** Claude Code loads only the first 200 lines or 25 KB of MEMORY.md; the threshold is stated, not measured. Our memory index was checked at 97 lines and 20,039 bytes, inside the window (intake-2946#01; [dive D](../research/deep-dives/intake-always-on-1124/dive-D-memory-autopilot.md)).
+- **Wikis help only paired with search.** Dreaming-built wikis raised graded criteria from 13% to 48% over 2 to 128 sessions on 25 questions, but search plus wiki scored 54% to 61% versus 53% for search alone, with no gain where one document sufficed; one wiki grew larger than its raw files (intake-2946#03).
+- **One writer per page.** Concurrent writers to one shared page lost facts (41 of 57 survived); one writer per page kept 57 of 57 (intake-2946#05). Dreaming can correct a wrong note against the original transcript, shown on one anecdotal scenario (intake-2946#02).
+- **Sleep-time compute is already indexed** as intake-819; not re-ingested ([dive D](../research/deep-dives/intake-always-on-1124/dive-D-memory-autopilot.md), [digest 2942-2955](../research/deep-dives/intake-digests/2026-11-24-ids-2942-2955.md)).
+
+#### Source References (2026-11-25, operator wiki sweep 2, agent-memory slice)
+- [dive D](../research/deep-dives/intake-always-on-1124/dive-D-memory-autopilot.md), [always-on stage-3 plan](../research/deep-dives/intake-always-on-1124/stage3-plan.md), [digest 2942-2955](../research/deep-dives/intake-digests/2026-11-24-ids-2942-2955.md)
