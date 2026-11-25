@@ -2553,6 +2553,10 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: pytest scripts/coordination/tests/test_rowflow_resumable_window.py passes
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **PM-HOST-DRAIN-NARROW** [non-inference] Enforce a narrow whole-host drain in rowflow (HOST-DRAIN): a grantable host/quiet-host row waiting over 30 min keeps worse-ranked rows off its regions when they would end after its earliest start (operator 2026-11-25 Narrow drain now)
+      · done when: pytest scripts/coordination/tests/test_rowflow_host_drain.py passes and the live keeper runs a sha containing HOST_DRAIN_ENFORCE
+      · gate: none
+      · owner: pipeline-mgmt
 - [x] **AKWASTE-R2** [non-inference] AK waste audit R2: two-strike family park keyed by id_stem (family_strikes.py); publish_row refuses PARKED <stem>; rowflow.py unpark --family logged UNPARK resets; fresh_attempt bypass closed ✅ 2026-11-25 [no-belief: software]
       · done when: test_rowflow_family_strikes.py R2Park passes and the commit is on origin/main and deployed live
       · gate: none
