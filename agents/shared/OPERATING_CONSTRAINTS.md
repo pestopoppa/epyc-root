@@ -541,6 +541,13 @@ including the dispatches whose nudge says nothing about subagents.
   `ionice` onto "spare" cores is not isolation: CPUs 96-191 are the SMT siblings of 0-95, so 160-183 *is*
   physical cores 64-87, and `region-lock` drops sibling CPUs from a `--cpu-list`, so claim the physical cores.
   (origin: INC-20261004-subagent-unlocked-cpu-in-held-window)
+- **Under heavy compute load, a subagent pins EVERY command to the shared test cores (operator, 2026-11-25).**
+  While the production stack is serving or measurement rows are running, every command a subagent runs
+  (validators, scripts, linters, tests, one-off python) runs as `nice -n 19 taskset -c 84-87 <cmd>`,
+  not only test suites; the brief must say so. Builds and self-launched servers still take the
+  `region-lock` claim above. (origin: 2026-11-25, an unpinned `validate_intake.py --check-anchors` from
+  a research-intake subagent ran at 100% CPU on q2 and contaminated an AutoKernel C22 CPU measurement;
+  2026-11-24, an unpinned `pytest loop` idled the MI210 ~20 min)
 - **Every subagent brief states the close-out sequence (operator, 2026-10-21).** Report first; once
   main approves, the subagent ticks the box, writes its agent_log, appends a progress shard,
   updates the relevant handoffs and cleans its task scratch (index rows stay prepare-only, ruling (b)).
