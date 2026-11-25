@@ -139,88 +139,88 @@ copy is at `/mnt/raid0/llm/tmp/ak-bw-census/`.
 
 | Rank | Model | Kernel class | Shape | n | MB/call | µs | GB/s | vs 1 TB/s | vs 1.638 TB/s | calls/round | recoverable ms/round @1.2 | Status | Seed | Source row |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 27b-q8_0 | dense_verify_aggregate_v5i | 27.02GB | 8 | 27020.0 | 25232.4 | 1071 | +71 | -567 | 1 | 2.72 | ok | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 2 | 27b-q8_0 | served_weight_gemv_v5i | served-v5i | 8 | 33159.9 | 30024.3 | 1104 | +104 | -534 | 1 | 2.39 | ok | BW-DENSE-M16 | `ak-27b-served-decode-profile-gpu-20261125` |
-| 3 | 27b-q8_0 | gv_fattn_f16kv | ctx11446 | 8 | 46.9 | 163.1 | 288 | -712 | -1350 | 16 | 1.98 | open_surface | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 4 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 16 | 94.7 | 93.0 | 1018 | +18 | -620 | 128 | 1.80 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 5 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 8 | 94.7 | 90.4 | 1047 | +47 | -591 | 128 | 1.47 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 6 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 4 | 94.7 | 90.1 | 1052 | +52 | -586 | 128 | 1.43 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 7 | 27b-q8_0 | ffn_down_v5i | 5120x17408 | 16 | 94.7 | 93.1 | 1017 | +17 | -621 | 64 | 0.91 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 8 | 27b-q8_0 | attn_kv_v5i | 1024x5120 | 16 | 5.6 | 25.2 | 221 | -779 | -1417 | 32 | 0.66 | open_surface | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 9 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 3 | 94.7 | 84.0 | 1127 | +127 | -511 | 128 | 0.66 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 10 | 27b-q8_0 | ffn_down_v5i | 5120x17408 | 8 | 94.7 | 88.7 | 1067 | +67 | -571 | 64 | 0.63 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 11 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 1 | 94.7 | 83.6 | 1133 | +133 | -505 | 128 | 0.60 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 12 | 27b-q8_0 | ssm_out+attn_output_v5i | 5120x6144 | 16 | 33.4 | 36.9 | 906 | -94 | -732 | 64 | 0.58 | open_surface | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 13 | 27b-q8_0 | attn_kv_v5i | 1024x5120 | 8 | 5.6 | 21.2 | 262 | -738 | -1376 | 32 | 0.53 | open_surface | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 14 | 27b-q8_0 | attn_kv_trace_q8sk | 1024x5120 | 8 | 5.6 | 20.2 | 276 | -724 | -1362 | 32 | 0.50 | open_surface | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 15 | 27b-q8_0 | ffn_down_v5i | 5120x17408 | 4 | 94.7 | 86.5 | 1094 | +94 | -544 | 64 | 0.49 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 16 | 27b-q8_0 | gdn_attn_qkv_v5i | 10240x5120 | 16 | 55.7 | 56.1 | 993 | -7 | -645 | 48 | 0.46 | open_surface | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 17 | 27b-q8_0 | ffn_down_v5i | 5120x17408 | 1 | 94.7 | 86.1 | 1100 | +100 | -538 | 64 | 0.46 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 18 | 27b-q8_0 | gdn_attn_gate_v5i | 6144x5120 | 16 | 33.4 | 36.6 | 913 | -87 | -725 | 48 | 0.42 | open_surface | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 19 | 27b-q8_0 | ffn_down_v5i | 5120x17408 | 3 | 94.7 | 85.4 | 1108 | +108 | -530 | 64 | 0.42 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 20 | 27b-q8_0 | ssm_out+attn_output_v5i | 5120x6144 | 8 | 33.4 | 34.2 | 976 | -24 | -662 | 64 | 0.41 | open_surface | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 21 | 27b-q8_0 | gdn_attn_gate_v5i | 6144x5120 | 8 | 33.4 | 35.6 | 939 | -61 | -699 | 48 | 0.37 | open_surface | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 22 | 27b-q8_0 | ssm_out+attn_output_v5i | 5120x6144 | 4 | 33.4 | 33.5 | 999 | -1 | -639 | 64 | 0.36 | open_surface | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 23 | 27b-q8_0 | gdn_attn_qkv_v5i | 10240x5120 | 8 | 55.7 | 53.3 | 1045 | +45 | -593 | 48 | 0.33 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 24 | 27b-q8_0 | ssm_out+attn_output_v5i | 5120x6144 | 3 | 33.4 | 33.0 | 1014 | +14 | -624 | 64 | 0.33 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 25 | 27b-q8_0 | attn_kv_v5i | 1024x5120 | 4 | 5.6 | 14.7 | 380 | -620 | -1258 | 32 | 0.32 | open_surface | - | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 26 | 27b-q8_0 | ssm_out+attn_output_v5i | 5120x6144 | 1 | 33.4 | 32.8 | 1019 | +19 | -619 | 64 | 0.32 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 27 | 27b-q8_0 | gdn_attn_gate_v5i | 6144x5120 | 3 | 33.4 | 34.1 | 979 | -21 | -659 | 48 | 0.30 | open_surface | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 28 | 27b-q8_0 | lm_head_v5i | 248320x5120 | 16 | 1350.9 | 1405.4 | 961 | -39 | -677 | 1 | 0.28 | open_surface | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 29 | 27b-q8_0 | gdn_attn_gate_v5i | 6144x5120 | 4 | 33.4 | 33.5 | 996 | -4 | -642 | 48 | 0.27 | open_surface | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 30 | 27b-q8_0 | gdn_attn_gate_v5i | 6144x5120 | 1 | 33.4 | 32.7 | 1023 | +23 | -615 | 48 | 0.23 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 31 | 27b-q8_0 | gdn_attn_qkv_v5i | 10240x5120 | 4 | 55.7 | 51.2 | 1087 | +87 | -551 | 48 | 0.23 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 32 | 27b-q8_0 | attn_kv_v5i | 1024x5120 | 3 | 5.6 | 11.6 | 480 | -520 | -1158 | 32 | 0.22 | open_surface | - | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 33 | 27b-q8_0 | gdn_attn_qkv_v5i | 10240x5120 | 3 | 55.7 | 50.9 | 1095 | +95 | -543 | 48 | 0.21 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 34 | 27b-q8_0 | attn_q_v5i | 12288x5120 | 16 | 66.8 | 68.2 | 981 | -19 | -657 | 16 | 0.20 | open_surface | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 35 | 27b-q8_0 | gdn_attn_qkv_v5i | 10240x5120 | 1 | 55.7 | 49.7 | 1120 | +120 | -518 | 48 | 0.16 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 36 | 27b-q8_0 | attn_q_v5i | 12288x5120 | 8 | 66.8 | 64.5 | 1036 | +36 | -602 | 16 | 0.14 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
-| 37 | 27b-q8_0 | lm_head_v5i | 248320x5120 | 8 | 1350.9 | 1265.6 | 1067 | +67 | -571 | 1 | 0.14 | ok | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
-| 38 | 27b-q8_0 | attn_q_v5i | 12288x5120 | 3 | 66.8 | 63.5 | 1052 | +52 | -586 | 16 | 0.12 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 39 | 27b-q8_0 | attn_q_v5i | 12288x5120 | 4 | 66.8 | 62.5 | 1070 | +70 | -568 | 16 | 0.11 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
-| 40 | 27b-q8_0 | attn_q_v5i | 12288x5120 | 1 | 66.8 | 60.8 | 1099 | +99 | -539 | 16 | 0.08 | ok | - | `ak-q8wv-split16-gpu-20261122-r3` |
+| 1 | 27b-q8_0 | vk_launch_tail | ctx8192 | 8 | 0.4 | 12.3 | 34 | -966 | -1604 | 1140 | 13.60 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 2 | 27b-q8_0 | vk_launch_tail | ctx8192 | 4 | 0.3 | 6.0 | 51 | -949 | -1587 | 1140 | 6.57 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 3 | 27b-q8_0 | vk_launch_tail | ctx32768 | 4 | 0.3 | 6.0 | 52 | -948 | -1586 | 1140 | 6.52 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 4 | 27b-q8_0 | vk_launch_tail | ctx32768 | 8 | 0.4 | 6.0 | 69 | -931 | -1569 | 1140 | 6.49 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 5 | 27b-q8_0 | vk_launch_tail | ctx1024 | 4 | 0.3 | 5.9 | 52 | -948 | -1586 | 1140 | 6.43 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 6 | 27b-q8_0 | vk_launch_tail | ctx1024 | 8 | 0.4 | 6.0 | 69 | -931 | -1569 | 1140 | 6.42 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 7 | 27b-q8_0 | vk_launch_tail | ctx32768 | 1 | 0.3 | 5.8 | 45 | -955 | -1593 | 948 | 5.32 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 8 | 27b-q8_0 | vk_launch_tail | ctx8192 | 1 | 0.3 | 5.8 | 46 | -954 | -1592 | 948 | 5.27 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 9 | 27b-q8_0 | vk_launch_tail | ctx1024 | 1 | 0.3 | 5.8 | 46 | -954 | -1592 | 948 | 5.27 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 10 | 27b-q8_0 | gv_fattn_q8kv | ctx32768 | 8 | 83.7 | 289.3 | 289 | -711 | -1349 | 16 | 3.51 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 11 | 27b-q8_0 | gv_fattn_q8kv | ctx32768 | 4 | 79.4 | 269.6 | 294 | -706 | -1344 | 16 | 3.25 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 12 | 27b-q8_0 | gv_fattn_q8kv | ctx32768 | 1 | 76.9 | 260.2 | 296 | -704 | -1342 | 16 | 3.14 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 13 | 27b-q8_0 | vk_gated_delta_net | ctx8192 | 8 | 4.2 | 65.3 | 64 | -936 | -1574 | 48 | 2.97 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 14 | 27b-q8_0 | dense_verify_aggregate_v5i | 27.02GB | 8 | 27020.0 | 25232.4 | 1071 | +71 | -567 | 1 | 2.72 | ok | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
+| 15 | 27b-q8_0 | vk_actquant | ctx1024 | 8 | 0.2 | 4.4 | 39 | -961 | -1599 | 625 | 2.68 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 16 | 27b-q8_0 | vk_actquant | ctx32768 | 8 | 0.2 | 4.4 | 39 | -961 | -1599 | 625 | 2.67 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 17 | 27b-q8_0 | vk_actquant | ctx8192 | 8 | 0.2 | 4.4 | 39 | -961 | -1599 | 625 | 2.67 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 18 | 27b-q8_0 | served_weight_gemv_v5i | served-v5i | 8 | 33159.9 | 30024.3 | 1104 | +104 | -534 | 1 | 2.39 | ok | BW-DENSE-M16 | `ak-27b-served-decode-profile-gpu-20261125` |
+| 19 | 27b-q8_0 | gv_fattn_f16kv | ctx11446 | 8 | 46.9 | 163.1 | 288 | -712 | -1350 | 16 | 1.98 | open_surface | BW-DENSE-M16 | `ak-c18-27b-df2-v5i-trace-gpu-20261122` |
+| 20 | 27b-q8_0 | gv_fattn_q8kv | ctx8192 | 8 | 24.9 | 138.0 | 180 | -820 | -1458 | 16 | 1.88 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 21 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 16 | 94.7 | 93.0 | 1018 | +18 | -620 | 128 | 1.80 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
+| 22 | 27b-q8_0 | gv_fattn_q8kv | ctx8192 | 4 | 22.0 | 125.3 | 175 | -825 | -1463 | 16 | 1.71 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 23 | 27b-q8_0 | gv_fattn_q8kv | ctx8192 | 1 | 19.7 | 121.2 | 163 | -837 | -1475 | 16 | 1.68 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 24 | 27b-q8_0 | vk_actquant | ctx1024 | 4 | 0.1 | 4.5 | 26 | -974 | -1612 | 377 | 1.67 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 25 | 27b-q8_0 | vk_actquant | ctx32768 | 4 | 0.1 | 4.5 | 26 | -974 | -1612 | 377 | 1.67 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 26 | 27b-q8_0 | vk_actquant | ctx8192 | 4 | 0.1 | 4.5 | 26 | -974 | -1612 | 377 | 1.67 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 27 | 27b-q8_0 | vk_actquant | ctx1024 | 1 | 0.0 | 4.5 | 7 | -993 | -1631 | 345 | 1.54 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 28 | 27b-q8_0 | vk_actquant | ctx32768 | 1 | 0.0 | 4.5 | 7 | -993 | -1631 | 345 | 1.54 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 29 | 27b-q8_0 | vk_actquant | ctx8192 | 1 | 0.0 | 4.5 | 7 | -993 | -1631 | 345 | 1.54 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 30 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 8 | 94.7 | 90.4 | 1047 | +47 | -591 | 128 | 1.47 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
+| 31 | 27b-q8_0 | ffn_gate_up_v5i | 17408x5120 | 4 | 94.7 | 90.1 | 1052 | +52 | -586 | 128 | 1.43 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
+| 32 | 27b-q8_0 | vk_gated_delta_net | ctx1024 | 8 | 4.2 | 32.0 | 132 | -868 | -1506 | 48 | 1.37 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 33 | 27b-q8_0 | vk_gated_delta_net | ctx32768 | 8 | 4.2 | 30.9 | 137 | -863 | -1501 | 48 | 1.31 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 34 | 27b-q8_0 | gv_fattn_q8kv | ctx1024 | 8 | 3.0 | 69.7 | 43 | -957 | -1595 | 16 | 1.07 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 35 | 27b-q8_0 | gv_fattn_q8kv | ctx1024 | 4 | 2.9 | 66.7 | 44 | -956 | -1594 | 16 | 1.03 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 36 | 27b-q8_0 | gv_fattn_q8kv | ctx1024 | 1 | 2.8 | 65.4 | 43 | -957 | -1595 | 16 | 1.01 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 37 | 27b-q8_0 | ffn_down_v5i | 5120x17408 | 16 | 94.7 | 93.1 | 1017 | +17 | -621 | 64 | 0.91 | ok | BW-DENSE-M16 | `ak-q8wv-split16-gpu-20261122-r3` |
+| 38 | 27b-q8_0 | vk_q8sk_mul_mat | ctx32768:q8sk_mul_mat:g3840x64 | 8 | 0.4 | 9.0 | 40 | -960 | -1598 | 96 | 0.83 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 39 | 27b-q8_0 | vk_q8sk_mul_mat | ctx8192:q8sk_mul_mat:g3840x64 | 8 | 0.4 | 7.8 | 46 | -954 | -1592 | 96 | 0.72 | open_surface | BW-DENSE-M16 | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
+| 40 | 27b-q8_0 | vk_gated_delta_net | ctx8192 | 4 | 4.0 | 18.4 | 218 | -782 | -1420 | 48 | 0.72 | open_surface | - | `ak-27b-verify-kernel-roofline-census-gpu-20261124-r2` |
 
 ### CPU (EPYC 9655, NPS4) — open surface below 75% of the measured ceiling (operator-tunable `cpu.flag_frac`)
 
 | Rank | Model | Op class | Config | MB/step | ms/step | GB/s | Ceiling GB/s | % of ceiling | Share of step | recoverable ms @80% | Status | Seed | Source row |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | q38fn-ud-iq4xs-cpu | forward_m1_dense | quarter-24t | 5700 | 94.00 | 60.6 | 129.0 | 47% | - | 38.77 | open_surface | CPU-Q38FN-M1-DENSE | `epyc-root docs/design/q38fn-cpu-verify-weight-reuse-20261122.md (aed195fda) r3` |
-| 2 | q38fn-ud-iq4xs-cpu | MUL_MAT:gdn_proj | quarter-24t | 2247 | 26.90 | 83.5 | 129.0 | 65% | 29.7% | 5.12 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 3 | q38fn-ud-iq4xs-cpu | MUL_MAT:gdn_proj | quarter-24t | 2247 | 25.86 | 86.9 | 129.0 | 67% | 26.4% | 4.08 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 4 | q38fn-ud-iq4xs-cpu | MUL_MAT:other_weight | quarter-24t | 719 | 9.64 | 74.6 | 129.0 | 58% | 10.6% | 2.67 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 5 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_gate_up | quarter-24t | 679 | 9.22 | 73.7 | 129.0 | 57% | 10.2% | 2.64 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 6 | q38fn-ud-iq4xs-cpu | MUL_MAT:other_weight | quarter-24t | 719 | 9.54 | 75.4 | 129.0 | 58% | 9.1% | 2.57 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 7 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_gate_up | quarter-24t | 679 | 8.60 | 78.9 | 129.0 | 61% | 8.8% | 2.02 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 8 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_down | quarter-24t | 483 | 5.85 | 82.6 | 129.0 | 64% | 6.5% | 1.17 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 9 | q38fn-ud-iq4xs-cpu | MUL_MAT:fullattn_proj | quarter-24t | 635 | 7.26 | 87.5 | 129.0 | 68% | 8.0% | 1.10 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 10 | q38fn-ud-iq4xs-cpu | MUL_MAT:fullattn_proj | quarter-24t | 635 | 7.25 | 87.6 | 129.0 | 68% | 7.2% | 1.09 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 11 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_down | quarter-24t | 483 | 5.51 | 87.8 | 129.0 | 68% | 5.8% | 0.82 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 12 | q38fn-ud-iq4xs-cpu | MUL_MAT:shared_expert | quarter-24t | 251 | 3.19 | 78.5 | 129.0 | 61% | 3.5% | 0.77 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 13 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 66.3 | 129.0 | 51% | - | 0.74 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 14 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 66.8 | 129.0 | 52% | - | 0.72 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 15 | q38fn-ud-iq4xs-cpu | MUL_MAT:shared_expert | quarter-24t | 251 | 3.11 | 80.6 | 129.0 | 62% | 2.9% | 0.68 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 16 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 69.2 | 129.0 | 54% | - | 0.65 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 17 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 70.1 | 129.0 | 54% | - | 0.63 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 18 | q38fn-ud-iq4xs-cpu | MUL_MAT:lm_head | quarter-24t | 528 | 5.63 | 93.9 | 129.0 | 73% | 6.2% | 0.51 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 19 | q38fn-ud-iq4xs-cpu | MUL_MAT:moe_router | quarter-24t | 252 | 2.89 | 87.0 | 129.0 | 67% | 3.2% | 0.46 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 20 | q38fn-ud-iq4xs-cpu | MUL_MAT:moe_router | quarter-24t | 252 | 2.77 | 90.8 | 129.0 | 70% | 3.0% | 0.33 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 21 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.02 | 61.8 | 129.0 | 48% | - | 0.30 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
-| 22 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.02 | 65.4 | 129.0 | 51% | - | 0.26 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
-| 23 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.04 | 87.4 | 129.0 | 68% | - | 0.24 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 24 | q38fn-ud-iq4xs-cpu | MUL_MAT:indexer | quarter-24t | 39 | 0.60 | 65.7 | 129.0 | 51% | 0.7% | 0.22 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
-| 25 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.02 | 69.8 | 129.0 | 54% | - | 0.21 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
-| 26 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 68 | 0.67 | 102.4 | 129.0 | 79% | - | 0.21 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 27 | a3b-q8_0-cpu | MUL_MAT:shared_expert | quarter-24t | 138 | 1.54 | 89.4 | 129.0 | 69% | 3.8% | 0.21 | open_surface | CPU-A3B-SHEXP | `a3b-cpu-gap-census-20261121` |
-| 28 | q38fn-ud-iq4xs-cpu | MUL_MAT:lm_head | quarter-24t | 528 | 5.33 | 99.2 | 129.0 | 77% | 6.1% | 0.21 | ok | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 29 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 84 | 0.82 | 102.6 | 129.0 | 80% | - | 0.18 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 30 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.01 | 74.6 | 129.0 | 58% | - | 0.17 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
-| 31 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 35 | 0.34 | 102.0 | 129.0 | 79% | - | 0.17 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 32 | a3b-q8_0-cpu | MUL_MAT_ID:exps_down | quarter-24t | 357 | 3.62 | 98.7 | 129.0 | 76% | 8.9% | 0.16 | ok | - | `a3b-cpu-gap-census-20261121` |
-| 33 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up | quarter-24t | 713 | 7.03 | 101.4 | 129.0 | 79% | 17.7% | 0.12 | ok | CPU-A3B-MMID | `a3b-cpu-gap-census-20261122-r2` |
-| 34 | q38fn-ud-iq4xs-cpu | MUL_MAT:indexer_weight | quarter-24t | 39 | 0.49 | 80.0 | 129.0 | 62% | - | 0.11 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
-| 35 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 18 | 0.18 | 101.6 | 129.0 | 79% | - | 0.11 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
-| 36 | a3b-q8_0-cpu | MUL_MAT:gdn_proj | quarter-24t | 1069 | 10.43 | 102.5 | 129.0 | 80% | 25.7% | 0.07 | ok | - | `a3b-cpu-gap-census-20261121` |
-| 37 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.01 | 97.5 | 129.0 | 76% | - | 0.03 | ok | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
+| 2 | q38fn-ud-iq4xs-cpu | MUL_MAT:gdn_proj | quarter-24t | 2247 | 25.86 | 86.9 | 129.0 | 67% | 26.4% | 4.08 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 3 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_gate_up | quarter-24t | 679 | 9.22 | 73.7 | 129.0 | 57% | 10.2% | 2.64 | open_surface | - | `ak-q38fn-cpu-gap-census-20261122` |
+| 4 | q38fn-ud-iq4xs-cpu | MUL_MAT:other_weight | quarter-24t | 719 | 9.54 | 75.4 | 129.0 | 58% | 9.1% | 2.57 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 5 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_gate_up | quarter-24t | 679 | 8.60 | 78.9 | 129.0 | 61% | 8.8% | 2.02 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 6 | q38fn-ud-iq4xs-cpu | MUL_MAT:other_weight | quarter-24t | 719 | 8.33 | 86.3 | 129.0 | 67% | 10.4% | 1.36 | open_surface | - | `ak-c21-census-refresh-cpu-20261124-r4` |
+| 7 | q38fn-ud-iq4xs-cpu | MUL_MAT:fullattn_proj | quarter-24t | 635 | 7.25 | 87.6 | 129.0 | 68% | 7.2% | 1.09 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 8 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_down | quarter-24t | 483 | 5.51 | 87.8 | 129.0 | 68% | 5.8% | 0.82 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 9 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 66.3 | 129.0 | 51% | - | 0.74 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 10 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 66.8 | 129.0 | 52% | - | 0.72 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 11 | q38fn-ud-iq4xs-cpu | MUL_MAT:shared_expert | quarter-24t | 251 | 3.11 | 80.6 | 129.0 | 62% | 2.9% | 0.68 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 12 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 69.2 | 129.0 | 54% | - | 0.65 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 13 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.05 | 70.1 | 129.0 | 54% | - | 0.63 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 14 | q38fn-ud-iq4xs-cpu | MUL_MAT:shared_expert | quarter-24t | 251 | 2.77 | 90.5 | 129.0 | 70% | 3.5% | 0.34 | open_surface | - | `ak-c21-census-refresh-cpu-20261124-r4` |
+| 15 | q38fn-ud-iq4xs-cpu | MUL_MAT:moe_router | quarter-24t | 252 | 2.77 | 90.8 | 129.0 | 70% | 3.0% | 0.33 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 16 | q38fn-ud-iq4xs-cpu | MUL_MAT:moe_router | quarter-24t | 252 | 2.75 | 91.4 | 129.0 | 71% | 3.4% | 0.31 | open_surface | - | `ak-c21-census-refresh-cpu-20261124-r4` |
+| 17 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.02 | 61.8 | 129.0 | 48% | - | 0.30 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
+| 18 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.02 | 65.4 | 129.0 | 51% | - | 0.26 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
+| 19 | q38fn-ud-iq4xs-cpu | MUL_MAT_ID:exps_down | quarter-24t | 483 | 4.94 | 97.9 | 129.0 | 76% | 6.2% | 0.25 | ok | - | `ak-c21-census-refresh-cpu-20261124-r4` |
+| 20 | a3b-q8_0-cpu | MUL_MAT:shared_expert@ubench | quarter-24t | 3 | 0.04 | 87.4 | 129.0 | 68% | - | 0.24 | open_surface | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 21 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.02 | 69.8 | 129.0 | 54% | - | 0.21 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
+| 22 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 68 | 0.67 | 102.4 | 129.0 | 79% | - | 0.21 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 23 | a3b-q8_0-cpu | MUL_MAT:shared_expert | quarter-24t | 138 | 1.54 | 89.4 | 129.0 | 69% | 3.8% | 0.21 | open_surface | CPU-A3B-SHEXP | `a3b-cpu-gap-census-20261121` |
+| 24 | q38fn-ud-iq4xs-cpu | MUL_MAT:lm_head | quarter-24t | 528 | 5.33 | 99.2 | 129.0 | 77% | 6.1% | 0.21 | ok | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 25 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 84 | 0.82 | 102.6 | 129.0 | 80% | - | 0.18 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 26 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.01 | 74.6 | 129.0 | 58% | - | 0.17 | open_surface | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
+| 27 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 35 | 0.34 | 102.0 | 129.0 | 79% | - | 0.17 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 28 | a3b-q8_0-cpu | MUL_MAT_ID:exps_down | quarter-24t | 357 | 3.62 | 98.7 | 129.0 | 76% | 8.9% | 0.16 | ok | - | `a3b-cpu-gap-census-20261121` |
+| 29 | q38fn-ud-iq4xs-cpu | MUL_MAT:gdn_proj | quarter-24t | 2247 | 21.92 | 102.5 | 129.0 | 80% | 27.4% | 0.14 | ok | - | `ak-c21-census-refresh-cpu-20261124-r4` |
+| 30 | q38fn-ud-iq4xs-cpu | MUL_MAT:indexer | quarter-24t | 39 | 0.51 | 77.0 | 129.0 | 60% | 0.6% | 0.13 | open_surface | - | `ak-c21-census-refresh-cpu-20261124-r4` |
+| 31 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up | quarter-24t | 713 | 7.03 | 101.4 | 129.0 | 79% | 17.7% | 0.12 | ok | CPU-A3B-MMID | `a3b-cpu-gap-census-20261122-r2` |
+| 32 | q38fn-ud-iq4xs-cpu | MUL_MAT:indexer_weight | quarter-24t | 39 | 0.49 | 80.0 | 129.0 | 62% | - | 0.11 | open_surface | - | `ak-q38fn-cpu-d32k-gemv-diag-20261123` |
+| 33 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 18 | 0.18 | 101.6 | 129.0 | 79% | - | 0.11 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
+| 34 | a3b-q8_0-cpu | MUL_MAT:gdn_proj | quarter-24t | 1069 | 10.43 | 102.5 | 129.0 | 80% | 25.7% | 0.07 | ok | - | `a3b-cpu-gap-census-20261121` |
+| 35 | q38fn-ud-iq4xs-cpu | MUL_MAT:fullattn_proj | quarter-24t | 635 | 6.23 | 102.0 | 129.0 | 79% | 7.8% | 0.07 | ok | - | `ak-c21-census-refresh-cpu-20261124-r4` |
+| 36 | a3b-q8_0-cpu | MUL_MAT:shexp_down@ubench | quarter-24t | 1 | 0.01 | 97.5 | 129.0 | 76% | - | 0.03 | ok | - | `ak-a3b-cpu-shexp-verify-gap-20261123-r2` |
+| 37 | q38fn-ud-iq4xs-cpu | MUL_MAT:lm_head | quarter-24t | 528 | 5.13 | 102.9 | 129.0 | 80% | 6.4% | 0.01 | ok | - | `ak-c21-census-refresh-cpu-20261124-r4` |
 | 38 | a3b-q8_0-cpu | MUL_MAT:fullattn_proj | quarter-24t | 300 | 2.87 | 104.4 | 129.0 | 81% | 7.1% | 0.00 | ok | - | `a3b-cpu-gap-census-20261121` |
 | 39 | a3b-q8_0-cpu | MUL_MAT:lm_head | quarter-24t | 540 | 4.88 | 110.7 | 129.0 | 86% | 12.0% | 0.00 | ok | - | `a3b-cpu-gap-census-20261121` |
 | 40 | a3b-q8_0-cpu | MUL_MAT_ID:exps_gate_up@ubench | quarter-24t | 52 | 0.50 | 103.8 | 129.0 | 80% | - | 0.00 | ok | - | `ak-a3b-cpu-mmid-gateup-ubench-20261122-r2` |
@@ -285,48 +285,49 @@ Target 88 % of ceiling. Ceilings: GPU MI210 1638 GB/s, CPU quarter-24t 129 GB/s,
 
 | # | Op · path | Family | Share | Ours % | Saving ms/step | Owner | Status | Step source |
 |---|---|---|---|---|---|---|---|---|
-| 1 | gdn_proj · flash-next-cpu | dense-iq4xs-gemv | 29.7% | 64.7 | 7.12 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 2 | verify dense Q8 GEMV/GEMM (q8mf6, V5I) · 27b-df2-mi210 | dense-q8-gemv | 55.2% | 65.4 | 6.48 | V5I base; C21 V2 RRS fold | covered | fixed: 27B C18 verify round |
-| 3 | other_weight · flash-next-cpu | dense-iq4xs-gemv | 10.6% | 57.8 | 3.31 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 4 | exps_gate_up · flash-next-cpu | mmid-moe | 10.2% | 57.1 | 3.24 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 5 | gv_fattn + merge (verify FA) · 27b-df2-mi210 | flash-attn-verify | 7.1% | 11.2 | 2.84 | ak-gvfattn-lds/splits/served rows; G3 | covered | fixed: 27B C18 verify round |
-| 6 | GDN recurrence (fused tree GDN) · 27b-df2-mi210 | gdn-recurrence | 4.6% | 12.2 | 1.83 | speculative-decoding.md batched tree GDN lane | covered | fixed: 27B C18 verify round |
-| 7 | fullattn_proj · flash-next-cpu | dense-iq4xs-gemv | 8.0% | 67.8 | 1.67 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 8 | exps_down · flash-next-cpu | mmid-moe | 6.5% | 64.0 | 1.60 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 9 | MUL_MAT_ID exps_gate_up · a3b-mtp-cpu | mmid-moe | 18.7% | 72.9 | 1.30 | AK-CPU-A3B-MMID (NO_LEVER) | covered | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 10 | gdn_proj · a3b-mtp-cpu | dense-q8-gemv | 25.7% | 79.5 | 1.00 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 11 | shared_expert · flash-next-cpu | dense-iq4xs-gemv | 3.5% | 60.9 | 0.98 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 12 | lm_head · flash-next-cpu | lm-head-gemv | 6.2% | 72.8 | 0.97 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 13 | moe_router · flash-next-cpu | moe-router | 3.2% | 67.4 | 0.68 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 1 | verify dense Q8 GEMV/GEMM (q8mf6, V5I) · 27b-df2-mi210 | dense-q8-gemv | 55.2% | 65.4 | 6.48 | V5I base; C21 V2 RRS fold | covered | fixed: 27B C18 verify round |
+| 2 | launch-bound tail (eltwise/norm/copy/rope/conv) · 27b-df2-mi210 | launch-bound-tail | 14.7% | 4.2 | 6.38 | **none** | open | fixed: 27B C18 verify round |
+| 3 | gv_fattn + merge (verify FA) · 27b-df2-mi210 | flash-attn-verify | 7.1% | 11.2 | 2.84 | ak-gvfattn-lds/splits/served rows; G3 | covered | fixed: 27B C18 verify round |
+| 4 | actquant (q8mf_pre_i8 + q8sk_quantize) · 27b-df2-mi210 | act-quantize | 4.6% | 2.4 | 2.05 | AK-BW-27B-ACTQUANT-FUSE | covered | fixed: 27B C18 verify round |
+| 5 | GDN recurrence (fused tree GDN) · 27b-df2-mi210 | gdn-recurrence | 4.6% | 12.2 | 1.83 | speculative-decoding.md batched tree GDN lane | covered | fixed: 27B C18 verify round |
+| 6 | gdn_proj · flash-next-cpu | dense-iq4xs-gemv | 27.4% | 79.5 | 1.71 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 7 | other_weight · flash-next-cpu | dense-iq4xs-gemv | 10.4% | 66.9 | 1.61 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 8 | MUL_MAT_ID exps_gate_up · a3b-mtp-cpu | mmid-moe | 18.7% | 72.9 | 1.30 | AK-CPU-A3B-MMID (NO_LEVER) | covered | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 9 | gdn_proj · a3b-mtp-cpu | dense-q8-gemv | 25.7% | 79.5 | 1.00 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 10 | shared expert N>=2 · a3b-mtp-cpu | dense-q8-gemv | 3.8% | 53.1 | 0.61 | AK-CPU-A3B-SHEXP-VERIFY-GAP | covered | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 11 | exps_down · flash-next-cpu | mmid-moe | 6.2% | 75.9 | 0.55 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 12 | attn_k/v 1024x5120 (q8sk) · 27b-df2-mi210 | dense-q8-gemv | 1.4% | 16.8 | 0.53 | AK-BW-27B-ATTN-KV-CONCAT | covered | fixed: 27B C18 verify round |
+| 13 | fullattn_proj · flash-next-cpu | dense-iq4xs-gemv | 7.8% | 79.1 | 0.51 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
 | 14 | MUL_MAT_ID exps_down · a3b-mtp-cpu | mmid-moe | 8.9% | 76.5 | 0.47 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 15 | lm_head 248320x5120 · 27b-df2-mi210 | lm-head-gemv | 2.8% | 65.3 | 0.33 | **none** | open | fixed: 27B C18 verify round |
-| 16 | indexer · flash-next-cpu | dense-iq4xs-gemv | 0.7% | 50.9 | 0.25 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 17 | fullattn_proj · a3b-mtp-cpu | dense-q8-gemv | 7.1% | 80.9 | 0.23 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 18 | lm_head · a3b-mtp-cpu | lm-head-gemv | 12.0% | 85.8 | 0.12 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 19 | actquant (q8mf_pre_i8 + q8sk_quantize) · 27b-df2-mi210 | act-quantize | 4.6% | - | - | AK-BW-27B-ACTQUANT-FUSE | needs_measurement | fixed: 27B C18 verify round |
-| 20 | draft q8ip_permute · 27b-df2-mi210 | act-quantize | 0.9% | - | - | AK-BW-27B-DRAFT-Q8IP-PERMUTE | needs_measurement | fixed: 27B C18 verify round |
-| 21 | launch-bound tail (eltwise/norm/copy/rope/conv) · 27b-df2-mi210 | launch-bound-tail | 14.7% | - | - | **none** | needs_measurement | fixed: 27B C18 verify round |
-| 22 | router (CPU) · a3b-mtp-cpu | moe-router | - | - | - | AK-CPU-C22-LEVERS (router BF16 shadow) | needs_measurement | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 23 | indexer_weight · flash-next-cpu | dense-iq4xs-gemv | - | 62.0 | - | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
-| 24 | q4_0 KV attention (gv_fattn, q4_0 KV) · 27b-df2-mi210 | flash-attn-verify | - | - | - | ak-gvfattn-q4kv-gpu-20261124 | needs_measurement (not served) | fixed: 27B C18 verify round |
-| 25 | k_bin_bcast / scale · a3b-mtp-mi210 | launch-bound-tail | 7.1% | - | - | **none** | needs_measurement (not served) | fixed: A3B C14 busy step |
-| 26 | quantize_q8_1 · a3b-mtp-mi210 | act-quantize | 9.1% | - | - | **none** | needs_measurement (not served) | fixed: A3B C14 busy step |
-| 27 | router chain softmax/argsort/get_rows · a3b-mtp-mi210 | moe-router | 5.6% | - | - | **none** | needs_measurement (not served) | fixed: A3B C14 busy step |
+| 15 | shared_expert · flash-next-cpu | dense-iq4xs-gemv | 3.5% | 70.2 | 0.45 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 16 | moe_router · flash-next-cpu | moe-router | 3.4% | 70.9 | 0.43 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 17 | lm_head · flash-next-cpu | lm-head-gemv | 6.4% | 79.8 | 0.39 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 18 | lm_head 248320x5120 · 27b-df2-mi210 | lm-head-gemv | 2.8% | 65.3 | 0.33 | **none** | open | fixed: 27B C18 verify round |
+| 19 | fullattn_proj · a3b-mtp-cpu | dense-q8-gemv | 7.1% | 80.9 | 0.23 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 20 | indexer · flash-next-cpu | dense-iq4xs-gemv | 0.6% | 59.7 | 0.13 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 21 | lm_head · a3b-mtp-cpu | lm-head-gemv | 12.0% | 85.8 | 0.12 | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 22 | draft q8ip_permute · 27b-df2-mi210 | act-quantize | 0.9% | - | - | AK-BW-27B-DRAFT-Q8IP-PERMUTE | needs_measurement | fixed: 27B C18 verify round |
+| 23 | router (CPU) · a3b-mtp-cpu | moe-router | - | - | - | AK-CPU-C22-LEVERS (router BF16 shadow) | needs_measurement | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 24 | indexer_weight · flash-next-cpu | dense-iq4xs-gemv | - | 62.0 | - | **none** | open | derived (unverified): sum(us x calls)/sum(share_of_round), census n1 rows; no served tok/s row |
+| 25 | q4_0 KV attention (gv_fattn, q4_0 KV) · 27b-df2-mi210 | flash-attn-verify | - | - | - | ak-gvfattn-q4kv-gpu-20261124 | needs_measurement (not served) | fixed: 27B C18 verify round |
+| 26 | k_bin_bcast / scale · a3b-mtp-mi210 | launch-bound-tail | 7.1% | - | - | **none** | needs_measurement (not served) | fixed: A3B C14 busy step |
+| 27 | quantize_q8_1 · a3b-mtp-mi210 | act-quantize | 9.1% | - | - | **none** | needs_measurement (not served) | fixed: A3B C14 busy step |
+| 28 | router chain softmax/argsort/get_rows · a3b-mtp-mi210 | moe-router | 5.6% | - | - | **none** | needs_measurement (not served) | fixed: A3B C14 busy step |
 
 Family rank (score = sum of weight x saving ms/step over every path; `-` = unpriced, never guessed; knob = serving-knob arm, hypothesis = hand-written idea priced from census rows on every device it touches):
 
 | # | Family | Kind | Score ms/step | Paths | Unpriced |
 |---|---|---|---|---|---|
-| 1 | dense-iq4xs-gemv | family | 13.33 | flash-next-cpu | 1 |
-| 2 | dense-q8-gemv | family | 8.85 | 27b-df2-mi210, a3b-mtp-cpu, a3b-mtp-mi210 | 0 |
-| 3 | mmid-moe | family | 6.60 | a3b-mtp-cpu, a3b-mtp-mi210, flash-next-cpu | 0 |
+| 1 | dense-q8-gemv | family | 8.85 | 27b-df2-mi210, a3b-mtp-cpu, a3b-mtp-mi210 | 0 |
+| 2 | launch-bound-tail | family | 6.38 | 27b-df2-mi210, a3b-mtp-mi210 | 1 |
+| 3 | dense-iq4xs-gemv | family | 4.42 | flash-next-cpu | 1 |
 | 4 | hypothesis:27-ak-27b-tail-fusion-groups-20261124 | hypothesis | 3.22 | 27b-df2-mi210 | 0 |
 | 5 | flash-attn-verify | family | 2.84 | 27b-df2-mi210, a3b-mtp-mi210 | 1 |
-| 6 | gdn-recurrence | family | 1.83 | 27b-df2-mi210 | 0 |
-| 7 | lm-head-gemv | family | 1.42 | 27b-df2-mi210, a3b-mtp-cpu, flash-next-cpu | 0 |
-| 8 | moe-router | family | 0.68 | a3b-mtp-cpu, a3b-mtp-mi210, flash-next-cpu | 2 |
-| 9 | drafter-gemm | family | 0.00 | 27b-df2-mi210 | 0 |
-| 10 | act-quantize | family | - | 27b-df2-mi210, a3b-mtp-mi210 | 3 |
-| 11 | launch-bound-tail | family | - | 27b-df2-mi210, a3b-mtp-mi210 | 2 |
+| 6 | mmid-moe | family | 2.31 | a3b-mtp-cpu, a3b-mtp-mi210, flash-next-cpu | 0 |
+| 7 | act-quantize | family | 2.05 | 27b-df2-mi210, a3b-mtp-mi210 | 2 |
+| 8 | gdn-recurrence | family | 1.83 | 27b-df2-mi210 | 0 |
+| 9 | lm-head-gemv | family | 0.83 | 27b-df2-mi210, a3b-mtp-cpu, flash-next-cpu | 0 |
+| 10 | moe-router | family | 0.43 | a3b-mtp-cpu, a3b-mtp-mi210, flash-next-cpu | 2 |
+| 11 | drafter-gemm | family | 0.00 | 27b-df2-mi210 | 0 |
 
 <!-- BW-CENSUS:END -->
