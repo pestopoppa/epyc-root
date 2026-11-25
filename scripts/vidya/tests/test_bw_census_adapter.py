@@ -255,7 +255,9 @@ def test_ingest_report_counts_dropped_unknown_and_refused_records(tmp_path):
 
 def test_ingest_report_has_no_dropped_block_for_sources_without_the_hook(tmp_path):
     assert ingest_sources.SOURCES["ak-bw-census"].dropped == "dropped"
-    assert all(s.dropped == "" for n, s in ingest_sources.SOURCES.items() if n != "ak-bw-census")
+    # the census's second projection (AK-BNSIG signatures) reports drops the same way
+    assert all(s.dropped == "" for n, s in ingest_sources.SOURCES.items()
+               if n not in ("ak-bw-census", "ak-bottleneck-signature"))
 
 
 def test_ingest_dry_run_appends_nothing_and_missing_path_is_reported(tmp_path):

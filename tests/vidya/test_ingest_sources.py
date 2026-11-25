@@ -362,6 +362,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "ak-width-dimension", "ak-width-cells-cpu",
         # Census fixture, warrant drops, re-derivation refusals and temp-ledger ingest: scripts/vidya/tests/test_bw_census_adapter.py.
         "ak-bw-census",
+        # Signed census fixture, warrant drops, refusals and temp-ledger ingest:
+        # scripts/vidya/tests/test_bottleneck_signature_adapter.py.
+        "ak-bottleneck-signature",
         # Strict re-derivation over the real U4-NOISE-1 sessions, tamper refusals on a tmp copy and the
         # CLI dispatch count: test_gpu_cpu_noise_adapter.py. v1 readings + pre-hook dumps, refusals and the
         # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.

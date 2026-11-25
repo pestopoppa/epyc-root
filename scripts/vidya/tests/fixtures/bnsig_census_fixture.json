@@ -1,0 +1,157 @@
+{
+ "applied": [],
+ "ceiling_gbps": 1638.0,
+ "cpu": {
+  "ceiling_gbps": {
+   "full-host": 520.0,
+   "half-48t": 259.8,
+   "q0q2": 387.0,
+   "quarter-24t": 129.0
+  },
+  "ceiling_source": {
+   "full-host": "operator 2026-11-24: 520 GB/s",
+   "half-48t": "measured: q38p1-c13-20261117-r4 same-window bench_readbw read-sum",
+   "q0q2": "derived 2026-11-24: 3 x quarter-24t 129 GB/s (72t on cores 0-71, --interleave=0,1,2)",
+   "quarter-24t": "operator 2026-11-24: 129 GB/s (was measured 112.9, AK-CPU-QUARTER-READCEIL 9e379493 q2)"
+  },
+  "flag_frac": 0.75,
+  "target_frac": 0.8
+ },
+ "floor_gbps": 1000.0,
+ "noise_frac": 0.03,
+ "records": {
+  "27b-q8_0|gemv_q8mf|5120x17408|n8": {
+   "bytes_per_call": 10000000,
+   "calls_per_round": 1,
+   "device": "mi210",
+   "gbps": 1000.0,
+   "kernel_class": "gemv_q8mf",
+   "lane": "served",
+   "measured_at": "2026-11-25T11:00:00Z",
+   "model": "27b-q8_0",
+   "n": 8,
+   "op": null,
+   "op_path": null,
+   "rank": 2,
+   "recoverable_ms_per_round": 0.002,
+   "result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "shape": "5120x17408",
+   "signature": {
+    "axes": {
+     "ea_req_per_kb": 16.0877,
+     "fetch_over_bytes": 1.0055,
+     "issue_busy": 0.4645,
+     "lds_per_kb": 11.0272,
+     "mem_busy": 0.4988,
+     "mem_stalled": 0.3389,
+     "tcp_pending_stall": 0.4518,
+     "valu_per_kb": 28.9961,
+     "wait_any": 0.3268,
+     "wait_inst": 0.5065
+    },
+    "band_position": {
+     "ea_req_per_kb": null,
+     "fetch_over_bytes": null,
+     "issue_busy": null,
+     "lds_per_kb": null,
+     "mem_busy": 0.7936,
+     "mem_stalled": 0.5274,
+     "tcp_pending_stall": null,
+     "valu_per_kb": null,
+     "wait_any": 1.5903,
+     "wait_inst": 1.2331
+    },
+    "build": null,
+    "class": "issue_bound",
+    "classes": [
+     "over_subscribed",
+     "issue_bound"
+    ],
+    "counter_set_sha256": "594d6ae4e999de66e3d3f09802e076f821b007087946dc3a9ff39e18721b83b6",
+    "marginal": [
+     "over_subscribed"
+    ],
+    "measured_at": "2026-11-25T12:00:00Z",
+    "oversub_legs": {
+     "mem_stalled": true,
+     "wait_any": true
+    },
+    "reference_check": {
+     "S16": "healthy_bw",
+     "S64": "over_subscribed",
+     "incoherent_axes": [],
+     "ok": true
+    },
+    "refs": {
+     "S16": {
+      "ea_req_per_kb": 16.0042,
+      "fetch_over_bytes": 1.0003,
+      "issue_busy": 0.095,
+      "lds_per_kb": 0.0,
+      "mem_busy": 0.1792,
+      "mem_stalled": 0.0426,
+      "tcp_pending_stall": 0.7152,
+      "valu_per_kb": 9.3186,
+      "wait_any": 0.9623,
+      "wait_inst": 0.0097
+     },
+     "S16_id": "S16",
+     "S64": {
+      "ea_req_per_kb": 16.0043,
+      "fetch_over_bytes": 1.0003,
+      "issue_busy": 0.0731,
+      "lds_per_kb": 0.0,
+      "mem_busy": 0.5819,
+      "mem_stalled": 0.6044,
+      "tcp_pending_stall": 0.7115,
+      "valu_per_kb": 8.4106,
+      "wait_any": 0.5627,
+      "wait_inst": 0.4126
+     },
+     "S64_id": "S64",
+     "row": "ak-c22-q8wt-op-diag-gpu-20261125",
+     "s16_gbps": 1460.8,
+     "s64_gbps": 1319.6
+    },
+    "result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "rule": "issue_busy>=0.6 or (issue_busy>=0.4 and (valu_per_kb>=2.0*S16 or wait_inst>S64))",
+    "ruled_out": [
+     "over_fetch",
+     "latency_bound"
+    ],
+    "schema": "epyc.autokernel.bottleneck_signature.v1",
+    "source_row": "ak-c22-q8wt-op-diag-gpu-20261125",
+    "stale_vs_timing": false,
+    "timing_sha256": null
+   },
+   "source_row": "fx-timing-row",
+   "status": "ok",
+   "us_per_call": 10.0
+  }
+ },
+ "schema": "epyc.autokernel.bw_census.v1",
+ "seed_stubs": [],
+ "seeds": {},
+ "signature_applied": [
+  {
+   "row": "ak-c22-q8wt-op-diag-gpu-20261125",
+   "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+ ],
+ "surface_groups": [
+  {
+   "census_rows": [],
+   "class_share_sum": 0,
+   "covered_by": "",
+   "members": 0,
+   "note": "roll-up of the per-class surfaces below, never ranked itself; the parity share and the class-share sum do not reconcile and neither is vouched for",
+   "op": "forward m1 dense (UD-IQ4_XS)",
+   "parity_share_of_step": null,
+   "path": "flash-next-cpu",
+   "rollup_pct": null,
+   "unreconciled": true
+  }
+ ],
+ "target_gbps": 1200.0,
+ "target_pct": 88.0
+}
