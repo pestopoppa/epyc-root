@@ -69,7 +69,8 @@ CORRECTNESS_KEYS = {
     "common": {"kind", "argv", "arms", "timeout_s", "apply_flags", "witness", "lv"},
     "tbo": {"min_cases", "require_rc0"},
     "kld": {"base_arm", "max_kld", "witness_base"},
-    "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"}}
+    "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
+    "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"}}
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
                "draft": r"^\s*single-draft:\s*(.*?)\s*$"}
 
@@ -227,20 +228,32 @@ def validate_spec(spec):
             errs.append(f"input {rel}: must be relative to the row dir")
     c = spec.get("correctness")
     if c:
-        if c.get("kind") not in ("tbo", "kld", "identity"):
-            errs.append(f"correctness.kind {c.get('kind')!r} not tbo|kld|identity")
+        if c.get("kind") not in ("tbo", "kld", "identity", "selftest_bin"):
+            errs.append(f"correctness.kind {c.get('kind')!r} not tbo|kld|identity|selftest_bin")
         else:
             bad = sorted(set(c) - CORRECTNESS_KEYS["common"] - CORRECTNESS_KEYS[c["kind"]])
             if bad:
                 errs.append(f"correctness ({c['kind']}): unknown key(s) {bad}; allowed "
                             f"{sorted(CORRECTNESS_KEYS['common'] | CORRECTNESS_KEYS[c['kind']])}")
-        if c.get("kind") in ("tbo", "kld") and not c.get("argv"):
+        if c.get("kind") == "selftest_bin":
+            try:
+                if re.compile(str(c.get("mismatch_rx") or "")).groups < 1:
+                    errs.append("correctness selftest_bin: mismatch_rx needs one capture group (the mismatch count)")
+            except re.error as e:
+                errs.append(f"correctness selftest_bin: bad mismatch_rx: {e}")
+            mx = c.get("max_mismatch")
+            if not isinstance(mx, dict) or not mx or any(a not in arms for a in mx):
+                errs.append("correctness selftest_bin: max_mismatch {arm: N} must gate >= 1 declared arm")
+        if c.get("kind") in ("tbo", "kld", "selftest_bin") and not c.get("argv"):
             errs.append(f"correctness {c.get('kind')}: argv required")
         if c.get("kind") == "identity" and c.get("mode", "server") == "cmd" and not c.get("argv"):
             errs.append("correctness identity mode cmd: argv required")
         for a in c.get("arms") or []:
             if a not in arms:
                 errs.append(f"correctness arm {a} not declared")
+    for side, m in (spec.get("verdict_map") or {}).items():
+        if side not in ("PASS", "FAIL") or not isinstance(m, dict):
+            errs.append(f"verdict_map side {side!r}: want {{PASS|FAIL: {{native verdict (prefix): name}}}}")
     w = spec.get("workload") or {}
     if not (w.get("prompts") or w.get("input")):
         errs.append("workload needs prompts or an input file")
@@ -502,6 +515,9 @@ def plan_correctness(spec):
     b, cand = baseline_arms(spec), candidate_arms(spec)
     if kind == "tbo":
         return [(f"c-tbo-{a}", "c-tbo", a, {}) for a in (c.get("arms") or b[:1] + cand)]
+    if kind == "selftest_bin":   # N fresh processes per arm, interleaved run by run
+        arms = c.get("arms") or b + cand
+        return [(f"c-st-{a}-r{r}", "c-st", a, {"run": r}) for r in range(1, int(c.get("runs") or 1) + 1) for a in arms]
     if kind == "kld":
         base = c.get("base_arm") or b[0]
         arms = c.get("arms") or [x for x in b if x != base] + cand
@@ -541,6 +557,13 @@ def decide_correctness(spec, units):
         if any(v is None for v in kl.values()):
             return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why="no 'Mean KLD' in a perplexity log"), True
         bad = [a for a in candidate_arms(spec) if a in kl and kl[a] > mx]
+        return ("FAIL_CORRECTNESS", dict(det, failed=bad), True) if bad else (None, det, True)
+    if kind == "selftest_bin":
+        tot = {}
+        for u in us:
+            tot[u["arm"]] = tot.get(u["arm"], 0) + int(u.get("mismatches") or 0)
+        det = {"kind": kind, "mismatches": tot, "max_mismatch": c["max_mismatch"], "runs": int(c.get("runs") or 1)}
+        bad = [a for a, mx in c["max_mismatch"].items() if tot.get(a, 0) > int(mx)]
         return ("FAIL_CORRECTNESS", dict(det, failed=bad), True) if bad else (None, det, True)
     fields = identity_fields(c)
     ref, others = baseline_arms(spec)[0], baseline_arms(spec)[1:]
@@ -583,6 +606,18 @@ def polar(verdict):
 
 
 def decide(spec, units):
+    """_decide() with the row's declared verdict names (spec.verdict_map {PASS|FAIL: {native verdict or prefix: name}}):
+    a mapped verdict takes its side as `polar` and keeps the native one in native_verdict."""
+    d = _decide(spec, units)
+    v = str(d.get("verdict") or "")
+    for side, m in (spec.get("verdict_map") or {}).items():
+        for native, name in m.items():
+            if d.get("terminal") and (v == native or v.startswith(native + "_")):
+                return dict(d, verdict=name, polar=side, native_verdict=v)
+    return d
+
+
+def _decide(spec, units):
     """The pre-registered rule, first match wins. Returns {verdict, polar, terminal, reason, ...}; terminal False =
     keep running (or, in a replay, the prior run did not get far enough)."""
     kc = keep_cfg(spec)
@@ -969,6 +1004,8 @@ class Gate:
             argv = self.subst(c["argv"])
             if c.get("lv"):
                 argv = ensure_lv(argv, self.lv, force=True)
+        elif kind == "c-st":    # a declared A/A self-test binary, one fresh process per run
+            argv = self.llama_argv(c["argv"], arm, flags=bool(c.get("apply_flags")), force_lv=c.get("lv", True))
         else:   # identity, cmd mode: every (arm, prompt) in its OWN process
             argv = self.llama_argv(c["argv"], arm, flags=bool(c.get("apply_flags")),
                                    extra={"{PROMPT_INDEX}": str(extra["prompt"])}, force_lv=c.get("lv", True))
@@ -1000,6 +1037,10 @@ class Gate:
             u.update(mean_kld=float(m[-1]) if m else None, same_top_p_pct=float(s[-1]) if s else None)
             if u.get("mode") == "base" and u.get("rc") not in (0, None):
                 u.update(error=f"kld base run rc {u.get('rc')}", error_class="MISSING_OUTPUT")
+        elif u["kind"] == "c-st":
+            u.update(selftest_parse(c, txt))
+            if u["mismatches"] is None:
+                u.update(error=f"no mismatch_rx match in the self-test log (rc {u.get('rc')})", error_class="MISSING_OUTPUT")
         elif u["kind"] == "c-id" and c.get("mode", "server") == "cmd":
             got = identity_parse(c, txt)
             if got["output"] is None:
@@ -1096,6 +1137,12 @@ class Gate:
         return 0
 
 
+def selftest_parse(c, txt):
+    m = re.findall(str(c["mismatch_rx"]), txt or "", re.M)
+    v = m[-1] if m else None
+    return {"mismatches": int(v[0] if isinstance(v, tuple) else v) if v is not None else None}
+
+
 def identity_parse(c, txt):
     rx = {k: re.compile((c.get("rx") or {}).get(k) or v, re.M) for k, v in IDENTITY_RX.items()}
     t = txt or ""
@@ -1107,7 +1154,7 @@ def identity_parse(c, txt):
 def result_doc(spec, units, d):
     tus = [u for u in units if u.get("kind") == "visit"]
     res = {"schema": RESULT_SCHEMA, "complete": bool(d.get("terminal")), "verdict": d["verdict"], "polar": d.get("polar"),
-           "reason": d.get("reason", ""), "row": spec["row_id"], "task": spec.get("task"), "utc": H.now(),
+           "native_verdict": d.get("native_verdict", d["verdict"]), "reason": d.get("reason", ""), "row": spec["row_id"], "task": spec.get("task"), "utc": H.now(),
            "metric": spec["metric"], "keep": keep_cfg(spec), "per_arm": per_arm_stats(spec, units),
            "witness": witness_table(spec, units), "witness_mismatches": mismatches(units),
            "aa": {"ratio": aa_ratio(spec, units), "max": keep_cfg(spec)["aa_max"],
@@ -1161,7 +1208,8 @@ def replay_units(spec, out_dir, row_dir):
         if u.get("error"):
             out.append(u)
             continue
-        witnessed = u["kind"] in ("visit", "smoke", "log", "c-id", "c-kld") or (u["kind"] == "c-tbo" and c.get("witness"))
+        witnessed = u["kind"] in ("visit", "smoke", "log", "c-id", "c-kld", "c-st") or \
+            (u["kind"] == "c-tbo" and c.get("witness"))
         if witnessed and u.get("arm") not in (spec.get("arms") or {}):
             # a prior arm the new declaration does not declare cannot be judged: a mismatch, never "unwitnessed"
             u["witness"] = {"(arm)": {"expected": "a declared arm", "observed": "no-arm", "ok": False, "line": None,
@@ -1179,6 +1227,8 @@ def replay_units(spec, out_dir, row_dir):
             u.update(n_cases=len(cases), n_ok=sum(1 for x in cases if x["ok"]))
             u["pass"] = u["n_cases"] >= int(c.get("min_cases") or 1) and u["n_ok"] == u["n_cases"] and \
                 (u.get("rc") == 0 or not c.get("require_rc0"))
+        if u["kind"] == "c-st" and txt is not None:
+            u.update(selftest_parse(c, txt))
         if u["kind"] == "c-id" and c.get("mode", "server") == "cmd" and txt is not None:
             got = identity_parse(c, txt)
             for f in ("output", "accepted", "draft"):
@@ -1210,7 +1260,8 @@ def replay(spec, row_dir, prior, stream=None):
     mm = mismatches(units)
     rec = {"prev_id": prev_id, "prior_out": out_dir, "mode": mode, "n_units": len(units),
            "n_witnessed": sum(1 for u in units if u.get("witness")), "skipped_logs": skipped[:40],
-           "observed": {"verdict": d["verdict"], "polar": d.get("polar"), "terminal": d.get("terminal"),
+           "observed": {"verdict": d["verdict"], "native_verdict": d.get("native_verdict", d["verdict"]),
+                        "polar": d.get("polar"), "terminal": d.get("terminal"),
                         "reason": str(d.get("reason") or "")[:1200], "n_units": len(units)},
            "verdict": d["verdict"], "witness_mismatches": mm[:40],
            "mismatch_pairs": sorted({(m["knob"], m["arm"]) for m in mm}),
@@ -1288,15 +1339,15 @@ def selftest(spec, row_dir, stream=None):
             res = json.load(open(os.path.join(g.out, "RESULT.json")))
             verdicts[name] = res["verdict"]
             if name == "keep":
-                assert res["verdict"].startswith("KEEP") and res["polar"] == "PASS", res["verdict"]
+                assert res["native_verdict"].startswith("KEEP") and res["polar"] == "PASS", res["verdict"]
             elif float(keep_cfg(sp)["threshold"]) >= 1.0:
-                assert res["verdict"] in ("NO_KEEP", "FUTILITY_CANDIDATE_BELOW_FLOOR"), res["verdict"]
+                assert res["native_verdict"] in ("NO_KEEP", "FUTILITY_CANDIDATE_BELOW_FLOOR"), res["verdict"]
             r = replay(sp, g.d, g.out, stream=quiet)
             assert r["verdict"] == res["verdict"], (r["verdict"], res["verdict"])
         if keep_cfg(sp)["aa_max"] is not None:
             g = gate("aa", {baseline_arms(sp)[1]: 1.0 + 3 * float(keep_cfg(sp)["aa_max"])})
             g.run()
-            verdicts["aa"] = json.load(open(os.path.join(g.out, "RESULT.json")))["verdict"]
+            verdicts["aa"] = json.load(open(os.path.join(g.out, "RESULT.json")))["native_verdict"]
             assert verdicts["aa"] == "FUTILITY_HARNESS_AA", verdicts["aa"]
         g = gate("smoke", {})
         assert g.smoke() == 0, json.load(open(os.path.join(g.out, H.TERMINAL_SMOKE)))

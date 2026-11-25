@@ -1651,7 +1651,7 @@ def prev_failure_class(flags, fid, fail_path):
 def observed_class(observed, pairs=()):
     """The replayed verdict's class. ok = not a failure (pass / keep / measured NO_KEEP / INCOMPLETE: the replay ran past
     the prior failure point) OR not replayable offline (server / timeout / stop / residency / input: F1)."""
-    v = str((observed or {}).get("verdict") or "")
+    v = str((observed or {}).get("native_verdict") or (observed or {}).get("verdict") or "")   # a row's own names never class
     fine = _fine_class(v) or _fine_class(str((observed or {}).get("reason") or ""))
     key = None
     fc = _failclass_mod()

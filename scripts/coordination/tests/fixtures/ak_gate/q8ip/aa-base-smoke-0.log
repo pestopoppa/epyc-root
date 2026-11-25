@@ -1,0 +1,10 @@
+0.00.047.392 I cmn  common_init_: fitting params to device memory ...
+0.00.047.395 I cmn  common_init_: (for bugs during this step try to reproduce them with -fit off, or provide --verbose logs if the bug only occurs with -fit on)
+0.00.047.406 I common_params_fit_impl: getting device memory data for initial parameters:
+0.01.888.322 I ggml_cuda_q8ip: in-place Q8_0 stage-contiguous repack enabled (GGML_HIP_Q8_MF_INPLACE=1, MF=6)
+mode: AA (OFF vs OFF)
+prompt 0: rounds off=12 on=12  accepted_tokens off=60  out off=72 on=72  ms off=652.9 on=697.4  engaged on=0 off=0  MISMATCH (first draft divergence at round 9)
+prompt 1: rounds off=19 on=19  accepted_tokens off=49  out off=68 on=65  ms off=992.0 on=996.9  engaged on=0 off=0  MISMATCH (first draft divergence at round 5)
+prompt 2: rounds off=15 on=15  accepted_tokens off=50  out off=65 on=65  ms off=827.5 on=789.9  engaged on=0 off=0  MISMATCH (first draft divergence at round 1)
+prompt 3: rounds off=11 on=11  accepted_tokens off=60  out off=71 on=71  ms off=581.2 on=630.3  engaged on=0 off=0  MISMATCH (first draft divergence at round 0)
+summary: prompts=4 mismatches=4 engaged=1 rounds=57 ms/round off=53.572 on=54.640

@@ -788,6 +788,8 @@ def gate_scaffold(a, served=None):
               "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
                                              "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
               "inputs": inputs, "dirs": list(a.dir)}
+    if a.verdict_map:
+        spec_g["verdict_map"] = json.loads(a.verdict_map)
     G.validate_spec(dict(spec_g, server=dict(spec_g["server"], argv=argv),
                          correctness=dict(corr, argv=["x"]) if corr else None))
     body = pprint.pformat(spec_g, width=118, indent=1, sort_dicts=False)
@@ -867,6 +869,8 @@ def gate_main(argv=None):
     n.add_argument("--server-argv-json", help="the server argv as JSON when the row is not a registry role")
     n.add_argument("--server-env", action="append", default=[], metavar="K=V")
     n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity, argv, arms, ...}")
+    n.add_argument("--verdict-map", help='JSON {"PASS": {"KEEP": "PASS_X"}, "FAIL": {"FAIL_CORRECTNESS": "FAIL_Y"}}: '
+                   "the row's own verdict names; polar = the side")
     n.add_argument("--prompt", action="append", default=[])
     n.add_argument("--workload-input", help="inputs/X (a --copy-input destination) cut into windows")
     n.add_argument("--offsets", default="0")

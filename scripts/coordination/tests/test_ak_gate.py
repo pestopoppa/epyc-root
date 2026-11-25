@@ -593,5 +593,74 @@ def test_family_gate_receipt_unparks_and_enforce_switch(tmp_path, monkeypatch):
     assert not ok and "REPLAY-RECEIPT-MISSING" in why
 
 
+# ------------------------------------------------------------------------------------------------ A: selftest_bin + verdict map
+DET = "V5 deterministic split-tile reduction enabled (GGML_HIP_Q8_MF6_DET=1)"
+V5I = "ggml_cuda_q8ip: in-place Q8_0 stage-contiguous repack enabled"
+VMAP = {"PASS": {"KEEP": "PASS_DET_NOREGRESS"},
+        "FAIL": {"FAIL_CORRECTNESS": "FAIL_FIX_NONDET", "NO_KEEP": "FAIL_PERF_REGRESS",
+                 "FUTILITY_CANDIDATE_BELOW_FLOOR": "FAIL_PERF_REGRESS"}}
+
+
+def q8ip_spec(argv):
+    return spec(knobs={"GGML_HIP_Q8_MF6_DET": {"marker": DET, "level": 4}, "V5I": {"kind": "observe", "marker": V5I}},
+                arms={"BASE": {}, "FIX": {"GGML_HIP_Q8_MF6_DET": "1"}},
+                expect={"BASE": {"GGML_HIP_Q8_MF6_DET": "absent", "V5I": "present"},
+                        "FIX": {"GGML_HIP_Q8_MF6_DET": "present", "V5I": "present"}},
+                metric={"name": "ms_per_round", "higher_is_better": False},
+                keep={"threshold": 0.99, "n_blocks": 2, "look_blocks": 2, "aa_max": None}, verdict_map=VMAP,
+                correctness={"kind": "selftest_bin", "argv": argv, "runs": 3,
+                             "mismatch_rx": r"^summary: prompts=\d+ mismatches=(\d+)", "max_mismatch": {"FIX": 0}})
+
+
+def test_a_selftest_bin_replay_on_the_real_bisect_log(tmp_path):
+    """ak-27b-second-ctx-nondet-bisect smoke-0.log (AA, 4/4 MISMATCH, V5I on): BASE reports it, FIX gates on 0."""
+    real = open(os.path.join(FIX, "q8ip", "aa-base-smoke-0.log")).read()
+    sp = q8ip_spec(["/s/bin/test-q8ip-two-ctx", "-lv", "4"])
+
+    def prior(name, fix_log):
+        units, logs = [], []
+        row = tmp_path / name
+        (row / "out" / "logs").mkdir(parents=True)
+        for uid, kind, arm, ex in G.plan_correctness(sp):
+            (row / "out" / "logs" / f"{uid}.log").write_text(real if arm == "BASE" else fix_log)
+            H.append_unit({"unit_id": uid, "kind": kind, "arm": arm, "argv": ["test-q8ip-two-ctx", "-lv", "4"], "rc": 0,
+                           "log": f"logs/{uid}.log", "gate_unit": True, **ex}, str(row / "out"))
+        return row
+    nondet = real.replace(V5I, f"0.0 I {DET}\n0.1 I {V5I}")               # FIX armed but still 4/4 mismatches
+    r = G.replay(sp, str(tmp_path / "n"), str(prior("p1", nondet)), stream=QUIET)
+    assert r["verdict"] == "FAIL_FIX_NONDET" and r["observed"]["polar"] == "FAIL"
+    assert r["observed"]["native_verdict"] == "FAIL_CORRECTNESS" and '"FIX"' in r["observed"]["reason"]
+    assert P.observed_class(r["observed"])["fine"] == "correctness"        # the row's own name never re-classes
+    fixed = nondet.replace("mismatches=4", "mismatches=0")
+    r = G.replay(sp, str(tmp_path / "n2"), str(prior("p2", fixed)), stream=QUIET)
+    assert r["verdict"] == "INCOMPLETE"                                     # correctness passed; BASE 12 reported only
+    r = G.replay(sp, str(tmp_path / "n3"), str(prior("p3", real)), stream=QUIET)    # FIX without the DET line
+    assert r["verdict"] == "FUTILITY_HARNESS_WITNESS" and r["mismatch_pairs"][0] == ("GGML_HIP_Q8_MF6_DET", "FIX")
+
+
+def test_a_selftest_bin_live_fresh_processes_and_mapped_keep(tmp_path):
+    b = tmp_path / "bin"
+    b.mkdir()
+    (b / "test-q8ip-two-ctx").write_text(
+        "#!/usr/bin/env python3\nimport os\n"
+        "open(os.environ['PIDS'], 'a').write(str(os.getpid()) + '\\n')\n"
+        f"print('0.1 I {V5I}')\n"
+        f"det = os.environ.get('GGML_HIP_Q8_MF6_DET')\nprint('0.2 I {DET}') if det else None\n"
+        "print('summary: prompts=4 mismatches=%d engaged=1' % (0 if det else 3))\n")
+    os.chmod(b / "test-q8ip-two-ctx", 0o755)
+    sp = q8ip_spec([str(b / "test-q8ip-two-ctx")])
+    sp["server"]["env"] = {"PIDS": str(tmp_path / "pids")}
+    g = G.Gate(sp, str(tmp_path / "row"), env={"FILLER_PORTS": "1", "FILLER_ID": "t"}, stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out, {"FIX": 1.0})
+    assert g.run() == 0
+    res = json.load(open(os.path.join(g.out, "RESULT.json")))
+    assert res["verdict"] == "PASS_DET_NOREGRESS" and res["polar"] == "PASS" and res["native_verdict"] == "KEEP_FIX"
+    assert res["correctness"]["mismatches"] == {"BASE": 9, "FIX": 0}
+    assert len(set((tmp_path / "pids").read_text().split())) == 6            # 3 runs x 2 arms, each its own process
+    assert all(u["argv"][-2:] == ["-lv", "4"] for u in G.load_units(g.out) if u["kind"] == "c-st")
+    chk = MK.GATE_CHECK.format(result=os.path.join(g.out, "RESULT.json"))
+    assert subprocess.run([sys.executable, "-c", chk]).returncode == 0       # the keeper's completion check accepts it
+
+
 if __name__ == "__main__":
     raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/coordination/tests/test_ak_gate.py -q")
