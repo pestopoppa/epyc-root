@@ -43,9 +43,9 @@ class BuildLane(unittest.TestCase):
     def test_count_claim_takes_free_quarter_and_reaps(self):
         gid, line = self.claim("16", [bench_grant()])
         self.assertTrue(gid.startswith("build-akagg-"))
-        self.assertIn("regions=q1", line)
+        self.assertIn("regions=q2", line)   # CLAIM-PLACE: q1 shares q0's NUMA half with the bench grant
         g = [x for x in rf.open_grants(self.flags) if x["id"] == gid][0]
-        self.assertEqual(g["holds"] & set(rf.QUARTERS), {"q1"})
+        self.assertEqual(g["holds"] & set(rf.QUARTERS), {"q2"})
         self.assertEqual(rf.reap_build_grants(self.flags, now=time.time(), log=lambda m: None), [])
         self.assertEqual(rf.reap_build_grants(self.flags, now=time.time() + 31 * 60, log=lambda m: None), [gid])
         self.assertIn("reason=build-window", open(os.path.join(self.flags, "grants", gid + ".ended")).read())

@@ -6774,6 +6774,40 @@ def _new_build_id(flags, owner, t):
         return gid
     raise Refused("BUILD-REFUSED: could not mint a unique build grant id")
 
+# CLAIM-PLACE (AK 2026-11-25): build-autokernel-20261125T031820Z-55b4fe / -031850Z-b6d52e (q8w8 builds, --cpus 24-47 = q1) were
+# granted at 03:18Z beside ak-cpu-conv-state-fwd-20261124-r2 (timing, q0 0-23, membind 0): no core overlapped, but q0 and q1
+# share one half of the IO die / one memory controller set, and the build raised the measurement's noise 30x. The claim path
+# only refused the timing grant's OWN quarters. Now a build is never placed in a quarter on the same NUMA half
+# (BUILD_NUMA_SIDES) as an open CPU measurement (bench/timing) or quiet-sensitive grant; a count claim picks a quarter on the
+# other half (or the q3 pocket when q2/q3 are clear), a literal list there is refused, and with nothing fitting it waits.
+BUILD_NUMA_SIDES = (frozenset({"q0", "q1"}), frozenset({"q2", "q3"}))
+
+
+def build_side_blocked(flags, grants, allrows):
+    """{quarter: grant id} - quarters a build claim must avoid: every quarter on the NUMA half of an open non-build CPU grant
+    that is a measurement (bench/timing contract) or quiet-sensitive. GPU-lane grants (their 8 q3 host threads) are not
+    CPU measurements and keep the existing q3-pocket rules."""
+    out = {}
+    for g in grants:
+        if g["id"].startswith(BUILD_PREFIX):
+            continue
+        h = set(g.get("holds") or ())
+        if "gpu-quiet" in h or any(str(t).startswith("mi210") for t in h):
+            continue
+        d = allrows.get(g["id"]) or load_json(ready_path(flags, g["id"])) or {}
+        try:
+            meas = bool(contract_of(d, flags=flags)["bench"]) if d else False   # same as timing_quarters
+        except Exception:  # noqa: BLE001 - unparsable counts as a measurement (never risk one)
+            meas = True
+        if not (meas or quiet_sensitive(d)):
+            continue
+        gq = {q for q in QUARTERS if q in h or h & qcores(q)}
+        for side in BUILD_NUMA_SIDES:
+            if side & gq:
+                for q in side:
+                    out.setdefault(q, g["id"])
+    return out
+
 
 def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None,
                         queued=False):
@@ -6803,26 +6837,30 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
                         f"bandwidth-heavy - retry when they run (reserve self-releases after {quiet_reserve_max_s(flags) / 60:.0f} min)")
     tq = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX)], allrows)
     holder = {q: g["id"] for g in grants for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
+    sideb = build_side_blocked(flags, grants, allrows)   # CLAIM-PLACE: NUMA halves of running measurements
+    avoided = set()
     s = str(cpus).strip()
     part = None   # PARTIAL-QUARTER: core (+free sibling) tokens a build holds inside a quarter other grants hold only in part
     if re.fullmatch(r"\d+", s):
         n = int(s)
         need(1 <= n <= BUILD_MAX_CPUS, f"--cpus {n}: a build lane is at most one quarter ({BUILD_MAX_CPUS} cores)")
-        pick = [q for q in QUARTERS[:3] if q in free and q not in tq]
+        avoided = {sideb[q] for q in QUARTERS[:3] if q in sideb and q not in tq}
+        pick = [q for q in QUARTERS[:3] if q in free and q not in tq and q not in sideb]
         if not pick:   # a quarter held only in part still has free cores: take n of them, never the whole quarter
             for q in QUARTERS[:3]:
                 fc = free_cores(q, free)
-                if q not in tq and len(fc) >= n:
+                if q not in tq and q not in sideb and len(fc) >= n:
                     part = partial_tokens(fc[:n], free); pick = [q]; break
         if not pick and n <= BUILD_Q3_POCKET_CORES:   # q0-q2 have no pocket: the q3 pocket 72-87 (never 88-95), beside GPU grants
             tg = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX) and g["holds"] & COEXIST_Q3], allrows)
-            part = None if tg else q3_pocket_claim(flags, free, n)
+            part = None if (tg or "q3" in sideb) else q3_pocket_claim(flags, free, n)
             if part:
                 pick = ["q3"]
         if not pick:   # BUILD-POCKET: remember the unmet claim so the planner leaves the next pocket for it
             record_build_wait(flags, owner, now, wait_pid)
         need(pick, f"no whole-free quarter q0-q2 and none with >= {n} free cores for a build now (" + ", ".join(
-             f"{q}: {holder.get(q, 'busy')}" + (" [timing]" if q in tq else "") for q in QUARTERS[:3])
+             f"{q}: {holder.get(q, 'busy')}" + (" [timing]" if q in tq else "")
+             + (f" [numa-side of {sideb[q]}]" if q in sideb and q not in tq else "") for q in QUARTERS[:3])
              + "); retry later, never run it unclaimed")
         qs = [pick[0]]
     else:
@@ -6852,6 +6890,9 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
         wait = gpu_rows_waiting_on_q3(flags, grants, allrows, free)
         need(not wait, f"BUILD-REFUSED: GPU row {','.join(sorted(wait)[:3])} is grantable and waiting only on q3 host cores; a new q3 build "
                        "claim yields to it (running builds are never pre-empted) - retry when it has started")
+    for q in qs:   # CLAIM-PLACE: a literal list on a measurement's NUMA half is refused (a queued request keeps waiting)
+        need(q not in sideb or q in tq, f"BUILD-REFUSED: {q} shares a NUMA half with measurement grant {sideb.get(q)}; a build "
+                                        "there would perturb it. Use a quarter on the other half (or --cpus N to let the keeper pick)")
     pocket = bool(part) and qs == ["q3"]   # a q3-pocket build holds only 72-87/168-183: a GPU timing grant's 88-95 is not its quarter
     for q in qs:
         need(pocket or q not in tq, f"BUILD-REFUSED: {q} is held by timing grant {holder.get(q, '?')}; a build there would perturb "
@@ -6877,6 +6918,10 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
     rec = {"id": gid, "owner": owner, "kind": "build", "quarters": qs, "cpus": cl,
            "minutes": minutes, "at": now_iso(), **({"partial": sorted(part)} if part else {}), **({"pocket": "q3"} if pocket else {})}
     atomic_json(os.path.join(flags, "grants", gid + ".build.json"), rec)
+    if avoided:
+        msg = f"CLAIM-PLACE {gid} cpus={compress_cpus(build_cpu_set(cl)) if re.fullmatch(r'[0-9,-]+', cl) else cl} avoided {','.join(sorted(avoided))}"
+        _keeper_log_line(flags, msg)
+        log(msg)
     log(f"BUILD-GRANT {gid}: {','.join(qs)} for {minutes} min (owner={owner}); run it pinned: taskset -c {rec['cpus']} ...")
     return gid, line
 
