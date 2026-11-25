@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+import os
+from pathlib import Path
+import sys
+name = os.environ.get('AK_CANARY_TBO_LOG', 'tbo-notsupported.log')
+if name not in {'tbo-notsupported.log', 'tbo-fail.log', 'tbo-crash.log'}:
+    raise SystemExit('unknown canary log')
+print((Path(__file__).resolve().parents[2] / name).read_text(), end='')
+raise SystemExit(139 if name == 'tbo-crash.log' else 0)
