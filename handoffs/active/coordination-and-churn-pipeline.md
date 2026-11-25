@@ -2495,7 +2495,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: rowflow.py on origin/main has SMOKE_MEASURE_ENFORCE = True and is deployed live with zero queued rows failing SMOKE-NO-MEASURE
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-KEEPER-REAP-QH-TESTS** [non-inference] Fix the pre-existing QH unbound variable failures in test_keeper_reap_ws58_disk.py (5 tests) and test_keeper_reap_oob::test_measure_excludes_pidfile_tree
+- [x] **PM-KEEPER-REAP-QH-TESTS** [non-inference] Fix the pre-existing QH unbound variable failures in test_keeper_reap_ws58_disk.py (5 tests) and test_keeper_reap_oob::test_measure_excludes_pidfile_tree ✅ 2026-11-25 [no-belief: software] a85c5eb1b: test_keeper_reap_ws58_disk + test_keeper_reap_oob 19 passed
       · done when: pytest scripts/coordination/tests/test_keeper_reap_ws58_disk.py scripts/coordination/tests/test_keeper_reap_oob.py passes
       · gate: none
       · owner: pipeline-mgmt
@@ -2545,11 +2545,11 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: every listed commit is reachable from origin/main and the live keeper runs 2fc1818a5 or later
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-DEPLOY-ROLLBACK-GUARD** [non-inference] Make deploy_rowflow.sh refuse a --ref that does not contain the live DEPLOYED.json sha (rc 81) unless --allow-rollback is passed
+- [x] **PM-DEPLOY-ROLLBACK-GUARD** [non-inference] Make deploy_rowflow.sh refuse a --ref that does not contain the live DEPLOYED.json sha (rc 81) unless --allow-rollback is passed ✅ 2026-11-25 [no-belief: software] 0b54e24d6: rollback_guard + stage_cleanup + lock_claim passed (stage_cleanup/lock_claim 8 passed on rerun)
       · done when: pytest scripts/coordination/tests/test_deploy_rowflow_rollback_guard.py passes
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-RESUMABLE-WINDOW-SIZING** [non-inference] Book and size grants for resumable rows from their remaining estimate (RESUMABLE_WINDOW_SIZING) instead of the full window, never above the normal max
+- [x] **PM-RESUMABLE-WINDOW-SIZING** [non-inference] Book and size grants for resumable rows from their remaining estimate (RESUMABLE_WINDOW_SIZING) instead of the full window, never above the normal max ✅ 2026-11-25 [no-belief: software] 7c34553b2: resumable_window + autorequeue/reservation/allocator/gpu_urgent/quiet_yield/build_pocket/scheduling_model + replay gate 190 passed
       · done when: pytest scripts/coordination/tests/test_rowflow_resumable_window.py passes
       · gate: none
       · owner: pipeline-mgmt
