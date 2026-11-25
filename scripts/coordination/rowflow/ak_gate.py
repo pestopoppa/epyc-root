@@ -259,6 +259,8 @@ def validate_spec(spec):
     if len(kinds) != len(set(kinds)):
         errs.append(f"correctness: one unit per kind (got {kinds})")
     for c in corr_list(spec):
+        if c.get("kind") == "tbo" and "require_rc0" in c and not isinstance(c["require_rc0"], bool):
+            errs.append("correctness tbo: require_rc0 must be a boolean")
         if c.get("kind") not in ("tbo", "kld", "identity", "selftest_bin"):
             errs.append(f"correctness.kind {c.get('kind')!r} not tbo|kld|identity|selftest_bin")
         else:
@@ -302,6 +304,10 @@ def validate_spec(spec):
     errs += witness_scope_errors(spec) + server_env_knob_errors(spec)
     if errs:
         raise SpecError("; ".join(errs))
+    for c in corr_list(spec):
+        if c.get("kind") == "tbo" and c.get("require_rc0") is False:
+            print(f"WARNING ak_gate {spec['row_id']}: tbo require_rc0=false; nonzero exit codes are accepted",
+                  file=sys.stderr, flush=True)
     return True
 
 
@@ -643,7 +649,7 @@ def tbo_pass(c, u):
     """rc 0, zero explicit FAIL cases, every case that ran OK, and at least the arm's min_cases ran (a crash or a too-short
     -o list is not a pass). "not supported" cases are skipped (n_skipped), never failures; n_cases counts cases that ran."""
     return (int(u.get("n_cases") or 0) >= int(per_arm(c.get("min_cases"), u["arm"], 1)) and u.get("n_ok") == u.get("n_cases")
-            and not u.get("n_fail") and (u.get("rc") == 0 or not c.get("require_rc0")))
+            and not u.get("n_fail") and (u.get("rc") == 0 or c.get("require_rc0") is False))
 
 
 def tbo_counts(cases):

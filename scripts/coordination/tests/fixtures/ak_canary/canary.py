@@ -27,8 +27,7 @@ def tbo_semantics():
     bad = unit('tbo-fail.log', 0)
     assert not G.tbo_pass(cfg, bad), bad
     crash = unit('tbo-crash.log', 139)
-    if G.tbo_pass(cfg, crash):
-        raise KnownFailure('A5: nonzero return code accepted by default')
+    assert not G.tbo_pass(cfg, crash), 'A5: nonzero return code accepted by default'
 
 
 def server_env_knob():

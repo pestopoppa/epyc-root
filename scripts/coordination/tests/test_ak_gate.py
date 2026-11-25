@@ -826,6 +826,24 @@ def test_q8wt_tbo_unit_without_lv_is_exempt_from_witness_but_server_unit_still_f
     assert not G.witness_for(sp, "OFF", txt, None, "x", "tbo")["V5I_INPLACE"]["ok"]
 
 
+def test_tbo_return_code_default_and_explicit_opt_out(capsys):
+    c = {"kind": "tbo", "argv": ["test-backend-ops"]}
+    u = {"arm": "ON", "rc": 0, "n_cases": 1, "n_ok": 1, "n_fail": 0}
+    assert G.tbo_pass(c, u)
+    assert not G.tbo_pass(c, dict(u, rc=139))
+    assert not G.tbo_pass(c, dict(u, rc=None))
+    assert not G.tbo_pass(dict(c, require_rc0=True), dict(u, rc=139))
+    assert G.tbo_pass(dict(c, require_rc0=False), dict(u, rc=139))
+    assert not G.tbo_pass(dict(c, require_rc0=False), dict(u, rc=139, n_fail=1))
+    for invalid in (None, 0, 1, "false"):
+        with pytest.raises(G.SpecError, match="require_rc0 must be a boolean"):
+            G.validate_spec(spec(correctness=[dict(c, require_rc0=invalid)]))
+    assert G.validate_spec(spec(correctness=[dict(c, require_rc0=False)]))
+    assert "WARNING" in capsys.readouterr().err
+    assert G.validate_spec(spec(correctness=[c]))
+    assert not capsys.readouterr().err
+
+
 def test_knee_batch_tbo_not_supported_is_skipped_and_failing_baseline_is_harness():
     """ak-c22-knee-batch-gate-gpu-20261125-r3: OFF itself ended 1744/2085 ok with rc 0 because 'not supported [ROCm0]' lines
     were counted as failures. Skipped is not failed; a baseline that fails is a harness verdict, never FAIL_CORRECTNESS."""
