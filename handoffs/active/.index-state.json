@@ -2147,7 +2147,7 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 315,
+      "closed": 316,
       "guarded": 0,
       "last_advanced": "2026-11-25",
       "open": 8,
@@ -2159,11 +2159,11 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 323,
+      "total": 324,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 120,
+          "closed": 121,
           "gates": [
             "EVL-47"
           ],
@@ -2181,7 +2181,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1246,
+          "line": 1250,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2194,7 +2194,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2392,
+          "line": 2396,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2
@@ -2204,7 +2204,7 @@
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2767,
+          "line": 2771,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2214,7 +2214,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3203,
+          "line": 3207,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2224,7 +2224,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3298,
+          "line": 3302,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
