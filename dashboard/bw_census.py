@@ -78,7 +78,8 @@ def _num(x) -> Optional[float]:
 
 
 def shape_rows(doc: dict) -> dict:
-    """Split records into GPU (MI210) and CPU tables, sorted by recoverable ms desc."""
+    """Split records into GPU (MI210) and CPU tables: served lane first, then the candidate lane, then not_served
+    (stock-path records the producer keeps unranked), each by recoverable ms desc. A record without a lane is served."""
     floor = _num(doc.get("floor_gbps"))
     gpu_ceiling = _num(doc.get("ceiling_gbps"))
     cpu_ceils = ((doc.get("cpu") or {}).get("ceiling_gbps") or {})
@@ -117,13 +118,14 @@ def shape_rows(doc: dict) -> dict:
             "recoverable_ms": _num(rec.get("recoverable_ms_per_round")),
             "rank": rec.get("rank"),
             "status": rec.get("status"),
+            "lane": rec.get("lane") or "served",
             "seed": rec.get("seed"),
             "source_row": rec.get("source_row"),
             "measured_at": rec.get("measured_at"),
             "trend": trend(rec.get("history")),
         })
     for rows in tables.values():
-        rows.sort(key=lambda r: (-(r["recoverable_ms"] or 0.0), r["id"]))
+        rows.sort(key=lambda r: ({"not_served": 2, "candidate": 1}.get(r["lane"], 0), -(r["recoverable_ms"] or 0.0), r["id"]))
     return tables
 
 
