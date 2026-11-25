@@ -3221,6 +3221,24 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [x] **RPK-NEAR-BAND** [non-inference] Define the review decision band so review_majority_k fans out only on near-band reviews, as orchestration/review_plane_knobs.yaml describes; today k applies to every review — (orch 9de4356f: band = |first-pass score - 0.5| <= review_near_band_width, default 0.5 = every review; midpoint 0.5 is assumed, no score threshold exists in code) [no-belief: code wiring, unit-tested, no measurement]
       · done when: a unit test shows k>1 runs extra passes only for a review inside the defined band, and a far-band review runs one pass
       · gate: RPK-READER
+- [ ] **HF-TOOL-PIN** [non-inference] Pin orchestrator tool/REPL subprocesses (child_lane, code_search, external_access, file_mutation, fence_kernel) to a tool CPU set disjoint from serving roles, behind default-off tool_process_cpu_pin (rowflow lesson 1)
+      · done when: a unit test shows child processes get the tool affinity with the flag on, unchanged with it off, and an overlap with a serving cpu_shape is refused
+      · gate: none
+- [ ] **HF-CRASH-CLASS** [non-inference] Classify a dropped connection as candidate_crash when the role server log shows GGML_ASSERT or a segfault, behind default-off server_log_crash_class (rowflow lesson 5, rowflow 1a5e58bc0)
+      · done when: a unit test shows an assert in the server log yields candidate_crash and a clean log stays infra, unchanged with the flag off
+      · gate: none
+- [ ] **HF-DEPLOY-ANCESTRY** [non-inference] Refuse an API reload to a code ref that is not a descendant of the last-deployed ref, and refuse revert_code_mutation over a moved file, behind default-off deploy_ancestry_guard (rowflow lesson 8)
+      · done when: unit tests show an older ref is refused unless --allow-rollback, and a moved-file revert is refused, unchanged with the flag off
+      · gate: none
+- [ ] **HF-AP-WAKE** [non-inference] Push autopilot health-degraded, smoke-fail and consecutive-failure alerts to a configured owning session with dedupe and rate limit, behind default-off autopilot_alert_push (rowflow lesson 2, rowflow ca79760b7)
+      · done when: a unit test shows one alert per degraded transition, a deduped repeat, and nothing with the flag off
+      · gate: none
+- [ ] **HF-PROGRESS-RETRY** [non-inference] Do not charge autopilot retry caps (multitier per-tier attempts, AP55 seed rerun, consecutive_failures blacklist) for an attempt that made progress, behind default-off progress_aware_retry_cap (rowflow lesson 3, rowflow 603fd7099)
+      · done when: a unit test shows a progressing attempt is not charged and a non-progressing one is, unchanged with the flag off
+      · gate: none
+- [ ] **HF-GPU-DRAIN-INVERSION** [non-inference] Check whether the GPU window executor fixed 600 s drain lets a low-priority holder block a higher-priority window, and add a priority-aware yield if so (rowflow lesson 4, rowflow aab494157)
+      · done when: a finding with file:line is recorded, and if a gap exists a unit test shows a higher-priority request preempts a low-priority drain
+      · gate: none
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
