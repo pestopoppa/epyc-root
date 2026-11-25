@@ -227,6 +227,26 @@ class R6Budget(Base):
         self.assertTrue(lines[0].startswith("SMOKE-BUDGET-OVERRIDE"))
         self.assertTrue(fs.republish_allowed(self.flags, spec, now=NOW)[0])
 
+    def test_main_records_operator_override_before_rehearsal(self):
+        # 2026-11-25: the rehearsal runs the SMOKE-BUDGET check, so main() must record the override first.
+        import json as _json, os as _os, tempfile as _tf
+        for i in (1, 2, 3):
+            fs.record_gpu_smoke(self.flags, f"{BASE}-r{i}", "PASS")
+        spec = {"id": f"{BASE}-r4", "lane": "gpu"}
+        p = _os.path.join(_tf.mkdtemp(), "spec.json")
+        _json.dump(spec, open(p, "w"))
+        seen = {}
+
+        def fake_rehearse(s, flags, **kw):
+            seen["allowed"] = fs.republish_allowed(flags, s)[0]
+            return [] if seen["allowed"] else [("family", "SMOKE-BUDGET")]
+        with mock.patch.object(pr, "rehearse", fake_rehearse), mock.patch.object(pr, "route_rerank", lambda *a, **k: False), \
+                mock.patch.object(pr, "refresh_view", lambda *a, **k: None), \
+                mock.patch.object(pr, "publish_smoked", lambda *a, **k: None):
+            rc = pr.main([p, "--flags", self.flags, "--smoke-budget-by", "operator", "--reason", "operator: run ASAP"])
+        self.assertTrue(seen["allowed"])
+        self.assertEqual(rc, 0)
+
     def test_publish_smoked_refuses(self):
         for i in (1, 2, 3):
             fs.record_gpu_smoke(self.flags, f"{BASE}-r{i}", "FAIL")
