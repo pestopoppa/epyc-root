@@ -128,7 +128,7 @@ class StatusSurfaces(Fixture):
         out = self.tick()
         self.assertEqual([r for _, r, _ in out], [rid])
         snap = [l for l in self.lines if l.startswith("SNAPSHOT")][0]
-        self.assertTrue(snap.endswith(hostutil.line(BUSY)), snap)
+        self.assertIn(hostutil.line(BUSY), snap)   # a rule_would_fail suffix may follow the util line
 
     def test_idle_violation_alert_carries_util_and_is_routed(self):
         routed = []
