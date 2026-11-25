@@ -271,6 +271,18 @@ def classify(flags, owner=None, now=None):
                    expected_start=gstart,
                    reason=f"SMOKE-QUEUED (GPU) queued_at={q.get('queued_at')} expected start {gstart}"
                           + (f" wait_attempts={q.get('wait_attempts')}" if q.get("wait_attempts") else ""))
+    # AK waste audit R5 (2026-11-25): a smoke FAIL unpublishes the row, so the ready/ walk never saw the two operator-approved
+    # contamination rows abandoned 17 h. List every family whose last smoke FAILED and was not republished, with its age.
+    try:
+        import family_strikes as fs
+        seen = {x["id"] for k in out for x in (out[k] if isinstance(out[k], list) else [])}
+        for x in fs.needs_republish(flags, now.timestamp()):
+            if x["id"] in seen or (owner and owner.lower() not in str(x.get("owner", "")).lower()):
+                continue
+            x["kind"] = "FAILED-STALE"
+            out["NEEDS-REPUBLISH"].append(x)
+    except Exception as e:  # noqa: BLE001 - a read-only page never fails on an advisory block
+        out["NEEDS-REPUBLISH"].append({"id": "(family_strikes unavailable)", "reason": f"{type(e).__name__}: {e}"})
     out["UNFILED-ENDED"] = unfiled
     out["keeper"] = keeper
     return out

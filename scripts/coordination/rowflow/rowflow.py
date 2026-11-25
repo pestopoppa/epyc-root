@@ -10564,6 +10564,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             orphaned_smoke_alerts(flags, log=log)
         except Exception as e:  # noqa: BLE001
             log(f"QUEUED-SMOKE-ORPHANED check failed: {type(e).__name__}: {e}")
+        try:   # AK waste audit R5: a failed smoke nobody republished reaches its owner (2 h / 8 h; 1 h / 4 h urgent)
+            if not dry:
+                import family_strikes
+                family_strikes.stale_fail_escalations(flags, log=log)
+        except Exception as e:  # noqa: BLE001
+            log(f"SMOKE-FAIL-STALE check failed: {type(e).__name__}: {e}")
         try:   # F9: aged smoke markers reach their owners
             queued_aged_alerts(flags, log=log)
         except Exception as e:  # noqa: BLE001
