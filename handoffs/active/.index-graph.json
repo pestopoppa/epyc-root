@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T18:07:41Z",
+  "generated_at": "2026-11-25T18:28:48Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1385,7 +1385,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 1017,
+      "closed": 1018,
       "dispatchable": 134,
       "domain": "inference-research",
       "guarded": 0,
@@ -1446,7 +1446,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5569,
+          "line": 5570,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1455,7 +1455,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5654,
+          "line": 5655,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1474,7 +1474,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5835,
+          "line": 5836,
           "name": "autokernel-rebuild-program",
           "open": 7,
           "readiness": "blocked"
@@ -1491,7 +1491,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7720,
+          "line": 7721,
           "name": "autokernel-unified-surface-program",
           "open": 31,
           "readiness": "blocked"
@@ -1504,7 +1504,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 11059,
+          "line": 11066,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1538,7 +1538,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11306,
+          "line": 11313,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1551,7 +1551,7 @@
           "gates": [
             "INF-06"
           ],
-          "line": 11926,
+          "line": 11933,
           "name": "autokernel-roofline-surface-loop",
           "open": 6,
           "readiness": "blocked"
@@ -1681,15 +1681,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 320,
-      "dispatchable": 16,
+      "closed": 324,
+      "dispatchable": 13,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-25",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 16,
+      "open": 13,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1724,13 +1724,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 14,
+          "dispatchable": 11,
           "gates": [
             "EVL-47"
           ],
           "line": 60,
           "name": "rocm-verify-profile-backend",
-          "open": 14,
+          "open": 11,
           "readiness": "blocked"
         },
         {
@@ -1743,7 +1743,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1304,
+          "line": 1314,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1758,7 +1758,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2450,
+          "line": 2460,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1767,7 +1767,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2825,
+          "line": 2835,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1776,7 +1776,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3261,
+          "line": 3271,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1785,7 +1785,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3356,
+          "line": 3366,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1796,15 +1796,15 @@
       "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 302,
-      "dispatchable": 30,
+      "closed": 303,
+      "dispatchable": 29,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-25",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 33,
+      "open": 32,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1847,14 +1847,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 18,
+          "dispatchable": 17,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 1025,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19,
+          "open": 18,
           "readiness": "blocked"
         }
       ]
@@ -2324,14 +2324,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 154,
-      "dispatchable": 48,
+      "dispatchable": 49,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-25",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
-      "open": 49,
+      "open": 50,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2361,7 +2361,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 11,
+          "dispatchable": 12,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2369,7 +2369,7 @@
           ],
           "line": 21,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 11,
+          "open": 12,
           "readiness": "blocked"
         },
         {
@@ -2390,7 +2390,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 842,
+          "line": 845,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 38,
           "readiness": "blocked"
@@ -3528,7 +3528,7 @@
       "age_days": 0,
       "blocked": 6,
       "blocked_by": [],
-      "closed": 446,
+      "closed": 447,
       "dispatchable": 80,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3577,7 +3577,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1944,
+          "line": 1949,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3592,7 +3592,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2384,
+          "line": 2389,
           "name": "kv-unified-stack-rollout",
           "open": 32,
           "readiness": "blocked"
