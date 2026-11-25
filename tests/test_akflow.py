@@ -235,6 +235,12 @@ class PathGates(unittest.TestCase):
             self.assertNotEqual(got[v]["status"], "gated")
             self.assertEqual(got[v]["op_perf"], v)
 
+    def test_loop_html_treats_only_floored_as_good_and_labels_no_lane(self):
+        page = (REPO / "dashboard/static/loop.html").read_text()
+        self.assertIn("cell(p.op_perf,'floored')", page)
+        self.assertNotIn("cell(p.op_perf,'grid')", page)
+        self.assertIn("'no-lane':'no lane'", page)       # a missing lane is labelled as such, not as a missing floor
+
     def test_path_gates_counts_unfloored_paths_as_gaps(self):
         rep = {"a|mi210": {"status": "live", "device": "mi210", "timing": "cell", "quality": "gated", "op_perf": "grid-no-floor"},
                "b|cpu": {"status": "live", "device": "cpu", "timing": "cell", "quality": "gated", "op_perf": "no-lane"},
