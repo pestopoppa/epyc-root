@@ -38,7 +38,7 @@ REGISTER_REL = "data/belief/committed_conclusions.jsonl"
 
 NONPASS = re.compile(r"\b(DROP|FUTILITY\w*|STOPPED|INCONCLUSIVE|NOT_ATTRIBUTED|diagnostic|partial)\b", re.I)
 FAILISH = re.compile(r"\b(FAIL\w*|crash\w*|REFUSED|ERROR)\b", re.I)
-PASSISH = re.compile(r"^\s*(PASS|KEEP|CALIBRATED)\b", re.I)
+PASSISH = re.compile(r"^\s*(?:(?:PASS|CALIBRATED)\b|KEEP(?:_|\b))", re.I)
 NUMBER = re.compile(r"\d")
 
 
@@ -51,7 +51,7 @@ def parse_ended(text: str) -> dict:
     return out
 
 
-def map_verdict(native: str, ended: dict | None = None) -> str:
+def map_verdict(native: str, ended: dict | None = None, polar: str | None = None) -> str:
     """native RESULT verdict string (+ .ended record) -> pass | fail | inconclusive. Never pass on a non-pass."""
     native = (native or "").strip()
     ended = ended or {}
@@ -59,8 +59,12 @@ def map_verdict(native: str, ended: dict | None = None) -> str:
     reason = ended.get("reason", "complete")
     if rc in ("75", "143") or (reason and reason != "complete"):
         return "fail" if FAILISH.search(native) and not NONPASS.search(native) else "inconclusive"
+    if polar is not None:
+        return {"PASS": "pass", "FAIL": "fail"}.get(str(polar).strip().upper(), "inconclusive")
     if not native:
         return "inconclusive"
+    if re.match(r"^NO_KEEP(?:\b|_)", native, re.I):
+        return "fail"
     if FAILISH.search(native) and not NONPASS.search(native):
         return "fail"
     if NONPASS.search(native):
@@ -142,9 +146,9 @@ def draft(row: str) -> dict:
     if ended and complete_result(row):
         ended = {}   # a complete RESULT beats the .ended rc/reason (rc=75 from the old check_complete)
     native = str(res.get("verdict") or "")
-    v = map_verdict(native, ended)
+    v = map_verdict(native, ended, res.get("polar"))
     nums = {k: res[k] for k in res if isinstance(res[k], (int, float)) and not isinstance(res[k], bool)}
-    rat = f"RESULT {native or '(none)'}; ended rc={ended.get('rc', '?')} reason={ended.get('reason', '?')}"
+    rat = f"RESULT {native or '(none)'}; polar={res.get('polar', '(absent)')}; ended rc={ended.get('rc', '?')} reason={ended.get('reason', '?')}"
     if nums:
         rat += "; " + ", ".join(f"{k}={nums[k]}" for k in list(nums)[:8])
     rat += ". TODO: cite the numbers the pre-registered RULE decided on."

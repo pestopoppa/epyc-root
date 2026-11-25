@@ -373,6 +373,18 @@ def test_composite_verdicts():
     assert k("DROP").rule == "result:DROP"
 
 
+def test_ak_gate_compound_keep_and_polar():
+    import failclass as FC
+    def classify(verdict, **fields):
+        return FC.classify_result({"verdict": verdict, **fields})
+    assert (classify("KEEP_A+B").side, classify("KEEP_A+B").klass) == ("ok", "keep")
+    assert classify("NO_KEEP").side == "candidate"
+    assert classify("FAIL_SOME_GATE").side == "candidate"
+    assert classify("KEEP_A+B", polar="FAIL").side == "candidate"
+    assert classify("NO_KEEP", polar="PASS").side == "ok"
+    assert classify("FUTILITY_HARNESS_INPUT", polar="PASS").side == "ok"
+
+
 def _ended(tmp_path, rid, reason):
     g = tmp_path / "flags" / "grants"
     g.mkdir(parents=True, exist_ok=True)

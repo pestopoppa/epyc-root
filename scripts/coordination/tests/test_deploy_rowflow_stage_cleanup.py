@@ -31,6 +31,9 @@ class StageCleanup(unittest.TestCase):
         shutil.copytree(os.path.join(COORD, "rowflow"), os.path.join(self.repo, "scripts", "coordination", "rowflow"),
                         ignore=shutil.ignore_patterns("__pycache__", "*.bak*"))
         os.makedirs(os.path.join(self.repo, "scripts", "coordination", "tests"))
+        replay = os.path.join(self.repo, "scripts", "coordination", "tests", "replay")
+        os.makedirs(replay)
+        open(os.path.join(replay, "test_replay_gate.py"), "w").write("def test_replay():\n    assert True\n")
         open(os.path.join(self.repo, "scripts", "coordination", "rowflow", "x.txt"), "w").write("x\n")
         open(os.path.join(self.repo, "scripts", "coordination", "INSTALL.manifest"), "w").write(
             "bin/rowflow/x.txt scripts/coordination/rowflow/x.txt data\n")

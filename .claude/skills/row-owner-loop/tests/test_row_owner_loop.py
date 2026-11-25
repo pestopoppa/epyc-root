@@ -35,6 +35,22 @@ def test_fail_and_pass():
     assert runend.map_verdict("weird", {}) == "inconclusive"
 
 
+def test_ak_gate_verdict_and_polar_precedence(tmp_path, monkeypatch):
+    assert runend.map_verdict("KEEP_A+B") == "pass"
+    assert runend.map_verdict("KEEPER") == "inconclusive"
+    assert runend.map_verdict("NO_KEEP") == "fail"
+    assert runend.map_verdict("FAIL_CORRECTNESS") == "fail"
+    assert runend.map_verdict("FUTILITY_HARNESS_INPUT") == "inconclusive"
+    for row, result, expected in (
+        ("row-a", {"verdict": "KEEP_A+B"}, "pass"),
+        ("row-b", {"verdict": "NO_KEEP"}, "fail"),
+        ("row-c", {"verdict": "KEEP_A+B", "polar": "FAIL"}, "fail"),
+        ("row-d", {"verdict": "NO_KEEP", "polar": "PASS"}, "pass"),
+    ):
+        _ended_row(tmp_path, monkeypatch, row, {"complete": True, **result})
+        assert runend.draft(row)["verdict"] == expected
+
+
 def test_lint_verdict():
     assert runend.lint_verdict({"verdict": "pass", "rationale": "no numbers"}) == ["rationale cites no number"]
     errs = runend.lint_verdict({"verdict": "pass", "rationale": "DROP(diagnostic) 3 of 4"})
@@ -118,7 +134,7 @@ def test_scaffold_then_lint(tmp_path):
     hf.write_text("- [ ] **BOX-2** x. model: A3B. stop-on answer. est 1500 s\n")
     rc = rs.main(["new", "row-y", "--handoff", str(hf), "--box", "BOX-2", "--lane", "cpu", "--regions", "0-23",
                   "--threads", "24", "--units", "10", "--unit-s", "120", "--model", "model: A3B Q8_0",
-                  "--root", str(tmp_path)])
+                  "--root", str(tmp_path), "--flags", str(tmp_path / "flags"), "--futility", "stop on no gain"])
     assert rc == 0
     d = tmp_path / "row-y"
     assert json.load(open(d / "spec.json"))["estimate_s"] == 1500
@@ -136,7 +152,7 @@ def test_scaffold_defaults_to_estimate_from_history(tmp_path):
     hf = tmp_path / "h.md"
     hf.write_text("- [ ] **BOX-3** x. model: A3B. stop-on answer. est 375 s\n")
     base = ["--handoff", str(hf), "--box", "BOX-3", "--lane", "cpu", "--regions", "0-23", "--threads", "24",
-            "--model", "model: A3B Q8_0", "--root", str(tmp_path), "--flags", str(flags)]
+            "--model", "model: A3B Q8_0", "--root", str(tmp_path), "--flags", str(flags), "--futility", "stop on no gain"]
     assert rs.main(["new", "fam-h-20261130", *base]) == 0
     spec = json.load(open(tmp_path / "fam-h-20261130" / "spec.json"))
     assert spec["estimate_s"] == 375 and spec["estimate_justification"].startswith("history fam-h")
@@ -169,7 +185,7 @@ def test_scaffold_gpu_copies_harness_from_origin_main(tmp_path):
     head, status = _git("rev-parse", "HEAD", cwd=clone), _git("status", "--porcelain", cwd=clone)
     rc = rs.main(["new", "row-g", "--handoff", str(hf), "--box", "BOX-3", "--lane", "gpu", "--regions", "88-95,184-191",
                   "--threads", "8", "--units", "1", "--unit-s", "120", "--model", "model: none", "--root", str(tmp_path),
-                  "--research-repo", str(clone)])
+                  "--research-repo", str(clone), "--flags", str(tmp_path / "flags"), "--futility", "stop on no gain"])
     assert rc == 0
     d = tmp_path / "row-g"
     assert (d / "gpu_common.py").read_text() == "X = 2\n"  # origin/main, not the clone's stale checkout

@@ -247,6 +247,7 @@ RESULT_TOKENS = {
     "PASS_CORRECTNESS": ("ok", "pass"), "BIT_EXACT_PASS": ("ok", "pass"), "COMPLETE_DIAGNOSTIC_ONLY": ("ok", "complete"),
     "FUNCTIONAL-ONLY": ("ok", "complete"), "FLOOR_REGISTERED": ("ok", "complete"),
     "REJECT_CORRECTNESS": ("candidate", "correctness_gate"), "FAIL_CORRECTNESS": ("candidate", "correctness_gate"),
+    "NO_KEEP": ("candidate", "timing_loss"),
     "DROP": ("candidate", "timing_loss"), "NO_MOVE": ("candidate", "timing_loss"), "NOT_OVERRIDE": ("candidate", "timing_loss"),
     "REGRESSION": ("candidate", "timing_loss"), "REJECT": ("candidate", "timing_loss"),
     "UNDERFILL": ("candidate", "noise"), "INCONCLUSIVE": ("candidate", "noise"), "NOT_JUDGEABLE": ("candidate", "noise"),
@@ -274,6 +275,8 @@ def _token(v):
 def _single_verdict(v):
     """Existing single-token mapping (no composite handling): Classification or None when unrecognised."""
     base, paren = _token(v)
+    if re.match(r"^KEEP(?:_|$)", base):
+        return _c("ok", "keep", "result:KEEP*", v)
     if base == "FAIL" and "dup_ids" in paren:
         return _c("candidate", "correctness_gate", "result:FAIL(dup_ids)", v)
     if base == "FAIL":
@@ -281,6 +284,8 @@ def _single_verdict(v):
     if base in RESULT_TOKENS:
         side, klass = RESULT_TOKENS[base]
         return _c(side, klass, f"result:{base}", v)
+    if base.startswith("FAIL_"):
+        return _c("candidate", _candidate_klass(base), "result:FAIL_*", v)
     m = _LEAD_WORD.match(base)
     if m and m.group(0) in RESULT_TOKENS:
         side, klass = RESULT_TOKENS[m.group(0)]
@@ -347,13 +352,13 @@ def _polar(res):
     FUTILITY_HARNESS_* -> harness, FUTILITY_CANDIDATE_* -> candidate, else `polar` PASS -> ok / FAIL -> candidate."""
     v = str(res.get("verdict") or "").strip()
     tok = re.split(r"[\s:;,(]", v, maxsplit=1)[0].upper()
+    polar = str(res.get("polar") or "").strip().upper()
+    if polar == "PASS":
+        return _c("ok", "pass", "result:polar=PASS", v)
     if tok.startswith("FUTILITY_HARNESS"):
         return _c("harness", _harness_klass(tok), "result:FUTILITY_HARNESS*", v)
     if tok.startswith("FUTILITY_CANDIDATE"):
         return _c("candidate", _candidate_klass(tok), "result:FUTILITY_CANDIDATE*", v)
-    polar = str(res.get("polar") or "").strip().upper()
-    if polar == "PASS":
-        return _c("ok", "pass", "result:polar=PASS", v)
     if polar == "FAIL":
         return _c("candidate", _candidate_klass(f"{tok} {res.get('stage') or ''}"), "result:polar=FAIL", v)
     return None
@@ -373,6 +378,8 @@ def classify_result(res, launcher_text: str | None = None, row_dir: str | None =
             base, paren = _token(v)
             if key == "verdict" and "|" in v:
                 c = _composite_verdict(v)
+            elif re.match(r"^KEEP(?:_|$)", base):
+                c = _c("ok", "keep", "result:KEEP*", v)
             elif base == "FAIL" and "dup_ids" in paren:
                 c = _c("candidate", "correctness_gate", "result:FAIL(dup_ids)", v)  # duplicate unit ids: the patch broke id uniqueness
             elif base == "FAIL":
@@ -380,6 +387,8 @@ def classify_result(res, launcher_text: str | None = None, row_dir: str | None =
             elif base in RESULT_TOKENS:
                 side, klass = RESULT_TOKENS[base]
                 c = _c(side, klass, f"result:{base}", v)
+            elif base.startswith("FAIL_"):
+                c = _c("candidate", _candidate_klass(base), "result:FAIL_*", v)
             elif _LEAD_WORD.match(base) and _LEAD_WORD.match(base).group(0) in RESULT_TOKENS:
                 side, klass = RESULT_TOKENS[_LEAD_WORD.match(base).group(0)]
                 c = _c(side, klass, f"result:{_LEAD_WORD.match(base).group(0)}*", v)

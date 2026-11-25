@@ -40,6 +40,16 @@ class DeployLockClaim(unittest.TestCase):
         return open(self.log).read().splitlines() if os.path.exists(self.log) else []
 
     def test_second_deploy_is_refused_by_the_flock(self):
+        subprocess.run(["git", "init", "-q", self.d], check=True)
+        subprocess.run(["git", "-C", self.d, "-c", "user.name=t", "-c", "user.email=t@t",
+                        "commit", "-q", "--allow-empty", "-m", "fixture"], check=True)
+        # Bootstrap pins and validates the deploy script before acquiring the lock.
+        os.makedirs(os.path.join(self.d, "scripts", "coordination", "rowflow"))
+        import shutil
+        shutil.copy(DEPLOY, os.path.join(self.d, "scripts", "coordination", "rowflow", "deploy_rowflow.sh"))
+        subprocess.run(["git", "-C", self.d, "add", "scripts"], check=True)
+        subprocess.run(["git", "-C", self.d, "-c", "user.name=t", "-c", "user.email=t@t",
+                        "commit", "-q", "-m", "deploy fixture"], check=True)
         fd = os.open(os.path.join(self.flags, ".deploy_rowflow.lock"), os.O_CREAT | os.O_RDWR)
         fcntl.flock(fd, fcntl.LOCK_EX)
         try:
