@@ -5329,6 +5329,9 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92鈥
       路 stop: stop-on-answer when the gate row files every listed declaration is a published row or declined with a reason; stop-on-futility on a declaration the ak_gate harness cannot express after two harness releases (report the gap); gate-class = futility-only
       路 gate: none        路 inputs: `/mnt/raid0/llm/tmp/q38fn-hostdepth-gate-decl-20261125.md` `/mnt/raid0/llm/tmp/q8ip-ctxfix-gate-decl-20261125.md` `/mnt/raid0/llm/tmp/vattn-rf7-gate-decl-20261125.md` `/mnt/raid0/llm/tmp/ak-cpu-aa-calibration-q-a3b-20261124-decl.md` `/mnt/raid0/llm/tmp/ak-fused-decode-negctl-cpu-20261124-decl.md`
       路 owner: autokernel
+- [ ] **AK-CHAIN-ABT-FUTILITY** [non-inference] Pass the AK-EVAL-FUT futility rule into the akloop ab-timing stage comparison (research loop stage_bodies.py bench.compare called without futility=), so chain ab-timing rows stop at an interim futility look
+      路 done when: research test asserts a chain ab-timing stage on a losing synthetic arm stops with stop_reason futility at k=2, and akloop/chain.py custom_reason for ab-timing no longer says NO interim look
+      路 gate: none
 
 
 ### Done
