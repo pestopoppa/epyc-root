@@ -7817,6 +7817,7 @@ def build_window(flags, minutes, by, reason, now=None, log=print):
 
 BUILD_WINDOW_AUTOCLOSE = True   # a window with no build claim queued/running for BUILD_WINDOW_AUTOCLOSE_TICKS ticks closes itself
 BUILD_WINDOW_AUTOCLOSE_TICKS = 2
+BUILD_WINDOW_AUTOCLOSE_GRACE_S = 600   # never auto-close a window younger than this: builds need time to claim; idle count starts after
 BUILD_WINDOW_IDLE = "build_window_idle.json"
 BUILD_WINDOW_CLOSERS = frozenset({"operator"})   # besides the opener
 
@@ -7881,6 +7882,11 @@ def build_window_autoclose(flags, now=None, log=print, dry=False):
     w = load_json(os.path.join(state_dir(flags), BUILD_WINDOW)) or {}
     until = float(w.get("until") or 0)
     if until <= now or build_claims_active(flags, now):
+        if os.path.exists(ip) and not dry:
+            _rm(ip)
+        return False
+    opened = until - 60 * float(w.get("minutes") or BUILD_WINDOW_MAX_MIN)
+    if now - opened < BUILD_WINDOW_AUTOCLOSE_GRACE_S:   # grace: idle ticks before it do not count
         if os.path.exists(ip) and not dry:
             _rm(ip)
         return False
@@ -10023,11 +10029,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             if any(c.get("shape") == "quiet-host" for c in cands):
                 log(f"QUIET-HOST-WAIT smoke(s) live in pockets ({','.join(smoke_live[:5])}): no quiet-host grant this tick")
     # E5 fix A 2026-11-23: no quiet-host / whole-host grant while a foreign inference server runs (never kills it)
+    lane, _lk = build_lane_open(flags)   # decided BEFORE autoclose: a close this tick releases the hold next tick, never this one
     try:
         build_window_autoclose(flags, log=log, dry=dry)
     except Exception as e:  # noqa: BLE001 - never stops allocation
         log(f"BUILD-WINDOW autoclose failed: {type(e).__name__}: {e}")
-    lane, _lk = build_lane_open(flags)
     lane_held_ids = []
     build_lane_now = bool(lane)   # REPLAN metrics: a quiet row C would start while the lane is open is a BUILD-LANE collision
     if lane:   # BUILD LANE: no NEW quiet row is granted (running ones are never pre-empted)

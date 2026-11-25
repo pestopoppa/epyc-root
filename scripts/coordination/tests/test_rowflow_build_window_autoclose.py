@@ -62,6 +62,16 @@ class T(unittest.TestCase):
         self.assertFalse(self.tick(NOW + 260))
         self.assertTrue(self.tick(NOW + 290))
 
+    def test_grace_period_blocks_autoclose(self):
+        # freshly opened 8-min window, no build claim yet: idle ticks inside the grace never count
+        opened = NOW
+        rf.atomic_json(os.path.join(self.sd, rf.BUILD_WINDOW), {"by": "ak", "reason": "r", "minutes": 20, "until": opened + 1200})
+        for i in range(5):
+            self.assertFalse(self.tick(opened + 120 * i))   # 0..480 s < 600 s grace
+        self.assertEqual(self.win()["until"], opened + 1200)
+        self.assertFalse(self.tick(opened + rf.BUILD_WINDOW_AUTOCLOSE_GRACE_S))   # first idle tick after grace
+        self.assertTrue(self.tick(opened + rf.BUILD_WINDOW_AUTOCLOSE_GRACE_S + 120))
+
     def test_flag_off(self):
         with mock.patch.object(rf, "BUILD_WINDOW_AUTOCLOSE", False):
             self.assertFalse(self.tick())
