@@ -77,7 +77,7 @@ CORRECTNESS_KEYS = {
     "kld": {"base_arm", "max_kld", "max_kld_noise_k", "noise_arm", "witness_base"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
     "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"},
-    "served_quality": {"input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s"}}
+    "served_quality": {"input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s", "noise_argv_delta"}}
 UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin", "c-sq": "served_quality"}
 UNIT_TYPE = dict({"visit": "served", "smoke": "served", "log": "served"}, **UNIT_KIND)   # expect_by_unit scopes
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
@@ -350,6 +350,9 @@ def validate_spec(spec):
                 errs.append("correctness served_quality: noise_arm must be declared and distinct from baseline")
             if c.get("arms") and b and not set([b[0], noise] + candidate_arms(spec)).issubset(c["arms"]):
                 errs.append("correctness served_quality: arms must include baseline, noise and every candidate")
+            delta = c.get("noise_argv_delta", {})
+            if not isinstance(delta, dict) or any(k not in ("--threads", "--threads-batch") or type(v) is not int or v < 1 for k, v in (delta.items() if isinstance(delta, dict) else [])):
+                errs.append("correctness served_quality: noise_argv_delta accepts positive --threads and --threads-batch values")
             if type(c.get("gate", False)) is not bool:
                 errs.append("correctness served_quality: gate must be boolean")
             for name, default in (("n_predict", 512), ("n_probs", 5), ("test_timeout_s", 5)):
@@ -766,12 +769,22 @@ try:
     lib.seccomp_syscall_resolve_name.argtypes = [ctypes.c_char_p]
     ctx = lib.seccomp_init(0x7fff0000)
     if not ctx: raise RuntimeError("seccomp_init")
-    for name in ("socket", "socketpair", "io_uring_setup", "ptrace", "process_vm_readv", "process_vm_writev", "pidfd_getfd", "unshare", "setns", "kill", "tkill", "tgkill", "fork", "vfork", "clone", "clone3"):
+    for name in ("socket", "socketpair", "io_uring_setup", "ptrace", "process_vm_readv", "process_vm_writev", "pidfd_getfd", "pidfd_send_signal", "unshare", "setns", "kill", "tkill", "tgkill", "rt_sigqueueinfo", "rt_tgsigqueueinfo", "fork", "vfork", "clone", "clone3", "execve", "execveat", "openat2", "unlink", "unlinkat", "rename", "renameat", "renameat2", "link", "linkat", "symlink", "symlinkat", "mkdir", "mkdirat", "rmdir", "mknod", "mknodat", "truncate", "ftruncate", "chmod", "fchmod", "fchmodat", "chown", "fchown", "fchownat", "lchown"):
         nr = lib.seccomp_syscall_resolve_name(name.encode())
         if nr >= 0 and lib.seccomp_rule_add(ctx, 0x00050000 | errno.EPERM, nr, 0) != 0: raise RuntimeError(name)
+    class ArgCmp(ctypes.Structure):
+        _fields_ = [("arg", ctypes.c_uint), ("op", ctypes.c_int), ("datum_a", ctypes.c_uint64), ("datum_b", ctypes.c_uint64)]
+    lib.seccomp_rule_add_array.argtypes = [ctypes.c_void_p, ctypes.c_uint32, ctypes.c_int, ctypes.c_uint, ctypes.POINTER(ArgCmp)]
+    for name, arg in (("open", 1), ("openat", 2)):
+        nr = lib.seccomp_syscall_resolve_name(name.encode())
+        if nr >= 0:
+            for flag in (1, 2, 64, 512, 1024, 0x400000):
+                cmp = ArgCmp(arg, 7, flag, flag)  # SCMP_CMP_MASKED_EQ
+                if lib.seccomp_rule_add_array(ctx, 0x00050000 | errno.EPERM, nr, 1, ctypes.byref(cmp)) != 0:
+                    raise RuntimeError("seccomp open flags")
     if lib.seccomp_load(ctx) != 0: raise RuntimeError("seccomp_load")
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-    resource.setrlimit(resource.RLIMIT_FSIZE, (0, 0))
+    resource.setrlimit(resource.RLIMIT_FSIZE, (65536, 65536))
     resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
 except BaseException as e:
     sys.stderr.write("sandbox setup failed: " + str(e))
@@ -779,6 +792,7 @@ except BaseException as e:
 program = json.load(sys.stdin)
 sys.stdout.write("SANDBOX_READY\n"); sys.stdout.flush()
 exec(compile(program, "<quality-test>", "exec"), {})
+sys.stdout.write("\nSANDBOX_TESTS_PASSED\n"); sys.stdout.flush()
 '''
 
 
@@ -824,15 +838,17 @@ def score_quality(item, output, timeout):
     source = "from typing import *\n" + source
     source += "\n" + item["test"] + "\ncheck(" + item["entry_point"] + ")\n"
     try:
-        with tempfile.TemporaryDirectory(prefix="ak-quality-") as tmp:
+        with tempfile.TemporaryDirectory(prefix="ak-quality-") as tmp, tempfile.TemporaryFile(dir=tmp) as output_file:
             p = subprocess.run([sys.executable, "-I", "-c", QUALITY_SANDBOX], input=json.dumps(source),
-                               text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, cwd=tmp,
+                               text=True, stdout=output_file, stderr=subprocess.DEVNULL, cwd=tmp,
                                env={"PATH": "/usr/bin:/bin", "HOME": tmp}, timeout=float(timeout))
+            output_file.seek(0)
+            output = output_file.read().decode("utf-8", errors="replace")
     except subprocess.TimeoutExpired:
         return False
-    if not p.stdout.startswith("SANDBOX_READY\n"):
+    if not output.startswith("SANDBOX_READY\n"):
         raise RuntimeError("network-isolated code scorer could not initialize")
-    return p.returncode == 0
+    return p.returncode == 0 and output.endswith("\nSANDBOX_TESTS_PASSED\n")
 
 
 def mcnemar_bad_p(baseline, candidate):
@@ -840,6 +856,28 @@ def mcnemar_bad_p(baseline, candidate):
     good = sum(not a and b for a, b in zip(baseline, candidate))
     n = bad + good
     return sum(math.comb(n, i) for i in range(bad, n + 1)) / (2 ** n), bad, good
+
+
+def quality_noise_argv(argv, delta):
+    # Replace thread settings (including their short aliases), preserving every other served flag.
+    aliases = {"--threads": ("--threads", "-t"), "--threads-batch": ("--threads-batch", "-tb")}
+    out = list(argv)
+    for flag, value in delta.items():
+        names = aliases[flag]
+        cleaned, i = [], 0
+        while i < len(out):
+            token = out[i]
+            if token in names:
+                if i + 1 >= len(out):
+                    raise ValueError(f"missing value for {token}")
+                i += 2
+            elif any(token.startswith(name + "=") for name in names):
+                i += 1
+            else:
+                cleaned.append(token)
+                i += 1
+        out = cleaned + [flag, str(value)]
+    return out
 
 
 def quality_diagnostic(base, other):
@@ -1511,6 +1549,10 @@ class Gate:
         port = self.port()
         cfg = getattr(self, "current_unit", {})
         argv = self.llama_argv(cfg.get("argv", srv["argv"]), arm, port)
+        if kind == "c-sq":
+            quality = corr_of(self.spec, kind)
+            if arm == quality.get("noise_arm"):
+                argv = quality_noise_argv(argv, quality.get("noise_argv_delta") or {})
         log = os.path.join(self.logs, f"{uid}.log")
         if os.path.exists(log):
             os.replace(log, log + f".prev-{int(time.time())}")

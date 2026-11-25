@@ -1528,7 +1528,7 @@ def test_smoke_identity_budget_limits_complete_pairs(tmp_path, monkeypatch):
     assert G.smoke_spec(sp)["correctness"]["n_predict"] == 64
 
 
-def test_served_quality_scores_and_isolates_code():
+def test_served_quality_scores_and_isolates_code(tmp_path):
     assert G.score_quality({"kind": "math", "answer": "1,234"}, "steps 2; <answer>1234</answer>", 1)
     assert not G.score_quality({"kind": "math", "answer": "1"}, "2", 1)
     item = {"kind": "code", "prompt": "def add(a, b):\n", "entry_point": "add", "test": "def check(f):\n    assert f(2, 3) == 5"}
@@ -1536,6 +1536,13 @@ def test_served_quality_scores_and_isolates_code():
     assert not G.score_quality(item, "    return a-b", 2)
     item["test"] = "def check(f):\n    import socket\n    socket.socket()"
     assert not G.score_quality(item, "    return a+b", 2)
+    item["test"] = "def check(f):\n    import sys\n    sys.exit(0)"
+    assert not G.score_quality(item, "    return a+b", 2)
+    target = tmp_path / "protected"
+    target.write_text("intact")
+    item["test"] = f"def check(f):\n    open({str(target)!r}, 'w').write('bad')"
+    assert not G.score_quality(item, "    return a+b", 2)
+    assert target.read_text() == "intact"
     assert not G.score_quality(item, "    while True: pass", .1)
 
 
@@ -1567,13 +1574,15 @@ def test_served_quality_stub_server_fresh_each_arm(tmp_path):
     data = row / "inputs" / "set.jsonl"
     data.write_text(json.dumps({"id": "m", "kind": "math", "prompt": "answer", "answer": "42"}) + "\n")
     sp = spec(argv=[srv, "--port", "{PORT}"], inputs={"inputs/set.jsonl": G._sha_file(data)},
-              correctness={"kind": "served_quality", "input": "inputs/set.jsonl", "noise_arm": "OFF2", "gate": True, "n_predict": 4})
+              correctness={"kind": "served_quality", "input": "inputs/set.jsonl", "noise_arm": "OFF2", "noise_argv_delta": {"--threads": 23}, "gate": True, "n_predict": 4})
     sp["server"]["env"] = {"FAKE_MARKERS": json.dumps({"GGML_HIP_Q8MC": Q8MC_ARMED}), "FAKE_STARTS": str(starts)}
     gate = G.Gate(sp, str(row), env={"FILLER_PORTS": str(free_port())}, stream=QUIET)
     assert not gate.prepare()
     units = [gate.run_correctness_unit(*p) for p in G.plan_correctness(sp)]
     assert all(not u.get("error") for u in units), units
     assert len(starts.read_text().splitlines()) == 3
+    assert units[1]["argv"][-2:] == ["--threads", "23"]
+    assert G.quality_noise_argv(["server", "--threads", "24", "-md", "draft", "-tb", "8"], {"--threads": 23}) == ["server", "-md", "draft", "-tb", "8", "--threads", "23"]
     verdict, detail, _ = G.decide_correctness(sp, units)
     assert verdict is None and detail["served_quality"]["per_arm"]["ON"]["accuracy"] == 1
     assert units[0]["correctness"]["served_quality"]["items"][0]["correct"]
