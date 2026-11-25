@@ -902,6 +902,7 @@ def gate_scaffold(a, served=None):
             "result_path": os.path.join(d, "out", "RESULT.json"), "result_format": "json", "scratch_root": d,
             "workdir": d, "stop_file": os.path.join(d, "STOP"), "estimate_s": a.estimate_s, "min_window_s": a.min_window,
             "declared_threads": a.threads, "handoff_task": a.task, "model": a.model, "ports": port_list,
+            "first_progress_s": a.first_progress_s if a.first_progress_s is not None else max(300, a.smoke_budget_s + 120),
             "scratch_gb": a.scratch_gb, "smoke_predicate": SMOKE_PRED.format(p=os.path.join(d, "out", H.TERMINAL_SMOKE)),
             "expects_created": [os.path.join(d, "out", H.TERMINAL_SMOKE)],   # the smoke writes it (publish provenance)
             "decision_rule": a.rule + " | knobs: " + ", ".join(knobs) + f" | metric {a.metric} "
@@ -1002,6 +1003,7 @@ def gate_main(argv=None):
     n.add_argument("--smoke-prompt-chars", type=int, default=2000)
     n.add_argument("--smoke-n-predict", type=int, default=32)
     n.add_argument("--smoke-budget-s", type=int, default=300)
+    n.add_argument("--first-progress-s", type=int, help="keeper first-progress deadline in seconds")
     n.add_argument("--claim")
     n.add_argument("--threads", type=int, default=8)
     n.add_argument("--estimate-s", type=int, default=7200)

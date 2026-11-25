@@ -304,3 +304,35 @@ def test_existing_bad_marker_refused_by_rehearsal_and_publish(env, monkeypatch):
     assert rc_chk == 2 and message in chk, chk
     assert rc_pub != 0 and message in pub, pub
     assert not os.path.exists(rf.ready_path(str(env["flags"]), rid))
+
+
+@pytest.mark.parametrize("budget,deadline", [(100, 300), (300, 420), (900, 1020)])
+def test_gate_sets_first_progress_from_smoke_budget(env, budget, deadline):
+    rid = f"ak-r-deadline-{budget}-20261125"
+    rc, out = run(decl(env, rid, extra=["--smoke-budget-s", str(budget)]))
+    assert rc == 0, out
+    assert json.loads((env["rows"] / rid / "spec.json").read_text())["first_progress_s"] == deadline
+
+
+def test_gate_deadline_refused_in_rehearsal_and_publish(env, monkeypatch):
+    rid = "ak-r-deadline-20261125"
+    rc, out = run(decl(env, rid, extra=["--smoke-budget-s", "900", "--first-progress-s", "959"]))
+    assert rc == 2 and "FIX: --first-progress-s 960" in out
+    assert not (env["rows"] / rid).exists()
+    rc, out = run(decl(env, rid, extra=["--smoke-budget-s", "900", "--first-progress-s", "960"]))
+    assert rc == 0, out
+    row = env["rows"] / rid
+    sp = row / "spec.json"
+    spec = json.loads(sp.read_text())
+    monkeypatch.setattr(PR, "gpu_busy", lambda flags: True)
+    for value in (None, 959):
+        if value is None:
+            spec.pop("first_progress_s", None)
+        else:
+            spec["first_progress_s"] = value
+        sp.write_text(json.dumps(spec))
+        rc_chk, chk = run(["gate", "new", "--check-only", str(row), "--flags", str(env["flags"])])
+        rc_pub, pub = run_publish([str(sp), "--flags", str(env["flags"])])
+        assert rc_chk == 2 and rc_pub != 0
+        assert "FIX: --first-progress-s 960" in chk and "FIX: --first-progress-s 960" in pub
+        assert not os.path.exists(rf.ready_path(str(env["flags"]), rid))

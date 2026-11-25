@@ -1940,6 +1940,38 @@ def check_futility(spec, flags):
         raise rf.Refused(f"{missing[0]}; FIX: {missing[1]}")
 
 
+def check_gate_smoke_deadline(spec, flags):
+    """Compare the keeper deadline with the gate job's declared smoke budget without executing it."""
+    launcher = spec.get("launcher") or ""
+    if isinstance(launcher, dict):
+        launcher = launcher.get("path") or ""
+    directory = spec.get("workdir") or (os.path.dirname(launcher) if isinstance(launcher, str) else "")
+    if not directory or not os.path.isfile(os.path.join(directory, "ak_gate.py")):
+        return
+    try:
+        tree = ast.parse(open(os.path.join(directory, "job.py"), encoding="utf-8").read())
+        declarations = [node.value for node in tree.body if isinstance(node, ast.Assign)
+                        and any(isinstance(t, ast.Name) and t.id == "SPEC" for t in node.targets)
+                        and isinstance(node.value, ast.Dict)]
+        if len(declarations) != 1:
+            raise ValueError("missing SPEC declaration")
+        smoke_nodes = [v for k, v in zip(declarations[0].keys, declarations[0].values)
+                       if isinstance(k, ast.Constant) and k.value == "smoke"]
+        smoke = ast.literal_eval(smoke_nodes[0]) if smoke_nodes else {}
+        budget = float(smoke.get("budget_s", 300))
+        import math
+        if not math.isfinite(budget) or budget <= 0:
+            raise ValueError("invalid smoke budget")
+        minimum = math.ceil(budget + 60)
+        deadline = int(spec.get("first_progress_s") or spec.get("smoke_timeout_s")
+                       or spec.get("dryrun_timeout_s") or rf.FIRST_PROGRESS_S)
+    except (OSError, SyntaxError, ValueError, TypeError, AttributeError, OverflowError) as e:
+        raise rf.Refused(f"cannot check ak_gate smoke deadline: {e}; FIX: declare a literal smoke budget and first_progress_s")
+    if deadline < minimum:
+        raise rf.Refused(f"ak_gate first_progress_s {deadline} is below smoke.budget_s + 60 ({minimum}); "
+                         f"FIX: --first-progress-s {minimum}")
+
+
 def rehearsal_steps(rerun=False, identity_spec=None, repo=None):
     """[(step, fn(spec, flags))] in publish order. Each raises rf.Refused; rehearse() collects them all."""
     def estimate(s, f):
@@ -1952,6 +1984,7 @@ def rehearsal_steps(rerun=False, identity_spec=None, repo=None):
     return [
         ("estimate", estimate),
         ("futility", check_futility),
+        ("gate-smoke-deadline", check_gate_smoke_deadline),
         ("operator-gate", check_operator_gate),
         ("owner", check_owner_roster),
         ("handoff", lambda s, f: check_handoff(s, repo) if repo else check_handoff(s)),
