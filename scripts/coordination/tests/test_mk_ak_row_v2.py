@@ -198,7 +198,7 @@ def test_shim_new_cpu_row_is_stamped(tmp_path):
     hf = tmp_path / "h.md"
     hf.write_text("- [ ] **BOX-9** do it · model: X · stop: futility · est 100 s\n")
     rc = RS.main(["new", "row-shim", "--handoff", str(hf), "--box", "BOX-9", "--lane", "cpu", "--regions", "0-23",
-                  "--threads", "24", "--units", "4", "--unit-s", "10", "--model", "X", "--root", str(tmp_path)])
+                  "--threads", "24", "--units", "4", "--unit-s", "10", "--model", "X", "--root", str(tmp_path), "--custom-futility", "test fixture row"])
     assert rc == 0
     spec = json.loads((tmp_path / "row-shim" / "spec.json").read_text())
     assert spec["generator"]["tool"] == "mk_ak_row.py" and spec["generator"]["profile"] == "polar"
@@ -210,7 +210,7 @@ def test_shim_fetch_harness_monkeypatch_still_applies(tmp_path, monkeypatch):
     hf = tmp_path / "h.md"
     hf.write_text("x")
     assert RS.main(["new", "row-g", "--handoff", str(hf), "--box", "B", "--lane", "gpu", "--regions", "88-95",
-                    "--threads", "8", "--units", "1", "--unit-s", "1", "--model", "X", "--root", str(tmp_path)]) == 1
+                    "--threads", "8", "--units", "1", "--unit-s", "1", "--model", "X", "--root", str(tmp_path), "--custom-futility", "test fixture row"]) == 1
     assert not (tmp_path / "row-g").exists()
 
 

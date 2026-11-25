@@ -40,6 +40,8 @@ or owner autokernel*) and stay WARN for every other owner: a row certain to fail
   MECH-UNWITNESSED   WARN  (AK-MECH-WITNESS-1, D9-ack 2026-11-25; never FAIL) a row whose decision_rule can return a keep/pass on
                            a speed claim has no spec mechanism_witness {counter, direction, aa_band}, or its row code never
                            records the declared counter for both arms (intake-2958)
+  LOOSE-FUTILITY     WARN  (AK-EVAL-FUT default, D9-ack 2026-11-25; never FAIL) the job/spec states its own futility threshold
+                           ("mean < 0.97 after 3") with no spec.futility.custom_reason and no standard ak_futility_row.py helper
   REPLAY-NO-BASELINE WARN  a replay row with no baseline validation (baseline_ok / validate_baseline / replay_baseline)
   CPUS-IN-ARGV       WARN  a cpus() / grant_cpus() call placed directly inside an argv list/tuple literal or a `+` concatenation
                            with no cpu_str() / ",".join around it (a list of ints in an argv: subprocess TypeError, seen twice
@@ -114,12 +116,40 @@ def mech_unwitnessed(spec, allc):
         return [("WARN", "MECH-UNWITNESSED", f"mechanism_witness.counter {c!r} is not recorded for both arms in the row's "
                  "RESULT code")]
     return []
+# LOOSE-FUTILITY (AK-EVAL-FUT default, D9-ack 2026-11-25; WARN-only, never FAIL): a row that states its own ad-hoc
+# futility threshold ("mean < 0.97 after 3") instead of the shared look, with no spec.futility.custom_reason.
+LOOSE_FUT_RX = re.compile(
+    r"(?:mean|median|geomean|ratio|speedup|effect|delta|gain)\s*(?:<=?|≤)\s*-?\d*\.?\d+\s*%?\s*(?:after|at|by)\s+"
+    r"(?:k\s*=\s*)?\d+|futil\w*[^\n.;]{0,60}?(?:<=?|≤)\s*-?\d*\.?\d+\s*%?\s*(?:after|at|by)\s+(?:k\s*=\s*)?\d+", re.I)
+FUT_HELPER = "ak_futility_row.py"
+
+
+def loose_futility(d, spec, code):
+    """WARN-only. [] for rows on the standard helper, gate-harness rows or a declared --custom-futility reason."""
+    fut = spec.get("futility") if isinstance(spec.get("futility"), dict) else {}
+    if str(fut.get("custom_reason") or "").strip() or fut.get("schema") == "epyc.autokernel.futility_look.v1":
+        return []
+    gen = spec.get("generator") if isinstance(spec.get("generator"), dict) else {}
+    if "keep_rule" in spec or gen.get("profile") == "gate":   # gate rows: the ak_gate CI look is the standard rule
+        return []
+    if FUT_HELPER in code or "ak_gate.py" in code or os.path.isfile(os.path.join(d, "ak_gate.py")):
+        return []
+    texts = dict((f, t) for f, t in code.items() if f not in VENDORED)
+    texts["spec.json"] = " ".join(str(spec.get(k) or "") for k in ("decision_rule", "notes")) + " " + str(fut.get("rule") or "")
+    for f, t in texts.items():
+        m = LOOSE_FUT_RX.search(t or "")
+        if m:
+            return [("WARN", "LOOSE-FUTILITY", f"{f}: own futility threshold {m.group(0)!r}; use the shared AK-EVAL-FUT "
+                     "look (mk_ak_row.py polar new --keep-bar-pct/--sigma-source) or state --custom-futility \"<reason>\"")]
+    return []
+
+
 REPLAY_RX = re.compile(r"replay", re.I)
 BASELINE_RX = re.compile(r"baseline_ok|baseline_valid|validate_baseline|replay_baseline|baseline_check|baseline_match", re.I)
 SELFTEST_TIMEOUT_S = 60
 # vendored, sha-pinned helper copies (own SOURCE/BIN pin): never linted for row-authoring defects
 VENDORED = {"gpu_common.py", "gpuproof_row.py", "lp_common.py", "base.py", "fold_row_guard.py",
-            "ak_gate.py"}   # ak_gate.py: the tested gate harness (mk_ak_row gate new), vendored + sealed
+            "ak_gate.py", "ak_futility_row.py"}   # ak_futility_row.py: AK-EVAL-FUT helper; ak_gate.py: the tested gate harness (mk_ak_row gate new), vendored + sealed
 
 
 def _differs_proof(t):
@@ -732,6 +762,7 @@ def lint_dir(d, selftest=True):
         out.append(("WARN", "NO-WITNESS", f"decision rule names {knobs[:3]} but no RESULT witness key; prove the knob "
                                           "took effect or file FUTILITY_WITNESS"))
     out += mech_unwitnessed(spec, allc)
+    out += loose_futility(d, spec, code)
     if (REPLAY_RX.search(rid) or REPLAY_RX.search(rule)) and not BASELINE_RX.search(allc):
         out.append(("WARN", "REPLAY-NO-BASELINE", "replay row with no baseline validation (baseline_ok / "
                                                   "validate_baseline): an unvalidated replay baseline is not a control"))

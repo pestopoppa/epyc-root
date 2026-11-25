@@ -1331,9 +1331,9 @@ RULE      TODO: pre-registered, first match wins. RESULT.json carries ONE polar 
           FUTILITY_HARNESS_<WHY> (instrument/harness/input, candidate not judged -> inconclusive) vs
           FUTILITY_CANDIDATE_<WHY> (a measured negative about the candidate -> fail). gate_eval reads these.
           No finished RESULT -> no claim: the row files SUPERSEDED/WITHDRAWN, never inconclusive.
-STOP      on-answer: TODO. on-futility: TODO. rc 75 only on STOP file / FILLER_DEADLINE.
+STOP      {stop_line} rc 75 only on STOP file / FILLER_DEADLINE.
 """
-{gpu_block}raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json with complete, verdict, polar)")
+{gpu_block}{fut_block}raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json with complete, verdict, polar)")
 '''
 RESEARCH_REPO = "/mnt/raid0/llm/epyc-inference-research"  # shared clone: fetch + `git show` only, never its tree/branch/index
 HARNESS_PATH = "scripts/kernel_rnd/autokernel/harness"
@@ -1352,6 +1352,69 @@ for _n, _s in (("gpu_common.py", GPU_COMMON_SHA256), ("gpuproof_row.py", GPUPROO
 sys.path.insert(0, ROW_DIR)
 import gpu_common as G  # noqa: E402  (residency_from_proof gates < 2 s children on the in-process witness + LD_DEBUG proof)
 '''
+
+
+FUT_HELPER = "ak_futility_row.py"   # AK-EVAL-FUT helper, copied verbatim into default rows and sha-pinned
+FUT_JOB_T = '''
+# AK-EVAL-FUT (default futility look, operator 2026-11-25): {fut_helper} was copied INTO this row by mk_ak_row.py
+# and is sha256-pinned here and in SOURCE.sha256; it is the same math as research loop/futility.py
+# (sha256 {upstream_sha}). Call FUT(anchor_samples, candidate_samples) after EVERY complete pair; on
+# decision == "futile" write FUT.result(look) (+ units) to out/RESULT.json and stop. Never emit an early KEEP.
+import hashlib as _hl, os as _os, sys as _sys
+_RD = _os.path.dirname(_os.path.abspath(__file__))
+if _hl.sha256(open(_os.path.join(_RD, "{fut_helper}"), "rb").read()).hexdigest() != "{fut_sha}":
+    raise SystemExit("FUTILITY_HARNESS_MISSING_INPUT: {fut_helper} sha256 differs from the scaffold pin")
+_sys.path.insert(0, _RD)
+import ak_futility_row as _F  # noqa: E402
+FUT = _F.Look(sigma_pair_pct={sigma!r}, bar_pct={bar!r}, z={z!r}, min_pairs=_F.MIN_PAIRS, sigma_source={src!r})
+'''
+
+
+def futility_args(n):
+    """AK-EVAL-FUT arguments of `polar new` (the default stop-on-futility rule)."""
+    n.add_argument("--keep-bar-pct", type=float, help="AK-EVAL-FUT: keep bar in %% (futile iff the optimistic bound < bar)")
+    n.add_argument("--sigma-source", metavar="aa:<path>|floor1:<pct>",
+                   help="AK-EVAL-FUT sigma_pair: stored A/A pairs JSON {anchor,candidate} (>=3) or a k=1 p95 floor %%")
+    n.add_argument("--fut-z", type=float, help="AK-EVAL-FUT z (default 2.5 serving/cpu lane, 3.5 GPU bench lane)")
+    n.add_argument("--custom-futility", metavar="REASON",
+                   help="why the row does not use AK-EVAL-FUT (alone: rule 'custom: REASON'; with --futility: recorded as "
+                        "spec.futility.custom_reason, which silences ak_row_lint LOOSE-FUTILITY)")
+
+
+def resolve_futility(a) -> tuple[dict | None, str]:
+    """(fmt fields + spec.futility, '') or (None, refusal). Default is the shared AK-EVAL-FUT look."""
+    import ak_futility_row as F
+    custom = (getattr(a, "custom_futility", None) or "").strip()
+    own = getattr(a, "futility", None)   # cx42 --futility "<rule>": the row's own rule text (an AK-EVAL-FUT opt-out)
+    if own is not None:
+        f = {"rule": own}
+        if custom:
+            f["custom_reason"] = custom
+        return {"stop_line": f"on-answer: TODO. on-futility: {own}.", "fut_block": "", "futility": f}, ""
+    if custom:
+        return {"stop_line": f"on-answer: TODO. on-futility: CUSTOM ({custom}); state it in RULE.", "fut_block": "",
+                "futility": {"rule": f"custom: {custom}", "custom_reason": custom}}, ""
+    bar, src = getattr(a, "keep_bar_pct", None), getattr(a, "sigma_source", None)
+    if bar is None or not src:
+        return None, ("AK-EVAL-FUT default needs --keep-bar-pct and --sigma-source aa:<path>|floor1:<pct> "
+                      "(or opt out with --futility \"<rule>\" or --custom-futility \"<reason>\")")
+    try:
+        sigma, kind = F.sigma_from_source(src)
+    except (OSError, ValueError) as e:
+        return None, f"AK-EVAL-FUT sigma source: {e} (or opt out with --custom-futility \"<reason>\")"
+    if a.units and a.units < 2 * F.MIN_PAIRS:
+        return None, f"AK-EVAL-FUT first look is at k={F.MIN_PAIRS} pairs and must be <= n/2: --units >= {2 * F.MIN_PAIRS}"
+    z = a.fut_z if getattr(a, "fut_z", None) else (F.Z_BENCH if a.lane == "gpu" else F.Z_SERVING)
+    tag = "aa_calibration" if kind == "aa" else "floor1_p95"
+    rule = (f"AK-EVAL-FUT z={z} ({'GPU bench' if a.lane == 'gpu' else 'serving'} lane), futility-only, "
+            f"bar={bar}%: after each complete pair k>={F.MIN_PAIRS} stop FUTILITY_CANDIDATE_BELOW_BAR (polar FAIL) iff "
+            f"mean(100*ln(c/a)) + {z}*{sigma:.4f}/sqrt(k) < {bar}; sigma from {src}; no early KEEP")
+    stop = (f"on-answer: none (futility-only; no early KEEP). on-futility: {rule}; the look record (k, bound_pct, "
+            f"sigma, z, bar) goes to RESULT.json.")
+    fut = {"rule": rule, "schema": F.SCHEMA, "stopping": F.STOPPING, "look_pairs": F.MIN_PAIRS, "z": z,
+           "bar_pct": bar, "sigma_pair_pct": round(sigma, 6), "sigma_source": src, "verdict": F.VERDICT,
+           "upstream_sha256": F.UPSTREAM_SHA256}
+    return {"stop_line": stop, "futility": fut, "sigma": round(sigma, 6), "bar": bar, "z": z, "src": tag}, ""
 
 
 def fetch_harness(repo: str, ref: str = "origin/main") -> tuple[str, dict[str, bytes]] | str:
@@ -1440,6 +1503,10 @@ def polar_scaffold(a, fetch=None) -> int:
         if isinstance(got, str):
             print(f"REFUSED: canonical gpu_common.py: {got}")
             return 1
+    fut, why = resolve_futility(a)
+    if fut is None:
+        print(f"REFUSED: {why}")
+        return 1
     est, just = resolve_estimate(a)
     if est is None:
         print(f"REFUSED: {just}")
@@ -1448,10 +1515,21 @@ def polar_scaffold(a, fetch=None) -> int:
     claim = GPU_HOST_CLAIM if a.lane == "gpu" else a.regions
     regions = "mi210_0," + claim if a.lane == "gpu" else claim
     fmt = dict(id=a.row_id, owner=a.owner, handoff=a.handoff, box=a.box, threads=a.threads, dir=d,
-               regions=claim, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units or '?', unit_s=a.unit_s or '?', gpu_block="")
+               regions=claim, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units or '?', unit_s=a.unit_s or '?', gpu_block="",
+               stop_line=fut["stop_line"], fut_block="")
+    if fut.get("sigma") is not None:
+        hb = open(os.path.join(HERE, FUT_HELPER), "rb").read()
+        with open(os.path.join(d, FUT_HELPER), "wb") as f:
+            f.write(hb)
+        harness[FUT_HELPER] = hb
+        import ak_futility_row as F
+        fmt["fut_block"] = FUT_JOB_T.format(fut_helper=FUT_HELPER, fut_sha=hashlib.sha256(hb).hexdigest(),
+                                            upstream_sha=F.UPSTREAM_SHA256, sigma=fut["sigma"], bar=fut["bar"],
+                                            z=fut["z"], src=fut["src"])
     if a.lane == "gpu":
-        commit, harness = got
-        for n, b in harness.items():
+        commit, gh = got
+        harness.update(gh)
+        for n, b in gh.items():
             with open(os.path.join(d, n), "wb") as f:
                 f.write(b)
         sh = {n: hashlib.sha256(b).hexdigest() for n, b in harness.items()}
@@ -1470,11 +1548,10 @@ def polar_scaffold(a, fetch=None) -> int:
             "handoff_task": f"{os.path.basename(a.handoff)}:{a.box}", "model": a.model,
             "smoke_predicate": f"/usr/bin/test -s {d}/out/TERMINAL-smoke.json",
             "decision_rule": "see job.py docstring (RULE)", "notes": f"scaffolded by mk_ak_row.py (polar profile) for {a.owner}",
-            "generator": {"tool": "mk_ak_row.py", "profile": "polar", "version": GEN_VERSION, "utc": H.now()}}
+            "generator": {"tool": "mk_ak_row.py", "profile": "polar", "version": GEN_VERSION, "utc": H.now()},
+            "futility": fut["futility"]}
     if fix_ref:
         spec["fix_ref"] = fix_ref
-    if getattr(a, "futility", None) is not None:
-        spec["futility"] = {"rule": a.futility}
     with open(os.path.join(d, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
     polar_seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"] + sorted(harness))
@@ -1506,6 +1583,7 @@ def polar_main(argv=None, fetch=None) -> int:
     n.add_argument("--root", default="/mnt/raid0/llm/tmp")
     n.add_argument("--research-repo", default=RESEARCH_REPO, help="gpu lane: repo to fetch the canonical harness from (fetch + show only)")
     n.add_argument("--research-ref", default="origin/main", help="gpu lane: remote ref holding the canonical harness")
+    futility_args(n)
     a = ap.parse_args(argv)
     if a.cmd == "new":
         return polar_scaffold(a, fetch)

@@ -388,7 +388,9 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
                         regions="q0,q1,q2" if whole_host else stage.regions,
                         threads=stage.threads, units=1, unit_s=est / 1.25, flags=None, owner=owner, root=root,
                         model=model_label(cand, stage),
-                        research_repo=research_repo, research_ref="origin/main")
+                        research_repo=research_repo, research_ref="origin/main",
+                        # akloop stages pre-register their own stop rule (Stage.stop) and rewrite job.py: AK-EVAL-FUT opt-out
+                        custom_futility=f"akloop stage {stage.name}: {stage.stop}")
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         rc = RS.scaffold(a)
