@@ -330,7 +330,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: a keeper test shows a non-resumable row grant is capped and an unmeasured estimate emits a warning
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **DEPLOY-FROM-REF** [non-inference] Make deploy_rowflow.sh take its replay harness, and itself, from the staged ref (origin/main) instead of the invoking tree, so deploying from /workspace cannot use a stale harness.
+- [x] **DEPLOY-FROM-REF** [non-inference] Make deploy_rowflow.sh take its replay harness, and itself, from the staged ref (origin/main) instead of the invoking tree, so deploying from /workspace cannot use a stale harness. ✅ 2026-11-25 [no-belief: software] 9a8dc2782 deploy_rowflow.sh runs itself and its replay harness from --ref; test_deploy_from_ref.py + rollback guard 7 passed
       · done when: Running deploy_rowflow.sh from a stale tree uses the staged-ref harness; fixture test proves it.
       · gate: none
       · owner: pipeline-mgmt
