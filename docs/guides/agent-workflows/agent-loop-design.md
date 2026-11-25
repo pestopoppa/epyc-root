@@ -555,9 +555,15 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
   - **Quarter-shaped and concurrent.** Paired interleaved lever gates run quarter-shaped and concurrent;
     `requires_quiet_host` is reserved for absolute floors/calibrations (operator 2026-11-25). Each row books
     one quarter: taskset on its 24 cores plus their SMT siblings, `numactl --membind` to its node, and `-t 24`.
-    It runs with no DRAM-wide quiet guard. Neighbour contention hits every arm in a block alike, so it cancels
-    out of the paired ratio. The A/A arm measures what is left: contention ends a row only when the A/A arm
-    drifts by more than twice the CI half-width.
+    It runs with no DRAM-wide quiet guard. **Placement:** two rows that measure concurrently must sit on
+    OPPOSITE IO-die halves, one on q0/q1 and the other on q2/q3. Never put two measuring rows on the same
+    half. Builds and other non-measuring CPU work stay off any half that has a measuring row on it.
+    Same-half neighbours share memory channels, so they add noise the pairing does not fully cancel.
+    Neighbour contention that does reach a row hits every arm in a block alike, so it cancels out of the
+    paired ratio. The A/A arm measures what is left: contention ends a row only when the A/A arm drifts by
+    more than twice the CI half-width. Treat a trip as real until shown otherwise; check host RAM pressure,
+    for example large non-mmap model loads. On 2026-11-25, barrier-elide r3 tripped on genuine memory
+    pressure from four concurrent 88 GB Q38FN loads.
   - **Served-config rows.** Rows that run the served recipe (np4, official sampling, the registry
     argv) are a separate track. They collect serving specs: floors, served tok/s and recipe tuning.
     Never use them, or the noise they measure, to size or judge a lever gate.
