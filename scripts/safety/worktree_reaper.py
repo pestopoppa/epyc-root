@@ -41,6 +41,8 @@ import pending_refs  # noqa: E402
 
 DEFAULT_REPOS = ["/workspace", "/mnt/raid0/llm/epyc-inference-research", "/mnt/raid0/llm/epyc-orchestrator",
                  "/mnt/raid0/llm/llama.cpp"]
+SCRATCH_MARKER = ".scratch-worktree"
+SCRATCH_MIN_IDLE_S = 30 * 60
 DEFAULT_PROTECT = ["/mnt/raid0/llm/worktrees/mains"]
 SKEW_SLACK_S = 300
 
@@ -197,6 +199,8 @@ def classify(repo, wt, base, *, now, min_idle_s, protect, keep, only, proc_root=
     if d:
         return "DIRTY", f"{len(d.splitlines())} porcelain entries: {d.splitlines()[0][:80]}", {}
     idle_h = (now - newest) / 3600
+    if os.path.isfile(os.path.join(p, SCRATCH_MARKER)):   # scratch_worktree.py trees: clean+landed+30 min idle
+        min_idle_s = min(min_idle_s, SCRATCH_MIN_IDLE_S)
     if idle_h < min_idle_s / 3600:
         return "RECENT", f"idle {idle_h:.1f}h < {min_idle_s / 3600:g}h", {"idle_h": round(idle_h, 1)}
     me = cwd_inside(p, proc_root)

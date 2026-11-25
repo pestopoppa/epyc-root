@@ -153,6 +153,8 @@ def reap(*, roots: list[str], ttl_clean: float, ttl_dirty: float, salvage_dir: s
                 counts["kept"] += 1
                 line(wt.path, v, idle, f"KEEP-{v}", reason, "untouched (unknown verdict)")
                 continue
+            if act == "REMOVE" and wg.is_scratch(wt.path):
+                ttl = min(ttl, wg.SCRATCH_MIN_IDLE_DAYS)
             if idle is None or idle < ttl:
                 counts["kept"] += 1
                 line(wt.path, v, idle, "KEEP-RECENT", f"idle {idle} d < ttl {ttl} d", "untouched")
@@ -168,7 +170,7 @@ def reap(*, roots: list[str], ttl_clean: float, ttl_dirty: float, salvage_dir: s
                     line(wt.path, v, idle, "REMOVE", reason, "dry-run: would git worktree remove")
                     continue
                 try:
-                    ok, msg = wg.remove_one(wt.path, base=rbase, min_idle_days=ttl_clean, fetch=False, probe=probe)
+                    ok, msg = wg.remove_one(wt.path, base=rbase, min_idle_days=min(ttl_clean, ttl) if act == "REMOVE" else ttl_clean, fetch=False, probe=probe)
                 except Exception as exc:  # noqa: BLE001
                     ok, msg = False, f"remove_one raised: {exc}"
                 if ok:

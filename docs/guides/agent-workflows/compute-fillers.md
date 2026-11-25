@@ -229,6 +229,7 @@ Throughput*.
 - **Placement:** CPU rows prefer q0-q2 over q3 (operator, 2026-11-10); gpu-q3 timing rows block while another row holds q3.
 - **A fail-closed foreign-load guard needs a threshold matched to the window's width, plus two-sample persistence.** Floor r3 died on a janitor `du` scan at 57% and r4 on a single 8.7% `git log` sample; either transient killed a whole-host drain. r5 uses a 25% threshold with two-sample persistence.
 - **When copying a row dir to a new attempt, drop one-shot marks** such as ONE-WINDOW, or the new attempt inherits a spent window.
+- **Need an epyc-root worktree? Use `python3 scripts/system/scratch_worktree.py add <name> [--full]`, not a bare `git worktree add`** (sparse: no artifacts/benchmarks/data, ~0.3 GB vs 1.2 GB; marked so the gate and reaper reclaim it 30 min after it is clean and landed; remove it yourself with `worktree_gate.py remove <path>` when done).
 - **In the shared clone, commit from a temp worktree and never `update-ref` local main.** An `update-ref` on main left /workspace stale (2026-11-10) and a restore had to put 5 docs/publication files back to HEAD. Use `git worktree add -b <tmp> <path> origin/main` and `serialized_push.py --push`.
 
 ## Lessons from 2026-11-11 (AutoKernel)

@@ -162,6 +162,16 @@ REFERENCE_FILES = [
 REFERENCE_GLOB_FILES = [f"{LLM}/epyc-root/logs/crontab.bak-*"]
 REFERENCE_MAX_FILE_BYTES = 2 * 2**20
 
+# Scratch worktrees (created by scripts/system/scratch_worktree.py) carry this marker and are reclaimable
+# once clean + landed + idle this long; every other tree keeps --min-idle-days.
+SCRATCH_MARKER = ".scratch-worktree"
+SCRATCH_MIN_IDLE_DAYS = 30 / 1440.0
+
+
+def is_scratch(path: str) -> bool:
+    return os.path.isfile(os.path.join(path, SCRATCH_MARKER))
+
+
 REMOVABLE = "REMOVABLE"
 VERDICTS = (
     "MISSING",        # registered but the directory is gone (never pruned here; reported)
@@ -584,6 +594,8 @@ def classify(wt: Worktree, *, base: str | list[str], min_idle_days: float, probe
     except subprocess.TimeoutExpired as exc:
         wt.verdict, wt.reasons = "UNVERIFIABLE", [f"timeout: {exc.cmd}"]
         return wt
+    if is_scratch(wt.path):
+        min_idle_days = min(min_idle_days, SCRATCH_MIN_IDLE_DAYS)
     if wt.idle_days is None or wt.idle_days < min_idle_days:
         wt.verdict, wt.reasons = "RECENT", [f"idle {wt.idle_days} d < {min_idle_days} d"]
         return wt
