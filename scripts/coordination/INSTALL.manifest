@@ -44,6 +44,7 @@ bin/churn/file_result.py             scripts/coordination/churn/file_result.py  
 bin/churn/filing.py                  scripts/coordination/churn/filing.py                 hot
 bin/churn/auto_file.py               scripts/coordination/churn/auto_file.py              hot
 bin/churn/reclaim_row.py             scripts/coordination/churn/reclaim_row.py            hot
+bin/churn/keep_failed.py             scripts/coordination/churn/keep_failed.py            hot
 bin/churn/typed_classify.py          scripts/coordination/churn/typed_classify.py         hot
 bin/churn/tokens_per_task.py         scripts/coordination/churn/tokens_per_task.py        hot
 bin/churn/scratch_guard.py           scripts/coordination/churn/scratch_guard.py          hot
