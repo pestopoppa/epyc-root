@@ -304,6 +304,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: task_lint reports zero rule-f failures across committed briefs and a test trips the rewriter
       · gate: none
       · owner: pipeline-mgmt
+      · NEEDS-OWNER: 2026-11-25 codex lane cxd-tf-accept-cd-cleanup-20261125T1444: lane status BLOCKED: handoffs/active/briefs/ requires edits explicitly prohibited by lane instructions
 - [ ] **TF-DUPID-HS4** [non-inference] Resolve the duplicate box ID HS-4 (x3 occurrences) in harness-program: give each a unique ID and fix gate references.
       · done when: box_index reports no duplicate id HS-4
       · gate: none
