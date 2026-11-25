@@ -12009,6 +12009,27 @@ def main(argv=None):
             return 0 if st["state"] != "unknown" else 2
         if a.cmd == "preflight":
             sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            if a.rows and not (a.report or a.rollout):
+                import mk_ak_row as MK
+                bad = False
+                results = []
+                for row in a.rows:
+                    path = os.path.join(row, "spec.json") if os.path.isdir(row) else row
+                    try:
+                        with open(path) as f:
+                            spec = json.load(f)
+                        refusals = MK.rehearse_spec(spec, a.flags)
+                        warnings = spec.pop("_rehearsal_warnings", [])
+                    except (OSError, ValueError) as e:
+                        refusals, warnings = [("spec", f"cannot read {path}: {e}", "")], []
+                    bad |= bool(refusals)
+                    results.append({"row": row, "refusals": refusals, "warnings": warnings})
+                    if not a.json:
+                        print(f"preflight {row}:")
+                        print(MK._format(refusals, warnings))
+                if a.json:
+                    print(json.dumps(results, indent=1))
+                return 1 if bad else 0
             import preflight as PF
             return PF.main((["--rollout"] if a.rollout else ["--report"] if a.report or not a.rows else []) + (["--json"] if a.json else [])
                            + ["--flags", a.flags] + list(a.rows))

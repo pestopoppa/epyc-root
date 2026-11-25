@@ -118,6 +118,27 @@ def run_publish(argv):
     return rc, out.getvalue()
 
 
+def test_rowflow_preflight_collects_publish_refusals(env, monkeypatch):
+    rid = "ak-r-gate-gpu-20261125-region"
+    rc, out = run(decl(env, rid))
+    assert rc == 0, out
+    sp = env["rows"] / rid / "spec.json"
+    spec = json.loads(sp.read_text())
+    spec.update(regions="88-95,184-191", estimate_s=60)
+    sp.write_text(json.dumps(spec))
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(out):
+        rc = rf.main(["--flags", str(env["flags"]), "preflight", str(sp)])
+    assert rc != 0
+    assert "gpu regions must name mi210_0" in out.getvalue()
+    assert "under 5 min" in out.getvalue()
+    spec["estimate_s"] = 4200
+    sp.write_text(json.dumps(spec))
+    monkeypatch.setattr(PR, "gpu_busy", lambda flags: True)
+    rc, pub = run_publish([str(sp), "--flags", str(env["flags"])])
+    assert rc != 0 and "gpu regions must name mi210_0" in pub
+
+
 def test_check_only_on_an_existing_row_and_supersedes_flag(env):
     rid = "ak-r-gate-gpu-20261125-r3"
     rc, out = run(decl(env, rid, extra=["--supersedes", "ak-r-gate-gpu-20261125-r2"]))

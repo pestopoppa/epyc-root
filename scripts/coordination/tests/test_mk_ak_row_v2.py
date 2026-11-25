@@ -85,6 +85,28 @@ def _mk(tmp_path, rid, extra=(), served=None, monkeypatch=None):
     return d, json.loads((d / "spec.json").read_text()), (d / "job.py").read_text()
 
 
+@pytest.mark.parametrize("profile", ["default", "polar"])
+def test_gpu_scaffold_regions_pass_publish_check(tmp_path, monkeypatch, profile):
+    import publish_row as PR
+    import rowflow as rf
+    monkeypatch.setattr(rf, "TMP", str(tmp_path) + "/")
+    monkeypatch.setenv("ROWFLOW_NO_VIEW_REFRESH", "1")
+    flags = tmp_path / "flags"
+    flags.mkdir()
+    if profile == "default":
+        _, spec, _ = _mk(tmp_path, "ak-default-gpu-20261125", ["--lane", "gpu"])
+    else:
+        args = ["new", "ak-polar-gpu-20261125", "--handoff", "x.md", "--box", "T", "--lane", "gpu",
+                "--regions", "88-95", "--threads", "8", "--units", "1", "--unit-s", "400", "--model", "X",
+                "--root", str(tmp_path)]
+        assert MK.polar_main(args, fetch=lambda *a: ("abc", {"gpu_common.py": b"", "gpuproof_row.py": b""})) == 0
+        spec = json.loads((tmp_path / "ak-polar-gpu-20261125" / "spec.json").read_text())
+    assert spec["regions"] == "mi210_0,88-95,184-191"
+    assert spec["claim_cpus"] == MK.GPU_HOST_CLAIM
+    refusals = PR.rehearse(spec, str(flags))
+    assert not any("gpu regions must name mi210_0" in item for _, item, _ in refusals)
+
+
 def test_v2_stamp_predicate_and_selftest_runs_smoke(tmp_path):
     d, spec, job = _mk(tmp_path, "ak-v2-stamp-cpu-20261124")
     assert f"# GENERATED-BY: mk_ak_row.py {MK.GEN_VERSION} harness_sha256={MK.harness_sha()}" in job

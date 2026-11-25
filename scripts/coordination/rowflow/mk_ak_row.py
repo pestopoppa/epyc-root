@@ -525,7 +525,8 @@ def scaffold(a, served=None):
     if a.claim is not None and not CLAIM_RX.match(a.claim):
         raise SystemExit(f"mk_ak_row: --claim {a.claim!r} must be a digit/range list like 184-191 or 0-3,8")
     # CPU lane without an explicit --claim: no C= and no --claim-cpus, so the launcher defaults to the grant's cpus
-    claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else "184-191")
+    claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else GPU_HOST_CLAIM)
+    regions = "mi210_0," + claim if a.lane == "gpu" else claim
     pin = a.claim is not None or a.lane != "cpu"
     claim_line = "C=${WS58_CPUS:-%s}\n" % claim if pin else ""
     claim_arg = ' --claim-cpus "$C"' if pin else ""
@@ -548,7 +549,7 @@ id=a.id, task=a.task, rule=a.rule, knobs=", ".join(a.knob) or "none", knob_list=
     shutil.copy(os.path.join(HERE, "ak_row_harness.py"), os.path.join(d, "ak_row_harness.py"))
     seal(d)
     spec = {"owner": "autokernel", "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.id,
-            "regions": claim, "claim_cpus": claim, "verdict_by": "agent", "launcher": os.path.join(d, "launch.sh"),
+            "regions": regions, "claim_cpus": claim, "verdict_by": "agent", "launcher": os.path.join(d, "launch.sh"),
             "result_path": os.path.join(d, "out", "RESULT.json"), "result_format": "json", "scratch_root": d,
             "workdir": d, "stop_file": os.path.join(d, "STOP"), "estimate_s": a.estimate_s,
             "min_window_s": a.min_window, "declared_threads": a.threads, "handoff_task": a.task, "model": a.model,
@@ -1412,8 +1413,10 @@ def polar_scaffold(a, fetch=None) -> int:
         print(f"REFUSED: {just}")
         return 1
     os.makedirs(os.path.join(d, "out"))
+    claim = GPU_HOST_CLAIM if a.lane == "gpu" else a.regions
+    regions = "mi210_0," + claim if a.lane == "gpu" else claim
     fmt = dict(id=a.row_id, owner=a.owner, handoff=a.handoff, box=a.box, threads=a.threads, dir=d,
-               regions=a.regions, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units or '?', unit_s=a.unit_s or '?', gpu_block="")
+               regions=claim, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units or '?', unit_s=a.unit_s or '?', gpu_block="")
     if a.lane == "gpu":
         commit, harness = got
         for n, b in harness.items():
@@ -1427,7 +1430,7 @@ def polar_scaffold(a, fetch=None) -> int:
             f.write(t.format(**fmt))
         os.chmod(os.path.join(d, name), mode)
     spec = {"owner": a.owner, "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.row_id,
-            "regions": a.regions, "claim_cpus": a.regions, "verdict_by": "agent",
+            "regions": regions, "claim_cpus": claim, "verdict_by": "agent",
             "launcher": f"{d}/launch.sh", "result_path": f"{d}/out/RESULT.json", "result_format": "json",
             "scratch_root": d, "workdir": d, "stop_file": f"{d}/STOP", "estimate_s": est,
             "min_window_s": math.ceil(est * 0.8), "declared_threads": a.threads,
@@ -1495,6 +1498,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--reseal")
     ap.add_argument("--fix-ref", metavar="STORE:REASON", help="new kernel store and reason for the fix")
+    ap.add_argument("--check-only", metavar="ROWDIR")
+    ap.add_argument("--flags", default=None)
     ap.add_argument("--id")
     ap.add_argument("--task", default="")
     ap.add_argument("--model", default="")
@@ -1520,6 +1525,8 @@ def main(argv=None):
                          "as {arm, flag, value, reason}; flag argv[0] swaps the binary (lever rows)")
     ap.add_argument("--orch-repo", default=ORCH_REPO, help="orchestrator checkout --served-ref resolves in")
     a = ap.parse_args(argv)
+    if a.check_only:
+        return check_only_dir(a.check_only, a.flags)
     if a.reseal:
         seal(a.reseal)
         return 1 if lint(a.reseal) else 0
