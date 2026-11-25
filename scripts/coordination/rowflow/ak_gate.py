@@ -1951,7 +1951,7 @@ class Gate:
         if quality and not any(u.get("kind") == "quality-summary" for u in units):
             _, detail, _ = _decide_one(self.spec, quality, units)
             if "served_quality" in detail:
-                summary = {"kind": "quality-summary", "correctness": {"served_quality": detail["served_quality"]}}
+                summary = {"unit_id": "quality-summary", "kind": "quality-summary", "correctness": {"served_quality": detail["served_quality"]}}
                 H.append_unit(summary, self.out)
                 units.append(summary)
         d = decide(self.spec, units)
