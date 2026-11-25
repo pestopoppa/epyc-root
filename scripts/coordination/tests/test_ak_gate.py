@@ -1036,13 +1036,14 @@ def test_predecessor_exact_match_and_provenance(tmp_path):
     assert new.run() == 0
     records = G.load_units(new.out)
     reused = [u for u in records if u.get("reused_from")]
-    assert len(reused) == 3 and all(u["reused_from"] == "old" for u in reused)
+    assert len(reused) == 3 and all(u["reused_from"] == "old" and
+                                    u["unit_semantics_version"] == G.UNIT_SEMANTICS_VERSION for u in reused)
     assert "UNIT-REUSED c-tbo-ON from old" in new.stream.getvalue()
     assert len([u for u in json.load(open(os.path.join(new.out, "RESULT.json")))["units"] if u.get("reused_from")]) == 3
     assert calls  # timing units still execute
 
 
-@pytest.mark.parametrize("change", ["kernel_path", "kernel_sha", "knob", "arm_env", "unit_env", "prompt", "argv", "kind_params", "gate_sha", "harness_sha", "partial", "crash"])
+@pytest.mark.parametrize("change", ["kernel_path", "kernel_sha", "knob", "arm_env", "unit_env", "prompt", "argv", "kind_params", "partial", "crash"])
 def test_predecessor_key_mismatch_reruns(tmp_path, change):
     import copy
     sp, binary, (old, new) = _reuse_rows(tmp_path)
@@ -1073,11 +1074,25 @@ def test_predecessor_key_mismatch_reruns(tmp_path, change):
         new.spec["server"]["argv"].append("--different")
     elif change == "kind_params":
         new.spec["correctness"]["min_cases"] = 2
-    elif change in ("gate_sha", "harness_sha"):
-        with open(os.path.join(new.d, "ak_gate.py" if change == "gate_sha" else "ak_row_harness.py"), "a") as f:
-            f.write("# change\n")
     assert new.reuse_unit("c-tbo-ON", "c-tbo", "ON", {}) is None
     assert not G.load_units(new.out)
+
+
+def test_reuse_key_ignores_validation_edit_but_tracks_semantics_version(tmp_path, monkeypatch):
+    _, _, (old, new) = _reuse_rows(tmp_path)
+    args = ("c-tbo-ON", "c-tbo", "ON", {})
+    original = old.unit_key(*args)
+    assert original is not None
+    gate = os.path.join(new.d, "ak_gate.py")
+    with open(gate) as f:
+        source = f.read()
+    changed = source.replace("def validate_spec(spec):", "def validate_spec(spec):\n    if spec.get(\"new_refusal\"):\n        raise ValueError(\"new refusal\")")
+    assert changed != source
+    with open(gate, "w") as f:
+        f.write(changed)
+    assert new.unit_key(*args) == original
+    monkeypatch.setattr(G, "UNIT_SEMANTICS_VERSION", G.UNIT_SEMANTICS_VERSION + 1)
+    assert new.unit_key(*args) != original
 
 
 def test_smoke_reuse_and_no_timing_reuse(tmp_path):

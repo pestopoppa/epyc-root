@@ -52,6 +52,8 @@ if _HERE not in sys.path:
 import ak_row_harness as H  # noqa: E402
 
 GATE_VERSION = "1"
+# Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
+UNIT_SEMANTICS_VERSION = 1
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
 EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke")
@@ -565,6 +567,8 @@ def witness_exempt(spec, unit_type):
     return unit_type in WITNESS_EXEMPT_UNIT_TYPES and unit_type not in (spec.get("expect_by_unit") or {})
 
 
+# Unit execution and judgment also depend on helpers such as witness parsing and metrics.
+# Bump UNIT_SEMANTICS_VERSION when changing how correctness/smoke units execute or are judged.
 def witness_for(spec, arm, text, argv=None, log=None, unit_type="served"):
     """{knob: {expected, observed, ok, line, lines_scanned, log, argv_lv, log_lv, lv_required, note}} - one entry per knob,
     each judged ALONE against expect[arm][knob]. Never an AND over knobs."""
@@ -1374,6 +1378,8 @@ class Gate:
         u["secs"] = round(time.time() - t0, 2)
         return u
 
+    # Correctness/smoke execution and judgment: bump UNIT_SEMANTICS_VERSION when
+    # changing their behavior, including the helpers they call.
     def finish_unit(self, u):
         """Witness + metric from the unit's own log / requests (the same code the replay runs)."""
         if not u.get("error"):
@@ -1485,7 +1491,7 @@ class Gate:
             base_sha = _sha_file(os.path.join(self.out, "kld-base.bin")) if kind == "c-kld" and extra.get("mode") == "kld" else None
             key = {"kld_base_sha": base_sha, "unit_id": uid, "kind": kind, "arm": arm, "extra": extra,
                    "binaries": [(p, _sha_file(p)) for p in binaries],
-                   "harness": {p: _sha_file(os.path.join(self.d, p)) for p in ("ak_gate.py", "ak_row_harness.py")},
+                   "unit_semantics_version": UNIT_SEMANTICS_VERSION,
                    "server": server, "knobs": self.spec.get("knobs"), "arms": self.spec.get("arms"),
                    "arm_env": self.spec.get("arm_env"), "expect": self.spec.get("expect"),
                    "expect_by_unit": self.spec.get("expect_by_unit"), "correctness": c,
@@ -1515,7 +1521,7 @@ class Gate:
         else:
             verdict = decide_smoke(self.spec, [u])["verdict"] if u.get("req") and u.get("metric") is not None else None
         if verdict:
-            u.update(reuse_key=key, unit_verdict=verdict)
+            u.update(reuse_key=key, unit_verdict=verdict, unit_semantics_version=UNIT_SEMANTICS_VERSION)
             if kind == "c-kld" and extra.get("mode") == "base":
                 u["base_sha256"] = _sha_file(os.path.join(self.out, "kld-base.bin"))
         return u
@@ -1553,7 +1559,7 @@ class Gate:
                         shutil.copyfile(base, os.path.join(self.out, "kld-base.bin"))
                 except (OSError, ValueError):
                     continue
-                u = dict(u, reused_from=pid)
+                u = dict(u, reused_from=pid, unit_semantics_version=UNIT_SEMANTICS_VERSION)
                 H.append_unit(u, self.out)
                 self.log(f"UNIT-REUSED {uid} from {pid}")
                 return u
