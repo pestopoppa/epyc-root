@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T12:27:56Z",
+  "generated_at": "2026-11-25T12:38:34Z",
   "nodes": [
     {
       "age_days": 3,
@@ -997,7 +997,6 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
@@ -1630,7 +1629,6 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
@@ -3259,15 +3257,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 369,
-      "dispatchable": 16,
+      "closed": 370,
+      "dispatchable": 15,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-25",
       "next_action": "FM-4 Phase C: collect 30 prospective dispatch_with_gate records per arm plus one native canary; futility check 2026-12-03; then close and move to completed/",
-      "open": 16,
+      "open": 15,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3301,12 +3299,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 2577,
           "name": "churn-pipeline",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -3328,7 +3326,6 @@
         },
         {
           "blocked_by": [
-            "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 0,
@@ -3345,7 +3342,6 @@
         },
         {
           "blocked_by": [
-            "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 0,
@@ -3363,7 +3359,6 @@
         },
         {
           "blocked_by": [
-            "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 1,
@@ -3381,7 +3376,6 @@
         },
         {
           "blocked_by": [
-            "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 0,

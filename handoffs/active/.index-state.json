@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 494
+      "open": 493
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -640,11 +640,11 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 369,
+      "closed": 370,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "open": 16,
+      "open": 15,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -668,13 +668,13 @@
         },
         {
           "blocked": 0,
-          "closed": 1,
+          "closed": 2,
           "gates": [],
           "guarded": 0,
           "line": 2577,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
