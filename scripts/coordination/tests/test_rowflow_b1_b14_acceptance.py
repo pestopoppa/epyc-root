@@ -69,6 +69,13 @@ class B1FiveRowOrdering(Base):
         a = [json.loads(x) for x in open(os.path.join(self.flags, "rowflow-alerts.jsonl"))]
         self.assertEqual([(x["kind"], x["row_owner"]) for x in a], [("queued-smoke-orphaned", "autokernel")])
 
+    def test_smoke_queued_withdrawn_is_not_an_orphan(self):
+        rid = "gpu-w-20261124"
+        rf.atomic_json(pr.unpublished_path(self.flags, rid), {"id": rid, "owner": "autokernel"})
+        rf.atomic_json(pr.queued_path(self.flags, rid), {"id": rid, "queued_at": rf.now_iso()})
+        self.assertEqual(rf._withdraw_smoke_queued(self.flags, rid, "superseded", lambda m: None), "WITHDRAWN")
+        self.assertEqual(rf.orphaned_smoke_alerts(self.flags, log=lambda m: None, now=time.time() + 300), [])
+
     def test_review_s3_week_old_unpublished_ignored(self):
         rid = "gpu-old-20261101"
         up = pr.unpublished_path(self.flags, rid)

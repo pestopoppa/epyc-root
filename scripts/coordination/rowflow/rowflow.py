@@ -7262,6 +7262,10 @@ def orphaned_smoke_alerts(flags, log=print, emit=None, now=None, min_age_s=120):
             continue
         if os.path.exists(withdraw_pending_path(flags, rid)) or os.path.exists(os.path.join(withdrawn_dir(flags), rid + ".json")):
             continue
+        # _withdraw_smoke_queued's terminal record: grants/<id>.ended + dryrun/<id>/.withdrawn/; a .complete is also terminal
+        if (os.path.exists(os.path.join(flags, "grants", rid + ".ended")) or os.path.isdir(os.path.join(dd, ".withdrawn"))
+                or os.path.exists(os.path.join(dd, ".complete"))):
+            continue
         if any(proc_alive((load_json(os.path.join(dd, n)) or {}).get("pid")) for n in ("RUNNING.json", "SMOKE-PLACED.json")):
             continue
         recs = [os.path.join(dd, "PASS.json")] + glob.glob(os.path.join(dd, "FAIL-*.json")) + glob.glob(os.path.join(dd, "QUEUED-DROPPED-*.json"))
