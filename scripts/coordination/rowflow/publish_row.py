@@ -2181,11 +2181,12 @@ def main(argv=None):
         identity_spec = json.loads(json.dumps(spec))
         if route_rerank(identity_spec, a.flags):
             return 0
-        refresh_view()
-        # gate rehearsal 2026-11-25: every refusal at once (the same list mk_ak_row gate new rehearses before writing)
+        # gate rehearsal 2026-11-25: every refusal at once (the same list mk_ak_row gate new rehearses before writing).
+        # Refuse BEFORE refresh_view (nothing touched on a refusal); the first refusal leads the REFUSED line.
         refusals = rehearse(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)
         if refusals:
-            raise rf.Refused(format_rehearsal(refusals))
+            raise rf.Refused(f"{refusals[0][1]}\n{format_rehearsal(refusals)}")
+        refresh_view()
         if a.smoke_budget_by:
             import family_strikes as fs
             fs.override_budget(a.flags, fs.stem_of(spec.get("id")), a.smoke_budget_by, a.reason)
