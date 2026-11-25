@@ -161,16 +161,39 @@ def is_gpu(spec):
     return str((spec or {}).get("lane") or "") == "gpu"
 
 
+def replay_receipt_status(flags, spec):
+    """R1 (pipeline-mgmt, ak_gate 2026-11-25): (enforced, valid, why) of the replay-receipt gate for this republish, via
+    preflight.check_replay_receipt (receipt = out/REPLAY-RECEIPT.json from job.py --replay, spec.replay_receipt, or the R4
+    replay preflight already recorded in spec.preflight.replay_decide). valid = the family's last smoke FAILED and the
+    receipt binds to that failure with a different failure class (or spec.fix_ref names a new kernel store). Never raises."""
+    try:
+        import preflight as PF
+        row = PF.Row(spec)
+        last = PF.family_last_smoke(flags, row.id)
+        rd = ((spec or {}).get("preflight") or {}).get("replay_decide")
+        res = PF.check_replay_receipt(row, {"flags": flags, "replay_decide": {row.id: rd} if rd else {}})
+        fails = [f"{c}: {m}" for lv, c, m in res if lv == "FAIL"]
+        valid = bool(last and last["kind"] == "FAIL" and not fails)
+        return bool(PF.PREFLIGHT_ENFORCE.get("replay_receipt")), valid, "; ".join(fails)
+    except Exception as e:  # noqa: BLE001 - the receipt gate never crashes a publish (WARN-first)
+        return False, False, f"replay receipt not judged: {type(e).__name__}: {e}"
+
+
 def republish_allowed(flags, spec, now=None):
-    """-> (ok, reason). THE publish-time family gate (R2 park, R6 GPU budget). R1's replay receipt extends this function."""
+    """-> (ok, reason). THE publish-time family gate (R2 park, R6 GPU budget, R1 replay receipt). A validated R1 receipt is
+    an automatic unpark reason for R2 (one attempt: the receipt binds to the family's latest FAIL, so the next FAIL needs
+    a new one). The R1 refusal itself applies only once preflight.PREFLIGHT_ENFORCE["replay_receipt"] is True."""
     stem = stem_of((spec or {}).get("id"))
+    enforced, valid, rwhy = replay_receipt_status(flags, spec)
     why = park_reason(flags, stem)
-    if why:
+    if why and not valid:
         return False, why
     if is_gpu(spec):
         why = budget_reason(flags, stem, now)
         if why:
             return False, why
+    if enforced and rwhy:
+        return False, "replay receipt (R1): " + rwhy
     return True, ""
 
 

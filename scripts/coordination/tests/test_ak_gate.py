@@ -537,3 +537,30 @@ def test_replay_checks_are_warn_first_and_publish_only():
     assert {"replay_receipt", "replay_decide"} <= set(P.PUBLISH_ONLY)
     assert P.CHECKS.index("replay_decide") < P.CHECKS.index("replay_receipt")
     assert "replay_receipt" not in P.DRIFT_CHECKS
+
+
+def test_family_gate_receipt_unparks_and_enforce_switch(tmp_path, monkeypatch):
+    """family_strikes.republish_allowed (R2 park) accepts a validated R1 receipt as the unpark reason; the R1 refusal
+    applies only once PREFLIGHT_ENFORCE['replay_receipt'] is flipped."""
+    import family_strikes as fs
+    monkeypatch.setenv("PREFLIGHT_CACHE", str(tmp_path / "pfcache"))
+    flags, prev, prow = family(tmp_path)
+    for i in range(fs.PARK_AT):
+        fs.record_strike(str(flags), prev, "smoke", "witness miss", key=str(i), manifest={})
+    d, spec_ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r2")
+    ok, why = fs.republish_allowed(str(flags), spec_)
+    assert not ok and why.startswith("PARKED")
+    (prow / "out" / "logs" / "smoke-ON.log").write_text(f"0.0 I cmn verbosity = 4\n0.1 I {Q8MC_ARMED}\n")
+    subprocess.run([sys.executable, "-I", "-B", str(d / "job.py"), "--replay", str(prow)], capture_output=True,
+                   env={"PATH": "/usr/bin:/bin", "ROWFLOW_FLAGS": str(flags)}, check=True)
+    assert fs.republish_allowed(str(flags), spec_)[0]                  # valid receipt = one attempt past the park
+    os.remove(d / "out" / G.RECEIPT)
+    fs.record_clear(str(flags), prev, "PASS")                          # not parked, no receipt: WARN-first lets it through
+    assert fs.republish_allowed(str(flags), spec_)[0]
+    monkeypatch.setitem(P.PREFLIGHT_ENFORCE, "replay_receipt", True)
+    ok, why = fs.republish_allowed(str(flags), spec_)
+    assert not ok and "REPLAY-RECEIPT-MISSING" in why
+
+
+if __name__ == "__main__":
+    raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/coordination/tests/test_ak_gate.py -q")
