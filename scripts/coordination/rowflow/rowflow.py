@@ -1090,7 +1090,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False, dry_run=F
              "supersedes must be a row id or a list of row ids")
         need(rid not in ([sup] if isinstance(sup, str) else sup), "a row cannot supersede itself")
     if spec.get("fix_ref") is not None:
-        need(isinstance(spec["fix_ref"], str) and spec["fix_ref"].strip(), "fix_ref must name the fix (commit or path)")
+        fr = spec["fix_ref"]
+        need((isinstance(fr, str) and fr.strip()) or
+             (isinstance(fr, dict) and all(isinstance(fr.get(k), str) and fr[k].strip() for k in ("store", "reason"))),
+             "fix_ref must name the fix (commit or path) or contain non-empty store and reason")
     check_engine_not_sealed(launcher, eng)
     envp = check_env_passthrough(launcher)
     if envp:

@@ -197,3 +197,25 @@ def test_ticked_box_and_missing_model_both_reported_by_publish(env, monkeypatch)
     box = [it for st, it, _ in refusals if st == "box"]
     assert any("not open" in x for x in box) and any("identity incomplete" in x for x in box), box
     assert {st for st, _, _ in refusals} >= {"box", "placement"}     # later stages ran too
+
+
+def test_fix_ref_rehearsal_accepts_same_class_republish(env, tmp_path):
+    from test_ak_gate import family
+    flags, _, _ = family(tmp_path / "history")
+    env["flags"] = flags
+    rid = "ak-t-gate-gpu-20261125-r2"
+    rc, out = run(decl(env, rid))
+    assert rc == 2 and "REPLAY-RECEIPT-SAME-CLASS" in out, out
+    store = os.path.dirname(os.path.dirname(env["argv"][0]))
+    rc, out = run(decl(env, rid, extra=["--fix-ref", f"{store}:new kernel fix"]))
+    assert rc == 0 and "REHEARSAL PASS" in out, out
+    spec = json.loads((env["rows"] / rid / "spec.json").read_text())
+    assert spec["fix_ref"] == {"store": store, "reason": "new kernel fix"}
+
+
+@pytest.mark.parametrize("value", ["missing:reason", ":reason", "missing:", "missing:   ", "../escape:reason"])
+def test_fix_ref_rejects_invalid_store_or_reason(env, value):
+    rid = "ak-r-gate-gpu-20261125-r9"
+    with pytest.raises(SystemExit, match="--fix-ref"):
+        run(decl(env, rid, extra=["--fix-ref", value]))
+    assert not (env["rows"] / rid).exists()

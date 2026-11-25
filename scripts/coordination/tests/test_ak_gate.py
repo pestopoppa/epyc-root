@@ -582,6 +582,12 @@ def test_family_gate_receipt_unparks_and_enforce_switch(tmp_path, monkeypatch):
     d, spec_ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r2")
     ok, why = fs.republish_allowed(str(flags), spec_)
     assert not ok and why.startswith("PARKED")
+    new_store = tmp_path / "new-store"
+    new_store.mkdir()
+    fixed = dict(spec_, fix_ref={"store": str(new_store), "reason": "new kernel"})
+    assert fs.republish_allowed(str(flags), fixed)[0]  # structured fix un-parks the family
+    fixed["fix_ref"] = {"store": str(new_store), "reason": " "}
+    assert not fs.republish_allowed(str(flags), fixed)[0]
     _armed_log(prow)
     s = dict(spec_)
     P.publish_check(s, str(flags), warn=lambda w: None, queued={})      # publish order: row_preflight, then the family gate

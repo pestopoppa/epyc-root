@@ -380,6 +380,27 @@ print("RESOLVED " + json.dumps({"argv": [str(x) for x in argv], "serving_shape":
 DEFAULT_ARM_REASON = "arm-scoped lever delta (mk_ak_row --arm-delta)"
 
 
+KERNEL_BUILDS = "/mnt/raid0/llm/kernels/builds"
+
+
+def parse_fix_ref(value, argv=()):
+    """Resolve a store name or path, allowing a store explicitly used by the row argv."""
+    if value is None:
+        return None
+    store, sep, reason = value.partition(":")
+    store, reason = store.strip(), reason.strip()
+    if not sep or not store or not reason:
+        raise SystemExit("mk_ak_row: --fix-ref needs STORE:REASON with a non-empty reason")
+    path = os.path.realpath(store if os.path.isabs(store) else os.path.join(KERNEL_BUILDS, store))
+    builds = os.path.realpath(KERNEL_BUILDS)
+    under_builds = path != builds and os.path.commonpath((builds, path)) == builds
+    argv_stores = {os.path.realpath(os.path.dirname(os.path.dirname(str(x)))) for x in argv
+                   if str(x).endswith("/bin/llama-server")}
+    if not os.path.isdir(path) or not (under_builds or path in argv_stores):
+        raise SystemExit(f"mk_ak_row: --fix-ref store {store!r} must be an existing directory under {KERNEL_BUILDS} or the row's argv store")
+    return {"store": path, "reason": reason}
+
+
 def parse_arm_delta(text):
     """'ARM:flag=value[:reason]' -> {arm, flag, value, reason} (preflight check 11's canonical arm-scoped delta).
     A value without '=' (`ON:--no-warmup`) is a bare flag (value true)."""
@@ -494,6 +515,7 @@ def add_tool_witness_loglevel(tool, argv):
 
 
 def scaffold(a, served=None):
+    fix_ref = parse_fix_ref(getattr(a, "fix_ref", None), served.get("argv", []) if served else [])
     d = os.path.join(a.root, a.id)
     if os.path.exists(d):
         raise SystemExit(f"mk_ak_row: {d} exists; pick a new -rN id")
@@ -536,6 +558,8 @@ id=a.id, task=a.task, rule=a.rule, knobs=", ".join(a.knob) or "none", knob_list=
             "notes": "scaffolded by mk_ak_row.py; estimate_basis: add after the smoke (ak_row_harness.estimate_from_smoke)"}
     spec["generator"] = {"tool": "mk_ak_row.py", "version": GEN_VERSION, "harness_sha256": harness_sha(),
                          "utc": H.now()}
+    if fix_ref:
+        spec["fix_ref"] = fix_ref
     if served:
         spec["served_ref"] = served
     if tool_delta:
@@ -714,6 +738,7 @@ def gate_scaffold(a, served=None):
         src = "declared with --server-argv-json"
     else:
         raise SystemExit("mk_ak_row gate: --served-ref ROLE (preferred) or --server-argv-json '[...]' is required")
+    fix_ref = parse_fix_ref(getattr(a, "fix_ref", None), argv)
     argv = G.ensure_lv(argv, lv)
     if served:
         served = add_witness_loglevel(dict(served, argv=argv)) if G.argv_lv(served["argv"]) is None else \
@@ -866,6 +891,8 @@ def gate_scaffold(a, served=None):
                                "cap": v["cap"], "knob": k} for k, v in knobs.items() if not v["marker"].startswith("re:")],
             "keep": list(G.EVIDENCE_PATHS),   # the replay input of a failed gate; the reaper honours spec.keep
             "notes": "scaffolded by mk_ak_row.py gate new (declared gate row; ak_gate owns the harness)"}
+    if fix_ref:
+        spec["fix_ref"] = fix_ref
     spec["generator"] = {"tool": "mk_ak_row.py", "version": GEN_VERSION, "profile": "gate",
                          "harness_sha256": harness_sha(), "gate_sha256": gate_sha(), "utc": H.now()}
     if served:
@@ -948,6 +975,7 @@ def gate_main(argv=None):
     n.add_argument("--exclusive-cpu", action="store_true")
     n.add_argument("--no-quiet-host", action="store_true")
     n.add_argument("--rank", type=float, help="spec.priority_rank (lower = granted first; publish default 100)")
+    n.add_argument("--fix-ref", metavar="STORE:REASON", help="new kernel store and reason for the fix")
     n.add_argument("--supersedes", metavar="ID[,ID]", help="spec.supersedes: the live row id(s) this row replaces")
     n.add_argument("--create-box", action="store_true", help="PREPARE a compliant box stub for --task's box id and print "
                    "the handoff_box.py add command for the handoff OWNER to run (never writes the handoff)")
@@ -1365,6 +1393,7 @@ def polar_scaffold(a, fetch=None) -> int:
     """The polar/akloop row profile (formerly .claude/skills/row-owner-loop/scripts/row_scaffold.py `new`, retired
     2026-11-24 RCA F1: one generator). `fetch` resolves the canonical GPU harness (default fetch_harness)."""
     fetch = fetch or fetch_harness
+    fix_ref = parse_fix_ref(getattr(a, "fix_ref", None))
     d = os.path.join(a.root, a.row_id)
     if os.path.exists(d):
         print(f"REFUSED: {d} exists")
@@ -1407,6 +1436,8 @@ def polar_scaffold(a, fetch=None) -> int:
             "smoke_predicate": f"/usr/bin/test -s {d}/out/TERMINAL-smoke.json",
             "decision_rule": "see job.py docstring (RULE)", "notes": f"scaffolded by mk_ak_row.py (polar profile) for {a.owner}",
             "generator": {"tool": "mk_ak_row.py", "profile": "polar", "version": GEN_VERSION, "utc": H.now()}}
+    if fix_ref:
+        spec["fix_ref"] = fix_ref
     with open(os.path.join(d, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
     polar_seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"] + sorted(harness))
@@ -1432,6 +1463,7 @@ def polar_main(argv=None, fetch=None) -> int:
     n.add_argument("--unit-s", type=float, help="measured seconds per unit; omit to default to estimate-from-history")
     n.add_argument("--flags", help="compute-flags root for estimate-from-history (default: the live one)")
     n.add_argument("--model", required=True)
+    n.add_argument("--fix-ref", metavar="STORE:REASON", help="new kernel store and reason for the fix")
     n.add_argument("--owner", default="autokernel")
     n.add_argument("--root", default="/mnt/raid0/llm/tmp")
     n.add_argument("--research-repo", default=RESEARCH_REPO, help="gpu lane: repo to fetch the canonical harness from (fetch + show only)")
@@ -1462,6 +1494,7 @@ def main(argv=None):
         return gate_main(argv[1:])
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--reseal")
+    ap.add_argument("--fix-ref", metavar="STORE:REASON", help="new kernel store and reason for the fix")
     ap.add_argument("--id")
     ap.add_argument("--task", default="")
     ap.add_argument("--model", default="")
