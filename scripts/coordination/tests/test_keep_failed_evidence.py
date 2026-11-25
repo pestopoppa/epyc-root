@@ -82,6 +82,13 @@ class T(unittest.TestCase):
         self.assertNotIn("RECLAIM-KEEP-FAILED", out)
         self.assertTrue(self.reaped(out, "out/logs") or self.reaped(out, "out"), out)
 
+    def test_attempt_anchored_to_trailing_suffix(self):
+        rid = "ak-rsreplay-q4x-r10-sameserver-cpu-20261123"
+        self.assertEqual(keep_failed._attempt(rid), 0)
+        self.assertGreater(keep_failed._attempt(rid + "-r2"), keep_failed._attempt(rid))
+        self.assertEqual(keep_failed._attempt("kf-r3"), 3)
+        self.assertEqual(keep_failed._attempt("kf-r3-20261125"), 3)
+
     def test_72h_fallback(self):
         self.mk("kf-r1", "FAIL_X", end_age_h=73)
         self.assertNotIn("RECLAIM-KEEP-FAILED", self.reclaim("kf-r1"))

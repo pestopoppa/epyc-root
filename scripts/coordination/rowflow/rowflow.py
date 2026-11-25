@@ -226,7 +226,7 @@ def poke_keeper(flags):
     by >= 1 whole second (stat %Y is seconds) so the change is always seen. Wakes only; never writes a row. Never raises."""
     try:
         d = os.path.join(flags, "ready")
-        t = max(time.time(), os.stat(d).st_mtime + 1)
+        t = max(time.time(), os.stat(d).st_mtime + 1, os.stat(os.path.join(flags, "grants")).st_mtime + 1)
         os.utime(d, (t, t))
     except (OSError, TypeError, ValueError):
         pass
@@ -11432,8 +11432,11 @@ def gpu_batch_running(flags):
 
 
 def release_gpu_batch(flags):
+    """Drop GPU-SMOKE-BATCH.lock only when it names THIS process: a newer batch's lock is never deleted."""
     try:
-        os.remove(gpu_batch_lock(flags))
+        lk = gpu_batch_lock(flags)
+        if (load_json(lk) or {}).get("pid") == os.getpid():
+            os.remove(lk)
     except OSError:
         pass
 

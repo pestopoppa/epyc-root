@@ -72,6 +72,7 @@ class R8Tests(unittest.TestCase):
         rf.atomic_json(rf.gpu_batch_lock(self.flags), {"pid": os.getpid(), "started": rf.now_iso()})
         m0 = keeper_stamp(self.flags)
         self.assertEqual(pr.run_gpu_queue(self.flags), 0)
+        rf.release_gpu_batch(self.flags)   # main()'s finally
         self.assertFalse(os.path.exists(rf.gpu_batch_lock(self.flags)))
         self.assertGreater(keeper_stamp(self.flags), m0)
 
@@ -87,12 +88,30 @@ class R8Tests(unittest.TestCase):
                 mock.patch.object(pr, "clear_stale_dryrun"):
             self.assertEqual(pr.run_gpu_queue(self.flags), 1)
         self.assertEqual(seen, [True])
+        rf.release_gpu_batch(self.flags)
         self.assertFalse(os.path.exists(rf.gpu_batch_lock(self.flags)))
 
     def test_batch_never_removes_another_batchs_lock(self):
         rf.atomic_json(rf.gpu_batch_lock(self.flags), {"pid": os.getpid() + 999999, "started": rf.now_iso()})
         pr.run_gpu_queue(self.flags)
         self.assertTrue(os.path.exists(rf.gpu_batch_lock(self.flags)))
+
+    def test_release_gpu_batch_is_pid_checked(self):
+        lk = rf.gpu_batch_lock(self.flags)
+        rf.atomic_json(lk, {"pid": os.getpid() + 999999})
+        rf.release_gpu_batch(self.flags)
+        self.assertTrue(os.path.exists(lk))   # a newer batch's lock survives the old process's finally
+        rf.atomic_json(lk, {"pid": os.getpid()})
+        rf.release_gpu_batch(self.flags)
+        self.assertFalse(os.path.exists(lk))
+
+    def test_poke_beats_same_second_grants_mtime(self):
+        g = os.path.join(self.flags, "grants")
+        t = time.time() + 50
+        os.utime(g, (t, t))
+        m0 = keeper_stamp(self.flags)
+        rf.poke_keeper(self.flags)
+        self.assertGreater(keeper_stamp(self.flags), m0)
 
     # ---- (4) no double batch / double grant from an early wake
     def test_no_second_batch_while_live_lock(self):

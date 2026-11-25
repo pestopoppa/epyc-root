@@ -14,7 +14,8 @@ import time
 HOLD_HOURS = 72
 PROF_MAX_BYTES = 2 * 1024 ** 3
 PROF_KEEP_NEWEST = 20
-_ATTEMPT = re.compile(r"-r(\d+)(?:[-_]|$)")
+# Anchored to the trailing suffix group, as rowflow.id_stem does: a mid-id "-r10-" is not an attempt number.
+_ATTEMPT = re.compile(r"[-_]r(\d+)(?=(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry\d*|try\d+))*$)", re.I)
 
 
 def _stem(rid):
@@ -27,8 +28,8 @@ def _stem(rid):
 
 
 def _attempt(rid):
-    m = _ATTEMPT.search(rid)
-    return int(m.group(1)) if m else 0
+    m = _ATTEMPT.findall(rid or "")
+    return int(m[-1]) if m else 0
 
 
 def verdict_of(flags, rid, m=None):
