@@ -2487,7 +2487,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: check_regrowth_guards.py exits 0 on the branch and cx8 commits are PUSH VERIFIED on origin/main
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-ROWFLOW-RELEASE-BUILD** [non-inference] Make rowflow.py release accept build claims recorded only as grants/<id>.build.json instead of refusing with no open grant (AK report 2026-11-24 07:0xZ)
+- [x] **PM-ROWFLOW-RELEASE-BUILD** [non-inference] Make rowflow.py release accept build claims recorded only as grants/<id>.build.json instead of refusing with no open grant (AK report 2026-11-24 07:0xZ) ✅ 2026-11-25 [no-belief: software] landed b78cf46a0 (release-build test; 14 passed, release* tests); PUSH VERIFIED; not deployed
       · done when: pytest scripts/coordination/tests -k release_build passes
       · gate: none
       · owner: pipeline-mgmt
@@ -2499,7 +2499,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: pytest scripts/coordination/tests/test_keeper_reap_ws58_disk.py scripts/coordination/tests/test_keeper_reap_oob.py passes
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **PM-PUBLISH-REHEARSAL** [non-inference] Add a publish-time rehearsal that runs the row's real launcher in a no-compute mode (checksums, paths, env, whether the server would start) and refuses publish on failure (operator complaint 2026-11-23 ~21:45Z)
+- [x] **PM-PUBLISH-REHEARSAL** [non-inference] Add a publish-time rehearsal that runs the row's real launcher in a no-compute mode (checksums, paths, env, whether the server would start) and refuses publish on failure (operator complaint 2026-11-23 ~21:45Z) ✅ 2026-11-25 [no-belief: software] landed fb70d6248 as static rehearsal, WARN-ONLY (PUBLISH_REHEARSAL='warn', does not yet refuse); 113 passed; PUSH VERIFIED; not deployed
       · done when: publish_row refuses a fixture row with a missing model path via the rehearsal, covered by a unit test
       · gate: none
       · owner: pipeline-mgmt
