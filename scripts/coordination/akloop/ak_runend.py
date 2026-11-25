@@ -163,12 +163,12 @@ def _registry_resolve(registry: str | None, *, live: bool = True) -> dict:
 
 
 def _env_for(reg: dict) -> dict | None:
-    """Child env for a resolved registry. On a failed extract the child gets NO EPYC_ORCH_REGISTRY (an inherited stale value
-    is stripped too), so nothing here points it at a registry this hook did not prove; None = plain inherit (not live)."""
+    """Child env for a resolved registry. On a failed extract the child gets EPYC_ORCH_REGISTRY at a path that cannot exist, so the
+    research side reports registry-unreadable instead of silently reading the shared working tree; None = plain inherit (not live)."""
     if reg["path"]:
         return {**os.environ, "EPYC_ORCH_REGISTRY": reg["path"]}
-    if reg["status"] == REGISTRY_FAILED:
-        return {k: v for k, v in os.environ.items() if k != "EPYC_ORCH_REGISTRY"}
+    if reg["status"] == REGISTRY_FAILED:  # point at a path that cannot exist: research reports registry-unreadable
+        return {**os.environ, "EPYC_ORCH_REGISTRY": "/nonexistent/" + REGISTRY_FAILED + "/model_registry.yaml"}
     return None
 
 

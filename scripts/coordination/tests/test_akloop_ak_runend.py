@@ -257,13 +257,14 @@ def _failed():
 
 
 def test_failed_registry_snapshot_is_named_and_no_registry_env_is_passed(tmp_path, monkeypatch):
-    """N9: a failed origin/main extract is NOT a silent fallback: the child gets no EPYC_ORCH_REGISTRY (an inherited one is
+    """N9: a failed origin/main extract is NOT a silent fallback: the child gets an EPYC_ORCH_REGISTRY that cannot exist (an inherited one is
     stripped too) and the failure is recorded on the census line and in path-gates.json."""
     monkeypatch.setenv("EPYC_ORCH_REGISTRY", "/shared/working-tree/model_registry.yaml")
     monkeypatch.setattr(AR, "registry_snapshot", lambda *a, **k: None)
     assert AR._registry_resolve(None, live=True) == _failed()
-    assert "EPYC_ORCH_REGISTRY" not in AR._env_for(_failed())
-    assert AR._registry_env(None, live=True) is not None and "EPYC_ORCH_REGISTRY" not in AR._registry_env(None, live=True)
+    bad = AR._env_for(_failed())["EPYC_ORCH_REGISTRY"]
+    assert bad.startswith("/nonexistent/") and not os.path.exists(bad)  # never the inherited shared working tree
+    assert AR._registry_env(None, live=True)["EPYC_ORCH_REGISTRY"].startswith("/nonexistent/")
     kr = tmp_path / "kr"
     (kr / "autokernel" / "loop").mkdir(parents=True)
     (kr / "autokernel" / "loop" / "census_update.py").write_text("# x\n")
@@ -284,7 +285,7 @@ def test_failed_registry_snapshot_is_named_and_no_registry_env_is_passed(tmp_pat
     line = AR.census_update("r", str(res), kernel_rnd=str(kr), state=str(st), run=fake)
     assert line.startswith("BW-CENSUS") and AR.REGISTRY_FAILED in line     # the BW-CENSUS prefix the inbox gate keys on survives
     assert AR.path_gates(kernel_rnd=str(kr), state=str(st), run=fake, now=1.0).endswith(f"[{AR.REGISTRY_FAILED}]")
-    assert all("EPYC_ORCH_REGISTRY" not in e for e in seen) and len(seen) == 2
+    assert all(e["EPYC_ORCH_REGISTRY"].startswith("/nonexistent/") for e in seen) and len(seen) == 2
     d = json.load(open(st / "path-gates.json"))
     assert d["registry"] == {"status": AR.REGISTRY_FAILED, "commit": None, "path": None}
     import flow_status as FS
