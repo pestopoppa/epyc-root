@@ -824,3 +824,30 @@ def test_q8wt_tbo_unit_without_lv_is_exempt_from_witness_but_server_unit_still_f
     assert not w["V5I_INPLACE"]["ok"]
     sp["expect_by_unit"] = {"tbo": {"OFF": {"V5I_INPLACE": "present"}}}                     # explicit opt-in is honoured
     assert not G.witness_for(sp, "OFF", txt, None, "x", "tbo")["V5I_INPLACE"]["ok"]
+
+
+def test_knee_batch_tbo_not_supported_is_skipped_and_failing_baseline_is_harness():
+    """ak-c22-knee-batch-gate-gpu-20261125-r3: OFF itself ended 1744/2085 ok with rc 0 because 'not supported [ROCm0]' lines
+    were counted as failures. Skipped is not failed; a baseline that fails is a harness verdict, never FAIL_CORRECTNESS."""
+    txt = open(os.path.join(FIX, "knee", "c-tbo-OFF-excerpt.log"), errors="replace").read()
+    cases = G.H.tbo_cases(G.ANSI.sub("", txt))
+    cnt = G.tbo_counts(cases)
+    assert cnt["n_skipped"] >= 5 and cnt["n_fail"] == 0 and cnt["n_ok"] == cnt["n_cases"] > 0 and not cnt["fails"]
+    c = {"kind": "tbo", "require_rc0": True, "min_cases": 1}
+    u = dict(cnt, arm="OFF", rc=0)
+    assert G.tbo_pass(c, u)
+    assert not G.tbo_pass(c, dict(u, rc=1))
+    assert not G.tbo_pass(c, dict(u, n_fail=1, n_ok=u["n_ok"]))   # an explicit FAIL always fails
+    f = G.H.tbo_cases(G.ANSI.sub("", "  MUL_MAT(a=1): \x1b[1;31mFAIL\x1b[0m\n"))
+    assert f[0]["ok"] is False and not f[0]["skipped"]
+    sp = spec({"K": {"marker": "m", "level": 4}}, {"OFF": {}, "ON": {"K": "1"}})
+    sp["baseline"] = ["OFF"]
+    sp["correctness"] = [dict(c, arms=["OFF", "ON"])]
+    okc = dict(unit_id="c-tbo-ON", kind="c-tbo", arm="ON", rc=0, n_cases=3, n_ok=3, n_fail=0, n_skipped=2, fails=[])
+    badc = dict(okc, unit_id="c-tbo-OFF", arm="OFF", n_ok=1, n_fail=2)
+    v, det, done = G._decide_one(sp, sp["correctness"][0], [dict(okc, unit_id="c-tbo-OFF", arm="OFF"), okc])
+    assert v is None and done
+    v, det, done = G._decide_one(sp, sp["correctness"][0], [badc, okc])
+    assert v == "FUTILITY_HARNESS_BASELINE" and done                    # OFF fails -> harness, never FAIL_CORRECTNESS
+    v, det, done = G._decide_one(sp, sp["correctness"][0], [dict(okc, unit_id="c-tbo-OFF", arm="OFF"), dict(okc, n_ok=1, n_fail=2)])
+    assert v == "FAIL_CORRECTNESS"                                      # candidate fails while OFF passes

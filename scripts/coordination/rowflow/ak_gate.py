@@ -591,9 +591,17 @@ def _plan_one(spec, c):
 
 
 def tbo_pass(c, u):
-    """Every case OK and at least the arm's min_cases ran (a crash or a too-short -o list is not a pass)."""
+    """rc 0, zero explicit FAIL cases, every case that ran OK, and at least the arm's min_cases ran (a crash or a too-short
+    -o list is not a pass). "not supported" cases are skipped (n_skipped), never failures; n_cases counts cases that ran."""
     return (int(u.get("n_cases") or 0) >= int(per_arm(c.get("min_cases"), u["arm"], 1)) and u.get("n_ok") == u.get("n_cases")
-            and (u.get("rc") == 0 or not c.get("require_rc0")))
+            and not u.get("n_fail") and (u.get("rc") == 0 or not c.get("require_rc0")))
+
+
+def tbo_counts(cases):
+    ran = [x for x in cases if not x.get("skipped")]
+    return dict(n_cases=len(ran), n_ok=sum(1 for x in ran if x["ok"]), n_fail=sum(1 for x in ran if x["ok"] is False),
+                n_skipped=len(cases) - len(ran),
+                fails=[(x["op"] + "(" + x["args"] + ")")[:160] for x in ran if x["ok"] is not True][:20])
 
 
 def decide_correctness(spec, units):
@@ -627,9 +635,12 @@ def _decide_one(spec, c, units):
     kind = c["kind"]
     if kind == "tbo":
         bad = [u for u in us if not tbo_pass(c, u)]
-        det = {"kind": kind, "per_arm": {u["arm"]: dict({k: u.get(k) for k in ("n_cases", "n_ok", "rc", "fails")},
+        det = {"kind": kind, "per_arm": {u["arm"]: dict({k: u.get(k) for k in ("n_cases", "n_ok", "n_fail", "n_skipped", "rc", "fails")},
                                                        min_cases=int(per_arm(c.get("min_cases"), u["arm"], 1)))
                                          for u in us}}
+        if any(u["arm"] in baseline_arms(spec) for u in bad):   # the reference itself fails: harness/baseline broken, not the knob
+            return "FUTILITY_HARNESS_BASELINE", dict(det, failed=[u["unit_id"] for u in bad],
+                                                     why="baseline arm fails the tbo unit; a candidate is judged only when OFF passes"), True
         return ("FAIL_CORRECTNESS", dict(det, failed=[u["unit_id"] for u in bad]), True) if bad else (None, det, True)
     if kind == "kld":
         mx = float(c.get("max_kld", 0.003))
@@ -1119,8 +1130,7 @@ class Gate:
                                        UNIT_TYPE[u["kind"]])
         if u["kind"] == "c-tbo":
             cases = H.tbo_cases(txt or "")
-            u.update(n_cases=len(cases), n_ok=sum(1 for x in cases if x["ok"]),
-                     fails=[(x["op"] + "(" + x["args"] + ")")[:160] for x in cases if x["ok"] is not True][:20])
+            u.update(tbo_counts(cases))
             u["pass"] = tbo_pass(c, u)
         elif u["kind"] == "c-kld":
             m = KLD_RX.findall(txt or "")
@@ -1316,7 +1326,7 @@ def replay_units(spec, out_dir, row_dir):
             u["mean_kld"] = float(m[-1]) if m else None
         if u["kind"] == "c-tbo" and txt is not None:
             cases = H.tbo_cases(txt)
-            u.update(n_cases=len(cases), n_ok=sum(1 for x in cases if x["ok"]))
+            u.update(tbo_counts(cases))
             u["pass"] = tbo_pass(c, u)
         if u["kind"] == "c-st" and txt is not None:
             u.update(selftest_parse(c, txt))

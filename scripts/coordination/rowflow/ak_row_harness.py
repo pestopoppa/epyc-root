@@ -499,12 +499,12 @@ TBO_HEAD_RX = re.compile(r"^\s*(?P<op>[A-Z][A-Z0-9_]+)\((?P<args>.*)\):\s*(?P<re
 def tbo_cases(text):
     """test-backend-ops output split per case: each case runs from one `OP(args): ...` header line to the next, so a
     case's own NMSE/err/FAIL lines (and interleaved backend logs) stay with it. Returns
-    [{op, args, ok (True/False/None), lines}]; ok is from the last OK/FAIL token in the case."""
+    [{op, args, ok (True/False/None), skipped, lines}]; ok is from the last OK/FAIL token in the case."""
     cases, cur = [], None
     for ln in str(text).splitlines():
         m = TBO_HEAD_RX.match(ln)
         if m:
-            cur = {"op": m.group("op"), "args": m.group("args"), "ok": None, "lines": [ln]}
+            cur = {"op": m.group("op"), "args": m.group("args"), "ok": None, "skipped": False, "lines": [ln]}
             cases.append(cur)
         elif cur is not None:
             cur["lines"].append(ln)
@@ -513,6 +513,9 @@ def tbo_cases(text):
         toks = re.findall(r"\b(OK|FAIL)\b", m.group("rest") if m else ln)
         if toks:
             cur["ok"] = toks[-1] == "OK"
+    for c in cases:   # "not supported [dev]" with no OK/FAIL token: the backend declined the case - skipped, not failed
+        if c["ok"] is None and any("not supported" in x for x in c["lines"]):
+            c["skipped"] = True
     return cases
 
 
