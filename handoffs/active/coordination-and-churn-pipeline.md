@@ -2573,6 +2573,9 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: test_rowflow_family_strikes.py R7Preempt passes and the commit is on origin/main and deployed live
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **WRAPUP-LEASE-FSGUARD** [non-inference] Make the wrap-up skill lease bootstrap pass the INC-20260823 filesystem-containment hook, which refuses its rm -f -- "$WRAPUP_TOKEN_FILE" token cleanup as an unresolvable variable target
+      · done when: the bootstrap block in .claude/skills/wrap-up runs acquire, release and token cleanup in one bash call with the hook active and no EPYC_FS_ACK
+      · gate: none
 
 ## Track: churn-pipeline
 <!-- gate: none -->
