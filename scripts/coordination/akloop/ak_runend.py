@@ -322,7 +322,12 @@ def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=su
            gates=None) -> dict:
     man = manifest(flags, rid)
     rep: dict = {"row": rid}
-    if rid.startswith("akc-"):
+    hs = harness_strike_check(flags, rid, man, dry_run=dry_run, notify_mod=notify_mod)
+    if hs:
+        rep["harness_strike"] = hs
+    if rid.startswith("akc-") and hs:
+        rep["filed"] = f"held: harness strike ({hs}) - not filed as a result"
+    elif rid.startswith("akc-"):
         argv = [sys.executable, RUNEND, rid, "--gate-eval", "--file"]
         if dry_run:
             rep["filed"] = "dry-run: " + " ".join(argv[1:])
@@ -372,12 +377,58 @@ def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=su
     return rep
 
 
+ROWFLOW_DIR = os.path.join(os.path.dirname(HERE), "rowflow")
+
+
+def harness_strike_check(flags: str, rid: str, man: dict, *, dry_run: bool = False, notify_mod=None, cls=None) -> str:
+    """AK waste audit R3: a harness-class native verdict, or complete:true in < 60 s with 0 units, is a STRIKE for the
+    row's family (family_strikes, R2's two-strike park) and is flagged, never filed silently as a result. -> why or ''."""
+    try:
+        if ROWFLOW_DIR not in sys.path:
+            sys.path.insert(0, ROWFLOW_DIR)
+        import family_strikes as fs
+        rp = str(man.get("result_path") or "")
+        try:
+            res = json.load(open(rp))
+        except (OSError, ValueError):
+            return ""
+        if is_pause_skip(flags, rid, man, res):
+            return ""
+        hit, why = fs.harness_strike(res, cls, fs.ended_elapsed(flags, rid), man, rp)
+        if not hit:
+            return ""
+        if not dry_run:
+            rec = fs.record_strike(flags, rid, "harness", why, key="runend", manifest=man)
+            try:
+                os.makedirs(os.path.join(flags, "dryrun", rid), exist_ok=True)
+                with open(os.path.join(flags, "dryrun", rid, "HARNESS-STRIKE.json"), "w") as f:
+                    json.dump({"id": rid, "why": why, "harness_strike": True, "family": fs.stem_of(rid),
+                               "count": rec["count"], "at": time.time()}, f)
+            except OSError:
+                pass
+            try:
+                nm = notify_mod
+                if nm is None:
+                    import notify as nm
+                nm.emit(flags, "ak-harness-failure", rid, "harness-strike",
+                        f"HARNESS-STRIKE {rid}: {why}; family {fs.stem_of(rid)} STRIKE {rec['count']}/{fs.PARK_AT}. "
+                        "Not a result: fix the harness before republishing", "warning", str(man.get("owner") or ""),
+                        {"family": fs.stem_of(rid), "count": rec["count"]})
+            except Exception:  # noqa: BLE001
+                pass
+        return why
+    except Exception as e:  # noqa: BLE001
+        print(f"HARNESS-STRIKE check failed for {rid}: {type(e).__name__}: {e}")
+        return ""
+
+
 def line(rep: dict) -> str:
     c = rep.get("class") or {}
     return (f"AK-RUNEND {rep['row']} filed=[{rep.get('filed', '-')}] class={c.get('side')}/{c.get('klass')}"
             f"{' routed' if c.get('routed') else ''} lineage={rep.get('lineage', '-')} census={rep.get('census', '-')}"
             f"{' inbox=' + str(rep['inbox']) if 'inbox' in rep else ''}"
-            f"{' gates=' + str(rep['gates']) if 'gates' in rep else ''}")
+            f"{' gates=' + str(rep['gates']) if 'gates' in rep else ''}"
+            f"{' HARNESS-STRIKE=' + repr(rep['harness_strike']) if rep.get('harness_strike') else ''}")
 
 
 def main(argv=None) -> int:
