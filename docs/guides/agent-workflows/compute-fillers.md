@@ -141,6 +141,47 @@ A measured FAIL declared by the job (stop-on-futility negative) stays a fail.
   hook refuses variable-expanded write targets, so launch commands use literal paths.
 - `WINDOW_CONFIRMED=1` may be exported only inside a live grant naming the job's regions (OP-KPF64-ARM, 2026-10-22).
 
+## Gate rows: declare, don't hand-roll (2026-11-25, pipeline-mgmt for AutoKernel)
+
+Most 2026-11-24/25 smoke failures came from per-row hand-written gate logic copied between rows: witness parsers that
+missed real lines, inverted an arm's expectation or ANDed every knob together (tail-fuse2 r1/r2: one missing marker
+read as six False knobs), `-lv 4` missing on llama-perplexity (q8mc), resident-server arm bias, missing
+`out/kv_slots` / `inputs/kld_text.txt`, and in-process identity checks tripping on drafter near-ties (devhandoff
+r3-r6). **A knob gate row now declares the gate and nothing else:**
+
+```
+python3 scripts/coordination/rowflow/mk_ak_row.py gate new --id ak-c22-x-gate-gpu-20261126 --task file.md:BOX \
+  --model Qwen3.8-27B-Q8_0 --served-ref <registry-role> \
+  --knob 'GGML_HIP_X:ggml_cuda_x: GGML_HIP_X=1 path armed:4' \
+  --arm OFF: --arm OFF2: --arm ON:GGML_HIP_X=1 \
+  --metric ms_per_round --keep-rule 'ci_lower>1.01,n=8,look=4,aa=0.02' \
+  --copy-input /path/long_ctx.txt:inputs/long_ctx.txt --workload-input inputs/long_ctx.txt --offsets 0,22000 \
+  [--correctness '{"kind": "kld", "argv": [".../llama-perplexity", "-m", "...", "-f", "inputs/kld_text.txt"]}']
+```
+
+- **The declaration** (job.py: `KNOBS`, `SERVER_ARGV`, `SPEC`) = knobs (env var or `--flag`, witness marker, `re:`
+  for a regex, log level), arms, an explicit `expect[arm][knob] = present|absent` (derived from the arm settings,
+  `--expect ARM:KNOB=absent` overrides, `--observe` for markers every arm must show), baseline arms (the A/A pair),
+  workload, metric (its direction is checked: `tok_s` higher, `ms_per_round` lower), KEEP rule, optional correctness
+  (`tbo` | `kld` | `identity`, mode `server` or `cmd`), inputs (copied and sha-pinned), extra dirs.
+- **`ak_gate.py` owns** (vendored + sealed; never edit the copy): a fresh server per arm visit with discarded warm-ups;
+  `-lv >= max(level, 4)` on every llama binary argv; balanced ABBA order (2k scored blocks put every arm at every
+  position twice; block 0 is an unscored dummy); each knob judged alone per arm, with a failure line naming the knob,
+  arm, expected, observed, log, lines scanned and the argv `-lv`; correctness first (`FAIL_CORRECTNESS` stops the run;
+  identity runs each (arm, prompt) in its own process, gates outputs + accepted tokens, reports drafts unless
+  `strict_drafts`; an OFF/OFF2 difference is `FUTILITY_HARNESS_NONDET`); the A/A guard (`FUTILITY_HARNESS_AA`); a
+  ~5 min smoke on the ON arm (dirs + inputs checked first); per-unit append + resume; `out/RESULT.json`
+  (`complete`, `verdict`, `polar`, `per_arm`, `witness`, `aa`, `correctness`).
+- **Evidence:** a `FAIL_*` / `FUTILITY_*` row keeps `out/logs`, `out/prof`, `out/servers/*.log`, results and the smoke
+  outputs (spec `keep` + `evidence`); ak_gate never deletes them.
+- **Republish after a FAILED smoke:** `python3 -I -B <new row>/job.py --replay <prior row dir>` runs the whole decision
+  path offline on the prior run's real logs (logs-only mode for hand-rolled priors) and writes `out/REPLAY-RECEIPT.json`
+  (prior id, FAIL record sha, launcher.out sha, job.py sha, logs sha, verdict). Publish checks `replay_receipt` (R1)
+  and `replay_decide` (R4: preflight runs `job.py --decide-from <prior out>` itself on cpus 84-87) and refuses a replay
+  that reproduces the same failure class: *your fix does not change the verdict on the log it failed on*. A kernel
+  fix the old log cannot show declares `spec.fix_ref {store, reason}`. Both checks are WARN until
+  `PREFLIGHT_ENFORCE` is flipped at 0 queued fails; a valid receipt also counts as the R2 family-park unpark reason.
+
 ## Shared job templates: import, never copy (operator 2026-11-06)
 
 Two vendored lane templates caused most lost compute in Pass 4 of
