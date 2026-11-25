@@ -432245,8 +432245,13 @@
     - 'intake-2824 (PR #32837 CDNA1 MMQ config without stream-k; AK-MMQ-SK2 CLOSE 2026-11-24)'
   recommended_actions:
   - 'Dive: check the L2-sharing mechanism against our G17 WGM negative and AK-MMQ-SK2, and whether gfx90a stream-k has more tiles than its 104 blocks on 27B prefill/verify shapes.'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - rocm-kernel-authoring.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P1 AK-MMQ-SK2-CENSUS; K1 note (no-op on served gfx90a); M1 trigger (MMQ wide prefill)"
   verification: dive-verified
   reader_should_conclude: 'Cite PR #32921 for the column-tile-outermost stream-k order and its GB10 numbers (27B Q8_0 ub512 1.257x, ub256 1.162x; synthetic requants). Do NOT carry it
     as a gfx90a lever for served 27B: np4 verify M=36 picks J=48 so ntx=1 and the reorder is the identity map; Q8_0 prefill at ne11>128 routes to rocBLAS on CDNA2 (mmq.cu:346-362 @ 98ff8a4),
@@ -432711,8 +432716,13 @@
     intake_entries: []
   recommended_actions:
   - 'Dive: the operand-rebuild math, whether it maps to v_mfma_i32_*_i8 and AVX-512 VNNI, and how packed rows load (coalescing, per the Q8-W8 design-4 lesson).'
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  - rocm-kernel-authoring.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M1 trigger: per-channel INT8 arm when QUANT-ROT-1 is booked; K1 note (no int8 rate gain on gfx90a)"
   verification: dive-verified
   reader_should_conclude: Cite the SQ math (exact INT32 dot over K with per-token A8 and shift/append-packed int8 operands) and the bpw formula as verified. Do NOT carry "SHI2 3.77x
     with lower KL" (different activation configs), "SQ8 beats FP8" as evidence against Q8_0 (baseline is per-tensor FP8), or any INT4/SHI speedup to MI210 (no INT4 MFMA). On gfx90a int8
@@ -433116,8 +433126,12 @@
     - intake-1240 (GPU Forecasters)
   recommended_actions:
   - 'Dive: whether a claimed-mechanism witness (counter moved in the claimed direction, with A/A) fits the AutoKernel keep gate.'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P2 AK-MECH-WITNESS-1; M3 backfill trigger"
   verification: dive-verified
   reader_should_conclude: 'Cite the design (claim-to-signal map, blind builder, A/A, claimed-vs-unclaimed discrimination ratio) and the counts as preliminary (82 PRs, one machine, all-Claude
     pipeline). Do NOT carry 1.7x as a general property of kernel signals, and do NOT present it as GPU-kernel evidence: it is OS-kernel traces on Python PRs; transfer to our kernels
@@ -433322,8 +433336,12 @@
     - intake-2457
   recommended_actions:
   - 'Dive: which pieces transfer to Zen 5 (no AMX, NPS4) and to llama.cpp''s CPU flash-attention prefill path.'
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M1 trigger: CPU-served prompts of 32K or more"
   verification: dive-verified
   reader_should_conclude: 'Cite the loop-nest design (L3 chunk, L2 q-group inversion, cost-sorted queue) as a design reference only. Do not carry 2.01x or 1.74x as expectations for Zen
     5: they are AMX-Xeon, 128K, bf16 numbers, the pieces only pay off stacked (Table 6), and llama.cpp was never measured as baseline. Attention is 3.5-5.9% of our CPU prefill cycles
@@ -433528,8 +433546,12 @@
     - intake-1246
   recommended_actions:
   - 'Dive: whether ISA-based pre-ranking can order VERIFY-KERNEL-ROOFLINE-CENSUS-1 candidates before rocprofv3 rows, given that traffic is the weak estimate.'
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P1 VKRC-BYTES-PLAUSIBLE (deterministic check; LLM pre-ranker declined)"
   verification: dive-verified
   reader_should_conclude: 'Cite: ISA artifacts help static RAI estimates (+18-20 pp within 1.20x), FLOP far better than traffic, class accuracy 78-92 percent against an in-sample 73.2
     percent lookup, agentic +6.5 pp only for one model at 3.6x cost, five-run class agreement as a confidence signal (98.6 percent correct when all five agree, gpt-5.6). Do NOT carry:
@@ -433776,15 +433798,14 @@
     - intake-2493
   recommended_actions:
   - 'Dive: the Midmax rule and whether it applies to offline requantization of E8M0-scaled GGUF types (MXFP4) judged by KLD.'
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
   handoffs_created: []
-  verification: stage1-unverified
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage 1 intake-kspec-1125; operator pre-approved a Stage-2 dive.
-  reader_should_conclude: Midmax = if block max after floor scaling >= (6+8)/2 = 7.0 (E2M1), round the E8M0 scale up one step. Our quantize_row_mxfp4_ref uses plain floor (ggml-quants.c:368).
-    Effect is small (+0.12 pts avg, 5 zero-shot tasks, six small dense models, A4W4) and unmeasured under weight-only; do not quote KLD gains. Only MXFP4 model we serve (DS4.1-Flash
-    1017) is a lossless repack where Midmax cannot apply.
+  - "intake-kspec-1125 Stage 3 plan: M1 trigger: BF16-to-MXFP4 requant queued; PDF-only, kept stage1-unverified"
+  verification: stage1-unverified
+  reader_should_conclude: 'Unverified (PDF-only, no arXiv HTML): do not cite any figure or mechanism from this entry. Cite intake-2978 for the round-up E8M0 scale rule.'
   notes: 'AMD Research authors. No arXiv HTML rendering exists for v1 (html 404, ar5iv falls back to the abs page), so this entry can only be read from the PDF (sha256 f515f1c2cc2a9308).
     PDF-only; locators: abstract; Sec 3 Eq 4 (floor) and Eq 9 (Midmax); Sec 4.4 (0.12%, 67%, 0.25/0.62/0.20/0.30/0.06/0.02); Table 4 (GPTQ +1.32, Block32 +1.17, Midmax no-rotation +0.25,
     macroscale -0.66); Table 6; Sec 4.6 (A6W4 +1.74, A6W6 +1.26). Unread: figures, Table 1/3/5, appendix.'
@@ -433844,8 +433865,13 @@
     intake_entries: []
   recommended_actions:
   - 'Dive: whether our served 27B/A3B GDN path calls CUMSUM or warp_prefix_inclusive_sum on gfx90a at all, and at what sizes.'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - rocm-kernel-authoring.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: K1 note (no served consumer); M1 trigger (GDN reduction share, backend sampling)"
   verification: dive-verified
   reader_should_conclude: 'Cite only: DPP wave64 scan technique and that the PR bundles a DPP warp_reduce_sum rewrite; MI50 and RDNA4 micro-benchmark numbers as non-CDNA evidence. Do
     NOT carry: any claim that this helps our GDN/verify path (CUMSUM is absent from the served fused-GDN graphs in C21 98ff8a4; warp_prefix_inclusive_sum has one caller, cumsum.cu),
@@ -434065,8 +434091,12 @@
     - intake-737
   recommended_actions:
   - 'Dive: whether noise coupling is lossless under our verify rule and how it relates to SPEC-DTREE-DICE pre-sampled randomness and the DFlash2 lineup.'
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P3 DTREE-HEADROOM-REPLAY (Pando tree shape); K2 note (noise coupling)"
   verification: dive-verified
   reader_should_conclude: 'Cite Pando for (a) the losslessness argument of target-sampling-walk trees with prefix-keyed pre-drawn Gumbel noise, and (b) acceptance-vs-budget tables for
     DSpark trees on Qwen3-8B. Do NOT carry the +8.4% into our plans: it is T=1-only, the in-house DICE replay of the same idea is NULL, and our served T is mostly 0.1-0.3. Do NOT cite
@@ -434402,8 +434432,12 @@
     - intake-737 (DeepSpec framework)
   recommended_actions:
   - 'Dive: whether draft temperature changes the output law under our rejection verify, and whether the retained DICE capture can replay a temperature sweep offline.'
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: K2 note: SPEC-DRAFT-SHARPEN CLOSE is the in-house answer"
   verification: dive-verified
   reader_should_conclude: 'Cite for: draft T_d != T_t is lossless under rejection sampling and free; paper gains 5-10% accepted length at target T=1 untruncated on SGLang with community
     drafters. Do NOT carry the 5-10% to our DFlash2 27B: our offline replay of this lever on the retained capture gave 1.0000 (T0.3) and 1.0047 scale-only / 1.0070 with truncation (T1.0),
@@ -434594,8 +434628,12 @@
     - intake-737
   recommended_actions:
   - 'Dive: whether DFlux checkpoints are released for a target we serve, and what our llama.cpp DFlash2 path would need to run its backbone.'
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M2 trigger: DFlux checkpoint for a served target"
   verification: dive-verified
   reader_should_conclude: 'Cite DFlux only as: a recipe whose measured benefit is dominated by (i) a SWA-hybrid backbone for LONG context (+24.5%/+14.6% Long acceptance, ~0% Regular,
     Table IV, Qwen3-4B/3.5-9B) and (ii) training data/optimizer; R-Corrector and hierarchical loss add about 1.2% and 1.8% Regular. Do NOT carry the headline 13.7% / 34.7% as a general
@@ -434824,8 +434862,12 @@
     - intake-138
   recommended_actions:
   - 'Dive: whether any served role changes its grammar mid-request; if not, which steady-state mask cost result still bears on SPEC-GRAM-JSON-1 and the llguidance flip.'
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: K2 note: no served role grows its grammar mid-request"
   verification: dive-verified
   reader_should_conclude: 'Cite GramDelta only for mid-request grammar-UPDATE cost. Do NOT cite it for llguidance-vs-others steady-state TPOT (Table 5 shows no difference at K=0) and
     do NOT cite the 37.8%/55.1% llguidance TPOT overhead as llguidance mask cost: it is a rebuild-and-replay protocol artifact on an RTX PRO 6000 Blackwell GPU at 15-61 ms/tok. None
@@ -435025,8 +435067,12 @@
     intake_entries: []
   recommended_actions:
   - 'Dive: which of our chat templates inject a date and whether our eval and judge harness pins it.'
-  handoffs_updated: []
+  handoffs_updated:
+  - eval-tower-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P4 EV-DATE-PIN-1"
   verification: dive-verified
   reader_should_conclude: Cite the audit (none of 11 stacks pins or records the date), the 6.6% median churn between two plausible dates, and the pin-and-log recommendation. Do NOT cite
     36.5 points as a plausible-date effect (it is a searched, out-of-window date, Llama-only) and do not claim date effects exist in templates that do not read the date.
@@ -435204,8 +435250,12 @@
     intake_entries: []
   recommended_actions:
   - 'Dive: whether the behavior-distortion score (KL of next actions under summary vs full context) can grade our compaction without training.'
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M3 trigger: first complete compaction A/B result"
   verification: dive-verified
   reader_should_conclude: 'Cite the distortion definition (Eq 8, sampled-token KL, summary vs full context) as a method we can apply without training; do NOT cite 4.6/4.3 as robust (4B,
     one training run, 4 eval runs, lambda tuned) and do NOT claim distortion predicts task success: the paper never tests that.'
@@ -435366,8 +435416,12 @@
     intake_entries: []
   recommended_actions:
   - 'Dive: whether any result needs no training (prompt effort descriptions), and how it bears on our thinking budgets and escalation tiers.'
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M3 trigger: E-2 booked"
   verification: dive-verified
   reader_should_conclude: 'Cite: tier collapse under joint sparse RL; OPD tiers do not transfer to unseen agent formats; the three effort prompt texts. Do NOT carry: that natural-language
     effort prompts work without training (not tested), the 70% no-loss figure as model-general, or 58/43 as printed values.'
@@ -435602,8 +435656,13 @@
     intake_entries: []
   recommended_actions:
   - 'Dive: what this means for the DSA-style indexer TOP_K on CPU (INDEXER-TOPK-CPU, exact-order requirement) and for our KV eviction gates.'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - long-context-program.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M3 triggers: approximate indexer top-k; near-tied eviction arms"
   verification: dive-verified
   reader_should_conclude: Cite the math (joint support is a different object from marginal rank) and the small absolute KL scale. Do NOT cite it as evidence that exact top-k or learned-indexer
     top-k is inadequate, as a reason to change scorer, or as a ready KV-eviction gate; it never tests indexer selection, eviction, or serving.
@@ -435843,6 +435902,9 @@
   - 'Dive: what the paper says about tile order and cache reuse for split work, as the reference design behind PR #32921.'
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: K1: reference design behind PR #32921; tile-visit order is listed there as future work"
   verification: dive-verified
   reader_should_conclude: 'Cite for the stream-k partition, O(p) seams, and the §5.2 K-skew/cache-reuse caveat. Do not cite it as evidence about tile-visit order: the paper leaves that
     to future work. ggml MMQ on gfx90a runs the basic (non-hybrid) form at a fixed 104-block grid; the force-tiling hybrid analogue was tested in AK-MMQ-SK2 and closed.'
@@ -436099,8 +436161,12 @@
     - intake-2967
   recommended_actions:
   - 'Dive: as independent corroboration of intake-2967 and for the list of templates that inject dates.'
-  handoffs_updated: []
+  handoffs_updated:
+  - eval-tower-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P4 EV-DATE-PIN-1 (corroboration)"
   verification: dive-verified
   reader_should_conclude: Cite as independent evidence that varying an injected date moves accuracy, and for the point that providers can inject dates server-side (GPT-5.1, OpenRouter
     Qwen3). Do NOT cite 14% or 6% as typical flips (worst-to-best over 365 dates, largest model/dataset), do NOT cite "exceeds batch size" without the Table 5 margin, and do NOT repeat
@@ -436257,8 +436323,12 @@
     - intake-2963
   recommended_actions:
   - 'Dive: whether the bound gives a usable ceiling for our DTREE acceptance from measured target entropy.'
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P3 DTREE-HEADROOM-REPLAY (speed-of-light ceiling)"
   verification: dive-verified
   reader_should_conclude: Cite x03 as a ceiling on DRAW-BLIND (deterministic) tree acceptance, E[X] ~ log P / mu, for sampled decoding only. Do NOT cite it for concurrency effects (none
     in the paper), for greedy decoding (excluded), or as a bound on noise-coupled or Gumbel-coupled drafting (excluded).
@@ -436478,8 +436548,12 @@
     - intake-738
   recommended_actions:
   - 'Dive: how the tree-drafting gain behaves with concurrency and against DSpark, as a check on intake-2963.'
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M2 trigger: UBTree 27B selector release; K2 note (load-adaptive budgets)"
   verification: dive-verified
   reader_should_conclude: Cite x04 for (a) the Qwen3.8-27B tree-vs-DFlash2 datapoint (vendor, TP4, bs1) and (b) the concurrency rule that fixed large trees lose to chains at C=32 while
     load-adaptive budgets keep a 7-16% edge. Do NOT cite the "5.36x on Ling3-Flash" restatement (not in the source; Table 3 gives 3.27x). Do NOT claim it compares against DSpark under
@@ -436742,8 +436816,12 @@
     - intake-737
   recommended_actions:
   - 'Dive: its calibration step versus intake-2964''s temperature scaling, and its load-adaptive rule versus our DTREE losses on 27B.'
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M2 trigger: DTREE-GDN-BATCH tree win"
   verification: dive-verified
   reader_should_conclude: 'Cite for: edge-acceptance Platt calibration (a=0.67, b=-0.46) as a stop-threshold input, and without-replacement sibling sampling for lossless sampled trees.
     Do NOT cite as support or contradiction of draft temperature scaling (different object). Do NOT carry the 8-14% single-request gain to np>1 or to our GDN stack; at bs=16 sampled
@@ -436900,6 +436978,9 @@
   - 'Dive: whether its draft-temperature or estimator use bears on intake-2964 and on our np>1 DFlash2 serving.'
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: decline: gain needs a large drafting share at high load; ours is small at one or two streams"
   verification: dive-verified
   reader_should_conclude: 'Cite for: pre-draft acceptance estimation and joint draft/verify budgeting at high load on TP8 GPUs. Do NOT cite for draft temperature (the word temperature
     there is the confidence-logit calibration theta_j and the sampling T=1.0 robustness check). Do NOT expect a gain at np 1-2: our DFlash2 drafter is 14.7% of the round, not 40%.'
@@ -437033,8 +437114,12 @@
     - intake-1104
   recommended_actions:
   - 'Dive: as the predecessor study of intake-2958 and for its re-execution protocol.'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P2 AK-MECH-WITNESS-1 (cited)"
   verification: dive-verified
   reader_should_conclude: 'Cite as a re-execution study of agent performance claims with an explicit "a merge does not show the fix delivers". Do NOT carry 6 of 23 as a rejection-correctness
     rate (agent-built workloads, no population rate) and do NOT say acceptance ignores content (deleted-line share survives). Unread: sections 3.1-3.3 detail, 5, 6, 8 and appendices.'
@@ -437194,8 +437279,12 @@
     - deepseek-v41-flash-evaluation.md
     intake_entries:
     - intake-2961
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M1 trigger: BF16-to-MXFP4 requant queued; K1 note (same rule as Midmax)"
   verification: dive-verified
   notes: 'Stage-2b wave 2: surfaced by the dive of intake-2961; ingested and dived in one pass. Venue: source text says Keywords ICML; a search result lists an ICML 2026 poster and PMLR
     page (restatement). Credibility 3 conservative.'
@@ -437482,8 +437571,12 @@
     - autokernel-loop.md
     intake_entries:
     - intake-2958
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: P2 AK-MECH-WITNESS-1 (cited, reporting statistics only)"
   verification: dive-verified
   notes: 'Stage-2b wave 2: surfaced by the dive of intake-2958; ingested and dived in one pass. Unread: Sec 3.1-3.3, 4.1-4.2, 6.5, references. Preprint, Purdue, data on Hugging Face
     and replication repo (names only seen in text).'
@@ -437691,6 +437784,9 @@
     - intake-2981
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: K3: certified-sampling kernel declined; exact tail-mass view retained"
   verification: dive-verified
   notes: 'Stage-2b wave 2: surfaced by the dive of intake-2970; ingested and dived in one pass. Unread: proofs A.1-A.8, App B (incl. B.2, B.6), C, D tables, F.1, F.5 body.'
   reader_should_conclude: 'Cite for: per-call certified error for a SAMPLING sparse-attention estimator, and for the quantitative evidence that oracle top-k (true scores, independent
@@ -437877,8 +437973,13 @@
     intake_entries:
     - intake-2970
     - intake-2980
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - long-context-program.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-1125 Stage 3 plan: M3 triggers: approximate indexer top-k; near-tied eviction arms"
   verification: dive-verified
   notes: 'Stage-2b wave 2: surfaced by the dive of intake-2970; ingested and dived in one pass. Unread: S2, S6 derivation, S5.6, appendix proofs.'
   reader_should_conclude: 'Cite the TV/KL tail-mass identity and the exact head-tail output-error identity as a diagnostic metric (attention mass captured by a kept set; value-mean gap)

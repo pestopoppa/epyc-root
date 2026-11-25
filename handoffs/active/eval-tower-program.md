@@ -2814,6 +2814,11 @@ Proposed as **prose only** — deliberately not written into `coordination/infer
 ## Track: prompt-construction-determinism
 <!-- gate: none -->
 
+### Backlog
+- [ ] **EV-DATE-PIN-1** [non-inference] Make the system-prompt date a recorded, pinnable eval input: template_provenance.py (epyc-orchestrator scripts/validate/template_provenance.py @ faa783c7) records template_reads_date true when the effective template references strftime_now, date_string or a datetime value, and registry validation warns on any served or eval role whose template reads the date without a pinned date_string in its request kwargs; llama-server fills date_string from the wall clock (common/chat.cpp L2573-L2581 @ 98ff8a4) and a request can override it through chat_template_kwargs (L2747-L2750), and two plausible dates flip a median 6.6% of items with none of 11 eval stacks pinning it (intake-2967, intake-2972)
+      · done when: pytest tests/unit/test_template_provenance_bytes.py in epyc-orchestrator passes on its main and covers a date-reading template (template_reads_date true) and a date-free template (false), and the template plan rows for every served role in the registry carry template_reads_date
+      · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
+
 > Folded from `handoffs/active/prompt-construction-determinism.md` @ `c4b6d1388716` on 2026-11-02 (BRF-T1-F2, route 1a, operator D1/D5; retired row RTG-27 → EVL-14). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### Prompt-Construction & Sampling Determinism
