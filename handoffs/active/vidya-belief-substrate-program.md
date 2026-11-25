@@ -115,6 +115,11 @@ Retired Codex NI ROOT worktree custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy
 - **VB-CH26-REPLAY-WIRE — prospectively capture CH-26b structural receipt replay observations.** Include the compact synthetic request join producer: bind the request context, target and owner identities, native source and terminal census, archive replay and cleanup at write time; functional success is not a C5 or floor result. Bind the original receipt and raw-ring digests, CPU/event inventory, verifier revision, producer identity, synthetic interval designation, refusals and incomplete outcomes at write time; project through the existing carrier and `claim_tuple.grade()`. A structural replay is not a request-placement, contention, losslessness, host-coverage or floor verdict. Do not reconstruct historical measurement warrant. Prove the writer-to-reader path and planning-context canary before calling this source wired. [no-belief: prospective wiring task]
   - Include prospective C5 one-request boundary functional records: bind the source/image/request and model preparation, claim and target birth, scoped maps/socket, independent observer and cleanup, native outputs and refusals at write time. Project through the existing carrier and `claim_tuple.grade()` and prove a planning-context canary; no smoke, continuous placement, contention or floor warrant follows. [no-belief: prospective wiring task]
 
+### Backlog
+- [ ] **VB-AK-BNSIG-WIRE** [non-inference] Ingest AutoKernel bottleneck signatures (census records[k].signature, schema epyc.autokernel.bottleneck_signature.v1, write side research census_update.apply_signature) into the live ledger via cli.py ingest ak-bottleneck-signature (adapter scripts/vidya/adapters/autokernel_bottleneck_signature.py), one Judged/Located observation per record x build x fired class through claim_tuple.grade, then run scripts/vidya/canary/bnsig_context.py against the live signed census
+      · done when: the live census carries at least one signed record, its ingest projects with nothing refused, and bnsig_context.py passes against the live census
+      · gate: AK-BNSIG-CENSUS-TOPN
+
 ## 2026-11-09 audit refresh
 - *Knowledge (intake-ak-1123 K6, no checkbox):* Second-reader disagreements: 18 of 409 anchors judged no (listed in OD-4); never auto-overturned.
 
