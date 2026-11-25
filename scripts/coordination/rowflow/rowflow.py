@@ -8901,6 +8901,71 @@ def urgent_smoke_ahead_filter(pending, cands, now=None):
     return kept, lines
 
 
+# HOST-DRAIN (operator 2026-11-25 "Narrow drain now"): whole-host rows (shape host / quiet-host) starved for hours -
+# ak-pernuma-contam-cpu-20261124-r2 and ak-gpu-cpuload-contam-20261124-r2 (rank 20) waited from ~11:20Z while q1/q2 kept
+# being backfilled with rank-28 quarter rows (12:12Z, 12:23Z), because RESERVATION_MODE is shadow (B's drain never acts).
+# Narrow enforcement of B's DRAIN / BACKFILL-IF-FITS for this one case only: once a GRANTABLE whole-host candidate H (it
+# survived every gate this tick: smoke passed, no STOP, GPU not held back) has waited > HOST_DRAIN_WAIT_S since its smoke
+# passed, a worse-ranked (higher number) non-GPU-lane row R is not placed on H's CPU regions when R's booked end
+# (now + book_s) falls after H's earliest start T0 (own_start: the latest end of the grants / smokes on every token H needs,
+# its GPU included, so a GPU-needing H drains only towards max(CPU-ready, GPU-ready)). An R that ends at or before T0 still
+# runs (backfill-if-fits); options of R off H's regions are kept. Better-ranked rows are never held. RESERVATION_MODE /
+# REPLAN_MODE and the rest of B stay shadow.
+HOST_DRAIN_ENFORCE = True
+HOST_DRAIN_WAIT_S = 1800
+
+
+def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None):
+    """PURE. -> (kept cands, {key: HOST-DRAIN log line}). See HOST-DRAIN above."""
+    if not HOST_DRAIN_ENFORCE:
+        return list(cands), {}
+    now = time.time() if now is None else now
+    free = set(free)
+    later = [float(e) for e in grant_ends if e and float(e) > now]
+    heads = []
+    for h in cands:
+        if (h.get("shape") not in ("host", "quiet-host") or h.get("kind") == "claim" or h.get("phantom") or h.get("hold")
+                or int(h.get("arm_fails") or 0) or not h.get("since")):
+            continue
+        waited = now - float(h["since"])
+        if waited <= HOST_DRAIN_WAIT_S:
+            continue
+        opts = [o for o in h.get("options") or () if GPU_BLOCKED not in o]
+        if not opts:
+            continue   # anti-livelock: H cannot be granted (GPU held back) -> holds nothing
+        t0 = own_start(dict(h, options=opts), free, now, region_ends, later)
+        if t0 is None:
+            continue
+        cpu = set()
+        for o in opts:
+            cpu |= {t for t in expand(set(o)) if t not in (GPU, GPU_BLOCKED)}
+        heads.append((float(h["rank"]), h["id"], waited, t0, cpu))
+    if not heads:
+        return list(cands), {}
+    heads.sort()
+    head_ids = {x[1] for x in heads}
+    kept, lines = [], {}
+    for c in cands:
+        if c["id"] in head_ids or c.get("kind") == "claim" or gpu_lane_cand(c):
+            kept.append(c); continue
+        r, end = float(c["rank"]), now + (book_s(c) or hold_s(c))
+        opts, why = list(c.get("options") or ()), None
+        for hr, hid, waited, t0, cpu in heads:
+            if r <= hr or end <= t0:
+                continue
+            keep = [o for o in opts if not (expand(set(o)) & cpu)]
+            if len(keep) < len(opts) and why is None:
+                why = (f"HOST-DRAIN {hid} rank={hr:g} waited={int(waited // 60)}min: holding {c['id']} (would end "
+                       f"{dt.datetime.fromtimestamp(end, dt.timezone.utc):%H:%MZ} > H start "
+                       f"{dt.datetime.fromtimestamp(t0, dt.timezone.utc):%H:%MZ})")
+            opts = keep
+        if why:
+            lines[c["id"]] = why
+        if opts:
+            kept.append(dict(c, options=opts) if len(opts) < len(c.get("options") or ()) else c)
+    return kept, lines
+
+
 # QUIET-URGENT-PENDING (2026-11-24): c21-fold-cpu-20261124-r2 (rank 9, quiet, q0-q2) was in smoke 10:03-10:10Z when q0
 # freed; QUIET-SERIAL only sees grantable rows, so ak-cpu-gdn-state-fwd-20261123-r2 (rank 100) took q0 until 14:55Z and the
 # urgent row waited ~4.5 h. While an urgent quiet row is in dry run / smoke-queued / smoking, no NEW non-urgent quiet row is
@@ -10536,6 +10601,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                     res_base = urgent_smoke_ahead_filter(gpend, res_base)[0]
             except Exception as e:  # noqa: BLE001 - never stops allocation
                 log(f"GPU-URGENT failed: {type(e).__name__}: {e}")
+        try:   # HOST-DRAIN: a whole-host row waiting > HOST_DRAIN_WAIT_S keeps worse-ranked rows off its regions past its start
+            cands, hd_lines = host_drain_filter(cands, free, r_ends, ends)
+            log_transition(flags, "host-drain", hd_lines, log, persist=not dry)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"HOST-DRAIN failed: {type(e).__name__}: {e}")
         uw_p =os.path.join(state_dir(flags), QUIET_URGENT_WAITING_STATE)
         uwait, uw_state = urgent_quiet_waiting(pre_quiet, cands, qlines, allrows, load_json(uw_p) or {}, flags=flags)
         if rmode == "enforce":   # RESERVATION: QUIET-URGENT-PENDING / -WAITING are subsumed by the urgent head reservation
