@@ -5576,7 +5576,7 @@ def keeper_stop_file(d):
 
 
 def autorequeue_decision(flags, rid):
-    """(kind, why): kind 'requeue' | 'blocked' | 'limit' | 'stop' | 'suspect' | 'suspect-requeue' | None (not an auto-requeue end at all)."""
+    """(kind, why): kind 'requeue' | 'blocked' | 'limit' | 'stop' | 'stop-parked' | 'suspect' | 'suspect-requeue' | None (not an auto-requeue end at all)."""
     G = os.path.join(flags, "grants")
     text = _ended_text(flags, rid)
     if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
@@ -5611,6 +5611,12 @@ def autorequeue_decision(flags, rid):
         # re-granted one within the same tick, beside the gate row. An owner STOP is a PAUSE again; `rowflow resume` ends it.
         sf = resolve_stop_path(d)
         if stopped or (re.search(r"reason=partial-\S*stopped", first) and sf and os.path.exists(sf)):
+            # STOP-PARK (AK 2026-11-25, ak-q38fn-cpu-qsplit-min-r3 withdrawn twice): a resumable row's owner STOP with no RESULT is a
+            # PAUSE to keep, not an end to file: filing would auto-WITHDRAW it (no result -> no claim). Leave .ended, out/ and the
+            # resume ledger exactly as they are; `rowflow.py resume <id>` requeues it. Final markers, keeper STOPs, a superseded row
+            # and a row holding result units keep today's "stop" (filed).
+            if not (stop_final_marker(d) or keeper_stop_file(d) or superseded_by(flags, rid) or row_units(d)):
+                return "stop-parked", "resumable owner stop, no RESULT: parked for `rowflow.py resume <id>`"
             return "stop", "owner STOP is a pause (OWNER_STOP_REQUEUE=False); resume with `rowflow.py resume <id>`"
     why = autorequeue_blocked(text, _result_json(d))
     if why:
@@ -5644,7 +5650,7 @@ def autorequeue_decision(flags, rid):
 
 def autorequeue_pending(flags, rid):
     """Filing must not file this end: the keeper requeues it under the same id."""
-    return autorequeue_decision(flags, rid)[0] in ("requeue", "suspect-requeue", "suspect")   # suspect: held, not filed done
+    return autorequeue_decision(flags, rid)[0] in ("requeue", "suspect-requeue", "suspect", "stop-parked")   # suspect/stop-parked: held, not filed
 
 
 def autorequeue(flags, log=print, now=None, emit=None):
@@ -5677,6 +5683,11 @@ def autorequeue(flags, log=print, now=None, emit=None):
             except Exception as ex:  # noqa: BLE001
                 log(f"COMPLETE-SUSPECT alert failed: {type(ex).__name__}: {ex}")
             atomic_json(hp, dict(hj, id=rid, final_for=head, requeued_at=hj.get("requeued_at") or []))
+            continue
+        if kind == "stop-parked":
+            if hj.get("parked_for") != head:   # log once per end; the decision itself is stateless and keeps filing held
+                log(f"STOP-PARKED {rid} (resumable; owner stop)")
+                atomic_json(hp, dict(hj, id=rid, parked_for=head, requeued_at=hj.get("requeued_at") or []))
             continue
         if kind != "requeue" and kind != "suspect-requeue":
             if hj.get("final_for") == head:

@@ -118,10 +118,45 @@ class B8StopRequeue(Flags):
     def test_default_owner_stop_is_a_pause(self):
         """2026-11-23 rollback: with OWNER_STOP_REQUEUE off (default), an owner STOP is a pause, not a requeue."""
         rf.OWNER_STOP_REQUEUE = False
-        self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "stop")
+        self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "stop-parked")
         with open(os.path.join(self.G, self.RID + ".ended"), "w") as fh:
             fh.write("rc=75 time=2026-11-23T10:00:00Z reason=partial-native-stopped\n")
+        self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "stop-parked")
+
+    def test_stop_park_not_withdrawn_and_resume_works(self):
+        """AK 2026-11-25: a resumable owner STOP with no RESULT is parked (filing holds), never auto-WITHDRAWN."""
+        import filing
+        rf.OWNER_STOP_REQUEUE = False
+        self.assertTrue(filing.capcut_pending(self.f, self.RID))      # filing skips it
+        self.assertIsNone(filing.load_end(self.f, self.RID)[0])
+        logs = []
+        self.assertEqual(rf.autorequeue(self.f, log=logs.append, emit=lambda *a, **k: None), [])
+        self.assertEqual(logs, [f"STOP-PARKED {self.RID} (resumable; owner stop)"])
+        rf.autorequeue(self.f, log=logs.append, emit=lambda *a, **k: None)
+        self.assertEqual(len(logs), 1)                                # logged once per end
+        self.assertTrue(os.path.exists(os.path.join(self.G, self.RID + ".ended")))   # left for `rowflow.py resume`
+        self.assertIsNone(rf.resumable_stopped(self.f, self.RID)[1])
+
+    def test_stop_park_scope_unchanged(self):
+        import filing
+        rf.OWNER_STOP_REQUEUE = False
+        d = rf.load_json(rf.ready_path(self.f, self.RID))
+        # non-resumable STOP: not an auto-requeue end at all, filed as today
+        rf.atomic_json(rf.ready_path(self.f, self.RID), dict(d, resumable=False))
+        self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], None)
+        self.assertFalse(filing.capcut_pending(self.f, self.RID))
+        rf.atomic_json(rf.ready_path(self.f, self.RID), d)
+        # crash of a resumable row (rc=1): unchanged
+        with open(os.path.join(self.G, self.RID + ".ended"), "w") as fh:
+            fh.write("rc=1 time=2026-11-23T10:00:00Z reason=job-rc-1:exited\n")
+        self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], None)
+        self.assertFalse(filing.capcut_pending(self.f, self.RID))
+        # final marker / keeper STOP keep "stop" (filed)
+        with open(os.path.join(self.G, self.RID + ".ended"), "w") as fh:
+            fh.write("rc=75 time=2026-11-23T10:00:00Z reason=stopped\n")
+        open(self.stop, "w").write("STOP-FINAL: done\n")
         self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "stop")
+        self.assertFalse(filing.capcut_pending(self.f, self.RID))
 
     def test_owner_stop_requeues_and_clears_stop(self):
         self.assertEqual(rf.autorequeue_decision(self.f, self.RID)[0], "requeue")
