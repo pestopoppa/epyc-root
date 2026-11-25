@@ -1582,7 +1582,7 @@ def test_served_quality_stub_server_fresh_each_arm(tmp_path):
     row = tmp_path / "row"
     (row / "inputs").mkdir(parents=True)
     data = row / "inputs" / "set.jsonl"
-    data.write_text(json.dumps({"id": "m", "kind": "math", "prompt": "answer", "answer": "42"}) + "\n")
+    data.write_text("".join(json.dumps({"id": f"m{i}", "kind": "math", "prompt": "answer", "answer": "42"}) + "\n" for i in range(2)))
     sp = spec(argv=[srv, "--port", "{PORT}"], inputs={"inputs/set.jsonl": G._sha_file(data)},
               correctness={"kind": "served_quality", "input": "inputs/set.jsonl", "noise_arm": "OFF2", "noise_argv_delta": {"--threads": 23}, "gate": True, "n_predict": 4})
     sp["server"]["env"] = {"FAKE_MARKERS": json.dumps({"GGML_HIP_Q8MC": Q8MC_ARMED}), "FAKE_STARTS": str(starts)}
@@ -1595,7 +1595,10 @@ def test_served_quality_stub_server_fresh_each_arm(tmp_path):
     assert G.quality_noise_argv(["server", "--threads", "24", "-md", "draft", "-tb", "8"], {"--threads": 23}) == ["server", "-md", "draft", "-tb", "8", "--threads", "23"]
     verdict, detail, _ = G.decide_correctness(sp, units)
     assert verdict is None and detail["served_quality"]["per_arm"]["ON"]["accuracy"] == 1
-    assert units[0]["correctness"]["served_quality"]["items"][0]["correct"]
+    assert len(units[0]["req"]) == 2 and units[0]["correctness"]["served_quality"]["items"][0]["correct"]
+    gate.spec = G.smoke_spec(sp)
+    smoke = gate.run_correctness_unit("c-sq-OFF", "c-sq", "OFF", {})
+    assert not smoke.get("error") and len(smoke["req"]) == 1
 
 
 def test_mk_row_quality_json_copies_and_pins_input(tmp_path):
