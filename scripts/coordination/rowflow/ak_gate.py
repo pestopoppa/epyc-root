@@ -1508,33 +1508,39 @@ class Gate:
             if bad:
                 return H.end_smoke("FAIL", 3, "inputs: " + "; ".join(bad), self.out)
             prompt = (workload_prompts(self.spec, self.d) or ["Hello"])[0][:int(sm["prompt_chars"])]
-            ready = min(float(self.spec["server"].get("ready_timeout_s") or 900), float(sm["budget_s"]) - 30)
+            units = []
             u0 = time.time()
-            uid = f"smoke-{sm['arm']}"
-            u = self.reuse_unit(uid, "smoke", sm["arm"], {})
-            if u is None:
-                u = self.finish_unit(self.visit_fn(uid, sm["arm"], [prompt], int(sm["n_predict"]), 1,
-                                                   ready, kind="smoke"))
-                self.mark_reusable(u, {})
-                H.append_unit(u, self.out)
-            unit_s = max(time.time() - u0, 0.001)
-            H.append_unit(dict(u, smoke=True), self.out_smoke)
-            H.write_smoke_measure(self.out_smoke, unit_s, 1, float(u.get("load_s") or 0.0) + (u0 - t0),
-                                  unit_name="arm visit", extra={"arm": sm["arm"], "gate": "ak_gate"})
-            d = decide_smoke(self.spec, [u])
+            for arm in self.spec["arms"]:
+                remaining = float(sm["budget_s"]) - (time.time() - t0)
+                if remaining <= 0:
+                    return H.end_smoke("FAIL", 3, "smoke budget exceeded; adjust smoke.budget_s", self.out)
+                ready = min(float(self.spec["server"].get("ready_timeout_s") or 900), remaining)
+                uid = f"smoke-{arm}"
+                u = self.reuse_unit(uid, "smoke", arm, {})
+                if u is None:
+                    u = self.finish_unit(self.visit_fn(uid, arm, [prompt], int(sm["n_predict"]), 1,
+                                                       ready, kind="smoke"))
+                    self.mark_reusable(u, {})
+                    H.append_unit(u, self.out)
+                units.append(u)
+                H.append_unit(dict(u, smoke=True), self.out_smoke)
+                d = decide_smoke(self.spec, units)
+                if d["verdict"] != "SMOKE_PASS":
+                    fix = ("Verify GPU residency and adjust server.kfd_min_vram_gib to the measured footprint"
+                           if d["verdict"] == "FUTILITY_HARNESS_RESIDENCY" else
+                           "Check expect.<arm>.<knob>, expect_by_unit.served, knobs.<knob>.marker and server.argv")
+                    return H.end_smoke("FAIL", 3, f"{d['verdict']}: {d['reason']}", self.out,
+                                       extra={"verdict": d["verdict"], "fix": fix, "failclass": {"side": "harness"}})
+            unit_s = max((time.time() - u0) / len(units), 0.001)
+            H.write_smoke_measure(self.out_smoke, unit_s, len(units), u0 - t0,
+                                  unit_name="arm visit", extra={"gate": "ak_gate"})
             result_path = os.path.join(self.out, "RESULT.json")
-            if u.get("reused_from") and not os.path.exists(result_path):
-                atomic_json(result_path, dict(result_doc(self.spec, [u], d), smoke=True))
+            if any(u.get("reused_from") for u in units) and not os.path.exists(result_path):
+                atomic_json(result_path, dict(result_doc(self.spec, units, d), smoke=True))
             if time.time() - t0 > float(sm["budget_s"]):
                 return H.end_smoke("FAIL", 3, f"smoke took {time.time() - t0:.0f} s > budget {sm['budget_s']} s "
                                               f"(shorten smoke.prompt_chars / n_predict)", self.out)
-            if d["verdict"] != "SMOKE_PASS":
-                return H.end_smoke("FAIL", 3, f"{d['verdict']}: {d['reason']}", self.out,
-                                   extra={"verdict": d["verdict"], "fix": ("Verify GPU residency and adjust server.kfd_min_vram_gib to the measured footprint"
-                                          if d["verdict"] == "FUTILITY_HARNESS_RESIDENCY" else "Check the declaration and unit logs"),
-                                          "failclass": {"side": "harness"}})
-            return H.end_smoke("PASS", 0, f"arm {sm['arm']}: witness ok for {len(self.spec['knobs'])} knob(s); "
-                                          f"{self.spec['metric']['name']}={u.get('metric')}; {unit_s:.1f} s", self.out)
+            return H.end_smoke("PASS", 0, f"{len(units)} arms: {d['reason']}; {time.time() - t0:.1f} s", self.out)
         except Exception as e:  # noqa: BLE001 - the smoke always says why it failed
             return H.end_smoke("FAIL", 3, f"{e.__class__.__name__}: {e}", self.out)
         finally:

@@ -322,7 +322,7 @@ def test_smoke_fake_server_passes_and_writes_measure(tmp_path):
     g = G.Gate(sp, str(row), env={"FILLER_PORTS": str(free_port()), "FILLER_SMOKE": "1"}, stream=QUIET)
     assert g.smoke() == 0, (row / "out" / H.TERMINAL_SMOKE).read_text()
     assert json.loads((row / "out-smoke" / H.SMOKE_MEASURE).read_text())["unit_s"] > 0
-    assert [u["arm"] for u in G.load_units(str(row / "out-smoke"))] == ["ON"]   # ON arm only
+    assert [u["arm"] for u in G.load_units(str(row / "out-smoke"))] == ["OFF", "OFF2", "ON"]   # every declared arm
     sp["server"]["env"]["FAKE_MARKERS"] = "{}"                                   # knob never prints -> smoke FAIL, named
     g = G.Gate(sp, str(tmp_path / "row2"), env={"FILLER_PORTS": str(free_port()), "FILLER_SMOKE": "1"}, stream=QUIET)
     assert g.smoke() == 3
@@ -1195,3 +1195,23 @@ def test_smoke_residency_floor_reports_measured_footprint(tmp_path):
     assert "server.kfd_min_vram_gib" in terminal["fix"]
     assert str(2 * (1 << 30)) in terminal["reason"]
     assert terminal["failclass"]["side"] == "harness"
+
+
+def test_smoke_checks_witness_on_each_arm(tmp_path):
+    sp = spec()
+    row = tmp_path / "row"
+    row.mkdir()
+    g = G.Gate(sp, str(row))
+    stub = visit_stub(sp, str(row / "out"))
+    def visit(uid, arm, *args, **kwargs):
+        u = stub(uid, arm, *args, **kwargs)
+        if arm == "OFF2":
+            with open(row / "out" / u["log"], "a") as f:
+                f.write("\n" + Q8MC_ARMED + "\n")
+        return u
+    g.visit_fn = visit
+    assert g.smoke() == 3
+    result = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
+    assert result["verdict"] == "FUTILITY_HARNESS_WITNESS"
+    assert "OFF2" in result["reason"]
+    assert "expect." in result["fix"]
