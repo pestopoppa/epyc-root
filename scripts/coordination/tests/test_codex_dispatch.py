@@ -64,6 +64,7 @@ def env(tmp_path, monkeypatch):
     (root / "handoffs/active/briefs").mkdir(parents=True)
     for b in ("BX-1", "BX-2", "BX-3"):
         (root / f"handoffs/active/briefs/{b}.md").write_text(f"brief for {b}\n")
+    (root / "handoffs/active/churn-pipeline.md").write_text("# Handoff\n")
     fake = tmp_path / "codex"
     fake.write_text(FAKE)
     fake.chmod(0o755)
@@ -287,5 +288,85 @@ def test_stop_file(env, monkeypatch):
     assert rows == [] and not CX.read_ledger(env["out"])
 
 
-def test_one_lane_at_a_time_constant():
-    assert CX.MAX_CODEX_LANES == 1 and CX.PIN[:3] == ["taskset", "-c", "84-87"] and "ionice" in CX.PIN
+def test_width_cap_constant():
+    assert CX.MAX_CODEX_LANES == 4 and CX.PIN[:3] == ["taskset", "-c", "84-87"] and "ionice" in CX.PIN
+
+
+@pytest.mark.parametrize("term", ["scripts/coordination/rowflow/x.py", "scripts/coordination/churn/x.py",
+                                  "ak_gate", "ak_row", "mk_ak_row", "publish_row", "preflight",
+                                  "the keeper", "/mnt/raid0/llm/tmp/compute-flags"])
+def test_live_pipeline_exclusions(env, term):
+    assert CX.codex_skip(rec("BX-1", text=term), env["root"]) == "touches-live-pipeline"
+    _brief(env, "BX-1", [term])
+    assert CX.codex_skip(rec("BX-1"), env["root"]) == "touches-live-pipeline"
+
+
+@pytest.mark.parametrize("term", ["model", "server", "GPU", "benchmark"])
+def test_compute_exclusions(env, term):
+    assert CX.codex_skip(rec("BX-1", text=f"requires {term}"), env["root"]) == "needs-compute"
+
+
+def test_hygiene_scope_and_ownership(env):
+    root = env["root"]
+    (root / "handoffs/active/owned.md").write_text("# Handoff\n**Owner**: session-a\n")
+    (root / "handoffs/active/unowned.md").write_text("# Handoff\n**Domain**: software\n")
+    rows = [rec("BX-1", file=CX.HYGIENE_FILE), rec("BX-2", file="handoffs/active/owned.md"),
+            rec("BX-3", file="handoffs/active/unowned.md")]
+    chosen, _ = CX.select(doc(*rows), root, files=None, n=10, scope="hygiene")
+    assert {k for k, _ in chosen} == {"BX-1", "BX-3"}
+    assert CX.has_owner(rec("BX-3", file="handoffs/active/unowned.md", owner="session-b"), root)
+    assert CX.has_owner(rows[1], root)
+
+
+def test_width_rejected(env):
+    with pytest.raises(ValueError, match="width"):
+        CX.dispatch(root=env["root"], width=5)
+
+
+def test_quiet_hold_grants_and_latest_idle(tmp_path):
+    grants = tmp_path / "grants"
+    grants.mkdir()
+    grant = grants / "row.json"
+    grant.write_text(json.dumps({"shape": "host", "end": "2999-01-01T00:00:00Z"}))
+    assert "grant" in CX.quiet_hold(tmp_path)
+    grant.write_text(json.dumps({"shape": "quiet-host", "end": "2000-01-01T00:00:00Z"}))
+    assert CX.quiet_hold(tmp_path) is None
+    log = tmp_path / "ws58-calendar-keeper.log"
+    log.write_text("IDLE-WHY q0: WAIT row quiet-host needs 15%\n")
+    assert "IDLE-WHY" in CX.quiet_hold(tmp_path)
+    log.write_text(log.read_text() + "IDLE-WHY q0: no runnable row\n")
+    assert CX.quiet_hold(tmp_path) is None
+
+
+def test_quiet_hold_prevents_lane(env, monkeypatch, capsys):
+    calls = []
+    rows, _ = go(env, doc(rec("BX-1")), "blocked", monkeypatch, run_limit_s=0.01,
+                 hooks={"quiet_hold": lambda flags: "quiet-host", "sleep": lambda n: calls.append(n)})
+    assert not rows and calls and "QUIET-HOLD" in capsys.readouterr().out
+
+
+def test_width_runs_lanes_concurrently(env, monkeypatch):
+    import threading
+    barrier = threading.Barrier(2, timeout=5)
+    active = []
+    def lane(*args):
+        active.append(args[0])
+        barrier.wait()
+        return 0
+    rows, _ = go(env, doc(rec("BX-1"), rec("BX-2")), "blocked", monkeypatch, width=2,
+                 hooks={"mklane": lambda: None, "lane": lane, "quiet_hold": lambda flags: None})
+    assert len(rows) == len(active) == 2
+
+
+def test_owned_box_never_ticked(env, monkeypatch):
+    rows, calls = go(env, doc(rec("BX-1", owner="someone")), "done", monkeypatch,
+                     hooks={"quiet_hold": lambda flags: None})
+    assert rows[0]["verdict"] == "DONE" and calls["tick"] == []
+
+
+def test_grant_file_and_ready_manifest(tmp_path):
+    (tmp_path / "grants").mkdir()
+    (tmp_path / "ready").mkdir()
+    (tmp_path / "grants/row.grant").write_text("end=2999-01-01T00:00Z\n")
+    (tmp_path / "ready/row.json").write_text('{"shape":"host"}')
+    assert "grant" in CX.quiet_hold(tmp_path)

@@ -1103,6 +1103,9 @@ def main(argv=None) -> int:
     r.add_argument("--wall-budget", default="", help='JSON, e.g. {"prefill_tok_s":111,"decode_tok_s":17.4} (schema.WALL_BUDGET_DEFAULTS)')
     c = sub.add_parser("codex", help="route eligible boxes to unassisted Codex lanes (harness/codex.py)")
     c.add_argument("--file", action="append", default=[], help="handoff file(s) to draw from (default: churn files)")
+    c.add_argument("--scope", choices=("default", "hygiene"), default="default")
+    c.add_argument("--width", type=int, choices=range(1, 5), default=1)
+    c.add_argument("--run-limit-s", type=float, default=3600)
     c.add_argument("--max-boxes", type=int, default=3)
     c.add_argument("--out", default="")
     c.add_argument("--apply", action="store_true", help="tick verified DONE / tag NEEDS-OWNER and push")
@@ -1117,7 +1120,8 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     if a.cmd == "codex":
         from taskflow.harness import codex as CX
-        rows = CX.dispatch(out=Path(a.out) if a.out else CX.OUT_DEFAULT, files=tuple(a.file) or CX.DEFAULT_FILES,
+        rows = CX.dispatch(out=Path(a.out) if a.out else CX.OUT_DEFAULT, files=tuple(a.file) or (None if a.scope == "hygiene" else CX.DEFAULT_FILES),
+                           scope=a.scope, width=a.width, run_limit_s=a.run_limit_s,
                            n=a.max_boxes, apply=a.apply, dry_run=a.dry_run, codex=a.codex_bin, max_rounds=a.max_rounds,
                            trailers=a.trailer, env_ack=a.d9_ack)
         print(json.dumps(rows, indent=1))

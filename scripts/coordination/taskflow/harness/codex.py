@@ -26,13 +26,13 @@ With --apply a verified DONE is ticked via churn/wrapup.py (`[no-belief: softwar
 done-when) is recorded in the ledger and the box stays open. Without --apply nothing is ticked or tagged (the lane still
 runs and pushes its own work). --dry-run prints the selection and runs nothing.
 
-Concurrency: ONE Codex lane at a time (MAX_CODEX_LANES, a constant; lanes run sequentially in one process, and a run
-lock refuses a second dispatcher). Every lane and every dispatcher test re-run is pinned: taskset -c 84-87, nice 19,
+Concurrency: up to four lanes, with a run lock refusing a second dispatcher. Every lane and every dispatcher test re-run is pinned: taskset -c 84-87, nice 19,
 ionice -c3. Kill switch: `<out>/STOP` is checked before every lane and between resume rounds is honoured by not
 starting the next lane. Ledger: `<out>/ledger.jsonl`, one JSON line per lane.
 """
 from __future__ import annotations
 
+import concurrent.futures
 import datetime as dt
 import fcntl
 import json
@@ -49,12 +49,14 @@ ROOT = _HERE.parents[3]
 sys.path.insert(0, str(ROOT / "scripts" / "coordination"))
 from codex_lane import drive as D  # noqa: E402  (the artifact verdict + resume loop; one copy)
 
-MAX_CODEX_LANES = 1                      # one Codex lane at a time (operator 2026-11-25)
+MAX_CODEX_LANES = 4
 CORES = "84-87"
 PIN = ["taskset", "-c", CORES, "nice", "-n", "19", "ionice", "-c3"]
 OUT_DEFAULT = Path(os.environ.get("CODEX_DISPATCH_OUT", "/mnt/raid0/llm/tmp/codex-dispatch"))
 WT_ROOT = Path(os.environ.get("CODEX_DISPATCH_WT_ROOT", "/mnt/raid0/llm/worktrees"))
 DEFAULT_FILES = ("handoffs/active/churn-pipeline.md", "handoffs/active/coordination-and-churn-pipeline.md")
+HYGIENE_FILE = "handoffs/active/engineering-hygiene-backlog.md"
+FLAGS = Path("/mnt/raid0/llm/tmp/compute-flags")
 MAX_ROUNDS = 10
 TEST_TIMEOUT_S = 1800
 AGENT = "pipeline-mgmt"
@@ -201,6 +203,73 @@ def brief_path(root: Path, bid: str) -> Path:
     return root / "handoffs" / "active" / "briefs" / f"{bid}.md"
 
 
+def has_owner(rec: dict, root: Path) -> bool:
+    if rec.get("owner"):
+        return True
+    try:
+        text = (root / rec["file"]).read_text(errors="replace")
+    except OSError:
+        return True  # unknown ownership fails closed
+    box = re.search(r"(?ms)^\s*[-*] \[.\] \*\*" + re.escape(str(rec.get("id") or "")) + r"\*\*.*?(?=^\s*[-*] \[.\] |\Z)", text)
+    if box and re.search(r"(?i)(?:^|·)\s*owner\s*:\s*\S", box.group()):
+        return True
+    header = re.split(r"(?m)^#{1,6}\s|^\s*[-*] \[", text, maxsplit=2)
+    header = "\n".join(header[:2])
+    for m in re.finditer(r"(?im)(?:\*\*)?(?:owner|owning session|session)(?:\*\*)?\s*:\s*([^\n·]+)", header):
+        value = re.sub(r"[*`_]", "", m.group(1)).strip()
+        if value and not re.match(r"(?i)^(?:none|unassigned|not (?:yet )?assigned|open|tbd)\b", value):
+            return True
+    return False
+
+
+_PIPELINE = re.compile(r"scripts/coordination/(?:rowflow|churn)/|\b(?:ak_gate|ak_row|mk_ak_row|publish_row|preflight)\b|\bthe keeper\b|/mnt/raid0/llm/tmp/compute-flags", re.I)
+_COMPUTE = re.compile(r"\b(?:model|server|gpu|benchmark)(?:s|ing)?\b", re.I)
+
+
+def quiet_hold(flags: Path = FLAGS) -> str | None:
+    """Read keeper state only; unknown expiry on a host grant is conservatively live."""
+    for path in (flags / "grants").glob("*.json"):
+        try:
+            g = json.loads(path.read_text())
+            if not isinstance(g, dict) or str(g.get("shape", "")).lower() not in ("host", "quiet-host"):
+                continue
+            if g.get("live") is False or str(g.get("status", "")).lower() in ("ended", "expired", "released", "complete"):
+                continue
+            end = g.get("end") or g.get("expires_at") or g.get("deadline")
+            if end:
+                try:
+                    expiry = float(end) if isinstance(end, (int, float)) else dt.datetime.fromisoformat(str(end).replace("Z", "+00:00")).timestamp()
+                    if expiry <= time.time():
+                        continue
+                except (ValueError, TypeError, OverflowError):
+                    pass
+            return f"live {g['shape']} grant {path.name}"
+        except (OSError, ValueError):
+            continue
+    # The keeper also writes row grants as .grant files; their shape is in ready/<id>.json.
+    for path in (flags / "grants").glob("*.grant"):
+        if path.with_suffix(".ended").exists():
+            continue
+        try:
+            fields = dict(re.findall(r"(\w+)=(\S+)", path.read_text(errors="replace").splitlines()[0]))
+            end = fields.get("end")
+            if end and dt.datetime.fromisoformat(end.replace("Z", "+00:00")).timestamp() <= time.time():
+                continue
+            manifest = json.loads((flags / "ready" / (path.stem + ".json")).read_text())
+            if str(manifest.get("shape") or manifest.get("declared_shape") or "").lower() in ("host", "quiet-host"):
+                return f"live host grant {path.name}"
+        except (OSError, ValueError, IndexError, TypeError):
+            continue
+    try:
+        with (flags / "ws58-calendar-keeper.log").open(errors="replace") as f:
+            latest = next((line for line in reversed(f.readlines()) if "IDLE-WHY" in line), "")
+        if re.search(r"(?i)\bWAIT\b", latest) and re.search(r"(?i)quiet.host", latest):
+            return "keeper IDLE-WHY quiet-host WAIT"
+    except OSError:
+        pass
+    return None
+
+
 def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_state=None,
                recent_messages: tuple[str, ...] = ()) -> str | None:
     """Why this box is NOT eligible for a Codex lane, or None. `base_state(rec)` -> open|ticked|gone|None at origin/main."""
@@ -209,6 +278,12 @@ def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_sta
         import box_index
     finally:
         sys.path.pop(0)
+    where, _ = brief_where(root, str(rec.get("id") or ""))
+    hay = " ".join([str(rec.get("text") or ""), str(rec.get("done_when") or ""), *where])
+    if _PIPELINE.search(hay):
+        return "touches-live-pipeline"
+    if _COMPUTE.search(hay):
+        return "needs-compute"
     why = box_index.skip_reason(rec)
     if why:
         return why
@@ -253,16 +328,22 @@ def codex_skip(rec: dict, root: Path, done_ids: set[str] = frozenset(), base_sta
 
 
 def select(doc: dict, root: Path, files=DEFAULT_FILES, done_ids: set[str] = frozenset(), n: int = 3,
-           base_state=None, recent_messages: tuple[str, ...] = ()) -> tuple[list[tuple[str, dict]], dict]:
+           base_state=None, recent_messages: tuple[str, ...] = (), scope: str = "default") -> tuple[list[tuple[str, dict]], dict]:
     """(chosen [(key, rec)] in select.py order, skip histogram). One box per handoff file per run is NOT enforced:
-    the lanes are sequential, so a second box of the same file starts after the first one landed."""
+    independent lanes may work on boxes from the same handoff."""
     from taskflow import select as S
     hist: dict[str, int] = {}
     out = []
     if doc.get("boxes") and not doc.get("holds_source"):
         return [], {"holds-source-missing": len(doc["boxes"])}           # C3: fail closed
     for key, rec in sorted((doc.get("boxes") or {}).items(), key=S.order_key):
-        if files and rec.get("file") not in files:
+        if scope == "hygiene":
+            f = str(rec.get("file") or "")
+            if not f.startswith("handoffs/active/") or (f != HYGIENE_FILE and has_owner(rec, root)):
+                continue
+            if files and f not in files:
+                continue
+        elif files and rec.get("file") not in files:
             continue
         why = codex_skip(rec, root, done_ids, base_state if len(out) < n else None, recent_messages)
         if why is None and len(out) >= n:
@@ -453,6 +534,9 @@ def _drop_side_lane(root_repo: Path, wt: Path) -> None:
 def tick(rec: dict, v: dict, lane: str, root_repo: Path, trailers: list[str], env_ack: str) -> dict:
     """Tick the box via wrapup.py, `[no-belief: software]`. -> {ticked, detail}. A refusal leaves the box open."""
     wt = _side_lane(root_repo, f"{lane}-tick")
+    if has_owner(rec, wt):
+        _drop_side_lane(root_repo, wt)
+        return {"ticked": False, "detail": "box or handoff has an owner"}
     j = WT_ROOT / f"{lane}-tick.json"
     first = rec["text"].split("**", 2)
     tick_text = f"**{rec['id']}**" + (first[2][:60] if len(first) > 2 else "")
@@ -524,9 +608,15 @@ def run_lane(lane: str, d: Path, codex: str, max_rounds: int, runner=None) -> in
 def dispatch(*, root: Path = ROOT, root_repo: Path | None = None, out: Path = OUT_DEFAULT, files=DEFAULT_FILES,
              n: int = 3, apply: bool = False, dry_run: bool = False, codex: str = "codex", max_rounds: int = MAX_ROUNDS,
              trailers: list[str] = (), env_ack: str = "", doc: dict | None = None, hooks: dict | None = None,
-             repos: dict[str, str] | None = None) -> list[dict]:
-    """Select up to `n` eligible boxes and run them ONE AT A TIME. `hooks` (tests): lane, judge_rerun, tick, tag."""
+             repos: dict[str, str] | None = None, scope: str = "default", width: int = 1,
+             run_limit_s: float = 3600, flags: Path = FLAGS) -> list[dict]:
+    """Select up to `n` eligible boxes and run at most `width` lanes at once."""
+    if not 1 <= width <= MAX_CODEX_LANES:
+        raise ValueError("width must be between 1 and 4")
+    if scope not in ("default", "hygiene"):
+        raise ValueError("unknown scope")
     hooks = hooks or {}
+    deadline = time.monotonic() + run_limit_s
     root_repo = root_repo or Path(os.environ.get("TASKFLOW_ROOT_REPO", "/workspace"))
     out.mkdir(parents=True, exist_ok=True)
     lock = open(out / ".dispatch.lock", "w")
@@ -546,21 +636,18 @@ def dispatch(*, root: Path = ROOT, root_repo: Path | None = None, out: Path = OU
         doc = box_index.load(root)
     def base_state(r):
         st = origin_box_state(r, root_repo)
-        if st == "open" and (hooks.get("already_done") or (lambda x: already_done(x, root_repo)))(r):
+        if not dry_run and st == "open" and (hooks.get("already_done") or (lambda x: already_done(x, root_repo)))(r):
             return "landed"
         return st
     messages = recent_commit_messages(root_repo)
-    chosen, hist = select(doc, root, files, attempted(out), n, base_state=base_state, recent_messages=messages)
+    chosen, hist = select(doc, root, files, attempted(out), n, base_state=base_state, recent_messages=messages, scope=scope)
     print(f"[codex] chosen: {[k for k, _ in chosen]}  skips: {hist}")
     if dry_run:
         return [{"box": k, "file": r["file"], "line": r["line"], "dry_run": True} for k, r in chosen]
     repos = dict(repos or D.DEFAULT_REPOS)
     rows = []
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M")
-    for key, rec in chosen[:n]:
-        if stopped(out):
-            print(f"[codex] STOP file present; not starting {key}")
-            break
+    def execute(key, rec):
         lane = lane_name(rec["id"], stamp)
         report = out / f"{lane}-REPORT.md"
         base_heads = {}
@@ -581,18 +668,39 @@ def dispatch(*, root: Path = ROOT, root_repo: Path | None = None, out: Path = OU
             v = {"done": False, "why": f"dispatcher error {type(e).__name__}: {e}"[:300]}
         row.update(verdict="DONE" if v["done"] else "NOT-DONE", why=v["why"], sha=v.get("sha"), test_rc=v.get("test_rc"),
                    wall_s=round(time.time() - t0, 1))
-        if apply and v["done"]:
+        if apply and v["done"] and not has_owner(rec, root):
             row["tick"] = (hooks.get("tick") or tick)(rec, v, lane, root_repo, list(trailers), env_ack)
             if not row["tick"].get("ticked"):
                 row["tick_refused"] = True                                  # box stays open; recorded, not retried
-        elif apply:
+        elif apply and not v["done"]:
             row["needs_owner"] = (hooks.get("tag") or tag_needs_owner)(rec, v["why"], lane, root_repo, list(trailers), env_ack)
         status = D.parse_report(report.read_text(errors="replace") if report.exists() else "")[0]
         if v["done"] or (status == "BLOCKED" and lane_clean(wt)):      # coordinator 2026-11-25: no leftover lane trees
             row["worktree"] = (hooks.get("remove") or gate_remove)(root_repo, wt)
         else:
             row["worktree"] = {"removed": False, "detail": f"kept for the owner: {wt}"}
-        write_ledger(out, row)
-        rows.append(row)
-        print(f"[codex] {rec['id']} lane={lane} {row['verdict']}: {row['why']}")
+        return row
+
+    # Coordinator alone starts lanes and records their results. Lane pushes use serialized_push.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=width) as pool:
+        pending = set()
+        todo = iter(chosen[:n])
+        next_item = next(todo, None)
+        while next_item or pending:
+            while next_item and len(pending) < width and not stopped(out) and time.monotonic() < deadline:
+                reason = (hooks.get("quiet_hold") or quiet_hold)(flags)
+                if reason:
+                    print(f"[codex] QUIET-HOLD {reason}; waiting 60s", flush=True)
+                    (hooks.get("sleep") or time.sleep)(min(60, max(0, deadline - time.monotonic())))
+                    continue
+                pending.add(pool.submit(execute, *next_item))
+                next_item = next(todo, None)
+            if not pending:
+                break
+            finished, pending = concurrent.futures.wait(pending, return_when=concurrent.futures.FIRST_COMPLETED)
+            for future in finished:
+                row = future.result()
+                write_ledger(out, row)
+                rows.append(row)
+                print(f"[codex] {row['box']} lane={row['lane']} {row['verdict']}: {row['why']}")
     return rows
