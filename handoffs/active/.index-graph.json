@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T13:10:30Z",
+  "generated_at": "2026-11-25T13:31:40Z",
   "nodes": [
     {
       "age_days": 3,
@@ -3257,15 +3257,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 375,
-      "dispatchable": 12,
+      "closed": 376,
+      "dispatchable": 11,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-25",
       "next_action": "FM-4 Phase C: collect 30 prospective dispatch_with_gate records per arm plus one native canary; futility check 2026-12-03; then close and move to completed/",
-      "open": 12,
+      "open": 11,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3290,11 +3290,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": [],
           "line": 21,
           "name": "coordination-and-churn-pipeline",
-          "open": 11,
+          "open": 10,
           "readiness": "ready"
         },
         {
