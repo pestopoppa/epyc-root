@@ -3438,6 +3438,44 @@ RUNNABLE_STATES = ("grantable", "armed")
 GPU_QUEUED_STATES = RUNNABLE_STATES + ("needs-dryrun", "dryrun-running")   # GPU-Q3-GUARD: a GPU row still to run
 
 
+# New keeper rules belong here in warn mode. Predicates return True for a
+# violation and receive the ready manifest; existing allocator gates are unchanged.
+RULES = {"decision_rule_present": {"mode": "warn", "fails": lambda row: not str(row.get("decision_rule") or "").strip()}}
+RULE_QUEUED_STATES = {"grantable", "armed", "needs-dryrun", "dryrun-running", "stale", "parked", "held", "stopped"}
+
+
+def rule_modes(flags):
+    """Overrides are written only by set_rule_mode; unknown rules always start warn-only."""
+    saved = load_json(os.path.join(flags, "ws58-keeper-state", "rule_modes.json")) or {}
+    return {name: (saved.get(name) if saved.get(name) in ("warn", "enforce") else rule["mode"])
+            for name, rule in RULES.items()}
+
+
+def rule_failures(flags, allrows, statuses=None):
+    """Count each queued row once, including rows waiting for or undergoing smoke."""
+    statuses = statuses if statuses is not None else {rid: status(flags, rid, allrows) for rid in allrows}
+    return {name: {rid for rid, row in allrows.items()
+                   if statuses[rid].get("state") in RULE_QUEUED_STATES and rule["fails"](row)}
+            for name, rule in RULES.items()}
+
+
+def set_rule_mode(flags, name, mode):
+    """Freeze mode changes while <flags>/RULES-FREEZE exists during an AK push.
+
+    Operators creating the marker must do so before the push and remove it afterwards.
+    Promotion evaluates the current queue, not a potentially stale SNAPSHOT.
+    """
+    need(name in RULES, f"unknown keeper rule {name}")
+    need(mode in ("warn", "enforce"), "rule mode must be warn or enforce")
+    need(not os.path.exists(os.path.join(flags, "RULES-FREEZE")), "keeper rule modes frozen by RULES-FREEZE")
+    modes = rule_modes(flags)
+    if mode == "enforce" and modes[name] != mode:
+        failures = rule_failures(flags, rows(flags))[name]
+        need(not failures, f"{name} would fail {len(failures)} queued rows")
+    modes[name] = mode
+    atomic_json(os.path.join(flags, "ws58-keeper-state", "rule_modes.json"), modes)
+
+
 def runnable(st):
     """THE one candidate predicate (pipeline audit 2026-11-10 #2): may the planner place this row, and may a region it fits
     be reported as "fits but was not placed"? `st` is status()'s dict. Parked (precond refusal or MAX_FAILS arming/launch
@@ -10389,13 +10427,18 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     except Exception as e:  # noqa: BLE001 - an unreadable manifest never stops allocation
         log(f"SUPERSEDED-INDEX failed: {type(e).__name__}: {e}")
         sup_index = {}
+    rule_statuses = {rid: status(flags, rid, allrows) for rid in allrows}
+    rule_fail = rule_failures(flags, allrows, rule_statuses)
+    modes = rule_modes(flags)
     gpu_queued = False   # D9 2026-11-18 GPU-Q3-GUARD: a GPU-lane row queued (grantable, armed or awaiting its smoke)
     for rid, d in allrows.items():
-        sd = status(flags, rid, allrows)
+        sd = rule_statuses[rid]
         if d.get("lane") == "gpu" and sd.get("state") in GPU_QUEUED_STATES and not sd.get("precond_parked"):
             gpu_queued = True
         if not runnable(sd):
             continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed, unparked rows are granted
+        if any(modes[name] == "enforce" and rid in failed for name, failed in rule_fail.items()):
+            continue
         sby = sup_index.get(rid, "")
         if sby:   # PM-KEEPER3 #3: a superseded predecessor is never granted again (a running one is not a candidate anyway)
             sup_blocked[rid] = f"SUPERSEDED-BLOCK {rid} by {sby}: not granted (its successor is published)"
@@ -10899,8 +10942,9 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             dc, T = plan.last_drain
             log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
         if _pass == 0:
+            rule_counts = " ".join(f"{name}:{len(rule_fail[name])}" for name in sorted(RULES) if modes[name] == "warn") or "-"
             log(f"SNAPSHOT free={','.join(compress(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in compress(busy)) or '-'} "
-                f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']} {hostutil.line(util)}")
+                f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']} {hostutil.line(util)} rule_would_fail={rule_counts}")
         failed = []
         for c, opt in assigned:
             if c.get("kind") == "claim":   # CLAIM QUEUE (enforce): a placed request is granted as a build/light claim
@@ -11706,6 +11750,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--flags", default=FLAGS)
     sub = ap.add_subparsers(dest="cmd", required=True)
+    s = sub.add_parser("rule-mode", help="change a keeper rule mode; RULES-FREEZE blocks changes during AK pushes")
+    s.add_argument("name"); s.add_argument("mode", choices=("warn", "enforce"))
     s = sub.add_parser("publish"); s.add_argument("spec"); s.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
     s = sub.add_parser("status"); s.add_argument("id"); s.add_argument("--json", action="store_true")
     sub.add_parser("list")
@@ -11803,6 +11849,10 @@ def main(argv=None):
                       f"{r.get('row_id') or '-'} owner={r.get('owner') or '-'} {r.get('summary')}")
         return 0
     try:
+        if a.cmd == "rule-mode":
+            set_rule_mode(a.flags, a.name, a.mode)
+            print(f"RULE-MODE {a.name} {a.mode}")
+            return 0
         if a.cmd == "publish":
             spec = load_json(a.spec)
             need(spec, f"{a.spec} is not a JSON object")
