@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 580
+      "open": 582
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -105,7 +105,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-25",
       "needs_owner": 1,
-      "open": 131,
+      "open": 133,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -114,7 +114,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1148,
+      "total": 1150,
       "tracks": [
         {
           "blocked": 0,
@@ -178,7 +178,7 @@
           "line": 7717,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 29
+          "open": 31
         },
         {
           "blocked": 0,
@@ -187,7 +187,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 11042,
+          "line": 11056,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -211,7 +211,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11289,
+          "line": 11303,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -223,7 +223,7 @@
             "INF-06"
           ],
           "guarded": 0,
-          "line": 11909,
+          "line": 11923,
           "markers": 1,
           "name": "autokernel-roofline-surface-loop",
           "open": 6
@@ -535,6 +535,7 @@
       "closed": 210,
       "guarded": 0,
       "last_advanced": "2026-11-24",
+      "needs_owner": 1,
       "open": 48,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -631,7 +632,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 3815,
+          "line": 3816,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
@@ -2403,7 +2404,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 1024,
+          "line": 1025,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18

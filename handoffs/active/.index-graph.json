@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T15:29:21Z",
+  "generated_at": "2026-11-25T16:21:33Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1386,14 +1386,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 1017,
-      "dispatchable": 131,
+      "dispatchable": 133,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-25",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 131,
+      "open": 133,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1485,7 +1485,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 29,
+          "dispatchable": 31,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1493,7 +1493,7 @@
           ],
           "line": 7717,
           "name": "autokernel-unified-surface-program",
-          "open": 29,
+          "open": 31,
           "readiness": "blocked"
         },
         {
@@ -1504,7 +1504,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 11042,
+          "line": 11056,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1538,7 +1538,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11289,
+          "line": 11303,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1551,7 +1551,7 @@
           "gates": [
             "INF-06"
           ],
-          "line": 11909,
+          "line": 11923,
           "name": "autokernel-roofline-surface-loop",
           "open": 6,
           "readiness": "blocked"
@@ -1852,7 +1852,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 1024,
+          "line": 1025,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 19,
           "readiness": "blocked"
@@ -2983,7 +2983,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 3815,
+          "line": 3816,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"
