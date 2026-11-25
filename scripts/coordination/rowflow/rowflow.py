@@ -9047,14 +9047,32 @@ HOST_DRAIN_WAIT_S = 1800
 HOST_DRAIN_WAIT_REASONS = ("foreign busy", "bandwidth-heavy/whole-host grant")
 
 
-def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None, waiting=()):
+def host_drain_gpu_holds(flags, grants, allrows, now):
+    """GPU-lane grants and live GPU smokes, with their actual held tokens and end labels."""
+    holds = []
+    for g in grants:
+        tokens = expand(set(g.get("holds") or ()))
+        row = allrows.get(g["id"]) or {}
+        if gpu_lane_cand({"lane": row.get("lane"), "shape": row.get("shape"), "options": [tokens]}):
+            holds.append((g["id"], tokens, g.get("end") or "unknown"))
+    for pat in ("RUNNING.json", "SMOKE-PLACED.json"):
+        for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
+            smoke = load_json(p) or {}
+            if (smoke.get("gpu") or "mi210" in str(smoke.get("regions") or "")) and smoke.get("pid") and alive(smoke["pid"]):
+                tokens = cpu_tokens(ws58_cpus(smoke.get("regions")), gpu_threads=True) | {GPU}
+                end = smoke.get("deadline") or dt.datetime.fromtimestamp(now + SMOKE_HOLD_S, dt.timezone.utc).strftime("%H:%MZ")
+                holds.append((os.path.basename(os.path.dirname(p)), expand(tokens), end))
+    return holds
+
+
+def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None, waiting=(), gpu_holds=()):
     """PURE. -> (kept cands, {key: HOST-DRAIN log line}). See HOST-DRAIN above."""
     if not HOST_DRAIN_ENFORCE:
         return list(cands), {}
     now = time.time() if now is None else now
     free = set(free)
     later = [float(e) for e in grant_ends if e and float(e) > now]
-    heads = []
+    heads, lines = [], {}
     seen = {c["id"] for c in cands}
     for h in list(cands) + [w for w in waiting if w["id"] not in seen]:
         if (h.get("shape") not in ("host", "quiet-host") or h.get("kind") == "claim" or h.get("phantom") or h.get("hold")
@@ -9066,6 +9084,12 @@ def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None, waiting
         opts = [o for o in h.get("options") or () if GPU_BLOCKED not in o]
         if not opts:
             continue   # anti-livelock: H cannot be granted (GPU held back) -> holds nothing
+        needed = set().union(*(expand(set(o)) for o in opts))
+        blocker = next(((gid, end) for gid, tokens, end in gpu_holds if needed & set(tokens)), None)
+        if blocker:
+            gid, end = blocker
+            lines[h["id"]] = f"HOST-DRAIN-SKIP {h['id']}: blocked by GPU grant {gid} until {end}"
+            continue
         t0 = own_start(dict(h, options=opts), free, now, region_ends, later)
         if t0 is None:
             continue
@@ -9074,10 +9098,10 @@ def host_drain_filter(cands, free, region_ends, grant_ends=(), now=None, waiting
             cpu |= {t for t in expand(set(o)) if t not in (GPU, GPU_BLOCKED)}
         heads.append((float(h["rank"]), h["id"], waited, t0, cpu))
     if not heads:
-        return list(cands), {}
+        return list(cands), lines
     heads.sort()
     head_ids = {x[1] for x in heads}
-    kept, lines = [], {}
+    kept = []
     for c in cands:
         if c["id"] in head_ids or c.get("kind") == "claim" or gpu_lane_cand(c):
             kept.append(c); continue
@@ -10792,7 +10816,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 log(f"GPU-URGENT failed: {type(e).__name__}: {e}")
         try:   # HOST-DRAIN: a whole-host row waiting > HOST_DRAIN_WAIT_S keeps worse-ranked rows off its regions past its start
             hd_wait = [c for c, why in qwaits if any(k in why for k in HOST_DRAIN_WAIT_REASONS)]
-            cands, hd_lines = host_drain_filter(cands, free, r_ends, ends, waiting=hd_wait)
+            gpu_holds = host_drain_gpu_holds(flags, grants, allrows, time.time())
+            cands, hd_lines = host_drain_filter(cands, free, r_ends, ends, waiting=hd_wait, gpu_holds=gpu_holds)
             log_transition(flags, "host-drain", hd_lines, log, persist=not dry)
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"HOST-DRAIN failed: {type(e).__name__}: {e}")

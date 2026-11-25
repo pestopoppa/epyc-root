@@ -2,6 +2,9 @@
 """HOST-DRAIN (operator 2026-11-25 "Narrow drain now"): a whole-host row waiting > 30 min keeps worse-ranked rows off its
 regions when they would end after its earliest start. Replays the 11-25 ak-pernuma / ak-gpu-cpuload starvation."""
 import os
+import json
+import tempfile
+from unittest import mock
 import sys
 import unittest
 
@@ -54,6 +57,42 @@ class HostDrain(unittest.TestCase):
         for bad in (dict(h, hold=True), dict(h, arm_fails=1)):
             kept, lines = rf.host_drain_filter([new], FREE_Q1Q2_BUSY, rend, [NOW + 5400], now=NOW, waiting=[bad])
             self.assertEqual([c["id"] for c in kept], ["ak-new-rank30"])
+
+    def test_1623z_gpu_host_threads_do_not_drain_cpu_quarters(self):
+        hid = "ak-pernuma-contam-cpu-20261124-r3"
+        gid = "ak-c22-knee-batch-gate-gpu-20261125-r4"
+        h = host(hid, rank=15, waited=7200)
+        q = quarter("rank-60-quarter", rank=60, book=10800, qs=("q0",))
+        tokens = set(rf.GPU_Q3_TOKENS)
+        grant = {"id": gid, "holds": tokens, "end": "2026-11-25T18:19:00Z"}
+        holds = rf.host_drain_gpu_holds("/nonexistent", [grant], {gid: {"lane": "gpu"}}, NOW)
+        free = (set(HOST) | {rf.GPU}) - tokens - {"q3"}
+        rend = {t: NOW + 7200 for t in tokens | {"q3"}}
+        for cands, waiting in (([h, q], []), ([q], [h])):
+            kept, lines = rf.host_drain_filter(cands, free, rend, [NOW + 7200], now=NOW,
+                                               waiting=waiting, gpu_holds=holds)
+            assigned, _, _ = rf.plan(free, kept, 512.0, now=NOW)
+            self.assertIn(q["id"], [c["id"] for c, _ in assigned])
+            self.assertEqual(lines[hid], f"HOST-DRAIN-SKIP {hid}: blocked by GPU grant {gid} until 2026-11-25T18:19:00Z")
+        # A CPU grant holding the same cores remains a drain blocker, not an exclusion.
+        cpu_grant = dict(grant, holds={"c88"})
+        cpu_holds = rf.host_drain_gpu_holds("/nonexistent", [cpu_grant], {gid: {"lane": "cpu"}}, NOW)
+        kept, lines = rf.host_drain_filter([h, q], free, rend, [NOW + 7200], now=NOW, gpu_holds=cpu_holds)
+        self.assertNotIn(q["id"], [c["id"] for c in kept])
+        self.assertIn(q["id"], lines)
+
+    def test_live_gpu_smoke_excludes_head(self):
+        with tempfile.TemporaryDirectory() as flags:
+            path = os.path.join(flags, "dryrun", "gpu-smoke")
+            os.makedirs(path)
+            with open(os.path.join(path, "RUNNING.json"), "w") as f:
+                json.dump({"pid": 123, "regions": "mi210_0,88-95", "deadline": "2026-11-25T18:19:00Z"}, f)
+            with mock.patch.object(rf, "alive", return_value=True):
+                holds = rf.host_drain_gpu_holds(flags, [], {}, NOW)
+            kept, lines = rf.host_drain_filter([host(), quarter("q", book=10800)], FREE_Q1Q2_BUSY,
+                                               ends(NOW + 900), [NOW + 900], now=NOW, gpu_holds=holds)
+            self.assertIn("q", [c["id"] for c in kept])
+            self.assertIn("blocked by GPU grant gpu-smoke until", lines[H])
 
     def test_incident_rank28_held_after_30min(self):
         kept, lines = rf.host_drain_filter([host(), quarter("r28a"), quarter("r28b")], FREE_Q1Q2_BUSY, ends(NOW + 900),
