@@ -535,3 +535,10 @@ Sources: `handoffs/active/long-context-program.md` (AM-DECISIVE-1, AM-PORT-1..4)
 - triattention progress [11-19](../progress/2026-11/2026-11-19-handoff-triattention-kv-selection.md), [11-20](../progress/2026-11/2026-11-20-handoff-triattention-kv-selection.md)
 - [YaRN E1 A2 N10 verdict](../docs/evidence/yarn-e1-a2-n10-gpu-20261104/VERDICT.md)
 - [K-shift tail-key diagnostic](../docs/reports/kshift-tailkey-diagnostic-20261120.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, intake-kspec-1125 slice): top-k sparse attention limits and certificates
+
+- **Exact tail-mass identity gives a cheap offline gate, not a runtime one.** For top-k sparse attention the output error of a kept set is the discarded softmax mass times the head/tail mean gap (KL = -log(1-tau)); computing it needs the dense score row, and our indexer's scores are not the main attention logits. It is therefore usable as an offline diagnostic on a calibration set (e.g. why an approximate parallel top-k broke greedy identity) but cannot certify a live eviction, and it does not replace exact-set tests (intake-2981#record). The perturbed-retrieval certificate needs a 4-bit scan of every key (16.4% of dense bytes), is CPU-only and gives 1.1-1.4x vs the authors' own dense kernel; at equal bytes its headline flips for typical error (intake-2980#record). Neither conflicts with the Top-K limits paper, whose 133.2x ranking gap is a hand-built toy using exact singleton-deletion KL (intake-2970#record) ([dive W2B](../research/deep-dives/intake-kspec-1125/dive-W2B-sparse-attn-certs.md), [dive M2](../research/deep-dives/intake-kspec-1125/dive-M2-recap-effort-topk.md)).
+
+#### Source References (2026-11-25, intake-kspec-1125 slice)
+- [dive W2B](../research/deep-dives/intake-kspec-1125/dive-W2B-sparse-attn-certs.md), [dive M2](../research/deep-dives/intake-kspec-1125/dive-M2-recap-effort-topk.md)
