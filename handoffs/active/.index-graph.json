@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T04:40:59Z",
+  "generated_at": "2026-11-25T05:12:43Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1741,7 +1741,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1241,
+          "line": 1242,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1756,7 +1756,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2387,
+          "line": 2388,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1765,7 +1765,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2762,
+          "line": 2763,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1774,7 +1774,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3198,
+          "line": 3199,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1783,7 +1783,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3293,
+          "line": 3294,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -3301,7 +3301,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2542,
+          "line": 2549,
           "name": "churn-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -3310,7 +3310,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2550,
+          "line": 2557,
           "name": "dashboard-architecture-restructure",
           "open": 0,
           "readiness": "no_open"
@@ -3319,7 +3319,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3022,
+          "line": 3029,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3335,7 +3335,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3467,
+          "line": 3474,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0,
           "readiness": "no_open"
@@ -3352,7 +3352,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4983,
+          "line": 4990,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
@@ -3369,7 +3369,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5643,
+          "line": 5650,
           "name": "fleet-fanout-measurement",
           "open": 1,
           "readiness": "blocked"
@@ -3386,7 +3386,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5851,
+          "line": 5858,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3395,7 +3395,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6407,
+          "line": 6414,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
