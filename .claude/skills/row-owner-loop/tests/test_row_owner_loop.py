@@ -387,3 +387,36 @@ def test_runend_text_trips_no_delete_primitive_hook():
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "scripts", "hooks"))
     import destructive_scratch_scan as dss
     assert not dss.PRIMITIVE.search(open(runend.__file__).read())
+
+
+# ---------------------------------------------------------------- watch_rows --ack reaches the keeper alert
+def _ack(tmp_path, ack, stub_rc):
+    stub = tmp_path / "rowflow.py"
+    stub.write_text("import sys\nopen(%r,'a').write(' '.join(sys.argv[1:])+'\\n')\n"
+                    "if %d: print('row needs filing: refused'); sys.exit(%d)\n" % (str(tmp_path / "calls"), stub_rc, stub_rc))
+    env = dict(os.environ, WATCH_ROWS_ROWFLOW=str(stub), WATCH_ROWS_STATE=str(tmp_path / "st"))
+    sh = os.path.join(HERE, "..", "scripts", "watch_rows.sh")
+    r = subprocess.run(["bash", sh, "--owner", "o", "--flags", str(tmp_path / "fl"), "--ack", ack],
+                       env=env, capture_output=True, text=True)
+    calls = (tmp_path / "calls").read_text() if (tmp_path / "calls").exists() else ""
+    return r, calls, (tmp_path / "st" / "o.handled").read_text()
+
+
+def test_watch_rows_ack_push_acks_keeper_alert(tmp_path):
+    r, calls, st = _ack(tmp_path, "PUSH kind=x row=r1 cause=c fix_task=t key=abc123", 0)
+    assert r.returncode == 0 and calls.strip() == "alerts --ack abc123" and "key=abc123" in st
+
+
+def test_watch_rows_ack_bare_key(tmp_path):
+    r, calls, _ = _ack(tmp_path, "key=zz9", 0)
+    assert r.returncode == 0 and calls.strip() == "alerts --ack zz9"
+
+
+def test_watch_rows_ack_refusal_surfaced(tmp_path):
+    r, calls, st = _ack(tmp_path, "PUSH row=r1 key=k1", 1)
+    assert r.returncode != 0 and "row needs filing: refused" in r.stdout and "PUSH row=r1 key=k1" in st
+
+
+def test_watch_rows_ack_ended_unchanged(tmp_path):
+    r, calls, st = _ack(tmp_path, "ENDED r1", 0)
+    assert r.returncode == 0 and calls == "" and "ENDED r1" in st

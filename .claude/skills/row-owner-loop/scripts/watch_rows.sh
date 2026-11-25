@@ -38,7 +38,22 @@ IDLE=$STATE_DIR/$OWNER.idle
 touch "$STATE" "$IDLE"
 # The marker bounds ENDED to records newer than the first arm (or --since 'YYYY-MM-DD HH:MM').
 if [ -n "$SINCE" ]; then touch -d "$SINCE" "$MARK"; elif [ ! -e "$MARK" ]; then touch "$MARK"; fi
-if [ -n "$ACK" ]; then echo "$ACK" >> "$STATE"; echo "ACKED $ACK"; exit 0; fi
+if [ -n "$ACK" ]; then
+  echo "$ACK" >> "$STATE"; echo "ACKED $ACK"
+  # A PUSH line (or bare key=<k>) also acks the underlying keeper alert, else it escalates after 15 min.
+  AKEY=""
+  case "$ACK" in
+    PUSH\ *|*\ key=*) AKEY=$(echo "$ACK" | sed -n 's/.*\(^\| \)key=\([^ ]*\).*/\2/p');;
+    key=*) AKEY=${ACK#key=};;
+  esac
+  if [ -n "$AKEY" ]; then
+    if ! out=$(python3 "${WATCH_ROWS_ROWFLOW:-/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/rowflow.py}" alerts --ack "$AKEY" 2>&1); then
+      echo "$out"; echo "KEEPER-ACK-REFUSED key=$AKEY (watcher-state ack kept)" >&2; exit 1
+    fi
+    echo "$out"
+  fi
+  exit 0
+fi
 
 handled() { grep -qxF "$1" "$STATE"; }
 emit() { handled "$1" && return 1; echo "$(date -u +%FT%TZ) $1${2:+ $2}"; return 0; }
