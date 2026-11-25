@@ -1,4 +1,5 @@
 """INSTALL.manifest + deploy_rowflow.sh --parity (pipeline audit 2026-11-10 #6): one install list, a read-only drift check."""
+import ast
 import os
 import subprocess
 import tempfile
@@ -38,6 +39,35 @@ class ManifestTest(unittest.TestCase):
         for f in ("rowflow.py", "publish_row.py", "notify.py", "diskpause.py", "hostutil.py", "grant_ok_launcher.py",
                   "filler_run15.sh", "filler_lib.sh", "run_direct.py", "run_direct.sh"):
             self.assertIn(f"bin/rowflow/{f}", pubs)
+
+    def test_installed_files_import_only_installed_siblings(self):
+        """A module imported by an installed file but absent from the manifest crashes the deployed bin/ with
+        ModuleNotFoundError (complete_check.py; family_strikes.py + estimate_history.py, 2026-11-25)."""
+        es = entries()
+        pubs = {p for p, _, _ in es}
+        problems = []
+        failsoft = {("bin/rowflow/task_lint.py", "box_index")}  # try/except-guarded import, rule k degrades to a warning
+        # KNOWN GAP awaiting D9 ack: INSTALL.manifest lacks bin/churn/keep_failed.py (imported by filing + reclaim_row).
+        # Delete these entries once the manifest line lands; the test then enforces it.
+        failsoft |= {("bin/churn/filing.py", "keep_failed"), ("bin/churn/reclaim_row.py", "keep_failed")}
+        for pub, src, _ in es:
+            d = os.path.dirname(pub)
+            if d not in ("bin/rowflow", "bin/churn") or not src.endswith(".py"):
+                continue
+            srcdir = os.path.dirname(os.path.join(REPO, src))
+            tree = ast.parse(open(os.path.join(REPO, src)).read(), filename=src)
+            names = set()
+            for node in ast.walk(tree):  # module level AND inside functions
+                if isinstance(node, ast.Import):
+                    names.update(a.name.split(".")[0] for a in node.names)
+                elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                    names.add(node.module.split(".")[0])
+                elif isinstance(node, ast.ImportFrom) and node.level == 1 and not node.module:
+                    names.update(a.name for a in node.names)
+            for name in sorted(names):
+                if (pub, name) not in failsoft and os.path.isfile(os.path.join(srcdir, name + ".py")) and f"{d}/{name}.py" not in pubs:
+                    problems.append(f"{name}.py is imported by {pub} but not installed to {d}/ by INSTALL.manifest")
+        self.assertEqual(problems, [], "\n".join(problems))
 
 
 class ParityTest(unittest.TestCase):
