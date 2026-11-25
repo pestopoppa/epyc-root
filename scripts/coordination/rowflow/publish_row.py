@@ -1606,7 +1606,21 @@ def run_gpu_queue(flags, max_smoke_s=None):
         if v not in ("PASS", "WITHDRAWN", "RESULT"):   # RESULT already notified smoke-result
             alert_queued_nonpass(flags, rid, v, msg)
         os.remove(q)
+    release_own_batch_lock(flags)
     return n
+
+
+def release_own_batch_lock(flags):
+    """R8: the queue is empty and the last smoke has ended: drop GPU-SMOKE-BATCH.lock now (only when it names THIS
+    process; a newer batch's lock is never touched) and wake the keeper, so the GPU is grantable this second instead of
+    after the next tick notices a dead pid. Nothing runs after this. Never raises."""
+    try:
+        lk = rf.gpu_batch_lock(flags)
+        if (rf.load_json(lk) or {}).get("pid") == os.getpid():
+            os.remove(lk)
+    except OSError:
+        pass
+    rf.poke_keeper(flags)
 
 
 def completed_result(row, passed):

@@ -217,6 +217,19 @@ def dry_dir(flags, rid): return os.path.join(flags, "dryrun", rid)
 def pass_path(flags, rid): return os.path.join(dry_dir(flags, rid), "PASS.json")
 def armed_path(flags, rid): return os.path.join(dry_dir(flags, rid), "ARMED.json")
 def running_path(flags, rid): return os.path.join(dry_dir(flags, rid), "RUNNING.json")
+
+
+def poke_keeper(flags):
+    """R8 (waste audit 2026-11-25): wake the keeper NOW. Its sleep (ws58-calendar-keeper-v13.sh) re-polls
+    `stat -c %Y grants ready` every 5 s and runs allocate at once when either moves; a smoke verdict (PASS.json,
+    FAIL-N.json), a smoke tree's exit and the GPU batch's end land in dryrun/, which it does not watch. Bump ready/'s mtime
+    by >= 1 whole second (stat %Y is seconds) so the change is always seen. Wakes only; never writes a row. Never raises."""
+    try:
+        d = os.path.join(flags, "ready")
+        t = max(time.time(), os.stat(d).st_mtime + 1)
+        os.utime(d, (t, t))
+    except (OSError, TypeError, ValueError):
+        pass
 def fail_paths(flags, rid): return sorted(glob.glob(os.path.join(dry_dir(flags, rid), "FAIL-*.json")))
 def granted_path(flags, rid): return os.path.join(dry_dir(flags, rid), "GRANTED.json")
 
@@ -4048,6 +4061,7 @@ def record_fail(flags, rid, d, reason, extra):
         rec["failclass"] = fc
     fp = os.path.join(dry_dir(flags, rid), f"FAIL-{n}.json")
     atomic_json(fp, rec)
+    poke_keeper(flags)   # R8: event-driven wake on a smoke FAIL
     try:  # push, not wait-to-be-noticed (2026-11-04); never blocks the FAIL record
         notify.smoke_fail(flags, rid, fp, rec, owner=str(d.get("owner") or ""))
     except Exception as e:  # noqa: BLE001
@@ -4683,6 +4697,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
                 lo.write(f"==== smoke completion NOT filed: {why}\n")
     if verdict == "PASS":
         atomic_json(pass_path(flags, rid), {"id": rid, "passed_at": now_iso(), "launcher_sha256": lsha, **rec})
+        poke_keeper(flags)   # R8: event-driven wake on a smoke PASS
         for fp in fail_paths(flags, rid):
             pass  # history stays; status() prefers a current PASS
     else:
@@ -10962,6 +10977,8 @@ def running_smoke_gpu_occupants(flags, occ=None):
         roots = [int(x) for x in (d.get("pid"), d.get("pgid"), d.get("harness_pid")) if str(x or "").isdigit() and proc_alive(x)]
         if not roots:
             continue
+        if smoke_lock_after_exit(flags, rid, rp, d):
+            continue   # R8: the smoke's own tree already exited; its runner is only writing the verdict
         tree = set()
         for r in roots:
             try:
@@ -10976,6 +10993,16 @@ def running_smoke_gpu_occupants(flags, occ=None):
         e["pids"] = sorted(set(e["pids"]) | set(mine))
         e["until"] = e["until"] or rr.get("deadline")
     return out
+
+
+def smoke_lock_after_exit(flags, rid, rp, d):
+    """R8: True for a SMOKE.lock sidecar (no RUNNING.json) whose smoke tree has an exit receipt at/after the lock was
+    taken: the runner (the batch process) is alive but only recording the verdict, and the KFD tree is reaped
+    (record_smoke_exit writes no receipt when anything survived). Such a lock never holds the GPU."""
+    if os.path.basename(rp) != SMOKE_LOCK_NAME or os.path.exists(running_path(flags, rid)):
+        return False
+    ex, at = iso_epoch((load_json(smoke_exited_path(flags, rid)) or {}).get("exited_at")), iso_epoch(d.get("at"))
+    return ex is not None and at is not None and ex >= at
 
 
 SMOKE_EXIT_FRESH_S = 1800   # the one-sample path is for a smoke that JUST exited; every PASSed row keeps a record, so age must bound it
@@ -10993,6 +11020,7 @@ def record_smoke_exit(flags, rid, pgid, tracked, survivors):
             atomic_json(smoke_exited_path(flags, rid), {"id": rid, "pgid": int(pgid), "pids": sorted(int(x) for x in tracked), "exited_at": now_iso()})
     except (OSError, TypeError, ValueError):
         pass
+    poke_keeper(flags)   # R8: the smoke's tree is gone; the GPU hold ends this second, not at the next 2-min tick
 
 
 def smoke_tree_proven_dead(flags, rid, now=None):
@@ -11055,8 +11083,19 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
         own_exit = bool(lo.get("ids")) and n >= 1 and all(
             os.path.exists(os.path.join(flags, "grants", i + ".ended")) for i in lo["ids"]) and not any(
             alive(x) for x in lo.get("pids") or [])
+        # R8: the same fast path when the previous holder was the keeper's OWN smoke: every smoke seen holding the device
+        # last sample has an exit receipt (tree reaped, nothing survived), none of its pids lives, and no KFD client was
+        # sighted after the latest exit. A foreign sighting still needs the full GPU_QUIET_SAMPLES.
+        ls_ = st.get("last_smoke") or {}
+        if not own_exit and ls_.get("ids") and n >= 1 and not sm:
+            exits = [iso_epoch((load_json(smoke_exited_path(flags, i)) or {}).get("exited_at")) for i in ls_["ids"]]
+            seen_kfd = iso_epoch(last_kfd) if last_kfd else None
+            own_exit = all(e is not None for e in exits) and not any(proc_alive(x) for x in ls_.get("pids") or []) and (
+                seen_kfd is None or seen_kfd <= max(exits))
         need = 1 if own_exit else GPU_QUIET_SAMPLES
         keep = {"last_owner": lo} if lo and 1 <= n < need else {}
+        if sm:
+            keep["last_smoke"] = {"ids": sorted(sm), "pids": sorted({p for e in sm.values() for p in e["pids"]})}
         atomic_json(sp, {"quiet_n": n, "at": now_iso(), "foreign_pids": pids[:20], "foreign_vram": v, **keep, **kfd_rec})
         smoke_why = "; ".join(f"held by smoke {i} until {e['until'] or '?'}" for i, e in sorted(sm.items()))
         why = None if n >= need else (
