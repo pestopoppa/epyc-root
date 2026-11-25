@@ -26,6 +26,8 @@ Usage:
                [--served-ref <registry-role> [--orch-repo /workspace/repos/epyc-orchestrator]]
   mk_ak_row.py --reseal <row_dir>        re-seal (without spec.json) and lint an edited scaffold
   mk_ak_row.py polar new|--lint|--seal   the polar/akloop profile (the retired row_scaffold.py, same arguments)
+  mk_ak_row.py gate new --knob NAME:MARKER[:LEVEL] --arm NAME:KNOB=VAL,... --metric M --keep-rule R --served-ref ROLE
+                                         a DECLARED knob gate row: job.py is a declaration, ak_gate.py owns the harness
 
 v2 (2026-11-24, RCA ak-row-robustness-rca-20261124 F1/F2) - this is the ONLY row generator:
   * job.py carries `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` and spec.json a `generator` block (publish
@@ -57,7 +59,7 @@ ROOT = "/mnt/raid0/llm/tmp"
 FILLER = "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh"
 PUBLISH = "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py"   # the deployed copy (deploy_rowflow.sh)
 CLAIM_RX = re.compile(r"^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$")
-SEALED = ("job.py", "check_complete.py", "launch.sh", "ak_row_harness.py")
+SEALED = ("job.py", "check_complete.py", "launch.sh", "ak_row_harness.py", "ak_gate.py")
 GEN_VERSION = "v2"   # v2 (RCA ak-row-robustness-rca-20261124 F1/F2): stamp, harness helpers, production-argv smoke
 ORCH_REPO = "/workspace/repos/epyc-orchestrator"
 # Default smoke predicate: THIS run's terminal smoke record, ok:true, written at/after the launch (FILLER_SMOKE_T0; unset
@@ -267,7 +269,31 @@ def selftest():
     return 0
 
 
+def decide_from(path):
+    """R4/R1 replay (no server, no grant): decide() over a previous run's results.jsonl; prints `DECIDE {{json}}`."""
+    p = path if os.path.isfile(os.path.join(path, H.RESULTS_JSONL)) else os.path.join(path, "out")
+    units = []
+    try:
+        for ln in open(os.path.join(p, H.RESULTS_JSONL)):
+            try:
+                units.append(json.loads(ln))
+            except ValueError:
+                pass
+    except OSError:
+        pass
+    try:
+        v = decide(units)
+    except Exception as e:  # noqa: BLE001 - a crashing decide() is the finding
+        print("DECIDE " + json.dumps({{"error": f"{{e.__class__.__name__}}: {{e}}", "n_units": len(units)}}), flush=True)
+        return 3
+    print("DECIDE " + json.dumps({{"prev_id": os.path.basename(os.path.dirname(os.path.abspath(p))), "n_units": len(units),
+                                  "observed": {{"verdict": v, "n_units": len(units)}}}}), flush=True)
+    return 0
+
+
 if __name__ == "__main__":
+    if "--decide-from" in sys.argv[1:]:
+        sys.exit(decide_from(sys.argv[sys.argv.index("--decide-from") + 1]))
     sys.exit(selftest() if "--selftest" in sys.argv[1:] else main())
 '''
 
@@ -287,10 +313,10 @@ def _sha(p):
     return hashlib.sha256(open(p, "rb").read()).hexdigest()
 
 
-def seal(d):
+def seal(d, extra=()):
     """SOURCE.sha256 over the row's code, never spec.json. Keeps every file the existing SOURCE.sha256 already lists
-    (own_port_proof.py, lp_common.py, ...) plus the defaults."""
-    files = [f for f in SEALED if os.path.exists(os.path.join(d, f))]
+    (own_port_proof.py, lp_common.py, ...) plus the defaults and `extra` (a gate row's copied inputs/...)."""
+    files = [f for f in SEALED if os.path.exists(os.path.join(d, f))] + [x for x in extra if os.path.isfile(os.path.join(d, x))]
     try:
         with open(os.path.join(d, "SOURCE.sha256")) as f:
             for ln in f:
@@ -521,6 +547,372 @@ id=a.id, task=a.task, rule=a.rule, knobs=", ".join(a.knob) or "none", knob_list=
         spec["fresh_server_reason"] = a.fresh_server_reason
         spec["fresh_server_starts"] = a.fresh_server_starts
     return d, spec
+
+
+# ======================================================================================================================
+# GATE PROFILE (2026-11-25, pipeline-mgmt for AutoKernel): `mk_ak_row.py gate new ...` writes a row whose job.py is a
+# thin DECLARATION calling ak_gate.main(SPEC, D). ak_gate.py (vendored + sealed beside ak_row_harness.py) owns fresh
+# servers, -lv, ABBA order, per-knob witness, correctness first, A/A guard, smoke, resume and replay.
+# ======================================================================================================================
+import pprint  # noqa: E402
+
+import ak_gate as G  # noqa: E402
+
+GATE_JOB = '''#!/usr/bin/python3
+"""{id} (autokernel gate; {task}). DECLARED gate row (mk_ak_row.py gate new): this file only DECLARES the gate.
+ak_gate.py (vendored, sealed) owns the fresh server per visit, -lv >= {lv} on every llama argv, ABBA order, the per-knob
+per-arm witness, correctness first, the OFF/OFF2 A/A guard, the smoke, resume and replay. Edit the declaration, then
+`mk_ak_row.py --reseal <dir>` (re-seal + lint + --selftest).
+RULE: {rule}
+KNOBS (witness required, judged per knob per arm): {knobs}
+REPLAY: python3 -I -B job.py --replay <prior row dir> -> out/REPLAY-RECEIPT.json (publish needs it after a FAILED smoke)"""
+# GENERATED-BY: mk_ak_row.py {gen_version} harness_sha256={harness_sha} gate_sha256={gate_sha} profile=gate
+import os
+import sys
+
+D = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, D)
+import ak_gate as G  # noqa: E402
+
+ROW_ID = {id!r}
+KNOBS = {knob_names!r}
+# The production server argv ({argv_source}); "{{PORT}}" / "{{SLOTDIR}}" are filled per visit by ak_gate.
+SERVER_ARGV = {server_argv}
+{extra_argvs}SPEC = {spec}
+
+if __name__ == "__main__":
+    sys.exit(G.selftest(SPEC, D) if "--selftest" in sys.argv[1:] else G.main(SPEC, D, sys.argv[1:]))
+'''
+
+GATE_CHECK = '''#!/usr/bin/python3
+"""rc 0 iff out/RESULT.json is an ak_gate terminal result (complete:true, a verdict, a polar field). Smoke never counts."""
+import json, sys
+try:
+    r = json.load(open({result!r}))
+except (OSError, ValueError):
+    sys.exit(1)
+v = str(r.get("verdict") or "")
+sys.exit(0 if r.get("complete") is True and v and "polar" in r and not v.startswith(("SMOKE", "STOPPED", "INCOMPLETE"))
+         else 1)
+'''
+
+GATE_FRESH_REASON = ("ak_gate: one fresh server per arm visit (resident-server arm bias: the first OFF arm ran slow; "
+                     "load-time knobs are read once per process)")
+
+
+def parse_knob(text, kind=None):
+    """'NAME:MARKER[:LEVEL[:CAP]]' -> (name, {kind, marker, level, cap}). The marker may itself contain ':'; trailing
+    ':<int>' fields are LEVEL then CAP."""
+    name, sep, rest = str(text).partition(":")
+    if not sep or not name.strip() or not rest.strip():
+        raise SystemExit(f"mk_ak_row gate: --knob {text!r}: want NAME:MARKER[:LEVEL[:CAP]]")
+    level, cap = G.MIN_LV, -1
+    m = re.match(r"^(.*?)(?::(\d+))(?::(-?\d+))?$", rest)
+    if m and m.group(1).strip():
+        rest, level = m.group(1), int(m.group(2))
+        cap = int(m.group(3)) if m.group(3) is not None else -1
+    k = kind or ("flag" if name.startswith("-") else "env")
+    return name.strip(), {"kind": k, "marker": rest, "level": max(level, G.MIN_LV), "cap": cap}
+
+
+def parse_arm(text, knobs):
+    """'ARM:KNOB=VAL,KNOB2=VAL' (or 'ARM' / 'ARM:' for no knob) -> (arm, {knob: value}). Flag knobs: true -> bare flag."""
+    arm, _, rest = str(text).partition(":")
+    if not arm.strip():
+        raise SystemExit(f"mk_ak_row gate: --arm {text!r}: want ARM:KNOB=VAL,...")
+    setting = {}
+    for part in [x for x in rest.split(",") if x.strip()]:
+        k, eq, v = part.partition("=")
+        k = k.strip()
+        if k not in knobs:
+            raise SystemExit(f"mk_ak_row gate: --arm {text!r}: knob {k} is not declared with --knob")
+        if knobs[k]["kind"] == "flag":
+            setting[k] = True if (not eq or v.strip().lower() in ("true", "1", "on")) else v.strip()
+        else:
+            if not eq:
+                raise SystemExit(f"mk_ak_row gate: --arm {text!r}: env knob {k} needs =VALUE")
+            setting[k] = v.strip()
+    return arm.strip(), setting
+
+
+def derive_expect(knobs, arms, overrides=()):
+    """Explicit expect table. Default: a knob the arm sets (to anything but '0'/'false') -> present, else absent; an
+    observe-only marker -> present in every arm. --expect ARM:KNOB=present|absent,... overrides cells."""
+    exp = {}
+    for a, setting in arms.items():
+        exp[a] = {}
+        for k, v in knobs.items():
+            if v["kind"] == "observe":
+                exp[a][k] = "present"
+            else:
+                val = setting.get(k)
+                exp[a][k] = "present" if (val not in (None, False) and str(val).lower() not in ("0", "false", "off")) \
+                    else "absent"
+    for o in overrides:
+        arm, _, rest = str(o).partition(":")
+        if arm not in exp:
+            raise SystemExit(f"mk_ak_row gate: --expect {o!r}: unknown arm {arm}")
+        for part in [x for x in rest.split(",") if x.strip()]:
+            k, _, v = part.partition("=")
+            if k.strip() not in knobs or v.strip() not in G.EXPECT_VALUES:
+                raise SystemExit(f"mk_ak_row gate: --expect {o!r}: want ARM:KNOB=present|absent")
+            exp[arm][k.strip()] = v.strip()
+    return exp
+
+
+def parse_keep_rule(text):
+    """'ci_lower>1.01,n=8[,look=4][,aa=0.02|aa=none][,dummy=1]' -> keep dict."""
+    k = {}
+    for part in [x.strip() for x in str(text or "").split(",") if x.strip()]:
+        m = re.match(r"^(?:ci_lower|threshold)\s*[>=]+\s*([\d.]+)$", part)
+        if m:
+            k["threshold"] = float(m.group(1))
+            continue
+        key, _, v = part.partition("=")
+        key = key.strip()
+        if key in ("n", "n_blocks"):
+            k["n_blocks"] = int(v)
+        elif key in ("look", "look_blocks"):
+            k["look_blocks"] = int(v)
+        elif key in ("aa", "aa_max"):
+            k["aa_max"] = None if v.strip().lower() in ("none", "null", "off") else float(v)
+        elif key in ("dummy", "dummy_block"):
+            k["dummy_block"] = v.strip().lower() in ("1", "true", "yes", "on")
+        else:
+            raise SystemExit(f"mk_ak_row gate: --keep-rule part {part!r} not ci_lower>X|n=|look=|aa=|dummy=")
+    if "threshold" not in k:
+        raise SystemExit("mk_ak_row gate: --keep-rule needs ci_lower>X (the KEEP threshold on the CI lower bound)")
+    return k
+
+
+def _argv_lit(argv, indent=14):
+    return pprint.pformat([str(x) for x in argv], width=118, indent=1, compact=True).replace("\n", "\n" + " " * indent)
+
+
+def gate_scaffold(a, served=None):
+    """Write the gate row. Returns (row dir, spec.json dict). Raises SystemExit on a bad declaration."""
+    knobs = dict(parse_knob(x) for x in a.knob)
+    for x in a.observe:
+        n, v = parse_knob(x, kind="observe")
+        knobs[n] = v
+    if not knobs:
+        raise SystemExit("mk_ak_row gate: declare >= 1 --knob NAME:MARKER[:LEVEL]")
+    arms = dict(parse_arm(x, knobs) for x in a.arm)
+    if len(arms) < 2:
+        raise SystemExit("mk_ak_row gate: declare >= 2 --arm (e.g. OFF: OFF2: ON:GGML_X=1)")
+    baseline = [x.strip() for x in a.baseline.split(",")] if a.baseline else [k for k, v in arms.items() if not v]
+    expect = derive_expect(knobs, arms, a.expect)
+    lv = max([G.MIN_LV] + [v["level"] for v in knobs.values()])
+    if served:
+        argv = list(served["argv"])
+        src = f"orchestrator registry role {served['registry_role']}, spec.served_ref"
+    elif a.server_argv_json:
+        argv = json.loads(a.server_argv_json)
+        src = "declared with --server-argv-json"
+    else:
+        raise SystemExit("mk_ak_row gate: --served-ref ROLE (preferred) or --server-argv-json '[...]' is required")
+    argv = G.ensure_lv(argv, lv)
+    if served:
+        served = add_witness_loglevel(dict(served, argv=argv)) if G.argv_lv(served["argv"]) is None else \
+            dict(served, argv=argv, argv_sha256=hashlib.sha256(json.dumps(argv).encode()).hexdigest())
+        if G.argv_lv(served["argv"]) != G.argv_lv(argv):
+            served["argv_delta"] = list(served.get("argv_delta") or []) + [
+                {"flag": "-lv", "value": str(lv), "reason": "witness log level"}]
+    m = G.METRICS.get(a.metric)
+    if m is None:
+        raise SystemExit(f"mk_ak_row gate: --metric {a.metric!r} not one of {sorted(G.METRICS)}")
+    if a.direction and (a.direction == "higher") is not m[1]:
+        raise SystemExit(f"mk_ak_row gate: --metric {a.metric} is {'higher' if m[1] else 'lower'}-is-better; "
+                         f"--{a.direction}-is-better contradicts it")
+    keep = parse_keep_rule(a.keep_rule)
+    if not a.rule.strip():
+        a.rule = (f"KEEP iff {a.metric} ({'higher' if m[1] else 'lower'} is better) speedup CI lower > "
+                  f"{keep['threshold']} over the ABBA blocks, witness + correctness + A/A first")
+    d = os.path.join(a.root, a.id)
+    if os.path.exists(d):
+        raise SystemExit(f"mk_ak_row: {d} exists; pick a new -rN id")
+    bindir = os.path.dirname(str(argv[G.llama_index(argv) or 0]))
+    env = {"PATH": "/usr/bin:/bin" + (":/opt/rocm/bin" if a.lane == "gpu" else ""),
+           "LD_LIBRARY_PATH": bindir + (":/opt/rocm/lib" if a.lane == "gpu" else "")}
+    if a.lane == "gpu":
+        env.update(HIP_VISIBLE_DEVICES="0", ROCM_PATH="/opt/rocm")
+    else:
+        env.update(HIP_VISIBLE_DEVICES="-1", ROCR_VISIBLE_DEVICES="-1")
+    for kv in a.server_env:
+        k, _, v = kv.partition("=")
+        env[k.strip()] = v
+    os.makedirs(os.path.join(d, "inputs"))
+    inputs = {}
+    for ci in a.copy_input:
+        srcp, _, rel = ci.partition(":")
+        rel = rel or os.path.join("inputs", os.path.basename(srcp))
+        dst = os.path.join(d, rel)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy(srcp, dst)
+        inputs[rel] = _sha(dst)
+    workload = {"n_predict": a.n_predict}
+    if a.prompt:
+        workload["prompts"] = list(a.prompt)
+    elif a.workload_input:
+        if a.workload_input not in inputs:
+            raise SystemExit(f"mk_ak_row gate: --workload-input {a.workload_input} must be a --copy-input destination")
+        workload.update(input=a.workload_input, offsets=[int(x) for x in a.offsets.split(",")], win_chars=a.win_chars,
+                        suffix=a.prompt_suffix)
+    else:
+        raise SystemExit("mk_ak_row gate: declare the workload: --prompt TEXT (repeatable) or --workload-input inputs/X")
+    corr = json.loads(open(a.correctness[1:]).read() if a.correctness.startswith("@") else a.correctness) \
+        if a.correctness else None
+    extra_argvs, tool_delta = "", []
+    if corr and corr.get("argv"):
+        ca = [str(x) for x in corr["argv"]]
+        if corr.get("kind") != "tbo" or corr.get("lv"):
+            new = G.ensure_lv(ca, lv, force=bool(corr.get("lv")) or corr.get("kind") == "identity")
+            if new != ca:
+                tool_delta.append({"tool": os.path.basename(ca[0]), "flag": "-lv", "value": str(lv),
+                                   "reason": "witness log level"})
+            ca = new
+        corr["argv"] = "@@CORRECTNESS_ARGV@@"
+        extra_argvs = f"CORRECTNESS_ARGV = {_argv_lit(ca, 19)}\n"
+    kc = dict(G.keep_cfg({"keep": keep}))
+    starts = kc["n_blocks"] + (1 if kc["dummy_block"] else 0)
+    spec_g = {"row_id": a.id, "task": a.task, "rule": a.rule, "lane": a.lane, "knobs": knobs, "arms": arms,
+              "baseline": baseline, "expect": expect,
+              "witness_rule": "each knob judged alone per arm against expect (ak_gate.witness_for); never an AND",
+              "server": {"argv": "@@SERVER_ARGV@@", "env": env, "warmup": a.warmup, "ready_timeout_s": a.ready_timeout_s,
+                         "membind": a.membind if a.membind is not None else (3 if a.lane == "gpu" else None),
+                         "kfd_min_vram_gib": a.kfd_min_vram_gib if a.kfd_min_vram_gib is not None else
+                         (1 if a.lane == "gpu" else None)},
+              "workload": workload, "metric": {"name": a.metric, "higher_is_better": m[1]}, "keep": keep,
+              "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
+                                             "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
+              "inputs": inputs, "dirs": list(a.dir), "fresh_server_starts": starts}
+    G.validate_spec(dict(spec_g, server=dict(spec_g["server"], argv=argv),
+                         correctness=dict(corr, argv=["x"]) if corr else None))
+    body = pprint.pformat(spec_g, width=118, indent=1, sort_dicts=False)
+    body = body.replace("'@@SERVER_ARGV@@'", "SERVER_ARGV").replace("'@@CORRECTNESS_ARGV@@'", "CORRECTNESS_ARGV")
+    with open(os.path.join(d, "job.py"), "w") as f:
+        f.write(GATE_JOB.format(id=a.id, task=a.task, rule=a.rule, lv=lv, knobs=", ".join(knobs), knob_names=list(knobs),
+                                gen_version=GEN_VERSION, harness_sha=harness_sha(), gate_sha=gate_sha(),
+                                argv_source=src, server_argv=_argv_lit(argv), extra_argvs=extra_argvs, spec=body))
+    port_list = H.alloc_ports(a.id, 1)
+    claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else "184-191")
+    pin = a.claim is not None or a.lane != "cpu"
+    with open(os.path.join(d, "launch.sh"), "w") as f:
+        f.write(LAUNCH.format(id=a.id, task=a.task, d=d, claim_line=("C=${WS58_CPUS:-%s}\n" % claim) if pin else "",
+                              claim_arg=' --claim-cpus "$C"' if pin else "", filler=FILLER, lane=a.lane,
+                              min_window=a.min_window, port_arg=f" --port {port_list[0]}"))
+    os.chmod(os.path.join(d, "launch.sh"), 0o755)
+    with open(os.path.join(d, "check_complete.py"), "w") as f:
+        f.write(GATE_CHECK.format(result=os.path.join(d, "out", "RESULT.json")))
+    for lib in ("ak_row_harness.py", "ak_gate.py"):
+        shutil.copy(os.path.join(HERE, lib), os.path.join(d, lib))
+    seal(d, extra=sorted(inputs))
+    visits = starts * len(arms) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
+    spec = {"owner": "autokernel", "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.id,
+            "regions": claim, "claim_cpus": claim, "verdict_by": "agent", "launcher": os.path.join(d, "launch.sh"),
+            "result_path": os.path.join(d, "out", "RESULT.json"), "result_format": "json", "scratch_root": d,
+            "workdir": d, "stop_file": os.path.join(d, "STOP"), "estimate_s": a.estimate_s, "min_window_s": a.min_window,
+            "declared_threads": a.threads, "handoff_task": a.task, "model": a.model, "ports": port_list,
+            "smoke_predicate": SMOKE_PRED.format(p=os.path.join(d, "out", H.TERMINAL_SMOKE)),
+            "decision_rule": a.rule + " | knobs: " + ", ".join(knobs) + f" | metric {a.metric} "
+                             f"({'higher' if m[1] else 'lower'} is better), KEEP iff CI lower > {keep['threshold']} over "
+                             f"{kc['n_blocks']} ABBA blocks; A/A guard {kc['aa_max']}",
+            "requires_quiet_host": bool(a.lane == "cpu" and not a.no_quiet_host), "resumable": True,
+            "estimate_basis": {"provisional": True, "rebook_from": os.path.join(d, "out-smoke", H.SMOKE_MEASURE),
+                               "reason": f"pre-smoke: {visits} fresh-server visits/units; re-book from the smoke"},
+            "fresh_server_per_visit": True, "fresh_server_reason": GATE_FRESH_REASON, "fresh_server_starts": starts,
+            "fresh_server_starts_reason": f"ABBA: {kc['n_blocks']} scored blocks + "
+                                          f"{1 if kc['dummy_block'] else 0} dummy, one fresh server per arm visit",
+            "witness_lines": [{"line": v["marker"][3:] if v["marker"].startswith("re:") else v["marker"], "needs": 1,
+                               "cap": v["cap"], "knob": k} for k, v in knobs.items() if not v["marker"].startswith("re:")],
+            "gate": {"module": "ak_gate.py", "gate_sha256": gate_sha(), "arms": list(arms), "baseline": baseline,
+                     "metric": a.metric, "keep": keep, "correctness": (corr or {}).get("kind")},
+            "keep": list(G.EVIDENCE_PATHS),
+            "evidence": {"verdicts": list(G.EVIDENCE_VERDICTS), "paths": list(G.EVIDENCE_PATHS),
+                         "why": "a FAIL_*/FUTILITY_* gate row is diagnosed and replayed from these (job.py --replay)"},
+            "notes": "scaffolded by mk_ak_row.py gate new (declared gate row; ak_gate owns the harness)"}
+    spec["generator"] = {"tool": "mk_ak_row.py", "version": GEN_VERSION, "profile": "gate",
+                         "harness_sha256": harness_sha(), "gate_sha256": gate_sha(), "utc": H.now()}
+    if served:
+        spec["served_ref"] = served
+    if tool_delta:
+        spec["tool_argv_delta"] = tool_delta
+    if a.exclusive_cpu:
+        spec["exclusive_cpu"] = True
+    return d, spec
+
+
+def gate_sha():
+    return _sha(os.path.join(HERE, "ak_gate.py"))
+
+
+def gate_main(argv=None):
+    ap = argparse.ArgumentParser(prog="mk_ak_row.py gate new",
+                                 description="declare an AK knob gate row; ak_gate.py owns the harness")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    n = sub.add_parser("new")
+    n.add_argument("--id", required=True)
+    n.add_argument("--task", required=True, help="handoff file.md:BOX")
+    n.add_argument("--rule", default="", help="the pre-registered rule in words (the mechanics come from --keep-rule)")
+    n.add_argument("--model", required=True)
+    n.add_argument("--lane", choices=("cpu", "gpu"), default="gpu")
+    n.add_argument("--knob", action="append", default=[], metavar="NAME:MARKER[:LEVEL[:CAP]]",
+                   help="env var (GGML_/LLAMA_...) or --flag knob with its witness marker ('re:' prefix = regex)")
+    n.add_argument("--observe", action="append", default=[], metavar="NAME:MARKER[:LEVEL]",
+                   help="a marker no arm sets but every arm must show (e.g. the served V5I stage line)")
+    n.add_argument("--arm", action="append", default=[], metavar="NAME:KNOB=VAL,...")
+    n.add_argument("--expect", action="append", default=[], metavar="ARM:KNOB=present|absent,...",
+                   help="override derived expect cells (default: set -> present, unset -> absent)")
+    n.add_argument("--baseline", default="", help="baseline arms, comma list (default: the arms that set no knob)")
+    n.add_argument("--metric", required=True, choices=sorted(G.METRICS))
+    dg = n.add_mutually_exclusive_group()
+    dg.add_argument("--higher-is-better", dest="direction", action="store_const", const="higher")
+    dg.add_argument("--lower-is-better", dest="direction", action="store_const", const="lower")
+    n.add_argument("--keep-rule", required=True, metavar="ci_lower>X,n=N[,look=L][,aa=A][,dummy=1]")
+    n.add_argument("--served-ref", metavar="ROLE")
+    n.add_argument("--orch-repo", default=ORCH_REPO)
+    n.add_argument("--server-argv-json", help="the server argv as JSON when the row is not a registry role")
+    n.add_argument("--server-env", action="append", default=[], metavar="K=V")
+    n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity, argv, arms, ...}")
+    n.add_argument("--prompt", action="append", default=[])
+    n.add_argument("--workload-input", help="inputs/X (a --copy-input destination) cut into windows")
+    n.add_argument("--offsets", default="0")
+    n.add_argument("--win-chars", type=int, default=6000)
+    n.add_argument("--prompt-suffix", default="")
+    n.add_argument("--copy-input", action="append", default=[], metavar="SRC[:inputs/NAME]",
+                   help="copy an input into the row dir and pin its sha256")
+    n.add_argument("--dir", action="append", default=[], help="extra dir the harness creates (relative to the row)")
+    n.add_argument("--n-predict", type=int, default=256)
+    n.add_argument("--warmup", type=int, default=1)
+    n.add_argument("--ready-timeout-s", type=int, default=900)
+    n.add_argument("--membind", type=int)
+    n.add_argument("--kfd-min-vram-gib", type=float)
+    n.add_argument("--smoke-arm")
+    n.add_argument("--smoke-prompt-chars", type=int, default=2000)
+    n.add_argument("--smoke-n-predict", type=int, default=32)
+    n.add_argument("--smoke-budget-s", type=int, default=300)
+    n.add_argument("--claim")
+    n.add_argument("--threads", type=int, default=8)
+    n.add_argument("--estimate-s", type=int, default=7200)
+    n.add_argument("--min-window", type=int, default=1800)
+    n.add_argument("--root", default=ROOT)
+    n.add_argument("--exclusive-cpu", action="store_true")
+    n.add_argument("--no-quiet-host", action="store_true")
+    a = ap.parse_args(argv)
+    if a.claim is not None and not CLAIM_RX.match(a.claim):
+        ap.error(f"--claim {a.claim!r} must be a digit/range list")
+    served = resolve_served(a.served_ref, a.orch_repo) if a.served_ref else None
+    d, spec = gate_scaffold(a, served)
+    fails = lint(d)
+    if fails:
+        print(f"mk_ak_row gate: {d} fails ak_row_lint; spec.json NOT written", file=sys.stderr)
+        return 1
+    with open(os.path.join(d, "spec.json"), "w") as f:
+        json.dump(spec, f, indent=1)
+    print(f"mk_ak_row gate: scaffolded {d} (declaration only; lint + --selftest clean; spec.json written last)")
+    print(f"mk_ak_row gate: after a FAILED smoke in this family: python3 -I -B {d}/job.py --replay <prior row dir>")
+    print(f"mk_ak_row gate: publish with the DEPLOYED tool: /usr/bin/python3 {PUBLISH} {os.path.join(d, 'spec.json')}")
+    return 0
 
 
 # ======================================================================================================================
@@ -882,6 +1274,8 @@ def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
     if argv[:1] == ["polar"]:
         return polar_main(argv[1:])
+    if argv[:1] == ["gate"]:
+        return gate_main(argv[1:])
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--reseal")
     ap.add_argument("--id")
