@@ -49,7 +49,11 @@ class Hd(BaseHTTPRequestHandler):
         body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
         n = int(body.get("n_predict") or 16)
         assert body.get("cache_prompt") is False, "ak_gate must send cache_prompt:false"
-        self._send({"content": "x" * n, "tokens": list(range(n)),
+        quality = body.get("n_probs")
+        if quality:
+            assert body["temperature"] == 0 and body["return_tokens"] and not body["ignore_eos"]
+        self._send({"content": ("<answer>42</answer>" if quality else "x" * n), "tokens": list(range(n)),
+                    "completion_probabilities": [{"top_logprobs": [{"id": 1, "token": "x"}]} for _ in range(n)] if quality else None,
                     "timings": {"predicted_n": n, "predicted_ms": 10.0 * n / speed, "prompt_n": 64, "prompt_ms": 5.0,
                                 "draft_n": n, "draft_n_accepted": n // 2}})
 

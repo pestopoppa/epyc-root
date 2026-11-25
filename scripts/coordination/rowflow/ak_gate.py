@@ -53,7 +53,7 @@ import ak_row_harness as H  # noqa: E402
 
 GATE_VERSION = "1"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 2
+UNIT_SEMANTICS_VERSION = 3
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
 EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke")
@@ -76,8 +76,9 @@ CORRECTNESS_KEYS = {
     "tbo": {"min_cases", "require_rc0", "ops"},
     "kld": {"base_arm", "max_kld", "max_kld_noise_k", "noise_arm", "witness_base"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
-    "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"}}
-UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin"}
+    "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"},
+    "served_quality": {"input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s"}}
+UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin", "c-sq": "served_quality"}
 UNIT_TYPE = dict({"visit": "served", "smoke": "served", "log": "served"}, **UNIT_KIND)   # expect_by_unit scopes
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
                "draft": r"^\s*single-draft:\s*(.*?)\s*$"}
@@ -150,7 +151,7 @@ def baseline_arms(spec):
 
 
 def noise_arms(spec):
-    return {c["noise_arm"] for c in corr_list(spec) if c.get("kind") == "kld" and isinstance(c.get("noise_arm"), str) and c.get("noise_arm")}
+    return {c["noise_arm"] for c in corr_list(spec) if c.get("kind") in ("kld", "served_quality") and isinstance(c.get("noise_arm"), str) and c.get("noise_arm")}
 
 
 def candidate_arms(spec):
@@ -327,19 +328,38 @@ def validate_spec(spec):
     for c in corr_list(spec):
         if c.get("argv") and (error := executable_error(c["argv"], f"correctness {c.get('kind')}")):
             errs.append(error)
-        if c.get("kind") in ("identity", "kld", "tbo", "selftest_bin") and c.get("arms"):
+        if c.get("kind") in ("identity", "kld", "tbo", "selftest_bin", "served_quality") and c.get("arms"):
             for baseline in b:
                 if baseline not in c["arms"]:
                     errs.append(f"correctness {c['kind']}: FIX: add {baseline} to the unit's arms")
         if c.get("kind") == "tbo" and "require_rc0" in c and not isinstance(c["require_rc0"], bool):
             errs.append("correctness tbo: require_rc0 must be a boolean")
-        if c.get("kind") not in ("tbo", "kld", "identity", "selftest_bin"):
-            errs.append(f"correctness.kind {c.get('kind')!r} not tbo|kld|identity|selftest_bin")
+        if c.get("kind") not in ("tbo", "kld", "identity", "selftest_bin", "served_quality"):
+            errs.append(f"correctness.kind {c.get('kind')!r} not tbo|kld|identity|selftest_bin|served_quality")
         else:
             bad = sorted(set(c) - CORRECTNESS_KEYS["common"] - CORRECTNESS_KEYS[c["kind"]])
             if bad:
                 errs.append(f"correctness ({c['kind']}): unknown key(s) {bad}; allowed "
                             f"{sorted(CORRECTNESS_KEYS['common'] | CORRECTNESS_KEYS[c['kind']])}")
+        if c.get("kind") == "served_quality":
+            path = c.get("input")
+            if not isinstance(path, str) or path not in (spec.get("inputs") or {}) or not re.fullmatch(r"[0-9a-f]{64}", str((spec.get("inputs") or {}).get(path, ""))):
+                errs.append("correctness served_quality: input must name a sha256-pinned spec.inputs entry")
+            noise = c.get("noise_arm")
+            if noise not in arms or (b and noise == b[0]):
+                errs.append("correctness served_quality: noise_arm must be declared and distinct from baseline")
+            if c.get("arms") and b and not set([b[0], noise] + candidate_arms(spec)).issubset(c["arms"]):
+                errs.append("correctness served_quality: arms must include baseline, noise and every candidate")
+            if type(c.get("gate", False)) is not bool:
+                errs.append("correctness served_quality: gate must be boolean")
+            for name, default in (("n_predict", 512), ("n_probs", 5), ("test_timeout_s", 5)):
+                v = c.get(name, default)
+                if type(v) not in (int, float) or not math.isfinite(v) or v <= 0 or (name != "test_timeout_s" and type(v) is not int):
+                    errs.append(f"correctness served_quality: {name} must be positive")
+            for name, default in (("k", 3), ("abs_floor_items", 1)):
+                v = c.get(name, default)
+                if type(v) not in (int, float) or not math.isfinite(v) or v < 0:
+                    errs.append(f"correctness served_quality: {name} must be nonnegative")
         if c.get("kind") == "identity" and c.get("n_prompts") is not None:
             n = c["n_prompts"]
             if type(n) is not int or n < 1:
@@ -452,8 +472,10 @@ def witness_scope_errors(spec):
     arms = spec.get("arms") or {}
     for c in corr_list(spec):
         ut = c.get("kind")
-        if ut not in ("tbo", "kld", "identity", "selftest_bin"):
+        if ut not in ("tbo", "kld", "identity", "selftest_bin", "served_quality"):
             continue
+        if ut == "served_quality":
+            continue  # this unit uses the full served argv and arm flags
         if ut == "tbo" and not c.get("witness"):
             continue   # an unwitnessed tbo unit is never judged
         if witness_exempt(spec, ut):
@@ -731,6 +753,137 @@ def per_arm_stats(spec, units):
 
 
 # ---------------------------------------------------------------------------------------------------- correctness
+# Network isolation is installed before candidate code executes, inherited by descendants,
+# and fails closed if libseccomp is unavailable. The scorer never inherits open fds.
+QUALITY_SANDBOX = r'''
+import ctypes, errno, json, resource, sys
+try:
+    lib = ctypes.CDLL("libseccomp.so.2", use_errno=True)
+    lib.seccomp_init.argtypes = [ctypes.c_uint32]
+    lib.seccomp_init.restype = ctypes.c_void_p
+    lib.seccomp_rule_add.argtypes = [ctypes.c_void_p, ctypes.c_uint32, ctypes.c_int, ctypes.c_uint]
+    lib.seccomp_load.argtypes = [ctypes.c_void_p]
+    lib.seccomp_syscall_resolve_name.argtypes = [ctypes.c_char_p]
+    ctx = lib.seccomp_init(0x7fff0000)
+    if not ctx: raise RuntimeError("seccomp_init")
+    for name in ("socket", "socketpair", "io_uring_setup", "ptrace", "process_vm_readv", "process_vm_writev", "pidfd_getfd", "unshare", "setns", "kill", "tkill", "tgkill", "fork", "vfork", "clone", "clone3"):
+        nr = lib.seccomp_syscall_resolve_name(name.encode())
+        if nr >= 0 and lib.seccomp_rule_add(ctx, 0x00050000 | errno.EPERM, nr, 0) != 0: raise RuntimeError(name)
+    if lib.seccomp_load(ctx) != 0: raise RuntimeError("seccomp_load")
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+    resource.setrlimit(resource.RLIMIT_FSIZE, (0, 0))
+    resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
+except BaseException as e:
+    sys.stderr.write("sandbox setup failed: " + str(e))
+    sys.exit(125)
+program = json.load(sys.stdin)
+sys.stdout.write("SANDBOX_READY\n"); sys.stdout.flush()
+exec(compile(program, "<quality-test>", "exec"), {})
+'''
+
+
+def load_quality_items(path):
+    with open(path, encoding="utf-8") as f:
+        items = [json.loads(line) for line in f if line.strip()]
+    if not items or len({x.get("id") for x in items}) != len(items):
+        raise ValueError("empty or duplicate quality items")
+    for x in items:
+        if not isinstance(x.get("id"), str) or not isinstance(x.get("prompt"), str) or x.get("kind") not in ("math", "code"):
+            raise ValueError("invalid quality item")
+        if x["kind"] == "math" and not isinstance(x.get("answer"), str):
+            raise ValueError("math item missing answer")
+        if x["kind"] == "code" and (not isinstance(x.get("test"), str) or not re.fullmatch(r"[A-Za-z_]\w*", x.get("entry_point", ""))):
+            raise ValueError("code item missing test or entry point")
+    return items
+
+
+def numeric_answer(text):
+    from decimal import Decimal, InvalidOperation
+    tags = re.findall(r"<answer>\s*(.*?)\s*</answer>", text, re.I | re.S)
+    text = tags[-1] if tags else text
+    matches = re.findall(r"(?<![\w.])[-+]?(?:(?:\d[\d,]*)(?:\.\d+)?|\.\d+)", text)
+    if not matches:
+        return None
+    try:
+        return Decimal(matches[-1].replace(",", ""))
+    except InvalidOperation:
+        return None
+
+
+def score_quality(item, output, timeout):
+    if item["kind"] == "math":
+        expected, actual = numeric_answer(item["answer"]), numeric_answer(output)
+        return expected is not None and actual is not None and expected == actual
+    import tempfile
+    code = output.strip("\n")
+    fence = re.search(r"```(?:python)?\s*\n(.*?)```", code, re.S | re.I)
+    if fence:
+        code = fence.group(1)
+    # HumanEval asks for a continuation; accept a complete function as well.
+    source = code if re.search(r"^\s*def\s+" + re.escape(item["entry_point"]) + r"\s*\(", code, re.M) else item["prompt"] + code
+    source = "from typing import *\n" + source
+    source += "\n" + item["test"] + "\ncheck(" + item["entry_point"] + ")\n"
+    try:
+        with tempfile.TemporaryDirectory(prefix="ak-quality-") as tmp:
+            p = subprocess.run([sys.executable, "-I", "-c", QUALITY_SANDBOX], input=json.dumps(source),
+                               text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, cwd=tmp,
+                               env={"PATH": "/usr/bin:/bin", "HOME": tmp}, timeout=float(timeout))
+    except subprocess.TimeoutExpired:
+        return False
+    if not p.stdout.startswith("SANDBOX_READY\n"):
+        raise RuntimeError("network-isolated code scorer could not initialize")
+    return p.returncode == 0
+
+
+def mcnemar_bad_p(baseline, candidate):
+    bad = sum(a and not b for a, b in zip(baseline, candidate))
+    good = sum(not a and b for a, b in zip(baseline, candidate))
+    n = bad + good
+    return sum(math.comb(n, i) for i in range(bad, n + 1)) / (2 ** n), bad, good
+
+
+def quality_diagnostic(base, other):
+    a, b = base["tokens"], other["tokens"]
+    divergence = next((i for i, (x, y) in enumerate(zip(a, b)) if x != y), None)
+    if divergence is None and len(a) != len(b):
+        divergence = min(len(a), len(b))
+    end = divergence if divergence is not None else min(len(a), len(b))
+    overlaps = []
+    for p, q in zip(base["completion_probabilities"][:end], other["completion_probabilities"][:end]):
+        def choices(x):
+            return {str(v.get("token", v.get("tok_str"))) for v in (x.get("top_logprobs") or x.get("top_probs") or x.get("probs") or []) if isinstance(v, dict) and ("token" in v or "tok_str" in v)}
+        x, y = choices(p), choices(q)
+        overlaps.append(len(x & y) / max(len(x), len(y)) if x and y else None)
+    return {"first_divergence_token_index": divergence, "top_k_overlap_before_divergence": overlaps}
+
+
+def quality_decision(spec, c, units):
+    by = {u["arm"]: u["req"] for u in units}
+    base_arm, noise = baseline_arms(spec)[0], c["noise_arm"]
+    base = by[base_arm]
+    ids = [r["item_id"] for r in base]
+    if not ids or any([r["item_id"] for r in rows] != ids for rows in by.values()):
+        raise ValueError("quality item order differs between arms")
+    truth = [r["correct"] for r in base]
+    n = len(base)
+    acc = sum(truth) / n
+    noise_acc = sum(r["correct"] for r in by[noise]) / n
+    bound = max(float(c.get("abs_floor_items", 1)) / n, float(c.get("k", 3)) * abs(noise_acc - acc))
+    details, failed = {}, []
+    for arm, rows in by.items():
+        values = [r["correct"] for r in rows]
+        p, bad, good = mcnemar_bad_p(truth, values)
+        accuracy = sum(values) / n
+        passed = accuracy >= acc - bound and not (bad > good and p < 0.05)
+        if arm in candidate_arms(spec) and not passed:
+            failed.append(arm)
+        details[arm] = {"accuracy": accuracy, "correct": sum(values), "mcnemar_p_bad": p,
+                        "baseline_only_correct": bad, "arm_only_correct": good, "pass": passed,
+                        "per_prompt": [{"item_id": r["item_id"], "correct": r["correct"], **quality_diagnostic(ref, r)} for ref, r in zip(base, rows)]}
+    return {"n": n, "base_arm": base_arm, "noise_arm": noise, "noise_accuracy": noise_acc,
+            "allowed_loss": bound, "gate": c.get("gate", False), "failed": failed, "per_arm": details}
+
+
 def identity_fields(c):
     f = ["output"] + (["accepted"] if c.get("gate_accepted", True) else []) + (["draft"] if c.get("strict_drafts") else [])
     return f
@@ -750,6 +903,8 @@ def _plan_one(spec, c):
     if not kind:
         return []
     b, cand = baseline_arms(spec), candidate_arms(spec)
+    if kind == "served_quality":
+        return [(f"c-sq-{a}", "c-sq", a, {}) for a in [b[0], c["noise_arm"]] + cand]
     if kind == "tbo":
         return [(f"c-tbo-{a}", "c-tbo", a, {}) for a in (c.get("arms") or b + cand)]
     if kind == "selftest_bin":   # N fresh processes per arm, interleaved run by run
@@ -817,7 +972,12 @@ def decide_correctness(spec, units):
         if not done or v:
             return v, det, done
         dets.append(det)
-    return None, (dets[0] if len(dets) == 1 else {"kind": "+".join(c["kind"] for c in cs), "parts": dets}), True
+    result = dets[0] if len(dets) == 1 else {"kind": "+".join(c["kind"] for c in cs), "parts": dets}
+    if len(dets) > 1:
+        for det in dets:
+            if "served_quality" in det:
+                result["served_quality"] = det["served_quality"]
+    return None, result, True
 
 
 def _decide_one(spec, c, units):
@@ -845,6 +1005,9 @@ def _decide_one_impl(spec, c, units):
     if mm:
         return "FUTILITY_HARNESS_WITNESS", {"kind": c["kind"], "witness_mismatches": mm}, True
     kind = c["kind"]
+    if kind == "served_quality":
+        det = quality_decision(spec, c, us)
+        return ("FAIL_CORRECTNESS" if c.get("gate", False) and det["failed"] else None), {"kind": kind, "served_quality": det}, True
     if kind == "tbo":
         bad = [u for u in us if not tbo_pass(c, u)]
         det = {"kind": kind, "per_arm": {u["arm"]: dict({k: u.get(k) for k in ("n_cases", "n_ok", "n_fail", "n_skipped", "rc", "fails")},
@@ -970,6 +1133,11 @@ def _decide_impl(spec, units):
     keep running (or, in a replay, the prior run did not get far enough)."""
     kc = keep_cfg(spec)
     cv, cdet, cdone = decide_correctness(spec, units)
+    quality = next((c for c in corr_list(spec) if c.get("kind") == "served_quality"), None)
+    if quality and "served_quality" not in cdet:
+        _, qdet, _ = _decide_one(spec, quality, units)
+        if "served_quality" in qdet:
+            cdet = dict(cdet, served_quality=qdet["served_quality"])
     res = {"correctness": cdet}
     if not cdone:
         return dict(res, verdict="INCOMPLETE_CORRECTNESS", polar=None, terminal=False, reason="correctness unit pending")
@@ -1369,7 +1537,13 @@ class Gate:
                 self.request(port, request_body(self.spec, "Hello", 16), request_timeout())
             def one(item):
                 i, pr = item
-                return self.request(port, request_body(self.spec, pr, n_predict, cfg.get("sampler"), i + cfg.get("prompt_index", 0)), request_timeout())[0]
+                body = request_body(self.spec, pr, n_predict, cfg.get("sampler"), i + cfg.get("prompt_index", 0))
+                if kind == "c-sq":
+                    body.update(temperature=0.0, top_k=1, n_predict=n_predict, n_probs=cfg["n_probs"], return_tokens=True, cache_prompt=False, ignore_eos=False)
+                rec, response = self.request(port, body, request_timeout())
+                if kind == "c-sq":
+                    rec.update(content=response.get("content"), tokens=response.get("tokens"), completion_probabilities=response.get("completion_probabilities"))
+                return rec
             concurrency = cfg.get("concurrency", 1)
             if concurrency > 1:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:
@@ -1408,6 +1582,24 @@ class Gate:
         c = corr_of(self.spec, kind)
         to = float(c.get("timeout_s") or 3600)
         log = os.path.join(self.logs, f"{uid}.log")
+        if kind == "c-sq":
+            try:
+                items = load_quality_items(os.path.join(self.d, c["input"]))
+                self.current_unit = {"sampler": {"temperature": 0.0, "top_k": 1}, "n_probs": c.get("n_probs", 5)}
+                u = self.visit_fn(uid, arm, [x["prompt"] for x in items], int(c.get("n_predict", 512)), 0,
+                                  float(self.spec["server"].get("ready_timeout_s") or 900), kind=kind)
+                if not u.get("error"):
+                    req = u.get("req") or []
+                    if len(req) != len(items):
+                        raise ValueError("incomplete served quality responses")
+                    for item, rec in zip(items, req):
+                        if not isinstance(rec.get("content"), str) or not isinstance(rec.get("tokens"), list) or not isinstance(rec.get("completion_probabilities"), list) or len(rec["tokens"]) != len(rec["completion_probabilities"]):
+                            raise ValueError("served quality response missing content, tokens or probabilities")
+                        rec.update(item_id=item["id"], correct=score_quality(item, rec["content"], c.get("test_timeout_s", 5)))
+                    u["correctness"] = {"served_quality": {"items": req}}
+                return self.finish_correctness(u)
+            except Exception as e:
+                return {"unit_id": uid, "kind": kind, "arm": arm, "gate_unit": True, "error_class": "UNIT", "error": f"{type(e).__name__}: {e}"}
         if kind == "c-id" and c.get("mode", "server") == "server":
             prompts = identity_prompts(self.spec, self.d)
             if not 0 <= extra["prompt"] < len(prompts):
@@ -1525,6 +1717,8 @@ class Gate:
             verdict = "RECORDED" if (extra.get("mode") == "base" and os.path.isfile(os.path.join(self.out, "kld-base.bin"))) or u.get("mean_kld") is not None else None
         elif kind == "c-st":
             verdict = "RECORDED" if u.get("mismatches") is not None else None
+        elif kind == "c-sq":
+            verdict = "RECORDED" if u.get("req") and all(type(r.get("correct")) is bool for r in u["req"]) else None
         elif kind == "c-id":
             verdict = "RECORDED" if u.get("output_sha") and u.get("accepted_sha") else None
         else:
@@ -1703,6 +1897,13 @@ class Gate:
                 self.mark_reusable(u, extra)
                 H.append_unit(u, self.out)
             units.append(u)
+        quality = next((c for c in corr_list(self.spec) if c.get("kind") == "served_quality"), None)
+        if quality and not any(u.get("kind") == "quality-summary" for u in units):
+            _, detail, _ = _decide_one(self.spec, quality, units)
+            if "served_quality" in detail:
+                summary = {"kind": "quality-summary", "correctness": {"served_quality": detail["served_quality"]}}
+                H.append_unit(summary, self.out)
+                units.append(summary)
         d = decide(self.spec, units)
         if d["terminal"]:
             return self.finish(units, d)
@@ -1853,7 +2054,7 @@ def replay_units(spec, out_dir, row_dir):
         if u.get("error"):
             out.append(u)
             continue
-        witnessed = u["kind"] in ("visit", "smoke", "log", "c-id", "c-kld", "c-st") or \
+        witnessed = u["kind"] in ("visit", "smoke", "log", "c-id", "c-kld", "c-st", "c-sq") or \
             (u["kind"] == "c-tbo" and c.get("witness"))
         if witnessed and u.get("arm") not in (spec.get("arms") or {}):
             # a prior arm the new declaration does not declare cannot be judged: a mismatch, never "unwitnessed"

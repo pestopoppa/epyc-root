@@ -1526,3 +1526,67 @@ def test_smoke_identity_budget_limits_complete_pairs(tmp_path, monkeypatch):
     assert G.smoke_spec(sp)["correctness"]["n_predict"] == 8
     sp["smoke"]["identity_n_predict"] = 100
     assert G.smoke_spec(sp)["correctness"]["n_predict"] == 64
+
+
+def test_served_quality_scores_and_isolates_code():
+    assert G.score_quality({"kind": "math", "answer": "1,234"}, "steps 2; <answer>1234</answer>", 1)
+    assert not G.score_quality({"kind": "math", "answer": "1"}, "2", 1)
+    item = {"kind": "code", "prompt": "def add(a, b):\n", "entry_point": "add", "test": "def check(f):\n    assert f(2, 3) == 5"}
+    assert G.score_quality(item, "    return a+b", 2)
+    assert not G.score_quality(item, "    return a-b", 2)
+    item["test"] = "def check(f):\n    import socket\n    socket.socket()"
+    assert not G.score_quality(item, "    return a+b", 2)
+    assert not G.score_quality(item, "    while True: pass", .1)
+
+
+def test_served_quality_paired_gate_and_diagnostics():
+    sp = spec(correctness={"kind": "served_quality", "input": "inputs/set", "noise_arm": "OFF2", "gate": True}, inputs={"inputs/set": "a" * 64})
+    G.validate_spec(sp)
+    def rec(i, ok, tokens):
+        return {"item_id": str(i), "correct": ok, "tokens": tokens, "completion_probabilities": [{"top_logprobs": [{"token": "a"}, {"token": "b"}]}] * len(tokens)}
+    base = [rec(i, True, [1, 2, 3]) for i in range(20)]
+    noise = [rec(i, i != 0, [1, 2, 4]) for i in range(20)]
+    candidate = [rec(i, i >= 5, [1, 9, 3]) for i in range(20)]
+    units = [{"unit_id": "c-sq-" + arm, "kind": "c-sq", "arm": arm, "req": rows} for arm, rows in [("OFF", base), ("OFF2", noise), ("ON", candidate)]]
+    verdict, detail, done = G.decide_correctness(sp, units)
+    q = detail["served_quality"]
+    assert done and verdict == "FAIL_CORRECTNESS" and abs(q["allowed_loss"] - .15) < 1e-9
+    assert q["per_arm"]["ON"]["mcnemar_p_bad"] == 1 / 32
+    assert q["per_arm"]["OFF2"]["per_prompt"][0]["first_divergence_token_index"] == 2
+    assert q["per_arm"]["ON"]["per_prompt"][0]["top_k_overlap_before_divergence"] == [1.0]
+    sp["correctness"]["gate"] = False
+    assert G.decide_correctness(sp, units)[0] is None
+    assert G.mcnemar_bad_p([True] * 5, [False] * 5) == (1 / 32, 5, 0)
+
+
+def test_served_quality_stub_server_fresh_each_arm(tmp_path):
+    srv = fake_bin(tmp_path, "llama-server", "fake_llama_server.py")
+    starts = tmp_path / "starts"
+    row = tmp_path / "row"
+    (row / "inputs").mkdir(parents=True)
+    data = row / "inputs" / "set.jsonl"
+    data.write_text(json.dumps({"id": "m", "kind": "math", "prompt": "answer", "answer": "42"}) + "\n")
+    sp = spec(argv=[srv, "--port", "{PORT}"], inputs={"inputs/set.jsonl": G._sha_file(data)},
+              correctness={"kind": "served_quality", "input": "inputs/set.jsonl", "noise_arm": "OFF2", "gate": True, "n_predict": 4})
+    sp["server"]["env"] = {"FAKE_MARKERS": json.dumps({"GGML_HIP_Q8MC": Q8MC_ARMED}), "FAKE_STARTS": str(starts)}
+    gate = G.Gate(sp, str(row), env={"FILLER_PORTS": str(free_port())}, stream=QUIET)
+    assert not gate.prepare()
+    units = [gate.run_correctness_unit(*p) for p in G.plan_correctness(sp)]
+    assert all(not u.get("error") for u in units), units
+    assert len(starts.read_text().splitlines()) == 3
+    verdict, detail, _ = G.decide_correctness(sp, units)
+    assert verdict is None and detail["served_quality"]["per_arm"]["ON"]["accuracy"] == 1
+    assert units[0]["correctness"]["served_quality"]["items"][0]["correct"]
+
+
+def test_mk_row_quality_json_copies_and_pins_input(tmp_path):
+    data = tmp_path / "quality.jsonl"
+    data.write_text(json.dumps({"id": "m", "kind": "math", "prompt": "42?", "answer": "42"}) + "\n")
+    c = {"kind": "served_quality", "input": "inputs/quality.jsonl", "noise_arm": "OFF2", "gate": True}
+    row, sp = gen_row(tmp_path, extra=["--copy-input", f"{data}:inputs/quality.jsonl", "--correctness", json.dumps(c)])
+    assert "inputs/quality.jsonl" in (row / "SOURCE.sha256").read_text()
+    namespace = {"__file__": str(row / "job.py"), "__name__": "not_main"}
+    exec(compile((row / "job.py").read_text(), str(row / "job.py"), "exec"), namespace)
+    assert namespace["SPEC"]["inputs"]["inputs/quality.jsonl"] == G._sha_file(data)
+    assert namespace["SPEC"]["correctness"] == c
+    G.validate_spec(namespace["SPEC"])

@@ -1,0 +1,8 @@
+{
+  "selection": "First 70 GSM8K and 30 HumanEval records sorted by SHA-256 of UTF-8 PM-SERVED-QUALITY-UNIT:20261125: plus source ID, independently per source",
+  "subset_sha256": "450162c57625f8abc7700ace07ee567ac6c48a593718d607f91bc105a26236c1",
+  "sources": [
+    {"path": "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl", "sha256": "73a2ed5aa87c38e554c818aff4b8c6dd865621c6134b4abacebfa9070a818f8b", "filter": "id starts with gsm8k_", "count": 70},
+    {"path": "/mnt/raid0/llm/epyc-inference-research/research/specmquant/SpecMQuant/data/human_eval/HumanEval.jsonl.gz", "sha256": "b796127e635a67f93fb35c04f4cb03cf06f38c8072ee7cee8833d7bee06979ef", "count": 30}
+  ]
+}

@@ -976,7 +976,7 @@ def gate_main(argv=None):
     n.add_argument("--server-env", action="append", default=[], metavar="K=V")
     n.add_argument("--arm-env", action="append", default=[], metavar="ARM:K=V,K2=V2",
                    help="env for every process of one arm (not a knob; correctness units take {\"env\": {...}} in --correctness)")
-    n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity, argv, arms, ...}")
+    n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity|served_quality, ...}")
     n.add_argument("--verdict-map", help='JSON {"PASS": {"KEEP": "PASS_X"}, "FAIL": {"FAIL_CORRECTNESS": "FAIL_Y"}}: '
                    "the row's own verdict names; polar = the side")
     n.add_argument("--expect-by-unit", help='JSON {served|kld|tbo|identity|selftest_bin: {ARM: {KNOB: present|absent|'
