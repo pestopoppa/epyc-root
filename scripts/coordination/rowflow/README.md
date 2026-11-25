@@ -4,6 +4,16 @@ Inference-row flow: `publish_row.py` (owner publishes + smokes), `rowflow.py all
 writer), `filler_run15.sh` (launcher wrapper), `notify.py` (terminal-event alerts). Protocol:
 `docs/guides/agent-workflows/backlog-churn-flow.md`.
 
+## Futility declarations
+
+Publish rehearsal refuses AutoKernel measurement specs without a non-empty
+`"futility": {"rule": "stop when ..."}` describing the futility condition. For
+`ak_gate` rows, the keep rule must explicitly set `look=K` with `1 <= K <= n//2`,
+for example `--keep-rule 'ci_lower>1.01,n=8,look=4'`. The declaration is
+preserved in the published manifest. Build, claim and documentation rows are
+exempt. Existing ready rows remain in place; audit them without writing with
+`python3 scripts/coordination/rowflow/rowflow.py preflight --futility-report`.
+
 ## The inference mailbox (operator 2026-11-05)
 
 Every row alert (`row-ended`, `smoke-fail`, `disk-floor`) is appended once to

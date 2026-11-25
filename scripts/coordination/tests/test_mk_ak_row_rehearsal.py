@@ -240,3 +240,25 @@ def test_fix_ref_rejects_invalid_store_or_reason(env, value):
     with pytest.raises(SystemExit, match="--fix-ref"):
         run(decl(env, rid, extra=["--fix-ref", value]))
     assert not (env["rows"] / rid).exists()
+
+
+def test_gate_requires_explicit_futility_look(env):
+    argv = decl(env, 'ak-r-no-look-20261125')
+    argv[argv.index('--keep-rule') + 1] = 'ci_lower>1.01,n=8'
+    rc, out = run(argv)
+    assert rc == 2
+    assert 'FIX: add look=<n//2> to --keep-rule' in out
+
+
+def test_futility_check_gate_and_diagnostic():
+    gate = {'owner': 'autokernel', 'keep_rule': {'n_blocks': 8, 'look_blocks': 4}}
+    assert PR.futility_missing(gate) is None
+    for look in (None, 0, 5):
+        gate['keep_rule']['look_blocks'] = look
+        with pytest.raises(rf.Refused, match='look='):
+            PR.check_futility(gate, '')
+    diagnostic = {'owner': 'autokernel', 'kind': 'compute'}
+    with pytest.raises(rf.Refused, match='spec.futility.rule'):
+        PR.check_futility(diagnostic, '')
+    diagnostic['futility'] = {'rule': 'stop when the witness is absent'}
+    assert PR.futility_missing(diagnostic) is None

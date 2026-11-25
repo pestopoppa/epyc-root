@@ -1074,7 +1074,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False, dry_run=F
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "kernel_store", "kernel_store_sha256", "estimate_basis", "max_window_s", "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen", "autorequeue_max"):
+              "kernel_store", "kernel_store_sha256", "estimate_basis", "max_window_s", "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen", "autorequeue_max", "futility", "keep_rule", "generator", "kind"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -11896,6 +11896,7 @@ def main(argv=None):
     s = sub.add_parser("preflight", help="D9 deterministic preflight: --report = per check, how many queued rows would FAIL "
                                          "it and which (the evidence for flipping preflight.PREFLIGHT_ENFORCE)")
     mode = s.add_mutually_exclusive_group()
+    mode.add_argument("--futility-report", action="store_true", help="read-only audit of queued futility declarations")
     mode.add_argument("--report", action="store_true"); mode.add_argument("--rollout", action="store_true", help="counts for warn-only checks")
     s.add_argument("--json", action="store_true"); s.add_argument("rows", nargs="*")
     sub.add_parser("legacy-grants", help="ids of open grants whose poller still reads the live engine path (one per line)")
@@ -12034,6 +12035,24 @@ def main(argv=None):
             return 0 if st["state"] != "unknown" else 2
         if a.cmd == "preflight":
             sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            if a.futility_report:
+                import publish_row as PR
+                findings = []
+                for path in sorted(glob.glob(os.path.join(a.flags, "ready", "*.json"))):
+                    row = load_json(path)
+                    if not isinstance(row, dict):
+                        findings.append({"id": os.path.basename(path), "owner": "unknown", "missing": "unreadable row"})
+                        continue
+                    missing = PR.futility_missing(row)
+                    if missing:
+                        findings.append({"id": row.get("id", os.path.basename(path)), "owner": row.get("owner", "unknown"), "missing": missing[0]})
+                if a.json:
+                    print(json.dumps(findings, indent=1))
+                else:
+                    print(f"FUTILITY REPORT: {len(findings)} queued row(s) missing a declaration")
+                    for item in findings:
+                        print(f"{item['id']} | {item['owner']} | {item['missing']}")
+                return 0
             if a.rows and not (a.report or a.rollout):
                 import mk_ak_row as MK
                 bad = False

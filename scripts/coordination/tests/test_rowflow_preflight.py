@@ -604,3 +604,14 @@ def test_inputs_argv_hex_and_host_not_a_pin(tmp_path):
     d, s = make_row(tmp_path, "inp-argv-20261125", job=job)
     assert run(s, d, "inputs") == []
     assert P.pinned_inputs(P.Row(s, str(d))) == {}
+
+
+def test_futility_report_lists_queued_row(tmp_path, capsys):
+    import json
+    import rowflow as rf
+    ready = tmp_path / 'ready'
+    ready.mkdir()
+    (ready / 'diagnostic.json').write_text(json.dumps({'id': 'diagnostic', 'owner': 'autokernel', 'kind': 'compute'}))
+    assert rf.main(['--flags', str(tmp_path), 'preflight', '--futility-report']) == 0
+    out = capsys.readouterr().out
+    assert 'diagnostic | autokernel | measurement missing' in out

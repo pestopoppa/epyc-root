@@ -893,7 +893,7 @@ def gate_scaffold(a, served=None):
     seal(d, extra=sorted(inputs))
     visits = starts * len(arms) * max(1, len(a.sampler)) + sum(x.get("blocks", 1) * len(x.get("arms", [])) for x in spec_g.get("units", [])) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
     spec = {"owner": "autokernel", "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.id,
-            "regions": regions, "claim_cpus": claim, "verdict_by": "agent", "launcher": os.path.join(d, "launch.sh"),
+            "regions": regions, "claim_cpus": claim, "verdict_by": "agent", "keep_rule": keep, "launcher": os.path.join(d, "launch.sh"),
             "result_path": os.path.join(d, "out", "RESULT.json"), "result_format": "json", "scratch_root": d,
             "workdir": d, "stop_file": os.path.join(d, "STOP"), "estimate_s": a.estimate_s, "min_window_s": a.min_window,
             "declared_threads": a.threads, "handoff_task": a.task, "model": a.model, "ports": port_list,

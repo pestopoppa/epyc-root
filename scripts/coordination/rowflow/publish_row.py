@@ -74,7 +74,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction", "handoff_task_sha",
              "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
              "kernel_store", "kernel_store_sha256", "estimate_basis", "resumable", "max_window_s", "expects_created", "quiet_guard_regions", "scratch_gb", "reclaimable", "declared_threads", "shape_widen", "autorequeue_max",
-             "requires_quiet_host", "bandwidth_heavy", "quiet_sensitive", "exclusive_cpu")
+             "requires_quiet_host", "bandwidth_heavy", "quiet_sensitive", "exclusive_cpu", "futility", "keep_rule", "generator")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -1887,6 +1887,57 @@ def _split_refusal(step, msg):
     return [msg]
 
 
+def futility_missing(spec):
+    """Return the missing declaration and its fix; never execute a row's code."""
+    import ast
+    owner = str(spec.get("owner") or "").lower()
+    kind = str(spec.get("kind") or "").lower()
+    generator = spec.get("generator") or {}
+    gate = "keep_rule" in spec or (isinstance(generator, dict) and generator.get("profile") == "gate")
+    keep = spec.get("keep_rule")
+    launcher = spec.get("launcher") or ""
+    if isinstance(launcher, dict):
+        launcher = launcher.get("path") or ""
+    directory = spec.get("workdir") or (os.path.dirname(launcher) if isinstance(launcher, str) else "")
+    if directory and os.path.isfile(os.path.join(directory, "ak_gate.py")):
+        gate = True
+        # Older published gates store the declaration in job.py. Read only the literal keep dict.
+        try:
+            tree = ast.parse(open(os.path.join(directory, "job.py"), encoding="utf-8").read())
+            for node in tree.body:
+                if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "SPEC" for t in node.targets) and isinstance(node.value, ast.Dict):
+                    for key, value in zip(node.value.keys, node.value.values):
+                        if isinstance(key, ast.Constant) and key.value == "keep":
+                            keep = ast.literal_eval(value)
+        except (OSError, SyntaxError, ValueError, TypeError):
+            pass
+    if gate:
+        if isinstance(keep, str):
+            try:
+                import mk_ak_row
+                keep = mk_ak_row.parse_keep_rule(keep)
+            except (SystemExit, ValueError, TypeError):
+                keep = None
+        if isinstance(keep, dict):
+            n = keep.get("n_blocks", 8)
+            look = keep.get("look_blocks")
+            if type(n) is int and type(look) is int and 1 <= look <= n // 2:
+                return None
+        return ("gate missing a valid interim futility look", "add look=<n//2> to --keep-rule")
+    if not owner.startswith("autokernel") or kind in ("build", "claim", "doc", "docs", "documentation"):
+        return None
+    futility = spec.get("futility")
+    if isinstance(futility, dict) and isinstance(futility.get("rule"), str) and futility["rule"].strip():
+        return None
+    return ("measurement missing spec.futility.rule", 'set spec.futility.rule to a non-empty stop-on-futility rule')
+
+
+def check_futility(spec, flags):
+    missing = futility_missing(spec)
+    if missing:
+        raise rf.Refused(f"{missing[0]}; FIX: {missing[1]}")
+
+
 def rehearsal_steps(rerun=False, identity_spec=None, repo=None):
     """[(step, fn(spec, flags))] in publish order. Each raises rf.Refused; rehearse() collects them all."""
     def estimate(s, f):
@@ -1898,6 +1949,7 @@ def rehearsal_steps(rerun=False, identity_spec=None, repo=None):
             print(f"LINT {note}")
     return [
         ("estimate", estimate),
+        ("futility", check_futility),
         ("operator-gate", check_operator_gate),
         ("owner", check_owner_roster),
         ("handoff", lambda s, f: check_handoff(s, repo) if repo else check_handoff(s)),
