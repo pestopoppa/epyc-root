@@ -2531,7 +2531,7 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · owner: pipeline-mgmt
   - 2026-11-24: driver landed 5908a883f as scripts/coordination/codex_lane/drive.py (artifact-judged DONE, STALLED after 3 no-commit rounds, wall per round); scripts/coordination/tests/test_codex_lane_drive.py 7 passed. Not ticked: the done-when selector `-k codex_lane_verdict` matches 0 tests (only an unrelated skip), so refine the done-when to that test file (or rename the tests) before ticking.
       · ❄ frozen until: PM-CODEX-LANE-VERDICT-R2 (superseded by PM-CODEX-LANE-VERDICT-R2)
-- [ ] **PM-CODEX-LANE-VERDICT-R2** [non-inference] Take the interim Codex lane driver's stop decision off the lane's self-written LANE-STATUS line: commit the loop as scripts/coordination/codex_lane/drive.py whose DONE is computed from artifacts, treat LANE-STATUS as a hint, stop as STALLED after 3 consecutive rounds with no new commit, and log rounds and wall seconds per lane (intake-2943, intake-2947#02, intake-2953)
+- [x] **PM-CODEX-LANE-VERDICT-R2** [non-inference] Take the interim Codex lane driver's stop decision off the lane's self-written LANE-STATUS line: commit the loop as scripts/coordination/codex_lane/drive.py whose DONE is computed from artifacts, treat LANE-STATUS as a hint, stop as STALLED after 3 consecutive rounds with no new commit, and log rounds and wall seconds per lane (intake-2943, intake-2947#02, intake-2953) ✅ 2026-11-25 [no-belief: software] 5908a883f codex_lane/drive.py; test_codex_lane_drive.py 7/7 pass
       · done when: python3 -m pytest scripts/coordination/tests/test_codex_lane_drive.py passes on origin/main
       · gate: none        · inputs: `scripts/coordination/codex_lane/drive.py`
       · owner: pipeline-mgmt

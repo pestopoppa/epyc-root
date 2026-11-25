@@ -374,7 +374,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · gate: none        · inputs: `scripts/coordination/taskflow/dispatch.py` `docs/design/taskflow-stage1-canary-findings.md`
       · owner: pipeline-mgmt
       · ❄ frozen until: TF-EARLY-END-CENSUS-R2 (superseded by TF-EARLY-END-CENSUS-R2)
-- [ ] **TF-EARLY-END-CENSUS-R2** [non-inference] Count the taskflow units in canaries r8a-r8g whose worker ended before its wall cap with an empty or partial diff and no verified verdict, and how many were re-run by hand, then apply the brief's build-or-decline rule (census doc docs/design/taskflow-early-end-census-20261124.md)
+- [x] **TF-EARLY-END-CENSUS-R2** [non-inference] Count the taskflow units in canaries r8a-r8g whose worker ended before its wall cap with an empty or partial diff and no verified verdict, and how many were re-run by hand, then apply the brief's build-or-decline rule (census doc docs/design/taskflow-early-end-census-20261124.md) ✅ 2026-11-25 [no-belief: software] DECLINE 0/50 early-ends; census doc 0ef6e687f (Codex lane cx12)
       · done when: test -f docs/design/taskflow-early-end-census-20261124.md
       · gate: none
       · owner: pipeline-mgmt
