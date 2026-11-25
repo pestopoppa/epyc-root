@@ -1333,8 +1333,7 @@ RULE      TODO: pre-registered, first match wins. RESULT.json carries ONE polar 
           No finished RESULT -> no claim: the row files SUPERSEDED/WITHDRAWN, never inconclusive.
 STOP      {stop_line} rc 75 only on STOP file / FILLER_DEADLINE.
 """
-{gpu_block}{fut_block}raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json with complete, verdict, polar)")
-'''
+{gpu_block}{fut_block}{tail}'''
 RESEARCH_REPO = "/mnt/raid0/llm/epyc-inference-research"  # shared clone: fetch + `git show` only, never its tree/branch/index
 HARNESS_PATH = "scripts/kernel_rnd/autokernel/harness"
 HARNESS_FILES = ("gpu_common.py", "gpuproof_row.py")
@@ -1355,27 +1354,72 @@ import gpu_common as G  # noqa: E402  (residency_from_proof gates < 2 s children
 
 
 FUT_HELPER = "ak_futility_row.py"   # AK-EVAL-FUT helper, copied verbatim into default rows and sha-pinned
-FUT_JOB_T = '''
+FUT_JOB_T = """
 # AK-EVAL-FUT (default futility look, operator 2026-11-25): {fut_helper} was copied INTO this row by mk_ak_row.py
 # and is sha256-pinned here and in SOURCE.sha256; it is the same math as research loop/futility.py
-# (sha256 {upstream_sha}). Call FUT(anchor_samples, candidate_samples) after EVERY complete pair; on
-# decision == "futile" write FUT.result(look) (+ units) to out/RESULT.json and stop. Never emit an early KEEP.
-import hashlib as _hl, os as _os, sys as _sys
+# (sha256 {upstream_sha}). run_pairs() below calls FUT after EVERY complete pair; a futile look writes
+# FUT.result(look) to out/RESULT.json and ends the row. Never emit an early KEEP. One pair = {pair_def}.
+import hashlib as _hl, json as _json, os as _os, sys as _sys
 _RD = _os.path.dirname(_os.path.abspath(__file__))
 if _hl.sha256(open(_os.path.join(_RD, "{fut_helper}"), "rb").read()).hexdigest() != "{fut_sha}":
     raise SystemExit("FUTILITY_HARNESS_MISSING_INPUT: {fut_helper} sha256 differs from the scaffold pin")
 _sys.path.insert(0, _RD)
 import ak_futility_row as _F  # noqa: E402
-FUT = _F.Look(sigma_pair_pct={sigma!r}, bar_pct={bar!r}, z={z!r}, min_pairs=_F.MIN_PAIRS, sigma_source={src!r})
-'''
+FUT = _F.Look(sigma_pair_pct={sigma!r}, bar_pct={bar!r}, z={z!r}, min_pairs=_F.MIN_PAIRS, sigma_source={src!r},
+              direction={direction!r})
+N_PAIRS = {n_pairs!r}
+
+
+def write_result(rec):
+    _os.makedirs(_os.path.join(_RD, "out"), exist_ok=True)
+    tmp = _os.path.join(_RD, "out", "RESULT.json.tmp")
+    with open(tmp, "w") as f:
+        _json.dump(rec, f, indent=1)
+    _os.replace(tmp, _os.path.join(_RD, "out", "RESULT.json"))
+    return 0
+
+
+def measure_pair(i):
+    \"\"\"TODO (authored slot): run ONE complete A/B pair i (both arms, same conditions). Return (anchor, candidate)
+    metric values ({direction} is better).\"\"\"
+    raise NotImplementedError("TODO: measure_pair")
+
+
+def finish_pairs(anchor, candidate):
+    \"\"\"TODO (authored slot): the pre-registered RULE over all N_PAIRS pairs. Return the RESULT dict
+    (complete, verdict, polar).\"\"\"
+    raise NotImplementedError("TODO: finish_pairs")
+
+
+def run_pairs(n_pairs=N_PAIRS):
+    anchor, candidate = [], []
+    for i in range(n_pairs):
+        a, c = measure_pair(i)
+        anchor.append(a)
+        candidate.append(c)
+        look = FUT(anchor, candidate)          # AK-EVAL-FUT interim look after each complete pair
+        if look["decision"] == "futile":
+            return write_result(dict(FUT.result(look), anchor=anchor, candidate=candidate))
+    return write_result(finish_pairs(anchor, candidate))
+"""
+FUT_TAIL = 'if __name__ == "__main__":\n    raise SystemExit(run_pairs())\n'
+NO_FUT_TAIL = 'raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json with complete, verdict, polar)")\n'
+LOWER_RX = re.compile(r"latenc|(?<![a-z])ms(?![a-z])|_ms\b|ms/|s/round|(?<![a-z])sec|seconds|ttft|tpot|wall", re.I)
 
 
 def futility_args(n):
     """AK-EVAL-FUT arguments of `polar new` (the default stop-on-futility rule)."""
-    n.add_argument("--keep-bar-pct", type=float, help="AK-EVAL-FUT: keep bar in %% (futile iff the optimistic bound < bar)")
+    bar = n.add_mutually_exclusive_group()
+    bar.add_argument("--keep-bar-pct", type=float, help="AK-EVAL-FUT: keep bar in %% log-ratio (futile iff the optimistic bound < bar)")
+    bar.add_argument("--keep-bar-ratio", type=float, help="AK-EVAL-FUT: keep bar as a ratio R; bar_pct = 100*ln(R)")
     n.add_argument("--sigma-source", metavar="aa:<path>|floor1:<pct>",
                    help="AK-EVAL-FUT sigma_pair: stored A/A pairs JSON {anchor,candidate} (>=3) or a k=1 p95 floor %%")
     n.add_argument("--fut-z", type=float, help="AK-EVAL-FUT z (default 2.5 serving/cpu lane, 3.5 GPU bench lane)")
+    n.add_argument("--metric", help="AK-EVAL-FUT metric name (a latency-like name requires --metric-direction)")
+    n.add_argument("--metric-direction", choices=("higher", "lower"),
+                   help="which metric direction is better (default higher; required for latency / ms / s/round metrics)")
+    n.add_argument("--unit-kind", choices=("pair", "run"), default="pair",
+                   help="what one --units unit is: a complete A/B pair (default) or one single-arm run (pairs = units // 2)")
     n.add_argument("--custom-futility", metavar="REASON",
                    help="why the row does not use AK-EVAL-FUT (alone: rule 'custom: REASON'; with --futility: recorded as "
                         "spec.futility.custom_reason, which silences ak_row_lint LOOSE-FUTILITY)")
@@ -1394,27 +1438,53 @@ def resolve_futility(a) -> tuple[dict | None, str]:
     if custom:
         return {"stop_line": f"on-answer: TODO. on-futility: CUSTOM ({custom}); state it in RULE.", "fut_block": "",
                 "futility": {"rule": f"custom: {custom}", "custom_reason": custom}}, ""
-    bar, src = getattr(a, "keep_bar_pct", None), getattr(a, "sigma_source", None)
+    bar, ratio, src = getattr(a, "keep_bar_pct", None), getattr(a, "keep_bar_ratio", None), getattr(a, "sigma_source", None)
+    if ratio is not None:
+        if ratio <= 0:
+            return None, "--keep-bar-ratio must be > 0"
+        bar = round(100.0 * math.log(ratio), 6)
+        print(f"AK-EVAL-FUT: --keep-bar-ratio {ratio} -> bar_pct = 100*ln({ratio}) = {bar}")
+    elif bar is not None and 1.0 < bar < 1.1:
+        dec = repr(float(bar)).split(".")[1] if "." in repr(float(bar)) else ""
+        if len(dec.rstrip("0")) > 2:
+            return None, f"--keep-bar-pct {bar} looks like a ratio; use --keep-bar-ratio {bar}"
     if bar is None or not src:
-        return None, ("AK-EVAL-FUT default needs --keep-bar-pct and --sigma-source aa:<path>|floor1:<pct> "
-                      "(or opt out with --futility \"<rule>\" or --custom-futility \"<reason>\")")
+        return None, ("AK-EVAL-FUT default needs --keep-bar-pct/--keep-bar-ratio and --sigma-source "
+                      "aa:<path>|floor1:<pct> (or opt out with --futility \"<rule>\" or --custom-futility \"<reason>\")")
+    metric = getattr(a, "metric", None) or ""
+    direction = getattr(a, "metric_direction", None)
+    if direction is None:
+        if metric and LOWER_RX.search(metric):
+            return None, (f"--metric {metric!r} looks like a latency/time metric: state --metric-direction higher|lower "
+                          "(the look assumes higher is better unless told otherwise)")
+        direction = "higher"
     try:
         sigma, kind = F.sigma_from_source(src)
     except (OSError, ValueError) as e:
         return None, f"AK-EVAL-FUT sigma source: {e} (or opt out with --custom-futility \"<reason>\")"
-    if a.units and a.units < 2 * F.MIN_PAIRS:
-        return None, f"AK-EVAL-FUT first look is at k={F.MIN_PAIRS} pairs and must be <= n/2: --units >= {2 * F.MIN_PAIRS}"
+    unit_kind = getattr(a, "unit_kind", None) or "pair"
+    pairs = None
+    if a.units:
+        pairs = a.units if unit_kind == "pair" else a.units // 2
+        if pairs < 2 * F.MIN_PAIRS:
+            return None, (f"AK-EVAL-FUT first look is at k={F.MIN_PAIRS} pairs and must be <= n/2: need >= "
+                          f"{2 * F.MIN_PAIRS} complete pairs, got {pairs} (--units {a.units}, one unit = one {unit_kind})")
+    pair_def = "one --units unit" if unit_kind == "pair" else "two --units units (single-arm runs)"
     z = a.fut_z if getattr(a, "fut_z", None) else (F.Z_BENCH if a.lane == "gpu" else F.Z_SERVING)
     tag = "aa_calibration" if kind == "aa" else "floor1_p95"
+    ratio_txt = "100*ln(c/a)" if direction == "higher" else "100*ln(a/c) (lower is better: samples inverted)"
     rule = (f"AK-EVAL-FUT z={z} ({'GPU bench' if a.lane == 'gpu' else 'serving'} lane), futility-only, "
-            f"bar={bar}%: after each complete pair k>={F.MIN_PAIRS} stop FUTILITY_CANDIDATE_BELOW_BAR (polar FAIL) iff "
-            f"mean(100*ln(c/a)) + {z}*{sigma:.4f}/sqrt(k) < {bar}; sigma from {src}; no early KEEP")
+            f"bar={bar}%, direction={direction}{' (' + metric + ')' if metric else ''}: after each complete pair "
+            f"k>={F.MIN_PAIRS} stop FUTILITY_CANDIDATE_BELOW_BAR (polar FAIL) iff mean({ratio_txt}) + "
+            f"{z}*{sigma:.4f}/sqrt(k) < {bar}; sigma from {src}; pairs={pairs or '?'} (one pair = {pair_def}); no early KEEP")
     stop = (f"on-answer: none (futility-only; no early KEEP). on-futility: {rule}; the look record (k, bound_pct, "
-            f"sigma, z, bar) goes to RESULT.json.")
+            f"sigma, z, bar, direction) goes to RESULT.json.")
     fut = {"rule": rule, "schema": F.SCHEMA, "stopping": F.STOPPING, "look_pairs": F.MIN_PAIRS, "z": z,
            "bar_pct": bar, "sigma_pair_pct": round(sigma, 6), "sigma_source": src, "verdict": F.VERDICT,
+           "direction": direction, "metric": metric or None, "pairs": pairs, "unit_kind": unit_kind,
            "upstream_sha256": F.UPSTREAM_SHA256}
-    return {"stop_line": stop, "futility": fut, "sigma": round(sigma, 6), "bar": bar, "z": z, "src": tag}, ""
+    return {"stop_line": stop, "futility": fut, "sigma": round(sigma, 6), "bar": bar, "z": z, "src": tag,
+            "direction": direction, "n_pairs": pairs or 0, "pair_def": pair_def}, ""
 
 
 def fetch_harness(repo: str, ref: str = "origin/main") -> tuple[str, dict[str, bytes]] | str:
@@ -1516,7 +1586,7 @@ def polar_scaffold(a, fetch=None) -> int:
     regions = "mi210_0," + claim if a.lane == "gpu" else claim
     fmt = dict(id=a.row_id, owner=a.owner, handoff=a.handoff, box=a.box, threads=a.threads, dir=d,
                regions=claim, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units or '?', unit_s=a.unit_s or '?', gpu_block="",
-               stop_line=fut["stop_line"], fut_block="")
+               stop_line=fut["stop_line"], fut_block="", tail=NO_FUT_TAIL)
     if fut.get("sigma") is not None:
         hb = open(os.path.join(HERE, FUT_HELPER), "rb").read()
         with open(os.path.join(d, FUT_HELPER), "wb") as f:
@@ -1525,7 +1595,9 @@ def polar_scaffold(a, fetch=None) -> int:
         import ak_futility_row as F
         fmt["fut_block"] = FUT_JOB_T.format(fut_helper=FUT_HELPER, fut_sha=hashlib.sha256(hb).hexdigest(),
                                             upstream_sha=F.UPSTREAM_SHA256, sigma=fut["sigma"], bar=fut["bar"],
-                                            z=fut["z"], src=fut["src"])
+                                            z=fut["z"], src=fut["src"], direction=fut["direction"],
+                                            n_pairs=fut["n_pairs"], pair_def=fut["pair_def"])
+        fmt["tail"] = FUT_TAIL
     if a.lane == "gpu":
         commit, gh = got
         harness.update(gh)

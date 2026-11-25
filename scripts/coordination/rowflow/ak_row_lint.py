@@ -122,17 +122,24 @@ LOOSE_FUT_RX = re.compile(
     r"(?:mean|median|geomean|ratio|speedup|effect|delta|gain)\s*(?:<=?|≤)\s*-?\d*\.?\d+\s*%?\s*(?:after|at|by)\s+"
     r"(?:k\s*=\s*)?\d+|futil\w*[^\n.;]{0,60}?(?:<=?|≤)\s*-?\d*\.?\d+\s*%?\s*(?:after|at|by)\s+(?:k\s*=\s*)?\d+", re.I)
 FUT_HELPER = "ak_futility_row.py"
+FUT_CALL_RX = re.compile(r"^\s*[^#\n]*\bFUT\(", re.M)
 
 
 def loose_futility(d, spec, code):
     """WARN-only. [] for rows on the standard helper, gate-harness rows or a declared --custom-futility reason."""
     fut = spec.get("futility") if isinstance(spec.get("futility"), dict) else {}
-    if str(fut.get("custom_reason") or "").strip() or fut.get("schema") == "epyc.autokernel.futility_look.v1":
+    if fut.get("schema") == "epyc.autokernel.futility_look.v1":
+        job = code.get("job.py") or ""
+        if job and not FUT_CALL_RX.search(job):
+            return [("WARN", "LOOSE-FUTILITY", "FUT-UNCALLED: spec.futility is AK-EVAL-FUT v1 but job.py never calls FUT(...) "
+                     "after a complete pair; keep the scaffold's run_pairs() call site")]
+        return []
+    if str(fut.get("custom_reason") or "").strip():
         return []
     gen = spec.get("generator") if isinstance(spec.get("generator"), dict) else {}
     if "keep_rule" in spec or gen.get("profile") == "gate":   # gate rows: the ak_gate CI look is the standard rule
         return []
-    if FUT_HELPER in code or "ak_gate.py" in code or os.path.isfile(os.path.join(d, "ak_gate.py")):
+    if "ak_gate.py" in code or os.path.isfile(os.path.join(d, "ak_gate.py")):
         return []
     texts = dict((f, t) for f, t in code.items() if f not in VENDORED)
     texts["spec.json"] = " ".join(str(spec.get(k) or "") for k in ("decision_rule", "notes")) + " " + str(fut.get("rule") or "")

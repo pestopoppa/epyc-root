@@ -12,6 +12,7 @@ scripts/coordination/tests/test_ak_futility_row.py):
 
 sigma comes from stored A/A pairs (stdev of their log-ratios, >= 3 pairs) or from a single-pair p95 floor / 1.96.
 z: 2.5 serving lane (Z_SERVING), 3.5 GPU bench lane (Z_BENCH). Futility-only: there is no early KEEP.
+Direction: the look assumes higher is better; a lower-is-better metric (latency) is inverted (1/x) first.
 A futile stop is FUTILITY_CANDIDATE_BELOW_BAR with polar FAIL and the look record in RESULT.json.
 """
 from __future__ import annotations
@@ -73,20 +74,27 @@ def sigma_from_source(source: str, read=None) -> tuple[float, str]:
 class Look:
     """The row's pre-registered rule. Call with the complete anchor/candidate samples after every pair."""
 
-    def __init__(self, sigma_pair_pct, bar_pct, z, min_pairs=MIN_PAIRS, sigma_source="aa_calibration"):
+    def __init__(self, sigma_pair_pct, bar_pct, z, min_pairs=MIN_PAIRS, sigma_source="aa_calibration",
+                 direction="higher"):
         if not (sigma_pair_pct > 0 and z > 0 and min_pairs >= 2 and bar_pct is not None):
             raise ValueError("futility rule needs sigma>0, z>0, min_pairs>=2 and a bar")
+        if direction not in ("higher", "lower"):
+            raise ValueError("direction must be higher or lower")
         self.sigma, self.bar, self.z, self.min_pairs, self.source = sigma_pair_pct, bar_pct, z, min_pairs, sigma_source
+        self.direction = direction
 
     def plan(self) -> dict:
         return {"schema": SCHEMA, "stopping": STOPPING, "stop_on_answer": False, "z": self.z,
                 "min_pairs": self.min_pairs, "bar_pct": self.bar, "sigma_pair_pct": round(self.sigma, 6),
-                "sigma_source": self.source, "upstream_sha256": UPSTREAM_SHA256}
+                "sigma_source": self.source, "direction": self.direction, "upstream_sha256": UPSTREAM_SHA256}
 
     def __call__(self, anchor, candidate) -> dict:
+        if self.direction == "lower":   # the look assumes higher is better: invert lower-is-better samples first
+            anchor = [1.0 / x if x > 0 else x for x in anchor]
+            candidate = [1.0 / x if x > 0 else x for x in candidate]
         r = look(log_ratios_pct(anchor, candidate), sigma_pair_pct=self.sigma, bar_pct=self.bar, z=self.z,
                  min_pairs=self.min_pairs)
-        r.update(sigma_pair_pct=round(self.sigma, 6), z=self.z, bar_pct=self.bar)
+        r.update(sigma_pair_pct=round(self.sigma, 6), z=self.z, bar_pct=self.bar, direction=self.direction)
         return r
 
     def result(self, rec: dict) -> dict:

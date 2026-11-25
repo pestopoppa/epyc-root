@@ -389,8 +389,12 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
                         threads=stage.threads, units=1, unit_s=est / 1.25, flags=None, owner=owner, root=root,
                         model=model_label(cand, stage),
                         research_repo=research_repo, research_ref="origin/main",
-                        # akloop stages pre-register their own stop rule (Stage.stop) and rewrite job.py: AK-EVAL-FUT opt-out
-                        custom_futility=f"akloop stage {stage.name}: {stage.stop}")
+                        # akloop stages rewrite job.py; research stage_bodies applies any stop rule. ab-timing runs NO
+                        # interim look today (stage_bodies.py:242 calls bench.compare without futility=; audit 2026-11-25)
+                        custom_futility=(f"akloop stage {stage.name}: declared stop {stage.stop!r}, applied (if at all) "
+                                         "by research stage_bodies, not by AK-EVAL-FUT in this row"
+                                         + ("; ab-timing runs NO interim futility look today (stage_bodies.py:242 "
+                                            "bench.compare without futility=)" if stage.name == "ab-timing" else "")))
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         rc = RS.scaffold(a)

@@ -45,11 +45,13 @@ def test_helper_sigma_and_ratio_parity():
 
 
 def test_live_upstream_sha_and_parity_when_available(tmp_path):
+    if not os.path.isdir(os.path.join(RESEARCH, ".git")) and not os.path.isfile(os.path.join(RESEARCH, ".git")):
+        pytest.skip("research repo absent")
     r = subprocess.run(["git", "-C", RESEARCH, "show", f"origin/main:{UPSTREAM}"], capture_output=True)
-    if r.returncode != 0:
-        pytest.skip("research clone not available")
-    if hashlib.sha256(r.stdout).hexdigest() != F.UPSTREAM_SHA256:
-        pytest.skip("upstream futility.py moved past the pinned sha; re-verify parity and re-pin")
+    assert r.returncode == 0, f"research repo present but origin/main:{UPSTREAM} unreadable: {r.stderr[:200]!r}"
+    got = hashlib.sha256(r.stdout).hexdigest()
+    assert got == F.UPSTREAM_SHA256, (f"upstream futility.py drifted ({got} != pinned {F.UPSTREAM_SHA256}): re-vendor "
+                                      "rowflow/ak_futility_row.py from it, re-verify parity and re-pin UPSTREAM_SHA256")
     (tmp_path / "upfut.py").write_bytes(r.stdout)
     sys.path.insert(0, str(tmp_path))
     try:
@@ -165,6 +167,81 @@ def test_cx42_futility_rule_opts_out_and_lint_wants_a_reason(tmp_path):
     assert _new(tmp_path, "ak-own2-cpu-20261125", ["--futility", "stop when mean < 0.97 after 3",
                                                    "--custom-futility", "ratio rule pre-registered in the box"]) == 0
     assert _codes(tmp_path / "ak-own2-cpu-20261125") == []
+
+
+
+def _load_job(d, pairs):
+    """Import the generated job.py with a stubbed authored slot (measure_pair) returning `pairs`."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(f"job_{d.name.replace('-', '_')}", d / "job.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.measure_pair = lambda i: pairs[i]
+    mod.finish_pairs = lambda a, c: {"complete": True, "verdict": "RAN_ALL", "polar": "PASS", "n": len(a)}
+    return mod
+
+
+def test_generated_job_calls_fut_and_stops_futile(tmp_path):
+    assert _new(tmp_path, "ak-call-cpu-20261125", ["--keep-bar-pct", "1.0", "--sigma-source", "floor1:1.0"]) == 0
+    d = tmp_path / "ak-call-cpu-20261125"
+    job = (d / "job.py").read_text()
+    assert L.FUT_CALL_RX.search(job) and "def measure_pair" in job and "raise SystemExit(run_pairs())" in job
+    mod = _load_job(d, [(100.0, 90.0)] * 8)
+    assert mod.N_PAIRS == 8 and mod.run_pairs() == 0
+    res = json.loads((d / "out" / "RESULT.json").read_text())
+    assert res["verdict"] == "FUTILITY_CANDIDATE_BELOW_BAR" and res["polar"] == "FAIL"
+    assert res["futility"]["stopped_at"]["k"] == 2 and len(res["anchor"]) == 2
+    mod = _load_job(d, [(100.0, 103.0)] * 8)
+    assert mod.run_pairs() == 0 and json.loads((d / "out" / "RESULT.json").read_text())["n"] == 8
+
+
+def test_lint_fut_uncalled_warns(tmp_path):
+    assert _new(tmp_path, "ak-uncall-cpu-20261125", ["--keep-bar-pct", "1.0", "--sigma-source", "floor1:1.0"]) == 0
+    d = tmp_path / "ak-uncall-cpu-20261125"
+    job = (d / "job.py").read_text().replace("look = FUT(anchor, candidate)", "look = {'decision': 'continue'}  # FUT(x)")
+    (d / "job.py").write_text(job)
+    msgs = [m for lvl, c, m in L.lint_dir(str(d), selftest=False) if c == "LOOSE-FUTILITY"]
+    assert len(msgs) == 1 and msgs[0].startswith("FUT-UNCALLED")
+    assert all(lvl == "WARN" for lvl, c, _ in L.lint_dir(str(d), selftest=False) if c == "LOOSE-FUTILITY")
+
+
+def test_latency_three_pct_win_is_not_futile_when_direction_lower(tmp_path, capsys):
+    lat = ([10.0, 10.0], [9.7, 9.7])   # a 3% latency WIN (lower is better)
+    assert F.Look(0.5, 1.0, 2.5)(*lat)["decision"] == "futile"            # read as higher-better: wrongly futile
+    assert F.Look(0.5, 1.0, 2.5, direction="lower")(*lat)["decision"] == "continue"
+    assert F.Look(0.5, 1.0, 2.5, direction="lower")([10.0, 10.0], [10.3, 10.3])["decision"] == "futile"
+    base = ["--keep-bar-pct", "1.0", "--sigma-source", "floor1:1.0", "--metric", "e2e_ms_per_round"]
+    assert _new(tmp_path, "ak-lat-cpu-20261125", base) == 1 and "--metric-direction" in capsys.readouterr().out
+    assert _new(tmp_path, "ak-lat-cpu-20261125", base + ["--metric-direction", "lower"]) == 0
+    d = tmp_path / "ak-lat-cpu-20261125"
+    assert json.loads((d / "spec.json").read_text())["futility"]["direction"] == "lower"
+    assert "direction=lower" in (d / "job.py").read_text()
+    mod = _load_job(d, [lat[0][0:1] + lat[1][0:1]] * 8)
+    assert mod.run_pairs() == 0 and json.loads((d / "out" / "RESULT.json").read_text())["n"] == 8
+    assert _new(tmp_path, "ak-tps-cpu-20261125", ["--keep-bar-pct", "1.0", "--sigma-source", "floor1:1.0",
+                                                  "--metric", "tok_per_s"]) == 0
+
+
+def test_keep_bar_ratio_and_ratio_looking_pct(tmp_path, capsys):
+    import math
+    assert _new(tmp_path, "ak-ratio-cpu-20261125", ["--keep-bar-ratio", "1.01", "--sigma-source", "floor1:1"]) == 0
+    assert "100*ln(1.01)" in capsys.readouterr().out
+    bar = json.loads((tmp_path / "ak-ratio-cpu-20261125" / "spec.json").read_text())["futility"]["bar_pct"]
+    assert bar == pytest.approx(100 * math.log(1.01), abs=1e-6)
+    assert _new(tmp_path, "ak-rpct-cpu-20261125", ["--keep-bar-pct", "1.015", "--sigma-source", "floor1:1"]) == 1
+    assert "looks like a ratio; use --keep-bar-ratio" in capsys.readouterr().out
+    assert _new(tmp_path, "ak-rpct2-cpu-20261125", ["--keep-bar-pct", "1.05", "--sigma-source", "floor1:1"]) == 0
+
+
+def test_unit_kind_run_counts_pairs(tmp_path, capsys):
+    args = ["new", "ak-runs-cpu-20261125", "--handoff", "x.md", "--box", "T", "--lane", "cpu", "--regions", "0-23",
+            "--threads", "8", "--units", "6", "--unit-s", "10", "--model", "X", "--root", str(tmp_path),
+            "--keep-bar-pct", "1", "--sigma-source", "floor1:1", "--unit-kind", "run"]
+    assert MK.polar_main(args) == 1 and "got 3" in capsys.readouterr().out
+    args[args.index("6")] = "8"
+    assert MK.polar_main(args) == 0
+    f = json.loads((tmp_path / "ak-runs-cpu-20261125" / "spec.json").read_text())["futility"]
+    assert f["pairs"] == 4 and f["unit_kind"] == "run"
 
 
 if __name__ == "__main__":
