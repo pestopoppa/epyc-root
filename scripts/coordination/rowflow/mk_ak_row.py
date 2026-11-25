@@ -1680,8 +1680,135 @@ def polar_main(argv=None, fetch=None) -> int:
     return 2
 
 
+# ======================================================================================================================
+# SIGNATURE PROFILE (AK-BNSIG P1, D9-ack 2026-11-25): `mk_ak_row.py --profile signature <row_id> ...` (or `signature
+# <row_id> ...`) scaffolds a DIAGNOSTIC bottleneck-signature row over a kernel list plus the stream2 S16/S64 references,
+# reusing the structure of ak-c22-q8wt-op-diag-gpu-20261125/job.py (signature_job_template.py). The classifier
+# (research loop/bottleneck_signature.py) is VENDORED at a research ref (fetch + `git show` only) and sealed, like
+# ak_row_harness.py: the row imports nothing from the research repo at run time. Futility = harness stops only, never
+# a KEEP; spec.futility is the custom (--custom-futility) form, so it passes publish_row.futility_missing.
+# ======================================================================================================================
+SIG_TEMPLATE = os.path.join(HERE, "signature_job_template.py")
+SIG_MODULE_PATH = "scripts/kernel_rnd/autokernel/loop/bottleneck_signature.py"
+SIG_STREAM_SRC = "/mnt/raid0/llm/tmp/ak-c22-q8wt-op-diag-gpu-20261125/stream2.hip"   # sealed sha 5f067611 there
+SIG_FUTILITY = ("diagnostic bottleneck-signature row, no KEEP decision; harness stops only: FUTILITY_HARNESS_"
+                "{BUILD,STREAM,NOT_RESIDENT,MISSING_INPUT} (kernel not resident = no dispatch in its trace), "
+                "FUTILITY_COUNTERS_ZERO / FUTILITY_COUNTERS_REJECTED (zero or missing counters, > 25 % absent), "
+                "FUTILITY_REFERENCE_INCOHERENT (S16 not healthy_bw or S64 not over_subscribed)")
+
+
+def fetch_signature_module(repo: str, ref: str) -> tuple[str, bytes] | str:
+    """(commit, bytes) of bottleneck_signature.py at `ref` (fetch + show only); an error string on failure."""
+    import subprocess
+    remote, _, branch = ref.partition("/")
+    if branch:
+        f = subprocess.run(["git", "-C", repo, "fetch", "-q", remote, branch], capture_output=True, text=True)
+        if f.returncode != 0:
+            return f"git fetch {remote} {branch} failed: {f.stderr.strip()[:200]}"
+    c = subprocess.run(["git", "-C", repo, "rev-parse", "--verify", ref + "^{commit}"], capture_output=True, text=True)
+    if c.returncode != 0:
+        return f"{ref} not resolvable in {repo}"
+    r = subprocess.run(["git", "-C", repo, "show", f"{ref}:{SIG_MODULE_PATH}"], capture_output=True)
+    if r.returncode != 0:
+        return f"{ref}:{SIG_MODULE_PATH} missing (land the research bottleneck_signature.py first, or pass --research-ref)"
+    return c.stdout.strip(), r.stdout
+
+
+def parse_sig_kernel(text: str) -> dict:
+    """NAME:BYTES -> {'name', 'bytes'}; NAME is a substring of the mangled kernel name, BYTES the bytes read per dispatch."""
+    name, _, b = text.rpartition(":")
+    if not name or not b.isdigit() or int(b) <= 0:
+        raise SystemExit(f"mk_ak_row: --kernel {text!r} must be NAME:BYTES (bytes read per dispatch, > 0)")
+    return {"name": name, "bytes": int(b)}
+
+
+def signature_scaffold(a, fetch=None) -> int:
+    kernels = [parse_sig_kernel(k) for k in a.kernel]
+    if not kernels:
+        print("REFUSED: --kernel NAME:BYTES at least once")
+        return 1
+    if not a.workload.strip():
+        print("REFUSED: --workload (the command whose dispatches carry the listed kernels) is required")
+        return 1
+    if not os.path.isfile(a.stream_src):
+        print(f"REFUSED: --stream-src {a.stream_src} missing")
+        return 1
+    got = (fetch or fetch_signature_module)(a.research_repo, a.research_ref)
+    if isinstance(got, str):
+        print(f"REFUSED: vendored classifier: {got}")
+        return 1
+    commit, mod = got
+    fut, why = resolve_futility(argparse.Namespace(futility=None, custom_futility=a.custom_futility or SIG_FUTILITY))
+    if fut is None:
+        print(f"REFUSED: {why}")
+        return 1
+    rule = ("DIAGNOSTIC (no keep decision): per kernel, bottleneck_signature.signature(axes, S16, S64) -> "
+            "SIGNATURE_CLASSIFIED (polar PASS) or a FUTILITY_* harness stop (polar None); never a KEEP")
+    ns = argparse.Namespace(fix_ref=None, root=a.root, id=a.row_id, servers=0, claim=None, lane="gpu", task=a.task,
+                            min_window=a.min_window, kld_unit=False, knob=[], rule=rule, model=a.model,
+                            fresh_server_starts=0, estimate_s=a.estimate_s, threads=a.threads, no_quiet_host=True,
+                            futility=None, exclusive_cpu=False, fresh_server_reason="")
+    d, spec = scaffold(ns)
+    cfg = {"kernels": kernels, "workload": a.workload, "store": a.store or ""}
+    job = open(SIG_TEMPLATE).read()
+    job = job.replace("@@ID@@", a.row_id).replace("@@TASK@@", a.task).replace(
+        "@@STAMP@@", f"mk_ak_row.py {GEN_VERSION} harness_sha256={harness_sha()} profile=signature "
+                     f"bottleneck_signature_sha256={hashlib.sha256(mod).hexdigest()} research_commit={commit}")
+    job = job.replace("CONFIG = {'kernels': [], 'workload': '', 'store': ''}  # @@CONFIG@@", f"CONFIG = {cfg!r}")
+    with open(os.path.join(d, "job.py"), "w") as f:
+        f.write(job)
+    with open(os.path.join(d, "bottleneck_signature.py"), "wb") as f:
+        f.write(mod)
+    shutil.copy(a.stream_src, os.path.join(d, "stream2.hip"))
+    seal(d, extra=("bottleneck_signature.py", "stream2.hip"))
+    if lint(d):
+        print(f"mk_ak_row: {d} fails ak_row_lint; spec.json NOT written", file=sys.stderr)
+        return 1
+    n_units = 2 + 5 + len(kernels) * 6   # build, stream, 5 stream pmc passes; per kernel 1 trace + 5 pmc passes
+    spec.update(futility=fut["futility"], requires_quiet_host=False, notes=spec["notes"] + "; profile=signature",
+                estimate_basis={"provisional": True, "units": n_units, "total_units": n_units,
+                                "unit_s": round(a.estimate_s / n_units, 1),
+                                "reason": "pre-smoke: hipcc ~40 s, stream ~20 s, pmc/trace passes 3-20 s each (diag row "
+                                          "ak-c22-q8wt-op-diag-gpu-20261125); re-book from the smoke",
+                                "rebook_from": os.path.join(d, "out-smoke", H.SMOKE_MEASURE)})
+    spec["generator"].update(profile="signature", research_commit=commit,
+                             bottleneck_signature_sha256=hashlib.sha256(mod).hexdigest())
+    with open(os.path.join(d, "spec.json"), "w") as f:
+        json.dump(spec, f, indent=1)
+    print(f"mk_ak_row: scaffolded signature row {d} ({len(kernels)} kernels + S16/S64; lint clean, spec.json last)")
+    print(f"mk_ak_row: publish with the DEPLOYED tool: /usr/bin/python3 {PUBLISH} {os.path.join(d, 'spec.json')}")
+    return 0
+
+
+def signature_main(argv=None, fetch=None) -> int:
+    ap = argparse.ArgumentParser(prog="mk_ak_row.py --profile signature", description="bottleneck-signature diag row")
+    ap.add_argument("row_id")
+    ap.add_argument("--task", required=True, help="handoff.md:BOX")
+    ap.add_argument("--kernel", action="append", default=[], metavar="NAME:BYTES", help="repeatable; top-K hotspots")
+    ap.add_argument("--workload", required=True, help="argv (shell-quoted) whose dispatches carry the kernels")
+    ap.add_argument("--store", help="kernel store dir; its bin/ goes first on LD_LIBRARY_PATH")
+    ap.add_argument("--model", default="op-level bottleneck signature (no model load)")
+    ap.add_argument("--stream-src", default=SIG_STREAM_SRC)
+    ap.add_argument("--research-repo", default=RESEARCH_REPO)
+    ap.add_argument("--research-ref", default="origin/main")
+    ap.add_argument("--custom-futility", help="override the default harness-stop futility reason")
+    ap.add_argument("--estimate-s", type=int, default=1800)
+    ap.add_argument("--min-window", type=int, default=1500)
+    ap.add_argument("--threads", type=int, default=8)
+    ap.add_argument("--root", default=ROOT)
+    return signature_scaffold(ap.parse_args(argv), fetch)
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
+    if "--profile" in argv:
+        i = argv.index("--profile")
+        prof, rest = (argv[i + 1] if i + 1 < len(argv) else ""), argv[:i] + argv[i + 2:]
+        if prof == "signature":
+            return signature_main(rest)
+        argv = [prof] + rest
+    if argv[:1] == ["signature"]:
+        return signature_main(argv[1:])
     if argv[:1] == ["polar"]:
         return polar_main(argv[1:])
     if argv[:1] == ["gate"]:
