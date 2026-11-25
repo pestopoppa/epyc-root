@@ -536,7 +536,7 @@
       "closed": 210,
       "guarded": 0,
       "last_advanced": "2026-11-24",
-      "needs_owner": 1,
+      "needs_owner": 2,
       "open": 48,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -573,7 +573,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 630,
+          "line": 631,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -583,7 +583,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 896,
+          "line": 897,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 5
@@ -593,7 +593,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1408,
+          "line": 1409,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -603,7 +603,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1945,
+          "line": 1946,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -613,7 +613,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2707,
+          "line": 2708,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -623,7 +623,7 @@
           "closed": 60,
           "gates": [],
           "guarded": 0,
-          "line": 3135,
+          "line": 3136,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 8
@@ -633,7 +633,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 3816,
+          "line": 3817,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
@@ -853,6 +853,7 @@
       "closed": 109,
       "guarded": 0,
       "last_advanced": "2026-11-19",
+      "needs_owner": 2,
       "open": 118,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1519,6 +1520,7 @@
       "closed": 139,
       "guarded": 0,
       "last_advanced": "2026-11-20",
+      "needs_owner": 38,
       "open": 37,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1545,7 +1547,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 950,
+          "line": 961,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1555,7 +1557,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 1425,
+          "line": 1445,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1569,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1897,
+          "line": 1928,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
