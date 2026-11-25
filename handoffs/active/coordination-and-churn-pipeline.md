@@ -2615,6 +2615,24 @@ This verifies local installation only. A client-side hook can be bypassed and do
 - [x] **PM-CODEX-DISPATCH-DETERMINISTIC** [non-inference] Port Codex lane dispatch into the deterministic dispatcher (drive.py artifact verdict, push mode) so backlog boxes are routed to Codex lanes without a Claude driver ✅ 2026-11-25 [no-belief: software] 3 verified DONE of 9 dispatched (PM-RULES-WARN-FIRST c36bd54a4, WS4-WAKE-IMPERATIVE e860dbb3b, GNX-REINDEX round 3); 6 BLOCKED honestly on lane-rule limits (liv
       · done when: the dispatcher runs 3 backlog boxes end to end via Codex lanes with PUSH VERIFIED and no Claude edits
       · gate: PM-CODEX-UNASSISTED-DEF
+- [ ] **PM-TRASH-SWEEP-ROBUST** [non-inference] trash-sweep.sh skips and logs unremovable entries and chmods within trash instead of aborting NEEDS-OWNER
+      · done when: a trash sweep over a tree containing a root-owned or read-only entry completes, logs the skipped entry, and removes the rest; test added
+      · gate: none
+- [ ] **PM-ROOT-OWNED-SOURCE** [non-inference] Find what creates root-owned files under /mnt/raid0/llm and fix or document the source
+      · done when: the creating process is named with evidence (find -user root sample + writer) and a fix or umask/chown guard is committed
+      · gate: none
+- [ ] **PM-IODIE-HALF-RULE** [non-inference] Keeper must not place a bandwidth-heavy row on an IO-die half that an AutoKernel timing row holds or has queued
+      · done when: keeper placement refuses the overlap, with a unit test covering held and queued AK timing rows
+      · gate: none
+- [ ] **PM-SINGLE-DEPLOY-LOOP** [non-inference] One owned deploy loop with unique per-loop logs; verify DEPLOYED.json after each deploy
+      · done when: a second deploy loop is refused by a lock, logs carry a unique id, and deploy success requires DEPLOYED.json SHA == target; test added
+      · gate: none
+- [ ] **PM-SMOKE-AA-ALL-PROMPTS** [inference] cx59: smoke A/A runs over all prompts (multi-prompt A/A), not a single prompt
+      · done when: cx59-REPORT says DONE and its SHA is on main
+      · gate: none
+- [ ] **PM-STALE-ROW-SWEEP** [non-inference] Churn check flags rows stopped or smoke-queued for more than 6 h to their owners
+      · done when: churn check emits an owner alert for a row stopped/smoke-queued over 6 h; test added
+      · gate: none
 
 ## Track: dashboard-architecture-restructure
 <!-- gate: none -->
