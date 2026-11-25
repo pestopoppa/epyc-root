@@ -93,7 +93,9 @@ def option_region(option, cpus=DEFAULT_CPUS):
 
 
 def analyze_argv(option):
-    base = ["/bin/bash", str(HERE / "gitnexus-analyze.sh")]
+    # Keeper rows run a copy of this script in their scratch directory.  The
+    # analyze wrapper and its dependencies live in the repository, not there.
+    base = ["/bin/bash", str(REPO_ROOT / "scripts" / "gitnexus-analyze.sh")]
     return base + (["--workers", "1"] if option == "q3" else [])
 
 

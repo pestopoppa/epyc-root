@@ -84,6 +84,18 @@ class RegionChoice(unittest.TestCase):
             self.assertIn("reindex.py fresh", txt)
             self.assertIn("--option q3", (Path(d) / sp["id"] / "job.sh").read_text())
 
+    def test_copied_row_script_uses_repository_analyze_wrapper(self):
+        with tempfile.TemporaryDirectory() as d:
+            sp = R.plan_rows("abc1234", [], rows_root=d)[1]
+            R.write_row_files(sp)
+            copied = importlib.util.spec_from_file_location("row_reindex", Path(sp["workdir"]) / "reindex.py")
+            row = importlib.util.module_from_spec(copied)
+            copied.loader.exec_module(row)
+            self.assertEqual(row.analyze_argv("q3"),
+                             ["/bin/bash", str(row.REPO_ROOT / "scripts" / "gitnexus-analyze.sh"),
+                              "--workers", "1"])
+            self.assertEqual(row.analyze_argv("host")[1], row.analyze_argv("q3")[1])
+
     def test_gpu_grant_live_pocket_row_never_touches_gpu_threads(self):
         # a live GPU grant holds 88-95/184-191; the q3 option stays clear of them so it remains grantable beside it
         q3 = self.specs()["q3"]
