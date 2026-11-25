@@ -1,0 +1,206 @@
+"""PM-CODEX-DISPATCH-DETERMINISTIC: the `codex` lane type of taskflow/dispatch.py (harness/codex.py).
+
+A fake `codex` binary stands in for the lane; everything else (drive.py resume loop, sparse lane worktree, artifact
+verdict, dispatcher test re-run) runs for real against a throwaway origin + clone.
+"""
+from __future__ import annotations
+
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "scripts" / "coordination"))
+from taskflow.harness import codex as CX  # noqa: E402
+
+FAKE = r'''#!/usr/bin/env python3
+import os, re, subprocess, sys, json
+args = sys.argv[1:]
+prompt = sys.stdin.read()
+print(json.dumps({"type": "thread.started", "thread_id": "T1"}).replace(" ", ""))
+if "resume" in args:
+    sys.exit(0)
+mode = os.environ["FAKE_MODE"]
+wt = re.search(r"your worktree (\S+) \(branch (\S+),", prompt)
+wt, lane = wt.group(1), wt.group(2)
+report = re.search(r"Then write (\S+) with EXACTLY", prompt).group(1)
+box = re.search(r"^Task (\S+) ", prompt, re.M).group(1)
+repo = os.environ["FAKE_REPO"]
+if mode == "blocked":
+    open(report, "w").write("LANE-STATUS: BLOCKED `foo.py` raises KeyError\n")
+    sys.exit(0)
+if mode == "textonly":
+    open(report, "w").write(f"LANE-STATUS: DONE\n{box} {repo} {lane} {'a' * 40}\nTEST: python3 -m pytest -q t_ok.py\n1 passed\nPUSH VERIFIED\n")
+    sys.exit(0)
+open(os.path.join(wt, "t_ok.py"), "w").write("def test_ok():\n    assert True\n")
+g = lambda *a: subprocess.run(["git", "-C", wt, *a], check=True, capture_output=True, text=True).stdout.strip()
+g("add", "t_ok.py"); g("-c", "user.name=f", "-c", "user.email=f@x", "commit", "-qm", "lane work")
+g("push", "-q", "origin", "HEAD:main")
+sha = g("rev-parse", "HEAD")
+open(report, "w").write(f"LANE-STATUS: DONE\n{box} {repo} {lane} {sha}\nTEST: nice -n 19 taskset -c 84-87 python3 -m pytest -q t_ok.py\n1 passed\nPUSH VERIFIED — origin/main carries HEAD\n")
+'''
+
+
+def _git(*a, cwd=None):
+    return subprocess.run(["git", *a], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+
+
+@pytest.fixture
+def env(tmp_path, monkeypatch):
+    origin = tmp_path / "origin.git"
+    _git("init", "-q", "--bare", "-b", "main", str(origin))
+    clone = tmp_path / "clone"
+    _git("clone", "-q", str(origin), str(clone))
+    (clone / "README").write_text("x\n")
+    _git("add", "README", cwd=clone)
+    _git("-c", "user.name=f", "-c", "user.email=f@x", "commit", "-qm", "init", cwd=clone)
+    _git("push", "-q", "origin", "HEAD:main", cwd=clone)
+    _git("fetch", "-q", "origin", cwd=clone)
+    root = tmp_path / "root"
+    (root / "handoffs/active/briefs").mkdir(parents=True)
+    for b in ("BX-1", "BX-2", "BX-3"):
+        (root / f"handoffs/active/briefs/{b}.md").write_text(f"brief for {b}\n")
+    fake = tmp_path / "codex"
+    fake.write_text(FAKE)
+    fake.chmod(0o755)
+    wt_root = tmp_path / "wt"
+    wt_root.mkdir()
+    monkeypatch.setattr(CX, "WT_ROOT", wt_root)
+    monkeypatch.setenv("FAKE_REPO", str(clone))
+    return {"root": root, "clone": clone, "fake": str(fake), "out": tmp_path / "out", "wt": wt_root}
+
+
+def rec(bid, **kw):
+    r = {"id": bid, "state": "open", "class": "non-inference", "file": "handoffs/active/churn-pipeline.md", "line": 10,
+         "text": f"- [ ] **{bid}** [non-inference] do the thing", "done_when": "it is done", "brief": "unverified",
+         "holds": [], "gate": [], "gate_open": False, "gate_unknown": [], "inputs_missing": [], "lint": {"ok": True},
+         "needs_brief": False, "needs_owner": False, "frozen_until": None, "outside_backlog": False,
+         "proposed_by": None, "row_rank": 1, "pos_in_backlog": 1}
+    r.update(kw)
+    return r
+
+
+def doc(*recs):
+    return {"holds_source": "handoffs/active/holds.yaml", "boxes": {r["id"]: r for r in recs}}
+
+
+def go(e, d, mode, monkeypatch, **kw):
+    monkeypatch.setenv("FAKE_MODE", mode)
+    calls = {"tick": [], "tag": [], "remove": []}
+    hooks = {"tick": lambda r, v, *a: calls["tick"].append(r["id"]) or {"ticked": True, "detail": "WRAPPED x"},
+             "tag": lambda r, why, *a: calls["tag"].append((r["id"], why)) or {"tagged": True},
+             "remove": lambda repo, wt: calls["remove"].append(str(wt)) or {"removed": True},
+             "already_done": lambda r: False}
+    hooks.update(kw.pop("hooks", {}))
+    rows = CX.dispatch(root=e["root"], root_repo=e["clone"], out=e["out"], files=("handoffs/active/churn-pipeline.md",),
+                       doc=d, codex=e["fake"], max_rounds=2, apply=True, hooks=hooks, repos={"r": str(e["clone"])}, **kw)
+    return rows, calls
+
+
+# ------------------------------------------------------------------------------------------------- eligibility
+@pytest.mark.parametrize("kw,why", [
+    ({"state": "frozen", "frozen_until": "X"}, "state-frozen"),
+    ({"state": "needs-owner", "needs_owner": True}, "state-needs-owner"),
+    ({"holds": ["H1"]}, "held"),
+    ({"gate_open": True}, "gate-open"),
+    ({"gate_unknown": ["Q"]}, "gated"),
+    ({"class": "inference"}, "class-inference"),
+    ({"class": "operator-decision"}, "class-operator-decision"),
+    ({"done_when": ""}, "no-done-when"),
+    ({"brief": "none"}, "no-brief"),
+    ({"text": "- [ ] **BX-1** [non-inference] needs an operator-decision first"}, "operator-decision"),
+])
+def test_eligibility_filter(env, kw, why):
+    assert CX.codex_skip(rec("BX-1", **kw), env["root"]) == why
+    assert CX.codex_skip(rec("BX-1"), env["root"]) is None
+
+
+def test_no_brief_file_and_attempted_and_ticked(env):
+    assert CX.codex_skip(rec("BX-9"), env["root"]) == "no-brief"                # brief state ok, file missing
+    assert CX.codex_skip(rec("BX-1"), env["root"], {"BX-1"}) == "attempted-before"
+    assert CX.codex_skip(rec("BX-1"), env["root"], base_state=lambda r: "ticked") == "box-ticked-at-origin"
+
+
+def test_select_order_and_limit(env):
+    chosen, hist = CX.select(doc(rec("BX-2", row_rank=2), rec("BX-1"), rec("BX-3", row_rank=3)), env["root"],
+                             ("handoffs/active/churn-pipeline.md",), n=2)
+    assert [k for k, _ in chosen] == ["BX-1", "BX-2"] and hist["over-limit"] == 1
+
+
+def test_holds_source_missing_fails_closed(env):
+    assert CX.select({"boxes": {"BX-1": rec("BX-1")}}, env["root"])[0] == []
+
+
+def test_test_cmd_parse():
+    assert CX.test_cmd("TEST: nice -n 19 taskset -c 84-87 python3 -m pytest -q a.py — 3 passed")[1:] == ["-m", "pytest", "-q", "a.py"]
+    assert CX.test_cmd("TEST: bash -c 'rm -rf /'") is None
+    assert CX.test_cmd("TEST: pytest a.py; rm x") is None
+    assert CX.done_when_tests({"done_when": "pytest scripts/x/test_a.py passes with y"})[-1] == "scripts/x/test_a.py"
+
+
+# ----------------------------------------------------------------------------------------------- end to end
+def test_done_verified_from_artifacts_and_ticked(env, monkeypatch):
+    rows, calls = go(env, doc(rec("BX-1")), "done", monkeypatch)
+    assert rows[0]["verdict"] == "DONE", rows[0]
+    assert rows[0]["test_rc"] == 0 and calls["tick"] == ["BX-1"] and calls["tag"] == []
+    assert calls["remove"] == [str(env["wt"] / f"{rows[0]['lane']}-wt")]          # lane tree removed via the gate
+    led = CX.read_ledger(env["out"])
+    assert led[-1]["box"] == "BX-1" and led[-1]["verdict"] == "DONE"
+
+
+def test_lane_worktree_is_sparse(env, monkeypatch):
+    (env["clone"] / "artifacts").mkdir()
+    (env["clone"] / "artifacts" / "big").write_text("x")
+    _git("add", "artifacts", cwd=env["clone"])
+    _git("-c", "user.name=f", "-c", "user.email=f@x", "commit", "-qm", "a", cwd=env["clone"])
+    _git("push", "-q", "origin", "HEAD:main", cwd=env["clone"])
+    _git("fetch", "-q", "origin", cwd=env["clone"])
+    wt = CX.sparse_worktree(env["clone"], env["wt"] / "s-wt", "s")
+    assert (wt / "README").exists() and not (wt / "artifacts" / "big").exists()
+
+
+def test_report_says_done_but_no_commit_on_main_is_not_done(env, monkeypatch):
+    rows, calls = go(env, doc(rec("BX-1")), "textonly", monkeypatch)
+    assert rows[0]["verdict"] == "NOT-DONE" and "not in" in rows[0]["why"]
+    assert calls["tick"] == [] and calls["tag"][0][0] == "BX-1"
+
+
+def test_old_commit_already_on_main_is_not_done(env, monkeypatch):
+    head = _git("rev-parse", "HEAD", cwd=env["clone"])
+    v = CX.judge(f"LANE-STATUS: DONE\nBX-1 r main {head}\nTEST: pytest -q x.py\nPUSH VERIFIED\n", "BX-1",
+                 {"r": str(env["clone"])}, {str(env["clone"]): head}, rerun=lambda *a: (0, ""))
+    assert not v["done"] and "before dispatch" in v["why"]
+
+
+def test_failed_rerun_is_not_done(env, monkeypatch):
+    rows, calls = go(env, doc(rec("BX-1")), "done", monkeypatch, hooks={"rerun": lambda *a: (1, "1 failed")})
+    assert rows[0]["verdict"] == "NOT-DONE" and "rc=1" in rows[0]["why"] and calls["tick"] == []
+
+
+def test_blocked_tags_needs_owner_and_never_retries(env, monkeypatch):
+    rows, calls = go(env, doc(rec("BX-1")), "blocked", monkeypatch)
+    assert rows[0]["verdict"] == "NOT-DONE" and calls["tag"][0][0] == "BX-1"
+    assert calls["remove"]                                   # BLOCKED and clean -> lane tree removed too
+    rows2, calls2 = go(env, doc(rec("BX-1")), "done", monkeypatch)
+    assert rows2 == [] and calls2["tick"] == []              # ledger: attempted-before, no automatic retry
+
+
+def test_tick_refused_is_recorded_box_left_open(env, monkeypatch):
+    rows, _ = go(env, doc(rec("BX-1")), "done", monkeypatch,
+                 hooks={"tick": lambda *a: {"ticked": False, "detail": "tick refused (done-when not met)"}})
+    assert rows[0]["verdict"] == "DONE" and rows[0]["tick_refused"] is True
+
+
+def test_stop_file(env, monkeypatch):
+    env["out"].mkdir()
+    (env["out"] / "STOP").write_text("")
+    rows, calls = go(env, doc(rec("BX-1")), "done", monkeypatch)
+    assert rows == [] and not CX.read_ledger(env["out"])
+
+
+def test_one_lane_at_a_time_constant():
+    assert CX.MAX_CODEX_LANES == 1 and CX.PIN[:3] == ["taskset", "-c", "84-87"] and "ionice" in CX.PIN

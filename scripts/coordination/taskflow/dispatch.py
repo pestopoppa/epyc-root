@@ -3,6 +3,7 @@
 
     dispatch.py plan  --keys K1,K2 ... | --top N  [--out tasks.json]        # select + schema, no model, no writes
     dispatch.py run   --tasks tasks.json --endpoint http://127.0.0.1:P/v1 --out DIR [--apply] [--reviewer]
+    dispatch.py codex [--file F.md ...] [--max-boxes 3] [--apply] [--dry-run]  # Codex lane type: harness/codex.py
 
 `run` per task: `git worktree add` a detached disposable worktree of the task's repo at origin/main, branch
 `taskflow/<run>/<n>` -> harness spawn -> the DISPATCHER commits the worker's changes on that lane (the worker never
@@ -1100,10 +1101,27 @@ def main(argv=None) -> int:
     r.add_argument("--reviewer", action="store_true")
     r.add_argument("--no-gitnexus-trigger", action="store_true")
     r.add_argument("--wall-budget", default="", help='JSON, e.g. {"prefill_tok_s":111,"decode_tok_s":17.4} (schema.WALL_BUDGET_DEFAULTS)')
+    c = sub.add_parser("codex", help="route eligible boxes to unassisted Codex lanes (harness/codex.py)")
+    c.add_argument("--file", action="append", default=[], help="handoff file(s) to draw from (default: churn files)")
+    c.add_argument("--max-boxes", type=int, default=3)
+    c.add_argument("--out", default="")
+    c.add_argument("--apply", action="store_true", help="tick verified DONE / tag NEEDS-OWNER and push")
+    c.add_argument("--dry-run", action="store_true")
+    c.add_argument("--codex-bin", default=os.environ.get("CODEX_BIN", "codex"))
+    c.add_argument("--max-rounds", type=int, default=10)
+    c.add_argument("--trailer", action="append", default=[], help="commit trailer for lane + tick commits")
+    c.add_argument("--d9-ack", default=os.environ.get("EPYC_D9_ACK", ""))
     sw = sub.add_parser("sweep")
     sw.add_argument("--release-filed", action="store_true",
                     help="also drop kept lanes whose row has a FILED marker in filing-done/")
     a = ap.parse_args(argv)
+    if a.cmd == "codex":
+        from taskflow.harness import codex as CX
+        rows = CX.dispatch(out=Path(a.out) if a.out else CX.OUT_DEFAULT, files=tuple(a.file) or CX.DEFAULT_FILES,
+                           n=a.max_boxes, apply=a.apply, dry_run=a.dry_run, codex=a.codex_bin, max_rounds=a.max_rounds,
+                           trailers=a.trailer, env_ack=a.d9_ack)
+        print(json.dumps(rows, indent=1))
+        return 0
     if a.cmd == "sweep":
         print(json.dumps(sweep_lanes(release_filed=a.release_filed), indent=1))
         return 0
