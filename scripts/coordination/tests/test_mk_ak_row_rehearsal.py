@@ -276,3 +276,31 @@ def test_gate_explicit_futility_overrides_default(env):
 def test_missing_futility_hint_names_flag():
     missing = PR.futility_missing({"owner": "autokernel", "kind": "compute"})
     assert 'FIX: add --futility "..."' in PR.format_rehearsal([("futility", *missing)], [])
+
+
+@pytest.mark.parametrize("option", ["--knob", "--observe"])
+def test_marker_colon_typo_refused_at_declaration(env, option):
+    rid = "ak-r-gate-gpu-20261125-colon"
+    with pytest.raises(SystemExit) as exc:
+        run(decl(env, rid, extra=[option, "GGML_BAD:marker:4"]))
+    assert str(exc.value) == ("REFUSED: knob GGML_BAD marker ends in ':<n>' - the level separator is '::'. "
+                              "FIX: --knob 'GGML_BAD:<marker>::<n>'")
+    assert not (env["rows"] / rid).exists()
+
+
+def test_existing_bad_marker_refused_by_rehearsal_and_publish(env, monkeypatch):
+    rid = "ak-r-gate-gpu-20261125-colon-publish"
+    rc, out = run(decl(env, rid))
+    assert rc == 0, out
+    row = env["rows"] / rid
+    job = row / "job.py"
+    source = job.read_text()
+    assert Q8MC_ARMED in source
+    job.write_text(source.replace(Q8MC_ARMED, Q8MC_ARMED + ":4"))
+    rc_chk, chk = run(["gate", "new", "--check-only", str(row), "--flags", str(env["flags"])])
+    monkeypatch.setattr(PR, "gpu_busy", lambda flags: True)
+    rc_pub, pub = run_publish([str(row / "spec.json"), "--flags", str(env["flags"])])
+    message = "REFUSED: knob GGML_HIP_Q8MC marker ends in ':<n>' - the level separator is '::'."
+    assert rc_chk == 2 and message in chk, chk
+    assert rc_pub != 0 and message in pub, pub
+    assert not os.path.exists(rf.ready_path(str(env["flags"]), rid))

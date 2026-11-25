@@ -432,9 +432,8 @@ def test_generated_row_preflight_zero_fails(tmp_path, monkeypatch):
 
 
 def test_gate_cli_parse_knob_and_model_inference(tmp_path):
-    # F8: a marker that ends in ':8' is a marker, not a log level; '::N' is the level separator
-    assert MK.parse_knob("LLAMA_X:dflash2_dev_select: chain n_threads:8") == (
-        "LLAMA_X", {"kind": "env", "marker": "dflash2_dev_select: chain n_threads:8", "level": 4, "cap": -1})
+    with pytest.raises(SystemExit, match="level separator"):
+        MK.parse_knob("LLAMA_X:dflash2_dev_select: chain n_threads:8")
     assert MK.parse_knob("LLAMA_X:dflash2_dev_select: chain enabled::5")[1]["level"] == 5
     rc = MK.main(["gate", "new", "--no-rehearse", "--id", "ak-x-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
                   "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_A=1", "--metric",
@@ -926,3 +925,17 @@ def test_generator_multi_sampler_and_report_only_load(tmp_path):
     assert not any(u.get("report_only") or u["kind"] == "load" for u in replayed)
     with pytest.raises(G.SpecError):
         G.validate_spec(dict(sp, units=[{"kind": "load", "arms": ["UNKNOWN"]}]))
+
+
+@pytest.mark.parametrize("kind", ["env", "observe"])
+def test_marker_colon_level_typo_is_refused(kind):
+    message = "REFUSED: knob GGML_A marker ends in ':<n>' - the level separator is '::'. FIX: --knob 'GGML_A:<marker>::<n>'"
+    with pytest.raises(SystemExit) as exc:
+        MK.parse_knob("GGML_A:path ran:42", kind=kind)
+    assert str(exc.value) == message
+    with pytest.raises(G.SpecError) as exc:
+        G.validate_spec(spec(knobs={"GGML_A": {"kind": kind, "marker": "path ran:42"}}))
+    assert message in str(exc.value)
+    assert MK.parse_knob("GGML_A:path:42 ran::5", kind=kind)[1]["marker"] == "path:42 ran"
+    with pytest.raises(SystemExit):
+        MK.parse_knob("GGML_A:path:42::5", kind=kind)

@@ -176,6 +176,13 @@ def required_lv(spec):
     return max([MIN_LV] + [int(v.get("level") or MIN_LV) for v in (spec.get("knobs") or {}).values()])
 
 
+def marker_colon_refusal(name, marker):
+    if re.search(r":\d+$", str(marker or "")):
+        return (f"REFUSED: knob {name} marker ends in ':<n>' - the level separator is '::'. "
+                f"FIX: --knob '{name}:<marker>::<n>'")
+    return None
+
+
 def validate_spec(spec):
     """Raise SpecError naming every defect of the declaration (selftest and every entry point call this first)."""
     errs = []
@@ -196,6 +203,9 @@ def validate_spec(spec):
             errs.append(f"knob {k}: flag knob must start with '-'")
         if not str(v.get("marker") or "").strip():
             errs.append(f"knob {k}: empty witness marker")
+        colon_refusal = marker_colon_refusal(k, v.get("marker"))
+        if colon_refusal:
+            errs.append(colon_refusal)
         if v.get("marker", "").startswith("re:"):
             try:
                 re.compile(v["marker"][3:])

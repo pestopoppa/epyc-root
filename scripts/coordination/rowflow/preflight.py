@@ -1851,7 +1851,9 @@ def check_witness_scope(row, ctx):
         import ak_gate as G
     except ImportError as e:
         return [("WARN", "WITNESS-SCOPE-UNCHECKED", f"ak_gate not importable: {e}")]
-    return ([("FAIL", "WITNESS-SCOPE", e) for e in G.witness_scope_errors(sp)]
+    return ([("FAIL", "MARKER-COLON", e) for k, v in (sp.get("knobs") or {}).items()
+             if (e := G.marker_colon_refusal(k, v.get("marker")))]
+            + [("FAIL", "WITNESS-SCOPE", e) for e in G.witness_scope_errors(sp)]
             + [("FAIL", "SERVER-ENV-KNOB", e) for e in G.server_env_knob_errors(sp)])
 
 

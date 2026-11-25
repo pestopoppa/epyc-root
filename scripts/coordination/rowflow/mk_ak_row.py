@@ -26,7 +26,7 @@ Usage:
                [--served-ref <registry-role> [--orch-repo /workspace/repos/epyc-orchestrator]]
   mk_ak_row.py --reseal <row_dir>        re-seal (without spec.json) and lint an edited scaffold
   mk_ak_row.py polar new|--lint|--seal   the polar/akloop profile (the retired row_scaffold.py, same arguments)
-  mk_ak_row.py gate new --knob NAME:MARKER[:LEVEL] --arm NAME:KNOB=VAL,... --metric M --keep-rule R --served-ref ROLE
+  mk_ak_row.py gate new --knob NAME:MARKER[::LEVEL] --arm NAME:KNOB=VAL,... --metric M --keep-rule R --served-ref ROLE
                                          a DECLARED knob gate row: job.py is a declaration, ak_gate.py owns the harness
 
 v2 (2026-11-24, RCA ak-row-robustness-rca-20261124 F1/F2) - this is the ONLY row generator:
@@ -631,8 +631,8 @@ GATE_FRESH_REASON = ("ak_gate: one fresh server per arm visit (resident-server a
 
 
 def parse_knob(text, kind=None):
-    """'NAME:MARKER[::LEVEL[:CAP]]' -> (name, {kind, marker, level, cap}). The marker may contain ':' (and end in ':8');
-    only a '::' separator introduces LEVEL / CAP."""
+    """'NAME:MARKER[::LEVEL[:CAP]]' -> (name, {kind, marker, level, cap}).
+    Only a '::' separator introduces LEVEL / CAP."""
     name, sep, rest = str(text).partition(":")
     if not sep or not name.strip() or not rest.strip():
         raise SystemExit(f"mk_ak_row gate: --knob {text!r}: want NAME:MARKER[::LEVEL[:CAP]]")
@@ -641,6 +641,9 @@ def parse_knob(text, kind=None):
     if m and m.group(1).strip():
         rest, level = m.group(1), int(m.group(2))
         cap = int(m.group(3)) if m.group(3) is not None else -1
+    refusal = G.marker_colon_refusal(name.strip(), rest)
+    if refusal:
+        raise SystemExit(refusal)
     k = kind or ("flag" if name.startswith("-") else "env")
     return name.strip(), {"kind": k, "marker": rest, "level": max(level, G.MIN_LV), "cap": cap}
 
@@ -726,7 +729,7 @@ def gate_scaffold(a, served=None):
         n, v = parse_knob(x, kind="observe")
         knobs[n] = v
     if not knobs:
-        raise SystemExit("mk_ak_row gate: declare >= 1 --knob NAME:MARKER[:LEVEL]")
+        raise SystemExit("mk_ak_row gate: declare >= 1 --knob NAME:MARKER[::LEVEL]")
     arms = dict(parse_arm(x, knobs) for x in a.arm)
     if len(arms) < 2:
         raise SystemExit("mk_ak_row gate: declare >= 2 --arm (e.g. OFF: OFF2: ON:GGML_X=1)")
@@ -950,9 +953,9 @@ def gate_main(argv=None):
     n.add_argument("--rule", default="", help="the pre-registered rule in words (the mechanics come from --keep-rule)")
     n.add_argument("--model", help="default: the -m GGUF of the served / declared argv")
     n.add_argument("--lane", choices=("cpu", "gpu"), default="gpu")
-    n.add_argument("--knob", action="append", default=[], metavar="NAME:MARKER[:LEVEL[:CAP]]",
+    n.add_argument("--knob", action="append", default=[], metavar="NAME:MARKER[::LEVEL[:CAP]]",
                    help="env var (GGML_/LLAMA_...) or --flag knob with its witness marker ('re:' prefix = regex)")
-    n.add_argument("--observe", action="append", default=[], metavar="NAME:MARKER[:LEVEL]",
+    n.add_argument("--observe", action="append", default=[], metavar="NAME:MARKER[::LEVEL]",
                    help="a marker no arm sets but every arm must show (e.g. the served V5I stage line)")
     n.add_argument("--arm", action="append", default=[], metavar="NAME:KNOB=VAL,...")
     n.add_argument("--expect", action="append", default=[], metavar="ARM:KNOB=present|absent,...",
