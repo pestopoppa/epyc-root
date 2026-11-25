@@ -2545,6 +2545,14 @@ This verifies local installation only. A client-side hook can be bypassed and do
       · done when: every listed commit is reachable from origin/main and the live keeper runs 2fc1818a5 or later
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **PM-DEPLOY-ROLLBACK-GUARD** [non-inference] Make deploy_rowflow.sh refuse a --ref that does not contain the live DEPLOYED.json sha (rc 81) unless --allow-rollback is passed
+      · done when: pytest scripts/coordination/tests/test_deploy_rowflow_rollback_guard.py passes
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-RESUMABLE-WINDOW-SIZING** [non-inference] Book and size grants for resumable rows from their remaining estimate (RESUMABLE_WINDOW_SIZING) instead of the full window, never above the normal max
+      · done when: pytest scripts/coordination/tests/test_rowflow_resumable_window.py passes
+      · gate: none
+      · owner: pipeline-mgmt
 
 ## Track: churn-pipeline
 <!-- gate: none -->
