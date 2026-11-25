@@ -1355,3 +1355,14 @@ Sources: [kernel champion](../handoffs/active/kernel-champion-and-promotion.md) 
 
 #### Source References (2026-11-25, intake-kspec-1125 slice)
 - [dive K2](../research/deep-dives/intake-kspec-1125/dive-K2-shifter-quant.md), [dive K4](../research/deep-dives/intake-kspec-1125/dive-K4-tacpu-mxfp4.md), [dive W2A](../research/deep-dives/intake-kspec-1125/dive-W2A-mxfp4scale-agentprs.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, second pass): KV-quant rotation monitors
+**Confidence: inferred** (monitor triggers only; no measurement has run)
+- **KVQ-ROT-KLD-1 monitor (M4, operator-approved 2026-11-24).** If the rotation effect exceeds 10%, split `LLAMA_ATTN_ROT_DISABLE` into K-only and V-only switches in the experimental tree; selecting keys alone carries 93-94% of the gain (intake-2881#record). ([source](../handoffs/active/quantization-and-low-bit.md))
+- **KVQ-KMEAN-SIM-1 monitor (M5).** If the first full-attention layer simulates at >= 2x the median layer's KL, add a per-layer KV-type override for that layer (intake-2870#record). ([source](../handoffs/active/quantization-and-low-bit.md))
+- **Production KV stays q8_0.** The long-context census shows q4_0 target KV 2.1x slower per verify round at 8k and 3.6x at 16k (n-max 7) because of whole-cache dequant, so a lower-bit KV default needs a native q4_0 GQA-verify kernel first. ([source](../handoffs/active/speculative-decoding.md))
+
+#### Source References (2026-11-25, operator wiki sweep, second pass)
+- [quantization-and-low-bit handoff (M4, M5 monitors)](../handoffs/active/quantization-and-low-bit.md) — trigger conditions
+- [speculative-decoding handoff (G3-KTRACE-LONGCTX)](../handoffs/active/speculative-decoding.md) — q4_0 vs q8_0 timing
+- [kv-cache-program handoff](../handoffs/active/kv-cache-program.md) — KV-quant context

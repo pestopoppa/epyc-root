@@ -975,3 +975,15 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 #### Source References (2026-11-24, operator wiki sweep, autokernel slice)
 - [bandwidth census](../docs/design/mi210-served-kernel-bandwidth-census-20261122.md), [progress 2026-11-24](../progress/2026-11/2026-11-24-autokernel.md), [PR 32177 dive](../research/deep-dives/intake-ak-1124/intake-2868-pr32177.md)
 - [SpecMoE dive](../research/deep-dives/intake-ak-1124/intake-2895-specmoe.md), [S2-MoE dive](../research/deep-dives/intake-ak-1124/intake-2896-s2moe.md), [stage 2b PR 31233](../research/deep-dives/intake-2863/stage2b-pr31233-and-atomicchat-card.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, second pass): A3B CPU census, resident-expert drafter closed, MMID KLD
+**Confidence: verified** (filed rows with RESULT.json paths; N10 is a KLD-rule FAIL read as noise floor by the box note)
+- A3B CPU gap census (A3B-CPU-GAP-CENSUS, ANSWERED): in served CPU decode of Qwen3.6-35B-A3B Q8_0 MUL_MAT_ID is 27.6% of decode wall (plain) and 36.0% (MTP), with per-row cost jumping >2x at 1->2, 2->4 and 4->8 rows; src1 quantize is only 1.86%. Shares at 24 threads differ from 96t/48t because barrier/dispatch share grows with threads ([source](../handoffs/active/cpu-decode-roofline-program.md)).
+- Resident-expert drafter idea CLOSED (CDR-RT9-COVER-1): same-domain held-out coverage at 12.5% residency, layer mean 0.44-0.55 (prefill code 0.553 / prose 0.473 / reasoning 0.520; decode 0.507 / 0.439 / 0.490), all below the 0.6 gate; top-10% share gate met in 0/40 layers; cross-domain coverage 0.11-0.19, code-vs-prose Jaccard 0.03-0.05. A static 12.5% resident set does not hold, so the second-GPU expert-subset drafter monitor does not fire ([source](../handoffs/active/cpu-decode-roofline-program.md)).
+- C21 A3B GPU fold gate (`c21-fold-a3b-gpu-20261124-r2`) is INCONCLUSIVE: A3B-mtp np1 tok/s ratio over C18 0.9914 [0.9812, 1.0016] (unattributed), floor 0.9916; A3B np4-mtp CI 1.030-1.264 (NO_LOSS, likely gain; H15 mean 1.147) ([source](../handoffs/active/kernel-champion-and-promotion.md)).
+- AK-MMID-N10 KLD row `ak-mmid-n10-kld-gpu-20261125` filed FAIL_KLD at the fixed 0.003 rule but N10 sits at the noise floor: C21 A/A KLD 0.004953 (A3B) vs N10 0.003215; Q38FN A/A 0.032079 vs N10 0.031323. The fold is blocked pending an A/A-relative KLD gate, not dropped ([source](../handoffs/active/kernel-champion-and-promotion.md)).
+
+#### Source References (2026-11-25, operator wiki sweep, second pass)
+- [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) — A3B-CPU-GAP-CENSUS, CDR-RT9 close
+- [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) — C21 A3B gate, N10 KLD
+- [autokernel-akx-program](../handoffs/active/autokernel-akx-program.md) — A3B GPU candidate priority context

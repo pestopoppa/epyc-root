@@ -542,3 +542,14 @@ Sources: `handoffs/active/long-context-program.md` (AM-DECISIVE-1, AM-PORT-1..4)
 
 #### Source References (2026-11-25, intake-kspec-1125 slice)
 - [dive W2B](../research/deep-dives/intake-kspec-1125/dive-W2B-sparse-attn-certs.md), [dive M2](../research/deep-dives/intake-kspec-1125/dive-M2-recap-effort-topk.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, second pass): sparse-attention and EA-POOL bookkeeping
+**Confidence: inferred** (short filing notes; no new measurement beyond rows already compiled)
+- **EA-POOL-SCREEN r6 supersedes r5.** r5 ended rc 75 at 22:29:31Z only because the grant predated launcher fix `f5a2034fe`, which mis-mapped the deadline rc and made `rowflow.py resume` refuse it; r6 (`ak-ea-pool-screen-gpu-20261122-r6`) carries 110 banked (item, arm) units, is resumable, autorequeue_max 12, gpu-q3, smoke queued behind E5 r8. Still no verdict. ([source](../handoffs/active/long-context-program.md))
+- **LSA-CPU-SPARSE-E2E filed DROP_QUALITY (r2 numbers).** f16 32k speed +9.17% (5 pairs, CI +7.21 to +11.17%) clears the 3% keep gate, but greedy differs at token 56/64 (KLD mean 0.001919, p99 0.008681); q8 +34.60% (3 pairs) is descriptive. The wiki's r4 figure (1.092 geomean) is the later rerun; both agree on the verdict. ([source](../handoffs/active/long-context-program.md))
+- **M7 monitor (intake-lpr-20261122, operator-approved):** reopen the CDNA sparse-FA break-even prior when a DSA/indexer model enters the GPU roster. ([source](../handoffs/active/long-context-program.md))
+
+#### Source References (2026-11-25, operator wiki sweep, second pass)
+- [long-context-program handoff (EA-POOL r6 note, LSA-CPU-SPARSE-E2E, M7)](../handoffs/active/long-context-program.md) — all bullets
+- [kv-cache-program handoff](../handoffs/active/kv-cache-program.md) — cross-reference for KV selection tracks
+- [speculative-decoding handoff](../handoffs/active/speculative-decoding.md) — long-context kernel census context

@@ -4562,3 +4562,27 @@ Sources: `progress/2026-11/2026-11-10-vb-r234-wire.md`, `handoffs/active/vidya-b
 - [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md), [handoffs/active/churn-pipeline.md](../handoffs/active/churn-pipeline.md), [handoffs/active/coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md)
 - [handoffs/completed/skillbank-distillation.md](../handoffs/completed/skillbank-distillation.md)
 - [progress/2026-11/2026-11-18-handoff-vidya-belief-substrate.md](../progress/2026-11/2026-11-18-handoff-vidya-belief-substrate.md), [2026-11-19-handoff-vidya-belief-substrate.md](../progress/2026-11/2026-11-19-handoff-vidya-belief-substrate.md), [2026-11-20-handoff-standard-stage-c.md](../progress/2026-11/2026-11-20-handoff-standard-stage-c.md)
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, second pass): belief-kernel wiring of the AK bandwidth census
+**Confidence: verified** (adapter and test count stated in the box; live ingest explicitly not run)
+- VB-AK-BW-CENSUS-WIRE (2026-11-25) added a Vidya adapter for `epyc.autokernel.bw_census.v1`. Each record is projected into a ClaimTuple and graded by `claim_tuple.grade()`, with no new ladder. It refuses records missing `source_row`, `result_sha256` or `measured_at`, maps gpu to mi210, and reports dropped records from ingest. 31 tests pass. Live ingest has not been run, and that was not a done-when clause. The box feeds RSL-R5. ([source](../handoffs/active/vidya-belief-substrate-program.md))
+- BW-SURFACES-UNIFIED (2026-11-24, operator): the /loop bandwidth census and roofline parity are merged into one table ranked by `saving_ms_per_step` at an 88% target. Ceilings are GPU 1500, CPU quarter 129 and full host 520 GB/s; the hub serves 25 surfaces. CENSUS-96T-FULLHOST maps `-t 96` to the 520 GB/s ceiling (research `e271815dd`, 69/69 census suites). The ranking reuses existing census measurements and is not a new measurement. ([source](../handoffs/active/engineering-hygiene-backlog.md))
+- The belief-kernel trial clock was re-anchored on 2026-11-09 (operator): the trial starts at hold release, with both loops live for 7 days, and the 2026-11-20/23/30 reminder dates are superseded and not to be re-armed. ([source](../handoffs/active/vidya-belief-substrate-program.md))
+
+#### Source References (2026-11-25, operator wiki sweep, second pass)
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-BW-CENSUS-WIRE, trial clock
+- [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md) — BW-SURFACES-UNIFIED, CENSUS-96T-FULLHOST
+- [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md) — wiring conventions for new producers
+
+### Compiled Update — 2026-11-25 (operator wiki sweep, second pass): intake-kspec-1125 and operating lessons
+**Confidence: verified** (progress log of the completed intake run and wrap-ups)
+- **intake-kspec-1125 complete through Stage 4.** 15 submitted sources (llama.cpp PRs and 13 arXiv papers) plus 11 expansions yield entries intake-2956#record to intake-2981#record (25 dive-verified; intake-2961#record is PDF-only, stage1-unverified); second reader checked 160 quotes and dropped 6 anchors; the operator approved the Stage-3 plan as proposed. ([intake-kspec](../progress/2026-11/2026-11-25-intake-kspec-1125.md))
+- **Applied outcome:** 5 new boxes (AK-MMQ-SK2-CENSUS, AK-MECH-WITNESS-1, VKRC-BYTES-PLAUSIBLE, DTREE-HEADROOM-REPLAY, EV-DATE-PIN-1), 3 notes, 9 trigger notes, 6 declines, 0 index rows; a citation narrowed to the precise `#03` form because it blocked cite-check. Known open: 26 anchor-mark mismatches on intake-2678#record..intake-2690#record. ([intake-kspec](../progress/2026-11/2026-11-25-intake-kspec-1125.md))
+- **Process lessons:** an unpinned validator contaminated an AK C22 CPU measurement, so subagents pin every command to cores 84-87 under load (root `a4c4bdb02`); a subagent fast-forwarding the shared checkout needs explicit operator approval; measure the served baseline before kernel work (the w8 GEMV designs targeted stock q8wv while production serves V5I at about 62% of peak). ([workspace-f2 11-25](../progress/2026-11/2026-11-25-workspace-f2.md), [autokernel 11-25](../progress/2026-11/2026-11-25-autokernel.md))
+- **Dashboard producer fix:** hub imported `flow_status` once and restarted only on `dashboard/*.py`; `_akflow_module` now reloads on mtime. Spool pollution (98 e2e fixtures) inflated the live candidate count until quarantined (research `0403f49a7`). ([workspace-f2 11-24](../progress/2026-11/2026-11-24-workspace-f2.md))
+
+#### Source References (2026-11-25, operator wiki sweep, second pass)
+- [intake-kspec-1125](../progress/2026-11/2026-11-25-intake-kspec-1125.md) — intake run record
+- [workspace-f2 11-25](../progress/2026-11/2026-11-25-workspace-f2.md) — boxes, policy, incident
+- [workspace-f2 11-24](../progress/2026-11/2026-11-24-workspace-f2.md) — dashboard fixes
+- [autokernel 11-25](../progress/2026-11/2026-11-25-autokernel.md) — process lessons
