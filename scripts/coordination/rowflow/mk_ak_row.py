@@ -169,7 +169,7 @@ def request(port, payload, timeout=1800):
         return json.load(r)
 
 
-def measure_unit(port, unit):
+{kld_block}def measure_unit(port, unit):
     """TODO: one measured unit. Return a dict; for a knob row include proof the knob took effect under "witness"."""
     raise NotImplementedError("fill measure_unit() before publishing")
 
@@ -218,7 +218,7 @@ def smoke():
         H.write_smoke_measure(OUT_SMOKE, unit_s, 1, u0 - t0)
         if KNOBS and not witness_ok(r.get("witness") or {{}}):
             return H.end_smoke("FAIL", 3, f"knob witness missing for {{KNOBS}}", OUT)
-        return H.end_smoke("PASS", 0, f"1 unit in {{unit_s:.1f}} s", OUT)
+{kld_smoke}        return H.end_smoke("PASS", 0, f"1 unit in {{unit_s:.1f}} s", OUT)
     except Exception as e:  # noqa: BLE001 - the smoke must always say why it failed
         return H.end_smoke("FAIL", 3, f"{{e.__class__.__name__}}: {{e}}", OUT)
     finally:
@@ -244,7 +244,7 @@ def main():
 def selftest():
     """No compute: the witness rule, then smoke() itself against a stub server + stub unit in a tempdir."""
     import tempfile
-    global KNOBS, OUT, OUT_SMOKE, start_production_server, measure_unit
+    global KNOBS, OUT, OUT_SMOKE, start_production_server, measure_unit{kld_global}
     saved = (KNOBS, OUT, OUT_SMOKE, start_production_server, measure_unit)
     try:
         KNOBS = ["GGML_TEST_KNOB"]
@@ -256,7 +256,7 @@ def selftest():
             OUT, OUT_SMOKE = os.path.join(t, "out"), os.path.join(t, "out-smoke")
             start_production_server = lambda port: None  # noqa: E731 - stub: no process
             measure_unit = lambda port, unit: {{"witness": {{"GGML_TEST_KNOB": "stub"}}, "value": 1.0}}  # noqa: E731
-            assert smoke() == 0, "smoke() against the stub did not PASS"
+{kld_selftest}            assert smoke() == 0, "smoke() against the stub did not PASS"
             term = json.load(open(os.path.join(OUT, H.TERMINAL_SMOKE)))
             assert term["ok"] is True, term
             assert os.path.exists(os.path.join(OUT_SMOKE, H.SMOKE_MEASURE))
@@ -416,6 +416,56 @@ def add_witness_loglevel(served):
         {"flag": "-lv", "value": "4", "reason": "witness log level"}]
     return served
 
+KLD_BLOCK = '''# KLD unit (mk_ak_row --kld-unit): llama-perplexity. A knob witness is an INFO line, so a knob row runs it with -lv 4
+# (spec.tool_argv_delta records it); unit_kld() MUST build its argv with kld_argv() or the witness never prints
+# (ak-c22-q8mc-gate-gpu-20261124: the server had -lv 4, unit_kld did not).
+KLD_BIN = "/mnt/raid0/llm/llama.cpp/kernels/production/gpu/bin/llama-perplexity"   # TODO: the row's store binary
+KLD_MODEL = {model!r}
+KLD_CORPUS = "TODO-corpus.txt"   # TODO: the row's KLD corpus
+KLD_LV = {kld_lv!r}   # [] when the row declares no knob
+
+
+def kld_argv(extra=(), ctx=None, chunks=None):
+    """The llama-perplexity argv of every KLD unit (and of the smoke witness check): witness log level included."""
+    a = [KLD_BIN, "-m", KLD_MODEL, "-f", KLD_CORPUS, *KLD_LV, *extra]
+    if ctx:
+        a += ["-c", str(ctx)]
+    if chunks:
+        a += ["--chunks", str(chunks)]
+    return a
+
+
+def kld_witness_check(timeout=55):
+    """Smoke: ONE tiny ON perplexity run (1 chunk, -c 128) must print every KNOBS marker. Env ON values come from KLD_ON_ENV."""
+    if KLD_CORPUS.startswith("TODO"):
+        raise RuntimeError("KLD_CORPUS is still the TODO placeholder: fill it before publishing")
+    env = dict(os.environ, **KLD_ON_ENV)
+    p = subprocess.run(kld_argv(ctx=128, chunks=1), capture_output=True, text=True, timeout=timeout, env=env)
+    out = p.stdout + p.stderr
+    return {{k: (k in out) for k in KNOBS}}
+
+
+KLD_ON_ENV = {{}}   # TODO: the knob env vars in their ON state, e.g. {{"GGML_HIP_Q8MC": "1"}}
+
+
+'''
+KLD_SMOKE = '''        if KNOBS:
+            w = kld_witness_check()
+            if not witness_ok(w):
+                return H.end_smoke("FAIL", 3, f"KLD-path knob witness missing (llama-perplexity -lv): {{w}}", OUT)
+'''
+KLD_SELFTEST = '''            kld_witness_check = lambda: {{"GGML_TEST_KNOB": True}}  # noqa: E731 - stub: no perplexity process
+'''
+
+
+def add_tool_witness_loglevel(tool, argv):
+    """argv delta for a non-server llama binary (llama-perplexity/bench/cli): `-lv 4` unless a log level is already given.
+    Returns (argv, [delta]); delta = {tool, flag, value, reason: "witness log level"}."""
+    argv = list(argv)
+    if any(t in ("-lv", "--verbosity", "--log-verbose", "--log-verbosity") or t.startswith("--verbosity=") for t in argv):
+        return argv, []
+    return argv + ["-lv", "4"], [{"tool": tool, "flag": "-lv", "value": "4", "reason": "witness log level"}]
+
 
 def scaffold(a, served=None):
     d = os.path.join(a.root, a.id)
@@ -435,8 +485,14 @@ def scaffold(a, served=None):
         f.write(LAUNCH.format(id=a.id, task=a.task, d=d, claim_line=claim_line, claim_arg=claim_arg, filler=FILLER, lane=a.lane,
                               min_window=a.min_window, port_arg=port_arg))
     os.chmod(os.path.join(d, "launch.sh"), 0o755)
+    kld = bool(getattr(a, "kld_unit", False))
+    kld_lv, tool_delta = add_tool_witness_loglevel("llama-perplexity", []) if (kld and a.knob) else ([], [])
+    kld_lv = kld_lv if tool_delta else []
     with open(os.path.join(d, "job.py"), "w") as f:
-        f.write(JOB.format(id=a.id, task=a.task, rule=a.rule, knobs=", ".join(a.knob) or "none", knob_list=list(a.knob),
+        f.write(JOB.format(kld_block=KLD_BLOCK.format(model=a.model, kld_lv=kld_lv) if kld else "",
+                           kld_smoke=KLD_SMOKE.format() if kld else "", kld_selftest=KLD_SELFTEST.format() if kld else "",
+                           kld_global=", kld_witness_check" if kld else "",
+id=a.id, task=a.task, rule=a.rule, knobs=", ".join(a.knob) or "none", knob_list=list(a.knob),
                            servers=a.servers, fresh_starts=a.fresh_server_starts, gen_version=GEN_VERSION,
                            harness_sha=harness_sha(), server_argv=list(served["argv"]) if served else []))
     with open(os.path.join(d, "check_complete.py"), "w") as f:
@@ -456,6 +512,8 @@ def scaffold(a, served=None):
                          "utc": H.now()}
     if served:
         spec["served_ref"] = served
+    if tool_delta:
+        spec["tool_argv_delta"] = tool_delta
     if a.exclusive_cpu:
         spec["exclusive_cpu"] = True
     spec["fresh_server_per_visit"] = bool(a.fresh_server_reason)
@@ -838,6 +896,8 @@ def main(argv=None):
     ap.add_argument("--estimate-s", type=int, default=3600)
     ap.add_argument("--min-window", type=int, default=1800)
     ap.add_argument("--root", default=ROOT)
+    ap.add_argument("--kld-unit", action="store_true",
+                    help="row has a KLD (llama-perplexity) unit: emit kld_argv() with -lv 4 for knob rows + a smoke witness check")
     ap.add_argument("--exclusive-cpu", action="store_true", help="gate rows: spec exclusive_cpu=true")
     ap.add_argument("--fresh-server-reason", default="",
                     help="only when a server per visit is required (load-time kernel selection, per-process effects)")

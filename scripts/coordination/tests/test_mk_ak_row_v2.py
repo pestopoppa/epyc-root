@@ -206,3 +206,21 @@ def test_knob_row_keeps_explicit_lv_and_no_knob_no_lv(tmp_path, monkeypatch):
     assert spec["served_ref"]["argv"] == served["argv"]
     _, spec, _ = _mk(tmp_path, "ak-v2-noknob-cpu-20261124", ["--served-ref", "frontdoor"], SERVED, monkeypatch)
     assert "-lv" not in spec["served_ref"]["argv"]
+
+
+def test_kld_unit_knob_row_emits_lv4_delta_and_smoke_witness(tmp_path, monkeypatch):
+    d, spec, job = _mk(tmp_path, "ak-v2-kld-gpu-20261125", ["--served-ref", "frontdoor", "--knob", "GGML_TEST_KNOB", "--kld-unit"],
+                       SERVED, monkeypatch)
+    assert "KLD_LV = ['-lv', '4']" in job and "*KLD_LV" in job
+    assert spec["tool_argv_delta"] == [{"tool": "llama-perplexity", "flag": "-lv", "value": "4", "reason": "witness log level"}]
+    assert "kld_witness_check()" in job and "ctx=128, chunks=1" in job and "timeout=55" in job
+    p = subprocess.run([sys.executable, "-I", "-B", str(d / "job.py"), "--selftest"], capture_output=True, text=True,
+                       env={"PATH": "/usr/bin:/bin"})
+    assert p.returncode == 0, p.stderr
+
+
+def test_kld_unit_without_knob_has_no_lv_and_no_kld_flag_no_block(tmp_path):
+    _, spec, job = _mk(tmp_path, "ak-v2-kld2-gpu-20261125", ["--kld-unit"])
+    assert "KLD_LV = []" in job and "tool_argv_delta" not in spec
+    _, spec, job = _mk(tmp_path, "ak-v2-nokld-gpu-20261125", [])
+    assert "KLD_BIN" not in job and "kld_witness_check" not in job

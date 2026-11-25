@@ -107,3 +107,25 @@ def test_report_scope_excludes_ended_superseded_stop(tmp_path):
     assert "live" in q and "old-r2" in q
     assert not ({"ended", "old", "held"} & set(q))
     assert "superseded" in ex["old"] and "STOP-held" in ex["held"]
+
+
+def _ppl_row(tmp_path, argv, knobs=("GGML_HIP_Q8MC",)):
+    (tmp_path / "job.py").write_text(f"KNOBS = {list(knobs)!r}\nSERVER_ARGV = {BASE + ['-lv', '4']!r}\n# llama-server\n"
+                                     f"PPL = '/s/bin/llama-perplexity'\ncmd = [PPL, *{argv!r}]\n"
+                                     f"cmd2 = ['/s/bin/llama-perplexity', '-m', 'x', '-f', 'c.txt'] + {argv!r}\n")
+    return pf.Row({"id": "r"}, str(tmp_path))
+
+
+def test_perplexity_without_lv_flags_even_when_server_has_it(tmp_path):
+    f = pf.check_witness_loglevel_tools(_ppl_row(tmp_path, ["-m", "x", "-f", "c.txt"]), {})
+    assert f and f[0][0] == "FAIL" and f[0][1] == "WITNESS-LOGLEVEL-TOOL" and "llama-perplexity" in f[0][2]
+    assert not pf.check_witness_loglevel(_ppl_row(tmp_path, ["-m", "x", "-f", "c.txt"]), {})   # server part unchanged
+
+
+def test_perplexity_with_lv4_passes_and_no_witness_no_check(tmp_path):
+    (tmp_path / "job.py").write_text("KNOBS = ['GGML_HIP_Q8MC']\nSERVER_ARGV = ['/x/llama-server', '-lv', '4']\n# llama-server\n"
+                                     "cmd = ['/s/bin/llama-perplexity', '-m', 'x', '-f', 'c.txt', '-lv', '4']\n")
+    assert not pf.check_witness_loglevel_tools(pf.Row({"id": "r"}, str(tmp_path)), {})
+    (tmp_path / "job.py").write_text("KNOBS = ['GGML_HIP_Q8MC']\ncmd = ['/s/bin/llama-bench', '-m', 'x', '--log-verbose']\n")
+    assert not pf.check_witness_loglevel_tools(pf.Row({"id": "r"}, str(tmp_path)), {})
+    assert not pf.check_witness_loglevel_tools(_ppl_row(tmp_path, ["-m", "x"], knobs=()), {})

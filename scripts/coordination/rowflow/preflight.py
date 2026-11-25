@@ -35,6 +35,9 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
                mk_ak_row v2 schema: served_ref.argv is rebuilt via orchestrator_stack.build_server_command and diffed
   witness_log  13  a row declaring a knob witness (job.py KNOBS / spec.witness_lines) must run llama-server with -lv >= 4
                (INFO witness lines never print otherwise: ak-c22-i8pc-gate-gpu-20261124-r3). WITNESS-LOGLEVEL
+  witness_log_tools 15  the same -lv >= 4 rule on EVERY other llama binary argv in the job (llama-perplexity KLD unit, llama-bench,
+               llama-cli, ...): the e2e server had -lv 4 but unit_kld ran llama-perplexity without it (ak-c22-q8mc-gate-gpu-20261124).
+               WITNESS-LOGLEVEL-TOOL. Separate switch from witness_log (the server part) so it can be WARN while the server part enforces.
   witness_decl 14  a row declaring job.py KNOBS but no spec.witness_lines: WITNESS-UNDECLARED
   generator 12 WARN only: job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` + spec.generator agree
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
@@ -56,11 +59,12 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`
     sys.path.insert(0, _HERE)
 
-CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl")
+CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl", "witness_log_tools")
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
-PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True, witness_log=True, witness_decl=True)
+PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True, witness_log=True, witness_decl=True,
+                         witness_log_tools=True)   # 2026-11-25: --report showed 0 queued non-grandfathered fails
 # estimate: on the operator's 0-fail list, but the RCA F5 tightening (2026-11-24) re-stages it warn-first; flip at 0 fails.
 DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness", "served")   # re-run at grant time (code is sealed at publish)
 
@@ -1326,6 +1330,69 @@ def check_witness_loglevel(row, ctx):
     x = "none" if lv is None else f"-lv {lv}"
     return [("FAIL", "WITNESS-LOGLEVEL", f"WITNESS-LOGLEVEL: witness {ws[0]} needs -lv >= {WITNESS_LV_MIN}; argv has {x}")]
 
+TOOL_BIN_RX = re.compile(r"^llama-(?:perplexity|bench|cli|batched-bench|completion|imatrix|server)$")
+
+
+def tool_argvs(row):
+    """[(file, lineno, binary, argv)] for every statically visible llama-binary argv in the job (python list/tuple literals whose
+    argv names llama-perplexity/bench/cli/... and shell lines naming one), argv cut at the binary. llama-server included."""
+    out = []
+    for f, t in row.code.items():
+        try:
+            tree = ast.parse(t)
+        except (SyntaxError, ValueError):
+            continue
+        aliases = {}
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+                b = _expr_binary(n.value, aliases)
+                if b:
+                    aliases[n.targets[0].id] = b
+        for n in ast.walk(tree):
+            if isinstance(n, (ast.List, ast.Tuple)) and n.elts:
+                a = _const_list(n, aliases)
+                k = next((i for i, x in enumerate(a) if TOOL_BIN_RX.match(os.path.basename(x))), None)
+                if k is not None and any(x.startswith("-") and len(x) > 1 for x in a[k + 1:]):
+                    out.append((f, n.lineno, os.path.basename(a[k]), a[k:]))
+    for f, t in row.sh.items():
+        for i, l in enumerate(re.sub(r"\\\n", " ", t).splitlines(), 1):
+            m = re.search(r"llama-(?:perplexity|bench|cli|batched-bench|completion|imatrix|server)\b", l)
+            if m and not l.lstrip().startswith("#"):
+                out.append((f, i, m.group(0), l[m.start():].split()))
+    return out
+
+
+def _argv_lv(a):
+    m = argv_map(a)
+    if "--log-verbose" in m:
+        return 99
+    lv = None
+    for k in ("-lv", "--verbosity", "--log-verbosity"):
+        v = m.get(k)
+        if isinstance(v, str) and v.lstrip("-").isdigit():
+            lv = max(lv or 0, int(v))
+        elif k in m and v is None:
+            return 99   # a placeholder value: unknowable statically, do not guess
+    return lv
+
+
+def check_witness_loglevel_tools(row, ctx):
+    """WITNESS-LOGLEVEL-TOOL: every llama-binary argv other than the server needs -lv >= 4 when a knob witness is declared
+    (the server argv is witness_log's aggregate check, which also reads served_ref)."""
+    ws = _knob_witnesses(row)
+    if not ws:
+        return []
+    out = []
+    for f, ln, binary, a in tool_argvs(row):
+        if binary == "llama-server":
+            continue
+        lv = _argv_lv(a)
+        if lv is None or lv < WITNESS_LV_MIN:
+            x = "none" if lv is None else f"-lv {lv}"
+            out.append(("FAIL", "WITNESS-LOGLEVEL-TOOL", f"WITNESS-LOGLEVEL: witness {ws[0]} needs -lv >= {WITNESS_LV_MIN} on "
+                                                          f"{binary} ({f}:{ln}); argv has {x}"))
+    return out
+
 
 def check_witness_declared(row, ctx):
     ws = _job_knobs(row)
@@ -1338,7 +1405,8 @@ def check_witness_declared(row, ctx):
 CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_flags, "model": check_model,
              "lane": check_lane, "smoke": check_smoke, "estimate": check_estimate, "ports": check_ports,
              "append": check_append, "witness": check_witness, "witness_log": check_witness_loglevel,
-             "witness_decl": check_witness_declared, "served": check_served,
+             "witness_decl": check_witness_declared, "witness_log_tools": check_witness_loglevel_tools,
+             "served": check_served,
              "generator": check_generator}
 
 
@@ -1346,7 +1414,7 @@ CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_fl
 # Publish-only checks: they judge what the row DECLARES before its smoke has run. A row whose smoke already PASSED ran the real
 # binary and found the witness, which is stronger evidence, so report / keeper-side use grandfathers it (grandfather=True);
 # publish never does (its new id has no PASS). Operator-adjacent origin: AutoKernel report 2026-11-24 23:2xZ.
-PUBLISH_ONLY = ("witness_log", "witness_decl")
+PUBLISH_ONLY = ("witness_log", "witness_decl", "witness_log_tools")
 
 
 def smoke_pass_date(flags, spec):
