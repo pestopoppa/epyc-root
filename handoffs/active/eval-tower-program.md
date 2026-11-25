@@ -3244,7 +3244,7 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [x] **HF-GPU-DRAIN-INVERSION** [non-inference] Check whether the GPU window executor fixed 600 s drain lets a low-priority holder block a higher-priority window, and add a priority-aware yield if so (rowflow lesson 4, rowflow aab494157) — (no gap: gpu_window_executor has no priority or queue, refuses fail-fast at :208-210, AK is the only holder, drain delays only the requester) [no-belief: code read, no measurement]
       · done when: a finding with file:line is recorded, and if a gap exists a unit test shows a higher-priority request preempts a low-priority drain
       · gate: none
-- [ ] **HF-TEST-ORDER-DEP** [non-inference] Make tests/integration/test_graph_harness_replay.py and tests/test_config_consolidation.py::TestTimeoutsDefaults pass in shared pytest sessions, not only alone (suspected cached get_config() tmp_dir and registry-timeout fallback to 90)
+- [x] **HF-TEST-ORDER-DEP** [non-inference] Make tests/integration/test_graph_harness_replay.py and tests/test_config_consolidation.py::TestTimeoutsDefaults pass in shared pytest sessions, not only alone (suspected cached get_config() tmp_dir and registry-timeout fallback to 90) — (orch 12df8158: session_log._IN_PYTEST fixed at import, _REGISTRY_TIMEOUTS_CACHE not reset; a5690950: preflight and dispatch_log tests stale vs worker_general alias and 57f07ceb identity fallback; wide run 1415 passed 0 failed) [no-belief: test fixes, no measurement]
       · done when: both pass inside the mixed -k feature/flags selection run, and the cause is named in the commit
       · gate: none
 
