@@ -17,7 +17,7 @@
    "sha256": "9926dcb52fda77c604d000bfed150758cf2e2304a53832394f5c9b45c4dc2fa1"
   }
  ],
- "ceiling_gbps": 1500.0,
+ "ceiling_gbps": 1638.0,
  "floor_gbps": 1000.0,
  "noise_frac": 0.03,
  "records": {
