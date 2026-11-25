@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T15:18:14Z",
+  "generated_at": "2026-11-25T15:29:21Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1743,7 +1743,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1296,
+          "line": 1298,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1758,7 +1758,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2442,
+          "line": 2444,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1767,7 +1767,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2817,
+          "line": 2819,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1776,7 +1776,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3253,
+          "line": 3255,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1785,7 +1785,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3348,
+          "line": 3350,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1797,14 +1797,14 @@
       "blocked": 3,
       "blocked_by": [],
       "closed": 301,
-      "dispatchable": 29,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-25",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 32,
+      "open": 33,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1847,14 +1847,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 17,
+          "dispatchable": 18,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 1024,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 18,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
