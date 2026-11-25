@@ -77,8 +77,11 @@ class KeeperStatic(unittest.TestCase):
             os.makedirs(os.path.join(trash, "20200101-000000-old"))
             keeper = os.path.join(td, "keeper.sh")
             open(keeper, "w").write('echo "REAP-WOULD x: $1"\n')
+            # Keep optional janitor tools out of this fixture: their default is the live /workspace tree.
+            tools = os.path.join(td, "tools")
+            os.mkdir(tools)
             env = dict(os.environ, JANITOR_FLAGS=td, JANITOR_KEEPER=keeper, JANITOR_TRASHES=trash + " " + os.path.join(td, "absent"),
-                       JANITOR_SWEEP=os.path.join(CO, "..", "safety", "trash-sweep.sh"), JANITOR_DISK=td)
+                       JANITOR_SWEEP=os.path.join(CO, "..", "safety", "trash-sweep.sh"), JANITOR_DISK=td, JANITOR_TOOLS=tools)
             r = subprocess.run(["bash", JANITOR, "--dry-run"], capture_output=True, text=True, env=env, timeout=60)
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertIn("REAP REAP-WOULD x: --reap-dry-run", r.stdout)
