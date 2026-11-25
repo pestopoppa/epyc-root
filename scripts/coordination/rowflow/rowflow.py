@@ -3463,6 +3463,20 @@ def regions_held(regions):
     return sorted(quarters_of(regions) | ({GPU} if "mi210" in str(regions) else set()))
 
 
+def _status_units(p, d):
+    """STATUS-UNITS (2026-11-25): the PASS record's `units` is the dry run's DELTA (count after - count before), so a resumed row
+    whose results.jsonl already held 9 units read "0 unit(s)". Name the real count now in the file beside the delta."""
+    added = p.get("units")
+    fmt = str(p.get("result_format") or (d or {}).get("result_format") or "")
+    if not p.get("result_path") or not fmt or fmt.startswith("custom:"):
+        return f"{added} unit(s)"
+    try:
+        n = count_units(p["result_path"], fmt, (d or {}).get("workdir"))
+    except Exception:  # noqa: BLE001 - status never fails on a count
+        return f"{added} unit(s)"
+    return f"{n} unit(s) now, dry run added {added}" if n != added else f"{n} unit(s)"
+
+
 def status(flags, rid, allrows=None, util=None):
     """Row state + the fixed companions every surface prints: `next` (one deterministic action), `logs` (the row's
     dry-run dir: poller.out / launcher.out), `held` (regions its open grant books) and, when the caller passes a
@@ -3569,7 +3583,7 @@ def _status_raw(flags, rid, allrows=None):
             if armed_engine_ok(a.get("pid"), rid):
                 out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
             out["rearm"] = f"ARMED pid {a['pid']} runs no filler_run*.sh engine for this row; re-armed on the next tick"
-        out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({p.get('units')} unit(s) in {p.get('result_path')})"); return out
+        out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({_status_units(p, d)} in {p.get('result_path')})"); return out
     if nf >= MAX_FAILS and not fresh_attempt(flags, rid, allrows, cur):
         out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md "
                                           f"(owner: `rowflow.py unpark {lin}`, or republish with a changed launcher/job for one fresh attempt)"); return out
@@ -7797,6 +7811,100 @@ def build_window(flags, minutes, by, reason, now=None, log=print):
     return rec
 
 
+BUILD_WINDOW_AUTOCLOSE = True   # a window with no build claim queued/running for BUILD_WINDOW_AUTOCLOSE_TICKS ticks closes itself
+BUILD_WINDOW_AUTOCLOSE_TICKS = 2
+BUILD_WINDOW_IDLE = "build_window_idle.json"
+BUILD_WINDOW_CLOSERS = frozenset({"operator"})   # besides the opener
+
+
+def build_claims_active(flags, now=None):
+    """-> [what]: build claims queued (requests/), refused-and-retrying (build_refusals.json), or open (grants/*.build.json
+    with no .ended/.complete). Empty = no build needs the window."""
+    now = time.time() if now is None else now
+    out = [f"queued {r['id']}" for r in claim_requests(flags)]
+    st = load_json(os.path.join(state_dir(flags), BUILD_REFUSALS)) or {}
+    out += [f"refused {k}" for k, e in st.items() if now - float((e or {}).get("last_at") or 0) <= BUILD_LANE_STALE_S]
+    G = os.path.join(flags, "grants")
+    for bp in glob.glob(os.path.join(G, BUILD_PREFIX + "*.build.json")):
+        gid = os.path.basename(bp)[:-len(".build.json")]
+        if any(os.path.exists(os.path.join(G, gid + t)) for t in (".ended", ".complete")):
+            continue
+        bj = load_json(bp)
+        if bj is None:   # O_EXCL id reservation, record not yet written: a claim in flight
+            try:
+                if now - os.path.getmtime(bp) < 120:
+                    out.append(f"claiming {gid}")
+            except OSError:
+                pass
+            continue
+        if not bj.get("heal_withdrawn"):
+            out.append(f"running {gid}")
+    return out
+
+
+def _close_window_record(flags, w, now, by, reason):
+    start = float(w.get("until") or now) - 60 * float(w.get("minutes") or BUILD_WINDOW_MAX_MIN)
+    rec = dict(w, until=now, minutes=max(1, int((now - start) / 60 + 0.999)), closed_at=now_iso(), closed_by=by, closed_reason=reason)
+    atomic_json(os.path.join(state_dir(flags), BUILD_WINDOW), rec)
+    return rec
+
+
+def build_window_close(flags, by, reason, now=None, log=print):
+    """`rowflow.py build-window --close --by <owner> --reason R`: close the open window now. Only its opener or an operator."""
+    now = time.time() if now is None else now
+    by = str(by or "").strip()
+    need(by, "build-window --close: --by <owner> is required")
+    reason = re.sub(r"\s+", "_", str(reason or "").strip())
+    need(reason, "build-window --close: --reason is required")
+    w = load_json(os.path.join(state_dir(flags), BUILD_WINDOW)) or {}
+    need(float(w.get("until") or 0) > now, "build-window --close: no build window is open")
+    need(by == str(w.get("by") or "") or by in BUILD_WINDOW_CLOSERS,
+         f"build-window --close: window opened by {w.get('by') or '?'}, caller is {by}; only the opener or an operator may close it")
+    _close_window_record(flags, w, now, by, reason)
+    msg = f"BUILD-WINDOW closed by {by} (opened by {w.get('by') or '?'}, reason={reason})"
+    _keeper_log_line(flags, msg)
+    log(msg)
+    return True
+
+
+def build_window_autoclose(flags, now=None, log=print, dry=False):
+    """Each allocate tick: an open window with no build claim queued/running for 2 consecutive ticks closes early (AK window
+    2026-11-24 23:38Z held a resumed quiet row 20 min after its 5 builds finished). -> True when closed."""
+    if not BUILD_WINDOW_AUTOCLOSE:
+        return False
+    now = time.time() if now is None else now
+    ip = os.path.join(state_dir(flags), BUILD_WINDOW_IDLE)
+    w = load_json(os.path.join(state_dir(flags), BUILD_WINDOW)) or {}
+    until = float(w.get("until") or 0)
+    if until <= now or build_claims_active(flags, now):
+        if os.path.exists(ip) and not dry:
+            _rm(ip)
+        return False
+    st = load_json(ip) or {}
+    n = (int(st.get("n") or 0) if st.get("until") == until else 0) + 1
+    if dry:
+        return False
+    if n < BUILD_WINDOW_AUTOCLOSE_TICKS:
+        atomic_json(ip, {"until": until, "n": n})
+        return False
+    _close_window_record(flags, w, now, "keeper", "autoclose")
+    _rm(ip)
+    msg = f"BUILD-WINDOW auto-closed: no build claim queued/running for {BUILD_WINDOW_AUTOCLOSE_TICKS} ticks"
+    _keeper_log_line(flags, msg)
+    log(msg)
+    return True
+
+
+def build_window_idle_note(flags, held_ids, now=None):
+    """IDLE-WHY text when an open build window is what holds quiet rows; '' otherwise."""
+    now = time.time() if now is None else now
+    w = load_json(os.path.join(state_dir(flags), BUILD_WINDOW)) or {}
+    if not held_ids or float(w.get("until") or 0) <= now:
+        return ""
+    return (f"BUILD-WINDOW open until {dt.datetime.fromtimestamp(float(w['until']), dt.timezone.utc):%H:%MZ} "
+            f"(opened by {w.get('by') or '?'}) holds quiet row(s) {','.join(held_ids[:IDLE_WHY_MAX_ROWS])}")
+
+
 def quiet_required(d):
     d = d or {}
     return d.get("requires_quiet_host") is True or bool(d.get("quiet_guard_regions"))
@@ -9911,10 +10019,16 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             if any(c.get("shape") == "quiet-host" for c in cands):
                 log(f"QUIET-HOST-WAIT smoke(s) live in pockets ({','.join(smoke_live[:5])}): no quiet-host grant this tick")
     # E5 fix A 2026-11-23: no quiet-host / whole-host grant while a foreign inference server runs (never kills it)
+    try:
+        build_window_autoclose(flags, log=log, dry=dry)
+    except Exception as e:  # noqa: BLE001 - never stops allocation
+        log(f"BUILD-WINDOW autoclose failed: {type(e).__name__}: {e}")
     lane, _lk = build_lane_open(flags)
+    lane_held_ids = []
     build_lane_now = bool(lane)   # REPLAN metrics: a quiet row C would start while the lane is open is a BUILD-LANE collision
     if lane:   # BUILD LANE: no NEW quiet row is granted (running ones are never pre-empted)
         hold = [c for c in cands if quiet_required(allrows.get(c["id"])) or c.get("shape") == "quiet-host"]
+        lane_held_ids = [c["id"] for c in hold]   # IDLE-WHY names every quiet row the lane keeps off a region
         hold_res = [c for c in hold if float(c["rank"]) >= URGENT_RANK]   # RESERVATION: the lane never holds the urgent head
         if rmode == "enforce":
             hold = hold_res
@@ -10313,6 +10427,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             why = idle_why_line(sw[0], sw[1:])
         if r == GPU:
             why = gpu_idle_smoke_note(flags, why, smoke_block, qh_hold)
+        elif lane_held_ids and why.startswith("no runnable row needs it"):   # the window, not the absence of rows, holds it
+            why = build_window_idle_note(flags, lane_held_ids) or why
         log(f"IDLE-WHY {r}: {why}")
     for r, why in idle_partial_quarters(flags, free, busy, grants, holders).items():   # idle CPU quarters too
         log(f"IDLE-WHY {r}: {why}")
@@ -10998,7 +11114,8 @@ def main(argv=None):
                    "not bandwidth-heavy (never blocks a quiet row); refused while a running quiet row logged a contended launch in the last 10 min. "
                    "ADVISORY contract (not enforced): " + "; ".join(LIGHT_ADVISORY).replace("%", "%%"))
     s = sub.add_parser("build-window", help="open the BUILD LANE for N minutes (<= 90): no new quiet row is granted and QUIET-RESERVE stops refusing build claims; closes itself")
-    s.add_argument("--minutes", type=int, required=True); s.add_argument("--by", required=True); s.add_argument("--reason", required=True)
+    s.add_argument("--minutes", type=int, default=None); s.add_argument("--by", required=True); s.add_argument("--reason", required=True)
+    s.add_argument("--close", action="store_true", help="close the open window now (the opener or an operator only)")
     s = sub.add_parser("deploy-guard", help="deploy_rowflow step 3: rc 75 when a changed engine file would reach LEGACY open grants")
     s.add_argument("--changed", nargs="*", default=[]); s.add_argument("--allow-open-grants", action="store_true")
     s = sub.add_parser("preflight", help="D9 deterministic preflight: --report = per check, how many queued rows would FAIL "
@@ -11076,7 +11193,11 @@ def main(argv=None):
             print(f"BUILD-GRANT {gid} {line}")
             return 0
         if a.cmd == "build-window":
-            build_window(a.flags, a.minutes, a.by, a.reason)
+            if a.close:
+                build_window_close(a.flags, a.by, a.reason)
+            else:
+                need(a.minutes is not None, "build-window: --minutes is required (or --close)")
+                build_window(a.flags, a.minutes, a.by, a.reason)
             return 0
         if a.cmd == "withdraw":
             r = withdraw(a.flags, a.id, a.reason)
