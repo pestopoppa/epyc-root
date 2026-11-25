@@ -61,7 +61,8 @@ def test_signature_profile_scaffold_lints(tmp_path):
     assert rc == 0
     spec = json.loads((d / "spec.json").read_text())
     assert spec["generator"]["profile"] == "signature" and spec["generator"]["research_commit"] == "deadbeef"
-    assert spec["lane"] == "gpu" and spec["regions"] == "mi210_0," + MK.GPU_HOST_CLAIM
+    # e3faa5b0b: GPU rows reserve the 88-95 timing threads only when requested; a counter profile does not
+    assert spec["lane"] == "gpu" and spec["regions"] == "mi210_0,184-191"
     sealed = (d / "SOURCE.sha256").read_text()
     for n in ("job.py", "bottleneck_signature.py", "stream2.hip", "ak_row_harness.py", "launch.sh"):
         assert f"  {n}\n" in sealed, n
