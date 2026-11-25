@@ -1562,6 +1562,15 @@ def test_served_quality_paired_gate_and_diagnostics():
     assert q["per_arm"]["ON"]["mcnemar_p_bad"] == 1 / 32
     assert q["per_arm"]["OFF2"]["per_prompt"][0]["first_divergence_token_index"] == 2
     assert q["per_arm"]["ON"]["per_prompt"][0]["top_k_overlap_before_divergence"] == [1.0]
+    # Separately exercise each half of the conjunction.
+    units[2]["req"] = [rec(i, i >= 4, [1, 9, 3]) for i in range(20)]
+    assert G.decide_correctness(sp, units)[0] == "FAIL_CORRECTNESS"  # loss 4 > noise bound 3; p=1/16
+    units[1]["req"] = [rec(i, i >= 2, [1, 2, 4]) for i in range(20)]
+    units[2]["req"] = candidate
+    assert G.decide_correctness(sp, units)[0] == "FAIL_CORRECTNESS"  # loss 5 <= bound 6; p=1/32
+    units[2]["req"] = [rec(i, i >= 2, [1, 9, 3]) for i in range(20)]
+    assert G.decide_correctness(sp, units)[0] is None
+    units[2]["req"] = candidate
     sp["correctness"]["gate"] = False
     assert G.decide_correctness(sp, units)[0] is None
     assert G.mcnemar_bad_p([True] * 5, [False] * 5) == (1 / 32, 5, 0)
