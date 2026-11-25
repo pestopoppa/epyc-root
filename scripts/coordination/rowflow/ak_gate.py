@@ -67,10 +67,12 @@ KLD_RX = re.compile(r"Mean\s+KLD:\s+([-\d.eE+]+)")
 SAME_TOP_RX = re.compile(r"Same top p:\s+([\d.]+)")
 CORRECTNESS_KEYS = {
     "common": {"kind", "argv", "arms", "timeout_s", "apply_flags", "witness", "lv"},
-    "tbo": {"min_cases", "require_rc0"},
-    "kld": {"base_arm", "max_kld", "witness_base"},
+    "tbo": {"min_cases", "require_rc0", "ops"},
+    "kld": {"base_arm", "max_kld", "max_kld_noise_k", "witness_base"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
     "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"}}
+UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin"}
+UNIT_TYPE = dict({"visit": "served", "smoke": "served", "log": "served"}, **UNIT_KIND)   # expect_by_unit scopes
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
                "draft": r"^\s*single-draft:\s*(.*?)\s*$"}
 
@@ -120,6 +122,21 @@ METRICS = {"tok_s": (m_tok_s, True), "pp_tok_s": (m_pp_tok_s, True), "ms_per_tok
 # ---------------------------------------------------------------------------------------------------- spec
 class SpecError(ValueError):
     pass
+
+
+def corr_list(spec):
+    """The declared correctness units: one dict or a list of them (all must pass, run in order)."""
+    c = spec.get("correctness")
+    return [x for x in (c if isinstance(c, list) else [c]) if x]
+
+
+def corr_of(spec, unit_kind):
+    return next((c for c in corr_list(spec) if c.get("kind") == UNIT_KIND.get(unit_kind)), {})
+
+
+def per_arm(v, arm, default):
+    """A per-arm setting: a scalar for every arm, or {ARM: value} (arms not named get `default`)."""
+    return v.get(arm, default) if isinstance(v, dict) else (default if v is None else v)
 
 
 def baseline_arms(spec):
@@ -226,8 +243,10 @@ def validate_spec(spec):
     for rel in (spec.get("inputs") or {}):
         if rel.startswith("/") or ".." in rel.split("/"):
             errs.append(f"input {rel}: must be relative to the row dir")
-    c = spec.get("correctness")
-    if c:
+    kinds = [c.get("kind") for c in corr_list(spec)]
+    if len(kinds) != len(set(kinds)):
+        errs.append(f"correctness: one unit per kind (got {kinds})")
+    for c in corr_list(spec):
         if c.get("kind") not in ("tbo", "kld", "identity", "selftest_bin"):
             errs.append(f"correctness.kind {c.get('kind')!r} not tbo|kld|identity|selftest_bin")
         else:
@@ -248,9 +267,20 @@ def validate_spec(spec):
             errs.append(f"correctness {c.get('kind')}: argv required")
         if c.get("kind") == "identity" and c.get("mode", "server") == "cmd" and not c.get("argv"):
             errs.append("correctness identity mode cmd: argv required")
-        for a in c.get("arms") or []:
+        for a in list(c.get("arms") or []) + [a for x in ("ops", "min_cases", "max_mismatch")
+                                               if isinstance(c.get(x), dict) for a in c[x]]:
             if a not in arms:
-                errs.append(f"correctness arm {a} not declared")
+                errs.append(f"correctness {c.get('kind')}: arm {a} not declared")
+        if c.get("max_kld_noise_k") is not None and len(baseline_arms(spec)) < 2:
+            errs.append("correctness kld: max_kld_noise_k needs the OFF2 arm (KLD(OFF2 vs OFF) is the noise floor)")
+    for ut, by_arm in (spec.get("expect_by_unit") or {}).items():
+        if ut not in set(UNIT_TYPE.values()):
+            errs.append(f"expect_by_unit {ut!r}: not one of {sorted(set(UNIT_TYPE.values()))}")
+            continue
+        for a, cells in (by_arm or {}).items():
+            for k, e in (cells or {}).items():
+                if a not in arms or k not in knobs or e not in EXPECT_VALUES + ("ignore",):
+                    errs.append(f"expect_by_unit[{ut}][{a}][{k}] = {e!r}: want a declared arm/knob and present|absent|ignore")
     for side, m in (spec.get("verdict_map") or {}).items():
         if side not in ("PASS", "FAIL") or not isinstance(m, dict):
             errs.append(f"verdict_map side {side!r}: want {{PASS|FAIL: {{native verdict (prefix): name}}}}")
@@ -340,7 +370,13 @@ def marker_hit(marker, lines):
     return None
 
 
-def witness_for(spec, arm, text, argv=None, log=None):
+def expect_of(spec, arm, knob, unit_type="served"):
+    """expect_by_unit[unit_type][arm][knob] (present|absent|ignore) when declared, else expect[arm][knob]."""
+    e = ((spec.get("expect") or {}).get(arm) or {}).get(knob)
+    return (((spec.get("expect_by_unit") or {}).get(unit_type) or {}).get(arm) or {}).get(knob, e)
+
+
+def witness_for(spec, arm, text, argv=None, log=None, unit_type="served"):
     """{knob: {expected, observed, ok, line, lines_scanned, log, argv_lv, log_lv, lv_required, note}} - one entry per knob,
     each judged ALONE against expect[arm][knob]. Never an AND over knobs."""
     lines = (text or "").splitlines()
@@ -349,7 +385,7 @@ def witness_for(spec, arm, text, argv=None, log=None):
     log_lv = int(m[0]) if m else None
     alv = argv_lv(argv) if argv else None
     for k, v in (spec.get("knobs") or {}).items():
-        exp = ((spec.get("expect") or {}).get(arm) or {}).get(k)
+        exp = expect_of(spec, arm, k, unit_type)
         ln = marker_hit(str(v["marker"]), lines) if text is not None else None
         obs = "present" if ln else "absent"
         need = int(v.get("level") or MIN_LV)
@@ -365,7 +401,7 @@ def witness_for(spec, arm, text, argv=None, log=None):
             elif eff is None:
                 note = (f"no 'verbosity = N' banner in the log: the binary most likely ran below -lv {need}, so INFO "
                         "witness lines never print")
-        out[k] = {"expected": exp, "observed": obs, "ok": obs == exp, "line": ln, "lines_scanned": len(lines),
+        out[k] = {"expected": exp, "observed": obs, "ok": obs == exp or exp == "ignore", "line": ln, "lines_scanned": len(lines),
                   "log": log, "argv_lv": alv, "log_lv": log_lv, "lv_required": need, "note": note}
     return out
 
@@ -507,8 +543,11 @@ def correctness_units(units):
 
 
 def plan_correctness(spec):
-    """[(unit_id, kind, arm, extra)] of the declared correctness unit, in run order."""
-    c = spec.get("correctness") or {}
+    """[(unit_id, kind, arm, extra)] of every declared correctness unit, in run order."""
+    return [p for c in corr_list(spec) for p in _plan_one(spec, c)]
+
+
+def _plan_one(spec, c):
     kind = c.get("kind")
     if not kind:
         return []
@@ -528,12 +567,29 @@ def plan_correctness(spec):
     return [(f"c-id-{a}-p{i}", "c-id", a, {"prompt": i}) for i in range(n) for a in arms]
 
 
+def tbo_pass(c, u):
+    """Every case OK and at least the arm's min_cases ran (a crash or a too-short -o list is not a pass)."""
+    return (int(u.get("n_cases") or 0) >= int(per_arm(c.get("min_cases"), u["arm"], 1)) and u.get("n_ok") == u.get("n_cases")
+            and (u.get("rc") == 0 or not c.get("require_rc0")))
+
+
 def decide_correctness(spec, units):
-    """(verdict or None, detail, complete). None + complete = passed."""
-    c = spec.get("correctness") or {}
-    if not c:
+    """(verdict or None, detail, complete) over every declared correctness unit: the first failing one decides; all
+    must pass. None + complete = passed."""
+    cs = corr_list(spec)
+    if not cs:
         return None, {"kind": None}, True
-    plan = plan_correctness(spec)
+    dets = []
+    for c in cs:
+        v, det, done = _decide_one(spec, c, units)
+        if not done or v:
+            return v, det, done
+        dets.append(det)
+    return None, (dets[0] if len(dets) == 1 else {"kind": "+".join(c["kind"] for c in cs), "parts": dets}), True
+
+
+def _decide_one(spec, c, units):
+    plan = _plan_one(spec, c)
     by = {u.get("unit_id"): u for u in correctness_units(units)}
     if any(uid not in by for uid, *_ in plan):
         return None, {"kind": c["kind"], "missing": [uid for uid, *_ in plan if uid not in by]}, False
@@ -547,15 +603,23 @@ def decide_correctness(spec, units):
         return "FUTILITY_HARNESS_WITNESS", {"kind": c["kind"], "witness_mismatches": mm}, True
     kind = c["kind"]
     if kind == "tbo":
-        bad = [u for u in us if not u.get("pass")]
-        det = {"kind": kind, "per_arm": {u["arm"]: {k: u.get(k) for k in ("n_cases", "n_ok", "rc", "fails")} for u in us}}
+        bad = [u for u in us if not tbo_pass(c, u)]
+        det = {"kind": kind, "per_arm": {u["arm"]: dict({k: u.get(k) for k in ("n_cases", "n_ok", "rc", "fails")},
+                                                       min_cases=int(per_arm(c.get("min_cases"), u["arm"], 1)))
+                                         for u in us}}
         return ("FAIL_CORRECTNESS", dict(det, failed=[u["unit_id"] for u in bad]), True) if bad else (None, det, True)
     if kind == "kld":
         mx = float(c.get("max_kld", 0.003))
         kl = {u["arm"]: u.get("mean_kld") for u in us if u.get("mode") == "kld"}
-        det = {"kind": kind, "mean_kld": kl, "max_kld": mx}
+        det = {"kind": kind, "mean_kld": kl, "max_kld_abs": mx}
         if any(v is None for v in kl.values()):
             return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why="no 'Mean KLD' in a perplexity log"), True
+        k, noise_arm = c.get("max_kld_noise_k"), baseline_arms(spec)[1:2]
+        if k is not None:   # bound = max(abs, k x KLD(OFF2 vs OFF)): the A/A noise floor of the instrument
+            if not noise_arm or kl.get(noise_arm[0]) is None:
+                return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why="no OFF2 KLD for the noise-floor bound"), True
+            mx = max(mx, float(k) * kl[noise_arm[0]])
+        det["max_kld"] = mx
         bad = [a for a in candidate_arms(spec) if a in kl and kl[a] > mx]
         return ("FAIL_CORRECTNESS", dict(det, failed=bad), True) if bad else (None, det, True)
     if kind == "selftest_bin":
@@ -735,7 +799,7 @@ def atomic_json(path, obj):
 
 # ---------------------------------------------------------------------------------------------------- workload
 def identity_prompts(spec, row_dir):
-    c = spec.get("correctness") or {}
+    c = corr_of(spec, "c-id")
     if c.get("prompts"):
         return list(c["prompts"])
     ps = workload_prompts(spec, row_dir) if row_dir else list((spec.get("workload") or {}).get("prompts") or [])
@@ -982,7 +1046,7 @@ class Gate:
 
     # ------------------------------------------------------------------ correctness
     def run_correctness_unit(self, uid, kind, arm, extra):
-        c = self.spec["correctness"]
+        c = corr_of(self.spec, kind)
         to = float(c.get("timeout_s") or 3600)
         log = os.path.join(self.logs, f"{uid}.log")
         if kind == "c-id" and c.get("mode", "server") == "server":
@@ -1001,7 +1065,8 @@ class Gate:
             ex = ["--kl-divergence-base", base] + (["--kl-divergence"] if extra.get("mode") == "kld" else [])
             argv = self.llama_argv(list(c["argv"]) + ex, arm, flags=bool(c.get("apply_flags")))
         elif kind == "c-tbo":
-            argv = self.subst(c["argv"])
+            ops = per_arm(c.get("ops"), arm, None)
+            argv = self.subst(list(c["argv"]) + (["-o", str(ops)] if ops else []))
             if c.get("lv"):
                 argv = ensure_lv(argv, self.lv, force=True)
         elif kind == "c-st":    # a declared A/A self-test binary, one fresh process per run
@@ -1017,20 +1082,20 @@ class Gate:
         return self.finish_correctness(u)
 
     def finish_correctness(self, u):
-        c = self.spec["correctness"]
+        c = corr_of(self.spec, u["kind"])
         txt = read_log(os.path.join(self.out, u["log"])) if u.get("log") else None
         if u.get("error"):
             u["gate_unit"] = True
             return u
         if c.get("witness", c["kind"] != "tbo") and not (u["kind"] == "c-kld" and u.get("mode") == "base"
                                                           and c.get("witness_base") is False):
-            u["witness"] = witness_for(self.spec, u["arm"], txt, u.get("argv") if c["kind"] != "tbo" else None, u["log"])
+            u["witness"] = witness_for(self.spec, u["arm"], txt, u.get("argv") if c["kind"] != "tbo" else None, u["log"],
+                                       UNIT_TYPE[u["kind"]])
         if u["kind"] == "c-tbo":
             cases = H.tbo_cases(txt or "")
             u.update(n_cases=len(cases), n_ok=sum(1 for x in cases if x["ok"]),
                      fails=[(x["op"] + "(" + x["args"] + ")")[:160] for x in cases if x["ok"] is not True][:20])
-            u["pass"] = (u["n_cases"] >= int(c.get("min_cases") or 1) and u["n_ok"] == u["n_cases"]
-                         and (u.get("rc") == 0 or not c.get("require_rc0")))
+            u["pass"] = tbo_pass(c, u)
         elif u["kind"] == "c-kld":
             m = KLD_RX.findall(txt or "")
             s = SAME_TOP_RX.findall(txt or "")
@@ -1200,10 +1265,10 @@ def replay_units(spec, out_dir, row_dir):
     if not units:
         units, skipped = logs_only_units(spec, out_dir)
         mode = "logs-only"
-    c = spec.get("correctness") or {}
     out = []
     for u in units:
         u = dict(u)
+        c = corr_of(spec, u.get("kind"))
         txt = read_log(os.path.join(out_dir, u["log"])) if u.get("log") else None
         if u.get("error"):
             out.append(u)
@@ -1216,7 +1281,8 @@ def replay_units(spec, out_dir, row_dir):
                                       "lines_scanned": 0, "log": u.get("log"), "argv_lv": None, "log_lv": None,
                                       "lv_required": MIN_LV, "note": f"prior arm {u.get('arm')!r} is not declared"}}
         elif witnessed:
-            u["witness"] = witness_for(spec, u["arm"], txt, u.get("argv") if u["kind"] != "c-tbo" else None, u.get("log"))
+            u["witness"] = witness_for(spec, u["arm"], txt, u.get("argv") if u["kind"] != "c-tbo" else None, u.get("log"),
+                                       UNIT_TYPE.get(u["kind"], "served"))
         if u.get("req") is not None:
             u["metric"] = metric_of(spec, u["req"])
         if u["kind"] == "c-kld" and txt is not None:
@@ -1225,8 +1291,7 @@ def replay_units(spec, out_dir, row_dir):
         if u["kind"] == "c-tbo" and txt is not None:
             cases = H.tbo_cases(txt)
             u.update(n_cases=len(cases), n_ok=sum(1 for x in cases if x["ok"]))
-            u["pass"] = u["n_cases"] >= int(c.get("min_cases") or 1) and u["n_ok"] == u["n_cases"] and \
-                (u.get("rc") == 0 or not c.get("require_rc0"))
+            u["pass"] = tbo_pass(c, u)
         if u["kind"] == "c-st" and txt is not None:
             u.update(selftest_parse(c, txt))
         if u["kind"] == "c-id" and c.get("mode", "server") == "cmd" and txt is not None:
@@ -1265,7 +1330,7 @@ def replay(spec, row_dir, prior, stream=None):
                         "reason": str(d.get("reason") or "")[:1200], "n_units": len(units)},
            "verdict": d["verdict"], "witness_mismatches": mm[:40],
            "mismatch_pairs": sorted({(m["knob"], m["arm"]) for m in mm}),
-           "correctness_kind": (spec.get("correctness") or {}).get("kind"), "elapsed_s": round(time.time() - t0, 3)}
+           "correctness_kind": "+".join(c["kind"] for c in corr_list(spec)) or None, "elapsed_s": round(time.time() - t0, 3)}
     print(f"REPLAY {prev_id} mode={mode} units={len(units)} witnessed={rec['n_witnessed']} -> {d['verdict']} "
           f"(polar {d.get('polar')}): {str(d.get('reason') or '')[:400]}", file=stream or sys.stdout, flush=True)
     return rec
@@ -1275,7 +1340,7 @@ def replay(spec, row_dir, prior, stream=None):
 def _synthetic_log(spec, arm, lv=MIN_LV):
     lines = [f"0.00.040.649 I cmn  common_param: verbosity = {lv} (adjust with the `-lv N` CLI arg)", "noise line"]
     for k, v in spec["knobs"].items():
-        if spec["expect"][arm][k] == "present":
+        if expect_of(spec, arm, k) == "present":
             m = v["marker"]
             lines.append("0.01.000.000 I " + (re.sub(r"[\\^$.*+?()\[\]{}|]", "", m[3:]) if m.startswith("re:") else m))
     return "\n".join(lines) + "\n"
@@ -1308,8 +1373,7 @@ def selftest(spec, row_dir, stream=None):
         w = witness_for(spec, a, _synthetic_log(spec, a), ["llama-server", "-lv", "4"])
         assert all(x["ok"] for x in w.values()), (a, w)
     cand = candidate_arms(spec)[0]
-    k0 = next(k for k in spec["knobs"] if spec["expect"][cand][k] == "present") if any(
-        spec["expect"][cand][k] == "present" for k in spec["knobs"]) else None
+    k0 = next((k for k in spec["knobs"] if expect_of(spec, cand, k) == "present"), None)
     if k0:
         txt = "\n".join(ln for ln in _synthetic_log(spec, cand).splitlines()
                         if not marker_hit(spec["knobs"][k0]["marker"], [ln]))

@@ -764,17 +764,21 @@ def gate_scaffold(a, served=None):
         raise SystemExit("mk_ak_row gate: declare the workload: --prompt TEXT (repeatable) or --workload-input inputs/X")
     corr = json.loads(open(a.correctness[1:]).read() if a.correctness.startswith("@") else a.correctness) \
         if a.correctness else None
-    extra_argvs, tool_delta = "", []
-    if corr and corr.get("argv"):
-        ca = [str(x) for x in corr["argv"]]
-        if corr.get("kind") != "tbo" or corr.get("lv"):
-            new = G.ensure_lv(ca, lv, force=bool(corr.get("lv")) or corr.get("kind") == "identity")
+    extra_argvs, tool_delta, real_argv = "", [], {}
+    for c in (corr if isinstance(corr, list) else [corr] if corr else []):   # one dict or a list (all must pass)
+        if not c.get("argv"):
+            continue
+        ca = [str(x) for x in c["argv"]]
+        if c.get("kind") != "tbo" or c.get("lv"):
+            new = G.ensure_lv(ca, lv, force=bool(c.get("lv")) or c.get("kind") in ("identity", "selftest_bin"))
             if new != ca:
                 tool_delta.append({"tool": os.path.basename(ca[0]), "flag": "-lv", "value": str(lv),
                                    "reason": "witness log level"})
             ca = new
-        corr["argv"] = "@@CORRECTNESS_ARGV@@"
-        extra_argvs = f"CORRECTNESS_ARGV = {_argv_lit(ca, 19)}\n"
+        name = "CORRECTNESS_ARGV_" + str(c.get("kind")).upper()
+        real_argv[name] = ca
+        c["argv"] = f"@@{name}@@"
+        extra_argvs += f"{name} = {_argv_lit(ca, len(name) + 4)}\n"
     kc = dict(G.keep_cfg({"keep": keep}))
     starts = kc["n_blocks"] + (1 if kc["dummy_block"] else 0)
     spec_g = {"row_id": a.id, "task": a.task, "rule": a.rule, "lane": a.lane, "knobs": knobs, "arms": arms,
@@ -790,10 +794,21 @@ def gate_scaffold(a, served=None):
               "inputs": inputs, "dirs": list(a.dir)}
     if a.verdict_map:
         spec_g["verdict_map"] = json.loads(a.verdict_map)
-    G.validate_spec(dict(spec_g, server=dict(spec_g["server"], argv=argv),
-                         correctness=dict(corr, argv=["x"]) if corr else None))
+    if a.expect_by_unit:
+        spec_g["expect_by_unit"] = json.loads(a.expect_by_unit)
+    lits = dict(real_argv, SERVER_ARGV=argv)
+
+    def resolved(o):   # the declaration with its argv names filled in, for validate_spec
+        if isinstance(o, dict):
+            return {k: resolved(v) for k, v in o.items()}
+        if isinstance(o, list):
+            return [resolved(v) for v in o]
+        return lits[o.strip("@")] if isinstance(o, str) and o.startswith("@@") else o
+    G.validate_spec(resolved(spec_g))
     body = pprint.pformat(spec_g, width=118, indent=1, sort_dicts=False)
-    body = body.replace("'@@SERVER_ARGV@@'", "SERVER_ARGV").replace("'@@CORRECTNESS_ARGV@@'", "CORRECTNESS_ARGV")
+    body = body.replace("'@@SERVER_ARGV@@'", "SERVER_ARGV")
+    for name in real_argv:
+        body = body.replace(f"'@@{name}@@'", name)
     with open(os.path.join(d, "job.py"), "w") as f:
         f.write(GATE_JOB.format(id=a.id, task=a.task, rule=a.rule, lv=lv, knobs=", ".join(knobs), knob_names=list(knobs),
                                 gen_version=GEN_VERSION, harness_sha=harness_sha(), gate_sha=gate_sha(),
@@ -871,6 +886,8 @@ def gate_main(argv=None):
     n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity, argv, arms, ...}")
     n.add_argument("--verdict-map", help='JSON {"PASS": {"KEEP": "PASS_X"}, "FAIL": {"FAIL_CORRECTNESS": "FAIL_Y"}}: '
                    "the row's own verdict names; polar = the side")
+    n.add_argument("--expect-by-unit", help='JSON {served|kld|tbo|identity|selftest_bin: {ARM: {KNOB: present|absent|'
+                   "ignore}}}: a knob's expectation scoped to one unit type (default: --expect for every unit)")
     n.add_argument("--prompt", action="append", default=[])
     n.add_argument("--workload-input", help="inputs/X (a --copy-input destination) cut into windows")
     n.add_argument("--offsets", default="0")

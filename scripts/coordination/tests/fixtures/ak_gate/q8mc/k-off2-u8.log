@@ -1,0 +1,32 @@
+llama_device_accept: ENABLED (LLAMA_DEVICE_ACCEPT default on, =0 disables; lazy logits download behind device argmax)
+llama_device_accept: lazy_skipped=0 flushed=0
+0.01.091.665 W model has unused tensor blk.64.attn_norm.weight (size = 20480 bytes) -- ignoring
+0.01.091.674 W model has unused tensor blk.64.post_attention_norm.weight (size = 20480 bytes) -- ignoring
+0.01.091.680 W model has unused tensor blk.64.attn_q.weight (size = 66846720 bytes) -- ignoring
+0.01.091.683 W model has unused tensor blk.64.attn_k.weight (size = 5570560 bytes) -- ignoring
+0.01.091.686 W model has unused tensor blk.64.attn_v.weight (size = 5570560 bytes) -- ignoring
+0.01.091.695 W model has unused tensor blk.64.attn_output.weight (size = 33423360 bytes) -- ignoring
+0.01.091.698 W model has unused tensor blk.64.attn_q_norm.weight (size = 1024 bytes) -- ignoring
+0.01.091.700 W model has unused tensor blk.64.attn_k_norm.weight (size = 1024 bytes) -- ignoring
+0.01.091.703 W model has unused tensor blk.64.ffn_gate.weight (size = 94699520 bytes) -- ignoring
+0.01.091.706 W model has unused tensor blk.64.ffn_down.weight (size = 94699520 bytes) -- ignoring
+0.01.091.709 W model has unused tensor blk.64.ffn_up.weight (size = 94699520 bytes) -- ignoring
+0.01.091.713 W model has unused tensor blk.64.nextn.eh_proj.weight (size = 55705600 bytes) -- ignoring
+0.01.091.717 W model has unused tensor blk.64.nextn.enorm.weight (size = 20480 bytes) -- ignoring
+0.01.091.720 W model has unused tensor blk.64.nextn.hnorm.weight (size = 20480 bytes) -- ignoring
+chunk             PPL               ln(PPL(Q)/PPL(base))          KL Divergence              Δp RMS            Same top p
+Mean    KLD:   0.000398 ±   0.000109
+Maximum KLD:   0.052352
+99.9%   KLD:   0.030915
+99.0%   KLD:   0.006162
+95.0%   KLD:   0.001056
+90.0%   KLD:   0.000745
+Median  KLD:   0.000043
+10.0%   KLD:  -0.000000
+ 5.0%   KLD:  -0.000001
+ 1.0%   KLD:  -0.000001
+ 0.1%   KLD:  -0.000010
+Minimum KLD:  -0.000015
+Same top p: 99.413 ± 0.338 %
+
+llama_device_accept: lazy_skipped=1 flushed=0

@@ -662,5 +662,77 @@ def test_a_selftest_bin_live_fresh_processes_and_mapped_keep(tmp_path):
     assert subprocess.run([sys.executable, "-c", chk]).returncode == 0       # the keeper's completion check accepts it
 
 
+# ------------------------------------------------------------------------------------------------ B: several correctness kinds
+def q8mc_b_spec(max_kld=0.0001, k=3.0, ops_min=(37, 44)):
+    tbo = {"kind": "tbo", "argv": ["/s/bin/test-backend-ops", "test", "-b", "ROCm0"], "witness": True,
+           "ops": {"OFF": "MUL_MAT", "ON": "MUL_MAT,Q8MC"}, "min_cases": {"OFF": ops_min[0], "ON": ops_min[1]}}
+    kld = {"kind": "kld", "argv": ["/s/bin/llama-perplexity", "-m", "m", "-f", "inputs/kld_text.txt"], "max_kld": max_kld}
+    if k is not None:
+        kld["max_kld_noise_k"] = k
+    return spec(correctness=[tbo, kld],
+                expect_by_unit={"kld": {"ON": {"GGML_HIP_Q8MC": "ignore"}}})   # the KLD run printed no INFO (no -lv)
+
+
+def q8mc_b_prior(tmp_path, name):
+    """The real ak-c22-q8mc-gate-gpu-20261124 tbo (OFF 37 / ON 44 cases) and KLD (OFF2 0.000398, ON 0.000412) logs."""
+    row = tmp_path / name
+    (row / "out" / "logs").mkdir(parents=True)
+    src = {"c-tbo-OFF": "c-tbo-off-head.log", "c-tbo-ON": "c-tbo-on-head.log", "c-kld-base-OFF": "k-off2-u8.log",
+           "c-kld-OFF2": "k-off2-u8.log", "c-kld-ON": "k-on-u8.log"}
+    for uid, kind, arm, ex in G.plan_correctness(q8mc_b_spec()):
+        shutil.copy(os.path.join(FIX, "q8mc", src[uid]), row / "out" / "logs" / f"{uid}.log")
+        H.append_unit({"unit_id": uid, "kind": kind, "arm": arm, "rc": 0, "log": f"logs/{uid}.log",
+                       "argv": ["/s/bin/llama-perplexity", "-lv", "4"] if kind == "c-kld" else None, "gate_unit": True,
+                       **ex}, str(row / "out"))
+    return row
+
+
+def test_b_tbo_and_kld_all_must_pass_with_noise_floor_bound(tmp_path):
+    prior = q8mc_b_prior(tmp_path, "p")
+    r = G.replay(q8mc_b_spec(), str(tmp_path / "n1"), str(prior), stream=QUIET)
+    assert r["verdict"] == "INCOMPLETE" and r["correctness_kind"] == "tbo+kld"     # both passed: ON 0.000412 <= 3 x 0.000398
+    r = G.replay(q8mc_b_spec(k=None), str(tmp_path / "n2"), str(prior), stream=QUIET)
+    assert r["verdict"] == "FAIL_CORRECTNESS" and "ON" in r["observed"]["reason"]   # absolute 0.0001 alone fails it
+    r = G.replay(q8mc_b_spec(ops_min=(37, 45)), str(tmp_path / "n3"), str(prior), stream=QUIET)
+    assert r["verdict"] == "FAIL_CORRECTNESS" and "c-tbo-ON" in r["observed"]["reason"]   # 44 < the arm's 45 cases
+    sp = q8mc_b_spec()
+    del sp["expect_by_unit"]
+    r = G.replay(sp, str(tmp_path / "n4"), str(prior), stream=QUIET)                  # unscoped: the KLD miss counts
+    assert r["verdict"] == "FUTILITY_HARNESS_WITNESS" and r["mismatch_pairs"] == [("GGML_HIP_Q8MC", "ON")]
+    assert [p[0] for p in G.plan_correctness(q8mc_b_spec())][:2] == ["c-tbo-OFF", "c-tbo-ON"]   # tbo first, then KLD
+
+
+def test_b_per_arm_ops_argv_scoped_witness_and_validation(tmp_path):
+    sp = q8mc_b_spec()
+    g = G.Gate(sp, str(tmp_path / "row"), env={"FILLER_PORTS": "1"}, stream=QUIET)
+    seen = []
+    g.run_fn = lambda argv, env, log, to: (seen.append(argv), open(log, "w").write(""), {"rc": 0, "secs": 0})[2]
+    g.prepare()
+    g.run_correctness_unit("c-tbo-ON", "c-tbo", "ON", {})
+    assert seen[-1][-2:] == ["-o", "MUL_MAT,Q8MC"]
+    w = G.witness_for(sp, "ON", "nothing\n", ["llama-perplexity", "-lv", "4"], unit_type="kld")
+    assert w["GGML_HIP_Q8MC"]["ok"] and w["GGML_HIP_Q8MC"]["expected"] == "ignore"
+    assert not G.witness_for(sp, "ON", "nothing\n", ["llama-server", "-lv", "4"])["GGML_HIP_Q8MC"]["ok"]   # served
+    with pytest.raises(G.SpecError, match="one unit per kind"):
+        G.validate_spec(dict(sp, correctness=sp["correctness"] + [sp["correctness"][1]]))
+    with pytest.raises(G.SpecError, match="expect_by_unit"):
+        G.validate_spec(dict(sp, expect_by_unit={"kld": {"ON": {"GGML_HIP_Q8MC": "maybe"}}}))
+    with pytest.raises(G.SpecError, match="arm NOPE not declared"):
+        G.validate_spec(dict(sp, correctness=[dict(sp["correctness"][0], ops={"NOPE": "X"})]))
+
+
+
+def test_b_generator_emits_one_argv_literal_per_correctness_kind(tmp_path):
+    corr = [{"kind": "tbo", "argv": ["/s/bin/test-backend-ops", "test"], "ops": {"OFF": "A", "ON": "A,B"},
+             "min_cases": {"OFF": 2, "ON": 3}},
+            {"kind": "kld", "argv": ["/s/bin/llama-perplexity", "-m", "m"], "max_kld": 0.003, "max_kld_noise_k": 3}]
+    d, spec_ = gen_row(tmp_path, extra=["--correctness", json.dumps(corr),
+                                        "--expect-by-unit", '{"kld": {"ON": {"GGML_HIP_Q8MC": "ignore"}}}'])
+    job = (d / "job.py").read_text()
+    assert "CORRECTNESS_ARGV_TBO = [" in job and "CORRECTNESS_ARGV_KLD = [" in job and "'-lv', '4']" in job
+    assert "'argv': CORRECTNESS_ARGV_KLD" in job and "'expect_by_unit'" in job
+    assert [t["tool"] for t in spec_["tool_argv_delta"]] == ["llama-perplexity"]      # tbo argv untouched
+
+
 if __name__ == "__main__":
     raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/coordination/tests/test_ak_gate.py -q")
