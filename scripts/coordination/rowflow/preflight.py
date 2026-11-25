@@ -81,7 +81,8 @@ PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
 PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True, witness_log=True, witness_decl=True,
                          witness_log_tools=True,
-                         inputs=True)   # 2026-11-25: --report showed 0 queued non-grandfathered fails (inputs: 0 of 14)
+                         inputs=True,   # 2026-11-25: --report showed 0 queued non-grandfathered fails (inputs: 0 of 14)
+                         replay_receipt=True)   # 2026-11-25: 0 FAIL / 0 WARN of 24 queued
 # estimate: on the operator's 0-fail list, but the RCA F5 tightening (2026-11-24) re-stages it warn-first; flip at 0 fails.
 DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness", "served")   # re-run at grant time (code is sealed at publish)
 

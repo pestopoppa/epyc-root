@@ -564,8 +564,8 @@ def test_replay_decide_legacy_job_is_warn_and_crash_is_fail(tmp_path, monkeypatc
     assert [(l, c) for l, c, _m in got] == [("FAIL", "REPLAY-DECIDE-CRASH")]
 
 
-def test_replay_checks_are_warn_first_and_publish_only():
-    assert P.PREFLIGHT_ENFORCE["replay_receipt"] is False and P.PREFLIGHT_ENFORCE["replay_decide"] is False
+def test_replay_checks_enforcement_and_publish_only():
+    assert P.PREFLIGHT_ENFORCE["replay_receipt"] is True and P.PREFLIGHT_ENFORCE["replay_decide"] is False
     assert {"replay_receipt", "replay_decide"} <= set(P.PUBLISH_ONLY)
     assert P.CHECKS.index("replay_decide") < P.CHECKS.index("replay_receipt")
     assert "replay_receipt" not in P.DRIFT_CHECKS
@@ -573,7 +573,7 @@ def test_replay_checks_are_warn_first_and_publish_only():
 
 def test_family_gate_receipt_unparks_and_enforce_switch(tmp_path, monkeypatch):
     """family_strikes.republish_allowed (R2 park) accepts a validated R1 receipt as the unpark reason; the R1 refusal
-    applies only once PREFLIGHT_ENFORCE['replay_receipt'] is flipped."""
+    applies by default and can still be switched off."""
     import family_strikes as fs
     monkeypatch.setenv("PREFLIGHT_CACHE", str(tmp_path / "pfcache"))
     flags, prev, prow = family(tmp_path)
@@ -586,11 +586,11 @@ def test_family_gate_receipt_unparks_and_enforce_switch(tmp_path, monkeypatch):
     s = dict(spec_)
     P.publish_check(s, str(flags), warn=lambda w: None, queued={})      # publish order: row_preflight, then the family gate
     assert fs.republish_allowed(str(flags), s)[0]                      # valid receipt = one attempt past the park
-    fs.record_clear(str(flags), prev, "PASS")                          # not parked, no replay: WARN-first lets it through
-    assert fs.republish_allowed(str(flags), spec_)[0]
-    monkeypatch.setitem(P.PREFLIGHT_ENFORCE, "replay_receipt", True)
+    fs.record_clear(str(flags), prev, "PASS")                          # not parked, but missing receipt is refused
     ok, why = fs.republish_allowed(str(flags), spec_)
     assert not ok and "REPLAY-RECEIPT-MISSING" in why
+    monkeypatch.setitem(P.PREFLIGHT_ENFORCE, "replay_receipt", False)
+    assert fs.republish_allowed(str(flags), spec_)[0]                  # warn-only switch lets it through
 
 
 # ------------------------------------------------------------------------------------------------ A: selftest_bin + verdict map
