@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T09:48:23Z",
+  "generated_at": "2026-11-25T10:09:35Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1385,14 +1385,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 1010,
-      "dispatchable": 128,
+      "dispatchable": 129,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-25",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 128,
+      "open": 129,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1484,7 +1484,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 26,
+          "dispatchable": 27,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1492,7 +1492,7 @@
           ],
           "line": 7676,
           "name": "autokernel-unified-surface-program",
-          "open": 26,
+          "open": 27,
           "readiness": "blocked"
         },
         {
@@ -1503,7 +1503,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10978,
+          "line": 10982,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1537,7 +1537,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11225,
+          "line": 11229,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1550,7 +1550,7 @@
           "gates": [
             "INF-06"
           ],
-          "line": 11845,
+          "line": 11849,
           "name": "autokernel-roofline-surface-loop",
           "open": 7,
           "readiness": "blocked"
@@ -1741,7 +1741,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1263,
+          "line": 1265,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1756,7 +1756,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2409,
+          "line": 2411,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2,
           "readiness": "blocked"
@@ -1765,7 +1765,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2784,
+          "line": 2786,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1774,7 +1774,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3220,
+          "line": 3222,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1783,7 +1783,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3315,
+          "line": 3317,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
