@@ -12009,3 +12009,6 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
 - [ ] **AK-BNSIG-GDN-DECODE** [inference] Measure the bottleneck signature of the served 27B gated_delta_net decode kernel (gated_delta_net_cudaILi128ELb0ELb0EfLb0E at grid 3072) with a decode-shaped signature row, since llama-bench pp8 dispatches it only at grid 393216
       · done when: a signature row files with gated_delta_net witnessed at grid 3072 and its class applied to the census record
       · gate: AK-BNSIG-CENSUS-TOPN
+- [ ] **AK-BNSIG-CENSUS-KERNEL-KEYS** [non-inference] Give census records a kernel identity (kernel template substring plus grid) so bottleneck signatures can attach per kernel: q8mf6 V5I per-shape records, rms_norm and silu have no matching 27B GPU record today, so 3 of 4 signatures from ak-bnsig-census-topn-gpu-20261126-r2 could not be filed
+      · done when: census_extract emits kernel and grid on 27B GPU records, and the r2 signatures for q8mf6, rms_norm and silu attach via apply_signature with census tests passing
+      · gate: none
