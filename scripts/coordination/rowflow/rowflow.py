@@ -888,7 +888,9 @@ def check_kernel_store(spec):
 
 
 
-def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
+def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False, dry_run=False):
+    """Validate spec and write ready/<id>.json. dry_run=True (publish_row.rehearse): every refusal, nothing written - no
+    snapshot copy, no ready/<id>.json, no supersede block; returns the row it would write."""
     check_kernel_store(spec)
     for k in ("id", "owner", "launcher", "lane", "result_path", "decision_rule", "estimate_s", "handoff_task"):
         need(k in spec and spec[k] not in (None, ""), f"spec.{k} missing")
@@ -944,7 +946,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         where = f"under the lane/worktree path {vr}" if vr else f"outside the job-dir root {TMP}"
         raise Refused(f"launcher {launcher} is {where}: copy its job dir to {TMP}{rid}/ and publish that launcher, or set "
                       f"\"snapshot\": true in the spec")
-    if spec.get("snapshot") is True:
+    if spec.get("snapshot") is True and not dry_run:
         volatile = [p for p in [launcher] + referenced_paths(o) if volatile_root(p)]
         scratch = os.path.normpath(spec.get("scratch_root") or TMP + rid)
         need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
@@ -1178,6 +1180,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     if row.get("busy_fraction") is None and row.get("declared_threads"):
         row["busy_fraction"] = round(min(1.0, row["declared_threads"] / claimed_cpus(regions, o.get("claim_cpus"), row["shape"])), 3)
         row["busy_fraction_source"] = "declared_threads"
+    if dry_run:
+        return row
     atomic_json(ready_path(flags, rid), row)
     supersede_block(flags, row)   # PM-KEEPER3 #3: the predecessor stops being grantable NOW, not at the successor's PASS
     return row

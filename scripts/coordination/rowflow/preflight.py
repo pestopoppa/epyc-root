@@ -54,6 +54,9 @@ Checks (AutoKernel spec 2026-11-24, items 1-10):
                server/timeout/stop/residency/input failures are not replayable, never a refusal): REPLAY-RECEIPT-MISSING /
                -NO-UNITS / -GATE-REMOVED / -SAME-CLASS. spec.fix_ref {store, reason} naming a new kernel store is the one
                escape. No job-sha (fresh_attempt) bypass. PUBLISH_ONLY.
+  witness_scope 19 (gate rehearsal 2026-11-25) a gate row (generator.profile gate): ak_gate.witness_scope_errors over the
+               job.py SPEC - a witnessed tbo unit (test-backend-ops: no -lv) or a non-served unit without apply_flags judged on a
+               marker it can never print: WITNESS-SCOPE. FIX: expect_by_unit.<unit>.<arm>.<knob> = "ignore". PUBLISH_ONLY.
   generator 12 WARN only: job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` + spec.generator agree
   (7, RCA F5: estimate_basis must cite {smoke_measure, sha256, units, unit_s, loads_s, margin} of this row or of a
    row with identical (model, lane, declared_threads, argv hash); arithmetic checked; estimate_history >1.5x warns)
@@ -75,14 +78,15 @@ if _HERE not in sys.path:   # the keeper runs `python3 -I`
     sys.path.insert(0, _HERE)
 
 CHECKS = ("selftest", "store", "flags", "model", "lane", "smoke", "estimate", "ports", "append", "witness", "served", "generator", "witness_log", "witness_decl", "witness_log_tools", "inputs",
-          "replay_decide", "replay_receipt")   # replay_decide BEFORE replay_receipt: R4's replay can serve as the R1 receipt
+          "witness_scope", "replay_decide", "replay_receipt")   # replay_decide BEFORE replay_receipt: R4's replay can serve as the R1 receipt
 # THE switch (operator 2026-11-24): one entry per check; True = a raw FAIL refuses/holds. All start False (WARN for everyone).
 PREFLIGHT_ENFORCE = {c: False for c in CHECKS}
 # Operator 2026-11-24 (via coordinator): enforce the four checks with 0 failing queued rows at deploy time.
 PREFLIGHT_ENFORCE.update(store=True, ports=True, append=True, witness_log=True, witness_decl=True,
                          witness_log_tools=True,
                          inputs=True,   # 2026-11-25: --report showed 0 queued non-grandfathered fails (inputs: 0 of 14)
-                         replay_receipt=True)   # 2026-11-25: 0 FAIL / 0 WARN of 24 queued
+                         replay_receipt=True,   # 2026-11-25: 0 FAIL / 0 WARN of 24 queued
+                         witness_scope=True)    # 2026-11-25 gate rehearsal: an impossible witness never smokes
 # estimate: on the operator's 0-fail list, but the RCA F5 tightening (2026-11-24) re-stages it warn-first; flip at 0 fails.
 DRIFT_CHECKS = ("store", "flags", "lane", "smoke", "ports", "witness", "served")   # re-run at grant time (code is sealed at publish)
 
@@ -1817,20 +1821,54 @@ def replay_receipt_verdict(spec, flags, row_dir=None):
     return not any(l == "FAIL" for l, _c, _m in res), [f"{l} {c}: {m}" for l, c, m in res]
 
 
+def gate_spec_of(source):
+    """The SPEC literal of a generated gate job.py (module-level literal assignments, Names resolved in order), or None."""
+    try:
+        tree = ast.parse(source or "")
+    except SyntaxError:
+        return None
+    ns = {}
+
+    class _Sub(ast.NodeTransformer):
+        def visit_Name(self, node):
+            return ast.copy_location(ast.Constant(ns[node.id]), node) if node.id in ns else node
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            try:
+                ns[node.targets[0].id] = ast.literal_eval(_Sub().visit(node.value))
+            except (ValueError, TypeError, SyntaxError, RecursionError):
+                continue
+    return ns.get("SPEC") if isinstance(ns.get("SPEC"), dict) else None
+
+
+def check_witness_scope(row, ctx):
+    if (row.spec.get("generator") or {}).get("profile") != "gate":
+        return []
+    sp = gate_spec_of(row.code.get("job.py"))
+    if sp is None:
+        return []   # selftest / generator report an unreadable declaration
+    try:
+        import ak_gate as G
+    except ImportError as e:
+        return [("WARN", "WITNESS-SCOPE-UNCHECKED", f"ak_gate not importable: {e}")]
+    return ([("FAIL", "WITNESS-SCOPE", e) for e in G.witness_scope_errors(sp)]
+            + [("FAIL", "SERVER-ENV-KNOB", e) for e in G.server_env_knob_errors(sp)])
+
+
 CHECK_FNS = {"selftest": check_selftest, "store": check_store, "flags": check_flags, "model": check_model,
              "lane": check_lane, "smoke": check_smoke, "estimate": check_estimate, "ports": check_ports,
              "append": check_append, "witness": check_witness, "witness_log": check_witness_loglevel,
              "witness_decl": check_witness_declared, "witness_log_tools": check_witness_loglevel_tools,
              "served": check_served, "inputs": check_inputs,
              "generator": check_generator, "replay_decide": check_replay_decide,
-             "replay_receipt": check_replay_receipt}
+             "replay_receipt": check_replay_receipt, "witness_scope": check_witness_scope}
 
 
 # ---------------------------------------------------------------- runners
 # Publish-only checks: they judge what the row DECLARES before its smoke has run. A row whose smoke already PASSED ran the real
 # binary and found the witness, which is stronger evidence, so report / keeper-side use grandfathers it (grandfather=True);
 # publish never does (its new id has no PASS). Operator-adjacent origin: AutoKernel report 2026-11-24 23:2xZ.
-PUBLISH_ONLY = ("witness_log", "witness_decl", "witness_log_tools", "inputs", "replay_decide", "replay_receipt")
+PUBLISH_ONLY = ("witness_log", "witness_decl", "witness_log_tools", "inputs", "witness_scope", "replay_decide", "replay_receipt")
 
 
 def smoke_pass_date(flags, spec):

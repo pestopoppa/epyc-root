@@ -21,7 +21,7 @@ import rowflow as rf  # noqa: E402
 from test_rowflow import Fixture  # noqa: E402
 
 GOOD = ("- [ ] **T-1** [inference] Measure Qwen3-8B Q4_K_M decode t/s on the v10 production build, CPU quarter Q0; "
-        "keep if t/s >= 10; est 600 s from run r1; stop rule: stop on answer or futility.")
+        "keep if t/s >= 10; est 600 s from run r1; stop rule: stop on answer or futility; done when: verdict filed.")
 BOXES = {
     "T-1": GOOD,
     "T-NOSTOP": GOOD.replace("T-1", "T-NOSTOP").replace("; stop rule: stop on answer or futility", ""),
@@ -169,7 +169,7 @@ class PublishLintTests(unittest.TestCase):
             with contextlib.redirect_stdout(out):
                 rc = pr.main([sp, "--flags", fx.flags])
             self.assertEqual(rc, 2, out.getvalue())
-            self.assertIn("task_lint publish REFUSED", out.getvalue())
+            self.assertIn("[box] no sufficiency/stop rule", out.getvalue())
             self.assertNotIn(rid, rf.rows(fx.flags))
             self.assertFalse(os.path.exists(rf.dry_dir(fx.flags, rid)) and os.listdir(rf.dry_dir(fx.flags, rid)), "no smoke ran")
         finally:

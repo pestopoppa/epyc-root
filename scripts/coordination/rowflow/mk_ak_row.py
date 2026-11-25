@@ -818,7 +818,12 @@ def gate_scaffold(a, served=None):
         if isinstance(o, list):
             return [resolved(v) for v in o]
         return lits[o.strip("@")] if isinstance(o, str) and o.startswith("@@") else o
-    G.validate_spec(resolved(spec_g))
+    try:
+        G.validate_spec(resolved(spec_g))
+    except G.SpecError as e:
+        if getattr(a, "collect", None) is None:
+            raise
+        a.collect += [x.strip() for x in str(e).split("; ") if x.strip()]   # rehearsal: report with every other refusal
     body = pprint.pformat(spec_g, width=118, indent=1, sort_dicts=False)
     body = body.replace("'@@SERVER_ARGV@@'", "SERVER_ARGV")
     for name in real_argv:
@@ -848,6 +853,7 @@ def gate_scaffold(a, served=None):
             "workdir": d, "stop_file": os.path.join(d, "STOP"), "estimate_s": a.estimate_s, "min_window_s": a.min_window,
             "declared_threads": a.threads, "handoff_task": a.task, "model": a.model, "ports": port_list,
             "scratch_gb": a.scratch_gb, "smoke_predicate": SMOKE_PRED.format(p=os.path.join(d, "out", H.TERMINAL_SMOKE)),
+            "expects_created": [os.path.join(d, "out", H.TERMINAL_SMOKE)],   # the smoke writes it (publish provenance)
             "decision_rule": a.rule + " | knobs: " + ", ".join(knobs) + f" | metric {a.metric} "
                              f"({'higher' if m[1] else 'lower'} is better), KEEP iff CI lower > {keep['threshold']} over "
                              f"{kc['n_blocks']} ABBA blocks; A/A guard {kc['aa_max']}",
@@ -868,6 +874,11 @@ def gate_scaffold(a, served=None):
         spec["tool_argv_delta"] = tool_delta
     if a.exclusive_cpu:
         spec["exclusive_cpu"] = True
+    if getattr(a, "rank", None) is not None:
+        spec["priority_rank"] = a.rank
+    if getattr(a, "supersedes", None):
+        sup = [x.strip() for x in a.supersedes.split(",") if x.strip()]
+        spec["supersedes"] = sup[0] if len(sup) == 1 else sup
     return d, spec
 
 
@@ -880,8 +891,8 @@ def gate_main(argv=None):
                                  description="declare an AK knob gate row; ak_gate.py owns the harness")
     sub = ap.add_subparsers(dest="cmd", required=True)
     n = sub.add_parser("new")
-    n.add_argument("--id", required=True)
-    n.add_argument("--task", required=True, help="handoff file.md:BOX")
+    n.add_argument("--id")
+    n.add_argument("--task", help="handoff file.md:BOX")
     n.add_argument("--rule", default="", help="the pre-registered rule in words (the mechanics come from --keep-rule)")
     n.add_argument("--model", help="default: the -m GGUF of the served / declared argv")
     n.add_argument("--lane", choices=("cpu", "gpu"), default="gpu")
@@ -893,8 +904,8 @@ def gate_main(argv=None):
     n.add_argument("--expect", action="append", default=[], metavar="ARM:KNOB=present|absent,...",
                    help="override derived expect cells (default: set -> present, unset -> absent)")
     n.add_argument("--baseline", default="", help="baseline arms, comma list (default: the arms that set no knob)")
-    n.add_argument("--metric", required=True, choices=sorted(G.METRICS))
-    n.add_argument("--keep-rule", required=True, metavar="ci_lower>X,n=N[,look=L][,aa=A][,dummy=1]")
+    n.add_argument("--metric", choices=sorted(G.METRICS))
+    n.add_argument("--keep-rule", metavar="ci_lower>X,n=N[,look=L][,aa=A][,dummy=1]")
     dirn = n.add_mutually_exclusive_group()
     dirn.add_argument("--lower-is-better", dest="direction", action="store_const", const="lower",
                       help="assert the metric is lower-is-better (refused if --metric is a higher-is-better one)")
@@ -936,19 +947,155 @@ def gate_main(argv=None):
     n.add_argument("--scratch-gb", type=float, default=4.0, help="expected peak scratch_root size (logs, kld base)")
     n.add_argument("--exclusive-cpu", action="store_true")
     n.add_argument("--no-quiet-host", action="store_true")
+    n.add_argument("--rank", type=float, help="spec.priority_rank (lower = granted first; publish default 100)")
+    n.add_argument("--supersedes", metavar="ID[,ID]", help="spec.supersedes: the live row id(s) this row replaces")
+    n.add_argument("--create-box", action="store_true", help="PREPARE a compliant box stub for --task's box id and print "
+                   "the handoff_box.py add command for the handoff OWNER to run (never writes the handoff)")
+    n.add_argument("--handoff", help="with --create-box: handoffs/active/<file>.md (default: --task's file)")
+    n.add_argument("--track", help="with --create-box: the track heading the box goes under")
+    n.add_argument("--check-only", nargs="?", const=True, default=None, metavar="ROWDIR",
+                   help="run ONLY the publish rehearsal: on an existing row dir (ROWDIR/spec.json), or on this declaration "
+                        "(nothing is kept). Exit 0 = publishable, 2 = the complete refusal list")
+    n.add_argument("--flags", default=None, help="compute-flags root the rehearsal reads (default: the live one)")
+    n.add_argument("--no-rehearse", action="store_true", help="offline/tests only: skip the publish rehearsal")
     a = ap.parse_args(argv)
+    if isinstance(a.check_only, str):
+        return check_only_dir(a.check_only, a.flags)
+    if a.create_box:
+        return print_box_stub(a)
+    for k in ("id", "task", "metric", "keep_rule"):
+        if not getattr(a, k):
+            ap.error(f"--{k.replace('_', '-')} is required")
     if a.claim is not None and not CLAIM_RX.match(a.claim):
         ap.error(f"--claim {a.claim!r} must be a digit/range list")
     served = resolve_served(a.served_ref, a.orch_repo) if a.served_ref else None
-    d, spec = gate_scaffold(a, served)
-    fails = lint(d)
-    if fails:
-        print(f"mk_ak_row gate: {d} fails ak_row_lint; spec.json NOT written", file=sys.stderr)
-        return 1
+    if a.no_rehearse:
+        d, spec = gate_scaffold(a, served)
+        fails = lint(d)
+        if fails:
+            print(f"mk_ak_row gate: {d} fails ak_row_lint; spec.json NOT written", file=sys.stderr)
+            return 1
+        return _write_spec(d, spec, rehearsed=False)
+    d0 = os.path.join(a.root, a.id)
+    if a.check_only and os.path.isdir(d0):
+        return check_only_dir(d0, a.flags)
+    a.collect = []
+    d, spec = gate_scaffold(a, served)   # refuses an existing dir: everything under d is ours to remove
+    try:
+        refusals = [("declaration", x, "fix the gate declaration (mk_ak_row gate new flags) as named") for x in a.collect]
+        refusals += rehearse_spec(spec, a.flags)
+    except BaseException:
+        shutil.rmtree(d, ignore_errors=True)
+        raise
+    warnings = list(spec.get("_rehearsal_warnings") or [])
+    spec.pop("_rehearsal_warnings", None)
+    print(_format(refusals, warnings))
+    if refusals or a.check_only:
+        shutil.rmtree(d, ignore_errors=True)   # nothing kept: no row dir, no spec.json, nothing under flags/
+        print(f"mk_ak_row gate: {'REFUSED' if refusals else 'CHECK-ONLY PASS'} - nothing written ({d} removed)"
+              + (f"; {len(refusals)} item(s) above, fix them all and re-run" if refusals else ""), file=sys.stderr)
+        return 2 if refusals else 0
+    return _write_spec(d, spec, rehearsed=True)
+
+
+def _write_spec(d, spec, rehearsed):
     with open(os.path.join(d, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
-    print(f"mk_ak_row gate: scaffolded {d} (declaration only; lint + --selftest clean; spec.json written last)")
+    print(f"mk_ak_row gate: scaffolded {d} (declaration only; {'publish rehearsal PASS' if rehearsed else 'lint + --selftest clean'}; "
+          "spec.json written last)")
     print(f"mk_ak_row gate: publish with the DEPLOYED tool: /usr/bin/python3 {PUBLISH} {os.path.join(d, 'spec.json')}")
+    return 0
+
+
+def _publish_row():
+    import publish_row as PR   # beside this file (checkout scripts/coordination/rowflow or deployed bin/rowflow)
+    return PR
+
+
+def rehearse_spec(spec, flags=None):
+    """publish_row.rehearse on a copy of spec: the SAME checks publish runs, all of them, nothing written.
+    -> [(step, item, hint)]; the copy's publish warnings land in spec["_rehearsal_warnings"]."""
+    PR = _publish_row()
+    flags = flags or PR.rf.FLAGS
+    PR.refresh_view()
+    sp = json.loads(json.dumps(spec))
+    refusals = PR.rehearse(sp, flags, identity_spec=json.loads(json.dumps(spec)))
+    refusals = [(st, it, MK_HINTS.get(st) or hint) for st, it, hint in refusals]
+    refusals = [(st, it, _item_hint(it, h)) for st, it, h in refusals]
+    spec["_rehearsal_warnings"] = list(sp.get("publish_warnings") or [])
+    return refusals
+
+
+MK_HINTS = {"supersedes": "re-run with --supersedes ID[,ID] (never hand-edit spec.json)"}
+
+
+def _item_hint(item, hint):
+    t = str(item)
+    if "not open" in t:
+        return ("the box is ticked: a row serves an OPEN box. File a new box id (re-run with --create-box --handoff "
+                "<file> --track <t> for the stub) and point --task at it")
+    if "stop rule" in t:
+        return ("add a stop rule to the box (`stop-on-answer when ...; stop-on-futility on ...`); "
+                "--create-box prints a compliant stub")
+    if "witness scope" in t or "WITNESS-SCOPE" in t:
+        return "set the cell to \"ignore\" in --expect-by-unit (tbo units print no witness lines)"
+    if "server-env knob" in t or "SERVER-ENV-KNOB" in t:
+        k = t.split("server.env sets ", 1)[-1].split(",", 1)[0]
+        return f"set it per arm: --arm OFF:{k} (drop it from --server-env)"
+    if "priority_rank" in t:
+        return "re-run with --rank N (never hand-edit spec.json)"
+    if "supersed" in t:
+        return "re-run with --supersedes ID[,ID] (never hand-edit spec.json)"
+    if "ESTIMATE-BASIS" in t or "estimate" in t.lower():
+        return hint or "re-run with --estimate-s N"
+    return hint
+
+
+def _format(refusals, warnings):
+    return _publish_row().format_rehearsal(refusals, warnings)
+
+
+def check_only_dir(d, flags=None):
+    """--check-only ROWDIR: the publish rehearsal on an existing row's spec.json; writes nothing."""
+    p = os.path.join(d, "spec.json") if os.path.isdir(d) else d
+    try:
+        spec = json.load(open(p))
+    except (OSError, ValueError) as e:
+        print(f"mk_ak_row gate --check-only: cannot read {p}: {e}", file=sys.stderr)
+        return 2
+    refusals = rehearse_spec(spec, flags)
+    warnings = spec.pop("_rehearsal_warnings", [])
+    print(f"mk_ak_row gate --check-only {spec.get('id')} ({p}):")
+    print(_format(refusals, warnings))
+    return 2 if refusals else 0
+
+
+def print_box_stub(a):
+    """--create-box: PREPARE (never apply) a box that passes the publish box checks. Subagents prepare, owners apply."""
+    task = a.task or ""
+    f, _, bid = task.partition(":")
+    handoff = a.handoff or f
+    if not (handoff and bid and a.track):
+        print("mk_ak_row gate --create-box: needs --task <file>.md:<BOX-ID>, --track <t> (and --handoff when it differs)",
+              file=sys.stderr)
+        return 2
+    model = a.model or "<model + quant + kernel store>"
+    knobs = ", ".join(k.split(":", 1)[0] for k in a.knob) or "<knob>"
+    metric = a.metric or "<metric>"
+    text = (f"AK gate {bid}: measure {metric} of {knobs} vs OFF/OFF2 on {model} ({a.lane} lane, row {a.id or '<row id>'}); "
+            f"stop-on-answer when the ABBA speedup CI lower bound clears the keep threshold or the CI upper bound is "
+            f"below it at the look; stop-on-futility on A/A > guard, witness miss or correctness FAIL; "
+            f"gate-class = futility-only [inference]")
+    done = f"row {a.id or '<row id>'} filed with verdict.json (KEEP/NO_KEEP/FUTILITY_*) and the box ticked with a belief tag"
+    path = handoff if handoff.startswith("handoffs/") else os.path.join("handoffs", "active", os.path.basename(handoff))
+    cmd = ["python3", "scripts/handoffs/handoff_box.py", "add", "--file", path, "--track", a.track, "--id", bid,
+           "--class", "inference", "--text", text, "--done-when", done]
+    import shlex
+    print("mk_ak_row gate --create-box: PREPARED (not written). The handoff OWNER runs, in an origin/main worktree:")
+    print("  " + " ".join(shlex.quote(x) for x in cmd) + " --dry-run")
+    print("  # then the same command without --dry-run, commit, push; then re-run mk_ak_row gate new (without --create-box)")
+    print(f"box text: {text}")
+    print(f"done when: {done}")
     return 0
 
 

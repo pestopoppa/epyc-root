@@ -373,7 +373,7 @@ class Preflight(unittest.TestCase):
         finally:
             pr.check_handoff, pr.check_task_lint = saved
         self.assertEqual(rc, 2)
-        self.assertIn("REFUSED: nothing to do; already complete", out.getvalue())
+        self.assertIn("[preflight] nothing to do; already complete", out.getvalue())
         self.assertFalse(os.path.exists(rf.ready_path(self.fx.flags, self.rid)))
         self.assertFalse(os.path.exists(os.path.join(rf.dry_dir(self.fx.flags, self.rid), "SMOKE-QUEUED.json")))
 

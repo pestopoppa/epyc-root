@@ -389,7 +389,7 @@ def gen_row(tmp_path, rid="ak-t-gate-gpu-20261125", extra=()):
             "-ngl", "99"]
     root = tmp_path / "rows"
     root.mkdir(exist_ok=True)
-    rc = MK.main(["gate", "new", "--id", rid, "--task", "x.md:T", "--model", "Qwen3.8-27B-Q8_0", "--root", str(root),
+    rc = MK.main(["gate", "new", "--no-rehearse", "--id", rid, "--task", "x.md:T", "--model", "Qwen3.8-27B-Q8_0", "--root", str(root),
                   "--knob", f"GGML_HIP_Q8MC:{Q8MC_ARMED}::4", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_HIP_Q8MC=1",
                   "--metric", "ms_per_round", "--keep-rule", "ci_lower>1.01,n=8,look=4,aa=0.02",
                   "--server-argv-json", json.dumps(argv), "--copy-input", f"{text}:inputs/kld_text.txt",
@@ -436,13 +436,13 @@ def test_gate_cli_parse_knob_and_model_inference(tmp_path):
     assert MK.parse_knob("LLAMA_X:dflash2_dev_select: chain n_threads:8") == (
         "LLAMA_X", {"kind": "env", "marker": "dflash2_dev_select: chain n_threads:8", "level": 4, "cap": -1})
     assert MK.parse_knob("LLAMA_X:dflash2_dev_select: chain enabled::5")[1]["level"] == 5
-    rc = MK.main(["gate", "new", "--id", "ak-x-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
+    rc = MK.main(["gate", "new", "--no-rehearse", "--id", "ak-x-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
                   "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_A=1", "--metric",
                   "tok_s", "--keep-rule", "ci_lower>1.01", "--server-argv-json",
                   '["/s/bin/llama-server", "-m", "/m/Qwen3.8-27B-Q8_0.gguf", "--port", "{PORT}"]', "--prompt", "p"])
     assert rc == 0 and json.loads((tmp_path / "ak-x-gpu-20261125" / "spec.json").read_text())["model"] == "Qwen3.8-27B-Q8_0"
     with pytest.raises(G.SpecError, match="unknown key"):
-        MK.main(["gate", "new", "--id", "ak-y-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
+        MK.main(["gate", "new", "--no-rehearse", "--id", "ak-y-gpu-20261125", "--task", "x.md:T", "--root", str(tmp_path),
                  "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm", "OFF2:", "--arm", "ON:GGML_A=1", "--metric",
                  "tok_s", "--keep-rule", "ci_lower>1.01", "--server-argv-json",
                  '["/s/bin/llama-server", "-m", "/m/x.gguf", "--port", "{PORT}"]', "--prompt", "p",
@@ -767,7 +767,7 @@ def test_cpu_gate_row_keeps_its_bare_claim(tmp_path):
 
 
 def test_direction_flags_assert_the_metric_direction(tmp_path):
-    base = ["gate", "new", "--task", "x.md:T", "--root", str(tmp_path), "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm",
+    base = ["gate", "new", "--no-rehearse", "--task", "x.md:T", "--root", str(tmp_path), "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm",
             "OFF2:", "--arm", "ON:GGML_A=1", "--keep-rule", "ci_lower>1.01", "--prompt", "p", "--server-argv-json",
             '["/s/bin/llama-server", "-m", "/m/x.gguf", "--port", "{PORT}"]']
     assert MK.main(base + ["--id", "ak-d1-gpu-20261125", "--metric", "ms_per_round", "--lower-is-better"]) == 0

@@ -182,6 +182,30 @@ python3 scripts/coordination/rowflow/mk_ak_row.py gate new --id ak-c22-x-gate-gp
   old log cannot show declares `spec.fix_ref {store, reason}`. Fix loop: `python3 -I -B job.py --replay <prior row dir>`
   prints the verdict (writes nothing). Both checks are WARN until `PREFLIGHT_ENFORCE` is flipped at 0 queued fails; a
   passing replay also counts as the R2 family-park unpark reason.
+- **One command, every refusal at once (2026-11-25).** Before it keeps anything, `gate new` runs the WHOLE publish
+  rehearsal (`publish_row.rehearse`). This is the exact check list `publish_row.py` runs, in collect mode:
+  - estimate, operator gate, owner, handoff;
+  - the box, resolved as publish resolves it: it must be open and have a model/build identity and a stop rule (a
+    missing done-when only warns);
+  - ak_row_lint, supersedes, launch inputs, the decision rule and its predicates;
+  - preflight: every enforced check, including `replay_receipt` and the new `witness_scope`. `witness_scope`
+    refuses a tbo unit expected to print a `-lv` witness line (set `expect_by_unit.tbo.<arm>.<knob> = "ignore"`) and
+    a `--server-env` key that is also a declared knob (ak_gate strips it from every arm, as in q8wt-r3; set it per
+    arm with `--arm OFF:K=V`);
+  - the family gate: a smoke in flight, strikes, R2, R6 and R1;
+  - placement and spec, via `rf.publish(dry_run=True)`: regions, estimate, `estimate_basis.units`, ports,
+    `priority_rank`, supersedes.
+
+  The result is either `REHEARSAL PASS` and spec.json, or ONE numbered list of every refusal, each with a `FIX:`
+  line. If anything is refused, nothing is written: the row dir is removed and nothing goes under flags/. Publish
+  runs the same list, so the rehearsal and publish cannot disagree.
+  - `--rank N` and `--supersedes ID[,ID]` write `priority_rank` and `supersedes` into the spec. Never hand-edit
+    spec.json.
+  - `--create-box --handoff <file> --track <t>` (with `--task file.md:NEW-ID`) PREPARES a compliant box stub and
+    prints the `handoff_box.py add` command. The handoff owner runs that command; the tool never writes the handoff.
+  - `--check-only ROWDIR` rehearses an existing row and exits 0 if it is publishable, 2 with the list if not. Bare
+    `--check-only` on a full declaration rehearses it and keeps nothing. `publish_row.py --rehearse spec.json` does
+    the same.
 
 ## Shared job templates: import, never copy (operator 2026-11-06)
 

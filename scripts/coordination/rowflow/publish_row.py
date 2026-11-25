@@ -578,6 +578,8 @@ def owner_check_mode(flags, enforce=None):
 
 def _record_non_roster(flags, owner, rid):
     """Append `owner` to <flags>/owner-not-roster.jsonl once (distinct owners); never raises."""
+    if _REHEARSING:
+        return   # a rehearsal writes nothing under flags/
     p = os.path.join(flags, OWNER_NOT_ROSTER_FILE)
     try:
         seen = {json.loads(x).get("owner") for x in open(p)} if os.path.exists(p) else set()
@@ -641,9 +643,10 @@ def _task_lint():
     raise rf.Refused("task_lint.py not found (set TASK_LINT_DIR or ROWFLOW_REPO); publish cannot lint the task box")
 
 
-def task_box(spec, repo=None):
+def task_box(spec, repo=None, problems=None):
     """(file, line, box text, children) of the OPEN box handoff_task names: `<file>.md:<TASK-ID>` matches the bold ID at
-    the start of a checkbox; `<file>.md:<N>` is a 1-based line number."""
+    the start of a checkbox; `<file>.md:<N>` is a 1-based line number. problems=[...] (collect mode, gate rehearsal
+    2026-11-25): a box that is not open is APPENDED there and the box is still returned, so its lint runs too."""
     tl = _task_lint()
     ht = str(spec.get("handoff_task") or "").strip()
     f, _, task = ht.partition(":")
@@ -670,7 +673,11 @@ def task_box(spec, repo=None):
         idx = next((i for i, l in enumerate(lines) if rx.match(l)), None)
         rf.need(idx is not None, f"handoff_task {ht!r}: no checkbox **{task}** in {os.path.basename(f)}")
     state = tl.L1.CHECKBOX.match(lines[idx]).group(2)
-    rf.need(state == " ", f"handoff_task {ht!r}: the box is [{state}], not open; a row serves an open task")
+    closed = f"handoff_task {ht!r}: the box is [{state}], not open; a row serves an open task"
+    if problems is not None and state != " ":
+        problems.append(closed)
+    else:
+        rf.need(state == " ", closed)
     txt, ch = tl.L1.block(lines, idx)
     return path, idx + 1, txt, ch
 
@@ -752,10 +759,11 @@ def check_task_lint(spec, repo=None):
     """BRF-T6-1, relaxed (operator 2026-11-03): refuse only (1) a box that does not resolve to a real open task (task_box),
     (2) a box with no model/build identity, (3) a box with no stop rule. Every other finding is a WARNING: printed, and
     recorded in the row's publish record as spec["publish_warnings"] (-> ready/<id>.json). Returns the warnings."""
-    path, ln, txt, ch = task_box(spec, repo)
+    closed = []
+    path, ln, txt, ch = task_box(spec, repo, problems=closed)
     tl = _task_lint()
     refuse, warn = tl.publish_findings(txt, ch)
-    refuse, warn = list(refuse), list(warn)
+    refuse, warn = closed + list(refuse), list(warn)
     ident_refuse, ident_warn = box_identity_findings(spec, path, txt, repo)
     refuse += ident_refuse
     warn += ident_warn
@@ -771,6 +779,8 @@ def check_task_lint(spec, repo=None):
             warn = [w for w in warn if not w.startswith("class ")]
     rf.need(not refuse, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}):\n  - "
             + "\n  - ".join(refuse) + f"\nFIX: edit the box at {path}:{ln} as listed above, then re-run publish_row.py")
+    if hasattr(tl, "DONE_WHEN_TEXT") and not tl.DONE_WHEN_TEXT.search(txt):   # gate rehearsal 2026-11-25: warn, never refuse
+        warn.append("box states no `· done when:` line (the tick has no test); add it with handoff_box.py")
     warn = [f"{os.path.basename(path)}:{ln}: {w}" for w in warn]
     for w in warn:
         print(f"WARN task_lint {w}")
@@ -1191,7 +1201,7 @@ def publish_rehearsal(spec, flags):
             fail(f"{name} binary not executable: {binary}")
         elif not os.path.isabs(binary) and "$" not in binary and not shutil.which(binary):
             fail(f"{name} binary not found in PATH: {binary}")
-        if any("$" in x or "{" in x for x in argv):
+        if any("$" in x or "{" in x.replace("{PORT}", "").replace("{SLOTDIR}", "") for x in argv):   # ak_gate fills these
             _warn(spec, f"publish-rehearsal: {name} contains dynamic arguments; server argv unverified")
         for i, token in enumerate(argv[1:], 1):
             if token in ("-m", "--model", "-t", "--threads", "--port", "--host") and (i + 1 == len(argv) or argv[i + 1].startswith("--")):
@@ -1829,12 +1839,105 @@ def archive_held_pass(flags, rid, held):
     os.replace(held, os.path.join(folder, "PASS.json"))
 
 
-def publish_smoked(spec, flags, source, queue_cpu=False, identity_spec=None):
-    """Publish, then THE dry run (rowflow.dryrun_run writes PASS.json or the FAIL memo). queue_cpu=True (the CLI default,
-    operator 2026-11-05): a CPU row's smoke is QUEUED for the keeper (returns None). A GPU row whose GPU is busy is QUEUED
-    for the next GPU gap. An immediate CPU smoke with no free cores in the keeper's snapshot is queued too.
-    A republish while this id's smoke is in flight is refused first: its GPU-busy/queue/fail paths would unpublish the live
-    row under the running smoke. Only the CLI publish path reaches here; the keeper's runners call run_smoke directly."""
+# ---------------------------------------------------------------- the publish rehearsal (gate rehearsal 2026-11-25)
+# ONE list of every refusal publish makes before it writes, in publish order. main() runs it in collect mode and refuses
+# with EVERY item at once; mk_ak_row.py gate new / --check-only run the same list before writing anything. A new publish
+# check goes in this list, never beside it, so the rehearsal cannot drift from publish (operator 2026-11-25: one AK gate
+# row failed to publish three times for three reasons, found one at a time).
+_REHEARSING = False
+REHEARSAL_HINTS = {
+    "estimate": "raise estimate_s (>= 300 s) or run the work in your turn",
+    "operator-gate": "the row is under an operator hold: ask the operator, or pick a box the hold does not cover",
+    "owner": "set spec.owner to a roster id (agents roster)",
+    "handoff": "handoff_task must be \"<file>.md:<BOX-ID>\" naming handoffs/active/<file>.md on origin/main",
+    "box": "fix the box on origin/main (open, with a model/build identity, a stop rule and a done-when), or file a new "
+           "box: mk_ak_row.py gate new ... --create-box --handoff <file> --track <t> prints the handoff_box.py add command",
+    "lint": "fix the row files (ak_row_lint / spec fields) as named, then re-scaffold",
+    "supersedes": "name every live lower -rN of the family in spec.supersedes (mk_ak_row: --supersedes ID[,ID])",
+    "publish-rehearsal": "a launch input (engine, workdir, binary, model, env, SOURCE.sha256) is missing or wrong",
+    "preflight": "the decision rule / smoke_predicate / --complete-cmd / --precond-cmd check named above",
+    "row-preflight": "preflight.py <row_dir> shows every finding with its FIX; enforced checks: "
+                     "store ports append witness_log witness_decl witness_log_tools witness_scope inputs replay_receipt",
+    "pre-publish": "a smoke in flight, a parked family (3 strikes / R2), the GPU smoke budget (R6) or a missing replay "
+                   "receipt (R1: run job.py --replay <prior row dir> and fix what it names, or spec.fix_ref a new store)",
+    "placement": "regions / estimate / estimate_basis.units / ports / priority_rank / supersedes as named "
+                 "(mk_ak_row: --rank N, --supersedes ID[,ID], --claim, --estimate-s)",
+}
+
+
+def _split_refusal(step, msg):
+    """One refusal message -> its items (task_lint lists '  - ' items, preflight joins 'FAIL preflight/...' with '; ')."""
+    msg = str(msg)
+    if step == "box" and "\n  - " in msg:
+        head, _, rest = msg.partition("\n  - ")
+        items, _, fix = rest.rpartition("\nFIX: ")
+        items = items or rest
+        return [x.strip() for x in items.split("\n  - ") if x.strip()]
+    if msg.startswith("preflight: ") and "FAIL preflight/" in msg:
+        return [x.strip() for x in msg[len("preflight: "):].split("; FAIL ") if x.strip()]
+    return [msg]
+
+
+def rehearsal_steps(rerun=False, identity_spec=None, repo=None):
+    """[(step, fn(spec, flags))] in publish order. Each raises rf.Refused; rehearse() collects them all."""
+    def estimate(s, f):
+        rf.need(s.get("estimate_s") is None or int(s["estimate_s"]) >= MIN_ESTIMATE_S,
+                "under 5 min: run it in your turn, not as a row")
+
+    def lint_step(s, f):
+        for note in lint(s):
+            print(f"LINT {note}")
+    return [
+        ("estimate", estimate),
+        ("operator-gate", check_operator_gate),
+        ("owner", check_owner_roster),
+        ("handoff", lambda s, f: check_handoff(s, repo) if repo else check_handoff(s)),
+        ("box", lambda s, f: check_task_lint(s, repo) if repo else check_task_lint(s)),
+        ("lint", lint_step),
+        ("supersedes", check_supersedes),
+        ("publish-rehearsal", publish_rehearsal),
+        ("preflight", lambda s, f: preflight(s, f, rerun=rerun, identity_spec=identity_spec)),
+        ("row-preflight", row_preflight),
+        ("pre-publish", pre_publish_checks),
+        ("placement", lambda s, f: rf.publish(json.loads(json.dumps(s)), f, dry_run=True)),
+    ]
+
+
+def rehearse(spec, flags, rerun=False, identity_spec=None, repo=None):
+    """Run EVERY publish refusal on `spec` (mutated like publish mutates it: lint fields, publish_warnings) WITHOUT
+    writing to flags/ready/grants and without fail-fast. -> [(step, item, hint)], empty = publish would not refuse."""
+    global _REHEARSING
+    out = []
+    prev, _REHEARSING = _REHEARSING, True
+    try:
+        for step, fn in rehearsal_steps(rerun, identity_spec, repo):
+            try:
+                fn(spec, flags)
+            except rf.Refused as e:
+                out += [(step, item, REHEARSAL_HINTS.get(step, "")) for item in _split_refusal(step, e)]
+            except Exception as e:  # noqa: BLE001 - a crashing check is a refusal, never a silent pass
+                out.append((step, f"check crashed: {type(e).__name__}: {e}", "report to pipeline-mgmt"))
+    finally:
+        _REHEARSING = prev
+    return out
+
+
+def format_rehearsal(refusals, warnings=()):
+    lines = [f"{len(refusals)} refusal(s):"] if refusals else ["REHEARSAL PASS: publish would not refuse"]
+    for i, (step, item, hint) in enumerate(refusals, 1):
+        lines.append(f"  {i}. [{step}] {item}")
+        if hint:
+            lines.append(f"     FIX: {hint}")
+    if warnings:
+        lines.append(f"{len(warnings)} publish warning(s):")
+        lines += [f"  - {w}" for w in warnings]
+    return "\n".join(lines)
+
+
+
+def pre_publish_checks(spec, flags):
+    """The read-only refusals publish_smoked makes before rf.publish: a smoke in flight, the 3-strike park, the family
+    gate (R2 park, R6 GPU budget, R1 receipt) and smoke_cpus. Shared by publish and the rehearsal (rehearse)."""
     busy = smoke_in_flight(flags, str(spec.get("id") or ""))
     if not busy and rf.smoke_lock_holder(flags, str(spec.get("id") or "")):   # F2: a smoke runner without RUNNING.json yet
         busy = "a smoke runner"
@@ -1850,6 +1953,17 @@ def publish_smoked(spec, flags, source, queue_cpu=False, identity_spec=None):
     import family_strikes as fs
     ok, why = fs.republish_allowed(flags, spec)   # R2 family park + R6 GPU smoke budget; R1 extends republish_allowed
     rf.need(ok, why)
+    smoke_cpus_of(spec)
+
+
+def publish_smoked(spec, flags, source, queue_cpu=False, identity_spec=None):
+    """Publish, then THE dry run (rowflow.dryrun_run writes PASS.json or the FAIL memo). queue_cpu=True (the CLI default,
+    operator 2026-11-05): a CPU row's smoke is QUEUED for the keeper (returns None). A GPU row whose GPU is busy is QUEUED
+    for the next GPU gap. An immediate CPU smoke with no free cores in the keeper's snapshot is queued too.
+    A republish while this id's smoke is in flight is refused first: its GPU-busy/queue/fail paths would unpublish the live
+    row under the running smoke. Only the CLI publish path reaches here; the keeper's runners call run_smoke directly."""
+    pre_publish_checks(spec, flags)
+    rid = str(spec.get("id") or "")
     want = smoke_cpus_of(spec)   # refused before anything is published
     ready = rf.ready_path(flags, rid)
     old_ready = rf.sha256(ready) if os.path.isfile(ready) else None
@@ -2030,6 +2144,8 @@ def main(argv=None):
                     "(the preflight otherwise refuses: nothing to do)")
     ap.add_argument("--smoke-budget-by", help="R6: operator override of the GPU smoke budget (3/family/UTC day); logged")
     ap.add_argument("--reason", help="with --smoke-budget-by: why")
+    ap.add_argument("--rehearse", action="store_true", help="run every publish check on spec.json and list ALL refusals; "
+                    "writes nothing (the rehearsal mk_ak_row.py gate new/--check-only runs)")
     a = ap.parse_args(argv)
     if a.run_smoke:
         rf.need(a.regions, "--run-smoke needs --regions")
@@ -2055,22 +2171,21 @@ def main(argv=None):
         rf.need(spec, f"{a.spec} is not a JSON object")
         if a.migrate:
             spec = rf.spec_from_legacy(spec, a.flags)
+        if a.rehearse:
+            refresh_view()
+            spec = json.loads(json.dumps(spec))
+            refusals = rehearse(spec, a.flags, rerun=a.rerun, identity_spec=json.loads(json.dumps(spec)))
+            print(format_rehearsal(refusals, spec.get("publish_warnings") or ()))
+            return 2 if refusals else 0
         # Lint/preflight add derived fields and warnings; bind reuse to the submitted spec instead.
         identity_spec = json.loads(json.dumps(spec))
         if route_rerank(identity_spec, a.flags):
             return 0
-        rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
-        check_operator_gate(spec, a.flags)
-        check_owner_roster(spec, a.flags)
         refresh_view()
-        check_handoff(spec)
-        check_task_lint(spec)
-        for note in lint(spec):
-            print(f"LINT {note}")
-        check_supersedes(spec, a.flags)
-        publish_rehearsal(spec, a.flags)
-        preflight(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)   # pipeline audit 2026-11-10 #4: before anything is published or queued
-        row_preflight(spec, a.flags)   # D9-ack 2026-11-24: deterministic preflight, warn-first
+        # gate rehearsal 2026-11-25: every refusal at once (the same list mk_ak_row gate new rehearses before writing)
+        refusals = rehearse(spec, a.flags, rerun=a.rerun, identity_spec=identity_spec)
+        if refusals:
+            raise rf.Refused(format_rehearsal(refusals))
         if a.smoke_budget_by:
             import family_strikes as fs
             fs.override_budget(a.flags, fs.stem_of(spec.get("id")), a.smoke_budget_by, a.reason)

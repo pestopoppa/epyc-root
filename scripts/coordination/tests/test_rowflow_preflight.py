@@ -83,8 +83,8 @@ def _cache(tmp_path, monkeypatch):
 
 # ---------------------------------------------------------------- the switch
 def test_enforce_table_all_false_and_one_entry_per_check():
-    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS) and len(P.CHECKS) == 18
-    assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "ports", "append", "witness_log", "witness_decl", "witness_log_tools", "inputs", "replay_receipt"}
+    assert set(P.PREFLIGHT_ENFORCE) == set(P.CHECKS) and len(P.CHECKS) == 19
+    assert {c for c, v in P.PREFLIGHT_ENFORCE.items() if v} == {"store", "ports", "append", "witness_log", "witness_decl", "witness_log_tools", "inputs", "replay_receipt", "witness_scope"}
     assert set(P.DRIFT_CHECKS) <= set(P.CHECKS)
 
 

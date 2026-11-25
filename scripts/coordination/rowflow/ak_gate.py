@@ -299,9 +299,58 @@ def validate_spec(spec):
     w = spec.get("workload") or {}
     if not (w.get("prompts") or w.get("input")):
         errs.append("workload needs prompts or an input file")
+    errs += witness_scope_errors(spec) + server_env_knob_errors(spec)
     if errs:
         raise SpecError("; ".join(errs))
     return True
+
+
+def server_env_knob_errors(spec):
+    """q8wt-r3 (2026-11-25): proc_env strips a server.env key that is a declared knob, so a knob set in --server-env
+    never reaches ANY arm (OFF/OFF2 silently ran the stock path). Refused: set it per arm instead."""
+    knobs = spec.get("knobs") or {}
+    return [f"server-env knob: server.env sets {k}={v}, but {k} is a declared knob and ak_gate strips it from every arm; "
+            f"set it per arm: --arm OFF:{k}={v} (and on every arm that should carry it)"
+            for k, v in ((spec.get("server") or {}).get("env") or {}).items() if k in knobs]
+
+
+NO_LV_BINARIES = ("test-backend-ops",)   # takes no -lv: prints no INFO witness line, ever
+
+
+def witness_scope_errors(spec):
+    """Witness scope per unit (gate rehearsal 2026-11-25): every (arm, knob) a correctness unit is JUDGED on with an
+    effective expectation `present` must be one that unit's binary can print. Refused: a witnessed tbo unit (or any unit
+    whose binary is test-backend-ops) expecting a marker (no -lv, no INFO line); a non-served unit expecting a FLAG
+    knob it does not get (no apply_flags: the flag is only on the server argv). FIX: expect_by_unit[<unit>][<arm>]
+    [<knob>] = "ignore"."""
+    errs = []
+    knobs = spec.get("knobs") or {}
+    arms = spec.get("arms") or {}
+    for c in corr_list(spec):
+        ut = c.get("kind")
+        if ut not in ("tbo", "kld", "identity", "selftest_bin"):
+            continue
+        if ut == "tbo" and not c.get("witness"):
+            continue   # an unwitnessed tbo unit is never judged
+        if witness_exempt(spec, ut):
+            continue
+        argv = [str(x) for x in (c.get("argv") or [])]
+        binary = os.path.basename(argv[0]) if argv and not str(argv[0]).startswith("@@") else ""
+        no_lv = ut == "tbo" or binary in NO_LV_BINARIES
+        for a in (c.get("arms") or list(arms)):
+            for k, v in knobs.items():
+                if expect_of(spec, a, k, ut) != "present":
+                    continue
+                kind = v.get("kind") or ("flag" if k.startswith("-") else "env")
+                if no_lv:
+                    errs.append(f"witness scope: {ut} unit ({binary or 'test-backend-ops'}) is judged on {k} = present for "
+                                f"arm {a}, but test-backend-ops takes no -lv and never prints a witness line; set "
+                                f"expect_by_unit.{ut}.{a}.{k} = \"ignore\" (or drop witness:true)")
+                elif kind == "flag" and not c.get("apply_flags"):
+                    errs.append(f"witness scope: {ut} unit is judged on flag knob {k} = present for arm {a}, but the flag "
+                                f"is only on the server argv (no apply_flags); set expect_by_unit.{ut}.{a}.{k} = "
+                                f"\"ignore\" or apply_flags: true")
+    return errs
 
 
 # ---------------------------------------------------------------------------------------------------- argv / env
