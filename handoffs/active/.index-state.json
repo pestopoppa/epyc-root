@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 492
+      "open": 490
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -513,12 +513,12 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 96,
+      "closed": 97,
       "frozen": 1,
       "guarded": 0,
-      "last_advanced": "2026-11-24",
+      "last_advanced": "2026-11-25",
       "needs_owner": 1,
-      "open": 51,
+      "open": 50,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -639,11 +639,11 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 363,
+      "closed": 364,
       "frozen": 1,
       "guarded": 0,
-      "last_advanced": "2026-11-24",
-      "open": 14,
+      "last_advanced": "2026-11-25",
+      "open": 13,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -656,14 +656,14 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 155,
+          "closed": 156,
           "frozen": 1,
           "gates": [],
           "guarded": 0,
           "line": 21,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 13
+          "open": 12
         },
         {
           "blocked": 0,

@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T05:12:43Z",
+  "generated_at": "2026-11-25T05:23:15Z",
   "nodes": [
     {
       "age_days": 3,
@@ -3133,20 +3133,20 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 96,
-      "dispatchable": 51,
+      "closed": 97,
+      "dispatchable": 50,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
-      "last_advanced": "2026-11-24",
+      "last_advanced": "2026-11-25",
       "next_action": "Resume taskflow canary r8g (rowflow resume, CPU q0-q2; fixes 1-6 landed) \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
-      "open": 51,
+      "open": 50,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
@@ -3254,18 +3254,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 363,
-      "dispatchable": 14,
+      "closed": 364,
+      "dispatchable": 13,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-24",
+      "last_advanced": "2026-11-25",
       "next_action": "FM-4 Phase C: collect 30 prospective dispatch_with_gate records per arm plus one native canary; futility check 2026-12-03; then close and move to completed/",
-      "open": 14,
+      "open": 13,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3290,11 +3290,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 13,
+          "dispatchable": 12,
           "gates": [],
           "line": 21,
           "name": "coordination-and-churn-pipeline",
-          "open": 13,
+          "open": 12,
           "readiness": "ready"
         },
         {
