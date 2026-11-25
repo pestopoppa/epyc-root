@@ -610,6 +610,8 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
         sb.materialize(tick, rf)
         if tick.get("build_window_min") and hasattr(rf, "build_window"):   # {"build_window_min": N}: `rowflow build-window` opens at this tick
             rf.build_window(sb.flags, int(tick["build_window_min"]), "replay", "replay-build-lane", now=W.t, log=lambda m: None)
+        if "host_drain" in tick and hasattr(rf, "HOST_DRAIN_ENFORCE"):   # {"host_drain": bool}: HOST-DRAIN on/off from this tick on
+            rf.HOST_DRAIN_ENFORCE = bool(tick["host_drain"])
         if tick.get("reservation_mode") and hasattr(rf, "RESERVATION_MODE"):   # {"reservation_mode": off|shadow|enforce} from this tick on
             rf.RESERVATION_MODE = tick["reservation_mode"]
         pre_lines = []
@@ -677,7 +679,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             "kills": W.kills[kills0:], "fails_new": sorted(set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json"))) - fails0),
             "running_json": running, "cands": int(mc.group(1)) if mc else None, "assigned": int(mc.group(2)) if mc else None,
             "snapshot_busy": mb.group(1) if mb else "",
-            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD", "HOLD-ORPHAN", "SHORT-ROW",
+            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "HOST-DRAIN", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD", "HOLD-ORPHAN", "SHORT-ROW",
                                                                                 "CLAIM", "RESERVE", "BACKFILL", "WOULD-", "RESERVATION",
                                                                                 "REPLAN"))][:400],
             "foreign": tick.get("foreign") or {},

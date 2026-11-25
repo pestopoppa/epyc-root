@@ -1470,8 +1470,8 @@ def _before_head(d, head, low):
     return out
 
 
-def _mode(ticks, mode):
-    return [(r, dict(w, reservation_mode=mode)) for r, w in ticks]
+def _mode(ticks, mode, **kw):
+    return [(r, dict(w, reservation_mode=mode, **kw)) for r, w in ticks]
 
 
 def _ticks_1003():
@@ -1559,7 +1559,7 @@ def sc_res_1135_shadow_changes_nothing(path):
         if not any(_lines(d, f"WOULD-REFUSE {r}") for r in lows):
             out.append("no WOULD-REFUSE line for the low row")
         return out
-    return write(path, _mode(_ticks_1135(plain_low=True), "shadow")), check
+    return write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=False)), check
 
 
 def _ticks_1135(plain_low=False):
@@ -1672,11 +1672,30 @@ def sc_replan_1120_specpit_r4(path):
 def sc_replan_1139_rank_skip(path):
     """11:35/11:39Z: RANK-SKIP with T = the GPU grant's end -> live GRANT calib-c18 / specpit-t1p095 ahead of c21-r3 (the low
     rows plain quarter rows, as in the shadow twin above); C plans c21-r3 at its own regions' end, never the 3 h GPU end."""
-    return (write(path, _mode(_ticks_1135(plain_low=True), "shadow")),
+    return (write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=False)),
             _replan_check("c21-fold-cpu-r3", ["ak-cpu-aa-calibration-q-c18-r3", "ak-specpit1-t1p095"]))
 
 
+
+def sc_host_drain_1135(path):
+    """HOST-DRAIN (operator 2026-11-25): the 11:35Z twin with HOST-DRAIN on (the deployed default). c21-r3 (whole host) has
+    waited > 30 min: no worse-ranked low row is granted ahead of it, a HOST-DRAIN line names the held row."""
+    lows = ("ak-cpu-aa-calibration-q-c18-r3", "ak-specpit1-t1p095")
+
+    def check(d):
+        out = []
+        h = _first(d, "c21-fold-cpu-r3")
+        early = [r for r in lows if _granted(d, r) and (h is None or _first(d, r) < h)]
+        if early:
+            out.append(f"low row(s) {early} granted ahead of c21-r3 under HOST-DRAIN")
+        if not _lines(d, "HOST-DRAIN c21-fold-cpu-r3 "):
+            out.append("no HOST-DRAIN line for c21-r3")
+        return out
+    return write(path, _mode(_ticks_1135(plain_low=True), "shadow", host_drain=True)), check
+
+
 SCENARIOS = {
+    "host-drain-1135": sc_host_drain_1135,
     "replan-1027-calib-a3b-shadow": sc_replan_1027_calib_a3b,
     "replan-1120-specpit-r4-shadow": sc_replan_1120_specpit_r4,
     "replan-1139-rank-skip-shadow": sc_replan_1139_rank_skip,
