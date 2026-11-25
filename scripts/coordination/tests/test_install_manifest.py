@@ -47,9 +47,6 @@ class ManifestTest(unittest.TestCase):
         pubs = {p for p, _, _ in es}
         problems = []
         failsoft = {("bin/rowflow/task_lint.py", "box_index")}  # try/except-guarded import, rule k degrades to a warning
-        # KNOWN GAP awaiting D9 ack: INSTALL.manifest lacks bin/churn/keep_failed.py (imported by filing + reclaim_row).
-        # Delete these entries once the manifest line lands; the test then enforces it.
-        failsoft |= {("bin/churn/filing.py", "keep_failed"), ("bin/churn/reclaim_row.py", "keep_failed")}
         for pub, src, _ in es:
             d = os.path.dirname(pub)
             if d not in ("bin/rowflow", "bin/churn") or not src.endswith(".py"):
