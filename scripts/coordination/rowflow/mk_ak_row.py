@@ -596,6 +596,9 @@ sys.exit(0 if r.get("complete") is True and v and "polar" in r and not v.startsw
          else 1)
 '''
 
+GPU_HOST_CLAIM = "88-95,184-191"   # the MI210's host threads (SMT pair): spec.regions = "mi210_0," + this, as published GPU rows
+
+
 GATE_FRESH_REASON = ("ak_gate: one fresh server per arm visit (resident-server arm bias: the first OFF arm ran slow; "
                      "load-time knobs are read once per process)")
 
@@ -721,6 +724,9 @@ def gate_scaffold(a, served=None):
     m = G.METRICS.get(a.metric)
     if m is None:
         raise SystemExit(f"mk_ak_row gate: --metric {a.metric!r} not one of {sorted(G.METRICS)}")
+    if getattr(a, "direction", None) and (a.direction == "higher") is not m[1]:
+        raise SystemExit(f"mk_ak_row gate: --{a.direction}-is-better contradicts --metric {a.metric} "
+                         f"({'higher' if m[1] else 'lower'} is better); the metric's direction is fixed in ak_gate.METRICS")
     keep = parse_keep_rule(a.keep_rule)
     if not a.model:
         mp = next((argv[i + 1] for i, t in enumerate(argv[:-1]) if t in ("-m", "--model")), "")
@@ -792,6 +798,14 @@ def gate_scaffold(a, served=None):
               "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
                                              "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
               "inputs": inputs, "dirs": list(a.dir)}
+    if a.arm_env:
+        spec_g["arm_env"] = {}
+        for x in a.arm_env:
+            arm_n, _, rest = str(x).partition(":")
+            if arm_n.strip() not in arms:
+                raise SystemExit(f"mk_ak_row gate: --arm-env {x!r}: unknown arm {arm_n}")
+            spec_g["arm_env"].setdefault(arm_n.strip(), {}).update(
+                {k.strip(): v for k, _, v in (p.partition("=") for p in rest.split(",") if p.strip())})
     if a.verdict_map:
         spec_g["verdict_map"] = json.loads(a.verdict_map)
     if a.expect_by_unit:
@@ -814,7 +828,8 @@ def gate_scaffold(a, served=None):
                                 gen_version=GEN_VERSION, harness_sha=harness_sha(), gate_sha=gate_sha(),
                                 argv_source=src, server_argv=_argv_lit(argv), extra_argvs=extra_argvs, spec=body))
     port_list = H.alloc_ports(a.id, 1)
-    claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else "184-191")
+    claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else GPU_HOST_CLAIM)
+    regions = ("mi210_0," + claim) if a.lane == "gpu" else claim   # publish books the GPU lane + its host threads
     pin = a.claim is not None or a.lane != "cpu"
     with open(os.path.join(d, "launch.sh"), "w") as f:
         f.write(LAUNCH.format(id=a.id, task=a.task, d=d, claim_line=("C=${WS58_CPUS:-%s}\n" % claim) if pin else "",
@@ -828,16 +843,17 @@ def gate_scaffold(a, served=None):
     seal(d, extra=sorted(inputs))
     visits = starts * len(arms) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
     spec = {"owner": "autokernel", "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.id,
-            "regions": claim, "claim_cpus": claim, "verdict_by": "agent", "launcher": os.path.join(d, "launch.sh"),
+            "regions": regions, "claim_cpus": claim, "verdict_by": "agent", "launcher": os.path.join(d, "launch.sh"),
             "result_path": os.path.join(d, "out", "RESULT.json"), "result_format": "json", "scratch_root": d,
             "workdir": d, "stop_file": os.path.join(d, "STOP"), "estimate_s": a.estimate_s, "min_window_s": a.min_window,
             "declared_threads": a.threads, "handoff_task": a.task, "model": a.model, "ports": port_list,
-            "smoke_predicate": SMOKE_PRED.format(p=os.path.join(d, "out", H.TERMINAL_SMOKE)),
+            "scratch_gb": a.scratch_gb, "smoke_predicate": SMOKE_PRED.format(p=os.path.join(d, "out", H.TERMINAL_SMOKE)),
             "decision_rule": a.rule + " | knobs: " + ", ".join(knobs) + f" | metric {a.metric} "
                              f"({'higher' if m[1] else 'lower'} is better), KEEP iff CI lower > {keep['threshold']} over "
                              f"{kc['n_blocks']} ABBA blocks; A/A guard {kc['aa_max']}",
             "requires_quiet_host": bool(a.lane == "cpu" and not a.no_quiet_host), "resumable": True,
-            "estimate_basis": {"provisional": True, "rebook_from": os.path.join(d, "out-smoke", H.SMOKE_MEASURE),
+            "estimate_basis": {"provisional": True, "units": visits,
+                               "rebook_from": os.path.join(d, "out-smoke", H.SMOKE_MEASURE),
                                "reason": f"pre-smoke: {visits} fresh-server visits/units; re-book from the smoke"},
             "fresh_server_per_visit": True, "fresh_server_reason": GATE_FRESH_REASON,
             "witness_lines": [{"line": v["marker"][3:] if v["marker"].startswith("re:") else v["marker"], "needs": 1,
@@ -879,10 +895,17 @@ def gate_main(argv=None):
     n.add_argument("--baseline", default="", help="baseline arms, comma list (default: the arms that set no knob)")
     n.add_argument("--metric", required=True, choices=sorted(G.METRICS))
     n.add_argument("--keep-rule", required=True, metavar="ci_lower>X,n=N[,look=L][,aa=A][,dummy=1]")
+    dirn = n.add_mutually_exclusive_group()
+    dirn.add_argument("--lower-is-better", dest="direction", action="store_const", const="lower",
+                      help="assert the metric is lower-is-better (refused if --metric is a higher-is-better one)")
+    dirn.add_argument("--higher-is-better", dest="direction", action="store_const", const="higher",
+                      help="assert the metric is higher-is-better (refused if --metric is a lower-is-better one)")
     n.add_argument("--served-ref", metavar="ROLE")
     n.add_argument("--orch-repo", default=ORCH_REPO)
     n.add_argument("--server-argv-json", help="the server argv as JSON when the row is not a registry role")
     n.add_argument("--server-env", action="append", default=[], metavar="K=V")
+    n.add_argument("--arm-env", action="append", default=[], metavar="ARM:K=V,K2=V2",
+                   help="env for every process of one arm (not a knob; correctness units take {\"env\": {...}} in --correctness)")
     n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity, argv, arms, ...}")
     n.add_argument("--verdict-map", help='JSON {"PASS": {"KEEP": "PASS_X"}, "FAIL": {"FAIL_CORRECTNESS": "FAIL_Y"}}: '
                    "the row's own verdict names; polar = the side")
@@ -910,6 +933,7 @@ def gate_main(argv=None):
     n.add_argument("--estimate-s", type=int, default=7200)
     n.add_argument("--min-window", type=int, default=1800)
     n.add_argument("--root", default=ROOT)
+    n.add_argument("--scratch-gb", type=float, default=4.0, help="expected peak scratch_root size (logs, kld base)")
     n.add_argument("--exclusive-cpu", action="store_true")
     n.add_argument("--no-quiet-host", action="store_true")
     a = ap.parse_args(argv)

@@ -736,3 +736,73 @@ def test_b_generator_emits_one_argv_literal_per_correctness_kind(tmp_path):
 
 if __name__ == "__main__":
     raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/coordination/tests/test_ak_gate.py -q")
+
+
+# ------------------------------------------------------------------------------------------------ generator gaps (2026-11-25)
+GAP_CORR = [{"kind": "selftest_bin", "runs": 2, "arms": ["ON", "OFF"], "timeout_s": 60, "env": {"GGML_HIP_Q8_SKINNY": "0"},
+             "argv": ["/s/bin/test-q8ip-two-ctx", "-m", "/m/x.gguf"],
+             "mismatch_rx": r"summary: prompts=\d+ mismatches=(\d+)", "max_mismatch": {"ON": 0}}]
+
+
+def test_gpu_gate_row_regions_units_zero_publish_and_preflight_warnings(tmp_path, monkeypatch):
+    import publish_row as PR
+    monkeypatch.setenv("PREFLIGHT_CACHE", str(tmp_path / "pfcache"))
+    d, spec_ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r2", extra=["--lower-is-better"])
+    assert spec_["regions"] == "mi210_0,88-95,184-191" and spec_["claim_cpus"] == "88-95,184-191"   # the published GPU shape
+    assert spec_["estimate_basis"]["units"] == 27 and spec_["estimate_basis"]["provisional"] is True
+    flags = tmp_path / "flags"
+    (flags / "dryrun").mkdir(parents=True)
+    (flags / "ready").mkdir()
+    res = P.run(spec_, row_dir=str(d), flags=str(flags), queued={}, run_selftest=True)
+    assert not [f for f in res if f[1] in ("FAIL", "WARN")], res
+    sp = dict(spec_)
+    PR.check_smoke_estimate(sp)
+    PR.lint(sp)
+    assert not sp.get("publish_warnings"), sp.get("publish_warnings")
+
+
+def test_cpu_gate_row_keeps_its_bare_claim(tmp_path):
+    d, spec_ = gen_row(tmp_path, rid="ak-t-gate-cpu-20261125", extra=["--lane", "cpu", "--claim", "0-7"])
+    assert spec_["regions"] == "0-7" and spec_["claim_cpus"] == "0-7"
+
+
+def test_direction_flags_assert_the_metric_direction(tmp_path):
+    base = ["gate", "new", "--task", "x.md:T", "--root", str(tmp_path), "--knob", "GGML_A:A ran", "--arm", "OFF:", "--arm",
+            "OFF2:", "--arm", "ON:GGML_A=1", "--keep-rule", "ci_lower>1.01", "--prompt", "p", "--server-argv-json",
+            '["/s/bin/llama-server", "-m", "/m/x.gguf", "--port", "{PORT}"]']
+    assert MK.main(base + ["--id", "ak-d1-gpu-20261125", "--metric", "ms_per_round", "--lower-is-better"]) == 0
+    assert MK.main(base + ["--id", "ak-d2-gpu-20261125", "--metric", "tok_s", "--higher-is-better"]) == 0
+    with pytest.raises(SystemExit, match="contradicts"):
+        MK.main(base + ["--id", "ak-d3-gpu-20261125", "--metric", "tok_s", "--lower-is-better"])
+
+
+def test_per_unit_and_per_arm_env_are_applied_to_the_subprocess_env(tmp_path):
+    d, spec_ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r3",
+                       extra=["--correctness", json.dumps(GAP_CORR), "--arm-env", "ON:LLAMA_PER_ARM=7"])
+    import importlib.util
+    spc = importlib.util.spec_from_file_location("gate_job_under_test", str(d / "job.py"))
+    mod = importlib.util.module_from_spec(spc)
+    sys.path.insert(0, str(d))
+    try:
+        spc.loader.exec_module(mod)
+    finally:
+        sys.path.remove(str(d))
+        sys.modules.pop("ak_gate_vendored", None)
+    ns = {"SPEC": mod.SPEC}
+    sp = ns["SPEC"]
+    assert sp["arm_env"] == {"ON": {"LLAMA_PER_ARM": "7"}} and sp["correctness"][0]["env"] == {"GGML_HIP_Q8_SKINNY": "0"}
+    g = G.Gate(sp, str(d), env={"FILLER_PORTS": "1"})
+    unit = g.proc_env("ON", "/s/bin/x", sp["correctness"][0]["env"])
+    assert unit["GGML_HIP_Q8_SKINNY"] == "0" and unit["LLAMA_PER_ARM"] == "7"
+    off = g.proc_env("OFF", "/s/bin/x")
+    assert "LLAMA_PER_ARM" not in off and "GGML_HIP_Q8_SKINNY" not in off
+    with pytest.raises(G.SpecError, match="declared knob"):
+        G.validate_spec(dict(sp, arm_env={"ON": {"GGML_HIP_Q8MC": "1"}}))
+
+
+def test_job_cli_flags_are_not_server_flags_and_vendored_gate_smoke_is_accepted(tmp_path):
+    argvs = [("job.py", 1, ["/s/llama-server", "--replay", "--decide-from", "-m", "x"])]
+    assert P.argv_flags(argvs) == {"-m"}
+    d, _ = gen_row(tmp_path, rid="ak-t-gate-gpu-20261125-r4")
+    own = {"job.py": (d / "job.py").read_text() + "\n# TERMINAL-smoke\n"}
+    assert LINT.smoke_checks(str(d), {}, own) == []

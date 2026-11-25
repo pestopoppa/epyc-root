@@ -59,6 +59,7 @@ LV_FLAG_NAMES = ("-lv", "--verbosity", "--log-verbosity")
 LOG_VERBOSITY_RX = re.compile(r"verbosity\s*=\s*(\d+)")
 ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 ENV_KNOB_RX = re.compile(r"^[A-Z][A-Z0-9_]{2,}$")
+ENV_NAME_RX = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")   # per-unit / per-arm env (arm_env, correctness env)
 EXPECT_VALUES = ("present", "absent")
 T975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228,
         11: 2.201, 12: 2.179, 13: 2.160, 14: 2.145, 15: 2.131, 16: 2.120, 20: 2.086, 25: 2.060, 30: 2.042}
@@ -66,7 +67,7 @@ TIMING_FIELDS = ("prompt_n", "prompt_ms", "predicted_n", "predicted_ms", "draft_
 KLD_RX = re.compile(r"Mean\s+KLD:\s+([-\d.eE+]+)")
 SAME_TOP_RX = re.compile(r"Same top p:\s+([\d.]+)")
 CORRECTNESS_KEYS = {
-    "common": {"kind", "argv", "arms", "timeout_s", "apply_flags", "witness", "lv"},
+    "common": {"kind", "argv", "arms", "timeout_s", "apply_flags", "witness", "lv", "env"},
     "tbo": {"min_cases", "require_rc0", "ops"},
     "kld": {"base_arm", "max_kld", "max_kld_noise_k", "witness_base"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
@@ -233,6 +234,17 @@ def validate_spec(spec):
     elif m.get("higher_is_better") is not METRICS[m["name"]][1]:
         errs.append(f"metric {m['name']}: higher_is_better must be {METRICS[m['name']][1]} (declared "
                     f"{m.get('higher_is_better')!r}); confirm the metric direction")
+    for what, envd in [("arm_env[%s]" % a, e) for a, e in (spec.get("arm_env") or {}).items()] + \
+            [("correctness %s env" % c.get("kind"), c.get("env")) for c in corr_list(spec) if c.get("env") is not None]:
+        if not isinstance(envd, dict) or not all(isinstance(k, str) and ENV_NAME_RX.match(k) for k in envd):
+            errs.append(f"{what}: want a {{ENV_NAME: value}} dict")
+            continue
+        for k in envd:
+            if k in knobs:
+                errs.append(f"{what}: {k} is a declared knob (only an arm sets a knob; use --arm)")
+    for a in (spec.get("arm_env") or {}):
+        if a not in arms:
+            errs.append(f"arm_env names unknown arm {a}")
     srv = spec.get("server") or {}
     argv = srv.get("argv") or []
     if not argv or "{PORT}" not in [str(x) for x in argv]:
@@ -905,12 +917,14 @@ class Gate:
             pre += ["/usr/bin/taskset", "-c", H.cpu_str(cpus)]
         return pre + list(argv)
 
-    def proc_env(self, arm, binary=None):
+    def proc_env(self, arm, binary=None, unit_env=None):
         e = {"PATH": "/usr/bin:/bin", "HOME": self.env.get("HOME", "/tmp"),
              "FILLER_ID": self.env.get("FILLER_ID", self.spec["row_id"])}
         e.update({k: str(v) for k, v in ((self.spec.get("server") or {}).get("env") or {}).items()})
         if binary and "LD_LIBRARY_PATH" not in ((self.spec.get("server") or {}).get("env") or {}):
             e["LD_LIBRARY_PATH"] = os.path.dirname(os.path.realpath(binary))   # this kernel's own ggml, never inherited
+        e.update({k: str(v) for k, v in (unit_env or {}).items()})                          # this unit's own env
+        e.update({k: str(v) for k, v in ((self.spec.get("arm_env") or {}).get(arm) or {}).items()})   # this arm's env
         for k in self.spec["knobs"]:
             if knob_kind(self.spec, k) == "env":
                 e.pop(k, None)      # a knob is only ever set by its arm
@@ -1005,7 +1019,8 @@ class Gate:
         if os.path.exists(log):
             os.replace(log, log + f".prev-{int(time.time())}")
         t0 = time.time()
-        p = self.start_server(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0]), log)
+        uenv = (corr_of(self.spec, kind) or {}).get("env") if kind in UNIT_KIND else None
+        p = self.start_server(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0], uenv), log)
         u = {"unit_id": uid, "kind": kind, "arm": arm, "argv": argv, "log": os.path.relpath(log, self.out), "port": port}
         try:
             why = self.wait_ready(port, p, ready_timeout)
@@ -1074,7 +1089,7 @@ class Gate:
         else:   # identity, cmd mode: every (arm, prompt) in its OWN process
             argv = self.llama_argv(c["argv"], arm, flags=bool(c.get("apply_flags")),
                                    extra={"{PROMPT_INDEX}": str(extra["prompt"])}, force_lv=c.get("lv", True))
-        r = self.run_fn(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0]), log, to)
+        r = self.run_fn(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0], c.get("env")), log, to)
         u = {"unit_id": uid, "kind": kind, "arm": arm, "argv": argv, "log": os.path.relpath(log, self.out),
              "rc": r.get("rc"), "secs": r.get("secs"), **extra}
         if r.get("error"):

@@ -288,13 +288,16 @@ def server_argvs(row):
     return out
 
 
+JOB_CLI_FLAGS = {"--replay", "--decide-from", "--no-receipt", "--selftest"}   # the job's own CLI (ak_gate.main), not server flags
+
+
 def argv_flags(argvs):
     fl = set()
     for _f, _ln, a in argvs:
         for x in [t for y in a for t in str(y).split()]:
             if x.startswith("-") and len(x) > 1 and not re.fullmatch(r"-[\d.]+", x):
                 x = x.split("=", 1)[0]
-                if x not in WRAPPER_FLAGS and not x.startswith("-D") and ":" not in x:
+                if x not in WRAPPER_FLAGS and x not in JOB_CLI_FLAGS and not x.startswith("-D") and ":" not in x:
                     fl.add(x)
     return fl
 
@@ -890,6 +893,9 @@ def check_estimate(row, ctx):
         return [("FAIL", "NO-BASIS", "no estimate_basis: cite {smoke_measure, sha256, units, unit_s, loads_s, margin}")]
     miss = [k for k in BASIS_FIELDS if b.get(k) in (None, "")]
     sm = b.get("smoke_measure") or b.get("rebook_from")
+    if b.get("provisional") and b.get("units") and b.get("rebook_from") and str(b.get("reason") or "").strip() \
+            and not (sm and os.path.isfile(sm if os.path.isabs(str(sm)) else os.path.join(row.dir, str(sm)))):
+        miss = [k for k in miss if k == "units"]   # a pre-smoke basis is complete once it names its unit plan + re-book source
     smp = (sm if os.path.isabs(str(sm)) else os.path.join(row.dir, str(sm))) if sm else None
     if miss:
         lvl = "WARN" if b.get("provisional") and not (smp and os.path.isfile(smp)) else "FAIL"
@@ -1095,6 +1101,8 @@ def check_served(row, ctx):
     llama-server argv; a delta not declared in argv_delta (with a reason) fails."""
     ref = row.spec.get("served_ref")
     argvs = server_argvs(row)
+    if not ref and (row.spec.get("generator") or {}).get("profile") == "gate":
+        return []   # a declared gate row (mk_ak_row gate new --server-argv-json): the argv is the declaration's SERVER_ARGV, sealed
     if not ref:
         return [("WARN", "SERVED-REF-MISSING", "server row with no spec.served_ref: its argv is not tied to a served "
                                                "shape (mk_ak_row v2 writes it)")] if argvs else []
@@ -1185,10 +1193,11 @@ def check_generator(row, ctx):
     g = row.spec.get("generator")
     spec_ok = bool(isinstance(g, dict) and os.path.basename(str(g.get("tool") or "")) == "mk_ak_row.py"
                    and str(g.get("version") or "") == "v2" and re.fullmatch(r"[0-9a-f]{64}", str(g.get("harness_sha256") or ""))
-                   and g.get("profile") in (None, "polar"))
+                   and g.get("profile") in (None, "polar", "gate")
+                   and (g.get("profile") != "gate" or re.fullmatch(r"[0-9a-f]{64}", str(g.get("gate_sha256") or ""))))
     if isinstance(g, dict) and not spec_ok:
         out.append(("WARN", "GENERATOR-SPEC", f"spec.generator {g} is not {{tool: mk_ak_row.py, version: v2, harness_sha256"
-                                              "[, profile: polar]}"))
+                                              "[, profile: polar | profile: gate + gate_sha256]}"))
     if not (stamp_ok or spec_ok):
         out.append(("WARN", "GENERATOR-UNSTAMPED", "neither a job.py `# GENERATED-BY: mk_ak_row.py v2 harness_sha256=<sha>` "
                                                    "stamp nor spec.generator (hand-built row; publish will refuse these later)"))

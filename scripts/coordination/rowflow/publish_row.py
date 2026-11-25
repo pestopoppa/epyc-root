@@ -242,7 +242,8 @@ def check_smoke_estimate(spec):
         _, warns = H.check_spec_estimate(spec)
     except ValueError as e:
         raise rf.Refused(f"estimate_s: {e}. FIX: set estimate_s >= the derived value (ak_row_harness.py estimate ...)")
-    if warns and str(spec.get("owner") or "").startswith("autokernel"):
+    gate_plan = (spec.get("generator") or {}).get("profile") == "gate" and (spec.get("estimate_basis") or {}).get("units")
+    if warns and str(spec.get("owner") or "").startswith("autokernel") and not gate_plan:   # a gate row re-books from its smoke
         _warn(spec, "estimate-unmeasured: " + warns[0] + " (publish continues)")
 
 

@@ -307,9 +307,24 @@ def keeper_measure_rels(spec, d):
     return rels
 
 
+def _vendored_gate_smoke(d, own):
+    """True iff the job `import ak_gate`s and the vendored ak_gate.py beside it really calls end_smoke(>=3 args) and
+    write_smoke_measure (a gate row's smoke lives in the sealed harness, not in the declaration)."""
+    if not any(re.search(r"^\s*import ak_gate\b|^\s*from ak_gate import", t, re.M) for t in own.values()):
+        return False
+    try:
+        tree = ast.parse(_read(os.path.join(d, "ak_gate.py")))
+    except (OSError, SyntaxError, ValueError):
+        return False
+    names = [(_callname(n), len(n.args) + len(n.keywords)) for n in ast.walk(tree) if isinstance(n, ast.Call)]
+    return any(c == "end_smoke" and k >= 3 for c, k in names) and any(c == "write_smoke_measure" for c, _ in names)
+
+
 def smoke_checks(d, spec, own):
     """SMOKE-FAIL-SILENT / SMOKE-NO-MEASURE / SMOKE-MEASURE-PATH over real call sites (AST), not text matches."""
     out = []
+    if _vendored_gate_smoke(d, own):
+        return out        # the vendored ak_gate.py owns end_smoke + write_smoke_measure (out-smoke/), proven by its own tests
     ends, writes, unresolved = 0, [], []
     for f, t in sorted(own.items()):
         try:
