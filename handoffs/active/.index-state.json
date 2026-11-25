@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 581
+      "open": 587
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -105,8 +105,8 @@
       "closed": 1018,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "needs_owner": 1,
-      "open": 134,
+      "needs_owner": 2,
+      "open": 139,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -115,7 +115,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1152,
+      "total": 1157,
       "tracks": [
         {
           "blocked": 0,
@@ -227,7 +227,7 @@
           "line": 11933,
           "markers": 1,
           "name": "autokernel-roofline-surface-loop",
-          "open": 6
+          "open": 11
         }
       ]
     },
@@ -2378,7 +2378,7 @@
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "open": 29,
+      "open": 30,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2387,7 +2387,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 336,
+      "total": 337,
       "tracks": [
         {
           "blocked": 2,
@@ -2411,7 +2411,7 @@
           "line": 1025,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 17
+          "open": 18
         }
       ]
     },

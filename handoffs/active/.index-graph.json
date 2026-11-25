@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T20:04:09Z",
+  "generated_at": "2026-11-25T20:35:53Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1386,14 +1386,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 1018,
-      "dispatchable": 134,
+      "dispatchable": 139,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-25",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 134,
+      "open": 139,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1547,13 +1547,13 @@
           "blocked_by": [
             "INF-06"
           ],
-          "dispatchable": 6,
+          "dispatchable": 11,
           "gates": [
             "INF-06"
           ],
           "line": 11933,
           "name": "autokernel-roofline-surface-loop",
-          "open": 6,
+          "open": 11,
           "readiness": "blocked"
         }
       ]
@@ -1797,14 +1797,14 @@
       "blocked": 3,
       "blocked_by": [],
       "closed": 303,
-      "dispatchable": 29,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-25",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 32,
+      "open": 33,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1847,14 +1847,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 17,
+          "dispatchable": 18,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 1025,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 18,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
