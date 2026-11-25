@@ -1934,11 +1934,12 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · done when: both columns added to the table under KV-EVICT-COST-1 with per-device break-even length or NO-GO recorded under this box
       · gate: KV-EVICT-COST-1        · inputs: `handoffs/active/kv-cache-program.md`
 - Monitor (intake-ak-1124 M6, operator-approved 2026-11-24, no checkbox): If KV-EVICT-COST-2 records a break-even length for the compressor/agent split on some device: probe a concurrent CPU-quarter compressor with the GPU agent for latency (intake-2875).
-- [ ] **Q8IP-DET2-GATE-1** [inference] Gate DET2, a cheaper deterministic V5 q8ip half-tile reduction, against served atomics
+- [x] **Q8IP-DET2-GATE-1** [inference] Gate DET2, a cheaper deterministic V5 q8ip half-tile reduction, against served atomics ✅ 2026-11-25 [belief: cc] FAIL_DET2_PERF_REGRESS: DET2/BASE 0.970 [0.960,0.981], 0 vs 10 mismatches; DET1 0.938
       · done when: row ak-c22-q8ipdet2-gate-gpu-20261125 files KEEP / FAIL_PERF_REGRESS / FAIL_* with mismatch counts and ms/round CI
       · stop: stop-on-answer when the gate row files PASS_DET2_NOREGRESS / FAIL_DET2_PERF_REGRESS / FAIL_DET2_NONDET; stop-on-futility on FUTILITY_CANDIDATE_BELOW_FLOOR or FUTILITY_HARNESS_*; gate-class = futility-only
       · gate: ak-c22-q8ipdet2-gate-gpu-20261125        · inputs: `/mnt/raid0/llm/tmp/q8ip-second-ctx-mechanism-20261125.md`
       · owner: autokernel
+  - 2026-11-25 (autokernel) row `ak-c22-q8ipdet2-gate-gpu-20261125` filed FAIL (FUTILITY at the 3-block look; `/mnt/raid0/llm/tmp/ak-c22-q8ipdet2-gate-gpu-20261125/verdict.json`): correctness PASS (DET2 0 vs BASE 10 AA mismatches over 3 two-context runs), DET2/BASE 0.970 [0.960,0.981] (-3.0 %, deterministic), DET1/BASE 0.938 [0.931,0.946] (-6.2 %). Attribution: the WG-count cut 416->320 costs about 3.0 %, DET1 sync + serial sum another 3.2 %. Determinism via fewer WGs is not free: serve on atomics, use DET only in identity/A-A test arms. [belief: cc]
 
 
 ## Track: heterogeneous-slot-fabric-residency
