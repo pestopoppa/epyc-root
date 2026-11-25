@@ -309,6 +309,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: box_index reports no duplicate id HS-4
       · gate: none
       · owner: pipeline-mgmt
+      · NEEDS-OWNER: 2026-11-25 codex lane cxd-tf-dupid-hs4-20261125T1444: lane status BLOCKED: handoffs/active/harness-program.md requires ID and reference edits, but the lane prohibits editing handoffs/
 - [ ] **TF-DUPID-KPF-18-0D** [non-inference] Resolve the duplicate box ID KPF-18.0d (x4 occurrences) in kv-cache-program.
       · done when: box_index reports no duplicate id KPF-18.0d
       · gate: none
