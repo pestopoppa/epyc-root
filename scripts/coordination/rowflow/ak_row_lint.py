@@ -88,6 +88,7 @@ SPEED_WORD_RX = re.compile(
     r"(?<![a-z])(?:speed|faster|slower|tok/?s|t/s|throughput|latency|bandwidth|geomean|ratio|perf|prefill|decode|e2e|gain|"
     r"ms|us|pp\d*|tg\d*)(?![a-z])|µs|\bGB/s", re.I)
 # self-declared non-gating rules (diagnostic/census/screening/futility-only) cannot return a keep: no warn
+EXPLICIT_KEEP_RX = re.compile(r"KEEP_CANDIDATE|GATE_PASS|\bKEEP\b|\bPROMOTE\b")  # an explicit keep beats a non-gating word
 NONGATING_RX = re.compile(r"diagnostic|never\s+gates|polar\s+None|(?<![a-z])census(?![a-z])|(?<![a-z])screening(?![a-z])|"
                           r"futility[- ]only|floor[- ](?:only|census|measurement)", re.I)
 MECH_FIELDS = ("counter", "direction", "aa_band")
@@ -98,7 +99,8 @@ def mech_unwitnessed(spec, allc):
     rule = " ".join(str(spec.get(k) or "") for k in ("decision_rule", "notes"))
     if not (SPEED_CLAIM_RX.search(rule) and SPEED_WORD_RX.search(rule)):
         return []
-    if NONGATING_RX.search(str(spec.get("decision_rule") or "")):
+    dr = str(spec.get("decision_rule") or "")
+    if NONGATING_RX.search(dr) and not EXPLICIT_KEEP_RX.search(dr):
         return []
     w = spec.get("mechanism_witness")
     miss = [k for k in MECH_FIELDS if not (isinstance(w, dict) and str(w.get(k) or "").strip())]

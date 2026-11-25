@@ -74,3 +74,8 @@ def test_arms_diagnostic_polar_pass_no_warn(tmp_path):
 def test_floor_band_keep_candidate_still_warns(tmp_path):
     rule = "floor band [0.99, 1.01] either way -> KEEP_CANDIDATE (CI above) | LOSS; tok/s ratio"
     assert len(_mech(_row(tmp_path, {"decision_rule": rule}))) == 1
+
+
+def test_futility_only_explicit_keep_still_warns(tmp_path):
+    rule = "Gate class futility-only. KEEP iff ci_lo(tok/s ratio ON/OFF) > 1"
+    assert len(_mech(_row(tmp_path, {"decision_rule": rule}))) == 1
