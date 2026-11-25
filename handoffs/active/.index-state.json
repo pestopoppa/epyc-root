@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 580
+      "open": 579
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 493
+      "open": 492
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -640,11 +640,11 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 376,
+      "closed": 377,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "open": 15,
+      "open": 14,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -668,13 +668,13 @@
         },
         {
           "blocked": 0,
-          "closed": 2,
+          "closed": 3,
           "gates": [],
           "guarded": 0,
           "line": 2584,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
@@ -2368,11 +2368,11 @@
     },
     "speculative-decoding.md": {
       "blocked": 3,
-      "closed": 299,
+      "closed": 300,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "open": 30,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2396,7 +2396,7 @@
         },
         {
           "blocked": 1,
-          "closed": 161,
+          "closed": 162,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2405,7 +2405,7 @@
           "line": 1024,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 18
+          "open": 17
         }
       ]
     },
