@@ -306,3 +306,13 @@ class R7Preempt(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_harness_terminal_verdict_is_classified_as_harness():
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "akloop"))
+    import failclass
+    c = failclass.classify_fail({"id": "ak-test", "smoke_result": {"result_path": "out/TERMINAL-smoke.json",
+                                                                  "verdict": "FUTILITY_HARNESS_NONDET"}})
+    assert c.side == "harness"

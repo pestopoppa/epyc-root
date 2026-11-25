@@ -204,7 +204,12 @@ def smoke_terminal(fail: dict):
 def classify_fail(fail: dict, launcher_text: str | None = None, row_dir: str | None = None) -> Classification:
     reason = str(fail.get("reason") or "")
     tv = smoke_terminal(fail)
-    if tv:   # before reason:partial-native-incomplete / reason:job-rc-no-text-rule: a verdict, never a harness defect
+    if tv and tv.startswith("FUTILITY_HARNESS_"):
+        c = _c("harness", _harness_klass(tv), "result:smoke-terminal-harness", tv)
+        c.row_id = str(fail.get("id") or "")
+        c.source = "fail"
+        return c
+    if tv:   # an explicit candidate or pass verdict
         side, klass = (("ok", "pass") if tv.startswith("PASS") else
                        ("candidate", "correctness_gate" if "CORRECT" in tv else "timing_loss" if "TIM" in tv or "SPEED" in tv
                         else "candidate_verdict"))
