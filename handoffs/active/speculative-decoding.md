@@ -1490,6 +1490,12 @@ Goal: make 12-16-token verify on the MI210 cheap enough that tree drafting beats
       · stop: stop-on-answer when the row files KEEP or NO_KEEP at block 8; stop-on-futility on CI95-upper < 1.01 at both T at the block-4 look, FUTILITY_WITNESS, FUTILITY_RESIDENCY (KFD VRAM < 40 GiB), or A/A band > 0.02; gate-class = futility-only
       · gate: none
       · owner: autokernel
+- [ ] **DTREE-PANDO-GATE-R3** [inference] Rerun of DTREE-PANDO-GATE after r2 FUTILITY_HARNESS_NONDET (baseline V5 atomic nondeterminism): identity unit now GGML_HIP_Q8_MF_INPLACE=0 and output-only. Measure ms_per_token of PANDO16 and PANDO10 (LLAMA_DTREE_BUILDER=pando) vs the shipped C21T16 V2 RRS tree, A/A C21T16/C21T16B, at T0.3 and T1.0 (C21 official sampler), plus a report-only np4 load unit, T=0 output identity and KLD. Row ak-dtree-pando-gate-gpu-20261125-r3.
+      · model: Qwen3.8-27B Q8_0 + DFlash2-Q8_0 · quant_build: gpu-20261125-63e69e295-c22dtreepando · region: exclusive MI210 + host 184-191 · est: 10800 s (provisional)
+      · done when: row ak-dtree-pando-gate-gpu-20261125-r3 files KEEP / NO_KEEP / FUTILITY_* with PANDO16 and PANDO10 ratios and CI per T, the A/A band, np4 ms/round, identity and KLD
+      · stop: stop-on-answer when KEEP or NO_KEEP is filed at block 8; stop-on-futility at the block-4 look if every candidate CI upper < 1.01, on A/A > 0.02, witness miss, residency < 20 GiB or correctness FAIL; gate-class = futility-only
+      · gate: ak-dtree-pando-gate-gpu-20261125-r3
+      · owner: autokernel
 
 ### dFlash2 block drafter — experimental build + measured comparison vs MTP
 
