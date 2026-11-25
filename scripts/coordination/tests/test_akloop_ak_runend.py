@@ -371,3 +371,42 @@ def test_composite_verdicts():
     c = k("INCONCLUSIVE")
     assert (c.side, c.klass, c.rule) == ("candidate", "noise", "result:INCONCLUSIVE")
     assert k("DROP").rule == "result:DROP"
+
+
+def _ended(tmp_path, rid, reason):
+    g = tmp_path / "flags" / "grants"
+    g.mkdir(parents=True, exist_ok=True)
+    (g / f"{rid}.ended").write_text(f"rc=75 time=x reason={reason}\n")
+
+
+def _man(tmp_path, rid, result, resumable):
+    flags = _row(tmp_path, rid, result)
+    mp = tmp_path / "flags" / "ready" / f"{rid}.json"
+    m = json.loads(mp.read_text())
+    m["resumable"] = resumable
+    mp.write_text(json.dumps(m))
+    return flags
+
+
+def test_resumable_stopped_no_alert(tmp_path):
+    flags = _man(tmp_path, "ak-p-gpu-20261125", None, True)
+    _ended(tmp_path, "ak-p-gpu-20261125", "stopped")
+    nm = FakeNotify()
+    c = AR.classify(flags, "ak-p-gpu-20261125", AR.manifest(flags, "ak-p-gpu-20261125"), route=True, notify_mod=nm)
+    assert c["side"] == "pause" and not nm.calls
+
+
+def test_nonresumable_stopped_no_result_alerts(tmp_path):
+    flags = _man(tmp_path, "ak-q-gpu-20261125", None, False)
+    _ended(tmp_path, "ak-q-gpu-20261125", "stopped")
+    nm = FakeNotify()
+    c = AR.classify(flags, "ak-q-gpu-20261125", AR.manifest(flags, "ak-q-gpu-20261125"), route=True, notify_mod=nm)
+    assert c["side"] == "harness" and nm.calls[0][0] == "ak-harness-failure"
+
+
+def test_resumable_complete_futility_harness_alerts(tmp_path):
+    flags = _man(tmp_path, "ak-r-gpu-20261125", {"complete": True, "verdict": "FUTILITY_HARNESS_X (p)"}, True)
+    _ended(tmp_path, "ak-r-gpu-20261125", "stopped")
+    nm = FakeNotify()
+    c = AR.classify(flags, "ak-r-gpu-20261125", AR.manifest(flags, "ak-r-gpu-20261125"), route=True, notify_mod=nm)
+    assert c["side"] == "harness" and nm.calls

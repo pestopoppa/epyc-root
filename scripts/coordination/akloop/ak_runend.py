@@ -75,6 +75,27 @@ def manifest(flags: str, rid: str) -> dict:
     return {}
 
 
+PAUSE_REASONS = ("stopped", "partial-native-stopped", "released-early")
+
+
+def ended_reason(flags: str, rid: str) -> str:
+    try:
+        h = open(os.path.join(flags, "grants", rid + ".ended"), errors="replace").readline()
+    except OSError:
+        return ""
+    m = re.search(r"(?:^|\s)reason=(\S+)", h)
+    return m.group(1) if m else ""
+
+
+def is_pause_skip(flags: str, rid: str, man: dict, res) -> bool:
+    """An owner STOP / deadline partial of a RESUMABLE row with no result (or complete:false) is a pause, not a harness failure."""
+    if not man.get("resumable"):
+        return False
+    if ended_reason(flags, rid) not in PAUSE_REASONS:
+        return False
+    return res is None or (isinstance(res, dict) and res.get("complete") is False)
+
+
 def classify(flags: str, rid: str, man: dict, *, route: bool, notify_mod=None) -> dict:
     import failclass as FC
     rp = str(man.get("result_path") or "")
@@ -82,6 +103,9 @@ def classify(flags: str, rid: str, man: dict, *, route: bool, notify_mod=None) -
         res = json.load(open(rp))
     except (OSError, ValueError):
         res = None
+    if is_pause_skip(flags, rid, man, res):
+        print(f"HARNESS-SKIP-PAUSE {rid}")
+        return {"side": "pause", "klass": "paused", "rule": "resumable-stop", "row_id": rid, "routed": False}
     lt = None
     for p in (os.path.join(flags, "dryrun", rid, "launcher.out"),):
         try:
