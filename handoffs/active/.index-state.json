@@ -45,7 +45,6 @@
       "closed": 154,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "needs_owner": 1,
       "open": 49,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -93,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 845,
+          "line": 847,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 37

@@ -708,7 +708,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-25T22:22:28Z",
+  "generated_at": "2026-11-25T22:33:05Z",
   "nodes": [
     {
       "age_days": 3,
@@ -2390,7 +2390,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 845,
+          "line": 847,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 38,
           "readiness": "blocked"
