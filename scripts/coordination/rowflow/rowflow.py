@@ -5333,6 +5333,45 @@ def autorequeue_history(flags, rid):
                                .get("requeued_at") or [])]
 
 
+PROGRESS_END_RX = re.compile(r"(^|\s)reason=(partial-native-stopped|released-early|partial-released-early)(\s|$)")
+
+
+def row_units(d):
+    """Valid result units the row's result file holds now (None = not countable: no path or a custom: format)."""
+    d = d or {}
+    rp = str(d.get("result_path") or "")
+    fmt = str(d.get("result_format") or "jsonl")
+    if not rp or fmt.startswith("custom:"):
+        return None
+    if not os.path.isabs(rp):
+        rp = os.path.join(str(d.get("workdir") or ""), rp)
+    try:
+        return int(count_units(rp, fmt, d.get("workdir")))
+    except Exception:  # noqa: BLE001 - an uncountable result never exempts the cap
+        return None
+
+
+def autorequeue_charged(hj):
+    """Requeues charged against the cap; legacy history (no `charged`) charges every requeue."""
+    c = (hj or {}).get("charged")
+    return int(c) if isinstance(c, int) and not isinstance(c, bool) else len((hj or {}).get("requeued_at") or [])
+
+
+def autorequeue_progress(flags, rid, d, head):
+    """+n units gained since the previous grant start when this end is a deadline/partial stop of a resumable row, else 0.
+    The baseline is the unit count recorded at the last requeue (`units_at_grant`); none recorded = 0 (2026-11-25:
+    rka-a3b-d-remeasure-q-20261123-r5 burned 3/3 on deadline ends while adding units)."""
+    if not (d and d.get("resumable") and PROGRESS_END_RX.search(head or "")):
+        return 0
+    u = row_units(d)
+    if u is None:
+        return 0
+    hj = load_json(os.path.join(autorequeue_dir(flags), rid + ".history.json")) or {}
+    base = hj.get("units_at_grant")
+    base = int(base) if isinstance(base, int) and not isinstance(base, bool) else 0
+    return max(0, u - base)
+
+
 COMPLETE_SUSPECT_S = 60   # rc=0 reason=complete this soon after grant start, with no evidence of work, is not a completion
 
 
@@ -5494,8 +5533,12 @@ def autorequeue_decision(flags, rid):
         sf = resolve_stop_path(d)
         if sf and os.path.exists(sf):
             return "stop", f"STOP file {sf} present"
-    n = len(autorequeue_history(flags, rid))
+    hj = load_json(os.path.join(autorequeue_dir(flags), rid + ".history.json")) or {}
+    n = autorequeue_charged(hj)
     mx = autorequeue_max_for(d)
+    gain = autorequeue_progress(flags, rid, d, first)
+    if gain > 0:
+        return "requeue", f"progress +{gain} units, cap not charged ({n}/{mx})"
     if n >= mx:
         return "limit", f"auto-requeue limit {mx} reached"
     return "requeue", f"{n + 1}/{mx}"
@@ -5582,9 +5625,22 @@ def autorequeue(flags, log=print, now=None, emit=None):
                 log(f"AUTO-REQUEUE {rid}: could not remove STOP {sfp}: {ex}")
         rotate_launcher_out(flags, rid, ts)   # B13: the finished attempt keeps its launcher.out
         hist = autorequeue_history(flags, rid) + [now]
-        atomic_json(hp, {"id": rid, "requeued_at": hist, **({"suspect_requeued": "partial-blocked-stale-complete"} if kind == "suspect-requeue" else {})})
+        dd = load_json(ready_path(flags, rid)) or {}
+        gain = autorequeue_progress(flags, rid, dd, head) if kind == "requeue" else 0
+        charged = autorequeue_charged(hj) + (0 if gain > 0 else 1)
+        units = row_units(dd)
+        rec = {"id": rid, "requeued_at": hist, "charged": charged}
+        if units is not None:
+            rec["units_at_grant"] = units
+        if kind == "suspect-requeue":
+            rec["suspect_requeued"] = "partial-blocked-stale-complete"
+        elif hj.get("suspect_requeued"):
+            rec["suspect_requeued"] = hj["suspect_requeued"]
+        atomic_json(hp, rec)
+        if gain > 0:
+            log(f"AUTO-REQUEUE-PROGRESS {rid}: +{gain} units, cap not charged")
         log(f"AUTO-REQUEUE {rid}: {head}; resumable {'owner STOP' if 'reason=stopped' in head else 'partial end'}, .ended/.grant archived to .autorequeue/{rid}.{ts}.*, "
-            f"same id grantable again ({len(hist)}/{autorequeue_max_for(load_json(ready_path(flags, rid)))})")
+            f"same id grantable again ({charged}/{autorequeue_max_for(dd)})")
         out.append(rid)
     return out
 
