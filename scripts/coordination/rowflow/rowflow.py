@@ -8588,6 +8588,181 @@ def build_interstice_open_for(flags, owner, now=None):
                 and now - float(a.get("picked_at") or 0) <= BUILD_INTERSTICE_PENDING_S)
 
 
+# GPU-URGENT (pipeline-mgmt 2026-11-25): twice on 11-25 a rank-1 AutoKernel GPU row's smoke was queued minutes AFTER the
+# keeper granted a rank-20 / rank-31 GPU row a 2-3 h window; the urgent row waited hours and its owner STOPped the
+# non-resumable running row (opperf-cal-27b-r2 lost 41 min, kvtype-r4 22 min). B's phantoms missed both: urgent_quiet_pending
+# admits only quiet_sensitive rows (a GPU row is not), RESERVATION_MODE is "shadow", and SLOT-KEEP (b) needs a predecessor.
+# (1) PREEMPT-PROPOSE (advisory, never acts): a rank <= GPU_URGENT_RANK GPU row is pending while a GPU grant with rank >=
+#     PREEMPT_LOW_RANK has > PREEMPT_LEFT_S left -> one notify.emit per (urgent, running) pair to the running row's owner.
+# (2) URGENT-SMOKE-AHEAD (prevention): a NEW GPU grant with rank >= PREEMPT_LOW_RANK and a window > URGENT_SMOKE_WINDOW_S is
+#     held one tick while such an urgent row has a smoke queued / running, or was published < URGENT_PUBLISH_S ago and still
+#     awaits its smoke, unless it fits before that smoke's expected end. Bounded: 2x the smoke budget from the first marker.
+# Future work (not built): run a pending smoke in a running resumable row's between-unit gap.
+GPU_URGENT = True
+GPU_URGENT_RANK = 3
+PREEMPT_LOW_RANK = 20
+PREEMPT_LEFT_S = 3600
+URGENT_SMOKE_WINDOW_S = 3600
+URGENT_PUBLISH_S = 900
+PREEMPT_PROPOSED = "preempt_proposed.json"
+
+
+def _gpu_row(d):
+    return str((d or {}).get("lane") or "") == "gpu"
+
+
+def urgent_gpu_pending(flags, grants=(), allrows=None, now=None):
+    """-> [{id, rank, state, since, end}] of GPU rows with priority_rank <= GPU_URGENT_RANK that are not granted and wait:
+    state 'smoke' (a smoke marker, no FAIL, no PASS; end = first marker + budget), 'published' (ready/ < URGENT_PUBLISH_S ago,
+    no smoke yet; end = publish + URGENT_PUBLISH_S + budget) or 'ready' (smoke passed, waiting for the GPU; end None)."""
+    now = time.time() if now is None else now
+    allrows = allrows or {}
+    granted = {g["id"] for g in grants}
+    G = os.path.join(flags, "grants")
+    out, seen = [], set()
+
+    def rank_of(d):
+        try:
+            return float(d.get("priority_rank", 100))
+        except (TypeError, ValueError):
+            return None
+
+    def budget_of(rid, d):
+        sq = load_json(smoke_queued_path(flags, rid)) or {}
+        try:
+            return float(sq.get("smoke_s") or d.get("smoke_s") or SMOKE_HOLD_S)
+        except (TypeError, ValueError):
+            return float(SMOKE_HOLD_S)
+
+    def dead(rid):
+        return rid in granted or any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete"))
+    for dd in sorted(glob.glob(os.path.join(flags, "dryrun", "*"))):
+        rid = os.path.basename(dd)
+        if dead(rid):
+            continue
+        marks = [os.path.join(dd, m) for m in _SMOKE_PENDING_MARKERS if os.path.exists(os.path.join(dd, m))]
+        if not marks or fail_paths(flags, rid):
+            continue
+        d = allrows.get(rid) or load_json(ready_path(flags, rid)) or load_json(os.path.join(dd, "unpublished.json")) or {}
+        rank = rank_of(d)
+        if rank is None or rank > GPU_URGENT_RANK or not _gpu_row(d):
+            continue
+        try:
+            if smoke_passed(flags, rid, d):
+                continue
+            since = min(os.path.getmtime(m) for m in marks)
+        except Exception:  # noqa: BLE001
+            continue
+        b = budget_of(rid, d)
+        if now - since > 2 * b:
+            continue   # a stale smoke record reserves nothing
+        out.append({"id": rid, "rank": rank, "state": "smoke", "since": since, "end": since + b}); seen.add(rid)
+    for mp in sorted(glob.glob(os.path.join(flags, "ready", "*.json"))):
+        rid = os.path.basename(mp)[:-5]
+        if rid in seen or dead(rid):
+            continue
+        d = allrows.get(rid) or load_json(mp) or {}
+        rank = rank_of(d)
+        if rank is None or rank > GPU_URGENT_RANK or not _gpu_row(d) or fail_paths(flags, rid):
+            continue
+        try:
+            passed = smoke_passed(flags, rid, d)
+            pub = os.path.getmtime(mp)
+        except Exception:  # noqa: BLE001
+            continue
+        if passed:
+            out.append({"id": rid, "rank": rank, "state": "ready", "since": pub, "end": None})
+        elif now - pub <= URGENT_PUBLISH_S:
+            out.append({"id": rid, "rank": rank, "state": "published", "since": pub,
+                        "end": pub + URGENT_PUBLISH_S + budget_of(rid, d)})
+    return sorted(out, key=lambda p: (p["rank"], p["id"]))
+
+
+def preempt_propose(flags, grants, allrows, log, now=None, emit=None, dry=False, pending=None):
+    """-> [(urgent id, running id)] proposed this call. ADVISORY ONLY: one alert per (urgent, running) pair to the running row's
+    owner; never pauses, stops or re-grants anything."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    allrows = allrows or {}
+    pend = urgent_gpu_pending(flags, grants, allrows, now) if pending is None else pending
+    out = []
+    if not pend:
+        return out
+    sp = os.path.join(state_dir(flags), PREEMPT_PROPOSED)
+    st = load_json(sp) or {}
+    st = {k: v for k, v in st.items() if now - float(v or 0) <= 2 * 86400}
+    for g in grants:
+        rid = g["id"]
+        if rid.startswith(BUILD_PREFIX) or g.get("dryrun"):
+            continue
+        d = allrows.get(rid) or load_json(ready_path(flags, rid)) or {}
+        if not (_gpu_row(d) or GPU in set(g.get("holds") or ())):
+            continue
+        try:
+            rank = float(d.get("priority_rank", 100))
+        except (TypeError, ValueError):
+            continue
+        end = iso_epoch(g.get("end")) if g.get("end") else None
+        if rank < PREEMPT_LOW_RANK or not end or end - now <= PREEMPT_LEFT_S:
+            continue
+        owner = str(d.get("owner") or "")
+        resumable = d.get("resumable") is True
+        left = int((end - now) / 60)
+        for p in pend:
+            k = f"{p['id']}|{rid}"
+            if k in st:
+                continue
+            if resumable:
+                stop = resolve_stop_path(d) or "<its STOP file>"
+                how = (f"It is resumable: `touch {stop}`, let {p['id']} run, then "
+                       f"`python3 scripts/coordination/rowflow/rowflow.py resume {rid} --by {owner or '<owner>'} "
+                       f"--reason preempted-by-{p['id']}`.")
+            else:
+                how = "It is NOT resumable: stopping it loses its partial work; weigh that against the urgent row's wait."
+            msg = (f"PREEMPT-PROPOSAL: urgent GPU row {p['id']} (rank {p['rank']:g}, {p['state']}) waits behind your running "
+                   f"{rid} (rank {rank:g}, {left} min left). {how} Advisory: the keeper does not stop anything")
+            try:
+                if not dry:
+                    emit(flags, "preempt-proposal", rid, p["id"], msg, "warning", owner,
+                         {"urgent": p["id"], "urgent_rank": p["rank"], "running": rid, "running_rank": rank,
+                          "left_s": int(end - now), "resumable": resumable})
+            except Exception as ex:  # noqa: BLE001
+                log(f"PREEMPT-PROPOSE {p['id']}|{rid}: notify failed: {type(ex).__name__}: {ex}")
+                continue
+            st[k] = now
+            out.append((p["id"], rid))
+            log(f"PREEMPT-PROPOSE urgent={p['id']} rank={p['rank']:g} running={rid} rank={rank:g} left={left}min "
+                f"resumable={resumable}")
+    if out and not dry:
+        atomic_json(sp, st)
+    return out
+
+
+def urgent_smoke_ahead_filter(pending, cands, now=None):
+    """PURE. -> (kept cands, {key: log line}). A GPU candidate with rank >= PREEMPT_LOW_RANK and a window over
+    URGENT_SMOKE_WINDOW_S is held this tick while an urgent GPU row's smoke is queued / running / imminent ('smoke' or
+    'published' pending), unless now + its window ends before that smoke's expected end."""
+    now = time.time() if now is None else now
+    pend = [p for p in pending or [] if p.get("state") in ("smoke", "published") and p.get("end")]
+    if not pend:
+        return list(cands), {}
+    kept, lines = [], {}
+    for c in cands:
+        if c.get("kind") == "claim" or c.get("phantom") or c.get("hold") or not gpu_lane_cand(c):
+            kept.append(c); continue
+        r = float(c["rank"])
+        win = int(c.get("book_s") or c.get("window_s") or 0)
+        if r < PREEMPT_LOW_RANK or win <= URGENT_SMOKE_WINDOW_S:
+            kept.append(c); continue
+        block = next((p for p in pend if now + win > float(p["end"])), None)
+        if block is None:
+            kept.append(c); continue
+        lines[f"{block['id']}|{c['id']}"] = (f"URGENT-SMOKE-AHEAD {block['id']} rank={block['rank']:g} ({block['state']}, smoke end "
+                                             f"{dt.datetime.fromtimestamp(float(block['end']), dt.timezone.utc):%H:%MZ}) holds "
+                                             f"{c['id']} (rank {r:g}, window {win // 60} min) one tick")
+    return kept, lines
+
+
 # QUIET-URGENT-PENDING (2026-11-24): c21-fold-cpu-20261124-r2 (rank 9, quiet, q0-q2) was in smoke 10:03-10:10Z when q0
 # freed; QUIET-SERIAL only sees grantable rows, so ak-cpu-gdn-state-fwd-20261123-r2 (rank 100) took q0 until 14:55Z and the
 # urgent row waited ~4.5 h. While an urgent quiet row is in dry run / smoke-queued / smoking, no NEW non-urgent quiet row is
@@ -10204,7 +10379,17 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001 - never stops allocation
             sk_holds = []
             log(f"SLOT-KEEP failed: {type(e).__name__}: {e}")
-        uw_p = os.path.join(state_dir(flags), QUIET_URGENT_WAITING_STATE)
+        if GPU_URGENT:
+            try:   # GPU-URGENT: PREEMPT-PROPOSE (advisory) + URGENT-SMOKE-AHEAD (hold a long low-rank GPU grant one tick)
+                gpend = urgent_gpu_pending(flags, grants, allrows)
+                preempt_propose(flags, grants, allrows, log, dry=dry, pending=gpend)
+                cands, usa_lines = urgent_smoke_ahead_filter(gpend, cands)
+                log_transition(flags, "urgent-smoke-ahead", usa_lines, log, persist=not dry)
+                if res_base is not None:
+                    res_base = urgent_smoke_ahead_filter(gpend, res_base)[0]
+            except Exception as e:  # noqa: BLE001 - never stops allocation
+                log(f"GPU-URGENT failed: {type(e).__name__}: {e}")
+        uw_p =os.path.join(state_dir(flags), QUIET_URGENT_WAITING_STATE)
         uwait, uw_state = urgent_quiet_waiting(pre_quiet, cands, qlines, allrows, load_json(uw_p) or {}, flags=flags)
         if rmode == "enforce":   # RESERVATION: QUIET-URGENT-PENDING / -WAITING are subsumed by the urgent head reservation
             uwait, uw_state = [], {}
