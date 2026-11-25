@@ -21,8 +21,8 @@ non-server argv (ak-c22-q8mc: llama-perplexity printed no INFO marker); resident
      (arm, prompt) in its OWN process; the gate is outputs + accepted tokens, drafts are diagnostic unless
      `strict_drafts`; a baseline A/A identity difference is FUTILITY_HARNESS_NONDET (not the knob's fault);
   4. the OFF/OFF2 A/A guard: |exp(mean ln(OFF2/OFF)) - 1| > aa_max -> FUTILITY_HARNESS_AA (knob not judged);
-  5. a fast smoke (budget ~5 min) on the smoke arm only: makes every dir, checks every declared input, one fresh
-     server, one warm-up, one request long enough to reach the knob, witness check, TERMINAL-smoke.json +
+  5. a time-bounded smoke: checks inputs, visits each arm, runs a reduced correctness plan and writes
+     TERMINAL-smoke.json +
      out-smoke/smoke_measure.json;
   6. resume: every unit is appended (fsync) to out/results.jsonl; a rerun skips completed unit ids;
   7. replay: `job.py --replay <prior out dir>` runs the WHOLE decision path offline (log re-parse -> witness, A/A,
@@ -1318,11 +1318,18 @@ class Gate:
             to = float(srv.get("request_timeout_s") or 1800)
             if getattr(self, "smoke_deadline", None):
                 to = min(to, max(0.001, self.smoke_deadline - time.time()))
+            def request_timeout():
+                if getattr(self, "smoke_deadline", None):
+                    remaining = self.smoke_deadline - time.time()
+                    if remaining <= 0:
+                        raise TimeoutError("smoke.budget_s exhausted")
+                    return min(to, remaining)
+                return to
             for _ in range(int(warmup)):
-                self.request(port, request_body(self.spec, "Hello", 16), to)
+                self.request(port, request_body(self.spec, "Hello", 16), request_timeout())
             def one(item):
                 i, pr = item
-                return self.request(port, request_body(self.spec, pr, n_predict, cfg.get("sampler"), i + cfg.get("prompt_index", 0)), to)[0]
+                return self.request(port, request_body(self.spec, pr, n_predict, cfg.get("sampler"), i + cfg.get("prompt_index", 0)), request_timeout())[0]
             concurrency = cfg.get("concurrency", 1)
             if concurrency > 1:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:
@@ -1527,8 +1534,7 @@ class Gate:
 
     # ------------------------------------------------------------------ modes
     def smoke(self):
-        """ON-arm-only smoke under a ~5 min budget: dirs + inputs first, one fresh server, one warm-up, ONE request long
-        enough to reach the knob, witness check, TERMINAL-smoke.json + out-smoke/smoke_measure.json."""
+        """Visit every arm and run one reduced correctness plan within the smoke budget."""
         sm = dict({"arm": candidate_arms(self.spec)[0], "prompt_chars": 2000, "n_predict": 32, "budget_s": 300},
                   **(self.spec.get("smoke") or {}))
         t0 = time.time()
@@ -1546,12 +1552,9 @@ class Gate:
                     return H.end_smoke("FAIL", 3, "smoke budget exceeded; adjust smoke.budget_s", self.out)
                 ready = min(float(self.spec["server"].get("ready_timeout_s") or 900), remaining)
                 uid = f"smoke-{arm}"
-                u = self.reuse_unit(uid, "smoke", arm, {})
-                if u is None:
-                    u = self.finish_unit(self.visit_fn(uid, arm, [prompt], int(sm["n_predict"]), 1,
-                                                       ready, kind="smoke"))
-                    self.mark_reusable(u, {})
-                    H.append_unit(u, self.out)
+                u = self.finish_unit(self.visit_fn(uid, arm, [prompt], int(sm["n_predict"]), 1,
+                                                   ready, kind="smoke"))
+                H.append_unit(u, self.out)
                 units.append(u)
                 H.append_unit(dict(u, smoke=True), self.out_smoke)
                 d = decide_smoke(self.spec, units)
@@ -1559,6 +1562,9 @@ class Gate:
                     fix = ("Verify GPU residency and adjust server.kfd_min_vram_gib to the measured footprint"
                            if d["verdict"] == "FUTILITY_HARNESS_RESIDENCY" else
                            "Check expect.<arm>.<knob>, expect_by_unit.served, knobs.<knob>.marker and server.argv")
+                    if d.get("witness_mismatches"):
+                        mismatch = d["witness_mismatches"][0]
+                        fix = f"Check expect.{mismatch['arm']}.{mismatch['knob']}, expect_by_unit.served.{mismatch['arm']}.{mismatch['knob']}, knobs.{mismatch['knob']}.marker and server.argv"
                     return H.end_smoke("FAIL", 3, f"{d['verdict']}: {d['reason']}", self.out,
                                        extra={"verdict": d["verdict"], "fix": fix, "failclass": {"side": "harness"}})
             # Run the same correctness units and judge as the full run, against a reduced plan.
@@ -1579,10 +1585,14 @@ class Gate:
                 verdict, detail, _ = decide_correctness(self.spec, correctness)
                 if verdict:
                     reason = json.dumps(detail, sort_keys=True)[:1200]
-                    fix = {"FUTILITY_HARNESS_WITNESS": "Check correctness.<kind>.argv, knobs.<knob>.marker and expect_by_unit.<kind>.<arm>.<knob>",
-                           "FUTILITY_HARNESS_NONDET": "Fix correctness.identity sampler/argv and baseline arm settings to make A/A deterministic",
-                           "FUTILITY_HARNESS_MISSING_OUTPUT": "Fix correctness.<kind>.argv executable path and output flags"}.get(
-                               verdict, "Check correctness.<kind>.argv and unit logs")
+                    kind = detail.get("kind", "unknown")
+                    fix = {"FUTILITY_HARNESS_WITNESS": f"Check correctness[{kind}].argv and expect_by_unit.{kind} for the named arm and knob",
+                           "FUTILITY_HARNESS_NONDET": "Fix correctness[identity].argv or server.argv and baseline arm settings to make A/A deterministic",
+                           "FUTILITY_HARNESS_MISSING_OUTPUT": f"Fix correctness[{kind}].argv executable path and output flags"}.get(
+                               verdict, f"Check correctness[{kind}].argv and unit logs")
+                    if detail.get("witness_mismatches"):
+                        mismatch = detail["witness_mismatches"][0]
+                        fix = f"Check expect_by_unit.{kind}.{mismatch['arm']}.{mismatch['knob']}, knobs.{mismatch['knob']}.marker and correctness[{kind}].argv"
                     extra = {"verdict": verdict, "fix": fix}
                     if verdict.startswith("FUTILITY_HARNESS_"):
                         extra["failclass"] = {"side": "harness"}
@@ -1594,14 +1604,15 @@ class Gate:
             H.write_smoke_measure(self.out_smoke, unit_s, len(units), u0 - t0,
                                   unit_name="arm visit", extra={"gate": "ak_gate"})
             result_path = os.path.join(self.out, "RESULT.json")
-            if any(u.get("reused_from") for u in units) and not os.path.exists(result_path):
-                atomic_json(result_path, dict(result_doc(self.spec, units, d), smoke=True))
+
             if time.time() - t0 > float(sm["budget_s"]):
                 return H.end_smoke("FAIL", 3, f"smoke took {time.time() - t0:.0f} s > budget {sm['budget_s']} s "
                                               f"(shorten smoke.prompt_chars / n_predict)", self.out)
             return H.end_smoke("PASS", 0, f"{len(units)} arms: {d['reason']}; {time.time() - t0:.1f} s", self.out)
         except Exception as e:  # noqa: BLE001 - the smoke always says why it failed
-            return H.end_smoke("FAIL", 3, f"{e.__class__.__name__}: {e}", self.out)
+            return H.end_smoke("FAIL", 3, f"FUTILITY_HARNESS_SERVER: {e.__class__.__name__}: {e}", self.out,
+                               extra={"verdict": "FUTILITY_HARNESS_SERVER", "fix": "Check server.argv and smoke.budget_s",
+                                      "failclass": {"side": "harness"}})
         finally:
             self.smoke_deadline = None
             self.kill_all()

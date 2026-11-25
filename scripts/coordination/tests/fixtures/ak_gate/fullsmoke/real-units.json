@@ -1,0 +1,42 @@
+{
+  "ak-c22-df2-devhandoff-gate-gpu-20261125-g3": [
+    {
+      "unit_id": "c-id-OFF-p0",
+      "kind": "c-id",
+      "arm": "OFF",
+      "prompt": 0,
+      "output_sha": "0bcb03cf5121c24a",
+      "accepted_sha": "38b2d03f3256502b",
+      "draft_sha": "30eec89ddd9c342e"
+    },
+    {
+      "unit_id": "c-id-OFF2-p0",
+      "kind": "c-id",
+      "arm": "OFF2",
+      "prompt": 0,
+      "output_sha": "a00c3f633f57a4a4",
+      "accepted_sha": "38b2d03f3256502b",
+      "draft_sha": "1e5ee5e58c8f490a"
+    },
+    {
+      "unit_id": "c-id-DEVHANDOFF-p0",
+      "kind": "c-id",
+      "arm": "DEVHANDOFF",
+      "prompt": 0,
+      "output_sha": "a00c3f633f57a4a4",
+      "accepted_sha": "61a229bae1e90331",
+      "draft_sha": "d4679c618f1af07e"
+    }
+  ],
+  "ak-c22-df2-devhandoff-gate-gpu-20261125-g4": [
+    {
+      "unit_id": "c-kld-base-OFF",
+      "kind": "c-kld",
+      "arm": "OFF",
+      "rc": 127,
+      "error": "kld base run rc 127",
+      "error_class": "MISSING_OUTPUT",
+      "mode": "base"
+    }
+  ]
+}

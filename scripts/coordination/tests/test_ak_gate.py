@@ -1086,10 +1086,10 @@ def test_smoke_reuse_and_no_timing_reuse(tmp_path):
     old.run_correctness_unit = new.run_correctness_unit = lambda uid, kind, arm, extra: {"unit_id": uid, "kind": kind, "arm": arm, "rc": 0, "n_cases": 1, "n_ok": 1, "gate_unit": True}
     old.visit_fn = visit_stub(sp, old.out, calls=calls)
     assert old.smoke() == 0
-    new.visit_fn = lambda *args, **kwargs: pytest.fail("smoke should reuse")
+    calls = []
+    new.visit_fn = visit_stub(sp, new.out, calls=calls)
     assert new.smoke() == 0
-    assert G.load_units(new.out)[0]["reused_from"] == "old"
-    assert json.load(open(os.path.join(new.out, "RESULT.json")))["units"][0]["reused_from"] == "old"
+    assert calls == ["smoke-OFF", "smoke-OFF2", "smoke-ON"]
     timing = {"unit_id": "b1-ON", "kind": "visit", "arm": "ON", "gate_unit": True,
               "unit_verdict": "PASS", "reuse_key": "anything"}
     H.append_unit(timing, old.out)
@@ -1233,7 +1233,7 @@ def test_smoke_identity_aa_uses_full_judge(tmp_path):
     assert g.smoke() == 3
     result = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
     assert result["verdict"] == "FUTILITY_HARNESS_NONDET"
-    assert "correctness.identity" in result["fix"]
+    assert "correctness[identity]" in result["fix"]
     assert seen == [("OFF", 0), ("OFF2", 0), ("ON", 0)]
 
 
@@ -1247,4 +1247,48 @@ def test_smoke_kld_missing_binary_is_harness_failure(tmp_path):
     assert g.smoke() == 3
     result = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
     assert result["verdict"] == "FUTILITY_HARNESS_MISSING_OUTPUT"
-    assert "correctness.<kind>.argv" in result["fix"]
+    assert "correctness[kld].argv" in result["fix"]
+
+
+def test_fullsmoke_replays_real_identity_and_kld_records(tmp_path):
+    path = os.path.join(FIX, "fullsmoke", "real-units.json")
+    rows = json.load(open(path))
+    for name, verdict, kind in [("ak-c22-df2-devhandoff-gate-gpu-20261125-g3", "FUTILITY_HARNESS_NONDET", "identity"),
+                                ("ak-c22-df2-devhandoff-gate-gpu-20261125-g4", "FUTILITY_HARNESS_MISSING_OUTPUT", "kld")]:
+        corr = {"kind": kind, "mode": "server", "n_prompts": 1} if kind == "identity" else {
+            "kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")]}
+        sp = spec(correctness=corr)
+        g = G.Gate(sp, str(tmp_path / kind), stream=QUIET)
+        g.visit_fn = visit_stub(sp, g.out)
+        real = rows[name]
+        def run(uid, unit_kind, arm, extra):
+            source_arm = "DEVHANDOFF" if arm == "ON" else arm
+            match = next((u for u in real if u["arm"] == source_arm), None)
+            if match:
+                return dict(match, unit_id=uid, kind=unit_kind, arm=arm, **extra)
+            return {"unit_id": uid, "kind": unit_kind, "arm": arm, "mean_kld": 0.0, **extra}
+        g.run_correctness_unit = run
+        assert g.smoke() == 3
+        terminal = json.loads((tmp_path / kind / "out" / H.TERMINAL_SMOKE).read_text())
+        assert terminal["verdict"] == verdict
+        assert "correctness[" in terminal["fix"]
+
+
+def test_fullsmoke_real_kld_witness_log(tmp_path):
+    marker = "GDN rollback snapshots written in place, no state CPY"
+    sp = spec(knobs={"LLAMA_GDN_SNAP_INPLACE": {"marker": marker, "level": 4}},
+              arms={"OFF": {}, "OFF2": {}, "ALL_FAST": {"LLAMA_GDN_SNAP_INPLACE": "1"}},
+              correctness={"kind": "kld", "argv": [os.path.join(FIX_BIN, "llama-perplexity")]})
+    g = G.Gate(sp, str(tmp_path / "row"), stream=QUIET)
+    g.visit_fn = visit_stub(sp, g.out)
+    def run(uid, kind, arm, extra):
+        if arm == "ALL_FAST":
+            shutil.copy(os.path.join(FIX, "fullsmoke", "q38-kld.log"), os.path.join(g.logs, uid + ".log"))
+            return g.finish_correctness({"unit_id": uid, "kind": kind, "arm": arm, "rc": 0,
+                                         "argv": ["llama-perplexity", "-lv", "4"], "log": "logs/" + uid + ".log", **extra})
+        return {"unit_id": uid, "kind": kind, "arm": arm, "mean_kld": 0.0, **extra}
+    g.run_correctness_unit = run
+    assert g.smoke() == 3
+    terminal = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
+    assert terminal["verdict"] == "FUTILITY_HARNESS_WITNESS"
+    assert "expect_by_unit.kld" in terminal["fix"]
