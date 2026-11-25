@@ -596,3 +596,11 @@ def test_inputs_none_pinned_no_check(tmp_path):
 
 def test_inputs_publish_only_grandfathered():
     assert "inputs" in P.PUBLISH_ONLY
+
+
+def test_inputs_argv_hex_and_host_not_a_pin(tmp_path):
+    job = SELFTEST_OK + ("SERVER_ARGV = ['llama-server', '--host', '127.0.0.1', '--port', '8080', "
+                         "'--chat-template-sha', %r]\n" % ("ab" * 32))
+    d, s = make_row(tmp_path, "inp-argv-20261125", job=job)
+    assert run(s, d, "inputs") == []
+    assert P.pinned_inputs(P.Row(s, str(d))) == {}

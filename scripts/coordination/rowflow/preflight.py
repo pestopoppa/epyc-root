@@ -1429,11 +1429,16 @@ def pinned_inputs(row):
             m = re.match(r"^\s*([0-9a-fA-F]{64})\s+\*?(\S+)\s*$", ln)
             if m and _rel_ok(m.group(2).lstrip("./") if m.group(2).startswith("./") else m.group(2)):
                 pins[m.group(2)[2:] if m.group(2).startswith("./") else m.group(2)] = m.group(1).lower()
+    def _pathlike(rel):
+        return (_rel_ok(rel) and not HEX64_RX.fullmatch(rel) and not re.fullmatch(r"[\d.:]+", rel) and "://" not in rel
+                and not re.match(r"^[\w.-]+:\d+$", rel)
+                and ("/" in rel or re.search(r"\.[A-Za-z][A-Za-z0-9]{0,5}$", rel)))
+
     def _pathlit(txt):
         for sm in reversed(list(_STR_RX.finditer(txt))):
             rel = sm.group(1)
             rel = rel[1:] if rel.startswith("/inputs/") else rel   # HERE + "/inputs/x"
-            if _rel_ok(rel) and ("/" in rel or re.search(r"\.[A-Za-z0-9]{1,6}$", rel)) and not HEX64_RX.fullmatch(rel):
+            if _pathlike(rel):
                 return rel
         return None
 
@@ -1447,7 +1452,7 @@ def pinned_inputs(row):
             if nm:   # TEXT_SHA = '<hex>' pairs with TEXT / TEXT_PATH / TEXT_FILE = <path literal>
                 pm = re.search(r"^\s*%s(?:_PATH|_FILE)?\s*=\s*(.*)$" % re.escape(nm.group(1)), t, re.M)
                 rel = _pathlit(pm.group(1)) if pm else None
-            rel = rel or _pathlit(ln[:hm.start()] + " " + ln[hm.end():])   # same line, e.g. ("inputs/x.txt", "<hex>")
+            # no same-line pairing: a hex inside an argv list / long string (--chat-template-sha <hex> ... 127.0.0.1) is not a file pin
             if rel:
                 pins.setdefault(rel, hm.group(1))
     for t in list(row.code.values()) + list(row.sh.values()):
