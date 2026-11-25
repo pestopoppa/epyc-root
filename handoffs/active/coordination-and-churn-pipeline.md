@@ -2594,6 +2594,18 @@ This verifies local installation only. A client-side hook can be bypassed and do
 
 - [x] **OBS-CHURN-UP** `churn_up.sh` liveness probes (pidfile+argv, exact-path argv over /proc) are registered `unadopted` in `observer_registry.json`: adopt `observer_guard.sh` three-valued state (measured / absent / blind).  *(stays here until the observer registry's `owning_handoff` for `churn_up` is repointed to `churn-pipeline.md`; that file is under D9 and needs operator ack.)*
   ✅ 2026-11-11 — root `1ffdb6d93`: every churn_up loop probe folds pidfile+argv and exact-path /proc argv through `observer_guard.sh` (present / absent / unobservable, no start when unobservable); `observer_registry.json` `churn_up` now `OBS-CHURN-UP adopted`; tests `scripts/coordination/tests/test_churn_up_observe.py`. The owning_handoff repoint is placement only, not acceptance. [belief: cc]
+- [ ] **PM-CODEX-UNASSISTED-DEF** [non-inference] Redefine 'unassisted' for Codex lanes: a lane runs its own done-when tests pinned to cores 84-87 and pushes via serialized_push; require 5 such lanes before the PM-CODEX-DISPATCH-DETERMINISTIC port (2026-11-25: cx12/14/17/18/19 met the bar only for code-writing, Claude ran tests and pushed every lane)
+      · done when: 5 consecutive Codex lanes each record their own done-when test rc (cores 84-87) and a serialized_push PUSH VERIFIED in the lane receipt, with no Claude test/push step
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-REPLAY-RECEIPT-ENFORCE** [non-inference] Flip PREFLIGHT_ENFORCE replay_receipt to enforcing and update the 3 tests in test_ak_gate.py that assert it is off
+      · done when: pytest scripts/coordination/tests/test_ak_gate.py passes with replay_receipt enforcing
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-R8-KEEP-TRIMS-FOLLOWUP** [non-inference] R8 keep review trims: F3 fold defer_keep_failed into defer_reclaim, F4 reduce successor_ended glob cost, F9 log or retire the duplicate one-sample path (F7/F8/F2 are in flight elsewhere, do not touch)
+      · done when: F3, F4, F9 each landed with tests; rowflow unit and replay suites pass
+      · gate: none
+      · owner: pipeline-mgmt
 
 ## Track: dashboard-architecture-restructure
 <!-- gate: none -->

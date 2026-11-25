@@ -4,73 +4,29 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1512,
+    "progress": 1514,
     "research": 552
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 22,
+      "added": 2,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-25T12:54:22Z",
+    "at": "2026-11-25T13:37:23Z",
     "scope_paths": [
-      "docs/design/ak-audit-b5-b11-status-20261124.md",
-      "handoffs/active/autokernel-akx-program.md",
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/autopilot-program.md",
-      "handoffs/active/churn-pipeline.md",
-      "handoffs/active/context-and-token-economy.md",
       "handoffs/active/coordination-and-churn-pipeline.md",
-      "handoffs/active/cpu-decode-roofline-program.md",
-      "handoffs/active/engineering-hygiene-backlog.md",
-      "handoffs/active/eval-tower-program.md",
-      "handoffs/active/harness-program.md",
-      "handoffs/active/kernel-champion-and-promotion.md",
-      "handoffs/active/knowledge-pipelines.md",
-      "handoffs/active/kv-cache-program.md",
-      "handoffs/active/long-context-program.md",
-      "handoffs/active/memory-program.md",
-      "handoffs/active/model-evaluation-queue.md",
-      "handoffs/active/quantization-and-low-bit.md",
-      "handoffs/active/reviewer-control-plane.md",
-      "handoffs/active/rocm-kernel-authoring.md",
-      "handoffs/active/routing-program.md",
-      "handoffs/active/speculative-decoding.md",
-      "handoffs/active/vidya-belief-substrate-program.md",
-      "progress/2026-11/2026-11-23-autopilot-backlog-session.md",
-      "progress/2026-11/2026-11-23-handoff-df2.md",
-      "progress/2026-11/2026-11-24-autokernel.md",
-      "progress/2026-11/2026-11-24-autopilot-backlog-session.md",
-      "progress/2026-11/2026-11-24-handoff-batched-decode-measurement.md",
-      "progress/2026-11/2026-11-24-handoff-cpu-decode-roofline.md",
-      "progress/2026-11/2026-11-24-handoff-df2.md",
-      "progress/2026-11/2026-11-24-handoff-pipeline-mgmt.md",
-      "progress/2026-11/2026-11-24-handoff-pm-wrapup-20261124.md",
-      "progress/2026-11/2026-11-24-handoff-tick-1124m.md",
-      "progress/2026-11/2026-11-24-handoff-tick-1124n.md",
-      "progress/2026-11/2026-11-24-pipeline-mgmt.md",
-      "progress/2026-11/2026-11-24-workspace-f2.md",
-      "progress/2026-11/2026-11-25-autopilot-backlog-session.md",
-      "progress/2026-11/2026-11-25-handoff-df2.md",
-      "progress/2026-11/2026-11-25-handoff-pm-akw-r8.md",
-      "progress/2026-11/2026-11-25-handoff-pm-codex-lanes-landing.md",
-      "progress/2026-11/2026-11-25-handoff-pm-cx12-census-tick-20261125.md",
-      "progress/2026-11/2026-11-25-handoff-pm-land-cx14-cx15.md",
-      "progress/2026-11/2026-11-25-handoff-workspace-f2-mechwit.md",
-      "progress/2026-11/2026-11-25-handoff-workspace-f2-vkrc.md",
-      "progress/2026-11/2026-11-25-handoff-workspace-f2.md",
-      "progress/2026-11/2026-11-25-intake-kspec-1125.md",
-      "progress/2026-11/2026-11-25-workspace-f2.md"
+      "progress/2026-11/2026-11-25-handoff-pm-hostdrain-20261125.md",
+      "progress/2026-11/2026-11-25-pipeline-mgmt.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-25T12:54:22Z",
+  "scan_time": "2026-11-25T13:37:23Z",
   "schema_version": 1,
-  "source_set_hash": "03cae42aace3c356a1d658e1ab6e32619a5257111ea4db6215140857e2421704",
+  "source_set_hash": "721a186e01aebaf7aac32f714ae4fa9f9c1ce5e46a60b3e44672c5b8e185851b",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -129,10 +85,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7ba29676386cc06d4948cd29406d370d8ca61be731d42edbcdb848db21c1373b",
-      "modified": "2026-11-25T12:54:03Z",
+      "content_hash": "208484e45a83e9821b315656dc12af1c6729fcd9c38d94ca41638a392e03d0bb",
+      "modified": "2026-11-25T13:35:33Z",
       "path": "handoffs/active/coordination-and-churn-pipeline.md",
-      "size": 625198,
+      "size": 627117,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -19705,6 +19661,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "e0d33151a89d956f3449a7c2070530ce5fb9ffa425bb8de98af3bb2d0a74b63f",
+      "modified": "2026-11-25T13:35:08Z",
+      "path": "progress/2026-11/2026-11-25-handoff-pm-hostdrain-20261125.md",
+      "size": 318,
+      "title": "2026-11-25 \u2014 handoff pm-hostdrain-20261125",
+      "type": "progress"
+    },
+    {
       "content_hash": "a47cc9dad782f0407f171599e7ec12020036af0fe11550a2edc1160bdf3bfbbf",
       "modified": "2026-11-25T12:48:46Z",
       "path": "progress/2026-11/2026-11-25-handoff-pm-land-cx14-cx15.md",
@@ -19742,6 +19706,14 @@
       "path": "progress/2026-11/2026-11-25-intake-kspec-1125.md",
       "size": 3740,
       "title": "2026-11-25 \u2014 research intake intake-kspec-1125 (for workspace-f2)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "7d6ce34e317d6584d49033fb7810269fa6a6a07af1d9856722bea60698367873",
+      "modified": "2026-11-25T13:35:43Z",
+      "path": "progress/2026-11/2026-11-25-pipeline-mgmt.md",
+      "size": 1793,
+      "title": "2026-11-25 \u2014 pipeline-mgmt",
       "type": "progress"
     },
     {
@@ -24673,7 +24645,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3075,
+  "total_new": 3077,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
