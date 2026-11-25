@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 1008,
+      "closed": 1009,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "open": 130,
+      "open": 129,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -167,7 +167,7 @@
         },
         {
           "blocked": 0,
-          "closed": 291,
+          "closed": 292,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -177,7 +177,7 @@
           "line": 7675,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 27
+          "open": 26
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10972,
+          "line": 10973,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11219,
+          "line": 11220,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -222,7 +222,7 @@
             "INF-06"
           ],
           "guarded": 0,
-          "line": 11839,
+          "line": 11840,
           "markers": 1,
           "name": "autokernel-roofline-surface-loop",
           "open": 7
@@ -2147,7 +2147,7 @@
       "closed": 314,
       "guarded": 0,
       "last_advanced": "2026-11-25",
-      "open": 6,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2156,7 +2156,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 320,
+      "total": 321,
       "tracks": [
         {
           "blocked": 0,
@@ -2168,7 +2168,7 @@
           "line": 60,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 4
+          "open": 5
         },
         {
           "blocked": 0,
@@ -2178,7 +2178,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1233,
+          "line": 1236,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2191,7 +2191,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2379,
+          "line": 2382,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2
@@ -2201,7 +2201,7 @@
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2754,
+          "line": 2757,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2211,7 +2211,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3190,
+          "line": 3193,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2221,7 +2221,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3285,
+          "line": 3288,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2364,7 +2364,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 3,
-      "closed": 294,
+      "closed": 295,
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-25",
@@ -2377,11 +2377,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 329,
+      "total": 330,
       "tracks": [
         {
           "blocked": 2,
-          "closed": 136,
+          "closed": 137,
           "frozen": 1,
           "gates": [],
           "guarded": 0,
@@ -2398,7 +2398,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 1017,
+          "line": 1022,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18
