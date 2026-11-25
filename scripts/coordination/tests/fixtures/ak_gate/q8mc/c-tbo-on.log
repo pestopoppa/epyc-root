@@ -1,0 +1,12 @@
+ggml_cuda_init: found 1 ROCm devices (Total VRAM: 65520 MiB):
+  Device 0: AMD Instinct MI210, gfx90a:sramecc+:xnack- (0x90a), VMM: no, Wave Size: 64, VRAM: 65520 MiB
+ggml_cuda_install_gemm_down_override: GGML_HIP_GEMM_DOWN_TILE rocBLAS override installed (27B down MT160x256x64)
+ggml_cuda_q8_mc: GGML_HIP_Q8MC=1 multi-column Q8_0 GEMV armed (M 2..8, > 1048576 B, 16 waves)
+ggml_cuda_q8_mc: gfx90a Q8MC multi-column Q8_0 GEMV ran (call 1, 2-deep weight pipeline)
+Testing 2 devices
+
+Backend 1/2: ROCm0
+  Device description: AMD Instinct MI210
+  Device memory: 65520 MB (65432 MB free)
+
+  MUL_MAT(type_a=q8_0,type_b=f32,m=6144,n=5,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): [1;32mOK[0m

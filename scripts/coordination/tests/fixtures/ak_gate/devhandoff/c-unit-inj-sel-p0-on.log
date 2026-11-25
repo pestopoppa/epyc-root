@@ -1,0 +1,19 @@
+0.00.047.343 I cmn  common_init_: fitting params to device memory ...
+0.00.047.347 I cmn  common_init_: (for bugs during this step try to reproduce them with -fit off, or provide --verbose logs if the bug only occurs with -fit on)
+0.05.287.324 I dflash2_dev_select: Q8-SERVED-DEV-SELECT-1 device selector chain enabled (LLAMA_DFLASH_DEV_SELECT=1)
+0.05.374.053 I set_dflash_dev_inject: DFlash dev inject on: ROCm0 buffer [5120, 512] (10.00 MiB)
+0.05.374.054 I common_speculative_impl_draft_dflash: LLAMA_DFLASH_DEV_INJECT=1 -> dev_inject=1 (dflash2=1 np=1)
+single-draft: 2 606,220,16,25,198,285,460,
+single-draft: 3 16,198,262,745,25,198,285,
+single-draft: 4 73111,1393,471,220,16,8,478,
+single-draft: 5 1393,471,220,17,8,1358,2,
+single-draft: 6 2,3284,279,1118,220,16,15,
+single-draft: 7 10121,198,1302,925,564,38044,7,
+single-draft: 8 283,514,5216,2072,198,1302,925,
+single-draft: 9 16,15,198,1302,925,564,38044,
+single-draft: 10 313,77,92,337,
+single-draft: 11 1324,369,25,313,72758,38044,1393,
+single-accepted: 7,7,7,7,7,5,1,2,1,5,4,7,
+single-output: 262,413,307,2564,220,15,25,198,285,460,220,15,198,262,4265,307,606,220,16,25,198,285,460,220,16,198,262,745,25,198,285,460,73111,1393,471,220,16,8,478,73111,1393,471,220,17,8,271,2,12996,10121,198,77,283,220,16,15,198,1302,925,9726,313,77,92,337,76938,1324,369,25,313,72758,38044,1393,8866,
+SINGLE-DONE
+llama_device_accept: lazy_skipped=1 flushed=0

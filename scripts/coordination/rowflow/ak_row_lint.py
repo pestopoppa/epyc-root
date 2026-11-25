@@ -118,7 +118,8 @@ REPLAY_RX = re.compile(r"replay", re.I)
 BASELINE_RX = re.compile(r"baseline_ok|baseline_valid|validate_baseline|replay_baseline|baseline_check|baseline_match", re.I)
 SELFTEST_TIMEOUT_S = 60
 # vendored, sha-pinned helper copies (own SOURCE/BIN pin): never linted for row-authoring defects
-VENDORED = {"gpu_common.py", "gpuproof_row.py", "lp_common.py", "base.py", "fold_row_guard.py"}
+VENDORED = {"gpu_common.py", "gpuproof_row.py", "lp_common.py", "base.py", "fold_row_guard.py",
+            "ak_gate.py"}   # ak_gate.py: the tested gate harness (mk_ak_row gate new), vendored + sealed
 
 
 def _differs_proof(t):
@@ -546,6 +547,9 @@ def sealed_spec(d):
     return out
 
 
+REPLAY_RECEIPTS = ("REPLAY-RECEIPT.json",)   # out/REPLAY-RECEIPT.json (ak_gate --replay) is input, not a stale result
+
+
 def stale_out(d):
     seal = [os.path.join(d, n) for n in SEAL_FILES if os.path.exists(os.path.join(d, n))]
     if not seal:
@@ -560,7 +564,7 @@ def stale_out(d):
         for r, dirs, files in os.walk(root):
             dirs[:] = [x for x in dirs if not x.startswith("stale-")]
             old += [os.path.relpath(os.path.join(r, f), d) for f in files
-                    if os.path.getmtime(os.path.join(r, f)) < t_seal]
+                    if os.path.getmtime(os.path.join(r, f)) < t_seal and f not in REPLAY_RECEIPTS]
         if old:
             out.append(("FAIL", "STALE-OUT", f"{len(old)} file(s) in {sub}/ older than the seal ({sorted(old)[:3]}); move "
                                              "them aside (fold_row_guard.move_stale) before publishing"))

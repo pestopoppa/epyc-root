@@ -1,0 +1,21 @@
+0.00.055.550 I cmn  common_param: common_params_print_info: build 10738 (a09e57e77) with GNU 15.2.0 for Linux x86_64
+0.00.055.554 I cmn  common_param: common_params_print_info: verbosity = 4 (adjust with the `-lv N` CLI arg)
+0.00.055.554 I cmn  common_param: device_info:
+0.02.447.904 I ggml_cuda_q8ip: in-place Q8_0 stage-contiguous repack enabled (GGML_HIP_Q8_MF_INPLACE=1, MF=6)
+0.02.607.579 I ggml_cuda_q8ip: packed 1 Q8_0 tensors in place (1288.3 MiB; last output.weight 5120x248320)
+0.04.522.578 I sched_reserve: reserve took 20.53 ms, sched copies = 1
+0.04.523.018 I cmn  common_init_: warming up the model with an empty run - please wait ... (--no-warmup to disable)
+0.04.529.412 I ggml_cuda_q8_mf: V5 4-WG/CU half-tile packed path ran (call 1, GGML_HIP_Q8_MF=6, P=2, slc=1, ggml-cuda: V5 4-WG/CU half-tile packed Q8_0 small-M kernel (GGML_HIP_Q8_MF=6))
+0.04.547.207 I ggml_cuda_ak_tf2: AK-RF-27B-TAIL-FUSE-2 G3 gdn gate add+softplus+mul fused path ran (call 1, GGML_CUDA_AK_TF2_G3=1)
+0.04.556.220 W GDN_FUSED_COLS: ggml_cuda_gdn_fused column width 2 ran (S_v 128, n_tokens 2, K 8)
+0.04.556.223 W GDN_FUSED: ggml_cuda_gdn_fused GDN-FUSED-VARIANT float2-reduction gated delta-net ran (call 1, n_tokens 2, K 8, state f32, GGML_HIP_GDN_FUSED=1)
+0.04.556.269 I ggml_cuda_op_ak_add_rms_norm_fused: AK-RF-27B-TAIL-FUSE G1 add+rms_norm+mul fused path ran (call 1, ncols=5120, nrows=2)
+0.04.556.289 I ggml_cuda_ak_tf2: AK-RF-27B-TAIL-FUSE-2 G2 swiglu into the q8mf6 down-proj pre-pass fused path ran (call 1, GGML_CUDA_AK_TF2_G2=1)
+0.04.559.393 I ggml_cuda_ak_tf2: AK-RF-27B-TAIL-FUSE-2 G6 mrope+view+set_rows fused path ran (call 1, GGML_CUDA_AK_TF2_G6=1)
+0.04.562.490 W ggml_cuda_fattn_gqa_verify: GQA-packed verify attention ran (call 1)
+0.06.063.374 I ggml_cuda_actq: q8sk zero-fold ran (call 1, GGML_HIP_ACTQ_FUSE=1)
+0.09.331.829 I common_memory_breakdown_print: |   - ROCm0 (MI210)      | 65520 = 32254 + (29669 = 27260 +    2221 +     188) +        3596 |
+0.09.331.829 I common_memory_breakdown_print: |   - Host               |                     26 =     0 +       0 +      26                |
+llama_device_accept: lazy_skipped=0 flushed=0
+0.09.332.223 W ~llama_context:  ROCm_Host compute buffer size of  50.0000 MiB, does not match expectation of   2.5117 MiB
+llama_device_accept: lazy_skipped=21 flushed=0
