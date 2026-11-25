@@ -47,3 +47,53 @@ C22 keep inputs: `/mnt/raid0/llm/tmp/c22-keep-list-20261125.md`. No fold was sta
 ## Wrap-up bookkeeping
 - **Filed:** ak-27b-tail-fuse2-gate-gpu-20261124-r3, ak-a3b-cpu-kld-floor-20261124-r2, ak-q38fn-rowexact-variants-cpu-20261125, ak-27b-served-api-trace-gpu-20261125-r2 and ak-mmid-n10-kld-gpu-20261125.
 - **Re-anchored:** the c21-fold-a3b-gpu-20261124-r2 register row is now rev 2 at bc14b481a, on main.
+
+---
+
+# Wrap-up 2 — ~10:05Z onward (autokernel)
+
+## Keeps
+- **Small-op fusion** `ak-c22-smallop-fuse-gate-gpu-20261125`: **KEEP_ALL+F1**. Served 27B ms/round 1.031x (95 % CI 1.024-1.039) for ALL (F1 CPY_BATCH + G1 ADD_RMS_NORM + G3 TF2_G3), F1 alone 1.011x (CI 1.003-1.020), KLD 0.0004 (A/A 0.0005, bar 0.003). Added to `/mnt/raid0/llm/tmp/c22-keep-list-20261125.md`; not folded.
+
+## Negatives and corrections
+- **Barrier-elide is NOT a gain.** The earlier +0.6-0.7 % was OFF-arm bias. The conv-state +0.5 % is not established.
+- **Harness bias found and fixed.** The paired gate ran one resident server per arm, so a +-0.4-0.8 % per-instance offset was confounded with the arm. Fix: a fresh server per visit, warm-up, a parity gate, a balance diagnostic and foreign-pid recording. It was applied to all sibling rows.
+- **Checkpoint fast copy closed.** The copy takes 19 ms and the pinned copy is slower. The 0.9 s stall did not reproduce: the API trace shows 57 ms.
+- **KV head-contiguous repack not built.** Fetched/useful bytes are 1.00-1.01, so there is nothing to recover.
+- **iqk-q8 A3B: FAIL_DIGEST.** mmid-n10 KLD is at the noise floor (the A/A is higher), so its fold waits on an A/A-relative gate.
+- **Devhandoff (DEV-INJECT / DEV-SELECT).** The identity failures trace to drafter nondeterminism across a second in-process context (AA diag DIAG_DRAFTER_NONDET). Inject is not the cause. Per the operator's drafter policy, the r6 gate uses output identity. r6 filed FUTILITY_HARNESS_WITNESS (inconclusive) because the d-draft-off arm witnessed the knobs active, so no speed was scored. Its units: sel 200/200; inj output mismatch 2/4 at 54.005 vs 54.267 ms/round; inj+sel 1/4 at 54.055 vs 53.387.
+
+## Findings
+- **API trace per-step gaps:** 1.69 ms target to drafter, 1.28 ms drafter to target, 0.65 ms drafter to drafter.
+- **Bandwidth straggler review:** `/mnt/raid0/llm/tmp/bw-straggler-review-20261125.md`.
+- **Flash-Next weight types** are IQ3_S / IQ4_NL, not uniform IQ4_XS.
+- **ub512 vs 2048:** tradeoff analysis done. ub512 stays; the arrival sweep decides.
+- **Q38FN host depth** (`ak-q38fn-cpu-hostdepth-perf-20261125`, ATTRIBUTED): host time is 4.13 ms/step at d1k and 11.38 at d32k. The culprit is `llama_kv_cache::get_prev_tokens`, 0.07 -> 3.73 ms/step.
+
+## Operator decisions
+- Q38FN ROWEXACT: faster, not lossless.
+- The A3B GPU rows are dropped to candidate.
+- The MI210 ceiling is 1638 GB/s everywhere.
+
+## Built and queued
+- RF7 verify attention (`ak-c22-vattn-rf7-op-gpu-20261125`).
+- Q38FN MoE CPU levers: upgate-slab and skinny-balance, greedy and MTP.
+- Q38FN host-depth: perf is attributed; the fix is in progress.
+- Tail-fuse2 r4. The G2/G6 "never fired" was a test-backend-ops abort, not a non-firing fusion.
+- Q38FN served-shape census rows (full and q0q2).
+- Arrival sweep r2, now resumable.
+- Second-context nondeterminism bisect.
+
+## Process lessons
+- Fix a bug class across all sibling rows at once (the harness bias fix).
+- Profile the served config before kernel work.
+- Make long rows resumable.
+- **Incident to note:** a subagent fast-forwarded the shared `/workspace` checkout without the operator's OK. Shared-checkout moves need explicit operator approval; wrap-ups run in a fresh worktree.
+
+## Wrap-up bookkeeping
+- **Filed:** `ak-c22-df2-devhandoff-gate-gpu-20261125-r6` (inconclusive) and `ak-q38fn-cpu-hostdepth-perf-20261125` (pass).
+- **Ticked:** Q8-SERVED-SMALLOP-FUSE-1.
+- **Annotated, not ticked:** DEV-INJECT-1 and DEV-SELECT-1 (their gate lines now point at r6) and Q38FN-CPU-HOST-DEPTH-1.
+- **Not filed (no RESULT):** `ak-opperf-cal-27b-gpu-20261125-r3` ended without a RESULT. The other unfiled rows have not ended yet.
+
+Next: autokernel — fix the devhandoff d-draft-off witness leak and re-gate; land the host-depth get_prev_tokens fix and its gate.
