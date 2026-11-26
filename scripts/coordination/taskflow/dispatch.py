@@ -41,7 +41,7 @@ from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))
-from taskflow import brief as B, schema, verify  # noqa: E402
+from taskflow import brief as B, external_refs, schema, verify  # noqa: E402
 from taskflow.harness import local_llm  # noqa: E402
 
 ROOT = _HERE.parents[2]
@@ -136,6 +136,10 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     # r3: the 35B miscopied long digit-heavy lane paths (".../canary-r3-2026120/.../t00/lane" for t02) ->
     # short lane roots: /mnt/raid0/llm/tf/<4 hex>
     root = lane_root()
+    try:
+        external = external_refs.read_sources(task, root)
+    except (OSError, ValueError) as exc:
+        raise LaneRefused(f"external reference preflight failed: {exc}") from exc
     root.mkdir(parents=True, exist_ok=True)
     lane = root / hashlib.sha1(str(base_dir).encode()).hexdigest()[:4]
     if lane.exists():
@@ -148,9 +152,11 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     free = shutil.disk_usage(root).free / 2**30
     if free < MIN_FREE_GIB:
         raise LaneRefused(f"{free:.0f} GiB free < {MIN_FREE_GIB} GiB")
+    base = _git(repo, "rev-parse", "origin/main").stdout.strip()
+    if external and _git(repo, "ls-tree", base, "--", REFS).stdout:
+        raise LaneRefused(f"base tracks reserved reference directory: {REFS}")
     base_dir.mkdir(parents=True, exist_ok=True)
     (base_dir / "lane.path").write_text(str(lane))
-    base = _git(repo, "rev-parse", "origin/main").stdout.strip()
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
     _meta(lane).write_text(json.dumps({"lane": str(lane), "repo": str(repo), "branch": branch, "base": base,
                                        "created": time.time(), "state": "live", "task": task.get("key"),
@@ -165,6 +171,14 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_bytes(data)
         dst.chmod(0o444)
+    if external:
+        try:
+            external_refs.stage(lane, external)
+            if failure := external_refs.verify(lane, task):
+                raise ValueError(failure)
+        except (OSError, ValueError) as exc:
+            drop_lane(repo, lane)
+            raise LaneRefused(f"external reference staging failed: {exc}") from exc
     return repo, lane, base
 
 
@@ -333,10 +347,12 @@ def commit_lane(lane: Path, task: dict) -> bool:
 
 def _clear_refs(lane: Path) -> None:
     refs = lane / REFS
+    if refs.is_symlink():
+        refs.unlink()
+        return
     if refs.exists():                   # our own read-only copies; the worktree is otherwise clean after commit
         for f in sorted(refs.rglob("*"), reverse=True):
-            if f.is_file():
-                f.chmod(0o644)
+            if f.is_symlink() or not f.is_dir():
                 f.unlink()
             else:
                 f.rmdir()
@@ -887,7 +903,8 @@ def tag_needs_brief(task: dict, tdir: Path, reason: str, apply: bool = False, pu
         return dict(out, detail="box has no ID")
     repo = schema.REPOS["epyc-root"]
     try:
-        _, tl, _ = make_lane(dict(task, repo="epyc-root", refs=[], key=str(task.get("key")) + "+tag"), tdir / "taglane",
+        _, tl, _ = make_lane(dict(task, repo="epyc-root", refs=[], external_readonly_inputs=[],
+                                  key=str(task.get("key")) + "+tag"), tdir / "taglane",
                              f"taskflow/needs-brief/{task['id']}-{int(time.time())}")
     except (subprocess.CalledProcessError, LaneRefused) as e:
         return dict(out, detail=f"lane: {(getattr(e, 'stderr', None) or str(e))[-200:]}")
@@ -1032,6 +1049,9 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                                failure_class=needs_brief_class(task))
                     row["tag"] = tag_needs_brief(task, tdir, row["reason"], apply)   # box_index then skips the box
                     raise _EndRun()
+            if task.get("external_readonly_inputs") and (failure := external_refs.verify(lane, task)):
+                row.update(verdict="error", reason="external-input-changed", failure_class="harness", detail=failure)
+                raise _EndRun()
             lane_was_live = not lane_destroyed(lane)
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
             if lane_was_live and lane_destroyed(lane):                            # r8g fix 2 (r8f MM-5): the worker removed its own lane

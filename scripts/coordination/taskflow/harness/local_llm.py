@@ -76,10 +76,12 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
 6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
    git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc, grep, sed, sort, awk or cut. No `>` files, no && chains, no cd.
-   When an ALLOWED COMMAND runs through orch-py.sh, you can also use `orch-py.sh -c "<python>"` or pass it a .py file
-   inside your cwd (relative path). Use `taskflow-scratch rm <relative path>` or
+   Copy ALLOWED COMMANDS verbatim, including the runner path, arguments and quotes. When one uses orch-py.sh,
+   the same runner path also accepts -c or a .py file inside your cwd (relative path).
+   Use `taskflow-scratch rm <relative path>` or
    `taskflow-scratch mv <relative src> <relative dst>` to clean up untracked scratch files you created.
-10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
+10. Use cwd-relative paths for file tools and scratch files (e.g. src/x.py).
+    In ALLOWED COMMANDS, preserve the exact configured runner path, including an absolute path when listed.
     Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
 8. Stop as soon as the box's done-when is met.
@@ -129,10 +131,12 @@ def cap_max_tokens(body: dict, cap: int = MAX_TOKENS_CAP) -> bool:
 WORKER_DENIED_TOOLS = ("opencode_worktree_remove", "opencode_worktree_create", "opencode_worktree_list")
 
 
-SHELL_DENIAL_HINT = (" Allowed shell forms: the ALLOWED COMMANDS, read-only helpers (ls cat head tail wc grep sed -n find git diff/status/log), "
-                     "`bash <row>/orch-py.sh -m pytest <test>`, `bash <row>/orch-py.sh -c \"<python>\"`, `bash <row>/orch-py.sh <relative .py>`. "
-                     "Scratch cleanup: `taskflow-scratch rm <relative path>` or `taskflow-scratch mv <relative src> <relative dst>`. "
-                     "Bare `python3`, `cd`, `&&` and `>` are not allowed; use orch-py.sh -c for Python probes.")
+SHELL_DENIAL_HINT = (
+    " Allowed shell forms are the exact ALLOWED COMMANDS and read-only helpers"
+    " (ls cat head tail wc grep sed -n find git diff/status/log)."
+    " Scratch cleanup: `taskflow-scratch rm <relative path>` or"
+    " `taskflow-scratch mv <relative src> <relative dst>`."
+)
 
 
 def _annotate_text(c: str, hint: str) -> str | None:
@@ -339,7 +343,7 @@ def allowed_commands(task: dict) -> list[str]:
     from taskflow import verify as _V       # `cd <task repo> && X` -> `X`: the lane is that repo
     acc = _V.lane_cmd(task.get("acceptance"), task) if task.get("acceptance") else None
     for c in ([acc] if acc else []) + list(task.get("test_cmds") or []):
-        c = " ".join(str(c).strip().strip("`").split())
+        c = str(c).strip().strip("`").strip()
         if c and c not in out:
             out.append(c)
     return out
@@ -397,6 +401,9 @@ def task_suffix(task: dict, excerpts: dict[str, str]) -> str:
         out.append("## REFERENCE FILES (read-only copies from other repos)\n" + "\n".join(
             f".taskflow-refs/{r['repo']}" + (f"@{r['rev']}" if r.get("rev") else "") + f"/{r['path']}"
             for r in task["refs"]))
+    if task.get("external_readonly_inputs"):
+        out.append("## EXTERNAL INPUTS (read-only pinned copies)\n" + "\n".join(
+            r["lane_path"] for r in task["external_readonly_inputs"]))
     out.append("## FORBIDDEN\n" + ", ".join(task["forbidden"][:12]) + " …")
     out.append(f"## LIMITS\n{b['turns']} tool turns max. Be brief.")
     if excerpts:
@@ -461,6 +468,19 @@ def acceptance_patterns(task: dict, lane: Path | str | None = None) -> list[str]
 # run `-c <code>` and a lane-relative .py file. An absolute, `..` or `~` script path stays denied (deny list wins).
 _ORCH = re.compile(r"^(?:bash\s+)?(\S*orch-py\.sh)\b")
 SCRATCH_DENY = ["*orch-py.sh /*", "*orch-py.sh ..*", "*orch-py.sh ~*", "*orch-py.sh *../*"]
+
+
+def shell_denial_hint(task: dict | None = None) -> str:
+    """Name runnable commands and a Python wrapper only when this task configures one."""
+    commands = allowed_commands(task) if task else []
+    hint = SHELL_DENIAL_HINT
+    if commands:
+        hint += "\nCopy the approved command verbatim, including its quotes and options:\n" + commands[0]
+    wrapper = next((m.group(1) for command in commands if (m := _ORCH.match(command))), None)
+    if wrapper:
+        hint += (f"\nThe configured runner is `bash {wrapper}`. Use that exact path with -c"
+                 " or a lane-relative .py file.")
+    return hint
 
 
 def scratch_patterns(task: dict, lane: Path | str | None = None) -> list[str]:
@@ -531,6 +551,14 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         lp = str(lane).rstrip("/")
         rp = os.path.realpath(lp)
         edit_perm = {"*": "allow", **{v: "deny" for q in dict.fromkeys([lp, rp]) for v in (q, q + "/", q + "/.")}}
+    if task.get("external_readonly_inputs"):
+        if not isinstance(edit_perm, dict):
+            edit_perm = {"*": edit_perm}
+        prefixes = [".taskflow-refs/external"]
+        if lane:
+            prefixes.extend(str(Path(p) / ".taskflow-refs/external") for p in (lp, rp))
+        for prefix in prefixes:
+            edit_perm[prefix] = edit_perm[prefix + "/**"] = "deny"
     cfg = {
         "$schema": "https://opencode.ai/config.json",
         "snapshot": False,

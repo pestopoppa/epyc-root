@@ -420,7 +420,8 @@ def test_shell_requires_checked_move_command(tmp_path, monkeypatch):
 
 
 def test_policy_names_mv_and_the_allowed_forms():
-    assert "`taskflow-scratch mv <relative src> <relative dst>`" in L.POLICY and "orch-py.sh -c" in L.POLICY
+    assert "`taskflow-scratch mv <relative src> <relative dst>`" in L.POLICY
+    assert "uses orch-py.sh" in L.POLICY and "same runner path also accepts -c" in L.POLICY
 
 
 def test_denied_shell_result_gets_the_allowed_forms_idempotently():
@@ -429,7 +430,9 @@ def test_denied_shell_result_gets_the_allowed_forms_idempotently():
                          {"role": "tool", "tool_call_id": "2", "content": "ok output"}]}
     assert L.annotate_denials(body) == 1
     c = body["messages"][1]["content"]
-    assert c.startswith("Permission denied: shell") and "orch-py.sh -c" in c and "`taskflow-scratch rm <relative path>`" in c
+    assert c.startswith("Permission denied: shell")
+    assert "Allowed shell forms" in c and "`taskflow-scratch rm <relative path>`" in c
+    assert "orch-py.sh" not in c
     assert body["messages"][2]["content"] == "ok output"
     assert L.annotate_denials(body) == 0 and body["messages"][1]["content"] == c          # idempotent: stable prefix
 

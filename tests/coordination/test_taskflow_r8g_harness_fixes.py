@@ -99,7 +99,9 @@ R8G_DENIAL = json.dumps({"error": {"type": "permission.rejected", "message": "Pe
 
 
 def _allowed_forms(text):
-    return all(form in text for form in ("orch-py.sh -m pytest", "orch-py.sh -c", "`taskflow-scratch rm <relative path>`",
+    return all(form in text for form in ("bash /tmp/pinned-row/orch-py.sh -m pytest",
+                                        "`bash /tmp/pinned-row/orch-py.sh`",
+                                        "`taskflow-scratch rm <relative path>`",
                                         "`taskflow-scratch mv <relative src>"))
 
 
@@ -107,10 +109,22 @@ def test_opencode_json_denial_gets_the_allowed_forms():
     body = {"messages": [{"role": "tool", "tool_call_id": "1", "content": R8G_DENIAL},
                          {"role": "tool", "tool_call_id": "2", "content": [{"type": "text", "text": "Permission denied: shell"}]},
                          {"role": "tool", "tool_call_id": "3", "content": '{"output":"ok"}'}]}
-    assert L.annotate_denials(body) == 2
+    task = {"acceptance": "bash /tmp/pinned-row/orch-py.sh -m pytest -q tests/test_x.py"}
+    hint = L.shell_denial_hint(task)
+    assert L.annotate_denials(body, hint) == 2
     d = json.loads(body["messages"][0]["content"])                          # still valid JSON
     assert d["error"]["message"].startswith("Permission denied: shell") and _allowed_forms(d["error"]["message"])
     assert _allowed_forms(body["messages"][1]["content"][0]["text"])
     assert body["messages"][2]["content"] == '{"output":"ok"}'
     snap = json.dumps(body)
-    assert L.annotate_denials(body) == 0 and json.dumps(body) == snap      # idempotent: stable prefix
+    assert L.annotate_denials(body, hint) == 0 and json.dumps(body) == snap      # idempotent: stable prefix
+
+
+def test_denial_hint_preserves_exact_python_command_without_inventing_runner():
+    command = """python3 -c "assert len('one space') == 9" """
+    task = {"repo": "epyc-root", "acceptance": command}
+    hint = L.shell_denial_hint(task)
+    assert hint.splitlines()[-1] == command.strip()
+    assert command.strip() in L.acceptance_patterns(task)
+    assert "orch-py.sh" not in hint
+    assert "Bare `python3`" not in hint

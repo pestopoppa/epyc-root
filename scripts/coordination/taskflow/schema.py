@@ -25,7 +25,7 @@ import os
 import re
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 SCHEMA = "epyc.task.v1"
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -45,6 +45,33 @@ FORBIDDEN = (
 DEFAULT_BUDGET = {"turns": 30, "tokens": 120000, "wall_s": 600,  # r7: one 839 s task ate a third of a booking;  # r1: 14 steps all went to exploration
                   "excerpt_chars": 9000}
 TIER_BY_CLASS = {"non-inference": "terra", "inference": "terra"}
+EXTERNAL_REF_DIR = PurePosixPath(".taskflow-refs/external")
+
+
+def external_readonly_inputs(task: dict) -> list[dict[str, str]]:
+    """Validate controller-supplied file pins on a task packet."""
+    entries = task.get("external_readonly_inputs", [])
+    if not isinstance(entries, list):
+        raise ValueError("external_readonly_inputs must be a list")
+    paths: set[PurePosixPath] = set()
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {"path", "lane_path", "sha256"}:
+            raise ValueError("external input needs path, lane_path and sha256")
+        if not all(isinstance(value, str) and "\0" not in value for value in entry.values()):
+            raise ValueError("external input fields must be strings")
+        source = Path(entry["path"])
+        target = PurePosixPath(entry["lane_path"])
+        if not source.is_absolute() or ".." in source.parts:
+            raise ValueError(f"external input source must be an absolute path: {source}")
+        if (".." in target.parts or "\\" in entry["lane_path"] or str(target) != entry["lane_path"]
+                or target == EXTERNAL_REF_DIR or not target.is_relative_to(EXTERNAL_REF_DIR)):
+            raise ValueError(f"invalid external input lane path: {entry['lane_path']}")
+        if not re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]):
+            raise ValueError(f"invalid external input digest: {target}")
+        if any(target.is_relative_to(other) or other.is_relative_to(target) for other in paths):
+            raise ValueError(f"external input lane path collides: {target}")
+        paths.add(target)
+    return entries
 
 
 # Per-task wall budget from the measured serving rate (r8b canary FIX-HARNESS 2026-11-22, fix 1): the 600 s default was
@@ -213,6 +240,10 @@ def unsupported(task: dict) -> str | None:
     """Why the harness must not take this task, or None."""
     if task["repo"] not in SUPPORTED_REPOS:
         return f"repo {task['repo']} not supported"
+    try:
+        external_readonly_inputs(task)
+    except ValueError as exc:
+        return str(exc)
     hits = _KERNEL.findall(task["goal"])
     if len(hits) >= 2 and not task["inputs"]:
         return "kernel/llama.cpp-tree work (" + ",".join(sorted(set(h.lower() for h in hits))[:4]) + ")"

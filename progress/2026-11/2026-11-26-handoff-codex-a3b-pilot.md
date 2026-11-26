@@ -23,3 +23,13 @@ Landed two independently reviewed design documents. PAW-5 retains one coherent s
 The scratch PAW structural checker also had overly strict heading/provenance placement assumptions. Versioned v2 controls accept valid Markdown headings and source headers, while independently preserving rejection of the original factual errors and refusal of a missing baseline (10 controls). Raw attempts, hashes and old graders are retained under `/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/`.
 
 Next: codex-a3b-pilot finishes the constrained test tasks, repairs observed harness defects, and files performance plus independent outcome evidence.
+
+## 15:48Z — Repair input custody and task-aware shell recovery found during real dispatch
+
+Added first-class external_readonly_inputs: validate packet shape and names, authenticate all files before lane creation, stage read-only copies, prevent edits, and reject missing/tampered inputs before model work and after acceptance tests. Cleanup unlinks reference symlinks without chmod of their targets. Malformed declarations fail admission.
+
+Replaced misleading universal shell guidance with exact task-specific accepted commands. A runner is suggested only if configured. Preserved whitespace inside quoted acceptance expressions through repo-cd normalization and the worker allowlist. Clarified that file tools use cwd-relative paths while approved runner commands retain their exact configured path. Permission grants are unchanged. Manual caller tracing scopes risk to Taskflow staging/verification/worker guidance; GitNexus had no usable index.
+
+Validation: full Taskflow suite 239 passed in18.77s; final policy subset79 passed in1.00s; real OpenCode2.2.5 replay demonstrated denial of the altered command, contradictory baseline feedback, and successful copying/execution of corrected feedback. External-input controls include positive staging and rejection of missing/hash/schema/traversal/collision/tampered/symlink cases. Index check:0 problems. Evidence under `/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/main-review/` and `test-selection/denial/`.
+
+Next: codex-a3b-pilot reviews remaining native outputs and files the final model/harness attribution and performance snapshot.

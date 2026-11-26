@@ -370,6 +370,16 @@ def test_brief_acceptance_cd_normalised_to_lane():
     assert local_llm.allowed_commands(t) == ["python3 -m pytest -q tests/unit/x.py"]
 
 
+def test_brief_acceptance_keeps_quoted_whitespace_after_repo_cd(tmp_path):
+    command = 'python3 -c "assert len(\'one  space\') == 10"'
+    supplied = f"  `cd  /workspace  &&  {command}`  "
+    task = {"repo": "epyc-root", "acceptance": supplied}
+    assert verify.acceptance_cmd(task) == command
+    assert local_llm.allowed_commands(task) == [command]
+    assert local_llm.shell_denial_hint(task).splitlines()[-1] == command
+    subprocess.run(["/bin/sh", "-c", verify.acceptance_cmd(task)], cwd=tmp_path, check=True)
+
+
 def test_brief_mode_off_skips_phase1_even_cross_repo(monkeypatch):
     called = []
     monkeypatch.setattr(dispatch, "_brief_lane", lambda *a, **k: called.append("lane") or (None, None))

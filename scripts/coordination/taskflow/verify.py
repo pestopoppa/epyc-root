@@ -4,6 +4,7 @@
 verify(task, lane_dir, base_ref, evidence, reviewer=None) -> {"verdict": "verified"|"rejected"|"unchecked", checks}
 
 Checks, in order (the first failing one decides `rejected`):
+  external     staged controller references still have the declared digests and are read-only
   commit       the lane has >= 1 commit over base_ref (the dispatcher commits the worker's tree)
   nonempty     the commit changes at least one path
   forbidden    no changed path matches task.forbidden (unless the box names that exact path as an input)
@@ -26,6 +27,8 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
+from . import external_refs
 
 ROOT = Path(__file__).resolve().parents[3]
 TEST_TIMEOUT_S = 300
@@ -148,7 +151,7 @@ def lane_cmd(cmd: str | None, task: dict) -> str | None:
     """`cd <the task repo's shared-clone path> && X` -> `X` (run in the lane, which IS that repo at origin/main).
     r7 prep: hand-written briefs name `cd /workspace/repos/<repo> && pytest ...`, which neither the verifier
     (_RUNNABLE) nor the worker's shell policy (no cd/&&) could run, and which would test the SHARED clone."""
-    a = " ".join(str(cmd or "").strip().strip("`").split())
+    a = str(cmd or "").strip().strip("`").strip()
     m = _CD.match(a)
     if m:
         d = m.group(1).rstrip("/")
@@ -382,6 +385,11 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
         checks.append({"check": name, "ok": ok, "why": why})
         return ok
 
+    if "external_readonly_inputs" in task:
+        failure = external_refs.verify(lane, task)
+        if not rec("external-inputs", failure is None, failure or ""):
+            return {"verdict": "rejected", "reason": "external-input-changed", "checks": checks, "evidence": ev}
+
     n = len([x for x in _git(lane, "rev-list", f"{base_ref}..HEAD").split() if x])
     if not rec("commit", n > 0, f"{n} commit(s) over {base_ref[:12]}"):
         return {"verdict": "rejected", "reason": "no-change", "checks": checks}
@@ -418,6 +426,10 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
     if not rec("tests", not failed, "; ".join(f"{r['cmd']} rc={r['rc']}" for r in failed)):
         return {"verdict": "rejected", "reason": "tests-fail", "checks": checks, "evidence": ev,
                 "test_tail": failed[0]["tail"]}
+    if cmds and task.get("external_readonly_inputs"):
+        failure = external_refs.verify(lane, task)
+        if not rec("external-inputs-after-tests", failure is None, failure or ""):
+            return {"verdict": "rejected", "reason": "external-input-changed", "checks": checks, "evidence": ev}
     diff = _git(lane, "diff", f"{base_ref}..HEAD", "--", ".", *([f":(exclude){own_brief}"] if own_brief else []))
     vac = vacuity_hits(diff)                            # r8e fix 3: deterministic, before done_when and the reviewer
     if not rec("vacuity", not vac, "; ".join(vac)[:300]):
