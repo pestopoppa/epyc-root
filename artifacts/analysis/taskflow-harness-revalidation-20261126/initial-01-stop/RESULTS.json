@@ -1,0 +1,470 @@
+{
+  "planned": [
+    "cpu-PAW-5-off-recommended",
+    "cpu-DS41-W-66-off-recommended",
+    "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+    "cpu-PFXC-A3-off-recommended",
+    "gpu-PAW-5-on-coding",
+    "gpu-DS41-W-66-off-common-on-sampling",
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+    "gpu-PFXC-A3-on-coding",
+    "gpu-PAW-5-off-common-on-sampling",
+    "gpu-DS41-W-66-on-coding",
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding",
+    "gpu-PFXC-A3-off-recommended",
+    "gpu-PAW-5-off-recommended",
+    "gpu-DS41-W-66-off-recommended"
+  ],
+  "terminal": [
+    {
+      "case": "PAW-5",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 0,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-PAW-5-off-recommended",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbdd3cffeMVzU05FTcEzZCL",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "44594f92f0e213cc80a9e4abe5dab1e0409007d611b356204f90537d7828fa98",
+      "application_source": "9cd1c942a3ad9edce34ba42b8eaf796156e8be72",
+      "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+      "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+      "acceptance_version": "paw5.markdown-fields.v3",
+      "prompt_sha256": "3569853b75337270cd5e1681ea10aa2cabf9daf5e67b137f9abb08fc3e9724c1",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/loop/loop.py": {
+          "sha256": "199d5137f3340b4882f444d0bee776fd0e29f8b18ca35f15c5904080b998f163",
+          "bytes": 131124,
+          "executable": false
+        },
+        "epyc-orchestrator@332ceb2e14d16f2031bd17b1f7c839ce8276a24b/src/graph/context_arm_ab.py": {
+          "sha256": "9047e8f3a90f7840dc1aaf445297006a48796a70dc8c110404797114c83344da",
+          "bytes": 13468,
+          "executable": false
+        },
+        "epyc-orchestrator@332ceb2e14d16f2031bd17b1f7c839ce8276a24b/src/api/routes/chat_pipeline/repl_executor.py": {
+          "sha256": "7fa8daa1b983b0cc1d2929bb14f6a75c85beece5564ca42ccf99ea739227cceb",
+          "bytes": 50702,
+          "executable": false
+        }
+      },
+      "started_at": 1795734902.6484177,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 11,
+      "generation_unknown_requests": 0,
+      "review_required": true,
+      "terminal_at": 1795735533.318368
+    },
+    {
+      "case": "DS41-W-66",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 1,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-DS41-W-66-off-recommended",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbd785ffeHCkM3YOtMroofi",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "f669529975dbcc3fbd7df74ca36ac750da3ecf47cf7e1971d4ed0b184679b457",
+      "application_source": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "acceptance_version": "original",
+      "prompt_sha256": "79320e03fc7b754c600115ff620c02f53ad2cd73b740fcb187576706a0adccf2",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/conftest.py": {
+          "sha256": "8da147f95f8a04c52ab6a51e26ff981daa6fb93983cb921ce5c738d566d0c6a3",
+          "bytes": 11434,
+          "executable": false
+        },
+        "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/loop/measurement_capture.py": {
+          "sha256": "b1360de97af87b7a0e1f6565a6bffbb347eb10e274408f487b00a9fb19c03c31",
+          "bytes": 42840,
+          "executable": false
+        }
+      },
+      "started_at": 1795734904.5815005,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 11,
+      "generation_unknown_requests": 0,
+      "review_required": true,
+      "terminal_at": 1795735533.038415
+    },
+    {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 2,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbddffffeTizRm31ynSEp2b",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "5086c46f98825398149514a1fd26840afe964407c312808f1c6506417d673aa3",
+      "application_source": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "original_oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "acceptance_version": "original",
+      "prompt_sha256": "93bcb7adf7c2196a17e1b8b95c780e3e674f36ced30b304b86030ffde1524af0",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "external/nariq-upstream/libtrellis-excerpts.txt": {
+          "sha256": "1e4a584b083b7bd695697f05444d72597b71f69e5467504074bfb0d0250b645d",
+          "bytes": 12049,
+          "executable": false
+        },
+        "epyc-root@9cd1c942a3ad9edce34ba42b8eaf796156e8be72/research/deep-dives/intake-kspec-20261120/intake-2733.md": {
+          "sha256": "567a6ef22784a6dd187d7d266ddd0c90b128c67b95b7c83123b8a0b77366346f",
+          "bytes": 2731,
+          "executable": false
+        }
+      },
+      "started_at": 1795734902.6444345,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 16,
+      "generation_unknown_requests": 1,
+      "review_required": true,
+      "terminal_at": 1795735532.7168481
+    },
+    {
+      "case": "PFXC-A3",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 3,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-PFXC-A3-off-recommended",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbe000ffe2EjzxJrBOXTSy9",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "62de225340d6afb063b63c4c85bef6db48f33d75c97da84f9359168cc8b2044b",
+      "application_source": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "acceptance_version": "original",
+      "prompt_sha256": "e1e787eada48d997372854dd822d1116a8fcb77c604ecd321b81166e1f77c954",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "external/pfxc/pfxc-source-excerpts.txt": {
+          "sha256": "68f3d17552f7dceca7a676311e5f10b46bb2b601673edd064cdb7f18b698d1b2",
+          "bytes": 7985,
+          "executable": false
+        },
+        "epyc-root@9cd1c942a3ad9edce34ba42b8eaf796156e8be72/handoffs/active/kernel-champion-and-promotion.md": {
+          "sha256": "6212a31c7077ed6186307c60daddaf34c6303b094782fb3a982799d799fe8395",
+          "bytes": 868556,
+          "executable": false
+        }
+      },
+      "started_at": 1795734902.6421187,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 12,
+      "generation_unknown_requests": 2,
+      "review_required": true,
+      "terminal_at": 1795735533.1570942
+    },
+    {
+      "case": "PAW-5",
+      "backend": "gpu",
+      "thinking": true,
+      "profile": "on-coding",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 0,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-PAW-5-on-coding",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbdc90ffeY1TSpHz57FMB5z",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "44594f92f0e213cc80a9e4abe5dab1e0409007d611b356204f90537d7828fa98",
+      "application_source": "9cd1c942a3ad9edce34ba42b8eaf796156e8be72",
+      "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+      "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+      "acceptance_version": "paw5.markdown-fields.v3",
+      "prompt_sha256": "3569853b75337270cd5e1681ea10aa2cabf9daf5e67b137f9abb08fc3e9724c1",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/loop/loop.py": {
+          "sha256": "199d5137f3340b4882f444d0bee776fd0e29f8b18ca35f15c5904080b998f163",
+          "bytes": 131124,
+          "executable": false
+        },
+        "epyc-orchestrator@332ceb2e14d16f2031bd17b1f7c839ce8276a24b/src/graph/context_arm_ab.py": {
+          "sha256": "9047e8f3a90f7840dc1aaf445297006a48796a70dc8c110404797114c83344da",
+          "bytes": 13468,
+          "executable": false
+        },
+        "epyc-orchestrator@332ceb2e14d16f2031bd17b1f7c839ce8276a24b/src/api/routes/chat_pipeline/repl_executor.py": {
+          "sha256": "7fa8daa1b983b0cc1d2929bb14f6a75c85beece5564ca42ccf99ea739227cceb",
+          "bytes": 50702,
+          "executable": false
+        }
+      },
+      "started_at": 1795734902.6487448,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 2482,
+      "generation_unknown_requests": 0,
+      "review_required": true,
+      "terminal_at": 1795735532.7755444
+    },
+    {
+      "case": "DS41-W-66",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-common-on-sampling",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 1,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-DS41-W-66-off-common-on-sampling",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbd822ffeI3zdwizn4eWlDU",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "f669529975dbcc3fbd7df74ca36ac750da3ecf47cf7e1971d4ed0b184679b457",
+      "application_source": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "acceptance_version": "original",
+      "prompt_sha256": "79320e03fc7b754c600115ff620c02f53ad2cd73b740fcb187576706a0adccf2",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/conftest.py": {
+          "sha256": "8da147f95f8a04c52ab6a51e26ff981daa6fb93983cb921ce5c738d566d0c6a3",
+          "bytes": 11434,
+          "executable": false
+        },
+        "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/loop/measurement_capture.py": {
+          "sha256": "b1360de97af87b7a0e1f6565a6bffbb347eb10e274408f487b00a9fb19c03c31",
+          "bytes": 42840,
+          "executable": false
+        }
+      },
+      "started_at": 1795734904.4271479,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 2740,
+      "generation_unknown_requests": 0,
+      "review_required": true,
+      "terminal_at": 1795735533.2754157
+    },
+    {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 2,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbe060ffeZPlzyCj0RDeEIb",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "5086c46f98825398149514a1fd26840afe964407c312808f1c6506417d673aa3",
+      "application_source": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "original_oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "acceptance_version": "original",
+      "prompt_sha256": "93bcb7adf7c2196a17e1b8b95c780e3e674f36ced30b304b86030ffde1524af0",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "external/nariq-upstream/libtrellis-excerpts.txt": {
+          "sha256": "1e4a584b083b7bd695697f05444d72597b71f69e5467504074bfb0d0250b645d",
+          "bytes": 12049,
+          "executable": false
+        },
+        "epyc-root@9cd1c942a3ad9edce34ba42b8eaf796156e8be72/research/deep-dives/intake-kspec-20261120/intake-2733.md": {
+          "sha256": "567a6ef22784a6dd187d7d266ddd0c90b128c67b95b7c83123b8a0b77366346f",
+          "bytes": 2731,
+          "executable": false
+        }
+      },
+      "started_at": 1795734902.644504,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 1400,
+      "generation_unknown_requests": 0,
+      "review_required": true,
+      "terminal_at": 1795735533.0969734
+    },
+    {
+      "case": "PFXC-A3",
+      "backend": "gpu",
+      "thinking": true,
+      "profile": "on-coding",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 3,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-PFXC-A3-on-coding",
+      "manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+      "session": "ses_de5dbdd65ffe9DkqL9qOE4SGsz",
+      "status": "harness_or_environment_error",
+      "task_packet_sha256": "62de225340d6afb063b63c4c85bef6db48f33d75c97da84f9359168cc8b2044b",
+      "application_source": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "acceptance_version": "original",
+      "prompt_sha256": "e1e787eada48d997372854dd822d1116a8fcb77c604ecd321b81166e1f77c954",
+      "config_sha256": "ed57b8b3e4fed85a9b4fe21ad12f781264fddaf0317e94832fb105c924343682",
+      "readonly_inputs": {
+        "external/pfxc/pfxc-source-excerpts.txt": {
+          "sha256": "68f3d17552f7dceca7a676311e5f10b46bb2b601673edd064cdb7f18b698d1b2",
+          "bytes": 7985,
+          "executable": false
+        },
+        "epyc-root@9cd1c942a3ad9edce34ba42b8eaf796156e8be72/handoffs/active/kernel-champion-and-promotion.md": {
+          "sha256": "6212a31c7077ed6186307c60daddaf34c6303b094782fb3a982799d799fe8395",
+          "bytes": 868556,
+          "executable": false
+        }
+      },
+      "started_at": 1795734902.643557,
+      "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+      "brief_class": "independent execution from detailed pinned owner brief",
+      "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+      "transport": "qualified stock/transport.py; legacy tool argument filter unused",
+      "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+      "error": "KeyError: 'data'",
+      "generation_observed": 3884,
+      "generation_unknown_requests": 1,
+      "review_required": true,
+      "terminal_at": 1795735533.038658
+    }
+  ],
+  "unattempted": [
+    "gpu-DS41-W-66-off-recommended",
+    "gpu-DS41-W-66-on-coding",
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding",
+    "gpu-PAW-5-off-common-on-sampling",
+    "gpu-PAW-5-off-recommended",
+    "gpu-PFXC-A3-off-recommended"
+  ]
+}

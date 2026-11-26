@@ -1,0 +1,6 @@
+{
+  "at": "2026-11-26T23:25:31.811918+00:00",
+  "pid": 3220534,
+  "reason": "confirmed OpenCode header timeout plus thinking title slot starvation",
+  "classification": "harness affected; retain all incremental results"
+}
