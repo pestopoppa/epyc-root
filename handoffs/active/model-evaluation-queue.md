@@ -723,36 +723,49 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
       **Headline:** at the box's mixed quant Mini costs the **same bytes/token as the served A3B** (~3.2 GB), so it is no speed win, and ~1.3x faster at all-IQ4_NL. It is ~9x cheaper per token than Qwen3.8-27B. The vendor puts it **tied with Qwen3.8-27B** (AA Index 20.1 each). The case for it is 27B-class quality at A3B cost; that rests only on vendor numbers until our own tasks measure it. Risks: no MTP/DFlash2 drafter (the served A3B is speculative, so plain-decode parity is not real parity), 2x long-context KV from looping, per-head mask on both of our FA fast paths, upstream defects (#32755 garbage with CPU MoE + long prompts, compute-buffer explosion).
     - **Recommendation: GO for a CPU-first port box (core 5 items only), gated by a measurement row before any HIP FA / iqk / DSpark work.** Boxes below. [belief: cc]
 - [ ] **INK2-PORT-1** [non-inference, code] Forward-port Inkling 2 Mini (text-only) onto a fresh `llama.cpp-experimental` branch from the current champion: #32217 base inkling2 + #32694 + #32704 + #32752 + #32799, one feature per commit with its test (arch load, 48-slot hybrid memory, 3-pass scaled-expert fixture, inkling2 vocab test). Generic CPU FA only; no HIP FA, iqk or DSpark work in this box. Watch the `n_layer_all` collision with the LiLiCorr head layers and our `llama-graph.h` hybrid inputs. Estimate 6.5-9.5 agent-days. Take a build region claim and never compile on held quarters.
+      · constraint: production stays frozen; experimental branch only. Deferred by operator 2026-11-22 until after the v11 promotion; partial work on llama.cpp-experimental-inkling2-20261122@3d01b5e50
+      · class: non-inference
       · done when: experimental branch builds CPU-only, loads `ggml-org/Inkling-2-Mini-GGUF:IQ4_NL`, passes the port tests, and its PPL on a short wikitext chunk lands near upstream's 7.69 +/- 0.43 (#32704)
-      · gate: none (production stays frozen; experimental branch only)
-      · Deferred by operator 2026-11-22 until after the v11 promotion; partial work on llama.cpp-experimental-inkling2-20261122@3d01b5e50
+      · gate: none
     - [ ] **INK2-PORT-1a** [non-inference, code] Port #32217 base `inkling2` arch plus missing infra. Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50: SITU activation + attn_res.block_size done), forked from champion C18 `74c18e2d8`. Includes the relative-position graph input class (`llm_graph_input_mem_hybrid_iswa_rel`) with its `build_attn` rel_pos overload, a conv-state store helper using the no-rollback path, and the `post_arch_tensors` hook in `llama-model.{h,cpp}`; watch `llama-graph.h` hybrid inputs and the `n_layer_all` collision with LiLiCorr head layers. Text-only (skip clip projector). Effort: uncertainty-weighted share of the 6.5-9.5 agent-day core; largest row (est. 2-3 days). starts after v11 promotion (operator 2026-11-22). Take a build region claim; never compile on held quarters; CPU-only builds; one feature per commit with its test.
+          · constraint: experimental branch only
+          · class: non-inference
           · done when: branch builds CPU-only and the arch-load test loads `ggml-org/Inkling-2-Mini-GGUF:IQ4_NL` without error
-          · gate: none (experimental branch only)
+          · gate: none
     - [ ] **INK2-PORT-1b** [non-inference, code] Port #32429 attention-mask fixes (prerequisite of #32694). Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50: SITU activation + attn_res.block_size done), forked from champion C18 `74c18e2d8`. Land before INK2-PORT-1c. Effort: 0.25-0.5 day. starts after v11 promotion (operator 2026-11-22). Take a build region claim; never compile on held quarters; CPU-only builds; one feature per commit with its test.
+          · class: non-inference
           · done when: mask fix commit builds and its mask test passes on the fixture
           · gate: INK2-PORT-1a
     - [ ] **INK2-PORT-1c** [non-inference, code] Port #32694 loop arch (`inkling2-loop.cpp`, 48-slot memory filter attn+recr, `llama-quant.cpp`, `models.h`). Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50: SITU activation + attn_res.block_size done), forked from champion C18 `74c18e2d8`. 48-slot expansion must not collide with `n_layer_all` use at `llama-model.h:355`. Effort: 1.5-2 days. starts after v11 promotion (operator 2026-11-22). Take a build region claim; never compile on held quarters; CPU-only builds; one feature per commit with its test.
+          · class: non-inference
           · done when: 48-slot hybrid-memory test passes and model loads with 8 full + 40 SWA@1024 visit caches
           · gate: INK2-PORT-1b
     - [ ] **INK2-PORT-1d** [non-inference, code] Port #32704 scale-pass re-share via the `post_arch_tensors` hook. Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50: SITU activation + attn_res.block_size done), forked from champion C18 `74c18e2d8`. Add the 3-pass scaled-expert fixture. Effort: 0.25 day (+ fixture). starts after v11 promotion (operator 2026-11-22). Take a build region claim; never compile on held quarters; CPU-only builds; one feature per commit with its test.
+          · class: non-inference
           · done when: 3-pass scaled-expert fixture passes; short wikitext PPL lands near upstream 7.69 +/- 0.43
           · gate: INK2-PORT-1c
     - [ ] **INK2-PORT-1e** [non-inference, code] Port only the Inkling hunk of #32752 (chunked rel mask in `llama-graph.cpp` build_attn rel path). Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50: SITU activation + attn_res.block_size done), forked from champion C18 `74c18e2d8`. Use champion C18's `ggml_mul_mat_set_prec` instead of #32669; skip the rest of #32752. Effort: 0.5-1 day. starts after v11 promotion (operator 2026-11-22). Take a build region claim; never compile on held quarters; CPU-only builds; one feature per commit with its test.
+          · class: non-inference
           · done when: chunked-mask path bounds the rel-mask buffer and PPL is unchanged vs INK2-PORT-1d
           · gate: INK2-PORT-1d
     - [ ] **INK2-PORT-1f** [non-inference, code] Port #32799 `ignore_merges` (1 line in `llama-vocab.cpp`) with paired inkling2 vocab tests. Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50: SITU activation + attn_res.block_size done), forked from champion C18 `74c18e2d8`.  Effort: 0.25 day. starts after v11 promotion (operator 2026-11-22). Take a build region claim; never compile on held quarters; CPU-only builds; one feature per commit with its test.
+          · class: non-inference
           · done when: inkling2 vocab test passes; INK2-PORT-1 parent done-when (CPU build, IQ4_NL loads, PPL ~7.69) then satisfied
           · gate: INK2-PORT-1e
 - [ ] **INK2-MEAS-1** [inference, CPU] First measurement row, after INK2-PORT-1 (starts after v11 promotion, operator 2026-11-22): CPU quarter (q0-q2, not 88-95), `Inkling-2-Mini IQ4_NL` vs served `Qwen3.6-35B-A3B-MTP-Q8_0` on the same quarter. Question: does Mini decode within 25% of its ~31-40 tok/s bandwidth ceiling, and does it match or beat A3B on our own task set? Arms: tg128 at d=0 and d=8192, 3 interleaved pairs per arm; quality = the existing A3B worker/frontdoor task set (same template, `enable_thinking` matched, MTP off on both arms for the speed number and A3B MTP on as a served reference). Stop-on-answer after 3 pairs; futility if PPL sanity fails or output is degenerate (repetition loops the card warns about). Book need from measured rate + 25%.
+      · class: inference
       · done when: tok/s table (labelled) + per-task pass/fail vs A3B filed here, with a GO/NO-GO for INK2-PORT-2 (HIP FA re-homed to src[8]/src[9], DSpark drafter)
-      · gate: INK2-PORT-1 children 1a-1f all done
+      · gate: INK2-PORT-1, INK2-PORT-1a, INK2-PORT-1b, INK2-PORT-1c, INK2-PORT-1d, INK2-PORT-1e, INK2-PORT-1f
 - [ ] **INK2-PORT-2a** [non-inference, code] HIP FA via #32740 (indexed bias), inputs re-homed to `src[8]`/`src[9]` (fits GGML_MAX_SRC 10) to avoid our qsa `src[5]`/`src[6]`. Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50), forked from champion C18 `74c18e2d8`. Op_param 5 flag; bias forces ncols2=1, never MFMA; vec instantiation as a template bit (VGPR gate); touches `fattn.cu`, `fattn-tile.cuh`, `fattn-vec.cuh`, `fattn-common.cuh`, `ggml.c`. Effort: 3-5 days. starts after v11 promotion (operator 2026-11-22); gated follow-up (becomes runnable when its gate closes). Take a build region claim; never compile on held quarters.
+      · NEEDS-OWNER: dispatch only on INK2-MEAS-1 GO; ID gates cannot express the verdict condition.
+      · class: non-inference
       · done when: HIP build runs Inkling through FA (not the non-FA softmax fallback), residency proved (non-zero VRAM sampled during the run, verify_ggml_linkage.sh), output matches CPU within tolerance
-      · gate: INK2-MEAS-1 GO
+      · gate: INK2-MEAS-1
 - [ ] **INK2-PORT-2b** [non-inference, code] iqk CPU per-head-mask FA path (`ops.cpp:10397` gate refusing mask `ne[2] != 1`; per-head mask stride in `iqk/fa`). Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50), forked from champion C18 `74c18e2d8`. Only if INK2-MEAS-1 shows mask/FA time > 10% of decode; sinks gate stays. Effort: 2-3 days. starts after v11 promotion (operator 2026-11-22); gated follow-up (becomes runnable when its gate closes). Take a build region claim; never compile on held quarters.
+      · NEEDS-OWNER: dispatch only on INK2-MEAS-1 GO and mask/FA time above 10%; ID gates cannot express these conditions.
+      · class: non-inference
       · done when: iqk FA accepts per-head masks, matches generic FA on the fixture, measured speedup filed
-      · gate: INK2-MEAS-1 GO and mask/FA time > 10%
+      · gate: INK2-MEAS-1
 - [ ] **INK2-PORT-2c** [non-inference, code] DSpark drafter (verify path `sample_and_accept_dspark_serial`, `server-context.cpp:5950`). Model: Inkling 2 Mini (IQ4_NL / Q8_0). Build/base: `llama.cpp-experimental-inkling2-20261122` (partial @ 3d01b5e50), forked from champion C18 `74c18e2d8`. Capture taps at visit inputs 5/23/41 + final 48, 3-layer drafter (SWA on 0,2), markov rnn head; convert drafter (no GGUF drafter published); verify must roll back 48 short-conv states. Same trigger as the speculative-decoding.md M3 monitor. Effort: 3-5 days. starts after v11 promotion (operator 2026-11-22); gated follow-up (becomes runnable when its gate closes). Take a build region claim; never compile on held quarters.
       · done when: drafter loads, serial verify accepts blocks with correct rollback, alpha measured vs MTP
       · gate: INK2-MEAS-1 GO and a GGUF drafter available or converted
