@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 579
+      "open": 577
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 492
+      "open": 491
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -533,11 +533,11 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 211,
+      "closed": 212,
       "guarded": 0,
       "last_advanced": "2026-11-26",
       "needs_owner": 1,
-      "open": 47,
+      "open": 46,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -620,13 +620,13 @@
         },
         {
           "blocked": 0,
-          "closed": 61,
+          "closed": 62,
           "gates": [],
           "guarded": 0,
           "line": 3136,
           "markers": 1,
           "name": "tool-output-compression",
-          "open": 7
+          "open": 6
         },
         {
           "blocked": 0,
@@ -850,11 +850,11 @@
     },
     "deepseek-v41-flash-evaluation.md": {
       "blocked": 1,
-      "closed": 111,
+      "closed": 112,
       "guarded": 0,
       "last_advanced": "2026-11-26",
       "needs_owner": 2,
-      "open": 116,
+      "open": 115,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2023,10 +2023,10 @@
     },
     "quantization-and-low-bit.md": {
       "blocked": 1,
-      "closed": 70,
+      "closed": 71,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 40,
+      "last_advanced": "2026-11-26",
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2049,13 +2049,13 @@
         },
         {
           "blocked": 0,
-          "closed": 29,
+          "closed": 30,
           "gates": [],
           "guarded": 0,
           "line": 242,
           "markers": 1,
           "name": "iqk-iquant-enablement",
-          "open": 19
+          "open": 18
         },
         {
           "blocked": 1,

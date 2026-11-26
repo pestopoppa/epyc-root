@@ -714,7 +714,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-26T16:02:18Z",
+  "generated_at": "2026-11-26T16:43:46Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2173,15 +2173,15 @@
         "INF-48",
         "RTG-58"
       ],
-      "closed": 111,
-      "dispatchable": 116,
+      "closed": 112,
+      "dispatchable": 115,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "last_advanced": "2026-11-26",
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
-      "open": 117,
+      "open": 116,
       "priority": 0.6069,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): DS41-W5d \u2014 1017 baseline + MUL_MAT_ID premise microbench (operator choice \"1017-only + mic",
@@ -2258,18 +2258,18 @@
       ]
     },
     {
-      "age_days": 19,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 70,
-      "dispatchable": 40,
+      "closed": 71,
+      "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
-      "last_advanced": "2026-11-07",
+      "last_advanced": "2026-11-26",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 41,
+      "open": 40,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2298,11 +2298,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 19,
+          "dispatchable": 18,
           "gates": [],
           "line": 242,
           "name": "iqk-iquant-enablement",
-          "open": 19,
+          "open": 18,
           "readiness": "ready"
         },
         {
@@ -2887,15 +2887,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 211,
-      "dispatchable": 47,
+      "closed": 212,
+      "dispatchable": 46,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-26",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 49,
+      "open": 48,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2978,11 +2978,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 6,
           "gates": [],
           "line": 3136,
           "name": "tool-output-compression",
-          "open": 7,
+          "open": 6,
           "readiness": "ready"
         },
         {
