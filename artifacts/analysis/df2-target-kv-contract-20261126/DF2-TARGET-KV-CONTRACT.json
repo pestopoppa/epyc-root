@@ -1,0 +1,36 @@
+{
+  "layer_map": {
+    "scope": "DS-V4.1-Flash and Qwen3.8-27B full-attention control; zero-based source layer pairs are not established by the retained intake excerpts.",
+    "released_dfly2": {"revision": "Tencent/AngelSpec e02ea36e65d44e6e165c4ba73c139d500e12f2d9", "mapping": null, "evidence": "research/deep-dives/intake-nov26-kernels/angel.md: DFly2 reads paired target MLA latents; DS/GLM weights and train configs reported released, DS/GLM vLLM support future at that revision.", "weights_revision": null},
+    "ds_v41_flash": {"target_layer_to_drafter_layer": null, "supported_pairs": [], "verdict": "UNRESOLVED: no retained pair-level mapping and runtime identity witness; empty supported_pairs means no pair established, not proof no pair exists.", "unsupported": "Any pair without a demonstrated matching source layer, latent representation and lifecycle is not eligible for direct aliasing."},
+    "qwen38_27b": {"target_layer_to_drafter_layer": null, "supported_pairs": [], "verdict": "REJECT direct DFly2 MLA alias into local full-attention K/V; the existing DFlash2 hidden-state extraction IDs are not KV layer pairs. A separately designed adapter is unqualified.", "unsupported": "Gated-delta/recurrent layers are not full-attention KV layers and are outside this comparison."}
+  },
+  "kv_stride": {
+    "source": "/mnt/raid0/llm/llama.cpp at ffc1bac82eeca6f9099e1ccd9ba49703c460a115, src/llama-kv-cache.cpp:210-245,1280-1331; common/speculative.cpp:1289-1290,1409-1426,1554-1592",
+    "local_full_attention": "Per-layer K and V allocations [GQA width, kv_size, stream]; non-transposed K/V position stride ggml_row_size(dtype, respective GQA width), stream stride ggml_row_size(dtype, width * kv_size). V may instead be transposed, in which case its position dimension is first and these V position strides do not apply. MLA allocates K but no separate V in this implementation.",
+    "dtype": "Runtime selectable; recorded 27B trace compares target f16/q8_0/q4_0 with drafter f16 (handoffs/active/speculative-decoding.md:381-382). Model Q8_0 weights do not imply KV dtype.",
+    "released_latent_stride_bytes": null,
+    "comparison": "Matching sizes alone cannot establish aliasing: dtype, quantization blocks, latent meaning, layout, sequence/slot addressing and ownership must match. Actual runtime row sizes and DFly2 reader strides are not retained here."
+  },
+  "selection_epoch": {
+    "released_rule": "Selections from each paired target indexer for the last accepted token are read for the next draft block, alongside draft-block positions; see research/deep-dives/intake-nov26-kernels/angel.md and intake-digests/2026-11-26-ids-2982-3005.md:567-575.",
+    "ds_v41_flash": "The retained handoff describes top-512 compressed rows plus a raw local window, and eight index-source layers with reuse (handoffs/active/deepseek-v41-flash-evaluation.md, DS41-C123.1 and DS41-C7.2). It does not establish a DFly2 reader's per-slot epoch or accepted-token alignment.",
+    "qwen38_27b": "Local full-attention control has no demonstrated DFly2 sparse index selection to reuse. DFlash2 selector top-k in common/speculative.cpp is a token selector, not evidence of a target sparse-position index.",
+    "required_identity": "Bind selection to target model/config revision, target source layer, sequence and slot generation, last accepted absolute position, and current KV generation; invalidate or recompute after rollback or slot recycling. This is a required contract, not an observed implementation."
+  },
+  "rollback_owner": {
+    "observed_local": "Server owns target and draft sequence cleanup/checkpoint operations separately (tools/server/server-context.cpp at ffc1bac82, including lines 308-310, 2403-2406, 3543-3545, 3936-3939, 4232-4234). DFlash accept callback is a no-op (common/speculative.cpp:1770); its encoder injects features into the separate draft context. This is not an implemented DFly2 shared-cache lifecycle.",
+    "required_shared_state": "Target/server remains sole owner of KV lifetime and rollback; drafter has a read-only view and must discard selection/address references when the accepted prefix or slot generation changes. No retained DFly2/local integration proves this invariant.",
+    "abi_verdicts": {
+      "ds_v41_flash_released_dfly2": {"accept": "UNRESOLVED: last-accepted selection rule is documented, but pair/stride/epoch binding is unwitnessed.", "reject": "UNRESOLVED: no witness that rejected suffix and its indices are invalidated before next read.", "slot_reuse": "UNRESOLVED: no slot-generation and stale-index invalidation witness."},
+      "qwen38_27b_full_attention_released_dfly2": {"accept": "REJECT direct alias: released MLA reader and local separate full-attention K/V have no demonstrated common ABI.", "reject": "REJECT direct alias: representation mismatch and no shared rollback/selection witness.", "slot_reuse": "REJECT direct alias: representation mismatch and no shared slot-generation witness."}
+    }
+  },
+  "missing_artifacts": [
+    "Pinned released DS-V4.1 DFly2 target/draft config contents and weight identities, including exact source-to-drafter layer pairs; intake retains revision and summary but not the pair table.",
+    "Pair-specific target and reader tensor dtype, shape, byte strides, encoding, cache layout and buffer identity for the actual released weights and local runtime.",
+    "A retained matched DS-V4.1 DFly2 integration trace or fixture binding last-accepted token, index source layer, selected positions and KV generation across accept, rejection and slot reuse.",
+    "A released Qwen3.8-27B DFly2 pairing and reader/adapter contract; local DFlash2 is a different mechanism.",
+    "A retained proof for recurrent-layer state sharing; excluded from the full-attention control."
+  ]
+}
