@@ -57,3 +57,11 @@ C22 GPU thinking was verified in actual forwarded bodies and reasoning histories
 The evidence set contains 17 scheduling attempts and 252 request records, including 67 CPU and 185 GPU. Both servers/controllers/workers exited and compute claims are free. The full root is KEEP-leased through 2027-01-25. See `docs/design/taskflow-real-dispatch-pilot-20261126.md` and `artifacts/analysis/taskflow-real-pilot-20261126/audit.json`.
 
 Next: codex-a3b-pilot files the committed conclusion and closes the remaining three completed source boxes.
+
+## 16:33Z — Close the remaining completed pilot source tasks
+
+Closed the remaining NARIQ design, DS41-W-66 fixture repair and VERBATIM regression boxes from their actual published artifacts and independent checks. Research `9a4e7dd4b433` contains the independently prepared design, research `ae08f0a58a77` contains the fixture repair, and orchestrator `af947afe843b` contains the corrected worker test. Source/review provenance and qualifications are in root findings commit `c6d1a04d9b82`.
+
+The pilot conclusion is registered as a committed observation. No model-ranking or retrospective measurement warrant is claimed. All observed harness failures have repairs and scoped regression evidence; remaining clear source/test errors are model limitations, while W66's interrupted/resumed execution outcome retains its reasoning-loss qualification. No inference processes or compute claims remain owned by this pilot.
+
+Next: pipeline-mgmt uses independent contracts and the retained residual cases when preparing the separately enrolled Stage 1 comparison.

@@ -653,7 +653,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - Progress: `progress/2026-09/2026-09-28-ak-ds41-main.md`.
   - [ ] **DS41-W-65** Confirm the first post-promotion launch under the new code logs `request-bound floor … [carried_forward]`
     instead of scheduling calibration.
-  - [ ] **DS41-W-66** Test-isolation hazard found by the subagent: `test_runtime_keep_source_continuity` and one
+  - [x] **DS41-W-66** Test-isolation hazard found by the subagent: `test_runtime_keep_source_continuity` and one ✅ 2026-11-26 [no-belief: reviewed software and design changes] Research ae08f0a58a77: both named tests pass with private locks and digest-bound continuation receipts; actual missing synthetic receipt fixed.
     `test_serial_run` test hang while holding the real host lock
     `/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock` (on main too) — fix the isolation.
 - [x] DS41-C70 — **Planner output cap 16,384 → 32,000.** ✅ 2026-09-28 (~11:25-11:50Z), `ak-ds41-main`. Two
