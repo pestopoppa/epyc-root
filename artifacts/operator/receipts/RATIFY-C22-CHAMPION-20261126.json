@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-C22-CHAMPION-20261126",
+  "indexed_by": "attest",
+  "receipt": "artifacts/operator/ratify_c22_champion_20261126.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

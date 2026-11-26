@@ -1,0 +1,159 @@
+{
+  "champion": {
+    "base": "98ff8a42a00ce816522fc913bbcfc414fe850d54",
+    "branch": "llama.cpp-experimental-c22-composite-20261125",
+    "head": "b1e1864cb6e9f8a012b0be422e6c72ab477ded62",
+    "production_ancestor": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "pushed_to_fork": true,
+    "tree_note": "tree == ce6fcbbde (stores built from it); b1e1864cb is an empty commit carrying the KERNEL-REPLACES declaration for iqk_flash_attn.cpp"
+  },
+  "decision": "Accept C22 (llama.cpp-experimental-c22-composite-20261125) as the AutoKernel champion. This is NOT a production promotion: production v10 stays frozen, and the registry is not written.",
+  "effects": "records C22 as AutoKernel champion only; no promotion, no production change, no registry write",
+  "gate_id": "RATIFY-C22-CHAMPION-20261126",
+  "gates": [
+    {
+      "result": "/mnt/raid0/llm/tmp/ak-c22-composite-gate-27b-gpu-20261126-r5/out/RESULT.json",
+      "result_sha256": "4f92f8efeb7d75ef7a72f12e2f09ec81e2d51d3aeb54102c935a231212883829",
+      "row_id": "ak-c22-composite-gate-27b-gpu-20261126-r5",
+      "verdict": "KEEP_C22+I8PC_ONLY+LOSSLESS"
+    },
+    {
+      "result": "/mnt/raid0/llm/tmp/ak-c22-composite-gate-q38fn-cpu-20261126/out/RESULT.json",
+      "result_sha256": "284d2dc8b0da877d240dd3b71e86ae23346ad8c891cfb29a6f03fb92e82426aa",
+      "row_id": "ak-c22-composite-gate-q38fn-cpu-20261126",
+      "verdict": "KEEP_C22+LOSSLESS"
+    },
+    {
+      "evidence": "7 clean blocks WIN x1.204..1.219 per block, OFF2/OFF within +/-0.7%",
+      "exclusion": "block 8 (09:31Z) excluded as documented contamination: the keeper placed 4 prodcfg CPU smokes beside the quiet row at 09:22Z (OFF2 0.876); Pipeline confirmed, fixed in cx73",
+      "raw_result_verdict": "FUTILITY_HARNESS_AA (all-block harness verdict, superseded by the filed operator verdict)",
+      "result_sha256": "6beea2b17f33f6a733e065e9328a6ac92a8203c65baab974e84938e121e54567",
+      "row_id": "ak-c22-q38fn-draftwin-confirm-cpu-20261126-r2",
+      "verdict": "KEEP by operator ruling 2026-11-26 (AskUserQuestion)",
+      "verdict_sha256": "e8dd126208e90fc00c87bb1dac629fe3ba9dbb92f3e0407720fc125744cf3572"
+    },
+    {
+      "row_id": "ak-c22-composite-gate-a3b-cpu-20261126",
+      "stop_file": "/mnt/raid0/llm/tmp/ak-c22-composite-gate-a3b-cpu-20261126/STOP",
+      "verdict": "FAIL (interim futility stop at 4/8 blocks): C22 x0.992 [0.924, 1.066]; identity units ran and the row proceeded to timing"
+    },
+    {
+      "result_sha256": "57afd0261a41964beb6d35da0076d23be5244b399cec2e68f398bc32965021e8",
+      "row_id": "ak-q38fn-draftvocab-quality-cpu-20261126-r3",
+      "verdict": "KEEP_DV"
+    }
+  ],
+  "headline_note": "On a long-context (~8.4k-token prompt) workload in the np4 production config, C22 ~= C21 (both +49-51% vs v10; decode tok/s 68.8 vs 69.1 vs v10 45.9; prefill C22 +4.6% vs C21). Short-prompt/coding/mixed production numbers not yet measured; pending a breakdown re-run (S1-r3).",
+  "keep_list": {
+    "path": "/mnt/raid0/llm/tmp/c22-keep-list-FROZEN-20261125.md",
+    "sha256": "6ee8f266ad2494fe55ada88bf8bdf03cf88b630d6eb9c1a903dc9bdb0521c4e6"
+  },
+  "kernel_preservation": {
+    "c21_to_c22": "PASS source+static on the ce6fcbbde stores; PASS source at b1e1864cb",
+    "v10_to_c22": "PASS at b1e1864cb (declared replacements measured): the iqk_flash_attn.cpp GGML_IQK 4->2 drop is declared an intentional replacement (case a) in b1e1864cb"
+  },
+  "operator": "Daniele",
+  "operator_decisions": {
+    "a3b_combined_gate": {
+      "choice": "resolved: no-gain, no-regression (CI spans 1.0)",
+      "row": "ak-c22-composite-gate-a3b-cpu-20261126",
+      "serving": "A3B serves the C22 store with the C22 knobs OFF: GGML_CONV_STATE_FWD, GGML_CPU_TOPK_SELECT and GGML_IQK_SKINNY_BALANCE are env knobs, default off in code (getenv(...) && atoi != 0); none goes in any A3B serving env"
+    },
+    "devhandoff_fold": {
+      "channel": "AskUserQuestion via coordinator",
+      "choice": "CONFIRMED",
+      "decided_at": "2026-11-26T06:25Z"
+    },
+    "draft_window": {
+      "basis": "draftwin-confirm r2 KEEP by operator ruling 2026-11-26",
+      "choice": "SERVE"
+    },
+    "draftvocab": {
+      "choice": "SERVE (quality proven: served_quality r3 KEEP)",
+      "note": "combined C22+DV served speed unmeasured; DV alone +8.1 % (gemv2-r5)",
+      "row": "ak-q38fn-draftvocab-quality-cpu-20261126-r3"
+    },
+    "lossy_equal_quality_rule_cpu": {
+      "channel": "AskUserQuestion via coordinator",
+      "choice": "CONFIRMED: KLD <= 1.5 x order-only calibration arm (OFF_T23)",
+      "decided_at": "2026-11-26T06:25Z"
+    },
+    "q8wp_serving": {
+      "channel": "AskUserQuestion via coordinator",
+      "choice": "A: serve WITHOUT GGML_HIP_Q8W8 (code stays, default-off)",
+      "decided_at": "2026-11-26T06:25Z",
+      "evidence": "the 27B served env then equals the G-27B r5 I8PC_ONLY arm: x1.128 [1.108, 1.147]"
+    }
+  },
+  "package": {
+    "path": "/mnt/raid0/llm/tmp/ak-c22-composite-build-20261125/RATIFY-C22-PACKAGE.md",
+    "sha256": "bd711894a7cadc8293304efdd6a6ee1f61df6e2479676098d59542ef301e9731"
+  },
+  "post_reboot_plan": {
+    "matrix_branch": "epyc-inference-research c22-np-ctx-depth-matrix-20261126 (pushed)",
+    "matrix_driver_commit": "c9c089a61c6585cd949c13b6e4ce985036f56fc1",
+    "rows": [
+      "M1-M5 matrix",
+      "Q2 quality q38fn",
+      "gpu-cpuload-r3",
+      "pernuma-r3",
+      "A3B remeasure"
+    ]
+  },
+  "preconditions_before_signature": [],
+  "production_receipts": [
+    {
+      "result_sha256": "0881f77eac239e786326b18639c7c7d317e0ff398c4408044be66de57d39b1f7",
+      "row_id": "ak-c22-prodcfg-27b-gpu-20261126-r2",
+      "verdict": "KEEP_C21+C22"
+    },
+    {
+      "row_id": "ak-c22-prodcfg-a3b-gpu-20261126-r2",
+      "verdict": "inconclusive FUTILITY_HARNESS_AA (A/A 1.028); possible regression vs v10, at-risk"
+    },
+    {
+      "note": "r1, no per-item sampling field",
+      "result_sha256": "7350dd44216bf0adcc4439dec07b7f0c4aa19e16610b452b9ed047b519bcdf69",
+      "row_id": "ak-c22-prodcfg-quality-a3b-cpu-20261126",
+      "verdict": "pass KEEP"
+    }
+  ],
+  "ratified_at": "2026-11-26T10:28:45.390585+00:00",
+  "ratify_script_sha256": "4aa54b1f03d60be0f9598bbde83ab852d25d609c08be0b65a8bab1d681ef775f",
+  "rollback": {
+    "champion_previous": "C21 98ff8a42a",
+    "production": "production-consolidated-v10 ffc1bac82 (unchanged)"
+  },
+  "schema": "epyc.operator_ratification.v1",
+  "serving_config_draft": {
+    "path": "/mnt/raid0/llm/tmp/ak-c22-composite-build-20261125/C22.serving-config.DRAFT.json",
+    "sha256": "20c446de0d636963e83044b4580759c9f673bfc5f5d8f99e14e1703228020c45",
+    "validated": "validate_serving_config.py --strict-files OK (0 errors, 0 warnings)"
+  },
+  "signature_channel": "operator-run script (--attest --operator)",
+  "signed_by_uid": 1000,
+  "status": "ratified",
+  "stores": {
+    "cpu": {
+      "build_identity_sha256": "e4cd9b6f6ab7115c02920684c582687f325656a088e6482f33ff73f5d5f023c4",
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite",
+      "sha256sums_sha256": "1d2b7df60e9936554802539f166804d9faaa36fe27254cd3098b81ebb0beb74f",
+      "source": "ce6fcbbde",
+      "version": "10748 (ce6fcbbde)"
+    },
+    "gated_stores_6528aab5f": {
+      "cpu": "cpu-20261126-6528aab5f-c22-composite",
+      "gpu": "gpu-20261126-6528aab5f-c22-composite",
+      "note": "G-27B r5 and G-Q38FN ran on these; ce6fcbbde differs only by C22[18] (default-off draft window)"
+    },
+    "gpu": {
+      "build_identity_sha256": "094423051b8904cce373ed2087391b7de17004c230d85c0e68bf5d8bc0e21cb6",
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20261126-ce6fcbbde-c22-composite",
+      "sha256sums_sha256": "a04da4395f920e844cd78dffb3050b5033048283291ffc472864b58f3ed21e26",
+      "source": "ce6fcbbde",
+      "version": "10748 (ce6fcbbde)"
+    }
+  },
+  "template_gate_id": "RATIFY-AK-C22-CHAMPION-20261126",
+  "template_sha256": "88332d00302fef0358c5fd65c1e4e22e1c1b8bb72b42d335583b407ab58b90e3"
+}
