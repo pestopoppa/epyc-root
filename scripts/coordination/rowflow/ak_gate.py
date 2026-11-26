@@ -1660,7 +1660,20 @@ class Gate:
             out.append(a)
         return out
 
+    def require_exec_grant(self, argv):
+        """Guard spec executables before adding launcher wrappers or synthesizing child env."""
+        if self.env.get("FILLER_ID") or self.env.get("AK_GATE_ALLOW_EXEC") == "1":
+            return
+        executable = str(argv[0]) if argv else ""
+        resolved = os.path.realpath(os.path.join(self.d, executable)) if os.sep in executable else ""
+        if "fixtures" in resolved.split(os.sep) or "test-fixtures" in resolved.split(os.sep):
+            return
+        raise RuntimeError("INC-20261126-ungranted-mi210-replay: refusing to execute "
+                           f"{executable!r} without a keeper grant (FILLER_ID); "
+                           "use fixture executables or explicitly set AK_GATE_ALLOW_EXEC=1")
+
     def pin(self, argv):
+        self.require_exec_grant(argv)
         cpus = H.grant_cpus(self.env, default=[])
         pre = []
         mb = (self.spec.get("server") or {}).get("membind")

@@ -237,7 +237,7 @@ def fixture_environment():
             (flags / part).mkdir(parents=True)
         rows = root / 'rows'
         rows.mkdir()
-        store = root / 'kernels/builds/gpu-20261125-abcdef123-gate'
+        store = root / 'test-fixtures/kernels/builds/gpu-20261125-abcdef123-gate'
         shutil.copytree(FIX / 'fake-store', store, symlinks=False)
         # Fixture links resolve relative to their original location before copying.
         (store / 'BUILD-IDENTITY.json').write_text(json.dumps({'source_sha': 'abcdef1234567'}))

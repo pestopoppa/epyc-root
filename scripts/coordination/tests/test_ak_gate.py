@@ -24,9 +24,10 @@ import preflight as P  # noqa: E402
 
 FIX = os.path.join(_TESTS, "fixtures", "ak_gate")
 _BIN_TMP = tempfile.TemporaryDirectory(prefix="ak-gate-test-bin-")
-FIX_BIN = _BIN_TMP.name
+FIX_BIN = os.path.join(_BIN_TMP.name, "test-fixtures")
+os.mkdir(FIX_BIN)
 for _name in ("llama-server", "llama-perplexity", "test-backend-ops", "test-dflash-dev-inject", "test-q8ip-two-ctx"):
-    os.symlink("/bin/true", os.path.join(FIX_BIN, _name))
+    shutil.copy("/bin/true", os.path.join(FIX_BIN, _name))
 
 Q8MC_ARMED = "ggml_cuda_q8_mc: GGML_HIP_Q8MC=1 multi-column Q8_0 GEMV armed"
 TF2 = {"GGML_CUDA_AK_ADD_RMS_NORM": "AK-RF-27B-TAIL-FUSE G1 add+rms_norm+mul fused path ran",
@@ -63,7 +64,8 @@ def spec(knobs=None, arms=None, expect=None, argv=None, **kw):
 
 
 def fake_bin(tmp_path, name, src):
-    b = tmp_path / "bin"
+    b = tmp_path / "test-fixtures" / "bin"
+    b.parent.mkdir(exist_ok=True)
     b.mkdir(exist_ok=True)
     shutil.copy(os.path.join(FIX, src), b / name)
     os.chmod(b / name, 0o755)
@@ -678,7 +680,8 @@ def test_a_selftest_bin_replay_on_the_real_bisect_log(tmp_path):
 
 
 def test_a_selftest_bin_live_fresh_processes_and_mapped_keep(tmp_path):
-    b = tmp_path / "bin"
+    b = tmp_path / "test-fixtures" / "bin"
+    b.parent.mkdir(exist_ok=True)
     b.mkdir()
     (b / "test-q8ip-two-ctx").write_text(
         "#!/usr/bin/env python3\nimport os\n"
@@ -1917,3 +1920,52 @@ def test_op_smoke_without_served_workload(tmp_path):
     g.run_op, g.run_correctness_unit = op, corr
     assert G.workload_prompts(sp, str(tmp_path)) == []
     assert g.smoke() == 0
+
+
+@pytest.mark.parametrize("kind", ["c-tbo", "c-kld", "c-st", "c-id"])
+def test_exec_guard_refuses_ungranted_correctness_before_child(tmp_path, monkeypatch, kind):
+    binary = "/bin/true"
+    configs = {
+        "c-tbo": {"kind": "tbo", "argv": [binary]},
+        "c-kld": {"kind": "kld", "argv": [binary], "max_kld": 0.01},
+        "c-st": {"kind": "selftest_bin", "argv": [binary], "runs": 1,
+                 "mismatch_rx": r"mismatches=(\d+)", "max_mismatch": {"ON": 0}},
+        "c-id": {"kind": "identity", "mode": "cmd", "argv": [binary], "n_prompts": 1},
+    }
+    gate = G.Gate(spec(correctness=configs[kind]), str(tmp_path), env={}, stream=QUIET)
+    monkeypatch.setattr(G.subprocess, "Popen", lambda *a, **k: pytest.fail("child started"))
+    with pytest.raises(RuntimeError, match="INC-20261126-ungranted-mi210-replay"):
+        gate.run_correctness_unit("guard", kind, "ON", {"prompt": 0, "mode": "base"})
+
+
+def test_exec_guard_server_op_fixtures_and_explicit_authorization(tmp_path, monkeypatch):
+    monkeypatch.setattr(G.subprocess, "Popen", lambda *a, **k: pytest.fail("child started"))
+    gate = G.Gate(spec(argv=["/bin/true", "{PORT}"]), str(tmp_path), env={"FILLER_PORTS": "1"}, stream=QUIET)
+    with pytest.raises(RuntimeError, match="INC-20261126-ungranted-mi210-replay"):
+        gate._visit("guard", "ON", [], 1, 0, 1)
+    sp = op_spec()
+    sp["op_unit"]["argv"] = ["/bin/true"]
+    gate = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    with pytest.raises(RuntimeError, match="INC-20261126-ungranted-mi210-replay"):
+        gate.run_op("guard", "ON", sp["op_unit"]["shapes"][0], 1)
+    gate.env = {"FILLER_ID": "grant"}
+    assert gate.pin(["/bin/true"]) == ["/bin/true"]
+    gate.env = {"AK_GATE_ALLOW_EXEC": "1"}
+    assert gate.pin(["/bin/true"]) == ["/bin/true"]
+    gate.env = {"FILLER_DRYRUN": "1", "AK_GATE_ALLOW_EXEC": "0"}
+    with pytest.raises(RuntimeError, match="INC-20261126-ungranted-mi210-replay"):
+        gate.pin(["/bin/true"])
+    fixture_link = tmp_path / "test-fixtures" / "link"
+    fixture_link.parent.mkdir()
+    fixture_link.symlink_to("/bin/true")
+    with pytest.raises(RuntimeError, match="INC-20261126-ungranted-mi210-replay"):
+        gate.pin([str(fixture_link)])
+
+
+def test_exec_guard_fixture_runs_without_grant(tmp_path):
+    binary = fake_bin(tmp_path, "fake-identity", "fake_identity.py")
+    sp = spec(correctness={"kind": "identity", "mode": "cmd", "argv": [binary], "n_prompts": 1})
+    gate = G.Gate(sp, str(tmp_path / "row"), env={}, stream=QUIET)
+    gate.prepare()
+    result = gate.run_correctness_unit("fixture", "c-id", "OFF", {"prompt": 0})
+    assert result["rc"] == 0
