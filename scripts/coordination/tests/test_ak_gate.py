@@ -1952,7 +1952,10 @@ def test_exec_guard_server_op_fixtures_and_explicit_authorization(tmp_path, monk
     assert gate.pin(["/bin/true"]) == ["/bin/true"]
     gate.env = {"AK_GATE_ALLOW_EXEC": "1"}
     assert gate.pin(["/bin/true"]) == ["/bin/true"]
+    # keeper-placed smokes run under FILLER_DRYRUN (ak_row_harness.require_grant accepts the same pair)
     gate.env = {"FILLER_DRYRUN": "1", "AK_GATE_ALLOW_EXEC": "0"}
+    assert gate.pin(["/bin/true"]) == ["/bin/true"]
+    gate.env = {"AK_GATE_ALLOW_EXEC": "0"}
     with pytest.raises(RuntimeError, match="INC-20261126-ungranted-mi210-replay"):
         gate.pin(["/bin/true"])
     fixture_link = tmp_path / "test-fixtures" / "link"

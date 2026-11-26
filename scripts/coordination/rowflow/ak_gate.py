@@ -1662,8 +1662,11 @@ class Gate:
 
     def require_exec_grant(self, argv):
         """Guard spec executables before adding launcher wrappers or synthesizing child env."""
-        if self.env.get("FILLER_ID") or self.env.get("AK_GATE_ALLOW_EXEC") == "1":
-            return
+        # Keeper full runs export FILLER_ID; keeper smokes (dry runs) export FILLER_DRYRUN - the same pair
+        # ak_row_harness.require_grant accepts. Missing FILLER_DRYRUN here refused every real smoke (2026-11-26).
+        for env in (self.env, os.environ):
+            if env.get("FILLER_ID") or env.get("FILLER_DRYRUN") or env.get("AK_GATE_ALLOW_EXEC") == "1":
+                return
         executable = str(argv[0]) if argv else ""
         resolved = os.path.realpath(os.path.join(self.d, executable)) if os.sep in executable else ""
         if "fixtures" in resolved.split(os.sep) or "test-fixtures" in resolved.split(os.sep):
