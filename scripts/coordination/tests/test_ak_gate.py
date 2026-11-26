@@ -1972,3 +1972,103 @@ def test_exec_guard_fixture_runs_without_grant(tmp_path):
     gate.prepare()
     result = gate.run_correctness_unit("fixture", "c-id", "OFF", {"prompt": 0})
     assert result["rc"] == 0
+
+
+def test_arm_stores_pin_substitute_and_fail_closed(tmp_path, monkeypatch):
+    store = tmp_path / "test-fixtures" / "store"
+    (store / "bin").mkdir(parents=True)
+    for name in ("llama-server", "test-backend-ops", "libggml-base.so"):
+        (store / "bin" / name).write_text(name)
+        (store / "bin" / name).chmod(0o755)
+    arms = {"OFF": {}, "OFF2": {}, "ON": {"GGML_HIP_Q8MC": "1"}}
+    corr = {"kind": "tbo", "argv": ["/old/test-backend-ops"]}
+    stores = MK.resolve_arm_stores([f"ON={store}"], arms, ["/old/llama-server"], corr)
+    sp = spec(arm_stores=stores)
+    gate = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    assert gate.llama_argv(["/old/llama-server", "--port", "{PORT}"], "ON", 3)[0] == str(store / "bin" / "llama-server")
+    assert gate.llama_argv(["/old/test-backend-ops"], "ON", flags=False)[0] == str(store / "bin" / "test-backend-ops")
+    assert gate.proc_env("ON", unit_env={"LD_LIBRARY_PATH": "/wrong"})["LD_LIBRARY_PATH"] == str(store / "bin")
+    class Result:
+        returncode = 0
+        stdout = f'libggml-base.so => {store}/bin/libggml-base.so (0x1)\n'
+    monkeypatch.setattr(G.subprocess, "run", lambda *a, **k: Result())
+    assert gate.verify_arm_stores()
+    (store / "bin" / "libggml-base.so").write_text("tampered")
+    assert not gate.verify_arm_stores()
+    assert "digest" in gate.linkage_witness["ON"]["error"]
+    assert gate.run() == 0
+    result = json.loads((tmp_path / "out" / "RESULT.json").read_text())
+    assert result["verdict"] == "FUTILITY_HARNESS_LINKAGE" and not result["arm_linkage"]["ON"]["ok"]
+
+
+def test_arm_store_refuses_missing_binary_and_outside_linkage(tmp_path, monkeypatch):
+    store = tmp_path / "test-fixtures" / "store"
+    (store / "bin").mkdir(parents=True)
+    (store / "bin" / "libggml-base.so").write_text("lib")
+    with pytest.raises(SystemExit, match="missing"):
+        MK.resolve_arm_stores([f"ON={store}"], {"ON": {}}, ["/old/llama-server"], None)
+    (store / "bin" / "llama-server").write_text("bin")
+    (store / "bin" / "llama-server").chmod(0o755)
+    stores = MK.resolve_arm_stores([f"ON={store}"], {"ON": {}}, ["/old/llama-server"], None)
+    gate = G.Gate(spec(arm_stores=stores), str(tmp_path), env={}, stream=QUIET)
+    class Result:
+        returncode = 0
+        stdout = 'libggml-base.so => /elsewhere/libggml-base.so (0x1)\n'
+    monkeypatch.setattr(G.subprocess, "run", lambda *a, **k: Result())
+    assert not gate.verify_arm_stores()
+    assert "outside store" in gate.linkage_witness["ON"]["error"]
+
+
+def test_serving_floor_compares_candidates_to_named_incumbent():
+    sp = spec(serving_floor={"arm": "OFF2", "ratio": 0.95})
+    rows = [{"kind": "visit", "arm": arm, "block": b, "metric": val}
+            for b in (1, 2) for arm, val in (("OFF", 80), ("OFF2", 100), ("ON", 94))]
+    result = G.serving_floor_results(sp, rows)["ON"]
+    assert result["ratio"] == .94 and result["pass"] is False
+    for row in rows:
+        if row["arm"] == "ON":
+            row["metric"] = 96
+    assert G.serving_floor_results(sp, rows)["ON"]["pass"] is True
+
+
+def test_serving_floor_prevents_keep_even_when_ci_passes(tmp_path):
+    sp = spec(serving_floor={"arm": "OFF", "ratio": 1.5})
+    g = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    g.visit_fn = G.stub_visit(sp, g.out, {"ON": 1.2})
+    assert g.run() == 0
+    result = json.loads((tmp_path / "out" / "RESULT.json").read_text())
+    assert result["verdict"] == "NO_KEEP"
+    assert result["serving_floor"]["ON"]["pass"] is False
+
+
+def test_serving_floor_normalizes_latency_direction():
+    sp = spec(serving_floor={"arm": "OFF", "ratio": 0.95},
+              metric={"name": "ms_per_token", "higher_is_better": False})
+    rows = [{"kind": "visit", "arm": arm, "block": b, "metric": val}
+            for b in (1, 2) for arm, val in (("OFF", 100), ("OFF2", 100), ("ON", 110))]
+    assert G.serving_floor_results(sp, rows)["ON"]["pass"] is False
+
+
+def test_arm_store_generation_refuses_missing_correctness_binary(tmp_path, monkeypatch):
+    store = tmp_path / "store"
+    (store / "bin").mkdir(parents=True)
+    shutil.copy("/bin/true", store / "bin" / "llama-server")
+    (store / "bin" / "libggml-base.so").write_text("lib")
+    monkeypatch.setattr(MK, "resolve_served", lambda *a: {"registry_role": "role", "argv": [os.path.join(FIX_BIN, "llama-server"), "--port", "{PORT}"], "argv_delta": []})
+    args = ["gate", "new", "--id", "ak-arm-store-test", "--task", "x.md:T", "--model", "test", "--root", str(tmp_path),
+            "--served-ref", "role", "--arm", "OFF:", "--arm", "ON:GGML_HIP_Q8MC=1", "--baseline", "OFF",
+            "--knob", "GGML_HIP_Q8MC:marker", "--metric", "tok_s", "--keep-rule", "ci_lower>1.01,n=4,look=2,aa=none",
+            "--prompt", "hello", "--arm-store", f"ON={store}", "--correctness", json.dumps({"kind": "tbo", "argv": ["/old/test-backend-ops"]}), "--check-only"]
+    with pytest.raises(SystemExit, match="missing executable"):
+        MK.main(args)
+    assert not (tmp_path / "ak-arm-store-test").exists()
+
+
+def test_arm_store_checks_load_unit_executables(tmp_path):
+    store = tmp_path / "store"
+    (store / "bin").mkdir(parents=True)
+    shutil.copy("/bin/true", store / "bin" / "llama-server")
+    (store / "bin" / "libggml-base.so").write_text("lib")
+    with pytest.raises(SystemExit, match="missing executable"):
+        MK.resolve_arm_stores([f"ON={store}"], {"ON": {}}, ["/old/llama-server"], None,
+                              [{"argv": ["/old/alternate-server"]}])

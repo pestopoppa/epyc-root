@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import glob
 import json
 import math
 import os
@@ -723,6 +724,43 @@ def _argv_lit(argv, indent=14):
     return pprint.pformat([str(x) for x in argv], width=118, indent=1, compact=True).replace("\n", "\n" + " " * indent)
 
 
+def resolve_arm_stores(entries, arms, argv, corr, load_units=()):
+    stores = {}
+    binaries = [argv[0]] + [c["argv"][0] for c in (corr if isinstance(corr, list) else [corr] if corr else []) if c.get("argv")]
+    binaries += [unit["argv"][0] for unit in load_units if unit.get("argv")]
+    for entry in entries:
+        arm, sep, value = entry.partition("=")
+        if not sep or arm not in arms or not value or arm in stores:
+            raise SystemExit(f"mk_ak_row gate: invalid or duplicate --arm-store {entry!r}")
+        if os.path.isabs(value) or os.path.isdir(value):
+            path = os.path.realpath(value)
+        elif value.startswith("kernels/"):
+            path = os.path.realpath(os.path.join("/mnt/raid0/llm", value))
+        else:
+            matches = {os.path.realpath(os.path.join(root, value)) for root in
+                       (KERNEL_BUILDS, "/mnt/raid0/llm/kernels/archive", "/mnt/raid0/llm/kernels/production")
+                       if os.path.isdir(os.path.join(root, value))}
+            if len(matches) != 1:
+                raise SystemExit(f"mk_ak_row gate: unknown or ambiguous store {value!r}")
+            path = matches.pop()
+        bindir = os.path.join(path, "bin") if os.path.isdir(os.path.join(path, "bin")) else path
+        libdir = os.path.join(path, "lib") if os.path.isdir(os.path.join(path, "lib")) else bindir
+        if not os.path.isdir(path):
+            raise SystemExit(f"mk_ak_row gate: unknown store {value!r}")
+        files = [os.path.join(bindir, os.path.basename(x)) for x in binaries]
+        if any(not os.access(f, os.X_OK) or not os.path.isfile(f) for f in files):
+            raise SystemExit(f"mk_ak_row gate: store {value!r} missing executable binary")
+        libs = sorted(glob.glob(os.path.join(libdir, "libggml*.so*")))
+        if not libs or not any(os.path.basename(x).startswith("libggml-base.so") for x in libs):
+            raise SystemExit(f"mk_ak_row gate: store {value!r} missing libggml-base")
+        for f in files + libs:
+            if not os.path.isfile(f) or os.path.commonpath((path, os.path.realpath(f))) != path:
+                raise SystemExit(f"mk_ak_row gate: store {value!r} missing or escaping file {f}")
+        stores[arm] = {"store": path, "bin": bindir, "lib": libdir,
+                       "sha256": {os.path.relpath(f, path): _sha(f) for f in sorted(set(files + libs))}}
+    return stores
+
+
 def gate_scaffold(a, served=None):
     """Write the gate row. Returns (row dir, spec.json dict). Raises SystemExit on a bad declaration."""
     knobs = dict(parse_knob(x) for x in a.knob)
@@ -766,9 +804,9 @@ def gate_scaffold(a, served=None):
     fix_ref = parse_fix_ref(getattr(a, "fix_ref", None), argv)
     argv = G.ensure_lv(argv, lv)
     if served:
-        served = add_witness_loglevel(dict(served, argv=argv)) if G.argv_lv(served["argv"]) is None else \
-            dict(served, argv=argv, argv_sha256=hashlib.sha256(json.dumps(argv).encode()).hexdigest())
-        if G.argv_lv(served["argv"]) != G.argv_lv(argv):
+        original_argv = served["argv"]
+        served = dict(served, argv=argv, argv_sha256=hashlib.sha256(json.dumps(argv).encode()).hexdigest())
+        if G.argv_lv(original_argv) != G.argv_lv(argv):
             served["argv_delta"] = list(served.get("argv_delta") or []) + [
                 {"flag": "-lv", "value": str(lv), "reason": "witness log level"}]
     m = G.METRICS.get(a.metric)
@@ -805,6 +843,12 @@ def gate_scaffold(a, served=None):
     for kv in a.server_env:
         k, _, v = kv.partition("=")
         env[k.strip()] = v
+    corr = json.loads(open(a.correctness[1:]).read() if a.correctness.startswith("@") else a.correctness) \
+        if a.correctness else None
+    if a.arm_store and not served:
+        raise SystemExit("mk_ak_row gate: --arm-store needs --served-ref")
+    load_units = [dict(json.loads(x), kind="load") for x in a.load_unit]
+    arm_stores = resolve_arm_stores(a.arm_store, arms, argv, corr, load_units) if a.arm_store else {}
     os.makedirs(os.path.join(d, "inputs"))
     inputs = {}
     for ci in a.copy_input:
@@ -824,8 +868,6 @@ def gate_scaffold(a, served=None):
                         suffix=a.prompt_suffix)
     elif not op:
         raise SystemExit("mk_ak_row gate: declare the workload: --prompt TEXT (repeatable) or --workload-input inputs/X")
-    corr = json.loads(open(a.correctness[1:]).read() if a.correctness.startswith("@") else a.correctness) \
-        if a.correctness else None
     extra_argvs, tool_delta, real_argv = "", [], {}
     for c in (corr if isinstance(corr, list) else [corr] if corr else []):   # one dict or a list (all must pass)
         if not c.get("argv"):
@@ -854,6 +896,20 @@ def gate_scaffold(a, served=None):
               "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
                                              "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
               "inputs": inputs, "dirs": list(a.dir)}
+    if arm_stores:
+        spec_g["arm_stores"] = arm_stores
+        served["argv_delta"] = list(served.get("argv_delta") or []) + [
+            {"arm": arm, "flag": "argv[0]", "value": os.path.join(store["bin"], os.path.basename(argv[0])),
+             "reason": "arm kernel store"} for arm, store in arm_stores.items()]
+    if a.serving_floor:
+        name, sep, raw = a.serving_floor.partition(":")
+        try:
+            ratio = float(raw)
+        except ValueError:
+            raise SystemExit("mk_ak_row gate: --serving-floor needs INCUMBENT:RATIO")
+        if not sep or name not in baseline or not math.isfinite(ratio) or ratio <= 0 or a.metric == "op_gbps":
+            raise SystemExit("mk_ak_row gate: --serving-floor needs a baseline arm and positive ratio on a serving metric")
+        spec_g["serving_floor"] = {"arm": name, "ratio": ratio}
     if a.candidate:
         spec_g["candidates"] = a.candidate
     if op:
@@ -882,7 +938,7 @@ def gate_scaffold(a, served=None):
     if a.seed_base is not None:
         spec_g["seed_base"] = a.seed_base
     if a.load_unit:
-        spec_g["units"] = [dict(json.loads(x), kind="load") for x in a.load_unit]
+        spec_g["units"] = load_units
     if a.arm_env:
         spec_g["arm_env"] = {}
         for x in a.arm_env:
@@ -1079,6 +1135,10 @@ def gate_main(argv=None):
     n.add_argument("--orch-repo", default=ORCH_REPO)
     n.add_argument("--server-argv-json", help="the server argv as JSON when the row is not a registry role")
     n.add_argument("--server-env", action="append", default=[], metavar="K=V")
+    n.add_argument("--arm-store", action="append", default=[], metavar="ARM=STORE",
+                   help="pin one arm to a kernel store id or directory (repeatable)")
+    n.add_argument("--serving-floor", metavar="INCUMBENT:RATIO",
+                   help="require each candidate serving speed to reach this fraction of the named baseline")
     n.add_argument("--arm-env", action="append", default=[], metavar="ARM:K=V,K2=V2",
                    help="env for every process of one arm (not a knob; correctness units take {\"env\": {...}} in --correctness)")
     n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity|served_quality, ...}")

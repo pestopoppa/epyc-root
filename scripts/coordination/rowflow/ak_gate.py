@@ -55,7 +55,7 @@ import rocprof_trace as RT  # noqa: E402
 
 GATE_VERSION = "2"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 7
+UNIT_SEMANTICS_VERSION = 8
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
 EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke", "out/prof", "out/OP-GBPS.json")
@@ -308,6 +308,13 @@ def validate_spec(spec):
         for k in envd:
             if k in knobs:
                 errs.append(f"{what}: {k} is a declared knob (only an arm sets a knob; use --arm)")
+    for a, store in (spec.get("arm_stores") or {}).items():
+        if a not in arms or not isinstance(store, dict) or not all(store.get(k) for k in ("store", "bin", "lib", "sha256")):
+            errs.append(f"arm_stores[{a}]: invalid store declaration")
+    floor = spec.get("serving_floor")
+    if floor and (floor.get("arm") not in b or not isinstance(floor.get("ratio"), (int, float)) or
+                  not math.isfinite(floor["ratio"]) or floor["ratio"] <= 0 or m.get("name") == "op_gbps"):
+        errs.append("serving_floor: needs a baseline arm and positive ratio on a serving metric")
     for a in (spec.get("arm_env") or {}):
         if a not in arms:
             errs.append(f"arm_env names unknown arm {a}")
@@ -847,6 +854,23 @@ def per_arm_stats(spec, units):
             st.update(speedup=u_, ci95=[lo, hi], block_log_ratios=lr)
         out[a] = st
     return out
+
+
+def serving_floor_results(spec, units):
+    floor = spec.get("serving_floor")
+    if not floor:
+        return {}
+    blocks = full_blocks(spec, units)
+    incumbent = floor["arm"]
+    result = {}
+    for arm in candidate_arms(spec):
+        pairs = [(v[arm], v[incumbent]) for v in blocks.values() if arm in v and incumbent in v]
+        ref = sum(y for _, y in pairs) / len(pairs) if pairs else None
+        value = sum(x for x, _ in pairs) / len(pairs) if pairs else None
+        ratio = _speed(spec, value, ref) if ref is not None and ref > 0 and value > 0 else None
+        result[arm] = {"incumbent": incumbent, "threshold": floor["ratio"], "ratio": ratio,
+                       "pass": ratio >= floor["ratio"] if ratio is not None else None, "blocks": len(pairs)}
+    return result
 
 
 # ---------------------------------------------------------------------------------------------------- correctness
@@ -1404,7 +1428,11 @@ def _decide_impl(spec, units):
                     reason=f"look at {nb} blocks: every candidate CI upper < {thr}")
     if nb < kc["n_blocks"]:
         return dict(res, verdict="INCOMPLETE", polar=None, terminal=False, reason=f"{nb}/{kc['n_blocks']} blocks scored")
-    keep = [a for a in live if (ci(log_ratios(spec, units, a))[1] or 0) > thr]
+    floor_results = serving_floor_results(spec, units)
+    keep = [a for a in live if (ci(log_ratios(spec, units, a))[1] or 0) > thr
+            and (not spec.get("serving_floor") or floor_results[a]["pass"] is True)]
+    if spec.get("serving_floor"):
+        res["serving_floor"] = floor_results
     v = "KEEP_" + "+".join(keep) if keep else "NO_KEEP"
     return dict(res, verdict=v, polar=polar(v), terminal=True,
                 reason=f"{nb} blocks; KEEP iff CI lower > {thr}: " +
@@ -1586,6 +1614,7 @@ class Gate:
         self.out_smoke = os.path.join(self.d, "out-smoke")
         self.logs = os.path.join(self.out, "logs")
         self.procs = []
+        self.linkage_witness = {}
         self.visit_fn = visit_fn or self._visit
         self.run_fn = run_fn or self._run_proc
         self.stream = stream or sys.stderr
@@ -1644,6 +1673,47 @@ class Gate:
         self.content_proof_ok = bool(proof) and not any(x.startswith("op content proof:") for x in bad)
         return bad
 
+    def verify_arm_stores(self):
+        """Check pinned contents and loader resolution before any arm executes."""
+        for arm, store in (self.spec.get("arm_stores") or {}).items():
+            witness = {"store": store["store"], "ok": False, "files": {}, "linkage": {}}
+            self.linkage_witness[arm] = witness
+            try:
+                root = os.path.realpath(store["store"])
+                for rel, digest in store["sha256"].items():
+                    path = os.path.join(root, rel)
+                    if os.path.commonpath((root, os.path.realpath(path))) != root or _sha_file(path) != digest:
+                        raise ValueError(f"digest or path mismatch: {rel}")
+                    witness["files"][rel] = digest
+                commands = [(self.spec["server"]["argv"], None)] + [
+                    (c.get("argv") or self.spec["server"]["argv"], c.get("env")) for c in corr_list(self.spec)]
+                commands += [(u["argv"], None) for u in self.spec.get("units", []) if u.get("argv")]
+                for command, unit_env in commands:
+                    binary = os.path.join(store["bin"], os.path.basename(command[0]))
+                    self.require_exec_grant([binary])
+                    env = self.proc_env(arm, binary, unit_env)
+                    p = subprocess.run(["/usr/bin/ldd", binary], env=env, capture_output=True, text=True, timeout=60)
+                    lines = [line.split() for line in p.stdout.splitlines() if line.strip().startswith(("libggml", "libllama", "libmtmd", "libwhisper"))]
+                    if p.returncode or not any(x[0].startswith("libggml-base.so") for x in lines):
+                        raise ValueError(f"ldd failed or no libggml-base: {binary}")
+                    linked = {}
+                    for fields in lines:
+                        if len(fields) < 3 or fields[1] != "=>" or not os.path.isabs(fields[2]):
+                            raise ValueError(f"unresolved linkage: {' '.join(fields)}")
+                        resolved = os.path.realpath(fields[2])
+                        if os.path.commonpath((root, resolved)) != root:
+                            raise ValueError(f"linkage outside store: {resolved}")
+                        if fields[0].startswith("libggml"):
+                            pinned = {os.path.realpath(os.path.join(root, rel)) for rel in store["sha256"]}
+                            if resolved not in pinned:
+                                raise ValueError(f"linked ggml library is not digest-pinned: {resolved}")
+                        linked[fields[0]] = resolved
+                    witness["linkage"][binary] = linked
+                witness["ok"] = True
+            except (OSError, ValueError, RuntimeError, subprocess.TimeoutExpired) as e:
+                witness["error"] = f"{type(e).__name__}: {e}"
+        return all(w["ok"] for w in self.linkage_witness.values())
+
     def port(self):
         env = [int(x) for x in str(self.env.get("FILLER_PORTS") or "").split(",") if x.strip().isdigit()]
         return env[0] if env else H.alloc_ports(self.spec["row_id"], 1)[0]
@@ -1698,10 +1768,16 @@ class Gate:
             if knob_kind(self.spec, k) == "env":
                 e.pop(k, None)      # a knob is only ever set by its arm
         e.update(arm_env_knobs(self.spec, arm))
+        store = (self.spec.get("arm_stores") or {}).get(arm)
+        if store:
+            e["LD_LIBRARY_PATH"] = store["lib"] + (":/opt/rocm/lib" if self.spec.get("lane") == "gpu" else "")
         return e
 
     def llama_argv(self, argv, arm, port=None, flags=True, extra=None, force_lv=False):
         a = self.subst(argv, port, extra)
+        store = (self.spec.get("arm_stores") or {}).get(arm)
+        if store and a:
+            a[0] = os.path.join(store["bin"], os.path.basename(a[0]))
         if flags:
             a = a + arm_flags(self.spec, arm)
         return ensure_lv(a, self.lv, force=force_lv)
@@ -1921,7 +1997,7 @@ class Gate:
             argv = self.llama_argv(list(c["argv"]) + ex, arm, flags=bool(c.get("apply_flags")))
         elif kind == "c-tbo":
             ops = per_arm(c.get("ops"), arm, None)
-            argv = self.subst(list(c["argv"]) + (["-o", str(ops)] if ops else []))
+            argv = self.llama_argv(list(c["argv"]) + (["-o", str(ops)] if ops else []), arm, flags=False)
             if c.get("lv"):
                 argv = ensure_lv(argv, self.lv, force=True)
         elif kind == "c-st":    # a declared A/A self-test binary, one fresh process per run
@@ -1930,7 +2006,7 @@ class Gate:
             argv = self.llama_argv(c["argv"], arm, flags=bool(c.get("apply_flags")),
                                    extra={"{PROMPT_INDEX}": str(extra["prompt"])}, force_lv=c.get("lv", True))
         try:
-            self.monitor_library_root = c.get("library_root") if kind == "c-kld" and c.get("min_vram_gib") else None
+            self.monitor_library_root = ((self.spec.get("arm_stores") or {}).get(arm) or {}).get("store", c.get("library_root")) if kind == "c-kld" and c.get("min_vram_gib") else None
             r = self.run_fn(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0], c.get("env")), log, to)
         except OSError as e:
             r = {"rc": None, "error": f"{type(e).__name__}: {e}"}
@@ -2008,7 +2084,7 @@ class Gate:
                    "binaries": [(p, _sha_file(p)) for p in binaries],
                    "unit_semantics_version": UNIT_SEMANTICS_VERSION,
                    "server": server, "knobs": self.spec.get("knobs"), "arms": self.spec.get("arms"),
-                   "arm_env": self.spec.get("arm_env"), "expect": self.spec.get("expect"),
+                   "arm_env": self.spec.get("arm_env"), "arm_stores": self.spec.get("arm_stores"), "expect": self.spec.get("expect"),
                    "expect_by_unit": self.spec.get("expect_by_unit"), "correctness": c,
                    "workload": w, "prompts_sha": sha_bytes(json.dumps(prompts, ensure_ascii=False)),
                    "inputs": inputs, "sampler": self.spec.get("sampler"), "seed_base": self.spec.get("seed_base"),
@@ -2129,6 +2205,9 @@ class Gate:
             bad = self.prepare()
             if bad:
                 return H.end_smoke("FAIL", 3, "inputs: " + "; ".join(bad), self.out)
+            if not self.verify_arm_stores():
+                self.finish([], {"verdict": "FUTILITY_HARNESS_LINKAGE", "polar": None, "terminal": True, "reason": "arm linkage verification failed"})
+                return H.end_smoke("FAIL", 3, "FUTILITY_HARNESS_LINKAGE: arm linkage verification failed", self.out)
             prompt = (workload_prompts(self.spec, self.d) or ["Hello"])[0][:int(sm["prompt_chars"])]
             units = []
             u0 = time.time()
@@ -2251,6 +2330,9 @@ class Gate:
         if bad:
             return self.finish([], {"verdict": "FUTILITY_HARNESS_MISSING_INPUT", "polar": None, "terminal": True,
                                     "reason": "; ".join(bad)})
+        if not self.verify_arm_stores():
+            return self.finish([], {"verdict": "FUTILITY_HARNESS_LINKAGE", "polar": None, "terminal": True,
+                                    "reason": "arm linkage verification failed"})
         units = load_units(self.out)
         done = {u["unit_id"] for u in units if u.get("gate_unit")}
         plan = plan_correctness(self.spec)
@@ -2382,6 +2464,8 @@ class Gate:
         except Exception as e:
             d = decide_error(e, "result", "unknown")
             res = {"schema": RESULT_SCHEMA, "complete": True, "row": self.spec.get("row_id"), **d}
+        if self.spec.get("arm_stores"):
+            res["arm_linkage"] = self.linkage_witness
         if (self.spec.get("op_unit") or {}).get("proof"):
             res["content_proof"] = {"declaration": self.spec["op_unit"]["proof"], "verified": getattr(self, "content_proof_ok", False)}
         atomic_json(os.path.join(self.out, "RESULT.json"), res)
@@ -2416,6 +2500,8 @@ def result_doc(spec, units, d):
            "n_units": len(units), "n_visits": len(tus),
            "units": units,
            "gate": {"module": "ak_gate.py", "version": GATE_VERSION, "sha256": _sha_file(os.path.abspath(__file__))}}
+    if spec.get("serving_floor"):
+        res["serving_floor"] = d.get("serving_floor", serving_floor_results(spec, gate_units))
     if spec["metric"]["name"] == "op_gbps":
         op_units = [u for u in gate_units if u.get("kind") == "op"]
         shaped = {shape["filter"]: [u for u in op_units if u.get("shape") == shape["filter"]]
@@ -2630,6 +2716,7 @@ def selftest(spec, row_dir, stream=None):
                 seen.setdefault(a, []).append(pos)
         assert all(sorted(v) == sorted(list(range(k)) * 2) for v in seen.values()), seen
     sp = dict(spec, correctness=None, candidates=candidate_arms(spec), inputs={}, workload={"prompts": ["p"]}, dirs=[])
+    sp.pop("arm_stores", None)  # selftest uses synthetic visits and must never inspect real binaries
     if spec["metric"]["name"] == "op_gbps":
         # Exercise the runner and smoke with synthetic units; never invoke a profiler here.
         sp["op_unit"] = dict(sp["op_unit"])
@@ -2665,7 +2752,8 @@ def selftest(spec, row_dir, stream=None):
             g = Gate(sp, os.path.join(t, name), env={"FILLER_PORTS": "1"}, stream=quiet)
             g.visit_fn = stub_visit(sp, g.out, speed)
             return g
-        fast = max(1.10, float(keep_cfg(sp)["threshold"]) * 1.05)
+        fast = max(1.10, float(keep_cfg(sp)["threshold"]) * 1.05,
+                   float((sp.get("serving_floor") or {}).get("ratio", 1.0)) * 1.05)
         for name, speed in (("keep", {a: fast for a in candidate_arms(sp)}), ("nokeep", {})):
             g = gate(name, speed)
             assert g.run() == 0
