@@ -33,3 +33,11 @@ Replaced misleading universal shell guidance with exact task-specific accepted c
 Validation: full Taskflow suite 239 passed in18.77s; final policy subset79 passed in1.00s; real OpenCode2.2.5 replay demonstrated denial of the altered command, contradictory baseline feedback, and successful copying/execution of corrected feedback. External-input controls include positive staging and rejection of missing/hash/schema/traversal/collision/tampered/symlink cases. Index check:0 problems. Evidence under `/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/main-review/` and `test-selection/denial/`.
 
 Next: codex-a3b-pilot reviews remaining native outputs and files the final model/harness attribution and performance snapshot.
+
+## 15:56Z — File independently reviewed historical cache sizing note
+
+- **PFXC-A3 — SIZING_NOTE_REVIEWED.** Research `8b6bc70f2242` records all41 evicted-entry sizes from source row `taskflow-stage1-canary-r2-20261120`: nearest-rankp95=1189.547MiB and ceil(10*p95)=11896MiB, with a prospective12288MiB controlled-check starting budget. The source trace is32K/np1. The separate8-task probe had zero evictions at8192MiB;37.9GiB is the distinct brief baseline. This is a source-bound historical calculation and planning note, not a new measurement or a claim of population-p95 bounds. Main replayed the exact documented extractor (41/41 numeric values), confirmed canonical recipe bytes unchanged, and passed checkerv3.
+
+A3B required a correction for geometry/link/arithmetic/bias errors and final human repair of extractor/source attribution. V2 checker falsely rejected a correct two-budget sentence; versionedv3 fixes that case and passes13controls. Original outputs and graders remain retained. The note is human-assisted, not an autonomous clean task success.
+
+Next: codex-a3b-pilot files the committed conclusion and closes the documentation box while remaining native tasks finish.
