@@ -12011,6 +12011,7 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
       · done when: autokernel confirms the classes on >=3 further kernels and the pruning ladder is set to refuse
       · gate: AK-BNSIG-CENSUS-TOPN
       · note (2026-11-26, autokernel): the condition counts kernels whose signature is CONFIRMED by an independent diagnosis or a lever outcome, not merely classified. Confirmed 1/3: q8mf6 issue_bound (VALU/issue analysis, issue 0.46; lean/wt levers that ignored it failed). Classified only: q8sk (skinny-balance 0% served is consistent but weak), rms_norm, silu. Autokernel reports further confirmations (post-reboot).
+      · operator decision (2026-11-26, AskUserQuestion): refuse only after 3 CONFIRMED signatures; stay advisory until then. On the 3rd confirmation, set the --signature-prune default to refuse and tick this box.
 - [ ] **AK-BNSIG-GDN-DECODE** [inference] Measure the bottleneck signature of the served 27B gated_delta_net decode kernel (gated_delta_net_cudaILi128ELb0ELb0EfLb0E at grid 3072) with a decode-shaped signature row, since llama-bench pp8 dispatches it only at grid 393216
       · done when: a signature row files with gated_delta_net witnessed at grid 3072 and its class applied to the census record
       · gate: AK-BNSIG-CENSUS-TOPN
