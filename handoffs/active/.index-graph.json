@@ -714,7 +714,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-26T11:46:45Z",
+  "generated_at": "2026-11-26T13:01:39Z",
   "nodes": [
     {
       "age_days": 4,
@@ -3141,20 +3141,20 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 100,
-      "dispatchable": 47,
+      "closed": 102,
+      "dispatchable": 45,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
-      "last_advanced": "2026-11-25",
-      "next_action": "Resume taskflow canary r8g (rowflow resume, CPU q0-q2; fixes 1-6 landed) \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
-      "open": 47,
+      "last_advanced": "2026-11-26",
+      "next_action": "Run TASKFLOW-STAGE1 beside the old dispatcher for its dated one-week token-efficiency comparison",
+      "open": 45,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,

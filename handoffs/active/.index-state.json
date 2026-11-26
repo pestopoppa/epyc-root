@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 495
+      "open": 493
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -515,12 +515,12 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 100,
+      "closed": 102,
       "frozen": 1,
       "guarded": 0,
-      "last_advanced": "2026-11-25",
-      "needs_owner": 4,
-      "open": 47,
+      "last_advanced": "2026-11-26",
+      "needs_owner": 3,
+      "open": 45,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2866,7 +2866,7 @@
       "id": "RTG-100",
       "index": "routing-and-optimization-index.md",
       "line": 18,
-      "next_action": "Resume taskflow canary r8g (rowflow resume, CPU q0-q2; fixes 1-6 landed) \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
+      "next_action": "Run TASKFLOW-STAGE1 beside the old dispatcher for its dated one-week token-efficiency comparison",
       "track": "churn pipeline"
     },
     "RTG-22": {
