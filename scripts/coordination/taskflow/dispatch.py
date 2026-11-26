@@ -288,7 +288,7 @@ KEEP_EMPTY = {"__init__.py", "py.typed", ".gitkeep", ".keep"}
 
 
 def tidy_lane(lane: Path, task: dict) -> dict:
-    """Before the commit: restore TRACKED files the worker deleted (the shell only lets it `rm` scratch files), and
+    """Before the commit: restore tracked files deleted outside the checked scratch command, and
     drop zero-byte NEW files (an emptied scratch file, r8e TU-GR-1 / LOOP-62 nothink) unless the packet names them or
     they are conventionally empty (__init__.py, py.typed, .gitkeep). Returns {"restored": [...], "dropped_empty": [...]}."""
     named = set(task.get("outputs") or []) | set(task.get("inputs") or []) | verify.approach_new_paths(task)
@@ -715,6 +715,8 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
         return "task"           # r8c fix 5: a done packet (INTAKE-VALIDATE-86, NUMA-DECOUPLE-1): no-change / rewrite
     if w.get("errors") and not w["usage"]["steps"]:
         return "harness"
+    if v.get("reason") == "contract-unavailable":
+        return "harness"
     if w.get("result") and w["result"].get("claimed_done") is False:
         return "task"           # the worker reported blocked/unclear: the box, not the model
     reason = v.get("reason")
@@ -723,7 +725,7 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
         named = verify.approach_new_paths(task)
         if out and all(p in named for p in out):
             return "task"       # r8b TU-GR-1: the approach named the files, the pathspec omitted them
-    if reason == "vacuous-acceptance":
+    if reason in ("vacuous-acceptance", "contract-fail"):
         return "model-limitation"   # r8e fix 3 (TU-GR-1 think): the worker's test passes on a launcher error
     if missing_test_file(v, task):
         return "model-limitation"   # r8c WS4 nothink: rc=4 = the acceptance test was never written, not env

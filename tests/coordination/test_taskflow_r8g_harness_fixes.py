@@ -49,6 +49,35 @@ def test_review_prompt_names_control_and_sanctioned_skip():
     assert verify.REVIEW_CONTROL_RULE in p and "Operation not permitted" in p       # the rule and the log both reach it
 
 
+def test_review_prompt_requires_control_evidence_and_review_of_skipped_code():
+    approach = "Mount an empty tmpfs over the scratch directory before exec."
+    prompt = verify.review_prompt(dict(TU_GR_1, approach=approach), "candidate diff")
+
+    assert f"## APPROACH\n{approach}" in prompt
+    assert "accessed that artifact before pytest.raises" in prompt
+    assert "cannot count as reachability or denial" in prompt
+    assert "actual skip reason and the predicate in the code" in prompt
+    assert "trace the unexecuted code from launcher argv to child and assertions" in prompt
+    assert "exact sanctioned skip and a witnessed passing control can be done" in prompt
+
+
+def test_ra_lines_retains_skip_os_diagnostic_after_long_launcher_prefix():
+    line = (f"SKIPPED [1] {T}:69: unshare not permitted on this host: launcher exited with code 1 and no stdout: "
+            "unshare: write failed /proc/self/uid_map: Operation not permitted")
+    assert len(line) > 200
+    assert verify.ra_lines(line) == [line]
+
+
+def test_review_prompt_checks_drift_even_when_acceptance_passes():
+    task = {"goal": "Add the new section and link to it", "approach": "Insert after the existing Rules section",
+            "acceptance_result": {"rc": 0}}
+    prompt = verify.review_prompt(task, "candidate diff")
+
+    assert "## APPROACH\nInsert after the existing Rules section" in prompt
+    assert "Read deletions, replacements, and added sections" in prompt
+    assert "duplicating existing rules is drift even when the requested additions and acceptance both succeed" in prompt
+
+
 def test_review_context_from_approach_and_brief():
     t = {"approach": "(1) test_a: launcher=[] and it must raise. This is the 'fails on a reachable grader' control. "
                      "(2) test_b: if unshare is not permitted, pytest.skip with the errno."}
@@ -60,8 +89,9 @@ def test_review_context_from_approach_and_brief():
 def test_tu_gr_1_brief_carries_reviewer_context():
     from taskflow import brief as B
     doc = B.parse_text((Path(__file__).resolve().parents[2] / "handoffs/active/briefs/TU-GR-1.md").read_text())
-    assert any("GraderReachable" in c for c in doc["control_tests"])
-    assert any("Operation not permitted" in s for s in doc["sanctioned_skips"])
+    assert any("assert the plain child read the sentinel" in c and "GraderReachable" in c for c in doc["control_tests"])
+    assert any("only for an explicit namespace setup permission refusal" in s and "Operation not permitted" in s
+               for s in doc["sanctioned_skips"])
 
 
 # ------------------------------------------------------------------------- fix 3: shell refusal hint reaches the model
@@ -69,7 +99,8 @@ R8G_DENIAL = json.dumps({"error": {"type": "permission.rejected", "message": "Pe
 
 
 def _allowed_forms(text):
-    return "orch-py.sh -m pytest" in text and "orch-py.sh -c" in text and "`rm <relative path>`" in text and "`mv <relative src>" in text
+    return all(form in text for form in ("orch-py.sh -m pytest", "orch-py.sh -c", "`taskflow-scratch rm <relative path>`",
+                                        "`taskflow-scratch mv <relative src>"))
 
 
 def test_opencode_json_denial_gets_the_allowed_forms():

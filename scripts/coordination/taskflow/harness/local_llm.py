@@ -24,7 +24,9 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -56,7 +58,7 @@ RETRIEVAL = ["gitnexus query *", "gitnexus context *", "gitnexus impact *",
              "/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query *"]
 KB_SEARCH = RETRIEVAL[-1][:-2]
 BASH_DENY = ["sed *-i*", "sed *--in-place*", "find *-delete*", "find *-exec*", "* > *", "* >> *", "* | sh*", "* | bash*",
-             "sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
+             "sudo*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
              "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*",
              # r8c fix 6: the writing / executing forms of the pipe filters (sed -i / w FILE, awk system / getline /
              # redirect, sort -o)
@@ -74,9 +76,9 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
 6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
    git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc, grep, sed, sort, awk or cut. No `>` files, no && chains, no cd.
-   When an ALLOWED COMMAND runs through orch-py.sh, the same orch-py.sh also runs `-c "<python>"` and a .py file
-   inside your cwd (relative path). `rm <relative path>` deletes a scratch file you created (never tracked files); `mv <relative src> <relative dst>`
-   moves one. A denied shell call means the form is not on this list: switch to `orch-py.sh -c`, `rm` or `mv`.
+   When an ALLOWED COMMAND runs through orch-py.sh, you can also use `orch-py.sh -c "<python>"` or pass it a .py file
+   inside your cwd (relative path). Use `taskflow-scratch rm <relative path>` or
+   `taskflow-scratch mv <relative src> <relative dst>` to clean up untracked scratch files you created.
 10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
     Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
@@ -128,8 +130,9 @@ WORKER_DENIED_TOOLS = ("opencode_worktree_remove", "opencode_worktree_create", "
 
 
 SHELL_DENIAL_HINT = (" Allowed shell forms: the ALLOWED COMMANDS, read-only helpers (ls cat head tail wc grep sed -n find git diff/status/log), "
-                     "`bash <row>/orch-py.sh -m pytest <test>`, `bash <row>/orch-py.sh -c \"<python>\"`, `bash <row>/orch-py.sh <relative .py>`, `rm <relative path>`, "
-                     "`mv <relative src> <relative dst>`. Bare `python3`, `cd`, `&&` and `>` are not allowed; use orch-py.sh -c.")
+                     "`bash <row>/orch-py.sh -m pytest <test>`, `bash <row>/orch-py.sh -c \"<python>\"`, `bash <row>/orch-py.sh <relative .py>`. "
+                     "Scratch cleanup: `taskflow-scratch rm <relative path>` or `taskflow-scratch mv <relative src> <relative dst>`. "
+                     "Bare `python3`, `cd`, `&&` and `>` are not allowed; use orch-py.sh -c for Python probes.")
 
 
 def _annotate_text(c: str, hint: str) -> str | None:
@@ -388,7 +391,8 @@ def task_suffix(task: dict, excerpts: dict[str, str]) -> str:
     allowed = allowed_commands(task)
     out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(no test command for this box)")
                + "\nRead-only helpers: gitnexus query|context|impact <name>"
-               + ("; kb-search (see WRITE BRIEF FIRST)." if task.get("phase") == "brief" else "."))
+               + ("; kb-search (see WRITE BRIEF FIRST)." if task.get("phase") == "brief" else ".")
+               + "\nUntracked scratch files: `taskflow-scratch rm <relative path>` or `taskflow-scratch mv <relative src> <relative dst>`.")
     if task.get("refs"):
         out.append("## REFERENCE FILES (read-only copies from other repos)\n" + "\n".join(
             f".taskflow-refs/{r['repo']}" + (f"@{r['rev']}" if r.get("rev") else "") + f"/{r['path']}"
@@ -475,18 +479,23 @@ def scratch_patterns(task: dict, lane: Path | str | None = None) -> list[str]:
     return out
 
 
-# r8e fix 2: TU-GR-1 / LOOP-62 nothink emptied a scratch file but could not delete it and were rejected outside-pathspec.
-# `rm <lane-relative path>` is allowed; flags, absolute, `..`, `~` and .git paths are denied. A TRACKED file the worker
-# deletes anyway is restored by dispatch.commit_lane, so only untracked (scratch) files can actually go.
-RM_ALLOW = ["rm *"]
-# r8g fix 4 (r8f think TU-GR-1): bare `python3 -c` and `mv` were denied and drove 30 steps of flailing. `mv <rel> <rel>`
-# is allowed on the same terms as rm (relative paths only; flags, absolute, `..`, `~`, .git and shell metacharacters are
-# denied). A TRACKED file it moves away is restored by dispatch.tidy_lane, so only untracked lane files really move.
-MV_ALLOW = ["mv *"]
-MV_DENY = ["mv -*", "mv * -*", "mv /*", "mv * /*", "mv *..*", "mv ~*", "mv * ~*", "mv *.git*", "mv *;*", "mv *&*",
-           "mv *|*", "mv *$*", "mv *`*"]
-RM_DENY = ["rm -*", "rm * -*", "rm /*", "rm * /*", "rm *..*", "rm ~*", "rm * ~*", "rm *.git*", "rm *;*", "rm *&*",
-           "rm *|*", "rm *$*", "rm *`*"]
+# NOFOLD deleted tracked READMEs with raw rm, including from a shell workdir set to a subdirectory.
+# The helper validates the actual argv against the current worktree before touching files.
+CLEANUP_ALLOW = ["taskflow-scratch rm *", "taskflow-scratch mv *"]
+CLEANUP_DENY = ["rm", "rm *", "mv", "mv *", "*/rm", "*/rm *", "*/mv", "*/mv *"]
+CLEANUP_DENY += [f"taskflow-scratch *{c}*" for c in ";&|$`<>"]
+
+
+def install_scratch_command(run_dir: Path, lane: Path) -> Path:
+    """Provide the checked cleanup command in the worker's private PATH, bound to its lane."""
+    bin_dir = (run_dir / "worker-bin").resolve()
+    bin_dir.mkdir(parents=True, exist_ok=True)
+    helper = Path(__file__).with_name("scratch_files.py").resolve()
+    command = bin_dir / "taskflow-scratch"
+    command.write_text(f'#!/bin/sh\nexec {shlex.join([sys.executable, "-I", str(helper), str(lane.resolve())])} "$@"\n',
+                       encoding="utf-8")
+    command.chmod(0o700)
+    return bin_dir
 
 
 def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
@@ -501,7 +510,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         bash[ro] = "allow"
     for ro in RETRIEVAL:
         bash[ro] = "allow"
-    for ro in PIPE_FILTERS + RM_ALLOW + MV_ALLOW:
+    for ro in PIPE_FILTERS:
         bash[ro] = "allow"
     acc_pats = acceptance_patterns(task, lane) + scratch_patterns(task, lane)
     for c in acc_pats:
@@ -512,7 +521,10 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     for base in acc_pats:
         for tail in EXIT_TAILS:
             bash[base + tail] = "allow"
-    for d in BASH_DENY + SCRATCH_DENY + RM_DENY + MV_DENY:
+    for c in CLEANUP_ALLOW:
+        bash[c] = "allow"
+    for d in BASH_DENY + SCRATCH_DENY + CLEANUP_DENY:
+        bash.pop(d, None)  # A task-supplied command may already have inserted this pattern.
         bash[d] = "deny"
     edit_perm: str | dict = "allow"
     if lane:                    # r8g fix 2: the built-in worktree_remove asserts `edit` on the lane directory itself
@@ -630,11 +642,13 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     run_dir.mkdir(parents=True, exist_ok=True)
     model_id = model_for(task.get("tier"), family)
     write_config(run_dir, base_url, model_id, task, ctx=int(task["budget"].get("ctx", 65536)), lane=cwd)  # = server per-slot ctx
+    bin_dir = install_scratch_command(run_dir, cwd)
     prompt = task_suffix(task, excerpts_for(task, cwd))
     (run_dir / "prompt.md").write_text(prompt, encoding="utf-8")
     env = dict(os.environ,
                XDG_CONFIG_HOME=str(run_dir / "xdg-config"), XDG_DATA_HOME=str(run_dir / "xdg-data"),
                XDG_STATE_HOME=str(run_dir / "xdg-state"), XDG_CACHE_HOME=str(run_dir.parent / "xdg-cache"),
+               PATH=os.pathsep.join((str(bin_dir), os.environ.get("PATH", os.defpath))),
                OPENCODE_DISABLE_AUTOUPDATE="1", PWD=str(cwd),
                # r6: the epyc-root lane's project plugin (.opencode/plugins/filesystem-containment.ts) blocked worker
                # writes, and Claude-Code compat would pull the lane's CLAUDE.md/.claude skills -> isolate the worker

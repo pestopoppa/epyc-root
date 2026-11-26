@@ -72,6 +72,7 @@ make parse strict
 pytest -q tests/test_x.py
 python3 scripts/x.py
 Read-only helpers: gitnexus query|context|impact <name>.
+Untracked scratch files: `taskflow-scratch rm <relative path>` or `taskflow-scratch mv <relative src> <relative dst>`.
 ## FORBIDDEN
 handoffs/** …
 ## LIMITS

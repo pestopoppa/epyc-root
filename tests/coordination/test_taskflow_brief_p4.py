@@ -1,5 +1,6 @@
 """Task-brief layer P4 (docs/design/task-brief-layer.md §5/§11): the two-phase run (self-brief then execute), D3
 acceptance (pending holds the tick), the NEEDS-BRIEF skip, the acceptance-vs-done-when lint, and the reviewer input."""
+import io
 import json
 import subprocess
 import sys
@@ -135,24 +136,31 @@ def test_acceptance_vs_done_when_lint():
     assert task_lint.DIFF_GATE_RULE_MODES["k-accept-auto"] == "enforce"
 
 
-def test_reviewer_input_contains_done_when_acceptance_result_non_goals(tmp_path):
+def test_reviewer_request_contains_acceptance_non_goals_and_full_diff(tmp_path, monkeypatch):
     lane = tmp_path / "lane"
     lane.mkdir()
     _git(tmp_path, "init", "-q", str(lane))
     _git(lane, "config", "user.email", "t@t"); _git(lane, "config", "user.name", "t")
     (lane / "a.py").write_text("x=1\n"); _git(lane, "add", "."); _git(lane, "commit", "-qm", "b")
     base = _git(lane, "rev-parse", "HEAD")
-    (lane / "a.py").write_text("x=2\n"); _git(lane, "commit", "-qam", "w")
+    (lane / "a.py").write_text("# " + "a" * 12000 + "\nx=2\n"); _git(lane, "commit", "-qam", "w")
     seen = {}
 
-    def reviewer(task, diff):
-        seen["p"] = verify.review_prompt(task, diff)
-        return {"verdict": "done"}
+    def complete(req, timeout):
+        seen["p"] = json.loads(req.data)["messages"][0]["content"]
+        reply = {"choices": [{"message": {"content": '{"verdict":"done"}'}}]}
+        return io.BytesIO(json.dumps(reply).encode())
+
+    monkeypatch.setattr(dispatch.urllib.request, "urlopen", complete)
+    reviewer = dispatch.reviewer_for("http://review.invalid/v1", "fixture")
     t = {"goal": "- [ ] **R-1** set x", "inputs": ["a.py"], "outputs": [], "forbidden": [], "test_cmds": [],
          "done_when": "x is 2 in a.py", "acceptance": "python3 a.py", "non_goals": ["do not touch b.py"],
          "brief_accepted": "pending"}
     v = verify.verify(t, lane, base, reviewer=reviewer)
     p = seen["p"]
     assert "## DONE WHEN\nx is 2 in a.py" in p and "## ACCEPTANCE\npython3 a.py" in p
-    assert "## ACCEPTANCE RESULT\nrc=0" in p and "- do not touch b.py" in p and "x=2" in p
+    assert "## ACCEPTANCE RESULT\nrc=0" in p and "- do not touch b.py" in p
+    diff = p.split("\n\n## DIFF\n", 1)[1]
+    assert diff.index("+x=2\n") > 12000
+    assert diff.rstrip() == _git(lane, "diff", f"{base}..HEAD")
     assert v["verdict"] == "verified" and v["hold"] == "accepted-pending" and v["evidence"]["acceptance"]["rc"] == 0

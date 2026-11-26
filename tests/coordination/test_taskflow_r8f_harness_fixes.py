@@ -52,13 +52,12 @@ def test_no_orch_runner_no_scratch_patterns(tmp_path, monkeypatch):
 
 
 # ------------------------------------------------------------------------- fix 2: rm untracked, drop empty new files
-def test_rm_of_lane_relative_path_allowed_flags_and_escapes_denied(tmp_path, monkeypatch):
+def test_shell_requires_checked_remove_command(tmp_path, monkeypatch):
     b = _bash(tmp_path, monkeypatch)
-    assert _ok(b, "rm tests/test_unshare_debug.py")                                       # r8e TU-GR-1 nothink
-    assert _ok(b, "rm tests/unit/_debug_alias.py")                                        # r8e LOOP-62 nothink
-    for bad in ("rm -rf tests", "rm -f x.py", "rm x.py -r", "rm /etc/passwd", "rm a.py /etc/x", "rm ../x.py",
-                "rm sub/../../x", "rm ~/x", "rm .git/index", "rm x; git push", "rm x && git commit -m y",
-                "rm $(cat list)", "rm `ls`"):
+    assert _ok(b, "taskflow-scratch rm tests/test_unshare_debug.py")
+    assert _ok(b, "taskflow-scratch rm tests/unit/_debug_alias.py")
+    for bad in ("rm tests/test_unshare_debug.py", "rm README.md", "/bin/rm README.md", "rm -rf tests",
+                "taskflow-scratch rm a.py>README.md", "taskflow-scratch rm $(cat list)", "taskflow-scratch rm `ls`"):
         assert not _ok(b, bad), bad
 
 
@@ -411,17 +410,17 @@ def test_no_change_timeout_rc130_does_not_default_to_harness():
 
 
 # ------------------------------------------------------------------------- r8g fix 4: mv + refusal message names allowed forms
-def test_mv_of_lane_relative_files_allowed_and_escapes_denied(tmp_path, monkeypatch):
+def test_shell_requires_checked_move_command(tmp_path, monkeypatch):
     b = _bash(tmp_path, monkeypatch)
-    assert _ok(b, "mv tests/unit/_debug.py tests/unit/test_x.py")
-    assert _ok(b, "mv _debug_result.json /dev/null".replace(" /dev/null", " old.json"))
-    for bad in ("mv -f a b", "mv a /etc/b", "mv /x/a b", "mv ../a b", "mv a ../b", "mv a ~/b", "mv .git/HEAD x",
-                "mv a b; rm -rf x", "mv a b && ls", "mv a b | sh", "mv a $HOME/b", "mv a b `id`"):
+    assert _ok(b, "taskflow-scratch mv tests/unit/_debug.py tests/unit/test_x.py")
+    assert _ok(b, "taskflow-scratch mv _debug_result.json old.json")
+    for bad in ("mv a b", "/bin/mv a b", "mv -f a b", "taskflow-scratch mv a b | sh",
+                "taskflow-scratch mv a $HOME/b", "taskflow-scratch mv a b `id`"):
         assert not _ok(b, bad), bad
 
 
 def test_policy_names_mv_and_the_allowed_forms():
-    assert "mv <relative src> <relative dst>" in L.POLICY and "orch-py.sh -c" in L.POLICY
+    assert "`taskflow-scratch mv <relative src> <relative dst>`" in L.POLICY and "orch-py.sh -c" in L.POLICY
 
 
 def test_denied_shell_result_gets_the_allowed_forms_idempotently():
@@ -430,7 +429,7 @@ def test_denied_shell_result_gets_the_allowed_forms_idempotently():
                          {"role": "tool", "tool_call_id": "2", "content": "ok output"}]}
     assert L.annotate_denials(body) == 1
     c = body["messages"][1]["content"]
-    assert c.startswith("Permission denied: shell") and "orch-py.sh -c" in c and "`rm <relative path>`" in c
+    assert c.startswith("Permission denied: shell") and "orch-py.sh -c" in c and "`taskflow-scratch rm <relative path>`" in c
     assert body["messages"][2]["content"] == "ok output"
     assert L.annotate_denials(body) == 0 and body["messages"][1]["content"] == c          # idempotent: stable prefix
 

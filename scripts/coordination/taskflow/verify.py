@@ -9,9 +9,10 @@ Checks, in order (the first failing one decides `rejected`):
   forbidden    no changed path matches task.forbidden (unless the box names that exact path as an input)
   pathspec     every changed path is in task.inputs ∪ task.outputs, or a new test file under tests/
   tests        every task.test_cmds command exits 0 in the lane (timeout 300 s); results go into evidence.commands
-  done_when    scripts/handoffs/done_when.check(task.done_when, evidence) -- "fail" rejects; "unchecked" defers
   acceptance   (task-brief layer P4) the brief's acceptance command runs with the tests when it is a runnable shape;
                its result goes into evidence.acceptance and into the reviewer input
+  contract     TU-GR-1 and MM-5 have independent behavioral checks before the verdict can reach the reviewer
+  done_when    scripts/handoffs/done_when.check(task.done_when, evidence) -- "fail" rejects; "unchecked" defers
 The task's own brief sidecar (task.brief_path, committed by phase 1) is exempt from forbidden/pathspec and does not
 count as a change. A verified result whose brief is `accepted: pending` carries hold="accepted-pending" (D3): the
 dispatcher never ticks it; the owner accepts brief + result at wrap-up.
@@ -113,7 +114,8 @@ _RA_LINE = re.compile(r"^(PASSED|SKIPPED|XFAIL|XPASS|FAILED|ERROR) .*$", re.M)
 
 def ra_lines(text: str, cap: int = 40) -> list[str]:
     """pytest `-rA` short-summary lines (pass / skip / xfail / ...) -- r8e fix 3: the reviewer sees which tests ran."""
-    return [m.group(0)[:200] for m in _RA_LINE.finditer(text or "")][:cap]
+    # Preserve the diagnostic after a long test path and launcher prefix on skip lines.
+    return [m[0][:(1000 if m[1] == "SKIPPED" else 200)] for m in _RA_LINE.finditer(text or "")][:cap]
 
 
 def with_ra(cmd: str) -> str:
@@ -175,6 +177,16 @@ def acceptance_cmd(task: dict) -> str | None:
 # acceptance. A packet with verify_scope: acceptance-only is reviewed on what the acceptance can show, and its verified
 # result is held (never ticks the box; the live clause stays open).
 ACCEPTANCE_ONLY = "acceptance-only"
+REPRODUCER_ONLY = "reproducer-only"
+
+
+def verification_scope(task: dict) -> str | None:
+    scope = task.get("verify_scope")
+    if scope is None and (task.get("id") or task.get("key")) == "LOOP-62":
+        # The r8 packets predate the explicit scope field and already declare this calibration.
+        if str(task.get("approach") or "").startswith("RE-SCOPED r8") and "xfail" in str(task.get("done_when") or ""):
+            return REPRODUCER_ONLY
+    return scope
 
 
 _GUARD = re.compile(r"vacuous|never pass|must (?:yield|fail|raise|report|deny|skip)|pytest\.skip|skip with", re.I)
@@ -278,10 +290,20 @@ def reviewer_context(task: dict) -> tuple[list[str], list[str]]:
     return ctl, skp
 
 
-REVIEW_CONTROL_RULE = ("A CONTROL test passes by asserting the failure mode (e.g. `pytest.raises(X)`): when it PASSES, the "
-                       "'fails on ...' clause it covers IS met; do not read it as 'did not fail'. A skip listed under "
-                       "SANCTIONED SKIPS whose reason carries a real errno / OS message (e.g. EPERM 'Operation not "
-                       "permitted') is allowed by the packet and is NOT a reason for not_done; any other skip still is.")
+REVIEW_CONTROL_RULE = (
+    "A passing CONTROL meets a 'fails on ...' clause when it establishes the specified trigger and then checks "
+    "the expected failure. If the trigger is a reachable artifact, require an assertion on the child's structured "
+    "result that it accessed that artifact before pytest.raises. Launcher/setup errors, crashes, and missing or "
+    "malformed probe output must fail distinctly; they cannot count as reachability or denial.\n"
+    "A SANCTIONED SKIP excuses execution only. Check both the actual skip reason and the predicate in the code: "
+    "both must identify the exact allowed condition (e.g. unshare itself reported EPERM), without also accepting "
+    "unrelated errors. Even on a sanctioned skip, trace the unexecuted code from launcher argv to child and "
+    "assertions. For a mount-based isolation test, verify that the launcher actually hides the sentinel path, "
+    "the shell receives the mount target and child argv in the correct positions, and the child checks the same "
+    "sentinel and reports a real access denial. Comments, a new namespace alone, or a skip label cannot establish "
+    "these facts. Answer not_done for broken or missing logic, a broad skip, or an unwitnessed control trigger. "
+    "A correct implementation with the exact sanctioned skip and a witnessed passing control can be done."
+)
 
 
 def _control_block(task: dict) -> str:
@@ -294,7 +316,7 @@ def _control_block(task: dict) -> str:
 
 
 def review_prompt(task: dict, diff: str) -> str:
-    """Reviewer input (P4, §7): verbatim box + done-when + acceptance and its result + non-goals + the diff."""
+    """Reviewer input (P4, §7): box, done-when, acceptance and result, non-goals, and the complete diff."""
     acc = task.get("acceptance")
     res = task.get("acceptance_result")
     res_txt = ("(not run: not a runnable command)" if res is None else
@@ -302,24 +324,30 @@ def review_prompt(task: dict, diff: str) -> str:
     if res is not None and res.get("ra"):
         res_txt += "\n\n## ACCEPTANCE LOG (pytest -rA: every test's outcome)\n" + "\n".join(res["ra"])
     ng = task.get("non_goals") or []
+    approach = str(task.get("approach") or "").strip()
     guards = approach_guards(task)
     return ("# REVIEW\nYou review a worker's diff for the box below. Answer ONLY JSON "
             '{"verdict":"done|not_done|drift","reason":"<=150 chars"}. done = the diff fully does what the box '
             "asks AND meets its DONE WHEN; not_done = partial, wrong, or the DONE WHEN is not met; drift = changes "
-            "things the box did not ask for, or does any NON-GOAL. Check the DONE WHEN clause item by item. A test that "
-            "passes without exercising what it claims (a SKIPPED case, or a probe/launcher error counted as a denial) "
-            "does not meet the DONE WHEN: answer not_done.\n\n## BOX\n"
+            "things the box did not ask for, or does any NON-GOAL. Read deletions, replacements, and added sections in "
+            "the diff. For an additive task, deleting unrelated content or duplicating existing rules is drift even "
+            "when the requested additions and acceptance both succeed. Check the DONE WHEN clause item by item. A test that "
+            "passes without exercising what it claims (e.g. a probe/launcher error counted as a denial) "
+            "does not meet the DONE WHEN. Reject skips unless the SANCTIONED SKIPS rule below applies.\n\n## BOX\n"
             + task["goal"] + "\n\n## DONE WHEN\n" + str(task.get("done_when") or "(see box)")
             + ("\n\n## SCOPE: ACCEPTANCE ONLY\nJudge the DONE WHEN only as far as the ACCEPTANCE can show it. A clause "
                "the acceptance cannot show (e.g. a live session acting on it) is out of scope here: not a reason for "
-               "not_done, and a done verdict does not close it." if task.get("verify_scope") == ACCEPTANCE_ONLY else "")
+               "not_done, and a done verdict does not close it." if verification_scope(task) == ACCEPTANCE_ONLY else "")
+            + ("\n\n## SCOPE: REPRODUCER ONLY\nJudge the calibrated reproducer and its pinned stress recipe. "
+               "The underlying source fix remains a separate task." if verification_scope(task) == REPRODUCER_ONLY else "")
             + "\n\n## ACCEPTANCE\n" + (str(acc) if acc else "(no brief acceptance)")
             + "\n\n## ACCEPTANCE RESULT\n" + res_txt
             + "\n\n## NON-GOALS\n" + ("\n".join(f"- {g}" for g in ng) if ng else "(none stated)")
+            + ("\n\n## APPROACH\n" + approach if approach else "")
             + _control_block(task)
             + ("\n\n## MUST NOT PASS VACUOUSLY (from the approach)\n" + "\n".join(f"- {g}" for g in guards)
                if guards else "")
-            + "\n\n## DIFF\n" + diff[:12000])
+            + "\n\n## DIFF\n" + diff)
 
 
 def _done_when():
@@ -329,6 +357,21 @@ def _done_when():
         return done_when
     finally:
         sys.path.pop(0)
+
+
+def _candidate_contract(task_id: str, lane: Path, acceptance: str | None) -> str | None:
+    if task_id == "TU-GR-1":
+        from . import tu_grader_isolation
+
+        return tu_grader_isolation.validate(lane, acceptance or "", TEST_TIMEOUT_S)
+    if task_id == "LOOP-62":
+        from . import loop_contract
+
+        return loop_contract.validate(lane)
+    from . import vision_contract
+
+    ok, why = vision_contract.check(lane)
+    return None if ok else why
 
 
 def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, reviewer=None) -> dict:
@@ -379,13 +422,25 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
     vac = vacuity_hits(diff)                            # r8e fix 3: deterministic, before done_when and the reviewer
     if not rec("vacuity", not vac, "; ".join(vac)[:300]):
         return {"verdict": "rejected", "reason": "vacuous-acceptance", "checks": checks, "evidence": ev}
+    task_id = task.get("id") or task.get("key")
+    scope = verification_scope(task)
+    if task_id in ("TU-GR-1", "MM-5") or (task_id == "LOOP-62" and scope == REPRODUCER_ONLY):
+        try:
+            failure = _candidate_contract(task_id, lane, acc)
+        except (ImportError, AttributeError, OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+            rec("candidate-contract", False, f"{task_id}: {str(exc)[:400]}")
+            return {"verdict": "rejected", "reason": "contract-unavailable", "checks": checks, "evidence": ev,
+                    "test_tail": str(exc)}
+        if not rec("candidate-contract", failure is None, f"{task_id}: {failure or 'checked'}"[:400]):
+            return {"verdict": "rejected", "reason": "contract-fail", "checks": checks, "evidence": ev,
+                    "test_tail": failure}
     res, why = _done_when().check(task.get("done_when"), ev, str(lane))
     rec("done_when", res != "fail", f"{res}: {why}")
     if res == "fail":
         return {"verdict": "rejected", "reason": "done-when-fail", "checks": checks, "evidence": ev}
     hold = {"hold": "accepted-pending"} if task.get("brief_accepted") == "pending" else {}
-    if task.get("verify_scope") == ACCEPTANCE_ONLY:
-        hold = {"hold": (hold.get("hold") + "," if hold else "") + ACCEPTANCE_ONLY}
+    if scope in (ACCEPTANCE_ONLY, REPRODUCER_ONLY):
+        hold = {"hold": (hold.get("hold") + "," if hold else "") + scope}
     if res == "ok":
         return {"verdict": "verified", "reason": "mechanical", "checks": checks, "evidence": ev, **hold}
     if reviewer is None:

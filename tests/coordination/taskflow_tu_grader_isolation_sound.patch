@@ -1,0 +1,119 @@
+diff --git a/scripts/autopilot/evals/dtap/harness/isolation.py b/scripts/autopilot/evals/dtap/harness/isolation.py
+new file mode 100644
+index 0000000..9f9f548
+--- /dev/null
++++ b/scripts/autopilot/evals/dtap/harness/isolation.py
+@@ -0,0 +1,55 @@
++import json
++from pathlib import Path
++import subprocess
++import sys
++
++
++_CHILD = """
++import hashlib
++import json
++import os
++from pathlib import Path
++import sys
++
++sentinel = Path(sys.argv[1])
++result = {
++    "uid": os.geteuid(),
++    "mountinfo_sha": hashlib.sha256(Path("/proc/self/mountinfo").read_bytes()).hexdigest(),
++}
++try:
++    sentinel.read_bytes()
++except OSError as exc:
++    result.update(open_ok=False, open_errno=exc.errno)
++else:
++    result.update(open_ok=True, open_errno=None)
++
++try:
++    os.listdir(sentinel.parent)
++except OSError as exc:
++    result.update(listdir_ok=False, listdir_errno=exc.errno)
++else:
++    result.update(listdir_ok=True, listdir_errno=None)
++
++result.update(ok=result["open_ok"] or result["listdir_ok"], errno=result["open_errno"])
++print(json.dumps(result))
++"""
++
++
++class GraderReachable(AssertionError):
++    pass
++
++
++def probe_grader_access(sentinel: Path, launcher: list[str]) -> dict:
++    completed = subprocess.run(
++        [*launcher, sys.executable, "-c", _CHILD, str(sentinel)],
++        check=True, capture_output=True, text=True, timeout=15,
++    )
++    result = json.loads(completed.stdout)
++    if not isinstance(result, dict) or not {"open_ok", "listdir_ok", "uid", "mountinfo_sha"}.issubset(result):
++        raise ValueError("invalid grader probe result")
++    return result
++
++
++def assert_grader_unreachable(result: dict) -> None:
++    if result["open_ok"] or result["listdir_ok"]:
++        raise GraderReachable("child accessed the grader artifact or directory")
+diff --git a/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py b/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py
+new file mode 100644
+index 0000000..9a62f42
+--- /dev/null
++++ b/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py
+@@ -0,0 +1,52 @@
++import errno
++from pathlib import Path
++import secrets
++import subprocess
++
++import pytest
++
++from scripts.autopilot.evals.dtap.harness.isolation import (
++    GraderReachable,
++    assert_grader_unreachable,
++    probe_grader_access,
++)
++
++
++@pytest.fixture
++def sentinel(tmp_path):
++    grader = tmp_path / "grader"
++    grader.mkdir()
++    path = grader / "sentinel"
++    path.write_text(secrets.token_hex(16), encoding="utf-8")
++    return path
++
++
++def test_reachable_grader_is_flagged(sentinel):
++    result = probe_grader_access(sentinel, launcher=[])
++    assert result["open_ok"] is True
++    with pytest.raises(GraderReachable):
++        assert_grader_unreachable(result)
++
++
++def test_isolated_launch_denies(sentinel):
++    scratch = sentinel.parent.parent
++    launcher = [
++        "unshare", "--user", "--map-root-user", "--mount",
++        "sh", "-c", 'mount -t tmpfs none "$1" && shift && exec "$@"', "--", str(scratch),
++    ]
++    try:
++        result = probe_grader_access(sentinel, launcher)
++    except subprocess.CalledProcessError as exc:
++        diagnostic = exc.stderr.strip()
++        if diagnostic in {
++            "unshare: write failed /proc/self/uid_map: Operation not permitted",
++            "unshare: unshare failed: Operation not permitted",
++        }:
++            pytest.skip(diagnostic)
++        raise
++
++    assert result["open_ok"] is False
++    assert result["open_errno"] in {errno.ENOENT, errno.EACCES}
++    assert result["listdir_ok"] is False
++    assert result["listdir_errno"] in {errno.ENOENT, errno.EACCES}
++    assert_grader_unreachable(result)
