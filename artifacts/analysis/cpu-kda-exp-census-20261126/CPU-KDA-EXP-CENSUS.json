@@ -1,0 +1,20 @@
+{
+  "model": "Qwen3.8-Flash-Next UD-IQ4_XS, MTP Q8_0",
+  "graph": {
+    "decode": "C14 eee3da838 qwen4exp trunk and MTP draft; CPU-only MTP verify, d1k/d32k/d64k, 48 threads, draft max 4",
+    "prefill": "Same C14 qwen4exp serving configuration; prompt lengths 1000, 32000, 54329, microbatch 512; per-phase KDA input shapes not retained"
+  },
+  "cpu_isa": "Native CPU build (GGML_NATIVE=ON, GCC 15); exact effective ISA not established by retained build manifest",
+  "kda_count": {
+    "decode": {"loop_1": null, "loop_2": null, "status": "unresolved: no retained per-loop counts or GDN gate shape trace"},
+    "prefill": {"loop_1": null, "loop_2": null, "status": "unresolved: no retained per-loop counts or phase-specific GDN gate shape trace"}
+  },
+  "self_time": {
+    "decode": null,
+    "prefill": null
+  },
+  "upper_bound": {
+    "decode": {"fraction": null, "status": "missing runtime gate-shape/branch witness and per-loop self time; scalar-gate source implies zero for that graph but is not a direct branch trace"},
+    "prefill": {"fraction": null, "status": "missing phase-specific runtime gate-shape/branch witness and per-loop self time; scalar-gate source implies zero for that graph but is not a direct branch trace"}
+  }
+}
