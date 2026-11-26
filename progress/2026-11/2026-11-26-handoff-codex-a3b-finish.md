@@ -21,3 +21,9 @@ The verdict is FIX-HARNESS under the original rule, with the identified repairs 
 Final findings and evidence pointers are in `docs/design/taskflow-stage1-canary-findings.md`, with telemetry and source manifests under `/mnt/raid0/llm/tmp/taskflow-finish-20261126/`.
 
 Next: operator reviews dispatch eligibility using the audited canary and repaired acceptance checks.
+
+## 12:56Z — Complete A3B canary and repair observed harness defects
+
+Canary filed as FIX-HARNESS with repairs validated. Original 16 executed attempts and six corrections yield seven sound outputs, plus four stale skips. Final suite passes 224 tests and eleven OpenCode tool controls. Independent gates reject the preserved false positives. Both C22 servers and host claims are released. Findings and evidence are linked in docs/design/taskflow-stage1-canary-findings.md.
+
+Next: operator reviews dispatch eligibility.

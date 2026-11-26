@@ -10,18 +10,18 @@ where:
 - epyc-orchestrator:src/dispatcher.py
 - epyc-orchestrator:tests/unit/test_inference_lock_concurrent_import.py@5886e5aeb273fd4a8aaf1447bb3d8bc163d5c082
 - epyc-orchestrator:tests/unit/test_inference_lock_concurrent_import.py
-approach: 'Recreate tests/unit/test_compat_alias_cold_import.py from 5886e5ae:tests/unit/test_inference_lock_concurrent_import.py
-  (git show), keeping _COMPAT_ALIASES (21 entries), test_compat_alias_is_the_unrenamed_target_module and test_all_compat_aliases_concurrent_first_import_is_safe.
+approach: >-
+  Recreate tests/unit/test_compat_alias_cold_import.py from
+  5886e5ae:tests/unit/test_inference_lock_concurrent_import.py (git show), keeping _COMPAT_ALIASES (16 entries),
+  test_compat_alias_is_the_unrenamed_target_module and test_all_compat_aliases_concurrent_first_import_is_safe.
 
-  Fix: in src/__init__.py, generalize _InferenceLockAliasFinder/_InferenceLockAliasLoader to one finder keyed on that same
-  dict; create_module returns importlib.import_module(target).
+  Fix: in src/__init__.py, generalize _InferenceLockAliasFinder/_InferenceLockAliasLoader to one finder keyed on
+  that same dict; create_module returns importlib.import_module(target).
 
-  Reduce each shim file (src/dispatcher.py etc., which today set _real.__name__ = __name__ and swap sys.modules from their
-  own body) to a docstring only, so the finder is the only path and the target is never renamed.
+  Reduce each shim file (src/dispatcher.py etc., which today set _real.__name__ = __name__ and swap sys.modules
+  from their own body) to a docstring only, so the finder is the only path and the target is never renamed.
 
   Keep the inference_lock behaviour and its two existing tests unchanged.
-
-  '
 acceptance: cd /workspace/repos/epyc-orchestrator && python3 -m pytest -q tests/unit/test_compat_alias_cold_import.py tests/unit/test_inference_lock_concurrent_import.py
 new_tests:
 - epyc-orchestrator:tests/unit/test_compat_alias_cold_import.py
