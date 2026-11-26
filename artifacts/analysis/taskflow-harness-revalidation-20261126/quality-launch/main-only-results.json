@@ -1,0 +1,174 @@
+[
+  {
+    "case": "DS41-W-66",
+    "execution": {
+      "rc": 0,
+      "wall_s": 74.823704,
+      "cli_version": "codex-cli 0.172.0",
+      "tool_audit_required": true
+    },
+    "usage": {
+      "input_tokens": 343820,
+      "cached_input_tokens": 303616,
+      "output_tokens": 2056,
+      "reasoning_output_tokens": 80,
+      "uncached_input_tokens": 40204
+    },
+    "path_scope_pass": true,
+    "oracle": {
+      "case": "DS41-W-66",
+      "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "rc": 0,
+      "wall_s": 6.3625,
+      "checked_candidate_files": {
+        "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": {
+          "sha256": "ab997c230433b5da3908e6ce36c21edc868f03453b8e1a0a3676b09592d8ed2f",
+          "bytes": 5540,
+          "executable": false
+        }
+      },
+      "retained_runtime_artifacts": {
+        "scripts/kernel_rnd/.pytest_cache/.gitignore": {
+          "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+          "bytes": 37,
+          "executable": false
+        },
+        "scripts/kernel_rnd/.pytest_cache/CACHEDIR.TAG": {
+          "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+          "bytes": 191,
+          "executable": false
+        },
+        "scripts/kernel_rnd/.pytest_cache/README.md": {
+          "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+          "bytes": 302,
+          "executable": false
+        },
+        "scripts/kernel_rnd/.pytest_cache/v/cache/lastfailed": {
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "bytes": 2,
+          "executable": false
+        },
+        "scripts/kernel_rnd/.pytest_cache/v/cache/nodeids": {
+          "sha256": "eaeced94049bd568bf91eebfbea56758d96928a6f144636791157968ad3980ff",
+          "bytes": 257,
+          "executable": false
+        },
+        "scripts/kernel_rnd/.pytest_cache/v/cache/stepwise": {
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "bytes": 2,
+          "executable": false
+        }
+      },
+      "stdout_sha256": "485dc97aee052b7a3aae66ab9e22501d72195d1e39c1b8350563aa8737cff6c9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true
+    },
+    "patch_sha256": "748c877dd68ebd4df358f175164e0a96f01226a2b583367b81406d64a5266139"
+  },
+  {
+    "case": "NARIQ-LIBTRELLIS-MAP-1",
+    "execution": {
+      "rc": 0,
+      "wall_s": 89.898506,
+      "cli_version": "codex-cli 0.172.0",
+      "tool_audit_required": true
+    },
+    "usage": {
+      "input_tokens": 158668,
+      "cached_input_tokens": 130944,
+      "output_tokens": 3859,
+      "reasoning_output_tokens": 10,
+      "uncached_input_tokens": 27724
+    },
+    "path_scope_pass": true,
+    "oracle": {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "rc": 0,
+      "wall_s": 0.0177,
+      "checked_candidate_files": {
+        "docs/research/exl3-4-gfx90a-libtrellis-design.md": {
+          "sha256": "a9fc762591277a784c10e1e9b9e866665b3f6a126600787f1c1fa92711124962",
+          "bytes": 12687,
+          "executable": false
+        }
+      },
+      "stdout_sha256": "4c82cec89a4949d31149cc9a9b1c2e44f0058e9b1cfc4b8268e600aaea8e6827",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true
+    },
+    "patch_sha256": "2531bf825c6c102b84a20a03a5aa26b70709a7999e98c6fc9adec6e1dcd2bcbb"
+  },
+  {
+    "case": "PAW-5",
+    "execution": {
+      "rc": 0,
+      "wall_s": 66.922348,
+      "cli_version": "codex-cli 0.172.0",
+      "tool_audit_required": true
+    },
+    "usage": {
+      "input_tokens": 183698,
+      "cached_input_tokens": 149504,
+      "output_tokens": 2900,
+      "reasoning_output_tokens": 51,
+      "uncached_input_tokens": 34194
+    },
+    "path_scope_pass": true,
+    "oracle": {
+      "case": "PAW-5",
+      "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+      "rc": 0,
+      "wall_s": 0.0141,
+      "checked_candidate_files": {
+        "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+          "sha256": "bd758267038b1f78f5ac93f687945d462a13dde2691190a943c2744c55385148",
+          "bytes": 10048,
+          "executable": false
+        }
+      },
+      "retained_runtime_artifacts": {},
+      "stdout_sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true,
+      "oracle_version": "paw5.markdown-fields.v3",
+      "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b"
+    },
+    "patch_sha256": "3ba76b91f1b581d4937ba5c3c809c3044902ccd4a44f3d9dfcd50d5a565a747d"
+  },
+  {
+    "case": "PFXC-A3",
+    "execution": {
+      "rc": 0,
+      "wall_s": 111.710705,
+      "cli_version": "codex-cli 0.172.0",
+      "tool_audit_required": true
+    },
+    "usage": {
+      "input_tokens": 224938,
+      "cached_input_tokens": 201088,
+      "output_tokens": 5051,
+      "reasoning_output_tokens": 22,
+      "uncached_input_tokens": 23850
+    },
+    "path_scope_pass": true,
+    "oracle": {
+      "case": "PFXC-A3",
+      "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "rc": 0,
+      "wall_s": 0.0172,
+      "checked_candidate_files": {
+        "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": {
+          "sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+          "bytes": 6965,
+          "executable": false
+        }
+      },
+      "retained_runtime_artifacts": {},
+      "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true
+    },
+    "patch_sha256": "8474384ee0cca57a0a799700b94c0b5d17dc65dce8fb053c066086fd627cb7a5"
+  }
+]

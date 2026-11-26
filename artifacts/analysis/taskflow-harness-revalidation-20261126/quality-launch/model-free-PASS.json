@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "model_free": true,
+  "work": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality/model-free-k8zgion9",
+  "w66_controls": {
+    "baseline": {
+      "rc": 1,
+      "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "acceptance_version": "original",
+      "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "stdout_sha256": "f3d07a8aaae9c4d1a8c0d0ad33ee0b6212619ad2595657a97680b690c91c19a0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true
+    },
+    "positive": {
+      "rc": 0,
+      "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "acceptance_version": "original",
+      "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "stdout_sha256": "b44f011eac8728be40c643fbb72202d9b1197229a5a3ea5600fd917f29edad81",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true
+    }
+  },
+  "initial_wire": {
+    "seq": 2,
+    "body_ref": "gpu-PAW-5-on-coding-0002.json.gz",
+    "tools": [
+      "edit",
+      "execute",
+      "glob",
+      "grep",
+      "question",
+      "read",
+      "shell",
+      "skill",
+      "subagent",
+      "webfetch",
+      "websearch",
+      "write"
+    ],
+    "tool_schema_sha256": "cc676efc434053b7dc1a81afc666c7d7737180c4639d9c363adbc041e5b4d37d",
+    "code_mode_catalog": true,
+    "recognized_output_cap": 32768,
+    "slot": 0,
+    "template": {
+      "enable_thinking": true,
+      "preserve_reasoning": true,
+      "preserve_thinking": true
+    },
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    }
+  },
+  "all_role_requests": 2,
+  "per_slot_order": {
+    "cpu/0": [
+      "cpu-PAW-5-off-recommended"
+    ],
+    "cpu/1": [
+      "cpu-DS41-W-66-off-recommended"
+    ],
+    "cpu/2": [
+      "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended"
+    ],
+    "cpu/3": [
+      "cpu-PFXC-A3-off-recommended"
+    ],
+    "gpu/0": [
+      "gpu-PAW-5-on-coding",
+      "gpu-PAW-5-off-common-on-sampling",
+      "gpu-PAW-5-off-recommended"
+    ],
+    "gpu/1": [
+      "gpu-DS41-W-66-off-common-on-sampling",
+      "gpu-DS41-W-66-on-coding",
+      "gpu-DS41-W-66-off-recommended"
+    ],
+    "gpu/2": [
+      "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+      "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding"
+    ],
+    "gpu/3": [
+      "gpu-PFXC-A3-on-coding",
+      "gpu-PFXC-A3-off-recommended"
+    ]
+  }
+}

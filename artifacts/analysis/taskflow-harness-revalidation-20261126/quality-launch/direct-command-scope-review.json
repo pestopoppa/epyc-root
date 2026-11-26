@@ -1,0 +1,50 @@
+{
+  "method": "Review saved completed command, file-change and web-call events and match declared-source hashes. This is an event-based scope audit of host access.",
+  "no_observed_answer_contamination": true,
+  "cases": [
+    {
+      "case": "DS41-W-66",
+      "events_sha256": "9b764f07208f2776b93e7983c8d5ebb75678256871f670117cd2bc743bcbc9ba",
+      "commands_reviewed": 10,
+      "changed_source_paths": [
+        "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+      ],
+      "retained_cache_count": 6,
+      "acceptance_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "observations": "Reads staged fixtures, edits only the named test, and runs the approved two-test command three times before the final success. An AGENTS filename scan covers the immediate private run parent. Pytest cache files were retained. Full controller acceptance replays the reviewed patch in a clean lane with isolated test dependencies."
+    },
+    {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "events_sha256": "d4f5ada7669f7bea9e372f0cd819fb4d329956b795cb8272c400e78314acacf9",
+      "commands_reviewed": 5,
+      "changed_source_paths": [
+        "docs/research/exl3-4-gfx90a-libtrellis-design.md"
+      ],
+      "retained_cache_count": 0,
+      "acceptance_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "observations": "Reads pinned staged sources, fetches the AMD GPUOpen matrix-core reference specified in the brief, and writes the declared design document. An AGENTS filename scan covers the immediate private run parent. The private non-repository git status exits 128."
+    },
+    {
+      "case": "PAW-5",
+      "events_sha256": "90697b9fb0ba196e2a366b1fceb9cb15950b61f8952875348bb8b0587a84d11e",
+      "commands_reviewed": 5,
+      "changed_source_paths": [
+        "docs/reference/harness-candidates/paw-5-compile-once-candidates.md"
+      ],
+      "retained_cache_count": 0,
+      "acceptance_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+      "observations": "Reads the four staged references and creates the declared candidate document. The recorded relative links to source references are documentation. The original oracle false rejection and revised oracle receipt bind the same candidate SHA-256."
+    },
+    {
+      "case": "PFXC-A3",
+      "events_sha256": "729c60a53e2aa6a71749486b4ab2711e2198bcc17a090ff00eaed6b44693b2c9",
+      "commands_reviewed": 8,
+      "changed_source_paths": [
+        "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md"
+      ],
+      "retained_cache_count": 0,
+      "acceptance_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "observations": "Reads the staged evidence, handoff and recipe. The commands that contain the original absolute evidence paths write Markdown citations. Its executed extraction reads the staged excerpt. A private non-repository git status exits 128 before the following chained command. Only the declared note changed."
+    }
+  ]
+}

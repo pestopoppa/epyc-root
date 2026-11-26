@@ -1,0 +1,352 @@
+{
+  "status": "staged_for_approval_no_native_launch",
+  "comparison": "exploratory capability, thinking profile/toggle, paid main effort and guidance",
+  "source_proposed_grid_sha256": "e6ced505a4c1f45db22303882036bb78f5dbc99935b44a8d7fe6dba50a9b41d8",
+  "quality_limits": {
+    "primary_output": 32768,
+    "context_per_slot": 131072,
+    "gpu_wall_s": 1800,
+    "cpu_wall_s": 3600,
+    "cumulative_generated": 120000,
+    "step_limit": null
+  },
+  "cases": {
+    "PAW-5": {
+      "original_packet_sha256": "83c9025c1b8019bf8c45a39c5a552f85cfed45c9cc06df41209757d748ef1297",
+      "task_packet_sha256": "44594f92f0e213cc80a9e4abe5dab1e0409007d611b356204f90537d7828fa98",
+      "source_sha": "9cd1c942a3ad9edce34ba42b8eaf796156e8be72",
+      "handoff_sha": "9cd1c942a3ad9edce34ba42b8eaf796156e8be72",
+      "prompt_sha256": "3569853b75337270cd5e1681ea10aa2cabf9daf5e67b137f9abb08fc3e9724c1",
+      "oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+      "files": 4,
+      "active_oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+      "acceptance_version": "paw5.markdown-fields.v3"
+    },
+    "DS41-W-66": {
+      "original_packet_sha256": "929abbdb3154976febd53cc1d1e25809762e9e32a0988bd5abb71ddcc7537d17",
+      "task_packet_sha256": "f669529975dbcc3fbd7df74ca36ac750da3ecf47cf7e1971d4ed0b184679b457",
+      "source_sha": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "handoff_sha": "9cd1c942a3ad9edce34ba42b8eaf796156e8be72",
+      "prompt_sha256": "79320e03fc7b754c600115ff620c02f53ad2cd73b740fcb187576706a0adccf2",
+      "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "files": 2962
+    },
+    "NARIQ-LIBTRELLIS-MAP-1": {
+      "original_packet_sha256": "f968a052516b23465fc0fc51008d4366310a0776a5b0405bd80836a4e8c2be85",
+      "task_packet_sha256": "5086c46f98825398149514a1fd26840afe964407c312808f1c6506417d673aa3",
+      "source_sha": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "handoff_sha": "9cd1c942a3ad9edce34ba42b8eaf796156e8be72",
+      "prompt_sha256": "93bcb7adf7c2196a17e1b8b95c780e3e674f36ced30b304b86030ffde1524af0",
+      "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "files": 5
+    },
+    "PFXC-A3": {
+      "original_packet_sha256": "75e44ca4b376949dedec6588926cf8ae14c816cb40cc5def1dfbd3dbbc25b527",
+      "task_packet_sha256": "62de225340d6afb063b63c4c85bef6db48f33d75c97da84f9359168cc8b2044b",
+      "source_sha": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+      "handoff_sha": "9cd1c942a3ad9edce34ba42b8eaf796156e8be72",
+      "prompt_sha256": "e1e787eada48d997372854dd822d1116a8fcb77c604ecd321b81166e1f77c954",
+      "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "files": 3
+    }
+  },
+  "rows": [
+    {
+      "case": "PAW-5",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 0,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-PAW-5-off-recommended"
+    },
+    {
+      "case": "DS41-W-66",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 1,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-DS41-W-66-off-recommended"
+    },
+    {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 2,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended"
+    },
+    {
+      "case": "PFXC-A3",
+      "backend": "cpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 3,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 3600,
+      "id": "cpu-PFXC-A3-off-recommended"
+    },
+    {
+      "case": "PAW-5",
+      "backend": "gpu",
+      "thinking": true,
+      "profile": "on-coding",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 0,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-PAW-5-on-coding"
+    },
+    {
+      "case": "DS41-W-66",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-common-on-sampling",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 1,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-DS41-W-66-off-common-on-sampling"
+    },
+    {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 2,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended"
+    },
+    {
+      "case": "PFXC-A3",
+      "backend": "gpu",
+      "thinking": true,
+      "profile": "on-coding",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 3,
+      "cohort": 0,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-PFXC-A3-on-coding"
+    },
+    {
+      "case": "PAW-5",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-common-on-sampling",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 0,
+      "cohort": 1,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-PAW-5-off-common-on-sampling"
+    },
+    {
+      "case": "DS41-W-66",
+      "backend": "gpu",
+      "thinking": true,
+      "profile": "on-coding",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 1,
+      "cohort": 1,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-DS41-W-66-on-coding"
+    },
+    {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "backend": "gpu",
+      "thinking": true,
+      "profile": "on-coding",
+      "sampling": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 2,
+      "cohort": 1,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding"
+    },
+    {
+      "case": "PFXC-A3",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 3,
+      "cohort": 1,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-PFXC-A3-off-recommended"
+    },
+    {
+      "case": "PAW-5",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 0,
+      "cohort": 2,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-PAW-5-off-recommended"
+    },
+    {
+      "case": "DS41-W-66",
+      "backend": "gpu",
+      "thinking": false,
+      "profile": "off-recommended",
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      },
+      "slot": 1,
+      "cohort": 2,
+      "request_cap": 32768,
+      "generated_ceiling": 120000,
+      "wall_s": 1800,
+      "id": "gpu-DS41-W-66-off-recommended"
+    }
+  ],
+  "resource_mode": "C22 CPU and GPU np4 split KV, fixed GPU slot per matched case",
+  "gpu_design": "counterbalanced common-sampling pairs first for PAW/W66, recommended OFF third",
+  "approval": "Case grid and native compaction receipt must be separately approved before inference"
+}

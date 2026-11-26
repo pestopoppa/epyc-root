@@ -97,3 +97,11 @@ Four fresh gpt-6.1-sol/low main-only turns completed rc0 on original paired brie
 The initial packets contain detailed owner guidance, including PFXC solution statistics. Initial success therefore means independent execution from that brief, not unguided backlog discovery. Historical preparation is reused and unmeasured in both arms.
 
 Next: codex-a3b-pilot finishes symmetric acceptance repairs and launches the frozen A3B CPU/GPU task grid, preserving the completed main-only outputs unseen by initial local workers.
+
+## Matched quality grid launched after acceptance repairs
+
+PAW Markdown v3 accepts equivalent period/colon field labels while preserving provenance/required-field negatives (15 controls); the original rejection is retained. W66 uses its unchanged independent oracle after normal pytest cache artifacts are isolated and hash-retained; actual unrelated writes still fail. All four saved main-only candidates now pass their same-version independent checks and source scope, with no model reruns. Audit of28 commands plus web/patch events found no observed prior-answer access.
+
+Main verified3020 sealed inputs and approved quality manifest0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b. Exec33004/controller3220534 now owns CPU3220587 andGPU3220840 under q0–q3 diagnostic locks, with GPUquiet none. Both C22 np4 servers passed live identity/residency/health. Eight initial units are active across bothservers; GPU slots run independent ordered queues over the fourteen-row design. Every thinking call preserves available reasoning; all roles have a recognized32768 output ceiling and120000 cumulative generated bound, with1800sGPU/3600sCPU walls and no custom read/step limit. Main-only outputs are excluded from worker mounts. Launch proof, changed acceptance version and comparator counts are retained in artifacts/analysis/taskflow-harness-revalidation-20261126/quality-launch/.
+
+Next: codex-a3b-pilot audits incremental local outputs, meters paid main review/guidance, and fills freed owned slots with separately approved continuations while preserving initial outcomes.
