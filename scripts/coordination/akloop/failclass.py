@@ -203,6 +203,26 @@ def smoke_terminal(fail: dict):
 
 def classify_fail(fail: dict, launcher_text: str | None = None, row_dir: str | None = None) -> Classification:
     reason = str(fail.get("reason") or "")
+    terminal = fail.get("smoke_terminal") or {}
+    if not isinstance(terminal, dict):
+        terminal = {}
+    ended = str(fail.get("ended") or "")
+    stopped_end = ended + " " + reason
+    stopped_rc = bool(re.search(r"\brc=75\b", stopped_end) or str(fail.get("rc")) == "75")
+    if fail.get("owner_stop") or (not fail.get("keeper_stop") and stopped_rc and
+                                   re.search(r"\breason=stopped(?:-before-start)?\b", stopped_end)):
+        c = _c("harness", "window_or_stop", "smoke:owner-stop", ended or "owner STOP file")
+        c.row_id, c.source = str(fail.get("id") or ""), "fail"
+        return c
+    blob = _launcher_blob(fail, launcher_text)
+    if re.search(r"smoke budget exceeded", str(terminal.get("reason") or "") + "\n" + blob, re.I):
+        c = _c("harness", "smoke_wiring", "smoke:budget-exceeded", "smoke budget exceeded")
+        c.row_id, c.source = str(fail.get("id") or ""), "fail"
+        return c
+    if str(terminal.get("verdict") or "").upper() == "FUTILITY_HARNESS_STOPPED":
+        c = _c("harness", "window_or_stop", "smoke:stopped", str(terminal.get("reason") or ""))
+        c.row_id, c.source = str(fail.get("id") or ""), "fail"
+        return c
     tv = smoke_terminal(fail)
     if tv and tv.startswith("FUTILITY_HARNESS_"):
         c = _c("harness", _harness_klass(tv), "result:smoke-terminal-harness", tv)

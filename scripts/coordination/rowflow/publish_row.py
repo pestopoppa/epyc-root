@@ -1455,7 +1455,13 @@ def record_family_outcome(flags, rid, verdict, msg, failure_sha=None):
         import family_strikes as fs
         m = fs.manifest_of(flags, rid)
         harness_failure = False
-        if verdict in ("PASS", "RESULT"):
+        if verdict == "RESULT":
+            result = rf.load_json(rf.smoke_result_path(flags, rid)) or {}
+            fc = rf._failclass_mod()
+            harness_failure = bool(fc and fc.classify_result(result).side == "harness")
+            if not harness_failure:
+                fs.record_clear(flags, rid, verdict)
+        elif verdict == "PASS":
             fs.record_clear(flags, rid, verdict)
         elif verdict == "FAIL":
             fails = rf.fail_paths(flags, rid)

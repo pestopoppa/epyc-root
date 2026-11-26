@@ -4181,6 +4181,25 @@ def record_fail(flags, rid, d, reason, extra):
            "row_sha256": row_sha(flags, rid), "rowflow_sha256": sha256(__file__), "reason": reason, "launcher_out_tail": tail(os.path.join(dry_dir(flags, rid), "launcher.out")),
            "fix_task": f"fix dry-run failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/launcher.out; the keeper retries as soon as the launcher file changes)",
            **extra}
+    # Capture only this smoke's terminal evidence; old files must not reclassify a later attempt.
+    t0 = rec.pop("smoke_started_epoch", None)
+    if t0 is not None:
+        for root in dict.fromkeys(filter(None, (d.get("workdir"), d.get("scratch_root")))):
+            for sub in ("out", "out-smoke"):
+                path = os.path.join(root, sub, "TERMINAL-smoke.json")
+                try:
+                    if os.path.getmtime(path) >= float(t0):
+                        terminal = load_json(path)
+                        if isinstance(terminal, dict):
+                            rec["smoke_terminal"] = terminal
+                            break
+                except (OSError, ValueError, TypeError):
+                    pass
+            if rec.get("smoke_terminal"):
+                break
+        sf = resolve_stop_path(d)
+        rec["keeper_stop"] = bool(sf and os.path.exists(sf) and keeper_stop_file(d))
+        rec["owner_stop"] = bool(sf and os.path.exists(sf) and not rec["keeper_stop"])
     fc = ak_failclass(flags, rid, d, rec)
     if fc is not None:
         rec["failclass"] = fc
@@ -4834,6 +4853,8 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
         tr = smoke_verdict.terminal_smoke_result(d, env.get("FILLER_SMOKE_T0")) if smoke_s and smoke_verdict else None
         if tr:   # AK RCA 2026-11-24 item 2: the smoke decided the row - file it, no FAIL-N, no "fix and republish"
             return record_smoke_result(flags, rid, d, tr, reason, rec, lsha)
+        if smoke_s:
+            rec["smoke_started_epoch"] = env.get("FILLER_SMOKE_T0")
         record_fail(flags, rid, d, reason, rec)
         write_escalation(flags, rid, allrows)
     return verdict, reason

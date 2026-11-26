@@ -138,6 +138,53 @@ class R3Harness(Base):
         self.assertEqual(fs.harness_strike({"native_verdict": "FUTILITY_HARNESS_IDENTITY"}), (False, ""))
         self.assertEqual(fs.harness_strike({"complete": True}, elapsed_s=11), (False, ""))
 
+    def test_smoke_budget_and_owner_stop_do_not_charge_family(self):
+        import time
+        cases = [
+            ({"verdict": "FAIL", "reason": "smoke budget exceeded; adjust smoke.budget_s"}, "", False),
+            ({"verdict": "FUTILITY_HARNESS_STOPPED", "reason": "owner stopped"}, "", False),
+            ({}, "rc=75 reason=stopped", False),
+            ({}, "", True),
+        ]
+        for i, (terminal, ended, stopped) in enumerate(cases):
+            rid = f"{BASE}-r{i + 10}"
+            root = os.path.join(self.flags, rid)
+            os.makedirs(os.path.join(root, "out"))
+            stop = os.path.join(root, "STOP")
+            d = self.manifest(rid, workdir=root, stop_file=stop, launcher={"path": os.path.join(root, "launch")})
+            if stopped:
+                open(stop, "w").close()
+            with open(os.path.join(root, "out", "TERMINAL-smoke.json"), "w") as f:
+                json.dump(terminal, f)
+            with mock.patch.object(rf, "poke_keeper"), mock.patch.object(rf.notify, "smoke_fail"), \
+                    mock.patch.object(rf, "ak_failclass", wraps=rf.ak_failclass):
+                rec = rf.record_fail(self.flags, rid, d, "job failed", {"ended": ended, "smoke_started_epoch": time.time() - 1})
+            self.assertEqual(rec["failclass"]["side"], "harness")
+            pr.record_family_outcome(self.flags, rid, "FAIL", "job failed")
+        self.assertEqual(fs.load(self.flags, STEM)["count"], 0)
+        self.assertEqual(fs.gpu_smokes_today(self.flags, STEM), [])
+
+    def test_deadline_is_not_owner_stop_and_candidate_still_strikes(self):
+        import failclass
+        c = failclass.classify_fail({"reason": "deadline", "ended": "rc=75 reason=hard-end"})
+        self.assertNotEqual(c.rule, "smoke:owner-stop")
+        rid = f"{BASE}-r20"
+        self.manifest(rid)
+        self.fail(rid, NOW, failclass=failclass.classify_fail({"reason": "job-rc-3", "launcher_out_tail": ["MISMATCH"]}).to_dict())
+        pr.record_family_outcome(self.flags, rid, "FAIL", "MISMATCH")
+        self.assertEqual(fs.load(self.flags, STEM)["count"], 1)
+        self.assertEqual(len(fs.gpu_smokes_today(self.flags, STEM)), 1)
+
+    def test_harness_result_preserves_strikes_and_budget(self):
+        rid = f"{BASE}-r21"
+        self.manifest(rid)
+        fs.record_strike(self.flags, f"{BASE}-r20", "smoke", "candidate")
+        os.makedirs(rf.dry_dir(self.flags, rid))
+        rf.atomic_json(rf.smoke_result_path(self.flags, rid), {"verdict": "FUTILITY_HARNESS_STOPPED"})
+        pr.record_family_outcome(self.flags, rid, "RESULT", "stopped")
+        self.assertEqual(fs.load(self.flags, STEM)["count"], 1)
+        self.assertEqual(fs.gpu_smokes_today(self.flags, STEM), [])
+
     def test_candidate_failures_park_and_push_owner_alert(self):
         import notify
         with mock.patch.object(notify, "_bus_send", return_value="skipped: test"), \
