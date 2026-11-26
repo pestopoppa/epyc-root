@@ -7607,3 +7607,17 @@ Sources: [progress 2026-11-23 autokernel](../progress/2026-11/2026-11-23-autoker
 
 #### Source References (2026-11-25, operator wiki sweep 2, bandwidth census slice)
 - [bandwidth census](../docs/design/mi210-served-kernel-bandwidth-census-20261122.md), [kspec stage-3 plan](../research/deep-dives/intake-kspec-1125/stage3-plan.md), [digest 2956-2981](../research/deep-dives/intake-digests/2026-11-25-ids-2956-2981.md), [AK progress 11-25](../progress/2026-11/2026-11-25-autokernel.md)
+
+### Compiled Update — 2026-11-26 (operator wrap-up sweep, autokernel slice): C22 composite gates, np4 production receipt, C22 nulls
+
+- **C22 composite is READY TO SIGN, not promoted.** Branch `llama.cpp-experimental-c22-composite-20261125` @ `b1e1864cb` is C21 `98ff8a42a` plus 18 forward-ported features, one per commit with tests. Stores are `cpu`/`gpu-20261126-ce6fcbbde-c22-composite`, and kernel_coverage PASSes for v10->C22 and C21->C22. G-27B r5 (np1 ms/round) is KEEP x1.121. The served env (I8PC_ONLY, since the operator ruled q8wp out of serving) is x1.128 [1.108, 1.147] at KLD 0.0009. G-Q38FN is KEEP x1.109. A3B composite stopped at the futility look, x0.992 [0.924, 1.066], so its knobs stay off. DRAFTVOCAB (served_quality 82 vs 83, noise 82) and the Q38FN draft window (x1.204-1.219 over 7 clean blocks, by operator ruling) are both in the serving config. Promotion is operator-only.
+- **np1 gains did not reach the np4 production receipt.** S1-r2 ran 27B np4 with ~8.4k-token prompts and sequential requests. Decode tok/s: v10 45.9, C21 69.1, C22 68.8, so C22 ≈ C21 and both are about +50 % over v10. Prefill: C22 is +4.6 % over C21. Short, coding and mixed prompts are unmeasured.
+- **C22 nulls:**
+  - Pando tree drafting is lossy on the 27B GPU (output differs on 3 of 8 prompts).
+  - Fast CPU top-k (TOPK_SELECT=2) is lossy on Q38FN: KLD 0.039 against an A/A of 0.000.
+  - ub1024 and ub2048 both worsen deep-context max stall (20.7 vs 16.3 s, 27.2 vs 15.3 s) while halving p95 ITL. Serving stays at ub512.
+  - RF7 split-K verify attention failed test-backend-ops before timing; the lever is not closed.
+- **The second long-context 27B nondeterminism source is the skinny Q8 split-K f32 atomic flush.** The bisect cleared it with SKINNY=0. A deterministic-reduction fix box is filed.
+
+#### Source References (2026-11-26, autokernel slice)
+- [progress 2026-11-26 autokernel](../progress/2026-11/2026-11-26-autokernel.md), [progress 2026-11-25 autokernel](../progress/2026-11/2026-11-25-autokernel.md)

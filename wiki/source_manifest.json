@@ -4,29 +4,28 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1514,
+    "progress": 1515,
     "research": 552
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
+      "added": 1,
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-25T13:37:23Z",
+    "at": "2026-11-26T10:16:43Z",
     "scope_paths": [
-      "handoffs/active/coordination-and-churn-pipeline.md",
-      "progress/2026-11/2026-11-25-handoff-pm-hostdrain-20261125.md",
-      "progress/2026-11/2026-11-25-pipeline-mgmt.md"
+      "progress/2026-11/2026-11-25-autokernel.md",
+      "progress/2026-11/2026-11-26-autokernel.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-25T13:37:23Z",
+  "scan_time": "2026-11-26T10:16:43Z",
   "schema_version": 1,
-  "source_set_hash": "721a186e01aebaf7aac32f714ae4fa9f9c1ce5e46a60b3e44672c5b8e185851b",
+  "source_set_hash": "702651d140ae9ee34c945658935279c814204ba861a3503374e5247ab26afd11",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -19605,10 +19604,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "0d02c495576afb08fe765a6600d93cb2dee498ed04467ccafb2ab8b54ae2a086",
-      "modified": "2026-11-25T12:46:05Z",
+      "content_hash": "3f63ec6d901061cf4781dad5762dcfe694b68b5ba548dc2e872bcb3075a52dfc",
+      "modified": "2026-11-26T10:02:17Z",
       "path": "progress/2026-11/2026-11-25-autokernel.md",
-      "size": 8045,
+      "size": 14624,
       "title": "2026-11-25 \u2014 AutoKernel overnight churn (2026-11-24 \u2192 25), wrap-up",
       "type": "progress"
     },
@@ -19722,6 +19721,14 @@
       "path": "progress/2026-11/2026-11-25-workspace-f2.md",
       "size": 5014,
       "title": "2026-11-24/25 \u2014 workspace-f2 (Assorted / RTG-22 non-inference)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b29218729b873e59af76a5a54296d59c81535953f411f9e4890f2e822090e5a6",
+      "modified": "2026-11-26T10:13:11Z",
+      "path": "progress/2026-11/2026-11-26-autokernel.md",
+      "size": 6222,
+      "title": "2026-11-26 \u2014 autokernel (operator-invoked wrap-up, session 2026-11-25..26)",
       "type": "progress"
     },
     {
@@ -24645,7 +24652,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3077,
+  "total_new": 3078,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
