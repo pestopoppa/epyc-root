@@ -2102,10 +2102,20 @@ def job_texts(d, o=None):
     return out
 
 
+# Vendored, sealed AK harness libraries: generic code whose GPU branches run only when the row's OWN argv/spec
+# (job.py, scanned) asks for them. Scanning them made every CPU ak_gate row look like GPU work (2026-11-26, cx68b op
+# unit `"-b", op.get("backend", "ROCm0")` refused CPU rows S2-S4 GPU-FENCE).
+_VENDORED_HARNESS = frozenset({"ak_gate.py", "ak_row_harness.py", "check_complete.py", "rocprof_trace.py"})
+
+
+def _row_job_texts(d, o=None):
+    return {f: t for f, t in job_texts(d, o).items() if os.path.basename(f) not in _VENDORED_HARNESS}
+
+
 def gpu_work_evidence(d, o=None):
     """[(file, line)] where the row's launcher/cmd/job files run GPU-only work (comment lines ignored)."""
     hits = []
-    for f, t in job_texts(d, o).items():
+    for f, t in _row_job_texts(d, o).items():
         for ln in t.splitlines():
             s = ln.strip()
             if s.startswith("#") or s.startswith("//"):
@@ -2117,7 +2127,7 @@ def gpu_work_evidence(d, o=None):
 
 
 def _kfd_capable(d, o=None):
-    return any(_KFD.search(t) for t in job_texts(d, o).values())
+    return any(_KFD.search(t) for t in _row_job_texts(d, o).values())
 
 
 def gpu_touch(d, o=None):

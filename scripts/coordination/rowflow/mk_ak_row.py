@@ -854,8 +854,9 @@ def gate_scaffold(a, served=None):
         a.copy_input.append(a.promotion_suites + ":inputs/promotion_quality_questions.json")
     promotions = [c for c in (corr if isinstance(corr, list) else [corr] if corr else [])
                   if c.get("kind") == "served_quality" and c.get("input_kind") == "promotion_suites"]
-    if a.arm_store and not served:
-        raise SystemExit("mk_ak_row gate: --arm-store needs --served-ref")
+    if a.arm_store and not (served or a.server_argv_json):
+        # 2026-11-26: an explicit --server-argv-json is also a whole production argv (A3B on GPU has no registry role)
+        raise SystemExit("mk_ak_row gate: --arm-store needs --served-ref or --server-argv-json")
     load_units = [dict(json.loads(x), kind="load") for x in a.load_unit]
     arm_stores = resolve_arm_stores(a.arm_store, arms, argv, corr, load_units) if a.arm_store else {}
     os.makedirs(os.path.join(d, "inputs"))
