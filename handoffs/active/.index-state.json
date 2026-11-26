@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-20",
-      "open": 257
+      "open": 258
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -2594,7 +2594,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-25",
       "needs_owner": 8,
-      "open": 134,
+      "open": 135,
       "owner_index": "research-evaluation-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -2604,7 +2604,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 623
+      "total": 624
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
