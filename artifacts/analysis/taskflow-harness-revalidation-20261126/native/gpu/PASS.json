@@ -1,0 +1,9 @@
+{
+  "backend": "gpu",
+  "generated_observed": 1367,
+  "charged_toward_ceiling": 1367,
+  "unknown_requests": 0,
+  "wall_s": 1800,
+  "executed_tools": true,
+  "custody": true
+}

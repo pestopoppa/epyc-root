@@ -1,0 +1,10 @@
+{
+  "slot": 3,
+  "wall_s": 3600,
+  "request_cap": 8192,
+  "generated_ceiling": 16384,
+  "thinking": false,
+  "effective_wall_s": 3600,
+  "monotonic_deadline": 1608223.323663331,
+  "output_ceiling_basis": "generated tokens"
+}

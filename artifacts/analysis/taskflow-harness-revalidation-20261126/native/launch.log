@@ -1,0 +1,6 @@
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='a3b-native-qualification' (timeout_s=10.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: python3 /mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/stock/qualify.py 556cc817e484ee7b2276c0d73f95f6bb8a17288d2e039da07c70ce436c7868c4
+cpu: owned native qualification pid=2920162 port=59443
+gpu: owned native qualification pid=2920412 port=50797
+cpu: healthy and smoke passed pid=2920162 port=59443
+gpu: healthy and smoke passed pid=2920412 port=50797

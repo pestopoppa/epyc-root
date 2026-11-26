@@ -79,3 +79,11 @@ The exact stock-derived API/container/transport path passes the twelve-tool matr
 W66 acceptance parity now passes in the same container after limiting git grep to four threads: the original baseline fails its intended witness and the known positive passes both tests. The earlier mismatch was container process-budget exhaustion, not missing source or a model failure.
 
 Next: codex-a3b-pilot verifies actual native tools, budgets, reasoning and continuation before approving the paired task and main-only set.
+
+## Native synthetic qualification passed
+
+Main launched the approved sealed manifest under the owned q0–q3 region claim. Controller PID2920116/exec83642 completed rc0. C22 CPU PID2920162 and GPU PID2920412 passed content-based identity, health/smoke and actual OpenCode controls. CPU read/write/pytest/reference custody used185 generated tokens; GPU execute syntax-error/correction plus same-session continuation used1367 generated tokens. Native template retained8/8 synthetic history markers with preservation versus0/8 default; the actual resumed session retained3/3 prior reasoning entries versus0/3 default. Counters were known and no request errors were accepted. Both owned servers exited rc0 with death verified and KFD empty. Raw native control receipts and request metrics are under artifacts/analysis/taskflow-harness-revalidation-20261126/native/.
+
+This is synthetic native harness qualification, not a real-task capability result. Actual native compaction continuity remains to be checked before the planned quality/main-only comparisons.
+
+Next: codex-a3b-pilot completes native compaction qualification, then freezes and runs the paired real-task grid with measured guidance and main-only accounting.

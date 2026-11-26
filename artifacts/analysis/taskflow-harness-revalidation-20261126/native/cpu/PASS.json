@@ -1,0 +1,9 @@
+{
+  "backend": "cpu",
+  "generated_observed": 185,
+  "charged_toward_ceiling": 185,
+  "unknown_requests": 0,
+  "wall_s": 3600,
+  "executed_tools": true,
+  "custody": true
+}
