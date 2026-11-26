@@ -2081,6 +2081,21 @@ def test_arm_store_generation_refuses_missing_correctness_binary(tmp_path, monke
     assert not (tmp_path / "ak-arm-store-test").exists()
 
 
+def test_arm_store_generation_with_explicit_server_argv(tmp_path, monkeypatch):
+    store = tmp_path / "store"
+    (store / "bin").mkdir(parents=True)
+    shutil.copy("/bin/true", store / "bin" / "llama-server")
+    (store / "bin" / "libggml-base.so").write_text("lib")
+    monkeypatch.setattr(MK, "lint", lambda *args: [])
+    monkeypatch.setattr(MK, "_write_spec", lambda *args, **kwargs: 0)
+    args = ["gate", "new", "--id", "ak-arm-store-argv", "--task", "x.md:T", "--model", "test",
+            "--root", str(tmp_path), "--server-argv-json", json.dumps([str(store / "bin" / "llama-server"), "--port", "{PORT}"]),
+            "--arm", "OFF:", "--arm", "ON:GGML_HIP_Q8MC=1", "--baseline", "OFF",
+            "--knob", "GGML_HIP_Q8MC:marker", "--metric", "tok_s", "--keep-rule", "ci_lower>1.01,n=4,look=2,aa=none",
+            "--prompt", "hello", "--arm-store", f"ON={store}", "--no-rehearse"]
+    assert MK.main(args) == 0
+
+
 def test_arm_store_checks_load_unit_executables(tmp_path):
     store = tmp_path / "store"
     (store / "bin").mkdir(parents=True)
@@ -2162,3 +2177,44 @@ def test_generator_refuses_unpinned_promotion_input_in_correctness(tmp_path):
     c = {"kind": "served_quality", "input_kind": "promotion_suites", "input": "inputs/bad.json", "gate": True}
     with pytest.raises(SystemExit, match="promotion manifest sha256 mismatch"):
         gen_row(tmp_path, extra=["--copy-input", str(path), "--correctness", json.dumps(c)])
+
+
+def test_parity_capture_and_assemble_uses_exact_request_and_raw_response(tmp_path, monkeypatch):
+    import base64
+    import hashlib
+    import io
+    import urllib.request
+    import parity_assemble
+    body = {"prompt": "café", "seed": 42, "temperature": 0, "cache_prompt": False, "stream": False, "n_predict": 3}
+    wire = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    binary = os.path.join(FIX_BIN, "llama-server")
+    binary_sha = hashlib.sha256(open(binary, "rb").read()).hexdigest()
+    runtime = {"kernel_commit": "a" * 40, "kernel_tree": "b" * 40, "binary_sha256": binary_sha}
+    pack = {"schema": "epyc.kernel_quality_parity_pack.v1", "shapes": [{"id": "shape-a", "endpoint": "/completion"}],
+            "runtime": {"shape-a": runtime}, "capture_source": {},
+            "items": [{"id": "one", "shape": "shape-a", "request_body": body, "request_sha256": hashlib.sha256(wire).hexdigest()}]}
+    payload = json.dumps(pack).encode()
+    (tmp_path / "pack.json").write_bytes(payload)
+    pin = hashlib.sha256(payload).hexdigest()
+    response = b'{\n "content":"caf\\u00e9"\n}\n'
+    received = []
+    def fake_open(request, timeout):
+        received.append((request.data, request.full_url))
+        return io.BytesIO(response)
+    monkeypatch.setattr(urllib.request, "urlopen", fake_open)
+    gate = G.Gate(spec(), str(tmp_path), env={}, stream=QUIET)
+    result = gate.parity_capture({"pack": "pack.json", "sha256": pin, "shape": "shape-a"}, "ON",
+                                 [binary, "-np", "1", "-c", "1024"], 123, 9000, lambda: 5)
+    fragment = json.loads((tmp_path / "out" / result["fragment_path"]).read_text())
+    assert received == [(wire, "http://127.0.0.1:9000/completion")]
+    assert base64.b64decode(fragment["items"][0]["capture"]["response_b64"]) == response
+    assert fragment["server_instance"].endswith(":ON:123")
+    assembled = parity_assemble.assemble(payload, pin, [fragment])
+    assert assembled["ON"]["candidate"]["items"] == fragment["items"]
+    with pytest.raises(ValueError, match="duplicate shape"):
+        parity_assemble.assemble(payload, pin, [fragment, fragment])
+    pack["shapes"].append({"id": "shape-b", "endpoint": "/completion"})
+    payload = json.dumps(pack).encode()
+    pin = hashlib.sha256(payload).hexdigest()
+    fragment["pack_sha256"] = pin
+    assert parity_assemble.assemble(payload, pin, [fragment])["ON"]["status"] == "incomplete"

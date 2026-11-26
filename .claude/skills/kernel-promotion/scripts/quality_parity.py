@@ -28,15 +28,22 @@ CANDIDATE_SCHEMA = "epyc.kernel_quality_parity_candidate.v1"
 REPORT_SCHEMA = "epyc.kernel_quality_parity_report.v1"
 CAPTURE_SCHEMA = "epyc.kernel_quality_parity_comparison.v1"
 VALIDATOR_SOURCE_SHA256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
-MANDATORY_SHAPES = {
-    "frontdoor-cpu-moe-mtp",
-    "worker-general-cpu-moe-mtp",
-    "architect-critic-cpu-mtp",
-    "ingest-long-context-recurrent-no-spec",
-    "architect-general-hip",
-    "worker-vision-hip-mmproj",
-    "dspark-dflash",
+# The compiled orchestrator view is orchestration/model_registry.yaml; its
+# server_mode aliases and diagnostic DFlash profile do not map one-to-one to
+# role names. Keep that mapping here, and check it against the registry in tests.
+SERVING_PROFILES = {
+    "frontdoor-cpu-moe-mtp": ("frontdoor", "cpu"),
+    "worker-general-cpu-moe-mtp": ("frontdoor", "cpu"),
+    "architect-critic-hip-dflash": ("architect_critic", "hip"),
+    "ingest-long-context-hip-dflash": ("ingest_long_context", "hip"),
+    "architect-general-cpu-mtp": ("architect_general", "cpu"),
+    "worker-vision-cpu-mmproj": ("worker_vision", "cpu"),
+    "dspark-dflash": ("architect_critic", "hip"),
 }
+MANDATORY_SHAPES = set(SERVING_PROFILES)
+LEGACY_SHAPES = {"frontdoor-cpu-moe-mtp", "worker-general-cpu-moe-mtp", "architect-critic-cpu-mtp",
+                 "ingest-long-context-recurrent-no-spec", "architect-general-hip", "worker-vision-hip-mmproj",
+                 "dspark-dflash"}
 PROMPTS = {"short", "long"}
 FORMATS = {"json", "prose", "code", "reasoning"}
 FIXTURES = {"loader-reshape", "recurrent-state"}
@@ -128,7 +135,7 @@ def _runtime(value, shapes):
         _digest(identity["binary_sha256"], f"{shape_id}.binary_sha256")
 
 
-def _shapes(rows):
+def _shapes(rows, required=MANDATORY_SHAPES):
     shapes = _named_rows(rows, "shape")
     profiles = set()
     for shape_id, shape in shapes.items():
@@ -139,12 +146,12 @@ def _shapes(rows):
             if type(cap) is not int or cap <= 0:
                 raise ValueError(f"{shape_id}: validated_cap must be a positive integer")
         _fields(shape, fields, shape_id)
-        if shape["profile"] not in MANDATORY_SHAPES or shape["endpoint"] not in ENDPOINTS:
+        if shape["profile"] not in required or shape["endpoint"] not in ENDPOINTS:
             raise ValueError(f"{shape_id}: unsupported profile or endpoint")
         for field in SHAPE_PINS:
             _digest(shape[field], f"{shape_id}.{field}")
         profiles.add(shape["profile"])
-    if missing := MANDATORY_SHAPES - profiles:
+    if missing := required - profiles:
         raise Incomplete(f"missing mandatory serving profiles: {', '.join(sorted(missing))}")
     return shapes
 
@@ -338,14 +345,14 @@ def _pair_row(item, capture, cap):
     )
 
 
-def build_pack(source):
+def build_pack(source, *, legacy=False):
     """Validate and snapshot the prospective source and all production response bytes."""
     if not isinstance(source, dict) or source.get("schema") != SOURCE_SCHEMA:
         raise ValueError("unsupported parity source schema")
     _fields(source, SOURCE_FIELDS, "source")
     source = _parse(canonical_json(source))
     _capture_source(source["capture_source"])
-    shapes = _shapes(source["shapes"])
+    shapes = _shapes(source["shapes"], LEGACY_SHAPES if legacy else MANDATORY_SHAPES)
     _runtime(source["runtime"], shapes)
     requests = set()
     pairs = {}
@@ -429,9 +436,14 @@ def compare_pack(pack, expected_sha256, candidate, *, audit=None):
     if _sha256(pack_bytes(pack)) != expected_sha256:
         raise ValueError("pack SHA-256 does not match the prospective pin")
     try:
-        rebuilt = build_pack(_pack_source(pack))
+        profiles = {shape["profile"] for shape in pack["shapes"]}
+        rebuilt = build_pack(_pack_source(pack), legacy=profiles == LEGACY_SHAPES)
     except (KeyError, TypeError) as exc:
         raise ValueError("invalid pack structure") from exc
+    # The original validator pin is part of the sealed historical pack, not a
+    # requirement that a newer reader have identical source bytes.
+    if profiles == LEGACY_SHAPES:
+        rebuilt["tool_source_sha256"] = pack.get("tool_source_sha256")
     if pack_bytes(rebuilt) != pack_bytes(pack):
         raise ValueError("pack differs from its canonical build or tool source")
     if audit is not None:

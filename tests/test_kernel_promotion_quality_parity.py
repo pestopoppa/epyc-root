@@ -40,7 +40,7 @@ def source():
     shapes = []
     items = []
     for profile in sorted(parity.MANDATORY_SHAPES):
-        chat = profile == "worker-vision-hip-mmproj"
+        chat = profile == "worker-vision-cpu-mmproj"
         dflash = profile == "dspark-dflash"
         shape = {
             "id": profile,
@@ -114,6 +114,32 @@ def source():
         "shapes": shapes,
         "items": items,
     }
+
+
+def test_profile_roles_and_devices_match_compiled_registry():
+    import yaml
+    registry = Path('/workspace/repos/epyc-orchestrator/orchestration/model_registry.yaml')
+    rows = yaml.safe_load(registry.read_text())['server_mode']
+    for profile, (role, expected_device) in parity.SERVING_PROFILES.items():
+        assert role in rows, profile
+        device = str(rows[role].get('device') or 'none').lower()
+        assert ('hip' if device.startswith('rocm') else 'cpu') == expected_device, profile
+    assert 'worker_general' in rows['frontdoor']['shared_with']
+    assert rows['ingest_long_context']['alias_of'] == 'architect_critic'
+    assert rows['architect_critic']['acceleration']['spec_type'] == 'draft-dflash'
+
+
+def test_legacy_pack_remains_readable(source):
+    mapping = {'architect-critic-hip-dflash': 'architect-critic-cpu-mtp',
+               'ingest-long-context-hip-dflash': 'ingest-long-context-recurrent-no-spec',
+               'architect-general-cpu-mtp': 'architect-general-hip',
+               'worker-vision-cpu-mmproj': 'worker-vision-hip-mmproj'}
+    for shape in source['shapes']:
+        shape['profile'] = mapping.get(shape['profile'], shape['profile'])
+    pack = parity.build_pack(source, legacy=True)
+    pack['tool_source_sha256'] = 'a' * 64
+    candidate = _candidate(pack)
+    assert _compare(pack, candidate)['status'] == 'pass'
 
 
 def _candidate(pack):
@@ -549,3 +575,41 @@ def test_capture_keeps_pack_validator_source_pin(source, tmp_path, comparison_re
     record = json.loads(output.read_bytes())
     assert record["report"] is None and record["error"]["status"] == "invalid_input"
     assert comparison_reader.native_rows(output) == ()
+
+
+def test_assemble_complete_fragments_runs_compare_and_reports_declared_argv(source, tmp_path):
+    import subprocess
+    import sys
+    pack = parity.build_pack(source)
+    payload = parity.pack_bytes(pack)
+    pin = _digest(payload)
+    pack_path = tmp_path / 'pack.json'
+    pack_path.write_bytes(payload)
+    candidate = _candidate(pack)
+    fragments = []
+    for shape in pack['shapes']:
+        sid = shape['id']
+        ids = {item['id'] for item in pack['items'] if item['shape'] == sid}
+        fragment = {'schema': 'epyc.ak_gate.parity_fragment.v1', 'pack_sha256': pin, 'arm': 'ON',
+                    'shape': sid, 'argv_sha256': '1' * 64, 'runtime': candidate['runtime'][sid],
+                    'items': [item for item in candidate['items'] if item['id'] in ids]}
+        out = tmp_path / sid / 'out'
+        (out / 'parity').mkdir(parents=True)
+        path = out / 'parity' / 'ON.fragment.json'
+        path.write_text(json.dumps(fragment))
+        (out / 'RESULT.json').write_text(json.dumps({'verdict': 'KEEP_ON', 'correctness': {'served_quality': {
+            'parity': {'ON': {'fragment_path': 'parity/ON.fragment.json', 'status': 'incomplete'}}}}}))
+        fragments.append(str(path))
+    cli = SCRIPT.parents[4] / 'scripts/coordination/rowflow/parity_assemble.py'
+    proc = subprocess.run([sys.executable, str(cli), '--pack', str(pack_path), '--pack-sha256', pin,
+                           '--output-dir', str(tmp_path / 'out'), *fragments], text=True, capture_output=True)
+    assert proc.returncode == 0, proc.stderr
+    result = json.loads(proc.stdout)['ON']
+    assert result['status'] == 'pass'
+    assert result['argv_sha256'] == {shape['id']: '1' * 64 for shape in pack['shapes']}
+    assert json.loads(Path(result['report_path']).read_text())['status'] == 'pass'
+    row = json.loads((tmp_path / pack['shapes'][0]['id'] / 'out' / 'RESULT.json').read_text())
+    assert row['verdict'] == 'KEEP_ON'
+    assert row['correctness']['served_quality']['parity']['ON']['verdict'] == 'pass'
+    assert row['correctness']['served_quality']['parity']['ON']['status'] == 'pass'
+    assert row['correctness']['served_quality']['parity']['ON']['report_path'] == result['report_path']

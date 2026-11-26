@@ -858,6 +858,30 @@ def gate_scaffold(a, served=None):
         a.copy_input.append(a.promotion_suites + ":inputs/promotion_quality_questions.json")
     promotions = [c for c in (corr if isinstance(corr, list) else [corr] if corr else [])
                   if c.get("kind") == "served_quality" and c.get("input_kind") == "promotion_suites"]
+    parity_args = (a.parity_pack, a.parity_pack_sha256, a.parity_shape)
+    if any(parity_args):
+        if not all(parity_args):
+            raise SystemExit("mk_ak_row gate: --parity-pack, --parity-pack-sha256 and --parity-shape are required together")
+        try:
+            raw = open(a.parity_pack, "rb").read()
+            pack = json.loads(raw)
+        except (OSError, ValueError) as e:
+            raise SystemExit(f"mk_ak_row gate: invalid parity pack: {e}")
+        if not isinstance(pack, dict) or pack.get("schema") != "epyc.kernel_quality_parity_pack.v1":
+            raise SystemExit("mk_ak_row gate: --parity-pack must have schema epyc.kernel_quality_parity_pack.v1")
+        if hashlib.sha256(raw).hexdigest() != a.parity_pack_sha256:
+            raise SystemExit("mk_ak_row gate: parity pack SHA-256 mismatch")
+        shapes = pack.get("shapes")
+        if not isinstance(shapes, list) or any(not isinstance(s, dict) for s in shapes):
+            raise SystemExit("mk_ak_row gate: parity pack shapes must be an array of objects")
+        if sum(s.get("id") == a.parity_shape for s in shapes) != 1:
+            raise SystemExit("mk_ak_row gate: --parity-shape is not in the pack")
+        quality = [c for c in (corr if isinstance(corr, list) else [corr] if corr else []) if c.get("kind") == "served_quality"]
+        if len(quality) != 1:
+            raise SystemExit("mk_ak_row gate: parity requires exactly one served_quality unit")
+        quality[0]["parity"] = {"pack": "inputs/parity_pack.json", "sha256": a.parity_pack_sha256,
+                                "shape": a.parity_shape}
+        a.copy_input.append(a.parity_pack + ":inputs/parity_pack.json")
     if a.arm_store and not (served or a.server_argv_json):
         # 2026-11-26: an explicit --server-argv-json is also a whole production argv (A3B on GPU has no registry role)
         raise SystemExit("mk_ak_row gate: --arm-store needs --served-ref or --server-argv-json")
@@ -1039,6 +1063,8 @@ def gate_scaffold(a, served=None):
                                "cap": v["cap"], "knob": k} for k, v in knobs.items() if not v["marker"].startswith("re:")],
             "keep": list(G.EVIDENCE_PATHS),   # the replay input of a failed gate; the reaper honours spec.keep
             "notes": "scaffolded by mk_ak_row.py gate new (declared gate row; ak_gate owns the harness)"}
+    if a.parity_pack:
+        spec["notes"] += "; parity shape is owner-declared (v1 pack has no argv preimage); recorded argv sha " + hashlib.sha256(json.dumps(argv).encode()).hexdigest()
     if op:
         spec["decision_rule"] = a.rule + " | op-decide: " + json.dumps(spec_g["op_decide"], sort_keys=True)
         spec["fresh_server_per_visit"] = False
@@ -1172,6 +1198,9 @@ def gate_main(argv=None):
     n.add_argument("--arm-env", action="append", default=[], metavar="ARM:K=V,K2=V2",
                    help="env for every process of one arm (not a knob; correctness units take {\"env\": {...}} in --correctness)")
     n.add_argument("--promotion-suites", metavar="MANIFEST", help="pinned promotion suite manifest")
+    n.add_argument("--parity-pack", metavar="PATH", help="pinned kernel quality parity pack")
+    n.add_argument("--parity-pack-sha256", metavar="HEX")
+    n.add_argument("--parity-shape", metavar="ID", help="owner-declared shape ID from the v1 pack")
     n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity|served_quality, ...}")
     n.add_argument("--verdict-map", help='JSON {"PASS": {"KEEP": "PASS_X"}, "FAIL": {"FAIL_CORRECTNESS": "FAIL_Y"}}: '
                    "the row's own verdict names; polar = the side")
@@ -1290,6 +1319,9 @@ def rehearse_spec(spec, flags=None):
     refusals = [(st, it, MK_HINTS.get(st) or hint) for st, it, hint in refusals]
     refusals = [(st, it, _item_hint(it, h)) for st, it, h in refusals]
     spec["_rehearsal_warnings"] = list(sp.get("publish_warnings") or [])
+    notes = spec.get("notes", "")
+    if "; parity shape is owner-declared" in notes:
+        spec["_rehearsal_warnings"].append("WARN parity shape is owner-declared" + notes.split("; parity shape is owner-declared", 1)[1])
     return refusals
 
 

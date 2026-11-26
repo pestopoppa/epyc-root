@@ -410,3 +410,40 @@ def test_arm_store_with_server_argv_json_no_served_ref(env):
     rc, out = run(decl(env, rid, extra=["--rank", "45", "--arm-store", f"ON={store}", "--check-only"]))
     assert "AttributeError" not in out, out
     assert rc == 0, out
+
+
+def test_parity_fixture_pack_check_only_rehearsal(env, tmp_path):
+    import hashlib
+    import runpy
+    import subprocess
+    from pathlib import Path
+    root = Path(_ROOT)
+    fixture = runpy.run_path(str(root / 'tests/test_kernel_promotion_quality_parity.py'))
+    source = fixture['source'].__wrapped__()
+    source_path, pack_path = tmp_path / 'source.json', tmp_path / 'pack.json'
+    source_path.write_text(json.dumps(source))
+    script = root / '.claude/skills/kernel-promotion/scripts/quality_parity.py'
+    subprocess.run([sys.executable, str(script), 'build', '--source', str(source_path), '--output', str(pack_path)], check=True, capture_output=True)
+    pin = hashlib.sha256(pack_path.read_bytes()).hexdigest()
+    quality = tmp_path / 'quality.jsonl'
+    quality.write_text(json.dumps({'id': 'one', 'prompt': '2+2?', 'kind': 'math', 'answer': '4'}) + '\n')
+    corr = json.dumps({'kind': 'served_quality', 'input': 'inputs/quality.jsonl', 'noise_arm': 'OFF2'})
+    args = ['--correctness', corr, '--copy-input', f'{quality}:inputs/quality.jsonl', '--parity-pack', str(pack_path),
+            '--parity-pack-sha256', pin, '--parity-shape', 'frontdoor-cpu-moe-mtp', '--check-only']
+    rc, out = run(decl(env, 'ak-parity-gate-gpu-20261126', extra=args))
+    print(out)
+    assert rc == 0, out
+    assert 'WARN parity shape is owner-declared (v1 pack has no argv preimage); recorded argv sha ' in out
+    assert 'CHECK-ONLY PASS' in out
+    args[args.index('frontdoor-cpu-moe-mtp')] = 'unknown'
+    with pytest.raises(SystemExit, match='not in the pack'):
+        run(decl(env, 'ak-parity-invalid-gpu-20261126', extra=args))
+    args[args.index('unknown')] = 'frontdoor-cpu-moe-mtp'
+    args.remove(str(pack_path))
+    args.remove('--parity-pack')
+    with pytest.raises(SystemExit, match='required together'):
+        run(decl(env, 'ak-parity-missing-gpu-20261126', extra=args))
+    pack_path.write_text('{"schema":"wrong"}')
+    args.extend(['--parity-pack', str(pack_path)])
+    with pytest.raises(SystemExit, match='must have schema'):
+        run(decl(env, 'ak-parity-schema-gpu-20261126', extra=args))

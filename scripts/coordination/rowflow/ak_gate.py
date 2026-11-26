@@ -34,6 +34,7 @@ Process management: only processes this module started (captured Popen handles) 
 ak_row_harness.kill_tree. No quiet-host guard here (GPU gate rows); a CPU timing gate declares requires_quiet_host.
 """
 import hashlib
+import base64
 import copy
 import concurrent.futures
 import json
@@ -55,10 +56,10 @@ import rocprof_trace as RT  # noqa: E402
 
 GATE_VERSION = "2"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 9
+UNIT_SEMANTICS_VERSION = 10
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
-EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke", "out/prof", "out/OP-GBPS.json")
+EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke", "out/prof", "out/OP-GBPS.json", "out/parity")
 RESULT_SCHEMA = "epyc.ak_gate.result.v1"
 MIN_LV = 4
 LV_BIN_RX = re.compile(r"^(?:llama-(?:server|perplexity|bench|cli|batched-bench|completion|imatrix)|test-dflash[\w.-]*)$")
@@ -79,7 +80,7 @@ CORRECTNESS_KEYS = {
     "kld": {"base_arm", "max_kld", "max_kld_noise_k", "noise_arm", "witness_base", "min_vram_gib", "library_root"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
     "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"},
-    "served_quality": {"input_kind", "input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s", "noise_argv_delta"}}
+    "served_quality": {"input_kind", "input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s", "noise_argv_delta", "parity", "parity_gate"}}
 UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin", "c-sq": "served_quality"}
 UNIT_TYPE = dict({"visit": "served", "smoke": "served", "log": "served", "op": "op"}, **UNIT_KIND)   # expect_by_unit scopes
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
@@ -376,6 +377,12 @@ def validate_spec(spec):
                 errs.append(f"correctness ({c['kind']}): unknown key(s) {bad}; allowed "
                             f"{sorted(CORRECTNESS_KEYS['common'] | CORRECTNESS_KEYS[c['kind']])}")
         if c.get("kind") == "served_quality":
+            parity = c.get("parity")
+            if parity is not None and (not isinstance(parity, dict) or set(parity) != {"pack", "sha256", "shape"} or
+                    (spec.get("inputs") or {}).get(parity.get("pack")) != parity.get("sha256") or not parity.get("shape")):
+                errs.append("correctness served_quality: parity requires a pinned pack and shape")
+            if type(c.get("parity_gate", False)) is not bool or (c.get("parity_gate") and not parity):
+                errs.append("correctness served_quality: parity_gate requires parity and must be boolean")
             path = c.get("input")
             if not isinstance(path, str) or path not in (spec.get("inputs") or {}) or not re.fullmatch(r"[0-9a-f]{64}", str((spec.get("inputs") or {}).get(path, ""))):
                 errs.append("correctness served_quality: input must name a sha256-pinned spec.inputs entry")
@@ -1220,7 +1227,10 @@ def _decide_one_impl(spec, c, units):
     kind = c["kind"]
     if kind == "served_quality":
         det = quality_decision(spec, c, us)
-        return ("FAIL_CORRECTNESS" if c.get("gate", False) and det["failed"] else None), {"kind": kind, "served_quality": det}, True
+        if c.get("parity"):
+            det["parity"] = {u["arm"]: u.get("parity", {"status": "incomplete"}) for u in us}
+        parity_failed = c.get("parity_gate", False) and not c.get("_smoke") and any(det["parity"].get(a, {}).get("status") != "pass" for a in candidate_arms(spec))
+        return ("FAIL_CORRECTNESS" if (c.get("gate", False) and det["failed"]) or parity_failed else None), {"kind": kind, "served_quality": det}, True
     if kind == "tbo":
         bad = [u for u in us if u["arm"] not in (c.get("diagnostic_arms") or []) and not tbo_pass(c, u)]
         det = {"kind": kind, "per_arm": {u["arm"]: dict({k: u.get(k) for k in ("n_cases", "n_ok", "n_fail", "n_skipped", "rc", "fails", "required_cases", "nmse_lines")},
@@ -1902,6 +1912,67 @@ class Gate:
             rec["tokens_sha"] = sha_bytes(json.dumps(res["tokens"]))[:16]
         return rec, res
 
+    def parity_capture(self, declaration, arm, argv, pid, port, timeout):
+        """Capture only the owner's declared pack shape on this arm's live server."""
+        import urllib.request
+        raw_pack = open(os.path.join(self.d, declaration["pack"]), "rb").read()
+        if hashlib.sha256(raw_pack).hexdigest() != declaration["sha256"]:
+            raise ValueError("parity pack SHA-256 mismatch")
+        pack = json.loads(raw_pack)
+        if pack.get("schema") != "epyc.kernel_quality_parity_pack.v1":
+            raise ValueError("invalid parity pack schema")
+        shape_id = declaration["shape"]
+        shapes = [s for s in pack["shapes"] if s["id"] == shape_id]
+        items = [i for i in pack["items"] if i["shape"] == shape_id]
+        if len(shapes) != 1 or not items:
+            raise ValueError("parity shape missing, duplicated, or empty")
+        if shapes[0].get("endpoint") not in ("/completion", "/v1/chat/completions"):
+            raise ValueError("unsupported parity endpoint")
+        binary = argv[llama_index(argv) or 0]
+        binary_sha = hashlib.sha256(open(binary, "rb").read()).hexdigest()
+        runtime = dict(pack["runtime"][shape_id])
+        if binary_sha != runtime["binary_sha256"]:
+            identity_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(binary))), "BUILD-IDENTITY.json")
+            identity = json.load(open(identity_path))
+            runtime = {"kernel_commit": identity["source_sha"], "kernel_tree": identity["source_tree"], "binary_sha256": binary_sha}
+        def flag(names, default):
+            values = [argv[i + 1] for i, x in enumerate(argv[:-1]) if x in names]
+            return int(values[-1]) if values else default
+        slots = flag(("-np", "--parallel"), 0)
+        ctx = flag(("-c", "--ctx-size"), 0)
+        if slots <= 0 or ctx <= 0:
+            raise ValueError("parity requires explicit positive context and parallel slots")
+        captures = []
+        for item in items:
+            body = json.dumps(item["request_body"], sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+            digest = hashlib.sha256(body).hexdigest()
+            if digest != item["request_sha256"]:
+                raise ValueError(f"parity request hash mismatch: {item['id']}")
+            req = urllib.request.Request(f"http://127.0.0.1:{port}{shapes[0]['endpoint']}", data=body,
+                                         headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=timeout()) as response:
+                raw = response.read()
+            raw.decode("utf-8")
+            capture = {"request_sha256": digest, "response_b64": base64.b64encode(raw).decode("ascii"),
+                       "response_sha256": hashlib.sha256(raw).hexdigest()}
+            if "speculative.n_max" in item["request_body"]:
+                capture.update(server_instance=f"{self.spec['row_id']}:{arm}:{pid}", parallel_slots=slots,
+                               effective_n_max=item["request_body"]["speculative.n_max"])
+            captures.append({"id": item["id"], "capture": capture})
+        directory = os.path.join(self.out, "parity")
+        os.makedirs(directory, exist_ok=True)
+        if re.fullmatch(r"[A-Za-z0-9_-]+", arm) is None:
+            raise ValueError("invalid parity arm name")
+        path = os.path.join(directory, f"{arm}-{pid}.fragment.json")
+        fragment = {"schema": "epyc.ak_gate.parity_fragment.v1", "pack_sha256": declaration["sha256"],
+                    "arm": arm, "shape": shape_id, "argv_sha256": hashlib.sha256(json.dumps(argv).encode()).hexdigest(),
+                    "declared_argv_sha256": hashlib.sha256(json.dumps(self.spec["server"]["argv"]).encode()).hexdigest(),
+                    "server_instance": f"{self.spec['row_id']}:{arm}:{pid}", "parallel_slots": slots,
+                    "effective_request_cap": ctx // slots, "runtime": runtime, "items": captures}
+        atomic_json(path, fragment)
+        return {"status": "incomplete", "fragment_path": os.path.relpath(path, self.out),
+                "reason": "assemble all pack shapes before comparison"}
+
     @staticmethod
     def kfd_vram(pid):
         d = f"/sys/class/kfd/kfd/proc/{pid}"
@@ -1975,6 +2046,11 @@ class Gate:
                 reqs = [one(item) for item in enumerate(prompts)]
             u["req"] = reqs
             u["warmup_discarded"] = int(warmup)
+            if kind == "c-sq" and not quality.get("_smoke") and quality.get("parity"):
+                try:
+                    u["parity"] = self.parity_capture(quality["parity"], arm, argv, p.pid, port, request_timeout)
+                except Exception as exc:
+                    u["parity"] = {"status": "invalid_input", "error": f"{type(exc).__name__}: {exc}"}
             if srv.get("kfd_min_vram_gib"):
                 u["vram_b"] = self.kfd_vram(p.pid)
         except Exception as e:  # noqa: BLE001 - a visit always records why it failed
