@@ -2033,6 +2033,9 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
       · gate: KVQ-ROT-KLD-1        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
   - 2026-11-24 (autokernel) row cdr-a3b-q4kv-32k-cpu-20261124 published (quiet quarter, priority_rank 45, C21 CPU store; llama-bench Q8/Q4 KV at -d 32768 plus a -d 0 arm for the attention share, 3 interleaved launches each). [no-belief: row published]
   - 2026-11-24 (autokernel) NOT TICKED (neither KEEP nor FUTILITY), row `cdr-a3b-q4kv-32k-cpu-20261124` filed inconclusive NO_GAIN (`/mnt/raid0/llm/tmp/cdr-a3b-q4kv-32k-cpu-20261124/out/RESULT.json`, C21 98ff8a42a CPU store, 3 launches per arm): q4_0 KV vs q8_0 KV at d32768 mean 13.457 vs 13.572 tok/s = -0.85% (q8 12.01/15.15/13.55, q4 13.72/13.59/13.06, q8 A/A spread 0.2315); d0 25.54 tok/s; step 73.68 ms at 32k vs 39.16 ms at d0, attention share of the 32k step 0.4685 (>= 10%, so not FUTILITY_ATTN_LT_10). Q4 KV gives no CPU decode gain at 32k (needs >= +5%); KLD gate not measured. The 23% q8 launch spread is wide, so the -0.85% is bounded by noise, not a tight negative. [belief: cc]
+- [ ] **CPU-KDA-EXP-CENSUS** [non-inference] Identify whether either KDA exponential loop executes in Q38FN CPU traces and bound its contribution to decode and prefill.
+      · done when: CPU-KDA-EXP-CENSUS.json contains model, graph, cpu_isa, kda_count, self_time, upper_bound. Both decode and prefill have a confirmed upper bound or an identified missing witness.
+      · gate: none        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
 
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
@@ -5989,6 +5992,9 @@ MoE-Spec Phase 0
       · ✅ 2026-11-24 (autokernel) [belief: cc] CLOSE the resident-expert drafter idea. `/mnt/raid0/llm/tmp/ak-offline-replays-20261124/cdr-rt9/skew_report.md` (json content_sha256 f59c4ba1…4e8b; Qwen3.6-35B-A3B traces, build b10303-ffc1bac82). Same-domain held-out coverage at 12.5% residency, layer mean: prefill code 0.553 / prose 0.473 / reasoning 0.520; decode 0.507 / 0.439 / 0.490; all below 0.6 (7, 1, 6 and 1, 0, 2 of 40 layers individually reach it). Top-10% share gate 0.6: 0/40 layers, decode share 0.41-0.47. Cross-domain coverage 0.11-0.19; code vs prose top-10% Jaccard 0.03 (prefill) to 0.05. A static 12.5% resident set does not hold, so Monitor M10 does not fire on this evidence.
   - 2026-11-24 (autokernel) `skew_report.py --residency F --cover-gate G` committed (research 5f8309e87): per-layer held-out coverage of the top-ceil(F*E) set, same-domain (even/odd windows) and cross-domain, with a CLOSE/RECORD verdict. Replay on results-q36 deferred: the light claim on 84-87 was refused (held by c21-fold-cpu-20261124-r3); rerun after 13:30Z. [no-belief: tooling only]
 - Monitor (intake-ak-1124 M10, operator-approved 2026-11-24, no checkbox): Fires when the second GPU is installed and A3B is placed GPU-resident (operator 2026-11-24: A3B GPU will be served on the 2nd GPU): design a GPU-resident expert-subset drafter for A3B, using CDR-RT9-COVER-1's same-domain coverage at <= 12.5% residency (>= 0.6 makes a resident subset worth drafting from) as a design input (intake-2876).
+- [ ] **MOE-STATIC-POOL-REPLAY** [non-inference] Replay existing per-layer expert routes against a capacity-bounded static GPU pool and price NUMA-local cold routes and deduplicated long-prefill uploads.
+      · done when: MOE-STATIC-POOL-REPLAY.json contains reservations_bytes, pool_bytes, unique_upload_bytes, cold_rows, join_bound_ms. The pool fits after reservations and all route rows reconcile to resident, cold or unresolved.
+      · gate: none        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
 
 ### MoE per-token routing tap and locality measurement (INF-72)
 

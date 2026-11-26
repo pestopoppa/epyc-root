@@ -2469,6 +2469,8 @@ Final same-entry noncohort qualification passed in241s: one actual answer391, ou
 
 **2026-11-01 owner reconciliation:** the later legacy keeper refused R7 at 2026-10-31 20:01:12Z because it saw no launcher PID within 30 seconds, and refused S2 R14 at 08:08:55Z because the reported PID was a bash wrapper. Receipts: `/mnt/raid0/llm/tmp/compute-flags/ready/refused/codex-ni-hil15b-v2-native60-r7-20261031.json` and `codex-hil15-s2-r14-dispatch-20261031.json` in the same directory. These supersede the above READY-WAIT state. R7 has no cohort output directory; R14 has no native collection result. R7's launcher calls the now-missing `filler_run13.sh` and carries the withdrawn r1 ID; its launcher log reports the missing engine. Preserve R7's frozen 60 slots and S2's 18 known / 2 unknown / 25 unexposed. Next prepare a current rowflow-compatible launcher and spec, ensuring the keeper's first-unit dry run cannot expose or redraw a frozen cohort slot; publish for keeper qualification, without owner-run compute. [no-belief: keeper state reconciliation]
 
+**Research-intake monitor M9 (2026-11-26).** intake-2996#record. Test hindsight allocation for a specific local distillation budget once eligible evidence-labeled trajectories exist. Trigger on a local student/teacher run with verified downstream outcomes and a fixed replay budget. Compare random and position-matched selection to evidence selection on unseen tasks, preserve all rejected prefixes, and separately score confidence calibration. HIL-16b is eval instrumentation. Neither replay nor a confidence gate alone trains a student, and the paper’s environment and teacher budget are not an EPYC estimate.
+
 ## Track: opencode-shell-integration
 <!-- gate: UFH-01#harness-selection-and-integration -->
 

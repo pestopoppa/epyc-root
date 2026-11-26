@@ -1021,6 +1021,9 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - M3 monitor (intake-lpr-20261122, operator-approved 2026-11-22): Inkling 2 DSpark drafter alpha vs MTP: reopen when an Inkling-capable build exists and a GGUF drafter is published.
 - M4 monitor (intake-lpr-20261122, operator-approved 2026-11-22): Full-block padding of the DFlash2/DSpark draft block: add a pad arm when the next DFlash2 X-sweep row is booked.
 
+**Research-intake monitor M4 (2026-11-26).** intake-2989#record. Test a matched boosted head or budget a one-card training step once local traces put the limitation in draft acceptance. Trigger on a per-position acceptance deficit with a compatible frozen backbone/head pair and priced training baseline. Log optimizer/gradient/activation/weights and allocator peak in a single-device microbatch dry fit; retain HSM mix and HSGD detach probability separately. Published memory is per GPU in a four-GB300 configuration. CPU and MI210 serving need acceptance-by-position and wall time at the same K before a head switch.
+
+**Research-intake monitor M6 (2026-11-26).** intake-2985#record, intake-3002#record. Retain request-local RNG and filtered-score semantics for a consumer that requires reproducible stochastic sampling across slots. Trigger on a recorded fixed-logit replay difference at equal seed and offset under reorder, recycle or filter-boundary ties, or a consumer requiring full versus retained log probabilities. Compare frozen logits/filters first. SPEC-RNG.1 at lines 679–688 already tested keyed RNG. Position-keyed draws do not resolve earlier logit drift; no reason to repeat a served sweep merely from this release.
 
 ## Track: dflash2-block-drafter-experimental-build
 <!-- gate: INF-06#autokernel-research-loop, INF-50#speculative-decoding-mtp-refresh -->
@@ -1502,6 +1505,12 @@ Goal: make 12-16-token verify on the MI210 cheap enough that tree drafting beats
       · stop: stop-on-answer when KEEP or NO_KEEP is filed at block 8; stop-on-futility at the block-4 look if every candidate CI upper < 1.01, on A/A > 0.02, witness miss, residency < 20 GiB or correctness FAIL; gate-class = futility-only
       · gate: ak-dtree-pando-gate-gpu-20261125-r4
       · owner: autokernel
+- [ ] **DF2-TARGET-KV-CONTRACT** [non-inference] Compare the released DFly2 target and drafter mappings with the local full-attention KV layout, sparse-index epoch and rollback semantics.
+      · done when: DF2-TARGET-KV-CONTRACT.json contains layer_map, kv_stride, selection_epoch, rollback_owner, missing_artifacts. Each requested architecture has an ABI verdict for accept, reject and slot reuse.
+      · gate: none        · inputs: `handoffs/active/speculative-decoding.md`
+- [ ] **SPEC-FILTER-TIES** [non-inference] Extend the frozen-logit sampler fixture to record retained support, drawn token and full versus post-filter probabilities at boundary ties.
+      · done when: SPEC-FILTER-TIES.json contains fixture_sha, row, key, filter_order, support, token, full_logprob, retained_logprob. All frozen and held-out cases match their declared reference semantics or record the first discrepancy.
+      · gate: none        · inputs: `handoffs/active/speculative-decoding.md`
 
 ### dFlash2 block drafter — experimental build + measured comparison vs MTP
 
@@ -2602,4 +2611,8 @@ Management rule: each phase's subagent hands back to autokernel, which files the
 - 2026-11-20 compacted 34 ticked box(es) older than 30 d -> [speculative-decoding-history-2026-11-20.md](../archived/speculative-decoding-history-2026-11-20.md) (handoff_compact.py)
 
 - Notes (ak-intake-20261121, operator-approved): G3 static routing prediction from C17 source: q8_0/f16 verify with 2-16 rows routes to GQA_VERIFY before any VEC branch; VEC is reached only for n_q=1, rows-are-seqs batches, or <= 2 rows on KV types GQA_VERIFY rejects (intake-2753#record). DF2-FT-1 precedent: NVIDIA's external 27B draft distils the target's top-20 distribution under the serving policy on target-synthesized responses (intake-2757#record). INF-70 prior: the intake dive measured ideal lossless headroom of production weight codes at about 2.0-2.1% (IQ4_NL) and 3.7-6.9% (Q8_0) before coder overhead; a 6.9% smaller stream is up to about 7.4% faster if decode hides under memory stalls, so the lever stays open and is priced by the P7 boxes in autokernel-akx-program.md (WSTREAM-*) (intake-2756#record). Q38P-1(a): report GDN snapshot write and copy bytes at K=n_rs_seq+1 vs K=1 inside the existing scope; GDN input-log replay (RS-REPLAY-PORT) removes that cost (intake-2752#record).
+
+**Research-intake monitor M2 (2026-11-26).** intake-2992#record. Consider sharing scratch when a single-sequence 27B configuration misses its fit bound by shareable scheduler bytes. Trigger on a measured fit failure with target/draft scratch live ranges that do not overlap. Record separate buffers, buffer types, async completion, realloc and actual peak. Test eligibility by capabilities and preserve independent fallback. The upstream guard literally requires CUDA; the fork names HIP ROCm. The C21 scheduler lacks the sharing primitive. DEV-INJECT removes a transfer and does not establish safe aliasing.
+
+**Research-intake monitor M5 (2026-11-26).** intake-2990#record. Test draft-only exemplars when a served repeated-task family uses a compatible separate draft model. Require stable shared tokenizer, true proposal probabilities and a family with disjoint exemplar and evaluation prompts. Compare target alone, symmetric draft, length-matched irrelevant and task-matched exemplars at equal cache state; measure TTFT and full session time. The existing DFlash2 path shares model features; a classical separate-proposal verifier is the consumer. Additional KV and prefill may overwhelm acceptance gains.
 

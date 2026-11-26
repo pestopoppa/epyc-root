@@ -1080,6 +1080,8 @@ The P2 A/B (≥50 code-edit-turn comparison at the edit-transaction seam) is reg
 - Cross-link decisive findings to `routing-and-optimization-index.md` Outstanding Tasks section.
 - On completion of all four phases, move this handoff to `handoffs/completed/` and write a wrap-up.
 
+**Research-intake monitor M8 (2026-11-26).** intake-2994#record. Compare task-specific delegation guidance against both plan-only and unguided routing before enabling heterogeneous delegation. Trigger on retained lead/worker traces with attributed worker spans and independent task groups; freeze judge and rubric, measure task quality, cache-adjusted tokens, end-to-end time, queueing and CPU/GPU occupancy. Count rejected/failed work in every arm. P3 chaining is gated. Delegation report persistence records handles; it cannot by itself price work or validate a policy. Hosted API dollars do not price co-resident EPYC workers.
+
 ## Track: learned-routing-controller
 <!-- gate: none -->
 

@@ -438145,7 +438145,7 @@
     PR overview, CDNA builtin argument mismatch, PR additional information, first bullet, PR additional information, third bullet. Remaining sections and hardware
     reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/rocm-kernel-authoring.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -438226,6 +438226,11 @@
   reader_should_conclude: MI210 gfx90a is directly covered by the compile target; runtime/numerical equivalence remains unmeasured. No Zen5 CPU code changes.
   dive_corrections: 2026-11-26. Open, head 901fbe76605e8630d505fd4cabab9defb17a118a. Both CDNA MFMA branches reinterpret bf16 storage as short vector fragments.
     Author built gfx908/gfx90a/gfx942/gfx950 with clang 23.1.6 and found identical generated code on clang 22. Build compatibility evidence only.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Check BF16 MFMA compiler compatibility when a clang-23 toolchain candidate enters qualification. Trigger on an actual LLVM 23 qualification build for gfx90a.
+    Compare old/new fragments and emitted ISA at both compilers; run BF16 op parity and DF2 target-route smoke using the candidate binary.
+
 - id: intake-2983
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/33019
@@ -438262,7 +438267,7 @@
     results. Selected passages: PR overview, first paragraph, PR additional information, benchmark setup, PR overview, threshold paragraph. Remaining sections
     and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/autokernel-loop.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -438344,6 +438349,12 @@
   dive_corrections: '2026-11-26. Open, head 8d9e8f29990360ac1ee43e7863ce9df4bf7a519c. Fused small-K MMVQ gains a separate gate loop, while the cutoff admits
     exact-fit K. RTX3060 tg128 randomized median of 4 runs with 3 reps: +21.87% Qwen2.5 3B Q3_K_M, +13.31% IQ4_XS, +5.07% OLMoE 1B–7B Q4_K_M; Q8_0 and Qwen3
     8B Q4_K_M near zero.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Count eligible fused small-K MMVQ calls in retained 27B and A3B traces at widths one through four. Pin trace digests, graph and candidate SHA. Emit op, quant
+    type, K, rows, fused flag, width and frequency or unknown for every cell. Check later traces from each role. A verified zero closes that role. For hits compare
+    split only, threshold only and both against current dispatch around exact-fit K. Include odd expert tails on wave64 before measuring time.
+
 - id: intake-2984
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/32081
@@ -438381,7 +438392,7 @@
     can move reductions. Frame this as audit instrumentation on both devices. Selected passages: PR additional information, mechanism, PR additional information,
     proc address contract, PR additional information, test scope. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/kv-cache-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -438463,6 +438474,13 @@
   dive_corrections: 2026-11-26. Draft, head 3f25ea199a36a9e83480b6dac0941bb82c96c5b9. Adds --batch-invariant and a backend proc address. CUDA-family path forces
     qualifying MMQ with fixed tiling, uses chunked MMVF where applicable, fixes attention configuration and bypasses selected fusions; Metal has its own dispatch
     changes. Test-backend-ops and manual CUDA server validation are author-reported. Expected performance penalty is unquantified.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Add fixed-width repeat and cross-width first-divergence comparisons to the long-context determinism diagnosis using retained inputs and dispatch receipts.
+    Freeze model, store digest, prompt bytes, state, seeds and launch choices. Replay OFF/OFF and width-1/verify on identical logits inputs where captured. Preserve
+    first mismatched op, tensor bits, route, reduction geometry and missing captures. Hold out later long prompts. Stop on a located first mismatch or insufficient
+    captures; measure HIP cost for that isolated path only after a matched input reproduces.
+
 - id: intake-2985
   arxiv_id: null
   url: https://github.com/flashinfer-ai/flashinfer/releases/tag/v0.7.6
@@ -438501,7 +438519,7 @@
     equivalents need separate layout and performance design. Selected passages: Release highlights, batch-invariant mode, Release highlights, linear attention
     and Mamba2, Release highlights, paged prefill. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -438584,6 +438602,12 @@
   dive_corrections: 2026-11-26. Version v0.7.6 tag object 8fe80f70f073dd080139f044fb62f6ef3ec0a853 resolves to ebf047a43bf84a2d0a635d25c697b51f4addded9. Release
     reports batch-invariant KDA/GDN and sampling by seed+offset and MoE on SM100/103/107; caller-owned Mamba2 state pool; selective cuDNN prefill on Hopper/Blackwell;
     SM107 die-local MoE and SM100/103 sparse NVFP4 KV. Highlights supply feature scope without EPYC metrics.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Retain request-local RNG and filtered-score semantics for a consumer that requires reproducible stochastic sampling across slots. Trigger on a recorded fixed-logit
+    replay difference at equal seed and offset under reorder, recycle or filter-boundary ties, or a consumer requiring full versus retained log probabilities.
+    Compare frozen logits/filters first.
+
 - id: intake-2986
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/33077
@@ -438619,7 +438643,7 @@
     would be independent. Selected passages: PR overview, call sites, PR additional information, setup. Remaining sections and hardware reproduction outside
     this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/cpu-decode-roofline-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -438677,6 +438701,12 @@
   dive_corrections: 2026-11-26. Open, head 6c855af36156079be907d4986123f0c560a104be. Adds AVX512F+DQ, AVX2+FMA and other platform paths using existing vector
     exponential with scalar tails. Author reports 3.1–6.5% baseline slowdown for multi-token op cells (16 pairs each) and 1.5–2.7% single token (40 pairs); no
     model-level gains established.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Identify whether either KDA exponential loop executes in Q38FN CPU traces and bound its contribution to decode and prefill. Pin graph, model, ISA, row lengths
+    and trace windows; emit per-loop counts, time share and missing fields. Repeat on a later prompt. Stop on proven zero or an Amdahl bound smaller than the paired
+    timing error. Otherwise compare scalar and AVX-512 at actual sizes, scalar tails, exceptional inputs and recurrent-state error before throughput.
+
 - id: intake-2987
   arxiv_id: '2611.34402'
   url: https://arxiv.org/abs/2611.34402v1
@@ -438718,7 +438748,7 @@
     and IQK. Measure actual packed bytes including LUT overhead. Selected passages: Abstract, Appendix H, §5, Table 3. Remaining sections and hardware reproduction
     outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/quantization-and-low-bit.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -438801,6 +438831,12 @@
   dive_corrections: 2026-11-26. Nine modes, integer 2–8 with half steps only at 2.5/3.5. At 2 bits authors report 69% of FP16 accuracy, not 69 percentage points;
     energy is LPDDR-model output. Appendix I MoE allocation is offline and the runtime demo switches mode from the following token. Table 3 142.4/127.0/121.3/112.7/104.9
     tok/s on RTX 5070 Ti at batch 1; this does not establish batched expert verify.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Compare nested-plane decoding at equal realized bytes and quality for a capacity-constrained target. Trigger when a proposed multi-rate deployment identifies
+    the exact layers/rates and an incumbent that misses its fit or quality target. Run integer bit unpack against reference bytes, compare shared row tables in
+    LDS and AVX-512 byte-permute/split tables with scalar tails, then paired KLD and held-out throughput against incumbent EXL3/GGUF.
+
 - id: intake-2988
   arxiv_id: '2611.34776'
   url: https://arxiv.org/abs/2611.34776v1
@@ -438853,7 +438889,7 @@
     and paired draft to one NUMA region. Dense-serving adoption has no demonstrated mechanism. Selected passages: Abstract, §5, setup, Abstract. Remaining sections
     and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -438937,6 +438973,12 @@
   dive_corrections: 2026-11-26. Three-layer 128-expert drafters have 0.4–1.1B active parameters. DS-V4.1-Flash attended set includes 512 selected positions,
     a 128-token window and six block rows. Prior indices overlap almost 90% in one DS target; that is coverage, not acceptance. Acceptance gain 3.9–10.5% general,
     10.0–31.5% long/agentic vs stronger same-recipe baseline. H20 serving gains are matched per-user speed at high concurrency.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Compare the released DFly2 target and drafter mappings with the local full-attention KV layout, sparse-index epoch and rollback semantics. Record exact weight/config
+    revisions, source layer pairs, strides, dtype, ownership and one-step index timestamp. Walk representative released mappings against DS41 and the dense 27B
+    control. Require a defined KV read and epoch across accept, reject and slot reuse before any execution probe. Mark unsupported layers and absent weights explicitly.
+
 - id: intake-2989
   arxiv_id: '2611.34092'
   url: https://arxiv.org/abs/2611.34092v1
@@ -438992,7 +439034,7 @@
     cost is a separate dependency. Selected passages: Abstract and §5, Abstract; Fig 1b, §6.6, Figure 12(f). Remaining sections and hardware reproduction outside
     this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -439079,6 +439121,12 @@
   dive_corrections: 2026-11-26. HSM mixes target-aligned recurrent and backbone states. HSGD helps early positions while HSM helps later ones in reported shared-parameter
     joint pretraining + SFT; Figure 1a AL 5.19→5.57 at K=11 and temperature 0. Best frozen-backbone result K=7. Figure 12 four- and eight-step TTT vs HSM = 70.3→36.3,
     197.2→43.9 GiB per GPU, measured four GB300s. Memory refers to reserved training memory, not inference.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Test a matched boosted head or budget a one-card training step once local traces put the limitation in draft acceptance. Trigger on a per-position acceptance
+    deficit with a compatible frozen backbone/head pair and priced training baseline. Log optimizer/gradient/activation/weights and allocator peak in a single-device
+    microbatch dry fit; retain HSM mix and HSGD detach probability separately.
+
 - id: intake-2990
   arxiv_id: '2611.34010'
   url: https://arxiv.org/abs/2611.34010v1
@@ -439117,7 +439165,7 @@
     extra context and prefill can erase acceptance savings, especially short generation; account for capture/copy costs and cache residency. No retraining dependency.
     Selected passages: §1, contributions; Theorem 1, Abstract, §4.5. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -439201,6 +439249,12 @@
     probabilities with matching vocabulary and full conditioning and aligned histories. Theorem 1 does not extend by name to heuristic fusion, greedy fork policy
     or any modified verifier. 512–1024 exemplar lengths work in tested A6000 runs; +35% over SPS at B1 on MATH-500, +15.7% at B16. Source §4.5 has overbroad
     inverted-U wording; its breakdown distinguishes throughput rollover with acceptance still improving.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Test draft-only exemplars when a served repeated-task family uses a compatible separate draft model. Require stable shared tokenizer, true proposal probabilities
+    and a family with disjoint exemplar and evaluation prompts. Compare target alone, symmetric draft, length-matched irrelevant and task-matched exemplars at
+    equal cache state; measure TTFT and full session time.
+
 - id: intake-2991
   arxiv_id: '2611.11533'
   url: https://arxiv.org/abs/2611.11533v2
@@ -439242,7 +439296,7 @@
     and weighted-output reduction control layer-join time. All-CPU baseline useful; phase switches must be tuned to measured host/device break-even. Selected
     passages: Abstract and §3, Abstract and §3, Abstract; §4 setup, Abstract and §3.4. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/cpu-decode-roofline-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -439350,6 +439404,14 @@
   dive_corrections: 2026-11-26. v2 improves evaluation specificity. 2.5–6.6× median tool-turn wait reduction, 1.36–3.83× session speedup default and 1.30–1.94×
     aligned at 512-token threshold and matched loading. Long-prefill scheduler deduplicates transfers across routed rows for each cold expert, leaving the static
     resident pool in place. CPU/GPU split and all-zero graph slots are different levers. Tested 4090D × 1–4 with dual Xeon DDR4 86–88 GB/s host read.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Replay existing per-layer expert routes against a capacity-bounded static GPU pool and price NUMA-local cold routes and deduplicated long-prefill uploads.
+    Freeze trace manifest, expert sizes, host bandwidth evidence and HBM reservations for weights, KV, scratch and allocator margin. Fill the remaining bytes by
+    utility across layers. Fit on early turns, score later whole sessions. Return per-turn hits, cold rows, unique bytes, join bound and invalid/unattributed counts.
+    Compare same capacity, loading and phase threshold to current placement and host-only. Stop if the saved bytes cannot exceed the join cost within timing uncertainty,
+    or if route identities are missing.
+
 - id: intake-2992
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/33068
@@ -439385,7 +439447,7 @@
     an otherwise fit MI210 pairing. Selected passages: PR overview, partner scheduler wiring, PR additional information, eligibility, PR additional information,
     benchmark. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -439466,6 +439528,12 @@
     scratch blocks an otherwise fit MI210 pairing.
   dive_corrections: 2026-11-26. Draft, head 9c7c5f8c66de2b8245ac124a930c0587cc0bebd8. The partner must be serial, scheduler backends and buffer types match,
     and exactly one non-CPU device must register as CUDA. ~130 MiB MTP and ~190 MiB DFlash2 on each RTX 5090 and RTX PRO 6000 in the reported 20-block setup.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Consider sharing scratch when a single-sequence 27B configuration misses its fit bound by shareable scheduler bytes. Trigger on a measured fit failure with
+    target/draft scratch live ranges that do not overlap. Record separate buffers, buffer types, async completion, realloc and actual peak. Test eligibility by
+    capabilities and preserve independent fallback.
+
 - id: intake-2993
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/30318
@@ -439501,7 +439569,7 @@
     Pinned lane records tested PARTIAL_ONLY separately. Selected passages: PR overview, recovery path, PR additional information, test assertions, PR additional
     information, local validation. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/kv-cache-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -439584,6 +439652,13 @@
   dive_corrections: 2026-11-26. Merged at 679d8677b2042e9ad2b6569b78127f5e1b0e0ffd. Early parsing and missing stored state now return zero through the existing
     catch, retain cleanup and avoid a process-level failure. Author reports CPU ctest 72/72, rf 150/150, RTX4070 rf/cp_d/cp_d_s each 150/150, and 146 memory-bearing
     models actually resident on CUDA0.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Restore destination-only error recovery for device checkpoints on the experimental kernel and add valid, absent-storage, truncated-header and partial-read
+    regression cases. A source-pinned regression on two populated slots must return zero on failure, clear any partially modified destination as required, preserve
+    the neighbor, and round-trip valid state. Repeat on a new sequence ID and in reverse slot order. Log each case and return value. Require a CPU build proof
+    before model-backed evaluation and HIP residency proof before claiming device coverage.
+
 - id: intake-2994
   arxiv_id: '2611.33402'
   url: https://arxiv.org/abs/2611.33402v1
@@ -439625,7 +439700,7 @@
     queue wait and quality, stratified by device pair; provider price is descriptive only. Selected passages: §3.3 Compiling the delegation policy, §5.2 Cost
     savings and quality increase, Table 3 discussion, §5.2 Cost savings and quality increase. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/routing-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -439709,6 +439784,12 @@
     risk, keeps coordination with the lead and makes low-confidence categories conditional. §5 Table 3 also reports Terminal-Bench 60.9%/$1.19 versus solo 54.3%/$1.17.
     ViBench 10 held-out applications ×3, Terminal-Bench 23 tasks ×2. Plan-only produces 68.9/$0.50 and 58.7%/$0.99 respectively. Multiple tested settings, limited
     task diversity, benchmark-specific pairs, judge-derived subtask quality and prompt-advisory tiers limit transfer.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Compare task-specific delegation guidance against both plan-only and unguided routing before enabling heterogeneous delegation. Trigger on retained lead/worker
+    traces with attributed worker spans and independent task groups; freeze judge and rubric, measure task quality, cache-adjusted tokens, end-to-end time, queueing
+    and CPU/GPU occupancy. Count rejected/failed work in every arm.
+
 - id: intake-2995
   arxiv_id: '2611.33943'
   url: https://arxiv.org/abs/2611.33943v1
@@ -439753,7 +439834,7 @@
     full denominator. Selected passages: Abstract, details in §§III-C–III-D, Abstract, tests in §IV-B, Abstract, exact strategy values in §V-C Table V. Remaining
     sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/eval-tower-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -439841,6 +439922,14 @@
     could not register loss. Table V baseline cutoff is +2.92 pp replay, +4.5 shuffle and +0.12 held-out (95% CI −0.67,+0.93); the best-of-two rule showed a
     significant negative held-out gain. Holdout repeats reuse trials; task bootstraps do not include refitting uncertainty and one-trial pairs have low precision.
     Label permutations require within-cell exchangeability.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Add a task-level replay report for skill gating that records effective skills, scorer requirements, within-cell shuffled labels and held-out decisions. Freeze
+    archive hashes, paired seeds, grader revision, effective inventories and folds. Compare the current suite gate, no gate and selected gate on the same cells.
+    Refit the policy on each permuted training fold. Score untouched later trials and unseen task families separately with paired intervals. Publish cell-level
+    outcomes including missing and timed-out arms. Stop if effective-arm identity or split independence cannot be established; a gain inside the null band cannot
+    authorize gating.
+
 - id: intake-2996
   arxiv_id: '2611.34756'
   url: https://arxiv.org/abs/2611.34756v1
@@ -439900,7 +439989,7 @@
     one-turn comparator specified in §4.3 Table 2, §4.5 controlled replay allocation, Table 4 discussion, §5 Limitations. Remaining sections and hardware reproduction
     outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/harness-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440015,6 +440104,12 @@
     4 40% teacher hindsight 57.3 versus 53.7 random and 53.9 position decay. The teacher reuses its own trajectory KV cache, and the stronger separate critic
     was 0.3 points higher. Replays use current students on histories sampled from a fixed initial-student/teacher pool; the pool can drift, and unexecuted responses
     have unknown environmental validity.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Test hindsight allocation for a specific local distillation budget once eligible evidence-labeled trajectories exist. Trigger on a local student/teacher run
+    with verified downstream outcomes and a fixed replay budget. Compare random and position-matched selection to evidence selection on unseen tasks, preserve
+    all rejected prefixes, and separately score confidence calibration.
+
 - id: intake-2997
   arxiv_id: null
   url: https://github.com/hoonki2002/Any-Rate
@@ -440055,7 +440150,7 @@
     AMD measurement. Selected passages: any_rate/README.md:L69 @ 9e75eb7, kernels/ar_gemv.py:L8 @ 9e75eb7, results/H.Storage_and_Decoding_Efficiency/throughput/table.md:L1
     @ 9e75eb7. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/quantization-and-low-bit.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440140,6 +440235,12 @@
     Batch-1 Llama-3.1-8B RTX AR versus Any-Precision was 142.35 vs 141.63 tok/s at 2 bits, 121.32 vs 124.07 at 3, 104.91 vs 107.57 at 4. Benchmark selects fastest
     kernel/config per shape and mode. Appendix H puts this model at 59.65% of FP16 average accuracy at 2 bits; the paper four-model average does not apply to
     each. Energy is modeled from LPDDR/SoC constants.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Compare nested-plane decoding at equal realized bytes and quality for a capacity-constrained target. Trigger when a proposed multi-rate deployment identifies
+    the exact layers/rates and an incumbent that misses its fit or quality target. Run integer bit unpack against reference bytes, compare shared row tables in
+    LDS and AVX-512 byte-permute/split tables with scalar tails, then paired KLD and held-out throughput against incumbent EXL3/GGUF.
+
 - id: intake-2998
   arxiv_id: null
   url: https://github.com/rrrrr4788/skillsbench-lift-reanalysis
@@ -440178,7 +440279,7 @@
   notes: 'Hardware-independent statistical control. Upstream raw trajectories and review exports are external. Selected passages: reanalysis/skillgate_checks.py:L635-L643
     @ eef0fae, README.md:L25 @ eef0fae, paper/main.tex:L283 @ eef0fae. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/eval-tower-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440261,6 +440362,14 @@
     pp shuffled, +0.12/−0.01/−0.33 pp held-out, all three CIs crossing zero. 219 of 1,421 cells are excluded from holdout and retrospective choices saw the full
     snapshot. Draws reuse records. Separately the decision-selected apparent-loss subset retains −9.93 pp [−16.80, −2.66] held-out. This does not establish harm
     per task or a beneficial policy.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Add a task-level replay report for skill gating that records effective skills, scorer requirements, within-cell shuffled labels and held-out decisions. Freeze
+    archive hashes, paired seeds, grader revision, effective inventories and folds. Compare the current suite gate, no gate and selected gate on the same cells.
+    Refit the policy on each permuted training fold. Score untouched later trials and unseen task families separately with paired intervals. Publish cell-level
+    outcomes including missing and timed-out arms. Stop if effective-arm identity or split independence cannot be established; a gain inside the null band cannot
+    authorize gating.
+
 - id: intake-2999
   arxiv_id: null
   url: https://github.com/Tencent/AngelSpec
@@ -440299,7 +440408,7 @@
     draft-attention work with context, without a supported gfx90a/CPU port or guarantee of total speed. Selected passages: docs/concepts/dfly2.md:L12-L15 @ e02ea36,
     docs/concepts/dfly2.md:L16-L18 @ e02ea36, docs/concepts/dfly2.md:L40-L45 @ e02ea36. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440381,6 +440490,12 @@
   dive_corrections: 2026-11-26. PARTIAL at e02ea36e65d44e6e165c4ba73c139d500e12f2d9. Read README, DFly2 docs and target configs; no train/export/serve or weight
     round trip. Hy4/Hy4 Flash/GLM use 2048 picks; DS-V4.1 uses 512 plus 128 local, with target-specific dsv41_mla and mHC. Train configs and released weights
     include DS/GLM, while documented export and serving cover Hy4 variants. Paper numbers do not establish a turnkey vLLM runtime for the released DS/GLM drafts.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Compare the released DFly2 target and drafter mappings with the local full-attention KV layout, sparse-index epoch and rollback semantics. Record exact weight/config
+    revisions, source layer pairs, strides, dtype, ownership and one-step index timestamp. Walk representative released mappings against DS41 and the dense 27B
+    control. Require a defined KV read and epoch across accept, reject and slot reuse before any execution probe. Mark unsupported layers and absent weights explicitly.
+
 - id: intake-3000
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/27530
@@ -440421,7 +440536,7 @@
     where the attention branch is skipped. Distinguish copy latency and #30318 header validation. Selected passages: PR overview, second paragraph, PR overview,
     failure semantics, PR additional information, Tests. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/kv-cache-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440505,6 +440620,13 @@
     drops already restored attention on recurrent failure. Separate composite implementations and ON_DEVICE pre-validation outside scope. Test 9 author report
     123 passed, 4 skipped, 0 failed of 127 and 62/62 ctest; earlier-base CUDA, no HIP run. C21 contains destructor-flushed readers without discard and sequential
     hybrid state_read. No local rerun.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Restore destination-only error recovery for device checkpoints on the experimental kernel and add valid, absent-storage, truncated-header and partial-read
+    regression cases. A source-pinned regression on two populated slots must return zero on failure, clear any partially modified destination as required, preserve
+    the neighbor, and round-trip valid state. Repeat on a new sequence ID and in reverse slot order. Log each case and return value. Require a CPU build proof
+    before model-backed evaluation and HIP residency proof before claiming device coverage.
+
 - id: intake-3001
   arxiv_id: null
   url: https://github.com/flashinfer-ai/flashinfer/pull/9405
@@ -440545,7 +440667,7 @@
     equality and observed performance do not transfer. Selected passages: PR description, guarantee R4, PR summary, performance paragraph. Remaining sections
     and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/kv-cache-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440605,6 +440727,12 @@
     arithmetic in decode and spans. Equality depends on MMA fold order, scalar epilogue and contraction. Overview decode ratios 0.65–0.77, completion row 0.25–0.26
     and multi-token steps 0.32–0.38 of non-invariant speed. Prefill ratios involve slot-index readback and cold-L2 benchmarks. Output_final_state returns the
     boundary pool. Duplicate decode/span slots are undefined and replacing a slot does not have KDA detection.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Use phase-invariant recurrent updates and indexed pool writes where a first difference or copy profile identifies recurrent state. Trigger on equal initial
+    state/input and first mismatch in the GDN transition across phase or a measured recurrent-state copy. Compare fixed chunking, zero padding and tail at a fixed
+    logical token. Verify poison slots, repeated indices, dtype and fences separately for the pool branch.
+
 - id: intake-3002
   arxiv_id: null
   url: https://github.com/flashinfer-ai/flashinfer/pull/9365
@@ -440650,7 +440778,7 @@
     can defeat the resulting sampler-level guarantee on both device paths. Selected passages: PR Description, opening paragraph, PR Description, second paragraph,
     PR Performance, B200 sampling_from_probs N=32768 M=1. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440737,6 +440865,12 @@
     dtypes, validity/invalid-row behavior and optional gathering. Multirow calls reject a shared scalar key or bare generator before reserving state. A one-row
     implicit generator reservation is allowed, while stable replay across different engine schedules requires a request-derived key. Raw B200/Rubin results are
     mixed by operation and shape.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Retain request-local RNG and filtered-score semantics for a consumer that requires reproducible stochastic sampling across slots. Trigger on a recorded fixed-logit
+    replay difference at equal seed and offset under reorder, recycle or filter-boundary ties, or a consumer requiring full versus retained log probabilities.
+    Compare frozen logits/filters first.
+
 - id: intake-3003
   arxiv_id: null
   url: https://github.com/flashinfer-ai/flashinfer/pull/9619
@@ -440780,7 +440914,7 @@
     mass plus HIP performance evidence; neither AMD device inherits the CUDA timings. Selected passages: PR Description, filtered draw contract, PR Training
     forward support, PR Against what is used by frameworks today. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/speculative-decoding.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440866,6 +441000,13 @@
     separately and reuses the support for teacher-forced scoring. Author''s sampled BF16 comparison against vLLM torch''s split-tie retained sets reports differences
     near half of rows, up to 0.1 nat and ~1% of picked tokens outside the comparator set. B200 fp32 top-p prefill geomean is 0.15x and minimum 0.06x default/BI,
     though some combined decode configurations improve.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Extend the frozen-logit sampler fixture to record retained support, drawn token and full versus post-filter probabilities at boundary ties. Hash rows, seeds
+    and sampler chain; test top-k, top-p, min-p, both orders, no-op, infinities and exact ties. Compare native support to a whole-tie reference with identical
+    inputs, then repeat on held-out row permutations. Emit every support and denominator; reject ambiguous probability labels. File a compatibility result. Serving
+    policy requires a separate gate.
+
 - id: intake-3004
   arxiv_id: null
   url: https://github.com/flashinfer-ai/flashinfer/pull/9644
@@ -440911,7 +441052,7 @@
     indirect addressing might lose when copies are absent or locality worsens. Neither AMD device has an author runtime result. Selected passages: PR Description,
     first paragraph, PR Description, baseline statement, PR Description, throughput comparison. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/kv-cache-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -440999,6 +441140,13 @@
     or skipped writes. Exact same pool view can support initial/final in-place state under caller-enforced unique writes and no cross-sequence read/write overlap.
     Unsupported overlapping checkpoint views are rejected. Author CUDA-graph microbenchmarks against gather/dense/scatter yield 2.10x B200, 2.10x GB300, 2.68x
     VR200 geomeans, with a 1.04x minimum on B200/GB300.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Trace recurrent-state ownership and residual state-sized copies across rollback, slot reuse and phase transitions on CPU and HIP. Pin trace and source revisions
+    plus the initial state; follow each pointer, dtype and byte count across gather, transition and scatter. Compare direct-write candidates to current device
+    replay counts. Include a later trace and poisoned non-target slots. Report unresolved copies separately; stop at no remaining transfer. Require unique destination
+    slots and read-before-write fences before any aliasing experiment.
+
 - id: intake-3005
   arxiv_id: '2610.32322'
   url: https://arxiv.org/abs/2610.32322v1
@@ -441055,7 +441203,7 @@
     and sufficient distinct tasks; source judge regrade near the boundary narrows mastery claims. Selected passages: §2.4 Validity gate and Eq. 2, §5.1 Benchmark
     cost, Table 4, §4.5 From label to decision. Remaining sections and hardware reproduction outside this read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated: [handoffs/active/eval-tower-program.md]
   handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
@@ -441145,3 +441293,7 @@
     18 skills and touched 17 tasks, −0.2 pp [−2.7,2.4] aggregate cost; primary level-minus-native band −0.8 pp [−3.1,1.7], no clear ordering. Per-touched-task
     upper limit about 11 points. Whole-library removal costs 19.1 pp [11.3,27.0]. No general equivalence, downstream improvement, or universal retirement rate
     is established.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - Assess retirement separately from observed skill uplift when a named skill/model pair is scheduled for removal. Freeze baseline unaided success, skill-on/skill-off
+    trials, invalid calls and retirement rule; reserve new tasks/trials, check retained reward and false retirements before withdrawing any skill.

@@ -5333,6 +5333,9 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92鈥
 - [ ] **AK-CHAIN-ABT-FUTILITY** [non-inference] Pass the AK-EVAL-FUT futility rule into the akloop ab-timing stage comparison (research loop stage_bodies.py bench.compare called without futility=), so chain ab-timing rows stop at an interim futility look
       路 done when: research test asserts a chain ab-timing stage on a losing synthetic arm stops with stop_reason futility at k=2, and akloop/chain.py custom_reason for ab-timing no longer says NO interim look
       路 gate: none
+- [ ] **AK-SHORT-ROW-CENSUS** [non-inference] Count eligible fused small-K MMVQ calls in retained 27B and A3B traces at widths one through four.
+      路 done when: AK-SHORT-ROW-CENSUS.json contains quant_type, K, output_rows, fused, ncols, eligible_calls. All requested model/width cells have a count or an explicit unresolved reason.
+      路 gate: none        路 inputs: `handoffs/active/autokernel-loop.md`
 
 
 ### Done

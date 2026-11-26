@@ -1311,6 +1311,8 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - [x] **RVP-PWR-5** ✅ 2026-08-21 — Re-measure the three CONFIDENCE-WINDOW parameters on the MI210, because the paper
 - [x] **RVP-C6-26-C-POINTER-SOURCE** ✅ 2026-10-07 — [MAIN exact source/original9 acceptance](../../artifacts/ni08/c-pointer-literal-source-acceptance-20261007/README.md); Researchaefa, original TRUE9/9 and prio
 
+**Research-intake monitor M1 (2026-11-26).** intake-2982#record. Check BF16 MFMA compiler compatibility when a clang-23 toolchain candidate enters qualification. Trigger on an actual LLVM 23 qualification build for gfx90a. Compare old/new fragments and emitted ISA at both compilers; run BF16 op parity and DF2 target-route smoke using the candidate binary. DF2-11-BF16 concerns the executed BF16 route. The upstream patch addresses compiler operand types and supplies no CDNA runtime measurement.
+
 ## Track: agentic-rocm-kernel-authoring
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47 -->
 

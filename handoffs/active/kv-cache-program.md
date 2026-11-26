@@ -1950,6 +1950,13 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · tier: sonnet   · owner: autokernel
   - 2026-11-26 (autokernel wrap-up) Prior art: C11-SKINNY-DET (kernel-champion-and-promotion.md) already built a two-pass fixed-order reduce, `2f034444b` on `llama.cpp-experimental-c11-skinny-det-20261110` (GGML_HIP_Q8_SKINNY_ATOMIC=1 = old path). Start by checking whether it was carried into C21/C22; if not, forward-port it rather than redesign. [no-belief: pointer]
 
+**Research-intake monitor M7 (2026-11-26).** intake-3001#record. Use phase-invariant recurrent updates and indexed pool writes where a first difference or copy profile identifies recurrent state. Trigger on equal initial state/input and first mismatch in the GDN transition across phase or a measured recurrent-state copy. Compare fixed chunking, zero padding and tail at a fixed logical token. Verify poison slots, repeated indices, dtype and fences separately for the pool branch. No native CUTE/SM100 kernel on MI210; fixed chunking can sacrifice occupancy and state pooling needs an ownership and alias contract. CPU state rows are already under CAFE-5.
+- [ ] **KPF-RESTORE-RECOVERY** [non-inference] Restore destination-only error recovery for device checkpoints on the experimental kernel and add valid, absent-storage, truncated-header and partial-read regression cases.
+      · done when: KPF-RESTORE-RECOVERY.json contains valid_count, failed_destination_removed, survivor_hash_equal, deferred_writes_after_failure. All valid restores succeed, no write survives discard and every neighbor hash matches.
+      · gate: none        · inputs: `handoffs/active/kv-cache-program.md`
+- [ ] **KPF-STATE-COPY-CENSUS** [non-inference] Trace recurrent-state ownership and residual state-sized copies across rollback, slot reuse and phase transitions on CPU and HIP.
+      · done when: KPF-STATE-COPY-CENSUS.json contains slot, dtype, source, destination, bytes, barrier, phase. Every state-sized copy in the pinned paths has one owner or an explicit unresolved alias.
+      · gate: none        · inputs: `handoffs/active/kv-cache-program.md`
 
 ## Track: heterogeneous-slot-fabric-residency
 <!-- gate: none -->
@@ -2911,6 +2918,9 @@ HSF PROFILE-6 R13 original whole-host run ended 06:06:06Z rc75 during A2 profile
       · section: 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)
 
 > Folded from `handoffs/active/kv-unified-stack-rollout.md` @ `3982f5e3f72a` on 2026-11-03 (BRF-T7-F2, route 1b, operator D1/D5; retired row RTG-57 → RTG-58). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **KV-NONDET-FIRST-DIFF** [non-inference] Add fixed-width repeat and cross-width first-divergence comparisons to the long-context determinism diagnosis using retained inputs and dispatch receipts.
+      · done when: KV-NONDET-FIRST-DIFF.json contains prompt_sha, repeat_pair, width_pair, first_different_op, reduction_route. Each replay distinguishes within-width variation from width-dependent differences or records missing inputs.
+      · gate: none        · inputs: `handoffs/active/kv-cache-program.md`
 
 ### Unified KV (`--kv-unified`) stack rollout and shared-pool serving
 

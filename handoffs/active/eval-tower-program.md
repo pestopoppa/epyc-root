@@ -1126,6 +1126,7 @@ Orchestrator `79230233c04b1e24b8736640d70e290825612880` adds per-call retained-m
 
 - Monitor (ak-intake-20261121, operator-approved): add an embedding-dispersion companion to Pass^k, reusing _consistency_and_passk, when the existing Pass^k monitor fires (intake-2764#record).
 
+**Research-intake monitor M10 (2026-11-26).** intake-3005#record. Assess retirement separately from observed skill uplift when a named skill/model pair is scheduled for removal. Freeze baseline unaided success, skill-on/skill-off trials, invalid calls and retirement rule; reserve new tasks/trials, check retained reward and false retirements before withdrawing any skill. A low marginal lift can reflect a task that both arms fail. EV-10a measures efficacy; a per-model retirement policy needs evidence of unaided competence.
 
 ## Track: bulk-inference-campaign
 <!-- gate: none -->
@@ -3251,6 +3252,9 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [x] **HF-TEST-ORDER-DEP** [non-inference] Make tests/integration/test_graph_harness_replay.py and tests/test_config_consolidation.py::TestTimeoutsDefaults pass in shared pytest sessions, not only alone (suspected cached get_config() tmp_dir and registry-timeout fallback to 90) — (orch 12df8158: session_log._IN_PYTEST fixed at import, _REGISTRY_TIMEOUTS_CACHE not reset; a5690950: preflight and dispatch_log tests stale vs worker_general alias and 57f07ceb identity fallback; wide run 1415 passed 0 failed) [no-belief: test fixes, no measurement]
       · done when: both pass inside the mixed -k feature/flags selection run, and the cause is named in the commit
       · gate: none
+- [ ] **EV-SKILL-NULL-REPLAY** [non-inference] Add a task-level replay report for skill gating that records effective skills, scorer requirements, within-cell shuffled labels and held-out decisions.
+      · done when: EV-SKILL-NULL-REPLAY.json contains paired_cells, effective_manifest_by_arm, heldout_delta, shuffled_delta, missing_arm_count. Each cell has a traceable manifest or explicit exclusion and zero training/holdout overlap.
+      · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 

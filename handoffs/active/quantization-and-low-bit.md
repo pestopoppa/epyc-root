@@ -237,6 +237,8 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 - NariQ vs EXL3 delta (intake-kspec-20261120, intake-2733#record): NariQ TRL1..TRL6 (ids 44-49, K=1..6) use the same exllamav3 mul1 codebook, 16-bit window and 16x16 tile as our EXL3_1..8; they differ in the wrapper: output-tile-major order (ours band8), F16 per-16-input block scales plus F32 pre/post sign-scale vectors and optional gathers (ours fp16 suh/svh), a per-side Hadamard descriptor including whole-slice Paley sizes 12/20/68 (ours fixed 128-block), banded lm_head/embedding with vocab gather, and custom TRELLIS ops. No mcg codebook, no HIP path; CPU path is fp32 dequant-then-FMA. MIT with Apache-2.0 libtrellis.
 - Monitor (intake-kspec-20261120, operator-approved): a NariQ file importer and the fork dequantizer as a second mul1 oracle (intake-2733#record) — reopen if NARIQ-EXL3-FEAS-1 finds a trellis quantizer path on this host or the EXL3 27B work is unparked.
 
+**Research-intake monitor M3 (2026-11-26).** intake-2987#record, intake-2997#record. Compare nested-plane decoding at equal realized bytes and quality for a capacity-constrained target. Trigger when a proposed multi-rate deployment identifies the exact layers/rates and an incumbent that misses its fit or quality target. Run integer bit unpack against reference bytes, compare shared row tables in LDS and AVX-512 byte-permute/split tables with scalar tails, then paired KLD and held-out throughput against incumbent EXL3/GGUF. Single-rate comparisons need all LUT and alignment overhead. No MI210 or Zen5 performance evidence; on-device LPDDR energy estimate cannot rank either platform.
+
 ## Track: iqk-iquant-enablement
 <!-- gate: none -->
 
