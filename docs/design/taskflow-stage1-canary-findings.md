@@ -1,6 +1,6 @@
 # Taskflow Stage 1 canary — findings through 2026-11-26
 
-> Follow-up: the [C22 real-task dispatch pilot](taskflow-real-dispatch-pilot-20261126.md) is complete with reviewed publications, additional harness repairs and qualified model findings. Its six-task diagnostic workload is separate from the historical canary below.
+> Follow-up: the [C22 real-task dispatch pilot](taskflow-real-dispatch-pilot-20261126.md) is complete with reviewed publications, additional harness repairs and qualified model findings. Its six-task diagnostic workload is separate from the historical canary below. A subsequent [harness-scope correction](taskflow-real-dispatch-pilot-20261126.md#harness-scope-correction--2026-11-26) establishes that both used a restricted OpenCode-derived setup; the recorded outcomes do not establish an intrinsic model ceiling. Native qualification of the replacement harness and matched comparisons remain in progress.
 
 ## Latest findings — C22 completion
 
