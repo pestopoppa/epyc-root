@@ -341,7 +341,7 @@ def test_gate_deadline_refused_in_rehearsal_and_publish(env, monkeypatch):
 def test_auto_smoke_budget_uses_latest_eligible_measure_and_correctness(env):
     old = env["rows"] / "predecessor"
     (old / "out-smoke").mkdir(parents=True)
-    (old / "out-smoke" / "smoke_measure.json").write_text(json.dumps({"arm_load_s": {"OFF": 105, "ON": 110}}))
+    (old / "out-smoke" / "smoke_measure.json").write_text(json.dumps({"arm_load_s": {"OFF": 105, "ON": 110}, "correctness_unit_s": {"a": 35, "b": 40}}))
     other = env["rows"] / "same-model"
     (other / "out").mkdir(parents=True)
     (other / "spec.json").write_text(json.dumps({"model": "Qwen3.8-27B-Q8_0"}))
@@ -351,7 +351,7 @@ def test_auto_smoke_budget_uses_latest_eligible_measure_and_correctness(env):
                        "arms": ["OFF", "OFF2", "ON"], "ops": "MUL_MAT", "timeout_s": 40})
     rc, out = run(decl(env, rid, extra=["--supersedes", "predecessor", "--correctness", corr]))
     assert rc == 0, out
-    assert "120 s/arm x 3 arms + 120 s correctness (3 units) + 120 s = 600 s" in out
+    assert "120 s/arm x 3 arms + 120 s correctness (3 units at 40 s) + 120 s = 600 s" in out
     assert "same-model/out/TERMINAL-smoke.json" in out
     spec = json.loads((env["rows"] / rid / "spec.json").read_text())
     assert spec["first_progress_s"] == 720
@@ -361,9 +361,11 @@ def test_auto_smoke_budget_uses_latest_eligible_measure_and_correctness(env):
 def test_auto_smoke_budget_default_and_explicit_override(env):
     rc, out = run(decl(env, "ak-r-gate-gpu-20261125-autodefault"))
     assert rc == 0, out
-    assert "150 s/arm x 3 arms + 0 s correctness (0 units) + 120 s = 570 s" in out
-    rc, out = run(decl(env, "ak-r-auto-explicit-20261125", extra=["--smoke-budget-s", "300"]))
-    assert rc == 0 and "300 s (explicit --smoke-budget-s)" in out
+    assert "150 s/arm x 3 arms + 0 s correctness (0 units at 300 s) + 120 s = 570 s" in out
+    rc, out = run(decl(env, "ak-r-auto-explicit-20261125", extra=["--smoke-budget-s", "3000"]))
+    assert rc == 0 and "3000 s (explicit --smoke-budget-s)" in out
+    assert "WARN: automatic smoke budget capped" not in out
+    assert "'budget_s': 3000" in (env["rows"] / "ak-r-auto-explicit-20261125" / "job.py").read_text()
 
 
 def test_auto_budget_accounts_for_served_quality_load(env):
@@ -374,4 +376,15 @@ def test_auto_budget_accounts_for_served_quality_load(env):
     args = argparse.Namespace(root=str(env["rows"]), model="model", supersedes="prior")
     spec = {"arms": {"OFF": {}, "OFF2": {}, "ON": {"K": "1"}}, "baseline": ["OFF", "OFF2"],
             "correctness": {"kind": "served_quality", "noise_arm": "OFF2", "timeout_s": 10}}
-    assert MK.derive_smoke_budget(args, spec) == 1320
+    assert MK.derive_smoke_budget(args, spec) == 1620
+
+
+def test_auto_budget_caps_long_correctness_timeouts(env, capsys):
+    import argparse
+    args = argparse.Namespace(root=str(env["rows"]), model="model", supersedes=None)
+    spec = {"arms": {"OFF": {}, "OFF2": {}, "ON": {"K": "1"}}, "baseline": ["OFF", "OFF2"],
+            "correctness": {"kind": "tbo", "arms": ["OFF", "OFF2", "ON"], "timeout_s": 5400}}
+    assert MK.derive_smoke_budget(args, spec) == 1470
+    spec["arms"].update({f"arm{i}": {} for i in range(10)})
+    assert MK.derive_smoke_budget(args, spec) == 2400
+    assert "WARN: automatic smoke budget capped" in capsys.readouterr().out

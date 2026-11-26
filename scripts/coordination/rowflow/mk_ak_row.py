@@ -946,8 +946,8 @@ def gate_scaffold(a, served=None):
     return d, spec
 
 
-def smoke_load_estimate(root, model, supersedes):
-    """Newest usable per-arm load measurement from a predecessor or same-model row."""
+def smoke_load_estimate(root, model, supersedes, correctness=False):
+    """Newest usable measurement from a predecessor or same-model row."""
     candidates = []
     predecessors = {x.strip() for x in (supersedes or "").split(",") if x.strip()}
     try:
@@ -964,12 +964,13 @@ def smoke_load_estimate(root, model, supersedes):
             same_model = False
         if row.name not in predecessors and not same_model:
             continue
-        for directory, filename in (("out-smoke", H.SMOKE_MEASURE), ("out", H.TERMINAL_SMOKE)):
+        paths = (("out-smoke", H.SMOKE_MEASURE),) if correctness else (("out-smoke", H.SMOKE_MEASURE), ("out", H.TERMINAL_SMOKE))
+        for directory, filename in paths:
             path = os.path.join(row.path, directory, filename)
             try:
                 with open(path) as f:
                     record = json.load(f)
-                values = record.get("arm_load_s", {})
+                values = record.get("correctness_unit_s" if correctness else "arm_load_s", {})
                 values = values.values() if isinstance(values, dict) else values if isinstance(values, list) else []
                 values = [float(v) for v in values if isinstance(v, (int, float)) and not isinstance(v, bool)
                           and 0 < float(v) < float("inf")]
@@ -980,23 +981,20 @@ def smoke_load_estimate(root, model, supersedes):
     if candidates:
         _, seconds, path = max(candidates)
         return seconds, path
-    return 150, "conservative default"
+    return (300 if correctness else 150), "conservative default"
 
 
 def derive_smoke_budget(a, gate_spec):
     load_s, source = smoke_load_estimate(a.root, a.model, getattr(a, "supersedes", None))
-    reduced = G.smoke_spec(gate_spec)
-    costs = []
-    for _, kind, _, _ in G.plan_correctness(reduced):
-        c = G.corr_of(reduced, kind)
-        # A correctness process has its own timeout; served units also load the model.
-        cost = float(c.get("timeout_s") or 150)
-        if kind == "c-sq" or (kind == "c-id" and c.get("mode", "server") == "server"):
-            cost = max(cost, load_s)
-        costs.append(cost)
-    budget = math.ceil(load_s * len(gate_spec["arms"]) + sum(costs) + 120)
+    unit_s, unit_source = smoke_load_estimate(a.root, a.model, getattr(a, "supersedes", None), correctness=True)
+    count = len(G.plan_correctness(G.smoke_spec(gate_spec)))
+    raw_budget = math.ceil(load_s * len(gate_spec["arms"]) + unit_s * count + 120)
+    budget = min(raw_budget, 2400)
     print(f"smoke budget: {load_s:g} s/arm x {len(gate_spec['arms'])} arms + "
-          f"{sum(costs):g} s correctness ({len(costs)} units) + 120 s = {budget} s; load source: {source}")
+          f"{unit_s * count:g} s correctness ({count} units at {unit_s:g} s) + 120 s = {raw_budget} s; "
+          f"load source: {source}; correctness source: {unit_source}")
+    if budget < raw_budget:
+        print(f"WARN: automatic smoke budget capped at {budget} s (derived {raw_budget} s)")
     return budget
 
 

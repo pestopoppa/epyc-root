@@ -1465,6 +1465,9 @@ def test_smoke_runs_selftest_once_per_arm_with_full_parser(tmp_path):
     g.run_fn = run
     assert g.smoke() == 0
     assert seen == ["BASE", "FIX"]
+    measure = json.loads((tmp_path / "row" / "out-smoke" / H.SMOKE_MEASURE).read_text())
+    assert set(measure["correctness_unit_s"]) == {"c-st-BASE-r1", "c-st-FIX-r1"}
+    assert all(v > 0 for v in measure["correctness_unit_s"].values())
     units = G.load_units(g.out_smoke)
     assert [u["unit_id"] for u in units if u["kind"] == "c-st"] == ["c-st-BASE-r1", "c-st-FIX-r1"]
 

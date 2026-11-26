@@ -1857,6 +1857,7 @@ class Gate:
             original_spec = self.spec
             self.spec = smoke_spec(original_spec)
             correctness = []
+            correctness_unit_s = {}
             identity = next((c for c in corr_list(self.spec) if c["kind"] == "identity"), None)
             total_prompts = int(identity.get("n_prompts") or len(identity_prompts(self.spec, self.d)) or 1) if identity else 0
             checked = 0
@@ -1881,7 +1882,12 @@ class Gate:
                     c = corr_of(self.spec, kind)
                     c["timeout_s"] = min(float(c.get("timeout_s") or 3600), remaining)
                     self.spec["server"]["ready_timeout_s"] = min(float(self.spec["server"].get("ready_timeout_s") or 900), remaining)
+                    unit_start = time.monotonic()
                     u = self.run_correctness_unit(uid, kind, arm, extra)
+                    correctness_unit_s[uid] = max(time.monotonic() - unit_start, 0.001)
+                    H.write_smoke_measure(self.out_smoke, visit_s, len(units), u0 - t0,
+                                          unit_name="arm visit", extra={"gate": "ak_gate", "arm_load_s": arm_load_s,
+                                                                        "correctness_unit_s": correctness_unit_s})
                     correctness.append(u)
                     if kind == "c-id" and arm == baseline_arms(self.spec)[1]:
                         checked += 1
@@ -1900,9 +1906,9 @@ class Gate:
             finally:
                 self.spec = original_spec
                 self.current_unit = {}
-            unit_s = max((time.time() - u0) / len(units), 0.001)
-            H.write_smoke_measure(self.out_smoke, unit_s, len(units), u0 - t0,
-                                  unit_name="arm visit", extra={"gate": "ak_gate", "arm_load_s": arm_load_s})
+            H.write_smoke_measure(self.out_smoke, visit_s, len(units), u0 - t0,
+                                  unit_name="arm visit", extra={"gate": "ak_gate", "arm_load_s": arm_load_s,
+                                                                "correctness_unit_s": correctness_unit_s})
             result_path = os.path.join(self.out, "RESULT.json")
 
             if time.time() - t0 > float(sm["budget_s"]):
