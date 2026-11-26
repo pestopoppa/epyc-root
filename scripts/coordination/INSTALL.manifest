@@ -27,6 +27,7 @@ bin/rowflow/run_direct.py            scripts/coordination/rowflow/run_direct.py 
 bin/rowflow/run_direct.sh            scripts/coordination/rowflow/run_direct.sh           hot
 bin/rowflow/ak_row_harness.py        scripts/coordination/rowflow/ak_row_harness.py       hot
 bin/rowflow/ak_gate.py               scripts/coordination/rowflow/ak_gate.py              hot
+bin/rowflow/rocprof_trace.py         scripts/coordination/rowflow/rocprof_trace.py        hot
 bin/rowflow/ak_futility_row.py       scripts/coordination/rowflow/ak_futility_row.py      hot
 bin/rowflow/ak_row_lint.py           scripts/coordination/rowflow/ak_row_lint.py          hot
 bin/rowflow/preflight.py             scripts/coordination/rowflow/preflight.py            hot

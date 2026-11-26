@@ -41,6 +41,7 @@ import math
 import os
 import re
 import signal
+import statistics
 import shutil
 import subprocess
 import sys
@@ -50,13 +51,14 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 import ak_row_harness as H  # noqa: E402
+import rocprof_trace as RT  # noqa: E402
 
-GATE_VERSION = "1"
+GATE_VERSION = "2"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 6
+UNIT_SEMANTICS_VERSION = 7
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
-EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke")
+EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke", "out/prof", "out/OP-GBPS.json")
 RESULT_SCHEMA = "epyc.ak_gate.result.v1"
 MIN_LV = 4
 LV_BIN_RX = re.compile(r"^(?:llama-(?:server|perplexity|bench|cli|batched-bench|completion|imatrix)|test-dflash[\w.-]*)$")
@@ -73,13 +75,13 @@ KLD_RX = re.compile(r"Mean\s+KLD:\s+([-\d.eE+]+)")
 SAME_TOP_RX = re.compile(r"Same top p:\s+([\d.]+)")
 CORRECTNESS_KEYS = {
     "common": {"kind", "argv", "arms", "timeout_s", "apply_flags", "witness", "lv", "env"},
-    "tbo": {"min_cases", "require_rc0", "ops"},
-    "kld": {"base_arm", "max_kld", "max_kld_noise_k", "noise_arm", "witness_base"},
+    "tbo": {"min_cases", "require_rc0", "ops", "diagnostic_arms", "required_cases"},
+    "kld": {"base_arm", "max_kld", "max_kld_noise_k", "noise_arm", "witness_base", "min_vram_gib", "library_root"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
     "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"},
     "served_quality": {"input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s", "noise_argv_delta"}}
 UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin", "c-sq": "served_quality"}
-UNIT_TYPE = dict({"visit": "served", "smoke": "served", "log": "served"}, **UNIT_KIND)   # expect_by_unit scopes
+UNIT_TYPE = dict({"visit": "served", "smoke": "served", "log": "served", "op": "op"}, **UNIT_KIND)   # expect_by_unit scopes
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
                "draft": r"^\s*single-draft:\s*(.*?)\s*$"}
 
@@ -123,7 +125,7 @@ def m_wall_s(reqs):
 
 # name -> (function over the measured request records, higher_is_better). The declared direction must agree.
 METRICS = {"tok_s": (m_tok_s, True), "pp_tok_s": (m_pp_tok_s, True), "ms_per_token": (m_ms_per_token, False),
-           "ms_per_round": (m_ms_per_round, False), "wall_s": (m_wall_s, False)}
+           "ms_per_round": (m_ms_per_round, False), "wall_s": (m_wall_s, False), "op_gbps": (None, True)}
 
 
 # ---------------------------------------------------------------------------------------------------- spec
@@ -165,6 +167,8 @@ def candidate_arms(spec):
 def arm_list(spec):
     """Base arm order for ABBA: baseline[0], candidates, baseline[1:] (the A/A pair is split across the block)."""
     b = baseline_arms(spec)
+    if (spec.get("metric") or {}).get("name") == "op_gbps" and (spec.get("op_unit") or {}).get("arms"):
+        return list(spec["op_unit"]["arms"])
     return b[:1] + candidate_arms(spec) + b[1:]
 
 
@@ -281,7 +285,7 @@ def validate_spec(spec):
     b = baseline_arms(spec)
     if not b or any(x not in arms for x in b):
         errs.append(f"baseline {b} must name declared arms")
-    if not candidate_arms(spec) or any(x not in arms for x in candidate_arms(spec)):
+    if not candidate_arms(spec) or any(x not in arms or x in b for x in candidate_arms(spec)):
         errs.append("no candidate arm (arms that are not baseline)")
     kc = keep_cfg(spec)
     if kc.get("aa_max") is not None and len(b) < 2:
@@ -309,9 +313,10 @@ def validate_spec(spec):
             errs.append(f"arm_env names unknown arm {a}")
     srv = spec.get("server") or {}
     argv = srv.get("argv") or []
-    if error := executable_error(argv, "server"):
+    is_op = m.get("name") == "op_gbps"
+    if not is_op and (error := executable_error(argv, "server")):
         errs.append(error)
-    if not argv or "{PORT}" not in [str(x) for x in argv]:
+    if not is_op and (not argv or "{PORT}" not in [str(x) for x in argv]):
         errs.append("server.argv must be the production argv with a '{PORT}' placeholder")
     for k, v in knobs.items():
         if (v.get("kind") or ("flag" if k.startswith("-") else "env")) == "flag" and k in [str(x) for x in argv]:
@@ -335,6 +340,25 @@ def validate_spec(spec):
             for baseline in b:
                 if baseline not in c["arms"]:
                     errs.append(f"correctness {c['kind']}: FIX: add {baseline} to the unit's arms")
+        if c.get("kind") == "kld" and c.get("min_vram_gib") is not None:
+            v = c["min_vram_gib"]
+            if type(v) not in (int, float) or not math.isfinite(v) or v <= 0 or not os.path.isabs(str(c.get("library_root") or "")):
+                errs.append("correctness kld: min_vram_gib requires a positive number and absolute library_root")
+        if c.get("kind") == "tbo":
+            for arm in c.get("diagnostic_arms") or []:
+                if arm not in (c.get("arms") or []) or arm in b or arm in candidate_arms(spec):
+                    errs.append(f"correctness tbo: diagnostic arm {arm} must be a declared non-gating arm")
+            required = c.get("required_cases") or {}
+            if not isinstance(required, dict):
+                errs.append("correctness tbo: required_cases must map regexes to positive counts")
+            else:
+                for pattern, count in required.items():
+                    try:
+                        re.compile(pattern)
+                        if type(count) is not int or count < 1:
+                            raise ValueError("count must be positive")
+                    except (TypeError, ValueError, re.error) as e:
+                        errs.append(f"correctness tbo: invalid required_cases {pattern!r}: {e}")
         if c.get("kind") == "tbo" and "require_rc0" in c and not isinstance(c["require_rc0"], bool):
             errs.append("correctness tbo: require_rc0 must be a boolean")
         if c.get("kind") not in ("tbo", "kld", "identity", "selftest_bin", "served_quality"):
@@ -438,13 +462,73 @@ def validate_spec(spec):
         for key in ("blocks", "concurrency"):
             if key in u and (type(u[key]) is not int or u[key] < 1):
                 errs.append(f"load unit {key} must be a positive integer")
-        if u.get("metric", "ms_per_round") not in METRICS:
-            errs.append("load unit metric must name a supported metric")
+        if u.get("metric", "ms_per_round") not in METRICS or u.get("metric") == "op_gbps":
+            errs.append("load unit metric must name a supported served metric")
         if "argv" in u and (not isinstance(u["argv"], list) or "{PORT}" not in u["argv"]):
             errs.append("load unit argv must be a list containing {PORT}")
     w = spec.get("workload") or {}
-    if not (w.get("prompts") or w.get("input")):
+    if not is_op and not (w.get("prompts") or w.get("input")):
         errs.append("workload needs prompts or an input file")
+    if is_op:
+        op = spec.get("op_unit") or {}
+        if type(op.get("witness_exactly_once", False)) is not bool:
+            errs.append("op_unit.witness_exactly_once must be boolean")
+        proof = op.get("proof")
+        if proof is not None and (not isinstance(proof, dict) or not os.path.isabs(str(proof.get("store") or "")) or not re.fullmatch(r"[0-9a-f]{40}", str(proof.get("source_sha") or "")) or not re.fullmatch(r"[0-9a-f]{64}", str(proof.get("library_sha256") or ""))):
+            errs.append("op_unit.proof requires absolute store, source_sha and library_sha256")
+        if not isinstance(op.get("op"), str) or not op["op"]:
+            errs.append("op_unit.op required")
+        if error := executable_error(op.get("argv") or [], "op test-backend-ops"):
+            errs.append(error)
+        if type(op.get("reps")) is not int or op["reps"] < 2:
+            errs.append("op_unit.reps must be an integer >= 2")
+        shapes = op.get("shapes")
+        if not isinstance(shapes, list) or not shapes or any(not isinstance(x, dict) or not isinstance(x.get("filter"), str) or not x["filter"] or type(x.get("bytes")) not in (int, float) or not math.isfinite(x["bytes"]) or x["bytes"] <= 0 or (type(x.get("gate", True)) is not bool or type(x.get("futility", x.get("gate", True))) is not bool) for x in shapes):
+            errs.append("op_unit.shapes requires [{filter: str, bytes: positive number, gate: bool}]")
+        elif len({x["filter"] for x in shapes}) != len(shapes) or not any(x.get("gate", True) for x in shapes) or not any(x.get("futility", x.get("gate", True)) for x in shapes):
+            errs.append("op_unit.shapes must be unique and contain a gating shape")
+        for key in ("kernel_regex", "merge_regex"):
+            if key == "kernel_regex" or op.get(key):
+                try:
+                    if not isinstance(op.get(key), str) or not op[key]:
+                        raise ValueError("required")
+                    re.compile(op[key])
+                except (ValueError, re.error) as e:
+                    errs.append(f"op_unit.{key}: invalid regex: {e}")
+        for arm, pattern in (op.get("attribution") or {}).items():
+            try:
+                if arm not in arms or not isinstance(pattern, str) or not pattern:
+                    raise ValueError("requires a declared arm and nonempty regex")
+                re.compile(pattern)
+            except (ValueError, re.error) as e:
+                errs.append(f"op_unit.attribution[{arm}]: {e}")
+        for arm, av in (op.get("arm_argv") or {}).items():
+            if arm not in arms:
+                errs.append(f"op_unit.arm_argv: unknown arm {arm}")
+            if error := executable_error(av, f"op arm {arm}"):
+                errs.append(error)
+        timing_arms = op.get("arms") or arm_list(spec)
+        if not isinstance(timing_arms, list) or len(timing_arms) != len(set(timing_arms)) or not set(b + candidate_arms(spec)).issubset(timing_arms) or any(a not in arms for a in timing_arms):
+            errs.append("op_unit.arms must uniquely include the baseline and every candidate")
+        rule = spec.get("op_decide") or {"kind": "ci_lower"}
+        if not isinstance(rule, dict):
+            errs.append("op_decide must be an object")
+            rule = {}
+        if rule.get("kind") == "ratio_min" and (len(b) != 1 or len(candidate_arms(spec)) != 1):
+            errs.append("ratio_min requires exactly one baseline and one candidate")
+        if rule.get("kind") not in ("ci_lower", "ratio_min"):
+            errs.append("op_decide.kind must be ci_lower or ratio_min")
+        for key in (("threshold",) if rule.get("kind") == "ratio_min" else ()):
+            if type(rule.get(key)) not in (int, float) or not math.isfinite(rule[key]) or rule[key] <= 0:
+                errs.append(f"op_decide.{key} must be positive")
+        f = rule.get("futility") or {}
+        if not isinstance(f, dict):
+            errs.append("op_decide.futility must be an object")
+            f = {}
+        if f and (type(f.get("first_rep_gmean_min")) not in (int, float) or not math.isfinite(f["first_rep_gmean_min"]) or f["first_rep_gmean_min"] <= 0):
+            errs.append("op_decide.futility.first_rep_gmean_min must be positive")
+        if op.get("reps") != kc["n_blocks"] or kc["dummy_block"]:
+            errs.append("op_unit.reps must equal keep.n_blocks and dummy_block must be false")
     errs += witness_scope_errors(spec) + server_env_knob_errors(spec)
     if errs:
         raise SpecError("; ".join(errs))
@@ -488,7 +572,7 @@ def witness_scope_errors(spec):
             continue
         argv = [str(x) for x in (c.get("argv") or [])]
         binary = os.path.basename(argv[0]) if argv and not str(argv[0]).startswith("@@") else ""
-        no_lv = ut == "tbo" or binary in NO_LV_BINARIES
+        no_lv = (ut == "tbo" or binary in NO_LV_BINARIES) and (spec.get("metric") or {}).get("name") != "op_gbps"
         for a in (c.get("arms") or list(arms)):
             for k, v in knobs.items():
                 if expect_of(spec, a, k, ut) != "present":
@@ -589,12 +673,14 @@ def expect_of(spec, arm, knob, unit_type="served"):
     return (((spec.get("expect_by_unit") or {}).get(unit_type) or {}).get(arm) or {}).get(knob, e)
 
 
-# test-backend-ops takes no -lv, so it can never print the INFO witness lines: exempt from witness expectations unless
-# the row lists "tbo" in expect_by_unit. kld / identity / selftest_bin run llama binaries at -lv and stay witnessed.
+# Served rows exempt test-backend-ops unless explicitly scoped. An op row may opt into its own TBO witness:
+# the declaration is then responsible for choosing markers its backend actually emits.
 WITNESS_EXEMPT_UNIT_TYPES = ("tbo",)
 
 
 def witness_exempt(spec, unit_type):
+    if unit_type == "tbo" and (spec.get("metric") or {}).get("name") == "op_gbps" and any(c.get("kind") == "tbo" and c.get("witness") for c in corr_list(spec)):
+        return False
     return unit_type in WITNESS_EXEMPT_UNIT_TYPES and unit_type not in (spec.get("expect_by_unit") or {})
 
 
@@ -627,7 +713,12 @@ def witness_for(spec, arm, text, argv=None, log=None, unit_type="served"):
             elif eff is None:
                 note = (f"no 'verbosity = N' banner in the log: the binary most likely ran below -lv {need}, so INFO "
                         "witness lines never print")
-        out[k] = {"expected": exp, "observed": obs, "ok": obs == exp or exp == "ignore", "line": ln, "lines_scanned": len(lines),
+        count = sum(marker_hit(str(v["marker"]), [line]) is not None for line in lines)
+        exact = (spec.get("op_unit") or {}).get("witness_exactly_once", False) and unit_type in ("op", "tbo", "kld")
+        ok = (obs == exp or exp == "ignore") and not (exact and exp == "present" and count != 1)
+        if exact and exp == "present" and count > 1:
+            note = f"witness appeared {count} times; expected exactly once"
+        out[k] = {"expected": exp, "observed": obs, "ok": ok, "line": ln, "count": count, "lines_scanned": len(lines),
                   "log": log, "argv_lv": alv, "log_lv": log_lv, "lv_required": need, "note": note}
     return out
 
@@ -992,13 +1083,17 @@ def smoke_spec(spec, identity_count=None):
             c["ops"] = "ADD"
             c["argv"] = list(c.get("argv") or []) + ["-p", r"^type=f16,ne=\[1,1,8,1\],nr=\[1,1,1,1\],nf=1(,perm1=0(,src_overlap=0)?)?$"]
             c["min_cases"] = 1
+            c.pop("required_cases", None)
+            if (spec.get("metric") or {}).get("name") == "op_gbps":
+                c["witness"] = False
     return reduced
 
 
 def tbo_pass(c, u):
     """rc 0, zero explicit FAIL cases, every case that ran OK, and at least the arm's min_cases ran (a crash or a too-short
     -o list is not a pass). "not supported" cases are skipped (n_skipped), never failures; n_cases counts cases that ran."""
-    return (int(u.get("n_cases") or 0) >= int(per_arm(c.get("min_cases"), u["arm"], 1)) and u.get("n_ok") == u.get("n_cases")
+    return (all((u.get("required_cases") or {}).get(rx, 0) >= count for rx, count in (c.get("required_cases") or {}).items())
+            and int(u.get("n_cases") or 0) >= int(per_arm(c.get("min_cases"), u["arm"], 1)) and u.get("n_ok") == u.get("n_cases")
             and not u.get("n_fail") and (u.get("rc") == 0 or c.get("require_rc0") is False))
 
 
@@ -1058,11 +1153,11 @@ def _decide_one_impl(spec, c, units):
         det = quality_decision(spec, c, us)
         return ("FAIL_CORRECTNESS" if c.get("gate", False) and det["failed"] else None), {"kind": kind, "served_quality": det}, True
     if kind == "tbo":
-        bad = [u for u in us if not tbo_pass(c, u)]
-        det = {"kind": kind, "per_arm": {u["arm"]: dict({k: u.get(k) for k in ("n_cases", "n_ok", "n_fail", "n_skipped", "rc", "fails")},
+        bad = [u for u in us if u["arm"] not in (c.get("diagnostic_arms") or []) and not tbo_pass(c, u)]
+        det = {"kind": kind, "per_arm": {u["arm"]: dict({k: u.get(k) for k in ("n_cases", "n_ok", "n_fail", "n_skipped", "rc", "fails", "required_cases", "nmse_lines")},
                                                        min_cases=int(per_arm(c.get("min_cases"), u["arm"], 1)))
                                          for u in us}}
-        if any(u["arm"] in baseline_arms(spec) for u in bad):   # the reference itself fails: harness/baseline broken, not the knob
+        if (spec.get("metric") or {}).get("name") != "op_gbps" and any(u["arm"] in baseline_arms(spec) for u in bad):   # the reference itself fails: harness/baseline broken, not the knob
             return "FUTILITY_HARNESS_BASELINE", dict(det, failed=[u["unit_id"] for u in bad],
                                                      why="baseline arm fails the tbo unit; a candidate is judged only when OFF passes"), True
         return ("FAIL_CORRECTNESS", dict(det, failed=[u["unit_id"] for u in bad]), True) if bad else (None, det, True)
@@ -1070,8 +1165,8 @@ def _decide_one_impl(spec, c, units):
         mx = float(c.get("max_kld", 0.003))
         kl = {u["arm"]: u.get("mean_kld") for u in us if u.get("mode") == "kld"}
         det = {"kind": kind, "mean_kld": kl, "max_kld_abs": mx}
-        if any(v is None for v in kl.values()):
-            return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why="no 'Mean KLD' in a perplexity log"), True
+        if any(v is None or not math.isfinite(v) for v in kl.values()):
+            return "FUTILITY_HARNESS_MISSING_OUTPUT", dict(det, why="no finite 'Mean KLD' in a perplexity log"), True
         k = c.get("max_kld_noise_k")
         noise_arm = c.get("noise_arm") or next(iter(baseline_arms(spec)[1:2]), None)
         det["kld_floor_source"] = noise_arm if k is not None else None
@@ -1082,7 +1177,8 @@ def _decide_one_impl(spec, c, units):
             mx = max(mx, float(k) * kl[noise_arm])
         det["max_kld"] = mx
         bad = [a for a in candidate_arms(spec) if a in kl and kl[a] > mx]
-        return ("FAIL_CORRECTNESS", dict(det, failed=bad), True) if bad else (None, det, True)
+        verdict = "FAIL_KLD" if (spec.get("metric") or {}).get("name") == "op_gbps" else "FAIL_CORRECTNESS"
+        return (verdict, dict(det, failed=bad), True) if bad else (None, det, True)
     if kind == "selftest_bin":
         tot = {}
         for u in us:
@@ -1162,6 +1258,12 @@ def _decide_public(spec, units):
         d = dict(d, sampler_decisions=ds)
     else:
         d = _decide(spec, units)
+    return map_verdict(spec, d)
+
+
+def map_verdict(spec, d):
+    if d.get("native_verdict") is not None:
+        return d
     v = str(d.get("verdict") or "")
     for side, m in (spec.get("verdict_map") or {}).items():
         for native, name in m.items():
@@ -1175,6 +1277,84 @@ def _decide(spec, units):
         return _decide_impl(spec, units)
     except Exception as e:
         return decide_error(e, "keep rule", "unknown")
+
+
+def op_trace_metric(op, shape, arm, directory):
+    """Recompute bandwidth from the saved rocprof trace; reject missing or invalid dispatches."""
+    rows = RT.read_csvs(directory, "kernel_trace.csv")
+    def duration(pattern, label):
+        matches = [r for r in rows if re.search(pattern, r.get("Kernel_Name") or "")]
+        if not matches:
+            raise ValueError(f"{label} found no kernel in rocprofv3 trace")
+        if any(int(r["End_Timestamp"]) <= int(r["Start_Timestamp"]) for r in matches):
+            raise ValueError(f"{label} has a nonpositive kernel duration")
+        return matches, RT.mean_duration_s(matches)
+    main, elapsed = duration(op["kernel_regex"], "kernel_regex")
+    if op.get("merge_regex"):
+        _, merge = duration(op["merge_regex"], "merge_regex")
+        elapsed += merge
+    family = (op.get("attribution") or {}).get(arm)
+    if family and any(not re.search(family, r.get("Kernel_Name") or "") for r in main):
+        raise ValueError("kernel attribution mismatch")
+    return shape["bytes"] / elapsed / 1e9
+
+
+def decide_op(spec, units, res):
+    """Judge each shape using the declared rule; incomplete matrices never pass."""
+    op, rule = spec["op_unit"], spec.get("op_decide") or {"kind": "ci_lower"}
+    us = [u for u in units if u.get("kind") == "op"]
+    err = next((u for u in us if u.get("error") or type(u.get("metric")) not in (int, float) or not math.isfinite(u["metric"]) or u["metric"] <= 0), None)
+    mm = mismatches(us)
+    valid = [u for u in us if not u.get("error") and type(u.get("metric")) in (int, float)
+             and math.isfinite(u["metric"]) and u["metric"] > 0]
+    outcomes = {}
+    base, candidates = baseline_arms(spec)[0], candidate_arms(spec)
+    for shape in op["shapes"]:
+        shape_us = [u for u in valid if u.get("shape") == shape["filter"]]
+        row = {}
+        for arm in candidates:
+            vals = {a: [u["metric"] for u in shape_us if u.get("arm") == a and u.get("block")] for a in (base, arm)}
+            ratio = statistics.median(vals[arm]) / statistics.median(vals[base]) if all(vals.values()) else None
+            lr = log_ratios(spec, [dict(u, kind="visit") for u in shape_us], arm)
+            estimate, lo, hi = ci(lr)
+            passed = (ratio >= rule["threshold"] if ratio is not None else None) if rule["kind"] == "ratio_min" else (lo > keep_cfg(spec)["threshold"] if lo is not None else None)
+            first = {u["arm"]: u["metric"] for u in shape_us if u.get("block") == 1}
+            row[arm] = {"ratio": ratio, "first_ratio": first[arm] / first[base] if arm in first and base in first else None,
+                        "ci": [estimate, lo, hi], "keep": passed}
+        outcomes[shape["filter"]] = {"gate": shape.get("gate", True), "futility": shape.get("futility", shape.get("gate", True)), "arms": row}
+        if rule["kind"] == "ci_lower":
+            ci_spec = dict(spec, metric={"name": "tok_s", "higher_is_better": True}, correctness=None, candidates=candidate_arms(spec))
+            cd = _decide_impl(ci_spec, [dict(u, kind="visit") for u in shape_us])
+            outcomes[shape["filter"]]["decision"] = cd
+    res.update(op_decide=rule, per_shape=outcomes)
+    if err:
+        return dict(res, verdict="FUTILITY_HARNESS_" + (err.get("error_class") or "MISSING_OUTPUT"), polar=None, terminal=True, reason=str(err.get("error") or "op metric missing"))
+    if mm:
+        return dict(res, verdict="FUTILITY_HARNESS_WITNESS", polar=None, terminal=True, witness_mismatches=mm, reason=mismatch_text(mm[0]))
+    gated = [x for x in outcomes.values() if x["gate"]]
+    f = (rule.get("futility") or {}).get("first_rep_gmean_min")
+    if f is not None:
+        first = [x["arms"][a]["first_ratio"] for x in outcomes.values() if x["futility"] for a in candidates]
+        first_shapes = {shape["filter"] for shape in op["shapes"] if shape.get("futility", shape.get("gate", True))}
+        first_complete = {(shape, 1, arm) for shape in first_shapes for arm in arm_list(spec)} <= {
+            (u.get("shape"), u.get("block"), u.get("arm")) for u in us}
+        if first_complete and all(x is not None for x in first):
+            gm = math.exp(sum(math.log(x) for x in first) / len(first))
+            res["first_rep_gmean"] = gm
+            if gm < f:
+                return dict(res, verdict="FUTILITY_OP_BELOW_FLOOR", polar="FAIL", terminal=True, reason=f"first-rep geometric mean {gm} < {f}")
+    if rule["kind"] == "ci_lower":
+        decisions = [x["decision"] for x in gated]
+        failure = next((x for x in decisions if x["terminal"] and str(x["verdict"]).startswith("FUTILITY")), None)
+        if failure:
+            return dict(res, verdict=failure["verdict"], polar=failure["polar"], terminal=True, reason=failure["reason"])
+    expected = {(shape["filter"], b, a) for shape in op["shapes"] for b in range(1, op["reps"] + 1) for a in arm_list(spec)}
+    actual = {(u.get("shape"), u.get("block"), u.get("arm")) for u in us}
+    if not expected <= actual:
+        return dict(res, verdict="INCOMPLETE", polar=None, terminal=False, reason=f"{len(expected - actual)} op units pending")
+    winners = [a for a in candidates if all(x["arms"][a]["keep"] for x in gated)]
+    verdict = "KEEP_" + "+".join(winners) if winners else "NO_KEEP"
+    return dict(res, verdict=verdict, polar=polar(verdict), terminal=True, reason="all qualifying shapes must pass")
 
 
 def _decide_impl(spec, units):
@@ -1195,6 +1375,8 @@ def _decide_impl(spec, units):
              if cdet.get("witness_mismatches") else json.dumps({k: cdet.get(k) for k in ("failed", "nondet", "why", "error")
                                                                  if cdet.get(k)})[:600])
         return dict(res, verdict=cv, polar=polar(cv), terminal=True, reason=r)
+    if spec["metric"]["name"] == "op_gbps":
+        return decide_op(spec, units, res)
     tus = [u for u in units if u.get("kind") == "visit"]
     err = [u for u in tus if u.get("error")]
     if err:
@@ -1434,12 +1616,28 @@ class Gate:
         if any("{SLOTDIR}" == str(a) for a in self.spec["server"]["argv"]):
             os.makedirs(os.path.join(self.out, "kv_slots"), exist_ok=True)
         bad = []
+        proof = (self.spec.get("op_unit") or {}).get("proof")
+        if proof:
+            try:
+                store = proof["store"]
+                with open(os.path.join(store, "BUILD-IDENTITY.json")) as f:
+                    identity = json.load(f)
+                if identity.get("source_sha") != proof["source_sha"]:
+                    bad.append("op content proof: source_sha mismatch")
+                if _sha_file(os.path.join(store, "bin", "libggml-hip.so")) != proof["library_sha256"]:
+                    bad.append("op content proof: libggml-hip.so sha256 mismatch")
+                check = subprocess.run(["/usr/bin/sha256sum", "--check", "--status", "SHA256SUMS"], cwd=store, timeout=900)
+                if check.returncode:
+                    bad.append("op content proof: SHA256SUMS verification failed")
+            except (OSError, ValueError, KeyError, subprocess.TimeoutExpired) as e:
+                bad.append(f"op content proof: {type(e).__name__}: {e}")
         for rel, want in sorted((self.spec.get("inputs") or {}).items()):
             p = os.path.join(self.d, rel)
             if not os.path.isfile(p):
                 bad.append(f"input {rel} missing")
             elif want and _sha_file(p) != want:
                 bad.append(f"input {rel} sha256 {_sha_file(p)[:12]} != pinned {str(want)[:12]}")
+        self.content_proof_ok = bool(proof) and not any(x.startswith("op content proof:") for x in bad)
         return bad
 
     def port(self):
@@ -1497,8 +1695,17 @@ class Gate:
         with open(log, "wb") as lf:
             p = subprocess.Popen(argv, stdout=lf, stderr=subprocess.STDOUT, env=env, cwd=self.d)
             self.procs.append(p)
+            vram_max, hip_from_store = 0, False
             try:
                 while p.poll() is None:
+                    if getattr(self, "monitor_library_root", None):
+                        vram_max = max(vram_max, self.kfd_vram(p.pid))
+                        try:
+                            maps = [os.path.realpath(line.split()[-1]) for line in open(f"/proc/{p.pid}/maps") if "libggml-hip" in line]
+                            root = os.path.realpath(self.monitor_library_root) + "/"
+                            hip_from_store |= bool(maps) and all(path.startswith(root) for path in maps)
+                        except OSError:
+                            pass
                     if self.should_stop() or time.time() - t0 > timeout:
                         H.kill_tree(p)
                         return {"rc": None, "secs": round(time.time() - t0, 1),
@@ -1507,7 +1714,7 @@ class Gate:
             finally:
                 if p in self.procs:
                     self.procs.remove(p)
-        return {"rc": p.returncode, "secs": round(time.time() - t0, 1)}
+        return {"rc": p.returncode, "secs": round(time.time() - t0, 1), "vram_max_b": vram_max, "hip_from_store": hip_from_store}
 
     def start_server(self, argv, env, log):
         os.makedirs(os.path.dirname(log), exist_ok=True)
@@ -1703,13 +1910,20 @@ class Gate:
             argv = self.llama_argv(c["argv"], arm, flags=bool(c.get("apply_flags")),
                                    extra={"{PROMPT_INDEX}": str(extra["prompt"])}, force_lv=c.get("lv", True))
         try:
+            self.monitor_library_root = c.get("library_root") if kind == "c-kld" and c.get("min_vram_gib") else None
             r = self.run_fn(self.pin(argv), self.proc_env(arm, argv[llama_index(argv) or 0], c.get("env")), log, to)
         except OSError as e:
             r = {"rc": None, "error": f"{type(e).__name__}: {e}"}
+        finally:
+            self.monitor_library_root = None
         u = {"unit_id": uid, "kind": kind, "arm": arm, "argv": argv, "log": os.path.relpath(log, self.out),
              "rc": r.get("rc"), "secs": r.get("secs"), **extra}
         if r.get("error"):
             u.update(error=r["error"], error_class="STOPPED" if r["error"] == "stopped" else ("MISSING_OUTPUT" if r["error"].startswith(("FileNotFoundError", "PermissionError")) else "TIMEOUT"))
+        elif kind == "c-kld" and c.get("min_vram_gib"):
+            u.update(vram_max_b=r.get("vram_max_b"), hip_from_store=r.get("hip_from_store"))
+            if (r.get("vram_max_b") or 0) < c["min_vram_gib"] * (1 << 30) or not r.get("hip_from_store"):
+                u.update(error="KLD residency or library mapping proof missing", error_class="RESIDENCY")
         return self.finish_correctness(u)
 
     def finish_correctness(self, u):
@@ -1725,6 +1939,8 @@ class Gate:
         if u["kind"] == "c-tbo":
             cases = H.tbo_cases(txt or "")
             u.update(tbo_counts(cases))
+            u["nmse_lines"] = re.findall(r"(?im)^.*\bNMSE\s*=\s*[0-9.eE+-]+.*$", txt or "")
+            u["required_cases"] = {rx: len({x["args"] for x in cases if not x.get("skipped") and re.search(rx, x["args"])}) for rx in (c.get("required_cases") or {})}
             u["pass"] = tbo_pass(c, u)
         elif u["kind"] == "c-kld":
             m = KLD_RX.findall(txt or "")
@@ -1732,6 +1948,12 @@ class Gate:
             u.update(mean_kld=float(m[-1]) if m else None, same_top_p_pct=float(s[-1]) if s else None)
             if u.get("mode") == "base" and u.get("rc") not in (0, None):
                 u.update(error=f"kld base run rc {u.get('rc')}", error_class="MISSING_OUTPUT")
+            elif (self.spec.get("metric") or {}).get("name") == "op_gbps" and u.get("rc") != 0:
+                u.update(error=f"kld run rc {u.get('rc')}", error_class="MISSING_OUTPUT")
+            elif (self.spec.get("metric") or {}).get("name") == "op_gbps" and u.get("mode") == "base":
+                base = os.path.join(self.out, "kld-base.bin")
+                if not os.path.isfile(base) or os.path.getsize(base) == 0:
+                    u.update(error="kld base output missing or empty", error_class="MISSING_OUTPUT")
         elif u["kind"] == "c-st":
             u.update(selftest_parse(c, txt))
             if u["mismatches"] is None:
@@ -1840,6 +2062,41 @@ class Gate:
                 return u
         return None
 
+    def write_op_progress(self, units):
+        """Persist the first numbers and subsequent per-shape ratios before the terminal result."""
+        op_units = [u for u in units if u.get("kind") == "op"]
+        d = decide_op(self.spec, op_units, {})
+        atomic_json(os.path.join(self.out, "OP-GBPS.json"), {
+            "row": self.spec["row_id"], "metric": "op_gbps", "rule": self.spec.get("op_decide") or {"kind": "ci_lower"},
+            "per_shape": d.get("per_shape", {}), "first_rep_gmean": d.get("first_rep_gmean"), "units": op_units})
+
+    def run_op(self, uid, arm, shape, block):
+        op = self.spec["op_unit"]
+        prof = op.get("rocprof", "/mnt/raid0/llm/tools/rocprofiler-sdk-6.2.0-66/opt/rocm-6.2.0/bin/rocprofv3")
+        log = os.path.join(self.logs, uid + ".log")
+        odir = os.path.join(self.out, "prof", uid)
+        argv = self.subst((op.get("arm_argv") or {}).get(arm, op["argv"])) + ["perf", "-b", op.get("backend", "ROCm0"), "-o", op["op"], "-p", shape["filter"]]
+        cmd = [prof, "-M", "--output-format", "csv", "-d", odir, "-o", uid, "--kernel-trace", "--"] + self.pin(argv)
+        u = {"unit_id": uid, "kind": "op", "arm": arm, "shape": shape["filter"], "block": block,
+             "argv": argv, "log": os.path.relpath(log, self.out), "gate_unit": True}
+        try:
+            env = self.proc_env(arm, argv[0], op.get("env"))
+            if arm in (op.get("arm_argv") or {}):
+                env["LD_LIBRARY_PATH"] = os.path.dirname(os.path.realpath(argv[0])) + ":/opt/rocm/lib"
+            sdk = os.path.dirname(os.path.dirname(prof))
+            env["LD_LIBRARY_PATH"] = ":".join([env.get("LD_LIBRARY_PATH", ""), sdk + "/lib", sdk + "/lib/rocprofiler-sdk", "/mnt/raid0/llm/tools/rocm-profilers-6.2/opt/rocm-6.2.0/lib"])
+            r = self.run_fn(cmd, env, log, float(op.get("timeout_s", 1800)))
+            u.update(rc=r.get("rc"), secs=r.get("secs"))
+            if r.get("error") == "stopped":
+                return dict(u, error="stopped", error_class="STOPPED")
+            if r.get("error") or r.get("rc") != 0:
+                raise RuntimeError(r.get("error") or f"rocprofv3 exited {r.get('rc')}")
+            u["metric"] = op_trace_metric(op, shape, arm, odir)
+            u["witness"] = witness_for(self.spec, arm, read_log(log), None, u["log"], "op")
+        except (OSError, ValueError, KeyError, TypeError, RuntimeError) as e:
+            u.update(error=f"{type(e).__name__}: {e}", error_class="MISSING_OUTPUT")
+        return u
+
     # ------------------------------------------------------------------ modes
     def smoke(self):
         """Visit every arm and run one reduced correctness plan within the smoke budget."""
@@ -1861,8 +2118,12 @@ class Gate:
                     return H.end_smoke("FAIL", 3, "smoke budget exceeded; adjust smoke.budget_s", self.out)
                 ready = min(float(self.spec["server"].get("ready_timeout_s") or 900), remaining)
                 uid = f"smoke-{arm}"
-                u = self.finish_unit(self.visit_fn(uid, arm, [prompt], int(sm["n_predict"]), 1,
-                                                   ready, kind="smoke"))
+                if self.spec["metric"]["name"] == "op_gbps":
+                    u = self.run_op(uid, arm, self.spec["op_unit"]["shapes"][0], 1)
+                    u["kind"] = "smoke"
+                else:
+                    u = self.finish_unit(self.visit_fn(uid, arm, [prompt], int(sm["n_predict"]), 1,
+                                                       ready, kind="smoke"))
                 H.append_unit(u, self.out)
                 units.append(u)
                 arm_load_s = {x["arm"]: x["load_s"] for x in units if x.get("load_s") is not None}
@@ -1972,7 +2233,32 @@ class Gate:
                                     "reason": "; ".join(bad)})
         units = load_units(self.out)
         done = {u["unit_id"] for u in units if u.get("gate_unit")}
-        for uid, kind, arm, extra in plan_correctness(self.spec):
+        plan = plan_correctness(self.spec)
+        first_number_done = False
+        for index, (uid, kind, arm, extra) in enumerate(plan):
+            if kind == "c-kld" and self.spec["metric"]["name"] == "op_gbps" and not first_number_done:
+                first_number_done = True
+                for i, shape in enumerate(self.spec["op_unit"]["shapes"]):
+                    if not shape.get("futility", shape.get("gate", True)):
+                        continue
+                    for op_arm in block_order(self.spec, 1):
+                        op_uid = f"op-b1-s{i}-{op_arm}"
+                        if op_uid in done:
+                            continue
+                        if self.should_stop():
+                            return 75
+                        op_record = self.run_op(op_uid, op_arm, shape, 1)
+                        if op_record.get("error_class") == "STOPPED":
+                            return 75
+                        H.append_unit(op_record, self.out)
+                        units.append(op_record)
+                        self.write_op_progress(units)
+                        done.add(op_uid)
+                        if op_record.get("error"):
+                            return self.finish(units, {"verdict": "FUTILITY_HARNESS_" + op_record.get("error_class", "MISSING_OUTPUT"), "polar": None, "terminal": True, "reason": op_record["error"]})
+                        mismatch = mismatches([op_record])
+                        if mismatch:
+                            return self.finish(units, {"verdict": "FUTILITY_HARNESS_WITNESS", "polar": None, "terminal": True, "reason": mismatch_text(mismatch[0])})
             if uid in done:
                 continue
             if self.should_stop():
@@ -1986,6 +2272,12 @@ class Gate:
                 self.mark_reusable(u, extra)
                 H.append_unit(u, self.out)
             units.append(u)
+            if self.spec["metric"]["name"] == "op_gbps" and (index + 1 == len(plan) or plan[index + 1][1] != kind):
+                c = corr_of(self.spec, kind)
+                verdict, detail, complete = _decide_one(self.spec, c, units)
+                if complete and verdict:
+                    return self.finish(units, {"verdict": verdict, "polar": polar(verdict), "terminal": True,
+                                               "reason": json.dumps(detail), "correctness": detail})
         quality = next((c for c in corr_list(self.spec) if c.get("kind") == "served_quality"), None)
         if quality and not any(u.get("kind") == "quality-summary" for u in units):
             _, detail, _ = _decide_one(self.spec, quality, units)
@@ -2000,6 +2292,25 @@ class Gate:
         w = self.spec.get("workload") or {}
         prompts = workload_prompts(self.spec, self.d)
         kc = keep_cfg(self.spec)
+        if self.spec["metric"]["name"] == "op_gbps":
+            for b in range(1, self.spec["op_unit"]["reps"] + 1):
+                for i, shape in enumerate(self.spec["op_unit"]["shapes"]):
+                    for arm in block_order(self.spec, b):
+                        uid = f"op-b{b}-s{i}-{arm}"
+                        if uid in done:
+                            continue
+                        if self.should_stop():
+                            return 75
+                        u = self.run_op(uid, arm, shape, b)
+                        if u.get("error_class") == "STOPPED":
+                            return 75
+                        H.append_unit(u, self.out)
+                        units.append(u)
+                        self.write_op_progress(units)
+                        d = decide(self.spec, units)
+                        if d["terminal"]:
+                            return self.finish(units, d)
+            return self.finish(units, decide(self.spec, units))
         for j, cfg in enumerate(self.spec.get("units", [])):
             for b in range(1, cfg.get("blocks", 1) + 1):
                 for arm in cfg["arms"]:
@@ -2045,11 +2356,14 @@ class Gate:
         return self.finish(units, decide(self.spec, units))
 
     def finish(self, units, d):
+        d = map_verdict(self.spec, d)
         try:
             res = result_doc(self.spec, units, d)
         except Exception as e:
             d = decide_error(e, "result", "unknown")
             res = {"schema": RESULT_SCHEMA, "complete": True, "row": self.spec.get("row_id"), **d}
+        if (self.spec.get("op_unit") or {}).get("proof"):
+            res["content_proof"] = {"declaration": self.spec["op_unit"]["proof"], "verified": getattr(self, "content_proof_ok", False)}
         atomic_json(os.path.join(self.out, "RESULT.json"), res)
         self.log(f"RESULT {res['verdict']} (polar {res['polar']}): {res.get('reason', '')[:300]}")
         return 0
@@ -2082,6 +2396,18 @@ def result_doc(spec, units, d):
            "n_units": len(units), "n_visits": len(tus),
            "units": units,
            "gate": {"module": "ak_gate.py", "version": GATE_VERSION, "sha256": _sha_file(os.path.abspath(__file__))}}
+    if spec["metric"]["name"] == "op_gbps":
+        op_units = [u for u in gate_units if u.get("kind") == "op"]
+        shaped = {shape["filter"]: [u for u in op_units if u.get("shape") == shape["filter"]]
+                  for shape in spec["op_unit"]["shapes"]}
+        res["per_arm"] = {arm: {shape: {"n": len(values), "median_gbps": statistics.median(values) if values else None}
+                                for shape, rows in shaped.items()
+                                for values in [[u["metric"] for u in rows if u.get("arm") == arm and u.get("metric") is not None]]}
+                          for arm in arm_list(spec)}
+        res["blocks_scored"] = min((len(full_blocks(spec, [dict(u, kind="visit") for u in rows]))
+                                    for rows in shaped.values()), default=0)
+        res["n_op_units"] = len(op_units)
+        res.update(op_decide=d.get("op_decide", spec.get("op_decide") or {"kind": "ci_lower"}), per_shape=d.get("per_shape", {}), first_rep_gmean=d.get("first_rep_gmean"))
     if spec.get("units") or any(u.get("kind") == "load" or u.get("report_only") for u in units):
         res["report_only"] = [u for u in units if u.get("kind") == "load" or u.get("report_only")]
     if d.get("sampler_decisions") is not None:
@@ -2122,7 +2448,7 @@ def replay_units(spec, out_dir, row_dir):
     units = [u for u in recorded if u.get("kind") != "load" and not u.get("report_only")]
     smoke_units = [u for u in load_units(os.path.join(row_dir, "out-smoke")) if u.get("gate_unit")]
     shaped = [u for u in smoke_units if u.get("smoke_shape") == "full" and isinstance(u.get("smoke_run_id"), int)]
-    if shaped and not any(u.get("kind") == "visit" for u in units):
+    if shaped and not any(u.get("kind") in ("visit", "op") for u in units):
         latest = max(u["smoke_run_id"] for u in shaped)
         units = [u for u in shaped if u["smoke_run_id"] == latest]
         mode = "full-smoke"
@@ -2157,12 +2483,22 @@ def replay_units(spec, out_dir, row_dir):
                                        UNIT_TYPE.get(u["kind"], "served"))
         if u.get("req") is not None:
             u["metric"] = metric_of(spec, u["req"])
+        if u.get("kind") == "op" or (u.get("kind") == "smoke" and spec["metric"]["name"] == "op_gbps"):
+            try:
+                op = spec["op_unit"]
+                shape = next(x for x in op["shapes"] if x["filter"] == u["shape"])
+                u["metric"] = op_trace_metric(op, shape, u["arm"], os.path.join(out_dir, "prof", u["unit_id"]))
+                u["witness"] = witness_for(spec, u["arm"], txt, None, u.get("log"), "op")
+            except (OSError, ValueError, KeyError, TypeError, StopIteration) as e:
+                u.update(error=str(e), error_class="MISSING_OUTPUT")
         if u["kind"] == "c-kld" and txt is not None:
             m = KLD_RX.findall(txt)
             u["mean_kld"] = float(m[-1]) if m else None
         if u["kind"] == "c-tbo" and txt is not None:
             cases = H.tbo_cases(txt)
             u.update(tbo_counts(cases))
+            u["nmse_lines"] = re.findall(r"(?im)^.*\bNMSE\s*=\s*[0-9.eE+-]+.*$", txt or "")
+            u["required_cases"] = {rx: len({x["args"] for x in cases if not x.get("skipped") and re.search(rx, x["args"])}) for rx in (c.get("required_cases") or {})}
             u["pass"] = tbo_pass(c, u)
         if u["kind"] == "c-st" and txt is not None:
             u.update(selftest_parse(c, txt))
@@ -2196,7 +2532,7 @@ def replay(spec, row_dir, prior, stream=None):
                 d = decide_smoke_correctness(spec, units, count)
         else:
             d["fix"] = smoke_served_fix(d)
-    if mode == "units" and not d["terminal"] and not [u for u in units if u.get("kind") == "visit"] and \
+    if mode == "units" and not d["terminal"] and not [u for u in units if u.get("kind") in ("visit", "op")] and \
             any(u.get("kind") == "smoke" for u in units):
         d = decide_smoke(spec, units)
     prev_id = os.path.basename(prow)
@@ -2274,6 +2610,34 @@ def selftest(spec, row_dir, stream=None):
                 seen.setdefault(a, []).append(pos)
         assert all(sorted(v) == sorted(list(range(k)) * 2) for v in seen.values()), seen
     sp = dict(spec, correctness=None, candidates=candidate_arms(spec), inputs={}, workload={"prompts": ["p"]}, dirs=[])
+    if spec["metric"]["name"] == "op_gbps":
+        # Exercise the runner and smoke with synthetic units; never invoke a profiler here.
+        sp["op_unit"] = dict(sp["op_unit"])
+        sp["op_unit"].pop("proof", None)
+        rule = sp.get("op_decide") or {"kind": "ci_lower"}
+        gain = max(2.0, 2 * float(rule.get("threshold", 1.0)), 2 * float(keep_cfg(sp)["threshold"]),
+                   2 * float((rule.get("futility") or {}).get("first_rep_gmean_min", 1.0)))
+        with tempfile.TemporaryDirectory() as t:
+            def gate(path):
+                g = Gate(sp, os.path.join(t, path), env={}, stream=stream)
+                def fake(uid, arm, shape, block):
+                    witness = {k: {"expected": expect_of(sp, arm, k, "op"),
+                                   "observed": expect_of(sp, arm, k, "op"), "ok": True}
+                               for k in sp["knobs"]}
+                    return {"unit_id": uid, "kind": "op", "arm": arm, "shape": shape["filter"],
+                            "block": block, "metric": gain if arm in candidate_arms(sp) else 1.0,
+                            "witness": witness, "gate_unit": True}
+                g.run_op = fake
+                return g
+            g = gate("full")
+            assert g.run() == 0
+            result = json.load(open(os.path.join(g.out, "RESULT.json")))
+            assert result["native_verdict"].startswith("KEEP"), result
+            g = gate("smoke")
+            assert g.smoke() == 0
+            assert os.path.isfile(os.path.join(g.out_smoke, H.SMOKE_MEASURE))
+        print("selftest ok (synthetic op runner and smoke)", file=stream)
+        return 0
     quiet = open(os.devnull, "w")
     verdicts = {}
     with tempfile.TemporaryDirectory() as t:

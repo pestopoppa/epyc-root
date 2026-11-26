@@ -1678,3 +1678,223 @@ def test_c22_r4_smoke_witnesses_identity_candidate_and_replays(tmp_path):
     assert replay["verdict"] == terminal["verdict"]
     assert detail in replay["observed"]["reason"]
     assert replay["witness_mismatches"][0]["unit"] == "c-id-LOSSLESS-p0"
+
+
+def op_spec():
+    arms = {"OFF": {}, "ON": {"GGML_HIP_Q8MC": "1"}}
+    return spec(arms=arms, baseline=["OFF"],
+                metric={"name": "op_gbps", "higher_is_better": True},
+                keep={"threshold": 1.1, "n_blocks": 5, "look_blocks": 2, "aa_max": None, "dummy_block": False},
+                op_unit={"argv": [os.path.join(FIX_BIN, "test-backend-ops")], "op": "FLASH_ATTN_EXT",
+                         "reps": 5, "kernel_regex": "attention", "shapes": [
+                             {"filter": "32k", "bytes": 1000}, {"filter": "8k", "bytes": 1000, "gate": False}]},
+                op_decide={"kind": "ratio_min", "threshold": 1.5, "futility": {"first_rep_gmean_min": 1.2}})
+
+
+def test_op_ratio_decision_and_first_rep_futility():
+    sp = op_spec()
+    units = [{"kind": "op", "arm": a, "shape": shape, "block": b, "metric": value}
+             for b in range(1, 6) for shape in ("32k", "8k")
+             for a, value in (("OFF", 100), ("ON", 150 if shape == "32k" else 50))]
+    d = G.decide(sp, units)
+    assert d["verdict"] == "KEEP_ON"
+    assert d["per_shape"]["32k"]["arms"]["ON"]["ratio"] == 1.5
+    assert d["per_shape"]["8k"]["gate"] is False
+    for u in units:
+        if u["shape"] == "32k" and u["arm"] == "ON" and u["block"] == 1:
+            u["metric"] = 110
+    assert G.decide(sp, units)["verdict"] == "FUTILITY_OP_BELOW_FLOOR"
+
+
+def test_op_trace_reader_and_missing_kernel_fail_closed(tmp_path):
+    sp = op_spec()
+    def fake_run(cmd, env, log, timeout):
+        directory = cmd[cmd.index('-d') + 1]
+        os.makedirs(directory, exist_ok=True)
+        with open(os.path.join(directory, 'fixture_kernel_trace.csv'), 'w') as f:
+            f.write('Kernel_Name,Start_Timestamp,End_Timestamp\nattention,0,1000\nattention,0,3000\n')
+        os.makedirs(os.path.dirname(log), exist_ok=True)
+        with open(log, 'w') as f:
+            f.write(G._synthetic_log(sp, 'ON'))
+        return {'rc': 0, 'secs': 1}
+    gate = G.Gate(sp, str(tmp_path), run_fn=fake_run, stream=QUIET)
+    gate.prepare()
+    u = gate.run_op('test', 'ON', sp['op_unit']['shapes'][0], 1)
+    assert u['metric'] == pytest.approx(.5)
+    assert all(w['ok'] for w in u['witness'].values())
+    sp['op_unit']['kernel_regex'] = 'absent'
+    assert 'no kernel' in gate.run_op('test2', 'ON', sp['op_unit']['shapes'][0], 1)['error']
+
+
+def test_op_separate_futility_shapes_and_incomplete_matrix():
+    sp = op_spec()
+    sp["op_unit"]["shapes"][1]["gate"] = True
+    sp["op_unit"]["shapes"][1]["futility"] = False
+    units = [{"kind": "op", "arm": a, "shape": shape, "block": b, "metric": value}
+             for b in range(1, 6) for shape in ("32k", "8k")
+             for a, value in (("OFF", 100), ("ON", 150 if shape == "32k" else 50))]
+    assert G.decide(sp, units)["verdict"] == "NO_KEEP"
+    assert not G.decide(sp, units[:-1])["terminal"]
+    assert G.result_doc(sp, units, G.decide(sp, units))["op_decide"] == sp["op_decide"]
+
+
+def test_op_ci_uses_paired_served_decision():
+    sp = op_spec()
+    sp["op_decide"] = {"kind": "ci_lower"}
+    units = [{"kind": "op", "arm": a, "shape": sh["filter"], "block": b, "metric": v}
+             for b in range(1, 6) for sh in sp["op_unit"]["shapes"]
+             for a, v in (("OFF", 100), ("ON", 200))]
+    d = G.decide(sp, units)
+    assert d["verdict"] == "KEEP_ON"
+    assert d["per_shape"]["32k"]["decision"]["verdict"] == "KEEP_ON"
+
+
+def test_op_replay_rejects_removed_trace(tmp_path):
+    sp = op_spec()
+    (tmp_path / "logs").mkdir()
+    (tmp_path / "logs" / "x.log").write_text(G._synthetic_log(sp, "ON"))
+    H.append_unit({"unit_id": "x", "kind": "op", "arm": "ON", "shape": "32k", "block": 1,
+                   "metric": 999, "gate_unit": True, "log": "logs/x.log"}, str(tmp_path))
+    units, mode, _ = G.replay_units(sp, str(tmp_path), str(tmp_path))
+    assert mode == "units" and "no kernel" in units[0]["error"]
+    assert G.decide(sp, units)["verdict"] == "FUTILITY_HARNESS_MISSING_OUTPUT"
+
+
+def test_generator_op_no_served_workload_and_sealed_reader(tmp_path):
+    sp = op_spec()
+    args = ['new', '--id', 'ak-test-op-gpu-20261126', '--task', 'x.md:T', '--model', 'test-model',
+            '--root', str(tmp_path), '--metric', 'op_gbps', '--op-unit', json.dumps(sp['op_unit']),
+            '--op-decide', json.dumps(sp['op_decide']), '--knob', 'GGML_HIP_Q8MC:' + Q8MC_ARMED,
+            '--arm', 'OFF:', '--arm', 'ON:GGML_HIP_Q8MC=1', '--baseline', 'OFF', '--no-rehearse']
+    assert MK.gate_main(args) == 0
+    row = tmp_path / 'ak-test-op-gpu-20261126'
+    assert (row / 'rocprof_trace.py').is_file()
+    assert 'rocprof_trace.py' in (row / 'SOURCE.sha256').read_text()
+    assert "'op_gbps'" in (row / 'job.py').read_text()
+
+
+def test_op_tbo_witness_is_judged_and_diagnostics_do_not_gate():
+    sp = op_spec()
+    sp['correctness'] = {'kind': 'tbo', 'argv': [os.path.join(FIX_BIN, 'test-backend-ops')],
+                         'arms': ['OFF', 'ON'], 'witness': True}
+    assert G.witness_for(sp, 'ON', G._synthetic_log(sp, 'ON'), unit_type='tbo')['GGML_HIP_Q8MC']['ok']
+    assert not G.witness_for(sp, 'ON', 'no marker', unit_type='tbo')['GGML_HIP_Q8MC']['ok']
+    us = [{'unit_id': 'c-tbo-' + a, 'kind': 'c-tbo', 'arm': a, 'n_cases': 1, 'n_ok': n, 'rc': 0}
+          for a, n in [('OFF', 0), ('ON', 1)]]
+    assert G.decide_correctness(sp, us)[0] == 'FAIL_CORRECTNESS'
+
+
+def test_op_smoke_visits_every_arm_and_reduced_tbo(tmp_path):
+    sp = op_spec()
+    sp['correctness'] = {'kind': 'tbo', 'argv': [os.path.join(FIX_BIN, 'test-backend-ops'), 'test'],
+                         'arms': ['OFF', 'ON'], 'min_cases': 102, 'ops': 'FLASH_ATTN_EXT'}
+    g = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    calls = []
+    def op(uid, arm, shape, block):
+        calls.append(('op', arm, shape['filter'], block))
+        return {'unit_id': uid, 'kind': 'op', 'arm': arm, 'shape': shape['filter'], 'block': block,
+                'metric': 1.0, 'gate_unit': True, 'witness': G.witness_for(sp, arm, G._synthetic_log(sp, arm), unit_type='op')}
+    def corr(uid, kind, arm, extra):
+        c = G.corr_of(g.spec, kind)
+        calls.append(('tbo', arm, c['ops'], c['min_cases']))
+        return {'unit_id': uid, 'kind': kind, 'arm': arm, 'gate_unit': True, 'rc': 0,
+                'n_cases': 1, 'n_ok': 1, 'n_fail': 0, 'pass': True}
+    g.run_op, g.run_correctness_unit = op, corr
+    assert g.smoke() == 0
+    assert [x[1] for x in calls if x[0] == 'op'] == list(sp['arms'])
+    assert all(x[2:] == ('ADD', 1) for x in calls if x[0] == 'tbo')
+
+
+def test_op_content_proof_fails_closed(tmp_path, monkeypatch):
+    sp = op_spec()
+    store = tmp_path / 'store'
+    (store / 'bin').mkdir(parents=True)
+    (store / 'BUILD-IDENTITY.json').write_text(json.dumps({'source_sha': 'a' * 40}))
+    (store / 'bin' / 'libggml-hip.so').write_bytes(b'fixture')
+    sp['op_unit']['proof'] = {'store': str(store), 'source_sha': 'a' * 40,
+                              'library_sha256': G.sha_bytes(b'fixture')}
+    monkeypatch.setattr(G.subprocess, 'run', lambda *a, **kw: type('Result', (), {'returncode': 0})())
+    g = G.Gate(sp, str(tmp_path / 'row'), env={}, stream=QUIET)
+    assert not g.prepare()
+    (store / 'bin' / 'libggml-hip.so').write_bytes(b'wrong')
+    assert any('sha256 mismatch' in message for message in g.prepare())
+
+
+def test_op_first_rep_look_runs_before_kld(tmp_path):
+    sp = op_spec()
+    sp['correctness'] = [
+        {'kind': 'tbo', 'argv': [os.path.join(FIX_BIN, 'test-backend-ops')], 'arms': ['OFF', 'ON']},
+        {'kind': 'kld', 'argv': [os.path.join(FIX_BIN, 'llama-perplexity')], 'arms': ['OFF', 'ON'], 'base_arm': 'OFF'}]
+    g = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    calls = []
+    def corr(uid, kind, arm, extra):
+        calls.append(kind)
+        rec = {'unit_id': uid, 'kind': kind, 'arm': arm, 'gate_unit': True, 'rc': 0, **extra}
+        if kind == 'c-tbo':
+            rec.update(n_cases=1, n_ok=1, n_fail=0, **{'pass': True})
+        else:
+            rec['mean_kld'] = 0.0
+            if extra.get('mode') == 'base':
+                (tmp_path / 'out' / 'kld-base.bin').write_bytes(b'fixture')
+        return rec
+    def op(uid, arm, shape, block):
+        calls.append(('op', shape['filter'], block))
+        return {'unit_id': uid, 'kind': 'op', 'arm': arm, 'shape': shape['filter'], 'block': block,
+                'gate_unit': True, 'metric': 200 if arm == 'ON' else 100}
+    g.run_correctness_unit, g.run_op = corr, op
+    assert g.run() == 0
+    result = json.loads((tmp_path / 'out' / 'RESULT.json').read_text())
+    assert result['verdict'] == 'KEEP_ON'
+    progress = json.loads((tmp_path / 'out' / 'OP-GBPS.json').read_text())
+    assert progress['per_shape']['32k']['arms']['ON']['ratio'] == 2
+    first_kld = calls.index('c-kld')
+    assert calls[:2] == ['c-tbo', 'c-tbo']
+    assert calls[2:first_kld] == [('op', '32k', 1), ('op', '32k', 1)]
+    assert any(call == ('op', '8k', 1) for call in calls[first_kld:])
+
+
+def test_op_witness_exactly_once():
+    sp = op_spec()
+    sp['op_unit']['witness_exactly_once'] = True
+    marker = sp['knobs']['GGML_HIP_Q8MC']['marker']
+    assert G.witness_for(sp, 'ON', marker, unit_type='op')['GGML_HIP_Q8MC']['ok']
+    w = G.witness_for(sp, 'ON', marker + '\n' + marker, unit_type='op')['GGML_HIP_Q8MC']
+    assert not w['ok'] and w['count'] == 2
+
+
+def test_op_forced_early_failure_uses_declared_verdict_map(tmp_path):
+    sp = op_spec()
+    sp['verdict_map'] = {'FAIL': {'FAIL_CORRECTNESS': 'FAIL_CORRECTNESS_TBO'}}
+    g = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    g.prepare()
+    g.finish([], {'verdict': 'FAIL_CORRECTNESS', 'polar': 'FAIL', 'terminal': True, 'reason': 'tbo failed'})
+    result = json.loads((tmp_path / 'out' / 'RESULT.json').read_text())
+    assert result['verdict'] == 'FAIL_CORRECTNESS_TBO'
+    assert result['native_verdict'] == 'FAIL_CORRECTNESS'
+
+
+def test_op_harness_failure_retains_available_shape_ratios():
+    sp = op_spec()
+    units = [{'kind': 'op', 'arm': 'OFF', 'shape': '32k', 'block': 1, 'metric': 100},
+             {'kind': 'op', 'arm': 'ON', 'shape': '32k', 'block': 1, 'metric': 200},
+             {'kind': 'op', 'arm': 'OFF', 'shape': '8k', 'block': 1, 'error': 'no kernel'}]
+    d = G.decide(sp, units)
+    assert d['verdict'] == 'FUTILITY_HARNESS_MISSING_OUTPUT'
+    assert d['per_shape']['32k']['arms']['ON']['ratio'] == 2
+
+
+def test_op_kld_requires_success_and_finite_result(tmp_path):
+    sp = op_spec()
+    sp['correctness'] = {'kind': 'kld', 'argv': [os.path.join(FIX_BIN, 'llama-perplexity')],
+                         'arms': ['OFF', 'ON'], 'base_arm': 'OFF'}
+    g = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    g.prepare()
+    log = tmp_path / 'out' / 'logs' / 'k.log'
+    log.write_text('Mean KLD: 0.001\n')
+    u = g.finish_correctness({'unit_id': 'k', 'kind': 'c-kld', 'arm': 'ON', 'mode': 'kld', 'rc': 1,
+                              'log': 'logs/k.log'})
+    assert u['error_class'] == 'MISSING_OUTPUT'
+    units = [{'unit_id': 'c-kld-base-OFF', 'kind': 'c-kld', 'arm': 'OFF', 'mode': 'base'},
+             {'unit_id': 'c-kld-OFF', 'kind': 'c-kld', 'arm': 'OFF', 'mode': 'kld', 'mean_kld': 0.0},
+             {'unit_id': 'c-kld-ON', 'kind': 'c-kld', 'arm': 'ON', 'mode': 'kld', 'mean_kld': float('inf')}]
+    assert G.decide_correctness(sp, units)[0] == 'FUTILITY_HARNESS_MISSING_OUTPUT'

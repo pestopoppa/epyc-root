@@ -95,3 +95,25 @@ unchecked prompts are deterministic. The server identity check normally uses
 integer `smoke.identity_n_predict` to request a longer identity check, up to the full
 correctness limit. Longer checks can reduce prompt coverage within the budget. Command-mode
 identity uses its declared command arguments; authors control its token limit there.
+
+### Op timing gates
+
+`mk_ak_row.py gate new --metric op_gbps --op-unit JSON` declares a profiler-based gate without a served workload.
+`--op-unit` accepts `@file`; its object names `op`, `reps`, `kernel_regex`, and `shapes`. Each shape is an object with
+`filter` (the test-backend-ops `-p` regex) and `bytes` (bytes per dispatch). `gate: false` reports a shape without
+including it in KEEP, and `futility: false` excludes it from the first-rep look. Set `argv` to the test-backend-ops
+binary, or supply a tbo correctness unit whose binary is used. `arms` selects the timing arms; `--baseline` and
+`--candidate` select the reference and candidate. `merge_regex` adds the mean merge duration to the mean kernel
+duration, and `attribution` maps arms to required kernel-name regexes. `arm_argv` permits per-arm binaries.
+
+`--op-decide '{"kind":"ratio_min","threshold":1.5,"futility":{"first_rep_gmean_min":1.2}}'` gates on the ratio of
+per-arm medians on every qualifying shape and stops after the declared first-rep geometric-mean look. The default
+`ci_lower` uses the paired CI rule from served gates. Timing records, per-shape ratios, decisions and the declared
+rule are saved in RESULT.json; incremental first numbers and ratios go to `out/OP-GBPS.json`, and rocprof CSVs and logs remain under `out/`. Missing profiler output, kernels, attribution
+or witness lines fails closed. An optional `proof` object pins `store`, `source_sha` and `library_sha256` and verifies
+the store's SHA256SUMS; KLD correctness may declare `min_vram_gib` and `library_root` for residency checks.
+
+A tbo unit may set `required_cases` to `{case_args_regex: minimum_distinct_cases}` and list non-gating
+`diagnostic_arms`. Set `witness: true` when that TBO actually emits the declared markers; `witness_exactly_once`
+on the op unit makes present markers occur exactly once in each witnessed op, TBO and KLD process. If KLD is declared,
+the first-rep futility shapes run after TBO and before KLD; the rest of the census follows the KLD decision.

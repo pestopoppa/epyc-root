@@ -588,8 +588,8 @@ import ak_gate as G  # noqa: E402
 
 GATE_JOB = '''#!/usr/bin/python3
 """{id} (autokernel gate; {task}). DECLARED gate row (mk_ak_row.py gate new): this file only DECLARES the gate.
-ak_gate.py (vendored, sealed) owns the fresh server per visit, -lv >= {lv} on every llama argv, ABBA order, the per-knob
-per-arm witness, correctness first, the OFF/OFF2 A/A guard, the smoke, resume and replay. Edit the declaration, then
+ak_gate.py (vendored, sealed) owns {timing_desc}, -lv >= {lv} on every llama argv, ABBA order, the per-knob
+per-arm witness, correctness, the smoke, resume and replay. Edit the declaration, then
 `mk_ak_row.py --reseal <dir>` (re-seal + lint + --selftest).
 RULE: {rule}
 KNOBS (witness required, judged per knob per arm): {knobs}
@@ -604,7 +604,7 @@ import ak_gate as G  # noqa: E402
 
 ROW_ID = {id!r}
 KNOBS = {knob_names!r}
-# The production server argv ({argv_source}); "{{PORT}}" / "{{SLOTDIR}}" are filled per visit by ak_gate.
+# Base argv ({argv_source}); "{{PORT}}" / "{{SLOTDIR}}" are filled per visit by ak_gate.
 SERVER_ARGV = {server_argv}
 {extra_argvs}SPEC = {spec}
 
@@ -740,11 +740,29 @@ def gate_scaffold(a, served=None):
     if served:
         argv = list(served["argv"])
         src = f"orchestrator registry role {served['registry_role']}, spec.served_ref"
+    elif a.metric == "op_gbps":
+        argv = []
+        src = "op unit (no server)"
     elif a.server_argv_json:
         argv = json.loads(a.server_argv_json)
         src = "declared with --server-argv-json"
     else:
         raise SystemExit("mk_ak_row gate: --served-ref ROLE (preferred) or --server-argv-json '[...]' is required")
+    op = json.loads(open(a.op_unit[1:]).read() if a.op_unit.startswith("@") else a.op_unit) if getattr(a, "op_unit", None) else None
+    if a.metric == "op_gbps" and not op:
+        raise SystemExit("mk_ak_row gate: --metric op_gbps requires --op-unit JSON")
+    if a.metric == "op_gbps" and served:
+        raise SystemExit("mk_ak_row gate: --served-ref cannot be combined with an op unit")
+    if a.metric != "op_gbps" and (op or getattr(a, "op_decide", None)):
+        raise SystemExit("mk_ak_row gate: --op-unit/--op-decide require --metric op_gbps")
+    if op and not op.get("argv") and a.correctness:
+        cs = json.loads(open(a.correctness[1:]).read() if a.correctness.startswith("@") else a.correctness)
+        tbo = next((c for c in (cs if isinstance(cs, list) else [cs]) if c.get("kind") == "tbo"), None)
+        if tbo and tbo.get("argv"):
+            op["argv"] = [tbo["argv"][0]]
+    if op and op.get("argv"):
+        argv = list(op["argv"])
+        src = "op test-backend-ops argv (no server)"
     fix_ref = parse_fix_ref(getattr(a, "fix_ref", None), argv)
     argv = G.ensure_lv(argv, lv)
     if served:
@@ -760,18 +778,24 @@ def gate_scaffold(a, served=None):
         raise SystemExit(f"mk_ak_row gate: --{a.direction}-is-better contradicts --metric {a.metric} "
                          f"({'higher' if m[1] else 'lower'} is better); the metric's direction is fixed in ak_gate.METRICS")
     keep = parse_keep_rule(a.keep_rule)
+    if op:
+        keep.update(n_blocks=op.get("reps"), dummy_block=False)
     if not a.model:
         mp = next((argv[i + 1] for i, t in enumerate(argv[:-1]) if t in ("-m", "--model")), "")
         a.model = os.path.basename(mp)[:-5] if mp.endswith(".gguf") else os.path.basename(mp)
         if not a.model:
             raise SystemExit("mk_ak_row gate: --model not given and the server argv has no -m <gguf>")
+    op_decide = json.loads(a.op_decide) if op and a.op_decide else {"kind": "ci_lower"}
     if not a.rule.strip():
-        a.rule = (f"KEEP iff {a.metric} ({'higher' if m[1] else 'lower'} is better) speedup CI lower > "
-                  f"{keep['threshold']} over the ABBA blocks, witness + correctness + A/A first")
+        if op and op_decide.get("kind") == "ratio_min":
+            a.rule = f"KEEP iff candidate/baseline median-of-reps ratio >= {op_decide.get('threshold')} on every gating shape, witness and correctness first"
+        else:
+            a.rule = (f"KEEP iff {a.metric} ({'higher' if m[1] else 'lower'} is better) speedup CI lower > "
+                      f"{keep['threshold']} over the ABBA blocks, witness + correctness + A/A first")
     d = os.path.join(a.root, a.id)
     if os.path.exists(d):
         raise SystemExit(f"mk_ak_row: {d} exists; pick a new -rN id")
-    bindir = os.path.dirname(str(argv[G.llama_index(argv) or 0]))
+    bindir = os.path.dirname(str((op.get("argv") or [""])[0] if op else argv[G.llama_index(argv) or 0]))
     env = {"PATH": "/usr/bin:/bin" + (":/opt/rocm/bin" if a.lane == "gpu" else ""),
            "LD_LIBRARY_PATH": bindir + (":/opt/rocm/lib" if a.lane == "gpu" else "")}
     if a.lane == "gpu":
@@ -798,7 +822,7 @@ def gate_scaffold(a, served=None):
             raise SystemExit(f"mk_ak_row gate: --workload-input {a.workload_input} must be a --copy-input destination")
         workload.update(input=a.workload_input, offsets=[int(x) for x in a.offsets.split(",")], win_chars=a.win_chars,
                         suffix=a.prompt_suffix)
-    else:
+    elif not op:
         raise SystemExit("mk_ak_row gate: declare the workload: --prompt TEXT (repeatable) or --workload-input inputs/X")
     corr = json.loads(open(a.correctness[1:]).read() if a.correctness.startswith("@") else a.correctness) \
         if a.correctness else None
@@ -830,6 +854,11 @@ def gate_scaffold(a, served=None):
               "correctness": corr, "smoke": {"prompt_chars": a.smoke_prompt_chars, "n_predict": a.smoke_n_predict,
                                              "budget_s": a.smoke_budget_s, **({"arm": a.smoke_arm} if a.smoke_arm else {})},
               "inputs": inputs, "dirs": list(a.dir)}
+    if a.candidate:
+        spec_g["candidates"] = a.candidate
+    if op:
+        spec_g["op_unit"] = op
+        spec_g["op_decide"] = op_decide
     if a.smoke_budget_s is None:
         a.smoke_budget_s = derive_smoke_budget(a, spec_g)
         spec_g["smoke"]["budget_s"] = a.smoke_budget_s
@@ -887,7 +916,8 @@ def gate_scaffold(a, served=None):
     with open(os.path.join(d, "job.py"), "w") as f:
         f.write(GATE_JOB.format(id=a.id, task=a.task, rule=a.rule, lv=lv, knobs=", ".join(knobs), knob_names=list(knobs),
                                 gen_version=GEN_VERSION, harness_sha=harness_sha(), gate_sha=gate_sha(),
-                                argv_source=src, server_argv=_argv_lit(argv), extra_argvs=extra_argvs, spec=body))
+                                argv_source=src, server_argv=_argv_lit(argv), extra_argvs=extra_argvs, spec=body,
+                                timing_desc="op profiling per arm and shape" if op else "the fresh server per visit"))
     port_list = H.alloc_ports(a.id, 1)
     claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else GPU_HOST_CLAIM)
     regions = ("mi210_0," + claim) if a.lane == "gpu" else claim   # publish books the GPU lane + its host threads
@@ -899,10 +929,10 @@ def gate_scaffold(a, served=None):
     os.chmod(os.path.join(d, "launch.sh"), 0o755)
     with open(os.path.join(d, "check_complete.py"), "w") as f:
         f.write(GATE_CHECK.format(result=os.path.join(d, "out", "RESULT.json")))
-    for lib in ("ak_row_harness.py", "ak_gate.py"):
+    for lib in ("ak_row_harness.py", "ak_gate.py", "rocprof_trace.py"):
         shutil.copy(os.path.join(HERE, lib), os.path.join(d, lib))
-    seal(d, extra=sorted(inputs))
-    visits = starts * len(arms) * max(1, len(a.sampler)) + sum(x.get("blocks", 1) * len(x.get("arms", [])) for x in spec_g.get("units", [])) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
+    seal(d, extra=sorted(inputs) + ["rocprof_trace.py"])
+    visits = (op["reps"] * len(op["shapes"]) * len(op.get("arms") or arms) if op else starts * len(arms) * max(1, len(a.sampler))) + sum(x.get("blocks", 1) * len(x.get("arms", [])) for x in spec_g.get("units", [])) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
     spec = {"owner": "autokernel", "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.id,
             "regions": regions, "claim_cpus": claim, "verdict_by": "agent", "keep_rule": keep, "launcher": os.path.join(d, "launch.sh"),
             "result_path": os.path.join(d, "out", "RESULT.json"), "result_format": "json", "scratch_root": d,
@@ -923,7 +953,14 @@ def gate_scaffold(a, served=None):
                                "cap": v["cap"], "knob": k} for k, v in knobs.items() if not v["marker"].startswith("re:")],
             "keep": list(G.EVIDENCE_PATHS),   # the replay input of a failed gate; the reaper honours spec.keep
             "notes": "scaffolded by mk_ak_row.py gate new (declared gate row; ak_gate owns the harness)"}
+    if op:
+        spec["decision_rule"] = a.rule + " | op-decide: " + json.dumps(spec_g["op_decide"], sort_keys=True)
+        spec["fresh_server_per_visit"] = False
+        spec.pop("fresh_server_reason", None)
+        spec["estimate_basis"]["reason"] = f"pre-smoke: {visits} op and correctness units; re-book from the smoke"
     futility = getattr(a, "futility", None)
+    if op and not futility and (spec_g["op_decide"].get("futility") or {}).get("first_rep_gmean_min"):
+        futility = "stop after rep 1 when first-rep geometric mean ratio below " + str(spec_g["op_decide"]["futility"]["first_rep_gmean_min"])
     if futility is None and keep.get("look_blocks") is not None:
         futility = f"stop at look={keep['look_blocks']} if every candidate ci_upper<{keep['threshold']}"
     if futility is not None:
@@ -1026,9 +1063,12 @@ def gate_main(argv=None):
     n.add_argument("--arm", action="append", default=[], metavar="NAME:KNOB=VAL,...")
     n.add_argument("--expect", action="append", default=[], metavar="ARM:KNOB=present|absent,...",
                    help="override derived expect cells (default: set -> present, unset -> absent)")
+    n.add_argument("--candidate", action="append", default=[], help="explicit candidate arm (repeatable)")
     n.add_argument("--baseline", default="", help="baseline arms, comma list (default: the arms that set no knob)")
     n.add_argument("--metric", choices=sorted(G.METRICS))
     n.add_argument("--futility", help="stop-on-futility rule text")
+    n.add_argument("--op-unit", help="op timing unit JSON or @file")
+    n.add_argument("--op-decide", help="op decision JSON")
     n.add_argument("--keep-rule", metavar="ci_lower>X,n=N[,look=L][,aa=A][,dummy=1]")
     dirn = n.add_mutually_exclusive_group()
     dirn.add_argument("--lower-is-better", dest="direction", action="store_const", const="lower",
@@ -1094,6 +1134,11 @@ def gate_main(argv=None):
         return check_only_dir(a.check_only, a.flags)
     if a.create_box:
         return print_box_stub(a)
+    if a.metric == "op_gbps" and not a.keep_rule:
+        op_decl = json.loads(open(a.op_unit[1:]).read() if a.op_unit.startswith("@") else a.op_unit) if a.op_unit else {}
+        n = op_decl.get("reps", 8)
+        look = max(1, n // 2) if type(n) is int else 1
+        a.keep_rule = f"ci_lower>1.0,n={n},look={look},aa=none"
     for k in ("id", "task", "metric", "keep_rule"):
         if not getattr(a, k):
             ap.error(f"--{k.replace('_', '-')} is required")
@@ -1828,7 +1873,8 @@ def signature_scaffold(a, fetch=None) -> int:
     with open(os.path.join(d, "bottleneck_signature.py"), "wb") as f:
         f.write(mod)
     shutil.copy(a.stream_src, os.path.join(d, "stream2.hip"))
-    seal(d, extra=("bottleneck_signature.py", "stream2.hip"))
+    shutil.copy(os.path.join(HERE, "rocprof_trace.py"), os.path.join(d, "rocprof_trace.py"))
+    seal(d, extra=("bottleneck_signature.py", "stream2.hip", "rocprof_trace.py"))
     if lint(d):
         print(f"mk_ak_row: {d} fails ak_row_lint; spec.json NOT written", file=sys.stderr)
         return 1

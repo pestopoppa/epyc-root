@@ -389,3 +389,12 @@ def test_auto_budget_caps_long_correctness_timeouts(env, capsys):
     spec["arms"].update({f"arm{i}": {} for i in range(10)})
     assert MK.derive_smoke_budget(args, spec) == 2400
     assert "WARN: automatic smoke budget capped" in capsys.readouterr().out
+
+
+def test_op_gate_requires_unit_without_requiring_served(env):
+    args = ['gate', 'new', '--id', 'ak-op-required-gpu-20261126', '--task', 'akr.md:AKR-1',
+            '--model', 'Qwen3.8-27B-Q8_0', '--root', str(env['rows']), '--metric', 'op_gbps',
+            '--knob', f'GGML_HIP_Q8MC:{Q8MC_ARMED}', '--arm', 'OFF:', '--arm', 'ON:GGML_HIP_Q8MC=1',
+            '--baseline', 'OFF', '--no-rehearse']
+    with pytest.raises(SystemExit, match='--metric op_gbps requires --op-unit'):
+        run(args)

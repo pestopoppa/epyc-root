@@ -64,12 +64,24 @@ def test_signature_profile_scaffold_lints(tmp_path):
     # e3faa5b0b: GPU rows reserve the 88-95 timing threads only when requested; a counter profile does not
     assert spec["lane"] == "gpu" and spec["regions"] == "mi210_0,184-191"
     sealed = (d / "SOURCE.sha256").read_text()
-    for n in ("job.py", "bottleneck_signature.py", "stream2.hip", "ak_row_harness.py", "launch.sh"):
+    for n in ("job.py", "bottleneck_signature.py", "rocprof_trace.py", "stream2.hip", "ak_row_harness.py", "launch.sh"):
         assert f"  {n}\n" in sealed, n
     assert "spec.json" not in sealed
     job = (d / "job.py").read_text()
     assert "@@" not in job and "q8mf6_mul_mat" in job and "profile=signature" in job
     assert not MK.lint(str(d))
+
+
+def test_trace_csv_reader_and_duration(tmp_path):
+    from rocprof_trace import mean_duration_s, read_csvs
+
+    trace = tmp_path / "nested" / "sample_kernel_trace.csv"
+    trace.parent.mkdir()
+    trace.write_text("Kernel_Name,Start_Timestamp,End_Timestamp\nfoo,100,200\nfoo,200,500\n")
+    rows = read_csvs(str(tmp_path), "kernel_trace.csv")
+    assert len(rows) == 2
+    assert mean_duration_s(rows) == pytest.approx(2e-7)
+    assert mean_duration_s([]) is None
 
 
 def test_signature_futility_rule_filled_and_passes_publish_check(tmp_path):

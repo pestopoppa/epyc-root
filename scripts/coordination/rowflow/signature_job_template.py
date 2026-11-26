@@ -19,14 +19,11 @@ STOP      futility = the harness stops above (spec.futility.rule, custom); on-an
 KNOBS: none"""
 # GENERATED-BY: @@STAMP@@
 import atexit
-import csv
-import glob
 import json
 import os
 import re
 import shlex
 import signal
-import statistics
 import subprocess
 import sys
 import time
@@ -35,6 +32,7 @@ D = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, D)
 import ak_row_harness as H  # noqa: E402
 import bottleneck_signature as BS  # noqa: E402  vendored + sealed by mk_ak_row.py --profile signature
+from rocprof_trace import read_csvs, mean_duration_s  # noqa: E402
 
 ROW_ID = '@@ID@@'
 KNOBS = []
@@ -115,14 +113,6 @@ def run_logged(uid, argv, env, timeout=1800):
         _SERVERS.remove(p)
     return {'rc': p.returncode, 'txt': ANSI.sub('', open(log, 'rb').read().decode(errors='replace')),
             'secs': round(time.time() - t0, 1)}
-
-
-def read_csvs(odir, suffix):
-    rows = []
-    for p in glob.glob(odir + '/**/*' + suffix, recursive=True):
-        with open(p, newline='') as f:
-            rows += list(csv.DictReader(f))
-    return rows
 
 
 def prof_argv(uid, odir, ctrs):
@@ -209,11 +199,10 @@ def trace_record(i, rc, rows):
     same kernel at other grids are filtered out and recorded as other_grids."""
     pat, exp = KERNELS[i]['name'], KERNELS[i]['grid']
     sel = [r for r in rows if pat in (r.get('Kernel_Name') or '') and _grid(r) == exp]
-    ds = [(int(r['End_Timestamp']) - int(r['Start_Timestamp'])) * 1e-9 for r in sel]
-    dur = statistics.mean(ds) if ds else None
-    return {'kind': 'trace', 'i': i, 'kernel': pat, 'rc': rc, 'n_dispatch': len(ds), 'dur_us': dur and dur * 1e6,
+    dur = mean_duration_s(sel)
+    return {'kind': 'trace', 'i': i, 'kernel': pat, 'rc': rc, 'n_dispatch': len(sel), 'dur_us': dur and dur * 1e6,
             'gbps': (KERNELS[i]['bytes'] / dur / 1e9) if dur else None,
-            'witness': {'ok': rc == 0 and bool(ds), 'expected_grid': exp, 'other_grids': other_grids(i, rows)}}
+            'witness': {'ok': rc == 0 and bool(sel), 'expected_grid': exp, 'other_grids': other_grids(i, rows)}}
 
 
 def unit_trace(uid, i):
