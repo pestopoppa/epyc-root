@@ -1483,12 +1483,25 @@ def test_smoke_runs_kld_base_candidate_and_noise(tmp_path):
         uid = os.path.basename(log).removesuffix(".log")
         arm = next(a for a in ("NOISE", "OFF2", "ON", "OFF") if uid.endswith("-" + a))
         seen.append((arm, "--kl-divergence" in argv))
+        assert argv[argv.index("--chunks") + 1] == "2"
         with open(log, "w") as f:
             f.write(G._synthetic_log(sp, arm) + "\nMean KLD: 0.0001\n")
         return {"rc": 0, "secs": 0.01}
     g.run_fn = run
     assert g.smoke() == 0
     assert seen == [("OFF", False), ("OFF2", True), ("ON", True), ("NOISE", True)]
+    full_argv = []
+    def run_full(argv, env, log, timeout):
+        full_argv.append(argv)
+        return {"rc": 0, "secs": 0.01}
+    g.run_fn = run_full
+    g.run_correctness_unit("c-kld-base-OFF", "c-kld", "OFF", {"mode": "base"})
+    assert "--chunks" not in full_argv[0]
+    sp["smoke"]["kld_chunks"] = 3
+    assert G.corr_of(G.smoke_spec(sp), "c-kld")["argv"][-2:] == ["--chunks", "3"]
+    sp["smoke"]["kld_chunks"] = 0
+    with pytest.raises(G.SpecError, match="smoke.kld_chunks"):
+        G.validate_spec(sp)
 
 
 def test_smoke_tbo_uses_one_filter_per_arm(tmp_path):
@@ -1499,13 +1512,13 @@ def test_smoke_tbo_uses_one_filter_per_arm(tmp_path):
     g.visit_fn = visit_stub(sp, g.out)
     seen = []
     def run(argv, env, log, timeout):
-        seen.append(argv[argv.index("-o") + 1])
+        seen.append((argv[argv.index("-o") + 1], argv[argv.index("-p") + 1]))
         with open(log, "w") as f:
             f.write("MUL_MAT(m=1): OK\n")
         return {"rc": 0, "secs": 0.01}
     g.run_fn = run
     assert g.smoke() == 0
-    assert seen == ["MUL_MAT"] * 3
+    assert seen == [("ADD", r"^type=f16,ne=\[1,1,8,1\],nr=\[1,1,1,1\],nf=1(,perm1=0(,src_overlap=0)?)?$")] * 3
 
 
 def test_smoke_identity_budget_limits_complete_pairs(tmp_path, monkeypatch):

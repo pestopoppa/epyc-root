@@ -53,7 +53,7 @@ import ak_row_harness as H  # noqa: E402
 
 GATE_VERSION = "1"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 5
+UNIT_SEMANTICS_VERSION = 6
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
 EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke")
@@ -322,6 +322,9 @@ def validate_spec(spec):
     kinds = [c.get("kind") for c in corr_list(spec)]
     if len(kinds) != len(set(kinds)):
         errs.append(f"correctness: one unit per kind (got {kinds})")
+    kld_chunks = (spec.get("smoke") or {}).get("kld_chunks")
+    if kld_chunks is not None and (type(kld_chunks) is not int or kld_chunks < 1):
+        errs.append("smoke.kld_chunks must be a positive integer")
     identity_limit = (spec.get("smoke") or {}).get("identity_n_predict")
     if identity_limit is not None and (type(identity_limit) is not int or identity_limit < 1):
         errs.append("smoke.identity_n_predict must be a positive integer")
@@ -978,16 +981,16 @@ def smoke_spec(spec, identity_count=None):
             sm = spec.get("smoke") or {}
             c["n_predict"] = min(int(c.get("n_predict") or 64), int(sm.get("identity_n_predict", sm.get("n_predict", 32))))
             c["arms"] = baseline_arms(spec)[:2]
+        elif c["kind"] == "kld":
+            c["argv"] = list(c.get("argv") or []) + ["--chunks", str((spec.get("smoke") or {}).get("kld_chunks", 2))]
         elif c["kind"] == "served_quality":
             c["_smoke"] = True  # one example of each type, while retaining the same scorer and token cap
         elif c["kind"] == "selftest_bin":
             c["runs"] = 1
         elif c["kind"] == "tbo":
-            ops = c.get("ops")
-            if isinstance(ops, dict):
-                c["ops"] = {a: str(v).split(",")[0] for a, v in ops.items()}
-            elif ops:
-                c["ops"] = str(ops).split(",")[0]
+            # An exact, small test-backend-ops case avoids running an entire operation suite.
+            c["ops"] = "ADD"
+            c["argv"] = list(c.get("argv") or []) + ["-p", r"^type=f16,ne=\[1,1,8,1\],nr=\[1,1,1,1\],nf=1(,perm1=0(,src_overlap=0)?)?$"]
             c["min_cases"] = 1
     return reduced
 
