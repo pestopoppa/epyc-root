@@ -476,7 +476,10 @@ class Sandbox:
                 f.pop("row_sha256", None)
                 _jdump(os.path.join(dd, f"FAIL-{i + 1}.json"), f)
             if blob.get("smoke_queued") is not None:
-                _jdump(os.path.join(dd, "SMOKE-QUEUED.json"), blob["smoke_queued"])
+                marker = os.path.join(dd, "SMOKE-QUEUED.json")
+                _jdump(marker, blob["smoke_queued"])
+                # The allocator reads marker mtimes during this tick, before stamp() runs.
+                os.utime(marker, (W.t, W.t))
             if blob.get("running") is not None:
                 r = dict(blob["running"])
                 r["pid"] = W.pid() if blob.get("running_alive") else 1

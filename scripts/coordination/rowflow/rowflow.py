@@ -9581,7 +9581,7 @@ def pick_smoke_cpus(free, n=SMOKE_CPUS, timing_q=frozenset()):
 
 
 def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), timing_q=frozenset(),
-                 drain_reserved=frozenset(), gpu_queued=False, demand_reserved=frozenset(), quiet_drain=None):
+                 drain_reserved=frozenset(), gpu_queued=False, demand_reserved=frozenset(), quiet_drain=None, running_quiet=None):
     """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets its record's `cpus` (default n) free
     cores, and its smoke starts detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated
     in place. No free cores is WAIT (logged), never a failure. Returns the placed (rid, cpus).
@@ -9602,6 +9602,10 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
         if smoke_passed(flags, rid):   # a PASS is terminal: never re-smoke a grantable row
             _rm(q)
             log(f"SMOKE-DONE {rid}: PASS already recorded for this launcher; queue record dropped")
+            continue
+        if running_quiet:
+            log(f"SMOKE-WAIT {rid}: quiet timing row {running_quiet['id']} running until "
+                f"{running_quiet.get('end') or '?'}; stays queued (not a failure)")
             continue
         smoke_rank = row_rank(load_json(ready_path(flags, rid)) or (load_json(q) or {}).get("spec"))
         if quiet_drain and float(quiet_drain["rank"]) < smoke_rank:
@@ -10860,9 +10864,15 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 eo = expand(set(o))
                 if eo <= efree:
                     dem |= eo
+        # CPU model loading and decode consume host-wide DRAM bandwidth, including across quarters. QUIET-SERIAL
+        # already holds other quiet CPU rows, so holding their smokes costs no placement opportunity; four smokes
+        # disturbed the final block and lost a 4.7-hour quiet row on 2026-11-26. GPU-only smokes use a separate queue.
+        running_quiet = next((g for g in grants if not g['id'].startswith(BUILD_PREFIX)
+                              and (_interstice_quiet(allrows.get(g['id']))
+                                   or (allrows.get(g['id']) or {}).get('admission_class') == 'block-timing-quiet')), None)
         placed_smokes = place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows),
                                      drain_reserved=frozenset(d_res), gpu_queued=gpu_queued,
-                                     demand_reserved=frozenset(dem), quiet_drain=qh_drain)
+                                     demand_reserved=frozenset(dem), quiet_drain=qh_drain, running_quiet=running_quiet)
     rmode = reservation_mode()   # RESERVATION: off | shadow | enforce (see the RESERVATION block above allocate)
     if rmode == "enforce":   # CLAIM QUEUE (claims were never gated by a disk pause / HOLD-ADMISSIONS; they still are not): pending claim requests are candidates like rows
         try:
