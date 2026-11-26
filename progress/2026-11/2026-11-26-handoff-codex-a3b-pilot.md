@@ -15,3 +15,11 @@ Reused current research implementation instead of dispatching a duplicate repair
 Extended the existing Taskflow belief-source registration to name the real-dispatch producer, immutable attempt manifests, source bundles, and distinct main acceptance. This is prospective wiring documentation; it creates no retrospective measurement warrant. The prior GREP closure was pushed as `9b079df8f42f` after adding the authorized D9 trailer required for the pilot service identity.
 
 Next: codex-a3b-pilot reviews pending worker patches and lands only independently accepted changes.
+
+## 15:39Z — Independently review and repair bounded A3B documentation outputs
+
+Landed two independently reviewed design documents. PAW-5 retains one coherent shadow-classifier candidate with a matched direct-model baseline, independent human gold, explicit abstain/invalid paths, and the correct PAW prerequisite state. The original draft had enum/source/routing contradictions; its model correction still misstated PAW-1. Main repaired the final status and provenance. DS41-W-75 records only the requested AutoKernel seed abstention from pinned source guards. Main excluded an out-of-scope helper and corrected source identifiers/line citations and unsupported detail. Both are human-assisted outcomes, not clean autonomous task successes.
+
+The scratch PAW structural checker also had overly strict heading/provenance placement assumptions. Versioned v2 controls accept valid Markdown headings and source headers, while independently preserving rejection of the original factual errors and refusal of a missing baseline (10 controls). Raw attempts, hashes and old graders are retained under `/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/`.
+
+Next: codex-a3b-pilot finishes the constrained test tasks, repairs observed harness defects, and files performance plus independent outcome evidence.
