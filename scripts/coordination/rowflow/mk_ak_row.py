@@ -845,6 +845,15 @@ def gate_scaffold(a, served=None):
         env[k.strip()] = v
     corr = json.loads(open(a.correctness[1:]).read() if a.correctness.startswith("@") else a.correctness) \
         if a.correctness else None
+    if a.promotion_suites:
+        if corr:
+            raise SystemExit("mk_ak_row gate: --promotion-suites cannot be combined with --correctness")
+        if _sha(a.promotion_suites) != G.PROMOTION_SHA256:
+            raise SystemExit("mk_ak_row gate: promotion manifest sha256 mismatch")
+        corr = {"kind": "served_quality", "input_kind": "promotion_suites", "input": "inputs/promotion_quality_questions.json", "gate": True}
+        a.copy_input.append(a.promotion_suites + ":inputs/promotion_quality_questions.json")
+    promotions = [c for c in (corr if isinstance(corr, list) else [corr] if corr else [])
+                  if c.get("kind") == "served_quality" and c.get("input_kind") == "promotion_suites"]
     if a.arm_store and not served:
         raise SystemExit("mk_ak_row gate: --arm-store needs --served-ref")
     load_units = [dict(json.loads(x), kind="load") for x in a.load_unit]
@@ -858,6 +867,9 @@ def gate_scaffold(a, served=None):
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy(srcp, dst)
         inputs[rel] = _sha(dst)
+    for promotion in promotions:
+        if inputs.get(promotion.get("input")) != G.PROMOTION_SHA256:
+            raise SystemExit("mk_ak_row gate: promotion manifest sha256 mismatch or input missing")
     workload = {"n_predict": a.n_predict}
     if a.prompt:
         workload["prompts"] = list(a.prompt)
@@ -987,7 +999,17 @@ def gate_scaffold(a, served=None):
         f.write(GATE_CHECK.format(result=os.path.join(d, "out", "RESULT.json")))
     for lib in ("ak_row_harness.py", "ak_gate.py", "rocprof_trace.py"):
         shutil.copy(os.path.join(HERE, lib), os.path.join(d, lib))
-    seal(d, extra=sorted(inputs) + ["rocprof_trace.py"])
+    extra_libs = []
+    if promotions:
+        for lib, expected in (("answer_scoring.py", "4a1498cdd59c21b2e01415888b219ef529c4caf9ba24306e0285a305d298fbfd"),
+                              ("v7_quality_gate_compare.py", "76405f6cc665bab9d3426a7189b195d58e01bb8c5dd82d24661119e4cb5c2ea7"),
+                              ("gate_verdict_vocab.py", "fa0e96a350981f236afb9dc43663432cf8aa7b90fa3bdff4533f0e102fb97060")):
+            source = os.path.join(HERE, lib)
+            if _sha(source) != expected:
+                raise SystemExit(f"mk_ak_row gate: vendored scorer hash mismatch: {lib}")
+            shutil.copy(source, os.path.join(d, lib))
+            extra_libs.append(lib)
+    seal(d, extra=sorted(inputs) + ["rocprof_trace.py"] + extra_libs)
     visits = (op["reps"] * len(op["shapes"]) * len(op.get("arms") or arms) if op else starts * len(arms) * max(1, len(a.sampler))) + sum(x.get("blocks", 1) * len(x.get("arms", [])) for x in spec_g.get("units", [])) + len(G.plan_correctness(dict(spec_g, server=dict(spec_g["server"], argv=argv))))
     spec = {"owner": "autokernel", "schema": "epyc.row.v3", "kind": "compute", "lane": a.lane, "id": a.id,
             "regions": regions, "claim_cpus": claim, "verdict_by": "agent", "keep_rule": keep, "launcher": os.path.join(d, "launch.sh"),
@@ -1141,6 +1163,7 @@ def gate_main(argv=None):
                    help="require each candidate serving speed to reach this fraction of the named baseline")
     n.add_argument("--arm-env", action="append", default=[], metavar="ARM:K=V,K2=V2",
                    help="env for every process of one arm (not a knob; correctness units take {\"env\": {...}} in --correctness)")
+    n.add_argument("--promotion-suites", metavar="MANIFEST", help="pinned promotion suite manifest")
     n.add_argument("--correctness", help="JSON (or @file): {kind: tbo|kld|identity|served_quality, ...}")
     n.add_argument("--verdict-map", help='JSON {"PASS": {"KEEP": "PASS_X"}, "FAIL": {"FAIL_CORRECTNESS": "FAIL_Y"}}: '
                    "the row's own verdict names; polar = the side")

@@ -55,7 +55,7 @@ import rocprof_trace as RT  # noqa: E402
 
 GATE_VERSION = "2"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 8
+UNIT_SEMANTICS_VERSION = 9
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
 EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke", "out/prof", "out/OP-GBPS.json")
@@ -79,7 +79,7 @@ CORRECTNESS_KEYS = {
     "kld": {"base_arm", "max_kld", "max_kld_noise_k", "noise_arm", "witness_base", "min_vram_gib", "library_root"},
     "identity": {"mode", "prompts", "n_prompts", "n_predict", "rx", "gate_accepted", "strict_drafts"},
     "selftest_bin": {"runs", "mismatch_rx", "max_mismatch"},
-    "served_quality": {"input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s", "noise_argv_delta"}}
+    "served_quality": {"input_kind", "input", "noise_arm", "gate", "n_predict", "n_probs", "k", "abs_floor_items", "test_timeout_s", "noise_argv_delta"}}
 UNIT_KIND = {"c-tbo": "tbo", "c-kld": "kld", "c-id": "identity", "c-st": "selftest_bin", "c-sq": "served_quality"}
 UNIT_TYPE = dict({"visit": "served", "smoke": "served", "log": "served", "op": "op"}, **UNIT_KIND)   # expect_by_unit scopes
 IDENTITY_RX = {"output": r"^\s*single-output:\s*(.*?)\s*$", "accepted": r"^\s*single-accepted:\s*(.*?)\s*$",
@@ -380,9 +380,16 @@ def validate_spec(spec):
             if not isinstance(path, str) or path not in (spec.get("inputs") or {}) or not re.fullmatch(r"[0-9a-f]{64}", str((spec.get("inputs") or {}).get(path, ""))):
                 errs.append("correctness served_quality: input must name a sha256-pinned spec.inputs entry")
             noise = c.get("noise_arm")
-            if noise not in arms or (b and noise == b[0]):
+            promotion = c.get("input_kind") == "promotion_suites"
+            if c.get("input_kind", "items") not in ("items", "promotion_suites"):
+                errs.append("correctness served_quality: unknown input_kind")
+            if promotion and c.get("gate") is not True:
+                errs.append("correctness served_quality: promotion suites must gate")
+            if promotion and (spec.get("inputs") or {}).get(path) != PROMOTION_SHA256:
+                errs.append("correctness served_quality: promotion manifest hash mismatch")
+            if not promotion and (noise not in arms or (b and noise == b[0])):
                 errs.append("correctness served_quality: noise_arm must be declared and distinct from baseline")
-            if c.get("arms") and b and not set([b[0], noise] + candidate_arms(spec)).issubset(c["arms"]):
+            if c.get("arms") and b and not set([b[0]] + ([] if promotion else [noise]) + candidate_arms(spec)).issubset(c["arms"]):
                 errs.append("correctness served_quality: arms must include baseline, noise and every candidate")
             delta = c.get("noise_argv_delta", {})
             if not isinstance(delta, dict) or any(k not in ("--threads", "--threads-batch") or type(v) is not int or v < 1 for k, v in (delta.items() if isinstance(delta, dict) else [])):
@@ -914,6 +921,19 @@ sys.stdout.write("\nSANDBOX_TESTS_PASSED\n"); sys.stdout.flush()
 '''
 
 
+PROMOTION_SHA256 = "1532906b4a754673937027e73e2023d8eee7ed5d08f084c207a60ac81460adb1"
+
+def load_promotion_items(path):
+    if _sha_file(path) != PROMOTION_SHA256:
+        raise ValueError("promotion manifest hash mismatch")
+    with open(path, encoding="utf-8") as f:
+        suites = json.load(f)["suites"]
+    items = [dict(row, suite=suite) for suite, n in (("mmlu_pro", 200), ("gpqa", 195))
+             for row in suites[suite]]
+    if [len(suites[x]) for x in ("mmlu_pro", "gpqa")] != [200, 195] or len({x["id"] for x in items}) != 395 or any(x.get("scoring_method") != "multiple_choice" for x in items):
+        raise ValueError("invalid promotion suite")
+    return items
+
 def load_quality_items(path):
     with open(path, encoding="utf-8") as f:
         items = [json.loads(line) for line in f if line.strip()]
@@ -1020,6 +1040,31 @@ def quality_diagnostic(base, other):
 
 def quality_decision(spec, c, units):
     by = {u["arm"]: u["req"] for u in units}
+    if c.get("input_kind") == "promotion_suites":
+        import v7_quality_gate_compare as compare
+        base_arm = baseline_arms(spec)[0]
+        ids = [(r["suite"], r["item_id"]) for r in by[base_arm]]
+        if not ids or any([(r["suite"], r["item_id"]) for r in rows] != ids for rows in by.values()):
+            raise ValueError("promotion item order differs between arms")
+        expected_counts = [1, 1] if c.get("_smoke") else [200, 195]
+        if [sum(suite == name for suite, _ in ids) for name in ("mmlu_pro", "gpqa")] != expected_counts:
+            raise ValueError("promotion suite coverage incomplete")
+        per_arm = {}
+        for arm, rows in by.items():
+            suites = []
+            for suite in ("mmlu_pro", "gpqa"):
+                subset = [r for r in rows if r["suite"] == suite]
+                n = len(subset)
+                suites.append({"suite": suite, "n": n, "accuracy": sum(r["correct"] for r in subset) / n if n else None,
+                               "truncated": sum(r["truncated"] for r in subset), "errors": 0,
+                               "accuracy_is_lower_bound": any(r["truncated"] for r in subset)})
+            per_arm[arm] = {"suites": suites, "truncated": sum(r["truncated"] for r in rows), "errors": 0}
+        failed = []
+        for arm in candidate_arms(spec):
+            rows, summary, verdict, verdict_text = compare.compare(per_arm[base_arm], per_arm[arm], 0.05)
+            per_arm[arm]["compare"] = {"rows": rows, "summary": summary, "verdict": verdict, "verdict_text": verdict_text}
+            if verdict != "pass" and not c.get("_smoke"): failed.append(arm)
+        return {"base_arm": base_arm, "gate": True, "failed": failed, "per_arm": per_arm}
     base_arm, noise = baseline_arms(spec)[0], c["noise_arm"]
     base = by[base_arm]
     ids = [r["item_id"] for r in base]
@@ -1066,7 +1111,7 @@ def _plan_one(spec, c):
         return []
     b, cand = baseline_arms(spec), candidate_arms(spec)
     if kind == "served_quality":
-        return [(f"c-sq-{a}", "c-sq", a, {}) for a in [b[0], c["noise_arm"]] + cand]
+        return [(f"c-sq-{a}", "c-sq", a, {}) for a in [b[0]] + ([] if c.get("input_kind") == "promotion_suites" else [c["noise_arm"]]) + cand]
     if kind == "tbo":
         return [(f"c-tbo-{a}", "c-tbo", a, {}) for a in (c.get("arms") or b + cand)]
     if kind == "selftest_bin":   # N fresh processes per arm, interleaved run by run
@@ -1842,9 +1887,9 @@ class Gate:
             time.sleep(0.5)
         return f"server not ready within {timeout} s"
 
-    def request(self, port, body, timeout):
+    def request(self, port, body, timeout, path="/completion"):
         import urllib.request
-        req = urllib.request.Request(f"http://127.0.0.1:{port}/completion", data=json.dumps(body).encode(),
+        req = urllib.request.Request(f"http://127.0.0.1:{port}{path}", data=json.dumps(body).encode(),
                                      headers={"Content-Type": "application/json"})
         t0 = time.time()
         with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -1903,6 +1948,17 @@ class Gate:
             def one(item):
                 i, pr = item
                 body = request_body(self.spec, pr, n_predict, cfg.get("sampler"), i + cfg.get("prompt_index", 0))
+                promotion = kind == "c-sq" and cfg.get("promotion")
+                if promotion:
+                    body = {"model": "auto", "messages": [{"role": "user", "content": pr}], "max_tokens": 4096,
+                            "temperature": 0.0, "seed": 42, "stream": False,
+                            "chat_template_kwargs": {"enable_thinking": False}}
+                    rec, response = self.request(port, body, request_timeout(), "/v1/chat/completions")
+                    choices = response.get("choices")
+                    if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0].get("message", {}).get("content"), str) or not choices[0]["message"]["content"] or choices[0].get("finish_reason") not in ("stop", "length"):
+                        raise ValueError("invalid promotion chat response")
+                    rec.update(content=choices[0]["message"]["content"], truncated=choices[0]["finish_reason"] == "length")
+                    return rec
                 if kind == "c-sq":
                     body.update(temperature=0.0, top_k=1, n_predict=n_predict, n_probs=cfg["n_probs"], return_tokens=True, cache_prompt=False, ignore_eos=False)
                 rec, response = self.request(port, body, request_timeout())
@@ -1949,12 +2005,15 @@ class Gate:
         log = os.path.join(self.logs, f"{uid}.log")
         if kind == "c-sq":
             try:
-                items = load_quality_items(os.path.join(self.d, c["input"]))
-                if c.get("_smoke"):
+                promotion = c.get("input_kind") == "promotion_suites"
+                items = (load_promotion_items if promotion else load_quality_items)(os.path.join(self.d, c["input"]))
+                if c.get("_smoke") and promotion:
+                    items = [next(x for x in items if x["suite"] == suite) for suite in ("mmlu_pro", "gpqa")]
+                elif c.get("_smoke"):
                     items = [next(x for x in items if x["kind"] == kind_name) for kind_name in ("math", "code")
                              if any(x["kind"] == kind_name for x in items)]
-                self.current_unit = {"sampler": {"temperature": 0.0, "top_k": 1}, "n_probs": c.get("n_probs", 5)}
-                u = self.visit_fn(uid, arm, [x["prompt"] for x in items], int(c.get("n_predict", 512)), 0,
+                self.current_unit = {"sampler": {"temperature": 0.0, "top_k": 1}, "n_probs": c.get("n_probs", 5), "promotion": promotion}
+                u = self.visit_fn(uid, arm, [x["prompt"] for x in items], 4096 if promotion else int(c.get("n_predict", 512)), 0,
                                   float(self.spec["server"].get("ready_timeout_s") or 900), kind=kind)
                 if not u.get("error"):
                     req = u.get("req") or []
@@ -1966,6 +2025,14 @@ class Gate:
                         if not isinstance(rec.get("content"), str):
                             raise ValueError("served quality response missing content; response keys: "
                                              + ",".join(sorted(k for k in rec if not k.startswith("_")))[:300])
+                        if promotion:
+                            if not rec["content"] or rec.get("error"):
+                                raise ValueError("promotion request returned an error or empty response")
+                            from answer_scoring import score_response
+                            if not isinstance(rec.get("truncated"), bool):
+                                raise ValueError("promotion response missing finish reason")
+                            rec.update(item_id=item["id"], suite=item["suite"], correct=score_response(rec["content"], item["expected"], item))
+                            continue
                         toks, probs = rec.get("tokens"), rec.get("completion_probabilities")
                         if not (isinstance(toks, list) and isinstance(probs, list) and len(toks) == len(probs)):
                             rec["diagnostics_unavailable"] = ("tokens/probabilities absent or misaligned: keys "

@@ -113,3 +113,6 @@ system/scratch_lease.py              scripts/system/scratch_lease.py            
 bin/job_templates/worktree_gate.py   scripts/system/worktree_gate.py                      hot
 bin/job_templates/worktree_salvage.py scripts/system/worktree_salvage.py                   hot
 bin/job_templates/scratch_lease.py   scripts/system/scratch_lease.py                      hot
+bin/rowflow/answer_scoring.py         scripts/coordination/rowflow/answer_scoring.py         hot
+bin/rowflow/v7_quality_gate_compare.py scripts/coordination/rowflow/v7_quality_gate_compare.py hot
+bin/rowflow/gate_verdict_vocab.py      scripts/coordination/rowflow/gate_verdict_vocab.py      hot

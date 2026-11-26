@@ -2072,3 +2072,76 @@ def test_arm_store_checks_load_unit_executables(tmp_path):
     with pytest.raises(SystemExit, match="missing executable"):
         MK.resolve_arm_stores([f"ON={store}"], {"ON": {}}, ["/old/llama-server"], None,
                               [{"argv": ["/old/alternate-server"]}])
+
+
+def test_promotion_suites_scoring_and_errors(tmp_path, monkeypatch):
+    items = [{"id": "m", "suite": "mmlu_pro", "prompt": "q", "expected": "A", "scoring_method": "multiple_choice"},
+             {"id": "g", "suite": "gpqa", "prompt": "q", "expected": "B", "scoring_method": "multiple_choice"}]
+    c = {"kind": "served_quality", "input_kind": "promotion_suites", "input": "inputs/set", "gate": True}
+    sp = spec(correctness=c, inputs={"inputs/set": G.PROMOTION_SHA256})
+    monkeypatch.setattr(G, "load_promotion_items", lambda path: items)
+    g = G.Gate(sp, str(tmp_path))
+    g.finish_correctness = lambda unit: unit
+    g.visit_fn = lambda uid, arm, prompts, n, warm, ready, kind: {"unit_id": uid, "kind": kind, "arm": arm, "req": [{"content": "A", "truncated": False}, {"content": "B", "truncated": True}]}
+    units = [g.run_correctness_unit(uid, kind, arm, extra) for uid, kind, arm, extra in G.plan_correctness(sp)]
+    detail = G.quality_decision(sp, dict(c, _smoke=True), units)
+    assert detail["per_arm"]["ON"]["suites"][1]["truncated"] == 1
+    assert all(row["correct"] for row in units[0]["req"])
+    g.visit_fn = lambda *a, **k: {"unit_id": a[0], "kind": "c-sq", "arm": a[1], "error": "request failed", "error_class": "SERVER"}
+    failed = g.run_correctness_unit(*G.plan_correctness(sp)[0])
+    assert failed["error"] and G.decide_correctness(sp, [failed] + units[1:])[0] == "FUTILITY_HARNESS_SERVER"
+
+
+def test_promotion_manifest_mismatch_refused(tmp_path):
+    path = tmp_path / "bad.json"
+    path.write_text("{}")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        G.load_promotion_items(path)
+
+
+def test_promotion_comparator_full_coverage():
+    c = {"kind": "served_quality", "input_kind": "promotion_suites", "input": "inputs/set", "gate": True}
+    sp = spec(correctness=c, inputs={"inputs/set": G.PROMOTION_SHA256})
+    rows = [{"suite": suite, "item_id": f"{suite}-{i}", "correct": True, "truncated": i == 0}
+            for suite, n in (("mmlu_pro", 200), ("gpqa", 195)) for i in range(n)]
+    bad = [dict(r, correct=False) if r["suite"] == "gpqa" else dict(r) for r in rows]
+    detail = G.quality_decision(sp, c, [{"arm": "OFF", "req": rows}, {"arm": "ON", "req": bad}])
+    assert detail["failed"] == ["ON"]
+    assert detail["per_arm"]["ON"]["compare"]["verdict"] == "fail"
+    assert detail["per_arm"]["OFF"]["truncated"] == 2
+
+
+def test_promotion_chat_request_shape_and_bad_response(tmp_path, monkeypatch):
+    c = {"kind": "served_quality", "input_kind": "promotion_suites", "input": "inputs/set", "gate": True}
+    sp = spec(correctness=c, inputs={"inputs/set": G.PROMOTION_SHA256})
+    g = G.Gate(sp, str(tmp_path))
+    g.current_unit = {"promotion": True}
+    monkeypatch.setattr(g, "port", lambda: 1234)
+    monkeypatch.setattr(g, "start_server", lambda *a: object())
+    monkeypatch.setattr(g, "stop_server", lambda p: None)
+    monkeypatch.setattr(g, "wait_ready", lambda *a: None)
+    seen = []
+    def request(port, body, timeout, path):
+        seen.append((path, body))
+        return {}, {"choices": [{"message": {"content": "A"}, "finish_reason": "length"}]}
+    monkeypatch.setattr(g, "request", request)
+    unit = g._visit("test", "OFF", ["question"], 4096, 0, 1, kind="c-sq")
+    assert unit["req"][0]["truncated"] is True
+    assert seen == [("/v1/chat/completions", {"model": "auto", "messages": [{"role": "user", "content": "question"}], "max_tokens": 4096, "temperature": 0.0, "seed": 42, "stream": False, "chat_template_kwargs": {"enable_thinking": False}})]
+    monkeypatch.setattr(g, "request", lambda *a: ({}, {"choices": []}))
+    assert g._visit("test", "OFF", ["question"], 4096, 0, 1, kind="c-sq")["error_class"] == "SERVER"
+
+
+def test_generator_refuses_wrong_promotion_manifest(tmp_path):
+    path = tmp_path / "bad.json"
+    path.write_text("{}")
+    with pytest.raises(SystemExit, match="promotion manifest sha256 mismatch"):
+        gen_row(tmp_path, extra=["--promotion-suites", str(path)])
+
+
+def test_generator_refuses_unpinned_promotion_input_in_correctness(tmp_path):
+    path = tmp_path / "bad.json"
+    path.write_text("{}")
+    c = {"kind": "served_quality", "input_kind": "promotion_suites", "input": "inputs/bad.json", "gate": True}
+    with pytest.raises(SystemExit, match="promotion manifest sha256 mismatch"):
+        gen_row(tmp_path, extra=["--copy-input", str(path), "--correctness", json.dumps(c)])
