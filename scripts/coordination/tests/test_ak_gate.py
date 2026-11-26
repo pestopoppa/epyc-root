@@ -1898,3 +1898,22 @@ def test_op_kld_requires_success_and_finite_result(tmp_path):
              {'unit_id': 'c-kld-OFF', 'kind': 'c-kld', 'arm': 'OFF', 'mode': 'kld', 'mean_kld': 0.0},
              {'unit_id': 'c-kld-ON', 'kind': 'c-kld', 'arm': 'ON', 'mode': 'kld', 'mean_kld': float('inf')}]
     assert G.decide_correctness(sp, units)[0] == 'FUTILITY_HARNESS_MISSING_OUTPUT'
+
+
+def test_op_smoke_without_served_workload(tmp_path):
+    # 2026-11-26: ak-c22-vattn-rf7-op-gpu-20261126 (no --served-ref, so no workload) died KeyError 'input'
+    # 5 s into its smoke; the fixture spec() always carried workload prompts and masked it.
+    sp = op_spec()
+    sp.pop('workload', None)
+    sp['correctness'] = {'kind': 'tbo', 'argv': [os.path.join(FIX_BIN, 'test-backend-ops'), 'test'],
+                         'arms': ['OFF', 'ON'], 'min_cases': 102, 'ops': 'FLASH_ATTN_EXT'}
+    g = G.Gate(sp, str(tmp_path), env={}, stream=QUIET)
+    def op(uid, arm, shape, block):
+        return {'unit_id': uid, 'kind': 'op', 'arm': arm, 'shape': shape['filter'], 'block': block,
+                'metric': 1.0, 'gate_unit': True, 'witness': G.witness_for(sp, arm, G._synthetic_log(sp, arm), unit_type='op')}
+    def corr(uid, kind, arm, extra):
+        return {'unit_id': uid, 'kind': kind, 'arm': arm, 'gate_unit': True, 'rc': 0,
+                'n_cases': 1, 'n_ok': 1, 'n_fail': 0, 'pass': True}
+    g.run_op, g.run_correctness_unit = op, corr
+    assert G.workload_prompts(sp, str(tmp_path)) == []
+    assert g.smoke() == 0

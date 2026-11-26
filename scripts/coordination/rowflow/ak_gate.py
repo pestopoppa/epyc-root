@@ -1550,6 +1550,10 @@ def workload_prompts(spec, row_dir):
     w = spec.get("workload") or {}
     if w.get("prompts"):
         return list(w["prompts"])
+    if not w.get("input"):
+        # 2026-11-26: op rows (metric op_gbps, no served workload) have no workload input; the smoke died with
+        # KeyError 'input' before running any op. A served row without input is still refused by validate_spec.
+        return []
     t = open(os.path.join(row_dir, w["input"]), encoding="utf-8", errors="replace").read()
     win = int(w.get("win_chars") or 6000)
     offs = w.get("offsets") or [0]
