@@ -692,3 +692,23 @@ control.
 
 Remedy: a new keeper rule lands without a kill switch unless a replay negative control needs one, and the
 provenance goes here or in the commit message, not inline.
+
+## INC-20261126-ungranted-mi210-replay
+
+**What happened.** 2026-11-26 ~05:55-06:05Z, pipeline-mgmt replayed AutoKernel's real row spec
+(`ak-c22-vattn-rf7-op-gpu-20261126`, copied to `/mnt/raid0/llm/tmp/pm-opsmoke-replay`) through a patched
+`ak_gate.Gate.smoke()` to prove the op-smoke `KeyError: 'input'` fix (511326552). Only `run_op` was stubbed;
+`run_correctness_unit` stayed live, so the row's real `test-backend-ops test` (TBO) and `llama-perplexity` (KLD)
+binaries ran on the MI210 for ~10 min with **no keeper grant and no core pin**. The GPU had no grant holder at the
+time; no row was perturbed and nothing was left running. It was disclosed to the row owner the same minute and
+reported to the operator by the owner.
+
+**Root cause.** An offline replay of a real spec is code that execs the spec's argv; a partial stub is a live run.
+There was no guard: `Gate` runs any argv it is handed, and the replay was not wrapped in the keeper or a fence.
+
+**Side effect.** The run produced an unofficial early signal (RF7 mean KLD 0.0389 vs A/A 0.0004); the owner used it
+to stop the RF7 chain under its declared strike-2 rule. An ungranted measurement is still not admissible evidence.
+
+**Remedy.** Offline replays of real specs stub every runner that execs argv (`run_op`, `run_correctness_unit`,
+`visit_fn`) or rewrite argv to fixture binaries, and assert no child process starts. Follow-up: an
+`AK_GATE_NO_EXEC=1` guard in `ak_gate` that refuses to exec outside a keeper grant, filed as a churn-pipeline box.
