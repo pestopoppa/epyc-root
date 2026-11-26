@@ -1,0 +1,16 @@
+{
+  "input_quality_approval_sha256": "90c8a973d4b498c08f607819877a5200701fb337ed2e13eb73a5aa6f22143514",
+  "source_quality_manifest_sha256": "0d9271ba12676e3899d27d92cc65ccdb68378595bc4d74cbf96e47081af1f33b",
+  "recovery_report_sha256": "186f702e5faab0a84de7705a1688316a66f0c4381f6faa39574bc161e86b71ee",
+  "all_terminal_assistant_steps": "aborted: Step interrupted",
+  "no_on_disk_or_complete_inline_candidate": true,
+  "gpu_w66_partial_evidence": {
+    "unit": "gpu-DS41-W-66-off-common-on-sampling",
+    "diagnosed_placeholder_runtime_selection_receipt": true,
+    "proposed_real_ArtifactStore_write": true,
+    "implemented_or_verified": false,
+    "evidence_kind": "interrupted diagnosis and source excerpts"
+  },
+  "not_gradeable_attempts": 8,
+  "model_calls_in_recovery": 0
+}

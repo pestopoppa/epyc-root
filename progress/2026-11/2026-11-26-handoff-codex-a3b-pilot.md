@@ -115,3 +115,13 @@ Main stopped captured controller3220534 withSIGINT and blocked queued rows, pres
 The repair keeps titles and useful tools: use an explicitly configured small-model alias on the same A3B with nonthinking metadata and a small role-specific cap; disable the provider's shorter header/chunk timeouts under the already-enforced absolute unit wall; batch/reduce API polling; fix supported cancellation and always preserve exports/error envelopes. New versioned controls and a fresh sealed epoch are required before drawing quality conclusions. Main-only completed outputs remain valid and will be reused.
 
 Next: codex-a3b-pilot validates the role-budget/timeout/cancellation repair, recovers stopped-session evidence without inference, and resumes the matched grid on a new frozen harness.
+
+## Role-aware timeout/cancellation repair and new epoch
+
+Committed reusable OpenCode-derived source at b5baa0a73, including fresh/same-session candidate dispatch, full useful tools, hashed input custody, role-specific title budgets, absolute task deadlines and supported cancellation/export handling. The existing plus new Taskflow tests pass246/246. Actual contained scripted fresh/resume control preserves reasoning and draft files. A separate delayed-header negative control reproduces the retry; repaired configuration waits and completes; active cancellation returns interrupted:true and retains its export. Title calls use explicit small_model alias q35-a3b-title, nonthinking and64token cap; primary requests retain32768. Provider headerTimeout isdisabled while numeric chunkTimeout isbound to the approved owner wall. API forms/activitypolling isbatched once persecond percase.
+
+Recovered all eight stopped original sessions without inference or changing originalbytes. Everylastassistantrecord is aborted/Stepinterrupted; noneproducedacandidate. W66 containsacorrectpartialdiagnosis, notapatch. Recoveryproofand53artifacthashes are retained under artifacts/analysis/taskflow-harness-revalidation-20261126/initial-01-recovery/.
+
+Main independently verified3031 inputs in new quality-v3 seal7552d3ef1a76eb4c2164f4a5010370bcdc424ccd8b898f1621e892fb7e51ef60; its Pythonmodulebytes exactly match committedcanonicalsource. Repaired epoch exec93923/controller4142230 now owns C22 CPU4142995 andGPU4144485, both np4 whole-host-overlap diagnostic serving. All eight metadata calls have completed at9–16tokens, with primary thinking/cap preserved and no observed newtransportfailure at the initial snapshot. No originalmain-only modelrun is repeated.
+
+Next: codex-a3b-pilot checks completed initialoutputs and matched thinkingpairs, meters mainreview/guidance, and extends approvedslotqueues as needed to answer capability and task-effort questions.

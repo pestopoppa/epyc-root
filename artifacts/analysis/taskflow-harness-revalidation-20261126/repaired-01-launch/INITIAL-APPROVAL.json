@@ -1,0 +1,30 @@
+{
+  "approved_by": "main",
+  "at": "2026-11-26T23:33:06.104553+00:00",
+  "quality_manifest_sha256": "7552d3ef1a76eb4c2164f4a5010370bcdc424ccd8b898f1621e892fb7e51ef60",
+  "native_compaction_passed": true,
+  "native_compaction_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/native-compaction/run/PASS.json",
+  "native_compaction_sha256": "1b681f191e21526710e353be6a8c9ff5948a9258e682a57cb02fa32195189963",
+  "initial_rows": [
+    "cpu-PAW-5-off-recommended",
+    "cpu-DS41-W-66-off-recommended",
+    "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+    "cpu-PFXC-A3-off-recommended",
+    "gpu-PAW-5-on-coding",
+    "gpu-DS41-W-66-off-common-on-sampling",
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+    "gpu-PFXC-A3-on-coding",
+    "gpu-PAW-5-off-common-on-sampling",
+    "gpu-DS41-W-66-on-coding",
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding",
+    "gpu-PFXC-A3-off-recommended",
+    "gpu-PAW-5-off-recommended",
+    "gpu-DS41-W-66-off-recommended"
+  ],
+  "scope": "14 matched exploratory calibration rows; independent execution from detailed original owner briefs; no handoff claims/ticks/landings",
+  "main_only_blinding": "direct outputs outside all worker mounts",
+  "stop": "retain increments; stop only on scoped evidence answer or diagnostic futility, no official material-benefit threshold",
+  "harness_source_commit": "b5baa0a73",
+  "prior_interrupted_epoch": "initial-01; harness affected, no candidate outputs",
+  "repair_controls": "quality-v3/provider-repair-i5z4elg8/PASS.json; quality-v3/model-free-y8qsk9wk/PASS.json"
+}

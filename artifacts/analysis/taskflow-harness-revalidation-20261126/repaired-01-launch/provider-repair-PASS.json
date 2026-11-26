@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "scenarios": [
+    {
+      "case": "short-header",
+      "interrupt": {
+        "response": {
+          "interrupted": true
+        }
+      },
+      "forwarded": 3,
+      "title_requests": 1,
+      "retried_header_timeout": true,
+      "delayed_primary_completed": false
+    },
+    {
+      "case": "owner-deadline",
+      "interrupt": null,
+      "forwarded": 2,
+      "title_requests": 1,
+      "retried_header_timeout": false,
+      "delayed_primary_completed": true
+    },
+    {
+      "case": "cancel",
+      "interrupt": {
+        "response": {
+          "interrupted": true
+        }
+      },
+      "forwarded": 2,
+      "title_requests": 1,
+      "retried_header_timeout": false,
+      "delayed_primary_completed": false
+    }
+  ]
+}
