@@ -2218,3 +2218,14 @@ def test_parity_capture_and_assemble_uses_exact_request_and_raw_response(tmp_pat
     pin = hashlib.sha256(payload).hexdigest()
     fragment["pack_sha256"] = pin
     assert parity_assemble.assemble(payload, pin, [fragment])["ON"]["status"] == "incomplete"
+
+
+def test_smoke_identity_prompts_are_smoke_length():
+    # 2026-11-26: prodcfg smokes ran identity on 16k+-token production prompts (20 min per prompt on 4 CPUs)
+    sp = spec(correctness={"kind": "identity", "arms": ["OFF", "OFF2"], "n_predict": 64})
+    sp["workload"] = {"prompts": ["x" * 50000, "y" * 50000]}
+    sp["smoke"] = {"prompt_chars": 2000}
+    full = G.identity_prompts(sp, None)
+    small = G.identity_prompts(G.smoke_spec(sp), None)
+    assert [len(p) for p in full] == [50000, 50000]
+    assert small and all(len(p) == 2000 for p in small)

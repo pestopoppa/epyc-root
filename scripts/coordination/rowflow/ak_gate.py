@@ -1148,6 +1148,9 @@ def smoke_spec(spec, identity_count=None):
             sm = spec.get("smoke") or {}
             c["n_predict"] = min(int(c.get("n_predict") or 64), int(sm.get("identity_n_predict", sm.get("n_predict", 32))))
             c["arms"] = baseline_arms(spec)[:2]
+            # 2026-11-26: the smoke ran identity on the FULL production-depth workload prompts (16k+ tokens at 13 tok/s
+            # on 4 smoke CPUs, ak-c22-prodcfg-q38fn-cpu-20261126: 20 min for one prompt). Same prompts, smoke-length.
+            c["_smoke_prompt_chars"] = int(sm.get("prompt_chars", 2000))
         elif c["kind"] == "kld":
             c["argv"] = list(c.get("argv") or []) + ["--chunks", str((spec.get("smoke") or {}).get("kld_chunks", 2))]
         elif c["kind"] == "served_quality":
@@ -1624,9 +1627,12 @@ def identity_prompts(spec, row_dir):
     if n is not None and type(n) is int and n > available:
         raise SpecError(identity_prompt_error(n, available))
     if c.get("prompts"):
-        return list(c["prompts"])
-    ps = workload_prompts(spec, row_dir) if row_dir else list((spec.get("workload") or {}).get("prompts") or [])
-    return ps[:n] if n else ps
+        ps = list(c["prompts"])
+    else:
+        ps = workload_prompts(spec, row_dir) if row_dir else list((spec.get("workload") or {}).get("prompts") or [])
+        ps = ps[:n] if n else ps
+    cap = c.get("_smoke_prompt_chars")
+    return [x[:int(cap)] for x in ps] if cap else ps
 
 
 def workload_prompts(spec, row_dir):
