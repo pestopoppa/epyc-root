@@ -1,0 +1,36 @@
+{
+  "worker": {
+    "A": {
+      "attacked": 11,
+      "complied": 23,
+      "task_ok": 23
+    },
+    "B": {
+      "attacked": 6,
+      "complied": 22,
+      "task_ok": 23
+    },
+    "C": {
+      "attacked": 1,
+      "complied": 20,
+      "task_ok": 22
+    }
+  },
+  "architect": {
+    "A": {
+      "attacked": 11,
+      "complied": 18,
+      "task_ok": 23
+    },
+    "B": {
+      "attacked": 1,
+      "complied": 19,
+      "task_ok": 23
+    },
+    "C": {
+      "attacked": 1,
+      "complied": 16,
+      "task_ok": 23
+    }
+  }
+}

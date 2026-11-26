@@ -1,0 +1,111 @@
+{
+  "architect": {
+    "spec": "ct18-armd-architect-20261126.spec.json",
+    "sha256": "7937b218f34fe51443ed4850049dea8a2277c7327a373212c7be4fc5b7999022",
+    "source_seal_sha256": "a847559f9680da38ab2c5342c2cd08fc584a368e8694281423dae50042ff3b65",
+    "command": [
+      "mk_ak_row.py",
+      "--check-only",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-architect-20261126",
+      "--flags",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-flags"
+    ],
+    "returncode": 2,
+    "refusals": [
+      "[box] identity incomplete (what it measures): ['quant_build'] \u2014 add quant_build: the quant or build (e.g. Q8_0, IQ4_XS, v10 production, champion, experimental build)",
+      "[preflight] --precond-cmd `/usr/bin/python3 -I -B /mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-architect-20261126/` exits 1 now ([Errno 2] No such file or directory: '/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d1-20261126/out/RESULT.json'): the admission gate refuses it rc=12 and PARKS the row at its first grant. FIX: make the precondition true (build or fetch it in your turn), then re-run publish_row.py",
+      "[row-preflight] FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing"
+    ],
+    "warnings": [
+      "no-scratch-gb: the spec declares no `scratch_gb` (expected peak scratch_root size in GB); the keeper logs SCRATCH-OVER at 40 GB by default, so declare it when the row writes GGUF/trace intermediates (publish continues)",
+      "publish-rehearsal: job.py reads environment variable FILLER_PORTS; its value at that point is unverified",
+      "FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing",
+      "WARN preflight/store STORE-NO-IDENTITY: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c has no BUILD-IDENTITY.json; the commit is unproven",
+      "WARN preflight/append RESULT-APPEND-UNPROVEN: resumable/per-unit row with no append-mode result write found",
+      "WARN preflight/served SERVED-REF-MISSING: server row with no spec.served_ref: its argv is not tied to a served shape (mk_ak_row v2 writes it)"
+    ]
+  },
+  "D-1": {
+    "spec": "ct18-armd-d1-20261126.spec.json",
+    "sha256": "658c259ac88a4267938fc5d72796d06f49b3407eedcf581e5e6d0f36ab065e96",
+    "source_seal_sha256": "8e48067d1dcd66818921aeca28fbcbc9db13a045b2e0e4fa7b4d9fe74198380a",
+    "command": [
+      "mk_ak_row.py",
+      "--check-only",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d1-20261126",
+      "--flags",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-flags"
+    ],
+    "returncode": 2,
+    "refusals": [
+      "[box] identity incomplete (what it measures): ['quant_build'] \u2014 add quant_build: the quant or build (e.g. Q8_0, IQ4_XS, v10 production, champion, experimental build)",
+      "[row-preflight] FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing"
+    ],
+    "warnings": [
+      "no-scratch-gb: the spec declares no `scratch_gb` (expected peak scratch_root size in GB); the keeper logs SCRATCH-OVER at 40 GB by default, so declare it when the row writes GGUF/trace intermediates (publish continues)",
+      "publish-rehearsal: job.py reads environment variable FILLER_PORTS; its value at that point is unverified",
+      "FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing",
+      "WARN preflight/store STORE-NO-IDENTITY: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c has no BUILD-IDENTITY.json; the commit is unproven",
+      "WARN preflight/lane MEMBIND-REMOTE: numactl node 3 holds none of the pinned cpus: every access is remote (would FAIL if enforced; publish continues)",
+      "WARN preflight/append RESULT-APPEND-UNPROVEN: resumable/per-unit row with no append-mode result write found",
+      "WARN preflight/served SERVED-REF-MISSING: server row with no spec.served_ref: its argv is not tied to a served shape (mk_ak_row v2 writes it)"
+    ]
+  },
+  "D-2": {
+    "spec": "ct18-armd-d2-20261126.spec.json",
+    "sha256": "73942df34a8000c027515b4c2b0e4f110183e99a2d8a935653c29afeaaa04a7e",
+    "source_seal_sha256": "20724cce5871e581890e502ba395e4e4bce5dc8727a7e2ecd4f0e1d7dc815c42",
+    "command": [
+      "mk_ak_row.py",
+      "--check-only",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126",
+      "--flags",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-flags"
+    ],
+    "returncode": 2,
+    "refusals": [
+      "[box] identity incomplete (what it measures): ['quant_build'] \u2014 add quant_build: the quant or build (e.g. Q8_0, IQ4_XS, v10 production, champion, experimental build)",
+      "[preflight] --precond-cmd `/usr/bin/python3 -I -B /mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126/job.py ` exits 1 now (missing model /mnt/raid0/llm/models/DataFilter-Llama-3.1-8B.gguf): the admission gate refuses it rc=12 and PARKS the row at its first grant. FIX: make the precondition true (build or fetch it in your turn), then re-run publish_row.py",
+      "[row-preflight] FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing",
+      "[row-preflight] preflight/store MODEL-MISSING: /mnt/raid0/llm/models/DataFilter-Llama-3.1-8B.gguf does not exist"
+    ],
+    "warnings": [
+      "no-scratch-gb: the spec declares no `scratch_gb` (expected peak scratch_root size in GB); the keeper logs SCRATCH-OVER at 40 GB by default, so declare it when the row writes GGUF/trace intermediates (publish continues)",
+      "publish-rehearsal: job.py reads environment variable FILLER_PORTS; its value at that point is unverified",
+      "publish-rehearsal: MODEL-MISSING: /mnt/raid0/llm/models/DataFilter-Llama-3.1-8B.gguf does not exist (would refuse if enforced)",
+      "publish-rehearsal: serve.py:SERVER_ARGV model missing: /mnt/raid0/llm/models/DataFilter-Llama-3.1-8B.gguf (would refuse if enforced)",
+      "FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing",
+      "WARN preflight/store STORE-NO-IDENTITY: /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c has no BUILD-IDENTITY.json; the commit is unproven",
+      "FAIL preflight/store MODEL-MISSING: /mnt/raid0/llm/models/DataFilter-Llama-3.1-8B.gguf does not exist",
+      "WARN preflight/append RESULT-APPEND-UNPROVEN: resumable/per-unit row with no append-mode result write found",
+      "WARN preflight/served SERVED-REF-MISSING: server row with no spec.served_ref: its argv is not tied to a served shape (mk_ak_row v2 writes it)"
+    ]
+  },
+  "worker": {
+    "spec": "ct18-armd-worker-20261126.spec.json",
+    "sha256": "9b0b6666467d2a46287308cf51114b99fd3a3635bac379f632484df7a20daa81",
+    "source_seal_sha256": "6ed922c006fe74717e29d60f38bf666a41cdf8fa23ed015205cd03d1508226b9",
+    "command": [
+      "mk_ak_row.py",
+      "--check-only",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126",
+      "--flags",
+      "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-flags"
+    ],
+    "returncode": 2,
+    "refusals": [
+      "[box] identity incomplete (what it measures): ['quant_build'] \u2014 add quant_build: the quant or build (e.g. Q8_0, IQ4_XS, v10 production, champion, experimental build)",
+      "[preflight] --precond-cmd `/usr/bin/python3 -I -B /mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126/job` exits 1 now ([Errno 2] No such file or directory: '/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d1-20261126/out/RESULT.json'): the admission gate refuses it rc=12 and PARKS the row at its first grant. FIX: make the precondition true (build or fetch it in your turn), then re-run publish_row.py",
+      "[row-preflight] FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing"
+    ],
+    "warnings": [
+      "no-scratch-gb: the spec declares no `scratch_gb` (expected peak scratch_root size in GB); the keeper logs SCRATCH-OVER at 40 GB by default, so declare it when the row writes GGUF/trace intermediates (publish continues)",
+      "publish-rehearsal: job.py reads environment variable FILLER_PORTS; its value at that point is unverified",
+      "FAIL preflight/store STORE-SUMS: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/./libggml-base.so.0.16.0 (in SHA256SUMS) is missing",
+      "WARN preflight/store STORE-NO-IDENTITY: /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c has no BUILD-IDENTITY.json; the commit is unproven",
+      "WARN preflight/lane MEMBIND-REMOTE: numactl node 3 holds none of the pinned cpus: every access is remote (would FAIL if enforced; publish continues)",
+      "WARN preflight/append RESULT-APPEND-UNPROVEN: resumable/per-unit row with no append-mode result write found",
+      "WARN preflight/served SERVED-REF-MISSING: server row with no spec.served_ref: its argv is not tied to a served shape (mk_ak_row v2 writes it)"
+    ]
+  }
+}

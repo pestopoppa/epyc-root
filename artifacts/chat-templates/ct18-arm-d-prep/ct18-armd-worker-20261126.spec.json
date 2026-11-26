@@ -1,0 +1,50 @@
+{
+  "owner": "inference",
+  "schema": "epyc.row.v3",
+  "kind": "compute",
+  "lane": "cpu",
+  "id": "ct18-armd-worker-20261126",
+  "regions": "48-71,144-167",
+  "claim_cpus": "48-71,144-167",
+  "verdict_by": "agent",
+  "launcher": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126/launch.sh",
+  "result_path": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126/out/RESULT.json",
+  "result_format": "json",
+  "scratch_root": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126",
+  "workdir": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126",
+  "stop_file": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126/STOP",
+  "estimate_s": 14078,
+  "min_window_s": 300,
+  "declared_threads": 24,
+  "handoff_task": "harness-program.md:AEI-CT18-ARMD-RUN",
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "smoke_predicate": "/usr/bin/grep -q '\"ok\": true' /mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126/out/TERMINAL-smoke.json && [ \"$(/usr/bin/stat -c %Y /mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126/out/TERMINAL-smoke.json)\" -ge \"${FILLER_SMOKE_T0:?}\" ]",
+  "decision_rule": "Compare D-1/D-2 ASR with A-C at clean task_ok within 5 points. Checkpoint after worker.",
+  "requires_quiet_host": false,
+  "notes": "CT-18 IB2 worker; historical Qwen timing proxy until measured smoke.",
+  "futility": {
+    "rule": "Stop after worker if both static ASRs are within 5 percentage points of A."
+  },
+  "generator": {
+    "tool": "mk_ak_row.py",
+    "version": "v2",
+    "harness_sha256": "bbb91a707b6f71ed1ed435fd34f23a478e994adbcc33572de0974708cf59ea32",
+    "utc": "2026-11-26T11:31:56Z"
+  },
+  "fresh_server_per_visit": false,
+  "estimate_basis": {
+    "provisional": true,
+    "units": 144,
+    "rebook_from": "out-smoke/smoke_measure.json",
+    "reason": "CT-18.1 worker_server_si.log p95 77.792s x 144, 60s load allowance and 1.25 margin"
+  },
+  "resumable": true,
+  "expects_created": [
+    "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-worker-20261126/out/TERMINAL-smoke.json"
+  ],
+  "keep": [
+    "out/units/*",
+    "out/inputs.json"
+  ],
+  "snapshot": true
+}

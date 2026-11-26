@@ -1,0 +1,50 @@
+{
+  "owner": "inference",
+  "schema": "epyc.row.v3",
+  "kind": "compute",
+  "lane": "gpu",
+  "id": "ct18-armd-d2-20261126",
+  "regions": "mi210_0,184-191",
+  "claim_cpus": "184-191",
+  "verdict_by": "agent",
+  "launcher": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126/launch.sh",
+  "result_path": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126/out/RESULT.json",
+  "result_format": "json",
+  "scratch_root": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126",
+  "workdir": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126",
+  "stop_file": "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126/STOP",
+  "estimate_s": 1798,
+  "min_window_s": 300,
+  "declared_threads": 8,
+  "handoff_task": "harness-program.md:AEI-CT18-ARMD-RUN",
+  "model": "/mnt/raid0/llm/models/DataFilter-Llama-3.1-8B.gguf",
+  "smoke_predicate": "/usr/bin/grep -q '\"ok\": true' /mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126/out/TERMINAL-smoke.json && [ \"$(/usr/bin/stat -c %Y /mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126/out/TERMINAL-smoke.json)\" -ge \"${FILLER_SMOKE_T0:?}\" ]",
+  "decision_rule": "Compare D-1/D-2 ASR with A-C at clean task_ok within 5 points. Checkpoint after worker.",
+  "requires_quiet_host": false,
+  "notes": "CT-18 IB2 D-2; historical Qwen timing proxy until measured smoke.",
+  "futility": {
+    "rule": "Stop after worker if both static ASRs are within 5 percentage points of A."
+  },
+  "generator": {
+    "tool": "mk_ak_row.py",
+    "version": "v2",
+    "harness_sha256": "bbb91a707b6f71ed1ed435fd34f23a478e994adbcc33572de0974708cf59ea32",
+    "utc": "2026-11-26T11:31:55Z"
+  },
+  "fresh_server_per_visit": false,
+  "estimate_basis": {
+    "provisional": true,
+    "units": 72,
+    "rebook_from": "out-smoke/smoke_measure.json",
+    "reason": "CT-18.1 arch_server_si.log p95 19.134s x 72, 60s load allowance and 1.25 margin"
+  },
+  "resumable": true,
+  "expects_created": [
+    "/mnt/raid0/llm/worktrees/cx88-wt/tmp/ct18-final/ct18-armd-d2-20261126/out/TERMINAL-smoke.json"
+  ],
+  "keep": [
+    "out/units/*",
+    "out/inputs.json"
+  ],
+  "snapshot": true
+}
