@@ -1948,6 +1948,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · done when: a gate row files KEEP / NO_KEEP / FAIL_* with OFF vs OFF2 greedy identity on the 28k-char prompts under the fix knob, served ms/round ratio CI and KLD; stop: futility look at N/2 if ms/round regresses > 2 %
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/ak-27b-longctx-nondet-bisect-gpu-20261125/out/RESULT.json`
       · tier: sonnet   · owner: autokernel
+  - 2026-11-26 (autokernel wrap-up) Prior art: C11-SKINNY-DET (kernel-champion-and-promotion.md) already built a two-pass fixed-order reduce, `2f034444b` on `llama.cpp-experimental-c11-skinny-det-20261110` (GGML_HIP_Q8_SKINNY_ATOMIC=1 = old path). Start by checking whether it was carried into C21/C22; if not, forward-port it rather than redesign. [no-belief: pointer]
 
 
 ## Track: heterogeneous-slot-fabric-residency
