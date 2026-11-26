@@ -1629,3 +1629,11 @@ def test_mk_row_quality_json_copies_and_pins_input(tmp_path):
     assert namespace["SPEC"]["inputs"]["inputs/quality.jsonl"] == G._sha_file(data)
     assert namespace["SPEC"]["correctness"] == c
     G.validate_spec(namespace["SPEC"])
+
+
+def test_served_quality_diagnostics_optional_when_server_omits_probs():
+    # 2026-11-26: MTP/speculative serving returned content without tokens/probabilities; accuracy must still be scored.
+    base = {"content": "a", "diagnostics_unavailable": "tokens/probabilities absent"}
+    other = {"content": "a", "tokens": [1], "completion_probabilities": [{}]}
+    d = G.quality_diagnostic(base, other)
+    assert d["first_divergence_token_index"] is None and d["unavailable"]

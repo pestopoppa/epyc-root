@@ -881,6 +881,9 @@ def quality_noise_argv(argv, delta):
 
 
 def quality_diagnostic(base, other):
+    if base.get("diagnostics_unavailable") or other.get("diagnostics_unavailable"):
+        return {"first_divergence_token_index": None, "top_k_overlap_before_divergence": [],
+                "unavailable": base.get("diagnostics_unavailable") or other.get("diagnostics_unavailable")}
     a, b = base["tokens"], other["tokens"]
     divergence = next((i for i, (x, y) in enumerate(zip(a, b)) if x != y), None)
     if divergence is None and len(a) != len(b):
@@ -1643,8 +1646,15 @@ class Gate:
                     if len(req) != len(items):
                         raise ValueError("incomplete served quality responses")
                     for item, rec in zip(items, req):
-                        if not isinstance(rec.get("content"), str) or not isinstance(rec.get("tokens"), list) or not isinstance(rec.get("completion_probabilities"), list) or len(rec["tokens"]) != len(rec["completion_probabilities"]):
-                            raise ValueError("served quality response missing content, tokens or probabilities")
+                        # 2026-11-26: only `content` is needed for the accuracy gate; tokens / probabilities are optional
+                        # diagnostics (speculative/MTP serving may omit or reshape them). Missing content is still an error.
+                        if not isinstance(rec.get("content"), str):
+                            raise ValueError("served quality response missing content; response keys: "
+                                             + ",".join(sorted(k for k in rec if not k.startswith("_")))[:300])
+                        toks, probs = rec.get("tokens"), rec.get("completion_probabilities")
+                        if not (isinstance(toks, list) and isinstance(probs, list) and len(toks) == len(probs)):
+                            rec["diagnostics_unavailable"] = ("tokens/probabilities absent or misaligned: keys "
+                                                              + ",".join(sorted(k for k in rec if not k.startswith("_")))[:300])
                         rec.update(item_id=item["id"], correct=score_quality(item, rec["content"], c.get("test_timeout_s", 5)))
                     u["correctness"] = {"served_quality": {"items": req}}
                 return self.finish_correctness(u)
