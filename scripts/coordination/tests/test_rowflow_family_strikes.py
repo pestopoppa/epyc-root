@@ -363,3 +363,17 @@ def test_harness_terminal_verdict_is_classified_as_harness():
     c = failclass.classify_fail({"id": "ak-test", "smoke_result": {"result_path": "out/TERMINAL-smoke.json",
                                                                   "verdict": "FUTILITY_HARNESS_NONDET"}})
     assert c.side == "harness"
+
+
+def test_harness_class_gpu_smokes_do_not_consume_budget(tmp_path):
+    # 2026-11-26: C22 G-27B r5 was refused SMOKE-BUDGET by two earlier smoke-budget overruns (harness class).
+    import json, os
+    flags = str(tmp_path)
+    for i, msg in ((1, "smoke budget exceeded; adjust smoke.budget_s"), (2, "job ended rc=3 before its first progress")):
+        rid = f"ak-x-gate-gpu-20261126-r{i}"
+        os.makedirs(os.path.join(flags, "dryrun", rid))
+        json.dump({"reason": msg}, open(os.path.join(flags, "dryrun", rid, "FAIL-1.json"), "w"))
+        fs.record_gpu_smoke(flags, rid, "FAIL")
+    fs.record_gpu_smoke(flags, "ak-x-gate-gpu-20261126-r3", "PASS")
+    assert [g["id"] for g in fs.gpu_smokes_today(flags, "ak-x-gate-gpu")] == ["ak-x-gate-gpu-20261126-r3"]
+    assert fs.budget_reason(flags, "ak-x-gate-gpu") is None

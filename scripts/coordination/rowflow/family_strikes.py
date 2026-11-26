@@ -122,10 +122,32 @@ def park_reason(flags, stem):
             f"rowflow.py unpark --family {stem} --by <owner> --reason R")
 
 
+_HARNESS_SMOKE_RE = re.compile(r"FUTILITY_HARNESS|smoke budget exceeded|before its first progress|reason=stopped", re.I)
+
+
+def _harness_smoke(flags, rid):
+    """True when the recorded GPU smoke failed for a harness/owner reason (budget overrun, first-progress deadline, owner
+    STOP, FUTILITY_HARNESS_*): such smokes say nothing about the candidate, so they never consume the R6 budget
+    (2026-11-26, same rule cx64 applied to strikes; records written before cx64 carry no class, so read the evidence)."""
+    d = os.path.join(flags, "dryrun", rid)
+    for p in sorted(glob.glob(os.path.join(d, "FAIL-*.json"))) + [os.path.join(d, "TERMINAL-smoke.json")]:
+        try:
+            rec = json.load(open(p))
+        except (OSError, ValueError):
+            continue
+        fc = rec.get("failclass") if isinstance(rec.get("failclass"), dict) else {}
+        if fc.get("side") == "harness":
+            return True
+        if _HARNESS_SMOKE_RE.search(json.dumps(rec)):
+            return True
+    return False
+
+
 def gpu_smokes_today(flags, stem, now=None):
     now = time.time() if now is None else now
     d = _day(now)
-    return [g for g in load(flags, stem)["gpu_smokes"] if _day(float(g.get("at") or 0)) == d]
+    return [g for g in load(flags, stem)["gpu_smokes"] if _day(float(g.get("at") or 0)) == d
+            and not (g.get("verdict") != "PASS" and _harness_smoke(flags, g.get("id") or ""))]
 
 
 def record_gpu_smoke(flags, rid, verdict, now=None):
