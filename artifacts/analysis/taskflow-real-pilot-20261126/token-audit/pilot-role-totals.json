@@ -1,0 +1,53 @@
+{
+  "totals": {
+    "reviewer OFF": {
+      "requests": 8,
+      "complete_counters": 8,
+      "prompt": 33440,
+      "cached": 309,
+      "uncached": 33131,
+      "generated": 407,
+      "valid_prompt": 8,
+      "valid_cached": 8,
+      "valid_uncached": 8,
+      "valid_generated": 8
+    },
+    "wire control ON": {
+      "requests": 1,
+      "complete_counters": 1,
+      "prompt": 254,
+      "cached": 0,
+      "uncached": 254,
+      "generated": 32,
+      "valid_prompt": 1,
+      "valid_cached": 1,
+      "valid_uncached": 1,
+      "valid_generated": 1
+    },
+    "worker OFF": {
+      "requests": 64,
+      "complete_counters": 64,
+      "prompt": 1548231,
+      "cached": 1446484,
+      "uncached": 101747,
+      "generated": 29512,
+      "valid_prompt": 64,
+      "valid_cached": 64,
+      "valid_uncached": 64,
+      "valid_generated": 64
+    },
+    "worker ON": {
+      "requests": 179,
+      "complete_counters": 179,
+      "prompt": 5769706,
+      "cached": 5415572,
+      "uncached": 354134,
+      "generated": 91108,
+      "valid_prompt": 179,
+      "valid_cached": 179,
+      "valid_uncached": 179,
+      "valid_generated": 179
+    }
+  },
+  "reasoning_only_tokens": null
+}

@@ -1,0 +1,45 @@
+task	arm	role	phase	device	outcome	audit	requests	complete_counters	prompt	cached	uncached	generated	valid_prompt	valid_cached	valid_uncached	valid_generated
+LOOP-62	F-canary-nothink	reviewer OFF	original	previous-gpu-r2	verified		1	1	3102	0	3102	48	1	1	1	1
+LOOP-62	F-canary-nothink	worker OFF	original	previous-gpu-r2	verified		24	24	539655	513276	26379	8340	24	24	24	24
+MM-5	F-canary-nothink	worker OFF	original	cpu	rejected	env-contention	16	16	325559	300439	25120	6452	16	16	16	16
+NOFOLD-1	F-canary-nothink	reviewer OFF	original	cpu	rejected	harness-false-accept	1	1	1954	0	1954	42	1	1	1	1
+NOFOLD-1	F-canary-nothink	worker OFF	original	cpu	rejected	harness-false-accept	6	6	77468	63530	13938	1710	6	6	6	6
+TU-GR-1	F-canary-nothink	reviewer OFF	original	previous-gpu-r2	rejected	harness-false-accept	1	1	4642	0	4642	43	1	1	1	1
+TU-GR-1	F-canary-nothink	worker OFF	original	previous-gpu-r2	rejected	harness-false-accept	19	19	666891	625077	41814	5778	19	19	19	19
+WS4-WAKE-IMPERATIVE	F-canary-nothink	no calls	original	cpu	skipped	stale-packet	0	0	0	0	0	0	0	0	0	0
+LOOP-62	F-canary-think	reviewer OFF	original	gpu	verified		1	1	3094	0	3094	36	1	1	1	1
+LOOP-62	F-canary-think	worker ON	original	gpu	verified		17	17	284495	263650	20845	7263	17	17	17	17
+MM-5	F-canary-think	reviewer OFF	original	gpu	rejected	harness-false-accept	1	1	5239	189	5050	30	1	1	1	1
+MM-5	F-canary-think	worker ON	original	gpu	rejected	harness-false-accept	28	28	707311	680609	26702	13801	28	28	28	28
+NOFOLD-1	F-canary-think	reviewer OFF	original	gpu	verified		1	1	1760	0	1760	47	1	1	1	1
+NOFOLD-1	F-canary-think	worker ON	original	gpu	verified		5	5	61847	48025	13822	1622	5	5	5	5
+TU-GR-1	F-canary-think	reviewer OFF	original	previous-gpu-r2	rejected	harness-false-accept	1	1	4025	0	4025	35	1	1	1	1
+TU-GR-1	F-canary-think	worker ON	original	previous-gpu-r2	rejected	harness-false-accept	19	19	727012	681397	45615	7938	19	19	19	19
+WS4-WAKE-IMPERATIVE	F-canary-think	no calls	original	gpu	skipped	stale-packet	0	0	0	0	0	0	0	0	0	0
+LOOP-62	R-canary-nothink	worker OFF	original	previous-gpu-r2	rejected	task	30	30	556055	536347	19708	6816	30	30	30	30
+MM-5	R-canary-nothink	worker OFF	original	cpu	rejected	model-limitation	13	13	250183	229581	20602	6329	13	13	13	13
+NOFOLD-1	R-canary-nothink	reviewer OFF	original	cpu	verified		1	1	1744	0	1744	42	1	1	1	1
+NOFOLD-1	R-canary-nothink	worker OFF	original	cpu	verified		5	5	61166	47386	13780	1233	5	5	5	5
+TU-GR-1	R-canary-nothink	reviewer OFF	original	previous-gpu-r2	rejected	model-limitation	1	1	4434	0	4434	58	1	1	1	1
+TU-GR-1	R-canary-nothink	worker OFF	original	previous-gpu-r2	rejected	model-limitation	30	30	945666	907500	38166	10501	30	30	30	30
+WS4-WAKE-IMPERATIVE	R-canary-nothink	no calls	original	cpu	skipped	stale-packet	0	0	0	0	0	0	0	0	0	0
+LOOP-62	R-canary-think	reviewer OFF	original	gpu	verified		1	1	3257	0	3257	42	1	1	1	1
+LOOP-62	R-canary-think	worker ON	original	gpu	verified		23	23	444995	424540	20455	9899	23	23	23	23
+MM-5	R-canary-think	reviewer OFF	original	gpu	rejected	harness-false-accept	1	1	4880	189	4691	32	1	1	1	1
+MM-5	R-canary-think	worker ON	original	gpu	rejected	harness-false-accept	27	27	688506	661617	26889	12999	27	27	27	27
+NOFOLD-1	R-canary-think	reviewer OFF	original	gpu	verified		1	1	1755	0	1755	46	1	1	1	1
+NOFOLD-1	R-canary-think	worker ON	original	gpu	verified		7	7	47897	41650	6247	1921	7	7	7	7
+TU-GR-1	R-canary-think	reviewer OFF	original	previous-gpu-r2	rejected	harness-false-accept	1	1	4751	0	4751	27	1	1	1	1
+TU-GR-1	R-canary-think	worker ON	original	previous-gpu-r2	rejected	harness-false-accept	14	14	359380	330967	28413	7230	14	14	14	14
+WS4-WAKE-IMPERATIVE	R-canary-think	no calls	original	gpu	skipped	stale-packet	0	0	0	0	0	0	0	0	0	0
+LOOP-62	R-canary-nothink	reviewer OFF	followup-loop	cpu	rejected	model-limitation	1	1	3273	0	3273	54	1	1	1	1
+LOOP-62	R-canary-nothink	worker OFF	followup-loop	cpu	rejected	model-limitation	26	26	464980	446933	18047	7366	26	26	26	26
+MM-5	F-canary-nothink	worker OFF	followup-mm	gpu	rejected	model-limitation	30	30	876643	845180	31463	7687	30	30	30	30
+MM-5	F-canary-think	worker ON	followup-mm	gpu	rejected	model-limitation	27	27	980499	925381	55118	14715	27	27	27	27
+NOFOLD-1	F-canary-nothink	reviewer OFF	followup-nofold	cpu	verified		1	1	1851	0	1851	47	1	1	1	1
+NOFOLD-1	F-canary-nothink	worker OFF	followup-nofold	cpu	verified		27	27	356495	342907	13588	7930	27	27	27	27
+TU-GR-1	F-canary-nothink	reviewer OFF	followup-tu	gpu	rejected	model-limitation	1	1	5347	0	5347	34	1	1	1	1
+TU-GR-1	F-canary-nothink	worker OFF	followup-tu	gpu	rejected	model-limitation	17	17	502108	470357	31751	5018	17	17	17	17
+TU-GR-1	F-canary-think	worker ON	followup-tu	gpu	rejected	model-limitation	20	20	612966	579425	33541	8005	20	20	20	20
+TU-GR-1	isolation-review-replay	reviewer OFF	reviewer-replay	gpu	reviewer replay		8	8	29444	189	29255	320	8	8	8	8
+TU-GR-1	isolation-review-replay	reviewer OFF	reviewer-fullpatch-replay	gpu	reviewer replay		1	1	5458	3299	2159	27	1	1	1	1

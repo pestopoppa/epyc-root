@@ -1,0 +1,26 @@
+task	attempt	device	audit	harness_state	role	requests	complete_counters	prompt	cached	uncached	generated	valid_prompt	valid_cached	valid_uncached	valid_generated
+PAW-5	PAW-5-try-1	gpu	harness-packaging	skipped	no calls	0	0	0	0	0	0	0	0	0	0
+PAW-5	PAW-5-try-2	gpu	harness-transport	rejected	worker ON	7	7	37492	32112	5380	2255	7	7	7	7
+PAW-5	PAW-5-runtime-recovery-try-1	gpu	harness-interruption	rejected	worker ON	1	1	5358	0	5358	436	1	1	1	1
+PAW-5	PAW-5-runtime-recovery-try-2	gpu	internal-pause-signal	paused	worker ON	8	8	133995	107036	26959	5569	8	8	8	8
+PAW-5	PAW-5-resumed-try-1	gpu	model-semantic-resume-confounded	verified	reviewer OFF	1	1	3502	0	3502	36	1	1	1	1
+PAW-5	PAW-5-resumed-try-1	gpu	model-semantic-resume-confounded	verified	worker ON	8	8	268552	236532	32020	3420	8	8	8	8
+NARIQ-LIBTRELLIS-MAP-1	NARIQ-LIBTRELLIS-MAP-1-try-1	cpu	harness-output-budget	rejected	worker OFF	10	10	278992	243952	35040	6961	10	10	10	10
+DS41-W-75	DS41-W-75-try-1	gpu	model-scope	rejected	worker ON	15	15	214813	201228	13585	3862	15	15	15	15
+DS41-W-66	DS41-W-66-try-1	gpu	model-execution-confounded	rejected	worker ON	30	30	861040	824939	36101	9039	30	30	30	30
+PFXC-A3	PFXC-A3-try-1	cpu	model-semantic	verified	reviewer OFF	1	1	3737	0	3737	48	1	1	1	1
+PFXC-A3	PFXC-A3-try-1	cpu	model-semantic	verified	worker OFF	15	15	182710	168502	14208	7332	15	15	15	15
+PAW-5	PAW-5-source-correction-try-1	gpu	human-assisted	verified	reviewer OFF	1	1	2357	0	2357	87	1	1	1	1
+PAW-5	PAW-5-source-correction-try-1	gpu	human-assisted	verified	worker ON	9	9	73118	64960	8158	2709	9	9	9	9
+NARIQ-LIBTRELLIS-MAP-1	NARIQ-LIBTRELLIS-MAP-1-cap-recovery-try-1	cpu	model-semantic	verified	reviewer OFF	1	1	9788	0	9788	37	1	1	1	1
+NARIQ-LIBTRELLIS-MAP-1	NARIQ-LIBTRELLIS-MAP-1-cap-recovery-try-1	cpu	model-semantic	verified	worker OFF	25	25	943247	902281	40966	12579	25	25	25	25
+UTM-B2-VERBATIM-WITH-COMPACTION	UTM-B2-VERBATIM-WITH-COMPACTION-try-1	gpu	model-test-semantics	verified	reviewer OFF	1	1	2568	309	2259	44	1	1	1	1
+UTM-B2-VERBATIM-WITH-COMPACTION	UTM-B2-VERBATIM-WITH-COMPACTION-try-1	gpu	model-test-semantics	verified	worker ON	26	26	1230293	1182374	47919	14596	26	26	26	26
+DS41-W-66	DS41-W-66-denial-guidance-try-1	gpu	harness-wall-envelope	rejected	worker ON	22	22	537465	508257	29208	6217	22	22	22	22
+PFXC-A3	PFXC-A3-source-correction-try-1	cpu	human-assisted	verified	reviewer OFF	1	1	3503	0	3503	55	1	1	1	1
+PFXC-A3	PFXC-A3-source-correction-try-1	cpu	human-assisted	verified	worker OFF	14	14	143282	131749	11533	2640	14	14	14	14
+DS41-W-66	DS41-W-66-guidance-continuation-try-1	gpu	resume-reasoning-confounded	rejected	worker ON	8	8	324198	285438	38760	5956	8	8	8	8
+UTM-B2-VERBATIM-WITH-COMPACTION	UTM-B2-VERBATIM-WITH-COMPACTION-source-correction-try-1	gpu	corrected test accepted	verified	reviewer OFF	1	1	2820	0	2820	50	1	1	1	1
+UTM-B2-VERBATIM-WITH-COMPACTION	UTM-B2-VERBATIM-WITH-COMPACTION-source-correction-try-1	gpu	corrected test accepted	verified	worker ON	15	15	414067	357199	56868	9456	15	15	15	15
+NARIQ-LIBTRELLIS-MAP-1	NARIQ-LIBTRELLIS-MAP-1-source-correction-try-1	gpu	model-semantic	verified	reviewer OFF	1	1	5165	0	5165	50	1	1	1	1
+NARIQ-LIBTRELLIS-MAP-1	NARIQ-LIBTRELLIS-MAP-1-source-correction-try-1	gpu	model-semantic	verified	worker ON	30	30	1669315	1615497	53818	27593	30	30	30	30
