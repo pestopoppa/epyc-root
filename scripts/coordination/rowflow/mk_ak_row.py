@@ -987,6 +987,13 @@ def smoke_load_estimate(root, model, supersedes, correctness=False):
 def derive_smoke_budget(a, gate_spec):
     load_s, source = smoke_load_estimate(a.root, a.model, getattr(a, "supersedes", None))
     unit_s, unit_source = smoke_load_estimate(a.root, a.model, getattr(a, "supersedes", None), correctness=True)
+    # 2026-11-26: a measurement from another store/rebuild undercounted (108 s/unit measured vs ~210 s real on
+    # ak-c22-q38fn-draftwin-confirm-cpu-20261126 -> killed at 576 s). Measurements may only RAISE the estimate,
+    # never lower it below the conservative defaults; the 2400 s cap still bounds the total.
+    if load_s < 150:
+        load_s, source = 150, f"{source} (floored to 150 s)"
+    if unit_s < 300:
+        unit_s, unit_source = 300, f"{unit_source} (floored to 300 s)"
     count = len(G.plan_correctness(G.smoke_spec(gate_spec)))
     raw_budget = math.ceil(load_s * len(gate_spec["arms"]) + unit_s * count + 120)
     budget = min(raw_budget, 2400)

@@ -351,11 +351,12 @@ def test_auto_smoke_budget_uses_latest_eligible_measure_and_correctness(env):
                        "arms": ["OFF", "OFF2", "ON"], "ops": "MUL_MAT", "timeout_s": 40})
     rc, out = run(decl(env, rid, extra=["--supersedes", "predecessor", "--correctness", corr]))
     assert rc == 0, out
-    assert "120 s/arm x 3 arms + 120 s correctness (3 units at 40 s) + 120 s = 600 s" in out
+    assert "150 s/arm x 3 arms + 900 s correctness (3 units at 300 s) + 120 s = 1470 s" in out  # measured 120/40 floored (2026-11-26)
+    assert "floored to 150 s" in out and "floored to 300 s" in out
     assert "same-model/out/TERMINAL-smoke.json" in out
     spec = json.loads((env["rows"] / rid / "spec.json").read_text())
-    assert spec["first_progress_s"] == 720
-    assert "'budget_s': 600" in (env["rows"] / rid / "job.py").read_text()
+    assert spec["first_progress_s"] == 1590
+    assert "'budget_s': 1470" in (env["rows"] / rid / "job.py").read_text()
 
 
 def test_auto_smoke_budget_default_and_explicit_override(env):
