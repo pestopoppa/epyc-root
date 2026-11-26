@@ -41,3 +41,9 @@ Next: codex-a3b-pilot reviews remaining native outputs and files the final model
 A3B required a correction for geometry/link/arithmetic/bias errors and final human repair of extractor/source attribution. V2 checker falsely rejected a correct two-budget sentence; versionedv3 fixes that case and passes13controls. Original outputs and graders remain retained. The note is human-assisted, not an autonomous clean task success.
 
 Next: codex-a3b-pilot files the committed conclusion and closes the documentation box while remaining native tasks finish.
+
+## 16:01Z — **PFXC-A3** [non-inference] `--cache-ram` sizing for 10+ concurrent worktrees (brief A3): entries are 330-1005 MiB (hybrid state + 32k f16 KV), 8 GiB holds ~8-12 conversations; r2 logged 41 `making room for prompt cache entry` evictions. Record per-entry MiB from the probe row's server log and write the recipe sizing (cache-ram MiB = entries x p95 entry size) plus the np2 VRAM budget note (37.9 GiB peak at np1) into the A3B recipe notes. model: Qwen3.6-35B-A3B-MTP Q8_0.
+
+Closed PFXC-A3 after independent semantic and executable review of research `8b6bc70f2242`. Committed conclusion `cc:v1:33a4f1000baf0ae817d3501a3898f8bf` anchors the source-bound calculation to progress commit `3110901242b3`; it supplies an observation of the documented conclusion and no retrospective measurement warrant. The source trace and separate probe remain distinguished, and the canonical serving recipe is unchanged.
+
+Next: codex-a3b-pilot completes the remaining engineering-note and test reviews.
