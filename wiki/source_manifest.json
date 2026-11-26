@@ -4,28 +4,29 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1515,
-    "research": 552
+    "progress": 1516,
+    "research": 579
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 1,
+      "added": 28,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-26T10:16:43Z",
+    "at": "2026-11-26T10:42:07Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-25-autokernel.md",
-      "progress/2026-11/2026-11-26-autokernel.md"
+      "progress/2026-11/2026-11-26-intake-nov26-kernels.md",
+      "research/deep-dives/intake-digests/2026-11-26-ids-2982-3005.md",
+      "research/deep-dives/intake-nov26-kernels"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-26T10:16:43Z",
+  "scan_time": "2026-11-26T10:42:07Z",
   "schema_version": 1,
-  "source_set_hash": "702651d140ae9ee34c945658935279c814204ba861a3503374e5247ab26afd11",
+  "source_set_hash": "94963f18c79bf45ff92c5b97154b22eb29c1732f69cbff31e058be95548e4f09",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -6140,6 +6141,14 @@
       "type": "research"
     },
     {
+      "content_hash": "7c349c4ea5ef12b4a24ff0e483ecbb81198dc5850ed6f6b246c8d3e8cc2af1fc",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-digests/2026-11-26-ids-2982-3005.md",
+      "size": 73948,
+      "title": "Intake dive digest \u2014 2026-11-26, intake-2982#record .. intake-3005#record",
+      "type": "research"
+    },
+    {
       "content_hash": "3659c482111246f8adfaadb22eb9f1d727f4e775bbe5d901139184ba3a7f8af1",
       "modified": "2026-11-25T12:43:28Z",
       "path": "research/deep-dives/intake-kspec-1125/dive-K1-streamk-order.md",
@@ -6721,6 +6730,214 @@
       "path": "research/deep-dives/intake-lpr-20261122/stage3-plan.md",
       "size": 93467,
       "title": "Stage-3 plan \u2014 llama.cpp PR batch + Inkling 2 Mini (intake-lpr-20261122) \u2014 APPROVED 2026-11-22 with operator edits",
+      "type": "research"
+    },
+    {
+      "content_hash": "79a512ae3a977111b97d06724adc18584df412aa7768a700ec34abed8184b642",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2610.32322.md",
+      "size": 4582,
+      "title": "Beyond Gain: Measuring Skill Internalization for Agent Skill Retirement",
+      "type": "research"
+    },
+    {
+      "content_hash": "91ca91bed323d359f579aa983c177dca5c3675ff32c3a669b9349b98cc9a5da4",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.11533.md",
+      "size": 2615,
+      "title": "Ostinato: Low-Latency CPU-GPU MoE Inference for Local Agents",
+      "type": "research"
+    },
+    {
+      "content_hash": "ba254b72c2f4ea7803c2728c12c371320eee0c60d37bc1b3f6e74d0239430acf",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.33402.md",
+      "size": 3284,
+      "title": "Partial Routing: Trace-Tuned Delegation for Resource-Efficient Agentic Workflows",
+      "type": "research"
+    },
+    {
+      "content_hash": "03a43638fc73d5dcdc6fe87784bf55edb6901edb249fb3481571f7172ecf93ac",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.33943.md",
+      "size": 3459,
+      "title": "What Does Skill Lift Actually Measure? A Source-Code-Level Audit and Noise-Aware Reanalysis of SkillsBench",
+      "type": "research"
+    },
+    {
+      "content_hash": "bb9bbce0d2f28fa6dcb1730bf88a6f66081ef44abc5ea3188d68ffd98b73ea3f",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.34010.md",
+      "size": 2377,
+      "title": "Asymmetric Speculative Decoding: Unlocking In-Context Learning in Draft Models",
+      "type": "research"
+    },
+    {
+      "content_hash": "10a4ca0f0a35c7076d57813040970a07f117b53887a5bb1f388aa4daef8de880",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.34092.md",
+      "size": 2677,
+      "title": "Improving Tail-Augmented Speculative Drafting with Hidden State Mixing and Gradient Detach",
+      "type": "research"
+    },
+    {
+      "content_hash": "641eea1931681ab751c50e1f58a515f1469fd9bb6e9f72f8436fd2f1c005ed07",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.34402.md",
+      "size": 2214,
+      "title": "Any-Rate: Half-Bit Multi-Precision LLM Quantization with Coded Bit-Planes",
+      "type": "research"
+    },
+    {
+      "content_hash": "2e5f5afee99a065b1f7eb4ffff1adfa2a22053ce4fde5af937e4e63db289d847",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.34756.md",
+      "size": 3807,
+      "title": "Collect for Coverage, Replay with Evidence: Adaptive and Efficient On-Policy Distillation for Long-Horizon Agents",
+      "type": "research"
+    },
+    {
+      "content_hash": "d5c14e3bc87c8adc48beff6259de6df0ac9fac3093edfe2c6c490f563446b421",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/2611.34776.md",
+      "size": 2245,
+      "title": "DFly2: Turbocharging Long-Context Speculative Decoding by Sharing the Target's Sparsity",
+      "type": "research"
+    },
+    {
+      "content_hash": "8bbecd661491386cedc993791065d9e399c90ca816aa1eb504621c9b1fc0bceb",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/27530.md",
+      "size": 2627,
+      "title": "llama : fix K/V and recurrent state cleanup after failed restores",
+      "type": "research"
+    },
+    {
+      "content_hash": "036b4a9ce62e23a7f8e65bfb06df9c0f0e49b9fb91ce66d1445476f36f4b1e5f",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/30318.md",
+      "size": 2051,
+      "title": "llama : fix seq state restore with ON_DEVICE",
+      "type": "research"
+    },
+    {
+      "content_hash": "9790e8dfad6121f56d4ed505caeb4d7f4d5df0995f1db5d0ef9ef5334a14be90",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/32081.md",
+      "size": 2250,
+      "title": "llama,ggml,tests: batch invariance support",
+      "type": "research"
+    },
+    {
+      "content_hash": "78dbcf0dc48317578c822a3a9ec4433de113ca3e802693f91660f21969fa1fd7",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/33019.md",
+      "size": 1773,
+      "title": "CUDA: split gate and up weight reads for small-k MMVQ",
+      "type": "research"
+    },
+    {
+      "content_hash": "48c0b4bee19609921ae3b7eefda3082e9efb3e28dafb83cfccbc6a47cc6429d7",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/33068.md",
+      "size": 2080,
+      "title": "llama : share compute buffers with the partner context",
+      "type": "research"
+    },
+    {
+      "content_hash": "2f0d66d79ab915c3563e361c830af656637478f7026a7e16d775b190a38b3264",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/33077.md",
+      "size": 1674,
+      "title": "ggml : vectorize ggml_vec_exp_f32",
+      "type": "research"
+    },
+    {
+      "content_hash": "fa0b92f35db4439bd47ada812aaa52ce6d1ca9c4acc686324c7103dca14eda76",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/33086.md",
+      "size": 1818,
+      "title": "hip : fix bf16 MFMA operand vector type for CDNA",
+      "type": "research"
+    },
+    {
+      "content_hash": "c7c73ee472623344d58cbe81811a71a43e8c91f9319bd319660057552a46b713",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/9365.md",
+      "size": 3480,
+      "title": "feat(batch_invariant): `sampling_from_probs` / `sampling_from_logits` under `batch_invariant=True`",
+      "type": "research"
+    },
+    {
+      "content_hash": "1df28dc294863e2a475a001a60032ccb376acd39c5cc62bbd46c473f78e2e81f",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/9405.md",
+      "size": 2411,
+      "title": "feat(batch_invariant): `chunk_gated_delta_rule(batch_invariant=True)`, the GDN class `gdn.bf16.c64`",
+      "type": "research"
+    },
+    {
+      "content_hash": "2d44db41c88883d2c71eccc84acea3b95b835b2b666de6550632c183e5759129",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/9619.md",
+      "size": 3478,
+      "title": "feat(batch_invariant): batch-invariant top-k / top-p / min-p sampling",
+      "type": "research"
+    },
+    {
+      "content_hash": "3e2b5179a7f96becb97e8258a554d91a14f0d6d1a5c5fc7657b16c64ee3ee5bf",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/9644.md",
+      "size": 3719,
+      "title": "feat(cake_ssd_combined): read and write states in a caller state pool by slot",
+      "type": "research"
+    },
+    {
+      "content_hash": "f53e0497c58a226773e928881b50d5f5a452083752e4e0f27d534bccde697d64",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/Any-Rate.md",
+      "size": 2516,
+      "title": "hoonki2002/Any-Rate",
+      "type": "research"
+    },
+    {
+      "content_hash": "1878f6a25b600d94da387972ff2a0976f728eff5aa3ded96d8ec4c199856ef12",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/angel.md",
+      "size": 2212,
+      "title": "Tencent/AngelSpec",
+      "type": "research"
+    },
+    {
+      "content_hash": "09e6201fb340d534686e42cc37f8831a97a3c68c47a106eebdbe395901e943e6",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/audit.md",
+      "size": 2565,
+      "title": "rrrrr4788/skillsbench-lift-reanalysis",
+      "type": "research"
+    },
+    {
+      "content_hash": "9f8acb777ee5607f66a11ed6b0ebd472374b1a8ded672370d8a5998c1ce58b87",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/flash.md",
+      "size": 2341,
+      "title": "FlashInfer v0.7.6",
+      "type": "research"
+    },
+    {
+      "content_hash": "26c4e86fa52f316019812e2cac8278f25f4c3e5125c67a91f9c8356f26387bc4",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/run-summary.md",
+      "size": 6027,
+      "title": "November 26 research intake",
+      "type": "research"
+    },
+    {
+      "content_hash": "b413fc944ba3699c3a47d213836f25ed9399e533c292e5248216fe460a9b69be",
+      "modified": "2026-11-26T10:37:32Z",
+      "path": "research/deep-dives/intake-nov26-kernels/stage3-plan.md",
+      "size": 172182,
+      "title": "Proposed filing for the November 26 research intake",
       "type": "research"
     },
     {
@@ -19732,6 +19949,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "1ed433806bea5f143331b0a054f6fd77d17d2b09085460a8e16290eebf745680",
+      "modified": "2026-11-26T10:40:07Z",
+      "path": "progress/2026-11/2026-11-26-intake-nov26-kernels.md",
+      "size": 3903,
+      "title": "November 26 research intake filing",
+      "type": "progress"
+    },
+    {
       "content_hash": "0412267d1044dc81a2a2d008806c740651691fac124a35700f332ee702aead6f",
       "modified": "2026-11-23T18:02:41Z",
       "path": "progress/2026-11/autokernel-loop-box-history-20261122.md",
@@ -24652,7 +24877,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3078,
+  "total_new": 3106,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
