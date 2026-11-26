@@ -1973,7 +1973,8 @@ Open kernel-fix boxes re-homed by INF48-FOLD-PLAN (moved from INF-48 2026-11-17;
 - [x] **C22-COMPOSITE-SERVED-GATE** [inference] C22 composite served gate (27B GPU): store gpu-20261126-7b950be40-c22-composite (C21 98ff8a42a + 15 KEEP features + 2 fixups), arms OFF/OFF2 (knobs off) vs C22 (all KEEP knobs), I8PC_ONLY, LOSSLESS; ms/round ABBA 8 blocks, KEEP iff CI lower > 1.01; tbo, KLD <= max(0.003, 3x A/A), identity on LOSSLESS (INPLACE=0+SKINNY=0, 256 tok). model: Qwen3.8-27B Q8_0 + DFlash2-Q8_0 · quant_build: gpu-20261126-7b950be40-c22-composite · stop: futility look at block 4 if CI upper < 1.01, A/A > 0.02, witness miss or correctness FAIL; stop-on-answer at block 8 ✅ 2026-11-26 [belief: cc] r5 KEEP_C22+I8PC_ONLY+LOSSLESS: C22 x1.121, I8PC_ONLY x1.128 [1.108,1.147] (served env, no q8wp), lossless +5.2%
       · done when: row ak-c22-composite-gate-27b-gpu-20261126 filed with verdict.json (KEEP/NO_KEEP/FUTILITY_*) and the box ticked with a belief tag
       · gate: none
-- [ ] **C22-RATIFY-SIGN** [operator-decision] Operator signs or rejects the C22 champion ratification package (branch llama.cpp-experimental-c22-composite-20261125 @ b1e1864cb, stores cpu/gpu-20261126-ce6fcbbde-c22-composite)
+- [x] **C22-RATIFY-SIGN** [operator-decision] Operator signs or rejects the C22 champion ratification package (branch llama.cpp-experimental-c22-composite-20261125 @ b1e1864cb, stores cpu/gpu-20261126-ce6fcbbde-c22-composite)
+      · result: RATIFIED by operator 2026-11-26, receipt artifacts/operator/ratify_c22_champion_20261126.json (commit f549db358); C22 b1e1864cb is the AutoKernel champion; nothing promoted. [belief: cc]
       · done when: a signed RATIFY-C22 json exists under artifacts/operator/ or the operator's rejection is recorded under this box
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/ak-c22-composite-build-20261125/RATIFY-C22-PACKAGE.md`
       · owner: autokernel
