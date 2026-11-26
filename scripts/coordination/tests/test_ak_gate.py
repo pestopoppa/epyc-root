@@ -2001,6 +2001,23 @@ def test_arm_stores_pin_substitute_and_fail_closed(tmp_path, monkeypatch):
     assert result["verdict"] == "FUTILITY_HARNESS_LINKAGE" and not result["arm_linkage"]["ON"]["ok"]
 
 
+def test_arm_store_production_bin_symlink_resolves_to_store_root(tmp_path):
+    store = tmp_path / "store"
+    (store / "bin").mkdir(parents=True)
+    (store / "lib").mkdir()
+    binary = store / "bin" / "llama-server"
+    binary.write_text("bin")
+    binary.chmod(0o755)
+    (store / "lib" / "libggml-base.so").write_text("lib")
+    alias = tmp_path / "gpu"
+    alias.symlink_to(store / "bin", target_is_directory=True)
+    root = MK.resolve_arm_stores([f"ON={store}"], {"ON": {}}, ["/old/llama-server"], None)
+    via_alias = MK.resolve_arm_stores([f"ON={alias}"], {"ON": {}}, ["/old/llama-server"], None)
+    assert via_alias == root
+    assert via_alias["ON"]["store"] == str(store)
+    assert via_alias["ON"]["lib"] == str(store / "lib")
+
+
 def test_arm_store_refuses_missing_binary_and_outside_linkage(tmp_path, monkeypatch):
     store = tmp_path / "test-fixtures" / "store"
     (store / "bin").mkdir(parents=True)

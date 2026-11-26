@@ -743,6 +743,10 @@ def resolve_arm_stores(entries, arms, argv, corr, load_units=()):
             if len(matches) != 1:
                 raise SystemExit(f"mk_ak_row gate: unknown or ambiguous store {value!r}")
             path = matches.pop()
+        # Production aliases resolve to <store>/bin; pin the whole store just as
+        # when its root is supplied, including libraries in a sibling lib directory.
+        if os.path.basename(path) == "bin" and os.path.isdir(os.path.dirname(path)):
+            path = os.path.dirname(path)
         bindir = os.path.join(path, "bin") if os.path.isdir(os.path.join(path, "bin")) else path
         libdir = os.path.join(path, "lib") if os.path.isdir(os.path.join(path, "lib")) else bindir
         if not os.path.isdir(path):
