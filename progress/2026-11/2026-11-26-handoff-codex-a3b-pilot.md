@@ -65,3 +65,9 @@ Closed the remaining NARIQ design, DS41-W-66 fixture repair and VERBATIM regress
 The pilot conclusion is registered as a committed observation. No model-ranking or retrospective measurement warrant is claimed. All observed harness failures have repairs and scoped regression evidence; remaining clear source/test errors are model limitations, while W66's interrupted/resumed execution outcome retains its reasoning-loss qualification. No inference processes or compute claims remain owned by this pilot.
 
 Next: pipeline-mgmt uses independent contracts and the retained residual cases when preparing the separately enrolled Stage 1 comparison.
+
+## Harness scope correction and revalidation hold
+
+Re-audited the actual OpenCode 2.2.5 wire: the old custom setup exposed seven direct tools; the stock reference exposes twelve, including execute, subagent and web capabilities. Old sampled prompts still referred to Code Mode session operations despite missing execute. Corrected the pilot report to restrict its conclusions to that configuration; intrinsic model capability remains unproven. The replacement keeps useful tools and validates deterministic syntax-error recovery, effective native output caps for all roles, questions, isolated references and session continuity before new quality runs. No native qualification or new quality outcome is claimed yet. GitNexus has no usable index; documentation-only impact manually scoped to this report and its conclusion record.
+
+Next: codex-a3b-pilot independently checks the sealed qualification manifest, then runs native C22 harness controls before any task comparison.

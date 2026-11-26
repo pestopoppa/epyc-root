@@ -1,6 +1,14 @@
 # A3B real-task dispatch pilot — 2026-11-26
 
-- **A3B-REAL-DISPATCH-PILOT — REPAIRS_VALIDATED_CANDIDATE_ONLY.** Six bounded tasks are complete and their reviewed outputs are published. No initial attempt closed a task unchanged. One corrected A3B test was accepted with an identical functional AST; three drafts needed human repairs and two tasks were completed independently. Fresh source and test-intent errors remain model limitations. Historical interrupted/resumed outcomes retain their specific harness qualifications. Automated reviewer acceptance remains advisory.
+- **A3B-REAL-DISPATCH-PILOT — REPAIRS_VALIDATED_CANDIDATE_ONLY.** Six bounded tasks are complete and their reviewed outputs are published. No initial attempt closed a task unchanged. One corrected A3B test was accepted with an identical functional AST; three drafts needed human repairs and two tasks were completed independently. Source and test-intent errors were observed under a restricted, changing harness; they do not establish an intrinsic model ceiling. Historical interrupted/resumed outcomes retain their specific harness qualifications. Automated reviewer acceptance remains advisory.
+
+## Harness-scope correction — 2026-11-26
+
+The prior pilot did **not** provide the best available OpenCode-derived harness. Its custom configuration exposed seven direct tools, disabled execution through Code Mode and other useful capabilities, imposed read/turn restrictions, and retained a stock instruction referring to `tools.opencode.session_move` without exposing the required `execute` tool. A model-free wire audit of the installed, published OpenCode 2.2.5 executable instead observes twelve direct tools: edit, glob, grep, question, read, shell, skill, subagent, webfetch, websearch, write and execute. The installed executable SHA-256 is `8d060e1d2fbb9bb44cf09ae6ed1f3f6a7cff070b5227e2f90970132b23a92050`.
+
+The published outcomes and token records remain historical evidence for that restricted configuration. They cannot establish whether these tasks require a stronger model after a fully repaired, useful harness is supplied. Software-unit checks and offline reasoning-template controls also did not prove native end-to-end qualification. Real-task comparisons are held until the replacement harness passes model-free and native tool, budget, isolation and continuity checks. The target is a reliable OpenCode-derived configuration, with deterministic error feedback and adequate budgets, rather than stock configuration purity.
+
+Audit receipts: `artifacts/analysis/taskflow-real-pilot-20261126/stock-structural.json`; full historical wire references and current qualification work remain KEEP-retained under `/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/` and `/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/`. No new model-quality result is claimed by this correction.
 
 ## Scope and serving identity
 
@@ -43,4 +51,4 @@ The [source-and-evidence archive](/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/run
 
 The global dispatcher stayed under its standing hold; its legacy coordinator relay was absent and the bounded pilot used direct owner claims. The parent TASKFLOW-STAGE1 dated one-week comparison remains a separate open task. This heterogeneous pilot supplies no replacement verdict for that comparison or for a paired 35B/27B experiment.
 
-Next: pipeline-mgmt uses independently checked candidate drafts and the recorded residual cases when preparing the separately enrolled Stage 1 comparison.
+Next: codex-a3b-pilot qualifies the repaired OpenCode-derived harness before matched task replays and measured guidance versus main-only comparisons.
