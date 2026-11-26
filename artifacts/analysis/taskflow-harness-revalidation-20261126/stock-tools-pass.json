@@ -1,0 +1,20 @@
+{
+  "tools": [
+    "edit",
+    "execute",
+    "glob",
+    "grep",
+    "question",
+    "read",
+    "shell",
+    "skill",
+    "subagent",
+    "webfetch",
+    "websearch",
+    "write"
+  ],
+  "requests": 15,
+  "syntax_diagnostic": "SyntaxError: Unexpected token. Code must be plain JavaScript written as a program body. (line 1, col 17)",
+  "wire_dir": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/stock/stock-wire-cwh3ce16",
+  "passed": true
+}

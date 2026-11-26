@@ -1,0 +1,855 @@
+{
+  "publication_fixture": {
+    "direct_stock_parameter_schema_sha256": {
+      "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+      "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+      "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+      "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+      "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+      "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+      "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+      "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+      "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+      "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+      "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+      "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+    },
+    "contained_parameter_schema_sha256": {
+      "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+      "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+      "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+      "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+      "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+      "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+      "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+      "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+      "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+      "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+      "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+      "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+    },
+    "different_parameters": [],
+    "requests": [
+      {
+        "names": [],
+        "schemas": {},
+        "schema_descriptions": {},
+        "catalog_head": false,
+        "catalog_notice": false,
+        "session_move_mentioned": false,
+        "cap": {
+          "maxOutputTokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "glob",
+          "grep",
+          "read",
+          "shell",
+          "skill",
+          "webfetch",
+          "websearch"
+        ],
+        "schemas": {
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd"
+        },
+        "schema_descriptions": {
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5"
+        },
+        "catalog_head": false,
+        "catalog_notice": false,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      },
+      {
+        "names": [
+          "edit",
+          "execute",
+          "glob",
+          "grep",
+          "question",
+          "read",
+          "shell",
+          "skill",
+          "subagent",
+          "webfetch",
+          "websearch",
+          "write"
+        ],
+        "schemas": {
+          "edit": "0f4a3beb0cd64394d321432093aa6983b3b4dc554586196c8fd611ba7aabff2c",
+          "glob": "8c881f9a9f221fd3061aeb544f4b932a26ffbb1f2b73189c44e35c0ae7f5d8c5",
+          "grep": "fd5fe5bd60ca1371a055af4e846f65f772de74adea2210080e98ebe61fca67d5",
+          "question": "c5e745bc20ee80f7cbad35122b5e3b58db1c6b863821ec26ef203d1e94c451a3",
+          "read": "6c40cf1d42047c8a800f2bdfa0ff675d1fe1183a06971c7b3d790381a3521a9a",
+          "shell": "07cd332089f46e2f58a314226d8cfbcb66cdf01302bd5c59064a858ddd18c3b4",
+          "skill": "0f797af54d65a932eeb4378c1843d29250ecf5dc5f29797399b0c13c577c9022",
+          "subagent": "0f574cfe102faaa5b9586e8febadeec764dda78126e99acfc0e1cc50fa0fc7fb",
+          "webfetch": "28d19e70a0bff86fdad5d7b08cff93a63bf4e61613e3054e9c336c6212e1b60a",
+          "websearch": "3077c725c48abb4c6193183d971bce3590853bc59f03d91a07de828121efabfd",
+          "write": "7a4a81bfc4c2af017756dd2bb4b99d8813bc4b38424456589af58cb8f3822989",
+          "execute": "e5de9e79f2da6956be1f81b55a9f782098f2cdeb3996cd84a3e38f8efcf40e25"
+        },
+        "schema_descriptions": {
+          "edit": "51b005f1283719ae34f03af323087733aae3a3192aa70ed7aacafff2a67782bd",
+          "glob": "2d0d36a8495b9495cd4bcb3e36ed0542858027a239e5228e0577f6a233d51f4e",
+          "grep": "67e7222b75344310ce867ff00c80092b62ee143917ba33052af74e012b6349aa",
+          "question": "0d91cca11635d1c256703d6e926e44ca5222b2732229a78926a03960086d1740",
+          "read": "ed13d53c4e961a558d6dfb619c4b769b7a2cde0613103e56ef9a23f28f396a89",
+          "shell": "360050ead6a51d7c95f5d8f70f0db11ecf1eebe5c3314a69e52a8864fe748bba",
+          "skill": "cc03da7845e713fe6717cbc6ee7d7463951af4927c4f4e2355718a2206119a45",
+          "subagent": "ca721c1b7b3f8b0f5be5586482b585cb893adc7afba594c387dc930617bf5217",
+          "webfetch": "1b9a2e8008f2667fb091512a4d29a0bcd926ffb65d8442b481ba65feacce9c90",
+          "websearch": "a53b05a1af41361faf390b42eb43c1495661bcf5bb42d242cb5b27b84799a9c5",
+          "write": "4678485f895a705ccbda5e33a4d6427849625bc8d864a218e553079b8426b993",
+          "execute": "1a797be03fc5b140794e84350a7bed17229fafe93593d69eaa45fbc70c757c99"
+        },
+        "catalog_head": true,
+        "catalog_notice": true,
+        "session_move_mentioned": true,
+        "cap": {
+          "maxOutputTokens": 8192,
+          "max_completion_tokens": 8192
+        }
+      }
+    ]
+  },
+  "old_routes": {
+    "cpu": {
+      "groups": [
+        {
+          "count": 25,
+          "names": [
+            "edit",
+            "glob",
+            "grep",
+            "read",
+            "shell",
+            "skill",
+            "write"
+          ],
+          "catalog_head": false,
+          "catalog_notice": false,
+          "session_move_mentioned": true,
+          "cap": {
+            "max_tokens": 2048
+          }
+        },
+        {
+          "count": 3,
+          "names": [],
+          "catalog_head": false,
+          "catalog_notice": false,
+          "session_move_mentioned": false,
+          "cap": {
+            "max_tokens": 1024
+          }
+        },
+        {
+          "count": 39,
+          "names": [
+            "edit",
+            "glob",
+            "grep",
+            "read",
+            "shell",
+            "skill",
+            "write"
+          ],
+          "catalog_head": false,
+          "catalog_notice": false,
+          "session_move_mentioned": true,
+          "cap": {
+            "max_completion_tokens": 8192
+          }
+        }
+      ],
+      "parameter_schema_hashes": [
+        "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "5a25b388773347769f2b89c4bae9261b0b2d71823660a5b12f5ce54988ec73c1"
+      ]
+    },
+    "gpu": {
+      "groups": [
+        {
+          "count": 143,
+          "names": [
+            "edit",
+            "glob",
+            "grep",
+            "read",
+            "shell",
+            "skill",
+            "write"
+          ],
+          "catalog_head": false,
+          "catalog_notice": false,
+          "session_move_mentioned": true,
+          "cap": {
+            "max_completion_tokens": 4096
+          }
+        },
+        {
+          "count": 5,
+          "names": [],
+          "catalog_head": false,
+          "catalog_notice": false,
+          "session_move_mentioned": false,
+          "cap": {
+            "max_tokens": 1024
+          }
+        },
+        {
+          "count": 30,
+          "names": [
+            "edit",
+            "glob",
+            "grep",
+            "read",
+            "shell",
+            "skill",
+            "write"
+          ],
+          "catalog_head": false,
+          "catalog_notice": false,
+          "session_move_mentioned": true,
+          "cap": {
+            "max_completion_tokens": 8192
+          }
+        }
+      ],
+      "parameter_schema_hashes": [
+        "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "5a25b388773347769f2b89c4bae9261b0b2d71823660a5b12f5ce54988ec73c1"
+      ]
+    }
+  }
+}

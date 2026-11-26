@@ -1,0 +1,16 @@
+{
+  "stock_manual_api": "/api/session/:sessionID/compact",
+  "same_session_id": true,
+  "initial_user_and_read_result_seen_by_compactor": true,
+  "retained_export_history": true,
+  "next_worker_saw_summary": true,
+  "post_compaction_tool_schema_count": 12,
+  "post_compaction_tool_schema_sha256": "c791912e176edf9ebfb619903abe673fa909394aadab2033e2fbaffe9bf16400",
+  "codemode_catalog_and_real_models_tool_after_compaction": true,
+  "metered_summary_requests": 1,
+  "metered_all_requests": 6,
+  "metered_synthetic_generated_tokens": 24,
+  "pending": 0,
+  "stubbed_model_inference": true,
+  "passed": true
+}

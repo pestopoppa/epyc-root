@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "directory": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/stock/transparent-wire-lp5czwdf",
+  "receipt": {
+    "task": "test",
+    "label": "continuous-timeout",
+    "seq": 1,
+    "slot": 2,
+    "backend": "gpu",
+    "t0": 1795733651.013943,
+    "wall_s": 0.3494,
+    "http_status": 200,
+    "first_body_s": 0.001,
+    "ttft_s": 0.001,
+    "delivered_ttft_s": 0.0011,
+    "server_error": null,
+    "transport_error": "approved wall deadline reached",
+    "generation_complete": false,
+    "finish_reason": null,
+    "body_ref": "continuous-timeout-0001.json.gz",
+    "usage": null,
+    "prompt_n": null,
+    "cache_n": null,
+    "prompt_tok_s": null,
+    "prompt_ms": null,
+    "predicted_n": null,
+    "decode_tok_s": null,
+    "predicted_ms": null,
+    "draft_n": null,
+    "draft_accepted": null,
+    "digest": {
+      "tools": 0,
+      "thinking": true,
+      "preserve_thinking": true,
+      "cap_agent": 8192,
+      "upstream_requested_cap": null
+    },
+    "reasoning_characters": 35,
+    "tool_calls": 0
+  },
+  "controls": 8
+}

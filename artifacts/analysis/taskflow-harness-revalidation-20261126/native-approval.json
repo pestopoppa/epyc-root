@@ -1,0 +1,14 @@
+{
+  "approved_by": "main",
+  "at": "2026-11-26T22:59:02.927722+00:00",
+  "manifest_sha256": "556cc817e484ee7b2276c0d73f95f6bb8a17288d2e039da07c70ce436c7868c4",
+  "verified_frozen_files": 3391,
+  "scope": "synthetic native CPU/GPU np4 qualification only",
+  "real_task_launch_authorized": false,
+  "qualification_limits": {
+    "cpu_wall_s": 3600,
+    "gpu_wall_s": 1800,
+    "request_cap": 8192
+  },
+  "additional_quality_prerequisite": "actual compaction continuity check"
+}

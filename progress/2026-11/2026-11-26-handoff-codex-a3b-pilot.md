@@ -71,3 +71,11 @@ Next: pipeline-mgmt uses independent contracts and the retained residual cases w
 Re-audited the actual OpenCode 2.2.5 wire: the old custom setup exposed seven direct tools; the stock reference exposes twelve, including execute, subagent and web capabilities. Old sampled prompts still referred to Code Mode session operations despite missing execute. Corrected the pilot report to restrict its conclusions to that configuration; intrinsic model capability remains unproven. The replacement keeps useful tools and validates deterministic syntax-error recovery, effective native output caps for all roles, questions, isolated references and session continuity before new quality runs. No native qualification or new quality outcome is claimed yet. GitNexus has no usable index; documentation-only impact manually scoped to this report and its conclusion record.
 
 Next: codex-a3b-pilot independently checks the sealed qualification manifest, then runs native C22 harness controls before any task comparison.
+
+## Model-free qualification receipts retained
+
+The exact stock-derived API/container/transport path passes the twelve-tool matrix, answered question, child session, skill, public web, Python test, read-only reference and execute syntax/correction controls. Eight transport controls cover output aliases, all-role metering and an absolute deadline under continuous SSE. Actual stock manual compaction keeps the same session, exposes the summary to the next worker and restores the identical twelve schemas plus a functioning Code Mode catalog. These are scripted provider controls, not A3B quality results. Exact frozen native manifest has 3391 matching files and SHA256 556cc817e484ee7b2276c0d73f95f6bb8a17288d2e039da07c70ce436c7868c4. Main approved synthetic CPU/GPU native qualification; real tasks remain held. Receipts are committed under artifacts/analysis/taskflow-harness-revalidation-20261126/.
+
+W66 acceptance parity now passes in the same container after limiting git grep to four threads: the original baseline fails its intended witness and the known positive passes both tests. The earlier mismatch was container process-budget exhaustion, not missing source or a model failure.
+
+Next: codex-a3b-pilot verifies actual native tools, budgets, reasoning and continuation before approving the paired task and main-only set.
