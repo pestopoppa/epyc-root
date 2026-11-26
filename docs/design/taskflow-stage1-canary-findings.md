@@ -1,4 +1,17 @@
-# Taskflow Stage 1 canary — findings (2026-11-20)
+# Taskflow Stage 1 canary — findings through 2026-11-26
+
+## Latest findings — C22 completion
+
+The November 26 completion used C22 composite source `ce6fcbbde1ee58f165283fbfe74910f47bb2efba`, binary version
+`10748`, with verified CPU and GPU store manifests. Both servers ran four slots with MTP D=2. The stores were
+`cpu-20261126-ce6fcbbde-c22-composite` and `gpu-20261126-ce6fcbbde-c22-composite`.
+
+The audit accepts seven of twenty-two executed attempts. Four additional stale positions skipped before worker launch.
+Observed harness defects are repaired, with 224 regression tests and eleven real OpenCode tool controls passing.
+Independent checks reject the remaining defective worker outputs. Detailed results and evidence appear in
+[C22 completion](#c22-completion-on-2026-11-26).
+
+## November 20 historical setup
 
 Box: `handoffs/active/churn-pipeline.md` **TASKFLOW-STAGE1-CANARY** (done when `verdict: STAY-35B|TRY-27B|FIX-HARNESS`).
 Worker: opencode 2.2.5 → row-owned llama-server, Qwen3.6-35B-A3B-MTP-Q8_0, champion C14 GPU store
@@ -6,7 +19,7 @@ Worker: opencode 2.2.5 → row-owned llama-server, Qwen3.6-35B-A3B-MTP-Q8_0, cha
 `qwen3.6-35b-a3b-q8-gpu-mtp` (research 78e981e96, sha 65770671…, MTP D=2). Rows are keeper-scheduled
 (rowflow), owner pipeline-mgmt; dispatch runs without `--apply`, so it makes no ticks and no pushes.
 
-## Current verdict: FIX-HARNESS (no model verdict yet)
+## November 20 historical verdict — FIX-HARNESS
 Across 7 GPU rounds the verified count is at most 2 per round (r4 np4 2/10; r2 and r7a1 each had 1, from a lenient reviewer).
 Every round exposed a new **harness** defect that blocked edits outright, so this is not yet a model-capacity
 result and not yet the 27B trigger. The latest clean A/B (r6c vs r7d, same 8 boxes, np2):
