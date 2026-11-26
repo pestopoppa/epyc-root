@@ -1254,7 +1254,7 @@ def test_smoke_identity_aa_uses_full_judge(tmp_path):
     result = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
     assert result["verdict"] == "FUTILITY_HARNESS_NONDET"
     assert "correctness[identity]" in result["fix"]
-    assert seen == [("OFF", 0), ("OFF2", 0), ("OFF", 1), ("OFF2", 1)]
+    assert seen == [("ON", 0), ("OFF", 0), ("OFF2", 0), ("OFF", 1), ("OFF2", 1)]
     assert result["nondet_prompts_checked"] == "2/2"
 
 
@@ -1530,7 +1530,7 @@ def test_smoke_identity_budget_limits_complete_pairs(tmp_path, monkeypatch):
     assert g.smoke() == 0
     result = json.loads((tmp_path / "row" / "out" / H.TERMINAL_SMOKE).read_text())
     assert result["nondet_prompts_checked"] == "2/4"
-    assert seen == [("OFF", 0, 8), ("OFF2", 0, 8), ("OFF", 1, 8), ("OFF2", 1, 8)]
+    assert seen == [("ON", 0, 8), ("OFF", 0, 8), ("OFF2", 0, 8), ("OFF", 1, 8), ("OFF2", 1, 8)]
     assert G.smoke_spec(sp)["correctness"]["n_predict"] == 8
     sp["smoke"]["identity_n_predict"] = 100
     assert G.smoke_spec(sp)["correctness"]["n_predict"] == 64
@@ -1637,3 +1637,31 @@ def test_served_quality_diagnostics_optional_when_server_omits_probs():
     other = {"content": "a", "tokens": [1], "completion_probabilities": [{}]}
     d = G.quality_diagnostic(base, other)
     assert d["first_divergence_token_index"] is None and d["unavailable"]
+
+
+def test_c22_r4_smoke_witnesses_identity_candidate_and_replays(tmp_path):
+    knob = "GGML_HIP_Q8IP_NOPACK_GETROWS"
+    marker = "ggml_cuda_q8ip: NOPACK_GETROWS leaves"
+    arms = {"OFF": {}, "OFF2": {}, "LOSSLESS": {knob: "1"}}
+    sp = spec(knobs={knob: {"kind": "env", "marker": marker, "level": 4}}, arms=arms,
+              correctness={"kind": "identity", "mode": "server", "arms": list(arms), "n_prompts": 1},
+              expect_by_unit={"identity": {"LOSSLESS": {knob: "present"}}})
+    row = tmp_path / "row"
+    g = G.Gate(sp, str(row), stream=QUIET)
+    visit = visit_stub(sp, g.out)
+    def real_log_visit(uid, arm, *args, **kwargs):
+        u = visit(uid, arm, *args, **kwargs)
+        if arm == "LOSSLESS":
+            name = "identity-LOSSLESS.log" if uid.startswith("c-id-") else "smoke-LOSSLESS.log"
+            shutil.copyfile(os.path.join(FIX, "fullsmoke", "c22-r4", name), os.path.join(g.out, u["log"]))
+        return u
+    g.visit_fn = real_log_visit
+    assert g.smoke() == 3
+    terminal = json.loads((row / "out" / H.TERMINAL_SMOKE).read_text())
+    detail = "knob GGML_HIP_Q8IP_NOPACK_GETROWS arm LOSSLESS unit c-id-LOSSLESS-p0: expected present, observed absent"
+    assert terminal["verdict"] == "FUTILITY_HARNESS_WITNESS"
+    assert detail in terminal["reason"]
+    replay = G.replay(sp, str(tmp_path / "new"), str(row), stream=QUIET)
+    assert replay["verdict"] == terminal["verdict"]
+    assert detail in replay["observed"]["reason"]
+    assert replay["witness_mismatches"][0]["unit"] == "c-id-LOSSLESS-p0"

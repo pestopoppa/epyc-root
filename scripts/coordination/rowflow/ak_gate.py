@@ -53,7 +53,7 @@ import ak_row_harness as H  # noqa: E402
 
 GATE_VERSION = "1"
 # Bump when the way a correctness/smoke unit is EXECUTED or JUDGED changes.
-UNIT_SEMANTICS_VERSION = 3
+UNIT_SEMANTICS_VERSION = 5
 # Evidence a FAIL_* / FUTILITY_* row must keep so it can be diagnosed and REPLAYED (AutoKernel 2026-11-25): declared in
 # spec.json keep + evidence by mk_ak_row gate new and in RESULT.json. ak_gate never deletes anything under these.
 EVIDENCE_PATHS = ("out/logs", "out/results.jsonl", "out/RESULT.json", "out/TERMINAL-smoke.json", "out-smoke")
@@ -1260,6 +1260,15 @@ def decide_smoke_correctness(spec, units, identity_count=None):
     reduced = smoke_spec(spec, identity_count)
     if identity_count == 0:
         reduced["correctness"] = [c for c in corr_list(reduced) if c["kind"] != "identity"]
+    # Identity candidates run once, while the reduced correctness judge compares
+    # baseline pairs over the available prompt budget. Check every executed unit.
+    mm = mismatches(correctness_units(units))
+    if mm:
+        kind = UNIT_TYPE.get(next(u["kind"] for u in units if u.get("unit_id") == mm[0]["unit"]), "unknown")
+        return {"verdict": "FUTILITY_HARNESS_WITNESS", "polar": None, "terminal": True,
+                "reason": "; ".join(mismatch_text(m) for m in mm[:6]),
+                "fix": f"Check expect_by_unit.{kind}.{mm[0]['arm']}.{mm[0]['knob']}, knobs.{mm[0]['knob']}.marker and correctness[{kind}].argv",
+                "witness_mismatches": mm}
     verdict, detail, _ = decide_correctness(reduced, units)
     if not verdict:
         return {"verdict": "SMOKE_PASS", "polar": "PASS", "terminal": True, "reason": "correctness units passed"}
@@ -1873,7 +1882,14 @@ class Gate:
             checked = 0
             try:
                 plan = plan_correctness(self.spec)
-                plan.sort(key=lambda item: item[1] == "c-id")
+                # The baseline pairs cover nondeterminism; each other declared
+                # identity arm also gets one witnessed execution.
+                original_identity = next((c for c in corr_list(original_spec) if c["kind"] == "identity"), None)
+                if original_identity:
+                    baseline = set(baseline_arms(self.spec)[:2])
+                    extra_identity = [p for p in _plan_one(original_spec, original_identity)
+                                      if p[2] not in baseline and p[3]["prompt"] == 0]
+                    plan = [p for p in plan if p[1] != "c-id"] + extra_identity + [p for p in plan if p[1] == "c-id"]
                 visit_s = max((time.time() - u0) / len(units), 0.001)
                 generation_s = max((float(r.get("predicted_ms") or 0) / 1000
                                     for u in units for r in (u.get("req") or [])), default=0)
@@ -2124,8 +2140,10 @@ def replay_units(spec, out_dir, row_dir):
         if u.get("error"):
             out.append(u)
             continue
-        witnessed = u["kind"] in ("visit", "smoke", "log", "c-id", "c-kld", "c-st", "c-sq") or \
-            (u["kind"] == "c-tbo" and c.get("witness"))
+        witnessed = u["kind"] in ("visit", "smoke", "log") or \
+            (u["kind"] in UNIT_KIND and c.get("witness", c.get("kind") != "tbo"))
+        if not witnessed or (u["kind"] == "c-kld" and u.get("mode") == "base" and c.get("witness_base") is False):
+            u.pop("witness", None)
         if witnessed and u.get("arm") not in (spec.get("arms") or {}):
             # a prior arm the new declaration does not declare cannot be judged: a mismatch, never "unwitnessed"
             u["witness"] = {"(arm)": {"expected": "a declared arm", "observed": "no-arm", "ok": False, "line": None,
