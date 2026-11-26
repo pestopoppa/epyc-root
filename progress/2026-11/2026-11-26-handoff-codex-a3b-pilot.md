@@ -7,3 +7,11 @@ Reviewed existing APP implementation at `332ceb2e14d16f2031bd17b1f7c839ce8276a24
 Registered nonschedulable `codex-a3b-pilot` service identity for exclusive pilot task claims.
 
 Next: codex-a3b-pilot dispatches the now-unblocked constrained compaction tests and independently reviews worker patches.
+
+## 15:36Z — **DS41-W-44** DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
+
+Reused current research implementation instead of dispatching a duplicate repair. On pinned `dd090a874c22be58e09b18fc1fc86da7b46b1d85`, the full `test_existing_cpu_run.py` and `test_serial_roster.py` suites pass (47 tests, 46.17 s, system Python 3.12, isolated locks and temporary files). Main checked the repaired oracle signature and actual scheduler settlement assertions. Evidence: `/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/test-selection/research-w44-312.txt`.
+
+Extended the existing Taskflow belief-source registration to name the real-dispatch producer, immutable attempt manifests, source bundles, and distinct main acceptance. This is prospective wiring documentation; it creates no retrospective measurement warrant. The prior GREP closure was pushed as `9b079df8f42f` after adding the authorized D9 trailer required for the pilot service identity.
+
+Next: codex-a3b-pilot reviews pending worker patches and lands only independently accepted changes.

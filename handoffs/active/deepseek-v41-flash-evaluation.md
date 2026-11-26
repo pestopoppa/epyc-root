@@ -1270,7 +1270,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     llama-server pid, never a name pattern. Discard the partial floor, and never cache it.
   - Test: a fake calibration launcher with a stop asked mid-series → no further launch, the child is reaped, and
     the process exits.
-- [ ] **DS41-W-44** DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
+- [x] **DS41-W-44** DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD ✅ 2026-11-26 [no-belief: implemented-tooling-revalidation] Research dd090a874: both named fixture suites pass, 47 tests in 46.17 s. No duplicate repair run needed.
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
   re-fixture.
