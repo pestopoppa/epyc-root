@@ -1,5 +1,7 @@
 # Taskflow Stage 1 canary — findings through 2026-11-26
 
+> Follow-up: the [C22 real-task dispatch pilot](taskflow-real-dispatch-pilot-20261126.md) is complete with reviewed publications, additional harness repairs and qualified model findings. Its six-task diagnostic workload is separate from the historical canary below.
+
 ## Latest findings — C22 completion
 
 The November 26 completion used C22 composite source `ce6fcbbde1ee58f165283fbfe74910f47bb2efba`, binary version

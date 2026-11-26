@@ -1,0 +1,326 @@
+{
+  "schema": "epyc.taskflow.real-pilot.main-audit.v1",
+  "recorded_at": "2026-11-26T16:25:40.260086+00:00",
+  "question": "Repair observed harness defects and distinguish residual model errors in a bounded real-task dispatch pilot",
+  "scope": "Six heterogeneous tasks; diagnostic workflow, no CPU/GPU benchmark or new model-ranking gate",
+  "model": "Qwen3.6-35B-A3B-MTP-Q8_0",
+  "kernel_source": "ce6fcbbde1ee58f165283fbfe74910f47bb2efba",
+  "servers": {
+    "cpu": {
+      "np": 4,
+      "thinking": false
+    },
+    "gpu": {
+      "np": 4,
+      "thinking": true
+    }
+  },
+  "counts": {
+    "logical_tasks": 6,
+    "scheduling_attempts": 17,
+    "request_records": 252,
+    "cpu_requests": 67,
+    "gpu_requests": 185,
+    "wire_controls": 1
+  },
+  "acceptance_boundary": "All Taskflow/reviewer verified states are advisory until independent main acceptance. No initial attempt closed a task unchanged. One corrected worker test was functionally accepted; three drafts needed human repairs and two tasks were completed independently.",
+  "tasks": [
+    {
+      "id": "PAW-5",
+      "worker_mode": "GPU thinking",
+      "final_disposition": "human-repaired model draft after correction",
+      "repo": "epyc-root",
+      "commit": "ad6ab8638c6dd55406cb60e58907dbcf20333e23",
+      "path": "docs/reference/harness-candidates/paw-5-compile-once-candidates.md",
+      "independent_review": "enum/source/policy errors in initial draft; prerequisite status and citations repaired after model correction"
+    },
+    {
+      "id": "NARIQ-LIBTRELLIS-MAP-1",
+      "worker_mode": "CPU nonthinking then GPU thinking",
+      "final_disposition": "independently prepared replacement design",
+      "repo": "epyc-inference-research",
+      "commit": "9a4e7dd4b4330f4ddafa78a567c75254d68f61e9",
+      "path": "docs/research/exl3-4-gfx90a-libtrellis-design.md",
+      "independent_review": "both delivered drafts failed source checks; replacement preserves legacy format and scopes LDS/MFMA work as unqualified proposal"
+    },
+    {
+      "id": "DS41-W-75",
+      "worker_mode": "GPU thinking",
+      "final_disposition": "human-repaired model draft",
+      "repo": "epyc-root",
+      "commit": "ad6ab8638c6dd55406cb60e58907dbcf20333e23",
+      "path": "docs/reference/autokernel/ds41-w75-qwen4exp-fused-decode-disposition.md",
+      "independent_review": "excluded stray helper and corrected identifiers, citations and unsupported architecture/reopening detail"
+    },
+    {
+      "id": "PFXC-A3",
+      "worker_mode": "CPU nonthinking",
+      "final_disposition": "human-repaired model draft after correction",
+      "repo": "epyc-inference-research",
+      "commit": "8b6bc70f22428c78225b55500e658a20f59712b3",
+      "path": "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md",
+      "independent_review": "corrected geometry/link/arithmetic/bias errors; main repaired extractor and source attribution; recipe unchanged"
+    },
+    {
+      "id": "DS41-W-66",
+      "worker_mode": "GPU thinking",
+      "final_disposition": "main fixture repair",
+      "repo": "epyc-inference-research",
+      "commit": "ae08f0a58a776bb74df4e51319a2c52f532f5bd1",
+      "path": "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py",
+      "independent_review": "no edit in original 30 turns; guided attempt split at shortened wall budget then resumed without preserved old reasoning; combined result remains confounded, not a clean model-only verdict"
+    },
+    {
+      "id": "UTM-B2-VERBATIM-WITH-COMPACTION",
+      "worker_mode": "GPU thinking",
+      "final_disposition": "corrected worker test accepted; AST unchanged by formatting",
+      "repo": "epyc-orchestrator",
+      "commit": "af947afe843bb9581155eb0c75eb1534be9ed3a1",
+      "path": "tests/unit/test_verbatim_with_compaction.py",
+      "independent_review": "initial forced/bypassed test rejected; model correction passes 62 tests and kills all five planted behavior regressions; main formatting/comment edit preserves exact AST"
+    }
+  ],
+  "attempts": [
+    {
+      "key": "PAW-5",
+      "epoch": "paused",
+      "attempt": 1,
+      "state": "skipped",
+      "backend": "gpu",
+      "slot": 0,
+      "audit": {
+        "class": "harness-packaging",
+        "detail": "Required box-index module missing; fallback hash differed before inference."
+      },
+      "requests": 0
+    },
+    {
+      "key": "PAW-5",
+      "epoch": "paused",
+      "attempt": 2,
+      "state": "rejected",
+      "backend": "gpu",
+      "slot": 0,
+      "audit": {
+        "class": "harness-transport",
+        "detail": "Proxy handler method shadowed by HTTP request headers. Upstream work recorded, zero output delivered."
+      },
+      "requests": 7
+    },
+    {
+      "key": "PAW-5-runtime-recovery",
+      "epoch": "paused",
+      "attempt": 1,
+      "state": "rejected",
+      "backend": "gpu",
+      "slot": 2,
+      "audit": {
+        "class": "harness-interruption",
+        "detail": "Recovery stopped for exact transport controls. One upstream completion, zero worktree edits."
+      },
+      "requests": 1
+    },
+    {
+      "key": "PAW-5-runtime-recovery",
+      "epoch": "paused",
+      "attempt": 2,
+      "state": "paused",
+      "backend": "gpu",
+      "slot": 3,
+      "audit": {
+        "class": "internal-pause-signal",
+        "detail": "An internal pause signal prompted a checkpoint. Main confirmed the goal was active. The same OpenCode session and lane continued."
+      },
+      "requests": 8
+    },
+    {
+      "key": "PAW-5-resumed",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "gpu",
+      "slot": 3,
+      "audit": {
+        "class": "model-semantic-resume-confounded",
+        "detail": "Main source audit rejected actual taxonomy, interface and policy errors despite advisory acceptance. Offline template replay showed prior reasoning loss at resume, which confounds attribution."
+      },
+      "requests": 9
+    },
+    {
+      "key": "NARIQ-LIBTRELLIS-MAP-1",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "rejected",
+      "backend": "cpu",
+      "slot": 2,
+      "audit": {
+        "class": "harness-output-budget",
+        "detail": "Three complete upstream streams reached the configured 2048-token ceiling and truncated tool arguments. This is an output-budget interaction."
+      },
+      "requests": 10
+    },
+    {
+      "key": "DS41-W-75",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "rejected",
+      "backend": "gpu",
+      "slot": 3,
+      "audit": {
+        "class": "model-scope",
+        "detail": "Taskflow correctly refused a stray out-of-scope verification file alongside the requested doc."
+      },
+      "requests": 15
+    },
+    {
+      "key": "DS41-W-66",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "rejected",
+      "backend": "gpu",
+      "slot": 1,
+      "audit": {
+        "class": "model-execution-confounded",
+        "detail": "The worker used all thirty turns without editing. A generic shell denial hint incorrectly suggested a wrapper absent from the task. A bounded retry uses truthful task-aware guidance."
+      },
+      "requests": 30
+    },
+    {
+      "key": "PFXC-A3",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "cpu",
+      "slot": 1,
+      "audit": {
+        "class": "model-semantic",
+        "detail": "Main review found scope, link, numerical and inference errors despite the advisory verifier accepting the document. The correction receives the retained document as an edit seed."
+      },
+      "requests": 16
+    },
+    {
+      "key": "PAW-5-source-correction",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "gpu",
+      "slot": 0,
+      "audit": {
+        "class": "human-assisted",
+        "detail": "The single-candidate revision addressed the key semantic concern. Human review repaired unsupported PAW-1 status and source citation framing."
+      },
+      "requests": 10
+    },
+    {
+      "key": "NARIQ-LIBTRELLIS-MAP-1-cap-recovery",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "cpu",
+      "slot": 3,
+      "audit": {
+        "class": "model-semantic",
+        "detail": "Output-budget repair succeeded. The subsequent advisory acceptance missed material hardware design errors and the exact harness citation."
+      },
+      "requests": 26
+    },
+    {
+      "key": "UTM-B2-VERBATIM-WITH-COMPACTION",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "gpu",
+      "slot": 2,
+      "audit": {
+        "class": "model-test-semantics",
+        "detail": "Main review found forced compaction, a direct test-only writer call, and absence-only rather than active cross-owner denial assertions. Focused wrapper execution itself worked."
+      },
+      "requests": 27
+    },
+    {
+      "key": "DS41-W-66-denial-guidance",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "rejected",
+      "backend": "gpu",
+      "slot": 1,
+      "audit": {
+        "class": "harness-wall-envelope",
+        "detail": "The row driver shortened 1800s to 660s. An ECONNRESET occurred at worker timeout. Continued the same saved worker session for the remaining 8 turns and 1139s."
+      },
+      "requests": 22
+    },
+    {
+      "key": "PFXC-A3-source-correction",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "cpu",
+      "slot": 1,
+      "audit": {
+        "class": "human-assisted",
+        "detail": "Model corrected the core numerical and geometry errors. Main separately repaired extraction/source attribution and landed the result in research commit 8b6bc70f2."
+      },
+      "requests": 15
+    },
+    {
+      "key": "DS41-W-66-guidance-continuation",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "rejected",
+      "backend": "gpu",
+      "slot": 0,
+      "audit": {
+        "class": "resume-reasoning-confounded",
+        "detail": "The combined guided attempt used all 30 turns without an edit. The same OpenCode session continued, but the resumed user message moved the template boundary. Offline replay found that the old default dropped prior reasoning, so this is not an isolated model outcome."
+      },
+      "requests": 8
+    },
+    {
+      "key": "UTM-B2-VERBATIM-WITH-COMPACTION-source-correction",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "gpu",
+      "slot": 3,
+      "audit": null,
+      "requests": 16
+    },
+    {
+      "key": "NARIQ-LIBTRELLIS-MAP-1-source-correction",
+      "epoch": "resumed",
+      "attempt": 1,
+      "state": "verified",
+      "backend": "gpu",
+      "slot": 3,
+      "audit": {
+        "class": "model-semantic",
+        "detail": "Independent engineering check rejected the scoped correction. The document still claims device execution from source and retains inconsistent LDS/resource and fragment examples."
+      },
+      "requests": 31
+    }
+  ],
+  "validation": {
+    "core_taskflow_tests": 239,
+    "final_policy_subset": 79,
+    "verbatim_tests": 62,
+    "verbatim_mutations_detected": 5,
+    "fixture_tests": 2,
+    "app_make_gates": "PASS",
+    "app_shell_format": "two pre-existing discrepancies repaired; minified AST output identical",
+    "reasoning_preservation_repair": "post-run only; five wire cases and three provenance controls; actual GGUF offline replay, no new native inference"
+  },
+  "artifacts": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/runtime/PERFORMANCE.json": "6599219b887f8caaa882ff0a9deef4c5d5a4b88bfb5476244356e0c43e8e010d",
+    "/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/runtime/PERFORMANCE.md": "31c21cc56bd3de846f3f0a24cc6b4642820e7efea77615ec5e5bccfcaf2a53bc",
+    "/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/runtime/FINAL-CLEANUP.json": "40a8d8513900d3681654d7d9d97ed8ede3274945b963fc91454093f00a271d07",
+    "/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/runtime/POST-RUN-RESUME-REPAIR.json": "c20ccfbbf5929a18808c45801712d5bf9936a765904a42baa2e0c5f1560c3842",
+    "/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/main-review/verbatim-ast-equivalence.json": "76e87e1fda511008743df87282f7a7d091fb412dd3d6d4bea81cd3dff5616f01"
+  },
+  "archive": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-pilot-20261126/runtime/reproducibility/taskflow-a3b-pilot-20261126T161856Z.tar.gz",
+    "sha256": "3b63f1a91fbe74ec0bd1c9d6830f006f8e3d2ff265c570506096b981b2961cdb"
+  },
+  "retention": "whole pilot root KEEP lease through 2027-01-25T16:23:19Z",
+  "cleanup": "both servers/controllers/workers exited, KFD empty, compute claims released"
+}

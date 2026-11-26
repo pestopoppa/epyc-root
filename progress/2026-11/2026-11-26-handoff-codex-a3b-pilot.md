@@ -47,3 +47,13 @@ Next: codex-a3b-pilot files the committed conclusion and closes the documentatio
 Closed PFXC-A3 after independent semantic and executable review of research `8b6bc70f2242`. Committed conclusion `cc:v1:33a4f1000baf0ae817d3501a3898f8bf` anchors the source-bound calculation to progress commit `3110901242b3`; it supplies an observation of the documented conclusion and no retrospective measurement warrant. The source trace and separate probe remain distinguished, and the canonical serving recipe is unchanged.
 
 Next: codex-a3b-pilot completes the remaining engineering-note and test reviews.
+
+## 16:30Z — Publish independently audited C22 pilot findings
+
+All six real-task outputs are now published across root, research and orchestrator. The final findings distinguish model drafts, human repairs and independently prepared replacements, and bind the full native attempt inventory in a committed audit. The corrected worker compaction test is functionally unchanged by formatting and passes 62 tests plus five behavior mutations; the main fixture repair passes two independent integration checks. Required app gates pass after byte-equivalent shell formatting repair.
+
+C22 GPU thinking was verified in actual forwarded bodies and reasoning histories; CPU work remained nonthinking as requested. The late resume audit found older reasoning omitted after OpenCode appended a new user turn. Future approved same-task thinking continuations now opt into preservation, with exact wire/provenance and embedded-template controls. Historical W66 continuation remains qualified; no native outcome was rewritten.
+
+The evidence set contains 17 scheduling attempts and 252 request records, including 67 CPU and 185 GPU. Both servers/controllers/workers exited and compute claims are free. The full root is KEEP-leased through 2027-01-25. See `docs/design/taskflow-real-dispatch-pilot-20261126.md` and `artifacts/analysis/taskflow-real-pilot-20261126/audit.json`.
+
+Next: codex-a3b-pilot files the committed conclusion and closes the remaining three completed source boxes.
