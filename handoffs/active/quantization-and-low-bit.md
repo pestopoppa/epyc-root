@@ -309,6 +309,16 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 - [ ] **K27 (P1, CPU) — x86 repack gaps**: no Q5_0/Q6_0 repack; Q8_0 still lacks a promotable optimized x86 interleave kernel (`ggml/src/ggml-cpu/repack.cpp`; iqk dir `ggml/src/ggml-cpu/iqk/`). The failed generic Q8_0 8x8 probe below is retired; any future Q8_0 work must be a real AVX2/AVX512/VNNI implementation with pinned-library canonical benches. Bit-exact checkable (lossless rearrangement); canonical bench. (re-homed here 2026-11-09 from the INF-48 drop triage of the ROCm kernel-authoring track; original text `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 3833)
       · section: Research intake 2026-10-22 — SLQ / IST-DASLab / kaitchup Qwen3.8-27B SLQ (intake-2461..2493)
 
+**Low-bit secondary quality gate:** alongside KLD, compare loop and cutoff counts
+against the same-prompt Q8_0 or BF16 reference at a fixed generation cap. Flag
+when either candidate count exceeds twice its reference count; if the Q8_0
+reference cuts off on more than 20% of prompts, re-declare the cap. Count wrong
+answers separately and review detector limitations. The offline scorer, frozen
+pilot prompts, synthetic fixture, and protocol are in the research repository
+under `data/quant-loopchk/`; the pilot's three prompts provide coarse resolution.
+The Qwen3.8-27B low-bit incumbent must be identified before its calibration row
+can be completed.
+
 > Folded from `handoffs/active/iqk-iquant-enablement.md` @ `6a4026f0ab50` on 2026-11-02 (BRF-T1-F5, route 1a, operator D1/D5; retired row INF-26 → INF-80). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 - [ ] **QUANT-LOOPCHK-1** [non-inference] Add a long-generation loop and truncation counter (wrong, looped or cut-off answers at a fixed generation cap, versus the Q8_0 or BF16 reference) as a secondary gate next to KLD for new low-bit GGUF arms (intake-2730).
       · done when: a script in the research repo emits per-prompt wrong/looped/cut-off labels with a fixed cap and the gate text is added to this track; a dry fixture shows a synthetic looping output is labelled looped
