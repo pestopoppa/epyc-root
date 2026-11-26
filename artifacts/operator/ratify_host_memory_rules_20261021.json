@@ -1,0 +1,38 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "decision": "HOST-MEMORY-RULES-LARGE-LOADS-ADMITTED-DRIVERS-DETACHED-NO-NESTED-REGION-LOCK",
+  "gate_id": "RATIFY-HOST-MEMORY-RULES-20261021",
+  "operator_decision": "approved 2026-10-21: \"yes, write the rules and prep the earlyoom command\"",
+  "ratified_at": "2026-11-26T10:52:00Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "target": "agents/shared/OPERATING_CONSTRAINTS.md",
+  "section": "Inference and Benchmarks",
+  "rules": [
+    "at most ONE DS41-class CPU server (private-RAM footprint >=200 GiB) on the host at once, across all sessions; before any load expected above ~100 GB of RAM, MemAvailable minus the expected footprint must stay >=100 GiB, else wait; multi-arm A/B briefs state 'one server at a time'",
+    "a driver that must outlive the agent that started it (timing drivers, chained launchers) starts with setsid nohup ... </dev/null &, never as a child of a session or subagent shell, and writes a pidfile plus an end flag on success AND failure",
+    "never wrap a tool that takes its own region-lock claim in another region-lock run; the nested claim deadlocks until timeout"
+  ],
+  "origin": "INC-20261021-earlyoom-session-kills: earlyoom killed 13 processes 15:56:59-15:57:15Z on 2026-10-21, three of them claude sessions, while the DS41-W6.1 drafter A/B ran two DS41-1017 CPU servers (each RssAnon ~276 GiB + RssFile ~463 GiB at 16:13Z); the DS41-W5 ABA driver died with its subagent and left an empty log; separately autokernel.loop.calibrate_served_shapes deadlocked an hour under a nested region-lock",
+  "incident_record": "docs/reference/agent-config/INCIDENT_LOG.md#inc-20261021-earlyoom-session-kills",
+  "host_change": "earlyoom.service reconfiguration (add --avoid for sessions/shells/tmux server/desktop, widen --prefer to batch llama tools, --ignore unchanged) is PRINTED by the bundle for the operator to run on the host; it is not applied or attested by this receipt",
+  "folded_in": "OP-OPCONST-3C4 (decided 2026-11-26 to sign with this bundle): Inference and Benchmarks gains a one-line pointer to docs/guides/agent-workflows/compute-fillers.md; Parallel Subagent Fan-Out close-out bullet gains a sub-bullet that the close-out wires measurements into the belief kernel",
+  "refreshed": "re-pinned 2026-11-26 against origin/main 23e33d5ca by opsign-20261126; original bundle ed2eb9101",
+  "not_changed": "no code, no measurement rule, no existing doctrine line; section heading unchanged",
+  "patch": {
+    "path": "artifacts/operator/host-memory-rules-opconst3c4-20261126.patch",
+    "sha256": "5391bb153ce4a65ffd236d9906913b76186a800d293ae6c2138a8df5352240bf"
+  },
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "e2e8fa0b0058d177cabaa014fa2a296a2ae4c977bcf2ecf55fa5f70c0c302621",
+      "sha256_after": "175e9fef4e9ff9f6f25c2e6e1b134bc68e0bf36e8c96bc6f7dac7e3296202783"
+    },
+    "docs/reference/agent-config/INCIDENT_LOG.md": {
+      "sha256_before": "4b9e5ba1ca33276df60bb2743cc30597f66d9f98ca6d39a285cd73d3892739ba",
+      "sha256_after": "76d8d60d33a33043ee98342689e7b0f36611b97a87a33b64651c1ebadec0e0ab"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_host_memory_rules_20261021.receipt.json",
+  "applied_by": "scripts/operator/ratify_host_memory_rules_opconst3c4_20261126.sh"
+}

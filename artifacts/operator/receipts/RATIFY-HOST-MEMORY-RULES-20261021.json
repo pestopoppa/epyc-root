@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-HOST-MEMORY-RULES-20261021",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_host_memory_rules_20261021.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

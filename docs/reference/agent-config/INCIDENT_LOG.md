@@ -712,3 +712,42 @@ to stop the RF7 chain under its declared strike-2 rule. An ungranted measurement
 **Remedy.** Offline replays of real specs stub every runner that execs argv (`run_op`, `run_correctness_unit`,
 `visit_fn`) or rewrite argv to fixture binaries, and assert no child process starts. Follow-up: an
 `AK_GATE_NO_EXEC=1` guard in `ak_gate` that refuses to exec outside a keeper grant, filed as a churn-pipeline box.
+
+## INC-20261021-earlyoom-session-kills
+
+On 2026-10-21 between 15:56:59Z and 15:57:15Z the host's earlyoom daemon (systemd
+`earlyoom.service`, pid 3820) SIGTERM-killed 13 processes. Three were `claude` agent sessions
+(pids 3948550, 721113, 3944010; their transcripts stop at 15:57:09–15:57:13Z and resume only
+at 16:06Z). The others were five `codex` processes, `opencode`, `gnome-shell`, two firefox
+processes and a `python3` cite-check. Every kill is in `logs/agent_audit-earlyoom.log`, which
+earlyoom's `-N` hook writes. Its timestamps are +0200. The forensics are in
+`/mnt/raid0/llm/tmp/session-crash-20261021/REPORT.md`. No API fault, tmux restart or container
+fault was involved, and tmux kept running.
+
+The live configuration was `-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore
+^(llama-server|sd-server)$ --prefer ^llama-bench$`. So earlyoom kills once MemAvailable falls
+below 20 GiB, never touches a llama-server, and picks the largest remaining RSS first. The
+pressure came from llama-servers, which earlyoom cannot kill. The DS41-W6.1 drafter A/B ran TWO
+DS41-1017 CPU servers at once. A 16:13Z measurement found each one holding RssAnon ≈276 GiB,
+because the MXFP4 `mxfp4_8x8_q8_0` CPU repack copies the experts into anonymous memory, plus
+RssFile ≈463 GiB. Two private footprints of that size, on top of the page cache, pushed
+MemAvailable under the kill threshold. earlyoom then removed the largest unprotected processes,
+which were the agent sessions and the desktop. Killing them could not relieve the pressure,
+because the servers held it. The DS41-W5 ABA driver had been started as a child of a subagent
+shell, so it died with that shell. Its `driver_aba.log` was 0 bytes, so there was no record of
+how far it got.
+
+A second, separate defect cost an hour the same day.
+`autokernel.loop.calibrate_served_shapes` takes its own region-lock claim, and it was run inside
+an outer `region-lock run`. The inner claim waited on the outer one held by its own caller, and
+the run deadlocked until timeout.
+
+Rules fed (`agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks, ratified by
+`RATIFY-HOST-MEMORY-RULES-20261021`):
+- large CPU model loads are memory-admitted and run one at a time;
+- drivers that must outlive their agent run detached and leave a pidfile and an end flag;
+- never nest `region-lock run` around a tool that takes its own claim.
+
+The same bundle prints a host-side earlyoom reconfiguration for the operator to run. It adds
+`--avoid` for the agent sessions, shells, tmux server and desktop, and widens `--prefer` to the
+batch llama tools. `--ignore` is unchanged, so llama-servers stay unkillable by earlyoom.

@@ -186,12 +186,33 @@ investigation; Appendix)
   - An outer hold covers everything inside it. A bench helper must not request gpu-quiet `shared` while its caller
     holds it `exclusive`, because the run then deadlocks on itself. The helper either inherits the hold or takes the
     lock only when called unwrapped.
+  - **Never wrap a tool that takes its own region-lock claim in another `region-lock run`.** The inner claim waits on
+    the outer one its own caller holds, so the run deadlocks until the lock times out. Check whether the tool claims
+    for itself before wrapping it; if it does, run it unwrapped. (origin: `autokernel.loop.calibrate_served_shapes`,
+    2026-10-21, an hour lost; recorded in INC-20261021-earlyoom-session-kills)
   - `region-lock run` changes directory into the epyc-orchestrator repo before it execs, so every path in the wrapped
     command must be absolute.
   - Neither lock is FIFO, so free-running subagent CPU benches can starve a GPU headline run that waits on the same
     claims. Schedule subagent benches around headline runs; never leave them free-running against a lock that a
     headline run needs.
   - (origin: INC-20261004-subagent-unlocked-cpu-in-held-window, second recurrence)
+- **Large CPU model loads are memory-admitted, one at a time.** At most ONE DS41-class CPU server (private-RAM
+  footprint ≥200 GiB) runs on the host at once, across all sessions.
+  - Before any load expected to take more than ~100 GB of RAM, check that `MemAvailable` (`/proc/meminfo`) minus the
+    expected footprint stays ≥100 GiB; otherwise wait. Count the private part, not only the weights: a DS41-1017 CPU
+    server holds RssAnon ≈276 GiB (the MXFP4 `mxfp4_8x8_q8_0` CPU repack copies the experts into anonymous memory)
+    on top of RssFile ≈463 GiB.
+  - A brief for a multi-arm A/B states "one server at a time"; the arms run in sequence, never side by side.
+  - earlyoom kills at <20 GiB available and protects only `llama-server`, so when servers overcommit the host, the
+    agent sessions are what dies.
+  - (origin: INC-20261021-earlyoom-session-kills — the W6.1 drafter A/B ran two DS41-1017 CPU servers at once)
+- **A driver that must outlive the agent that started it runs detached and leaves a trail.** Timing drivers and
+  chained launchers start with `setsid nohup <driver> </dev/null >>"$LOG" 2>&1 &`, never as a child of a session or
+  subagent shell, because when that shell dies its children die with it.
+  - The driver writes a pidfile at start and an end flag on success AND on failure. A pidfile whose process is gone,
+    with no end flag beside it, means the driver was killed.
+  - (origin: INC-20261021-earlyoom-session-kills — the DS41-W5 ABA driver died with its subagent at 15:57Z, and its
+    log was empty)
 - **Correctness work needs no quiet host; only timing does.** Numerical calibration, op tests, input-hash
   verification and builds are correctness work: shard it and claim a narrow build-role cpu list
   (`region-lock run --cpu-list <list> --role build -- <command>`), never a full-host bench claim. Only a TIMING
@@ -234,6 +255,8 @@ investigation; Appendix)
   drain-at-boundary changes.
 
 An exit code is not a result. Every measurement row that ends gets a post-measurement analysis (verdict vs predeclared rule and direction, classification, owning-handoff result bullet, belief/wiki candidates) before it is reported, and reports state what each result means. Checklist: `.claude/skills/inference-backlog-scheduling/references/post-measurement-analysis.md`. (origin: 2026-10-27)
+
+**Compute fillers.** Work that runs in granted gaps of the compute calendar (fillers: register, grants, `<block>_FREED` flags, launcher contract) follows `docs/guides/agent-workflows/compute-fillers.md`. (origin: OP-OPCONST-3C4, operator 2026-10-21)
 
 
 ## The Single Champion — one aggregate per production kernel tree, between promotions
@@ -560,6 +583,7 @@ including the dispatches whose nudge says nothing about subagents.
   important work logging in between major/thorough /wrap-up which you should trigger/dispatch at
   major work boundaries"*. The boundary dispatch is in `agents/shared/SESSION_LIFECYCLE.md` →
   *Wrap-up cadence*.
+  - **The close-out wires measurements into the belief kernel.** A subagent whose task produced measurements or verified findings emits its belief record (or names the source-table row and task it filed under `scripts/vidya/adapters/README.md`) as part of the close-out, before it is disposed. (origin: OP-OPCONST-3C4, operator 2026-10-22)
 - **Scratch lifetime is the MAIN's call, stated per brief (operator, 2026-10-07; re-approved 2026-11-09).** Each brief says that, once main approves the work, the subagent clears the scratch it created (exact paths only; worktrees through `scripts/system/worktree_gate.py`) **only if no longer needed**, and reports what it kept and why. The main, not the subagent, decides per brief which paths stay needed for review, promotion, evidence or follow-on work; evidence needed later lands in git before its tmp copy is removed. A per-task wrap-up includes the task's own scratch cleanup (`agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*). (origin: 2026-10-07 disk crisis)
 - **Dispose of a finished subagent; never reuse it for a new task (operator, 2026-10-21).** Once a
   subagent's task is approved and closed out, it is done. A new task gets a FRESH subagent so stale
