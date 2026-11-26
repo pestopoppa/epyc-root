@@ -150,3 +150,15 @@ def test_row_absent_from_signature_applied_is_refused():
 
 def test_applied_bound_is_recorded():
     assert bn.project(_rows(_doc())["issue_bound"]).extra["applied_bound"] is True
+
+
+def test_signed_time_only_record_projects_under_same_rules():
+    doc = _doc()
+    rec = copy.deepcopy(doc["records"].pop(RID))
+    rec.update(bytes_per_call=None, kernel="q8mf6_mul_mat<2, 2>", grid=106496, share_of_round=0.63)
+    doc["time_only"] = {"27b-q8_0|trace_kernel:q8mf6_mul_mat<2, 2>|verify:g106496x256|n0": rec}
+    got = bn.classify(doc, locator=LOC, sha256="0" * 64)
+    assert {r["class"] for r in got["rows"]} == {"issue_bound", "over_subscribed"}
+    assert grade(bn.project(got["rows"][0]))[:2] == ("Judged", "Located")
+    doc["signature_applied"] = []
+    assert bn.classify(doc, locator=LOC, sha256="0" * 64)["refused"]  # ledger refusal still applies

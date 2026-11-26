@@ -1,7 +1,7 @@
 """AutoKernel bottleneck signatures as Located observations (VB-AK-BNSIG-WIRE, AK-BNSIG-P3).
 
 Native source: the bandwidth census `mi210_bandwidth_census.json` (schema `epyc.autokernel.bw_census.v1`),
-`records[k].signature` -- written by research `scripts/kernel_rnd/autokernel/loop/census_update.py`
+`records[k].signature` and `time_only[k].signature` (kernel-keyed trace records, no byte basis) -- written by research `scripts/kernel_rnd/autokernel/loop/census_update.py`
 `apply_signature` (AK-BNSIG P1) from a counter-diag row RESULT classified by `bottleneck_signature.py`
 against the stream references S16 (healthy) / S64 (over-subscribed).
 
@@ -113,7 +113,7 @@ def _checked(key: str, rec: dict, applied: set[str] | None) -> dict:
 
 
 def classify(document: Any, *, locator: str, sha256: str) -> dict:
-    """Split signed census records into projectable `rows` (one per fired class), `unknown` (missing
+    """Split signed census records (bandwidth `records` and `time_only`) into projectable `rows` (one per fired class), `unknown` (missing
     warrant) and `refused`. Unsigned records are not this source's and are not reported."""
     if not isinstance(locator, str) or not locator.startswith(LOCATOR_PREFIX):
         raise ProjectionError("bottleneck signature needs its original census locator")
@@ -126,7 +126,8 @@ def classify(document: Any, *, locator: str, sha256: str) -> dict:
     if not isinstance(records, dict):
         raise ProjectionError("bandwidth census `records` is not an object")
     applied = _sig_applied(document)
-    for key, rec in records.items():
+    time_only = document.get("time_only") if isinstance(document.get("time_only"), dict) else {}
+    for key, rec in [*records.items(), *time_only.items()]:  # time_only: kernel-keyed signed records, same refusal rules
         sig = rec.get("signature") if isinstance(rec, dict) else None
         if not sig:
             continue
