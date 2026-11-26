@@ -1,0 +1,55 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "CREATE-PROTOCOL-P-MEMEVAL-1",
+  "gate_id": "RATIFY-P-MEMEVAL-1-20261126",
+  "operator_decision": "OP-42 decided 2026-11-26 (master-handoff-index 23e33d5ca): admit BEAM 128K and Tulving 200ch/100K as M-12's instruments (+ one inference window, granted separately, not by this receipt)",
+  "ratified_at": "2026-11-26T10:56:18Z",
+  "applied_at": "2026-11-26T10:56:18Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "protocol_id": "P-MEMEVAL-1",
+  "annex": "Q",
+  "annex_path": "measurement/protocols/quality-eval.md",
+  "amendment_class": "new protocol (append to the owning annex; no new annex)",
+  "registry_status": "✅ 2026-11-26",
+  "protocol_summary": {
+    "instrument_T": "Tulving 200ch/100K, Udefault_Sdefault_seed0, 686 q/arm, arms none/retrieved/full, deterministic score_tulving_run, headline five-bin Simple Recall incl. bin 0",
+    "instrument_B": "BEAM 128K (100K split), 400 q/arm, arms full/rag/trace, nugget judge != reader fixed across arms, BEAM fold, abstention excluded, admit_beam_runs.py + 8-item checklist gate",
+    "common": "prompt-matched arms, reader pinned by recipe_hash, no truncation rule (>=196608 ctx/slot), one result dir per arm, belief sidecar per arm"
+  },
+  "provenance": "memory-program.md M-12; progress/2026-09/2026-09-16-sub-op42-readiness.md; bundle prepared by an agent (opsign-20261126) from the P-SERVE-1 ratifier",
+  "not_granted": "no compute window, measurement, threshold, routing, promotion, eval-pool registration or re-verdict of the 2026-09-18 M-12a runs",
+  "patch": {
+    "path": "artifacts/operator/p-memeval-1-20261126.patch",
+    "sha256": "37275a395336c7d914eeacb60f118c781be67ed2e897dfebe9be439731462530"
+  },
+  "staged_text": {
+    "annex": {
+      "path": "artifacts/operator/staged/p-memeval-1-20261126.md",
+      "sha256": "33b550172fa84a3bb4f940050e762a1b3615c8747b301bbeed2ff5950dd3d70d"
+    },
+    "measurement_md_snippets": {
+      "path": "artifacts/operator/staged/p-memeval-1-20261126.measurement-md.md",
+      "sha256": "5918108365b4619aceba170f40d5bbe5a1a0397de4c53663f1919b5e9789d984"
+    }
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "53e04ad15dd635a6b463e6446e8ab58764ad97be66166793189120f8527dc745",
+      "sha256_after": "f9d3121aa67a4f02c59accd2107fde71382bff895945e6c7a007c5dd17df4818"
+    },
+    "measurement/protocols/quality-eval.md": {
+      "sha256_before": "480c11ece338e00e9e21f5c6a232c0e0ef6d3ade4d54ae167a358eeaa4d045e1",
+      "sha256_after": "dcb07b7837243f15d2e8cac90cf41f3668681a6bf3bdc58ff55df919c9f40bfa"
+    }
+  },
+  "tracking": {
+    "operator_queue": "OP-42",
+    "handoff": "handoffs/active/memory-program.md M-12"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_p_memeval_1_20261126.receipt.json",
+  "applied_by": {
+    "path": "scripts/operator/ratify_p_memeval_1_20261126.sh",
+    "sha256": "faf11116c3695f87c2f753140b1dc26cfa9598a2cb4ce680401a4a8aa3a6b92f"
+  }
+}

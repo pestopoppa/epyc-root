@@ -1,0 +1,207 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-26T10:56:18Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "e88ce86b817c70f77cf03c81f58153fd0ee1b863",
+  "git_head_before": "e88ce86b817c70f77cf03c81f58153fd0ee1b863",
+  "operator": "Daniele",
+  "protocol_id": "P-MEMEVAL-1",
+  "ratification_id": "RATIFY-P-MEMEVAL-1-20261126",
+  "ratify_script": {
+    "exists": true,
+    "path": "scripts/operator/ratify_p_memeval_1_20261126.sh",
+    "sha256": "faf11116c3695f87c2f753140b1dc26cfa9598a2cb4ce680401a4a8aa3a6b92f"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/tmp/opsign-20261126/sign-op42",
+  "sections": {
+    "coherence": {
+      "data": {
+        "MEASUREMENT.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        },
+        "measurement/protocols/quality-eval.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: instrument admission, not a measured claim: no measurement is taken or re-verdicted under P-MEMEVAL-1 by this amendment; it fixes the arm, scorer, judge and admission rules the M-12 handoff (memory-program.md M-12/M-12a/M-12b/M-12c) and the 2026-09-16 OP-42 readiness package already specify, and changes no threshold, gate or code; operator decision OP-42, 2026-11-26"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-MEMEVAL-1 present in MEASUREMENT.md",
+        "declared NEW by this amendment",
+        "anchor present in MEASUREMENT.md: - **2026-11-26 (v2.x)** \u2014 AMENDMENT (Annex Q, new protocol `P-MEMEVAL-",
+        "anchor present in MEASUREMENT.md: | P-MEMEVAL-1 | Memory-on vs memory-off long-context recall"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 8,
+      "lines_after": 768,
+      "lines_before": 760,
+      "lines_removed": 0,
+      "path": "MEASUREMENT.md",
+      "sha256_after": "f9d3121aa67a4f02c59accd2107fde71382bff895945e6c7a007c5dd17df4818",
+      "sha256_before": "53e04ad15dd635a6b463e6446e8ab58764ad97be66166793189120f8527dc745",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/MEASUREMENT.md",
+        "+++ b/MEASUREMENT.md",
+        "@@ -83,6 +83,7 @@",
+        " | P-DOCPARSE-1 | Document-parser comparison on the 200-PDF OpenDataLoader corpus: LiteParse vs OpenDataLoader as the born-digital fast path, paired by document | per-document `overall` (\u2191), 95% paired bootstrap; median latency gate (\u2193) in the ADOPT clause | \u2705 2026-11-08 | Q |",
+        " | P-SERVE-1 | Kernel-champion serving A/B instrument: fresh `llama-server` launch per sample under the role's registered production recipe, paired ABBA, with its serving floor, serving gate and headline admissibility (`instrument_class=serving`, unit = process) | aggregate decode tok/s (\u2191); effect = median(candidate)/median(anchor) \u2212 1 against a process-unit floor | \u2705 2026-11-19 | K |",
+        " | P-KLD-1 | Teacher-forced next-token distribution divergence between a named reference R and candidate Q of the same model (quantization/codec, precision swap, kernel/route, KV type, graph change); on a MoE, codec attribution requires a route-pinned R\u00d7Q cell | mean KL(R\u2016Q) nats (\u2193) with a source-cluster bootstrap CI; ln PPL ratio and top-1 agreement secondary \u2014 **not a claim** without a declared estimand, and **never** against a universal band | \u2705 2026-11-22 | V |",
+        "+| P-MEMEVAL-1 | Memory-on vs memory-off long-context recall at a fixed reader (M-12): instrument T = Tulving 200ch/100K (deterministic scorer), instrument B = BEAM 128K (nugget judge, judge != reader, fixed across arms); prompt-matched arms, no truncation rule | T: five-bin Simple Recall Score incl. bin 0 (\u2191); B: BEAM fold, abstention excluded (\u2191) | \u2705 2026-11-26 | Q |",
+        " ",
+        " ## 3. Claim grammar & examples",
+        " ",
+        "@@ -349,6 +350,13 @@",
+        " ",
+        " ## CHANGELOG",
+        " ",
+        "+- **2026-11-26 (v2.x)** \u2014 AMENDMENT (Annex Q, new protocol `P-MEMEVAL-1`): admits Tulving 200ch/100K and BEAM 128K",
+        "+  as the M-12 memory-on vs memory-off instruments (operator decision OP-42, 2026-11-26). Fixes prompt-matched arms,",
+        "+  reader pinned by recipe hash, no truncation rule, the Tulving headline with bin 0 included, the BEAM headline with",
+        "+  abstention excluded, the judge rules of 2026-11-09 (judge != reader, fixed across arms, self-judging banned), and",
+        "+  the `admit_beam_runs.py` / eight-item checklist admission gate. Grants no compute window and sets no routing,",
+        "+  promotion or threshold. Eval-pool registration stays a separate decision.",
+        "+",
+        " - **2026-11-24 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-AB-1` and `P-PAIRED`): every quality-eval comparison",
+        "   whose claimed effect is a scaffold, harness, prompt, routing, feature or reviewer-arm effect gains a",
+        "   **same-configuration rerun arm** (the baseline arm executed a second time, identical configuration and"
+      ]
+    },
+    {
+      "lines_added": 61,
+      "lines_after": 461,
+      "lines_before": 400,
+      "lines_removed": 0,
+      "path": "measurement/protocols/quality-eval.md",
+      "sha256_after": "dcb07b7837243f15d2e8cac90cf41f3668681a6bf3bdc58ff55df919c9f40bfa",
+      "sha256_before": "480c11ece338e00e9e21f5c6a232c0e0ef6d3ade4d54ae167a358eeaa4d045e1",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/quality-eval.md",
+        "+++ b/measurement/protocols/quality-eval.md",
+        "@@ -398,3 +398,64 @@",
+        " - **Latency caveat**: single-process sequential per-document wall time on one CPU quarter; JVM spawn per ODL convert() is",
+        "   included by design (it is the deployed cost). Latency is a gate only in the ADOPT clause.",
+        " ",
+        "+## P-MEMEVAL-1 \u2014 Memory-on vs memory-off long-context recall instruments, Tulving 200ch and BEAM 128K (RATIFIED 2026-11-26)",
+        "+",
+        "+Admitted by the operator on 2026-11-26 (decision queue item OP-42: \"admit both + one window\"). This section admits",
+        "+two instruments for the memory-program M-12 A/B (episodic retrieval on vs off). It does NOT grant the inference window;",
+        "+that is a separate compute booking. Eval-pool registration of either dataset is a separate decision from this admission",
+        "+(CJ-GATE precedent).",
+        "+",
+        "+- **Question**: at a fixed reader, does episodic retrieval (memory-ON) recover the recall the full context buys",
+        "+  (CEILING), and how far above memory-OFF does it sit, without losing abstention?",
+        "+- **Common rules (both instruments)**:",
+        "+  - **Prompt-matched arms.** Every arm carries the identical answer contract and closed-book instruction. The memory",
+        "+    arm never receives an instruction the memory-off arm lacks. The arm a row ran is proven per row",
+        "+    (`context_mode_by_prompt` for Tulving, the per-row context mode for BEAM), not inferred from the run name.",
+        "+  - **Reader pinned per run.** The reader is named by its serving recipe (`recipe_hash`), with the launch argv",
+        "+    generated, never transcribed, and a ggml linkage PASS. Arms are compared only under one reader recipe.",
+        "+  - **Context, no truncation rule.** The per-slot context must hold the longest prompt plus its answer budget (BEAM",
+        "+    100K-split prompts reach 191,456 Qwen3.x tokens, so >= 196,608 per slot). A run that needs a truncation rule",
+        "+    is a different instrument and is not admitted here. Truncated rows are counted and reported per arm.",
+        "+  - **One result directory per arm**, with a row-count check per arm after scoring (belief sidecars follow",
+        "+    `--out-json`; a shared directory overwrites them).",
+        "+  - **Belief write side.** Each scored arm emits its `belief_measurements.jsonl` beside its own artifact.",
+        "+- **Instrument T \u2014 Tulving 200ch / 100K (M-12a)**:",
+        "+  - Corpus: variant `Udefault_Sdefault_seed0`, `TULVING_CHAPTERS=200` (resolves to the 196-chapter parquet on disk),",
+        "+    book identity recorded as `book_sha16`; 686 questions per arm; `score_tulving_run --chapters`, when given, must",
+        "+    agree with the recorded rows.",
+        "+  - Arms: memory-OFF (`none`), memory-ON (`retrieved`, trace-store chapter retrieval), CEILING (`full` book).",
+        "+  - Scorer: the deterministic `score_tulving_run` (epyc-inference-research `scripts/benchmark/`). No LLM judge.",
+        "+  - **Headline**: five-bin Simple Recall Score **with bin 0 (unanswerable, answer `None`) included**. Per-bin avg F1",
+        "+    is reported beside it. Chronological Awareness is a diagnostic only until the M-12d tau fix lands.",
+        "+    Entities/Times/Spaces are reported separately from Event-contents/Full-details.",
+        "+  - Floor and sanity reference: the authors' shipped 12-arm results (`result_lenient_all_book_200.csv`). A result far",
+        "+    below that floor is a configuration defect, never a finding.",
+        "+- **Instrument B \u2014 BEAM 128K (M-12b)**:",
+        "+  - Corpus: BEAM 100K split, 20 conversations x 10 abilities x 2 = 400 questions per arm. Dataset path and sha256 are",
+        "+    recorded in each arm's `beam_run_receipt.json`. The dataset is staged locally. There is no SSL bypass.",
+        "+  - Arms: `BEAM_CONTEXT_MODE=full` (BEAM Vanilla, memory-off), `rag` (BEAM `pair_chunk`, naive-memory control) and",
+        "+    `trace` (FTS5 store + navigation, RRF k=60; the ingest filter is recorded as an experimental parameter).",
+        "+    Control and test arms use identical chunking.",
+        "+  - Scorer: `score_beam_run --arm full|rag|trace` over nugget verdicts from `judge_beam_run`, using BEAM's own fold.",
+        "+    The score is never binarised. A verdict that will not parse is refused and counted, never coerced to 0.0.",
+        "+  - **Judge** (operator 2026-11-09): judge model != reader model, and the judge is held FIXED across arms and named",
+        "+    per run. Qwen3.8-27B may judge with the same-family caveat accepted. Every claim records reader family, judge",
+        "+    family and that they overlap. The fallback in which the reader judges its own answers is BANNED. If the judge",
+        "+    cannot be served, the judged leg is NOT RUN. Arms are never mixed across judges.",
+        "+  - **Headline**: abstention is EXCLUDED. instruction_following, preference_following and event_ordering are reported",
+        "+    separately. The headline is the discriminating-core fold over the remaining abilities. The exact ability list is",
+        "+    pinned in the run receipt before the first row, from BEAM's original definition.",
+        "+  - **Admission gate**: a run is admissible only when `admit_beam_runs.py` accepts its artifacts. That covers complete",
+        "+    counts, source hashes, matched question ids, prompt/template/reader bindings and saved generation settings. All",
+        "+    eight items of `beam_prerun_checklist.py` must PASS (`cleared`). The three 2026-09-18 runs and the 2026-11-11",
+        "+    EVL-10 re-judge predate this gate and lack its receipts. They stay observations.",
+        "+  - Floor and sanity reference: BEAM issue #125 Raw ChromaDB arm (49.0% author fold / 55.7% BEAM fold).",
+        "+- **Comparisons**: within one instrument, one reader recipe and one judge (B) only. T and B are never pooled.",
+        "+  Paired by question id. Significance and calibration follow P-AB-1 / P-PAIRED where a verdict is claimed. Otherwise",
+        "+  the result is DESCRIPTIVE.",
+        "+- **Scope**: this admits instruments. It sets no routing, promotion, deployment or threshold. Results under it that",
+        "+  predate 2026-11-26 (M-12a 2026-09-18) may be cited under P-MEMEVAL-1 instrument T only if their artifacts satisfy",
+        "+  the rules above. Otherwise they stay observations.",
+        "+- **Claim tuple to carry**: instrument (T|B), arm, reader `recipe_hash`, judge identity and family (B), dataset or",
+        "+  book sha, research commit, n per arm, truncated count, unparseable-verdict count (B), and the headline fold.",
+        "+"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "bash scripts/validate/check_claims_grammar.sh --files measurement/protocols/quality-eval.md artifacts/operator/staged/p-memeval-1-20261126.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "check_claims_grammar: 5 line(s) look like uncited claims (need [P-<ID>, n, date, attest] or an observation marker):",
+        "measurement/protocols/quality-eval.md:38:(the X-MAS lesson: a 20pp effect at N=25 collapsed to 4pp at N=100); every failure classified by",
+        "measurement/protocols/quality-eval.md:144:- **Baselines (era anchors)**: code ECE 0.2532/0.3216, AUROC 0.6337/0.5751 (frontdoor/",
+        "measurement/protocols/quality-eval.md:154:  0.0279, AUROC 0.4639 (Hanley-McNeil 95% about 0.38-0.55); worker_math n=1628, accuracy 0.9631",
+        "measurement/protocols/quality-eval.md:155:  (60 negatives), ECE 0.0369, AUROC 0.4686 (about 0.39-0.54). `-tokens_generated` AUROC 0.5958 /",
+        "measurement/protocols/quality-eval.md:218:  \"indistinguishable\" (the ~0.2pp delta is inside the noise band). Ledger row:"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

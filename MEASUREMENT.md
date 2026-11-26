@@ -83,6 +83,7 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-DOCPARSE-1 | Document-parser comparison on the 200-PDF OpenDataLoader corpus: LiteParse vs OpenDataLoader as the born-digital fast path, paired by document | per-document `overall` (↑), 95% paired bootstrap; median latency gate (↓) in the ADOPT clause | ✅ 2026-11-08 | Q |
 | P-SERVE-1 | Kernel-champion serving A/B instrument: fresh `llama-server` launch per sample under the role's registered production recipe, paired ABBA, with its serving floor, serving gate and headline admissibility (`instrument_class=serving`, unit = process) | aggregate decode tok/s (↑); effect = median(candidate)/median(anchor) − 1 against a process-unit floor | ✅ 2026-11-19 | K |
 | P-KLD-1 | Teacher-forced next-token distribution divergence between a named reference R and candidate Q of the same model (quantization/codec, precision swap, kernel/route, KV type, graph change); on a MoE, codec attribution requires a route-pinned R×Q cell | mean KL(R‖Q) nats (↓) with a source-cluster bootstrap CI; ln PPL ratio and top-1 agreement secondary — **not a claim** without a declared estimand, and **never** against a universal band | ✅ 2026-11-22 | V |
+| P-MEMEVAL-1 | Memory-on vs memory-off long-context recall at a fixed reader (M-12): instrument T = Tulving 200ch/100K (deterministic scorer), instrument B = BEAM 128K (nugget judge, judge != reader, fixed across arms); prompt-matched arms, no truncation rule | T: five-bin Simple Recall Score incl. bin 0 (↑); B: BEAM fold, abstention excluded (↑) | ✅ 2026-11-26 | Q |
 
 ## 3. Claim grammar & examples
 
@@ -348,6 +349,13 @@ confers no authority beyond its own enumeration.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-11-26 (v2.x)** — AMENDMENT (Annex Q, new protocol `P-MEMEVAL-1`): admits Tulving 200ch/100K and BEAM 128K
+  as the M-12 memory-on vs memory-off instruments (operator decision OP-42, 2026-11-26). Fixes prompt-matched arms,
+  reader pinned by recipe hash, no truncation rule, the Tulving headline with bin 0 included, the BEAM headline with
+  abstention excluded, the judge rules of 2026-11-09 (judge != reader, fixed across arms, self-judging banned), and
+  the `admit_beam_runs.py` / eight-item checklist admission gate. Grants no compute window and sets no routing,
+  promotion or threshold. Eval-pool registration stays a separate decision.
 
 - **2026-11-24 (v2.x)** — AMENDMENT (Annex Q, `P-AB-1` and `P-PAIRED`): every quality-eval comparison
   whose claimed effect is a scaffold, harness, prompt, routing, feature or reviewer-arm effect gains a
