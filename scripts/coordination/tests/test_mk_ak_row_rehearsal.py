@@ -398,3 +398,15 @@ def test_op_gate_requires_unit_without_requiring_served(env):
             '--baseline', 'OFF', '--no-rehearse']
     with pytest.raises(SystemExit, match='--metric op_gbps requires --op-unit'):
         run(args)
+
+
+def test_arm_store_with_server_argv_json_no_served_ref(env):
+    # 2026-11-26 S5 (A3B GPU, no registry role): --arm-store + --server-argv-json crashed AttributeError on served=None
+    store = os.path.dirname(os.path.dirname(env["argv"][0]))
+    base = os.path.join(store, "bin", "libggml-base.so")
+    if not os.path.exists(base):
+        open(base, "w").write("base\n")
+    rid = "ak-r-gate-gpu-20261125-r9"
+    rc, out = run(decl(env, rid, extra=["--rank", "45", "--arm-store", f"ON={store}", "--check-only"]))
+    assert "AttributeError" not in out, out
+    assert rc == 0, out

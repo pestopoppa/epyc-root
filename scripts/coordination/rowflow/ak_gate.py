@@ -1957,7 +1957,9 @@ class Gate:
                     choices = response.get("choices")
                     if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0].get("message", {}).get("content"), str) or not choices[0]["message"]["content"] or choices[0].get("finish_reason") not in ("stop", "length"):
                         raise ValueError("invalid promotion chat response")
-                    rec.update(content=choices[0]["message"]["content"], truncated=choices[0]["finish_reason"] == "length")
+                    rec.update(content=choices[0]["message"]["content"], truncated=choices[0]["finish_reason"] == "length",
+                               sampling={k: body[k] for k in ("seed", "temperature", "max_tokens")}
+                               | {"enable_thinking": False, "endpoint": "/v1/chat/completions"})
                     return rec
                 if kind == "c-sq":
                     body.update(temperature=0.0, top_k=1, n_predict=n_predict, n_probs=cfg["n_probs"], return_tokens=True, cache_prompt=False, ignore_eos=False)

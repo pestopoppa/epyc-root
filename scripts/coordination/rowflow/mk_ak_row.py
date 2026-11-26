@@ -911,9 +911,12 @@ def gate_scaffold(a, served=None):
               "inputs": inputs, "dirs": list(a.dir)}
     if arm_stores:
         spec_g["arm_stores"] = arm_stores
-        served["argv_delta"] = list(served.get("argv_delta") or []) + [
-            {"arm": arm, "flag": "argv[0]", "value": os.path.join(store["bin"], os.path.basename(argv[0])),
-             "reason": "arm kernel store"} for arm, store in arm_stores.items()]
+        # served_ref.argv_delta is provenance only (ak_gate substitutes from spec.arm_stores); an explicit
+        # --server-argv-json row has no served_ref (S5 A3B GPU, 2026-11-26: AttributeError on None)
+        if served is not None:
+            served["argv_delta"] = list(served.get("argv_delta") or []) + [
+                {"arm": arm, "flag": "argv[0]", "value": os.path.join(store["bin"], os.path.basename(argv[0])),
+                 "reason": "arm kernel store"} for arm, store in arm_stores.items()]
     if a.serving_floor:
         name, sep, raw = a.serving_floor.partition(":")
         try:
