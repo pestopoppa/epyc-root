@@ -20,6 +20,6 @@ tier: local
 grounded:
   at: '2026-11-26'
   blobs:
-    epyc-root:handoffs/active/autokernel-loop.md: 8a642c938f4ee6c16d3e4f40d7b8eb7121363663
+    epyc-root:handoffs/active/autokernel-loop.md: 6881c7521bbbebbae2cd628f8a27354048411f16
     epyc-root:research/deep-dives/intake-nov26-kernels/33019.md: 253bc6e997f06ed2d023cc63cc27b6eede6a4ef9
 ---
