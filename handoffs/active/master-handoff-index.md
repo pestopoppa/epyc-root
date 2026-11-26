@@ -52,6 +52,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) C5 | 2026-08-16 |
 | OP-29 | OPEN (operator 2026-11-26: keep open, no downloads now). Video generation, 165 GB download. | EVL-32 | 2026-11-26 |
 | OP-83 | DHM-4: label the 30-item pilot (the private pilot set), then run dhm4_pilot_check.py; the other 70 only if it prints PROCEED_TO_70. | [dev-harness-trace-mining.md](memory-program.md#track-dev-harness-trace-mining) DHM-4 | 2026-10-22 |
+| OP-AK-HOLD | AutoKernel launch hold, kept in force (operator 2026-10-24, reconfirmed 2026-11-09; reconfirmed again 2026-11-26: NOT lifted). Blocks new AK search launches, CH-27 Q38FN floors, AK-Q38FN-64K-FLOOR and the C1-05 rollback merge; a named row may run only under an explicit operator exception, as AK-C9-Q38FN-FLOOR did. | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) CH-27 | 2026-10-24 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
