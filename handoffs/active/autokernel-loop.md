@@ -5336,6 +5336,10 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92鈥
 - [ ] **AK-SHORT-ROW-CENSUS** [non-inference] Count eligible fused small-K MMVQ calls in retained 27B and A3B traces at widths one through four.
       路 done when: AK-SHORT-ROW-CENSUS.json contains quant_type, K, output_rows, fused, ncols, eligible_calls. All requested model/width cells have a count or an explicit unresolved reason.
       路 gate: none        路 inputs: `handoffs/active/autokernel-loop.md`
+- [ ] **AK-LOOP-BLOAT-TRIM** [non-inference] Shrink the AutoKernel loop/ code (guard 130,181 of 130,183) by deleting proven zero-caller code and consolidating duplicates, in small tranches with the full loop suite identical before and after and a Fable audit per tranche
+      路 done when: check_regrowth_guards.py shows >= 500 lines of headroom under the current ceiling with the loop test pass/fail sets unchanged
+      路 gate: none        路 inputs: `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/bloat-A.md` `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/bloat-B.md` `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/dead.py` `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/deadA.py`
+      路 2026-11-26 partial review (workspace-f2, stopped for host reboot): guard counts non-blank, non-comment, non-docstring lines of non-test .py under loop/ (deleting tests saves nothing). 0 proven lines yet. Unproven leads: run.py _recover_legacy_cor_build (~40), production.py LEGACY_COMMIT/LEGACY_BUILD v9 fallback (~8; v9 is the rollback anchor, check first), run.py deprecated q3 spelling of --cpu-measurement-gpu-quiet (~6). Bulk sits in run.py inner closures (commit_pooled 449, gate 359 lines): compare against serial_run/resume for duplication. Callers to grep beyond imports: /mnt/raid0/llm/tmp/*/job.py and launch.sh, .claude/skills/row-owner-loop/scripts, watch_rows, seeds/negatives.json and journal-key readers, BW census and bottleneck-signature readers. Partition C (smaller modules, whole-module dead check) not reported.
 
 
 ### Done
