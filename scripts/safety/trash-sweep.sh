@@ -14,13 +14,15 @@ AUDIT_LOG="${SAFETY_AUDIT_LOG:-/workspace/logs/safety_audit.log}"
 days=0; dry=0
 while [ $# -gt 0 ]; do
     case "$1" in
-        --older-than) days="$2"; shift 2 ;;
+        --older-than) [ "$#" -ge 2 ] || { echo "--older-than requires a value" >&2; exit 2; }; days="$2"; shift 2 ;;
         --dry-run) dry=1; shift ;;
         *) echo "usage: trash-sweep.sh --older-than DAYS|now [--dry-run]" >&2; exit 2 ;;
     esac
 done
 
-[ -d "$TRASH_ROOT" ] || { echo "no trash"; exit 0; }
+[ -d "$TRASH_ROOT" ] || { echo "trash root missing: $TRASH_ROOT" >&2; exit 1; }
+TRASH_ROOT="$(realpath -e -- "$TRASH_ROOT")"
+[ "$TRASH_ROOT" != / ] || { echo "refusing filesystem root as trash" >&2; exit 1; }
 if [ "$days" = now ]; then
     cutoff=$(( $(date +%s) + 1 ))   # everything trashed up to this second
 elif [[ "$days" =~ ^([0-9]+)h$ ]] && [ "${BASH_REMATCH[1]}" -gt 0 ]; then
@@ -34,22 +36,64 @@ fi
 # otherwise be swept on the next run and the recoverable window would not exist. Files and dirs
 # alike (guarded_rm.sh trashes both; a `-type d` filter leaked every trashed file forever).
 # An entry without the prefix falls back to its ctime (set by the mv into the trash).
-find "$TRASH_ROOT" -mindepth 1 -maxdepth 1 \( -type d -o -type f -o -type l \) -printf '%C@ %p\n' | sort -n |
-    while read -r ctime p; do
-        name="$(basename "$p")"
-        if [[ "$name" =~ ^([0-9]{8})-([0-9]{2})([0-9]{2})([0-9]{2})- ]]; then
-            age="$(date -d "${BASH_REMATCH[1]} ${BASH_REMATCH[2]}:${BASH_REMATCH[3]}:${BASH_REMATCH[4]}" +%s 2>/dev/null || echo "${ctime%.*}")"
+# Materialize the list so traversal errors are not hidden by a pipeline subshell.
+entries=$(mktemp)
+links=$(mktemp)
+trap 'rm -f -- "$entries" "$links"' EXIT
+find -P "$TRASH_ROOT" -mindepth 1 -maxdepth 1 \( -type d -o -type f -o -type l \) -print0 | sort -z > "$entries"
+skipped=0
+while IFS= read -r -d '' p; do
+    ctime="$(stat -c %Z -- "$p")"
+    name="${p##*/}"
+    if [[ "$name" =~ ^([0-9]{8})-([0-9]{2})([0-9]{2})([0-9]{2})- ]]; then
+        age="$(date -d "${BASH_REMATCH[1]} ${BASH_REMATCH[2]}:${BASH_REMATCH[3]}:${BASH_REMATCH[4]}" +%s 2>/dev/null || echo "$ctime")"
+    else
+        age="$ctime"
+    fi
+    [ "$age" -lt "$cutoff" ] || continue
+    owner="$(stat -c '%U (%u)' -- "$p" 2>/dev/null || echo unknown)"
+    reason=""
+    resolved="$(realpath -m -- "$p")"
+    case "$resolved" in "$TRASH_ROOT"/*) ;; *) reason="path resolves outside trash root" ;; esac
+    # Recursive chmod and rm must never follow links outside the root. Refuse
+    # the whole entry if it contains such a link, including a top-level link.
+    if [ -z "$reason" ]; then
+        if find -P "$p" -type l -print0 > "$links"; then
+            while IFS= read -r -d '' link; do
+                resolved="$(realpath -m -- "$link")"
+                case "$resolved" in "$TRASH_ROOT"/*) ;; *) reason="symlink resolves outside trash root"; break ;; esac
+            done < "$links"
         else
-            age="${ctime%.*}"
+            reason="cannot inspect entry for symlinks"
         fi
-        [ "${age%.*}" -lt "$cutoff" ] || continue
-        if [ "$dry" = 1 ]; then
-            echo "[dry-run] would remove $p ($(( ( $(date +%s) - ${age%.*} ) / 86400 ))d old)"
-        else
-            size="$(du -sb "$p" 2>/dev/null | cut -f1 || echo unknown)"
-            rm -rf -- "$p"
-            printf '{"ts":"%s","session":"safety-guard","level":"INFO","cat":"TRASH_SWEEP","msg":"removed %s size=%s"}\n' \
-                "$(date +%Y-%m-%dT%H:%M:%S%z)" "$p" "$size" >> "$AUDIT_LOG"
-            echo "removed $p"
+    fi
+    if [ -n "$reason" ]; then
+        printf 'skipped %q owner=%q reason=%q\n' "$p" "$owner" "$reason"
+        skipped=$((skipped + 1))
+        continue
+    fi
+    if [ "$dry" = 1 ]; then
+        echo "[dry-run] would remove $p ($(( ( $(date +%s) - age ) / 86400 ))d old)"
+    else
+        size="$(du -sb "$p" 2>/dev/null | cut -f1 || echo unknown)"
+        if ! rm -rf -- "$p" 2>/dev/null; then
+            # Never let chmod dereference a command-line symlink.
+            if [ ! -L "$p" ]; then
+                chmod -R u+rwX -- "$p" 2>/dev/null || true
+            fi
+            if reason="$(rm -rf -- "$p" 2>&1)"; then
+                reason=""
+            else
+                reason="${reason:-removal failed after chmod retry}"
+                reason="${reason//$'\n'/; }"
+                printf 'skipped %q owner=%q reason=%q\n' "$p" "$owner" "$reason"
+                skipped=$((skipped + 1))
+                continue
+            fi
         fi
-    done
+        printf '{"ts":"%s","session":"safety-guard","level":"INFO","cat":"TRASH_SWEEP","msg":"removed %s size=%s"}\n' \
+            "$(date +%Y-%m-%dT%H:%M:%S%z)" "$p" "$size" >> "$AUDIT_LOG"
+        echo "removed $p"
+    fi
+done < "$entries"
+echo "skipped entries: $skipped"
