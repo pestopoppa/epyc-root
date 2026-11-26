@@ -1,0 +1,10 @@
+{
+  "fixture_sha": {"algorithm": "sha256", "value": "87a7ff00a5f5f561486a46eed3a386682cf9b5d4ce3d9a8e1b622783c1c96708", "source": "epyc-inference-research/scripts/kernel_rnd/dist_gate/test_spec_dist_gate.py"},
+  "row": {"case": "test_pit_uniform_with_ties", "input_probabilities": {"0": 0.25, "1": 0.25, "2": 0.25, "3": 0.25}, "status": "unresolved: retained PIT fixture has an exact tie but does not apply a boundary filter; no corresponding native frozen-logit boundary-tie output or held-out permutations were located"},
+  "key": {"fixture_rng_seed": 3, "native_seed_and_offset": null, "status": "missing: no recorded native keyed draw for this row"},
+  "filter_order": {"reference_default": ["top_k", "top_p", "min_p", "temperature"], "row": null, "status": "unresolved: the tied PIT case applies no filter; reverse orders and filter parameters have no retained native witness"},
+  "support": {"input": [0, 1, 2, 3], "native_retained": null, "whole_tie_reference": null, "status": "missing: no common filtered row and cutoff were recorded for comparison"},
+  "token": {"native": null, "status": "missing: aggregate PIT test does not retain the drawn token sequence"},
+  "full_logprob": {"value": null, "denominator": null, "status": "missing: no retained native draw or full-row scored output"},
+  "retained_logprob": {"value": null, "denominator": null, "status": "missing: no retained native draw or filtered scored output; PIT tie-group mass is not a per-token log probability"}
+}
