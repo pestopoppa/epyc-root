@@ -1,0 +1,102 @@
+{
+  "27B": {
+    "1": [
+      {
+        "quant_type": "Q8_0",
+        "K": null,
+        "output_rows": null,
+        "fused": true,
+        "ncols": 1,
+        "eligible_calls": 13680
+      },
+      {
+        "quant_type": "Q8_0",
+        "K": null,
+        "output_rows": null,
+        "fused": true,
+        "ncols": 1,
+        "eligible_calls": 0
+      }
+    ],
+    "2": [
+      {
+        "quant_type": null,
+        "K": null,
+        "output_rows": null,
+        "fused": null,
+        "ncols": 2,
+        "eligible_calls": "unresolved: no complete width-specific graph and dispatch witness located"
+      }
+    ],
+    "3": [
+      {
+        "quant_type": null,
+        "K": null,
+        "output_rows": null,
+        "fused": null,
+        "ncols": 3,
+        "eligible_calls": "unresolved: no complete width-specific graph and dispatch witness located"
+      }
+    ],
+    "4": [
+      {
+        "quant_type": null,
+        "K": null,
+        "output_rows": null,
+        "fused": null,
+        "ncols": 4,
+        "eligible_calls": "unresolved: no complete width-specific graph and dispatch witness located"
+      }
+    ]
+  },
+  "A3B": {
+    "1": [
+      {
+        "quant_type": "Q8_0",
+        "K": null,
+        "output_rows": null,
+        "fused": true,
+        "ncols": 1,
+        "eligible_calls": 4750
+      },
+      {
+        "quant_type": "Q8_0",
+        "K": null,
+        "output_rows": null,
+        "fused": true,
+        "ncols": 1,
+        "eligible_calls": 228
+      }
+    ],
+    "2": [
+      {
+        "quant_type": null,
+        "K": null,
+        "output_rows": null,
+        "fused": null,
+        "ncols": 2,
+        "eligible_calls": "unresolved: no complete width-specific graph and dispatch witness located"
+      }
+    ],
+    "3": [
+      {
+        "quant_type": null,
+        "K": null,
+        "output_rows": null,
+        "fused": null,
+        "ncols": 3,
+        "eligible_calls": "unresolved: no complete width-specific graph and dispatch witness located"
+      }
+    ],
+    "4": [
+      {
+        "quant_type": null,
+        "K": null,
+        "output_rows": null,
+        "fused": null,
+        "ncols": 4,
+        "eligible_calls": "unresolved: no complete width-specific graph and dispatch witness located"
+      }
+    ]
+  }
+}
