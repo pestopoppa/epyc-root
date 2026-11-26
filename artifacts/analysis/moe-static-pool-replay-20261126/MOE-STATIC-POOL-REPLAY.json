@@ -1,0 +1,42 @@
+{
+  "reservations_bytes": {
+    "status": "unresolved",
+    "weights": null,
+    "kv": null,
+    "scratch": null,
+    "allocator_margin": null,
+    "total": null,
+    "reason": "No matched model, context, placement and runtime reservation witness was established."
+  },
+  "pool_bytes": {
+    "status": "unresolved",
+    "capacity": null,
+    "allocated": null,
+    "fits_after_reservations": null,
+    "reason": "Available capacity and expert sizes are not bound to the same serving configuration; no pool was allocated."
+  },
+  "unique_upload_bytes": {
+    "status": "unresolved",
+    "bytes": null,
+    "reason": "Per-forward expert identities and expert sizes are needed for deduplication."
+  },
+  "cold_rows": {
+    "status": "unresolved",
+    "unit": "token-layer route row (eight expert selections)",
+    "historical_q36_corpus": {
+      "token_rows": 795485,
+      "token_layer_rows": 31819400,
+      "resident": null,
+      "cold": null,
+      "unresolved": 31819400,
+      "reconciliation": "All historical token-layer rows are unresolved because their expert identities and the fitted pool are unavailable. This is not a held-out replay count."
+    },
+    "invalid_or_unattributed": null,
+    "reason": "The historical report supplies aggregate row totals but not token/layer expert IDs, invalid-ID counts, or per-turn boundaries."
+  },
+  "join_bound_ms": {
+    "status": "unresolved",
+    "milliseconds": null,
+    "reason": "No cold route work, matching NUMA-local bandwidth, transfer and join timing witness, or uncertainty is bound to this pool and workload."
+  }
+}
