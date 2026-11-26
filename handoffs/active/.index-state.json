@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 585
+      "open": 582
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 156,
+      "closed": 157,
       "guarded": 0,
       "last_advanced": "2026-11-26",
-      "open": 47,
+      "open": 46,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 108,
+          "closed": 109,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,17 +95,17 @@
           "line": 847,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 37
+          "open": 36
         }
       ]
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 1023,
+      "closed": 1025,
       "guarded": 0,
       "last_advanced": "2026-11-26",
       "needs_owner": 2,
-      "open": 137,
+      "open": 136,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -114,7 +114,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1160,
+      "total": 1161,
       "tracks": [
         {
           "blocked": 0,
@@ -129,14 +129,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 62
+          "open": 63
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5573,
+          "line": 5577,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -146,7 +146,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5658,
+          "line": 5662,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -161,7 +161,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5839,
+          "line": 5843,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 7
@@ -175,7 +175,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7724,
+          "line": 7728,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 29
@@ -187,7 +187,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 11070,
+          "line": 11074,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -211,22 +211,22 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11317,
+          "line": 11321,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
         },
         {
           "blocked": 0,
-          "closed": 12,
+          "closed": 14,
           "gates": [
             "INF-06"
           ],
           "guarded": 0,
-          "line": 11937,
+          "line": 11941,
           "markers": 1,
           "name": "autokernel-roofline-surface-loop",
-          "open": 10
+          "open": 8
         }
       ]
     },
@@ -1200,10 +1200,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 0,
-      "closed": 277,
+      "closed": 278,
       "guarded": 0,
       "last_advanced": "2026-11-26",
-      "open": 28,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1216,7 +1216,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 232,
+          "closed": 233,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1227,14 +1227,14 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 27
+          "open": 26
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1997,
+          "line": 1998,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 2125,
+          "line": 2126,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1254,7 +1254,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2458,
+          "line": 2459,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2559,
+          "line": 2560,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 3113,
+          "line": 3114,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1284,7 +1284,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3251,
+          "line": 3252,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1294,7 +1294,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3258,
+          "line": 3259,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
