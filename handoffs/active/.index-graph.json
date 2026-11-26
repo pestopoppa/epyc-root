@@ -714,7 +714,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-26T11:36:22Z",
+  "generated_at": "2026-11-26T11:46:45Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2309,7 +2309,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 758,
+          "line": 768,
           "name": "tq3-quantization-evaluation",
           "open": 5,
           "readiness": "ready"
