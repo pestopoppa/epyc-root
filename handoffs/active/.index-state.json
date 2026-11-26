@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 582
+      "open": 579
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-20",
-      "open": 258
+      "open": 257
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 493
+      "open": 492
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -533,11 +533,11 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 210,
+      "closed": 211,
       "guarded": 0,
-      "last_advanced": "2026-11-24",
-      "needs_owner": 2,
-      "open": 48,
+      "last_advanced": "2026-11-26",
+      "needs_owner": 1,
+      "open": 47,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -620,13 +620,13 @@
         },
         {
           "blocked": 0,
-          "closed": 60,
+          "closed": 61,
           "gates": [],
           "guarded": 0,
           "line": 3136,
           "markers": 1,
           "name": "tool-output-compression",
-          "open": 8
+          "open": 7
         },
         {
           "blocked": 0,
@@ -850,11 +850,11 @@
     },
     "deepseek-v41-flash-evaluation.md": {
       "blocked": 1,
-      "closed": 109,
+      "closed": 111,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-26",
       "needs_owner": 2,
-      "open": 118,
+      "open": 116,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1200,10 +1200,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 0,
-      "closed": 278,
+      "closed": 279,
       "guarded": 0,
       "last_advanced": "2026-11-26",
-      "open": 27,
+      "open": 26,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1216,7 +1216,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 233,
+          "closed": 234,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1227,7 +1227,7 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 26
+          "open": 25
         },
         {
           "blocked": 0,
@@ -1580,12 +1580,12 @@
     },
     "model-evaluation-queue.md": {
       "blocked": 2,
-      "closed": 133,
+      "closed": 134,
       "frozen": 1,
       "guarded": 0,
-      "last_advanced": "2026-11-22",
+      "last_advanced": "2026-11-26",
       "needs_owner": 2,
-      "open": 43,
+      "open": 42,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1914,7 +1914,7 @@
         },
         {
           "blocked": 0,
-          "closed": 3,
+          "closed": 4,
           "gates": [
             "EVL-08"
           ],
@@ -1922,7 +1922,7 @@
           "line": 1725,
           "markers": 1,
           "name": "paw-compiled-specialists",
-          "open": 3
+          "open": 2
         }
       ]
     },

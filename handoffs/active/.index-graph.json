@@ -714,21 +714,21 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-26T14:56:55Z",
+  "generated_at": "2026-11-26T16:02:18Z",
   "nodes": [
     {
-      "age_days": 4,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 133,
-      "dispatchable": 43,
+      "closed": 134,
+      "dispatchable": 42,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "model-evaluation-queue.md",
       "id": "EVL-02",
-      "last_advanced": "2026-11-22",
+      "last_advanced": "2026-11-26",
       "next_action": "Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision",
-      "open": 45,
+      "open": 44,
       "priority": 0.8208,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AMS-TCAP-1 \u2014 A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-",
@@ -1047,13 +1047,13 @@
           "blocked_by": [
             "EVL-08"
           ],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [
             "EVL-08"
           ],
           "line": 1725,
           "name": "paw-compiled-specialists",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         }
       ]
@@ -1950,15 +1950,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 278,
-      "dispatchable": 27,
+      "closed": 279,
+      "dispatchable": 26,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-26",
       "next_action": "C19 27B ASan diagnostic for the test-dtree-device-accept heap corruption; then assemble C20 (Q0_RM4, GDNPROJ_FUSE, SPEC-DISTS-TRUNC)",
-      "open": 27,
+      "open": 26,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1992,7 +1992,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 26,
+          "dispatchable": 25,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2001,7 +2001,7 @@
           ],
           "line": 22,
           "name": "autokernel-champion-aggregate",
-          "open": 26,
+          "open": 25,
           "readiness": "blocked"
         },
         {
@@ -2167,21 +2167,21 @@
       ]
     },
     {
-      "age_days": 7,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
         "RTG-58"
       ],
-      "closed": 109,
-      "dispatchable": 118,
+      "closed": 111,
+      "dispatchable": 116,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-26",
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
-      "open": 119,
+      "open": 117,
       "priority": 0.6069,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): DS41-W5d \u2014 1017 baseline + MUL_MAT_ID premise microbench (operator choice \"1017-only + mic",
@@ -2884,18 +2884,18 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 210,
-      "dispatchable": 48,
+      "closed": 211,
+      "dispatchable": 47,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
-      "last_advanced": "2026-11-24",
+      "last_advanced": "2026-11-26",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 50,
+      "open": 49,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2978,11 +2978,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 7,
           "gates": [],
           "line": 3136,
           "name": "tool-output-compression",
-          "open": 8,
+          "open": 7,
           "readiness": "ready"
         },
         {
