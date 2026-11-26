@@ -11938,7 +11938,7 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
 <!-- gate: INF-06 -->
 
 ### Backlog
-- [ ] **AK-BNSIG-CENSUS-TOPN** [inference] Run the bottleneck-signature row ak-bnsig-census-topn-gpu-20261126 over the 27B DF2 V5I served top-5 kernels (q8mf6 anchor, gated_delta_net, q8sk, rms_norm, silu) and apply each signature to the census with census_update.apply_signature
+- [x] **AK-BNSIG-CENSUS-TOPN** [inference] Run the bottleneck-signature row ak-bnsig-census-topn-gpu-20261126 over the 27B DF2 V5I served top-5 kernels (q8mf6 anchor, gated_delta_net, q8sk, rms_norm, silu) and apply each signature to the census with census_update.apply_signature ✅ 2026-11-26 [belief: cc] r2 SIGNATURE_CLASSIFIED (filed inconclusive); q8mf6 issue_bound+oversub marginal, q8sk oversub marginal, rms_norm silu latency_bound; GDN unwitnessed
       · done when: row ak-bnsig-census-topn-gpu-20261126 files SIGNATURE_CLASSIFIED or FUTILITY_* and census records carry signature fields for each classified kernel
       · gate: none
       · stop rule: stop-on-answer when every listed kernel has a signature class or is marked unwitnessed and the S16/S64 reference self-check has passed; stop-on-futility on zero or missing counters, reference_incoherent, kernel not resident, or all kernels unclassified (FUTILITY_HARNESS_*); gate-class = futility-only (diagnostic, never a KEEP)
