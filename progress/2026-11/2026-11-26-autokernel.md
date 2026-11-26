@@ -57,3 +57,28 @@ On this workload C22 ≈ C21: decode is 0.996, and both are about x1.49-1.51 ove
 - Follow-ups (not boxed, box cap D9): S1-r3 production breakdown re-run (short, coding and mixed prompts; v10 / C21 / C22 decode, prefill and acceptance), which waits on the operator choice recorded in the RATIFY-C22 package.
 
 Next: operator — sign or reject RATIFY-C22, and choose whether to run S1-r3.
+
+## Final wrap-up (main thread, after the subagent wrap-up)
+
+**C22 RATIFIED** as AutoKernel champion by the operator: `RATIFY-C22-CHAMPION-20261126`, receipt `artifacts/operator/ratify_c22_champion_20261126.json`, commit `f549db358`. Ratifier `scripts/operator/ratify_c22_champion_20261126.sh` (commit `bbce8730d`). The first `--attest` lost a push race (non-fast-forward; nothing signed); the re-run succeeded. NOTHING promoted: production stays v10, the registry is unchanged.
+- Boxes ticked: C22-RATIFY-SIGN and AK-Q38FN-DRAFTWIN-C22 [belief: cc].
+
+**Production-config receipts (decode tok/s, server timing):**
+- 27B GPU np4, ~8.4k-token prompts, one request at a time: v10 45.9, C21 69.1, C22 68.8. Prefill 518 / 604 / 632 tok/s, acceptance about 0.41. C22 ≈ C21; both about +50% vs v10.
+- A3B GPU np4 MTP: inconclusive (A/A 1.028; C21 ×0.958, C22 ×0.966 vs v10). Possible regression, unresolved: decode visits were too short (~18 s) for np4+MTP acceptance noise (±4%).
+- A3B promotion quality (MMLU-Pro 200 + GPQA 195): v10 59.0 / 52.3 vs C22 60.0 / 51.3, pass.
+
+**Lesson (reporting):** I quoted gate-shape numbers (Q38FN 12.2 tok/s on one 24-thread quarter) and an np1 gain (+12.8%) next to production expectations without stating the shape. That caused two corrections. Every tok/s quoted to the operator now states threads, np, context, metric (decode / prefill / aggregate) and workload.
+
+**Post-reboot plan** (package §11):
+- np {1, 2, 4, 8} × ctx {1k, 8k, 32k, 64k, 100k} matrix for 27B GPU, A3B GPU+CPU, Q38FN CPU and VL-30B CPU. Driver `scripts/benchmark/np_ctx_depth_matrix.py`, research `c9c089a61`: incremental depth via prefix reuse, ≥75 s decode per cell, capacity skips, an exporter to epyc-web catalog.json, ~33 h.
+- Q38FN quality.
+- gpu-cpuload-contam -r3 after keeper fix cx75.
+- pernuma-r3 and the A3B remeasure.
+- Registry drift table: `/mnt/raid0/llm/tmp/ak-c22-composite-build-20261125/registry-drift-20261126.md` (27B KV layout, A3B CPU KV mode, two shared-port argv mismatches). Proposed for a later stack change.
+
+**RF7:** the line is paused, not closed. The 0.039 KLD came from Pipeline's unofficial, ungranted replay (`/mnt/raid0/llm/tmp/pm-opsmoke-replay/`), not a filed row. VATTN-ROOFLINE-5 stays open.
+
+**Bottleneck classifier:** pruning stays advisory. 1 of the ≥3 independently confirmed kernels is in hand (q8mf6 issue_bound).
+
+Next: operator — reboot; after the reboot, autokernel runs the §11 plan.
