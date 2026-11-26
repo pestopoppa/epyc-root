@@ -1,0 +1,8 @@
+{
+  "gpu": {
+    "pid": 2980940,
+    "rc": 0,
+    "dead_verified": true
+  },
+  "kfd_pids": []
+}

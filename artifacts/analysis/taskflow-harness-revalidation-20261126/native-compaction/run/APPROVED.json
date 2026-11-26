@@ -1,0 +1,9 @@
+{
+  "manifest_sha256": "dc3b056d92bf37d066a363bd345cbf36563cb4279d9ddc19df6b62c1ef6987fa",
+  "plan": {
+    "wall_s": 900,
+    "request_cap": 8192,
+    "generated_ceiling": 16384,
+    "slot": 3
+  }
+}

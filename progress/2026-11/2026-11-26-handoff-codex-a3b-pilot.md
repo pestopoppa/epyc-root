@@ -87,3 +87,13 @@ Main launched the approved sealed manifest under the owned q0–q3 region claim.
 This is synthetic native harness qualification, not a real-task capability result. Actual native compaction continuity remains to be checked before the planned quality/main-only comparisons.
 
 Next: codex-a3b-pilot completes native compaction qualification, then freezes and runs the paired real-task grid with measured guidance and main-only accounting.
+
+## Native compaction and fresh main-only comparator
+
+Native C22 compaction extension dc3b056d92bf37d066a363bd345cbf36563cb4279d9ddc19df6b62c1ef6987fa passed under main-owned exec3880. The same actual qualified session produced one real summary (470 generated tokens) and two continuation requests (299), retained its prior reference marker, restored all twelve identical tool schemas, executed the real Code Mode models catalog call, and read/returned the reference again. OwnedGPU2980940 exited rc0/death verified/KFD empty. The original3391-file seal remains untouched; extension receipts are retained in artifacts/analysis/taskflow-harness-revalidation-20261126/native-compaction/.
+
+Four fresh gpt-6.1-sol/low main-only turns completed rc0 on original paired briefs, in66.9s(PAW),74.8s(W66),89.9s(NARIQ) and111.7s(PFXC). These timings include CLI execution and are provisional comparator observations, not accepted-result claims. Verification exposed two further acceptance-harness gaps before any A3B quality launch: ordinary pytest cache artifacts were treated as forbidden source edits, and valid period-terminated bold field labels failed the PAW structural regex. Versioned equivalent acceptance and explicit migration of both arms are underway; model outputs and original failures are retained, with no model rerun needed. NARIQ and PFXC original structural/content checks pass; independent semantic/tool-use review is still required.
+
+The initial packets contain detailed owner guidance, including PFXC solution statistics. Initial success therefore means independent execution from that brief, not unguided backlog discovery. Historical preparation is reused and unmeasured in both arms.
+
+Next: codex-a3b-pilot finishes symmetric acceptance repairs and launches the frozen A3B CPU/GPU task grid, preserving the completed main-only outputs unseen by initial local workers.

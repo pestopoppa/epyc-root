@@ -1,0 +1,5 @@
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='a3b-native-compaction' (timeout_s=10.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: /usr/bin/python3 -B /mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/native-compaction/qualify_compaction.py dc3b056d92bf37d066a363bd345cbf36563cb4279d9ddc19df6b62c1ef6987fa
+GPU native compaction server pid=2980940, port=33849
+gpu: healthy and smoke passed pid=2980940 port=33849
+{"same_session": true, "summary_retained_original_ref_read": true, "post_summary_exact_schema_sha256": "c791912e176edf9ebfb619903abe673fa909394aadab2033e2fbaffe9bf16400", "post_summary_catalog_call": true, "post_summary_ref_read_and_answer": true, "requests_compaction": 1, "requests_continuation": 2, "generated_compaction": 470, "generated_continuation": 299, "generated_observed": 769, "unknown_requests": 0, "read_only_fixture": true, "slot": 3}

@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "real_tasks": 0,
+  "same_session": true,
+  "summary_retained_original_ref_read": true,
+  "post_summary_exact_schema_sha256": "c791912e176edf9ebfb619903abe673fa909394aadab2033e2fbaffe9bf16400",
+  "post_summary_catalog_call": true,
+  "post_summary_ref_read_and_answer": true,
+  "requests_compaction": 1,
+  "requests_continuation": 2,
+  "generated_compaction": 470,
+  "generated_continuation": 299,
+  "generated_observed": 769,
+  "unknown_requests": 0,
+  "read_only_fixture": true,
+  "slot": 3
+}

@@ -1,0 +1,63 @@
+{
+  "native_qualification_sha256": "556cc817e484ee7b2276c0d73f95f6bb8a17288d2e039da07c70ce436c7868c4",
+  "scope": "synthetic native GPU compaction continuation only",
+  "budget": {
+    "wall_s": 900,
+    "request_cap": 8192,
+    "generated_ceiling": 16384,
+    "slot": 3
+  },
+  "sampling": {
+    "seed": 223355,
+    "temperature": 0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "repeat_penalty": 1.0,
+    "presence_penalty": 0.0
+  },
+  "tools_sha256": "c791912e176edf9ebfb619903abe673fa909394aadab2033e2fbaffe9bf16400",
+  "session_files": [
+    "qualification/gpu/sandbox/config/opencode/opencode.json",
+    "qualification/gpu/sandbox/session/data/opencode/log/opencode.log",
+    "qualification/gpu/sandbox/session/data/opencode/opencode.db",
+    "qualification/gpu/sandbox/session/data/opencode/opencode.db-shm",
+    "qualification/gpu/sandbox/session/data/opencode/opencode.db-wal",
+    "qualification/gpu/sandbox/session/data/opencode/shell/d8b7dcffee8558519bac87ad8d95a702ec065afe/sh_21a1713e5001LozfJkJNMrOFA3.out",
+    "qualification/gpu/sandbox/work/.pytest_cache/.gitignore",
+    "qualification/gpu/sandbox/work/.pytest_cache/CACHEDIR.TAG",
+    "qualification/gpu/sandbox/work/.pytest_cache/README.md",
+    "qualification/gpu/sandbox/work/.pytest_cache/v/cache/nodeids",
+    "qualification/gpu/sandbox/work/.pytest_cache/v/cache/stepwise",
+    "qualification/gpu/sandbox/work/__pycache__/test_fixture.cpython-312-pytest-7.4.4.pyc",
+    "qualification/gpu/sandbox/work/result.txt",
+    "qualification/gpu/sandbox/work/test_fixture.py"
+  ],
+  "sha256": {
+    "native-compaction/qualify_compaction.py": "22ca2c517230f75d1ed1bfec26a39d21ae36fc5dea95955d99d2265b0f2de043",
+    "qualification/CLEANUP.json": "233ab5ba4c7d4b0494cf3a388576a5b10f220b085f9ca147a14cc1d41bd784ec",
+    "qualification/PASS.json": "de2f4314bcd0b3ea6db1817831ca1b2a120e32c20f06552ee05d07221d33de5e",
+    "qualification/gpu/NATIVE-SESSION-RESUME.json": "2de1c90bd922af0d58f060c9bcf875d7bb17e0f3996e18844d517addcdf92782",
+    "qualification/gpu/refs/reference.txt": "0a9f790b73b632feb079a8b9e3569fbce094d1935ec422e3f5bddf4d7078bb2e",
+    "qualification/gpu/resume/OPEN-CODE-SESSION.json": "d09e2dc3f47591ea1ddb5858d6d756270a764ac8e3034982041eef8a57d40ad9",
+    "qualification/gpu/resume/QUALIFY-gpu-resume-0005.json.gz": "9803866b4262029fef317fbc47053c2e1f8d61023030ffc4f9cac99886746562",
+    "qualification/gpu/resume/QUALIFY-gpu-resume-0006.json.gz": "9690fc91aa394aea84416e5a7fbd8bb05d16d16733710d38425c211b540d32d9",
+    "qualification/gpu/resume/QUALIFY-gpu-resume-0007.json.gz": "e14357ea2d08f41781931d6c70a1e6a711df170a566c344ce5ccba3c90094e8f",
+    "qualification/gpu/resume/QUALIFY-gpu-resume-0008.json.gz": "76ace30c53b49432de5b21a20859fc79f4588e38ce1e76cc059ac9793e5480d7",
+    "qualification/gpu/sandbox/config/opencode/opencode.json": "2381aaf0adc97aca23c1418d7d110b689870f597e77dc649fdd2d5d2805fbbf6",
+    "qualification/gpu/sandbox/session/data/opencode/log/opencode.log": "abedaf3511b1debaf8ca2c8403e0e9c3dba4f208d13de9c69ca0757af310fbbc",
+    "qualification/gpu/sandbox/session/data/opencode/opencode.db": "0c16d312f8a5c550810e799494ceb8d22f5691c62670b68a2dd44c45d45933ba",
+    "qualification/gpu/sandbox/session/data/opencode/opencode.db-shm": "1401c06ba0bfa68eb695b1532d23947218d3d9b63c5c3e011c325d58bf60cda1",
+    "qualification/gpu/sandbox/session/data/opencode/opencode.db-wal": "a5e0789d48a9e0dcb89b21d0ed1a1f8f63f773955f9e57d8d3a4d8c05aa9fa71",
+    "qualification/gpu/sandbox/session/data/opencode/shell/d8b7dcffee8558519bac87ad8d95a702ec065afe/sh_21a1713e5001LozfJkJNMrOFA3.out": "a0e31900be204081406bf1fe0a0ed2f5530fd6c2e8e0481a58c19f7b9203a01b",
+    "qualification/gpu/sandbox/work/.pytest_cache/.gitignore": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+    "qualification/gpu/sandbox/work/.pytest_cache/CACHEDIR.TAG": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+    "qualification/gpu/sandbox/work/.pytest_cache/README.md": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+    "qualification/gpu/sandbox/work/.pytest_cache/v/cache/nodeids": "20296a73f7ed8aab3d9bac8d4f578efa438ba0aa100dd739c0666586a67bdac4",
+    "qualification/gpu/sandbox/work/.pytest_cache/v/cache/stepwise": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "qualification/gpu/sandbox/work/__pycache__/test_fixture.cpython-312-pytest-7.4.4.pyc": "93d9771fb46b852742f2815076e618db086014c0863bd009c3f27739b03faefc",
+    "qualification/gpu/sandbox/work/result.txt": "0a9f790b73b632feb079a8b9e3569fbce094d1935ec422e3f5bddf4d7078bb2e",
+    "qualification/gpu/sandbox/work/test_fixture.py": "422ddd49cee4e2ce70f4a3332e412461439a46bbc939f9d62ff2f000ae7620e0",
+    "stock/QUALIFY-MANIFEST.json": "556cc817e484ee7b2276c0d73f95f6bb8a17288d2e039da07c70ce436c7868c4"
+  }
+}
