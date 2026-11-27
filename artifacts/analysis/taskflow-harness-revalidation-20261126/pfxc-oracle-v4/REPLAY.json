@@ -1,0 +1,330 @@
+{
+  "case": "PFXC-A3",
+  "acceptance_version": "pfxc.exact-events.v4",
+  "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+  "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+  "original_results_preserved": true,
+  "no_model_calls": true,
+  "controls": [
+    {
+      "id": "historical-main-direct",
+      "purpose": "Original accepted direct candidate, byte preserved",
+      "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+      "expected_new_diagnostic": null,
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 0,
+          "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 0,
+          "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "valid-side-by-side",
+      "purpose": "Same 41 events across two explicit ordinal groups",
+      "candidate_sha256": "8ca515281079fa4f16fd666077fc5d45240672e3321d651cb0ae1919f9ae265d",
+      "expected_new_diagnostic": null,
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3f3f9b0b608f5732150cce68e8173f2c6d6202d6cf8fad136ee490f1ce3f10b0"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 0,
+          "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "historical-gpu-on",
+      "purpose": "Original GPU ON artifact has 44 events and repeats three lines",
+      "candidate_sha256": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+      "expected_new_diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "8d66aba47913382284f7334a8384f2a22b05f3c5629a163b71a6c6dcfe606533"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b"
+        }
+      }
+    },
+    {
+      "id": "linear-duplicate-44",
+      "purpose": "Original regex wrongly accepts a 44-row subsequence",
+      "candidate_sha256": "3c715f8daef5e5ffcf414a5b3e049afeb621adba36639509e0a64cb777b0096b",
+      "expected_new_diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 0,
+          "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b"
+        }
+      }
+    },
+    {
+      "id": "extra-event-42",
+      "purpose": "Original regex ignores one extra row with a distinct source line",
+      "candidate_sha256": "2295475f5669c92c7092e459df93b41cd0004e267c5d2422c0907e77100ed16c",
+      "expected_new_diagnostic": "expected 41 source events exactly once, found 42",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 0,
+          "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "52c679c607f69a3edcbfccdda5a8c4c8ad908ee4df9c03442786a6b14ec666f5"
+        }
+      }
+    },
+    {
+      "id": "duplicate-instead-of-event",
+      "purpose": "41 rows alone cannot prove each event occurs once",
+      "candidate_sha256": "a5978328f01ba5fb522ebd3bec929deddd35234f0a26c159224712b80e4a0826",
+      "expected_new_diagnostic": "found 41; duplicate source lines: 1429",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "8d66aba47913382284f7334a8384f2a22b05f3c5629a163b71a6c6dcfe606533"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "1494acd10d9b967ca184d7d603b21c2fbee7160cd95f28061f2dc838f8e23247"
+        }
+      }
+    },
+    {
+      "id": "missing-event",
+      "purpose": "One row removed",
+      "candidate_sha256": "926a445eb58edc10394f389f26c0e8f18478cf24a7d6b08cc96f4f0620f01b1b",
+      "expected_new_diagnostic": "exactly once, found 40",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "8d66aba47913382284f7334a8384f2a22b05f3c5629a163b71a6c6dcfe606533"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3b03c88a4d180a8fb5919c87a6003e2ed6c92494e790adb1fabaf2e65c95e530"
+        }
+      }
+    },
+    {
+      "id": "wrong-order",
+      "purpose": "Adjacent authentic tuples assigned to the wrong event ordinals",
+      "candidate_sha256": "5768aea14dab28a7438b9546de747e8eafc609483c29501d25373217585d6933",
+      "expected_new_diagnostic": "event 21: source line 1568, expected 1528",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3f3f9b0b608f5732150cce68e8173f2c6d6202d6cf8fad136ee490f1ce3f10b0"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "9dcb9b936cd69af1824c7be157f0e8a5ecd14712c1edc7833a416643930c9918"
+        }
+      }
+    },
+    {
+      "id": "wrong-source-line",
+      "purpose": "Correct value at ordinal 21 with incorrect source-line attribution",
+      "candidate_sha256": "58a5df201f716ba2d0f7dcd7b8e8c1533deb8bdfc390048ebfc5a2d9f492726b",
+      "expected_new_diagnostic": "event 21: source line 9999, expected 1528",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 0,
+          "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "18d92d2786f3a2ea923c7be43e463d3b16161e15b415c6bec519b1ad92d90ad8"
+        }
+      }
+    },
+    {
+      "id": "wrong-size",
+      "purpose": "Correct ordinal and line with an incorrect measurement",
+      "candidate_sha256": "96ce2d9ebdc36e567fc79d7171959fd8f515c6a38792a45314851acf919c8ff5",
+      "expected_new_diagnostic": "event 21: size 973.458 MiB, expected 973.457 MiB",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "8d66aba47913382284f7334a8384f2a22b05f3c5629a163b71a6c6dcfe606533"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "db0da90caa70705f4515212e56087c8e8fe0dcbc97576a152cec51762414e914"
+        }
+      }
+    },
+    {
+      "id": "duplicate-ordinal",
+      "purpose": "Exact set of source lines and sizes with conflicting ordinal claims",
+      "candidate_sha256": "1548975ead23fc35db2b7ed527e253a9c59e1e19f71eb6879e4b18ad2bcaad98",
+      "expected_new_diagnostic": "entry ordinals must cover 1–41 exactly once",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 0,
+          "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "04f5c7c0bca79645292ba98b3e2b7a45c1f5e04ec75342a468e089a4f1c16ead"
+        }
+      }
+    },
+    {
+      "id": "no-output",
+      "purpose": "Original baseline has no candidate document",
+      "candidate_sha256": null,
+      "expected_new_diagnostic": "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "9efeed66cb85dc541cfd782d957f4ac39c5164c700b3d78fc69b86f8441243d2"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "78547de1614f3e133acbe5a6cd5b6f4b9c16d22fdd070705c802e6188d33ae18"
+        }
+      }
+    },
+    {
+      "id": "missing-probe-pin",
+      "purpose": "Existing pinned-capture check still refuses a changed hash",
+      "candidate_sha256": "e258bc86734718485c6afa52bab79c52975bbcb4cb8950127515b09e3ce9bd63",
+      "expected_new_diagnostic": "1512c7b77500b66635c3ac23f46c4a3b6ff28c50f69d8066f5532bd65246f32d",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "fd0462fb96812e1bf2ab27b8644cf02910457503d29a93f4e09886da7e20ea1b"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "d600f50fb04d23ef57d22f79baad1a5dd0ec6bf774d1e0094098fdb690c98900"
+        }
+      }
+    },
+    {
+      "id": "missing-eviction-log-pin",
+      "purpose": "Existing server trace hash still required",
+      "candidate_sha256": "ee7938b095a7257f142743ad448e9d80ee3032e4aa7ef072a569d28bdcd3b989",
+      "expected_new_diagnostic": "85533337680e2dee4307f67fb0fda5e08beae1b122adc0f53cacf15a08c4e377",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "2a39403137d342b3cc65297353fb9162144affc225ccc92f46ed930d5c8f07dc"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "d1efa9fbb46ef54d0f217eb986a92dc6bfb220595cd7092216b9b4272f6a2a04"
+        }
+      }
+    },
+    {
+      "id": "missing-sizing-minimum",
+      "purpose": "Existing 11896 MiB sizing arithmetic still required",
+      "candidate_sha256": "b09f944fdc12a66290e92b160248b8d779bdab30f6b46a07aef5fb10efccd89a",
+      "expected_new_diagnostic": "11896",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "5d1f98276880b848636d93f4b0c455cc6f8f3bb6658c629f9cc5afc8aae7669f"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3cb5f9fa0d80f4414cf6c6cf2314a1e7004dd057de84ff10fb23dbf28f697bae"
+        }
+      }
+    },
+    {
+      "id": "missing-np2-geometry",
+      "purpose": "Existing geometry expectation still required",
+      "candidate_sha256": "bf8e2d8e4da3ee9fcbf5a95c238a1972ec700de9d203c74ae088c0637af42779",
+      "expected_new_diagnostic": "np2",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "d719d1ccbcd72696a898493ef7f0717e95fddcae1164cf7ce137a3e21a82506f"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "b893de982383ff3e2c9ccf7842682ab19232be469c5c9c872d64b04ac3cb6336"
+        }
+      }
+    }
+  ]
+}

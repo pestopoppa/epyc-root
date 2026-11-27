@@ -1,0 +1,82 @@
+{
+  "case": "MM-5",
+  "arm": "direct",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 140.117489,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21a6d-9c58-7890-a06a-3d42b673b7c2",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 142565,
+      "cached_input_tokens": 129536,
+      "output_tokens": 2973,
+      "reasoning_output_tokens": 93,
+      "uncached_input_tokens": 13029
+    },
+    "command_count": 5,
+    "item_types": [
+      "agent_message",
+      "command_execution",
+      "file_change"
+    ],
+    "commentary_overhead_chars": 423,
+    "final_message_chars": 352,
+    "outside_scope_review_flags": [
+      {
+        "item_id": "item_3",
+        "command": "/usr/bin/bash -lc \"rg -n 'def record_http_call|notes' src/backends/serving_calls.py; rg --files -g AGENTS.md /mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1 2>/dev/null; sed -n '280,370p' src/backends/serving_calls.py; cat tests/unit/conftest.py\""
+      }
+    ]
+  },
+  "changed_by_strong_turn": [
+    "src/vision/analyzers/vl_describe.py",
+    "tests/unit/test_vl_describe_resize.py"
+  ],
+  "final_changes": [
+    "src/vision/analyzers/vl_describe.py",
+    "tests/unit/test_vl_describe_resize.py"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "95eb2bef1652f9040fe1a98d7ce64a3aa126ecfe8537f8ae5929d9ba7f196e24",
+  "retained_runtime_artifacts": {
+    ".pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    ".pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "sha256": "d9f07bee94634642150eaa001d996740b1d6037f19ee7f0a8d0fc28739b3716f",
+      "bytes": 1034,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    }
+  },
+  "oracle": null,
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported"
+}

@@ -1,0 +1,8 @@
+{
+  "at": "2026-11-27T00:41:24.461981+00:00",
+  "old_approval_sha256": "3339692bd6485b8d9055729f66d074bd181f6d51c6a6e5e84f20dd94c75cd3df",
+  "new_approval_sha256": "7d2bcafedf80a6ef85beeeeaa3d8c1babcc410f7c6873ccd6b3613337298b31a",
+  "reason": "v3 feedback named row-major subsequence symptom; v4 precisely identifies duplicate source events and accepts valid side-by-side layouts",
+  "original_scores_preserved": true,
+  "guidance_unit_existed_at_migration": false
+}

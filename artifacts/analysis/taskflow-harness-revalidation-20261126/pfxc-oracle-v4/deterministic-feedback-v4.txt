@@ -1,0 +1,1 @@
+The independent acceptance check rejected the saved document: expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429. Check the event table against the pinned source capture, correct the duplicate events and any dependent arithmetic, and rerun your checks. This is deterministic acceptance feedback, not a main-model diagnosis.
