@@ -4,30 +4,27 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1518,
+    "progress": 1519,
     "research": 590
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 13,
+      "added": 1,
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-27T14:49:39Z",
+    "at": "2026-11-27T16:21:00Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-27-codex-inkblot-intake.md",
-      "progress/2026-11/2026-11-27.md",
-      "research/deep-dives/intake-digests/2026-11-27-ids-3025-3032.md",
-      "research/deep-dives/intake-inkblot-20261127"
+      "progress/2026-11/2026-11-27-codex-q8-wrap.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-27T14:49:39Z",
+  "scan_time": "2026-11-27T16:21:00Z",
   "schema_version": 1,
-  "source_set_hash": "459a729bd93a704f8148fbbbe9dce8fdcee1131241cb2959c794a54ac9ed7f43",
+  "source_set_hash": "5979902c799b7364b0fe688871c2fa9aeea6f1307e81e80ae5c2d65a46b0ff06",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -20054,6 +20051,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "4b05a9502bb08b5b71d04702d7bb0cd20a5a1e04910abf8eb351673a4ae6f763",
+      "modified": "2026-11-27T16:19:55Z",
+      "path": "progress/2026-11/2026-11-27-codex-q8-wrap.md",
+      "size": 3486,
+      "title": "Q8 kernel redesign and follow-up measurements",
+      "type": "progress"
+    },
+    {
       "content_hash": "dd1d4f5b34766fdcbca029c7e800343d6229ff4f3fb76184f7cc0dc81fe43ebf",
       "modified": "2026-11-27T14:45:58Z",
       "path": "progress/2026-11/2026-11-27.md",
@@ -24982,7 +24987,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3119,
+  "total_new": 3120,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

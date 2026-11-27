@@ -1286,6 +1286,10 @@ The kernel owner retained V5I for the tested single-request greedy Qwen3.8-27B Q
       · done when: Compare deployed GPU symbols on a train and holdout context length, retaining code-object hash, VGPR/scratch metadata, ISA and dispatch hits. A nonzero private segment alone cannot prove traffic. Stop on absent path or equal material scratch traffic; specialize and time only if affected. Check both padded and unpadded tails.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3009.md`
 
+- [ ] **FATTN-VEC-PRIVATE-TRAFFIC** [non-inference] Determine whether the dispatched A3B two-column vector attention kernel's 144 B private frame creates material runtime scratch traffic before designing a replacement.
+      · done when: the 33-hit four-request window is matched to its code object and dynamic scratch contribution or an explicit measurement limit; compare the later zero-hit window and retain the total-kernel 5.76 ms ceiling separately from scratch cost
+      · gate: none        · inputs: `research/deep-dives/fattn-private-segment-20261127/README.md` and `research/deep-dives/mi210-matmul-census-20261127/requests.json`
+
 ### Done
 
 - [x] **RVP-AUD-2** ✅ 2026-08-12 —

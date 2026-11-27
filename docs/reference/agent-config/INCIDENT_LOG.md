@@ -1,5 +1,9 @@
 # Incident Log — origin narratives behind agent-file rules
 
+## INC-20261127-mi210-recovery-control-read
+
+During an operator-requested search for a stale GPU process, the agent mounted debugfs and verified no KFD compute client and matching emitted/signaled driver fences. A diagnostic shell then read `amdgpu_gpu_recover`, unintentionally triggering its recovery action. The driver performed MODE1 reset at 16:16:57–16:17:02 UTC, reported VRAM loss and successful recovery, and subsequent observations showed 0% busy and 42 W versus 100% and 61 W before recovery. Both census capture PIDs had already exited and no stale compute process was identified. The reset exceeded the requested process inspection and conditional process stop. The original busy-state cause is unresolved. The operator was informed after verification. The temporary debugfs mount was subsequently removed. Detailed observations live in `progress/2026-11/2026-11-27-codex-q8-wrap.md`.
+
 House style (operator directive 2026-07-30): every negative/incident-derived rule in the agent
 files keeps its directive plus a one-line origin pointer (`origin: INC-<id>`); the full
 narrative lives here. Rules cite entries; entries never carry rules.

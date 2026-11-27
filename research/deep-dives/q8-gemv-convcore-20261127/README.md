@@ -69,6 +69,8 @@ Both baseline visits use the candidate binary with the conversion switch off and
 
 ## Candidate build
 
+The rejected candidate source is archived on the fork at [5c061bf85](https://github.com/pestopoppa/llama.cpp/commit/5c061bf85ea4e3e855216f33bf31cf1febbde6c6), branch `codex/llama.cpp-experimental-q8convcore-20261127`. The NO_KEEP decision is retained with this source.
+
 Experimental kernel commit `5c061bf85ea4e3e855216f33bf31cf1febbde6c6` is based on servedperf `5d85e7e737d5557cd38d86a39a07a37e35b2f12f`, a descendant of frozen v10. The historical source differs from C21 by its served-shape test fixture. Apply the [kernel patch](convcore.patch) to that experimental parent to reproduce the source. Select the new path with `GGML_HIP_Q8_MF6_CONVCORE=1` on the existing MF=6 route.
 
 In both SLC configurations the compiled OFF function's 5,184 instruction bytes match the historical V5I function. In the linked ON image the two unrolled units contain 16 packed FP32 adds in place of 32 scalar conversions. Both arms have 15,360 bytes of LDS per workgroup, zero private scratch and the same compiler-reported occupancy of four waves per SIMD. ON uses 126 vector registers per lane and OFF uses 118. The [ISA receipt](candidate-isa.json) records each specialization. The [host oracle](check-bias.cpp), built with `c++ -std=c++20 -O2`, checked every integer in the inclusive range −524288 to +524288 and found zero FP32 bit mismatches.

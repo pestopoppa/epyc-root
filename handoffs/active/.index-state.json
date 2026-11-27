@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 585
+      "open": 581
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-20",
-      "open": 261
+      "open": 263
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -101,11 +101,11 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 1025,
+      "closed": 1026,
       "guarded": 0,
-      "last_advanced": "2026-11-26",
+      "last_advanced": "2026-11-27",
       "needs_owner": 2,
-      "open": 137,
+      "open": 136,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -118,7 +118,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 472,
+          "closed": 473,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -129,14 +129,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 64
+          "open": 63
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5584,
+          "line": 5587,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -146,7 +146,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5669,
+          "line": 5672,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -161,7 +161,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5850,
+          "line": 5853,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 7
@@ -175,7 +175,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7735,
+          "line": 7738,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 29
@@ -187,7 +187,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 11081,
+          "line": 11084,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -211,7 +211,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11328,
+          "line": 11331,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -223,7 +223,7 @@
             "INF-06"
           ],
           "guarded": 0,
-          "line": 11948,
+          "line": 11951,
           "markers": 1,
           "name": "autokernel-roofline-surface-loop",
           "open": 8
@@ -786,11 +786,11 @@
     },
     "cpu-decode-roofline-program.md": {
       "blocked": 0,
-      "closed": 158,
+      "closed": 160,
       "guarded": 0,
-      "last_advanced": "2026-11-24",
+      "last_advanced": "2026-11-27",
       "needs_owner": 8,
-      "open": 44,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -800,11 +800,11 @@
       },
       "row_id": "INF-70",
       "state": "active",
-      "total": 202,
+      "total": 203,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 119,
+          "closed": 121,
           "gates": [
             "INF-65"
           ],
@@ -812,14 +812,14 @@
           "line": 100,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
-          "open": 28
+          "open": 27
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 5170,
+          "line": 5179,
           "markers": 1,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0
@@ -829,7 +829,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 5323,
+          "line": 5332,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
           "open": 6
@@ -839,7 +839,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5838,
+          "line": 5847,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
           "open": 0
@@ -851,7 +851,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5952,
+          "line": 5961,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 10
@@ -2166,10 +2166,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 326,
+      "closed": 329,
       "guarded": 0,
-      "last_advanced": "2026-11-26",
-      "open": 14,
+      "last_advanced": "2026-11-27",
+      "open": 13,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2178,11 +2178,11 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 340,
+      "total": 342,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 131,
+          "closed": 133,
           "gates": [
             "EVL-47"
           ],
@@ -2190,17 +2190,17 @@
           "line": 60,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 0,
-          "closed": 93,
+          "closed": 94,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1322,
+          "line": 1336,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2213,7 +2213,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2471,
+          "line": 2497,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2
@@ -2223,7 +2223,7 @@
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2846,
+          "line": 2872,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2233,7 +2233,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3282,
+          "line": 3308,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2243,7 +2243,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3377,
+          "line": 3403,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2386,11 +2386,11 @@
     },
     "speculative-decoding.md": {
       "blocked": 3,
-      "closed": 304,
+      "closed": 305,
       "frozen": 1,
       "guarded": 0,
-      "last_advanced": "2026-11-25",
-      "open": 31,
+      "last_advanced": "2026-11-27",
+      "open": 30,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2414,7 +2414,7 @@
         },
         {
           "blocked": 1,
-          "closed": 166,
+          "closed": 167,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2423,7 +2423,7 @@
           "line": 1030,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19
+          "open": 18
         }
       ]
     },
@@ -2604,7 +2604,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-25",
       "needs_owner": 8,
-      "open": 135,
+      "open": 137,
       "owner_index": "research-evaluation-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -2614,7 +2614,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 624
+      "total": 626
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
