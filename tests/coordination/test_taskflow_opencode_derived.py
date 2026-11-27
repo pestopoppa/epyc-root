@@ -127,7 +127,7 @@ def test_model_free_entrypoint_verifies_approval_and_all_case_bytes(tmp_path):
 
 def test_saved_session_resumes_only_with_same_case_profile_and_private_state(tmp_path):
     from types import SimpleNamespace
-    from taskflow.harness.opencode_derived.__main__ import SESSION_PROFILE, restore_session, state_digest
+    from taskflow.harness.opencode_derived.__main__ import SESSION_PROFILE, restore_session, session_profile, state_digest
 
     prior = tmp_path / "prior"
     workspace = prior / "sandbox/work"
@@ -158,6 +158,20 @@ def test_saved_session_resumes_only_with_same_case_profile_and_private_state(tmp
     assert (box.session / "db").read_text() == "prior reasoning"
     with pytest.raises(ValueError, match="OpenCode/model profile"):
         restore_session({**job, "thinking": False}, case, box)
+    new_model = {"id": "qwen38-test", "manifest_sha256": "a" * 64}
+    explicit = {**job, "model": new_model}
+    with pytest.raises(ValueError, match="OpenCode/model profile"):
+        restore_session(explicit, case, box)
+    recorded = json.loads(p.read_text())
+    recorded["session_profile"] = session_profile(explicit)
+    p.write_text(json.dumps(recorded))
+    explicit["resume"] = {**job["resume"], "receipt_sha256": digest(p)}
+    assert restore_session(explicit, case, box) == "ses_fixture"
+    other_weights = {"model": {**new_model, "manifest_sha256": "b" * 64}}
+    with pytest.raises(ValueError, match="OpenCode/model profile"):
+        restore_session({**explicit, **other_weights}, case, box)
+    p.write_text(json.dumps({**recorded, "session_profile": session_profile(job)}))
+    job["resume"]["receipt_sha256"] = digest(p)
     (workspace / "wip.txt").write_text("changed after approval")
     with pytest.raises(ValueError, match="saved workspace or session bytes changed"):
         restore_session(job, case, box)
@@ -315,3 +329,179 @@ def test_serving_preflight_applies_placement_only_to_cpu(tmp_path, monkeypatch):
         driver.serving_proof(job)
     kfd.mkdir()
     assert driver.serving_proof({**job, "backend": "gpu"}) == 100
+
+
+def test_explicit_model_uses_same_wire_allowlist_caps_and_sdk_config(model, tmp_path, monkeypatch):
+    from taskflow.harness.opencode_derived.sandbox import Assets, Sandbox
+    from taskflow.harness.opencode_derived.transport import Model
+
+    local = Model("qwen38-test", "Qwen3.8 fixture")
+    limits = Limits(wall_s=5, output_cap=32768, cumulative_output=120000)
+    args = dict(limits=limits, backend="cpu", slot=2, task="fixture", label="explicit",
+                thinking=True, preserve_resume=True, model=local)
+    with pytest.raises(ValueError, match="invalid task mode"):
+        with proxy(model.server_port, tmp_path / "denied", **args):
+            pytest.fail("unqualified CPU thinking opened a model route")
+    tools = [{"type": "function", "function": {"name": "execute", "parameters": {"type": "object"}}}]
+    with proxy(model.server_port, tmp_path / "wire", **args, allow_cpu_thinking=True) as adapter:
+        assert post(adapter.server_port)[0] == 400
+        assert post(adapter.server_port, model=local.title_id, tools=tools)[0] == 400
+        assert post(adapter.server_port, model=local.title_id, maxOutputTokens=1000)[0] == 200
+        assert post(adapter.server_port, model=local.id, maxOutputTokens=32768, tools=tools)[0] == 200
+    title, primary = model.requests
+    assert title["model"] == primary["model"] == local.id
+    assert title["max_completion_tokens"] == 64
+    assert title["chat_template_kwargs"] == {"enable_thinking": False}
+    assert primary["max_completion_tokens"] == 32768
+    assert primary["tools"] == tools
+    assert primary["chat_template_kwargs"] == {
+        "enable_thinking": True, "preserve_reasoning": True, "preserve_thinking": True,
+    }
+
+    assets = Assets(tmp_path / "binary", tmp_path / "packages", tmp_path / "sockets")
+    box = Sandbox(tmp_path / "sandbox", model.server_port, "180-183", assets=assets,
+                  ctx=131072, cap=32768, model=local)
+    config = json.loads(box.config_path.read_text())
+    assert config["model"] == "taskflow-local/qwen38-test"
+    assert config["small_model"] == "taskflow-local/qwen38-test-title"
+    provider = config["provider"]["taskflow-local"]["models"]
+    assert set(provider) == {local.id, local.title_id}
+    assert provider[local.id]["name"] == local.name
+    assert provider[local.id]["tool_call"] and not provider[local.title_id]["tool_call"]
+    calls = []
+
+    def new_session(path, data):
+        calls.append((path, data["model"]))
+        return {"id": "ses_fixture"}
+
+    monkeypatch.setattr(box, "api", new_session)
+    assert box.new_session() == "ses_fixture"
+    assert calls == [("/api/session", {"providerID": "taskflow-local", "id": local.id})]
+
+
+def test_split_gguf_cpu_placement_checks_combined_bytes_and_all_mappings(cpu_placement):
+    proc, topology, process, _, _ = cpu_placement
+    target = []
+    for index, pages in enumerate((1, 100, 100), 1):
+        shard = topology.parent / f"weights-{index:05d}-of-00003.gguf"
+        shard.write_bytes(bytes(4096 * pages))
+        target.append(shard)
+    kwargs = {"proc_root": proc, "node_root": topology, "model_files": tuple(target)}
+    maps = process / "numa_maps"
+    maps.write_text("2000 default anon=100 N1=25 N3=25 N5=25 N7=25 kernelpagesize_kB=4\n")
+    with pytest.raises(ValueError, match="at least 75% of GGUF bytes"):
+        require_cpu_placement(100, [b"--no-mmap"], target[0], **kwargs)
+    balanced = "2000 default anon=200 N1=50 N3=50 N5=50 N7=50 kernelpagesize_kB=4\n"
+    maps.write_text(balanced)
+    require_cpu_placement(100, [b"--no-mmap"], target[0], **kwargs)
+    maps.write_text(balanced + f"5000 default file={target[2]} N1=2 kernelpagesize_kB=4\n")
+    with pytest.raises(ValueError, match="file-backed mapping"):
+        require_cpu_placement(100, [b"--no-mmap"], target[0], **kwargs)
+
+
+def sha_bound_json(path, value):
+    path.write_text(json.dumps(value))
+    return {"path": str(path), "sha256": digest(path)}
+
+
+def file_identity(path):
+    info = path.stat()
+    return {"path": str(path), "sha256": digest(path), "bytes": info.st_size,
+            "device": info.st_dev, "inode": info.st_ino, "mtime_ns": info.st_mtime_ns, "ctime_ns": info.st_ctime_ns}
+
+
+def test_serving_preflight_requires_exact_split_model_and_native_cpu_thinking_capability(tmp_path, monkeypatch):
+    from taskflow.harness.opencode_derived import __main__ as driver
+
+    process = tmp_path / "100"
+    process.mkdir()
+    executable = process / "exe"
+    executable.write_text("test binary")
+    target = tuple(tmp_path / f"weights-{index:05d}-of-00003.gguf" for index in (1, 2, 3))
+    for file in target:
+        file.write_bytes(b"GGUF fixture")
+    draft = tmp_path / "draft.gguf"
+    draft.write_bytes(b"GGUF draft fixture")
+    model_id = "qwen38-test"
+    template = "e" * 64
+    manifest = {"model_id": model_id, "template_sha256": template,
+                "target_files": [file_identity(path) for path in target], "draft_files": [file_identity(draft)]}
+    model_evidence = sha_bound_json(tmp_path / "weights.json", manifest)
+    library = "/fixture/libggml.so"
+    (process / "maps").write_text(library + "\n")
+    argv = [b"llama-server", b"--cache-ram", b"0", b"--port", b"10080", b"--host", b"127.0.0.1",
+            b"-m", bytes(target[0]), b"--no-mmap", b"--alias", model_id.encode(), b"--model-draft", bytes(draft)]
+
+    def write_argv():
+        (process / "cmdline").write_bytes(b"\0".join(argv) + b"\0")
+
+    write_argv()
+    proof = {"pid": 100, "port": 10080, "maps": [library], "kv_unified": False, "n_ctx_slot": 32768,
+             "n_parallel": 1, "model_id": model_id, "template_sha256": template,
+             "model_manifest_sha256": model_evidence["sha256"]}
+    approved = sha_bound_json(tmp_path / "live.json", proof)
+    qualifier = {key: proof[key] for key in ("pid", "model_id", "template_sha256", "model_manifest_sha256")}
+    qualifier.update(backend="cpu", enable_thinking_on=True, enable_thinking_off=True, preserve_thinking=True)
+    qualified = sha_bound_json(tmp_path / "thinking.json", qualifier)
+
+    def fixture_path(value):
+        if str(value).startswith("/proc/100/"):
+            return process / Path(value).name
+        if str(value) == "/sys/class/kfd/kfd/proc/100":
+            return tmp_path / "no-kfd"
+        return Path(value)
+
+    monkeypatch.setattr(driver, "Path", fixture_path)
+    checks = []
+    monkeypatch.setattr(driver, "require_cpu_placement",
+                        lambda pid, cmdline, model, *, model_files: checks.append((pid, model, model_files)))
+    job = {
+        "serving_receipt": approved["path"], "serving_receipt_sha256": approved["sha256"],
+        "server_executable_sha256": digest(executable), "port": 10080, "model_path": str(target[0]),
+        "context": 32768, "slot": 0, "backend": "cpu", "thinking": True,
+    }
+    with pytest.raises(ValueError, match="complete model manifest"):
+        driver.serving_proof(job)
+    job["model"] = {"id": model_id, "name": "Fixture", "manifest": model_evidence["path"],
+                    "manifest_sha256": model_evidence["sha256"]}
+    with pytest.raises(ValueError, match="explicit qualified model and template"):
+        driver.serving_proof(job)
+    assert driver.serving_proof({**job, "thinking": False}) == 100
+    assert driver.serving_proof({**job, "thinking_qualification": qualified}) == 100
+    assert checks == [(100, target[0], target)] * 2
+
+    invalid = sha_bound_json(tmp_path / "wrong-thinking.json", {**qualifier, "template_sha256": "f" * 64})
+    with pytest.raises(ValueError, match="qualification does not bind"):
+        driver.serving_proof({**job, "thinking_qualification": invalid})
+    bad_digest = {**qualified, "sha256": "a" * 64}
+    with pytest.raises(ValueError, match="qualification bytes changed"):
+        driver.serving_proof({**job, "thinking_qualification": bad_digest})
+
+    argv[argv.index(b"--alias") + 1] = b"wrong-model"
+    write_argv()
+    with pytest.raises(ValueError, match="native model alias"):
+        driver.serving_proof({**job, "thinking_qualification": qualified})
+    argv[argv.index(b"--alias") + 1] = model_id.encode()
+    write_argv()
+
+    missing = sha_bound_json(tmp_path / "incomplete.json", {**manifest, "target_files": manifest["target_files"][:1]})
+    wrong_proof = sha_bound_json(tmp_path / "wrong-live.json", {**proof, "model_manifest_sha256": missing["sha256"]})
+    with pytest.raises(ValueError, match="complete ordered target GGUF split"):
+        driver.serving_proof({**job, "serving_receipt": wrong_proof["path"],
+                              "serving_receipt_sha256": wrong_proof["sha256"],
+                              "model": {**job["model"], "manifest": missing["path"], "manifest_sha256": missing["sha256"]}})
+
+    target[1].write_bytes(b"replaced model content")
+    with pytest.raises(ValueError, match="target file differs"):
+        driver.serving_proof({**job, "thinking_qualification": qualified})
+
+
+def test_continuation_uses_remaining_tokens_below_primary_request_cap(model, tmp_path):
+    limits = Limits(wall_s=5, output_cap=32768, cumulative_output=4)
+    with proxy(model.server_port, tmp_path, limits=limits, backend="gpu", slot=0, task="fixture",
+               label="near-ceiling", thinking=False) as adapter:
+        assert post(adapter.server_port, maxOutputTokens=32768)[0] == 200
+        assert post(adapter.server_port, maxOutputTokens=32768)[0] == 200
+        assert post(adapter.server_port, maxOutputTokens=32768)[0] == 429
+    assert [request["max_completion_tokens"] for request in model.requests] == [4, 2]
+    assert limits.charged == 4 and not limits.pending

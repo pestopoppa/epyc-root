@@ -15,7 +15,7 @@ from uuid import uuid4
 
 from .public_web import PublicWebHandler
 from .socket_bridge import relay
-from .transport import MODEL_ID, TITLE_MODEL_ID, TITLE_OUTPUT_CAP
+from .transport import DEFAULT_MODEL, MODEL_ID, TITLE_MODEL_ID, TITLE_OUTPUT_CAP
 
 
 HERE = Path(__file__).resolve().parent
@@ -66,8 +66,10 @@ class SocketHandler(socketserver.BaseRequestHandler):
 
 
 class Sandbox:
-    def __init__(self, root, upstream_port, cpus, *, assets, ctx, cap, transport_wall_s=3600, refs=None, skills=None, public_web=False):
+    def __init__(self, root, upstream_port, cpus, *, assets, ctx, cap, transport_wall_s=3600,
+                 refs=None, skills=None, public_web=False, model=DEFAULT_MODEL):
         self.assets = assets
+        self.model = model
         self.root = root
         self.workspace = root / "work"
         self.session = root / "session"
@@ -84,8 +86,8 @@ class Sandbox:
             "$schema": "https://opencode.ai/config.json",
             "autoupdate": False,
             "share": "disabled",
-            "model": MODEL,
-            "small_model": TITLE_MODEL,
+            "model": f"{PROVIDER}/{model.id}",
+            "small_model": f"{PROVIDER}/{model.title_id}",
             "policies": [
                 {"action": "provider.use", "resource": "*", "effect": "deny"},
                 {"action": "provider.use", "resource": "taskflow-local", "effect": "allow"},
@@ -95,13 +97,13 @@ class Sandbox:
                 "name": "Local C22 model",
                 "options": {"baseURL": "http://127.0.0.1:8101/v1", "apiKey": "local",
                             "headerTimeout": False, "chunkTimeout": max(1, int(transport_wall_s * 1000))},
-                "models": {MODEL_ID: {
-                    "name": "Qwen3.6-35B-A3B-MTP",
+                "models": {model.id: {
+                    "name": model.name,
                     "tool_call": True,
                     "compatibility": {"reasoningField": "reasoning_content"},
                     "limit": {"context": ctx, "output": cap},
                     "options": {"maxOutputTokens": cap},
-                }, TITLE_MODEL_ID: {
+                }, model.title_id: {
                     "name": "Local C22 session titles",
                     "tool_call": False,
                     "limit": {"context": ctx, "output": TITLE_OUTPUT_CAP},
@@ -257,7 +259,7 @@ class Sandbox:
 
     def new_session(self):
         return self.api("/api/session", {"location": {"directory": "/case"}, "agent": "build",
-                        "model": {"providerID": PROVIDER, "id": MODEL_ID}})["id"]
+                        "model": {"providerID": PROVIDER, "id": self.model.id}})["id"]
 
     def prompt(self, session, prompt):
         return self.api(f"/api/session/{session}/prompt", {"text": prompt})

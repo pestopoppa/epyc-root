@@ -1,10 +1,12 @@
 """Meter the unchanged OpenCode tool wire against one owned inference slot."""
 from contextlib import closing, contextmanager
+from dataclasses import dataclass
 import gzip
 import http.client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
+import re
 import select
 import socket
 import threading
@@ -14,8 +16,25 @@ from weakref import WeakValueDictionary
 
 REASONING_MODE = {"preserve_reasoning": True, "preserve_thinking": True}
 PATH = "/v1/chat/completions"
-MODEL_ID = "q35-a3b"
-TITLE_MODEL_ID = "q35-a3b-title"
+@dataclass(frozen=True)
+class Model:
+    id: str
+    name: str
+
+    def __post_init__(self):
+        if not isinstance(self.id, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,95}", self.id) is None:
+            raise ValueError("local model ID must be one explicit provider alias")
+        if not isinstance(self.name, str) or not self.name.strip() or not self.name.isprintable():
+            raise ValueError("local model name must be printable")
+
+    @property
+    def title_id(self):
+        return f"{self.id}-title"
+
+
+DEFAULT_MODEL = Model("q35-a3b", "Qwen3.6-35B-A3B-MTP")
+MODEL_ID = DEFAULT_MODEL.id
+TITLE_MODEL_ID = DEFAULT_MODEL.title_id
 TITLE_OUTPUT_CAP = 64
 TITLE_SAMPLING = {"temperature": 0.0, "top_k": 1, "top_p": 1.0, "min_p": 0.0,
                   "presence_penalty": 0.0, "repeat_penalty": 1.0}
@@ -71,7 +90,7 @@ GATES_LOCK = threading.Lock()
 class Limits:
     """Reserve output bounds for primary, side and subagent requests."""
     def __init__(self, *, wall_s, output_cap, cumulative_output):
-        if wall_s <= 0 or output_cap <= 0 or cumulative_output < output_cap:
+        if wall_s <= 0 or output_cap <= 0 or cumulative_output <= 0:
             raise ValueError("invalid approved wall or token bounds")
         self.started = time.monotonic()
         self.deadline = self.started + wall_s
@@ -168,9 +187,10 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(payload, dict) or not isinstance(payload.get("messages"), list):
             raise ValueError("expected a chat-completion request")
         requested_model = payload.get("model")
-        if requested_model not in (MODEL_ID, TITLE_MODEL_ID):
+        model = self.server.model
+        if requested_model not in (model.id, model.title_id):
             raise ValueError("request used an unconfigured local model")
-        is_title = requested_model == TITLE_MODEL_ID
+        is_title = requested_model == model.title_id
         if is_title and payload.get("tools"):
             raise ValueError("the OpenCode title route cannot carry worker tools")
         requested = [int(payload[field]) for field in OUT_KEYS
@@ -189,7 +209,7 @@ class Handler(BaseHTTPRequestHandler):
             kwargs.update(REASONING_MODE)
         payload.update(id_slot=self.server.slot, chat_template_kwargs=kwargs, timings_per_token=True)
         payload.update(self.server.sampling)
-        payload["model"] = MODEL_ID
+        payload["model"] = model.id
         if is_title:
             payload.update(TITLE_SAMPLING)
         if payload.get("stream"):
@@ -352,8 +372,10 @@ class Proxy(ThreadingHTTPServer):
 
 
 @contextmanager
-def proxy(upstream, output, *, limits, backend, slot, task, label, thinking, preserve_resume=False, sampling=None):
-    if backend == "cpu" and thinking or preserve_resume and not thinking:
+def proxy(upstream, output, *, limits, backend, slot, task, label, thinking,
+          preserve_resume=False, sampling=None, model=DEFAULT_MODEL, allow_cpu_thinking=False):
+    if (backend == "cpu" and thinking and (model.id == DEFAULT_MODEL.id or not allow_cpu_thinking)
+            or preserve_resume and not thinking):
         raise ValueError("invalid task mode or resume state")
     if set(sampling or {}) - SAMPLING_KEYS:
         raise ValueError("unsupported sampling keys in approved profile")
@@ -362,6 +384,7 @@ def proxy(upstream, output, *, limits, backend, slot, task, label, thinking, pre
     with Proxy(("127.0.0.1", 0), Handler) as server:
         server.upstream, server.output, server.limits = upstream, output, limits
         server.backend, server.slot, server.task, server.label = backend, slot, task, label
+        server.model = model
         server.thinking, server.preserve_resume = thinking, preserve_resume
         server.sampling = dict(sampling or {})
         server.rows, server.write_lock = [], threading.Lock()

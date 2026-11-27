@@ -32,14 +32,15 @@ def _affinity_nodes(process, node_root):
     return nodes
 
 
-def _weight_residency(lines, model, model_bytes):
+def _weight_residency(lines, model_files, model_bytes):
+    model_paths = {str(path) for path in model_files}
     large = []
     for line in lines:
         fields = dict(field.split("=", 1) for field in line.split()[2:] if "=" in field)
         if "file" in fields:
             # Linux escapes spaces and other delimiters in /proc path fields.
             path = re.sub(r"\\([0-7]{3})", lambda match: chr(int(match[1], 8)), fields["file"])
-            if path == str(model):
+            if path in model_paths:
                 raise ValueError("live process still has a file-backed mapping of the GGUF model")
             continue
         if "anon" not in fields or "kernelpagesize_kB" not in fields:
@@ -59,18 +60,20 @@ def _weight_residency(lines, model, model_bytes):
     return large[0]
 
 
-def require_cpu_placement(pid, cmdline, model, *, proc_root=Path("/proc"), node_root=Path("/sys/devices/system/node")):
+def require_cpu_placement(pid, cmdline, model, *, model_files=None,
+                          proc_root=Path("/proc"), node_root=Path("/sys/devices/system/node")):
     """Require observed model-scale anonymous residency on the affinity's nodes."""
     if b"--no-mmap" not in cmdline:
         raise ValueError("CPU NUMA preflight requires a live server launched with --no-mmap")
     process = proc_root / str(pid)
     try:
-        model_bytes = model.stat().st_size
+        model_files = (model,) if model_files is None else model_files
+        model_bytes = sum(path.stat().st_size for path in model_files)
         if model_bytes <= 0:
             raise ValueError("GGUF size is unavailable")
         intended = _affinity_nodes(process, node_root)
         with (process / "numa_maps").open(errors="surrogateescape") as maps:
-            resident = _weight_residency(maps, model, model_bytes)
+            resident = _weight_residency(maps, model_files, model_bytes)
         total = sum(resident.values())
         fractions = {node: size / total for node, size in sorted(resident.items())}
         # The field-verified bounds are 15–35% for four participating nodes.

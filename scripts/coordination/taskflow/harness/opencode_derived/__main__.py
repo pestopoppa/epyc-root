@@ -1,4 +1,4 @@
-"""Dispatch one pinned Taskflow candidate through the isolated OpenCode-derived A3B worker."""
+"""Dispatch one pinned Taskflow candidate through the isolated OpenCode-derived worker."""
 from __future__ import annotations
 
 import argparse
@@ -15,6 +15,7 @@ import time
 from .case_snapshot import compare, digest, file_map, read, sanitize, stage, validate_baseline, write
 from .cpu_placement import require_cpu_placement
 from .drive import RunInterrupted, run
+from .model_route import job_model, verify_model, verify_thinking
 from .sandbox import Assets, Sandbox
 from .transport import Limits, proxy, require_disabled_shared_cache
 
@@ -32,6 +33,7 @@ def load_job(path, approved):
     if (digest(case_path) != job["case_sha256"] or digest(prompt_path) != job["prompt_sha256"]):
         raise ValueError("pinned task or prompt changed")
     case = read(case_path)
+    job_model(job)
     validate_baseline(case_dir, case)
     return job, case_dir, case, prompt_path.read_text()
 
@@ -63,8 +65,11 @@ def serving_proof(job):
     gpu_resident = Path(f"/sys/class/kfd/kfd/proc/{pid}").exists()
     if not actual_maps or actual_maps != proof["maps"] or gpu_resident != (job["backend"] == "gpu"):
         raise ValueError("owned native library or backend residency differs from receipt")
+    model = job_model(job)
+    model_files = verify_model(job, model, proof, cmdline, model_arg)
+    verify_thinking(job, model, proof)
     if job["backend"] == "cpu":
-        require_cpu_placement(pid, cmdline, model_arg)
+        require_cpu_placement(pid, cmdline, model_arg, model_files=model_files)
     return pid
 
 
@@ -90,6 +95,15 @@ def state_digest(*trees):
     return hashlib.sha256(json.dumps(sorted(records), separators=(",", ":")).encode()).hexdigest()
 
 
+def session_profile(job):
+    profile = {name: job.get(name) for name in SESSION_PROFILE}
+    if "model" in job:
+        config = job["model"]
+        profile["model_id"] = config["id"]
+        profile["model_manifest_sha256"] = config["manifest_sha256"]
+    return profile
+
+
 def restore_session(job, case, box):
     spec = job["resume"]
     prior = Path(spec["prior_run"]).resolve(strict=True)
@@ -97,7 +111,7 @@ def restore_session(job, case, box):
     if (digest(receipt_path) != spec["receipt_sha256"] or digest(export) != spec["session_sha256"]):
         raise ValueError("previous result/session export differs from the approved continuation")
     receipt = read(receipt_path)
-    picked = {name: job.get(name) for name in SESSION_PROFILE}
+    picked = session_profile(job)
     if (receipt["case"] != case["id"] or receipt["task_packet_sha256"] != case["task_packet_sha256"]
             or receipt["repo_base_sha"] != case["repo_base_sha"] or receipt["session_profile"] != picked
             or receipt["opencode_config_sha256"] != digest(box.config_path) or not receipt["session"]):
@@ -116,8 +130,7 @@ def restore_session(job, case, box):
 
 def dispatch(out, job, case_dir, case, prompt, approved):
     native_pid = serving_proof(job)
-    if job["thinking"] and job["backend"] != "gpu":
-        raise ValueError("thinking route requires the owned GPU model")
+    model = job_model(job)
     if not out.parent.is_dir() or out.exists():
         raise ValueError("output directory must be new inside the owner-staged private run root")
     out.mkdir(mode=0o700)
@@ -133,7 +146,7 @@ def dispatch(out, job, case_dir, case, prompt, approved):
         raise ValueError("registered private skill bundle changed")
     refs = out / "refs"
     box = Sandbox(out / "sandbox", job["port"], job["control_cpus"], assets=assets,
-                  ctx=job["context"], cap=job["request_cap"], transport_wall_s=job["wall_s"], refs=refs, skills=skills, public_web=job.get("public_web", False))
+                  ctx=job["context"], cap=job["request_cap"], transport_wall_s=job["wall_s"], refs=refs, skills=skills, public_web=job.get("public_web", False), model=model)
     if job.get("resume"):
         # Reset readonly references from the exact original case, then copy the writable
         # workspace and OpenCode state to preserve the approved prior checkpoint.
@@ -149,14 +162,15 @@ def dispatch(out, job, case_dir, case, prompt, approved):
     receipt = {"case": case["id"], "status": "running", "job_sha256": approved, "server_pid": native_pid,
                "repo_base_sha": case["repo_base_sha"], "task_packet_sha256": case["task_packet_sha256"],
                "session": session, "started_at": time.time(), "scope": "candidate only",
-               "session_profile": {name: job.get(name) for name in SESSION_PROFILE},
+               "session_profile": session_profile(job),
                "resume": job.get("resume"),
                "prompt_sha256": job["prompt_sha256"], "opencode_config_sha256": digest(box.config_path)}
     write(out / "receipt.json", receipt)
     try:
         with proxy(job["port"], out / "wire", limits=limits, backend=job["backend"], slot=job["slot"],
                    task=case["id"], label=case["id"], thinking=job["thinking"],
-                   preserve_resume=job["thinking"], sampling=job["sampling"]) as adapter:
+                   preserve_resume=job["thinking"], sampling=job["sampling"], model=model,
+                   allow_cpu_thinking=job["backend"] == "cpu" and job["thinking"]) as adapter:
             box.upstream_port = adapter.server_port
             with box.running():
                 session = session or box.new_session()
