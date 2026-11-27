@@ -1,0 +1,48 @@
+{
+  "model_calls": 0,
+  "proposed_policy_sha256": "3c7788431e4babc5a51c15bb006dc898c9ee1fd49d0b2ea589bc5f3765666236",
+  "queue_writes": 0,
+  "rows": {
+    "gpu-DS41-W-66-off-recommended": {
+      "reason": "no_result_receipt",
+      "status": "pending"
+    },
+    "gpu-DS41-W-66-on-coding": {
+      "reason": "nonterminal",
+      "status": "pending"
+    },
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended": {
+      "report": "Acceptance assertion failed: unbound libtrellis source",
+      "status": "eligible"
+    },
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding": {
+      "status": "already-consumed",
+      "unit": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1"
+    },
+    "gpu-PAW-5-off-recommended": {
+      "report": "Acceptance assertion failed: candidate has no pinned source",
+      "status": "eligible"
+    },
+    "gpu-PAW-5-on-coding": {
+      "status": "already-consumed",
+      "unit": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-on-coding-guidance-1"
+    },
+    "gpu-PFXC-A3-off-recommended": {
+      "pfxc_reassessment": {
+        "acceptance_version": "pfxc.exact-events.v4",
+        "candidate_sha256": "b2b8d40dfbbc009b295e003dfea4d65fb5b65a75594d2e3c427b4dfa26c7fb97",
+        "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "rc": 1,
+        "stderr_sha256": "3cb5f9fa0d80f4414cf6c6cf2314a1e7004dd057de84ff10fb23dbf28f697bae",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "report": "PFXC acceptance failed: required trace pin, sizing figure or geometry missing: 11896",
+      "status": "eligible"
+    },
+    "gpu-PFXC-A3-on-coding": {
+      "status": "already-consumed",
+      "unit": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-1"
+    }
+  },
+  "scope": "read-only selection of 8 representative initial GPU rows"
+}

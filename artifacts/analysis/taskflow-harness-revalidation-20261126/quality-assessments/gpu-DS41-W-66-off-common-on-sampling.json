@@ -1,0 +1,23 @@
+{
+  "unit": "gpu-DS41-W-66-off-common-on-sampling",
+  "raw_status": "interrupted",
+  "candidate_status": "oracle_pass",
+  "generated_observed": 16482,
+  "model_wall_s": 1802.138,
+  "result_sha256": "48a6344585d9b345d396919205dc89c2857d3f694c62336d6cabce0aa8345d06",
+  "patch_sha256": "51158c3f7783008a7baccb765e34e32a4904b34a587e89b9efd262b40a7aac0b",
+  "oracle": {
+    "rc": 0,
+    "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "stdout_sha256": "6f25809f7ef295927502e05fc62c9d9e7dfa33e8e33301e1318c59d91e0f7d7a",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true
+  },
+  "source_review": "Reviewed added reference-store write and bounded fixture assertions; no unsafe operations or out-of-scope modifications. Existing independent oracle verifies actual terminal receipt bytes and two isolated regression calls.",
+  "reviewer": "main management session; not an isolated measured review call",
+  "verdict": "accepted candidate artifact at deadline; model did not finish normally",
+  "normal_completion": false,
+  "raw_status_preserved": true
+}

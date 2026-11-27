@@ -1,0 +1,48 @@
+{
+  "approved_by": "main",
+  "controller": {
+    "pid": 1016657,
+    "start_ticks": "160922944"
+  },
+  "servers": [
+    {
+      "pid": 1016704,
+      "start_ticks": "160922995"
+    },
+    {
+      "pid": 1016973,
+      "start_ticks": "160923084"
+    }
+  ],
+  "approval_sha256": "171b5c98b1065aa2a525eccfd0d3257267c7bac7e95d60b8ac85daa588e6870d",
+  "cwd": "/workspace/repos/epyc-orchestrator",
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "-u",
+    "-m",
+    "src.runtime.region_lock_cli",
+    "run",
+    "--cpu-list",
+    "0-95",
+    "--gpu-quiet",
+    "none",
+    "--role",
+    "a3b-legacy-local",
+    "--tag",
+    "ws58-a3b-legacy-local-20261127",
+    "--timeout-s",
+    "90",
+    "--",
+    "/usr/bin/python3",
+    "-B",
+    "-u",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-runner/run.py",
+    "launch",
+    "9498641010d8c6e910862f38e1f838e28432a7934b205a2a874b3079837c3fd2",
+    "--approval",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-runner/MAIN-APPROVAL.json",
+    "--out",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-runner/runs/local-01"
+  ]
+}

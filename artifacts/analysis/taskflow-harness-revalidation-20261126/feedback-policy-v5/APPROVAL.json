@@ -1,0 +1,36 @@
+{
+  "approved_by": "main",
+  "base_approval": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/INITIAL-APPROVAL.json",
+  "base_approval_sha256": "62504054b9b905189f972b7d607eaa43c72f42bf3a195d2b66fb5e4acd135c26",
+  "controller": {
+    "cmdline_sha256": "d5acc142f6893f5986fe58d87bff87f5c59239da3797f2aaffcc6112fd71944a",
+    "pid": 1016657,
+    "start_ticks": 160922944
+  },
+  "epoch": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01",
+  "grid": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/GRID.json",
+  "helper_sha256": "42d358d1daf5f46d7763acfade1ea73f214e4823654fdecb219196b69c6825b3",
+  "initial_rows": [
+    "gpu-PAW-5-on-coding",
+    "gpu-PAW-5-off-recommended",
+    "gpu-DS41-W-66-on-coding",
+    "gpu-DS41-W-66-off-recommended",
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding",
+    "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+    "gpu-PFXC-A3-on-coding",
+    "gpu-PFXC-A3-off-recommended"
+  ],
+  "maximum_recovery_rounds": 1,
+  "output": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/feedback/policy-v5/receipts",
+  "pfxc_migration": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/acceptance-migration.json",
+  "pfxc_migration_sha256": "b009d0bb51ad867917d970b09e8cc3c061fa422d056b8a6affd6b88dd6263593",
+  "predecessor": {
+    "cmdline_sha256": "81d9090a725e72dbb8aaf478a0fa2c040ec19d9400b6162980a35c9cd264f993",
+    "pid": 1059357,
+    "start_ticks": 160934420
+  },
+  "quality_manifest": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/QUALITY-MANIFEST.json",
+  "quality_manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "scope": "one objective-only deterministic acceptance report per representative initial GPU arm, zero main-model diagnosis",
+  "version": 5
+}

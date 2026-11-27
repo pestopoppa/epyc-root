@@ -31,4 +31,17 @@ The cache-safe epoch remains live on both C22 servers. PAW GPU ON and common-sam
 
 Both additional fresh main-only runs completed and their changed Python was reviewed before independent checks. MM-5 passes its sealed check. TU-GR-1 fails the injected namespace permission-refusal control: its environmental skip regex fails to recognize `unshare: write failed /proc/self/uid_map: Operation not permitted`. This is a main-model candidate defect, not a missing tool or sandbox failure. Direct first-pass results are retained; any subsequent repair must have its own measured cost. No six-of-six main success claim is warranted. Native inference and main-comparison measurements remain separate.
 
-Next: codex-a3b-pilot reviews further clean outputs, completes measured recovery and independent review, launches the residual local legacy pairs at an owned serving boundary, and files the mode/token/time comparison.
+Previous next: codex-a3b-pilot reviews further clean outputs, completes measured recovery and independent review, launches the residual local legacy pairs at an owned serving boundary, and files the mode/token/time comparison.
+
+
+## Accepted interrupted artifact and remaining replay queued
+
+W66 common-sampler GPU OFF reached its 1800-second deadline after 16,482 generated tokens, with a scoped patch that passes both independent regression calls. Main reviewed the real reference-store write and retained fixture assertions. Record the artifact as accepted, while preserving `status=interrupted` and `candidate_status=oracle_pass`: the model had not ended normally. This distinction prevents a timeout from hiding useful completed code or becoming a normal-completion claim.
+
+Main independently verified the sealed legacy runner (9498641010d8c6e910862f38e1f838e28432a7934b205a2a874b3079837c3fd2), including 4155 dependency files. Actual stock-tool scripted controls cover six jobs, two simultaneous cases, same-session reasoning continuation and both unchanged positive oracles. Six native rows are approved. Main-owned watcher PID1815819/exec38040 waits for exact controller1016657 and server start identities to exit, then launches the owned CPU/GPU C22 grid under a new region lock. It is waiting, not running legacy inference yet.
+
+Main stopped only its exact owned v4 feedback helper PID1059357 after validating command-line/start identity, verified its death, then activated tested policy v5 under exec8508. V5 queues one objective-only round for GPU ON and OFF-recommended representatives, skips consumed guidance, and uses revised PFXC grading. Three OFF reports were queued; W66 remains pending. No extra main-model diagnosis call is charged to deterministic feedback.
+
+The separate measured TU main-only repair is launched under exec16235, preserving direct-first-pass failure and all costs. Its new ephemeral thread has started; repair result and acceptance remain pending. PFXC assessment snapshots replay original accepted-main and rejected-A3B artifacts without mutating scores; further terminal-only reassessment is separate from live candidates.
+
+Next: codex-a3b-pilot completes measured main repair, adds deterministic feedback for thinking-off candidates, reviews live corrections, and compares accepted artifacts, normal completions, tokens and elapsed time across all six cases.

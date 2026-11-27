@@ -1,0 +1,109 @@
+{
+  "approval_sha256": "62504054b9b905189f972b7d607eaa43c72f42bf3a195d2b66fb5e4acd135c26",
+  "assessment_migration_sha256": "b009d0bb51ad867917d970b09e8cc3c061fa422d056b8a6affd6b88dd6263593",
+  "capture_sha256": {
+    "/mnt/raid0/llm/tmp/ak-pfxc-probe-gpu-20261120-r2/out/RESULT.json": "1512c7b77500b66635c3ac23f46c4a3b6ff28c50f69d8066f5532bd65246f32d",
+    "/mnt/raid0/llm/tmp/taskflow-stage1-canary-r2-20261120/out/server.log": "85533337680e2dee4307f67fb0fda5e08beae1b122adc0f53cacf15a08c4e377"
+  },
+  "case": "PFXC-A3",
+  "counts": {
+    "excluded_units": 2,
+    "local_terminal_candidates": 1,
+    "main_terminal_candidates": 1
+  },
+  "driver_sha256": "380fb96a71b0c3b7880861674ff885242e2a02f1bcaee6e0510b4eb3c5b2f4f4",
+  "excluded_observed_units": [
+    {
+      "id": "cpu-PFXC-A3-off-recommended",
+      "raw_status": "running",
+      "reason": "nonterminal",
+      "result_sha256": "86f9cf580ab304d1694e8809d2ed48ff0f9873363ade03067996a0098d466b1c"
+    },
+    {
+      "id": "gpu-PFXC-A3-off-recommended",
+      "raw_status": "running",
+      "reason": "nonterminal",
+      "result_sha256": "3d88523c9d04488712aebc0bb38401b0fe859d9452e3dc20a891e6f3645f822f"
+    }
+  ],
+  "graded": [
+    {
+      "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+      "id": "main-direct-1",
+      "input_artifact_sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/delta.patch": "8474384ee0cca57a0a799700b94c0b5d17dc65dce8fb053c066086fd627cb7a5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/execution.json": "df5a54081fb8271eb66dd3947f5845f849401cc2b0cd144134385efeb31e1198",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/lane/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/measurement.json": "aed4303d979632e8b6b591b0bce6b62885882cf6403b346888bbb784e9525b73",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/oracle-result.json": "c4db52ccc365f6a9273c7dd64257e5eee268562abcc01eafe2d1796631466395",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/oracle.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/oracle.stdout.log": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0"
+      },
+      "original_automated_score": {
+        "case": "PFXC-A3",
+        "checked_candidate_files": {
+          "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": {
+            "bytes": 6965,
+            "executable": false,
+            "sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258"
+          }
+        },
+        "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+        "rc": 0,
+        "retained_runtime_artifacts": {},
+        "semantic_review_required": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+        "wall_s": 0.0172
+      },
+      "raw_status_preserved": "completed",
+      "reassessment": {
+        "acceptance_version": "pfxc.exact-events.v4",
+        "diagnostic": null,
+        "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      },
+      "semantic_review": "unreviewed in this offline snapshot",
+      "source_terminal_at": null
+    },
+    {
+      "candidate_sha256": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+      "id": "gpu-PFXC-A3-on-coding",
+      "input_artifact_sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/ORACLE.stderr.log": "dbce1c80ddae9d931f30e41d7189bed7855bf2afc06481bab2e7072b46eb901c",
+        "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/ORACLE.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/RESULT.json": "dcd6094da1e0adc3e7b8091345f01657043ddadd5b3264016a19b1fc040b84d0",
+        "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/independent/candidate.patch": "f04a333f28f0dc1fdb6860fad0cc4bf6d963f468bd006c37c862a9f0257bd9b0",
+        "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/independent/work/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776"
+      },
+      "original_automated_score": {
+        "acceptance_version": "original",
+        "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+        "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+        "rc": 1,
+        "semantic_review_required": true,
+        "stderr_sha256": "dbce1c80ddae9d931f30e41d7189bed7855bf2afc06481bab2e7072b46eb901c",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_status_preserved": "oracle_fail",
+      "reassessment": {
+        "acceptance_version": "pfxc.exact-events.v4",
+        "diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+        "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "rc": 1,
+        "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "semantic_review": "unreviewed in this offline snapshot",
+      "source_terminal_at": 1795739497.9913204
+    }
+  ],
+  "model_calls": 0,
+  "quality_epoch": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01",
+  "quality_manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "raw_scores_changed": false,
+  "schema": "pfxc.terminal-reassessment.v1",
+  "semantic_review_performed": false
+}

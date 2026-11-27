@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "native_inference": false,
+  "verified_jobs": [
+    "gpu-TU-GR-1-on-coding",
+    "gpu-TU-GR-1-off-common-on-sampling",
+    "gpu-MM-5-off-common-on-sampling",
+    "gpu-MM-5-on-coding",
+    "cpu-TU-GR-1-off-recommended",
+    "cpu-MM-5-off-recommended"
+  ],
+  "actual_opencode_scripted_runs": 3,
+  "scripted_requests": 8,
+  "same_session_reasoning_preserved": true,
+  "qualified_positive_oracle_receipts": {
+    "TU-GR-1": "4842bb9a27109eae638875a784ef45349c4eb4a1817a474cded6558ebe5b2f61",
+    "MM-5": "5b8da7a1bfd4340f0065c673e69a2666676b3df76d25abc863c1fa7de8c6af1a"
+  },
+  "frozen_core_commit": "beb0225b173e98d2e5de40351d42de5c32279d64",
+  "package": {
+    "verified": true,
+    "cases": [
+      "TU-GR-1",
+      "MM-5"
+    ],
+    "dependencies": 4155,
+    "seal_sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+    "model_calls": 0
+  }
+}

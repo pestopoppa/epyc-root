@@ -1,0 +1,11 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "package_seal_sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/plan.json": "c6ca3eac8c15fac22b067d4053dbf111011491aa548bd5f31c6c4a0b1063c731"
+  },
+  "at": "2026-11-27T00:48:01.158238+00:00",
+  "authorization": "Operator requested complete canary, harness repairs, matched modes and measured main-only comparison.",
+  "direct_repair_seal_sha256": "1c78d5559932d642d5628a22c13cdb6ae676dbeb5afcfed7a6b2dfd8fe8fb8b2"
+}

@@ -1,0 +1,16 @@
+{
+  "approved_by": "main",
+  "runner_seal_sha256": "9498641010d8c6e910862f38e1f838e28432a7934b205a2a874b3079837c3fd2",
+  "initial_rows": [
+    "gpu-TU-GR-1-on-coding",
+    "gpu-TU-GR-1-off-common-on-sampling",
+    "gpu-MM-5-off-common-on-sampling",
+    "gpu-MM-5-on-coding",
+    "cpu-TU-GR-1-off-recommended",
+    "cpu-MM-5-off-recommended"
+  ],
+  "idle_for_feedback_s": 900,
+  "at": "2026-11-27T00:48:01.158051+00:00",
+  "authorization": "Operator requested complete canary, harness repairs, matched modes and measured main-only comparison.",
+  "launch_boundary": "only after controller1016657 exits and its two C22 servers are confirmed dead; native KFD and region lock enforced at launch"
+}

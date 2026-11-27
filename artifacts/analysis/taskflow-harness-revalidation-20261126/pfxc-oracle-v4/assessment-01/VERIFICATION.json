@@ -1,0 +1,17 @@
+{
+  "report_sha256": "e0f02bc043638e12865e573e888bce7ca2d342f9fce11d93043cea7f1eec8679",
+  "replayed_only_frozen_candidates": [
+    {
+      "id": "main-direct-1",
+      "rc": 0,
+      "same_output_digests": true
+    },
+    {
+      "id": "gpu-PFXC-A3-on-coding",
+      "rc": 1,
+      "same_output_digests": true
+    }
+  ],
+  "read_live_candidates": false,
+  "model_calls": 0
+}

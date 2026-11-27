@@ -1,0 +1,20 @@
+{
+  "schema": "epyc.main-comparison.direct-repair.v1",
+  "package_seal_sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+  "prior_oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+  "prior_inputs_sha256": {
+    "plan.json": "49284b60aab0bfb5d16b8b9e152ad6633cb8bc5b28b8c93207526bd158aa1353",
+    "prompt.md": "6c78fea137318ae50f54e007a8461fb760f0ea331ca09eff1073cdc8ac261bcf",
+    "delta.patch": "bdde24e42566ae5328b5d630d275b17dea44096080f7c288fdf80f827cf97db4",
+    "events.jsonl": "d199d8e1413c19e814f76c12f479043da1505aa6eb6c1f34cf31a517e8157458",
+    "execution.json": "1047b076cedf4e843edbb7e5601c2e64318253f9f26c41ef2f04fe253378dc7d",
+    "oracle-result.json": "2d8566ed521df65921ad6f2c45af60e4e197d1352e6d235d477959fbbe825f72",
+    "oracle.stdout.log": "906ec20177991e1d7e1cd23f619003e48c683699d9dd01e8e2b45a849c7b8cc9",
+    "oracle.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runner_sha256": "c42d027c8086e0c321923deadc6a454247bf045ae65e282be4613e0e7a01bd01",
+  "first_pass_receipt_sha256": "d8aaf8c714e6b45d4106d5cbe13c4811f72c819ddf7090dae19117c2859359f7",
+  "plan_sha256": "c6ca3eac8c15fac22b067d4053dbf111011491aa548bd5f31c6c4a0b1063c731",
+  "prompt_sha256": "79195acbdd135a9320206d27a5c33536daaed23ac5bc3fd0def5f0b13b46d84f",
+  "model_calls": 0
+}

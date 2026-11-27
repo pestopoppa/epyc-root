@@ -1,0 +1,69 @@
+{
+  "at": "2026-11-27T00:45:28.282411+00:00",
+  "reviewer": "main",
+  "review_cost": "management session review not isolated CLI usage; retain separately from fresh main execution",
+  "cases": [
+    {
+      "case": "TU-GR-1",
+      "events_sha256": "d199d8e1413c19e814f76c12f479043da1505aa6eb6c1f34cf31a517e8157458",
+      "commands": [
+        {
+          "item_id": "item_1",
+          "command_sha256": "a6d4b8245179037769f0f5b3f225b08b405ab3b2dc5df7bf36e64da1ec79b94b"
+        },
+        {
+          "item_id": "item_2",
+          "command_sha256": "471d20d54348137d954ba5ddd03984b4b18ed3cf597fad227bbcec89dca15c9c"
+        },
+        {
+          "item_id": "item_3",
+          "command_sha256": "ce187ac30435fd5565565c5f58f2f0a207168000884ffd108da5aaf4ff7f0fd8"
+        },
+        {
+          "item_id": "item_5",
+          "command_sha256": "8317623850b5d244d75101047107711c3f48628cf8dbdc465e58563d99efb487"
+        },
+        {
+          "item_id": "item_6",
+          "command_sha256": "b95b2b944e095929da7423b1272bb19b31edafebadf303875d2f8ba9bab93843"
+        }
+      ],
+      "reviewed_candidate_patch_sha256": "bdde24e42566ae5328b5d630d275b17dea44096080f7c288fdf80f827cf97db4",
+      "prior_answers_accessed": false,
+      "scope_verdict": "pass",
+      "notes": "Relative find .. searches own direct-1 parent for AGENTS filenames only; no sibling answer contents read.",
+      "candidate_verdict": "reject: misses sanctioned uid_map namespace permission refusal"
+    },
+    {
+      "case": "MM-5",
+      "events_sha256": "379c6db553f7441b8e67ad008b4ef3d16757e1c72e5669a15c08e1fa979a883d",
+      "commands": [
+        {
+          "item_id": "item_1",
+          "command_sha256": "ee7605b269c278b7a9c5d403d11fa8342ddfe9f3a05a47860b84901ef6a6384b"
+        },
+        {
+          "item_id": "item_2",
+          "command_sha256": "335a348151f88a9826d3300beff4a295a852ee87d4468c059c95e76f8588d70f"
+        },
+        {
+          "item_id": "item_3",
+          "command_sha256": "6614b7dc98419db92447d22e9ab35ad78f57e8c49e03753d19347506aa895e80"
+        },
+        {
+          "item_id": "item_4",
+          "command_sha256": "31dad189d3a46795197bcc40f6ed2f6e46b7c2e5072ab0581f4b5422a48aa3d2"
+        },
+        {
+          "item_id": "item_7",
+          "command_sha256": "72696c36c3de60f34c8d2b9ced616dda7004c3fb00ea76b66a0a78b0c4708200"
+        }
+      ],
+      "reviewed_candidate_patch_sha256": "95eb2bef1652f9040fe1a98d7ce64a3aa126ecfe8537f8ae5929d9ba7f196e24",
+      "prior_answers_accessed": false,
+      "scope_verdict": "pass",
+      "notes": "Automated flag is an absolute path to this same direct-1 tree for AGENTS filenames; no external/prior-answer access.",
+      "candidate_verdict": "accept: reviewed bounded image preparation and recorder contract; sealed oracle passes"
+    }
+  ]
+}
