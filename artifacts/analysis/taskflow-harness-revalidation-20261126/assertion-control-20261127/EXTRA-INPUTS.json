@@ -1,0 +1,28 @@
+{
+  "cpu-boundary-detailed": {
+    "patch": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-DS41-W-66-off-recommended-numa-resume-1-boundary/independent/candidate.patch",
+      "sha256": "1725f3f8343fef0f92ca2a75be67da44f9ddc40ebb805661e32ea53c8e4b8933"
+    },
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-DS41-W-66-off-recommended-numa-resume-1-boundary/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py",
+    "result": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-DS41-W-66-off-recommended-numa-resume-1-boundary/RESULT.json",
+      "raw_status": "oracle_pass",
+      "sha256": "a0a8262ed55824e9a6611422f512dc21b14f7b17ba5596d0daeed25576f34db5"
+    },
+    "sha256": "7142bb1d9adf95ecef51432d4b050debb5c24d840d543f51aa8293fe83123de5"
+  },
+  "gpu-off-detailed": {
+    "patch": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-common-on-sampling/independent/candidate.patch",
+      "sha256": "51158c3f7783008a7baccb765e34e32a4904b34a587e89b9efd262b40a7aac0b"
+    },
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-common-on-sampling/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py",
+    "result": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-common-on-sampling/RESULT.json",
+      "raw_status": "interrupted",
+      "sha256": "48a6344585d9b345d396919205dc89c2857d3f694c62336d6cabce0aa8345d06"
+    },
+    "sha256": "bd2462c5af8f7ca9a1404c501a4ca2d3369500ce2c666264cf18c53251eefd67"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "journal_completion_observations": 2,
+  "mode": "original",
+  "oracle_claim_observations": 2,
+  "rc": 0,
+  "routing": {
+    "original": {
+      "locator": "fixture-runtime-selection",
+      "sha256": "ca2a5825d9e57accddac8cad47e1aeb3e32f3ad3a87febc04a5ba7e3a9f07021",
+      "verified": true
+    },
+    "original_journal_matches": false,
+    "original_read_proof_verified": true,
+    "phase_verified_before_change": true,
+    "real_main_module": "autokernel.loop.run",
+    "verified_runtime_journal_references": [
+      {
+        "locator": "fixture-runtime-selection",
+        "sha256": "bf432d179c0bc4caa36ee314d18cc4bdde6eaf290e07ed529f6cb38ade7dea57"
+      }
+    ]
+  },
+  "serial_receives_replacement": false
+}

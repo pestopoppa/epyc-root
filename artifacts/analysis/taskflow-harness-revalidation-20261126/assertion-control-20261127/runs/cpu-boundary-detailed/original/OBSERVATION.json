@@ -1,0 +1,24 @@
+{
+  "journal_completion_observations": 2,
+  "mode": "original",
+  "oracle_claim_observations": 2,
+  "rc": 0,
+  "routing": {
+    "original": {
+      "locator": "d9bbc9a5217faf3a31dafb68e761a037c55acd1eeb274c00e5e899fda3b2a6a0-68710d162d012229b47b01f08522589ec344f0513e5bb6019b228626f8c9f7ba.json",
+      "sha256": "e745e492ac37aba989bc8217d7160c19016fcf44b3c0fbcfb3b494af7c356157",
+      "verified": true
+    },
+    "original_journal_matches": false,
+    "original_read_proof_verified": true,
+    "phase_verified_before_change": true,
+    "real_main_module": "autokernel.loop.run",
+    "verified_runtime_journal_references": [
+      {
+        "locator": "d9bbc9a5217faf3a31dafb68e761a037c55acd1eeb274c00e5e899fda3b2a6a0-32b58dcffaa78ffbbbd3627cdd42c3d06f64191185674aaae64201b34ef52111.json",
+        "sha256": "fd7ca391d1ff0c490237c4f4fecb950168bb374f59c4264044e251a2145550bb"
+      }
+    ]
+  },
+  "serial_receives_replacement": false
+}
