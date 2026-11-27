@@ -1382,6 +1382,15 @@ Line references are at `98ff8a4` (C21, `llama.cpp-experimental-c21-20261124`).
       · done when: the compile log and verdict (lowers to gfx90a code object, or the first failing pass) are filed; a pass reopens a FlyDSL arm proposal, a fail closes it with evidence
       · gate: none
       · ✅ 2026-11-21 flydsl 0.5.1 compile-only vector-add for gfx90a PASS (needs a torch CPU import, undeclared); full pipeline to amdgcn gfx90a ISA (global_load_dwordx4, v_pk_add_f32, global_store_dwordx4). Log and ISA in /mnt/raid0/llm/tmp/flydsl-gfx90a-20261121/. No launch; execution and the ROCm-6.2 runtime untested. [no-belief: compile-only check]
+- [ ] **F32-ROUTER-DISPATCH-CAPTURE** [inference] Capture an MI210 A3B router prefill and decode trace on frozen v10 for the F32 split-K census, with a separate held-out request.
+      · model: Qwen3.6-35B-A3B-MTP-Q8_0 on MI210, greedy, four slots, F16 KV and MTP draft maximum two
+      · build: production GPU store v10 ffc1bac82, private server with matched HIP library
+      · metric: eligible ms per served round (lower is better), with actual F32 dispatches and workgroups
+      · rule: compare the maximal removable time with the owner's served gate; use an observed route or mark the cell unresolved
+      · est: provisional        · pilot: n=1 request validates model, residency, route and timestamps
+      · stop rule: stop on missing runtime proof or after the 256- and 1024-token prefill and single- and four-request decode captures include the held-out windows
+      · done when: persisted traces link both request windows to the served recipe, executed symbols and timing denominator, or identify the precise missing witness
+      · gate: none        · inputs: `data/ak-short-row-census/README.md` and `handoffs/active/briefs/F32-ROUTER-SPLITK-CENSUS.md`
 - [ ] **F32-ROUTER-SPLITK-CENSUS** [non-inference] Join actual ffn_gate_inp and skinny F32 dispatches to shape, backend, duration and CU count; bound saved served time against current rocBLAS. If material, compare fixed-order two-pass slice reduction with unsplit reference and repeat identical inputs bitwise.
       · done when: Reuse retained A3B router traces at decode and prefill. Baseline is the resolved Tensile solution; keep a later request window. Record M/N/K, workgroups, slices and all partial-buffer writes. The upstream half-CU test bounds unsplit tile count, not slices. Stop if even eliminating targeted time would miss the owner’s served gate. Test CPU splitting only for underoccupied cores after NPS4-local partitioning.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3008.md`
