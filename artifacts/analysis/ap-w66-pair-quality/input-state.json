@@ -1,0 +1,72 @@
+{
+  "fixture_path": "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py",
+  "baseline_sha256": "ec49d2f0607335d2a68c2522a9eee81fa379eb2e9d1d3f522af4e30c35096d83",
+  "manifest_sha256": "ccb69a428b7adbd1f85a6208993fba49230b4578c784a2c2653b220272bb1f3b",
+  "rubric_sha256": "7dbb303eca2692b661dd1e6dfd14560a75768f812252e50e50bbb7f395ae01ae",
+  "targets": [
+    {
+      "sequence": 52,
+      "slot": 2,
+      "unit": "gpu-DS41-W-66-off-common-light-v2",
+      "wire_receipt_sha256": "76ea504091f71c06e4d6dd100e9a39e7e0bc7b94e89ed2fa8bffff29eb406376",
+      "decoded_body_sha256": "3a9331e6e9fea3875087afaf0c1993b32db5d945f633e817133071c312c516d3",
+      "last_message_sha256": "46c310ce5a8e6e36bb374eb182d12b94c7e7d0bb986586768463322371898233",
+      "last_message_role": "tool",
+      "fixture_state_sha256": "f26c522e931ea1a5e83e546718aab04018b2f8c08084c2f48917f1a1e1cb6b93",
+      "successful_edit_message_indices": [
+        72,
+        84,
+        86,
+        100,
+        104
+      ]
+    },
+    {
+      "sequence": 56,
+      "slot": 2,
+      "unit": "gpu-DS41-W-66-off-common-light-v2",
+      "wire_receipt_sha256": "6f33a3230077d742f41df4e2efe2ec5b5324c92d18b40bc8582ff18c88c49ba3",
+      "decoded_body_sha256": "c490f72255257b1d322ef9c259d905d9377a717c78be72041c0e586f99ef5bd1",
+      "last_message_sha256": "7b0bf6af2634bdd0c9020a1c7348e01b6116c3f1a4b91fbdef97fffd0d9cd7e5",
+      "last_message_role": "user",
+      "fixture_state_sha256": "08d84d906ad80b647a7ee6eb375cd861e77eff9b123efabfaf58bd9963694fca",
+      "successful_edit_message_indices": [
+        72,
+        84,
+        86,
+        100,
+        104,
+        108,
+        110,
+        112
+      ]
+    },
+    {
+      "sequence": 28,
+      "slot": 1,
+      "unit": "gpu-DS41-W-66-on-common-light-v2",
+      "wire_receipt_sha256": "fffd1da722ff0ad74e4b69b20e71378542daa6c195c4c4793eb991b0aa09d6ab",
+      "decoded_body_sha256": "ea351db553537505b3742bbb18ae0f6e22e38679d4b3a440ffd5931846ee7474",
+      "last_message_sha256": "9e1ece0aab1a95ee24474c576a0f2ceac64eda3b6f66441c1407874f67e6cf28",
+      "last_message_role": "tool",
+      "fixture_state_sha256": "2e311e468d8c1b6bf67b8ad1823975e06e4ec768ba1a4269d1660dfbf9c2fa36",
+      "successful_edit_message_indices": [
+        58
+      ]
+    },
+    {
+      "sequence": 29,
+      "slot": 1,
+      "unit": "gpu-DS41-W-66-on-common-light-v2",
+      "wire_receipt_sha256": "a8e5fda7b2ea1f803c1828292b756c2d5b50060afb0e25ee441cf23730f75d92",
+      "decoded_body_sha256": "c246dd45def2dc9ac528f2f6e4998cc905946b7d1b17236ae98d70cf5b5bfac1",
+      "last_message_sha256": "486379d796c87b6305e2ba649ae1ce6581b03ff278c083ec65399c694ef8cc5c",
+      "last_message_role": "tool",
+      "fixture_state_sha256": "3596c43331824e739a58583abda02b9addcc568908b275e6496060274b3dee68",
+      "successful_edit_message_indices": [
+        58,
+        60
+      ]
+    }
+  ]
+}
