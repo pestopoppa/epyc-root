@@ -1,0 +1,13 @@
+/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libggml-base.so.0.16.0
+/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libggml-cpu.so.0.16.0
+/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libggml.so.0.16.0
+/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libllama-common.so.0.0.10748
+/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libllama-server-impl.so
+/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libllama.so.0.0.10748
+/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libmtmd.so.0.0.10748
+/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+/usr/lib/x86_64-linux-gnu/libc.so.6
+/usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+/usr/lib/x86_64-linux-gnu/libm.so.6
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.35

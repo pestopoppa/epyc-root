@@ -5242,6 +5242,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
 - [ ] **AP-W66-PAIR** [inference] Compare the four pinned requests alone and with concurrent slots under matched cache state.
       · done when: per-pair receipts attribute recoverable prefill or decode seconds or record an inconclusive result with the specific mismatch or uncertainty.
       · gate: AP-W66-TRACE
+      · CPU diagnostic 2026-11-27: two q0–q2 reversed pairs completed with four READY targets. Preservation retained 9,839 tokens vs 282 and reduced target wall by 5.65–9.14 s. GPU peer effects and real-task quality remain for this box. [Report](../../docs/reports/autopilot-w66-cpu-prefix-q012.md).
       · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: C22 ce6fcbbde · harness: pinned streaming request replay · metric: accepted work per hour (higher), request and phase latency (lower) · region: MI210 and recorded host affinity · est: ON 28 alone historically spent 165 s decoding, excluding warmup
       · stop rule: check after each pair, reverse order for noise, stop on stable attribution above repeat variation or after three matched pairs per target.
 - [x] **AP-W66-LOOP** [non-inference] Project the phase evidence into the existing eval report and exercise the planner's shadow decision on a held-out trace. ✅ 2026-11-27 [belief: cc] Orchestrator main 03e002c9 records optional phase evidence. Held-out prefix, decode and unknown controls produced five advisory journal events. [Replay](../../artifacts/analysis/ap-w66-loop/README.md).

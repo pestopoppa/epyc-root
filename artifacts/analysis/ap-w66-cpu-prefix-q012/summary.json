@@ -1,0 +1,134 @@
+{
+  "schema": "epyc.w66.cpu_prefix.diagnostic.v1",
+  "question": "Does consistent preserve_thinking improve prefix reuse and delivered TTFT on a bounded CPU-only user-turn transition?",
+  "scope": "synthetic 9843-token warm history; two reversed pairs; deterministic READY target; q0,q1,q2; isolated single slot; no peer workload",
+  "stop": "two paired trials completed; all targets literal READY; scoped question answered",
+  "sampling": "warm slot erased for every arm; false,true,true,false; no retries of accepted target trials",
+  "source": "ce6fcbbde1ee58f165283fbfe74910f47bb2efba",
+  "samples": 44,
+  "affinity_verified_all_threads": "physical CPUs 0-71 only",
+  "gpu_residency_observed": false,
+  "memory_policy": "interleave nodes 0,1,2; q3 cached shared file mappings visible; sampled q3 maps have zero anonymous mappings",
+  "targets": [
+    {
+      "ordinal": 0,
+      "preserve_thinking": false,
+      "wall_s": 6.5224742498248816,
+      "delivered_ttft_s": 6.477922905003652,
+      "output": "READY",
+      "accepted": true,
+      "timings": {
+        "cache_n": 282,
+        "prompt_n": 3942,
+        "prompt_ms": 6444.495,
+        "prompt_per_token_ms": 1.6348287671232877,
+        "prompt_per_second": 611.6848566101766,
+        "predicted_n": 2,
+        "predicted_ms": 45.584,
+        "predicted_per_token_ms": 22.792,
+        "predicted_per_second": 43.87504387504387,
+        "draft_n": 2,
+        "draft_n_accepted": 0,
+        "draft_rounds": 1,
+        "draft_nodes": 2,
+        "tree_rrs_rounds": 0,
+        "tree_rrs_noq": 0,
+        "tree_rrs_alt": 0
+      }
+    },
+    {
+      "ordinal": 1,
+      "preserve_thinking": true,
+      "wall_s": 0.8704084539785981,
+      "delivered_ttft_s": 0.77922517596744,
+      "output": "READY",
+      "accepted": true,
+      "timings": {
+        "cache_n": 9839,
+        "prompt_n": 29,
+        "prompt_ms": 743.764,
+        "prompt_per_token_ms": 25.64703448275862,
+        "prompt_per_second": 38.99086269300477,
+        "predicted_n": 2,
+        "predicted_ms": 90.077,
+        "predicted_per_token_ms": 45.0385,
+        "predicted_per_second": 22.20322612875651,
+        "draft_n": 2,
+        "draft_n_accepted": 0,
+        "draft_rounds": 1,
+        "draft_nodes": 2,
+        "tree_rrs_rounds": 0,
+        "tree_rrs_noq": 0,
+        "tree_rrs_alt": 0
+      }
+    },
+    {
+      "ordinal": 2,
+      "preserve_thinking": true,
+      "wall_s": 0.5495658540166914,
+      "delivered_ttft_s": 0.45639308891259134,
+      "output": "READY",
+      "accepted": true,
+      "timings": {
+        "cache_n": 9839,
+        "prompt_n": 29,
+        "prompt_ms": 424.116,
+        "prompt_per_token_ms": 14.624689655172414,
+        "prompt_per_second": 68.37751935791152,
+        "predicted_n": 2,
+        "predicted_ms": 89.845,
+        "predicted_per_token_ms": 44.9225,
+        "predicted_per_second": 22.260559853080306,
+        "draft_n": 2,
+        "draft_n_accepted": 0,
+        "draft_rounds": 1,
+        "draft_nodes": 2,
+        "tree_rrs_rounds": 0,
+        "tree_rrs_noq": 0,
+        "tree_rrs_alt": 0
+      }
+    },
+    {
+      "ordinal": 3,
+      "preserve_thinking": false,
+      "wall_s": 9.692791668931022,
+      "delivered_ttft_s": 9.610139056108892,
+      "output": "READY",
+      "accepted": true,
+      "timings": {
+        "cache_n": 282,
+        "prompt_n": 3942,
+        "prompt_ms": 9581.866,
+        "prompt_per_token_ms": 2.4307118214104517,
+        "prompt_per_second": 411.40212146569365,
+        "predicted_n": 2,
+        "predicted_ms": 84.845,
+        "predicted_per_token_ms": 42.4225,
+        "predicted_per_second": 23.572396723436857,
+        "draft_n": 2,
+        "draft_n_accepted": 0,
+        "draft_rounds": 1,
+        "draft_nodes": 2,
+        "tree_rrs_rounds": 0,
+        "tree_rrs_noq": 0,
+        "tree_rrs_alt": 0
+      }
+    }
+  ],
+  "pairs": [
+    {
+      "off_ordinal": 0,
+      "on_ordinal": 1,
+      "wall_saved_s": 5.652065795846283,
+      "ttft_saved_s": 5.698697729036212,
+      "wall_ratio_off_over_on": 7.493578698610914
+    },
+    {
+      "off_ordinal": 3,
+      "on_ordinal": 2,
+      "wall_saved_s": 9.14322581491433,
+      "ttft_saved_s": 9.1537459671963,
+      "wall_ratio_off_over_on": 17.63717959929263
+    }
+  ]
+}
