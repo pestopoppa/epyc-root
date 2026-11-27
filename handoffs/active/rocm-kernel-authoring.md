@@ -1277,7 +1277,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · done when: a gate row files KEEP / NO_KEEP / FAIL_* / FUTILITY_* with op VALU per KB, GB/s vs V5I, KLD and served ms/round CI; or a note names why the conversion core cannot shrink (packed int8 dot / MFMA operand path already ruled out)
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md` `/mnt/raid0/llm/tmp/ak-c22-q8wt-op-diag-gpu-20261125`
 
-The instruction audit identifies the converted values as i32 dot products and records the operator exception for this row. [Q8 conversion-core audit](../../research/deep-dives/q8-gemv-convcore-20261127/README.md)
+The kernel owner retained V5I for the tested single-request greedy Qwen3.8-27B Q8_0 + DFlash2 recipe. Both control servers logged V5 packed dispatch with `GGML_HIP_Q8_MF6_CONVCORE` unset. [Q8 conversion-core decision and audit](../../research/deep-dives/q8-gemv-convcore-20261127/README.md)
 
 - [ ] **PC-HOSTTRAP-COVERAGE** [non-inference] Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for stripped objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
       · done when: Use the original ELFs, code objects, store manifests and build IDs. Keep one other binary for validation. Record symbol+offset, source line or unmappable reason for each sampled PC. Only trial host-trap if unresolved hotspots remain and firmware/driver enumerate the capability; collect separate baseline runtime and check perturbation, skid and sample loss.

@@ -4,7 +4,7 @@ Run `python3 replay.py` in a copy of this directory on the EPYC host, pinned to 
 
 ## Result
 
-**NO_KEEP.** On the MI210, replacing the integer-to-float conversions reduced dynamic vector instructions by 12.9% per KiB of weight traffic. The six-shape operator aggregate gained 0.46% bandwidth. Served speedup was 0.9981× against V5I (95% CI 0.9904–1.0060, eight scored blocks). The confidence interval includes parity, and its upper bound is below the 1.01× keep threshold. The experiment supports keeping V5I for the tested greedy single-request recipe. [Native result](RESULT.json)
+**V5I retained.** For single-request greedy Qwen3.8-27B Q8_0 with DFlash2 on MI210, keep the tested MF=6 V5I recipe with `GGML_HIP_Q8_MF6_CONVCORE` unset. Both control servers logged the V5 packed dispatch. Replacing the integer-to-float conversions reduced dynamic vector instructions by 12.9% per KiB of weight traffic, but the six-shape operator aggregate gained only 0.46% bandwidth. Served speedup was 0.9981× against V5I (95% CI 0.9904–1.0060, eight scored blocks). Even the upper bound fell below the 1.01× keep threshold. The row filed **NO_KEEP**. This decision applies to the experimental serving recipe. [Native result](RESULT.json)
 
 | Metric | V5I controls | Packed conversion |
 |---|---:|---:|
