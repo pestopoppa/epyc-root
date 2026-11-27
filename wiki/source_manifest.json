@@ -4,29 +4,30 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1516,
-    "research": 579
+    "progress": 1518,
+    "research": 590
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 28,
+      "added": 13,
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-26T10:42:07Z",
+    "at": "2026-11-27T14:49:39Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-26-intake-nov26-kernels.md",
-      "research/deep-dives/intake-digests/2026-11-26-ids-2982-3005.md",
-      "research/deep-dives/intake-nov26-kernels"
+      "progress/2026-11/2026-11-27-codex-inkblot-intake.md",
+      "progress/2026-11/2026-11-27.md",
+      "research/deep-dives/intake-digests/2026-11-27-ids-3025-3032.md",
+      "research/deep-dives/intake-inkblot-20261127"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-26T10:42:07Z",
+  "scan_time": "2026-11-27T14:49:39Z",
   "schema_version": 1,
-  "source_set_hash": "94963f18c79bf45ff92c5b97154b22eb29c1732f69cbff31e058be95548e4f09",
+  "source_set_hash": "459a729bd93a704f8148fbbbe9dce8fdcee1131241cb2959c794a54ac9ed7f43",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -6146,6 +6147,94 @@
       "path": "research/deep-dives/intake-digests/2026-11-26-ids-2982-3005.md",
       "size": 73948,
       "title": "Intake dive digest \u2014 2026-11-26, intake-2982#record .. intake-3005#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "839a53d69375a3c955e6752d5e6dbf4ba90f238ae21ed0a7164d457a3989cf50",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-digests/2026-11-27-ids-3025-3032.md",
+      "size": 20027,
+      "title": "Intake dive digest \u2014 2026-11-27, intake-3025#record .. intake-3032#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "d41e274d89916c5fa24261d3d1209656bc7ac0e9b6137ea073553e21b0a2764d",
+      "modified": "2026-11-27T14:48:39Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/findings.md",
+      "size": 6557,
+      "title": "Inkblot as a candidate in the Inkling 2 Mini study",
+      "type": "research"
+    },
+    {
+      "content_hash": "7d4c44800084427369f698427ebf224479e73f0ec28cb9565ff3d79174b740e7",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3025.md",
+      "size": 2693,
+      "title": "Recursive Self-Improving Loopers",
+      "type": "research"
+    },
+    {
+      "content_hash": "d73cb0e1ab4e228fcff48a6d4c7aba2ea607c7dca78b5ab30273fbbc9e21c704",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3026.md",
+      "size": 3363,
+      "title": "Inkblot-2-mini",
+      "type": "research"
+    },
+    {
+      "content_hash": "85a07a3c588715c0c26ff9d45b4a6eedb3a76aafe7c9f6ee7e14510fde7d8346",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3027.md",
+      "size": 2610,
+      "title": "Fix native looping, checkpoint exports, and auditable training",
+      "type": "research"
+    },
+    {
+      "content_hash": "83844266386218e17049afb00ddeae5c25d9787443972ea66a5b9371a79ceb61",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3028.md",
+      "size": 2883,
+      "title": "Recursive Self-Improving Loopers (paper and author web report)",
+      "type": "research"
+    },
+    {
+      "content_hash": "20c54f31836819180b3ee7239d0fd048d34adfb4bbca6d4510187525b1e6d8bf",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3029.md",
+      "size": 1642,
+      "title": "CUDA and HIP flash attention with indexed bias",
+      "type": "research"
+    },
+    {
+      "content_hash": "370a33070a5787bc1f444afd2d1837a4fb37fdecaeca61c20f623f84fbaedf2c",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3030.md",
+      "size": 1693,
+      "title": "Inkling 2 Mini repetition with concurrent requests on HIP",
+      "type": "research"
+    },
+    {
+      "content_hash": "776ba2ecf4cd12a6b0dc4f9261bcece16cc5a55fc65059c4942e1369d0c9063c",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3031.md",
+      "size": 1536,
+      "title": "TML-d24-varloop-research",
+      "type": "research"
+    },
+    {
+      "content_hash": "e4c23b07d5bd4655bc4c01a3006e2166ecb21a9b4e169df5838a0aaafbbba91c",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/intake-3032.md",
+      "size": 1559,
+      "title": "Do We Really Need an LLM for Weight-Space Programming? A Deterministic Forward-Only Paradigm and Its Capability Boundaries",
+      "type": "research"
+    },
+    {
+      "content_hash": "1a1f909b688cfbcd85deabb18c3f301e6cd890a24b30c224c70ad0f08f08198a",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "research/deep-dives/intake-inkblot-20261127/stage3-plan.md",
+      "size": 35259,
+      "title": "Proposed Inkblot comparison in the Inkling 2 Mini study",
       "type": "research"
     },
     {
@@ -19957,6 +20046,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "315508dc7dc942a5b15b8f9dd2e4aa789266624b85afb58a9a95b08663889dae",
+      "modified": "2026-11-27T14:48:39Z",
+      "path": "progress/2026-11/2026-11-27-codex-inkblot-intake.md",
+      "size": 1213,
+      "title": "Inkblot intake closeout \u00b7 2026-11-27",
+      "type": "progress"
+    },
+    {
+      "content_hash": "dd1d4f5b34766fdcbca029c7e800343d6229ff4f3fb76184f7cc0dc81fe43ebf",
+      "modified": "2026-11-27T14:45:58Z",
+      "path": "progress/2026-11/2026-11-27.md",
+      "size": 1241,
+      "title": "2026-11-27",
+      "type": "progress"
+    },
+    {
       "content_hash": "0412267d1044dc81a2a2d008806c740651691fac124a35700f332ee702aead6f",
       "modified": "2026-11-23T18:02:41Z",
       "path": "progress/2026-11/autokernel-loop-box-history-20261122.md",
@@ -24877,7 +24982,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3106,
+  "total_new": 3119,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

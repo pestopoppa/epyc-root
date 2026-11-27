@@ -1,3 +1,3 @@
 # Inkblot and Inkling 2 Mini
 
-[Findings, checkpoint identities and eight-source register](findings.md) · [Proposed EVL-02 handoff changes and study protocol](stage3-plan.md)
+[Findings and source register](findings.md) · [Approved protocol](stage3-plan.md) · [Filed EVL-02 tasks](../../../handoffs/active/model-evaluation-queue.md#backlog)

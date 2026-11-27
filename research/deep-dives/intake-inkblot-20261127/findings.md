@@ -30,7 +30,7 @@ The released gate rejects a transition that decreases the total number correct. 
 
 ## Existing EPYC owner
 
-The active EVL-02 track owns the experimental base port, CPU comparison, MI210 placement and indexed-bias HIP support. Its recorded pre-v11 build restriction and the separate HIP acceptance still govern those tasks. The proposal adds a matched derivative arm. For GPU interpretation, the stock-Base report on two RX 9070 XTs is a reason to compare one versus two **busy** slots on the same MI210 server. That report did not isolate the cause. [Current Inkling study](../../../handoffs/active/model-evaluation-queue.md#track-model-evaluation-queue) · [HIP report](https://github.com/ggml-org/llama.cpp/issues/33150) · [Proposed filing and protocol](stage3-plan.md)
+The active EVL-02 track owns the experimental base port, CPU comparison, MI210 placement and indexed-bias HIP support. Its recorded pre-v11 build restriction and the separate HIP acceptance still govern those tasks. The approved EVL-02 tasks add artifact verification, a matched derivative arm and a GPU concurrency check. For GPU interpretation, the stock-Base report on two RX 9070 XTs is a reason to compare one versus two **busy** slots on the same MI210 server. That report did not isolate the cause. [Current Inkling study](../../../handoffs/active/model-evaluation-queue.md#track-model-evaluation-queue) · [HIP report](https://github.com/ggml-org/llama.cpp/issues/33150) · [Approved filing and protocol](stage3-plan.md)
 
 ## Source register
 
