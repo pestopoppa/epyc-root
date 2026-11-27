@@ -1,0 +1,10 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "review_seal_sha256": "aada61237ad9e735b6a1974f88bb5e777dff70523b2c4562b00ccf7979cf0421",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-tu-paid-final-review/reviews/TU-GR-1/cpu-OFF-off-recommended/final-acceptance/runs/TU-GR-1/guidance-1/plan.json": "56bb55c03d32314bd64675085c73c64b494821cd191d6c6cd9234b6fbadfd340"
+  },
+  "paid_role": "paid-independent-final-acceptance",
+  "instruction": "Main reviews this exact scoped role and plan; this template authorizes no call."
+}

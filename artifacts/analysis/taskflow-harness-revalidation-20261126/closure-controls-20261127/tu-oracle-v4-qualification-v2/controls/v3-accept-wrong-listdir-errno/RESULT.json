@@ -1,0 +1,12 @@
+{
+  "group": "v3-accept-wrong-listdir-errno",
+  "rc": 0,
+  "first_diagnostic": [
+    "TU-GR-1 contract passed"
+  ],
+  "test_sha256": "f9a44c5a1c5b7df3ec17f19868acfd2342a053e82b66cee95c4f4aa83af710c7",
+  "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+  "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+  "expected_rc": 0,
+  "expected_marker": "TU-GR-1 contract passed"
+}

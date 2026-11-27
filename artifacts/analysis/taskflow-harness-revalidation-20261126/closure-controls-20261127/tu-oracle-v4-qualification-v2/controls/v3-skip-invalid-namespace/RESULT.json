@@ -1,0 +1,12 @@
+{
+  "group": "v3-skip-invalid-namespace",
+  "rc": 0,
+  "first_diagnostic": [
+    "TU-GR-1 contract passed"
+  ],
+  "test_sha256": "b3979554dab4f0a5089df3f7efc0ce2b5a69bb43f68a877099d21b987ecfdcee",
+  "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+  "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+  "expected_rc": 0,
+  "expected_marker": "TU-GR-1 contract passed"
+}

@@ -1,0 +1,10 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "review_seal_sha256": "e467cec19780db4ae699100a2089f2177acb9d30e0fe9f0b7e18850c3820833a",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/runs/DS41-W-66/guidance-1/plan.json": "ca451abe3d84e7636868a89ef43bf5810648bf793a48f9dd4bc2114447ec1b7a"
+  },
+  "paid_role": "paid-independent-final-acceptance",
+  "instruction": "Main reviews this exact scoped role and plan; this template authorizes no call."
+}

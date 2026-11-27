@@ -1,0 +1,74 @@
+{
+  "terminal": [
+    {
+      "id": "gpu-PAW-5-off-recommended-clean-paid-2",
+      "case": "PAW-5",
+      "backend": "gpu",
+      "slot": 0,
+      "supervision": {
+        "pid": 1698319,
+        "returncode": 0,
+        "reason": null,
+        "elapsed_s": 218.6,
+        "force_kill": false
+      },
+      "cleanup": {
+        "owned_container": "ws58-a3b-stock-cfe730b950",
+        "removed_verified": true
+      },
+      "previous_attempts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended",
+          "generated": 4685,
+          "model_wall_s": 460.418,
+          "wire_observed_generated": 4685,
+          "wire_records": 14,
+          "wire_records_missing_completion_usage": 0,
+          "wire_failed_records": 0,
+          "wire_matches_raw_generated": true,
+          "wire_sha256": "c6ca89c511e9ed5bcc761c1b3e27a84893c3a811a35fe4c2e013de40e844ae1c"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1",
+          "generated": 2449,
+          "model_wall_s": 237.662,
+          "wire_observed_generated": 2449,
+          "wire_records": 8,
+          "wire_records_missing_completion_usage": 0,
+          "wire_failed_records": 0,
+          "wire_matches_raw_generated": true,
+          "wire_sha256": "e29f1ef4722a549784e7968e7b737f794097872a3a7529ca0732da95fb146cc9"
+        }
+      ],
+      "native_status": "oracle_fail",
+      "raw_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/RESULT.json",
+      "terminal_at": 1795752122.4684083,
+      "source_guidance": {
+        "paid_model_calls": 1,
+        "main_model_feedback_calls": 1,
+        "ordinal": 2,
+        "class": "paid source review of clean neutral predecessor",
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "usage": {
+          "input_tokens": 138538,
+          "cached_input_tokens": 113920,
+          "output_tokens": 1131,
+          "reasoning_output_tokens": 0,
+          "uncached_input_tokens": 24618
+        },
+        "measured_wall_s": 36.174931,
+        "excluded_false_feedback_branch": true
+      },
+      "current_local_tokens": 10319,
+      "known_combined_local_tokens": 17453,
+      "parts_with_unobserved_tokens": 0,
+      "status": "awaiting_source_review",
+      "independent_v5_rc": 0,
+      "independent_v5_stdout_sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+      "independent_v5_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "same_session": true
+    }
+  ],
+  "original_results_preserved": true
+}

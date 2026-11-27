@@ -1,0 +1,12 @@
+{
+  "candidate_patch_sha256": "9d1a2a5975205692de8024dd5f380b329a31bfbbf41074c5e4edb5edd90b0ac6",
+  "decision": "rejected",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-tu-paid-final-review/reviews/TU-GR-1/cpu-OFF-off-recommended/final-acceptance/runs/TU-GR-1/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "69bb2d5fa78af2d98c3bcf3678f5207df6d0b189c93a751c0fb5b98c0e30d510",
+  "normal_completion": true,
+  "raw_native_status": "awaiting_source_review",
+  "qualified_structural": "TU V3 passed",
+  "qualification": "Paid final review and main private-control/source audit find broad namespace skip violating only-permission-refusal scope. No semantic acceptance inferred from V3 pass.",
+  "review_cost_class": "paid final CLI40.454152s /168348input /125440cached /1496output including211reason; manager audit unisolated, not free",
+  "at": 1795752174.472119
+}

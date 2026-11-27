@@ -1,0 +1,1 @@
+{"prepared": true, "parser_checks": {"foreign_same_basename": "rejected", "foreign_module_with_same_prefix": "rejected", "empty_class_report": "rejected", "duplicate_named_result": "rejected"}, "candidate_executions": 0, "model_calls": 0}

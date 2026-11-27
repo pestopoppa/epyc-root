@@ -1,0 +1,25 @@
+{
+  "candidate_input_patch_sha256": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841",
+  "candidate_unmodified_by_review": true,
+  "case": "DS41-W-66",
+  "events_sha256": "da1a112306790abc7bbcac7baea3f1a8683d381d2d645a3097b910274c9b3fd2",
+  "evidence_version": "source-comparison-v2",
+  "execution": {
+    "cli_version": "codex-cli 0.172.0",
+    "rc": 0,
+    "tool_audit_required": true,
+    "wall_s": 21.279363
+  },
+  "mode": "gpu-OFF-off-common-light",
+  "path_scope_pass": true,
+  "previous_review_retained_separately": true,
+  "review_kind": "final-acceptance",
+  "semantic_review_advisory": "ACCEPT",
+  "usage": {
+    "cached_input_tokens": 108544,
+    "input_tokens": 127278,
+    "output_tokens": 627,
+    "reasoning_output_tokens": 59,
+    "uncached_input_tokens": 18734
+  }
+}

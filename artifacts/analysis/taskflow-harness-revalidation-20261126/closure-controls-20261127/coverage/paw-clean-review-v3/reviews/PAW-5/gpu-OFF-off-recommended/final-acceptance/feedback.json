@@ -1,0 +1,85 @@
+{
+  "id": "PAW-5",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 2,
+  "allowed_next_native_correction": null,
+  "native_correction_ceiling": 2,
+  "candidate_patch_sha256": "076d9de9e9eb8f1a6f045abada0bdbe64fb0c6e423c606ff7f57d74df0baec20",
+  "local_result": {
+    "id": "gpu-PAW-5-off-recommended-clean-paid-2",
+    "case": "PAW-5",
+    "backend": "gpu",
+    "thinking": false,
+    "profile": "off-recommended",
+    "status": "oracle_fail",
+    "patch_sha256": "076d9de9e9eb8f1a6f045abada0bdbe64fb0c6e423c606ff7f57d74df0baec20",
+    "oracle": {
+      "rc": 1,
+      "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+      "acceptance_version": "paw5.markdown-fields.v3",
+      "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "54da3fc2fe4cf39debb557bd724d294717d0d126dadcf331a9605e7194d74cc2",
+      "semantic_review_required": true
+    },
+    "changed_files": {
+      "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+        "sha256": "2d75f1375d4cb24ec447cede01de892dcf518755e7b4fcea0ec3ee1e0bfd136f",
+        "bytes": 15470,
+        "executable": false
+      }
+    },
+    "outside_scope": [],
+    "unsafe_paths": [],
+    "generation_observed": 10319,
+    "model_wall_s": 217.341
+  },
+  "actual_prior_help": [
+    {
+      "native_ordinal": 1,
+      "help_kind": "neutral-self-check; no failure or semantic diagnosis",
+      "sha256": "c733e2c901125608bbb21fb784936e08ad1d55576e95a78e7d17977fe61f9bdf",
+      "text": "Continue the same original approved task and scope in this saved session. The corrected structural check passes the saved document, including its shared pinned source/seam table. Structural acceptance does not establish semantic correctness.\n\nPerform one neutral self-check against the original brief and staged pinned source evidence: verify each candidate's source claims and paired comparison contracts, then run the original task-local check. Revise only if your own source inspection finds a problem. No failure is asserted and no source-specific diagnosis or solution is supplied. Preserve the original output scope, references, prerequisites and restrictions; keep all proposed runs unexecuted.\n",
+      "truncated": false
+    },
+    {
+      "native_ordinal": 2,
+      "help_kind": "one measured paid main source-guidance round",
+      "sha256": "58b9ecb5baadf1c3eda3af9ec666c70a846fcfaa222ecfe75d4894ad36012ec0",
+      "text": "REJECT — the unchanged candidate is not substantively complete. The task-local structural check passes.\n\nBounded diagnosis:\n\n- **Tool-output classification:** its primary seam comes from the FW-1 sketch, rather than independently established pinned runtime source. The pinned research functions are deterministic policy classifiers: `classify_author_failure()` uses structured failure signals; `classify_patch_rejection()` uses scope metadata, tags and gate identity. Neither exposes the claimed unknown residue.\n- **Transcript/log filtering:** `_tail_start()` is deterministic budget selection, not an existing fuzzy step. A proposed semantic selector is plausible, but the document must distinguish it explicitly. Its fallback also incorrectly equates returning all turns with `full_history`, whose renderer spills long outputs.\n- **Routing predicates:** this section bundles several decisions, including repair-versus-retry despite JSON repair being excluded. Only the long-context variant has a paired contract; summarization routing remains unspecified. Closed-set output does not eliminate invalid output, so its failure contract is incomplete.\n- **Comparisons:** no prospective reference labels or scoring procedure establish semantic correctness. Claims of deterministic latency and negligible inference cost are unsupported.\n\n**Correction entry point:** edit only `docs/reference/harness-candidates/paw-5-compile-once-candidates.md`. Retain one to three source-grounded semantic decisions, distinguish proposed judgment from existing deterministic code, and give each paired arm identical inputs, explicit labels, reference-label comparison criteria, and total abstention/invalid-output handling. Remove unsupported performance assertions and repair-routing scope.\n\n**Validation:** recheck each retained seam against the pinned files, verify each comparison contract independently, and rerun the supplied task-local check. Keep PAW-1/PAW-2 prerequisites and all runs unexecuted.\n\nCandidate left unmodified.\n",
+      "truncated": false
+    }
+  ],
+  "objective_diagnostics": {
+    "ORACLE.stdout.log": {
+      "text": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    },
+    "ORACLE.stderr.log": {
+      "text": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/PAW-5/oracle-format-v3.py\", line 27, in <module>\n    assert re.search(rf\"(?mi)^[ \t]*(?:[-*][ \t]+)?{header}[ \t]+\\S\", section), field\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Compile-once candidate\n",
+      "sha256": "54da3fc2fe4cf39debb557bd724d294717d0d126dadcf331a9605e7194d74cc2",
+      "truncated": false
+    }
+  },
+  "structural_reassessment": {
+    "case": "PAW-5",
+    "candidate_patch_sha256": "076d9de9e9eb8f1a6f045abada0bdbe64fb0c6e423c606ff7f57d74df0baec20",
+    "checked_candidate_files": {
+      "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+        "sha256": "2d75f1375d4cb24ec447cede01de892dcf518755e7b4fcea0ec3ee1e0bfd136f",
+        "bytes": 15470,
+        "executable": false
+      }
+    },
+    "source_result_sha256": "8d6ef731747910ad3b70b82950986a6edc13aed7746dcac8c5e30acb4dc45234",
+    "checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+    "rc": 0,
+    "diagnostic": "",
+    "candidate_unchanged": true,
+    "scope": "versioned structural reassessment only; source semantic acceptance remains independent"
+  },
+  "structural_pass_implies_semantic_acceptance": false,
+  "clean_replay_protocol": "original0 -> neutral1/guidance0 -> one measured paid semantic correction2 -> final independent acceptance",
+  "old_false_pin_feedback_branch_excluded": true
+}

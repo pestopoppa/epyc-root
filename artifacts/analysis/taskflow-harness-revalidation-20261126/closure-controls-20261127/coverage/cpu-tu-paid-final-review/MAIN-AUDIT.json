@@ -1,0 +1,10 @@
+{
+  "at": 1795752162.0836904,
+  "events_sha256": "656e311c0e71bc7b2d9c01fe0dfae2313b91b0aa0e52d4fb9e31f2b79610f1df",
+  "completed_commands_audited": 7,
+  "scope": "read-only source and diff inspection; original prescribed test plus private tempfile/mock reproductions under task Python environment; no real namespace launch beyond task wrapper/no candidate edits",
+  "advisory": "REJECT",
+  "main_agrees": true,
+  "source_evidence": "Unshare Invalid argument or mount failure at path containing unshare causes skip; original only explicit namespace permission refusal requirement violated. V3 original behavioral checks pass; semantic rejection retained independently.",
+  "observed_review_wall_s": 40.454152
+}

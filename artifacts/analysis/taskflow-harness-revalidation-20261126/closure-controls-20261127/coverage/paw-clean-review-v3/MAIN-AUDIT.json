@@ -1,0 +1,10 @@
+{
+  "at": 1795752463.7066133,
+  "events_sha256": "8f3f1f17e67f09b967c6a542035267246879fd84aa7dedc180b8375aaa1ffc67",
+  "completed_commands_audited": 5,
+  "scope": "read-only staged document/pinned source and original doc-structure command; no candidate modifications",
+  "advisory": "REJECT",
+  "main_agrees": true,
+  "qualification": "Main reopened exact candidate. Reference labels infer already_implemented from later measured hypothesis and no_feasible_answer from later proposal; neither entailment holds. Routing claims exploration/direct choice although pinned seam alters max_turns and excludes task_root override. Additional fallback/validation completeness concerns retained but not necessary to rejection.",
+  "clean_feedback_history": "Original checkpoint ->neutral corrected structural pass selfcheck -> one measured paid source guidance -> clean paid2, no false-pin branch consumed"
+}

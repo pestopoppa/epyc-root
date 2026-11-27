@@ -1,0 +1,11 @@
+{
+  "schema": "gpu-tu-on-paid-diagnosis.v1",
+  "sha256": {
+    "review.py": "1f734a8ee3c5ce0fa6f4f61347b86ab8da0fd04510345f65041176455ecef6e6",
+    "normalize.py": "b1214143ce45d0b638d64828817dcafa3a4d9c8c24893da006973097db04c223",
+    "control.py": "92fae6f3b2b597e721b1867bf030f100f62401c44eebbe88d04bc366ef6aa5a0",
+    "CONTROL.json": "b09717c56c848fceba502e94f2d8dd9c4cbbf2d4c6259dfe30256b529f93acf1",
+    "CODE-LOCK.json": "f5ef9c0a5c3d213c7972f154c11905cd4e7036e8766740e0cdb494be20e14ce7",
+    "LEGACY-REVIEWS.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  }
+}

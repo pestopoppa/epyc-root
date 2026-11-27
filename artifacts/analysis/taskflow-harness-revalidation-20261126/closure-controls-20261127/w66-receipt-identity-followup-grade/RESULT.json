@@ -1,0 +1,59 @@
+{
+  "input_review_sha256": "a697000a43bb304a4b865055876f3af322898a0f180617f258fa065529720af4",
+  "no_model_calls": true,
+  "normal_two_tests": {
+    "candidate_source": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py",
+      "sha256": "169e55912cfcb058dc3b5de7621eaf9accb1963aa7300e185672aaaff56ddc88"
+    },
+    "evidence": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/runs/gpu-DS41-W-66-off-common-light-v2-identity-1/original/OBSERVATION.json",
+      "sha256": "5e153a1be661ba91d7644a0d22cbb3e620702603259b4781b1e743211a295d9b"
+    },
+    "failure_locations": [],
+    "id": "gpu-DS41-W-66-off-common-light-v2-identity-1",
+    "mode": "original",
+    "pytest_result": [
+      "2 passed in 6.02s"
+    ],
+    "rc": 0,
+    "serial_receives_replacement": false,
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/runs/gpu-DS41-W-66-off-common-light-v2-identity-1/original/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/runs/gpu-DS41-W-66-off-common-light-v2-identity-1/original/stdout.log",
+      "sha256": "19092521099dbd8d75b56d542d4650be0b4678a019f5b605d0863a7ec08fba78"
+    }
+  },
+  "replacement_caught_by_exact_assertion": {
+    "candidate_source": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py",
+      "sha256": "169e55912cfcb058dc3b5de7621eaf9accb1963aa7300e185672aaaff56ddc88"
+    },
+    "evidence": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/runs/gpu-DS41-W-66-off-common-light-v2-identity-1/mutated/OBSERVATION.json",
+      "sha256": "6fc13501d48d4257835fe431c979a38e8891b1a252d39b98b2141ef7706bf26f"
+    },
+    "failure_locations": [
+      "E   AssertionError: assert {'locator': '...rified': True} == {'locator': '...rified': True}"
+    ],
+    "id": "gpu-DS41-W-66-off-common-light-v2-identity-1",
+    "mode": "mutated",
+    "pytest_result": [
+      "1 failed, 1 passed in 6.29s"
+    ],
+    "rc": 1,
+    "serial_receives_replacement": false,
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/runs/gpu-DS41-W-66-off-common-light-v2-identity-1/mutated/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/runs/gpu-DS41-W-66-off-common-light-v2-identity-1/mutated/stdout.log",
+      "sha256": "5a5c1e1b574fec363d65dea7a8430d953ed487fa83138ac360cc4d080b97f414"
+    }
+  },
+  "result": "pass"
+}

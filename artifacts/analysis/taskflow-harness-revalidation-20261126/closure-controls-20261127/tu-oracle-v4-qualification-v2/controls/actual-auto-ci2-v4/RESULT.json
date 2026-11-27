@@ -1,0 +1,12 @@
+{
+  "group": "actual-auto-ci2-v4",
+  "rc": 1,
+  "first_diagnostic": [
+    "simulated namespace mount-permission-path-unshare: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare namespace setup refused: mount: /tmp/taskflow-tu-grader-2oj5tkg0/mount-permission-path-unshare/test_isolated_launch_denies0: Operation not permitted')}"
+  ],
+  "test_sha256": "105fec81ca8bbd399f2e6726bb3961b36fea422285ab59e18cbd4681d8b6c9a4",
+  "harness_sha256": "489838272587082f5d76ba64c3c0cf91f8ae6e10751d7a7fb6b28c99382def33",
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "expected_rc": 1,
+  "expected_marker": "simulated namespace mount-permission-path-unshare"
+}

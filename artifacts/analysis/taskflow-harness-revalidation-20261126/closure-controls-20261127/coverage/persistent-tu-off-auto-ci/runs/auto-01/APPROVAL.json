@@ -1,0 +1,6 @@
+{
+  "approved_by": "main",
+  "runner_seal_sha256": "8fd3519c1517ce56c73ba1c7ff53a43cb180cd5d8c58eec17d94ba02427a1ccd",
+  "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/PLAN.json",
+  "plan_sha256": "85bc19dd6bc4d8254b5b04c14b90a237195d9c1fcc4dab3d2d90bae4c28779e9"
+}

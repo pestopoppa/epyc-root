@@ -1,0 +1,11 @@
+{
+  "group": "v4-accept-wrong-listdir-errno",
+  "rc": 1,
+  "first_diagnostic": [
+    "simulated namespace wrong-listdir-errno-only: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('passed', '')}"
+  ],
+  "test_sha256": "f9a44c5a1c5b7df3ec17f19868acfd2342a053e82b66cee95c4f4aa83af710c7",
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "expected_rc": 1,
+  "expected_marker": "simulated namespace wrong-listdir-errno-only"
+}

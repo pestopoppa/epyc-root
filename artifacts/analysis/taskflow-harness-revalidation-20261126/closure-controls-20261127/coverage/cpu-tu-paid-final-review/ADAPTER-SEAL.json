@@ -1,0 +1,11 @@
+{
+  "schema": "cpu-tu-paid-final-review.v1",
+  "sha256": {
+    "review.py": "2f149a147b8696c5f0f3933f09b533c142436ba209e473c17db37e9515783d8e",
+    "normalize.py": "6e71e93cfece950796685a0ea8322629bbb62bd632ba3b321ae8f88d1e7621e5",
+    "control.py": "26104000e809ed47f5dd163efa55447f3d2d05fb4fab56dc4dace686e0d08906",
+    "CONTROL.json": "7781bce8d12ebb0fb76ac156108e615b64122f8e99f05ac15934348736f573a6",
+    "CODE-LOCK.json": "1232be8cac268c19934f857634b955c7a96328cb6c92799045d9e10d6efa264c",
+    "LEGACY-REVIEWS.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "turns": [
+    {
+      "id": "gpu-TU-GR-1-off-common-on-sampling-auto-ci-1",
+      "case": "TU-GR-1",
+      "backend": "gpu",
+      "slot": 1,
+      "raw_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-1/worker/receipt.json",
+      "supervision": {
+        "pid": 1551985,
+        "returncode": 0,
+        "reason": null,
+        "elapsed_s": 182.933,
+        "force_kill": false
+      },
+      "cleanup": {
+        "owned_container": "ws58-a3b-stock-ec6bd43a9b",
+        "removed_verified": true
+      },
+      "previous_attempts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker",
+          "receipt_sha256": "2e5d8568f0262a4c65c5d4c582f2cc94aa2152708d339eeb57b6d86c5a0d24ec",
+          "generated": 6470,
+          "charged": 6470,
+          "generation_unknown": 0
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/worker",
+          "receipt_sha256": "b21f2b4cd35e61226f105790dfac39e535a5824ed0937ee293ab71587e8efdc6",
+          "generated": 12765,
+          "charged": 12765,
+          "generation_unknown": 0
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker",
+          "receipt_sha256": "16d98d75ac7370c0b5fdfe78df3e9ff5c90c981d234d7ceb45b7c2a1018dcc0a",
+          "generated": 9660,
+          "charged": 9660,
+          "generation_unknown": 0
+        }
+      ],
+      "feedback_sha256": "99290367bd3bc736d52ce5324109944fb777e7b8c6b99c93389cfb0366ad9a3b",
+      "source_guidance": {
+        "paid_model_calls": 0,
+        "class": "automatic contained CI exception",
+        "ordinal": 1
+      },
+      "remaining_generated_at_start": 91105,
+      "terminal_at": 1795751713.176759,
+      "native_status": "review",
+      "same_session": true,
+      "current_local_tokens": 7777,
+      "current_charged": 7777,
+      "known_combined_local_tokens": 36672,
+      "cumulative_charged": 36672,
+      "status": "new_failure",
+      "grade": {
+        "rc": 1,
+        "reason": null,
+        "cleanup_verified": true,
+        "elapsed_s": 1.789,
+        "stdout_sha256": "2ed94255249d79fbe1835d06fa051efb3b0c3b559623b6c392499498a6fae1a8",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "checker_sha256": "01a09351635c64b5b6f7c7486a4baee391095e7f18041a6380cf479aac313bda",
+        "checker_manifest_sha256": "f0f7978b540f0f83d5c5fef3e4f8e45badb11475d4c4d35cae74ea8584816c4b",
+        "model_calls": 0
+      },
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-1/grade-lane",
+      "grade_result": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-1/grade-v3/RESULT.json"
+    },
+    {
+      "id": "gpu-TU-GR-1-off-common-on-sampling-auto-ci-2",
+      "case": "TU-GR-1",
+      "backend": "gpu",
+      "slot": 1,
+      "raw_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-2/worker/receipt.json",
+      "supervision": {
+        "pid": 1642452,
+        "returncode": 0,
+        "reason": null,
+        "elapsed_s": 148.34,
+        "force_kill": false
+      },
+      "cleanup": {
+        "owned_container": "ws58-a3b-stock-e3688d0db8",
+        "removed_verified": true
+      },
+      "previous_attempts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker",
+          "receipt_sha256": "2e5d8568f0262a4c65c5d4c582f2cc94aa2152708d339eeb57b6d86c5a0d24ec",
+          "generated": 6470,
+          "charged": 6470,
+          "generation_unknown": 0
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/worker",
+          "receipt_sha256": "b21f2b4cd35e61226f105790dfac39e535a5824ed0937ee293ab71587e8efdc6",
+          "generated": 12765,
+          "charged": 12765,
+          "generation_unknown": 0
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker",
+          "receipt_sha256": "16d98d75ac7370c0b5fdfe78df3e9ff5c90c981d234d7ceb45b7c2a1018dcc0a",
+          "generated": 9660,
+          "charged": 9660,
+          "generation_unknown": 0
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-1/worker",
+          "receipt_sha256": "b4832803efb85786bc692cc8afe128bb92a361fb785a4a61f9f80bfad7e86180",
+          "generated": 7777,
+          "charged": 7777,
+          "generation_unknown": 0
+        }
+      ],
+      "feedback_sha256": "2e277973bfcb4922973c64e3169c8d917a015c77807d37eee249720a74c20e51",
+      "source_guidance": {
+        "paid_model_calls": 0,
+        "class": "automatic contained CI exception",
+        "ordinal": 2
+      },
+      "remaining_generated_at_start": 83328,
+      "terminal_at": 1795751864.0629885,
+      "native_status": "review",
+      "same_session": true,
+      "current_local_tokens": 5108,
+      "current_charged": 5108,
+      "known_combined_local_tokens": 41780,
+      "cumulative_charged": 41780,
+      "status": "checker_pass_pending_source_review",
+      "grade": {
+        "rc": 0,
+        "reason": null,
+        "cleanup_verified": true,
+        "elapsed_s": 1.89,
+        "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "checker_sha256": "01a09351635c64b5b6f7c7486a4baee391095e7f18041a6380cf479aac313bda",
+        "checker_manifest_sha256": "f0f7978b540f0f83d5c5fef3e4f8e45badb11475d4c4d35cae74ea8584816c4b",
+        "model_calls": 0
+      },
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-2/grade-lane",
+      "grade_result": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-2/grade-v3/RESULT.json"
+    }
+  ],
+  "original_verdict": "cap2_rejected_preserved",
+  "prior_paid_guidance": {
+    "paid_model_calls": 1,
+    "ordinal": 2,
+    "class": "measured paid source review corrective guidance",
+    "usage": {
+      "input_tokens": 128419,
+      "cached_input_tokens": 113664,
+      "output_tokens": 1128,
+      "reasoning_output_tokens": 70,
+      "uncached_input_tokens": 14755
+    },
+    "model": "gpt-6.1-sol",
+    "effort": "low",
+    "measured_wall_s": 35.28797
+  },
+  "new_paid_guidance_calls": 0,
+  "semantic_review_required": true,
+  "status": "checker_pass_pending_source_review",
+  "token_lineage": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker",
+      "receipt_sha256": "2e5d8568f0262a4c65c5d4c582f2cc94aa2152708d339eeb57b6d86c5a0d24ec",
+      "generated": 6470,
+      "charged": 6470,
+      "generation_unknown": 0
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/worker",
+      "receipt_sha256": "b21f2b4cd35e61226f105790dfac39e535a5824ed0937ee293ab71587e8efdc6",
+      "generated": 12765,
+      "charged": 12765,
+      "generation_unknown": 0
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker",
+      "receipt_sha256": "16d98d75ac7370c0b5fdfe78df3e9ff5c90c981d234d7ceb45b7c2a1018dcc0a",
+      "generated": 9660,
+      "charged": 9660,
+      "generation_unknown": 0
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-1/worker",
+      "receipt_sha256": "b4832803efb85786bc692cc8afe128bb92a361fb785a4a61f9f80bfad7e86180",
+      "generated": 7777,
+      "charged": 7777,
+      "generation_unknown": 0
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-2/worker",
+      "receipt_sha256": "6a683b917c4027489d27b802f644c06057178d9df72419323789de0cae7c9fd7",
+      "generated": 5108,
+      "charged": 5108,
+      "generation_unknown": 0
+    }
+  ],
+  "accounted_charged": 41780,
+  "terminal_at": 1795751866.3896556
+}

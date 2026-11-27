@@ -1,0 +1,31 @@
+{
+  "journal_completion_observations": 2,
+  "mode": "mutated",
+  "oracle_claim_observations": 2,
+  "rc": 1,
+  "routing": {
+    "original": {
+      "locator": "3f40d3c9d2f49b1872d04cd4250e6f09fdbccf2f4e5c10db17675e21675f2e48-63ab610024a11ccc90aeafaf074e11119aaf6ac59b43ecc0e8fa1088d0e5a7df.json",
+      "sha256": "72031f3149b9dd659ddea3b2f6503adc4ca6eeb868cc7535d17058b9b1719e2c",
+      "verified": true
+    },
+    "original_journal_matches": false,
+    "original_read_proof_verified": true,
+    "phase_verified_before_change": true,
+    "real_main_module": "autokernel.loop.run",
+    "replacement": {
+      "locator": "w66-substituted-selection-receipt.json",
+      "sha256": "eb4852d0a7da7b4ff5598113392d285a48205acd450e6c2b44b727019a6431c1",
+      "verified": true
+    },
+    "same_content": true,
+    "same_recipe_sha256": "5992f36b931661fdaed935587be85f07cf6d9e02123d9a80be61e9d8460a1c55",
+    "verified_runtime_journal_references": [
+      {
+        "locator": "3f40d3c9d2f49b1872d04cd4250e6f09fdbccf2f4e5c10db17675e21675f2e48-e77f038899d6715890e044b1cf9b0271dafccb6b6adcd0a97d9c4396d436f0b5.json",
+        "sha256": "f187ff4949ba44152100607f542580efeb3d6d9d65496bd92c0e63e0de25ef95"
+      }
+    ]
+  },
+  "serial_receives_replacement": false
+}

@@ -1,0 +1,10 @@
+{
+  "approved_by": "main",
+  "instruction": "Template authorizes no model call.",
+  "native_harness_qualified": true,
+  "paid_role": "paid-independent-final-acceptance",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance-v2/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/runs/DS41-W-66/guidance-1/plan.json": "c2d5559c87915f6f84d8d430e5a5b0a279e0d8381b0d323fca91ed1c5a88d648"
+  },
+  "review_seal_sha256": "6e1edd70e16dcea53456d651eb477b1b37cc4baa6d2659c5347ba6aa26775704"
+}

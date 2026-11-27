@@ -1,0 +1,10 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "review_seal_sha256": "467873641f31fde31a17cb6aeea39f82a8125778f93e1747b56558c35df16e76",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-autoci-final-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/final-acceptance/runs/TU-GR-1/guidance-1/plan.json": "0fdb043c1d754f860ba9f17c09d9e6f9f69fc295463584eabc7998c14eba5a0a"
+  },
+  "paid_role": "paid-independent-final-acceptance",
+  "instruction": "Main reviews this exact scoped role and plan; this template authorizes no call."
+}

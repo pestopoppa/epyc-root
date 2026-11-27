@@ -1,0 +1,10 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "review_seal_sha256": "48d2b5e9f430a76bf470c34f48441d513a7373616f023a2e3ba332c0b0d358e9",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v3/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/plan.json": "9045149c92a904cc63fac64f8e9208ade5a4fcdd161ade050a12f3fbbcb30ab5"
+  },
+  "paid_role": "paid-independent-final-acceptance",
+  "instruction": "Main reviews this exact scoped role and plan; this template authorizes no call."
+}

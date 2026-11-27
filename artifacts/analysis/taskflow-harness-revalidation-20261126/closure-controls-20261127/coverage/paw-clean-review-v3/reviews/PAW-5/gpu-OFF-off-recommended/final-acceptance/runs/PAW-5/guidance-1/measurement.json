@@ -1,0 +1,62 @@
+{
+  "case": "PAW-5",
+  "arm": "guidance",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 27.908022,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21b2c-d8df-7753-a1fd-379e6b573e4f",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 113119,
+      "cached_input_tokens": 92160,
+      "output_tokens": 1012,
+      "reasoning_output_tokens": 22,
+      "uncached_input_tokens": 20959
+    },
+    "command_count": 5,
+    "item_types": [
+      "agent_message",
+      "command_execution"
+    ],
+    "commentary_overhead_chars": 120,
+    "final_message_chars": 1027,
+    "outside_scope_review_flags": []
+  },
+  "changed_by_strong_turn": [],
+  "final_changes": [
+    "docs/reference/harness-candidates/paw-5-compile-once-candidates.md"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "a1a146d6fdb4e56f79d62a93bf3ee5eb7c6281dbb8b849b6bed746063b315f38",
+  "retained_runtime_artifacts": {},
+  "oracle": null,
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported",
+  "original_oracle": null,
+  "acceptance_migration": {
+    "case": "PAW-5",
+    "version": "paw5.markdown-fields.v3",
+    "original_oracle": "oracle.py",
+    "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+    "oracle": "oracle-format-v3.py",
+    "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+    "results_directory": "format-v3",
+    "control_receipts": {
+      "baseline": "controls/PAW-5/format-v3/baseline/oracle-result.json",
+      "positive": "controls/PAW-5/format-v3/positive/oracle-result.json",
+      "format_and_regression_matrix": "controls/PAW-5/format-v3/field-matrix.json"
+    },
+    "reason": "Accept logically equivalent inline Markdown field punctuation and require non-empty inline content. Candidate count, mandatory fields, revision pins, staged source seams, PAW prerequisites and JSON repair exclusion remain enforced."
+  }
+}

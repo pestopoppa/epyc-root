@@ -1,0 +1,10 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "review_seal_sha256": "f7f8773e5bb4bff1483b7a41c3f1132843b255f0b8c26324af57724db4d1e41a",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-on-paid-diagnosis/reviews/TU-GR-1/gpu-ON-on-coding/initial-diagnosis/runs/TU-GR-1/guidance-1/plan.json": "a44f0a615189ef3a52f0cf9dde722b5dd5812680cb958bc426abbd464f154e45"
+  },
+  "paid_role": "paid-independent-initial-diagnosis",
+  "instruction": "Main reviews this exact scoped role and plan; this template authorizes no call."
+}

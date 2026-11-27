@@ -1,0 +1,12 @@
+{
+  "group": "v4-accept-null-listdir-errno",
+  "rc": 1,
+  "first_diagnostic": [
+    "simulated namespace null-listdir-errno-only: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('passed', '')}"
+  ],
+  "test_sha256": "3c629dfdeefbd9b36000eafe432c066c608bedd71323216602d008db7bd3b052",
+  "harness_sha256": "4eee1caa3ca15e77bb5698d14182af0716d51d87866de56157baccbb5d24cbac",
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "expected_rc": 1,
+  "expected_marker": "simulated namespace null-listdir-errno-only"
+}

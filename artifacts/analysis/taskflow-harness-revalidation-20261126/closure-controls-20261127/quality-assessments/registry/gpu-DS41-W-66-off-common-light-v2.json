@@ -1,0 +1,11 @@
+{
+  "candidate_patch_sha256": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841",
+  "decision": "rejected",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-light-off-adjudication/ADJUDICATION.json",
+  "source_review_sha256": "29be3790097881f6fccc9b276705ad71cdfdba4997e4974a6e0e06caf3b2dcee",
+  "normal_completion": true,
+  "raw_native_status": "oracle_pass",
+  "qualification": "Original oracle pass retained. Exact baseline receipt identity assertion lost under explicit light preservation requirement; real substitution control proves gap. Prior expert ACCEPT contradicted; missing baseline/diff review-input audit pending.",
+  "review_cost_class": "paid CLI vectors preserved; additional manager/source-control effort unisolated, not zero",
+  "at": 1795751869.6364155
+}

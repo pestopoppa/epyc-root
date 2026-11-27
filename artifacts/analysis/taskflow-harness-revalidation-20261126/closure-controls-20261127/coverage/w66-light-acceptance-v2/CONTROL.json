@@ -1,0 +1,76 @@
+{
+  "exact_comparison_inputs_verified": true,
+  "model_calls": 0,
+  "old_advisories_and_costs_retained": true,
+  "previous_reviews_preserved": {
+    "gpu-OFF-off-common-light": {
+      "git_diff_command_id": "item_1",
+      "git_diff_diagnostic": "Not a git repository",
+      "original_advisory": "ACCEPT",
+      "prior_execution": {
+        "cli_version": "codex-cli 0.172.0",
+        "rc": 0,
+        "tool_audit_required": true,
+        "wall_s": 24.747677
+      },
+      "prior_usage": {
+        "cached_input_tokens": 100480,
+        "input_tokens": 137960,
+        "output_tokens": 813,
+        "reasoning_output_tokens": 21,
+        "uncached_input_tokens": 37480
+      },
+      "retained": {
+        "assistance-accounting.json": "91b8c50d0741562bbb9e0c95c252d28e58220d187122c4956594b034e4880aa9",
+        "events.jsonl": "b2e49fa2be28120f2848d3ac948c2315f8f60e76284929486be9c9c0ab3c1f9b",
+        "execution.json": "b57d9bafac0beb7c7b743698e10fc6a34cb2d644b26ca3899c6cf65c8a0e2c2f",
+        "measurement.json": "4199be61c5bca28aef193c3b368df1487c12bda6ae0d7b48021cf2a0e4641bba",
+        "plan.json": "ca451abe3d84e7636868a89ef43bf5810648bf793a48f9dd4bc2114447ec1b7a",
+        "prompt.md": "f354a9ff681fc7aeca4009cda5b48b535a77af5b1fe0520fe75a323773233970"
+      },
+      "review_seal": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/SEAL.json",
+        "sha256": "e467cec19780db4ae699100a2089f2177acb9d30e0fe9f0b7e18850c3820833a"
+      },
+      "source_comparison_available_in_worker_lane": false
+    },
+    "gpu-ON-on-common-light": {
+      "git_diff_command_id": "item_1",
+      "git_diff_diagnostic": "Not a git repository",
+      "original_advisory": "ACCEPT",
+      "prior_execution": {
+        "cli_version": "codex-cli 0.172.0",
+        "rc": 0,
+        "tool_audit_required": true,
+        "wall_s": 25.654359
+      },
+      "prior_usage": {
+        "cached_input_tokens": 113280,
+        "input_tokens": 132359,
+        "output_tokens": 711,
+        "reasoning_output_tokens": 26,
+        "uncached_input_tokens": 19079
+      },
+      "retained": {
+        "assistance-accounting.json": "413c18c663303204a46b680b58c53e21762f6ec936d625daa6029507bafe0d9b",
+        "events.jsonl": "f77f601128f0384f467ec60a4f1b8d782c5b90632ca2c0854979c7b72d36a5fd",
+        "execution.json": "55da05081cc0db30f562b44fdc18b646b3216917c1dda8cbda8de8fe6a661554",
+        "measurement.json": "4e7ba83765de857582ba6839e30cccc67e926dee7fadcef6fbfef1442757e9a9",
+        "plan.json": "a010a69e7f25b12f700fac9de9ce7557ab5b1ee4ce58173d546b3536eed61007",
+        "prompt.md": "e21c8b16e93b1604ebb18e4e30dba935cfa1110497abd21184aa9e481ed5c325"
+      },
+      "review_seal": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/SEAL.json",
+        "sha256": "ede4a161e63a13f9961bacd806783b546cab701732e2fb50b71db3192b56fb8b"
+      },
+      "source_comparison_available_in_worker_lane": false
+    }
+  },
+  "prior_adapter_sha256": "89c009474ce5bd761068fb488e17480759bd7fc13c672ad21411d86cb1bb1abc",
+  "required_in_lane_comparison_evidence": {
+    "baseline": ".review-evidence/original/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py",
+    "manifest": ".review-evidence/SOURCE-COMPARISON.json",
+    "patch": ".review-evidence/candidate.patch"
+  },
+  "tampered_and_missing_evidence_rejected": true
+}

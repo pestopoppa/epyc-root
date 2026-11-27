@@ -1,0 +1,110 @@
+{
+  "case": "TU-GR-1",
+  "status": "review",
+  "job_sha256": "b6cb574bc82765d6dc569771d40e80417b392c5b5fb1996e54156b0a3cf30298",
+  "server_pid": 147287,
+  "repo_base_sha": "332ceb2e14d16f2031bd17b1f7c839ce8276a24b",
+  "task_packet_sha256": "d44945b01d24ada4ae0a360ac94fdabf10335dff010effbfdc9c88255fb7c813",
+  "session": "ses_de53dad39fferUwH4PIyLpmCb3",
+  "started_at": 1795751688.628908,
+  "scope": "candidate only",
+  "session_profile": {
+    "backend": "gpu",
+    "slot": 0,
+    "thinking": true,
+    "context": 131072,
+    "request_cap": 32768,
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "public_web": true
+  },
+  "resume": {
+    "prior_run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/worker",
+    "receipt_sha256": "03a5d6637d8bd75b587eae09e25814b426c87d1c63598dc4d83676700da5c719",
+    "session_sha256": "202556b209da108b7a2a5479226789b280d31ca9249bc791fa98e2b0b4d8dfbb",
+    "workspace_session_sha256": "61f2280292c880b3ee0873f24e94a2833d1f39305b95df021c882cbc542bf560"
+  },
+  "prompt_sha256": "9422b82ad2d1dcdc73f0dae667a9e5cb4ac42d570b3a8653bb96f5f407c66ca1",
+  "opencode_config_sha256": "b013790e7085f84ab968518360222d57d8d621bd19253b853acb2c6438cd7c37",
+  "assistant_errors": [],
+  "workspace_session_sha256": "734d70a99607138a7ffe9416322921f26859b84614e5a82978a4269e3f728c17",
+  "changed_files": {
+    "scripts/autopilot/evals/dtap/harness/isolation.py": {
+      "sha256": "9330b7e46d23d873bcb833f16f45e1b10673a75ce2978d36b9426f7e39391fd2",
+      "bytes": 4339,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+      "sha256": "58d5455758e538dcc2e73ea0ee9f06b07dc63095fb93bfa19cc79e87ca4a4770",
+      "bytes": 8112,
+      "executable": false
+    }
+  },
+  "outside_scope": [],
+  "unsafe_paths": [],
+  "runtime_artifacts": {
+    "scripts/autopilot/evals/dtap/tests/__pycache__/test_grader_isolation.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "4e3d96442ed63e4fb7bc004f7f74483e4b77de75080bac83871c0cf84e98f4ba",
+      "bytes": 11653,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/tests/__pycache__/conftest.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "a3b805025a567af04687b6e725f3aa4dba9a2d5d5002633cf5ae0a5edd08257e",
+      "bytes": 648,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/harness/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "b980e2af7e9a058d5b96c8a5bcb0fa244f4969e1fbb69c35868e5d1ba8abe1fd",
+      "bytes": 1470,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/harness/__pycache__/isolation.cpython-312.pyc": {
+      "sha256": "e75b68d6ee9c6a9a7717b410241b581bf826f4d1bb16923693d5bdb98ee6a508",
+      "bytes": 5732,
+      "executable": false
+    },
+    ".pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    ".pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/lastfailed": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "bytes": 2,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "sha256": "eb49e5998cb8e2a604ddc7daecc2cf18415b5240e4d602263a98a38c8df92c31",
+      "bytes": 237,
+      "executable": false
+    }
+  },
+  "patch_sha256": "0d35e2f372c19d81486d9eca64ebb2391e76c09d899446525004f35e37fe04a3",
+  "ended_at": 1795751902.4440217,
+  "generated_observed": 9118,
+  "generation_unknown": 0,
+  "charged_toward_ceiling": 9118,
+  "reserved_at_terminal": 0
+}

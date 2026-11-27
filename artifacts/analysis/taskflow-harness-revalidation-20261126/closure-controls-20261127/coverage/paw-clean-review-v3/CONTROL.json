@@ -1,0 +1,13 @@
+{
+  "version": "new admission-v2 target",
+  "expected_final_result": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/RESULT.json",
+  "expected_final_result_exists": false,
+  "source_plan_identical": true,
+  "admission_runner_seal_sha256": "652ea6d728c0c9ee274d74dca77ba2f7e2c52acfde3225df4fe0b566e4aa753f",
+  "main_approval_sha256": "18811acc018a151c9f8fe281db8ba3619e65aaa8a7cee5efc79ddc9925253bf0",
+  "explicit_neutral_and_paid_history_verified": true,
+  "profile": "gpt-6.1-sol low /180-183",
+  "immutable_framework_imports_verified": true,
+  "model_calls": 0,
+  "final_safety_approval_requires_actual_terminal_candidate": true
+}

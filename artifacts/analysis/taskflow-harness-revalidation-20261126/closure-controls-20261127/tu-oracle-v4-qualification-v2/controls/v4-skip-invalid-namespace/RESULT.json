@@ -1,0 +1,12 @@
+{
+  "group": "v4-skip-invalid-namespace",
+  "rc": 1,
+  "first_diagnostic": [
+    "simulated namespace namespace-invalid-argument: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'Grader probe exited 1: unshare: cannot unshare: Invalid argument')}"
+  ],
+  "test_sha256": "b3979554dab4f0a5089df3f7efc0ce2b5a69bb43f68a877099d21b987ecfdcee",
+  "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "expected_rc": 1,
+  "expected_marker": "simulated namespace namespace-invalid-argument"
+}

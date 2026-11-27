@@ -1,0 +1,34 @@
+{
+  "code_lock_sha256": "a6d4a13e09abed497ee382c04be69bdb74232976799e0cb5a42bb7f85e3a0e6b",
+  "immutable": {
+    "feedback.json": "065ba10055f303d73ab7ff32ed61d22f496351bd499d120ff8a2fe99c4fb05d6",
+    "runs/DS41-W-66/guidance-1/plan.json": "a010a69e7f25b12f700fac9de9ce7557ab5b1ee4ce58173d546b3536eed61007",
+    "runs/DS41-W-66/guidance-1/prompt.md": "e21c8b16e93b1604ebb18e4e30dba935cfa1110497abd21184aa9e481ed5c325"
+  },
+  "external": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/import-view/cases/DS41-W-66/case.json": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/import-view/cases/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/import-view/cases/DS41-W-66/prompt.md": "c948ae10c650ec8f939b4bb4b0e6b39867db21538df009b405a4106d6e71faaf"
+  },
+  "source_native_files": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-on-common-light-v2/RESULT.json": "ee87f1daec76cd43c021ac0dfaa5ed60ef57fd2d28816c9517def37a06799c64",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-on-common-light-v2/independent/candidate.patch": "a24ac34ebdf412036e50b8c03f6d895b9f0fb55e40b3bc48b3e1a91b12a6e3e3",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-on-common-light-v2/ORACLE.stdout.log": "9a74f6172dc22eb939ee72530448f9bae2694d261bfff131966de3e17144465e",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-on-common-light-v2/ORACLE.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/test-pass-receipts/gpu-DS41-W-66-on-common-light-v2.json": "242b75c935fb5cb07d5b5fb74934600b6617e814407fce7cbc9cfcb29ba596e2"
+  },
+  "case": "DS41-W-66",
+  "mode": "gpu-ON-on-common-light",
+  "kind": "final-acceptance",
+  "native_ordinal": 0,
+  "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/runs/DS41-W-66/guidance-1",
+  "candidate_input_files": {
+    "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": {
+      "sha256": "dfd839f0bed65843d9a91d71c66266a8e9c0d467d6a9e38149cf85f75d1b9091",
+      "bytes": 6224,
+      "executable": false
+    }
+  },
+  "structural_is_not_semantic": true,
+  "patch_policy": "candidate git apply/check whitespace=nowarn; preserve meaningful Markdown hard-break bytes; reconstruct and hash-match every changed file against RESULT; all malformed patch errors remain fatal"
+}

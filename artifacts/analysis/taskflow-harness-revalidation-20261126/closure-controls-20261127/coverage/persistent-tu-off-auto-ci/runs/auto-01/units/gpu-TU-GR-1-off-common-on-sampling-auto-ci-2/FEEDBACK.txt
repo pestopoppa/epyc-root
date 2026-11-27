@@ -1,0 +1,5 @@
+The contained TU acceptance checker reported the result below for the saved candidate. Use this failure evidence to debug the existing candidate and continue the original task. Keep the original scope and test contract. The verifier will rerun after this turn.
+
+Evidence from the trusted TU V3 checker
+
+> simulated namespace missing-launcher: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare or mount not available on this host')}

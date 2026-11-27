@@ -1,0 +1,46 @@
+{
+  "case": "DS41-W-66",
+  "arm": "guidance",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 22.339399,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21b29-a30c-7711-b711-26eeb72bb874",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 136028,
+      "cached_input_tokens": 109056,
+      "output_tokens": 694,
+      "reasoning_output_tokens": 14,
+      "uncached_input_tokens": 26972
+    },
+    "command_count": 7,
+    "item_types": [
+      "agent_message",
+      "command_execution"
+    ],
+    "commentary_overhead_chars": 211,
+    "final_message_chars": 451,
+    "outside_scope_review_flags": []
+  },
+  "changed_by_strong_turn": [],
+  "final_changes": [
+    "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "676018b50532d2f743b832bdbcd6d3fbeb6acc0d19093adaf70bea2ed8721efa",
+  "retained_runtime_artifacts": {},
+  "oracle": null,
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported"
+}

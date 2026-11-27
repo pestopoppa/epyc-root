@@ -1,0 +1,12 @@
+{
+  "group": "v3-skip-mount-path-marker",
+  "rc": 0,
+  "first_diagnostic": [
+    "TU-GR-1 contract passed"
+  ],
+  "test_sha256": "f4c543aa0bd6344e67654006e9b0d15453d5c3df0f3c4f798b5a06fa76960782",
+  "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+  "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+  "expected_rc": 0,
+  "expected_marker": "TU-GR-1 contract passed"
+}

@@ -1,0 +1,12 @@
+{
+  "group": "actual-cpu-paid2-v4",
+  "rc": 1,
+  "first_diagnostic": [
+    "simulated namespace namespace-invalid-argument: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', \"unshare namespace setup refused (no user-namespace support): probe_grader_access: child exited with code 1 (returncode=1, stderr='unshare: cannot unshare: Invalid argument\\\\n')\")}"
+  ],
+  "test_sha256": "ec4b7a967e6e2450e0ee7662e62890424b917f492fa375d29078e47fe0cf8c8c",
+  "harness_sha256": "2373f46348bb4c9027590c0dfc0e5c63b2d47763ae3cae41b1095dd3e0e1bf11",
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "expected_rc": 1,
+  "expected_marker": "simulated namespace namespace-invalid-argument"
+}

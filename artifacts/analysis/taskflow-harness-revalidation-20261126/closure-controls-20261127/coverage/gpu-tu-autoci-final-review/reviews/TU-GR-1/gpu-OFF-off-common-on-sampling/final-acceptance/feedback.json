@@ -1,0 +1,113 @@
+{
+  "id": "TU-GR-1",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 2,
+  "allowed_next_native_correction": null,
+  "native_correction_ceiling": 2,
+  "candidate_patch_sha256": "64e5c64624fded791a5235670204af173ad9c4d1f681e82ffc3a6420ca152014",
+  "local_result": {
+    "id": "gpu-TU-GR-1-off-common-on-sampling-auto-ci-2",
+    "case": "TU-GR-1",
+    "backend": "gpu",
+    "thinking": false,
+    "profile": "off-common-on-sampling",
+    "status": "checker_pass_pending_source_review",
+    "patch_sha256": "64e5c64624fded791a5235670204af173ad9c4d1f681e82ffc3a6420ca152014",
+    "oracle": {
+      "rc": 0,
+      "candidate_patch_sha256": "64e5c64624fded791a5235670204af173ad9c4d1f681e82ffc3a6420ca152014",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "oracle_manifest_sha256": "f0f7978b540f0f83d5c5fef3e4f8e45badb11475d4c4d35cae74ea8584816c4b",
+      "acceptance_version": "TU V3",
+      "scope": "contained deterministic checker receipt only"
+    },
+    "changed_files": {
+      "scripts/autopilot/evals/dtap/harness/isolation.py": {
+        "sha256": "489838272587082f5d76ba64c3c0cf91f8ae6e10751d7a7fb6b28c99382def33",
+        "bytes": 8524,
+        "executable": false
+      },
+      "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+        "sha256": "105fec81ca8bbd399f2e6726bb3961b36fea422285ab59e18cbd4681d8b6c9a4",
+        "bytes": 4717,
+        "executable": false
+      }
+    },
+    "outside_scope": [],
+    "unsafe_paths": [],
+    "generation_observed": 5108,
+    "model_wall_s": 145.40196704864502
+  },
+  "actual_prior_help": [
+    {
+      "native_ordinal": 1,
+      "help_kind": "deterministic objective verifier",
+      "sha256": "4d9ab57a8c9425baf239f4c3eb960fc11715db06893a8bf96ae831c17ec0f4f2",
+      "text": "Continue the same task and scope from the saved workspace and session.\n\nThe independent verifier reported:\n\nsimulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1. The isolated launcher exited with code 1. The failed test was test_isolated_launch_denies.\n\nAddress that observed failure. Preserve the original requirements and rerun the task-local check.\n",
+      "truncated": false
+    },
+    {
+      "native_ordinal": 2,
+      "help_kind": "actual measured paid semantic guidance",
+      "sha256": "1ec563ed3b597a5d7cb29eeb6b954e2ba5ce462d0929cebf5f24eac3c8173972",
+      "text": "REJECT — candidate unchanged.\n\nThe isolated case cannot pass a successful namespace setup:\n\n- `test_grader_isolation.py:82,148` writes the probe beneath `tmp_path`, then mounts tmpfs over that same ancestor, hiding the script before execution.\n- Lines 90–101 leave both success flags as `None` on denial. Direct execution against an absent sentinel confirmed `open_ok=null`, `listdir_ok=null`, with errno 2; assertions at lines 183–187 require `False`.\n- Lines 142–165 skip missing commands and any permission-related stderr, including mount errors. The brief permits skipping only explicit **unshare namespace-setup permission refusal**, preserving the original diagnostic.\n- `isolation.py:120–140` returns fabricated results for empty successful stdout, ignores nonzero exit status when stdout exists, and accepts JSON without schema validation. Probe errors can therefore masquerade as denial.\n- The isolated test bypasses `probe_grader_access` and accepts either operation’s errno rather than requiring sentinel-open denial specifically.\n\nCorrection entry point: use the shared probe with the mount-only launcher prefix; keep child code accessible after mounting. Validate exit status and structured output, narrowly classify unshare refusals, and require genuine denial for both paths.\n\nValidation: task-local check returned **1 passed, 1 skipped**. After correction, rerun it and exercise namespace-capable execution plus launcher/mount failures and missing/malformed stdout using throwaway command stubs.\n",
+      "truncated": false
+    },
+    {
+      "native_ordinal": 3,
+      "help_kind": "supplemental automatic contained CI diagnostic, zero paid guidance",
+      "sha256": "99290367bd3bc736d52ce5324109944fb777e7b8c6b99c93389cfb0366ad9a3b",
+      "text": "The contained TU acceptance checker reported the result below for the saved candidate. Use this failure evidence to debug the existing candidate and continue the original task. Keep the original scope and test contract. The verifier will rerun after this turn.\n\nEvidence from the trusted TU V2 checker\n\n> simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('failure', 'RuntimeError: Launcher exited with code 1: Traceback (most recent call last):\\n  File \"<string>\", line 1, in <module>\\nModuleNotFoundError: No module named \\'harness\\'')}\n> FAILED scripts/autopilot/evals/dtap/tests/test_grader_isolation.py::test_isolated_launch_denies - RuntimeError: Launcher exited with code 1: Traceback (most recent call last):\n>   File \"<string>\", line 1, in <module>\n> ModuleNotFoundError: No module named 'harness'\n",
+      "truncated": false
+    },
+    {
+      "native_ordinal": 4,
+      "help_kind": "supplemental automatic contained CI diagnostic, zero paid guidance",
+      "sha256": "2e277973bfcb4922973c64e3169c8d917a015c77807d37eee249720a74c20e51",
+      "text": "The contained TU acceptance checker reported the result below for the saved candidate. Use this failure evidence to debug the existing candidate and continue the original task. Keep the original scope and test contract. The verifier will rerun after this turn.\n\nEvidence from the trusted TU V3 checker\n\n> simulated namespace missing-launcher: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare or mount not available on this host')}\n",
+      "truncated": false
+    }
+  ],
+  "objective_diagnostics": {},
+  "structural_reassessment": {
+    "rc": 0,
+    "candidate_patch_sha256": "64e5c64624fded791a5235670204af173ad9c4d1f681e82ffc3a6420ca152014",
+    "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+    "oracle_manifest_sha256": "f0f7978b540f0f83d5c5fef3e4f8e45badb11475d4c4d35cae74ea8584816c4b",
+    "acceptance_version": "TU V3",
+    "scope": "contained deterministic checker receipt only"
+  },
+  "structural_pass_implies_semantic_acceptance": false,
+  "supplemental_automatic_ci": {
+    "original_cap2_verdict": "cap2_rejected_preserved",
+    "turns_after_cap2": 2,
+    "new_paid_guidance_calls": 0,
+    "lineage": [
+      {
+        "attempt": 0,
+        "generated": 6470,
+        "charged": 6470
+      },
+      {
+        "attempt": 1,
+        "generated": 12765,
+        "charged": 12765
+      },
+      {
+        "attempt": 2,
+        "generated": 9660,
+        "charged": 9660
+      },
+      {
+        "attempt": 3,
+        "generated": 7777,
+        "charged": 7777
+      },
+      {
+        "attempt": 4,
+        "generated": 5108,
+        "charged": 5108
+      }
+    ]
+  }
+}

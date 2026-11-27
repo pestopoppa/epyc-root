@@ -1,0 +1,11 @@
+{
+  "candidate_patch_sha256": "64e5c64624fded791a5235670204af173ad9c4d1f681e82ffc3a6420ca152014",
+  "decision": "rejected",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-autoci-final-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/final-acceptance/runs/TU-GR-1/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "9e8ed58103a986c5de174137fd2c4f429af9ec41532022ed5252a2fb06a03048",
+  "normal_completion": true,
+  "qualified_structural": "TU V3 passed; independent semantic controls expose missing skip/directory-errno cases",
+  "qualification": "Initial and two automatic CI repairs retain demonstrated import/missing-launcher fixes; final proposal still violates original only-namespace-permission skip and genuine directory-denial clauses. No intrinsic model-capability claim.",
+  "review_cost_class": "paid final review49.732669s1597out; one earlier paidguidance1128out; localchain41780tokens free by convention, elapsed and all main work retained",
+  "at": 1795752323.7498412
+}

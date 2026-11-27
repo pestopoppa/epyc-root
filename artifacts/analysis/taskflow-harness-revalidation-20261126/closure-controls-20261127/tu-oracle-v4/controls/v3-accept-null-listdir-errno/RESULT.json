@@ -1,0 +1,11 @@
+{
+  "group": "v3-accept-null-listdir-errno",
+  "rc": 0,
+  "first_diagnostic": [
+    "TU-GR-1 contract passed"
+  ],
+  "test_sha256": "3c629dfdeefbd9b36000eafe432c066c608bedd71323216602d008db7bd3b052",
+  "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+  "expected_rc": 0,
+  "expected_marker": "TU-GR-1 contract passed"
+}

@@ -1,0 +1,25 @@
+{
+  "audited_by": "main",
+  "at": 1795751763.5810971,
+  "rows": [
+    {
+      "mode": "gpu-ON-on-common-light",
+      "events_sha256": "f77f601128f0384f467ec60a4f1b8d782c5b90632ca2c0854979c7b72d36a5fd",
+      "commands_audited": 4,
+      "command_scope": "only read-only staged lane source, searches, git status/diff attempt and hashes; no candidate execution or modification",
+      "expert_advisory": "ACCEPT",
+      "main_source_verdict": "accept",
+      "qualification": "OFF acceptance contradicted by independently valid receipt substitution control; baseline/diff availability audit pending; observed expert cost retained"
+    },
+    {
+      "mode": "gpu-OFF-off-common-light",
+      "events_sha256": "b2e49fa2be28120f2848d3ac948c2315f8f60e76284929486be9c9c0ab3c1f9b",
+      "commands_audited": 5,
+      "command_scope": "only read-only staged lane source, searches, git status/diff attempt and hashes; no candidate execution or modification",
+      "expert_advisory": "ACCEPT",
+      "main_source_verdict": "reject_preserved_assertion",
+      "qualification": "OFF acceptance contradicted by independently valid receipt substitution control; baseline/diff availability audit pending; observed expert cost retained"
+    }
+  ],
+  "prior_raw_reports_unchanged": true
+}

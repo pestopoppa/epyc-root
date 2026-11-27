@@ -1,0 +1,105 @@
+{
+  "case": "TU-GR-1",
+  "status": "review",
+  "job_sha256": "01b83b448067c891a5e10eda569c9371d46807bb27567cb198f49d51538a60ec",
+  "server_pid": 147287,
+  "repo_base_sha": "332ceb2e14d16f2031bd17b1f7c839ce8276a24b",
+  "task_packet_sha256": "d44945b01d24ada4ae0a360ac94fdabf10335dff010effbfdc9c88255fb7c813",
+  "session": "ses_de53dad49ffe3M7XhpEt7fmQ89",
+  "started_at": 1795751533.1213553,
+  "scope": "candidate only",
+  "session_profile": {
+    "backend": "gpu",
+    "slot": 1,
+    "thinking": false,
+    "context": 131072,
+    "request_cap": 32768,
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "public_web": true
+  },
+  "resume": {
+    "prior_run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker",
+    "receipt_sha256": "16d98d75ac7370c0b5fdfe78df3e9ff5c90c981d234d7ceb45b7c2a1018dcc0a",
+    "session_sha256": "d63e676159da3dbe484f8993076a1d389079113b04980b5f31952a137ca49a38",
+    "workspace_session_sha256": "8c268a711c3fcb4a8b85e9e94ee2f3cf1eed1911428c4017536dc3d0b9a6dc6c"
+  },
+  "prompt_sha256": "99290367bd3bc736d52ce5324109944fb777e7b8c6b99c93389cfb0366ad9a3b",
+  "opencode_config_sha256": "b013790e7085f84ab968518360222d57d8d621bd19253b853acb2c6438cd7c37",
+  "assistant_errors": [],
+  "workspace_session_sha256": "74edd5887347e14fa8e93bd39d2202f1c67f60782ea704546d800e52d508990b",
+  "changed_files": {
+    "scripts/autopilot/evals/dtap/harness/isolation.py": {
+      "sha256": "489838272587082f5d76ba64c3c0cf91f8ae6e10751d7a7fb6b28c99382def33",
+      "bytes": 8524,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+      "sha256": "8f27c7253010aa87f04c7ae96e800be4fe1d996097d062306fdf56d14f63a32e",
+      "bytes": 5094,
+      "executable": false
+    }
+  },
+  "outside_scope": [],
+  "unsafe_paths": [],
+  "runtime_artifacts": {
+    "scripts/autopilot/evals/dtap/tests/__pycache__/test_grader_isolation.cpython-312.pyc": {
+      "sha256": "19e09161803259fedd9970937c1228a5dfce5bae734911196c3e81db4908d891",
+      "bytes": 5521,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/harness/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "b980e2af7e9a058d5b96c8a5bcb0fa244f4969e1fbb69c35868e5d1ba8abe1fd",
+      "bytes": 1470,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/harness/__pycache__/isolation.cpython-312.pyc": {
+      "sha256": "7979d192649044e1e6b8c086e148b09ef200f7f0754df4bcc0c080d9f660a714",
+      "bytes": 9601,
+      "executable": false
+    },
+    ".pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    ".pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/lastfailed": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "bytes": 2,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "sha256": "4f3362baf24df904434c4c8d9a3fc88ca8d8c715cd1005c3ced83c01174f60cf",
+      "bytes": 195,
+      "executable": false
+    }
+  },
+  "patch_sha256": "bcaa29c438c9a6e59e9a6fef51977fffc169c0e2c9897c8dc1f0d485c3f42a8f",
+  "ended_at": 1795751713.1155124,
+  "generated_observed": 7777,
+  "generation_unknown": 0,
+  "charged_toward_ceiling": 7777,
+  "reserved_at_terminal": 0
+}

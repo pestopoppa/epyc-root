@@ -1,0 +1,64 @@
+{
+  "id": "TU-GR-1",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 2,
+  "allowed_next_native_correction": null,
+  "native_correction_ceiling": 2,
+  "candidate_patch_sha256": "9d1a2a5975205692de8024dd5f380b329a31bfbbf41074c5e4edb5edd90b0ac6",
+  "local_result": {
+    "id": "cpu-TU-GR-1-off-recommended-paid-2",
+    "case": "TU-GR-1",
+    "backend": "cpu",
+    "thinking": false,
+    "profile": "off-recommended",
+    "status": "awaiting_source_review",
+    "patch_sha256": "9d1a2a5975205692de8024dd5f380b329a31bfbbf41074c5e4edb5edd90b0ac6",
+    "oracle": {
+      "rc": 0,
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "acceptance_version": "TU V3"
+    },
+    "changed_files": {
+      "scripts/autopilot/evals/dtap/harness/isolation.py": {
+        "sha256": "2373f46348bb4c9027590c0dfc0e5c63b2d47763ae3cae41b1095dd3e0e1bf11",
+        "bytes": 5845,
+        "executable": false
+      },
+      "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+        "sha256": "ec4b7a967e6e2450e0ee7662e62890424b917f492fa375d29078e47fe0cf8c8c",
+        "bytes": 7829,
+        "executable": false
+      }
+    },
+    "outside_scope": [],
+    "unsafe_paths": [],
+    "generation_observed": 9193,
+    "model_wall_s": 1704.9633295536041
+  },
+  "actual_prior_help": [
+    {
+      "native_ordinal": 1,
+      "help_kind": "deterministic-objective-verifier; zero paid semantic guidance",
+      "sha256": "0b32429b49e8ff63e41338500e04b1b688404a36819819d63abc1da45361ba27",
+      "text": "Continue the same task and scope from the saved workspace and session.\n\nThe independent verifier reported:\n\nsimulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1. The validator expected listdir_ok=False and observed listdir_ok=True. The failed test was test_isolated_launch_denies.\n\nAddress that observed failure. Preserve the original requirements and rerun the task-local check.\n",
+      "truncated": false
+    },
+    {
+      "native_ordinal": 2,
+      "help_kind": "paid-main-source-guidance; one semantic round",
+      "sha256": "cac374a9120a3a7a828e0b1d0741a7f97d71f302060a9b5fdb70fdf59af08687",
+      "text": "REJECT. Candidate left unmodified.\n\nThe reachable-grader control meets the brief, but isolation/error handling remains incomplete:\n\n- `test_grader_isolation.py:164–182` skips for generic permission text and even diagnostic rerun exceptions. A mount permission failure can therefore become a skip. Only an explicit **unshare namespace setup permission refusal** may skip; preserve the original diagnostic and fail other errors.\n- `isolation.py:167–185` ignores nonzero exit status and only checks JSON keys. Reject unsuccessful launches and malformed result schemas as probe errors, including missing mount hash or invalid field types.\n- `test_grader_isolation.py:204–207` accepts either errno as denial evidence. Require the sentinel’s `open_errno` itself to be ENOENT/EACCES, plus genuine denial for listing its parent.\n- `_build_isolated_launcher` embeds a second probe before the probe argv appended by `probe_grader_access`. Remove that duplicate child so the launcher executes the harness’s child directly.\n\nCorrection entry points: `probe_grader_access`, `_build_isolated_launcher`, and `test_isolated_launch_denies` in the two permitted files.\n\nValidation: the prescribed task-local check yielded **1 passed, 1 skipped**, so namespace-capable behavior remains unverified locally. After correction, rerun it and exercise bare-command stubs: successful isolation must pass; reachable graders, mount failures, malformed/missing stdout, and nonzero launches must fail; only explicit unshare setup permission refusal may skip.\n",
+      "truncated": false
+    }
+  ],
+  "objective_diagnostics": {},
+  "structural_reassessment": {
+    "rc": 0,
+    "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+    "candidate_patch_sha256": "9d1a2a5975205692de8024dd5f380b329a31bfbbf41074c5e4edb5edd90b0ac6",
+    "acceptance_version": "TU V3",
+    "oracle_manifest_sha256": "f0f7978b540f0f83d5c5fef3e4f8e45badb11475d4c4d35cae74ea8584816c4b",
+    "scope": "deterministic checker receipt only; no semantic acceptance inferred"
+  },
+  "structural_pass_implies_semantic_acceptance": false
+}

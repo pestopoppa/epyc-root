@@ -1,0 +1,122 @@
+{
+  "adapter": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/ADAPTER-SEAL.json",
+    "sha256": "89c009474ce5bd761068fb488e17480759bd7fc13c672ad21411d86cb1bb1abc"
+  },
+  "adapter_files": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/review.py",
+      "sha256": "3babaaa0dfdddb6fceb99900587ae5b66ea459a7abba7df30a0e9614544e536b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/CODE-LOCK.json",
+      "sha256": "a6d4a13e09abed497ee382c04be69bdb74232976799e0cb5a42bb7f85e3a0e6b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/CONTROL.json",
+      "sha256": "07c1cf78d29d9a79b7bd83d85233e03b51654c73fa966bce8de4c38725c856cd"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/README.md",
+      "sha256": "fc15c27828b27c50d6e9a4d988e49793fab113cd7d1d7ac0a446334b6b8c8926"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/compare_costs.py",
+      "sha256": "cdfcbb95e4a1737c1dcffe504f6595d1c901a11b7270e4446e80240df145ca57"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/LEGACY-REVIEWS.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/test-pass-receipts/gpu-DS41-W-66-off-common-light-v2.json",
+      "sha256": "c706b12f6ea81e2f8d811bb53f759049ae58b3cb692df02218bba827b571a1a3"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/test-pass-receipts/gpu-DS41-W-66-on-common-light-v2.json",
+      "sha256": "242b75c935fb5cb07d5b5fb74934600b6617e814407fce7cbc9cfcb29ba596e2"
+    }
+  ],
+  "approval_changed": false,
+  "blinding": "Answer- and outcome-blinded. Native mode and execution metadata remain visible in the quoted terminal record.",
+  "cli": "codex-cli 0.172.0",
+  "evidence_scope": "Exact Light V2 preservation wording, staged candidate and original two-test receipt. No prior help, expected decision, substitution witness or other mode solution.",
+  "model_calls": 0,
+  "reviews": {
+    "gpu-OFF-off-common-light": {
+      "approval_template": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/APPROVAL-TEMPLATE.json",
+        "sha256": "6041aeb54882471778e7fcbcf8050e38a97c7e3875c1a676f2b43676a607600b"
+      },
+      "candidate_patch_sha256": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841",
+      "launch_state": "owner-approved launch observed",
+      "observed_launch": {
+        "approval": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/MAIN-APPROVAL.json",
+          "sha256": "45eca63c87fbee41efa6c76c18aa6129bf1fa1294e0153da6cdd37005efa9ede"
+        },
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/runs/DS41-W-66/guidance-1/launch-start.json",
+          "sha256": "da7e1d357ee1b3ad85ea3b746d6ad26ce01dda0b31f80ed786578743ef53c09a"
+        }
+      },
+      "oracle_receipt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/test-pass-receipts/gpu-DS41-W-66-off-common-light-v2.json",
+        "sha256": "c706b12f6ea81e2f8d811bb53f759049ae58b3cb692df02218bba827b571a1a3"
+      },
+      "plan": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/runs/DS41-W-66/guidance-1/plan.json",
+        "sha256": "ca451abe3d84e7636868a89ef43bf5810648bf793a48f9dd4bc2114447ec1b7a"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/runs/DS41-W-66/guidance-1/prompt.md",
+        "sha256": "f354a9ff681fc7aeca4009cda5b48b535a77af5b1fe0520fe75a323773233970"
+      },
+      "review_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance",
+      "scope": "Inspect and provide feedback only",
+      "seal": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance/SEAL.json",
+        "sha256": "e467cec19780db4ae699100a2089f2177acb9d30e0fe9f0b7e18850c3820833a"
+      },
+      "verified_candidate_files": 2962
+    },
+    "gpu-ON-on-common-light": {
+      "approval_template": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/APPROVAL-TEMPLATE.json",
+        "sha256": "b145dcf0fa583d02b2e89bf870a3a0b89e7b4135c5733af19d5fc6068a86d9a6"
+      },
+      "candidate_patch_sha256": "a24ac34ebdf412036e50b8c03f6d895b9f0fb55e40b3bc48b3e1a91b12a6e3e3",
+      "launch_state": "owner-approved launch observed",
+      "observed_launch": {
+        "approval": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/MAIN-APPROVAL.json",
+          "sha256": "d023358fca141675c2c82dbd8c63796eed37c81fe4864fc751f22cae3d1988ce"
+        },
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/runs/DS41-W-66/guidance-1/launch-start.json",
+          "sha256": "9c18e58a8b2d9e86981a50784deb9e8f6354ae32a31244345986cb8ba8793ceb"
+        }
+      },
+      "oracle_receipt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/test-pass-receipts/gpu-DS41-W-66-on-common-light-v2.json",
+        "sha256": "242b75c935fb5cb07d5b5fb74934600b6617e814407fce7cbc9cfcb29ba596e2"
+      },
+      "plan": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/runs/DS41-W-66/guidance-1/plan.json",
+        "sha256": "a010a69e7f25b12f700fac9de9ce7557ab5b1ee4ce58173d546b3536eed61007"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/runs/DS41-W-66/guidance-1/prompt.md",
+        "sha256": "e21c8b16e93b1604ebb18e4e30dba935cfa1110497abd21184aa9e481ed5c325"
+      },
+      "review_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance",
+      "scope": "Inspect and provide feedback only",
+      "seal": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance/SEAL.json",
+        "sha256": "ede4a161e63a13f9961bacd806783b546cab701732e2fb50b71db3192b56fb8b"
+      },
+      "verified_candidate_files": 2962
+    }
+  },
+  "schema": "taskflow.w66.light-v2.expert-readiness.v1"
+}

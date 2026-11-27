@@ -1,0 +1,45 @@
+{
+  "code_lock_sha256": "b7d24b19b97e515f03e4f6fe81bb44c8227ca6df43d4c92938f2cdc774d4c98e",
+  "immutable": {
+    "feedback.json": "51eb9e68f2a3fe2138d0c0310bf59cf4bd8a3691d41a963809d67859ee34c5a6",
+    "runs/PAW-5/guidance-1/plan.json": "9045149c92a904cc63fac64f8e9208ade5a4fcdd161ade050a12f3fbbcb30ab5",
+    "runs/PAW-5/guidance-1/prompt.md": "dfea8ba48a5b0661da4c963a78dfaa154f5e249d50e1a2e5d41a53455cb9b4d8"
+  },
+  "external": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/cases/PAW-5/case.json": "cea78594e1ef7aa1588351dddd51c7224f76f7d7d2144512064d1c9d5bc38e41",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/cases/PAW-5/acceptance-migration.json": "ca5bb72e0e40ef899f91dadb9bbb73658bd9d8325fcb6d9fb7da1ac4ec057f7b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/cases/PAW-5/oracle-format-v3.py": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/cases/PAW-5/oracle.py": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b"
+  },
+  "source_native_files": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/RESULT.json": "8d6ef731747910ad3b70b82950986a6edc13aed7746dcac8c5e30acb4dc45234",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/independent/candidate.patch": "076d9de9e9eb8f1a6f045abada0bdbe64fb0c6e423c606ff7f57d74df0baec20",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/RESULT.json": "a0605fa4efe46cf5d3aa6184c96e6ad3cbe795a781c14b9e15af4ca2b6758b4a",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/OPEN-CODE-SESSION.json": "518e860a32effbe5fa2f160ca39877922cafa33bfaf51d00bf960342143555c1",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/PROMPT.md": "c733e2c901125608bbb21fb784936e08ad1d55576e95a78e7d17977fe61f9bdf",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/FEEDBACK.txt": "58b9ecb5baadf1c3eda3af9ec666c70a846fcfaa222ecfe75d4894ad36012ec0",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/assistance-accounting.json": "e1eb013dd464d6247a34dd870fb2a7c375c7b47e5a42aa743d11564458359e06",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/PAW-CLEAN-PAID-2-PLAN.json": "0e3685e72d53ec3a9c0c0d44948d028bf0976c8f74cfebb22a93d6e816aa1bfe",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/PAW-PLAN.json": "0e3685e72d53ec3a9c0c0d44948d028bf0976c8f74cfebb22a93d6e816aa1bfe",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/PAW-MAIN-APPROVAL.json": "18811acc018a151c9f8fe281db8ba3619e65aaa8a7cee5efc79ddc9925253bf0",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/RUNNER-SEAL.json": "652ea6d728c0c9ee274d74dca77ba2f7e2c52acfde3225df4fe0b566e4aa753f",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/callback.py": "65b99c714c0b8f2742060f143e43dd90011a55c721a37517e46628216d5689c4",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/ORACLE.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/ORACLE.stderr.log": "54da3fc2fe4cf39debb557bd724d294717d0d126dadcf331a9605e7194d74cc2",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v3/structural/RECEIPT.json": "11c79165e574ca36b50271d06724cdc8a44acb281e68cfc70c195d06fd4d9f0c"
+  },
+  "case": "PAW-5",
+  "mode": "gpu-OFF-off-recommended",
+  "kind": "final-acceptance",
+  "native_ordinal": 2,
+  "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v3/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1",
+  "candidate_input_files": {
+    "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+      "sha256": "2d75f1375d4cb24ec447cede01de892dcf518755e7b4fcea0ec3ee1e0bfd136f",
+      "bytes": 15470,
+      "executable": false
+    }
+  },
+  "structural_is_not_semantic": true,
+  "patch_policy": "candidate git apply/check whitespace=nowarn; preserve meaningful Markdown hard-break bytes; reconstruct and hash-match every changed file against RESULT; all malformed patch errors remain fatal"
+}

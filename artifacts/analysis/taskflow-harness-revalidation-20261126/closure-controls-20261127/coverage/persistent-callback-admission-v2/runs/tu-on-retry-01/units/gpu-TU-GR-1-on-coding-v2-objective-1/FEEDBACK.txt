@@ -1,0 +1,5 @@
+Continue the same task from your saved workspace/session.
+
+The independent verifier observed: simulated namespace mount-permission-refusal: expected rc=1 and control passed / isolated failure, got rc=0. The control passed, but the isolated test was skipped on the mount error 'Operation not permitted'.
+
+Address that observed behavior within the original scope and run the task-local check.

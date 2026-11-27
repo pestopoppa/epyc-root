@@ -1,0 +1,1486 @@
+{
+  "backend": "gpu",
+  "brief_class": "independent execution from detailed pinned owner brief",
+  "case": "DS41-W-66",
+  "case_dir": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66",
+  "cohort": 0,
+  "comparison_scope": "matched sameGPU common-sampler thinkingON/OFF; no device or speed benchmark",
+  "fresh_session": false,
+  "generated_ceiling": 105889,
+  "guidance_received": "one deterministic observed assertion sensitivity failure",
+  "id": "gpu-DS41-W-66-off-common-light-v2-identity-1",
+  "profile": "off-common-light",
+  "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md",
+  "request_cap": 32768,
+  "resume": {
+    "feedback": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/FEEDBACK.md",
+    "feedback_sha256": "b3ec36dd8678c147113f682e02fee14454eafb478dc4fd4075f8e0ec3918ed96",
+    "main_model_feedback_calls": 0,
+    "ordinal": 1,
+    "prior": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2",
+    "prior_result_sha256": "a2d386c92ef7994622c4fd408d487fd886c456d121d8a0b21e4728218da1394c",
+    "prior_session_sha256": "af455e95ab5e6306b5a03798ad4ee36866304d6932edc06efee7281215f74830",
+    "prior_state_sha256": "af0d68b715de8ad4cf10fcb38a93ec5213d2fd39e35d1fe515bf7c98d2ab2e8d"
+  },
+  "same_baseline_and_oracle_as_detailed": true,
+  "sampling": {
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0,
+    "seed": 223355,
+    "temperature": 0.6,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "slot": 2,
+  "thinking": false,
+  "wall_s": 1800,
+  "manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "session": "ses_de501037bffeE6Uh1VKkKz970E",
+  "status": "oracle_pass",
+  "task_packet_sha256": "5901a75457809174b92725470f0f0fb9b39ebc0246135f9e518380f8528e572a",
+  "application_source": "dd090a874c22be58e09b18fc1fc86da7b46b1d85",
+  "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+  "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+  "acceptance_version": "original",
+  "prompt_sha256": "b3ec36dd8678c147113f682e02fee14454eafb478dc4fd4075f8e0ec3918ed96",
+  "config_sha256": "b013790e7085f84ab968518360222d57d8d621bd19253b853acb2c6438cd7c37",
+  "readonly_inputs": {
+    "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/conftest.py": {
+      "sha256": "8da147f95f8a04c52ab6a51e26ff981daa6fb93983cb921ce5c738d566d0c6a3",
+      "bytes": 11434,
+      "executable": false
+    },
+    "epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/loop/measurement_capture.py": {
+      "sha256": "b1360de97af87b7a0e1f6565a6bffbb347eb10e274408f487b00a9fb19c03c31",
+      "bytes": 42840,
+      "executable": false
+    }
+  },
+  "started_at": 1795752377.9358675,
+  "cpu_gpu_scope": "diagnostic overlapping host, C22 split-KV np4",
+  "preserve_thinking_policy": "all thinking calls; off for nonthinking",
+  "transport": "isolated OpenCode-derived adapter, with stock title metadata routed explicitly",
+  "title_policy": {
+    "sdk_model": "q35-a3b-title",
+    "thinking": false,
+    "cap": 64
+  },
+  "provider_deadline": {
+    "header_timeout": false,
+    "chunk_timeout_s": 1800,
+    "absolute_driver_wall_s": 1800
+  },
+  "request_accounting": "forwarded model transport records; SDK-side or locally rejected retries are not fully observed",
+  "assistant_errors": [],
+  "assistant_finish_reasons": [
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "stop",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "tool-calls",
+    "stop"
+  ],
+  "initial_wire": {
+    "seq": 1,
+    "body_ref": "gpu-DS41-W-66-off-common-light-v2-identity-1-0001.json.gz",
+    "tools": [
+      "edit",
+      "execute",
+      "glob",
+      "grep",
+      "question",
+      "read",
+      "shell",
+      "skill",
+      "subagent",
+      "webfetch",
+      "websearch",
+      "write"
+    ],
+    "tool_schema_sha256": "cc676efc434053b7dc1a81afc666c7d7737180c4639d9c363adbc041e5b4d37d",
+    "code_mode_catalog": true,
+    "recognized_output_cap": 32768,
+    "slot": 2,
+    "template": {
+      "enable_thinking": false
+    },
+    "sampling": {
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+    }
+  },
+  "requests": 7,
+  "generation_observed": 1778,
+  "generation_charged": 1778,
+  "generation_unknown_requests": 0,
+  "generated_budget_exhausted": false,
+  "model_wall_s": 30.476,
+  "changed_files": {
+    "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": {
+      "sha256": "169e55912cfcb058dc3b5de7621eaf9accb1963aa7300e185672aaaff56ddc88",
+      "bytes": 5874,
+      "executable": false
+    }
+  },
+  "outside_scope": [],
+  "unsafe_paths": [],
+  "runtime_artifacts": {
+    "scripts/lib/__pycache__/canonical_recipe.cpython-312.pyc": {
+      "sha256": "8fc563ef8b28fc4605efa491a484c37bd6bcb0603cf6d0301b201f460ba2c8c1",
+      "bytes": 66027,
+      "executable": false
+    },
+    "scripts/lib/__pycache__/registry.cpython-312.pyc": {
+      "sha256": "feb0b1a748b4297ad9d4dd9adc375c7cc7d651cc32761374f9d23cdb78b02eea",
+      "bytes": 27161,
+      "executable": false
+    },
+    "scripts/lib/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "acc733a1b4a0c8f4eaffd8d60da150cddf0ce8296e76495369823f315037c762",
+      "bytes": 1166,
+      "executable": false
+    },
+    "scripts/lib/__pycache__/executor.cpython-312.pyc": {
+      "sha256": "62a4b5d16b49dc1e7cd600874624f970793f0a4d76793379bb28c27d391313bf",
+      "bytes": 55088,
+      "executable": false
+    },
+    "scripts/kernel_rnd/__pycache__/conftest.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "de573aeda92defe66798ed995eb2beb5f681ab726c971b1b4968f0faecf76132",
+      "bytes": 997,
+      "executable": false
+    },
+    "scripts/kernel_rnd/.pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    "scripts/kernel_rnd/.pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    "scripts/kernel_rnd/.pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    "scripts/kernel_rnd/.pytest_cache/v/cache/lastfailed": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "bytes": 2,
+      "executable": false
+    },
+    "scripts/kernel_rnd/.pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    },
+    "scripts/kernel_rnd/.pytest_cache/v/cache/nodeids": {
+      "sha256": "eaeced94049bd568bf91eebfbea56758d96928a6f144636791157968ad3980ff",
+      "bytes": 257,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/integrity.cpython-312.pyc": {
+      "sha256": "c32e1f1eb3d40c8d652a66172d987280d1664e81374240b71d68d1be4b357136",
+      "bytes": 194375,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/recipes.cpython-312.pyc": {
+      "sha256": "4f58dc00715020f8f4d700f015a11cc2bd3c5b623625671a6bee1b244adafa18",
+      "bytes": 122229,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/c3_epyc_suite.cpython-312.pyc": {
+      "sha256": "c03a511dca5ce275b0edab74fec03e512b8c854803303612c05bdc58167fca39",
+      "bytes": 46131,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/anchor_drift.cpython-312.pyc": {
+      "sha256": "bbf990675ab2db62576e12c7610f7473fe24ce2b51ac9ea9cc82601dd2a78062",
+      "bytes": 2310,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/api.cpython-312.pyc": {
+      "sha256": "368d8528dbff60b8dddedbfe89bc3a6390ce380a5d1475445b8c2b40c9ab7ec4",
+      "bytes": 166285,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "07c62ad1e4733bb12f708faf59bf9ce2b1eee7401448e8a24c33d95fc00b140b",
+      "bytes": 2431,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/c3_epyc_tensor_capture.cpython-312.pyc": {
+      "sha256": "cd17a04b41250cb7b6f9c09a488861d072e0c88d966e2f7d9e13f6ee07f8ec1e",
+      "bytes": 93406,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/t0_policy.cpython-312.pyc": {
+      "sha256": "ee92b166a2d8b894e47d1def20c90eb3acc0eb8c80e072952c209ed39fc08277",
+      "bytes": 2713,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/statistics.cpython-312.pyc": {
+      "sha256": "49decb9c8f04a70a300df9411ee00679a8095fea93e144bec37a1b2a7f0fa87e",
+      "bytes": 208439,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/devices.cpython-312.pyc": {
+      "sha256": "c862e4330dca6d189937cf9f2a9d321ec47f7f933a86cd081433a782eb005252",
+      "bytes": 45961,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/footprint.cpython-312.pyc": {
+      "sha256": "7edf8b1e629a9fc912abeb44c41722b5795b5a55156f633add50ed35fd808dcb",
+      "bytes": 29471,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/controls.cpython-312.pyc": {
+      "sha256": "889350d9ea383a03569ce1961a2960b6d45331fe87392c2d19b273cdb96a6da8",
+      "bytes": 123788,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/correctness.cpython-312.pyc": {
+      "sha256": "2c8ad8f4e9391137e42a7155d569050970fe29561351c14899e6d4724a38667b",
+      "bytes": 237030,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/evaluator/__pycache__/surface.cpython-312.pyc": {
+      "sha256": "0e451177512168855add21e9574ae67a6bc4e27b480ee41d10d9df22146d58f9",
+      "bytes": 167182,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/lesson_cap.cpython-312.pyc": {
+      "sha256": "87d154199310ac6c64831f25427ec556dd31201365539cd28764b8508550717b",
+      "bytes": 8673,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "4a084dc881d463936f7c6d1ed0815674d98a26cf7ba3759d74925bc87ddde555",
+      "bytes": 949,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/journal.cpython-312.pyc": {
+      "sha256": "4ca35786b471a841dfd32baa502b57a347deec0e8e88a25fd6f785b26033ab0c",
+      "bytes": 230013,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/schemas.cpython-312.pyc": {
+      "sha256": "03cdf086c6cebd78e945ccf0753d9bee8592160420845b1797d465fa2f2573e8",
+      "bytes": 152703,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/lesson_caps_config.cpython-312.pyc": {
+      "sha256": "bc4d48a23cc2bd4886e59a6a4c5990b561af146747d2ab42a012f269e047f482",
+      "bytes": 2753,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/c5_seed_corpus.cpython-312.pyc": {
+      "sha256": "822fa1a3fe09108363cff9a10af0cfb7865e16b6e2ab71058db487ebf4730d80",
+      "bytes": 34974,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/custody.cpython-312.pyc": {
+      "sha256": "03009c32c4dd0b7e7f00e050007addc683c452c1980c7d8d3c55f39bdfd79745",
+      "bytes": 11915,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/bnsig_planner.cpython-312.pyc": {
+      "sha256": "b54997155e66b07d74f95720bc5a20f2055a674ada3b642728217aef42a51c7e",
+      "bytes": 19310,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/codegen_summary.cpython-312.pyc": {
+      "sha256": "8b4ab2b9a9bce36d7cc9f3e7e6f7606d674556d3dd6fff7b30243fb379d478f6",
+      "bytes": 49554,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/path_counters.cpython-312.pyc": {
+      "sha256": "5339a2bc9cb11f6d408a344fa91eb08f1f45538e586f751f9f6664768a9eeffb",
+      "bytes": 6155,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/production_pins.cpython-312.pyc": {
+      "sha256": "d962ac5a864acbf8da84ce6825b4e6735539d22db14f2b71f1a0c59bf1364783",
+      "bytes": 983,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/lesson_admission.cpython-312.pyc": {
+      "sha256": "22c6fe86ecd8ea85e3931475d16fbb3835c496ea4a3ee090f87988016a39d829",
+      "bytes": 5785,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/conftest.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "31e5f8f1ac12ae558b2f3770758449fb50edd7d727eb1c8ba93c9da24f5c1357",
+      "bytes": 13918,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/lesson_native.cpython-312.pyc": {
+      "sha256": "8d95b773895a414b29fddcee8b190383baa20289640a9d121c262e22fda2731f",
+      "bytes": 19370,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/__pycache__/storage.cpython-312.pyc": {
+      "sha256": "a30ae845a590af1f668798fb4c5518fb62d9ca2cc709b776eb2a3eb1093ed0fe",
+      "bytes": 84817,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/resource/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "41598c5901f553c267ad41bbf749632141921472f961e2ab23bc2e53a4c18c99",
+      "bytes": 1893,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/resource/__pycache__/preflight.cpython-312.pyc": {
+      "sha256": "a5c414c74545b921297e219c52285be34470a94158b7dad9c3f518d4b4885db5",
+      "bytes": 84051,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/resource/__pycache__/device_claim.cpython-312.pyc": {
+      "sha256": "6b2a5ae1ea48036b3874bda2c56116e93758d15e06f19cfe2ba232d3f1a026f4",
+      "bytes": 90582,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/build_recipe.cpython-312.pyc": {
+      "sha256": "7e414b889b105e9e84c5479eddbf9b4b5a41fb09ee2c64a0c4f04bffe066af2c",
+      "bytes": 17989,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/anchor_integrity.cpython-312.pyc": {
+      "sha256": "a2778949fa0daaf862ebe211059de2f72649b19ecd597e8ad0c77a8d5012657d",
+      "bytes": 10547,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/run_budget.cpython-312.pyc": {
+      "sha256": "a95abb94534d92dd8aa68ea04f7e2fff12cc202c50332636413c2a0f98b385ad",
+      "bytes": 18274,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/host_idle.cpython-312.pyc": {
+      "sha256": "e9e7fc6e44f7b8dd4a31314a7e6d03c77383c43f949c8c62c38e252e69cdf99b",
+      "bytes": 3989,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/shared.cpython-312.pyc": {
+      "sha256": "10cd6f24f12ad8e846da9ec00f20c78eeba07a7e2c64118fa35ccee8efb3cc54",
+      "bytes": 9204,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/loop_experiment_runner.cpython-312.pyc": {
+      "sha256": "d26e992916fb6d4a7fe99dc85ee99cef53106cb6ea2b7b3aa09dba3ffbfdec85",
+      "bytes": 43132,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "652ee0cc6832ef3f35358ec72674a7210ae26ba1ab9b8eb957135a38e468063b",
+      "bytes": 4978,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/discovery_supervisor_secure.cpython-312.pyc": {
+      "sha256": "8e2ca39b80b4a188e89ce882d3136a49b9f0d2ba890b947f51540a0d69028274",
+      "bytes": 23671,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/experiment_capture.cpython-312.pyc": {
+      "sha256": "007c1b526989eae4705862a66195a28382ffaa325dbf586ea025f0896f0e61da",
+      "bytes": 7981,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/hypotheses.cpython-312.pyc": {
+      "sha256": "e4dac9b0e8f8d25680980c90052f807eb83ca16ab0d71ef2ab38a5dbf02e4412",
+      "bytes": 220094,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/rung_confirm.cpython-312.pyc": {
+      "sha256": "c88260e42bf09cf1bfca73e31d2dba8cb5da3bf7278a33b59aee81702cb109dd",
+      "bytes": 11722,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/experiments.cpython-312.pyc": {
+      "sha256": "679a480159ae82920c3dbd5af18094af1eef748e2940689e01887e1b35e5ad56",
+      "bytes": 48808,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/do_not_repeat.cpython-312.pyc": {
+      "sha256": "8b903228ac3327456a3c127a597a835a7840a37e69e557989be4a9124414f145",
+      "bytes": 109200,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/loop_experiments.cpython-312.pyc": {
+      "sha256": "6820d1e263258cbbe4520f1bcc4cde659edec729c1030d9adcec920e3efaa878",
+      "bytes": 39347,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/inbox.cpython-312.pyc": {
+      "sha256": "74c2efeb8462825dcc3f893d7add01a7f9f4c3db39e5f4b5cad997b60e58a5e9",
+      "bytes": 4112,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/authoring_contract.cpython-312.pyc": {
+      "sha256": "774ab3a540415cd61195bc143d06beb11aaf52e33ced03d18d28d05bea8e5657",
+      "bytes": 29324,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/controller/__pycache__/workload_contract.cpython-312.pyc": {
+      "sha256": "ea8b3bfa5ec42683ed309f72bc26f178e006b8d818b7953f77427344fcc44e3e",
+      "bytes": 28664,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/reprofile_gate.cpython-312.pyc": {
+      "sha256": "292a7fdd8aabda3beab968fbd40300d8e74801cf687065a3287a513a333f852d",
+      "bytes": 3372,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/retired_mechanisms.cpython-312.pyc": {
+      "sha256": "53384bee8d3fe2f2986834afbd482d3423444837bc3f38309d5178f715f00b87",
+      "bytes": 19582,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serving_shares.cpython-312.pyc": {
+      "sha256": "d22792c5dcabe5b65b2c6297ce3aafec073be77c03225d4b0c62cde2a39ca175",
+      "bytes": 14188,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gate_graph_kld_policy.cpython-312.pyc": {
+      "sha256": "aacd87895cc8a874a1a231369b4232547775859ef728b6256fd8572e65da3e31",
+      "bytes": 3734,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/integrity.cpython-312.pyc": {
+      "sha256": "03517e7f255a89596056c0980bf03b36a6a77e1502a8cce51671bcfec753cc18",
+      "bytes": 29992,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/surface_validation.cpython-312.pyc": {
+      "sha256": "4996a699d8be7a29283448d7066aabcccbf40c79a2489e6ac654788ac51da511",
+      "bytes": 34198,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/archive.cpython-312.pyc": {
+      "sha256": "5c423083d92da47ef4a5fa18708eb7f96a5543783ad724ede808fad98014da02",
+      "bytes": 47744,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/runtime_window.cpython-312.pyc": {
+      "sha256": "71acf35624fba975d16a5888fd57bc550d9c3da64e15a962c77c8c328e70c795",
+      "bytes": 33333,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/pool.cpython-312.pyc": {
+      "sha256": "24dc3952a97a32fe914d871dadaf16381746d1269d8b6017f22c5a5c6206aff4",
+      "bytes": 45122,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/critic_provenance.cpython-312.pyc": {
+      "sha256": "c9c38fc52f314c1e19020388439aad90f39861a9bcbbe6b54c1c28a6b5f3ed1d",
+      "bytes": 6717,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/operation_preview.cpython-312.pyc": {
+      "sha256": "0a56a1862854d6f7d018c5e6d19dbcea67182a3f8f2e6ee062ec4e9119bc8a25",
+      "bytes": 6997,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/heartbeat.cpython-312.pyc": {
+      "sha256": "6b8a949a48c49d6f1bf7aebbcb33c156b5e67deaa8d638500d88f789024bdc79",
+      "bytes": 10001,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/source_loo.cpython-312.pyc": {
+      "sha256": "faadecccb932b09c161bcae8eec7a158f184d01dcc8c5d20257718a0cc7dff69",
+      "bytes": 16189,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/worker_bootstrap.cpython-312.pyc": {
+      "sha256": "079fb1c434782f0a4017773a3583c7f62a91b4b5d4d31560aa6485b6e857f70a",
+      "bytes": 16995,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/pipeline.cpython-312.pyc": {
+      "sha256": "c101e9782e38e8f9cfe4667f66f3516c573e2996f89489657cc9990332d33925",
+      "bytes": 32711,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/belief_context.cpython-312.pyc": {
+      "sha256": "abf4da4920dc15595d808a9aa792be417174a31eecc9f5714a677743cee3e7d7",
+      "bytes": 60009,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/observation_binding.cpython-312.pyc": {
+      "sha256": "bbeb65095786ff29435f098c17f0011b3f50e358156f5526db049da3702bb9eb",
+      "bytes": 59246,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/roofline_coverage.cpython-312.pyc": {
+      "sha256": "18aca6971eef3e5031f90567ce0b2ef1dacc0a29a3a1d993c624376b609229f7",
+      "bytes": 21066,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/run.cpython-312.pyc": {
+      "sha256": "78b6a9c9163d4197f886b4c044677d2412c926635bb832edb28e01a690d8d76d",
+      "bytes": 598224,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/lineage_taxonomy_wire.cpython-312.pyc": {
+      "sha256": "77ca2864564b338dc115386704c04a7b55f534f1590f6a183afcb4ccca4eaa2c",
+      "bytes": 7426,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/ram_admit.cpython-312.pyc": {
+      "sha256": "15e47bc8da2e1b453b7773af5cdf3359d0e13c293f1dc8bc5443a28f40c683f4",
+      "bytes": 9007,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/keep_timing.cpython-312.pyc": {
+      "sha256": "59049f44ec8c592be0a0afd6040032b746e581a829ff07166c7b56019ef1ef91",
+      "bytes": 14680,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/same_code_tripwire.cpython-312.pyc": {
+      "sha256": "6089dbd8f0aeba0bb278c6706da17ff977bb2022bb94562485619ce468b30e55",
+      "bytes": 9310,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/worker_recovery_inspection.cpython-312.pyc": {
+      "sha256": "25b47829a35a61d28baaf2ccf3d299e5dd8deb2ca360bcf8678e298fb8a8c250",
+      "bytes": 7715,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/runtime_combinations.cpython-312.pyc": {
+      "sha256": "895e26aca066934b0fb67c08cf47e724f503fc5d07a34d8cb521ad977e91af31",
+      "bytes": 1294,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/noop_build.cpython-312.pyc": {
+      "sha256": "3bc82da35694e60d23f59b9dcfe72c0f2bd4f02c5baf81de57646d67487e1236",
+      "bytes": 5285,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/bestof.cpython-312.pyc": {
+      "sha256": "d9cb9b5fbe6f15660648b90a208613fad3a22a919a2cc9605623426dbffb5565",
+      "bytes": 102769,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/typed_planner.cpython-312.pyc": {
+      "sha256": "ff645250b5c2b745fded8fe6ec41ec82087f1bd824a1c5b247e6c4eb1936fe72",
+      "bytes": 14541,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/futility.cpython-312.pyc": {
+      "sha256": "7a675f65591ec40b02e62e8c4a5199aa29bbb1a7fa5d69a7edc504871806429b",
+      "bytes": 6473,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/lifecycle_observation.cpython-312.pyc": {
+      "sha256": "c386eec695deef93be022b213baedb304648313baee37be9697485526188a8f6",
+      "bytes": 117310,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/cpu_stage_elapsed.cpython-312.pyc": {
+      "sha256": "4dc998daf47687972b1838899e26fde019591e29f0164d2ab2cb247038fe3752",
+      "bytes": 4189,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/comparison_validation.cpython-312.pyc": {
+      "sha256": "ac70868dcf419903f88a615d99daaf6ee57f55387908e43c5ab9ccab373a3d08",
+      "bytes": 4503,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gate_wrappers.cpython-312.pyc": {
+      "sha256": "ba03b6799d90cbb7819ed0163841c6f88da1c805346a2fa9ad8e660b0b3eb4a3",
+      "bytes": 2066,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_existing_cpu_run.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "bb5cbc7daf1f48bb449eb3724443ee8ed1c2759e2ddf152437ff032a397342d5",
+      "bytes": 85454,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/keep_lesson.cpython-312.pyc": {
+      "sha256": "5c45c6916238f86fcf272dea44a423b648b4fd4ff9fb1612c7e0fb80e77d6a6b",
+      "bytes": 6032,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/lineage_edit_diagnostics.cpython-312.pyc": {
+      "sha256": "c42cb91327cb8ea0e2c77942afd67297a0272688f470f20372184131a29988f7",
+      "bytes": 12793,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/floor_selfcheck.cpython-312.pyc": {
+      "sha256": "37bbcc478bda9acf695164b02e084dbfbad4319338dc187a5e9c556359b47b14",
+      "bytes": 15722,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/campaign_cli.cpython-312.pyc": {
+      "sha256": "7c1a5733d93a662bcdafb557c00163887189205c3d2f2d9c8f7ae0f2c2847147",
+      "bytes": 15993,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/tool_output.cpython-312.pyc": {
+      "sha256": "d8c6acc86901fc50c6de78801e4b2355fa20137c355bf0d6faee856c27f29b04",
+      "bytes": 1442,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_legacy_targets.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "b2f73186f67c7a995912a35f81e77c4ca5e8d259263b5c526ac4ad299f73401f",
+      "bytes": 62337,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/campaign.cpython-312.pyc": {
+      "sha256": "152f472c81a1cb8d2d4af1a2ab60bfe83ea1aaac320af158e3176fee365f5514",
+      "bytes": 56975,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actors.cpython-312.pyc": {
+      "sha256": "7e878d57fe1fd3f026731b1b18b0e8ce60655ec3455e20deddb04dc94e4805fc",
+      "bytes": 199984,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/status.cpython-312.pyc": {
+      "sha256": "a71d40e4a944dea0d7fa065af87ab4bee77b55c92c11cf532591d9d044bb9bbc",
+      "bytes": 25311,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gpu_phases.cpython-312.pyc": {
+      "sha256": "d5dd1029b91cf951a9400c637cbc1bcd029edf94ccd41375d844960e240c78a6",
+      "bytes": 10749,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/lane_actors.cpython-312.pyc": {
+      "sha256": "2f02ee5b46db7fcb421b3cd37ac2edfb953006ee1ce7de6397228b52ac5cee89",
+      "bytes": 8851,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/launch_affinity.cpython-312.pyc": {
+      "sha256": "1317f5beed0348168759219f3bad21c0bc2d5487bb5250007e6fe5ad5594f96c",
+      "bytes": 21963,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/integrity_pack.cpython-312.pyc": {
+      "sha256": "69186135f4d8496cd96a5d3191d6cc2c7ead09e8f024182ba1da0154429d6a89",
+      "bytes": 12420,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/pool_commit_message.cpython-312.pyc": {
+      "sha256": "ad072ee6674535b4212fa7ad7d3728a36b05cff71b511d3daf7a194fac79c528",
+      "bytes": 2317,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/prebuild_rules.cpython-312.pyc": {
+      "sha256": "8b2c3ef3dfb03ea44619ca9e585650f2615ca762e1df705bd611ff624199d52d",
+      "bytes": 7246,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/clock_policy.cpython-312.pyc": {
+      "sha256": "7cb2027f517bddb3d48f1137808426520a1f6d65de3c3be22da01f29f6c45500",
+      "bytes": 17082,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/keep_screen.cpython-312.pyc": {
+      "sha256": "26d797a9d6d2743aa2d3cd16afd2fff7d4f8800a319940b5c61fc63d46c128d0",
+      "bytes": 29538,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/runtime_calibration.cpython-312.pyc": {
+      "sha256": "26e80324129aaba1518f1de47f2e7578157f78e4926aa90fd41847ca7224a996",
+      "bytes": 71359,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serial_scheduling.cpython-312.pyc": {
+      "sha256": "aa26ac94a26d8c2e6dc73c6ea7b2e4d04788202af3042fb3f60225155958fc99",
+      "bytes": 47423,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gpu_window.cpython-312.pyc": {
+      "sha256": "b282dd974cb25c689152810d89e80515851aab8780060151ccd7e3269a85e196",
+      "bytes": 43129,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/kernel_mutation_guard.cpython-312.pyc": {
+      "sha256": "7db0151ca5922055b1e9f18b25c8f2fc3f4b602d1ef20ec15e33f836c71f49e8",
+      "bytes": 2205,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_serial_run.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "0b6657a13e37efd6bdf69e10702c2ed57c2986f14cb54988e653459d22e67be1",
+      "bytes": 342102,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/variance_keep.cpython-312.pyc": {
+      "sha256": "34981032f97ec7a077c72f4e4514fcd85a203e30496799c317839acc8abb0bda",
+      "bytes": 13419,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/search_window.cpython-312.pyc": {
+      "sha256": "bd839f55321fc3af0f496f212d6d34a9e481d8018cf09b18c4a5bfb153c3d115",
+      "bytes": 59337,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/resolved_recipe.cpython-312.pyc": {
+      "sha256": "59fbc3a2e2fcc71924cdf63a455142b42d09609fbfcae3ec19e7ea146ba974ae",
+      "bytes": 111127,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serving.cpython-312.pyc": {
+      "sha256": "419b4a746ab6d3fe3c4cee5de3330e5cc3c1adbffb9a2393f8f5c718e8a4faa1",
+      "bytes": 188496,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/cpu_screen.cpython-312.pyc": {
+      "sha256": "570463ad5a80caf1408ccbbe4e8ef5455d056aa144dbb32efa7e0393356d9e30",
+      "bytes": 42837,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/run_args.cpython-312.pyc": {
+      "sha256": "8c985c88b9c4259a3c2cc92390d02ea1b82681f40d076258ce17c9485ed3525a",
+      "bytes": 52993,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/immutable_values.cpython-312.pyc": {
+      "sha256": "d60781a24e9bd7eaaab270a4584933003f7e2b4a21ef9cbfb006f73091114629",
+      "bytes": 2265,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/new_epoch.cpython-312.pyc": {
+      "sha256": "8820a51f2d8b3c3bd5c5100b65443972f078c121f15696c9511ea6400df209df",
+      "bytes": 10503,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/dispatch_guard.cpython-312.pyc": {
+      "sha256": "833a6e163c684404c36b1a5e411c458fd064a6a26a7f1a7ac5c37de6257ca31c",
+      "bytes": 18980,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_orchestrator.cpython-312.pyc": {
+      "sha256": "5b93c08942208016d414499f6dfd7b8a42c388adab1d7b438aff1778536770bb",
+      "bytes": 36018,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/pipeline_budget.cpython-312.pyc": {
+      "sha256": "c80f81ebcffd83af563dce8b58adbbdc1f73332ca13101a348b49fc519adca87",
+      "bytes": 2071,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/provider_breaker.cpython-312.pyc": {
+      "sha256": "580018d0b0cfdea0a1d8447aad34fbe43cb38ae13448e7a1ca045c1558fcd082",
+      "bytes": 6263,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/epoch_aliases.cpython-312.pyc": {
+      "sha256": "7a87a6cb49ba7d92ce49bb35d0684fcd7d953fb38df21e2cdb14fd1b72bdd1fb",
+      "bytes": 19512,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/legacy_targets.cpython-312.pyc": {
+      "sha256": "76f7f61eb8f956c87e4730c36ae9dd5ebba90ccb72f6aa03eba799752ad64131",
+      "bytes": 8669,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/isa_claims.cpython-312.pyc": {
+      "sha256": "44c9a946418eaa5b3ef423fdc88103232590f6d3db740364d4ac5fa174491301",
+      "bytes": 22282,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "9f69ab7e74525662b68a212852e9c03b6ace67aa6d95badefed4c51a3b8c6572",
+      "bytes": 639,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/sampling_axis.cpython-312.pyc": {
+      "sha256": "84b85b4ffa006b8b8928840dbc0673b8911650ae9344cd870bc6fca77329c01b",
+      "bytes": 11799,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gate_identity_checks.cpython-312.pyc": {
+      "sha256": "a66c912b5ac2ebf14b7418333c1f1bd7826f66370dd1027838af0f799a5ff84a",
+      "bytes": 3420,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/route_defaults.cpython-312.pyc": {
+      "sha256": "beb7032bc7f8dab0756a3c627aa42119a70d1433d9ca7b03e1e2c62ae028834c",
+      "bytes": 8325,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_serving.cpython-312.pyc": {
+      "sha256": "04dad257e12d87d0713827975f29bd86f5a825c92120523ec45d28ff3928dcea",
+      "bytes": 25115,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/lineage_capture.cpython-312.pyc": {
+      "sha256": "16b3bdeca32945c760a81ff01927a18e75d0116c546a8bd096c913474e23e636",
+      "bytes": 9695,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/surface_fold.cpython-312.pyc": {
+      "sha256": "698176b7d293e992900b3840761c29aa2a61787f48f17adb3141bfb5e7850172",
+      "bytes": 24449,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/native_model_preparation.cpython-312.pyc": {
+      "sha256": "d7e0a113121f116e797d4d0cb7080632ed86fc65d04b7c47156ea8da1d8a699c",
+      "bytes": 8475,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/resume.cpython-312.pyc": {
+      "sha256": "0cd5e2f9819495055adc7370ae08b0d53d188ea7472e7d0b188df59ab063e9a1",
+      "bytes": 230247,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/blast_radius.cpython-312.pyc": {
+      "sha256": "54fbb4116cc08e088fc51b11ebd45693ac266c10e5395947625bb196e01f959b",
+      "bytes": 22249,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gpu_serving_profile.cpython-312.pyc": {
+      "sha256": "9bf442abe4ff64b632bff7305761404a1a8d4edece49b3357f7ef38706d636ce",
+      "bytes": 66681,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/field_validation.cpython-312.pyc": {
+      "sha256": "06fb178a9c2f8ced50e6826b1be89a7b248004434cec899209bbcb40dd6d9444",
+      "bytes": 5545,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/census.cpython-312.pyc": {
+      "sha256": "b730601f9484d1966c449f11d89cf90f76c5722f0c185fde9b5aee3429501c43",
+      "bytes": 12890,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_campaign.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "c6079f1eb63103ab78fe135ebeb04e0420e781b49885d772de28e2acfe8f6060",
+      "bytes": 77010,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_serving_residency.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "5c80388bc0506b64c165c0e98641518695df34d54fd3fa51d3758bd4991aef7b",
+      "bytes": 34293,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/runtime_recovery.cpython-312.pyc": {
+      "sha256": "6b77ef6fcc14bf6ceecb12bc0d809f62bf091480b0b5da46bc2a21eb8961248e",
+      "bytes": 17943,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serving_server_owner.cpython-312.pyc": {
+      "sha256": "7f5bdde1fa6f6e47391578bb5760a89c99b9a6fb3896a802d39b573460c0e7e8",
+      "bytes": 5725,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/tailsplit.cpython-312.pyc": {
+      "sha256": "5b9695f76f2a389524e8390ef39cafd36e0159972241c755e9da1a06e1878e09",
+      "bytes": 25931,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/history_fields.cpython-312.pyc": {
+      "sha256": "6c1ffd779c8ad3cadccf17b34671b67bdead592b6fb59bd12cb45d469e3f653d",
+      "bytes": 12398,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/run_actor_config.cpython-312.pyc": {
+      "sha256": "b74c81a325af5509670d15431f40631702af4155ef3f37474aa1795707863d19",
+      "bytes": 5806,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/experiment_plan.cpython-312.pyc": {
+      "sha256": "ebddae76e74bf64c9481c905edac0a90f487c575f6719e8fec1631552e5f6995",
+      "bytes": 54148,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/reflexion.cpython-312.pyc": {
+      "sha256": "a1c3e85b5dffb0b5d81437e666bc3dc88b14ff3031982ee5d4e900eafa718f92",
+      "bytes": 9082,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/served_shape_cases.cpython-312.pyc": {
+      "sha256": "2344b03587ad0a69b443788abeaf1e1e98939ae036c30dd4291c4a189d2da02c",
+      "bytes": 81849,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/phase_journal.cpython-312.pyc": {
+      "sha256": "5850dc7c5e9528a1007863fae2bf7df9908ea4cda2c6e43c342a3611032bb65c",
+      "bytes": 36825,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/claim.cpython-312.pyc": {
+      "sha256": "51ece2c977204ae5f760a111d1d42031442d78221a9921b5e8ba8ea6bacf5662",
+      "bytes": 74615,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/bench.cpython-312.pyc": {
+      "sha256": "c8aab50854fd158c47709687f1766d3e305a89d2088dccd60f6fed0a8e5e2d08",
+      "bytes": 48984,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/switch_bisect.cpython-312.pyc": {
+      "sha256": "63cb936b6309b9ba15ebb99a590fcf6a17ca1f10fb818e73e6b3e98c2902f4c7",
+      "bytes": 8029,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/census_coverage.cpython-312.pyc": {
+      "sha256": "247cabfa098443f423436ee25212a752da806bccc2faf351a7e30259910b0e1f",
+      "bytes": 12347,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_budgets.cpython-312.pyc": {
+      "sha256": "4deec95faa2e4ddc8bc7140e4418b13b44650d81d84a46d4b5e5f0a78897ce59",
+      "bytes": 2571,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/census_extract.cpython-312.pyc": {
+      "sha256": "1c48c98d27c0c688763e09c569eae53342aa9fd72e6b7296eaa35ec8589c7f5b",
+      "bytes": 48746,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/heldout_serving.cpython-312.pyc": {
+      "sha256": "1a7eb6b63a8c29d9a95c60533f86101e107dacd32ee87802c4134a50d9e1a89f",
+      "bytes": 5138,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serving_knobs.cpython-312.pyc": {
+      "sha256": "891157e950bbd9926ae956844f8cb5df470187727173ab54d7b30d1712c9af35",
+      "bytes": 31601,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serving_beliefs.cpython-312.pyc": {
+      "sha256": "7d67183a192bbd41fb9e94a86df4fe6c97acc6cdb37f4fa75ecc678e1f749579",
+      "bytes": 16067,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serving_preparation.cpython-312.pyc": {
+      "sha256": "35c050f12cb1af69d0fefa52b90dcd958df6477c04aed11ecee48533c9ff1ed0",
+      "bytes": 81674,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/stage_admission.cpython-312.pyc": {
+      "sha256": "96ed6d83449cda6af12a8c656d096a9f26a2d18f2f4082dd00b9e52fd15ec1ab",
+      "bytes": 10905,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/anchor.cpython-312.pyc": {
+      "sha256": "f31081ca725cccc01fab083df0cd12b8cc63078294c1e2053c2d141b3a6c5974",
+      "bytes": 12763,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_opencode_config.cpython-312.pyc": {
+      "sha256": "465afe051d0d92fde8f41b12399ffc8c206e1f51174c1c4996b1de4aa374af66",
+      "bytes": 39767,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/worker_lifecycle.cpython-312.pyc": {
+      "sha256": "b1e8d574e8f836624eebd7e67723893067927a7030500923c9c0d7726748ed55",
+      "bytes": 157974,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/hip_launch_proof.cpython-312.pyc": {
+      "sha256": "f9b81d1b894313944b1406ab29caf4c8d763980b68886c245dfb50751bcb446f",
+      "bytes": 11213,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_resolved_recipe.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "b85f6e8478bd5176fe4586ad80a9faa80d8caf436a1d14285a4d7d9bd4ebf657",
+      "bytes": 49464,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/floor_registry.cpython-312.pyc": {
+      "sha256": "6c75d9336f9c71317513c059cabef77e1f697b227e7237736c3a9981900a7a8d",
+      "bytes": 82651,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/hotspots.cpython-312.pyc": {
+      "sha256": "cdd6ff99a58e738c0e510f271db90699e2a44bc5236e304a61d25bdfcdc46edd",
+      "bytes": 20680,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/champion.cpython-312.pyc": {
+      "sha256": "4cd85b95196e27839dd221bdf6d36342b42da11c0673ac789c9236dd28d75b9c",
+      "bytes": 21356,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/trial_lifecycle.cpython-312.pyc": {
+      "sha256": "eb2ebc4e6fc813278283f36be68877b84b3b47633c7ead0ac5fd122b3b2fd740",
+      "bytes": 9580,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/census_reconcile.cpython-312.pyc": {
+      "sha256": "ac83e5ba476b630fddb4e54762d36f291245addd2933dd1bbfcbd74e901f7f9b",
+      "bytes": 5746,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/runtime_identity.cpython-312.pyc": {
+      "sha256": "8988396d3116c80ceb3f83f6e9bf956c8762d85848f59a9eb9b8c29ea68cdf91",
+      "bytes": 22920,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/scheduling.cpython-312.pyc": {
+      "sha256": "398927def904bdf9578547f8699d0eb3e9b306fbfe32f26dff49e955c975ca38",
+      "bytes": 158861,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/runtime_arms.cpython-312.pyc": {
+      "sha256": "18cfc50f623bd51594c281afe1851aebf98a76469fd1691c943a2e4eaa6b232f",
+      "bytes": 45604,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/runtime_admission.cpython-312.pyc": {
+      "sha256": "247623d99011be9fef53be41201897502c242492c0427803f5dabd1d294b2078",
+      "bytes": 81265,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/build_slot.cpython-312.pyc": {
+      "sha256": "f97875ec2080626b38840c400227be9b244246459aae93539bc3ed1407a2f170",
+      "bytes": 6315,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/run_author_plan.cpython-312.pyc": {
+      "sha256": "e466cbcd03d4567cef406c27cfc7ca8779d7e917f91fa252127ef1912836d93e",
+      "bytes": 6102,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/production.cpython-312.pyc": {
+      "sha256": "a8a3d0746d9403be3d85fa00823554ed2e2db0fc68d665bacaa29ca7a280c5a4",
+      "bytes": 116658,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/cross_target.cpython-312.pyc": {
+      "sha256": "6c447cf2b596abc83089b81d3833ebb859b6d89e32ea2e254b79577a014c6241",
+      "bytes": 44260,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/longctx.cpython-312.pyc": {
+      "sha256": "a9219413b2c3c1c0c871b585bbd47f506fc694c9f14cfa1284e2f20da00d4d79",
+      "bytes": 79992,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/scoped_evidence.cpython-312.pyc": {
+      "sha256": "46bc4b196f757a9df56dcd5ccfaff25ff7ab3bc12bcf1cddf037846d424afcf3",
+      "bytes": 117137,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/bottleneck_signature.cpython-312.pyc": {
+      "sha256": "ff5bc1b6a79c8147ea593e428fe80d39ff44916ad9520ad7058691d377b4eaee",
+      "bytes": 22486,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/exact_lane.cpython-312.pyc": {
+      "sha256": "09f2f59d4173f4d16a4f15cf3c0d8b7d6ee0f05cd81e1412b6bc3642e39c348d",
+      "bytes": 23580,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/loop.cpython-312.pyc": {
+      "sha256": "175aa3fbf4e8549b9db690cc2180a0923ab1c5fed2a59a9c0cc1680a92d70226",
+      "bytes": 106220,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_glm_frozen_requests.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "7a5d68366d406813d2a5495b867ca655c8ba9f0ade8c248e809f6c2239b8a244",
+      "bytes": 35666,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_metrics.cpython-312.pyc": {
+      "sha256": "0cc1bb485bbd5f04cab6e64b49a968e942b4e105935120424b01503aa042eca9",
+      "bytes": 54115,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/spec_temperature_gate.cpython-312.pyc": {
+      "sha256": "1e02376917d00f0341ceb6c0d8f86cdaace5542ab76e50e5caddb8a9660c82c0",
+      "bytes": 7381,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/planned_serving.cpython-312.pyc": {
+      "sha256": "552190f773c98172ab3424b79f40fd5f5e868c503a388abf3c6ecd723453d266",
+      "bytes": 56051,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/accumulate.cpython-312.pyc": {
+      "sha256": "ce2788ebb99acefec9a66e63ef19763eef20a0d3af6c450084a686a9ac043d25",
+      "bytes": 63494,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/scratch.cpython-312.pyc": {
+      "sha256": "4594a14a4de1c9d4681e9fab55a3d19b0b69c966c815d13b4c428ed540c4bc6b",
+      "bytes": 73862,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/native_server_response.cpython-312.pyc": {
+      "sha256": "3e5512237239e8c5db08135a4e022fdef3310121b6b5a201ada81da11deedbd2",
+      "bytes": 28829,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serial_build_retention.cpython-312.pyc": {
+      "sha256": "5ff4b366da899aba77b1784030cf915ca666e2b910904c9c149ae2d636d2ae5d",
+      "bytes": 27904,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/cpu_window.cpython-312.pyc": {
+      "sha256": "fd2c7a4f5ed3618b244e1523b101d6c4d48ce9632d1bcc08d39e025ce6f5caf0",
+      "bytes": 50647,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/headline_admissibility.cpython-312.pyc": {
+      "sha256": "a43bd156271b9653c2d45665066349206afc706ad7b135b4097184d8f61e7651",
+      "bytes": 7499,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/unified_planner.cpython-312.pyc": {
+      "sha256": "f2c7189465d057fad56a012b901e16b283c3e49c34d3a4fbc41c5b177b52d931",
+      "bytes": 92798,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/census_update.cpython-312.pyc": {
+      "sha256": "170e203ed372a01f5fcac3bac0fde05cf4a8cb205a25304a1883bc6cf152541c",
+      "bytes": 87589,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/procguard.cpython-312.pyc": {
+      "sha256": "a1d7829148cf0b0b19baedcc399412b68c98de26ca895b0597b175145bebfa2d",
+      "bytes": 52175,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/ak_check.cpython-312.pyc": {
+      "sha256": "c5691dd9016d66493b1ef5c56ab19fbf743ebd2d163dc651a5eae977c7fc227a",
+      "bytes": 97009,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/cpu_profile.cpython-312.pyc": {
+      "sha256": "ffdf639bc70b4049751e6054c891da5a74a49f9d16e87ecbacc5abc8beb7dece",
+      "bytes": 112300,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_render.cpython-312.pyc": {
+      "sha256": "51f3e790dd3e26dd7d6329f63bdf1ee55c82e21b93268052dcd0f11fcfbdeb81",
+      "bytes": 61510,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/journal_keys.cpython-312.pyc": {
+      "sha256": "1fdbeef6989fcd537432a9212bbd6b71833dc873900a41509018b788c9d2ac72",
+      "bytes": 15809,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gpu_counter_signals.cpython-312.pyc": {
+      "sha256": "e1d64dd0cfb5c77a7e2733a0586600fc314d67139d9a03e4318a584ca7a6fbaf",
+      "bytes": 27793,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/tail_timing.cpython-312.pyc": {
+      "sha256": "44c7336897de329672af79e3c489fc2d2306ad91cadc38bef75efd0f88d3efde",
+      "bytes": 26916,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/native_capture_control.cpython-312.pyc": {
+      "sha256": "885c9e9c0f6bfeb6f2bd6e97ddab31fdd409a2931460abac6234131c0e993475",
+      "bytes": 58840,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_planned_serving.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "da92ee184866b06664913ffba5b4b56557bcabe2ca572491bab3669a2e2afc47",
+      "bytes": 59477,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/deadline_reserve.cpython-312.pyc": {
+      "sha256": "f27f36cd8dc33d6d1b3e932e256c4953be7aaddbccb1e34e8ed0030a1de7f206",
+      "bytes": 4682,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_promotion_targets.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "66aec76e72fa4dcbf5fb90ddaadfcb493ba7ff8fc1b58d97b3052ec025bb5f37",
+      "bytes": 49789,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/stage_footprint.cpython-312.pyc": {
+      "sha256": "0f69cefe3a7e954cceed3dce4473204b02c302ec68490ad7d7289136a83ab4d4",
+      "bytes": 13477,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/residency.cpython-312.pyc": {
+      "sha256": "e8315b59b242b9ab686498a4356ec18ad3be4913ce88ecf50561a9caca2e1d09",
+      "bytes": 54562,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gates.cpython-312.pyc": {
+      "sha256": "a4fd618ccaa885b4ab02a0e321cf522ba591720cf26b369587ecec481779dda8",
+      "bytes": 241865,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/planner_only.cpython-312.pyc": {
+      "sha256": "f29bca0de2105c090c8f928b90f96e594b4c5e08f920891960651a79cf387c0d",
+      "bytes": 21771,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/measurement_capture.cpython-312.pyc": {
+      "sha256": "c2d30dbe525989d7055fb91856b1a5f8633126d619edd946e6b519655f490f8b",
+      "bytes": 56701,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/kernel_coverage.cpython-312.pyc": {
+      "sha256": "aa72cc08dc82d574c48baa71d4be64b60fe266dc7f0c074cb00573429032d70f",
+      "bytes": 49676,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_experiment_plan.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "7c4bc2c1c073f62fab9c34208bccb73493bedb9b5a1f1e64d14bd043c7dbe633",
+      "bytes": 105855,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/stage_coordination.cpython-312.pyc": {
+      "sha256": "ff819ff5eecb18b9f61693fcb869963f38a305d4dc3e9e2619c0d2656b6ba6c9",
+      "bytes": 21518,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/test_runtime_keep_source_continuity.cpython-312-pytest-7.4.4.pyc": {
+      "sha256": "c6335ba95a34cd9a145e26957106ffc9ad710af7b987b736873e8b1d0c216fc8",
+      "bytes": 20716,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_wire_gate.cpython-312.pyc": {
+      "sha256": "30e82084f7d233a1867507474e23b7c66c9d7df613f02b50dd8db7be1ca858ce",
+      "bytes": 10737,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/gpu_counter.cpython-312.pyc": {
+      "sha256": "3a1966cb31b7a24f5ad0ab589dd0657fedae7a5d08c57a0e19ae69dfbe824ee5",
+      "bytes": 18607,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/lane_watchdog.cpython-312.pyc": {
+      "sha256": "9e52f3a361a9c5d0750137fdb96a2c98c1713a4b3d75404d1cfd89eda52b57a4",
+      "bytes": 41822,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/loadgen_selfcheck.cpython-312.pyc": {
+      "sha256": "69bcb69f33a573737c0ab35bb2ed0b77e02414bd4a5ddd59b58b92cf3fdde36a",
+      "bytes": 9388,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/cpu_repack_cases.cpython-312.pyc": {
+      "sha256": "5b49dce3e6893631b5b7f8b39f697285b19462d3725f37ca98b0cb18b8ea54f3",
+      "bytes": 57850,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/cpu_routes_table.cpython-312.pyc": {
+      "sha256": "2703a216473ba1c1b7cb9867228e6b7921c1663c75fcd5c61d7ad60b808fbb07",
+      "bytes": 25674,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/arm_accounting.cpython-312.pyc": {
+      "sha256": "b74a730599d15fa10ac4e00bb7611c84af99482a7fc847cd34a48a3758a0b29d",
+      "bytes": 10699,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/amdahl.cpython-312.pyc": {
+      "sha256": "34fa55335f5be90ab374b82c9fb0ec5709aefea2f021fb35eeae48752f478d05",
+      "bytes": 11517,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/experiment_plan_fields.cpython-312.pyc": {
+      "sha256": "839059291523f2fe7bb9b5e7f2e9ba170ed70e469fa1576178a6069b49d1fa2f",
+      "bytes": 4960,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serial_run_resume_option.cpython-312.pyc": {
+      "sha256": "03f4242648c402340fa916524de7e0b5a1fb2559ed10ab0a007d4bc3e6fa3126",
+      "bytes": 1654,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/integrity_patterns.cpython-312.pyc": {
+      "sha256": "ac6887f8f09d417bcc31f17acc875de72ba1f32843cc925e8b926b67e0e9b556",
+      "bytes": 3217,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/call_budget.cpython-312.pyc": {
+      "sha256": "d3458f16064ca2e2cffdb86a32c4787d9f569434d2f80da05f0f58e3eab628f1",
+      "bytes": 3824,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/serial_run.cpython-312.pyc": {
+      "sha256": "1675b3f8bf41d02feafdfdc5a5eea21843654268577a10eb39c1eb75da2bcdff",
+      "bytes": 182878,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/node_profile.cpython-312.pyc": {
+      "sha256": "c6e6bea76cb7c5dda676c8c3323e515dfb3920f3f6676f024db3556116d11cd4",
+      "bytes": 32998,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/actor_passthrough.cpython-312.pyc": {
+      "sha256": "b70ed8475b7c1428211412aa3df0dabf479c53a7686b6236d83ab5bb0cb4fdec",
+      "bytes": 12741,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/lineage_beliefs.cpython-312.pyc": {
+      "sha256": "0e1f5907d08faa9bebdb733a374464619ab1d21aa130d84ead64278b9521a0e9",
+      "bytes": 9189,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/floor_units.cpython-312.pyc": {
+      "sha256": "76828a69572c22c213755373d69fda945821c227d386621929be49e246d98bd8",
+      "bytes": 612,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/claims.cpython-312.pyc": {
+      "sha256": "8205b12abc54f14f021e43304c027e8e23c70068031f76a0a9f245317a97c67f",
+      "bytes": 4028,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/loop/__pycache__/same_state_stop.cpython-312.pyc": {
+      "sha256": "1cf5fe7a2d390dff84070fa6e53245d28e0752cfdaa3b2cd5e34e851893f62bd",
+      "bytes": 21269,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/instrument_integrity.cpython-312.pyc": {
+      "sha256": "a8c74e4fbaefaeab0feb69f2dff9379292e884034981a1a60e1faf2c01477d3e",
+      "bytes": 6294,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/__init__.cpython-312.pyc": {
+      "sha256": "1c2f6fa2f282b548a0dd87a363b867503091229efb5f3705d8fd5b9194be161e",
+      "bytes": 1530,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/cpu_region_claim.cpython-312.pyc": {
+      "sha256": "5a129a510c0a3bcfad044db74bb15d3619e0304337f7d56a7353afa0da9ed8fa",
+      "bytes": 122440,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/provider.cpython-312.pyc": {
+      "sha256": "60076be0726e9f70a028dbbd8dab4eb0d0bb3caebc2549ef0efa7a325923f376",
+      "bytes": 25702,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/sandbox.cpython-312.pyc": {
+      "sha256": "421055f7700459dd3c6fde56c133333b93a2221df49852a5572861f378f7e314",
+      "bytes": 58393,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/server_generation.cpython-312.pyc": {
+      "sha256": "7b81c0b081b51cc2cc2f10dccf3feb7f781e844d17d6bf7cd702575b3eb68950",
+      "bytes": 7434,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/reward_hack_scan.cpython-312.pyc": {
+      "sha256": "c2cac35ca27e6cb95735533ffff7078cea2026b034db3637ac538db17b323cde",
+      "bytes": 15891,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/microbench.cpython-312.pyc": {
+      "sha256": "477d4ba7298027d665cf88dde5c2ed7089bde368f2f21a8b254caba40b6b4823",
+      "bytes": 296538,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/physical_bounds.cpython-312.pyc": {
+      "sha256": "68ab3724a3bdb93615bb11c2e6e926459737633d1f9f22d710d594c4befe4937",
+      "bytes": 12042,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/device_sampler.cpython-312.pyc": {
+      "sha256": "6d53596b2a140076f9f64d815b20a27f48155fe6e56ff17eb744ee40f709761e",
+      "bytes": 28478,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/worktree.cpython-312.pyc": {
+      "sha256": "1868977063539b1d925b788295ec97128bb9a6ea4ef50cc64c224765234b127a",
+      "bytes": 193347,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/t0_provider.cpython-312.pyc": {
+      "sha256": "a281d16913ac125d6d7918578367d993b7db3cbb1bcec8a51db9326286ddfdc9",
+      "bytes": 228106,
+      "executable": false
+    },
+    "scripts/kernel_rnd/autokernel/execution/__pycache__/reward_hack_scan_solx.cpython-312.pyc": {
+      "sha256": "b849a542f1bf60d38e26413f7c938764255712b3115cf8605ece5a4c5d99e68f",
+      "bytes": 18428,
+      "executable": false
+    },
+    "scripts/benchmark/__pycache__/belief_capture.cpython-312.pyc": {
+      "sha256": "a35d99eb62b2e4f1d8538c7fd567e4f4d6939939d9df9641612855b7c9c6db49",
+      "bytes": 7110,
+      "executable": false
+    }
+  },
+  "patch_sha256": "86e3e718041bbf66303640a45008fe0c78c700d705a7b35b0252621c93e97c1b",
+  "oracle": {
+    "rc": 0,
+    "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "stdout_sha256": "88bf8642eed3a209a5997014e849f36f84ecb571e55791c7f8841e935dcd387b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true
+  },
+  "review_required": true,
+  "terminal_at": 1795752415.3887355
+}

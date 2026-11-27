@@ -1,0 +1,42 @@
+{
+  "id": "gpu-DS41-W-66-off-common-light-v2-identity-1",
+  "case": "DS41-W-66",
+  "backend": "gpu",
+  "slot": 2,
+  "supervision": {
+    "pid": 1796053,
+    "returncode": 0,
+    "reason": null,
+    "elapsed_s": 39.7,
+    "force_kill": false
+  },
+  "cleanup": {
+    "owned_container": "ws58-a3b-stock-849d0dc7d4",
+    "removed_verified": true
+  },
+  "previous_attempts": [
+    {
+      "generated": 14111,
+      "model_wall_s": 1133.295,
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2",
+      "status": "oracle_pass"
+    }
+  ],
+  "native_status": "oracle_pass",
+  "raw_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/RESULT.json",
+  "terminal_at": 1795752415.4150724,
+  "source_guidance": {
+    "class": "deterministic receipt substitution observation only",
+    "ordinal": 1,
+    "original_two_test_pass_and_owner_adjudication_preserved": true,
+    "paid_model_calls": 0
+  },
+  "current_local_tokens": 1778,
+  "supervision_wall_s": 600,
+  "sdk_wall_s": 1800,
+  "cumulative_generated_ceiling": 120000,
+  "known_combined_local_tokens": 15889,
+  "parts_with_unobserved_tokens": 0,
+  "status": "oracle_pass",
+  "same_session": true
+}

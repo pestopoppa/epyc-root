@@ -1,0 +1,12 @@
+{
+  "group": "actual-auto-ci2-v3",
+  "rc": 0,
+  "first_diagnostic": [
+    "TU-GR-1 contract passed"
+  ],
+  "test_sha256": "105fec81ca8bbd399f2e6726bb3961b36fea422285ab59e18cbd4681d8b6c9a4",
+  "harness_sha256": "489838272587082f5d76ba64c3c0cf91f8ae6e10751d7a7fb6b28c99382def33",
+  "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+  "expected_rc": 0,
+  "expected_marker": "TU-GR-1 contract passed"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "gpu-TU-GR-1-on-coding-v2-objective-1",
+  "case": "TU-GR-1",
+  "backend": "gpu",
+  "slot": 0,
+  "supervision": {
+    "pid": 1636329,
+    "returncode": 0,
+    "reason": null,
+    "elapsed_s": 217.043,
+    "force_kill": false
+  },
+  "cleanup": {
+    "owned_container": "ws58-a3b-stock-1e56b24d47",
+    "removed_verified": true
+  },
+  "previous_attempts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding",
+      "generated": 13671,
+      "worker_wall_s": 541.2324447631836
+    }
+  ],
+  "native_status": "review",
+  "raw_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/worker/receipt.json",
+  "terminal_at": 1795751902.4924734,
+  "source_guidance": {
+    "paid_model_calls": 0,
+    "ordinal": 1,
+    "class": "TU V2 mount observation only",
+    "empty-map failure was never submitted": true
+  },
+  "current_local_tokens": 9118,
+  "known_combined_local_tokens": 22789,
+  "parts_with_unobserved_tokens": 0,
+  "status": "awaiting_source_review",
+  "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/grade-lane",
+  "worker_receipt_sha256": "ec511af49f985e49f5b4841943d85f831aa20f4fc1d2ef12433e836a3c3e5618",
+  "same_session": true
+}

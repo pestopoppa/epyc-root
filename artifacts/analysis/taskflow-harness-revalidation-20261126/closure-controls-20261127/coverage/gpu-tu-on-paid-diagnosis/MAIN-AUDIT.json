@@ -1,0 +1,17 @@
+{
+  "at": 1795752356.092839,
+  "events_sha256": "872f68222a3c1712efab161cbf6ff13ce54f0ef1eeac35046670e8659055c978",
+  "completed_commands_audited": 7,
+  "scope": "read-only staged source/diff/pinned brief and originaltaskcheck, independent temporary mock EIO check; candidate unchanged",
+  "advisory": "REJECT",
+  "main_agrees": true,
+  "qualification": "Injected EIO accepted in isolated test conflicts with actual denial requirement; source-grounded terminal feedback may drive original paid correction2",
+  "feedback_sha256": "d7e42b8265da1c8ee246ed1f8d29e639eb2efc4d4611ee5a0ad7d7f3d9e2a076",
+  "observed_usage": {
+    "input_tokens": 187614,
+    "cached_input_tokens": 171904,
+    "output_tokens": 1291,
+    "reasoning_output_tokens": 78,
+    "uncached_input_tokens": 15710
+  }
+}

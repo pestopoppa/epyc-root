@@ -1,0 +1,12 @@
+{
+  "group": "main-function-positive",
+  "rc": 0,
+  "first_diagnostic": [
+    "TU-GR-1 contract passed"
+  ],
+  "test_sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede",
+  "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "expected_rc": 0,
+  "expected_marker": "TU-GR-1 contract passed"
+}

@@ -1,0 +1,30 @@
+{
+  "bound_inputs": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": "9d19382476f794f69169e2f6754ff5baefff5afbf4f9b7171b0e3f570bb8d93c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/PLAN.json": "4d1ed8cb2386558b090a051479222ac107f8f8a193441be40f39eb4e2e0040b8",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/RUNNER-SEAL.json": "106eed9eb78c775d85941c359d1a999eb5c637da12f5bfbf91406962de220427",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/APPROVAL.json": "c52f3390a5d47c2170a9c7d08301c36e55b217e70e7577049669abc3bac480ed",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/CALLBACK-RESULT.json": "edc02d40d54715818b1b7cd55d8973319e0c1df0ae526a5aa1b1169e43551449",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/ORACLE.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/ORACLE.stdout.log": "88bf8642eed3a209a5997014e849f36f84ecb571e55791c7f8841e935dcd387b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/RESULT.json": "1324bc0a45614db37c0cb5d6a8ff9d3533adec61352c8a7cf758c48635af20d4",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/independent/candidate.patch": "86e3e718041bbf66303640a45008fe0c78c700d705a7b35b0252621c93e97c1b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/runs/identity-01/units/gpu-DS41-W-66-off-common-light-v2-identity-1/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": "169e55912cfcb058dc3b5de7621eaf9accb1963aa7300e185672aaaff56ddc88",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-w66-light-native/REVIEW.json": "a3a287683ab947b79154e6ff77404b02083854a21afa4ede85d388abf2f2d8de",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/REPORT-full.json": "ce0aec2adbc5a83d7ee45c2573ffb814c4cd8de7461b8fbce7fe278c9b6b316e",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/SOURCE-CONTROL.sha256": "85075d9e8199128edec575e55eae65fb0bf0b3fa0b9141e44ed87000fe39ee6c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/observer.py": "2b251ee54206e8281640c776634e5b88cbf42409fcc5bc7b0781acd9f1055f4d"
+  },
+  "candidate_patch_sha256": "86e3e718041bbf66303640a45008fe0c78c700d705a7b35b0252621c93e97c1b",
+  "candidate_source_sha256": "169e55912cfcb058dc3b5de7621eaf9accb1963aa7300e185672aaaff56ddc88",
+  "hand_review_unisolated": true,
+  "id": "gpu-DS41-W-66-off-common-light-v2-identity-1",
+  "new_local_generated": 1778,
+  "new_native_model_wall_s": 30.476,
+  "old_style_tests_passed": true,
+  "prior_scope_comparison": "exact source change only captures and asserts fixture receipt",
+  "same_session": "ses_de501037bffeE6Uh1VKkKz970E",
+  "supervision_wall_s": 39.7,
+  "total_local_generated": 15889
+}

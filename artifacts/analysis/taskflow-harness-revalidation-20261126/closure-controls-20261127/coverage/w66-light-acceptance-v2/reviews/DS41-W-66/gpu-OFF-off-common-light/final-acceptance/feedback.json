@@ -1,0 +1,80 @@
+{
+  "id": "DS41-W-66",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 0,
+  "allowed_next_native_correction": null,
+  "native_correction_ceiling": 2,
+  "candidate_patch_sha256": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841",
+  "local_result": {
+    "id": "gpu-DS41-W-66-off-common-light-v2",
+    "case": "DS41-W-66",
+    "backend": "gpu",
+    "thinking": false,
+    "profile": "off-common-light",
+    "status": "oracle_pass",
+    "patch_sha256": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841",
+    "oracle": {
+      "rc": 0,
+      "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "acceptance_version": "original",
+      "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "stdout_sha256": "9e1875d1b30ebfbe7de0fa81ec412125b28d88c64b87940ff363c6b789ec847b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true
+    },
+    "changed_files": {
+      "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": {
+        "sha256": "9d19382476f794f69169e2f6754ff5baefff5afbf4f9b7171b0e3f570bb8d93c",
+        "bytes": 5892,
+        "executable": false
+      }
+    },
+    "outside_scope": [],
+    "unsafe_paths": [],
+    "generation_observed": 14111,
+    "model_wall_s": 1133.295
+  },
+  "actual_prior_help": [],
+  "objective_diagnostics": {
+    "ORACLE.stdout.log": {
+      "text": "..                                                                       [100%]\n2 passed in 3.99s\n",
+      "sha256": "9e1875d1b30ebfbe7de0fa81ec412125b28d88c64b87940ff363c6b789ec847b",
+      "truncated": false
+    },
+    "ORACLE.stderr.log": {
+      "text": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    }
+  },
+  "structural_reassessment": {
+    "case": "DS41-W-66",
+    "source_unit": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2",
+    "source_result_sha256": "a2d386c92ef7994622c4fd408d487fd886c456d121d8a0b21e4728218da1394c",
+    "candidate_patch_sha256": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841",
+    "checked_candidate_files": {
+      "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": {
+        "sha256": "9d19382476f794f69169e2f6754ff5baefff5afbf4f9b7171b0e3f570bb8d93c",
+        "bytes": 5892,
+        "executable": false
+      }
+    },
+    "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "rc": 0,
+    "two_listed_tests_passed": true,
+    "acceptance_command": "python3 -m pytest -q scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+    "stdout_sha256": "9e1875d1b30ebfbe7de0fa81ec412125b28d88c64b87940ff363c6b789ec847b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_stdout": "..                                                                       [100%]\n2 passed in 3.99s\n",
+    "source_files": {
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/RESULT.json": "a2d386c92ef7994622c4fd408d487fd886c456d121d8a0b21e4728218da1394c",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/ORACLE.stdout.log": "9e1875d1b30ebfbe7de0fa81ec412125b28d88c64b87940ff363c6b789ec847b",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/ORACLE.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/independent/candidate.patch": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841"
+    },
+    "prior_feedback_count": 0,
+    "semantic_acceptance_inferred": false,
+    "rerun_policy": "avoid repeating equivalent passed tests; independent semantic source/assertion review is still required"
+  },
+  "structural_pass_implies_semantic_acceptance": false
+}

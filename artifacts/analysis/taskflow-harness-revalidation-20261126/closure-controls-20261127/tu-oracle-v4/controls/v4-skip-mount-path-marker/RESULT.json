@@ -1,0 +1,11 @@
+{
+  "group": "v4-skip-mount-path-marker",
+  "rc": 1,
+  "first_diagnostic": [
+    "simulated namespace mount-permission-path-unshare: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'Grader probe exited 1: mount: /tmp/taskflow-tu-grader-du_8123u/mount-permission-path-unshare/test_isolated_launch_denies0: Operation not permitted')}"
+  ],
+  "test_sha256": "f4c543aa0bd6344e67654006e9b0d15453d5c3df0f3c4f798b5a06fa76960782",
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "expected_rc": 1,
+  "expected_marker": "simulated namespace mount-permission-path-unshare"
+}

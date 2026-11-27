@@ -1,0 +1,85 @@
+{
+  "case": "TU-GR-1",
+  "status": "review",
+  "job_sha256": "ae70105eb6d48764dc36c4edb9619242466b5fd1d3d81f9e381579f39383cc79",
+  "server_pid": 147287,
+  "repo_base_sha": "332ceb2e14d16f2031bd17b1f7c839ce8276a24b",
+  "task_packet_sha256": "d44945b01d24ada4ae0a360ac94fdabf10335dff010effbfdc9c88255fb7c813",
+  "session": "ses_de53dad49ffe3M7XhpEt7fmQ89",
+  "started_at": 1795751718.6384318,
+  "scope": "candidate only",
+  "session_profile": {
+    "backend": "gpu",
+    "slot": 1,
+    "thinking": false,
+    "context": 131072,
+    "request_cap": 32768,
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "public_web": true
+  },
+  "resume": {
+    "prior_run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/runs/auto-01/units/gpu-TU-GR-1-off-common-on-sampling-auto-ci-1/worker",
+    "receipt_sha256": "b4832803efb85786bc692cc8afe128bb92a361fb785a4a61f9f80bfad7e86180",
+    "session_sha256": "d50c2e8da18d81e9dcae6298c2f1b319e6246af698d8a2349fa88f56da4d380b",
+    "workspace_session_sha256": "74edd5887347e14fa8e93bd39d2202f1c67f60782ea704546d800e52d508990b"
+  },
+  "prompt_sha256": "2e277973bfcb4922973c64e3169c8d917a015c77807d37eee249720a74c20e51",
+  "opencode_config_sha256": "b013790e7085f84ab968518360222d57d8d621bd19253b853acb2c6438cd7c37",
+  "assistant_errors": [],
+  "workspace_session_sha256": "578f162b106f7a032cbcdc90c3544f388607aea81063f2f294f2ba053a3e3a4f",
+  "changed_files": {
+    "scripts/autopilot/evals/dtap/harness/isolation.py": {
+      "sha256": "489838272587082f5d76ba64c3c0cf91f8ae6e10751d7a7fb6b28c99382def33",
+      "bytes": 8524,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+      "sha256": "105fec81ca8bbd399f2e6726bb3961b36fea422285ab59e18cbd4681d8b6c9a4",
+      "bytes": 4717,
+      "executable": false
+    }
+  },
+  "outside_scope": [],
+  "unsafe_paths": [],
+  "runtime_artifacts": {
+    ".pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    ".pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "sha256": "4f3362baf24df904434c4c8d9a3fc88ca8d8c715cd1005c3ced83c01174f60cf",
+      "bytes": 195,
+      "executable": false
+    }
+  },
+  "patch_sha256": "64e5c64624fded791a5235670204af173ad9c4d1f681e82ffc3a6420ca152014",
+  "ended_at": 1795751864.0403988,
+  "generated_observed": 5108,
+  "generation_unknown": 0,
+  "charged_toward_ceiling": 5108,
+  "reserved_at_terminal": 0
+}
