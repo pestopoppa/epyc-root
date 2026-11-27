@@ -97,7 +97,7 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 13 | 585 | 25 | 2026-11-07 |
 | pipeline-integration | 1 | 2 | 0 | 2026-11-17 |
-| research-evaluation | 4 | 258 | 2 | 2026-11-20 |
+| research-evaluation | 4 | 261 | 2 | 2026-11-20 |
 | reviewer-control-plane | 1 | 19 | 8 | 2026-11-24 |
 | routing-and-optimization | 9 | 494 | 12 | 2026-11-05 |
 | user-facing-harness | 2 | 111 | 1 | 2026-10-03 |
