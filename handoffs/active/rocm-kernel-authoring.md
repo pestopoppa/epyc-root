@@ -1267,8 +1267,18 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · owner: autokernel
   - 2026-11-25 (autokernel) knee-batch: r3 FAIL_CORRECTNESS (`ak-c22-knee-batch-gate-gpu-20261125-r3`), r4 `ak-c22-knee-batch-gate-gpu-20261125-r4` judged futile at its interim look, stopped and withdrawn by the operator ruling that every row carries a futility look; ops measured flat (no GB/s gain from batching GEMV launches). No verdict.json was written for r4 (withdrawn). Dead end seeded with q8wt/q8lean in the journal record `akm-c22-q8-gemv-q8wt-q8lean-kneebatch-det2`. [belief: cc]
 - [ ] **Q8-GEMV-CONVCORE-1** [inference] Redesign the V5I served 27B Q8_0 weight GEMV conversion-heavy core (about 40 VALU per wave per unit, cvt_f32_i32 int8-to-float path) to cut VALU per KB from 29 toward the stream kernel's 9, since V5I is issue-bound not bandwidth-bound (q8wt, q8lean, knee-batch all lost)
+      · model: Qwen3.8-27B Q8_0 + DFlash2-Q8_0, np1 greedy, draft n-max 7
+      · build: candidate HIP binary, same V5I MF=6 build for OFF/OFF2/ON
+      · metric: VALU/KiB and ms/round lower, packed-weight GB/s higher
+      · rule: CPU reference PASS, mean KLD <=0.003 at ub 8/4/16/512, valid A/A within 2%, KEEP if served speedup 95% CI lower >1.01
+      · region: MI210 exclusive + assigned host CPUs
+      · est: provisional, pilot: n=1 smoke visit to rebook
+      · stop rule: stop-on-answer at 8 scored blocks; stop-on-futility on failed correctness, missing witness/proof, invalid A/A, or CI upper <1.0 at block 4; gate-class = futility-only
       · done when: a gate row files KEEP / NO_KEEP / FAIL_* / FUTILITY_* with op VALU per KB, GB/s vs V5I, KLD and served ms/round CI; or a note names why the conversion core cannot shrink (packed int8 dot / MFMA operand path already ruled out)
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md` `/mnt/raid0/llm/tmp/ak-c22-q8wt-op-diag-gpu-20261125`
+
+The instruction audit identifies the converted values as i32 dot products and records the operator exception for this row. [Q8 conversion-core audit](../../research/deep-dives/q8-gemv-convcore-20261127/README.md)
+
 - [ ] **PC-HOSTTRAP-COVERAGE** [non-inference] Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for stripped objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
       · done when: Use the original ELFs, code objects, store manifests and build IDs. Keep one other binary for validation. Record symbol+offset, source line or unmappable reason for each sampled PC. Only trial host-trap if unresolved hotspots remain and firmware/driver enumerate the capability; collect separate baseline runtime and check perturbation, skid and sample loss.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3006.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3020.md`

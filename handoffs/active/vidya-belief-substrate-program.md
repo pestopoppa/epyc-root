@@ -120,6 +120,10 @@ Retired Codex NI ROOT worktree custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy
       · done when: the live census carries at least one signed record, its ingest projects with nothing refused, and bnsig_context.py passes against the live census
       · gate: AK-BNSIG-CENSUS-TOPN
 
+- [ ] **VB-Q8-CONVCORE-WIRE** [non-inference] Project prospective Q8 GEMV static instruction counts and matched MI210 row records through the existing static-observation and AutoKernel measurement carriers. Retain symbol hashes, counted boundaries, denominators, arm and visit identity, and native failures.
+      · done when: a planning-context canary retrieves the recorded value for its exact symbol, scope and denominator, and refuses a mismatched binary or static-to-runtime lookup
+      · gate: none        · inputs: `scripts/vidya/adapters/gfx90a_static_register.py` and the [Q8 audit](../../research/deep-dives/q8-gemv-convcore-20261127/README.md)
+
 ## 2026-11-09 audit refresh
 - *Knowledge (intake-ak-1123 K6, no checkbox):* Second-reader disagreements: 18 of 409 anchors judged no (listed in OD-4); never auto-overturned.
 
