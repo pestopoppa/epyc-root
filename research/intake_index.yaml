@@ -443721,3 +443721,981 @@
   disposition_evidence:
   - Add a CPU parser and incidence-postings arm returning original episode IDs and text at the same answer budget. Compare with lexical, raw/full-context and
     incumbent retrieval; include episode provenance, temporal errors and missed evidence.
+- id: intake-3025
+  dive_surfaced_sources: "The author paper and independent repair PR were selected for sweep 2. The HF companion was already selected."
+  arxiv_id: null
+  url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers
+  title: Recursive Self-Improving Loopers
+  authors:
+  - Eric E., Tensorbend.ai Research
+  source_type: repo
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The released FP-Solve implementation calls the generic linear solver for its regularized update.
+  - The original acceptance function allows a maximum loss of two correct answers per mode and rejects total losses.
+  - Running the original GSPO CLI requires externally supplied training and gate JSONL files.
+  - The original generation summary records 118 correct for the accepted generation 2 winner, followed by 114 for the accepted generation 3 winner.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-3026
+    - intake-3027
+    - intake-3028
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  notes: Read the pinned implementation, tests, six summary JSONs, README and four-page paper. No training set, gate split or per-item predictions in the tracked
+    release. No training or inference run. The v5.24.0 native Transformers file at eeee110 lacks the cache class the wrapper imports. Items, seeds and evaluation-environment
+    identities would be needed for exact replay.
+  dive_corrections: 2026-11-27. Recipe replay is overturned for this release. Five generations marked accepted (0–4) give 111 → 112 → 114 → 118 → 114 → 116 correct
+    across three modes. The 118→114 step violates the public gate. The separately reported merged result is 120/192. The merge helper has no caller in the generation
+    loop. The README describes four generations and Cholesky. The original evaluator uses known answers with a deterministic grader, so teacher-free does not imply
+    label-free GSPO.
+  reported_results:
+  - The original log marks all five numbered generations accepted. The fourth accepted state falls from 118/192 to 114/192.
+  recommended_actions:
+  - Keep checkpoint evaluation independent of reproducing its training. Require split IDs, actual saved parents, gate decisions, merge coefficients and final hash
+    before any provenance replay.
+  reader_should_conclude: Keep checkpoint evaluation independent of reproducing its training. Require split IDs, actual saved parents, gate decisions, merge coefficients
+    and final hash before any provenance replay.
+  contradicting_evidence:
+  - Recipe replay is overturned for this release. Five generations marked accepted (0–4) give 111 → 112 → 114 → 118 → 114 → 116 correct across three modes. The 118→114
+    step violates the public gate. The separately reported merged result is 120/192. The merge helper has no caller in the generation loop. The README describes four
+    generations and Cholesky. The original evaluator uses known answers with a deterministic grader, so teacher-free does not imply label-free GSPO.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: rse_looper/fpsolve.py:L61-L70 @ 765453d
+    quote: torch.linalg.solve(A, B).T
+    quote_sha256: 9f9830049ad5021e6e5127296062cda312f407a8cac1f611f54944a864a0cb6d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 15510672e457b8dd215026cef50d3f0db6b82516e5d2f25704848e438635da26, found: true}
+    source_revision: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/fpsolve.py
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers
+      requested_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/fpsolve.py
+      effective_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/fpsolve.py
+      retrieved_at_utc: '2026-11-27T14:25:37.680864+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:15510672e457b8dd215026cef50d3f0db6b82516e5d2f25704848e438635da26
+      relative_path: sha256/15/15510672e457b8dd215026cef50d3f0db6b82516e5d2f25704848e438635da26.raw
+      raw_sha256: 15510672e457b8dd215026cef50d3f0db6b82516e5d2f25704848e438635da26
+      byte_length: 10317
+  - claim_index: 1
+    kind: page-and-quote
+    locator: rse_looper/gspo.py:L120-L138 @ 765453d
+    quote: 'max_single_regime_drop: int = 2'
+    quote_sha256: 5ea75249831aa611c3ab29654b3242fadf00dc044fdcad2e14aae42a3a2de748
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731, found: true}
+    source_revision: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/gspo.py
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers
+      requested_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/gspo.py
+      effective_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/gspo.py
+      retrieved_at_utc: '2026-11-27T14:25:37.723092+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731
+      relative_path: sha256/15/156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731.raw
+      raw_sha256: 156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731
+      byte_length: 22216
+  - claim_index: 2
+    kind: page-and-quote
+    locator: rse_looper/gspo.py:L376-L381,L416-L418 @ 765453d
+    quote: default="./data/gate_math.jsonl"
+    quote_sha256: 35f7022fc3ee3b7f9353752d6b6c85f974a57f09c2d3264ec6aef977e1929528
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731, found: true}
+    source_revision: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/gspo.py
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers
+      requested_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/gspo.py
+      effective_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/rse_looper/gspo.py
+      retrieved_at_utc: '2026-11-27T14:25:37.758108+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731
+      relative_path: sha256/15/156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731.raw
+      raw_sha256: 156f91caa076bd8bb1c73294da1627a86fea5b3dd8e54f6b6eb6f76f03a88731
+      byte_length: 22216
+  - claim_index: 3
+    kind: page-and-quote
+    locator: results/gspo_results.json:L128-L178 @ 765453d
+    quote: '"total_correct": 118,'
+    quote_sha256: ca046c54b5abfca6476cb83986be994419bbc95cf4cae4985fb65c5048801a5d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 5646a19c282df9f66c72a07a63ce4d7cf0dc8a13330897f4f68de3cc70a92c8d, found: true}
+    source_revision: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/results/gspo_results.json
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers
+      requested_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/results/gspo_results.json
+      effective_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/results/gspo_results.json
+      retrieved_at_utc: '2026-11-27T14:25:37.925339+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:5646a19c282df9f66c72a07a63ce4d7cf0dc8a13330897f4f68de3cc70a92c8d
+      relative_path: sha256/56/5646a19c282df9f66c72a07a63ce4d7cf0dc8a13330897f4f68de3cc70a92c8d.raw
+      raw_sha256: 5646a19c282df9f66c72a07a63ce4d7cf0dc8a13330897f4f68de3cc70a92c8d
+      byte_length: 7955
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The released FP-Solve implementation calls the generic linear solver for its regularized update.
+  - claim_index: 1
+    effect: unaffected
+    note: The original acceptance function allows a maximum loss of two correct answers per mode and rejects total losses.
+  - claim_index: 2
+    effect: narrowed
+    note: Running the original GSPO CLI requires externally supplied training and gate JSONL files.
+  - claim_index: 3
+    effect: unaffected
+    note: The original generation summary records 118 correct for the accepted generation 2 winner, followed by 114 for the accepted generation 3 winner.
+  source_revision: 765453d13878804c49876a656f39b57a4384dca4
+- id: intake-3026
+  dive_surfaced_sources: "The fixed parent already has a verified intake. The variable-depth card and HIP field report were selected for sweep 2. Release announcements, an empty discussion page and the openinterpretability review request supply no new observations."
+  arxiv_id: null
+  url: https://huggingface.co/Ex0bit/Inkblot-2-mini
+  title: Inkblot-2-mini
+  authors:
+  - Eric E., Tensorbend.ai Research (Ex0bit)
+  source_type: repo
+  categories:
+  - local_inference
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Published config defaults to three fixed passes through layers 6–17.
+  - On the same 64 DeepScaleR items at three passes the card reports base 32 correct and Inkblot 44.
+  - The HF audit lists 321 modified tensors for an output directory named Inkling-2-Mini-Looper.
+  - At three passes the displayed GSM8K gain of 3.1 points belongs to FP-Solve. The counts for Inkblot give a one-item gain (121 versus 120 of 128).
+  - The packaged evaluation YAML cites the parent Inkling model card as its source.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-3025
+    - intake-3027
+    - intake-3031
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  notes: Read author card, edit list, audit, both pinned model trees, config, index, quantization, template and copied eval metadata. Base revision c9d028302cd0f035fdf8e7e91f089a4ce94d2195.
+    Main LFS digest differs at equal 19,526,019,168 bytes. MTP LFS digest matches. No tensor payloads were downloaded. The 327 unique positive entries include 288
+    BF16 and 39 FP32, and include later layers and global attention-residual tensors. Mean listed rel_change ×100 is 0.092109%.
+  dive_corrections: 2026-11-27. Different audit records report 321 and 327 edits, with different mean changes and no shared output digest or metric definition. Tensor-level
+    expert/vision identity is unverified. Four-pass Inkblot scores 45/64 compared with 44/64 at three. The raw matched three-pass GSM8K gain is 0.78 points. HellaSwag,
+    ARC-Challenge and WinoGrande decline at native depth. Exact-name HF Hub and replication searches found the author release, discussion relays and a software repair,
+    with no independent paired evaluation or candidate GGUF in the search.
+  reported_results:
+  - 'Author counts on DeepScaleR (n=64): Base three-pass 32, Inkblot three-pass 44, Base forced four-pass 2, Inkblot four-pass 45. Same-depth LiveCodeBench 11→13
+    of 32. No per-item matched answers available for the reported slice.'
+  recommended_actions:
+  - Use matched native three-pass Base and Inkblot as the primary CPU comparison. Bind safetensors, converter, target GGUF and effective settings before interpreting
+    output.
+  reader_should_conclude: Use matched native three-pass Base and Inkblot as the primary CPU comparison. Bind safetensors, converter, target GGUF and effective settings
+    before interpreting output.
+  contradicting_evidence:
+  - Different audit records report 321 and 327 edits, with different mean changes and no shared output digest or metric definition. Tensor-level expert/vision identity
+    is unverified. Four-pass Inkblot scores 45/64 compared with 44/64 at three. The raw matched three-pass GSM8K gain is 0.78 points. HellaSwag, ARC-Challenge and
+    WinoGrande decline at native depth. Exact-name HF Hub and replication searches found the author release, discussion relays and a software repair, with no independent
+    paired evaluation or candidate GGUF in the search.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: config.json:L67-L72 @ fb0b924
+    quote: '"num_passes": 3,'
+    quote_sha256: a05f909ce468748368e43f5dd0d128d9554e0b89d5e4e5f447eb8066f83b273b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a7a349601f0984c4abf999c480ef775d8567d21f5f84b4e8a3e035b44f288dc2, found: true}
+    source_revision: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/config.json
+    source_artifact:
+      entry_url: https://huggingface.co/Ex0bit/Inkblot-2-mini
+      requested_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/config.json
+      effective_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/config.json
+      retrieved_at_utc: '2026-11-27T14:25:38.082815+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:a7a349601f0984c4abf999c480ef775d8567d21f5f84b4e8a3e035b44f288dc2
+      relative_path: sha256/a7/a7a349601f0984c4abf999c480ef775d8567d21f5f84b4e8a3e035b44f288dc2.raw
+      raw_sha256: a7a349601f0984c4abf999c480ef775d8567d21f5f84b4e8a3e035b44f288dc2
+      byte_length: 2722
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L34 @ fb0b924
+    quote: '**68.8%** (`44/64`)'
+    quote_sha256: 7bf535c29231f38e76ded8828873482923a76a4afa8416654f5d5f58931e951d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a, found: true}
+    source_revision: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/README.md
+    source_artifact:
+      entry_url: https://huggingface.co/Ex0bit/Inkblot-2-mini
+      requested_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/README.md
+      effective_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/README.md
+      retrieved_at_utc: '2026-11-27T14:25:38.218638+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a
+      relative_path: sha256/09/095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a.raw
+      raw_sha256: 095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a
+      byte_length: 4498
+  - claim_index: 2
+    kind: page-and-quote
+    locator: integrity_audit.json:L2-L9 @ fb0b924
+    quote: '"num_modified_tensors": 321,'
+    quote_sha256: 0d1b4aa9d3d5448cab82415e855dffd646dbcc5be0491053ef821a570b236bca
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2d5fc054f2a34f6eaf9de676dd9257e5172b09f47d61c54d67f60d8efa3f469b, found: true}
+    source_revision: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/integrity_audit.json
+    source_artifact:
+      entry_url: https://huggingface.co/Ex0bit/Inkblot-2-mini
+      requested_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/integrity_audit.json
+      effective_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/integrity_audit.json
+      retrieved_at_utc: '2026-11-27T14:25:38.349785+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2d5fc054f2a34f6eaf9de676dd9257e5172b09f47d61c54d67f60d8efa3f469b
+      relative_path: sha256/2d/2d5fc054f2a34f6eaf9de676dd9257e5172b09f47d61c54d67f60d8efa3f469b.raw
+      raw_sha256: 2d5fc054f2a34f6eaf9de676dd9257e5172b09f47d61c54d67f60d8efa3f469b
+      byte_length: 972
+  - claim_index: 3
+    kind: page-and-quote
+    locator: README.md:L37 @ fb0b924
+    quote: 94.5% (`121/128`)
+    quote_sha256: c10b29de91298dfb54bfb8d7cc250095af1d43d4f41d2d77f06956f41f369feb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a, found: true}
+    source_revision: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/README.md
+    source_artifact:
+      entry_url: https://huggingface.co/Ex0bit/Inkblot-2-mini
+      requested_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/README.md
+      effective_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/README.md
+      retrieved_at_utc: '2026-11-27T14:25:38.482542+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a
+      relative_path: sha256/09/095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a.raw
+      raw_sha256: 095b5f43bd8ab3dc1840c79b617f45cba1e87ddd71c98477d26f3ec0988d4e8a
+      byte_length: 4498
+  - claim_index: 4
+    kind: page-and-quote
+    locator: .eval_results/Inkling-2-Mini.yaml:L6-L8 @ fb0b924
+    quote: 'url: https://huggingface.co/thinkingmachines/Inkling-2-Mini'
+    quote_sha256: 5c67230ef52793260445bfffec863f7b2641d120c504ad1ec8e9d8f84bf0d40b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3725c76123aff1cba937e799dfd974dcc0b5cf7c05770a9b7717f49cbbc0e2e7, found: true}
+    source_revision: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/.eval_results/Inkling-2-Mini.yaml
+    source_artifact:
+      entry_url: https://huggingface.co/Ex0bit/Inkblot-2-mini
+      requested_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/.eval_results/Inkling-2-Mini.yaml
+      effective_url: https://huggingface.co/Ex0bit/Inkblot-2-mini/raw/fb0b924f46a74331e34ce4f4288177f9dc0383c8/.eval_results/Inkling-2-Mini.yaml
+      retrieved_at_utc: '2026-11-27T14:25:38.610097+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3725c76123aff1cba937e799dfd974dcc0b5cf7c05770a9b7717f49cbbc0e2e7
+      relative_path: sha256/37/3725c76123aff1cba937e799dfd974dcc0b5cf7c05770a9b7717f49cbbc0e2e7.raw
+      raw_sha256: 3725c76123aff1cba937e799dfd974dcc0b5cf7c05770a9b7717f49cbbc0e2e7
+      byte_length: 2293
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Published config defaults to three fixed passes through layers 6–17.
+  - claim_index: 1
+    effect: unaffected
+    note: On the same 64 DeepScaleR items at three passes the card reports base 32 correct and Inkblot 44.
+  - claim_index: 2
+    effect: narrowed
+    note: The HF audit lists 321 modified tensors for an output directory named Inkling-2-Mini-Looper.
+  - claim_index: 3
+    effect: reattributed
+    note: At three passes the displayed GSM8K gain of 3.1 points belongs to FP-Solve. The counts for Inkblot give a one-item gain (121 versus 120 of 128).
+  - claim_index: 4
+    effect: reattributed
+    note: The packaged evaluation YAML cites the parent Inkling model card as its source.
+  source_revision: fb0b924f46a74331e34ce4f4288177f9dc0383c8
+- id: intake-3027
+  dive_surfaced_sources: "The native Transformers pin and contributor tests were read as implementation dependencies of the PR. Base metadata was already covered. The PR supplies no independent checkpoint benchmark."
+  arxiv_id: null
+  url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/pull/1
+  title: Fix native looping, checkpoint exports, and auditable training
+  authors:
+  - tryingET (external contributor)
+  source_type: repo
+  categories:
+  - benchmark_methodology
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The PR tests exact uncached native three-pass agreement on a tiny initialized model.
+  - The historical evidence checker reads six existing summaries and does not rerun the experiment.
+  - The repaired run returns the last accepted checkpoint.
+  - The contributor audit reconstructs an accepted sequence containing a total-score regression from 118 to 114.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-3025
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  notes: Open and unmerged at review. Compared base and head git bytes, forward/optimizer, tests and documentation. Pretrained, distributed and GPU execution untested
+    here. Repaired training changes sampling. The contributor reports 190 passing CPU tests and a 409-key base metadata check. Scores in the original six JSONs are
+    unchanged.
+  dive_corrections: 2026-11-27. The proposed repair supplies regression fixtures and prospective evidence capture. No independent replay of the historical accuracy.
+    Changed sampling and final selection policy would define a new experiment. The in-memory candidate is scored before final export, which leaves a need to evaluate
+    the actual reloaded artifact.
+  reported_results: []
+  recommended_actions:
+  - Borrow the pairing and provenance checks for the saved artifact. Use the PR as software evidence only.
+  reader_should_conclude: Borrow the pairing and provenance checks for the saved artifact. Use the PR as software evidence only.
+  contradicting_evidence:
+  - The proposed repair supplies regression fixtures and prospective evidence capture. No independent replay of the historical accuracy. Changed sampling and final
+    selection policy would define a new experiment. The in-memory candidate is scored before final export, which leaves a need to evaluate the actual reloaded artifact.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: tests/test_model_integration.py:L13-L40 @ ad15629
+    quote: assert torch.equal(actual, expected)
+    quote_sha256: a2bfbd81a5080acd5af0e93704cab86c37285561a5b48a1c3b6af1af18733dec
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 405a8bbada60c9a52caecfc7558d1aa827ef653677a0da4e1d2b154498e7b515, found: true}
+    source_revision: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/tests/test_model_integration.py
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/pull/1
+      requested_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/tests/test_model_integration.py
+      effective_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/tests/test_model_integration.py
+      retrieved_at_utc: '2026-11-27T14:25:38.804411+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:405a8bbada60c9a52caecfc7558d1aa827ef653677a0da4e1d2b154498e7b515
+      relative_path: sha256/40/405a8bbada60c9a52caecfc7558d1aa827ef653677a0da4e1d2b154498e7b515.raw
+      raw_sha256: 405a8bbada60c9a52caecfc7558d1aa827ef653677a0da4e1d2b154498e7b515
+      byte_length: 5922
+  - claim_index: 1
+    kind: page-and-quote
+    locator: rse_looper/evidence.py:L400-L425 @ ad15629
+    quote: Read-only audit of the six historical summary artifacts
+    quote_sha256: 884d95d4ad0032892eb3697d8fc736834b1844e5b540ea824aff2340933f7bf5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ed578630b811d94627b5dd48bc03d40641bde1ebede607dcd4248e44c3a21286, found: true}
+    source_revision: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/rse_looper/evidence.py
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/pull/1
+      requested_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/rse_looper/evidence.py
+      effective_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/rse_looper/evidence.py
+      retrieved_at_utc: '2026-11-27T14:25:38.840134+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ed578630b811d94627b5dd48bc03d40641bde1ebede607dcd4248e44c3a21286
+      relative_path: sha256/ed/ed578630b811d94627b5dd48bc03d40641bde1ebede607dcd4248e44c3a21286.raw
+      raw_sha256: ed578630b811d94627b5dd48bc03d40641bde1ebede607dcd4248e44c3a21286
+      byte_length: 26350
+  - claim_index: 2
+    kind: page-and-quote
+    locator: README.md:L133-L145 @ ad15629
+    quote: '**last accepted checkpoint**'
+    quote_sha256: 7b9e0eb428c823bee605a2a7dd6368831070552f2e92fb735cb2278bf4fc7be0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6ac9a47b79377fd6bcb06c7c59a70408bc46a27f4363c19e83004483d8509557, found: true}
+    source_revision: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/README.md
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/pull/1
+      requested_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/README.md
+      effective_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/README.md
+      retrieved_at_utc: '2026-11-27T14:25:38.875004+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6ac9a47b79377fd6bcb06c7c59a70408bc46a27f4363c19e83004483d8509557
+      relative_path: sha256/6a/6ac9a47b79377fd6bcb06c7c59a70408bc46a27f4363c19e83004483d8509557.raw
+      raw_sha256: 6ac9a47b79377fd6bcb06c7c59a70408bc46a27f4363c19e83004483d8509557
+      byte_length: 9962
+  - claim_index: 3
+    kind: page-and-quote
+    locator: docs/REPRODUCIBILITY.md:L40-L46 @ ad15629
+    quote: 111 -> 112 -> 114 -> 118 -> 114 -> 116
+    quote_sha256: 52b66351640b9da3c45c13509bd8054bbda3619e6b248835ed86f24fe2a8c9bd
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 76dbb022b5d2b5373ab3b5e3919418c4acdec453d23bc92db9af511f4b4ddcf7, found: true}
+    source_revision: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/docs/REPRODUCIBILITY.md
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/pull/1
+      requested_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/docs/REPRODUCIBILITY.md
+      effective_url: https://raw.githubusercontent.com/tryingET/Recursive-Self-Improving-Loopers/ad15629dfd09856a03a3313be5a08d2718f44829/docs/REPRODUCIBILITY.md
+      retrieved_at_utc: '2026-11-27T14:25:39.059411+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:76dbb022b5d2b5373ab3b5e3919418c4acdec453d23bc92db9af511f4b4ddcf7
+      relative_path: sha256/76/76dbb022b5d2b5373ab3b5e3919418c4acdec453d23bc92db9af511f4b4ddcf7.raw
+      raw_sha256: 76dbb022b5d2b5373ab3b5e3919418c4acdec453d23bc92db9af511f4b4ddcf7
+      byte_length: 15104
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The PR tests exact uncached native three-pass agreement on a tiny initialized model.
+  - claim_index: 1
+    effect: unaffected
+    note: The historical evidence checker reads six existing summaries and does not rerun the experiment.
+  - claim_index: 2
+    effect: unaffected
+    note: The repaired run returns the last accepted checkpoint.
+  - claim_index: 3
+    effect: unaffected
+    note: The contributor audit reconstructs an accepted sequence containing a total-score regression from 118 to 114.
+  source_revision: ad15629dfd09856a03a3313be5a08d2718f44829
+  expanded_from: intake-3025
+- id: intake-3028
+  dive_surfaced_sources: "The deterministic comparison was selected for sweep 3. Self-WSP (2611.28833), continual test-time ES (2610.24137) and EGGROLL (2609.10980) investigate distinct optimization methods. None compares the released checkpoints or explains their provenance; retain as bibliography only."
+  arxiv_id: null
+  url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/blob/765453d13878804c49876a656f39b57a4384dca4/paper/main.pdf
+  title: Recursive Self-Improving Loopers (paper and author web report)
+  authors:
+  - Eric E., Tensorbend.ai Research
+  source_type: paper
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The authors attribute forced-depth instability to a layer-17 direction accounting for 75.5% of pass-shift energy.
+  - The paper attributes the final checkpoint to merging accepted generations, without supplying the realized weights or parent hashes.
+  - The supplied Harbor 4.1 summary records zero tasks resolved by the edited model, matching base on its ten tasks.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-3025
+    - intake-3026
+    - intake-3032
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: FULL
+  notes: Read all four pages, equations, table and references plus same-commit HTML companion and result JSON. PDF sha256 ecc6351a086c5c6541c8fcd4cf4df0952c62c41ffbd3717f4c1cd0c7523f1ec2.
+    §3 presents the preserve/edit/ridge objective. The layer-17 statistic is descriptive. No independent intervention isolates that direction. Harbor command count
+    rises 10 to 63, while Terminal-Bench Core uses different tasks and forced four-pass base (0/10 versus 6/10).
+  dive_corrections: 2026-11-27. Paper and model card come from the same experiment. Keep Harbor and Core separate. Accepted-generation aggregation is mismatched with
+    the released code. Distinguish FP-Solve label-free calibration from answer-verified GSPO. Other ES and self-programming papers describe different interventions
+    and do not determine checkpoint quality.
+  reported_results: []
+  recommended_actions:
+  - Retain fixed-depth and actual task resolution as the primary outcomes. Reserve matched compute and a simple ablation for a later training study.
+  reader_should_conclude: Retain fixed-depth and actual task resolution as the primary outcomes. Reserve matched compute and a simple ablation for a later training
+    study.
+  contradicting_evidence:
+  - Paper and model card come from the same experiment. Keep Harbor and Core separate. Accepted-generation aggregation is mismatched with the released code. Distinguish
+    FP-Solve label-free calibration from answer-verified GSPO. Other ES and self-programming papers describe different interventions and do not determine checkpoint
+    quality.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Paper §2 and author web report docs/index.html:L47-L49 @ 765453d
+    quote: 75.5% of pass-shift energy
+    quote_sha256: f80d051cf6a4d02c11c4a0cb48d94865fb43b2e2764ffa2112426488bf45fe29
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96, found: true}
+    source_revision: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/docs/index.html
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/blob/765453d13878804c49876a656f39b57a4384dca4/paper/main.pdf
+      requested_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/docs/index.html
+      effective_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/docs/index.html
+      retrieved_at_utc: '2026-11-27T14:25:39.256129+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96
+      relative_path: sha256/31/31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96.raw
+      raw_sha256: 31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96
+      byte_length: 10498
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Paper §4 and docs/index.html:L62-L64 @ 765453d
+    quote: Merging top accepted generations produces
+    quote_sha256: 5f61fe79b9981e895f3bc0f6f3a408f875b60a73a3a8a5caf231b8d764314ea4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96, found: true}
+    source_revision: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/docs/index.html
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/blob/765453d13878804c49876a656f39b57a4384dca4/paper/main.pdf
+      requested_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/docs/index.html
+      effective_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/docs/index.html
+      retrieved_at_utc: '2026-11-27T14:25:39.288563+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96
+      relative_path: sha256/31/31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96.raw
+      raw_sha256: 31092b094c3fb9ee76b1e082dc8c6386a020560be804e2a3c27b90e8f1eadb96
+      byte_length: 10498
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Paper §5 and results/terminal_bench.json:L13-L22 @ 765453d
+    quote: '"edited_resolved": 0'
+    quote_sha256: 3a0abb491aa4ccf68ed6a3920ec01ee721ac6b6e099a1de66c26e0e02dc126e3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 11d08cc0425ffc1d25d17189c49a796c8b237799e983c33397b6f25dccdbe5dd, found: true}
+    source_revision: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/results/terminal_bench.json
+    source_artifact:
+      entry_url: https://github.com/eelbaz/Recursive-Self-Improving-Loopers/blob/765453d13878804c49876a656f39b57a4384dca4/paper/main.pdf
+      requested_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/results/terminal_bench.json
+      effective_url: https://raw.githubusercontent.com/eelbaz/Recursive-Self-Improving-Loopers/765453d13878804c49876a656f39b57a4384dca4/results/terminal_bench.json
+      retrieved_at_utc: '2026-11-27T14:25:39.317410+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:11d08cc0425ffc1d25d17189c49a796c8b237799e983c33397b6f25dccdbe5dd
+      relative_path: sha256/11/11d08cc0425ffc1d25d17189c49a796c8b237799e983c33397b6f25dccdbe5dd.raw
+      raw_sha256: 11d08cc0425ffc1d25d17189c49a796c8b237799e983c33397b6f25dccdbe5dd
+      byte_length: 601
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The authors attribute forced-depth instability to a layer-17 direction accounting for 75.5% of pass-shift energy.
+  - claim_index: 1
+    effect: narrowed
+    note: The paper attributes the final checkpoint to merging accepted generations, without supplying the realized weights or parent hashes.
+  - claim_index: 2
+    effect: unaffected
+    note: The supplied Harbor 4.1 summary records zero tasks resolved by the edited model, matching base on its ten tasks.
+  source_revision: 765453d13878804c49876a656f39b57a4384dca4
+  expanded_from: intake-3025
+  referenced_arxiv_ids:
+  - '2611.28833'
+  - '2611.34612'
+  - '2610.24137'
+  - '2609.10980'
+- id: intake-3029
+  dive_surfaced_sources: "The #32740 interface is already intake-2797#record. The PR’s touched operator files and tests are retained at the merge SHA. No further candidate-quality evidence surfaced."
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/33063
+  title: CUDA and HIP flash attention with indexed bias
+  authors:
+  - ggml-org/llama.cpp contributors
+  source_type: repo
+  categories:
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The merged backend dispatch supports indexed bias in tile and vector kernels.
+  - The upstream indexed bias uses source slot 6 for an auxiliary input.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-2797
+    - intake-3030
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  notes: Read PR, merge revision, dispatcher, tile/vector input access and operator fixtures including one and two streams. No whole-model HIP test was run. EPYC
+    INK2-PORT-2a records champion source-slot conflicts; retain its re-home and test inputs. Operator fixtures do not exercise concurrent requests.
+  dive_corrections: 2026-11-27. Use the merged implementation as a reference to the older interface PR. It supplies no MI210 serving result or attribution for the
+    repetition report.
+  reported_results: []
+  recommended_actions:
+  - Use this merge as the implementation reference in the existing HIP task and preserve a matched concurrency check.
+  reader_should_conclude: Use this merge as the implementation reference in the existing HIP task and preserve a matched concurrency check.
+  contradicting_evidence:
+  - Use the merged implementation as a reference to the older interface PR. It supplies no MI210 serving result or attribution for the repetition report.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: ggml/src/ggml-cuda/fattn.cu:L693-L704 @ 2a33525
+    quote: the tile and vec kernels implement the indexed bias
+    quote_sha256: 053a85b2487fc7c4dd53c846952e1cbf862bb3aa8c12b755e81cc3bdfa92d0ec
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 04ac525ff04ddbe335de5e858664871616efd4e72134c7d3d7459c1907d8df28, found: true}
+    source_revision: https://raw.githubusercontent.com/ggml-org/llama.cpp/2a335259caa98ff30013907efdf1beba484db119/ggml/src/ggml-cuda/fattn.cu
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33063
+      requested_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/2a335259caa98ff30013907efdf1beba484db119/ggml/src/ggml-cuda/fattn.cu
+      effective_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/2a335259caa98ff30013907efdf1beba484db119/ggml/src/ggml-cuda/fattn.cu
+      retrieved_at_utc: '2026-11-27T14:25:39.535958+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:04ac525ff04ddbe335de5e858664871616efd4e72134c7d3d7459c1907d8df28
+      relative_path: sha256/04/04ac525ff04ddbe335de5e858664871616efd4e72134c7d3d7459c1907d8df28.raw
+      raw_sha256: 04ac525ff04ddbe335de5e858664871616efd4e72134c7d3d7459c1907d8df28
+      byte_length: 36069
+  - claim_index: 1
+    kind: page-and-quote
+    locator: ggml/src/ggml-cuda/fattn-common.cuh:L1327-L1329 @ 2a33525
+    quote: 'has_bias ? dst->src[6] : nullptr'
+    quote_sha256: 1c7494b72a0aa6c276b7b2dc0193107e5b5afff8a9d711665d1abbaeca4f02de
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fd0ae81fa0e6234b9e4c01519cb2a6d981ba506b07d79dcbe5b8514004c76ae2, found: true}
+    source_revision: https://raw.githubusercontent.com/ggml-org/llama.cpp/2a335259caa98ff30013907efdf1beba484db119/ggml/src/ggml-cuda/fattn-common.cuh
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33063
+      requested_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/2a335259caa98ff30013907efdf1beba484db119/ggml/src/ggml-cuda/fattn-common.cuh
+      effective_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/2a335259caa98ff30013907efdf1beba484db119/ggml/src/ggml-cuda/fattn-common.cuh
+      retrieved_at_utc: '2026-11-27T14:25:39.757175+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:fd0ae81fa0e6234b9e4c01519cb2a6d981ba506b07d79dcbe5b8514004c76ae2
+      relative_path: sha256/fd/fd0ae81fa0e6234b9e4c01519cb2a6d981ba506b07d79dcbe5b8514004c76ae2.raw
+      raw_sha256: fd0ae81fa0e6234b9e4c01519cb2a6d981ba506b07d79dcbe5b8514004c76ae2
+      byte_length: 66261
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The merged backend dispatch supports indexed bias in tile and vector kernels.
+  - claim_index: 1
+    effect: unaffected
+    note: The upstream indexed bias uses source slot 6 for an auxiliary input.
+  source_revision: 2a335259caa98ff30013907efdf1beba484db119
+  expanded_from: intake-3030
+- id: intake-3030
+  dive_surfaced_sources: "The merged indexed-bias implementation was selected for sweep 3. The older comparison CUDA run differs in device, context and KV; it supplies no additional controlled replication."
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/33150
+  title: Inkling 2 Mini repetition with concurrent requests on HIP
+  authors:
+  - 'llama.cpp issue #33150 reporter'
+  source_type: repo
+  categories:
+  - inference_serving
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - One reporter on two RX 9070 XTs saw 33/120 responses hit the repeat limit with two active requests versus 1/28 with one busy slot on the same two-slot server.
+  - The reporter did not isolate the cause of the symptom.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-2797
+    - intake-3026
+    - intake-3029
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  notes: Read issue body, config, hardware, results table, tail examples and comment inventory. Pre-merge f7d1bbb on two gfx1201 devices, IQ3_S, FA on, q8_0 KV, BFCL
+    tool prompts. Different request subsets and counts. CUDA observation used another setup. No bisection or single-MI210 run.
+  dive_corrections: 2026-11-27. Concurrent Base repetition can confound model quality. This is one field report on a different GPU architecture. Two configured slots
+    with one busy is distinct from a one-slot server. Do not infer that the merge, Inkblot or loop depth causes the symptom.
+  reported_results: []
+  recommended_actions:
+  - For MI210 acceptance compare identical prompt IDs with one versus two active requests on a two-slot base server before scoring the derivative.
+  reader_should_conclude: For MI210 acceptance compare identical prompt IDs with one versus two active requests on a two-slot base server before scoring the derivative.
+  contradicting_evidence:
+  - Concurrent Base repetition can confound model quality. This is one field report on a different GPU architecture. Two configured slots with one busy is distinct
+    from a one-slot server. Do not infer that the merge, Inkblot or loop depth causes the symptom.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Issue body, Results table, HIP simultaneous and sequential rows
+    quote: 2 120 33 same server, requests sent one at a time 2 (one busy) 28 1
+    quote_sha256: 5765c84d26232ffc423a98a90994806fe3e43165518f0637ea0d9cf1d3011cd7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d33bb2680bbb79f7e61fc04689f68dbf155d701fcdf516680787006cec9772c8, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/issues/33150
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/issues/33150
+      requested_url: https://github.com/ggml-org/llama.cpp/issues/33150
+      effective_url: https://github.com/ggml-org/llama.cpp/issues/33150
+      retrieved_at_utc: '2026-11-27T14:25:40.423677+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:d33bb2680bbb79f7e61fc04689f68dbf155d701fcdf516680787006cec9772c8
+      relative_path: sha256/d3/d33bb2680bbb79f7e61fc04689f68dbf155d701fcdf516680787006cec9772c8.raw
+      raw_sha256: d33bb2680bbb79f7e61fc04689f68dbf155d701fcdf516680787006cec9772c8
+      byte_length: 197608
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Issue body, paragraph following example tails
+    quote: I have not isolated which one matters
+    quote_sha256: f9e7b8ab5acb0866efa74da6be9a21ff90cc7910386f62ba4d4b51720eb41251
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6d221ab9d3118da532c298c31010ef2d231a5ac63c0691688ebc88b4f7ff1fb3, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/issues/33150
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/issues/33150
+      requested_url: https://github.com/ggml-org/llama.cpp/issues/33150
+      effective_url: https://github.com/ggml-org/llama.cpp/issues/33150
+      retrieved_at_utc: '2026-11-27T14:25:40.540881+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6d221ab9d3118da532c298c31010ef2d231a5ac63c0691688ebc88b4f7ff1fb3
+      relative_path: sha256/6d/6d221ab9d3118da532c298c31010ef2d231a5ac63c0691688ebc88b4f7ff1fb3.raw
+      raw_sha256: 6d221ab9d3118da532c298c31010ef2d231a5ac63c0691688ebc88b4f7ff1fb3
+      byte_length: 197607
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: One reporter on two RX 9070 XTs saw 33/120 responses hit the repeat limit with two active requests versus 1/28 with one busy slot on the same two-slot server.
+  - claim_index: 1
+    effect: unaffected
+    note: The reporter did not isolate the cause of the symptom.
+  source_revision: GitHub issue body snapshot from 2026-11-27 (retained at claim level)
+  expanded_from: intake-3026
+- id: intake-3031
+  dive_surfaced_sources: "The official launch post and base card repeat the distinction or were previously covered. No additional experiment on the derivative surfaced."
+  arxiv_id: null
+  url: https://huggingface.co/thinkingmachines/TML-d24-varloop-research
+  title: TML-d24-varloop-research
+  authors:
+  - Thinking Machines Lab
+  source_type: repo
+  categories:
+  - local_inference
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The variable-depth checkpoint used a 1:2:6:2:1 sampling ratio for one through five passes during later midtraining.
+  - The publisher cautions against direct comparison because the two models diverge in later training.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-2805
+    - intake-3026
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  notes: Read the pinned training description, evaluation notes and loop config. No weight download or model evaluation. This release shares pretraining and first
+    midtraining with Mini but continued with variable depths and post-trained at three passes.
+  dive_corrections: 2026-11-27. An adjustable native research release is evidence about a separately trained model. It cannot substitute for forcing four passes on
+    the fixed checkpoint.
+  reported_results: []
+  recommended_actions:
+  - Keep this checkpoint as a contextual depth control only.
+  reader_should_conclude: Keep this checkpoint as a contextual depth control only.
+  contradicting_evidence:
+  - An adjustable native research release is evidence about a separately trained model. It cannot substitute for forcing four passes on the fixed checkpoint.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md:L104-L106 @ 91a57fe
+    quote: sampled in a 1:2:6:2:1 ratio
+    quote_sha256: a9fa60eba6969ea4595fb85b69dfd7eddec6700d1d213924e7608b00c2c7309d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9, found: true}
+    source_revision: https://huggingface.co/thinkingmachines/TML-d24-varloop-research/raw/91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d/README.md
+    source_artifact:
+      entry_url: https://huggingface.co/thinkingmachines/TML-d24-varloop-research
+      requested_url: https://huggingface.co/thinkingmachines/TML-d24-varloop-research/raw/91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d/README.md
+      effective_url: https://huggingface.co/thinkingmachines/TML-d24-varloop-research/raw/91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d/README.md
+      retrieved_at_utc: '2026-11-27T14:25:40.687257+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9
+      relative_path: sha256/15/1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9.raw
+      raw_sha256: 1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9
+      byte_length: 38876
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L104-L110 @ 91a57fe
+    quote: The two models' later training stages differ
+    quote_sha256: 80882184f4d91c86b2140282db6ca484917441453153464fba11d4c20f77d17c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9, found: true}
+    source_revision: https://huggingface.co/thinkingmachines/TML-d24-varloop-research/raw/91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d/README.md
+    source_artifact:
+      entry_url: https://huggingface.co/thinkingmachines/TML-d24-varloop-research
+      requested_url: https://huggingface.co/thinkingmachines/TML-d24-varloop-research/raw/91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d/README.md
+      effective_url: https://huggingface.co/thinkingmachines/TML-d24-varloop-research/raw/91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d/README.md
+      retrieved_at_utc: '2026-11-27T14:25:40.822429+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9
+      relative_path: sha256/15/1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9.raw
+      raw_sha256: 1511503f7bd917c7ce42dbaab6e6ecd6c8a93edfcf09ea73354d9d2b4b42ebc9
+      byte_length: 38876
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The variable-depth checkpoint used a 1:2:6:2:1 sampling ratio for one through five passes during later midtraining.
+  - claim_index: 1
+    effect: unaffected
+    note: The publisher cautions against direct comparison because the two models diverge in later training.
+  source_revision: 91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d
+  expanded_from: intake-3026
+- id: intake-3032
+  dive_surfaced_sources: "The original Self-WSP paper is a separate study of weight-edit proposals. It cannot identify the cause of any Inkblot gain. No further primary comparison warranting a fourth sweep surfaced."
+  arxiv_id: '2611.34612'
+  url: https://arxiv.org/abs/2611.34612v1
+  title: Do We Really Need an LLM for Weight-Space Programming? A Deterministic Forward-Only Paradigm and Its Capability Boundaries
+  authors:
+  - Lin Yao
+  source_type: paper
+  categories:
+  - benchmark_methodology
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The blind dispatch comparison holds the validation guard and two-step horizon constant.
+  - The authors tested open optimizers on structured faults.
+  credibility_score: 1
+  verification: dive-verified
+  cross_references:
+    handoffs:
+    - handoffs/active/model-evaluation-queue.md
+    intake_entries:
+    - intake-2798
+    - intake-2805
+    - intake-2812
+    - intake-2866
+    - intake-3028
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  notes: Versioned HTML read from disk, focused on §4–5 and Table 1(b). Six DINOv2-Base faults × three seeds. Author reports 15/18 deterministic and 6/18 model exact
+    dispatches. Same small tool library and bounded horizon. Other experiments concern different models, faults and optimization methods. No Inkblot or EPYC experiment.
+  dive_corrections: 2026-11-27. The deterministic-control design transfers. Exact dispatch rates on synthetic vision faults do not measure language-model training,
+    checkpoint ability, CPU inference or MI210 runtime.
+  reported_results: []
+  recommended_actions:
+  - If a later training attribution study is justified, include a budget-matched simpler alternative and isolate the benefit of the deeper-mode reward.
+  reader_should_conclude: If a later training attribution study is justified, include a budget-matched simpler alternative and isolate the benefit of the deeper-mode
+    reward.
+  contradicting_evidence:
+  - The deterministic-control design transfers. Exact dispatch rates on synthetic vision faults do not measure language-model training, checkpoint ability, CPU inference
+    or MI210 runtime.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §4.2, matched-search comparison and Table 1(b)
+    quote: over the same 2-step horizon and validation guard
+    quote_sha256: cf9174ad5bdc4a4c76bef032210e2b351a70d19b8950ed5ca443e0460757d8ac
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f, found: true}
+    source_revision: https://arxiv.org/html/2611.34612v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34612v1
+      requested_url: https://arxiv.org/html/2611.34612v1
+      effective_url: https://arxiv.org/html/2611.34612v1
+      retrieved_at_utc: '2026-11-27T14:25:40.969205+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f
+      relative_path: sha256/6a/6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f.raw
+      raw_sha256: 6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f
+      byte_length: 896635
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5, limitations
+    quote: evaluates open 8B and 27B optimizers on structured fault classes
+    quote_sha256: 641f17b208c70b62fde2703197a4b6b04c135e9579ed720e5d6e04aabf1171ec
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f, found: true}
+    source_revision: https://arxiv.org/html/2611.34612v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34612v1
+      requested_url: https://arxiv.org/html/2611.34612v1
+      effective_url: https://arxiv.org/html/2611.34612v1
+      retrieved_at_utc: '2026-11-27T14:25:41.115804+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f
+      relative_path: sha256/6a/6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f.raw
+      raw_sha256: 6a265d525073b94214d3433804e818127a02b7d29ab8b6e38524a5a29ed8f79f
+      byte_length: 896635
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The blind dispatch comparison holds the validation guard and two-step horizon constant.
+  - claim_index: 1
+    effect: narrowed
+    note: The authors tested open optimizers on structured faults.
+  source_revision: 2611.34612v1
+  expanded_from: intake-3028
