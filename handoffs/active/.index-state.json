@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 498
+      "open": 495
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -232,10 +232,10 @@
     },
     "autopilot-program.md": {
       "blocked": 1,
-      "closed": 305,
+      "closed": 308,
       "guarded": 0,
-      "last_advanced": "2026-11-23",
-      "open": 89,
+      "last_advanced": "2026-11-27",
+      "open": 86,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -434,13 +434,13 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 3,
           "gates": [],
           "guarded": 0,
           "line": 5234,
           "markers": 1,
           "name": "W66 serving attribution and local worker recovery",
-          "open": 4
+          "open": 1
         }
       ]
     },
