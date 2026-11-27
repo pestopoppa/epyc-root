@@ -15,7 +15,7 @@ import time
 from .case_snapshot import compare, digest, file_map, read, sanitize, stage, validate_baseline, write
 from .drive import RunInterrupted, run
 from .sandbox import Assets, Sandbox
-from .transport import Limits, proxy
+from .transport import Limits, proxy, require_disabled_shared_cache
 
 
 SESSION_PROFILE = ("backend", "slot", "thinking", "context", "request_cap", "sampling", "public_web")
@@ -45,6 +45,7 @@ def serving_proof(job):
     if not actual.exists() or digest(actual) != expected:
         raise ValueError("owned native serving process is absent or changed")
     cmdline = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+    require_disabled_shared_cache(cmdline)
     port_index = cmdline.index(b"--port")
     if int(cmdline[port_index + 1]) != job["port"]:
         raise ValueError("approved model route is not this process's listening port")

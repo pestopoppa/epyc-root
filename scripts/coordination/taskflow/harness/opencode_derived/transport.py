@@ -5,9 +5,11 @@ import http.client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
+import select
 import socket
 import threading
 import time
+from weakref import WeakValueDictionary
 
 
 REASONING_MODE = {"preserve_reasoning": True, "preserve_thinking": True}
@@ -21,8 +23,53 @@ OUT_KEYS = ("n_predict", "max_tokens", "max_completion_tokens", "maxOutputTokens
 SAMPLING_KEYS = {"seed", "temperature", "top_p", "top_k", "min_p", "repeat_penalty", "presence_penalty", "frequency_penalty"}
 
 
+def require_disabled_shared_cache(argv):
+    values = [argv[i + 1] if i + 1 < len(argv) else None
+              for i, arg in enumerate(argv) if arg in (b"--cache-ram", b"-cram")]
+    if values != [b"0"]:
+        raise ValueError("this C22 serving route requires explicit --cache-ram 0")
+
+
+class SlotGate:
+    """Serialize requests before a busy pinned slot can be touched by C22."""
+    def __init__(self):
+        self.changed = threading.Condition()
+        self.busy = False
+
+    def acquire(self, server, client):
+        with self.changed:
+            while True:
+                remaining = server.limits.seconds_left()
+                if server.closed:
+                    raise RuntimeError("case cancelled while waiting for the owned slot")
+                if remaining <= 0:
+                    raise RuntimeError("approved wall deadline expired waiting for the owned slot")
+                try:
+                    if select.select([client], [], [], 0)[0] and not client.recv(1, socket.MSG_PEEK | socket.MSG_DONTWAIT):
+                        raise RuntimeError("client disconnected while waiting for the owned slot")
+                except OSError as error:
+                    raise RuntimeError("client disconnected while waiting for the owned slot") from error
+                if not self.busy:
+                    self.busy = True
+                    return
+                self.changed.wait(min(remaining, 0.1))
+
+    def release(self):
+        with self.changed:
+            self.busy = False
+            self.changed.notify_all()
+
+    def wake(self):
+        with self.changed:
+            self.changed.notify_all()
+
+
+GATES = WeakValueDictionary()
+GATES_LOCK = threading.Lock()
+
+
 class Limits:
-    """Reserve output bounds across simultaneous primary, side and subagent requests."""
+    """Reserve output bounds for primary, side and subagent requests."""
     def __init__(self, *, wall_s, output_cap, cumulative_output):
         if wall_s <= 0 or output_cap <= 0 or cumulative_output < output_cap:
             raise ValueError("invalid approved wall or token bounds")
@@ -106,7 +153,8 @@ class Handler(BaseHTTPRequestHandler):
                 record = {"task": self.server.task, "label": self.server.label, "backend": self.server.backend,
                           "slot": self.server.slot, "http_status": code, "reason": message, "at": time.time(),
                           "wall_remaining_s": limits.seconds_left(), "generated_ceiling": limits.ceiling,
-                          "charged": limits.charged, "reserved": limits.pending}
+                          "charged": limits.charged, "reserved": limits.pending,
+                          "queue_wait_s": getattr(self, "queue_wait_s", None)}
             with self.server.write_lock:
                 with (self.server.output / "adapter-rejections.jsonl").open("a") as saved:
                     saved.write(json.dumps(record) + "\n")
@@ -149,31 +197,52 @@ class Handler(BaseHTTPRequestHandler):
             value["include_usage"] = True
             payload["stream_options"] = value
         requested = original_max if original_max is not None else self.server.limits.output_cap
-        seq, cap = self.server.limits.reserve(min(requested, TITLE_OUTPUT_CAP) if is_title else requested)
+        requested = min(requested, TITLE_OUTPUT_CAP) if is_title else requested
         for key in OUT_KEYS:
             payload.pop(key, None)
         for key in ("n_cmpl", "n", "n_parallel"):
             payload.pop(key, None)
-        payload["max_completion_tokens"] = cap
-        return seq, cap, original_max, payload, requested_model, is_title
+        return requested, original_max, payload, requested_model, is_title
 
     def do_POST(self):
+        arrived = time.monotonic()
         if self.path != PATH:
             self.send_error(404)
             return
         try:
-            seq, cap, original_max, payload, requested_model, is_title = self.prepare()
+            prepared = self.prepare()
         except (TypeError, ValueError) as error:
             self.send_error(400, str(error))
             return
+        queued_at = time.monotonic()
+        try:
+            self.server.gate.acquire(self.server, self.connection)
+        except RuntimeError as error:
+            self.queue_wait_s = round(time.monotonic() - queued_at, 4)
+            try:
+                self.send_error(429, str(error))
+            except OSError:
+                pass
+            return
+        try:
+            self.queue_wait_s = round(time.monotonic() - queued_at, 4)
+            self.forward(arrived, *prepared)
+        finally:
+            self.server.gate.release()
+
+    def forward(self, arrived, requested, original_max, payload, requested_model, is_title):
+        try:
+            seq, cap = self.server.limits.reserve(requested)
         except RuntimeError as error:
             self.send_error(429, str(error))
             return
+        payload["max_completion_tokens"] = cap
         started = time.time()
         tzero = time.monotonic()
         meter = EventMeter()
         headers_sent = False
         status = error = first_body = watchdog = channels = None
+        forwarded_at = None
         body_ref = f"{self.server.label}-{seq:04d}.json.gz"
         body = json.dumps(payload, ensure_ascii=False).encode()
         try:
@@ -189,6 +258,8 @@ class Handler(BaseHTTPRequestHandler):
                 watchdog = threading.Timer(self.server.limits.seconds_left(), close_channels, args=(channels,))
                 watchdog.daemon = True
                 watchdog.start()
+                tzero = time.monotonic()
+                forwarded_at = time.time()
                 conn.request("POST", PATH, body, {"Content-Type": "application/json"})
                 response = conn.getresponse()
                 status = response.status
@@ -234,13 +305,14 @@ class Handler(BaseHTTPRequestHandler):
             if self.server.limits.seconds_left() <= 0 and meter.outcome is None:
                 error = error or "approved wall deadline reached"
             timing, usage = meter.timings, meter.usage
+            client_ttft = meter.delivered + tzero - arrived if meter.delivered is not None else None
             # Native predicted_n includes reasoning where C22 emits no separate count.
             generated = timing.get("predicted_n", usage.get("completion_tokens"))
             if generated is None and status is not None and 400 <= status < 500:
                 generated = 0
             completed = error is None and (meter.outcome is not None or usage.get("completion_tokens") is not None
                                            or (status is not None and 400 <= status < 500))
-            self.server.limits.finish(cap, generated if completed else None)
+            self.server.limits.finish(cap, generated if completed else (None if forwarded_at is not None else 0))
             total = lambda value: round(value, 4) if value is not None else None
             template = payload["chat_template_kwargs"]
             digest = {"tools": len(payload.get("tools") or []), "thinking": template["enable_thinking"],
@@ -248,10 +320,13 @@ class Handler(BaseHTTPRequestHandler):
                       "sdk_model": requested_model, "role": "title" if is_title else None,
                       "upstream_requested_cap": original_max}
             row = {"task": self.server.task, "label": self.server.label, "seq": seq,
-                   "slot": self.server.slot, "backend": self.server.backend, "t0": started,
+                   "slot": self.server.slot, "backend": self.server.backend, "t0": forwarded_at or started,
                    "wall_s": total(time.monotonic() - tzero), "http_status": status,
+                   "queue_wait_s": self.queue_wait_s, "client_wall_s": total(time.monotonic() - arrived),
+                   "upstream_attempted": forwarded_at is not None, "forwarded_at": forwarded_at,
+                   "client_ttft_s": total(client_ttft),
                    "first_body_s": total(first_body), "ttft_s": total(meter.first_token),
-                   "delivered_ttft_s": total(meter.delivered), "server_error": meter.error,
+                   "delivered_ttft_s": total(client_ttft), "server_error": meter.error,
                    "transport_error": error, "generation_complete": completed, "finish_reason": meter.outcome, "body_ref": body_ref,
                    "usage": usage or None, "prompt_n": timing.get("prompt_n"), "cache_n": timing.get("cache_n"),
                    "prompt_tok_s": timing.get("prompt_per_second"), "prompt_ms": timing.get("prompt_ms"),
@@ -267,6 +342,13 @@ class Handler(BaseHTTPRequestHandler):
 
 class Proxy(ThreadingHTTPServer):
     daemon_threads = True
+
+    def cancel(self):
+        with self.connection_lock:
+            self.closed = True
+            for channels in self.connections:
+                close_channels(channels)
+        self.gate.wake()
 
 
 @contextmanager
@@ -284,12 +366,13 @@ def proxy(upstream, output, *, limits, backend, slot, task, label, thinking, pre
         server.sampling = dict(sampling or {})
         server.rows, server.write_lock = [], threading.Lock()
         server.connections, server.connection_lock, server.closed = set(), threading.Lock(), False
+        with GATES_LOCK:
+            key = (upstream, slot)
+            server.gate = GATES.get(key) or SlotGate()
+            GATES[key] = server.gate
         threading.Thread(target=server.serve_forever, daemon=True).start()
         try:
             yield server
         finally:
-            with server.connection_lock:
-                server.closed = True
-                for channels in server.connections:
-                    close_channels(channels)
+            server.cancel()
             server.shutdown()

@@ -186,3 +186,36 @@ def test_open_code_interrupt_returns_a_valid_unwrapped_response(tmp_path, monkey
     monkeypatch.setattr(box, "command", lambda *_args, **_kwargs: SimpleNamespace(
         stdout='{"interrupted":true}', stderr="", returncode=0))
     assert box.api("/api/session/ses_fixture/interrupt", {}) == {"interrupted": True}
+
+
+def test_slot_wait_uses_same_gate_across_adapters_and_expires_without_upstream_request(model, tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+
+    def adapter(name, wall):
+        limits = Limits(wall_s=wall, output_cap=8192, cumulative_output=120000)
+        return proxy(model.server_port, tmp_path / name, limits=limits, backend="gpu", slot=2,
+                     task="fixture", label=name, thinking=True)
+
+    with ThreadPoolExecutor(max_workers=2) as pool, adapter("owner", 3) as owner:
+        active = pool.submit(post, owner.server_port, stream=True)
+        until = time.monotonic() + 1
+        while not model.requests and time.monotonic() < until:
+            time.sleep(0.005)
+        assert len(model.requests) == 1
+        with adapter("waiter", 0.2) as waiter:
+            assert owner.gate is waiter.gate
+            assert post(waiter.server_port)[0] == 429
+            assert not waiter.rows and waiter.limits.pending == waiter.limits.charged == 0
+            assert len(model.requests) == 1
+        assert active.result()[0] == 200
+
+
+def test_c22_requires_explicit_zero_shared_ram_cache():
+    from taskflow.harness.opencode_derived.transport import require_disabled_shared_cache
+
+    require_disabled_shared_cache((b"llama-server", b"--cache-ram", b"0"))
+    for args in ((b"llama-server",), (b"llama-server", b"--cache-ram"),
+                 (b"llama-server", b"--cache-ram", b"8192"),
+                 (b"llama-server", b"--cache-ram", b"0", b"-cram", b"1")):
+        with pytest.raises(ValueError, match="explicit --cache-ram 0"):
+            require_disabled_shared_cache(args)
