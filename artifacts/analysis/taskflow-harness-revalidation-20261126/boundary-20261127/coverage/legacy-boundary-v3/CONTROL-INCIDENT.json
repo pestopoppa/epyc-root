@@ -1,0 +1,17 @@
+{
+  "event": "model-free NUMA custody fixture accidentally reached the real memory worker constructor",
+  "cause": "mocked proc Path stripped the process directory, causing the exact prior birth to appear absent",
+  "first_owned_test_session": 88340,
+  "second_owned_test_session": 72112,
+  "owned_test_pids": [3441656, 3442194],
+  "owned_allocation_worker_pids_terminated": [3441669, 3441670, 3441671, 3441672, 3442201, 3442202, 3442203, 3442204],
+  "ownership": "captured worker PPID and exact argv before signalling, SIGTERM only to captured owned workers",
+  "observational_window": "approximately 2026-11-27T02:03:20Z through 2026-11-27T02:04:28.304984823Z",
+  "all_processes_absent_at_end": true,
+  "maximum_possible_allocation_bytes": 171798691840,
+  "actual_peak_allocation_bytes": null,
+  "mem_available_after_kib": 1145662212,
+  "native_model_calls": 0,
+  "effect_conclusion": "Possible concurrent NUMA page reclaim and serving throughput interference in this window. Effect size unmeasured.",
+  "fixture_correction": "preserve both PID and stat components and forbid real Popen in the simulated custody rejection test"
+}

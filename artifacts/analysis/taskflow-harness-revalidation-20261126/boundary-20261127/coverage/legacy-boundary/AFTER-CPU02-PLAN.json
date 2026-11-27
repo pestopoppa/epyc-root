@@ -1,0 +1,318 @@
+{
+  "schema": "legacy-owned-boundary.v1",
+  "prior_artifacts": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/gpu-cleanup.json": "86fad5566d9ebdcd4e5001f6f1e2474f204f3067287f2c1ff226fc15eaf1696c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/CLEANUP.json": "c4e83eb9f3fdb528f4da0091e862dc70af7426984fc8fa6497d06d85d9f28ded",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/RESULTS.json": "90af0c4f219c35b0cdc4e55fc9e7c9a1f63ed3ff3052846ea84ce422500ce1df",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/APPROVAL.json": "f22f216a1a7f4d27bc979ed3aa21f84bd374072447cb4a31ec8121e9dfb7814a"
+  },
+  "stops": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/STOP-REASON.json": "d14b7a44429d41535f0bb062760392922eb1a4fcf072d2d588447be561b2670a",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/GRANT-LOST.json": "8a91893bb54b07bac409b54c45055920478610581eac6bb75a7ae3f5666d8fc9"
+  },
+  "cpu_rows": [
+    {
+      "kind": "quality",
+      "row": {
+        "case": "DS41-W-66",
+        "backend": "cpu",
+        "thinking": false,
+        "profile": "off-recommended",
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 1.5,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 1,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 3600,
+        "id": "cpu-DS41-W-66-off-recommended-numa-resume-1-boundary"
+      },
+      "checkpoint": {
+        "prior_result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-DS41-W-66-off-recommended-numa-resume-1/RESULT.json",
+          "sha256": "1005294ea9744e1e5eb17f1a091b3c942e4dd1bebb2894dd5dcf8388cc315e07"
+        },
+        "prior": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-DS41-W-66-off-recommended-numa-resume-1",
+        "prior_result_sha256": "1005294ea9744e1e5eb17f1a091b3c942e4dd1bebb2894dd5dcf8388cc315e07",
+        "prior_session_sha256": "2dcf59e7dcba75dc755d2d06c5a4ccdd0c9e5806656425101e7b521dfeb2c84e",
+        "prior_state_sha256": "2213890057b4a154d406ee19857a3fa0d240394fc236f3ce216dcb8c1b6d9f72",
+        "session_id": "ses_de5a2c1fbffeMjQ64Vmr0zf7jw"
+      },
+      "previous_attempts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/cpu-DS41-W-66-off-recommended",
+          "observed_generated_tokens": 3332,
+          "model_wall_s": 2669.848
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-DS41-W-66-off-recommended-numa-resume-1",
+          "observed_generated_tokens": 0,
+          "model_wall_s": 366.066
+        }
+      ]
+    },
+    {
+      "kind": "quality",
+      "row": {
+        "case": "NARIQ-LIBTRELLIS-MAP-1",
+        "backend": "cpu",
+        "thinking": false,
+        "profile": "off-recommended",
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 1.5,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 2,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 3600,
+        "id": "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary"
+      },
+      "checkpoint": {
+        "prior_result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1/RESULT.json",
+          "sha256": "c6c4b163551d6a8e0c09c6ee82e2ebee8778f248567ef5c35613d90a56dada6b"
+        },
+        "prior": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1",
+        "prior_result_sha256": "c6c4b163551d6a8e0c09c6ee82e2ebee8778f248567ef5c35613d90a56dada6b",
+        "prior_session_sha256": "6f54a67c3d73f02859a30cef8b8baf26187737753a7637095eb8b896424f64db",
+        "prior_state_sha256": "27e88ca55f149259c897749f89d1154a81f0cb8be11bb07c9b9f7d24c7b4469c",
+        "session_id": "ses_de5a2c86bffebCoWfDaps6ulJ5"
+      },
+      "previous_attempts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+          "observed_generated_tokens": 1463,
+          "model_wall_s": 2671.428
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1",
+          "observed_generated_tokens": 5654,
+          "model_wall_s": 3226.561
+        }
+      ]
+    }
+  ],
+  "completed_cpu_rows": [
+    {
+      "prior_row": "cpu-TU-GR-1-off-recommended",
+      "status": "awaiting_source_review",
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-TU-GR-1-off-recommended"
+    },
+    {
+      "prior_row": "cpu-MM-5-off-recommended",
+      "status": "awaiting_source_review",
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended"
+    },
+    {
+      "prior_row": "cpu-PAW-5-off-recommended-numa-resume-1",
+      "status": "oracle_fail",
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PAW-5-off-recommended-numa-resume-1"
+    },
+    {
+      "prior_row": "cpu-PFXC-A3-off-recommended-numa-resume-1",
+      "status": "oracle_pass",
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PFXC-A3-off-recommended-numa-resume-1"
+    }
+  ],
+  "unresolved_cpu_rows": [],
+  "legacy_gpu_rows": [
+    {
+      "kind": "legacy",
+      "row": {
+        "case": "TU-GR-1",
+        "backend": "gpu",
+        "thinking": true,
+        "profile": "on-coding",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 0,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-TU-GR-1-on-coding",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "checkpoint": null,
+      "previous_attempts": []
+    },
+    {
+      "kind": "legacy",
+      "row": {
+        "case": "TU-GR-1",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "off-common-on-sampling",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 1,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-TU-GR-1-off-common-on-sampling",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "checkpoint": null,
+      "previous_attempts": []
+    },
+    {
+      "kind": "legacy",
+      "row": {
+        "case": "MM-5",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "off-common-on-sampling",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 2,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-MM-5-off-common-on-sampling",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "checkpoint": null,
+      "previous_attempts": []
+    },
+    {
+      "kind": "legacy",
+      "row": {
+        "case": "MM-5",
+        "backend": "gpu",
+        "thinking": true,
+        "profile": "on-coding",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 3,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-MM-5-on-coding",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "checkpoint": null,
+      "previous_attempts": []
+    }
+  ],
+  "gpu_supplements": [
+    {
+      "kind": "supplement",
+      "row": {
+        "case": "NARIQ-LIBTRELLIS-MAP-1",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "on-coding",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 0,
+        "cohort": 1,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-NARIQ-LIBTRELLIS-MAP-1-off-common-on-sampling-supplement"
+      },
+      "reference_row": "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding",
+      "reference_sampler": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      }
+    },
+    {
+      "kind": "supplement",
+      "row": {
+        "case": "PFXC-A3",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "on-coding",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 2,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-PFXC-A3-off-common-on-sampling-supplement"
+      },
+      "reference_row": "gpu-PFXC-A3-on-coding",
+      "reference_sampler": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 223355
+      }
+    }
+  ],
+  "continuation_notice": "Resume the pinned task in this private session and workspace. The preceding turn or queue was paused by the controller at a resource ownership boundary. Use the original brief, scope and checks. No additional task guidance is available.\n",
+  "native_calls_during_prep": 0
+}

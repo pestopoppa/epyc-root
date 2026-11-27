@@ -1,0 +1,1251 @@
+{
+  "cases": [
+    {
+      "accepted_after_paid_turns": 1,
+      "case": "PAW-5",
+      "execution": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 149504,
+        "cli_execution_wall_s_sum": "66.922348",
+        "input_tokens": 183698,
+        "output_tokens": 2900,
+        "reasoning_output_tokens": 51,
+        "turns": 1,
+        "uncached_input_tokens": 34194
+      },
+      "final_candidate_files": {
+        "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+          "bytes": 10048,
+          "executable": false,
+          "sha256": "bd758267038b1f78f5ac93f687945d462a13dde2691190a943c2744c55385148"
+        }
+      },
+      "first_turn_oracle_rc": 0,
+      "last_turn_oracle_rc": 0,
+      "turn_ids": [
+        "01a21a1b-4d41-7fb1-b2d9-3835c8f8732a"
+      ]
+    },
+    {
+      "accepted_after_paid_turns": 1,
+      "case": "DS41-W-66",
+      "execution": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 303616,
+        "cli_execution_wall_s_sum": "74.823704",
+        "input_tokens": 343820,
+        "output_tokens": 2056,
+        "reasoning_output_tokens": 80,
+        "turns": 1,
+        "uncached_input_tokens": 40204
+      },
+      "final_candidate_files": {
+        "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": {
+          "bytes": 5540,
+          "executable": false,
+          "sha256": "ab997c230433b5da3908e6ce36c21edc868f03453b8e1a0a3676b09592d8ed2f"
+        }
+      },
+      "first_turn_oracle_rc": 0,
+      "last_turn_oracle_rc": 0,
+      "turn_ids": [
+        "01a21a1b-4deb-7851-8711-2bc1046d8341"
+      ]
+    },
+    {
+      "accepted_after_paid_turns": 1,
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "execution": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 130944,
+        "cli_execution_wall_s_sum": "89.898506",
+        "input_tokens": 158668,
+        "output_tokens": 3859,
+        "reasoning_output_tokens": 10,
+        "turns": 1,
+        "uncached_input_tokens": 27724
+      },
+      "final_candidate_files": {
+        "docs/research/exl3-4-gfx90a-libtrellis-design.md": {
+          "bytes": 12687,
+          "executable": false,
+          "sha256": "a9fc762591277a784c10e1e9b9e866665b3f6a126600787f1c1fa92711124962"
+        }
+      },
+      "first_turn_oracle_rc": 0,
+      "last_turn_oracle_rc": 0,
+      "turn_ids": [
+        "01a21a1b-4d63-7712-9a6e-5d16011b1ca0"
+      ]
+    },
+    {
+      "accepted_after_paid_turns": 1,
+      "case": "PFXC-A3",
+      "execution": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 201088,
+        "cli_execution_wall_s_sum": "111.710705",
+        "input_tokens": 224938,
+        "output_tokens": 5051,
+        "reasoning_output_tokens": 22,
+        "turns": 1,
+        "uncached_input_tokens": 23850
+      },
+      "final_candidate_files": {
+        "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": {
+          "bytes": 6965,
+          "executable": false,
+          "sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258"
+        }
+      },
+      "first_turn_oracle_rc": 0,
+      "last_turn_oracle_rc": 0,
+      "turn_ids": [
+        "01a21a1b-4d2d-71c2-b130-ae94867d5b23"
+      ]
+    },
+    {
+      "accepted_after_paid_turns": 2,
+      "case": "TU-GR-1",
+      "execution": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 152448,
+        "cli_execution_wall_s_sum": "191.404095",
+        "input_tokens": 172616,
+        "output_tokens": 2529,
+        "reasoning_output_tokens": 123,
+        "turns": 2,
+        "uncached_input_tokens": 20168
+      },
+      "final_candidate_files": {
+        "scripts/autopilot/evals/dtap/harness/isolation.py": {
+          "bytes": 3094,
+          "executable": false,
+          "sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc"
+        },
+        "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+          "bytes": 2149,
+          "executable": false,
+          "sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede"
+        }
+      },
+      "first_turn_oracle_rc": 1,
+      "last_turn_oracle_rc": 0,
+      "turn_ids": [
+        "01a21a6d-9c4e-7950-be5e-c757d808bcdc",
+        "01a21a7a-9f03-7c41-8ae7-a1f6895e58b2"
+      ]
+    },
+    {
+      "accepted_after_paid_turns": 1,
+      "case": "MM-5",
+      "execution": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 129536,
+        "cli_execution_wall_s_sum": "140.117489",
+        "input_tokens": 142565,
+        "output_tokens": 2973,
+        "reasoning_output_tokens": 93,
+        "turns": 1,
+        "uncached_input_tokens": 13029
+      },
+      "final_candidate_files": {
+        "src/vision/analyzers/vl_describe.py": {
+          "bytes": 23321,
+          "executable": false,
+          "sha256": "ced7ba6f65bb9f76ddbcc3991ffa5e09063411371d7bc21d9010d503ddba4c2c"
+        },
+        "tests/unit/test_vl_describe_resize.py": {
+          "bytes": 4086,
+          "executable": false,
+          "sha256": "9f99525cc28e07efc669c2c54ba4616504e2cf4b36924764019cb27580e0bf70"
+        }
+      },
+      "first_turn_oracle_rc": 0,
+      "last_turn_oracle_rc": 0,
+      "turn_ids": [
+        "01a21a6d-9c58-7890-a06a-3d42b673b7c2"
+      ]
+    }
+  ],
+  "checker_qualifications": {
+    "DS41-W-66": "same oracle SHA; isolated test dependency/context replay retained in committed scope audit",
+    "NARIQ-LIBTRELLIS-MAP-1": "selected pinned source checker rc0; source/web-read audit retained",
+    "PAW-5": "same-byte formatting migration from original rc1 to paw5.markdown-fields.v3 rc0; no second paid model turn",
+    "PFXC-A3": "original direct checker rc0 and later pfxc.exact-events.v4 shared-checker replay rc0 on identical candidate; no second paid turn"
+  },
+  "excluded_paid_guidance": {
+    "arm": "guidance",
+    "candidate_changed": false,
+    "case": "NARIQ-LIBTRELLIS-MAP-1",
+    "cli_execution_wall_s": "95.819931",
+    "events_sha256": "437d127e9cd6a5e51c4c926abfb0e3be369aaa29732af8dabf8289288a25b404",
+    "included_in_main_only_totals": false,
+    "ordinal": 1,
+    "reason": "paid A3B review/guidance, not direct-main completion",
+    "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1",
+    "usage": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 91008,
+      "input_tokens": 123494,
+      "output_tokens": 1016,
+      "reasoning_output_tokens": 21,
+      "uncached_input_tokens": 32486
+    }
+  },
+  "provenance": {
+    "committed_reviews": {
+      "legacy_first_scope": {
+        "commit": "47139dc8f2206e9149cf403269c33b6531791c80",
+        "git_blob": "167a1c115c2dae892f0c85a9b04599fdcb5a71c1",
+        "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/legacy-main-first-pass/independent-review.json",
+        "repo": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126",
+        "sha256": "15eacdd6a048e3ca5f595d78eacc4d5ed1e1eb12b485bc24b99041f3eff20ca4"
+      },
+      "original_four_results": {
+        "commit": "47139dc8f2206e9149cf403269c33b6531791c80",
+        "git_blob": "3c9be4a19f2ffa74a299c385eb15461ee063a309",
+        "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/quality-launch/main-only-results.json",
+        "repo": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126",
+        "sha256": "8c50d90fb014f92b47c99e9185c3a4c90b6c2bf91b271aec5ebac9022e5beb95"
+      },
+      "original_four_scope": {
+        "commit": "47139dc8f2206e9149cf403269c33b6531791c80",
+        "git_blob": "33d7df5a4e441af59be29998d9e530f60960112c",
+        "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/quality-launch/direct-command-scope-review.json",
+        "repo": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126",
+        "sha256": "54f55d9e87338c5f2dedbedcb115f485fc2960d3e51dab158b3d0b2d47360be8"
+      },
+      "paw_migration": {
+        "commit": "47139dc8f2206e9149cf403269c33b6531791c80",
+        "git_blob": "2f714a984c3323f2520a7e4b4e7ef90f07d91bee",
+        "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/quality-launch/acceptance-migration.json",
+        "repo": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126",
+        "sha256": "ca5bb72e0e40ef899f91dadb9bbb73658bd9d8325fcb6d9fb7da1ac4ec057f7b"
+      },
+      "pfxc_migration": {
+        "commit": "47139dc8f2206e9149cf403269c33b6531791c80",
+        "git_blob": "47cadcba785e2bebf9735c1b9fb685ef1bcc4c33",
+        "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/pfxc-oracle-v4/acceptance-migration.json",
+        "repo": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126",
+        "sha256": "b009d0bb51ad867917d970b09e8cc3c061fa422d056b8a6affd6b88dd6263593"
+      },
+      "repair_accounting": {
+        "commit": "47139dc8f2206e9149cf403269c33b6531791c80",
+        "git_blob": "0329e0712c36a88ed0b28eace276390db6ebf302",
+        "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/legacy-main-repair/DIRECT-REPAIR-ACCOUNTING.json",
+        "repo": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126",
+        "sha256": "58049521ceb81e29c5c4729a34d238860ef633830a88e8df4b483fd55690ca73"
+      },
+      "repair_scope": {
+        "commit": "47139dc8f2206e9149cf403269c33b6531791c80",
+        "git_blob": "d9ba054d50a0f92018b0dd2a3f978ac6354d1405",
+        "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/legacy-main-repair/source-and-scope-review.json",
+        "repo": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126",
+        "sha256": "aec10485112281492538e395dc1c53474f6243b15cf2004b65544d18fc2d3b7a"
+      }
+    },
+    "extractor_sha256": "163f7f5a39b9083d4d63c2087ce8455f9651ef2c13a43dbfee5015360e3a99e3",
+    "source_files": {
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/delta.patch": {
+        "bytes": 9990,
+        "sha256": "95eb2bef1652f9040fe1a98d7ce64a3aa126ecfe8537f8ae5929d9ba7f196e24"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/events.jsonl": {
+        "bytes": 46714,
+        "sha256": "379c6db553f7441b8e67ad008b4ef3d16757e1c72e5669a15c08e1fa979a883d"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/execution.json": {
+        "bytes": 107,
+        "sha256": "a0f1d359cf0dfc74a057ca56db0dea8fe19e2d186ba6697a31b9711cb1bd0afc"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/launch-start.json": {
+        "bytes": 700,
+        "sha256": "9f30385abadceae053cdf7ecbeb44f6a10c0c6d073546ba881462eb631dfa1ee"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/measurement.json": {
+        "bytes": 2684,
+        "sha256": "882aca939182ede4690f87851d59d415a166b707cd70466d89ea7a7ed81e55d2"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/oracle-result.json": {
+        "bytes": 1758,
+        "sha256": "e009550c75a52d395a57a80488e5641710a1f1aa154408056d4226586dc5cb41"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/oracle.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/oracle.stdout.log": {
+        "bytes": 28,
+        "sha256": "ad1546ceacfae3aec47dd930e43c10cecc58600050398c84e30e6d66601e9b04"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/plan.json": {
+        "bytes": 341137,
+        "sha256": "61ac6124738a387e87a10e11e6edf89e7a2e7ca71b1216e6ee43513eb1dd9c02"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/prompt.md": {
+        "bytes": 3747,
+        "sha256": "d6dfb0c3a998bb6962d9b0d5c0798eea50a15a4e02bc60a1ed4df53119031dd7"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/delta.patch": {
+        "bytes": 5525,
+        "sha256": "bdde24e42566ae5328b5d630d275b17dea44096080f7c288fdf80f827cf97db4"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/events.jsonl": {
+        "bytes": 41649,
+        "sha256": "d199d8e1413c19e814f76c12f479043da1505aa6eb6c1f34cf31a517e8157458"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/execution.json": {
+        "bytes": 107,
+        "sha256": "1047b076cedf4e843edbb7e5601c2e64318253f9f26c41ef2f04fe253378dc7d"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/launch-start.json": {
+        "bytes": 703,
+        "sha256": "772d2650eacddd01a9f1e0f72622eef4f89a6daef3a1dc9c4906ff5f59066ab5"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/measurement.json": {
+        "bytes": 2371,
+        "sha256": "91d2da5cb1351fac12d1ba39a90313066fcc9903afed0ff7b6d00c58bfc8b5ae"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/oracle-result.json": {
+        "bytes": 1795,
+        "sha256": "2d8566ed521df65921ad6f2c45af60e4e197d1352e6d235d477959fbbe825f72"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/oracle.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/oracle.stdout.log": {
+        "bytes": 1332,
+        "sha256": "906ec20177991e1d7e1cd23f619003e48c683699d9dd01e8e2b45a849c7b8cc9"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/plan.json": {
+        "bytes": 341407,
+        "sha256": "49284b60aab0bfb5d16b8b9e152ad6633cb8bc5b28b8c93207526bd158aa1353"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/prompt.md": {
+        "bytes": 4197,
+        "sha256": "6c78fea137318ae50f54e007a8461fb760f0ea331ca09eff1073cdc8ac261bcf"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1/stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/DIRECT-REPAIR-ACCOUNTING.json": {
+        "bytes": 7550,
+        "sha256": "58049521ceb81e29c5c4729a34d238860ef633830a88e8df4b483fd55690ca73"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/delta.patch": {
+        "bytes": 5577,
+        "sha256": "9926a6b982cd23c1fbe27c0d0e6b31be7b3035d0fb5c35d186991c0b2c39553b"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/events.jsonl": {
+        "bytes": 9620,
+        "sha256": "247c5f0c04b2aea9b305ef49e666049148b3ce2a3d8e511126b53d13ca6b3742"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/execution.json": {
+        "bytes": 106,
+        "sha256": "3b57066ad6ff8604e3d76a3f2804db25d0402cd09a187bc87ec52385758ad8f2"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/launch-start.json": {
+        "bytes": 713,
+        "sha256": "59c59aa669d857b412358cb89f61841fb314d689b6a3ed497ffd0398d1c35670"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/measurement.json": {
+        "bytes": 4222,
+        "sha256": "e6ce500e56b9622972cc383fca9b76364f151d552ae5ce27e3aa149d361927ed"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/oracle-result.json": {
+        "bytes": 1794,
+        "sha256": "9e345d88c89d0778a38f71b6f9539da36b0b3bac354ae03ee2a2c77b12e980e0"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/oracle.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/oracle.stdout.log": {
+        "bytes": 24,
+        "sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/plan.json": {
+        "bytes": 343083,
+        "sha256": "c6ca3eac8c15fac22b067d4053dbf111011491aa548bd5f31c6c4a0b1063c731"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/prompt.md": {
+        "bytes": 5126,
+        "sha256": "79195acbdd135a9320206d27a5c33536daaed23ac5bc3fd0def5f0b13b46d84f"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/delta.patch": {
+        "bytes": 3458,
+        "sha256": "748c877dd68ebd4df358f175164e0a96f01226a2b583367b81406d64a5266139"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/events.jsonl": {
+        "bytes": 64772,
+        "sha256": "9b764f07208f2776b93e7983c8d5ebb75678256871f670117cd2bc743bcbc9ba"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/execution.json": {
+        "bytes": 106,
+        "sha256": "5be92b1f34e4677f4226551761b306d66880a7ec8ca0e0a5dbbe638d7e461d7b"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/launch-start.json": {
+        "bytes": 694,
+        "sha256": "22a8751ff00ed3155c247344a2851fd9ee0629293c1f73f17322368fcd9b9adc"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/measurement.json": {
+        "bytes": 4491,
+        "sha256": "84947eb3992c864223267009d0082aa87c4ce8a3815e9b47e9591d4cb5aff76a"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/oracle-result.json": {
+        "bytes": 1803,
+        "sha256": "1163186998e25084334cf6d2bcf068d72ca1343aa71b6a7fe8da63f7837d25ef"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/oracle.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/oracle.stdout.log": {
+        "bytes": 98,
+        "sha256": "485dc97aee052b7a3aae66ab9e22501d72195d1e39c1b8350563aa8737cff6c9"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/plan.json": {
+        "bytes": 606448,
+        "sha256": "0bb44a8c3e9ca11013f1c4d22c34dc385e6670fb7b79469ab9beb7be573ce546"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/prompt.md": {
+        "bytes": 2742,
+        "sha256": "fd47252d8da97bdd3bcfd64ddf54f562bbc751acc234acd2c1c32651e1f3d194"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1/stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/delta.patch": {
+        "bytes": 12851,
+        "sha256": "2531bf825c6c102b84a20a03a5aa26b70709a7999e98c6fc9adec6e1dcd2bcbb"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/events.jsonl": {
+        "bytes": 87890,
+        "sha256": "d4f5ada7669f7bea9e372f0cd819fb4d329956b795cb8272c400e78314acacf9"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/execution.json": {
+        "bytes": 106,
+        "sha256": "5ebffdbd9540a33c0e5611531a695e58893234e9a6cfede70138b8453cce2eb6"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/launch-start.json": {
+        "bytes": 707,
+        "sha256": "ce661df5e042fe7f3282029567b7301d34bbbab8782eb6cae5ef56afb4e2756e"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/measurement.json": {
+        "bytes": 2027,
+        "sha256": "24f1455c88f08b254aeb67059ff14ac3a8b4a38ff1b4ca488a2aed190dde2d79"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/oracle-result.json": {
+        "bytes": 599,
+        "sha256": "652b055d7f87cc243f10646ccf57b35d2a76d82e0a34df4531f1eb89c484ca8b"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/oracle.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/oracle.stdout.log": {
+        "bytes": 108,
+        "sha256": "4c82cec89a4949d31149cc9a9b1c2e44f0058e9b1cfc4b8268e600aaea8e6827"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/plan.json": {
+        "bytes": 2801,
+        "sha256": "52f8dbae9ff1e40edb148a7f3fadf4d7f50b0772e6b1a29dede8bc8fc06727a0"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/prompt.md": {
+        "bytes": 3467,
+        "sha256": "3d2d8b8a07a56f5066b0734990f8ea42e605073756044402429bc1f666d373c1"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/events.jsonl": {
+        "bytes": 110585,
+        "sha256": "437d127e9cd6a5e51c4c926abfb0e3be369aaa29732af8dabf8289288a25b404"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/execution.json": {
+        "bytes": 106,
+        "sha256": "b7385df9bcd434eda6ca52d760d87daba10a7de2e3aab052d790f12e9d2719fa"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/measurement.json": {
+        "bytes": 1347,
+        "sha256": "e79c6decd66bb0e46c91acfe52829403984645256e53c01fe3e8009f029d2617"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/plan.json": {
+        "bytes": 3136,
+        "sha256": "f2c9ee9b4ba29dee800fb3c071ccf76ac846e7251863b98894059d85836c13df"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/delta.patch": {
+        "bytes": 10201,
+        "sha256": "3ba76b91f1b581d4937ba5c3c809c3044902ccd4a44f3d9dfcd50d5a565a747d"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/events.jsonl": {
+        "bytes": 138668,
+        "sha256": "90697b9fb0ba196e2a366b1fceb9cb15950b61f8952875348bb8b0587a84d11e"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/execution.json": {
+        "bytes": 106,
+        "sha256": "eba8b013b95eea1a5ea64f2553a3f8750b4d5c73691562ee761ced39f44bd043"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/format-v3/oracle-result.json": {
+        "bytes": 779,
+        "sha256": "f22dcb0cad79bdb4c11b9c68471976a28097ae3e7a44a41bab934c3f204d0415"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/format-v3/oracle.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/format-v3/oracle.stdout.log": {
+        "bytes": 94,
+        "sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/launch-start.json": {
+        "bytes": 690,
+        "sha256": "d6632710601e193611d72b797a2b9f606c5d32eda81ac05acbe05bf8896c486d"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/measurement.json": {
+        "bytes": 4349,
+        "sha256": "63148783fed752e8663310285d659b0698449a0ed23fa5e70bd4f53aee842335"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/oracle-result.json": {
+        "bytes": 600,
+        "sha256": "47f9b4922305469733dd39d56306274324f9adb37bd3d3f762a15f434c34a74c"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/plan.json": {
+        "bytes": 2665,
+        "sha256": "7e59b455648f5367dcd6b35545e2ae99c684917b41bc2678037171f8d48a3202"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/prompt.md": {
+        "bytes": 3078,
+        "sha256": "a0de09234094cdf48108d9a86c20b646944424862b363dfc1fe5864314d1d890"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/delta.patch": {
+        "bytes": 7163,
+        "sha256": "8474384ee0cca57a0a799700b94c0b5d17dc65dce8fb053c066086fd627cb7a5"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/events.jsonl": {
+        "bytes": 921022,
+        "sha256": "729c60a53e2aa6a71749486b4ab2711e2198bcc17a090ff00eaed6b44693b2c9"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/execution.json": {
+        "bytes": 107,
+        "sha256": "df5a54081fb8271eb66dd3947f5845f849401cc2b0cd144134385efeb31e1198"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/launch-start.json": {
+        "bytes": 692,
+        "sha256": "f4c8dda4fc23a1074ad7836802ab17a306b32a2dd614e0cfd3dcbbc696d62d88"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/measurement.json": {
+        "bytes": 3501,
+        "sha256": "aed4303d979632e8b6b591b0bce6b62885882cf6403b346888bbb784e9525b73"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/oracle-result.json": {
+        "bytes": 627,
+        "sha256": "c4db52ccc365f6a9273c7dd64257e5eee268562abcc01eafe2d1796631466395"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/oracle.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/oracle.stdout.log": {
+        "bytes": 68,
+        "sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/plan.json": {
+        "bytes": 2353,
+        "sha256": "94e81c2e97a800274bddba87a7acfed4c1076d023f78484b518c45e6f2fe38bf"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/prompt.md": {
+        "bytes": 4453,
+        "sha256": "250c3cfd59a8d3c180f8b4f00106b5399d4f953a0408f4dc0789b82375ad5ff6"
+      },
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "schema": "epyc.a3b.main-only-execution-accounting.v1",
+  "schema_sha256": "13dcb323c236a553dcbd29e511ec5d9cddb67504c5a3b036bcd13adc480b4482",
+  "scope": {
+    "accepted_after_one_turn": 5,
+    "accepted_after_two_turns": 1,
+    "additional_paid_repair_turns": 1,
+    "cases": 6,
+    "cli_version": "codex-cli 0.172.0",
+    "duration_definition": "sum saved CLI execution wall_s, including tool/runtime time; not pure model-service time and not parallel batch elapsed",
+    "excluded_costs": "manager/setup/review, checker repairs and experiment coordination are not isolated by these CLI vectors; they are neither zero nor included. Native A3B execution and paid A3B guidance are separate.",
+    "initial_paid_turns": 6,
+    "model": "gpt-6.1-sol",
+    "parallel_batch_elapsed_s": null,
+    "pure_model_service_duration_s": null,
+    "raw_review_flags": "preserved pending flags can predate the committed source/scope reviews; authoritative review provenance is linked separately",
+    "reasoning_definition": "reported reasoning_output_tokens are included in output_tokens; never add them again",
+    "reasoning_effort": "low"
+  },
+  "totals": {
+    "additional_direct_repair": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 49792,
+      "cli_execution_wall_s_sum": "71.562237",
+      "input_tokens": 57572,
+      "output_tokens": 460,
+      "reasoning_output_tokens": 51,
+      "turns": 1,
+      "uncached_input_tokens": 7780
+    },
+    "all_seven_turns": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 1067136,
+      "cli_execution_wall_s_sum": "674.876847",
+      "input_tokens": 1226305,
+      "output_tokens": 19368,
+      "reasoning_output_tokens": 379,
+      "turns": 7,
+      "uncached_input_tokens": 159169
+    },
+    "initial_six_turns": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 1017344,
+      "cli_execution_wall_s_sum": "603.314610",
+      "input_tokens": 1168733,
+      "output_tokens": 18908,
+      "reasoning_output_tokens": 328,
+      "turns": 6,
+      "uncached_input_tokens": 151389
+    }
+  },
+  "turns": [
+    {
+      "candidate_files": {
+        "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+          "bytes": 10048,
+          "executable": false,
+          "sha256": "bd758267038b1f78f5ac93f687945d462a13dde2691190a943c2744c55385148"
+        }
+      },
+      "case": "PAW-5",
+      "case_turn": 1,
+      "checker_migration": {
+        "case": "PAW-5",
+        "control_receipts": {
+          "baseline": "controls/PAW-5/format-v3/baseline/oracle-result.json",
+          "format_and_regression_matrix": "controls/PAW-5/format-v3/field-matrix.json",
+          "positive": "controls/PAW-5/format-v3/positive/oracle-result.json"
+        },
+        "oracle": "oracle-format-v3.py",
+        "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+        "original_oracle": "oracle.py",
+        "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+        "reason": "Accept logically equivalent inline Markdown field punctuation and require non-empty inline content. Candidate count, mandatory fields, revision pins, staged source seams, PAW prerequisites and JSON repair exclusion remain enforced.",
+        "results_directory": "format-v3",
+        "version": "paw5.markdown-fields.v3"
+      },
+      "cli_execution_wall_s": "66.922348",
+      "cli_version": "codex-cli 0.172.0",
+      "completed_command_count": 5,
+      "completed_turn_jsonl_line": 16,
+      "effort": "low",
+      "embedded_oracle_was_null": false,
+      "event_type_counts": {
+        "item.completed": 8,
+        "item.started": 5,
+        "thread.started": 1,
+        "turn.completed": 1,
+        "turn.started": 1
+      },
+      "events_sha256": "90697b9fb0ba196e2a366b1fceb9cb15950b61f8952875348bb8b0587a84d11e",
+      "initial_oracle_rc": 1,
+      "kind": "initial-direct",
+      "launch_started_unix": 1795734326.3131602,
+      "model": "gpt-6.1-sol",
+      "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+      "patch_sha256": "3ba76b91f1b581d4937ba5c3c809c3044902ccd4a44f3d9dfcd50d5a565a747d",
+      "path_scope_pass": true,
+      "plan_schema": "epyc.main-comparison.plan.v1",
+      "pure_model_service_duration_s": null,
+      "raw_human_review_flag": "pending",
+      "raw_usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 149504,
+        "input_tokens": 183698,
+        "output_tokens": 2900,
+        "reasoning_output_tokens": 51
+      },
+      "review_outcome": "scope-pass; owner-accepted checker-passing artifact",
+      "review_source": "original_four_scope",
+      "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1",
+      "selected_oracle_rc": 0,
+      "selected_oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+      "thread_id": "01a21a1b-4d41-7fb1-b2d9-3835c8f8732a",
+      "turn_completed_schema_sha256": "27322640f1de48ed4d940e13fae89d7c601e1edda06d5f2877d6d821c0a4dc2f",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 149504,
+        "input_tokens": 183698,
+        "output_tokens": 2900,
+        "reasoning_output_tokens": 51,
+        "uncached_input_tokens": 34194
+      },
+      "usage_schema": {
+        "$": [
+          "dict"
+        ],
+        "cache_write_input_tokens": [
+          "int"
+        ],
+        "cached_input_tokens": [
+          "int"
+        ],
+        "input_tokens": [
+          "int"
+        ],
+        "output_tokens": [
+          "int"
+        ],
+        "reasoning_output_tokens": [
+          "int"
+        ]
+      },
+      "usage_schema_sha256": "80f5f9566d4d1d4aa9139db961f77423b5a2690ac70ecac9133c4bdc765eacd3",
+      "usage_sha256": "c8b884fb3297631487ca5257ddd1537a6cb97a38c510253fea483c21f4cfbca6"
+    },
+    {
+      "candidate_files": {
+        "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": {
+          "bytes": 5540,
+          "executable": false,
+          "sha256": "ab997c230433b5da3908e6ce36c21edc868f03453b8e1a0a3676b09592d8ed2f"
+        }
+      },
+      "case": "DS41-W-66",
+      "case_turn": 1,
+      "checker_migration": null,
+      "cli_execution_wall_s": "74.823704",
+      "cli_version": "codex-cli 0.172.0",
+      "completed_command_count": 10,
+      "completed_turn_jsonl_line": 32,
+      "effort": "low",
+      "embedded_oracle_was_null": false,
+      "event_type_counts": {
+        "item.completed": 16,
+        "item.started": 13,
+        "thread.started": 1,
+        "turn.completed": 1,
+        "turn.started": 1
+      },
+      "events_sha256": "9b764f07208f2776b93e7983c8d5ebb75678256871f670117cd2bc743bcbc9ba",
+      "initial_oracle_rc": 0,
+      "kind": "initial-direct",
+      "launch_started_unix": 1795734326.4773388,
+      "model": "gpt-6.1-sol",
+      "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "patch_sha256": "748c877dd68ebd4df358f175164e0a96f01226a2b583367b81406d64a5266139",
+      "path_scope_pass": true,
+      "plan_schema": "epyc.main-comparison.plan.v1",
+      "pure_model_service_duration_s": null,
+      "raw_human_review_flag": "pending",
+      "raw_usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 303616,
+        "input_tokens": 343820,
+        "output_tokens": 2056,
+        "reasoning_output_tokens": 80
+      },
+      "review_outcome": "scope-pass; owner-accepted checker-passing artifact",
+      "review_source": "original_four_scope",
+      "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/DS41-W-66/direct-1",
+      "selected_oracle_rc": 0,
+      "selected_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+      "thread_id": "01a21a1b-4deb-7851-8711-2bc1046d8341",
+      "turn_completed_schema_sha256": "27322640f1de48ed4d940e13fae89d7c601e1edda06d5f2877d6d821c0a4dc2f",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 303616,
+        "input_tokens": 343820,
+        "output_tokens": 2056,
+        "reasoning_output_tokens": 80,
+        "uncached_input_tokens": 40204
+      },
+      "usage_schema": {
+        "$": [
+          "dict"
+        ],
+        "cache_write_input_tokens": [
+          "int"
+        ],
+        "cached_input_tokens": [
+          "int"
+        ],
+        "input_tokens": [
+          "int"
+        ],
+        "output_tokens": [
+          "int"
+        ],
+        "reasoning_output_tokens": [
+          "int"
+        ]
+      },
+      "usage_schema_sha256": "80f5f9566d4d1d4aa9139db961f77423b5a2690ac70ecac9133c4bdc765eacd3",
+      "usage_sha256": "5e9c0b5236e97e563b2fb532eb68d10ade4bceacda104c7bbc11639fa1bdc319"
+    },
+    {
+      "candidate_files": {
+        "docs/research/exl3-4-gfx90a-libtrellis-design.md": {
+          "bytes": 12687,
+          "executable": false,
+          "sha256": "a9fc762591277a784c10e1e9b9e866665b3f6a126600787f1c1fa92711124962"
+        }
+      },
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "case_turn": 1,
+      "checker_migration": null,
+      "cli_execution_wall_s": "89.898506",
+      "cli_version": "codex-cli 0.172.0",
+      "completed_command_count": 5,
+      "completed_turn_jsonl_line": 18,
+      "effort": "low",
+      "embedded_oracle_was_null": false,
+      "event_type_counts": {
+        "item.completed": 9,
+        "item.started": 6,
+        "thread.started": 1,
+        "turn.completed": 1,
+        "turn.started": 1
+      },
+      "events_sha256": "d4f5ada7669f7bea9e372f0cd819fb4d329956b795cb8272c400e78314acacf9",
+      "initial_oracle_rc": 0,
+      "kind": "initial-direct",
+      "launch_started_unix": 1795734326.3095968,
+      "model": "gpt-6.1-sol",
+      "original_oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "patch_sha256": "2531bf825c6c102b84a20a03a5aa26b70709a7999e98c6fc9adec6e1dcd2bcbb",
+      "path_scope_pass": true,
+      "plan_schema": "epyc.main-comparison.plan.v1",
+      "pure_model_service_duration_s": null,
+      "raw_human_review_flag": "pending",
+      "raw_usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 130944,
+        "input_tokens": 158668,
+        "output_tokens": 3859,
+        "reasoning_output_tokens": 10
+      },
+      "review_outcome": "scope-pass; owner-accepted checker-passing artifact",
+      "review_source": "original_four_scope",
+      "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1",
+      "selected_oracle_rc": 0,
+      "selected_oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+      "thread_id": "01a21a1b-4d63-7712-9a6e-5d16011b1ca0",
+      "turn_completed_schema_sha256": "27322640f1de48ed4d940e13fae89d7c601e1edda06d5f2877d6d821c0a4dc2f",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 130944,
+        "input_tokens": 158668,
+        "output_tokens": 3859,
+        "reasoning_output_tokens": 10,
+        "uncached_input_tokens": 27724
+      },
+      "usage_schema": {
+        "$": [
+          "dict"
+        ],
+        "cache_write_input_tokens": [
+          "int"
+        ],
+        "cached_input_tokens": [
+          "int"
+        ],
+        "input_tokens": [
+          "int"
+        ],
+        "output_tokens": [
+          "int"
+        ],
+        "reasoning_output_tokens": [
+          "int"
+        ]
+      },
+      "usage_schema_sha256": "80f5f9566d4d1d4aa9139db961f77423b5a2690ac70ecac9133c4bdc765eacd3",
+      "usage_sha256": "f4e9af3707f472bcc791cc57d25046ee91c0da7d35aba836bd2e7762aa278e56"
+    },
+    {
+      "candidate_files": {
+        "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": {
+          "bytes": 6965,
+          "executable": false,
+          "sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258"
+        }
+      },
+      "case": "PFXC-A3",
+      "case_turn": 1,
+      "checker_migration": null,
+      "cli_execution_wall_s": "111.710705",
+      "cli_version": "codex-cli 0.172.0",
+      "completed_command_count": 8,
+      "completed_turn_jsonl_line": 22,
+      "effort": "low",
+      "embedded_oracle_was_null": false,
+      "event_type_counts": {
+        "item.completed": 11,
+        "item.started": 8,
+        "thread.started": 1,
+        "turn.completed": 1,
+        "turn.started": 1
+      },
+      "events_sha256": "729c60a53e2aa6a71749486b4ab2711e2198bcc17a090ff00eaed6b44693b2c9",
+      "initial_oracle_rc": 0,
+      "kind": "initial-direct",
+      "later_shared_checker_replay": {
+        "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+        "extra_paid_model_turns": 0,
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+        },
+        "source": "pfxc_migration",
+        "version": "pfxc.exact-events.v4"
+      },
+      "launch_started_unix": 1795734326.3095934,
+      "model": "gpt-6.1-sol",
+      "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "patch_sha256": "8474384ee0cca57a0a799700b94c0b5d17dc65dce8fb053c066086fd627cb7a5",
+      "path_scope_pass": true,
+      "plan_schema": "epyc.main-comparison.plan.v1",
+      "pure_model_service_duration_s": null,
+      "raw_human_review_flag": "pending",
+      "raw_usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 201088,
+        "input_tokens": 224938,
+        "output_tokens": 5051,
+        "reasoning_output_tokens": 22
+      },
+      "review_outcome": "scope-pass; owner-accepted checker-passing artifact",
+      "review_source": "original_four_scope",
+      "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1",
+      "selected_oracle_rc": 0,
+      "selected_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+      "thread_id": "01a21a1b-4d2d-71c2-b130-ae94867d5b23",
+      "turn_completed_schema_sha256": "27322640f1de48ed4d940e13fae89d7c601e1edda06d5f2877d6d821c0a4dc2f",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 201088,
+        "input_tokens": 224938,
+        "output_tokens": 5051,
+        "reasoning_output_tokens": 22,
+        "uncached_input_tokens": 23850
+      },
+      "usage_schema": {
+        "$": [
+          "dict"
+        ],
+        "cache_write_input_tokens": [
+          "int"
+        ],
+        "cached_input_tokens": [
+          "int"
+        ],
+        "input_tokens": [
+          "int"
+        ],
+        "output_tokens": [
+          "int"
+        ],
+        "reasoning_output_tokens": [
+          "int"
+        ]
+      },
+      "usage_schema_sha256": "80f5f9566d4d1d4aa9139db961f77423b5a2690ac70ecac9133c4bdc765eacd3",
+      "usage_sha256": "27e95a2d4576a6fbab08bf1cdc11140ee2933e4d060e35442a37e38fe9a51a4c"
+    },
+    {
+      "candidate_files": {
+        "scripts/autopilot/evals/dtap/harness/isolation.py": {
+          "bytes": 3094,
+          "executable": false,
+          "sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc"
+        },
+        "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+          "bytes": 2098,
+          "executable": false,
+          "sha256": "cf5adb8c732cc7f56e4710945b77fb6fd44b1fc8dc7a57479301398c88056eab"
+        }
+      },
+      "case": "TU-GR-1",
+      "case_turn": 1,
+      "checker_migration": null,
+      "cli_execution_wall_s": "119.841858",
+      "cli_version": "codex-cli 0.172.0",
+      "completed_command_count": 5,
+      "completed_turn_jsonl_line": 16,
+      "effort": "low",
+      "embedded_oracle_was_null": true,
+      "event_type_counts": {
+        "item.completed": 8,
+        "item.started": 5,
+        "thread.started": 1,
+        "turn.completed": 1,
+        "turn.started": 1
+      },
+      "events_sha256": "d199d8e1413c19e814f76c12f479043da1505aa6eb6c1f34cf31a517e8157458",
+      "initial_oracle_rc": 1,
+      "kind": "initial-direct",
+      "launch_started_unix": 1795739706.8192484,
+      "model": "gpt-6.1-sol",
+      "original_oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+      "patch_sha256": "bdde24e42566ae5328b5d630d275b17dea44096080f7c288fdf80f827cf97db4",
+      "path_scope_pass": true,
+      "plan_schema": "epyc.main-comparison.plan.v1",
+      "pure_model_service_duration_s": null,
+      "raw_human_review_flag": "pending",
+      "raw_usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 102656,
+        "input_tokens": 115044,
+        "output_tokens": 2069,
+        "reasoning_output_tokens": 72
+      },
+      "review_outcome": "reject: misses sanctioned uid_map namespace permission refusal",
+      "review_source": "legacy_first_scope",
+      "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1",
+      "selected_oracle_rc": 1,
+      "selected_oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+      "thread_id": "01a21a6d-9c4e-7950-be5e-c757d808bcdc",
+      "turn_completed_schema_sha256": "27322640f1de48ed4d940e13fae89d7c601e1edda06d5f2877d6d821c0a4dc2f",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 102656,
+        "input_tokens": 115044,
+        "output_tokens": 2069,
+        "reasoning_output_tokens": 72,
+        "uncached_input_tokens": 12388
+      },
+      "usage_schema": {
+        "$": [
+          "dict"
+        ],
+        "cache_write_input_tokens": [
+          "int"
+        ],
+        "cached_input_tokens": [
+          "int"
+        ],
+        "input_tokens": [
+          "int"
+        ],
+        "output_tokens": [
+          "int"
+        ],
+        "reasoning_output_tokens": [
+          "int"
+        ]
+      },
+      "usage_schema_sha256": "80f5f9566d4d1d4aa9139db961f77423b5a2690ac70ecac9133c4bdc765eacd3",
+      "usage_sha256": "a3a51f4d0a9c3470344335a72c48bc78c49a039d7d9fe4f3bb31e665c7205dcb"
+    },
+    {
+      "candidate_files": {
+        "src/vision/analyzers/vl_describe.py": {
+          "bytes": 23321,
+          "executable": false,
+          "sha256": "ced7ba6f65bb9f76ddbcc3991ffa5e09063411371d7bc21d9010d503ddba4c2c"
+        },
+        "tests/unit/test_vl_describe_resize.py": {
+          "bytes": 4086,
+          "executable": false,
+          "sha256": "9f99525cc28e07efc669c2c54ba4616504e2cf4b36924764019cb27580e0bf70"
+        }
+      },
+      "case": "MM-5",
+      "case_turn": 1,
+      "checker_migration": null,
+      "cli_execution_wall_s": "140.117489",
+      "cli_version": "codex-cli 0.172.0",
+      "completed_command_count": 5,
+      "completed_turn_jsonl_line": 18,
+      "effort": "low",
+      "embedded_oracle_was_null": true,
+      "event_type_counts": {
+        "item.completed": 9,
+        "item.started": 6,
+        "thread.started": 1,
+        "turn.completed": 1,
+        "turn.started": 1
+      },
+      "events_sha256": "379c6db553f7441b8e67ad008b4ef3d16757e1c72e5669a15c08e1fa979a883d",
+      "initial_oracle_rc": 0,
+      "kind": "initial-direct",
+      "launch_started_unix": 1795739706.8920338,
+      "model": "gpt-6.1-sol",
+      "original_oracle_sha256": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+      "patch_sha256": "95eb2bef1652f9040fe1a98d7ce64a3aa126ecfe8537f8ae5929d9ba7f196e24",
+      "path_scope_pass": true,
+      "plan_schema": "epyc.main-comparison.plan.v1",
+      "pure_model_service_duration_s": null,
+      "raw_human_review_flag": "pending",
+      "raw_usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 129536,
+        "input_tokens": 142565,
+        "output_tokens": 2973,
+        "reasoning_output_tokens": 93
+      },
+      "review_outcome": "accept: reviewed bounded image preparation and recorder contract; sealed oracle passes",
+      "review_source": "legacy_first_scope",
+      "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1",
+      "selected_oracle_rc": 0,
+      "selected_oracle_sha256": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+      "thread_id": "01a21a6d-9c58-7890-a06a-3d42b673b7c2",
+      "turn_completed_schema_sha256": "27322640f1de48ed4d940e13fae89d7c601e1edda06d5f2877d6d821c0a4dc2f",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 129536,
+        "input_tokens": 142565,
+        "output_tokens": 2973,
+        "reasoning_output_tokens": 93,
+        "uncached_input_tokens": 13029
+      },
+      "usage_schema": {
+        "$": [
+          "dict"
+        ],
+        "cache_write_input_tokens": [
+          "int"
+        ],
+        "cached_input_tokens": [
+          "int"
+        ],
+        "input_tokens": [
+          "int"
+        ],
+        "output_tokens": [
+          "int"
+        ],
+        "reasoning_output_tokens": [
+          "int"
+        ]
+      },
+      "usage_schema_sha256": "80f5f9566d4d1d4aa9139db961f77423b5a2690ac70ecac9133c4bdc765eacd3",
+      "usage_sha256": "5380ff8be232164d50131b7de9d54807d0f611f295a8b409fb228c5b80c8cb2c"
+    },
+    {
+      "candidate_files": {
+        "scripts/autopilot/evals/dtap/harness/isolation.py": {
+          "bytes": 3094,
+          "executable": false,
+          "sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc"
+        },
+        "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+          "bytes": 2149,
+          "executable": false,
+          "sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede"
+        }
+      },
+      "case": "TU-GR-1",
+      "case_turn": 2,
+      "checker_migration": null,
+      "cli_execution_wall_s": "71.562237",
+      "cli_version": "codex-cli 0.172.0",
+      "completed_command_count": 3,
+      "completed_turn_jsonl_line": 13,
+      "effort": "low",
+      "embedded_oracle_was_null": false,
+      "event_type_counts": {
+        "item.completed": 6,
+        "item.started": 4,
+        "thread.started": 1,
+        "turn.completed": 1,
+        "turn.started": 1
+      },
+      "events_sha256": "247c5f0c04b2aea9b305ef49e666049148b3ce2a3d8e511126b53d13ca6b3742",
+      "initial_oracle_rc": 0,
+      "kind": "direct-repair",
+      "launch_started_unix": 1795740556.8083973,
+      "model": "gpt-6.1-sol",
+      "original_oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+      "patch_sha256": "9926a6b982cd23c1fbe27c0d0e6b31be7b3035d0fb5c35d186991c0b2c39553b",
+      "path_scope_pass": true,
+      "plan_schema": "epyc.main-comparison.plan.v1",
+      "pure_model_service_duration_s": null,
+      "raw_human_review_flag": "pending",
+      "raw_usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 49792,
+        "input_tokens": 57572,
+        "output_tokens": 460,
+        "reasoning_output_tokens": 51
+      },
+      "review_outcome": "accept",
+      "review_source": "repair_scope",
+      "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1",
+      "selected_oracle_rc": 0,
+      "selected_oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+      "thread_id": "01a21a7a-9f03-7c41-8ae7-a1f6895e58b2",
+      "turn_completed_schema_sha256": "27322640f1de48ed4d940e13fae89d7c601e1edda06d5f2877d6d821c0a4dc2f",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 49792,
+        "input_tokens": 57572,
+        "output_tokens": 460,
+        "reasoning_output_tokens": 51,
+        "uncached_input_tokens": 7780
+      },
+      "usage_schema": {
+        "$": [
+          "dict"
+        ],
+        "cache_write_input_tokens": [
+          "int"
+        ],
+        "cached_input_tokens": [
+          "int"
+        ],
+        "input_tokens": [
+          "int"
+        ],
+        "output_tokens": [
+          "int"
+        ],
+        "reasoning_output_tokens": [
+          "int"
+        ]
+      },
+      "usage_schema_sha256": "80f5f9566d4d1d4aa9139db961f77423b5a2690ac70ecac9133c4bdc765eacd3",
+      "usage_sha256": "7b42a11a00229641ea427f68a8be051a508795c3083064bf66f3e4308f476a2c"
+    }
+  ],
+  "validation": {
+    "all_original_files_read_only": true,
+    "native_or_model_reexecution": false,
+    "output_schema_sha256": "13dcb323c236a553dcbd29e511ec5d9cddb67504c5a3b036bcd13adc480b4482",
+    "raw_usage_cross_checked_with_measurements": 7,
+    "repair_first_pass_embedded_usage_not_double_counted": true,
+    "unique_paid_thread_ids": 7
+  }
+}

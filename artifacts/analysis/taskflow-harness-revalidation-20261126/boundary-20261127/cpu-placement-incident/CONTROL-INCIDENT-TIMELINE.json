@@ -1,0 +1,23 @@
+{
+  "incident_record": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/CONTROL-INCIDENT.json",
+  "observation": "Trusted owner cleanup and boundary-selector records precede the incident window, placing the accidental allocations between managed serving epochs. No active managed inference overlap is established; effects on later host cache state are unmeasured.",
+  "records": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary/AFTER-CPU02-PLAN.json",
+      "sha256": "b895206cad5daf131f9ea6dd4b5d60c6b91945f99bbe95f9259fdd589d3d724b",
+      "filesystem_written_utc": "2026-11-27T02:02:12.183262+00:00"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/CLEANUP.json",
+      "sha256": "c4e83eb9f3fdb528f4da0091e862dc70af7426984fc8fa6497d06d85d9f28ded",
+      "filesystem_written_utc": "2026-11-27T02:02:10.320239+00:00"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/CLEANUP.json",
+      "sha256": "6604daa5321a280498dc67b1dd72e65e726273a3d3b1e01dd97efb20ce3524c8",
+      "filesystem_written_utc": "2026-11-27T02:02:04.500165+00:00"
+    }
+  ],
+  "source_basis": "Boundary build_plan requires captured previous process identities absent, verified CPU/GPU cleanup, and terminal CPU batch before writing the plan. Cleanup receipts verify native PIDs dead.",
+  "original_incident_record_preserved": true
+}
