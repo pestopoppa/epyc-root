@@ -17,6 +17,13 @@
 # FILE-ONLY hold (one with no registry operator_gate twin, e.g. rocm-kernel-authoring) does not refuse rows
 # until the file parses again; the dispatcher side (select, generated rows) still holds everything.
 holds:
+- id: a3b-standalone-two-pass-gate
+  scope: all-rows
+  boxes:
+  - F32-ROUTER-SPLITK-CENSUS
+  since: '2026-11-27'
+  by: operator, prioritize AP-W66-PAIR at next MI210 window
+  reason: 'Standalone two-pass A3B gate parked. Reopen on a larger measured C22 target-workload share or a fused design that removes following launches. The C21 1.01x served target leaves approximately 2.4 us per replacement gate call including reduction, requiring about 3.5x gate speedup.'
 - id: akagg
   sessions:
   - akagg

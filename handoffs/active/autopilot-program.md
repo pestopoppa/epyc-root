@@ -5240,6 +5240,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
       · done when: all 140 receipts reconcile with the published per-mode totals, four replay inputs have verified bytes and predecessor plans, and a benchmark comparison records matched and mismatched settings.
       · gate: none
 - [ ] **AP-W66-PAIR** [inference] Compare the four pinned requests alone and with concurrent slots under matched cache state.
+      · operator priority 2026-11-27: next authorized MI210 window. Four hash-pinned real requests, each against itself with its recorded peer and without, independently reconstruct cache history and reverse pair order. Score accepted task output, streamed TTFT and native prefill/decode. Stop on attribution stable across reversal above repeat noise, or three matched pairs per target. A persistent isolated, prefix-preserved decode penalty routes that exact C22 request to the ROCm owner.
       · done when: per-pair receipts attribute recoverable prefill or decode seconds or record an inconclusive result with the specific mismatch or uncertainty.
       · gate: AP-W66-TRACE
       · CPU diagnostic 2026-11-27: two q0–q2 reversed pairs completed with four READY targets. Preservation retained 9,839 tokens vs 282 and reduced target wall by 5.65–9.14 s. GPU peer effects and real-task quality remain for this box. [Report](../../docs/reports/autopilot-w66-cpu-prefix-q012.md).
