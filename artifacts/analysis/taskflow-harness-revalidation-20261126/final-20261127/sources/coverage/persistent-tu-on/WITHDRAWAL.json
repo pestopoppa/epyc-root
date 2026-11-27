@@ -1,0 +1,6 @@
+{
+  "status": "withdrawn_before_launch",
+  "model_calls": 0,
+  "reason": "The original TU oracle omits class-qualified test outcomes. Its empty-map failure is confounded.",
+  "original_grade_retained": true
+}

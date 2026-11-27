@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "native_calls": 0,
+  "model_callbacks_spawned": 0,
+  "live_lease_and_exact_prior_receipts_tested": true,
+  "current_ready_observation": {
+    "mm-mechanical": false
+  },
+  "wrong_approval_plan_and_owner_birth_rejected": true,
+  "busy_slot_lock_rejected": true
+}

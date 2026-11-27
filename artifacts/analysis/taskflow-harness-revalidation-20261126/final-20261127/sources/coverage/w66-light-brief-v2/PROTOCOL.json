@@ -1,0 +1,17 @@
+{
+  "question": "For this pinned W66 task, can the full-tool harness complete from an accurate problem statement/scope/pins/acceptance without a repair recipe under thinkingON versusOFF, and how does fresh main compare?",
+  "expected_effect": "detailed-brief evidence does not identify performance without repair guidance; this adds the missing light-brief condition only",
+  "scope": "one matched GPU common-sampler pair and one fresh main-only comparator; exploratory case evidence, no capacity or population benchmark",
+  "baseline": "byte-identical2962-file detailed W66 source and unchanged independent oracle",
+  "brief_classes": {
+    "existing": "detailed owner approach includes repair guidance; retained separately",
+    "new": "light-v2 accurate fixture-continuity problem statement, preserved private isolation/assertions, scope/pins/acceptance; no repair recipe"
+  },
+  "thinking_contrast": "sameGPU/common sampler/input/limits/fulltools; explicitslot identities; no speed inference from slots",
+  "checkpoint": "persist every request/terminal candidate/checker verdict; independent semantic acceptance remains separate",
+  "stop_on_answer": "stop after this initial pair and fresh comparator answer the scoped light-brief question; any further assistance is separately approved/classified and costed",
+  "stop_on_futility": "stop diagnostic repeats on reproducible harness/serving confound; preserve partial wire costs and do not classify infrastructure interruption as task incapacity",
+  "sample_size_limit": "one case cannot establish a general thinking effect or minimum guidance required",
+  "no_hidden_reuse": "fresh native sessions and fresh metered main direct-1; no v1 light stage, detailed candidate/session/review/guidance/direct result enters inputs",
+  "model_calls_in_preparation": 0
+}

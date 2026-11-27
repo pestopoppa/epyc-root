@@ -1,0 +1,14 @@
+{
+  "candidate_patch_sha256": "1725f3f8343fef0f92ca2a75be67da44f9ddc40ebb805661e32ea53c8e4b8933",
+  "decision": "accepted",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/REVIEW.json",
+  "source_review_sha256": "3d9eb30d8f0385955286331704eae0e6c329faf11cff0c84201b68b65a098d30",
+  "classification": "Main adopts already manually reviewed detailed-scope acceptance; this closes a missing owner registry row, not a new experiment or paid review",
+  "qualification": "Actual durable receipt, original phase journal verification, continuation-to-serial exact identity and unchanged recipe/floor/no-compilation/retained-build/lock checks satisfy the detailed brief. Later substitution control leaves the narrower detailed continuation-to-child equality true; light-brief stronger preservation is a separate criterion.",
+  "cost_addendum": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/COST-QUALIFICATION.json",
+  "cost_addendum_sha256": "44efb3ce571618834472a49ca86b81e942433d6d10780ef5c9ef49b979f45eb2",
+  "known_chain_generation": 5663,
+  "unknown_generation_receipts": 1,
+  "review_cost_class": "Unisolated manager source review; not zero or a separately metered paid CLI execution",
+  "at": 1795753366.169192
+}

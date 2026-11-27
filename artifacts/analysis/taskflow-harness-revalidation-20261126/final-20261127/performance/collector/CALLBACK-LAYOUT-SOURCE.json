@@ -1,0 +1,13 @@
+{
+  "prior_collector_sha256": "5a164e6cacd375a97f91de299152b9cf1e2251864d42e98c07eb6a858c550906",
+  "current_collector_sha256": "05db008e7701b4630afd776f5c3c8f1335ebf926b0e84bcb37029473bcaa064a",
+  "scope": [
+    "actual callback worker-start fallback when owner RESULT omits start",
+    "explicit raw MECHANICAL-ERROR status provenance when RESULT absent"
+  ],
+  "metric_math_unchanged": true,
+  "acceptance_logic_unchanged": true,
+  "version_past_directory": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3",
+  "captured_v2_collector_restored_sha256": "5a164e6cacd375a97f91de299152b9cf1e2251864d42e98c07eb6a858c550906",
+  "schema": "a3b.multi-epoch-performance.v3"
+}

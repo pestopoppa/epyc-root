@@ -1,0 +1,7 @@
+{
+  "wrapper": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py",
+  "wrapper_sha256": "c020c321f031763281f4476149d1d3c1e0a723086d508e1d41ad4d3d80443d49",
+  "code_lock": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/CODE-LOCK.json",
+  "code_lock_sha256": "282997a25f1b7b8153fc8f6d174b855122a9a30013178027a1fa1c366440372a",
+  "source_claim": "measure.launch consumes plan.command_affinity at unchanged measure.py line116; profile/prompt/candidate/usage accounting remain unchanged"
+}

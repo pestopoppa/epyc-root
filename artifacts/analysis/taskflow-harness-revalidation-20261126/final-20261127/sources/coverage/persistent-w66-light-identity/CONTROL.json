@@ -1,0 +1,17 @@
+{
+  "actual_candidate_specific_observation": true,
+  "begin_from_same_checkpoint": "af0d68b715de8ad4cf10fcb38a93ec5213d2fd39e35d1fe515bf7c98d2ab2e8d",
+  "executable_proof_fault_cases_rejected": 4,
+  "external_budget_includes_slot_admission_and_signal_grace": true,
+  "external_condition_budget_s": 600,
+  "main_expert_critique_supplied": false,
+  "model_calls": 0,
+  "original_result_preserved": true,
+  "original_scope_and_observer_preserved": true,
+  "previous_generated_charged": 14111,
+  "qualified": true,
+  "same_gpu_slot": 2,
+  "same_session_id": "ses_de501037bffeE6Uh1VKkKz970E",
+  "sdk_wall_s": 1800,
+  "worker_generation_remaining": 105889
+}

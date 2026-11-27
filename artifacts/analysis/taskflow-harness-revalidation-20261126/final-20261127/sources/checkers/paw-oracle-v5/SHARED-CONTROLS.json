@@ -1,0 +1,48 @@
+{
+  "controls": [
+    {
+      "control": "original-shared-map",
+      "candidate_sha256": "a4b90866756148c745521c73602f8652d99051d7656ec385b79625333626f06e",
+      "rc": 0,
+      "expected": true,
+      "diagnostic": ""
+    },
+    {
+      "control": "wrong-revision",
+      "candidate_sha256": "7e9a2a83b5d1b440a719801931703589b538fdc0c85703a1cfb366b19cfd410e",
+      "rc": 1,
+      "expected": false,
+      "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 111, in <module>\n    assert any(pin in section for pin in PINS) or shared, \"candidate has no pinned source\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no pinned source"
+    },
+    {
+      "control": "unrelated-pins-outside-map",
+      "candidate_sha256": "4071f051fd1e8e3bf1dd6256475598f1bc47f2254ef4122a7ee1aeee57a06cf9",
+      "rc": 1,
+      "expected": false,
+      "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 111, in <module>\n    assert any(pin in section for pin in PINS) or shared, \"candidate has no pinned source\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no pinned source"
+    },
+    {
+      "control": "unresolved-seam-alias",
+      "candidate_sha256": "c8810943924c66d4dfd4d933c76017a5f61b2e73f038c2eb8d7b2cb680c996f5",
+      "rc": 1,
+      "expected": false,
+      "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 111, in <module>\n    assert any(pin in section for pin in PINS) or shared, \"candidate has no pinned source\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no pinned source"
+    },
+    {
+      "control": "wrong-shared-source-file",
+      "candidate_sha256": "9196695f2a71f5747a8c304c355e8586c1368a5270a15f989433fbc0f90c331c",
+      "rc": 1,
+      "expected": false,
+      "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 111, in <module>\n    assert any(pin in section for pin in PINS) or shared, \"candidate has no pinned source\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no pinned source"
+    },
+    {
+      "control": "ambiguous-shared-seam",
+      "candidate_sha256": "f25a70a75465618f26cd81ddf1052bcde226aa274d41876b6d9aa0f4048361b7",
+      "rc": 1,
+      "expected": false,
+      "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 111, in <module>\n    assert any(pin in section for pin in PINS) or shared, \"candidate has no pinned source\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no pinned source"
+    }
+  ],
+  "checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+  "all_passed": true
+}

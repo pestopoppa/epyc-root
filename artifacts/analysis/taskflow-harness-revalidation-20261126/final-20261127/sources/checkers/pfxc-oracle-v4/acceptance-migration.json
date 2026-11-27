@@ -1,0 +1,67 @@
+{
+  "version": "pfxc.exact-events.v4",
+  "case": "PFXC-A3",
+  "oracle": "oracle.py",
+  "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+  "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+  "control_receipt": "REPLAY.json",
+  "control_receipt_sha256": "af97112dc5677a283e35ffa93857fb06d1ec332e9f28d16638f3db2aa6de0d56",
+  "pinned_captures": {
+    "/mnt/raid0/llm/tmp/taskflow-stage1-canary-r2-20261120/out/server.log": "85533337680e2dee4307f67fb0fda5e08beae1b122adc0f53cacf15a08c4e377",
+    "/mnt/raid0/llm/tmp/ak-pfxc-probe-gpu-20261120-r2/out/RESULT.json": "1512c7b77500b66635c3ac23f46c4a3b6ff28c50f69d8066f5532bd65246f32d"
+  },
+  "original_inputs_before_after_sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/lane/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/independent/work/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/sandbox/work/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PFXC-A3/direct-1/oracle-result.json": "c4db52ccc365f6a9273c7dd64257e5eee268562abcc01eafe2d1796631466395",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/RESULT.json": "dcd6094da1e0adc3e7b8091345f01657043ddadd5b3264016a19b1fc040b84d0",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding/ORACLE.stderr.log": "dbce1c80ddae9d931f30e41d7189bed7855bf2afc06481bab2e7072b46eb901c"
+  },
+  "saved_assessments": {
+    "main_direct": {
+      "id": "historical-main-direct",
+      "purpose": "Original accepted direct candidate, byte preserved",
+      "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+      "expected_new_diagnostic": null,
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 0,
+          "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 0,
+          "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "cache_safe_gpu_on": {
+      "id": "historical-gpu-on",
+      "purpose": "Original GPU ON artifact has 44 events and repeats three lines",
+      "candidate_sha256": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+      "expected_new_diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+      "receipt": {
+        "original": {
+          "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "8d66aba47913382284f7334a8384f2a22b05f3c5629a163b71a6c6dcfe606533"
+        },
+        "revised": {
+          "oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+          "rc": 1,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b"
+        }
+      }
+    }
+  },
+  "observed_format_issue": "Original value-subsequence scan rejected a valid side-by-side table and accepted a linear 44-event table.",
+  "correction": "Require exactly 41 pinned events with source-order values. Match explicit ordinals and source-line claims when supplied. Keep the existing trace pin, sizing and geometry checks.",
+  "gpu_on_objective_failure": "Expected 41 events, found 44. Source lines 1314, 1330 and 1429 repeat. The 41-event nearest-rank p95 is rank 39.",
+  "grading_scope": "Offline comparison of saved artifacts using an identical revised oracle for main and local arms."
+}

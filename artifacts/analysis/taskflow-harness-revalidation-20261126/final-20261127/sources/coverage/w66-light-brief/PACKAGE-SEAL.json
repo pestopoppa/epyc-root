@@ -1,0 +1,23 @@
+{
+  "sha256": {
+    "NATIVE-ROWS.json": "4b964928d5b91a5a6c4ae0d4811b68972f9a117481221d8fba712b8726c0c93a",
+    "OPTIONAL-CPU-ROW.json": "94bbe56faa197f515d740f505b72591f6d17f0df8d7f3ff432861d54f7ae9489",
+    "APPROVAL-TEMPLATE.json": "1ab5c97a76cf4bf5bbe32a56d5a7467743db77f3b2e27939a6ff791441343942",
+    "PROTOCOL.json": "9ebc8f238030bbcbc0bc588d4a5add4799cee380c28ce1481b1637d809aaeadc",
+    "CONTROL.json": "2cc5d6320d60eabd8cdc901359e71e255a795c7ca29825e8c6d7db81a01e7663",
+    "README.md": "f45b8648b27ba4afd252573d8b7808ecb826985bd7f15accbc4287243233e56a",
+    "main.py": "aa53d379b384a0c55047a5af88166ec838381336b5c4c0126480130b7c173027",
+    "MAIN-CODE-LOCK.json": "a1c86d3bfb25262a074fba0aaabd4ad1ce63fd3cfb635339003d9bf58c6d205d",
+    "cases/DS41-W-66/case.json": "1fe672349273afde331fd36c6630d225d514f562f7706f7b70002444e8ff683d",
+    "cases/DS41-W-66/prompt.md": "0db7c89b9e362cde01161b8d7e63a758f1a71ff3afcc9da4eae0f9b46865703f",
+    "cases/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "main-comparison/runs/DS41-W-66/direct-1/plan.json": "a510ab40fd4eba05d1f7ad75152cea342d9b4d264d19c3e85bcc3bb0dfb880ea",
+    "main-comparison/runs/DS41-W-66/direct-1/prompt.md": "83ad6e7ca24d02cde9cb3cd10ef84fc7361adb656ac579b9ab585f0169ba0d4c",
+    "main-comparison/APPROVAL-TEMPLATE.json": "6b0f44aab94209db0ac29b27bde16602ee0b6788fc009aeea2994fabbb6cc610"
+  },
+  "baseline_manifest_sha256": "8ab8d2b562350b44e275edec4a12f654221d071ef883a5d8e597a453470b22ec",
+  "original_baseline_source": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/DS41-W-66/baseline",
+  "model_calls": 0,
+  "sourceblind": true,
+  "original_raw_results_unmodified": true
+}

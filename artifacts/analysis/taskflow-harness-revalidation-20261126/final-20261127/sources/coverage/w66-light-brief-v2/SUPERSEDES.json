@@ -1,0 +1,8 @@
+{
+  "status": "withdrawn-unlaunched",
+  "reason": "Original light prompt repeated stale real-host-lock causal diagnosis. Pinned baseline already has private isolation; accurate problem statement required for a clean light arm.",
+  "preserved_package_seal_sha256": "180a8b4f05c4d2bbb6b01e46c6bb62d29a146697dbd6a8d4cfad241ba4ca4970",
+  "old_main_stage_unlaunched_verified": true,
+  "replacement": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2",
+  "model_calls": 0
+}

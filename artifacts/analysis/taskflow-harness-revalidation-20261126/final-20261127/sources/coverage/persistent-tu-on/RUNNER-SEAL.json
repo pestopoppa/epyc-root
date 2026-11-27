@@ -1,0 +1,12 @@
+{
+  "schema": "legacy-tu-on-persistent-followup.v1",
+  "source_objective_callback_sha256": "fda73aada5a1eb20ec0c10e5809adbe04fcb5550572646cc60e2aa77606a50d3",
+  "source_slot3_callback_sha256": "b4e9a10f04507dbdeb2c11e86a5150feb415a70bd9098661dcd377e1b41cb372",
+  "sha256": {
+    "follow.py": "467c0bb228d0959b0fbcd6624ab4be0d0091d75598ee08cddb98244ccbc77e84",
+    "lease.py": "83bcdc40961759993164f8de2b174fb4fba8158d3f04ebe8cf1d8cb3ded9d254",
+    "control.py": "9f9d41582eb2deb126ee0b23f0ea048c45e04c745eef6610586dc636192c0e19",
+    "CONTROL.json": "e0d879455772c56a87538a190952753d4ac92eae8dac1cc6eed8cfcd83b87590",
+    "TU-ON-PLAN.json": "2ca5abfb512527526e7a75baebd19c250f37f2c7463dcdf179c5736e3527df8d"
+  }
+}

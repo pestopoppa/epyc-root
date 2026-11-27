@@ -1,0 +1,74 @@
+[
+  {
+    "unit": "gpu-PAW-5-off-recommended",
+    "candidate_sha256": "a4b90866756148c745521c73602f8652d99051d7656ec385b79625333626f06e",
+    "candidate_patch_sha256": "6996f5ccefb89f403c798a462034afdd46cf5e4f434fa27faac960006f15b46c",
+    "checked_candidate_files": {
+      "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+        "sha256": "a4b90866756148c745521c73602f8652d99051d7656ec385b79625333626f06e",
+        "bytes": 12846,
+        "executable": false
+      }
+    },
+    "source_result_sha256": "35a92915e82d8f89e48ec675ca93b59dabedf5138bd482764ad87502859a959e",
+    "checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+    "rc": 0,
+    "diagnostic": "",
+    "candidate_unchanged": true,
+    "scope": "structure/provenance only; semantic source review remains required"
+  },
+  {
+    "unit": "gpu-PAW-5-off-common-on-sampling",
+    "candidate_sha256": "3c7a7b6762b7e6f0dfb2206602ed03ba04af8dc6134bdbbcf420a081a95532e5",
+    "candidate_patch_sha256": "94b1ccee881c98831f0e266f836c6c5740f4e41fc0eaf610e5542e9bfe145711",
+    "checked_candidate_files": {
+      "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+        "sha256": "3c7a7b6762b7e6f0dfb2206602ed03ba04af8dc6134bdbbcf420a081a95532e5",
+        "bytes": 11315,
+        "executable": false
+      }
+    },
+    "source_result_sha256": "1f7020b3384a2d0611438d80433b6238481454c406c6a99f055de918b49d0d7e",
+    "checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+    "rc": 1,
+    "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 111, in <module>\n    assert any(pin in section for pin in PINS) or shared, \"candidate has no pinned source\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no pinned source",
+    "candidate_unchanged": true,
+    "scope": "structure/provenance only; semantic source review remains required"
+  },
+  {
+    "unit": "gpu-PAW-5-on-coding",
+    "candidate_sha256": "b77a7bd063ddfcc72bf83f45368ac548891cfb47ce64f329585d945eb11822c0",
+    "candidate_patch_sha256": "241429008600de9e55003cd1b2262198955c4ae1b5b6d94a6b6290123a5b513e",
+    "checked_candidate_files": {
+      "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+        "sha256": "b77a7bd063ddfcc72bf83f45368ac548891cfb47ce64f329585d945eb11822c0",
+        "bytes": 15736,
+        "executable": false
+      }
+    },
+    "source_result_sha256": "3c8e1ddf1d77c3e5fe4a1de582d50c51c08de7505a8fddd5ed22e1c210c53ab6",
+    "checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+    "rc": 1,
+    "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 112, in <module>\n    assert any(src in section for src in SOURCES) or shared, \"candidate has no reviewed loop seam\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no reviewed loop seam",
+    "candidate_unchanged": true,
+    "scope": "structure/provenance only; semantic source review remains required"
+  },
+  {
+    "unit": "gpu-PAW-5-on-coding-guidance-1",
+    "candidate_sha256": "abe09117ac0a45e9dc942d217669181ded333b983ac8e682ad67c9e76bbbe322",
+    "candidate_patch_sha256": "20ad397acb66554c1ee6d37880630496b2db1aa66d80c78fa3a0591eae883ff5",
+    "checked_candidate_files": {
+      "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+        "sha256": "abe09117ac0a45e9dc942d217669181ded333b983ac8e682ad67c9e76bbbe322",
+        "bytes": 22706,
+        "executable": false
+      }
+    },
+    "source_result_sha256": "1b53781695438d628516c69693bcf9086d9b395e11a2a605e7a1c4a50fa049d2",
+    "checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+    "rc": 1,
+    "diagnostic": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py\", line 112, in <module>\n    assert any(src in section for src in SOURCES) or shared, \"candidate has no reviewed loop seam\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: candidate has no reviewed loop seam",
+    "candidate_unchanged": true,
+    "scope": "structure/provenance only; semantic source review remains required"
+  }
+]

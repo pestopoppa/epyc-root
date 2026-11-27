@@ -1,8 +1,10 @@
 # Taskflow Stage 1 canary — findings through 2026-11-26
 
-> Follow-up: the [C22 real-task dispatch pilot](taskflow-real-dispatch-pilot-20261126.md) is complete with reviewed publications, additional harness repairs and qualified model findings. Its six-task diagnostic workload is separate from the historical canary below. A subsequent [harness-scope correction](taskflow-real-dispatch-pilot-20261126.md#harness-scope-correction--2026-11-26) establishes that both used a restricted OpenCode-derived setup; the recorded outcomes do not establish an intrinsic model ceiling. Native qualification of the replacement harness and matched comparisons remain in progress.
+> Latest evidence: the [November 27 full-tools C22 study](../reports/a3b-full-tools-canary-20261127.md) covers the qualified replacement harness, matched thinking/light-brief conditions, deterministic and paid guidance, fresh main-only comparisons, and final performance accounting. The figures below remain historical restricted-harness evidence and are not added to that study's task counts.
 
-## Latest findings — C22 completion
+> Earlier follow-up: the [C22 real-task dispatch pilot](taskflow-real-dispatch-pilot-20261126.md) published reviewed outputs. A subsequent [harness-scope correction](taskflow-real-dispatch-pilot-20261126.md#harness-scope-correction--2026-11-26) establishes that both that pilot and the canary below used a restricted OpenCode-derived setup; their outcomes do not establish an intrinsic model ceiling.
+
+## November 26 restricted-harness C22 completion
 
 The November 26 completion used C22 composite source `ce6fcbbde1ee58f165283fbfe74910f47bb2efba`, binary version
 `10748`, with verified CPU and GPU store manifests. Both servers ran four slots with MTP D=2. The stores were

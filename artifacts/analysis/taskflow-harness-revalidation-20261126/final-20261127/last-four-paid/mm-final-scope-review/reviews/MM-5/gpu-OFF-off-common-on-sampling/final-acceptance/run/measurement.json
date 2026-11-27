@@ -1,0 +1,73 @@
+{
+  "case": "MM-5",
+  "arm": "guidance",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 57.464086,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21b38-572c-7de1-ae6e-fbdb3157a221",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 179432,
+      "cached_input_tokens": 157568,
+      "output_tokens": 1574,
+      "reasoning_output_tokens": 45,
+      "uncached_input_tokens": 21864
+    },
+    "command_count": 7,
+    "item_types": [
+      "agent_message",
+      "command_execution"
+    ],
+    "commentary_overhead_chars": 152,
+    "final_message_chars": 1265,
+    "outside_scope_review_flags": []
+  },
+  "changed_by_strong_turn": [],
+  "final_changes": [
+    "src/vision/analyzers/vl_describe.py",
+    "tests/unit/test_vl_describe_resize.py"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "c310038ea464816372936c8d688c3c0dba71e260d7ef17bbf04f2318cac6d18a",
+  "retained_runtime_artifacts": {
+    ".pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    ".pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "sha256": "ddad116c9d032a8b21983070fafe247f92d259566afad40553ebcb77d6431d97",
+      "bytes": 1715,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    }
+  },
+  "oracle": null,
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported"
+}

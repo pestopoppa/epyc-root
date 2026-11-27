@@ -1,0 +1,17 @@
+{
+  "source_snapshot": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paid-call-accounting/snapshot-04/ACCOUNTING.json",
+  "unique_paid_executions": 36,
+  "main_implementation_calls": 8,
+  "original_unique_task_ids": 6,
+  "all_raw_event_usage_matches_measurement": true,
+  "per_arm_paid_calls_unique": true,
+  "condition_matched_main_baselines": true,
+  "withdrawn_light_v1_metadata_fixed_without_billing_change": true,
+  "old_failed_and_qualified_light_review_costs_both_preserved_per_arm": true,
+  "native_ancestry_and_copied_receipts_deduplicated_per_alternative": true,
+  "w66_identity_generation_known": 15889,
+  "tu_autoci_generation_known": 41780,
+  "original_cpu_w66_wire_generation_known": 3524,
+  "unknown_and_empty_values_not_fabricated_zero": true,
+  "model_calls": 0
+}

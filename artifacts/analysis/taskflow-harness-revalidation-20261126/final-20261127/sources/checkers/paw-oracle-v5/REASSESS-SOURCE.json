@@ -1,0 +1,8 @@
+{
+  "oracle_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+  "verify_sha256": "2fb42cd0bdfc7b3b2cd21b0f6080571f27ecae313c13ed3360beaf123c13a0ef",
+  "reassess_sha256": "ed63b985dd94c776f91c124449fb88d29a7d472c003340bf394a58af87739802",
+  "upstream_v3_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/cases/PAW-5/oracle-format-v3.py",
+  "upstream_v3_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+  "model_calls": 0
+}

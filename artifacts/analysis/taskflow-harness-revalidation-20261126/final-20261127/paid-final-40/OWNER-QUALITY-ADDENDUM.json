@@ -1,0 +1,34 @@
+{
+  "schema": "owner-quality-addendum.v1",
+  "immutable_accounting_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paid-call-accounting/snapshot-final-40/ACCOUNTING.json",
+  "immutable_accounting_sha256": "d4e06ffde11edf6cf5268646fd182b35243cbe6591379c762389163e9dfe7a0c",
+  "original_source_native_input": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3/INPUTS-PERSISTENT-WORKING.json",
+    "sha256": "9f5b4cd71f8f6740056660892261ef253852fd8bb126079de228b576ced06963"
+  },
+  "new_performance_input": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3/INPUTS-PERSISTENT-FINAL-v2.json",
+    "sha256": "c1a766c04070cd5035da610a6da26dbfece2e7d32100d52d91b6c0e008e90a0e"
+  },
+  "owner_registry_row": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/cpu-DS41-W-66-off-recommended-numa-resume-1-boundary.json",
+    "sha256": "57181021eb71c5012d994a8e11678aa8ceb283328b901dc2fcd75a7a13c62215"
+  },
+  "owner_decision": "accepted",
+  "candidate_patch_sha256": "1725f3f8343fef0f92ca2a75be67da44f9ddc40ebb805661e32ea53c8e4b8933",
+  "source_review": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/REVIEW.json",
+    "sha256": "3d9eb30d8f0385955286331704eae0e6c329faf11cff0c84201b68b65a098d30"
+  },
+  "cost_qualification": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/COST-QUALIFICATION.json",
+    "sha256": "44efb3ce571618834472a49ca86b81e942433d6d10780ef5c9ef49b979f45eb2",
+    "known_generation": 5663,
+    "unknown_generation_receipts": 1
+  },
+  "scope": "Owner adopts previously manually reviewed detailed-scope CPU W66 acceptance; no new experiment or paid review and no light-scope acceptance inferred",
+  "billed_execution_count_unchanged": 40,
+  "billed_vectors_unchanged": true,
+  "manager_review_cost": "unisolated; not zero or included in paid CLI execution vectors",
+  "model_api_calls": 0
+}

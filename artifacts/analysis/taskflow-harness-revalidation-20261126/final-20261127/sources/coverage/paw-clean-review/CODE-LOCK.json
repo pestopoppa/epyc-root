@@ -1,0 +1,14 @@
+{
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py": "c020c321f031763281f4476149d1d3c1e0a723086d508e1d41ad4d3d80443d49",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/prepare.py": "864bdad1512fc223469a372b78f779e47e00c6432d7515cba0884a753172ce0c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/measure.py": "3175392d9b99143501a3b3e385d549234bc7ef4c2d50a802b72bf9a42f251488",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/review.py": "891d2ca31a205e936f3675c68a7180768f6b9203797633013c0e75bcfccc0741"
+  },
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "imports": "exact original sources; private per-review module HERE; only prompt role adapted",
+  "native_protocol": "original0 + neutral-self-check1/guidance0 + optional one paid-guided correction2; independent review distinct",
+  "wrapper_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py",
+  "clean_protocol": "new namespace after approved false-feedback replay; no previous guided path reused; exact original metered profile"
+}

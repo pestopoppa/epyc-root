@@ -1,0 +1,73 @@
+{
+  "id": "TU-GR-1",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 2,
+  "allowed_next_native_correction": null,
+  "native_correction_ceiling": 2,
+  "candidate_patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+  "local_result": {
+    "id": "gpu-TU-GR-1-on-coding-paid-2",
+    "case": "TU-GR-1",
+    "backend": "gpu",
+    "thinking": true,
+    "profile": "on-coding",
+    "status": "awaiting_source_review",
+    "patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+    "oracle": {
+      "rc": 1,
+      "candidate_patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "acceptance_version": "TU V4",
+      "qualification_sha256": "e1f66b12bc1c5c5690486446ee23bdf5baf0b49144b9c487b679b6e176215ee8",
+      "outcome": [
+        "simulated namespace mount-permission-path-unshare: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare namespace setup refused (permission denied): mount: /tmp/taskflow-tu-grader-l9fup4xz/mount-permission-path-unshare/test_isolated_launch_denies0: Operation not permitted')}"
+      ],
+      "scope": "actual contained checker result for the reviewed bytes"
+    },
+    "changed_files": {
+      "scripts/autopilot/evals/dtap/harness/isolation.py": {
+        "sha256": "9330b7e46d23d873bcb833f16f45e1b10673a75ce2978d36b9426f7e39391fd2",
+        "bytes": 4339,
+        "executable": false
+      },
+      "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+        "sha256": "08acf2eaea36fde0afaaa3077bc226882b91f2fded78e89d75827096f9d660bc",
+        "bytes": 8601,
+        "executable": false
+      }
+    },
+    "outside_scope": [],
+    "unsafe_paths": [],
+    "generation_observed": 2787,
+    "model_wall_s": 148.48461771011353
+  },
+  "actual_prior_help": [
+    {
+      "native_ordinal": 1,
+      "help_kind": "deterministic objective verifier with zero paid semantic guidance",
+      "sha256": "9422b82ad2d1dcdc73f0dae667a9e5cb4ac42d570b3a8653bb96f5f407c66ca1",
+      "text": "Continue the same task from your saved workspace/session.\n\nThe independent verifier observed: simulated namespace mount-permission-refusal: expected rc=1 and control passed / isolated failure, got rc=0. The control passed, but the isolated test was skipped on the mount error 'Operation not permitted'.\n\nAddress that observed behavior within the original scope and run the task-local check.\n",
+      "truncated": false
+    },
+    {
+      "native_ordinal": 2,
+      "help_kind": "one measured paid source guidance",
+      "sha256": "d7e42b8265da1c8ee246ed1f8d29e639eb2efc4d4611ee5a0ad7d7f3d9e2a076",
+      "text": "REJECT.\n\nThe candidate does not enforce genuine denial. In [test_grader_isolation.py:165](scripts/autopilot/evals/dtap/tests/test_grader_isolation.py:165), any non-null `open_errno` passes; `listdir_errno` is never checked. The brief requires ENOENT/EACCES. An in-memory reproduction confirmed that EIO for both probes passes the isolated test.\n\nFor correction ordinal2, require both failed child probes to report `errno.ENOENT` or `errno.EACCES`, keeping launcher/probe failures distinct from denial.\n\nValidation: the ordinary task-local check returned **1 passed, 1 skipped**. After correction, rerun it and verify that injected EIO fails the isolated case while the reachable control passes.\n\nCandidate and review evidence left unchanged.\n",
+      "truncated": false
+    }
+  ],
+  "objective_diagnostics": {},
+  "structural_reassessment": {
+    "rc": 1,
+    "candidate_patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+    "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+    "acceptance_version": "TU V4",
+    "qualification_sha256": "e1f66b12bc1c5c5690486446ee23bdf5baf0b49144b9c487b679b6e176215ee8",
+    "outcome": [
+      "simulated namespace mount-permission-path-unshare: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare namespace setup refused (permission denied): mount: /tmp/taskflow-tu-grader-l9fup4xz/mount-permission-path-unshare/test_isolated_launch_denies0: Operation not permitted')}"
+    ],
+    "scope": "actual contained checker result for the reviewed bytes"
+  },
+  "structural_pass_implies_semantic_acceptance": false
+}

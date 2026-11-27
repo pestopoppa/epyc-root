@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "native_model_calls": 0,
+  "sole_original_checkpoint": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended",
+  "new_live_idle_slot": 0,
+  "offline_exact_restored_session": "ses_de58d3f88ffelHv2rhzddPWAM4",
+  "plan_sha256": "4d001d4fc816fff31f9896d1f75cde25253ff144e724a58108f0b53d2a1d08f9"
+}

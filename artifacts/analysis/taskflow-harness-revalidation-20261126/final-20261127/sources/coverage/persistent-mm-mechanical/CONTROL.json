@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "native_calls": 0,
+  "canonical_same_session_config_offline": true,
+  "case_scope_and_actual_v4_receipts_bound": true,
+  "model_facing_provider_wall_s": 1800,
+  "external_deadline_s": 300,
+  "native_route_verified": true,
+  "plan_sha256": "1e3449f82475692c72cce1a10b0e2f670c0ae089cc0518b4b96ec34c05bc4fad",
+  "existing_watchdog_proof": "e310f09960fae6b6bf8801c520395f49c0494a91fcfa8f267dabbef4aa746a0f"
+}

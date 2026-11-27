@@ -1,0 +1,82 @@
+{
+  "adopted": "v4",
+  "approved_scope": "model-free review of saved candidates",
+  "cap_one_robustness_changed": false,
+  "model_calls": 0,
+  "original_and_v2_checks_changed": false,
+  "original_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/oracle.py",
+    "sha256": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745"
+  },
+  "original_raw_grades_preserved": true,
+  "prior_grade_refs": {
+    "gpu-MM-5-off-common-on-sampling-objective-1": {
+      "v1": {
+        "candidate_patch_sha256": "03d40a81c951c564af50ffb371cc9c8cb7cc78dbe0325d63a09f5a43221f83c5",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades/gpu-MM-5-off-common-on-sampling-objective-1/RESULT.json",
+        "rc": 0,
+        "sha256": "e2690add654aa4ce0a3042c806c9209907e9f5d88e4c48a7c74c5231662539d2"
+      },
+      "v2": {
+        "candidate_patch_sha256": "03d40a81c951c564af50ffb371cc9c8cb7cc78dbe0325d63a09f5a43221f83c5",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades-v2/gpu-MM-5-off-common-on-sampling-objective-1/RESULT.json",
+        "rc": 0,
+        "sha256": "cada29e1561c591455fd6095523ba8f967d0bbf55f5912179eb2dcf7d0c2bb34"
+      }
+    },
+    "gpu-MM-5-on-coding": {
+      "v1": {
+        "candidate_patch_sha256": "d17c8c5ae8c6276058a7da874cd5b04a447771f6524d1d547500bb089f39046e",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades/gpu-MM-5-on-coding/RESULT.json",
+        "rc": 0,
+        "sha256": "3151a605b4a066115f80ad99f18b3d179369100df99e124003d3f11c90d4ec94"
+      },
+      "v2": {
+        "candidate_patch_sha256": "d17c8c5ae8c6276058a7da874cd5b04a447771f6524d1d547500bb089f39046e",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades-v2/gpu-MM-5-on-coding/RESULT.json",
+        "rc": 0,
+        "sha256": "e65e4df261de7a893751dcf8abad39b9541908e44c1d1cdc91d7983cdd0cf7a3"
+      }
+    }
+  },
+  "reason": "V3 set the cap after candidate import. Fresh bounded child processes set or clear it before import, allowing the brief's startup-time and constructor-time configurations to exercise the same mocked request behavior.",
+  "schema": "mm5.capped-encoding.v4.migration",
+  "startup_read_control": {
+    "source_sha256": "db1141c99f4e88eb6743021f68a915a111d05764d0bb10b0279d54f941d707c9",
+    "v3": {
+      "detail": "ORCHESTRATOR_VL_MAX_PIXELS=784: sent dimensions (896, 896), expected (28, 28)",
+      "failure_type": "AssertionError",
+      "status": "fail"
+    },
+    "v4": {
+      "detail": null,
+      "status": "pass"
+    }
+  },
+  "superseded": "v3",
+  "v2_seal": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v2/SOURCE-CONTROL.sha256",
+    "sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976"
+  },
+  "v3_comparison_assessments": 0,
+  "v3_migration": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v3/acceptance-migration.json",
+    "sha256": "9b7c01ff8e0c244155bda2faac4b470a3f56a86dc3d5c14d0da9a85091d71269"
+  },
+  "v3_seal": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v3/SOURCE-CONTROL.sha256",
+    "sha256": "f2f9fa1d63846f4df1e61b1ef8c3836a19ea11564d5f218e8e3be0b6975f90ca"
+  },
+  "v4_control_receipt": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/CONTROL.json",
+    "sha256": "c302faec4f1e5405ab6d8f77a3f352befab2ea405b7ff12adc0556f01d02bb08"
+  },
+  "v4_evaluator_support": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/vision_contract_v4.py",
+    "sha256": "b74f64cccb3ac7543f6283ad92a25067fe8e4e47ded63b310b2580992f75c091"
+  },
+  "v4_wrapper": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/oracle.py",
+    "sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a"
+  }
+}

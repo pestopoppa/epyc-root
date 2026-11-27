@@ -1,0 +1,12 @@
+{
+  "at": 1795753142.7304072,
+  "events_sha256": "2d6b7001e6628ac02c8bbf9692c02d79ed35384f70ce73b7f2aced00511d66f5",
+  "completed_commands_audited": 7,
+  "scope": "candidate/baseline/pinned-source inspection and task-local tests or private mock probes; no real inference/server launch; candidates unchanged",
+  "read_scope_note": "Actual commands audited against staged candidate and reference evidence.",
+  "advisory": "ACCEPT",
+  "main_decision": "accepted_original_scope",
+  "qualification": "Original feasible-cap and startup-environment contract accepted independently. Main audited all seven commands, exact diff, independent payload/HTTP/recorder checks and focused suites. Additional infeasible cap <784 behavior remains separately failed; no robust or deployed claim.",
+  "additional_infeasible_cap_robustness": "failed and separate from original-scope acceptance",
+  "candidate_patch_sha256": "b9a257627af85dc1f2f024afee7aac3d2675f48a1ebec65c502b5a08f0c0c80b"
+}

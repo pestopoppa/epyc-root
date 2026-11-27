@@ -1,0 +1,79 @@
+{
+  "scope": "fresh light-v2 main implementation versus incremental fresh semantic acceptance reviews of exact unassisted native outputs",
+  "main_implementation": {
+    "measurement_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/runs/DS41-W-66/direct-1/measurement.json",
+    "measurement_sha256": "2690ff1c208f032573850b4520d43f8dbbb3f79094f911623f699657499689e1",
+    "events_sha256": "2cfb6083a730b82530da79169b864e6d2a2b19b44d39445502c1a14571b4dc8d",
+    "execution": {
+      "rc": 0,
+      "wall_s": 54.217887,
+      "cli_version": "codex-cli 0.172.0",
+      "tool_audit_required": true
+    },
+    "usage": {
+      "input_tokens": 204592,
+      "cached_input_tokens": 189696,
+      "output_tokens": 1130,
+      "reasoning_output_tokens": 22,
+      "uncached_input_tokens": 14896
+    },
+    "acceptance": "Independent acceptance supplied by owning main session; not inferred from measurement.oracle or cost fields."
+  },
+  "reviews": [
+    {
+      "mode": "gpu-ON-on-common-light",
+      "review_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-ON-on-common-light/final-acceptance",
+      "review_seal_sha256": "ede4a161e63a13f9961bacd806783b546cab701732e2fb50b71db3192b56fb8b",
+      "state": "terminal report observed",
+      "accounting_sha256": "413c18c663303204a46b680b58c53e21762f6ec936d625daa6029507bafe0d9b",
+      "execution": {
+        "rc": 0,
+        "wall_s": 25.654359,
+        "cli_version": "codex-cli 0.172.0",
+        "tool_audit_required": true
+      },
+      "usage": {
+        "input_tokens": 132359,
+        "cached_input_tokens": 113280,
+        "output_tokens": 711,
+        "reasoning_output_tokens": 26,
+        "uncached_input_tokens": 19079
+      },
+      "semantic_review_advisory": "ACCEPT",
+      "candidate_unmodified": true,
+      "execution_wall_ratio_to_fresh_main": 0.4731715015009715,
+      "input_token_ratio_to_fresh_main": 0.6469412293735826
+    },
+    {
+      "mode": "gpu-OFF-off-common-light",
+      "review_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/reviews/DS41-W-66/gpu-OFF-off-common-light/final-acceptance",
+      "review_seal_sha256": "e467cec19780db4ae699100a2089f2177acb9d30e0fe9f0b7e18850c3820833a",
+      "state": "terminal report observed",
+      "accounting_sha256": "91b8c50d0741562bbb9e0c95c252d28e58220d187122c4956594b034e4880aa9",
+      "execution": {
+        "rc": 0,
+        "wall_s": 24.747677,
+        "cli_version": "codex-cli 0.172.0",
+        "tool_audit_required": true
+      },
+      "usage": {
+        "input_tokens": 137960,
+        "cached_input_tokens": 100480,
+        "output_tokens": 813,
+        "reasoning_output_tokens": 21,
+        "uncached_input_tokens": 37480
+      },
+      "semantic_review_advisory": "ACCEPT",
+      "candidate_unmodified": true,
+      "execution_wall_ratio_to_fresh_main": 0.45644857019234264,
+      "input_token_ratio_to_fresh_main": 0.6743176663799171
+    }
+  ],
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "reasoning_is_subset_of_output": true,
+  "wall_scope": "Each full metered CLI execution wall, including its local tools. Sum of review walls is not parallel batch elapsed or isolated model compute time.",
+  "other_costs": "Manager/setup/source-audit/coordination costs are separate, not zero or included in these execution vectors. Local token monetary charge may be zero by experiment convention; local compute/time is still separate.",
+  "claim_limits": "No claim of minimum possible review/guidance cost, capacity or a general thinking effect. No semantic acceptance inferred from structural rc.",
+  "model_calls_by_extractor": 0
+}

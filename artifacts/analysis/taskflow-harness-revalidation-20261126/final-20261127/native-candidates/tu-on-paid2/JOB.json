@@ -1,0 +1,42 @@
+{
+  "backend": "gpu",
+  "slot": 0,
+  "thinking": true,
+  "request_cap": 32768,
+  "generated_ceiling": 97211,
+  "wall_s": 1800,
+  "sampling": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0,
+    "seed": 223355
+  },
+  "case": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1",
+  "case_sha256": "d7a455b74aa99393979341d60bae2d5f62a2b2edfd623425c952561dfe4f2aba",
+  "prompt_sha256": "d7e42b8265da1c8ee246ed1f8d29e639eb2efc4d4611ee5a0ad7d7f3d9e2a076",
+  "context": 131072,
+  "control_cpus": "84-87",
+  "public_web": true,
+  "port": 56071,
+  "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/live.json",
+  "serving_receipt_sha256": "60e658b4147bbaba5e79cc93efa8621ef15756ff0c242ce9378e850ecfc8f81f",
+  "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+  "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "assets": {
+    "opencode": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/stock/opencode",
+    "opencode_sha256": "8d060e1d2fbb9bb44cf09ae6ed1f3f6a7cff070b5227e2f90970132b23a92050",
+    "python_packages": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/python-packages",
+    "socket_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/s",
+    "image": "sha256:9c429a17180a9b3ce2bce942d1bb05a7b7dfbf8218edbc267d190c35fe2b7635"
+  },
+  "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-on-paid-2/FEEDBACK.txt",
+  "resume": {
+    "prior_run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/worker",
+    "receipt_sha256": "ec511af49f985e49f5b4841943d85f831aa20f4fc1d2ef12433e836a3c3e5618",
+    "session_sha256": "f36027f293e0aba13029ac6dafb50233fc81bdcdfc8eb33abe50868198f7ea48",
+    "workspace_session_sha256": "734d70a99607138a7ffe9416322921f26859b84614e5a82978a4269e3f728c17"
+  }
+}

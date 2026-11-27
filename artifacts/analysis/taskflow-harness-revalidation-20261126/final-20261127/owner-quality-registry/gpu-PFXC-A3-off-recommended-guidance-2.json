@@ -1,0 +1,18 @@
+{
+  "candidate_patch_sha256": "91f03d60fde517bf71b9c8f9440b2eccda4118131c88eb2cfb7a8035f7bf1bf9",
+  "decision": "rejected",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PFXC-A3/gpu-OFF-off-recommended/final-acceptance/runs/PFXC-A3/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "2a091594ec3c94151b39f086384d71944bccaf5896072df7fc7de51cd94bff66",
+  "raw_native_status": "oracle_pass",
+  "raw_oracle": {
+    "rc": 0,
+    "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true
+  },
+  "qualification": "full source review; raw structural scores unchanged",
+  "current_bounded_verdict_preserved": true
+}

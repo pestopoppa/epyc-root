@@ -1,0 +1,12 @@
+{
+  "adapter_sha256": "891d2ca31a205e936f3675c68a7180768f6b9203797633013c0e75bcfccc0741",
+  "code_lock_sha256": "c72399679842fd4e78f63f7c642b271ced1f12a606e388a2b7d7f4668484dbff",
+  "immutable_profile_import_passed": true,
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "measure_here": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/qualification",
+  "neutral_help_classification_passed": true,
+  "affinity_metadata_passed": true,
+  "model_calls": 0,
+  "stage_launch_not_executed": true
+}

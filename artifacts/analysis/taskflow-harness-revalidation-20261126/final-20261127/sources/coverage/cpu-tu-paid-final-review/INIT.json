@@ -1,0 +1,13 @@
+{
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-tu-paid-final-review/review.py": "2f149a147b8696c5f0f3933f09b533c142436ba209e473c17db37e9515783d8e",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-tu-paid-final-review/normalize.py": "6e71e93cfece950796685a0ea8322629bbb62bd632ba3b321ae8f88d1e7621e5",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/prepare.py": "9bd8e09ab2d3adb4cf44f1ed0a9c68eaacfa8dee6cbeb3d713266fc8b3b5b341",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/measure.py": "3175392d9b99143501a3b3e385d549234bc7ef4c2d50a802b72bf9a42f251488",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/ADAPTER-SEAL.json": "099a931a0866d22c7f5eab2be6da0c5976186541af5fb91703d5be8e266b7ce6"
+  },
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "imports": "exact legacy prepare/measure sources; explicit owner/job/worker projection, objective ordinals, role prompt and180-183 scheduling",
+  "native_protocol": "initial0 + deterministic1 + at most one paid-guided correction2; final acceptance review is a different paid role; takeover separate"
+}

@@ -1,0 +1,6 @@
+{
+  "approved_by": "main",
+  "runner_seal_sha256": "b4e9a10f04507dbdeb2c11e86a5150feb415a70bd9098661dcd377e1b41cb372",
+  "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/slot3-recovery/CURRENT-PLAN.json",
+  "plan_sha256": "4abc785e289ce7532e16e37df6ec515e43639a0f2a8c3ee44baca1f1f69e7306"
+}

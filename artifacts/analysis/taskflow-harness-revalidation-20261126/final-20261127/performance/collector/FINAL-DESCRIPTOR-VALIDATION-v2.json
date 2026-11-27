@@ -1,0 +1,21 @@
+{
+  "input": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3/INPUTS-PERSISTENT-FINAL-v2.json",
+  "input_sha256": "c1a766c04070cd5035da610a6da26dbfece2e7d32100d52d91b6c0e008e90a0e",
+  "difference_from_old": "exactly one existing reviews[unit] reference replaced; no new key or other descriptor field changed",
+  "old_input_sha256_preserved": "9f5b4cd71f8f6740056660892261ef253852fd8bb126079de228b576ced06963",
+  "review_entry_count": 29,
+  "epoch_binding_count": 344,
+  "all_source_binding_mismatches": 0,
+  "adopted_owner_row": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/cpu-DS41-W-66-off-recommended-numa-resume-1-boundary.json",
+    "sha256": "57181021eb71c5012d994a8e11678aa8ceb283328b901dc2fcd75a7a13c62215"
+  },
+  "actual_candidate_patch_matches_owner": true,
+  "owner_decision": "accepted",
+  "known_generation_preserved": 5663,
+  "unknown_generation_receipts_preserved": 1,
+  "ledger_original_input_sha_still_valid": true,
+  "immutable_paid_ledger_sha256_unchanged": "d4e06ffde11edf6cf5268646fd182b35243cbe6591379c762389163e9dfe7a0c",
+  "model_calls": 0,
+  "performance_snapshot_executed": false
+}

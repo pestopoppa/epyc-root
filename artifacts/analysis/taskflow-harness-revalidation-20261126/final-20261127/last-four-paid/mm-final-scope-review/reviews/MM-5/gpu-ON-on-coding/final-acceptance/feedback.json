@@ -1,0 +1,88 @@
+{
+  "id": "MM-5",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 1,
+  "allowed_next_native_correction": null,
+  "native_correction_ceiling": 2,
+  "candidate_patch_sha256": "8881ced49ee66bc0810b5dae8e3f6b184278a46db0cac485a4a7ceb97e4fce82",
+  "local_result": {
+    "id": "gpu-MM-5-on-coding-v4-objective-1",
+    "case": "MM-5",
+    "backend": "gpu",
+    "thinking": true,
+    "profile": "on-coding",
+    "status": "awaiting_source_review",
+    "patch_sha256": "8881ced49ee66bc0810b5dae8e3f6b184278a46db0cac485a4a7ceb97e4fce82",
+    "oracle": {
+      "rc": 1,
+      "candidate_patch_sha256": "8881ced49ee66bc0810b5dae8e3f6b184278a46db0cac485a4a7ceb97e4fce82",
+      "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+      "acceptance_version": "MM V4",
+      "native_suite_components": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: AssertionError: source (200, 150), cap 1: encoded dimensions (1, 1) are off the positive 28-pixel grid",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "brief_environment_control": {
+          "detail": null,
+          "status": "pass"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "scope": "observed contained V4 test outcomes; reviewer interprets original brief"
+    },
+    "changed_files": {
+      "src/vision/analyzers/vl_describe.py": {
+        "sha256": "ad3858cc34e721836496069073bfd717fd6e5ceabe874ff38f8aebfd7f2327b6",
+        "bytes": 25575,
+        "executable": false
+      },
+      "tests/unit/test_vl_describe_resize.py": {
+        "sha256": "ddaed8ff2cacfc9120b62ee8b36bee7d9b7577242904236b924c918422888b86",
+        "bytes": 6982,
+        "executable": false
+      }
+    },
+    "outside_scope": [],
+    "unsafe_paths": [],
+    "generation_observed": 14226,
+    "model_wall_s": 1134.4846653938293
+  },
+  "actual_prior_help": [
+    {
+      "native_ordinal": 1,
+      "help_kind": "deterministic verifier observations only",
+      "sha256": "3ca1c553cedede1eff7959986362141c1ec51435574bf96f9874152510e4688f",
+      "text": "Continue the task in the same saved workspace and session. The independent versioned verifier observed:\n\n- cap=1: AssertionError: source (200, 150), cap 1: encoded dimensions (28, 28) exceed the cap\n- ORCHESTRATOR_VL_MAX_PIXELS=784: sent dimensions (896, 896), expected (28, 28)\n\nAddress those observed behaviors and retain the original requirements, scope, and focused task tests.\n",
+      "truncated": false
+    }
+  ],
+  "objective_diagnostics": {},
+  "structural_reassessment": {
+    "rc": 1,
+    "candidate_patch_sha256": "8881ced49ee66bc0810b5dae8e3f6b184278a46db0cac485a4a7ceb97e4fce82",
+    "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+    "acceptance_version": "MM V4",
+    "native_suite_components": {
+      "additional_infeasible_cap_robustness": {
+        "detail": "cap=1: AssertionError: source (200, 150), cap 1: encoded dimensions (1, 1) are off the positive 28-pixel grid",
+        "failure_type": "AssertionError",
+        "status": "fail"
+      },
+      "brief_environment_control": {
+        "detail": null,
+        "status": "pass"
+      },
+      "unchanged_original_and_v2_feasible": {
+        "detail": null,
+        "status": "pass"
+      }
+    },
+    "scope": "observed contained V4 test outcomes; reviewer interprets original brief"
+  },
+  "structural_pass_implies_semantic_acceptance": false
+}

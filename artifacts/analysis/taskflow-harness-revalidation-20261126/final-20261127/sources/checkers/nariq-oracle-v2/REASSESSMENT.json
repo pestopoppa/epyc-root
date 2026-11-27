@@ -1,0 +1,161 @@
+{
+  "assessments": [
+    {
+      "candidate": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/lane/docs/research/exl3-4-gfx90a-libtrellis-design.md",
+        "sha256": "a9fc762591277a784c10e1e9b9e866665b3f6a126600787f1c1fa92711124962"
+      },
+      "id": "main-direct",
+      "original_retained": {
+        "patch": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/delta.patch",
+          "sha256": "2531bf825c6c102b84a20a03a5aa26b70709a7999e98c6fc9adec6e1dcd2bcbb"
+        },
+        "receipt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/measurement.json",
+          "sha256": "24f1455c88f08b254aeb67059ff14ac3a8b4a38ff1b4ca488a2aed190dde2d79"
+        },
+        "stderr": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/oracle.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/direct-1/oracle.stdout.log",
+          "sha256": "4c82cec89a4949d31149cc9a9b1c2e44f0058e9b1cfc4b8268e600aaea8e6827"
+        }
+      },
+      "v1_replay": {
+        "diagnostic": null,
+        "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "4c82cec89a4949d31149cc9a9b1c2e44f0058e9b1cfc4b8268e600aaea8e6827"
+      },
+      "v2": {
+        "diagnostic": null,
+        "oracle_sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0",
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "4c82cec89a4949d31149cc9a9b1c2e44f0058e9b1cfc4b8268e600aaea8e6827"
+      }
+    },
+    {
+      "candidate": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/independent/work/docs/research/exl3-4-gfx90a-libtrellis-design.md",
+        "sha256": "fc9bc354675fb2038eb5cc9a940f0bf71d99a1828bc1061541b54d4fa8c56a11"
+      },
+      "classification": "structural pass pending semantic review",
+      "id": "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary",
+      "original_retained": {
+        "patch": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/independent/candidate.patch",
+          "sha256": "5076688f5624a3211501b9a8d888d0d80cd84f1c07200a07102a75fa3ec0c436"
+        },
+        "receipt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/RESULT.json",
+          "sha256": "202a7a35df8b7b5dabf4b85a0a6cec0e01383764af63d87337831096e8d0eeb9"
+        },
+        "stderr": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/ORACLE.stderr.log",
+          "sha256": "39832ef9364abef3b810756cdfaef4bde8a08e7b2810b00f35dcdd5b844385ed"
+        },
+        "stdout": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/ORACLE.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "v1_replay": {
+        "diagnostic": [
+          "AssertionError: ('Harness coverage', 'test_runtime.hip')"
+        ],
+        "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+        "rc": 1,
+        "stderr_sha256": "39832ef9364abef3b810756cdfaef4bde8a08e7b2810b00f35dcdd5b844385ed",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v2": {
+        "diagnostic": null,
+        "oracle_sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0",
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "4c82cec89a4949d31149cc9a9b1c2e44f0058e9b1cfc4b8268e600aaea8e6827"
+      }
+    },
+    {
+      "control_document_sha256": "26514df42da3eee68e950f42fcf6b32ced743984ca7229e556d769f11e543fb9",
+      "id": "wrong-harness-filename",
+      "v2": {
+        "diagnostic": [
+          "AssertionError: ('document', 'test_runtime.hip')"
+        ],
+        "oracle_sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0",
+        "rc": 1,
+        "stderr_sha256": "df029ce103334a8c15227e6a6ab3fca991e73ca19d5b3cd22f1aaa31bbc182ab",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "control_document_sha256": "4464e0dd6f39bc5626438c929774f267bd9215b36e0f65381d85fb7c2e7e647e",
+      "id": "missing-harness-filename",
+      "v2": {
+        "diagnostic": [
+          "AssertionError: ('document', 'test_runtime.hip')"
+        ],
+        "oracle_sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0",
+        "rc": 1,
+        "stderr_sha256": "df029ce103334a8c15227e6a6ab3fca991e73ca19d5b3cd22f1aaa31bbc182ab",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "control_document_sha256": "c4fa75c73bca99764ffc66283670345736e91fb442f110eb0cd06cfb9bd64383",
+      "id": "empty-harness-coverage",
+      "v2": {
+        "diagnostic": [
+          "AssertionError: ('Harness coverage', 'lane')"
+        ],
+        "oracle_sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0",
+        "rc": 1,
+        "stderr_sha256": "8f9d9e68040f237a58f4bbb55b8ad0f67a45761caf2d913b22ef6af5610a30b0",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "control_document_sha256": "f8fe76ca3609b40b6f57130fdbec8977a36f6646df70a723aca0a33bf824f13d",
+      "id": "wrong-harness-pin",
+      "v2": {
+        "diagnostic": [
+          "AssertionError: unbound local harness source"
+        ],
+        "oracle_sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0",
+        "rc": 1,
+        "stderr_sha256": "c46bd925f981f6e98bac74f79cd8731e886ecc0bcc4035c020c8ad3fd2e47a2d",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "brief": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/NARIQ-LIBTRELLIS-MAP-1/prompt.md",
+    "sha256": "93bcb7adf7c2196a17e1b8b95c780e3e674f36ced30b304b86030ffde1524af0"
+  },
+  "case": "NARIQ-LIBTRELLIS-MAP-1",
+  "case_spec": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/NARIQ-LIBTRELLIS-MAP-1/case.json",
+    "sha256": "422fb4d2b94e0b411253c7d31323c63b7cb51db1a76b8e4fe3b2d30d50924f94"
+  },
+  "change": "Recognize the existing case-insensitive test_runtime.hip filename anywhere in the document. Preserve lane, offset and grouping terms in Harness coverage, both revision pins, all sections, all other required terms and the LDS ceiling check.",
+  "disposition": "CPU result is structurally eligible for semantic review under V2. The V1 placement diagnostic is not an objective model failure.",
+  "model_calls": 0,
+  "new_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/nariq-oracle-v2/oracle.py",
+    "sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0"
+  },
+  "old_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/NARIQ-LIBTRELLIS-MAP-1/oracle.py",
+    "sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795"
+  },
+  "original_grades_preserved": true,
+  "reason": "The pinned brief asks the note to use test_runtime.hip for the coverage analysis. It gives headings and source requirements and does not assign the filename reference to a specific heading.",
+  "schema": "taskflow.nariq-structural-acceptance.v2",
+  "semantic_review_done": false
+}

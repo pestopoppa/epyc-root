@@ -1,0 +1,172 @@
+{
+  "lease": {
+    "holder": {
+      "pid": 133800,
+      "ppid": 89061,
+      "start_ticks": 161837437
+    },
+    "controller": {
+      "pid": 133805,
+      "ppid": 133800,
+      "start_ticks": 161837443
+    },
+    "native": {
+      "gpu": {
+        "pid": 147287,
+        "ppid": 133805,
+        "start_ticks": 161842751
+      },
+      "cpu": {
+        "pid": 147530,
+        "ppid": 133805,
+        "start_ticks": 161842764
+      }
+    },
+    "providers": {
+      "gpu": {
+        "port": 56071,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/live.json",
+        "serving_receipt_sha256": "60e658b4147bbaba5e79cc93efa8621ef15756ff0c242ce9378e850ecfc8f81f",
+        "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      },
+      "cpu": {
+        "port": 52473,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/live.json",
+        "serving_receipt_sha256": "66b8b361767f3f124e4363766b51ab2476f18194accee0a53f8f497ad5d30741",
+        "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      }
+    },
+    "grant": {
+      "holder_pid": 133800,
+      "regions": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ]
+    },
+    "receipts": {
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/READY.json": "7da1bd085dea64c16d60b0316eb4cfd5378445ad394690d40f75e46a67c78d15",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/GRANT.json": "8573a8e5292de0c1c3622349998f1bfa9c4d26c98b6943ad318e6cd99ec814d3",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/SERVING.json": "9f4d4437231e0dc035b791b5e45634e75f355740693ed81438b7f9c28bde922d",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/serve.py": "97d17990a584623dc3c346fbee2023757df291ec251adcc012c76447cd410710"
+    }
+  },
+  "jobs": [
+    {
+      "kind": "quality-fresh",
+      "id": "gpu-DS41-W-66-on-common-light-v2",
+      "row": {
+        "id": "gpu-DS41-W-66-on-common-light-v2",
+        "case": "DS41-W-66",
+        "backend": "gpu",
+        "thinking": true,
+        "profile": "on-common-light",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 1,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "brief_class": "light-v2/accurate-problem-no-repair-recipe",
+        "fresh_session": true,
+        "case_dir": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66",
+        "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md",
+        "comparison_scope": "matched sameGPU common-sampler thinkingON/OFF; no device or speed benchmark",
+        "guidance_received": "accurate problem/scope/pins/acceptance only; no repair recipe",
+        "same_baseline_and_oracle_as_detailed": true
+      },
+      "sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/PACKAGE-SEAL.json": "65e235b135ecc4a82aa56fdedb60679dba6f10e62be05b10b0bee0d6ce774ea1",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/NATIVE-ROWS.json": "a1aa42830332ff76505fb1c5b88f9d296befa40b9ca5139297af90b36fcd7992",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/OPTIONAL-CPU-ROW.json": "4083e2f4bc26b1edd153e8ffa7c241e062d1b458de781c4a0b7ad6c80716065d",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/APPROVAL-TEMPLATE.json": "b561195cf69656473f822bc0e3223733a3c44ee0ce1529a8dcf09985c771f63a",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/PROTOCOL.json": "3d6ec4250a7a70a9b58b79de8627980b65d1ba9d1109318daf710182c41a7cb8",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/CONTROL.json": "d6672d9dc292b1d359318b3f0cf5d95dc395fc4067608cd7cdc23556b908e6cc",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/README.md": "1073985c721eec59f5fd486b524dd41656b00d8e50f08f23c68ce6e8d11366d5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main.py": "97b3751ee83129aa1eaa460e4b9af4f60c1cbaf80bb5a2a287dbbf48d333f043",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/MAIN-CODE-LOCK.json": "baab735863d1998a2f8477536c6f4cd4d4b0657082b0e3fef75b46283fe668ac",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/SUPERSEDES.json": "b02614a7b1e5a43c538c42bc9362c527b9405c8613f4ac2cbd9efe3a64fded51",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/case.json": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md": "c948ae10c650ec8f939b4bb4b0e6b39867db21538df009b405a4106d6e71faaf",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/APPROVAL-TEMPLATE.json": "d95d8ffffb4d23464d028335e15a2bedea1e687276420968617dd48856b3b3bb",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/runs/DS41-W-66/direct-1/plan.json": "a0b467631b4ed91c4bdd7e201f38f500bc8305fcd783237a52227a18b423f774",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/runs/DS41-W-66/direct-1/prompt.md": "d528718169663b4003a5d029e6d1dfaac8f3828839472dc0fa997b1019d62bb9"
+      },
+      "source_guidance": {
+        "paid_model_calls": 0,
+        "class": "accurate light brief only"
+      }
+    },
+    {
+      "kind": "quality-fresh",
+      "id": "gpu-DS41-W-66-off-common-light-v2",
+      "row": {
+        "id": "gpu-DS41-W-66-off-common-light-v2",
+        "case": "DS41-W-66",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "off-common-light",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 2,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "brief_class": "light-v2/accurate-problem-no-repair-recipe",
+        "fresh_session": true,
+        "case_dir": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66",
+        "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md",
+        "comparison_scope": "matched sameGPU common-sampler thinkingON/OFF; no device or speed benchmark",
+        "guidance_received": "accurate problem/scope/pins/acceptance only; no repair recipe",
+        "same_baseline_and_oracle_as_detailed": true
+      },
+      "sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/PACKAGE-SEAL.json": "65e235b135ecc4a82aa56fdedb60679dba6f10e62be05b10b0bee0d6ce774ea1",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/NATIVE-ROWS.json": "a1aa42830332ff76505fb1c5b88f9d296befa40b9ca5139297af90b36fcd7992",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/OPTIONAL-CPU-ROW.json": "4083e2f4bc26b1edd153e8ffa7c241e062d1b458de781c4a0b7ad6c80716065d",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/APPROVAL-TEMPLATE.json": "b561195cf69656473f822bc0e3223733a3c44ee0ce1529a8dcf09985c771f63a",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/PROTOCOL.json": "3d6ec4250a7a70a9b58b79de8627980b65d1ba9d1109318daf710182c41a7cb8",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/CONTROL.json": "d6672d9dc292b1d359318b3f0cf5d95dc395fc4067608cd7cdc23556b908e6cc",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/README.md": "1073985c721eec59f5fd486b524dd41656b00d8e50f08f23c68ce6e8d11366d5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main.py": "97b3751ee83129aa1eaa460e4b9af4f60c1cbaf80bb5a2a287dbbf48d333f043",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/MAIN-CODE-LOCK.json": "baab735863d1998a2f8477536c6f4cd4d4b0657082b0e3fef75b46283fe668ac",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/SUPERSEDES.json": "b02614a7b1e5a43c538c42bc9362c527b9405c8613f4ac2cbd9efe3a64fded51",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/case.json": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md": "c948ae10c650ec8f939b4bb4b0e6b39867db21538df009b405a4106d6e71faaf",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/APPROVAL-TEMPLATE.json": "d95d8ffffb4d23464d028335e15a2bedea1e687276420968617dd48856b3b3bb",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/runs/DS41-W-66/direct-1/plan.json": "a0b467631b4ed91c4bdd7e201f38f500bc8305fcd783237a52227a18b423f774",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/runs/DS41-W-66/direct-1/prompt.md": "d528718169663b4003a5d029e6d1dfaac8f3828839472dc0fa997b1019d62bb9"
+      },
+      "source_guidance": {
+        "paid_model_calls": 0,
+        "class": "accurate light brief only"
+      }
+    }
+  ],
+  "model_calls_during_preparation": 0,
+  "approved_slot_adjustment_from_tentative_packet": {
+    "thinking_on": 1,
+    "thinking_off": 2
+  }
+}

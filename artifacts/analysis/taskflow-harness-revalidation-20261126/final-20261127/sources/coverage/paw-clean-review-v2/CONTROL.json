@@ -1,0 +1,15 @@
+{
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "exact_framework_imports": true,
+  "cross_epoch_feedback_lookup_verified": true,
+  "neutral_help_kind": "neutral-self-check; no failure or semantic diagnosis",
+  "paid_help_kind": "one measured paid main source-guidance round",
+  "feedback_verbatim_not_truncated": true,
+  "prior_sources_hash_bound": true,
+  "paid2_actual_id_recognized": true,
+  "effective_expert_wrapper_sha256": "225950f28fe26c9887d02601a26dff5dc5abadf405df558d3d069b29d7c55063",
+  "expected_final_result_exists": false,
+  "full_final_candidate_qualification": "pending actual terminal result; no approval template can bind a nonexistent candidate",
+  "model_calls": 0
+}

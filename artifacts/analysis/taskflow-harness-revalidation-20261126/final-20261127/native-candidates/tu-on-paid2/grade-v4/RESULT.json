@@ -1,0 +1,17 @@
+{
+  "candidate_json_sha256": "9a3efddba10a216ccf1bfec0d122472e83f95040e67fc80074bfb186e82e7d7a",
+  "candidate_patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+  "checker_sha256": "c329c827bc67355904fb22104d3975c564d4142814b655ee4d2de8a230ea0625",
+  "first_diagnostic": [
+    "simulated namespace mount-permission-path-unshare: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare namespace setup refused (permission denied): mount: /tmp/taskflow-tu-grader-l9fup4xz/mount-permission-path-unshare/test_isolated_launch_denies0: Operation not permitted')}"
+  ],
+  "id": "gpu-TU-GR-1-on-coding-paid-2",
+  "model_calls": 0,
+  "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+  "rc": 1,
+  "source_safety": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-on-paid-final-review/SOURCE-SAFETY.json",
+  "source_safety_sha256": "7e7caeb4893dc0e0163128555b6895ccb5b7e06edeb147a13523283cb053b53f",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "6f25643ace1eadfec434a9e29aef5c61b82fe24fd638dadd76584f858ced3665",
+  "v4_qualification_sha256": "e1f66b12bc1c5c5690486446ee23bdf5baf0b49144b9c487b679b6e176215ee8"
+}

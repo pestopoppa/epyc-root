@@ -1,0 +1,10 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "review_seal_sha256": "5dade925e2f0805eef1b70287802643c01905cd6f4949e6746fcfa8c4a6790de",
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-ON-on-coding/final-acceptance/runs/MM-5/guidance-1/plan.json": "b271ba0b40266915c5e0795eae58d5d9fc71d7f2fe12a09a957941640e3506d2"
+  },
+  "paid_role": "paid-independent-final-acceptance",
+  "instruction": "Main reviews this exact scoped role and plan; this template authorizes no call."
+}

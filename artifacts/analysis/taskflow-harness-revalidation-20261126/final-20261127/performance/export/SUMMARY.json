@@ -1,0 +1,166 @@
+{
+  "source": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3/snapshot-persistent-final-01/REPORT.json",
+  "source_sha256": "6e6bda47abd353471db29e0c9eb65498558ab05f80986482ebe4ab0b926ed60b",
+  "requests": 1061,
+  "tasks": 62,
+  "epochs": 18,
+  "rollup": {
+    "approximate_native_phase_rates": {
+      "decode": {
+        "eligible_receipts": 1057,
+        "excluded_receipts": 4,
+        "method": "native phase durations right-aligned to proxy response end; approximate intervals, union removes concurrency double-counting; includes post-task-terminal upstream drain and is not task completion rate",
+        "summed_native_phase_s": 39820.989694833755,
+        "tokens": 514121,
+        "tokens_per_union_active_s": 47.66640542565557,
+        "union_active_s": 10785.814357280731
+      },
+      "prompt": {
+        "eligible_receipts": 1057,
+        "excluded_receipts": 4,
+        "method": "native phase durations right-aligned to proxy response end; approximate intervals, union removes concurrency double-counting; includes post-task-terminal upstream drain and is not task completion rate",
+        "summed_native_phase_s": 11989.980440855026,
+        "tokens": 4001524,
+        "tokens_per_union_active_s": 548.1027308903507,
+        "union_active_s": 7300.682471513748
+      }
+    },
+    "forwarded_receipts": 1061,
+    "forwarded_request_window": {
+      "first_forwarded_epoch_s": 1795738646.721558,
+      "interpretation": "forwarded request wall envelope includes queueing, cancellation and post-task drain; never task completion latency",
+      "last_receipt_after_terminal_s": null,
+      "last_receipt_epoch_s": 1795752845.2294374,
+      "post_terminal_request_wall_union_s": null,
+      "receipts_ending_after_terminal": null,
+      "request_wall_union_s": 11419.320849895477,
+      "unit_terminal_epoch_s": null
+    },
+    "latency": {
+      "client_ttft_s": {
+        "count": 1056,
+        "max": 1372.0148,
+        "median": 7.127750000000001,
+        "min": 0.2261
+      },
+      "client_wall_s": {
+        "count": 1061,
+        "max": 1575.9307,
+        "median": 16.5888,
+        "min": 0.5282
+      },
+      "decode_tok_s": {
+        "count": 1057,
+        "max": 1000000.0,
+        "median": 31.084745992749376,
+        "min": 0.2192693119567055
+      },
+      "delivered_ttft_s": {
+        "count": 1056,
+        "max": 1372.0148,
+        "median": 7.127750000000001,
+        "min": 0.2261
+      },
+      "first_body_s": {
+        "count": 1061,
+        "max": 105.6172,
+        "median": 1.1732,
+        "min": 0.0291
+      },
+      "prompt_tok_s": {
+        "count": 1057,
+        "max": 3006.8420640346253,
+        "median": 74.13695865601838,
+        "min": 0.2858398129040659
+      },
+      "queue_wait_s": {
+        "count": 1061,
+        "max": 541.1945,
+        "median": 0.0,
+        "min": 0.0
+      },
+      "ttft_s": {
+        "count": 1056,
+        "max": 1199.5053,
+        "median": 6.8565000000000005,
+        "min": 0.2226
+      },
+      "wall_s": {
+        "count": 1061,
+        "max": 1575.9174,
+        "median": 16.0745,
+        "min": 0.5074
+      }
+    },
+    "mtp_paired": {
+      "acceptance_ratio": 0.8266260829571674,
+      "accepted": 319920,
+      "proposed": 387019,
+      "receipts": 1056,
+      "unknown_receipts": 5
+    },
+    "native_intervals_outside_request_wall": 0,
+    "receipts_ending_after_own_unit_terminal": 0,
+    "role_counts": {
+      "observed_title": 24,
+      "unknown": 1037
+    },
+    "tokens": {
+      "cache_n": {
+        "known_count": 1057,
+        "known_sum": 59040123,
+        "unknown_count": 4
+      },
+      "draft_accepted": {
+        "known_count": 1056,
+        "known_sum": 319920,
+        "unknown_count": 5
+      },
+      "draft_n": {
+        "known_count": 1056,
+        "known_sum": 387019,
+        "unknown_count": 5
+      },
+      "predicted_n": {
+        "known_count": 1057,
+        "known_sum": 514121,
+        "unknown_count": 4
+      },
+      "prompt_n": {
+        "known_count": 1057,
+        "known_sum": 4001524,
+        "unknown_count": 4
+      },
+      "reasoning_output": {
+        "known_count": 0,
+        "known_sum": null,
+        "unknown_count": 1061
+      },
+      "sdk_cached_input": {
+        "known_count": 1052,
+        "known_sum": 58764330,
+        "unknown_count": 9
+      },
+      "sdk_input": {
+        "known_count": 1052,
+        "known_sum": 62764253,
+        "unknown_count": 9
+      },
+      "sdk_output": {
+        "known_count": 1052,
+        "known_sum": 513845,
+        "unknown_count": 9
+      }
+    }
+  },
+  "accepted_artifact_variants": 9,
+  "interpretation": [
+    "This exports existing closed receipts, not a new experiment or hardware benchmark.",
+    "Blank CSV values are unknown, not zero. Native reasoning-only counts are unavailable.",
+    "TTFT applies to streaming deltas; response completion is not first-token timing.",
+    "Native phase union rates are estimates from right-aligned intervals.",
+    "Resources are shared-host observations, not per-task attribution; repeated windows are references.",
+    "Standalone source review of superseded intermediate artifacts is not pending dispatch work.",
+    "Accepted artifact variants are not unique tasks or an estimated model success rate."
+  ]
+}

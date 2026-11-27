@@ -1,0 +1,12 @@
+{
+  "at": 1795753142.730929,
+  "events_sha256": "56a4628c2ddc31b6ac405fc8132d9cd13f501013eefd55bf39f89e8cb47e22ad",
+  "completed_commands_audited": 7,
+  "scope": "candidate/baseline/pinned-source inspection and task-local tests or private mock probes; no real inference/server launch; candidates unchanged",
+  "read_scope_note": "Actual commands audited against staged candidate and reference evidence.",
+  "advisory": "REJECT",
+  "main_decision": "rejected",
+  "qualification": "Main audited seven commands and full patch. Both errno checks repaired, but mount error with unshare in its path still causes skip. Qualified V4 and independent mocked reproduction agree with source rejection.",
+  "additional_infeasible_cap_robustness": null,
+  "candidate_patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b"
+}

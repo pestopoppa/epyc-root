@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-11-27T04:35:58Z",
+  "source": "get_goal tool counter",
+  "scope": "Long-running manager goal, including harness development and experiment coordination; not a per-task API billing vector. Do not add to or compare directly with the CLI token accounting; attribution and counter definitions differ.",
+  "value": {
+    "goal": {
+      "threadId": "01a217a9-736d-75d3-ba97-6339ffdde7e9",
+      "objective": "First, build and validate the best reliable OpenCode-derived harness A3B can use, preserving useful tools and providing deterministic debugging, sound budgets and reliable session continuity. Then rerun the confounded real-world cases and compare\n  thinking on versus off under matched conditions, recording token usage and outcomes. Finally, compare A3B working independently or with measured guidance against main-only execution, treating local tokens as free and assessing main-model effort,\n  elapsed time and accepted results.",
+      "status": "active",
+      "tokensUsed": 8474625,
+      "timeUsedSeconds": 21089,
+      "createdAt": 1795733029,
+      "updatedAt": 1795754119
+    },
+    "remainingTokens": null,
+    "completionBudgetReport": null
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "version": "accurate-light-v2",
+  "case_sha256": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+  "native_prompt_sha256": "c948ae10c650ec8f939b4bb4b0e6b39867db21538df009b405a4106d6e71faaf",
+  "fresh_main_prompt_sha256": "d528718169663b4003a5d029e6d1dfaac8f3828839472dc0fa997b1019d62bb9",
+  "fresh_main_plan_sha256": "a0b467631b4ed91c4bdd7e201f38f500bc8305fcd783237a52227a18b423f774",
+  "original_baseline_file_manifest_identical": true,
+  "baseline_files": 2962,
+  "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+  "accurate_goal_present_both_arms": true,
+  "solution_recipe_and_stale_causal_terms_absent": true,
+  "v1_withdrawal_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief/WITHDRAWAL.json",
+  "v1_seal_preserved": true,
+  "main_plan_fresh_unlaunched": true,
+  "detailed_and_v1_main_results_not_reused": true,
+  "model_calls": 0
+}

@@ -1,5 +1,7 @@
 # A3B real-task dispatch pilot — 2026-11-26
 
+> Follow-up evidence: [November 27 full-tools C22 revalidation and task comparison](../reports/a3b-full-tools-canary-20261127.md). That study qualifies the replacement harness and evaluates independent execution, deterministic feedback, paid guidance and main-only effort. The pilot figures below retain their original restricted-harness scope.
+
 - **A3B-REAL-DISPATCH-PILOT — REPAIRS_VALIDATED_CANDIDATE_ONLY.** Six bounded tasks are complete and their reviewed outputs are published. No initial attempt closed a task unchanged. One corrected A3B test was accepted with an identical functional AST; three drafts needed human repairs and two tasks were completed independently. Source and test-intent errors were observed under a restricted, changing harness; they do not establish an intrinsic model ceiling. Historical interrupted/resumed outcomes retain their specific harness qualifications. Automated reviewer acceptance remains advisory.
 
 ## Harness-scope correction — 2026-11-26

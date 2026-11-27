@@ -1,0 +1,10 @@
+{
+  "schema": "owner-slot3-recovery-seal.v1",
+  "source_boundary_sha256": "185ba0467a41eefd63a9ada0d3856abb565ce7d5a7a6f0af68ef4d0362a288cb",
+  "sha256": {
+    "recover.py": "d23259086769ea6f9403f314662c77be960d681726ce8f108b065e10ce057dbb",
+    "control.py": "2195399b0e60870bac48b758379463c97a2955c6056db135f582d9017b77f347",
+    "CONTROL.json": "513cc5646eca3f7658399c5009909c1fb03d7821c4af7c85f5ef0d51a9d67cb7",
+    "CURRENT-PLAN.json": "4abc785e289ce7532e16e37df6ec515e43639a0f2a8c3ee44baca1f1f69e7306"
+  }
+}

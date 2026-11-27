@@ -1,0 +1,10 @@
+{
+  "schema": "persistent-mm-mechanical.v1",
+  "preceding_callback_sha256": "e203f1389e8753223da7ff9623ce67fad0f627716dd735c39117cce8344c5803",
+  "sha256": {
+    "callback.py": "04b3b381639a5e4b090436ea2ceb2d0f6435d6d4093f648b6de5f836efc18ac2",
+    "prepare.py": "7b325866e4b49401f3e21d907beeff353866912273a35424dfeea2a5648dce17",
+    "CONTROL.json": "ff2906a88a564197b012d253c8b5e2b49e91d46c6d2be22f2c1d83305aeade29",
+    "MM-MECHANICAL-3-PLAN.json": "1e3449f82475692c72cce1a10b0e2f670c0ae089cc0518b4b96ec34c05bc4fad"
+  }
+}

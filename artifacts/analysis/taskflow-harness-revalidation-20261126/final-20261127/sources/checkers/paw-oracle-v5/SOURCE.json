@@ -1,0 +1,12 @@
+{
+  "v4_source_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v4/oracle.py",
+  "v4_source_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+  "v5_checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+  "change": "resolve candidate mentions through exact pinned source/seam tables; preserve field parser and all original scope/prerequisite checks",
+  "model_calls": 0,
+  "control_counts": {
+    "inherited_field_and_scope_controls": 31,
+    "shared_map_controls": 6
+  },
+  "accepted_main_control_sha256": "71b14fa48f13fb448cf336e7071a44104c0a63d9fd20371723575668dabe2e71"
+}

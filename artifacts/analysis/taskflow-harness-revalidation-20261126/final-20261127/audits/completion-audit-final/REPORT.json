@@ -1,0 +1,638 @@
+{
+  "canonical_checkers": {
+    "receipt": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/canonical-checker-validation/RECEIPT.json",
+      "sha256": "b38e8023c73934bec154d2d2c7d8e1d7d759e4cc42e6c9bca3b90eb1e0e4d09c"
+    },
+    "tested_bytes": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/scripts/coordination/taskflow/tu_grader_isolation.py",
+        "sha256": "c163e78514f6e9f6f896e756b59a01bfce5a7c0ccedc2a4bd8036ac02ac4fa88"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/scripts/coordination/taskflow/vision_contract.py",
+        "sha256": "31e81a53ec2e40b5a2199851e331307c4c8c9f64abe7f794829e1d84e3577909"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/tests/coordination/test_taskflow_tu_grader_isolation.py",
+        "sha256": "d0c1f39fad93508de18ee864bb4a42ca4fbeb5a1e04e003b461faa6d0c9cf27c"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/tests/coordination/test_taskflow_vision_contract.py",
+        "sha256": "35e0f73ff93efc59f95393d00c3cf0910c1b5485079c4a42b238e7ee5b0c265b"
+      }
+    ],
+    "tests_passed": 47
+  },
+  "earlier_requirements": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/completion-audit/AUDIT.json",
+    "sha256": "cd4b78e621b71ab80eacc33de26dfff90287218da55e4b5b561248d6d04ae828"
+  },
+  "feedback_audit": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/feedback-final-audit/REPORT.json",
+    "sha256": "df2c0e63d57e2005797463d85865a7f129042626971d1bbfda3f2cf1a327f9d6"
+  },
+  "final_owner_outcomes": {
+    "cpu-DS41-W-66-off-recommended-numa-resume-1-boundary": {
+      "cost_qualification": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/COST-QUALIFICATION.json",
+        "sha256": "44efb3ce571618834472a49ca86b81e942433d6d10780ef5c9ef49b979f45eb2"
+      },
+      "final_owner_state": "accepted",
+      "known_generation": 5663,
+      "owner": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/cpu-DS41-W-66-off-recommended-numa-resume-1-boundary.json",
+        "sha256": "57181021eb71c5012d994a8e11678aa8ceb283328b901dc2fcd75a7a13c62215"
+      },
+      "patch_sha256": "1725f3f8343fef0f92ca2a75be67da44f9ddc40ebb805661e32ea53c8e4b8933",
+      "snapshot_owner_state": "accepted",
+      "snapshot_raw_status": "oracle_pass",
+      "source_review": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/REVIEW.json",
+        "sha256": "3d9eb30d8f0385955286331704eae0e6c329faf11cff0c84201b68b65a098d30"
+      },
+      "unknown_generation_receipts": 1
+    },
+    "gpu-MM-5-off-common-on-sampling-v4-mechanical-3": {
+      "final_owner_state": "rejected",
+      "owner": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/gpu-MM-5-off-common-on-sampling-v4-mechanical-3.json",
+        "sha256": "915f37e9d9fa4ebb48ee7e7cdd44c6269f10f6ae3190a63e9a8ba13eb144d0c7"
+      },
+      "patch_sha256": "78126c4fadaccb93782ef853a87e64048f99ffc8307d01d09a3fb01b99c59c43",
+      "post_snapshot_owner_addendum": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/final-export/OWNER-QUALITY-FINAL-ADDENDUM.json",
+        "sha256": "695ecd7d1b02d7a576f68bc2816de1f30fb6c864e14c72f97d953c3dcb017903"
+      },
+      "qualified_scope_checks": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: AssertionError: source (200, 150), cap 1: encoded dimensions (1, 1) are off the positive 28-pixel grid",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "brief_environment_control": {
+          "detail": null,
+          "status": "pass"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "snapshot_owner_state": "pending_independent_review",
+      "snapshot_raw_status": "awaiting_source_review",
+      "source_review": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-mm-mechanical-3/grades-v4/gpu-MM-5-off-common-on-sampling-v4-mechanical-3/RESULT.json",
+        "sha256": "26874b980180cad4927ea9dae73ec31490f332c67c722b73b0c16d0f06e9b63c"
+      }
+    },
+    "gpu-MM-5-off-common-on-sampling-v4-objective-2": {
+      "final_owner_state": "accepted",
+      "owner": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/gpu-MM-5-off-common-on-sampling-v4-objective-2.json",
+        "sha256": "dce64d362ede1b8dca3d1052878045fd17b8b2df46bc40e2cec221b0e0a85139"
+      },
+      "paid_review": {
+        "execution": {
+          "cli_version": "codex-cli 0.172.0",
+          "rc": 0,
+          "tool_audit_required": true,
+          "wall_s": 57.464086
+        },
+        "semantic_review_advisory": "ACCEPT",
+        "usage": {
+          "cached_input_tokens": 157568,
+          "input_tokens": 179432,
+          "output_tokens": 1574,
+          "reasoning_output_tokens": 45,
+          "uncached_input_tokens": 21864
+        }
+      },
+      "patch_sha256": "b9a257627af85dc1f2f024afee7aac3d2675f48a1ebec65c502b5a08f0c0c80b",
+      "snapshot_owner_state": "accepted",
+      "snapshot_raw_status": "awaiting_source_review",
+      "source_review": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-OFF-off-common-on-sampling/final-acceptance/runs/MM-5/guidance-1/assistance-accounting.json",
+        "sha256": "3c931f010e8d92bc573c792e82213bde436584c012b4655ade28928b3e57e827"
+      }
+    },
+    "gpu-TU-GR-1-on-coding-paid-2": {
+      "current_local_tokens": 2787,
+      "final_owner_state": "rejected",
+      "known_combined_local_tokens": 25576,
+      "owner": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/gpu-TU-GR-1-on-coding-paid-2.json",
+        "sha256": "d7e34e2ac0f8854043f27ddfa1a6bbc3d5d0dfb5f576e83b056611d7c136652c"
+      },
+      "paid_review": {
+        "execution": {
+          "cli_version": "codex-cli 0.172.0",
+          "rc": 0,
+          "tool_audit_required": true,
+          "wall_s": 32.255763
+        },
+        "semantic_review_advisory": "REJECT",
+        "usage": {
+          "cached_input_tokens": 121856,
+          "input_tokens": 141902,
+          "output_tokens": 1005,
+          "reasoning_output_tokens": 53,
+          "uncached_input_tokens": 20046
+        }
+      },
+      "patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+      "qualified_grade": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-on-paid-final-review/grade-v4/RESULT.json",
+        "sha256": "a2f786c168cf60cc9c1bc9d013e902a32f4844658721c6b26bbc7d8f4366c77a"
+      },
+      "raw_terminal": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-paid-01/units/gpu-TU-GR-1-on-coding-paid-2/RESULT.json",
+        "sha256": "d4eee733468574d842a93a6d361c0ca5a3ef19537bdc377de590591a7e59b5e9"
+      },
+      "snapshot_owner_state": "rejected",
+      "snapshot_raw_status": "awaiting_source_review",
+      "source_review": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-on-paid-final-review/reviews/TU-GR-1/gpu-ON-on-coding/final-acceptance/runs/TU-GR-1/guidance-1/assistance-accounting.json",
+        "sha256": "5446edb15246abc2b086dddf4d02acfc77d6e6612892b1a5d327dc4119e2f185"
+      }
+    }
+  },
+  "native_performance": {
+    "accepted_artifact_variants": 9,
+    "attempts": 62,
+    "authoritative_snapshot": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3/snapshot-persistent-final-01/REPORT.json",
+      "sha256": "6e6bda47abd353471db29e0c9eb65498558ab05f80986482ebe4ab0b926ed60b"
+    },
+    "csv_files": {
+      "REQUESTS.csv": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/final-export/files-v2/REQUESTS.csv",
+        "rows": 1061,
+        "sha256": "29febeab9a22a6b582840f067e34963a24cd0c7b2fa4ee7182ee54ea74c77125"
+      },
+      "TASKS.csv": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/final-export/files-v2/TASKS.csv",
+        "rows": 62,
+        "sha256": "dca30bdcf534657a0fbd9b19fadf2c76f366cb2156f87696fc058d199b226b72"
+      }
+    },
+    "csv_transformation_receipt": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/final-export/CSV-FORMAT-VALIDATION.json",
+      "sha256": "940e92ea8b617769947a28b5e61c748ed6cf8aef8ba1f36f81a1b07a12a0198a"
+    },
+    "epochs": 18,
+    "native_reasoning_count": {
+      "known_count": 0,
+      "known_sum": null,
+      "unknown_count": 1061
+    },
+    "read_warning_count": 0,
+    "snapshot_owner_state_counts": {
+      "accepted": 9,
+      "no_candidate_review_record": 8,
+      "pending": 1,
+      "pending_independent_review": 25,
+      "rejected": 19
+    },
+    "summary": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/final-export/files-v2/SUMMARY.json",
+      "sha256": "71ae8213e82e7f408b776bceb7d1e829fba699146fd4a0b1a8294e2849e66d4b"
+    },
+    "unique_forwarded_receipts": 1061,
+    "unreceipted_archives": 0
+  },
+  "new_tests_measurements_models_or_api_calls": 0,
+  "paid_accounting": {
+    "call_roles": {
+      "final-acceptance": 22,
+      "guidance": 5,
+      "initial-diagnosis": 5,
+      "main-only-implementation": 8
+    },
+    "detailed_main_only": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/main-only-accounting/ACCOUNTING.json",
+      "sha256": "764f8f1f8a3ecc890062d5480b3e41c61f3e390d9aa6d2186fa88a4200223af9"
+    },
+    "detailed_main_totals": {
+      "additional_direct_repair": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 49792,
+        "cli_execution_wall_s_sum": "71.562237",
+        "input_tokens": 57572,
+        "output_tokens": 460,
+        "reasoning_output_tokens": 51,
+        "turns": 1,
+        "uncached_input_tokens": 7780
+      },
+      "all_seven_turns": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 1067136,
+        "cli_execution_wall_s_sum": "674.876847",
+        "input_tokens": 1226305,
+        "output_tokens": 19368,
+        "reasoning_output_tokens": 379,
+        "turns": 7,
+        "uncached_input_tokens": 159169
+      },
+      "initial_six_turns": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 1017344,
+        "cli_execution_wall_s_sum": "603.314610",
+        "input_tokens": 1168733,
+        "output_tokens": 18908,
+        "reasoning_output_tokens": 328,
+        "turns": 6,
+        "uncached_input_tokens": 151389
+      }
+    },
+    "global_vector": {
+      "observed_execution_count": 40,
+      "scope": "observed executions only; unknown is never zero; summed CLI walls are not parallel elapsed or isolated model compute",
+      "sum_cli_execution_walls_s": {
+        "known_count": 40,
+        "known_sum": 3259.404165,
+        "unknown_count": 0
+      },
+      "usage": {
+        "cached_input_tokens": {
+          "known_count": 40,
+          "known_sum": 6365696,
+          "unknown_count": 0
+        },
+        "input_tokens": {
+          "known_count": 40,
+          "known_sum": 7438036,
+          "unknown_count": 0
+        },
+        "output_tokens": {
+          "known_count": 40,
+          "known_sum": 56853,
+          "unknown_count": 0
+        },
+        "reasoning_output_tokens": {
+          "known_count": 40,
+          "known_sum": 2246,
+          "unknown_count": 0
+        },
+        "uncached_input_tokens": {
+          "known_count": 40,
+          "known_sum": 1072340,
+          "unknown_count": 0
+        }
+      }
+    },
+    "ledger": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paid-call-accounting/snapshot-final-40/ACCOUNTING.json",
+      "sha256": "d4e06ffde11edf6cf5268646fd182b35243cbe6591379c762389163e9dfe7a0c"
+    },
+    "ledger_cpu_quality_addendum": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paid-call-accounting/snapshot-final-40/OWNER-QUALITY-ADDENDUM.json",
+      "sha256": "b867471672a103af26ab70b69c410ff62521de2e6f860379212df0de4beacde3"
+    },
+    "ledger_seal": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paid-call-accounting/snapshot-final-40/FINAL-SEAL.json",
+      "sha256": "2b8c707cc1c32e1f3ad73cc0cdd0aa38c45f3e16e80f106131349fcd7b4d0a69"
+    }
+  },
+  "requirement_evidence_rechecked": {
+    "01_protocol_and_scope": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/docs/design/taskflow-a3b-revalidation-plan-20261126.md",
+        "sha256": "7eaca31c964bb3e0f9080f038340023cfd05c43d0aaa9cd952ec08369cb2ae83"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/progress/2026-11/2026-11-27-handoff-codex-a3b-pilot.md",
+        "sha256": "bddce6d518080cebe8500baba6278af833fa1defc7d06354db4ba994cd7872d2"
+      }
+    ],
+    "02_full_useful_tool_catalog": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/stock-tools-pass.json",
+        "sha256": "573347c3a4892975ee571fcb952c7907b01a98d66c799a85dae886931aade67d"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/stock/STOCK-WIRE.py",
+        "sha256": "6a89010f74603e4b8878dadf609960fd20f36f9a1ea368022a7dfdeeab8b5fde"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/catalog-and-cap-audit.json",
+        "sha256": "c39b57fe3b1abd612e8635d69fbdeca3a48dc5015ebf2753c718783d283dc4d7"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native/cpu/PASS.json",
+        "sha256": "eebbc6cd801e2e1b6548ca3d5fde1ce4f3dc857107490221473061e9bd2429a5"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native/gpu/PASS.json",
+        "sha256": "cd219e32ae9fbc75836611fa641e466b8e9071bfa807bf170659b340c0bdd3c2"
+      }
+    ],
+    "03_caps_wall_and_all_roles": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/transport-controls.json",
+        "sha256": "bac77e73686f9cf6b3303c914961c4df43c97cae13f45c42a2780cd89026ff89"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/repaired-01-launch/provider-repair-PASS.json",
+        "sha256": "ba77f51461dae572c543aed40a724070455807986e0a7942b32480595d81497d"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/role-wire-v3-exact/PASS.json",
+        "sha256": "fbdfa3f641d73cd0463782d8176bde4caf47b8b4bc664b0be8770613b8c3aaf2"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/role-wire-v3-exact/ROLE-EVIDENCE.json",
+        "sha256": "d3b7e71379d246bccb9f79d2ffe14a7d74d417015266c511f9c0b9635b497a99"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/QUALITY-MANIFEST.json",
+        "sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36"
+      }
+    ],
+    "04_reasoning_sessions_and_compaction": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native-input-manifest.json",
+        "sha256": "556cc817e484ee7b2276c0d73f95f6bb8a17288d2e039da07c70ce436c7868c4"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native/PASS.json",
+        "sha256": "de2f4314bcd0b3ea6db1817831ca1b2a120e32c20f06552ee05d07221d33de5e"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native/NATIVE-TEMPLATE-RECEIPT.json",
+        "sha256": "a9d9307563fee6385c24a96ba9665e6b65b788a63490e8c6ba35b7425c1a22cf"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native/gpu/NATIVE-SESSION-RESUME.json",
+        "sha256": "2de1c90bd922af0d58f060c9bcf875d7bb17e0f3996e18844d517addcdf92782"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/compaction-pass.json",
+        "sha256": "b6ccc3679e5473b3904c2f6c44d981d5b02478e5e1c309538bad5ef4229e1017"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native-compaction/MANIFEST.json",
+        "sha256": "dc3b056d92bf37d066a363bd345cbf36563cb4279d9ddc19df6b62c1ef6987fa"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/native-compaction/run/PASS.json",
+        "sha256": "1b681f191e21526710e353be6a8c9ff5948a9258e682a57cb02fa32195189963"
+      }
+    ],
+    "05_c22_content_and_dual_serving": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/READY.json",
+        "sha256": "7da1bd085dea64c16d60b0316eb4cfd5378445ad394690d40f75e46a67c78d15"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/GRANT.json",
+        "sha256": "8573a8e5292de0c1c3622349998f1bfa9c4d26c98b6943ad318e6cd99ec814d3"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/SERVING.json",
+        "sha256": "9f4d4437231e0dc035b791b5e45634e75f355740693ed81438b7f9c28bde922d"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/CPU-NUMA.json",
+        "sha256": "3db571485a1d29e08e45bdd5577206a99fef90b210a1c76abeaf788007613424"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/server.json",
+        "sha256": "161a2e74ce3d690d13019312a203d3a1a8d0c2b9c7cf320cd318f94d6ab97f31"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/proofs.json",
+        "sha256": "3ab7735b923c50b424b7241a1d11629c017c9a8ac55b83cce18d834e14a36e80"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/live.json",
+        "sha256": "60e658b4147bbaba5e79cc93efa8621ef15756ff0c242ce9378e850ecfc8f81f"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/linkage.txt",
+        "sha256": "63fcc807a3e3077722a2f668e800b7ab40ba0dd8cfecf828802d4fb44accdf37"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/server.json",
+        "sha256": "e317688d3cbb49bbe6bbb6a855c979d2c1e2597cbf1642aaa60b2f816254eb4d"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/proofs.json",
+        "sha256": "5459f9a487cb9921f1a095d6b9626b725a6c0eadafa581594d8891feed489073"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/live.json",
+        "sha256": "66b8b361767f3f124e4363766b51ab2476f18194accee0a53f8f497ad5d30741"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/linkage.txt",
+        "sha256": "ad82e916b88e78736cec5dbe9fa381d3eef3a381cd2d709d210b33b5b3d2755b"
+      }
+    ],
+    "06_full_load_failures_repaired_at_observed_boundary": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/initial-01-stop/OWNER-STOP.json",
+        "sha256": "7db2ce18aede6038f190dcf9fb77ea531f17e33d60b22dbadc470be1a411ba88"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/initial-01-recovery/RECOVERY-REPORT.json",
+        "sha256": "186f702e5faab0a84de7705a1688316a66f0c4381f6faa39574bc161e86b71ee"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/c22-cache-incident/INCIDENT-BINARY-PROOF.json",
+        "sha256": "91b2f452d429659137ebb6e1ddd21cc9afd660d83f5c8b989b0530097bb6c977"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/c22-cache-incident/INCIDENT-WINDOWS.json",
+        "sha256": "5bcdf0792113cbb7708036aafd1fade2f598ae84fdf8c100912b78add93b6b59"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126/artifacts/analysis/taskflow-harness-revalidation-20261126/cache-safe-serving/native-slot-control/run/PASS.json",
+        "sha256": "8052d3d468fd61ec12720e8c3fa1d1730a6f4314b57d033e69d8d1eb3423672f"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/cpu-placement-incident/CPU-02-ACTIVE-NUMA.json",
+        "sha256": "99390021f1eb38a26ed95226b7d3f51162a90225fe2fde6b731092c46483ce9e"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/cpu-placement-incident/CONTROL-INCIDENT-TIMELINE.json",
+        "sha256": "241213e979e62708c839714a4508e935958655306034df4c5a01377513202e26"
+      }
+    ],
+    "07_oracle_qualification_and_custody": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/nariq-oracle-v2/SOURCE-CONTROL.sha256",
+        "sha256": "e2f1b991a86d3f6e19f6cca73cd11ca877475a06b4d6250533899a47e427586c"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/nariq-v2-terminal-assessment-01/SOURCE-CONTROL.sha256",
+        "sha256": "41cb30a38ddacaa9a171f3a71827663e0c6138ba8c6f833752905ce6c6a87e03"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/V5-SEAL.json",
+        "sha256": "c3d2456c2f896b80ac2d480225a604c9833c758a9e7258cf4150ad6e741f81df"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v6/V6-SEAL.json",
+        "sha256": "1b437d39f59c0ce3a2c538017c09f664fcb4f904abc5ad348277ef84b2768261"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/SOURCE-CONTROL.sha256",
+        "sha256": "0dd66ef730a0715235abbae6e78ac71f99bff80aa35fac7c24b09d19cda48368"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v3/SOURCE-CONTROL.sha256",
+        "sha256": "f0f7978b540f0f83d5c5fef3e4f8e45badb11475d4c4d35cae74ea8584816c4b"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/PACKAGE-SEAL.json",
+        "sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-light-v2-independent-grade/SOURCE-CONTROL.sha256",
+        "sha256": "db4f17d1d5401a4c2c68c99f054101d97ad992b6e2dabaaeeaa862062b27a891"
+      }
+    ],
+    "08_native_initial_source_and_brief_scope": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/GRID.json",
+        "sha256": "506c30e14b0953c8aeda031cc968070ac2e3c516507a82c285aca206141efd2f"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/REVIEW-REGISTER.json",
+        "sha256": "289c6c496d3a86d04406b4592092a7316addfbe8d88ee845c2c5d61c970ba164"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/gpu-DS41-W-66-on-coding.json",
+        "sha256": "2a6afc12c4bd6c56d46332536fb3c2bb92147db85fd0583d334608a74896e698"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/gpu-DS41-W-66-off-common-on-sampling.json",
+        "sha256": "e20ab76f1a1a7a9460e575fcd59793e6aed30f21bfc4a096723383823aae041a"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/REVIEW.json",
+        "sha256": "3d9eb30d8f0385955286331704eae0e6c329faf11cff0c84201b68b65a098d30"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/COST-QUALIFICATION.json",
+        "sha256": "44efb3ce571618834472a49ca86b81e942433d6d10780ef5c9ef49b979f45eb2"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-w66-light-native/REVIEW.json",
+        "sha256": "a3a287683ab947b79154e6ff77404b02083854a21afa4ede85d388abf2f2d8de"
+      }
+    ],
+    "09_feedback_scope_and_consumption": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/feedback-confound-audit/CONSUMED-FEEDBACK.json",
+        "sha256": "1b4fc536fa9640b6f256254efb3e7234823108775a95c7bbf740ed2d0feb44ee"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/feedback/policy-v5/receipts/DECISIONS.json",
+        "sha256": "f8469c3f971fcc8db501fc247c812acd6f94fa0db4e27cb7ee8a6778a7b276e7"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/gpu-PFXC-A3-on-coding-post-review-mechanical-3.json",
+        "sha256": "5dcb651cc300e3635dfc92bda7b8e544a6ea73988b741c463a92cac835dfceb4"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-off-auto-ci/PLAN.json",
+        "sha256": "85bc19dd6bc4d8254b5b04c14b90a237195d9c1fcc4dab3d2d90bae4c28779e9"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/PLAN.json",
+        "sha256": "4d1ed8cb2386558b090a051479222ac107f8f8a193441be40f39eb4e2e0040b8"
+      }
+    ],
+    "10_independent_review_baseline_visibility": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-light-off-adjudication/ADJUDICATION.json",
+        "sha256": "29be3790097881f6fccc9b276705ad71cdfdba4997e4974a6e0e06caf3b2dcee"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance-v2/CONTROL.json",
+        "sha256": "1c74260120a0eaa92ce4c59190f89c31fc07cb5c70a31fc374cc863281587236"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance-v2/SOURCE-CONTROL.sha256",
+        "sha256": "ff5199058cf2116f0ce3659e2cc01800d1c130de2113a630612f879b1c321dbf"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/SOURCE-CONTROL.sha256",
+        "sha256": "85075d9e8199128edec575e55eae65fb0bf0b3fa0b9141e44ed87000fe39ee6c"
+      }
+    ],
+    "11_main_only_positive_comparison": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/main-only-accounting/ACCOUNTING.json",
+        "sha256": "764f8f1f8a3ecc890062d5480b3e41c61f3e390d9aa6d2186fa88a4200223af9"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/main-only-accounting/CASES.tsv",
+        "sha256": "145bbb8e0fd9f49ad4f308cb51d4e09b33bc2a9738061a75b8db6ff6906ea71e"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/main-comparison/runs/DS41-W-66/direct-1/measurement.json",
+        "sha256": "2690ff1c208f032573850b4520d43f8dbbb3f79094f911623f699657499689e1"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-light-v2-independent-grade/grade/oracle-result.json",
+        "sha256": "0ef960d206701a3afac880b6efeb87f001fab247ffb7337aa12fe3aa034aeb06"
+      }
+    ],
+    "12_latency_tokens_and_concurrency": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3/QUALIFICATION.json",
+        "sha256": "a5d8f0d59a307fed1612641a282e7329504cf3f57eed5e6bf79ca203c3956f8f"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch-v3/snapshot-working-01/REPORT.json",
+        "sha256": "6dd875bf7026054a5275cc4194669f58168351f61093afdaca7ae12e7e071d8d"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/token-audit/SOURCES.sha256",
+        "sha256": "0cc99abacbca0c1200fa7f58691212de73e2d1b8a5b6e1821a56f7eb0a26e8c4"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/token-audit/REPORT.md",
+        "sha256": "dddd362179e3636c81fd6e19e1e1cdc89f3dac5434f1113287845537879addd4"
+      }
+    ]
+  },
+  "schema": "a3b.closed-completion-audit.v1",
+  "serving": {
+    "cleanup": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/CLEANUP.json",
+      "sha256": "15f9b8efb06d0de01eb8f1e9a2cffd6b99cbbc53ddfe25e15fb18fbb8d56d60f"
+    },
+    "exclusive_slot_locks": 8,
+    "idle_slots": 8,
+    "kfd_pids_after_close": [],
+    "owned_servers": {
+      "cpu": {
+        "dead_verified": true,
+        "pid": 147530,
+        "rc": 0
+      },
+      "gpu": {
+        "dead_verified": true,
+        "pid": 147287,
+        "rc": 0
+      }
+    },
+    "pre_close": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/PRE-CLOSE.json",
+      "sha256": "2942ea5c351f6d146a73e10c46b5e2f549efa23a4d54e8d6bd94cd2e2807f372"
+    },
+    "preserved_codex_app_server_pid": 89061,
+    "process_observation": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/completion-audit-final/PROCESS-OBSERVATION.txt",
+      "sha256": "04f8ea3097045316ed52e1cee2b678b5f1747cbcf88bef6cc5c5ac6616ab71f1"
+    },
+    "ready": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/READY.json",
+      "sha256": "7da1bd085dea64c16d60b0316eb4cfd5378445ad394690d40f75e46a67c78d15"
+    }
+  }
+}

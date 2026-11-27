@@ -1,0 +1,146 @@
+{
+  "checks": [
+    {
+      "checks": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: returned promptly with ValueError: max_pixels must be at least 784 (one 28x28 patch)",
+          "status": "pass"
+        },
+        "brief_environment_control": {
+          "detail": null,
+          "status": "pass"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "id": "main-direct",
+      "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+      "rc": 0,
+      "source_sha256": "ced7ba6f65bb9f76ddbcc3991ffa5e09063411371d7bc21d9010d503ddba4c2c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2dc3168da18a1ddd5ec03639519ea4dc630c032a766eb00970d1106f5ff4e5a8"
+    },
+    {
+      "checks": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: ImportError: cannot import name 'encode_image_for_vl' from 'src.vision.analyzers.vl_describe' (/case/src/vision/analyzers/vl_describe.py)",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "brief_environment_control": {
+          "detail": "ORCHESTRATOR_VL_MAX_PIXELS=784: sent dimensions (896, 896), expected (28, 28)",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": "cannot import name 'encode_image_for_vl' from 'src.vision.analyzers.vl_describe' (/case/src/vision/analyzers/vl_describe.py)",
+          "failure_type": "ImportError",
+          "status": "fail"
+        }
+      },
+      "id": "baseline",
+      "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+      "rc": 1,
+      "source_sha256": "29f96ef634f040581ea9894920fe270a060f6be8562fc2c80cb5c600a4a9214a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "bae3b171c71f99da44cef6a063a5bf9a6e2e1d7e81c1099be88c3b3a64f74cf2"
+    },
+    {
+      "checks": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: returned promptly with ValueError: max_pixels must be at least 784 (one 28x28 patch)",
+          "status": "pass"
+        },
+        "brief_environment_control": {
+          "detail": null,
+          "status": "pass"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "id": "environment-read-at-startup",
+      "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+      "rc": 0,
+      "source_sha256": "db1141c99f4e88eb6743021f68a915a111d05764d0bb10b0279d54f941d707c9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2dc3168da18a1ddd5ec03639519ea4dc630c032a766eb00970d1106f5ff4e5a8"
+    },
+    {
+      "checks": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: returned promptly with ValueError: max_pixels must be at least 784 (one 28x28 patch)",
+          "status": "pass"
+        },
+        "brief_environment_control": {
+          "detail": "ORCHESTRATOR_VL_MAX_PIXELS=784: sent dimensions (896, 896), expected (28, 28)",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "id": "environment-read-at-startup-old-v3",
+      "oracle_sha256": "6ee94e2b493298daf71b1bee9df2026a9f0611b31a151464b2279ee50fbc8e0b",
+      "rc": 1,
+      "source_sha256": "db1141c99f4e88eb6743021f68a915a111d05764d0bb10b0279d54f941d707c9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5c91a7c8cf33e51f1a0ada192e3f0dbebe31a9311c4ac390ba8b12d478957104"
+    },
+    {
+      "checks": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: returned promptly with ValueError: max_pixels must be at least 784 (one 28x28 patch)",
+          "status": "pass"
+        },
+        "brief_environment_control": {
+          "detail": "ORCHESTRATOR_VL_MAX_PIXELS=784: sent dimensions (896, 896), expected (28, 28)",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "id": "environment-control-removed",
+      "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+      "rc": 1,
+      "source_sha256": "66c61c4bfbfe387240158f426306a9927e6bd7cbffd27ecd64030e95b6a0f958",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3195c5f1a4d0af224349f404361fed2e53adcde06587568cf56cea3ad46e0e2c"
+    },
+    {
+      "checks": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: encoder did not return within 8 seconds",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "brief_environment_control": {
+          "detail": null,
+          "status": "pass"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "id": "infeasible-cap-stalled",
+      "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+      "rc": 1,
+      "source_sha256": "3a053cead93cebceb78f6e3bc7f02f1150056ecb3cdd50c7fdb63ff96f51dbc8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0e28e214aaea523b1ce668b96db4c3416e01fc8fdd4a24d7b4b3885220bd437e"
+    }
+  ],
+  "main_patch_sha256": "95eb2bef1652f9040fe1a98d7ce64a3aa126ecfe8537f8ae5929d9ba7f196e24",
+  "model_calls": 0,
+  "preserved_v2_seal_sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976",
+  "schema": "mm5.capped-encoding.v4.controls"
+}

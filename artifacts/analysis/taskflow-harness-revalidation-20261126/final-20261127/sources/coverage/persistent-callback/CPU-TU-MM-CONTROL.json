@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "native_calls": 0,
+  "offline_restored_sessions": {
+    "cpu-TU-GR-1-off-recommended-paid-2": "ses_de574260fffe5ZLy7BNiY9SVsD",
+    "cpu-MM-5-off-recommended-v4-objective-2": "ses_de5742666ffeK3ye95N9B9Ieor"
+  },
+  "new_active_grant_and_idle_slots": true,
+  "plan_sha256": "9dbe1061abdb87ca63f9943355ff94c647198eedd5a9c9ad817ce1680f0ac7f8",
+  "preparer_sha256": "c18dda145fb92ff7fc7c8b40c08868089b732096b047dc9061966fff124b0f2c"
+}

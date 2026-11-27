@@ -1,0 +1,56 @@
+{
+  "change": "Retain pytest JUnit xunit1 file metadata. Bind the two exact outcome names to the explicit test source path and reject duplicates. Original namespace phases, exit/skip behavior, injected faults and direct probe tests retained.",
+  "controls": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/CONTROL.json",
+    "sha256": "4aa5a9bc17c5a722e7022470b775f176218194bfd3583787de7d677378c3d79a"
+  },
+  "diagnostic_tu_on_v2": {
+    "candidate_patch_sha256": "dbe4bb97513f162b197d9169146c27ce2813d54896e03a59b6be1de976ff0ebf",
+    "classification": "mount-stage permission failure incorrectly skipped",
+    "rc": 1,
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/diagnostic-tu-on/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/diagnostic-tu-on/stdout.log",
+      "sha256": "d43c779bdc218b6d971bedb9baffe981f6464c7566cf65f470d05f12b8e359f6"
+    },
+    "witness": "simulated namespace mount-permission-refusal: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare namespace setup refused (permission denied): mount: simulated tmpfs setup: Operation not permitted')}"
+  },
+  "final_owner_assessment_pending": true,
+  "model_calls": 0,
+  "original_sources_and_grades_preserved": true,
+  "raw_tu_on": {
+    "classification": "grader omitted class-method JUnit entries",
+    "result": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/RESULT.json",
+      "sha256": "ed0d9388bf592ab6ed459cac23be3d1550e9b0b05991bb926ada9e44efabcbf2"
+    },
+    "source_review": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary-tu-on/REVIEW.json",
+      "sha256": "f84cfd6bb451b775957b41dfb8c27b037df8ec2490791765506d9e7500401760"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/stdout.log",
+      "sha256": "410978429650143dd1e866dca77c4554b8c570c4069aef3af810756fbd72cf38"
+    }
+  },
+  "schema": "tu-grader-isolation.v2.migration",
+  "v1_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/oracle.py",
+    "sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2"
+  },
+  "v1_support": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/evaluator-support/tu_grader_isolation.py",
+    "sha256": "6da203e37f636fe2d094f4742bbef5816daf2af04add8b5bf150fa3843891de5"
+  },
+  "v2_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/oracle.py",
+    "sha256": "d2dc074c25d3373601dbd1ce9772bb4a240c465806c07ca1aeb13107fe51a9f6"
+  },
+  "v2_support": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/tu_grader_isolation.py",
+    "sha256": "2f5ec985cc649f3569e1b8bcc95f235f0db00927c841517845fc5a4bfb554492"
+  }
+}

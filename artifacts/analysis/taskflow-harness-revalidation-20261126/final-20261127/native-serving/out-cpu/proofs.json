@@ -1,0 +1,45 @@
+{
+  "kernel_lib_sha256": "7cafa501d43a31f318cf29e51d34549cbd1d002d15f8f705e0a25543cd5d9822",
+  "kernel_marker_count": 4,
+  "recipe_sha256": "3b80edac9c8ff40db71486febe111b0fab9bf0f6ed1584b8445f57798e502fe1",
+  "recipe_derived": true,
+  "model_stat": [
+    37801097504,
+    96242023
+  ],
+  "linkage_rc": 0,
+  "identity": {
+    "version": [
+      "version: 10748 (ce6fcbbde)",
+      "built with GNU 15.2.0 for Linux x86_64"
+    ],
+    "devices": [
+      "Available devices:"
+    ],
+    "mi210_listed": false
+  },
+  "source_sha": "ce6fcbbde1ee58f165283fbfe74910f47bb2efba",
+  "manifest_verified": {
+    "bin/libggml-base.so": "7f8d8747adae5cad592a1a58d37890d128ddaf2793cda47dc8cddb1f25b7a7e2",
+    "bin/libggml-base.so.0": "7f8d8747adae5cad592a1a58d37890d128ddaf2793cda47dc8cddb1f25b7a7e2",
+    "bin/libggml-base.so.0.16.0": "7f8d8747adae5cad592a1a58d37890d128ddaf2793cda47dc8cddb1f25b7a7e2",
+    "bin/libggml-cpu.so": "7cafa501d43a31f318cf29e51d34549cbd1d002d15f8f705e0a25543cd5d9822",
+    "bin/libggml-cpu.so.0": "7cafa501d43a31f318cf29e51d34549cbd1d002d15f8f705e0a25543cd5d9822",
+    "bin/libggml-cpu.so.0.16.0": "7cafa501d43a31f318cf29e51d34549cbd1d002d15f8f705e0a25543cd5d9822",
+    "bin/libggml.so": "0ef1f53e033e8493d5e572cd38c63d9c3e610fa4c29c4da4e5f700615a50c980",
+    "bin/libggml.so.0": "0ef1f53e033e8493d5e572cd38c63d9c3e610fa4c29c4da4e5f700615a50c980",
+    "bin/libggml.so.0.16.0": "0ef1f53e033e8493d5e572cd38c63d9c3e610fa4c29c4da4e5f700615a50c980",
+    "bin/libllama-bench-impl.so": "b800ed8d023138b8cd2e9ea9cd5c9db9d51c65972eea1c4142c7c3297ce702e1",
+    "bin/libllama-common.so": "56650ddc438b24bb377dd0ace1fbad8abfe4d03a3c075cb470f62286264f0d39",
+    "bin/libllama-common.so.0": "56650ddc438b24bb377dd0ace1fbad8abfe4d03a3c075cb470f62286264f0d39",
+    "bin/libllama-common.so.0.0.10748": "56650ddc438b24bb377dd0ace1fbad8abfe4d03a3c075cb470f62286264f0d39",
+    "bin/libllama-perplexity-impl.so": "92aba3929f492e9076516cc9789550a3994b872788d618fafb758c636c16aa5a",
+    "bin/libllama-server-impl.so": "0e5913ac75efedfe6baa547fff9f2bccc941fff8de8c98634f76b7b78e32750c",
+    "bin/libllama.so": "1539a8cc11d781f9d738d0da344f18d74fd977c9f6be414f4cc2924efa5b8502",
+    "bin/libllama.so.0": "1539a8cc11d781f9d738d0da344f18d74fd977c9f6be414f4cc2924efa5b8502",
+    "bin/libllama.so.0.0.10748": "1539a8cc11d781f9d738d0da344f18d74fd977c9f6be414f4cc2924efa5b8502",
+    "bin/llama-server": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3"
+  },
+  "config_sha256": "e6bf30774b952e29b302d28dbe8e06dbf418a0938006f6815aa9dd729b0a35a8",
+  "model_sha256_registry": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
+}

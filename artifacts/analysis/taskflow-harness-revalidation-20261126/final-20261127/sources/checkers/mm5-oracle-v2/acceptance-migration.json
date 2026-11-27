@@ -1,0 +1,15 @@
+{
+  "additional_support_sha256": "c08d80d2cd4c50599465c75687cc17ea83ebe5632d3ce768b970cc358da48bdd",
+  "case": "MM-5",
+  "commands_are_owner_assessments": true,
+  "control_receipt_sha256": "e5173040925372e813149dbfebec319f69611a0e45436c0eb5e63eab58314ea3",
+  "dependency_package_seal_sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+  "model_calls": 0,
+  "oracle_sha256": "6619c29e02b97122137357b410da8968344fcf55aa01033a61e55dc611804099",
+  "original_evaluator_support_sha256": "ebf06226092574fd21faeb026624618074308a82fa5307cbe488861482215cbb",
+  "original_oracle_sha256": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+  "original_owner_case_sha256": "08d950e7bfe1447adbd9f0fe124f1bfcf0b34cf5b6199e6c80b7049474f4a655",
+  "original_results_preserved": true,
+  "question_domain": "Only feasible tested caps at or above 784",
+  "version": "mm5.capped-encoding.v2"
+}

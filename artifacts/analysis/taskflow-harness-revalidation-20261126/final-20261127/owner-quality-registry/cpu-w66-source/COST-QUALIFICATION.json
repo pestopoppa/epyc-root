@@ -1,0 +1,30 @@
+{
+  "classification": "accounting addendum only; source acceptance unchanged",
+  "native_closed_wire_known_sum": 5663,
+  "native_closed_wire_parts": [
+    {
+      "id": "cpu-DS41-W-66-off-recommended",
+      "known_sum": 3524,
+      "unknown_requests": 0
+    },
+    {
+      "id": "cpu-DS41-W-66-off-recommended-numa-resume-1",
+      "known_sum": null,
+      "unknown_requests": 1
+    },
+    {
+      "id": "cpu-DS41-W-66-off-recommended-numa-resume-1-boundary",
+      "known_sum": 2139,
+      "unknown_requests": 0
+    }
+  ],
+  "native_closed_wire_unknown_requests": 1,
+  "provenance": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-DS41-W-66-off-recommended-numa-resume-1-boundary/wire/requests.jsonl": "62f2d10700f21f824df7d4450b438fc88630f2e29ff96380dbeb847aee483e36",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/performance/multi-epoch/snapshot-04/REPORT.json": "e4028c1134735b9fad74202e58c984f49d574719e1d3431737567ccb937c6b97",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-boundary-w66/REVIEW.json": "3d9eb30d8f0385955286331704eae0e6c329faf11cff0c84201b68b65a098d30"
+  },
+  "raw_result_counter_sum": 5471,
+  "raw_result_wall_s_sum": 4019.852,
+  "reason": "The initial part's raw SDK counter omits one request with native decode counts. The intermediate resume has one unknown-generation request. The terminal part uses its nine closed receipts."
+}

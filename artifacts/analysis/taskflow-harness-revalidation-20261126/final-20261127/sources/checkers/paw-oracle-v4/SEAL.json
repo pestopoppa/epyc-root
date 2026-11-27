@@ -1,0 +1,26 @@
+{
+  "files": {
+    "ACCEPTED-MAIN-CONTROL.json": "5cc2fafce7a934bca2649486302514e98622944ebcb0989b0d22fe0e02bad866",
+    "CONTROLS.json": "673979b0173e5aa2cc2a50ea1b0cdfc67a0ee6fb3d89d5224255ca8383bc5b0f",
+    "MIGRATION.json": "ea71b5b0509249568c0fce07ee8df608c1d4a30ed37ae713dd663b977b40f560",
+    "REASSESSMENT.json": "bd52e805998b65798be69bdd42b0057344ed68426939d68135a58d9d34efc915",
+    "REPORT.md": "8ee887a141bfed432d4d30011a250ad90b1377f5ce049850c14424c19cffb1fa",
+    "SOURCE.json": "4cfff1dd2e4b8d6ad3ee62101773abf763c55098ba1bf9014e8531130637bfc3",
+    "accepted-main.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "accepted-main.stdout.log": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "cpu-PAW-5-off-recommended-numa-resume-1/RECEIPT.json": "a976dd341119ce7455258bd2e07a5b8682bf45dc718d54b462b4776af23b4245",
+    "cpu-PAW-5-off-recommended-numa-resume-1/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cpu-PAW-5-off-recommended-numa-resume-1/stdout.log": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "gpu-PAW-5-off-recommended-guidance-2/RECEIPT.json": "a5daad5091708da67cc848fda496a908b7579634b09adc97323f0a2c9b77d3de",
+    "gpu-PAW-5-off-recommended-guidance-2/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gpu-PAW-5-off-recommended-guidance-2/stdout.log": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "gpu-PAW-5-on-coding-guidance-2/RECEIPT.json": "e263ef5548867f706acf5eaa0c3044cb09627864242133f1a292653f3a5d7160",
+    "gpu-PAW-5-on-coding-guidance-2/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gpu-PAW-5-on-coding-guidance-2/stdout.log": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "oracle.py": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+    "reassess.py": "5c3816fc554d3d8973fd9b02ce686363b8e4fe5260a1da3eaabff3bd92a152de",
+    "verify.py": "2fb42cd0bdfc7b3b2cd21b0f6080571f27ecae313c13ed3360beaf123c13a0ef"
+  },
+  "model_calls": 0,
+  "raw_results_unchanged": true
+}

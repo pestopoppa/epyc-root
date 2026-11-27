@@ -1,0 +1,14 @@
+{
+  "v6_seal_verified": true,
+  "mechanical_seal_verified": true,
+  "feedback_contains_correct_target": false,
+  "model_calls": 0,
+  "snapshot_owner": 1016652,
+  "snapshot_controller": 1016657,
+  "snapshot_gpu_pid": 1016973,
+  "snapshot_slot3_processing": [
+    false,
+    false
+  ],
+  "snapshot_is_not_launch_grant": true
+}

@@ -1,0 +1,6 @@
+{
+  "approved_by": "main",
+  "runner_seal_sha256": "652ea6d728c0c9ee274d74dca77ba2f7e2c52acfde3225df4fe0b566e4aa753f",
+  "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/PAW-PLAN.json",
+  "plan_sha256": "0e3685e72d53ec3a9c0c0d44948d028bf0976c8f74cfebb22a93d6e816aa1bfe"
+}

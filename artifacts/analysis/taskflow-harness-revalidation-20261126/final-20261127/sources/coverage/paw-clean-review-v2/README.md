@@ -1,0 +1,9 @@
+Version-past clean PAW final-review adapter. The old paw-clean-review adapter remains unchanged. This version recognizes actual clean-paid-2 IDs and reads explicit neutral and measured paid feedback across separate callback epochs.
+
+HISTORY-INPUTS.json binds the actual neutral result/export/PROMPT, the exact measured clean paid FEEDBACK and its assistance accounting, and the authorized callback plan. No old false-pin branch is reused. The immutable expert wrapper's sole source adaptation replaces its same-directory prior-prompt lookup with these explicit cross-epoch paths; existing candidate-copy and seal guards remain. Original main-comparison prepare.py/measure.py are imported byte-for-byte with gpt-6.1-sol low, per-mode roots and180–183 scheduling.
+
+review.py stage requires the actual terminal result at the authorized path, verifies its mode/profile and exact neutral→paid ancestry, checks source scope/safety and candidate/patch hashes, replays only the bounded V5 Markdown structural check, and stages a read-only final expert review plus exact unapproved template. Structural pass never supplies semantic acceptance. Final acceptance adds paid main cost and authorizes no additional correction. No API/model launch occurs during staging.
+
+At preparation time the expected paid callback root/result did not yet exist; the watcher had only a WAITING launch receipt. Therefore no candidate safety verdict or final approval template is fabricated. CONTROL.json qualifies explicit history lookup, actual paid2 ordinal and immutable profile imports. Once the real terminal artifact exists, invoke python3 -B review.py stage; main reviews and launches the generated exact plan. CALLBACK-STATES.json preserves the one-read observed callback state.
+
+Next: main/runtime complete the already-approved paid callback; then stage and approve its actual final candidate using this versioned adapter.

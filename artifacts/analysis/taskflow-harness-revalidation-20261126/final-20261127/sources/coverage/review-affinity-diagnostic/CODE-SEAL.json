@@ -1,0 +1,12 @@
+{
+  "files": {
+    "owned_affinity.py": "b74048a21036089d5adc5e907c851128f24eea6c179ff546a38363b4329c4ece",
+    "rebind_unlaunched.py": "af68070e428b79c8927edaa45d46c673dc349b9823356e01be19613c50c9fb80",
+    "FUTURE-SOURCE-LOCK.json": "27337313aa180fbca26ba14950487c467231df4140fabacc9d9a6c4b171818ac",
+    "SNAPSHOT.json": "d5460fee69316941ad57f0e7083d8119af9c3effb46b4f98f7c7f02e85368715",
+    "REPORT.md": "468b6583d9d43130a64041202fff5334acef193db173b2defd12784e65a9d40b"
+  },
+  "ast_parse": true,
+  "live_affinity_changed_by_this_agent": false,
+  "model_calls": 0
+}

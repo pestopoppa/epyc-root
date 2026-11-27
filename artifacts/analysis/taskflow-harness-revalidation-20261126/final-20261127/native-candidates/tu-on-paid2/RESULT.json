@@ -1,0 +1,62 @@
+{
+  "id": "gpu-TU-GR-1-on-coding-paid-2",
+  "case": "TU-GR-1",
+  "backend": "gpu",
+  "slot": 0,
+  "supervision": {
+    "pid": 1938820,
+    "returncode": 0,
+    "reason": null,
+    "elapsed_s": 151.747,
+    "force_kill": false
+  },
+  "cleanup": {
+    "owned_container": "ws58-a3b-stock-c5af34e6e8",
+    "removed_verified": true
+  },
+  "previous_attempts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding",
+      "generated": 13671,
+      "worker_wall_s": 541.2324447631836,
+      "charged": 13671,
+      "generation_unknown": 0,
+      "receipt_sha256": "03a5d6637d8bd75b587eae09e25814b426c87d1c63598dc4d83676700da5c719",
+      "reserved_at_terminal": 0
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1",
+      "generated": 9118,
+      "worker_wall_s": 217.043,
+      "charged": 9118,
+      "generation_unknown": 0,
+      "receipt_sha256": "ec511af49f985e49f5b4841943d85f831aa20f4fc1d2ef12433e836a3c3e5618",
+      "reserved_at_terminal": 0
+    }
+  ],
+  "native_status": "review",
+  "raw_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-paid-01/units/gpu-TU-GR-1-on-coding-paid-2/worker/receipt.json",
+  "terminal_at": 1795752849.5290184,
+  "source_guidance": {
+    "paid_model_calls": 1,
+    "ordinal": 2,
+    "class": "measured paid source review corrective guidance",
+    "usage": {
+      "input_tokens": 187614,
+      "cached_input_tokens": 171904,
+      "output_tokens": 1291,
+      "reasoning_output_tokens": 78,
+      "uncached_input_tokens": 15710
+    },
+    "model": "gpt-6.1-sol",
+    "effort": "low",
+    "measured_wall_s": 39.264021
+  },
+  "current_local_tokens": 2787,
+  "known_combined_local_tokens": 25576,
+  "parts_with_unobserved_tokens": 0,
+  "status": "awaiting_source_review",
+  "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-paid-01/units/gpu-TU-GR-1-on-coding-paid-2/grade-lane",
+  "worker_receipt_sha256": "f08f5d7843504a9cef1af824808b129e573b0bd9086fc93dfb916030f11c24db",
+  "same_session": true
+}

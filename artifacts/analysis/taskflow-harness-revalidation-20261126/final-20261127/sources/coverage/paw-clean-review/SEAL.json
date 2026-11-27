@@ -1,0 +1,12 @@
+{
+  "files": {
+    "CODE-LOCK.json": "c72399679842fd4e78f63f7c642b271ced1f12a606e388a2b7d7f4668484dbff",
+    "LEGACY-REVIEWS.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "QUALIFICATION.json": "4d222d37026472f0ceef1f19053219d17cda4c779b08a1eadbcc194acc66dcd5",
+    "qualification/feedback.json": "63ee428be42e481dd68a5458be85ec734dd411ba03433fb14138899f7b038ce0",
+    "qualification/plan.json": "df7d1808567192f004ba79eed630aab0df1e06e3b056033cd3bde614b837bb08",
+    "review.py": "891d2ca31a205e936f3675c68a7180768f6b9203797633013c0e75bcfccc0741"
+  },
+  "model_calls": 0,
+  "canonical_live_or_index_edits": false
+}

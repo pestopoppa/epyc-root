@@ -1,0 +1,106 @@
+{
+  "schema": "legacy-objective-followup.v1",
+  "cohort": [
+    {
+      "id": "gpu-TU-GR-1-on-coding",
+      "row": {
+        "case": "TU-GR-1",
+        "backend": "gpu",
+        "thinking": true,
+        "profile": "on-coding",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 0,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-TU-GR-1-on-coding",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "grade_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/RESULT.json",
+      "grade_receipt_sha256": "ed0d9388bf592ab6ed459cac23be3d1550e9b0b05991bb926ada9e44efabcbf2",
+      "prior_owner_result_sha256": "652e43a6a7114f4f16ca83cf1e7dc40d2830b0ccbd5a30d071cfbec767da670f",
+      "diagnostic": "simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=0. The verifier recorded an empty outcome map for the expected control and isolated tests. Pytest reported two passing tests.",
+      "source_review_sha256": "f84cfd6bb451b775957b41dfb8c27b037df8ec2490791765506d9e7500401760",
+      "prior_attempt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/worker",
+      "prior_receipt_sha256": "03a5d6637d8bd75b587eae09e25814b426c87d1c63598dc4d83676700da5c719",
+      "prior_session_sha256": "202556b209da108b7a2a5479226789b280d31ca9249bc791fa98e2b0b4d8dfbb",
+      "prior_workspace_session_sha256": "61f2280292c880b3ee0873f24e94a2833d1f39305b95df021c882cbc542bf560",
+      "prior_patch_sha256": "dbe4bb97513f162b197d9169146c27ce2813d54896e03a59b6be1de976ff0ebf",
+      "ordinal": 1,
+      "source_guidance_tokens": 0,
+      "max_protocol_rounds": 2,
+      "prior_cost": {
+        "generation": 13671,
+        "elapsed_s": 541.2324447631836
+      },
+      "prior_session": "ses_de53dad39fferUwH4PIyLpmCb3"
+    }
+  ],
+  "lease": {
+    "holder": {
+      "pid": 133800,
+      "ppid": 89061,
+      "start_ticks": 161837437
+    },
+    "controller": {
+      "pid": 133805,
+      "ppid": 133800,
+      "start_ticks": 161837443
+    },
+    "native": {
+      "gpu": {
+        "pid": 147287,
+        "ppid": 133805,
+        "start_ticks": 161842751
+      },
+      "cpu": {
+        "pid": 147530,
+        "ppid": 133805,
+        "start_ticks": 161842764
+      }
+    },
+    "providers": {
+      "gpu": {
+        "port": 56071,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/live.json",
+        "serving_receipt_sha256": "60e658b4147bbaba5e79cc93efa8621ef15756ff0c242ce9378e850ecfc8f81f",
+        "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      },
+      "cpu": {
+        "port": 52473,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/live.json",
+        "serving_receipt_sha256": "66b8b361767f3f124e4363766b51ab2476f18194accee0a53f8f497ad5d30741",
+        "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      }
+    },
+    "grant": {
+      "holder_pid": 133800,
+      "regions": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ]
+    },
+    "receipts": {
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/READY.json": "7da1bd085dea64c16d60b0316eb4cfd5378445ad394690d40f75e46a67c78d15",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/GRANT.json": "8573a8e5292de0c1c3622349998f1bfa9c4d26c98b6943ad318e6cd99ec814d3",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/SERVING.json": "9f4d4437231e0dc035b791b5e45634e75f355740693ed81438b7f9c28bde922d",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/serve.py": "97d17990a584623dc3c346fbee2023757df291ec251adcc012c76447cd410710"
+    }
+  },
+  "native_calls_during_preparation": 0,
+  "original_results_unchanged": true
+}

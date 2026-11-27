@@ -1,0 +1,11 @@
+{
+  "candidate_still_only_source_output": [
+    "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+  ],
+  "control_execution_is_not_paid_measurement": true,
+  "input_source_comparison_seal_sha256": "6e1edd70e16dcea53456d651eb477b1b37cc4baa6d2659c5347ba6aa26775704",
+  "model_calls": 0,
+  "modified_evidence_is_rejected": true,
+  "modified_evidence_path": ".review-evidence/candidate.patch",
+  "unchanged_evidence_is_expected_input": true
+}

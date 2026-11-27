@@ -1,0 +1,10 @@
+{
+  "schema": "persistent-paw-paid-watch.v1",
+  "parent_watcher_sha256": "55a4ffa6d65e8bcffd0ebe2105e78f680318fd01a18e838fb46e871ac0d40acf",
+  "callbacks_spawned_during_preparation": 0,
+  "sha256": {
+    "watch.py": "1b32ea46380d88e26eaa9b15a493fbac704ffbb23a8fb165f88929ffa700b956",
+    "control.py": "1276501bc1a59d7c6fc5e37e659e6c3d190c53c908d1c3a05b1eed42c5de32c8",
+    "CONTROL.json": "6bcb07250e3d6af60da0b1b9abeefc74d451d0deaac13994b979804672683470"
+  }
+}

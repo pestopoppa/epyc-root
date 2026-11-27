@@ -1,0 +1,6 @@
+{
+  "approved_by": "main",
+  "runner_seal_sha256": "951d0d9b15a235e7caa246a1043440cd08056404cebf62fdcc32850377fbdd40",
+  "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-objective-followup/MM-OBJECTIVE-PLAN.json",
+  "plan_sha256": "8638e54c4da0d808017b1d802592d8f19ad09bbf93f4e8fb2a70e8c27e9eece4"
+}

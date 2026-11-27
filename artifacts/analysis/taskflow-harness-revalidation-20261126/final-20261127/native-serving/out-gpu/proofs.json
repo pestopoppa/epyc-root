@@ -1,0 +1,50 @@
+{
+  "kernel_lib_sha256": "cfcef975c62d4e8f8fefda03600c097de3de4cbe47369dd6c2db50123c8e77f8",
+  "kernel_marker_count": 19,
+  "recipe_sha256": "3b80edac9c8ff40db71486febe111b0fab9bf0f6ed1584b8445f57798e502fe1",
+  "recipe_derived": true,
+  "model_stat": [
+    37801097504,
+    96242023
+  ],
+  "linkage_rc": 0,
+  "identity": {
+    "version": [
+      "version: 10748 (ce6fcbbde)",
+      "built with GNU 15.2.0 for Linux x86_64"
+    ],
+    "devices": [
+      "Available devices:",
+      "  ROCm0: AMD Instinct MI210 (65520 MiB, 65432 MiB free)"
+    ],
+    "mi210_listed": true
+  },
+  "source_sha": "ce6fcbbde1ee58f165283fbfe74910f47bb2efba",
+  "manifest_verified": {
+    "bin/libggml-base.so": "f7b8a1dc7e18ecdf503f4652a92b7cadaf9f501db104ed49edd800d3b1ab09bb",
+    "bin/libggml-base.so.0": "f7b8a1dc7e18ecdf503f4652a92b7cadaf9f501db104ed49edd800d3b1ab09bb",
+    "bin/libggml-base.so.0.16.0": "f7b8a1dc7e18ecdf503f4652a92b7cadaf9f501db104ed49edd800d3b1ab09bb",
+    "bin/libggml-cpu.so": "6641a67ef2e986551eafc2df119a31676b346e132b73b012e211ab770c7e9568",
+    "bin/libggml-cpu.so.0": "6641a67ef2e986551eafc2df119a31676b346e132b73b012e211ab770c7e9568",
+    "bin/libggml-cpu.so.0.16.0": "6641a67ef2e986551eafc2df119a31676b346e132b73b012e211ab770c7e9568",
+    "bin/libggml-hip.so": "cfcef975c62d4e8f8fefda03600c097de3de4cbe47369dd6c2db50123c8e77f8",
+    "bin/libggml-hip.so.0": "cfcef975c62d4e8f8fefda03600c097de3de4cbe47369dd6c2db50123c8e77f8",
+    "bin/libggml-hip.so.0.16.0": "cfcef975c62d4e8f8fefda03600c097de3de4cbe47369dd6c2db50123c8e77f8",
+    "bin/libggml.so": "224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694",
+    "bin/libggml.so.0": "224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694",
+    "bin/libggml.so.0.16.0": "224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694",
+    "bin/libllama-bench-impl.so": "d820a83a95abda00a9149e642745b72deb867c426fa2b46f368074d554b4afd3",
+    "bin/libllama-common.so": "454355fa1dee5dc22d90f1277673c098a016c5c9d8e4daec598481426bb52f76",
+    "bin/libllama-common.so.0": "454355fa1dee5dc22d90f1277673c098a016c5c9d8e4daec598481426bb52f76",
+    "bin/libllama-common.so.0.0.10748": "454355fa1dee5dc22d90f1277673c098a016c5c9d8e4daec598481426bb52f76",
+    "bin/libllama-perplexity-impl.so": "4f822c9a966bde09d3742453416e0e633dbe06e14ded705450f8044b1e0acd1f",
+    "bin/libllama-server-impl.so": "06c92442c44573714b12ee73f08d3c194619d64e97118afd0e524fc2b93a971d",
+    "bin/libllama.so": "78f765bdda32dfbc6e481d8404229000c311916c863e91dea133d451919a2907",
+    "bin/libllama.so.0": "78f765bdda32dfbc6e481d8404229000c311916c863e91dea133d451919a2907",
+    "bin/libllama.so.0.0.10748": "78f765bdda32dfbc6e481d8404229000c311916c863e91dea133d451919a2907",
+    "bin/llama-server": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e"
+  },
+  "config_sha256": "e761950638cc9cf98d57b285445e6fd80a9035d16cb5a3afa012ef69921ca267",
+  "model_sha256_registry": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "served_argv_sha256": "cceeb44df70c9c6957264b30230cc7302880910c6f7bef0393deb14b1bc10c3b"
+}

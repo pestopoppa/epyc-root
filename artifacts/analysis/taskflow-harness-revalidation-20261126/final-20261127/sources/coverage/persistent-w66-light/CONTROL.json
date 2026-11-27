@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "native_model_calls": 0,
+  "sealed_accurate_brief_and_same_baseline_oracle": true,
+  "baseline_files": 2962,
+  "persistent_route_proved": true,
+  "idle_slot_sample": {
+    "0": false,
+    "1": false
+  },
+  "plan_sha256": "a1996a3f29b5d310b7474dd55edb34b97f20156db0c01d51299723638937104a",
+  "source_packet_sha256": "65e235b135ecc4a82aa56fdedb60679dba6f10e62be05b10b0bee0d6ce774ea1"
+}

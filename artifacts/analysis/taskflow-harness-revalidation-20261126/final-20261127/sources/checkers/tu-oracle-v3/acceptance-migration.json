@@ -1,0 +1,32 @@
+{
+  "boundaries": "The same pinned read-only, network-none container and process timeout apply. No real unshare or bwrap is present on the restricted PATH. JUnit exact file and duplicate guards are unchanged.",
+  "change": "Add one missing-launcher phase after the unchanged V2 namespace and errno phases. Run pytest with absolute Python and a private PATH containing Python and sh links, which shim and the pinned mount stub. The plain control must pass. The isolated test must fail when no launcher is present.",
+  "model_calls": 0,
+  "original_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/oracle.py",
+    "sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2"
+  },
+  "previous_grades_preserved": true,
+  "reproducible_witness": "simulated namespace missing-launcher: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare binary is unavailable')}",
+  "schema": "tu-grader-isolation.v3.migration",
+  "v2_classifier": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/tu_grader_isolation.py",
+    "sha256": "2f5ec985cc649f3569e1b8bcc95f235f0db00927c841517845fc5a4bfb554492"
+  },
+  "v2_seal": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/SOURCE-CONTROL.sha256",
+    "sha256": "75745276e36e01cc279da123094036228ba187dc707f82ce0769b6b50345bca8"
+  },
+  "v3_classifier": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v3/tu_grader_isolation.py",
+    "sha256": "01a09351635c64b5b6f7c7486a4baee391095e7f18041a6380cf479aac313bda"
+  },
+  "v3_controls": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v3/CONTROL.json",
+    "sha256": "84b616927fa3b0bf18c46e015843d0a5ec3ae450703facb528b972a15693ef92"
+  },
+  "v3_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v3/oracle.py",
+    "sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/review.py": "3babaaa0dfdddb6fceb99900587ae5b66ea459a7abba7df30a0e9614544e536b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py": "c020c321f031763281f4476149d1d3c1e0a723086d508e1d41ad4d3d80443d49",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/prepare.py": "864bdad1512fc223469a372b78f779e47e00c6432d7515cba0884a753172ce0c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/measure.py": "3175392d9b99143501a3b3e385d549234bc7ef4c2d50a802b72bf9a42f251488",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/import-view/prepare.py": "864bdad1512fc223469a372b78f779e47e00c6432d7515cba0884a753172ce0c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/import-view/measure.py": "3175392d9b99143501a3b3e385d549234bc7ef4c2d50a802b72bf9a42f251488",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/PACKAGE-SEAL.json": "65e235b135ecc4a82aa56fdedb60679dba6f10e62be05b10b0bee0d6ce774ea1",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/case.json": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f"
+  },
+  "expert_wrapper": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py",
+  "native_units_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units",
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "case_view": "accurate light-v2 only; exact original baseline/oracle",
+  "imports": "immutable original prepare/measure and expert wrapper; namespace, case-view, existing-pass notice and host scheduling only adapted"
+}

@@ -1,0 +1,19 @@
+{
+  "immutable_imports_passed": true,
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "affinity": "180-183",
+  "per_mode_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/initial-diagnosis",
+  "objective_ordinal_inference": true,
+  "paid2_ordinal_inference": true,
+  "actual_verifier_feedback_verbatim": true,
+  "source_expert_recommendation_or_direct_answer_exposed": false,
+  "task_env_public_checker_available": true,
+  "exact_changed_files_reconstructed": true,
+  "projected_source_hashes_verified": true,
+  "review_seal_verified": true,
+  "normalize_sha256": "898cd9b48e46d025f44b3339fa02b83b0bd09803a06c87344ac21f276e5397ed",
+  "review_sha256": "90b51de0c741c889b5b6e749e8d09a0b8fc3a8463edee51dcaa685428f14287d",
+  "no_model_calls": true,
+  "control_scope": "source/profile/provenance/staging only; no inference, oracle replay or launch"
+}

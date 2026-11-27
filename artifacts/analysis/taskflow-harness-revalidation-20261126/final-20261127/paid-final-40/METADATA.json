@@ -1,0 +1,13 @@
+{
+  "unique_terminal_paid_executions": 40,
+  "main_implementation_executions": 8,
+  "assistance_review_executions": 32,
+  "original_unique_task_ids": 6,
+  "main_conditions": 7,
+  "alternative_arms": 29,
+  "raw_usage_matches_measurements": true,
+  "no_api_model_calls_by_collector": true,
+  "final_accounting_sha256": "d4e06ffde11edf6cf5268646fd182b35243cbe6591379c762389163e9dfe7a0c",
+  "summary_sha256": "e46751608362631fa1d3e66fa3ec1b38fb463c19cf2d48402bbed133bf917bfe",
+  "source_collector_sha256": "7e156ae93ca100e4ca425ee0fbf27bfe2aa1208643b7c1c99fb779a11b2bac84"
+}

@@ -1,0 +1,141 @@
+{
+  "schema": "legacy-objective-followup.v1",
+  "cohort": [
+    {
+      "id": "cpu-TU-GR-1-off-recommended",
+      "row": {
+        "case": "TU-GR-1",
+        "backend": "cpu",
+        "thinking": false,
+        "profile": "off-recommended",
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 1.5,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 0,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 3600,
+        "id": "cpu-TU-GR-1-off-recommended",
+        "required_for_residual_question": false,
+        "purpose": "independent practical candidate; no CPU/GPU speed contrast",
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "grade_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-TU-GR-1-off-recommended/independent/oracle-result.json",
+      "grade_receipt_sha256": "4adc3740219385f53cbebed980af16fe1d48baeee71c6faa3f7ccc3814eb194c",
+      "prior_owner_result_sha256": "5abc03801a0e6e00ee44620d0cc7633aa0052ec4eac3d48f539e070e97ca0267",
+      "diagnostic": "simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1. The validator expected listdir_ok=False and observed listdir_ok=True. The failed test was test_isolated_launch_denies.",
+      "prior_attempt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-TU-GR-1-off-recommended/worker",
+      "prior_receipt_sha256": "940cc0cb4968639801497b054bc8ed871d844e73682fbab3fa40c76c3ad3232a",
+      "prior_session_sha256": "de572066c2a67aa2d5ec252e07476e612042e9ed99338b1327b3c088e7880716",
+      "prior_workspace_session_sha256": "330e7de7c5de51e8a62fd28bc370a806a0a6fc554cc674a9589b5d4749297cc3",
+      "prior_patch_sha256": "f6fccc376c135e95b8bf6caa6aa56abec776291d6cd4d1d2b71ab1418c9abc78",
+      "ordinal": 1,
+      "source_guidance_tokens": 0,
+      "max_protocol_rounds": 2,
+      "prior_cost": {
+        "generation": 5488,
+        "elapsed_s": 1616.227840423584
+      },
+      "prior_session": "ses_de574260fffe5ZLy7BNiY9SVsD"
+    },
+    {
+      "id": "gpu-TU-GR-1-off-common-on-sampling",
+      "row": {
+        "case": "TU-GR-1",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "off-common-on-sampling",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 1,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-TU-GR-1-off-common-on-sampling",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "grade_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary/grades/gpu-TU-GR-1-off-common-on-sampling/RESULT.json",
+      "grade_receipt_sha256": "e46e48ca0cf54a217475330b5daa5738c01b00ad53736c258eca2c34bbcfee07",
+      "prior_owner_result_sha256": "9ef8dd08bb07c3bf1d0b0bae80e02d761177e1aef18e4a0d0c6b118ca371acb3",
+      "diagnostic": "simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1. The isolated launcher exited with code 1. The failed test was test_isolated_launch_denies.",
+      "prior_attempt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker",
+      "prior_receipt_sha256": "2e5d8568f0262a4c65c5d4c582f2cc94aa2152708d339eeb57b6d86c5a0d24ec",
+      "prior_session_sha256": "ae8ba629bbb5a0881ea06c789d134b66029bb3912c1d5ced2a1a5c28e6572b89",
+      "prior_workspace_session_sha256": "a7cdce368572efa7da5ac27d8062d5fafb884b13b4c051eed9cc5d0a2419215f",
+      "prior_patch_sha256": "a0f2772e539762d40426c5bdb2c121ad181bc4de7a4bacbde3e76dca58c20de5",
+      "ordinal": 1,
+      "source_guidance_tokens": 0,
+      "max_protocol_rounds": 2,
+      "prior_cost": {
+        "generation": 6470,
+        "elapsed_s": 263.5866959095001
+      },
+      "prior_session": "ses_de53dad49ffe3M7XhpEt7fmQ89"
+    }
+  ],
+  "lease": {
+    "holder": {
+      "pid": 3507046,
+      "ppid": 89061,
+      "start_ticks": 161578912
+    },
+    "controller": {
+      "pid": 3507253,
+      "ppid": 3507046,
+      "start_ticks": 161578918
+    },
+    "server": {
+      "pid": 3553296,
+      "ppid": 3507253,
+      "start_ticks": 161585422
+    },
+    "grant": {
+      "holder_pid": 3507046,
+      "regions": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ]
+    },
+    "cpu": {
+      "pid": 3553728,
+      "ppid": 3507253,
+      "start_ticks": 161585436
+    },
+    "providers": {
+      "gpu": {
+        "port": 42559,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/out-gpu/live.json",
+        "serving_receipt_sha256": "932b1ad48721cf8d87c2192f724d2a4ef4de23e25fc2aaf3d7ae2b6c2ff0c3e7",
+        "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      },
+      "cpu": {
+        "port": 39833,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/out-cpu/live.json",
+        "serving_receipt_sha256": "9c31a084c8a7474044b17e2b162b7a15b25023763e63d57df00ce74d8eaa26af",
+        "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      }
+    }
+  },
+  "native_calls_during_preparation": 0,
+  "original_results_unchanged": true
+}

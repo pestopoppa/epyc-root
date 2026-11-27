@@ -1,0 +1,62 @@
+{
+  "captured_tool_chunks": [
+    {
+      "output": "",
+      "session_open": true,
+      "tool_chunk_id": "cc4845"
+    },
+    {
+      "output": "..............................",
+      "session_open": true,
+      "tool_chunk_id": "cabd8a"
+    },
+    {
+      "exit_code": 0,
+      "output": ".................                          [100%]\n47 passed in 17.61s\n",
+      "session_open": false,
+      "tool_chunk_id": "2b9ef1"
+    }
+  ],
+  "exec_session_id": 92982,
+  "exit_code": 0,
+  "git_diff_check": {
+    "exit_code": 0,
+    "tool_chunk_ids": [
+      "dd9783",
+      "2079b7"
+    ]
+  },
+  "git_head_observed_before_edits": "601c95f2c4bf817f681c6d5106bb9a9f56b5265b",
+  "historical_qualified_mm_v4_source_manifest_sha256": "0dd66ef730a0715235abbae6e78ac71f99bff80aa35fac7c24b09d19cda48368",
+  "historical_qualified_tu_v4_control_receipt_sha256": "e1f66b12bc1c5c5690486446ee23bdf5baf0b49144b9c487b679b6e176215ee8",
+  "historical_qualified_tu_v4_source_manifest_sha256": "6e1f09e36fb540f09f7d357c0de0b14cf186fc6d24f4ec85db4102d51ae9a875",
+  "pytest_reported_wall_s": 17.61,
+  "schema": "taskflow.canonical-checker-validation.v1",
+  "scope": "existing canonical TU/MM and verification-path tests; no native serving, model calls, or repeated tests",
+  "sha256_of_tested_files": {
+    "scripts/coordination/taskflow/tu_grader_isolation.py": "c163e78514f6e9f6f896e756b59a01bfce5a7c0ccedc2a4bd8036ac02ac4fa88",
+    "scripts/coordination/taskflow/vision_contract.py": "31e81a53ec2e40b5a2199851e331307c4c8c9f64abe7f794829e1d84e3577909",
+    "tests/coordination/test_taskflow_tu_grader_isolation.py": "d0c1f39fad93508de18ee864bb4a42ca4fbeb5a1e04e003b461faa6d0c9cf27c",
+    "tests/coordination/test_taskflow_vision_contract.py": "35e0f73ff93efc59f95393d00c3cf0910c1b5485079c4a42b238e7ee5b0c265b"
+  },
+  "source_hashes_rechecked_at_archival": true,
+  "stdout": "...............................................                          [100%]\n47 passed in 17.61s\n",
+  "test_argv": [
+    "taskset",
+    "-c",
+    "180-183",
+    "/usr/bin/python3",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/coordination/test_taskflow_tu_grader_isolation.py",
+    "tests/coordination/test_taskflow_vision_contract.py",
+    "tests/coordination/test_taskflow_calibration_scope.py",
+    "tests/coordination/test_taskflow_r8g_harness_fixes.py"
+  ],
+  "tests_passed": 47,
+  "worktree": "/mnt/raid0/llm/tmp/ws58-a3b-finish-20261126"
+}

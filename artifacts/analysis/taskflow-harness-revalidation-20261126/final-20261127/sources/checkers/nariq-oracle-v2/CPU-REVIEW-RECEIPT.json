@@ -1,0 +1,9 @@
+{
+  "candidate_patch_sha256": "5076688f5624a3211501b9a8d888d0d80cd84f1c07200a07102a75fa3ec0c436",
+  "candidate_sha256": "fc9bc354675fb2038eb5cc9a940f0bf71d99a1828bc1061541b54d4fa8c56a11",
+  "rc": 0,
+  "checker_sha256": "23b83e4b20ac79bbda868a5251680adb1654c287a34057a2536d41d41f90d6a0",
+  "source_assessment_sha256": "05a7cac40fe7426be1fad5598773d5d57208e8edcbc5906914b2a3ccffde2238",
+  "scope": "structural pass pending semantic review; old filename-placement diagnostic is not a model error",
+  "old_grade_preserved": true
+}

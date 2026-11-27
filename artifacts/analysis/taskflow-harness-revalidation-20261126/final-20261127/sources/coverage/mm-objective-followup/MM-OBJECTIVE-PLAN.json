@@ -1,0 +1,149 @@
+{
+  "schema": "legacy-mm-objective-followup.v2",
+  "cohort": [
+    {
+      "id": "cpu-MM-5-off-recommended",
+      "row": {
+        "case": "MM-5",
+        "backend": "cpu",
+        "thinking": false,
+        "profile": "off-recommended",
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 1.5,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 1,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 3600,
+        "id": "cpu-MM-5-off-recommended",
+        "required_for_residual_question": false,
+        "purpose": "independent practical candidate; no CPU/GPU speed contrast",
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "grade_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v2/owner-assessments/cpu-MM-5-off-recommended/RESULT.json",
+      "grade_receipt_sha256": "b35d858c453f81f9c2cd89251d9036247f08855ddbc9f8febf8ec3c90458c6f4",
+      "prior_owner_result_sha256": "3b055caa26f24fbba0f8ae342b6bbbab77e61eb74bb5359b3999ccd9d0765a48",
+      "diagnostic": "under-cap image at cap 30000: encoded bytes differ from the original.",
+      "prior_attempt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/worker",
+      "original_rc0_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary/grades/cpu-MM-5-off-recommended/RESULT.json",
+      "original_rc0_receipt_sha256": "5088301e080ca993578d76505ee76cdc17aa2ff3c86b17862ae110c408bc6d47",
+      "checker_source_control_sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976",
+      "checker_version": "mm5.image-contract.v2",
+      "prior_receipt_sha256": "87db108de50dbe4d6191639619e4849067b439090a749645aaa0ff1dfb969078",
+      "prior_session_sha256": "657014ac608fa238da93fb82b3ba92c1c392d4abcffdfb05ab32353f3f6c3dc2",
+      "prior_workspace_session_sha256": "c8fd73dce281e98f9fc0eb236982ccb679311012a5c737d4225c0ab128b163a4",
+      "prior_patch_sha256": "5b69ed980a01f978230546533dd0a77e1e57420cd641264740a38465c8cf4dbc",
+      "ordinal": 1,
+      "source_guidance_tokens": 0,
+      "max_protocol_rounds": 2,
+      "prior_cost": {
+        "generation": 12614,
+        "elapsed_s": 2857.1651039123535
+      },
+      "prior_session": "ses_de5742666ffeK3ye95N9B9Ieor"
+    },
+    {
+      "id": "gpu-MM-5-off-common-on-sampling",
+      "row": {
+        "case": "MM-5",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "off-common-on-sampling",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 2,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-MM-5-off-common-on-sampling",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "grade_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v2/owner-assessments/gpu-MM-5-off-common-on-sampling/RESULT.json",
+      "grade_receipt_sha256": "4941f43e98f893633ec45a49c251031fcf421b6caf8d14d7ca98f3eea217e036",
+      "prior_owner_result_sha256": "5813820a8dfcf7789a1aed47397ec0e972a96bf347220f166bab3ec6873e9458",
+      "diagnostic": "source (100, 4000), cap 7840: encoded dimensions (28, 28) lose source orientation.",
+      "prior_attempt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/worker",
+      "original_rc0_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary/grades/gpu-MM-5-off-common-on-sampling/RESULT.json",
+      "original_rc0_receipt_sha256": "06768767b79174be9b1b576b18f6b74dc4dd8d88056c660113fe59e77dc6e1dd",
+      "checker_source_control_sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976",
+      "checker_version": "mm5.image-contract.v2",
+      "prior_receipt_sha256": "0d13470f6075095c318daceb2e30a5290fe70b8f8d335f9e986b9e89cce8c50f",
+      "prior_session_sha256": "e73221c3527033deaa644f2727b2887a9c62b431c41c7075bf42421c8c93af25",
+      "prior_workspace_session_sha256": "934613a697083fc645438e94122673c359448a73dd1b369a029baeb071eda6f5",
+      "prior_patch_sha256": "a62cb7476c519b0ece04a00e35093d2f1ff7e9874eea8d042cb6d89af194b17f",
+      "ordinal": 1,
+      "source_guidance_tokens": 0,
+      "max_protocol_rounds": 2,
+      "prior_cost": {
+        "generation": 8477,
+        "elapsed_s": 362.92258644104004
+      },
+      "prior_session": "ses_de53dae52ffewe4XuP6IyfpIUj"
+    }
+  ],
+  "lease": {
+    "holder": {
+      "pid": 3507046,
+      "ppid": 89061,
+      "start_ticks": 161578912
+    },
+    "controller": {
+      "pid": 3507253,
+      "ppid": 3507046,
+      "start_ticks": 161578918
+    },
+    "server": {
+      "pid": 3553296,
+      "ppid": 3507253,
+      "start_ticks": 161585422
+    },
+    "grant": {
+      "holder_pid": 3507046,
+      "regions": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ]
+    },
+    "cpu": {
+      "pid": 3553728,
+      "ppid": 3507253,
+      "start_ticks": 161585436
+    },
+    "providers": {
+      "gpu": {
+        "port": 42559,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/out-gpu/live.json",
+        "serving_receipt_sha256": "932b1ad48721cf8d87c2192f724d2a4ef4de23e25fc2aaf3d7ae2b6c2ff0c3e7",
+        "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      },
+      "cpu": {
+        "port": 39833,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/out-cpu/live.json",
+        "serving_receipt_sha256": "9c31a084c8a7474044b17e2b162b7a15b25023763e63d57df00ce74d8eaa26af",
+        "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      }
+    }
+  },
+  "native_calls_during_preparation": 0,
+  "original_results_unchanged": true
+}

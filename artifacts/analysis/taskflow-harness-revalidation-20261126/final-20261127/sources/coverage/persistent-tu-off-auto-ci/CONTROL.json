@@ -1,0 +1,21 @@
+{
+  "actual_exception_full": true,
+  "control_results": [
+    {
+      "cleanup_verified": true,
+      "rc": 1,
+      "test_sha256": "26ee49cae0b5ac53aa50a80b8e1e8058aae84c6f20ade08bacbebef417711149"
+    },
+    {
+      "cleanup_verified": true,
+      "elapsed_s": 2.108,
+      "rc": 0,
+      "reason": null,
+      "test_sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede"
+    }
+  ],
+  "failures_are_distinct": true,
+  "model_calls": 0,
+  "original_cap2_preserved": true,
+  "stage_budget": 91105
+}

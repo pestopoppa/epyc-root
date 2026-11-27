@@ -1,0 +1,10 @@
+{
+  "schema": "persistent-mm-mechanical-watch.v1",
+  "parent_watcher_sha256": "55a4ffa6d65e8bcffd0ebe2105e78f680318fd01a18e838fb46e871ac0d40acf",
+  "callbacks_spawned_during_preparation": 0,
+  "sha256": {
+    "watch.py": "9e05d6f40b9971c1a6acbfb5d78b4f6a55d2d00cc2c022400680a2aea8c55b8c",
+    "control.py": "1276501bc1a59d7c6fc5e37e659e6c3d190c53c908d1c3a05b1eed42c5de32c8",
+    "CONTROL.json": "cd68e2e3a4b3ce9adaa6c9ec92ec9255ae3325857b8dcc0c0cd3a7f69b9f03e0"
+  }
+}

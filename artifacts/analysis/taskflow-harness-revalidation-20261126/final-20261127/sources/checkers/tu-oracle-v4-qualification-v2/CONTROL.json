@@ -1,0 +1,181 @@
+{
+  "schema": "tu-grader-isolation.v4.controls",
+  "rows": [
+    {
+      "group": "main-function-positive",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "main-class-positive",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "d0ed0ed5f332c8bc8fc6226477c718c50a9abff3e208c694885f530a21d578c4",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "v3-skip-invalid-namespace",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "b3979554dab4f0a5089df3f7efc0ce2b5a69bb43f68a877099d21b987ecfdcee",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "v4-skip-invalid-namespace",
+      "rc": 1,
+      "first_diagnostic": [
+        "simulated namespace namespace-invalid-argument: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'Grader probe exited 1: unshare: cannot unshare: Invalid argument')}"
+      ],
+      "test_sha256": "b3979554dab4f0a5089df3f7efc0ce2b5a69bb43f68a877099d21b987ecfdcee",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 1,
+      "expected_marker": "simulated namespace namespace-invalid-argument"
+    },
+    {
+      "group": "v3-skip-mount-path-marker",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "f4c543aa0bd6344e67654006e9b0d15453d5c3df0f3c4f798b5a06fa76960782",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "v4-skip-mount-path-marker",
+      "rc": 1,
+      "first_diagnostic": [
+        "simulated namespace mount-permission-path-unshare: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'Grader probe exited 1: mount: /tmp/taskflow-tu-grader-wqgcr1_f/mount-permission-path-unshare/test_isolated_launch_denies0: Operation not permitted')}"
+      ],
+      "test_sha256": "f4c543aa0bd6344e67654006e9b0d15453d5c3df0f3c4f798b5a06fa76960782",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 1,
+      "expected_marker": "simulated namespace mount-permission-path-unshare"
+    },
+    {
+      "group": "v3-accept-wrong-listdir-errno",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "f9a44c5a1c5b7df3ec17f19868acfd2342a053e82b66cee95c4f4aa83af710c7",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "v4-accept-wrong-listdir-errno",
+      "rc": 1,
+      "first_diagnostic": [
+        "simulated namespace wrong-listdir-errno-only: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('passed', '')}"
+      ],
+      "test_sha256": "f9a44c5a1c5b7df3ec17f19868acfd2342a053e82b66cee95c4f4aa83af710c7",
+      "harness_sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 1,
+      "expected_marker": "simulated namespace wrong-listdir-errno-only"
+    },
+    {
+      "group": "v3-accept-null-listdir-errno",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "3c629dfdeefbd9b36000eafe432c066c608bedd71323216602d008db7bd3b052",
+      "harness_sha256": "4eee1caa3ca15e77bb5698d14182af0716d51d87866de56157baccbb5d24cbac",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "v4-accept-null-listdir-errno",
+      "rc": 1,
+      "first_diagnostic": [
+        "simulated namespace null-listdir-errno-only: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('passed', '')}"
+      ],
+      "test_sha256": "3c629dfdeefbd9b36000eafe432c066c608bedd71323216602d008db7bd3b052",
+      "harness_sha256": "4eee1caa3ca15e77bb5698d14182af0716d51d87866de56157baccbb5d24cbac",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 1,
+      "expected_marker": "simulated namespace null-listdir-errno-only"
+    },
+    {
+      "group": "actual-cpu-paid2-v3",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "ec4b7a967e6e2450e0ee7662e62890424b917f492fa375d29078e47fe0cf8c8c",
+      "harness_sha256": "2373f46348bb4c9027590c0dfc0e5c63b2d47763ae3cae41b1095dd3e0e1bf11",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "actual-cpu-paid2-v4",
+      "rc": 1,
+      "first_diagnostic": [
+        "simulated namespace namespace-invalid-argument: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', \"unshare namespace setup refused (no user-namespace support): probe_grader_access: child exited with code 1 (returncode=1, stderr='unshare: cannot unshare: Invalid argument\\\\n')\")}"
+      ],
+      "test_sha256": "ec4b7a967e6e2450e0ee7662e62890424b917f492fa375d29078e47fe0cf8c8c",
+      "harness_sha256": "2373f46348bb4c9027590c0dfc0e5c63b2d47763ae3cae41b1095dd3e0e1bf11",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 1,
+      "expected_marker": "simulated namespace namespace-invalid-argument"
+    },
+    {
+      "group": "actual-auto-ci2-v3",
+      "rc": 0,
+      "first_diagnostic": [
+        "TU-GR-1 contract passed"
+      ],
+      "test_sha256": "105fec81ca8bbd399f2e6726bb3961b36fea422285ab59e18cbd4681d8b6c9a4",
+      "harness_sha256": "489838272587082f5d76ba64c3c0cf91f8ae6e10751d7a7fb6b28c99382def33",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "expected_rc": 0,
+      "expected_marker": "TU-GR-1 contract passed"
+    },
+    {
+      "group": "actual-auto-ci2-v4",
+      "rc": 1,
+      "first_diagnostic": [
+        "simulated namespace mount-permission-path-unshare: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare namespace setup refused: mount: /tmp/taskflow-tu-grader-2oj5tkg0/mount-permission-path-unshare/test_isolated_launch_denies0: Operation not permitted')}"
+      ],
+      "test_sha256": "105fec81ca8bbd399f2e6726bb3961b36fea422285ab59e18cbd4681d8b6c9a4",
+      "harness_sha256": "489838272587082f5d76ba64c3c0cf91f8ae6e10751d7a7fb6b28c99382def33",
+      "oracle_sha256": "992dbb16ec453373f6fcdddd2dda73a0d021f1d43718797d8f2e1c91dbca8b07",
+      "expected_rc": 1,
+      "expected_marker": "simulated namespace mount-permission-path-unshare"
+    }
+  ],
+  "parser_controls_unchanged": {
+    "foreign_same_basename": "rejected",
+    "foreign_module_with_same_prefix": "rejected",
+    "empty_class_report": "rejected",
+    "duplicate_named_result": "rejected"
+  },
+  "model_calls": 0,
+  "previous_grade_artifacts_unchanged": true
+}

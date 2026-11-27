@@ -1,0 +1,7 @@
+{
+  "state": "unlaunched target superseded",
+  "reason": "Actual clean paid2 callback moved to repaired admission-v2 output root; old root/result was absent. Original plan remains byte-identical.",
+  "prior_adapter_seal_sha256": "9dd8d6bc7b4f84b41a88d75f9331de024229439665abfe10e55dd444215f68c1",
+  "replacement": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v3",
+  "model_calls": 0
+}

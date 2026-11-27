@@ -1,0 +1,84 @@
+{
+  "observed_at": 1795751627.7546477,
+  "source": "existing callback result files only; no API/native calls",
+  "callbacks": [
+    {
+      "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01",
+      "results": [
+        {
+          "unit": "cpu-MM-5-off-recommended-v4-objective-2",
+          "raw_status": "awaiting_source_review",
+          "terminal_at": 1795750125.5280569,
+          "raw_oracle_rc": null,
+          "result_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01/units/cpu-MM-5-off-recommended-v4-objective-2/RESULT.json",
+          "sha256": "456d85bdd43d122997fceea5aee4da20a32f95ce1c6fada5d92d43d108f91891"
+        },
+        {
+          "unit": "cpu-TU-GR-1-off-recommended-paid-2",
+          "raw_status": "awaiting_source_review",
+          "terminal_at": 1795750385.8298805,
+          "raw_oracle_rc": null,
+          "result_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01/units/cpu-TU-GR-1-off-recommended-paid-2/RESULT.json",
+          "sha256": "cf6882421c62499f57b8381577c5b244f8678e3f5ff532490ec7d0fbc8b10de8"
+        }
+      ],
+      "state_if_no_results": null
+    },
+    {
+      "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01",
+      "results": [
+        {
+          "unit": "gpu-MM-5-off-common-on-sampling-v4-objective-2",
+          "raw_status": "awaiting_source_review",
+          "terminal_at": 1795749072.19449,
+          "raw_oracle_rc": null,
+          "result_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/RESULT.json",
+          "sha256": "a2bdadbfcb1548ef099acb67793a114c1444c324e7328ceff6f4d833f807b141"
+        },
+        {
+          "unit": "gpu-MM-5-on-coding-v4-objective-1",
+          "raw_status": "awaiting_source_review",
+          "terminal_at": 1795749620.8382568,
+          "raw_oracle_rc": null,
+          "result_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-on-coding-v4-objective-1/RESULT.json",
+          "sha256": "0a6a4c76448d0337a03d4f4be62ba45e507e50d6b4f4ff9c72f31c450e23200f"
+        }
+      ],
+      "state_if_no_results": null
+    },
+    {
+      "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01",
+      "results": [
+        {
+          "unit": "gpu-PAW-5-off-recommended-clean-guidance-1",
+          "raw_status": "oracle_fail",
+          "terminal_at": 1795748721.4330533,
+          "raw_oracle_rc": 1,
+          "result_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/RESULT.json",
+          "sha256": "a0605fa4efe46cf5d3aa6184c96e6ad3cbe795a781c14b9e15af4ca2b6758b4a"
+        }
+      ],
+      "state_if_no_results": null
+    },
+    {
+      "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01",
+      "results": [
+        {
+          "unit": "gpu-TU-GR-1-off-common-on-sampling-paid-2",
+          "raw_status": "awaiting_source_review",
+          "terminal_at": 1795749239.6742172,
+          "raw_oracle_rc": null,
+          "result_path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/RESULT.json",
+          "sha256": "d05b1b8df396c5237af39adef091974355f5f54cddf1b6240c85b852de3d8dfe"
+        }
+      ],
+      "state_if_no_results": null
+    },
+    {
+      "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-on-v2-01",
+      "results": [],
+      "state_if_no_results": "no terminal RESULT observed"
+    }
+  ],
+  "expected_paw_paid_result_exists": false
+}

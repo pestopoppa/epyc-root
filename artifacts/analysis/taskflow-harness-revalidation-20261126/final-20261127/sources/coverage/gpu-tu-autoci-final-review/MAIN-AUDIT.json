@@ -1,0 +1,10 @@
+{
+  "at": 1795752323.749608,
+  "events_sha256": "822d1d56b9a1bfdbab218da9eea08ea4cb40b13c1e09847f02c32457ed1f6757",
+  "completed_commands_audited": 7,
+  "scope": "read-only candidate/diff/pinned source and task-local test; separate tempfile/mock repros of wrong denial metadata and mount error; no candidate edits",
+  "advisory": "REJECT",
+  "main_agrees": true,
+  "qualification": "V3 original behavioral test passes; semantic control proves mount-error path substring can trigger skip and invalid directory errno can pass. V4 expansion in preparation must qualify against main positive before feedback. Original limited two-CI branch ends with rejected proposal, not semantic acceptance.",
+  "new_paid_guidance_calls_in_two_ci_turns": 0
+}

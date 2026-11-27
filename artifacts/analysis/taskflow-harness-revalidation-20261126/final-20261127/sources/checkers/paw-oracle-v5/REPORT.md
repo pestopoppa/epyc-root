@@ -1,0 +1,11 @@
+PAW V5 corrects a source-provenance placement false rejection without changing the original source-grounding requirement or any V4 artifact.
+
+The original OFF recommended document has a three-column shared source table at lines13–15: each supplied file maps to its correct immutable revision and named seam. Candidate1 explicitly mentions “the discovery loop,” which uniquely resolves the corresponding row; candidate2 names context_arm_ab.py; candidate3 names repl_executor.py and loop.py. The original brief does not require repeating revision text inside every section. V5 resolves these explicit references through that exact table, so the unchanged original OFF candidate passes structural/provenance acceptance. Independent source-semantic correctness remains unproven.
+
+A valid shared binding requires an approved staged file paired with its correct revision in the same table row, plus an exact filename mention or unique multiword named seam in that candidate. Unrelated pins elsewhere, incorrect revisions/files, unresolved seams and ambiguous seam mappings fail. Local per-candidate provenance continues to work unchanged. The Markdown field parser, 1–3 count, PAW-1/2 prerequisites and JSON-repair exclusion remain inherited from V4.
+
+All31 prior controls and6 shared-map controls pass. The accepted main document and unchanged paid GPUON/GPUOFF and CPU NUMA final documents continue to pass (see FINAL-CANDIDATES-REASSESSMENT.json). Original ON and its deterministic1 candidate continue to fail for a missing reviewed seam; original OFF common continues to fail provenance. Exact original-candidate receipts are in REASSESSMENT.json. Rawscores, priorcheckers and all candidate bytes remain unchanged.
+
+The false OFF recommended diagnostic was consumed, so its old guided path is confounded conditional evidence. `coverage/paw-clean-replay` prepares a new neutral self-check from the original terminal checkpoint; no falsefailure prompt or prior guided source/session is reused. The resulting candidate requires an independently metered source review before any paid correction. No model calls occurred in preparation.
+
+Next: main approve the exact clean replay and source-qualified V5 postgrade; retain old conditional results separately.

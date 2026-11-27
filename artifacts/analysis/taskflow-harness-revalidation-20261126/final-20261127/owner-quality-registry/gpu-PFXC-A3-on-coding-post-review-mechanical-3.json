@@ -1,0 +1,21 @@
+{
+  "candidate_patch_sha256": "593d2c023c4369085d02927c84a8af66a77320c41d319b01b2170ccfac6f77f4",
+  "decision": "accepted",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/slot3-recovery/runs/fix-01/units/gpu-PFXC-A3-on-coding-post-review-mechanical-3/MECHANICAL-ASSESSMENT.json",
+  "source_review_sha256": "3c568bb0f67a7cf369887207f67f3c0bc4a5bb1e8a1263f5451e85c448532a9f",
+  "raw_native_status": "oracle_fail",
+  "raw_oracle": {
+    "rc": 1,
+    "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "dbce1c80ddae9d931f30e41d7189bed7855bf2afc06481bab2e7072b46eb901c",
+    "semantic_review_required": true
+  },
+  "qualification": "Main audited unified diff: only recipe link target changed ../ to ../../. Prior paid semantic review rejected exactly this link and accepted unchanged content. V6 checks pass. Supplemental verifier-only third feedback is separate from original cap2 REJECT.",
+  "native_cap2_status": "REJECT",
+  "extra_feedback_ordinal": 3,
+  "extra_paid_semantic_guidance_rounds": 0,
+  "claim_minimum_guidance": false
+}

@@ -1,0 +1,18 @@
+{
+  "sha256": {
+    "review.py": "3babaaa0dfdddb6fceb99900587ae5b66ea459a7abba7df30a0e9614544e536b",
+    "CODE-LOCK.json": "a6d4a13e09abed497ee382c04be69bdb74232976799e0cb5a42bb7f85e3a0e6b",
+    "CONTROL.json": "07c1cf78d29d9a79b7bd83d85233e03b51654c73fa966bce8de4c38725c856cd",
+    "README.md": "fc15c27828b27c50d6e9a4d988e49793fab113cd7d1d7ac0a446334b6b8c8926",
+    "compare_costs.py": "cdfcbb95e4a1737c1dcffe504f6595d1c901a11b7270e4446e80240df145ca57",
+    "LEGACY-REVIEWS.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "test-pass-receipts/gpu-DS41-W-66-off-common-light-v2.json": "c706b12f6ea81e2f8d811bb53f759049ae58b3cb692df02218bba827b571a1a3",
+    "test-pass-receipts/gpu-DS41-W-66-on-common-light-v2.json": "242b75c935fb5cb07d5b5fb74934600b6617e814407fce7cbc9cfcb29ba596e2"
+  },
+  "review_seals": {
+    "gpu-ON-on-common-light": "ede4a161e63a13f9961bacd806783b546cab701732e2fb50b71db3192b56fb8b",
+    "gpu-OFF-off-common-light": "e467cec19780db4ae699100a2089f2177acb9d30e0fe9f0b7e18850c3820833a"
+  },
+  "model_calls": 0,
+  "mutable_after_launch": "per-review runs only; no code/input resealing"
+}

@@ -1,0 +1,13 @@
+{
+  "candidate_patch_sha256": "076d9de9e9eb8f1a6f045abada0bdbe64fb0c6e423c606ff7f57d74df0baec20",
+  "decision": "rejected",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v3/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "272047d94a3d3725bbf0b975cf0b285a8102c3cb9ccce90ba3fddc57b243b869",
+  "normal_completion": true,
+  "raw_native_status": "oracle_fail",
+  "qualified_structural": "Corrected V5 passes unchangedcandidate",
+  "qualification": "Main reopened exact candidate. Reference labels infer already_implemented from later measured hypothesis and no_feasible_answer from later proposal; neither entailment holds. Routing claims exploration/direct choice although pinned seam alters max_turns and excludes task_root override. Additional fallback/validation completeness concerns retained but not necessary to rejection.",
+  "clean_feedback_history": "Original checkpoint ->neutral corrected structural pass selfcheck -> one measured paid source guidance -> clean paid2, no false-pin branch consumed",
+  "review_cost_class": "paid final27.908022s1012out; source-guidance36.174931s1131out; manager/setup unisolated notzero",
+  "at": 1795752463.7068613
+}

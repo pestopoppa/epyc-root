@@ -1,0 +1,11 @@
+{
+  "schema": "persistent-w66-light-v2.v1",
+  "previous_callback_sha256": "e203f1389e8753223da7ff9623ce67fad0f627716dd735c39117cce8344c5803",
+  "w66_light_packet_sha256": "65e235b135ecc4a82aa56fdedb60679dba6f10e62be05b10b0bee0d6ce774ea1",
+  "sha256": {
+    "callback.py": "b7eb03ceca9d660842c3119aaca1f79561e310cf6e10bb48caa08673ad101840",
+    "prepare.py": "86f5a60f97bd1c9aac4f648280b0ae1ea8c28173480b9f3a3403cb360dce8351",
+    "W66-LIGHT-V2-PLAN.json": "a1996a3f29b5d310b7474dd55edb34b97f20156db0c01d51299723638937104a",
+    "CONTROL.json": "40289141a497d54c6d899b59901590a2296aecf1b947174775b0cbb9af57aa4a"
+  }
+}

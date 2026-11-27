@@ -1,0 +1,14 @@
+{
+  "candidate_patch_sha256": "86e3e718041bbf66303640a45008fe0c78c700d705a7b35b0252621c93e97c1b",
+  "decision": "accepted",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-followup-grade/RESULT.json",
+  "source_review_sha256": "d85315b3806ac57a9af0731e1e71c7da1eb20d99fe15e29629f80855398392d4",
+  "normal_completion": true,
+  "qualification": "Main verified exact three receipt-reference modifications from independently reviewed initial candidate; unchanged original tests2pass; actual valid-substitution control nowfails at captured fixture reference assertion while serial testpasses. Other source semantics unchanged. Initial both oraclepass and expertaccept advisory preserved alongside stronger assertion-sensitivity failure.",
+  "guidance": "One deterministic observed receipt sensitivity diagnostic; no sourcefix or paidcritique delivered",
+  "new_local_generated": 1778,
+  "chain_local_generated": 15889,
+  "new_native_model_wall_s": 30.476,
+  "review_cost_class": "prior paidreviews retained; owning-main exactdelta/source/control review unisolated notzero; no newpaidAPIacceptancecall",
+  "at": 1795752611.538453
+}

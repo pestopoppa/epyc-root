@@ -1,0 +1,70 @@
+{
+  "case": "TU-GR-1",
+  "class_fixture_body_ast_equivalent": true,
+  "class_fixture_source_sha256": "d0ed0ed5f332c8bc8fc6226477c718c50a9abff3e208c694885f530a21d578c4",
+  "controls": [
+    {
+      "diagnostic": "TU-GR-1 contract passed",
+      "id": "main-repair-functions",
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd"
+    },
+    {
+      "diagnostic": "TU-GR-1 contract passed",
+      "id": "same-main-repair-class-methods",
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd"
+    },
+    {
+      "diagnostic": "TU-GR-1 contract passed",
+      "id": "sealed-positive",
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd"
+    },
+    {
+      "diagnostic": "simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=5 and {}",
+      "id": "empty-class",
+      "rc": 1,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9ab248bf07536e6f3269c63ff1046965172e8db970ede56e9d6ed2e7f66ac3ad"
+    },
+    {
+      "diagnostic": "file or directory not found: scripts/autopilot/evals/dtap/tests/test_grader_isolation.py",
+      "id": "missing-test-file-baseline",
+      "rc": 1,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c41501161dff2e4936b8e8032cc9c9e4aa1de837bbf2d42f4eb8a5f7a294a046"
+    },
+    {
+      "diagnostic": "simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('failure', 'RuntimeError: Launcher exited with code 1:   File \"<string>\", line 1\\n    /usr/bin/python3 -c import sys; sys.path.insert(0, \\'/case/scripts/autopilot/evals/dtap\\'); from harness.isolation import _child_main; _child_main(\\'/tmp/taskflow-tu-grader-')}",
+      "id": "previous-rejected-gpu-off",
+      "rc": 1,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1a9b3687cb602dcb825a171e47adafeaf0ab375076c482b6294b8fbcddea7f4b"
+    }
+  ],
+  "junit_parser_controls": {
+    "duplicate_named_result": "rejected",
+    "empty_class_report": "rejected",
+    "foreign_module_with_same_prefix": "rejected",
+    "foreign_same_basename": "rejected"
+  },
+  "model_calls": 0,
+  "only_outcome_file_binding_and_junit_metadata_changed": true,
+  "original_grades_preserved": true,
+  "original_support_sha256": "6da203e37f636fe2d094f4742bbef5816daf2af04add8b5bf150fa3843891de5",
+  "prior_passing_controls": {
+    "main_repair": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/oracle-result.json",
+      "sha256": "9e345d88c89d0778a38f71b6f9539da36b0b3bac354ae03ee2a2c77b12e980e0"
+    },
+    "sealed_positive": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/controls/TU-GR-1/positive/oracle-result.json",
+      "sha256": "9e98c9f10a964e314454d529d89e18513adbbf3e0c23a713dc91c34528767988"
+    }
+  },
+  "schema": "tu-grader-isolation.v2.controls"
+}

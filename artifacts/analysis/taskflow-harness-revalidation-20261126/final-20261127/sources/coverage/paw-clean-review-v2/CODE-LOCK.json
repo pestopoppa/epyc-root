@@ -1,0 +1,16 @@
+{
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v2/review.py": "4fa4aef9f5dc46a3f624adf2ad92921e8a33533016332f93b51f04d8a8358e0f",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v2/HISTORY-INPUTS.json": "9eaafd5565554a0ffef7b5881d35f6e83f9f2024996e9fcc68f26d0a97f0f722",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py": "c020c321f031763281f4476149d1d3c1e0a723086d508e1d41ad4d3d80443d49",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/prepare.py": "864bdad1512fc223469a372b78f779e47e00c6432d7515cba0884a753172ce0c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/measure.py": "3175392d9b99143501a3b3e385d549234bc7ef4c2d50a802b72bf9a42f251488",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345"
+  },
+  "expert_wrapper": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py",
+  "v5_checker": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py",
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "native_protocol": "original0 + neutral self-check1/guidance0 + one measured paid correction2; final review adds paid main cost, no extra correction",
+  "source_adaptation": "exact original wrapper bytes; only prior-prompt lookup replaced with explicit hash-bound cross-epoch neutral/paid paths; actual paid2 ordinal and180-183 affinity supplied by private adapter"
+}

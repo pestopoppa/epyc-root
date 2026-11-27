@@ -1,0 +1,29 @@
+{
+  "id": "cpu-DS41-W-66-off-recommended-light-v2",
+  "case": "DS41-W-66",
+  "backend": "cpu",
+  "thinking": false,
+  "profile": "off-recommended-light",
+  "sampling": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repeat_penalty": 1.0,
+    "seed": 223355
+  },
+  "slot": 0,
+  "cohort": 0,
+  "request_cap": 32768,
+  "generated_ceiling": 120000,
+  "wall_s": 3600,
+  "brief_class": "light-v2/accurate-problem-no-repair-recipe",
+  "fresh_session": true,
+  "case_dir": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66",
+  "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md",
+  "comparison_scope": "optional practical sourceblind candidate only; no CPU/GPU speed comparison",
+  "guidance_received": "accurate problem/scope/pins/acceptance only; no repair recipe",
+  "same_baseline_and_oracle_as_detailed": true,
+  "required": false
+}

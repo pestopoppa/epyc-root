@@ -1,0 +1,29 @@
+[
+  {
+    "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-ON-on-coding/final-acceptance",
+    "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-ON-on-coding/final-acceptance/runs/MM-5/guidance-1",
+    "seal_sha256": "5dade925e2f0805eef1b70287802643c01905cd6f4949e6746fcfa8c4a6790de",
+    "plan_sha256": "b271ba0b40266915c5e0795eae58d5d9fc71d7f2fe12a09a957941640e3506d2",
+    "id": "gpu-MM-5-on-coding-v4-objective-1",
+    "historical_paid_guidance_calls": 0,
+    "historical_verifier_messages": 1
+  },
+  {
+    "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-OFF-off-common-on-sampling/final-acceptance",
+    "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-OFF-off-common-on-sampling/final-acceptance/runs/MM-5/guidance-1",
+    "seal_sha256": "9f906884cfaeefe1b21220c75fd0d5b86f1e8267584d5a2c59bb70e7fbd2b248",
+    "plan_sha256": "7b11ab999b506cbb529f07749ff9af0cd2a83dcc447f71a382d103d2f32dad70",
+    "id": "gpu-MM-5-off-common-on-sampling-v4-objective-2",
+    "historical_paid_guidance_calls": 0,
+    "historical_verifier_messages": 2
+  },
+  {
+    "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/cpu-OFF-off-recommended/final-acceptance",
+    "run": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/cpu-OFF-off-recommended/final-acceptance/runs/MM-5/guidance-1",
+    "seal_sha256": "80fd7b8767f0507decd96edef4ae8db63d0e13606213d569085c25c8823b9b92",
+    "plan_sha256": "92881935c491cba07798926e14aa2c9c3e333a0ac3d5f82bb0b3e9043618dbfa",
+    "id": "cpu-MM-5-off-recommended-v4-objective-2",
+    "historical_paid_guidance_calls": 0,
+    "historical_verifier_messages": 2
+  }
+]

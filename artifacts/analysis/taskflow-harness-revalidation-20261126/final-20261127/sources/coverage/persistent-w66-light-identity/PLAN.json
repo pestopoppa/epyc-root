@@ -1,0 +1,146 @@
+{
+  "jobs": [
+    {
+      "cumulative_generated_ceiling": 120000,
+      "id": "gpu-DS41-W-66-off-common-light-v2-identity-1",
+      "kind": "quality-resume",
+      "previous_attempts": [
+        {
+          "generated": 14111,
+          "model_wall_s": 1133.295,
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2",
+          "status": "oracle_pass"
+        }
+      ],
+      "prior_session": "ses_de501037bffeE6Uh1VKkKz970E",
+      "row": {
+        "backend": "gpu",
+        "brief_class": "light-v2/accurate-problem-no-repair-recipe",
+        "case": "DS41-W-66",
+        "case_dir": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66",
+        "cohort": 0,
+        "comparison_scope": "matched sameGPU common-sampler thinkingON/OFF; no device or speed benchmark",
+        "fresh_session": false,
+        "generated_ceiling": 105889,
+        "guidance_received": "one deterministic observed assertion sensitivity failure",
+        "id": "gpu-DS41-W-66-off-common-light-v2-identity-1",
+        "profile": "off-common-light",
+        "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md",
+        "request_cap": 32768,
+        "resume": {
+          "feedback": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/FEEDBACK.md",
+          "feedback_sha256": "b3ec36dd8678c147113f682e02fee14454eafb478dc4fd4075f8e0ec3918ed96",
+          "main_model_feedback_calls": 0,
+          "ordinal": 1,
+          "prior": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2",
+          "prior_result_sha256": "a2d386c92ef7994622c4fd408d487fd886c456d121d8a0b21e4728218da1394c",
+          "prior_session_sha256": "af455e95ab5e6306b5a03798ad4ee36866304d6932edc06efee7281215f74830",
+          "prior_state_sha256": "af0d68b715de8ad4cf10fcb38a93ec5213d2fd39e35d1fe515bf7c98d2ab2e8d"
+        },
+        "same_baseline_and_oracle_as_detailed": true,
+        "sampling": {
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355,
+          "temperature": 0.6,
+          "top_k": 20,
+          "top_p": 0.95
+        },
+        "slot": 2,
+        "thinking": false,
+        "wall_s": 1800
+      },
+      "sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/RUNNER-SEAL.json": "652ea6d728c0c9ee274d74dca77ba2f7e2c52acfde3225df4fe0b566e4aa753f",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/callback.py": "65b99c714c0b8f2742060f143e43dd90011a55c721a37517e46628216d5689c4",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/APPROVAL.json": "244ccc9bfe42382b7f6cc035a6d625f24c4af38a6b3131f0b8db089eae2fb6c0",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/PLAN.json": "77674acc57934b69f84fa6ee49dab7ed5df020b0077733d5e510cf90125a55a1",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/OPEN-CODE-SESSION.json": "af455e95ab5e6306b5a03798ad4ee36866304d6932edc06efee7281215f74830",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/RESULT.json": "a2d386c92ef7994622c4fd408d487fd886c456d121d8a0b21e4728218da1394c",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/independent/candidate.patch": "fc3c95b7d1a1ba2ec5239e78318ae29df9e85b700c0364906493f08c99283841",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/wire/requests.jsonl": "beae67895a979f12819618669697be23f34f7e0de50b21b917c0a6751b0440d5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/FEEDBACK.md": "b3ec36dd8678c147113f682e02fee14454eafb478dc4fd4075f8e0ec3918ed96",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/PACKAGE-SEAL.json": "65e235b135ecc4a82aa56fdedb60679dba6f10e62be05b10b0bee0d6ce774ea1",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/case.json": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief-v2/cases/DS41-W-66/prompt.md": "c948ae10c650ec8f939b4bb4b0e6b39867db21538df009b405a4106d6e71faaf",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-light-off-adjudication/ADJUDICATION.json": "29be3790097881f6fccc9b276705ad71cdfdba4997e4974a6e0e06caf3b2dcee",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/REPORT-full.json": "ce0aec2adbc5a83d7ee45c2573ffb814c4cd8de7461b8fbce7fe278c9b6b316e",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/SOURCE-CONTROL.sha256": "85075d9e8199128edec575e55eae65fb0bf0b3fa0b9141e44ed87000fe39ee6c",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/runs/gpu-off-light/mutated/OBSERVATION.json": "e45cf1efc7963a996e69c0a02a5987c603fd9dfcdb8ad45587e3cb14611c2f80",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/runs/gpu-on-light/mutated/OBSERVATION.json": "7c1a6a738518cbafe73186ea92be2bbe64c8e00e6c68936649a6876a29c0b281",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-receipt-identity-control/runs/main-light/mutated/OBSERVATION.json": "8298265cae662a491e8f49a39786bf3edb6b3d1d151daccea0b49cf90246ad3f"
+      },
+      "source_guidance": {
+        "class": "deterministic receipt substitution observation only",
+        "ordinal": 1,
+        "original_two_test_pass_and_owner_adjudication_preserved": true,
+        "paid_model_calls": 0
+      },
+      "state_paths": [
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/sandbox/work",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/sandbox/session",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/refs"
+      ],
+      "state_sha256": "af0d68b715de8ad4cf10fcb38a93ec5213d2fd39e35d1fe515bf7c98d2ab2e8d",
+      "supervision_wall_s": 600
+    }
+  ],
+  "lease": {
+    "controller": {
+      "pid": 133805,
+      "ppid": 133800,
+      "start_ticks": 161837443
+    },
+    "grant": {
+      "holder_pid": 133800,
+      "regions": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ]
+    },
+    "holder": {
+      "pid": 133800,
+      "ppid": 89061,
+      "start_ticks": 161837437
+    },
+    "native": {
+      "cpu": {
+        "pid": 147530,
+        "ppid": 133805,
+        "start_ticks": 161842764
+      },
+      "gpu": {
+        "pid": 147287,
+        "ppid": 133805,
+        "start_ticks": 161842751
+      }
+    },
+    "providers": {
+      "cpu": {
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "port": 52473,
+        "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/live.json",
+        "serving_receipt_sha256": "66b8b361767f3f124e4363766b51ab2476f18194accee0a53f8f497ad5d30741"
+      },
+      "gpu": {
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "port": 56071,
+        "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/live.json",
+        "serving_receipt_sha256": "60e658b4147bbaba5e79cc93efa8621ef15756ff0c242ce9378e850ecfc8f81f"
+      }
+    },
+    "receipts": {
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/GRANT.json": "8573a8e5292de0c1c3622349998f1bfa9c4d26c98b6943ad318e6cd99ec814d3",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/READY.json": "7da1bd085dea64c16d60b0316eb4cfd5378445ad394690d40f75e46a67c78d15",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/SERVING.json": "9f4d4437231e0dc035b791b5e45634e75f355740693ed81438b7f9c28bde922d",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/serve.py": "97d17990a584623dc3c346fbee2023757df291ec251adcc012c76447cd410710"
+    }
+  },
+  "model_calls_during_preparation": 0
+}

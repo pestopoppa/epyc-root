@@ -1,0 +1,16 @@
+[
+  {
+    "file": "REQUESTS.csv",
+    "parsed_rows_identical": true,
+    "line_endings": "LF",
+    "whitespace_diagnostics": 0,
+    "sha256": "29febeab9a22a6b582840f067e34963a24cd0c7b2fa4ee7182ee54ea74c77125"
+  },
+  {
+    "file": "TASKS.csv",
+    "parsed_rows_identical": true,
+    "line_endings": "LF",
+    "whitespace_diagnostics": 0,
+    "sha256": "dca30bdcf534657a0fbd9b19fadf2c76f366cb2156f87696fc058d199b226b72"
+  }
+]

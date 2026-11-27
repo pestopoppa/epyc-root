@@ -1,0 +1,23 @@
+{
+  "sha256": {
+    "NATIVE-ROWS.json": "a1aa42830332ff76505fb1c5b88f9d296befa40b9ca5139297af90b36fcd7992",
+    "OPTIONAL-CPU-ROW.json": "4083e2f4bc26b1edd153e8ffa7c241e062d1b458de781c4a0b7ad6c80716065d",
+    "APPROVAL-TEMPLATE.json": "b561195cf69656473f822bc0e3223733a3c44ee0ce1529a8dcf09985c771f63a",
+    "PROTOCOL.json": "3d6ec4250a7a70a9b58b79de8627980b65d1ba9d1109318daf710182c41a7cb8",
+    "CONTROL.json": "d6672d9dc292b1d359318b3f0cf5d95dc395fc4067608cd7cdc23556b908e6cc",
+    "README.md": "1073985c721eec59f5fd486b524dd41656b00d8e50f08f23c68ce6e8d11366d5",
+    "main.py": "97b3751ee83129aa1eaa460e4b9af4f60c1cbaf80bb5a2a287dbbf48d333f043",
+    "MAIN-CODE-LOCK.json": "baab735863d1998a2f8477536c6f4cd4d4b0657082b0e3fef75b46283fe668ac",
+    "SUPERSEDES.json": "b02614a7b1e5a43c538c42bc9362c527b9405c8613f4ac2cbd9efe3a64fded51",
+    "cases/DS41-W-66/case.json": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+    "cases/DS41-W-66/prompt.md": "c948ae10c650ec8f939b4bb4b0e6b39867db21538df009b405a4106d6e71faaf",
+    "cases/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "main-comparison/APPROVAL-TEMPLATE.json": "d95d8ffffb4d23464d028335e15a2bedea1e687276420968617dd48856b3b3bb",
+    "main-comparison/runs/DS41-W-66/direct-1/plan.json": "a0b467631b4ed91c4bdd7e201f38f500bc8305fcd783237a52227a18b423f774",
+    "main-comparison/runs/DS41-W-66/direct-1/prompt.md": "d528718169663b4003a5d029e6d1dfaac8f3828839472dc0fa997b1019d62bb9"
+  },
+  "baseline_manifest_sha256": "8ab8d2b562350b44e275edec4a12f654221d071ef883a5d8e597a453470b22ec",
+  "sourceblind": true,
+  "model_calls": 0,
+  "superseded_v1_seal_preserved": "180a8b4f05c4d2bbb6b01e46c6bb62d29a146697dbd6a8d4cfad241ba4ca4970"
+}

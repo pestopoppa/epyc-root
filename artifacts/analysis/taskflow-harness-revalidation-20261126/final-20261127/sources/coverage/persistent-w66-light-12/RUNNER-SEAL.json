@@ -1,0 +1,11 @@
+{
+  "schema": "persistent-w66-light-v2.v2",
+  "prior_tentative_slots_runner_sha256": "10183139ac3b07cdbf09d4f91b516428ec53c59ee1914e781f327202546039f1",
+  "w66_light_packet_sha256": "65e235b135ecc4a82aa56fdedb60679dba6f10e62be05b10b0bee0d6ce774ea1",
+  "sha256": {
+    "callback.py": "b7eb03ceca9d660842c3119aaca1f79561e310cf6e10bb48caa08673ad101840",
+    "prepare.py": "913773ea34b5ee02982340e51bdcf09b9c49ba2326e700cd8b8417073e28da00",
+    "W66-LIGHT-V2-PLAN.json": "77674acc57934b69f84fa6ee49dab7ed5df020b0077733d5e510cf90125a55a1",
+    "CONTROL.json": "1737ae514f9fb2b89bdfb5deeb010dd044f643a961231263c6f76b547784e7c3"
+  }
+}

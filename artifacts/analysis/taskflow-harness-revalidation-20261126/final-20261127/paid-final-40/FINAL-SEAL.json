@@ -1,0 +1,15 @@
+{
+  "sha256": {
+    "collect.py": "7e156ae93ca100e4ca425ee0fbf27bfe2aa1208643b7c1c99fb779a11b2bac84",
+    "SOURCE-LOCK.json": "a26a84717ad1b71ead012806e84724a47e33a5f603a9e89993e71c71546c488f",
+    "snapshot-final-40/ACCOUNTING.json": "d4e06ffde11edf6cf5268646fd182b35243cbe6591379c762389163e9dfe7a0c",
+    "snapshot-final-40/METADATA.json": "0717c18c5839bdc48ffadac9b25104ba7d3e0ff63fda3c368f01dbcaf12d20f1",
+    "snapshot-final-40/SUMMARY.md": "e46751608362631fa1d3e66fa3ec1b38fb463c19cf2d48402bbed133bf917bfe"
+  },
+  "source_ledger_authority": "actual raw CLI plan/events/execution/measurement; no new model calls",
+  "unique_terminal_executions": 40,
+  "implementation_calls": 8,
+  "original_unique_task_ids": 6,
+  "assistance_review_calls": 32,
+  "no_final_verdict_invented": true
+}

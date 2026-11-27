@@ -1,0 +1,789 @@
+{
+  "candidate_or_grader_executions": 0,
+  "comparison_cost_context": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/completion-audit/REPORT-v2.md",
+    "sha256": "4ec5694b25190e9afbe0ce74fc0e88d072b11e8829c3cde452dcf9bfa7b42a7c"
+  },
+  "mm": {
+    "extra_robustness": {
+      "forwarded_at": 1795750395.1583433,
+      "forwarded_request": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-mm-mechanical/runs/mechanical-01/units/gpu-MM-5-off-common-on-sampling-v4-mechanical-3/worker/wire/MM-5-0001.json.gz",
+        "sha256": "0bbf8b8862fdd0d9ba0cd8228f51506dde7ae1d0fe6b63d55625f7392435fca6"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-mm-mechanical/runs/mechanical-01/units/gpu-MM-5-off-common-on-sampling-v4-mechanical-3/FEEDBACK.txt",
+        "sha256": "12917581104cc69153e962f5feebce82a4483357afb3ad9a94e4b2761260c90e"
+      },
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-mm-mechanical/runs/mechanical-01/units/gpu-MM-5-off-common-on-sampling-v4-mechanical-3/RESULT.json",
+        "sha256": "190516128a6209fc890d439821d02cd28f857b0c30458f24c4e591fad2b63e7a"
+      },
+      "saved_user_message_id": "msg_21b107c9700152qTHkUA95ewfx",
+      "saved_user_message_time": {
+        "created": 1795750395133
+      },
+      "session": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-mm-mechanical/runs/mechanical-01/units/gpu-MM-5-off-common-on-sampling-v4-mechanical-3/worker/session.json",
+        "sha256": "522610c028f2a823bbaf3ff4dedc39402c45d7d17adaaa9b0ab1f995b9c2282b"
+      },
+      "unit": "gpu-MM-5-off-common-on-sampling-v4-mechanical-3",
+      "wire_ledger": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-mm-mechanical/runs/mechanical-01/units/gpu-MM-5-off-common-on-sampling-v4-mechanical-3/worker/wire/requests.jsonl",
+        "sha256": "e03c9f99596d707c269594c72cb9700442bf336d4d8a1405881e915e2a387dde"
+      },
+      "wire_sequence": 1
+    },
+    "fresh_process_v4_control": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/CONTROL.json",
+      "sha256": "c302faec4f1e5405ab6d8f77a3f352befab2ea405b7ff12adc0556f01d02bb08"
+    },
+    "v3_migration": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v3/acceptance-migration.json",
+      "sha256": "9b7c01ff8e0c244155bda2faac4b470a3f56a86dc3d5c14d0da9a85091d71269"
+    },
+    "v4_consumed_feedback": [
+      {
+        "forwarded_at": 1795748487.7986467,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-on-coding-v4-objective-1/worker/wire/MM-5-0001.json.gz",
+          "sha256": "6b9d481ee4f68d3b5b0325034aecef73f5a7531faaab86d58a1330f4ecd72ba0"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-on-coding-v4-objective-1/FEEDBACK.txt",
+          "sha256": "3ca1c553cedede1eff7959986362141c1ec51435574bf96f9874152510e4688f"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-on-coding-v4-objective-1/RESULT.json",
+          "sha256": "0a6a4c76448d0337a03d4f4be62ba45e507e50d6b4f4ff9c72f31c450e23200f"
+        },
+        "saved_user_message_id": "msg_21af36176001fllSlOEPh95a9f",
+        "saved_user_message_time": {
+          "created": 1795748487765
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-on-coding-v4-objective-1/worker/session.json",
+          "sha256": "61a01ab6c3ffe35036f417386e983a85b8eb90719451167b81b115faa51b6c35"
+        },
+        "unit": "gpu-MM-5-on-coding-v4-objective-1",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-on-coding-v4-objective-1/worker/wire/requests.jsonl",
+          "sha256": "6644b426cf40e126e50af444cfa4c25e2340a5a1f88a9aec82336acad16669ae"
+        },
+        "wire_sequence": 1
+      },
+      {
+        "forwarded_at": 1795748487.787374,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/wire/MM-5-0001.json.gz",
+          "sha256": "e540559b5c3464975983212fb8a04ce4637b4d733e00bb2fdbb75d6a90b841a0"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/FEEDBACK.txt",
+          "sha256": "a75ac13b0028e6281782cc84a6a1a931a95ceae601cb7d044eaa63fe33181073"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/RESULT.json",
+          "sha256": "a2bdadbfcb1548ef099acb67793a114c1444c324e7328ceff6f4d833f807b141"
+        },
+        "saved_user_message_id": "msg_21af36197001wtflm2UebUmHtj",
+        "saved_user_message_time": {
+          "created": 1795748487747
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/session.json",
+          "sha256": "700cf144f82aad74c24d97b17aad8fed5ccf8b6f03285e2d6938a600797eba11"
+        },
+        "unit": "gpu-MM-5-off-common-on-sampling-v4-objective-2",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/wire/requests.jsonl",
+          "sha256": "6773b23b40e019d9c0366df700915922aecfbf90051c910e869943fb5fa70823"
+        },
+        "wire_sequence": 1
+      },
+      {
+        "forwarded_at": 1795748682.3694181,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01/units/cpu-MM-5-off-recommended-v4-objective-2/worker/wire/MM-5-0001.json.gz",
+          "sha256": "3ec0e95001af32631aafbd54270507375f5649ed9adcfffc62af257d5768699b"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01/units/cpu-MM-5-off-recommended-v4-objective-2/FEEDBACK.txt",
+          "sha256": "a75ac13b0028e6281782cc84a6a1a931a95ceae601cb7d044eaa63fe33181073"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01/units/cpu-MM-5-off-recommended-v4-objective-2/RESULT.json",
+          "sha256": "456d85bdd43d122997fceea5aee4da20a32f95ce1c6fada5d92d43d108f91891"
+        },
+        "saved_user_message_id": "msg_21af659ac0015bzfPk4NPqh8n0",
+        "saved_user_message_time": {
+          "created": 1795748682331
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01/units/cpu-MM-5-off-recommended-v4-objective-2/worker/session.json",
+          "sha256": "dbeb126ca5edabfe2f65ecccca38ecc3396449c33e6484213c6e5b78005a58a2"
+        },
+        "unit": "cpu-MM-5-off-recommended-v4-objective-2",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/cpu-tu-mm-01/units/cpu-MM-5-off-recommended-v4-objective-2/worker/wire/requests.jsonl",
+          "sha256": "8495087546a7f53c2c6d622c575ef7f6991cd37aa26a03c29923584bc75cc728"
+        },
+        "wire_sequence": 1
+      }
+    ],
+    "v4_migration": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/acceptance-migration.json",
+      "sha256": "87ac9c4f2c0af036dd302d41ee7b08bd3a6c59fc4c83a60b62aeac6e361bca24"
+    }
+  },
+  "model_calls": 0,
+  "nariq": {
+    "assessment": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/nariq-v2-terminal-assessment-01/REPORT.json",
+      "sha256": "cae17dd9019911d6de9cf8a7b2867d823293934ba177b791cd12b86ce068f133"
+    },
+    "cpu_independent_source_reject": {
+      "advisory": "REJECT",
+      "cli_wall_s": 35.072211,
+      "source": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/cpu-OFF-off-recommended/final-acceptance/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/assistance-accounting.json",
+        "sha256": "0a8a105ffd20043b458bcce547d6d8a8d9db43cc516bfdae463baf540631c902"
+      },
+      "usage": {
+        "cached_input_tokens": 93440,
+        "input_tokens": 122307,
+        "output_tokens": 841,
+        "reasoning_output_tokens": 12,
+        "uncached_input_tokens": 28867
+      }
+    },
+    "cpu_raw_grade": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/RESULT.json",
+      "sha256": "202a7a35df8b7b5dabf4b85a0a6cec0e01383764af63d87337831096e8d0eeb9"
+    },
+    "cpu_resource_resume": {
+      "forwarded_at": 1795745270.463669,
+      "forwarded_request": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/wire/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary-0001.json.gz",
+        "sha256": "9695487356423ae1e3cfaabe91a559ad68af6463ba7d41d091f9e809f16f57cc"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/PROMPT.md",
+        "sha256": "6554ec7635392803a9a0eb25b5f50c30129d2459b490d03b821089e60b849c11"
+      },
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/RESULT.json",
+        "sha256": "202a7a35df8b7b5dabf4b85a0a6cec0e01383764af63d87337831096e8d0eeb9"
+      },
+      "saved_user_message_id": "msg_21ac24a40001M20ECANzQsFXzB",
+      "saved_user_message_time": {
+        "created": 1795745270434
+      },
+      "session": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/OPEN-CODE-SESSION.json",
+        "sha256": "727c6cb025fb8c9e6e3937d02090d9af6e30adeab4a7f1d77338918ab0be594b"
+      },
+      "unit": "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary",
+      "wire_ledger": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1-boundary/wire/requests.jsonl",
+        "sha256": "4ed075d8c73934086802964815806ce0497d38180eb178064b4fe2777e9d2a22"
+      },
+      "wire_sequence": 1
+    },
+    "observed_gpu_feedback": [
+      {
+        "forwarded_at": 1795740686.8772027,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-1/wire/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-1-0001.json.gz",
+          "sha256": "3eb229bfff891750fccb1ff6a663379cbfa0fc651df854079684ec3e6fa1a5f6"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-1/PROMPT.md",
+          "sha256": "43b113fff57b71162fb86c7b730c35fb8d217f624a19de7b62d77d650a816fbd"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-1/RESULT.json",
+          "sha256": "b4bbff603113537ad5e12a6d844a499897823d5b6959f2aa01c2c9c597ac7b8b"
+        },
+        "saved_user_message_id": "msg_21a7c59940010hHGk2lqyvMoTq",
+        "saved_user_message_time": {
+          "created": 1795740686838
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-1/OPEN-CODE-SESSION.json",
+          "sha256": "cf1d02d65e2f40cf544727be644c9f38c323a30726a757fc164649268a6bc4da"
+        },
+        "unit": "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-1",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-1/wire/requests.jsonl",
+          "sha256": "834f29bc6cb985f8dd6d93440e010ffc3b7cb43b156b0d5f16bce44e332fc18f"
+        },
+        "wire_sequence": 1
+      },
+      {
+        "forwarded_at": 1795743170.5497165,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-2/wire/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-2-0001.json.gz",
+          "sha256": "68479d42a3bcb9d52b47f92ed31aa3f42c9c6bdbb1521af94c2ac023afcdfeea"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-2/PROMPT.md",
+          "sha256": "bacbc383fc5b3f4cfaf63d2843fbbd33aaaa539818042507d842fb316e9b64fc"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-2/RESULT.json",
+          "sha256": "9bff9b4e78e7f8113843385570f2382c236ca39acaf8118f931a523158f667c9"
+        },
+        "saved_user_message_id": "msg_21aa23f0a0018F7DKaxNa24Elj",
+        "saved_user_message_time": {
+          "created": 1795743170512
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-2/OPEN-CODE-SESSION.json",
+          "sha256": "eaa572445402ff41654dc3dca42a2e7b8da7589ad0e43126fd9f6f319f33470f"
+        },
+        "unit": "gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-2",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-guidance-2/wire/requests.jsonl",
+          "sha256": "304a3c58e004d698b0d432502d78a8c68cfac767c57f2280558c2132096d71b9"
+        },
+        "wire_sequence": 1
+      },
+      {
+        "forwarded_at": 1795740514.4446874,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1/wire/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1-0001.json.gz",
+          "sha256": "55bc078a8f0408d3e7ff266250679cf8e2ca5b23cbe9ac42be2fd8ec629ac669"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1/PROMPT.md",
+          "sha256": "a8fc76c3e2e3a7fab912e7ceaa64a47fecc0eef2f179a55e4e08c1cddf66ab88"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1/RESULT.json",
+          "sha256": "70078869ab5c7df004ba6121f7d9cd5b3c032415337148c731065904f3cdee5d"
+        },
+        "saved_user_message_id": "msg_21a79b840001FY5SHh6ztRhoer",
+        "saved_user_message_time": {
+          "created": 1795740514424
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1/OPEN-CODE-SESSION.json",
+          "sha256": "05335163f72e01824738af4f7609b802500b46e4d0df679981eb496065f7eeb1"
+        },
+        "unit": "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1/wire/requests.jsonl",
+          "sha256": "f858f1997a76c78fee471cb2d09e36f38bc96494692c5ea5bf3892ee2dbdc9cf"
+        },
+        "wire_sequence": 1
+      },
+      {
+        "forwarded_at": 1795741367.910901,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-2/wire/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-2-0001.json.gz",
+          "sha256": "2b42a15b947993ef73ef181cab0e8b77bde7f1107fc4f732682d08e3dbe3c606"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-2/PROMPT.md",
+          "sha256": "2824fce12e78438a1e0faf1ab65c9079b6e1601c3a9e8cbff05c5868288127d5"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-2/RESULT.json",
+          "sha256": "b3e344099239d417976539189e969e4d5e0c3aec810f903cbef11fcb6f4ca049"
+        },
+        "saved_user_message_id": "msg_21a86be19001iCfpQD1fkU7PZ3",
+        "saved_user_message_time": {
+          "created": 1795741367891
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-2/OPEN-CODE-SESSION.json",
+          "sha256": "4651d4e3d84c4ecaaa83d97ec75883ee1856c795d4256a544d81b80be7a00d35"
+        },
+        "unit": "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-2",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-2/wire/requests.jsonl",
+          "sha256": "237f1bc91ffe206d4a37c3fc48409f6cbf552a83c6acbf3999ac3708ee635f44"
+        },
+        "wire_sequence": 1
+      }
+    ],
+    "terminal_counts": {
+      "changed_structural_verdict": 1,
+      "no_candidate": 7,
+      "regraded": 8,
+      "terminal": 15
+    }
+  },
+  "paw": {
+    "clean_followup_raw_counters": [
+      {
+        "model_wall_s": 237.662,
+        "raw_observed_generated_tokens": 2449,
+        "raw_status": "oracle_fail",
+        "raw_unknown_generation_requests": 0,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/RESULT.json",
+          "sha256": "a0605fa4efe46cf5d3aa6184c96e6ad3cbe795a781c14b9e15af4ca2b6758b4a"
+        }
+      },
+      {
+        "model_wall_s": 217.341,
+        "raw_observed_generated_tokens": 10319,
+        "raw_status": "oracle_fail",
+        "raw_unknown_generation_requests": 0,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/RESULT.json",
+          "sha256": "8d6ef731747910ad3b70b82950986a6edc13aed7746dcac8c5e30acb4dc45234"
+        }
+      }
+    ],
+    "clean_history_inputs": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v3/HISTORY-INPUTS.json",
+      "sha256": "252dac17a05d93dd2c5bfe6885ab5361461ca06c4f4f403db9bdd4273cd9c1fc"
+    },
+    "clean_input_bindings": [
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/RESULT.json",
+        "sha256": "a0605fa4efe46cf5d3aa6184c96e6ad3cbe795a781c14b9e15af4ca2b6758b4a"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/OPEN-CODE-SESSION.json",
+        "sha256": "518e860a32effbe5fa2f160ca39877922cafa33bfaf51d00bf960342143555c1"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/PROMPT.md",
+        "sha256": "c733e2c901125608bbb21fb784936e08ad1d55576e95a78e7d17977fe61f9bdf"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/FEEDBACK.txt",
+        "sha256": "58b9ecb5baadf1c3eda3af9ec666c70a846fcfaa222ecfe75d4894ad36012ec0"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/assistance-accounting.json",
+        "sha256": "e1eb013dd464d6247a34dd870fb2a7c375c7b47e5a42aa743d11564458359e06"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/PAW-CLEAN-PAID-2-PLAN.json",
+        "sha256": "0e3685e72d53ec3a9c0c0d44948d028bf0976c8f74cfebb22a93d6e816aa1bfe"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/PAW-PLAN.json",
+        "sha256": "0e3685e72d53ec3a9c0c0d44948d028bf0976c8f74cfebb22a93d6e816aa1bfe"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/PAW-MAIN-APPROVAL.json",
+        "sha256": "18811acc018a151c9f8fe281db8ba3619e65aaa8a7cee5efc79ddc9925253bf0"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/RUNNER-SEAL.json",
+        "sha256": "652ea6d728c0c9ee274d74dca77ba2f7e2c52acfde3225df4fe0b566e4aa753f"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/callback.py",
+        "sha256": "65b99c714c0b8f2742060f143e43dd90011a55c721a37517e46628216d5689c4"
+      }
+    ],
+    "clean_neutral": {
+      "forwarded_at": 1795748484.744917,
+      "forwarded_request": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/wire/gpu-PAW-5-off-recommended-clean-guidance-1-0001.json.gz",
+        "sha256": "fee88a34174bfbe03025352eba05017ddbf6d3b4ce26576fade9325133b90291"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/PROMPT.md",
+        "sha256": "c733e2c901125608bbb21fb784936e08ad1d55576e95a78e7d17977fe61f9bdf"
+      },
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/RESULT.json",
+        "sha256": "a0605fa4efe46cf5d3aa6184c96e6ad3cbe795a781c14b9e15af4ca2b6758b4a"
+      },
+      "saved_user_message_id": "msg_21af3561c001unfh5LpAyLDpJn",
+      "saved_user_message_time": {
+        "created": 1795748484714
+      },
+      "session": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/OPEN-CODE-SESSION.json",
+        "sha256": "518e860a32effbe5fa2f160ca39877922cafa33bfaf51d00bf960342143555c1"
+      },
+      "unit": "gpu-PAW-5-off-recommended-clean-guidance-1",
+      "wire_ledger": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/wire/requests.jsonl",
+        "sha256": "e29f1ef4722a549784e7968e7b737f794097872a3a7529ca0732da95fb146cc9"
+      },
+      "wire_sequence": 1
+    },
+    "clean_owner_decision": "rejected",
+    "clean_owner_disposition": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/gpu-PAW-5-off-recommended-clean-paid-2.json",
+      "sha256": "286b28fea67302ce2decaf831f40d495b1d630b6d5489195a7902695549282fe"
+    },
+    "clean_paid_2": {
+      "forwarded_at": 1795751906.214911,
+      "forwarded_request": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/wire/gpu-PAW-5-off-recommended-clean-paid-2-0001.json.gz",
+        "sha256": "f56b6f2d0f41f2295e69f5a47d435b7fc378be945bc5528f1e73b072ae61d76b"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/PROMPT.md",
+        "sha256": "58b9ecb5baadf1c3eda3af9ec666c70a846fcfaa222ecfe75d4894ad36012ec0"
+      },
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/RESULT.json",
+        "sha256": "8d6ef731747910ad3b70b82950986a6edc13aed7746dcac8c5e30acb4dc45234"
+      },
+      "saved_user_message_id": "msg_21b278b710010cCWfs37hNxNd2",
+      "saved_user_message_time": {
+        "created": 1795751906183
+      },
+      "session": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/OPEN-CODE-SESSION.json",
+        "sha256": "5d4e658dc872d7c02d6ce2392a6de8d40ba91770ca22a3795a6e1a2a9bd940f0"
+      },
+      "unit": "gpu-PAW-5-off-recommended-clean-paid-2",
+      "wire_ledger": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/wire/requests.jsonl",
+        "sha256": "e85c09fd3f8ef85fd32bfcf0472e05565cfc58d083d4dbe9cbf47f39dfd960fb"
+      },
+      "wire_sequence": 1
+    },
+    "clean_paid_calls": [
+      {
+        "advisory": "REJECT",
+        "cli_wall_s": 36.174931,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/assistance-accounting.json",
+          "sha256": "e1eb013dd464d6247a34dd870fb2a7c375c7b47e5a42aa743d11564458359e06"
+        },
+        "usage": {
+          "cached_input_tokens": 113920,
+          "input_tokens": 138538,
+          "output_tokens": 1131,
+          "reasoning_output_tokens": 0,
+          "uncached_input_tokens": 24618
+        }
+      },
+      {
+        "advisory": "REJECT",
+        "cli_wall_s": 27.908022,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review-v3/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/assistance-accounting.json",
+          "sha256": "272047d94a3d3725bbf0b975cf0b285a8102c3cb9ccce90ba3fddc57b243b869"
+        },
+        "usage": {
+          "cached_input_tokens": 92160,
+          "input_tokens": 113119,
+          "output_tokens": 1012,
+          "reasoning_output_tokens": 22,
+          "uncached_input_tokens": 20959
+        }
+      }
+    ],
+    "conditional_history_followup_raw_counters": [
+      {
+        "model_wall_s": 236.56,
+        "raw_observed_generated_tokens": 4174,
+        "raw_status": "oracle_fail",
+        "raw_unknown_generation_requests": 0,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-1/RESULT.json",
+          "sha256": "a199aa270300f3af341ba2bc47e3df831f483f650cfabf1c0fd284a32af622e5"
+        }
+      },
+      {
+        "model_wall_s": 1495.907,
+        "raw_observed_generated_tokens": 13358,
+        "raw_status": "oracle_fail",
+        "raw_unknown_generation_requests": 0,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-2/RESULT.json",
+          "sha256": "996f4084fb52a15ba12edc3ce258f216ca639be26779ecdf46a8b25335aebd5a"
+        }
+      }
+    ],
+    "historical_conditional_owner_record": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/gpu-PAW-5-off-recommended-guidance-2.json",
+      "sha256": "6466dc0767dc458114ff3c856a2ffc5fe93193583c561e24f5947fa99f7fad37"
+    },
+    "historical_feedback": {
+      "feedback": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/feedback/policy-v5/receipts/gpu-PAW-5-off-recommended-35a92915e82d.txt",
+        "sha256": "49c5352f44bbcf22e088fc50e5fb826e37ba880820ea64650850e285c45cbfd4"
+      },
+      "forwarded_at": 1795741278.5323708,
+      "forwarded_request": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-1/wire/gpu-PAW-5-off-recommended-guidance-1-0001.json.gz",
+        "sha256": "3440e2b814b8d64eefc1b0df2be4ffcbce4739fbfa6771a9cdc156f7a8dc347f"
+      },
+      "prior_audit_classification": "false placement-based no-pin diagnostic; replay original checkpoint without this feedback",
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-1/PROMPT.md",
+        "sha256": "49c5352f44bbcf22e088fc50e5fb826e37ba880820ea64650850e285c45cbfd4"
+      },
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-1/RESULT.json",
+        "sha256": "a199aa270300f3af341ba2bc47e3df831f483f650cfabf1c0fd284a32af622e5"
+      },
+      "saved_user_message_id": "msg_21a8560e7001GHyN3n2b6zVjd7",
+      "saved_user_message_time": {
+        "created": 1795741278494
+      },
+      "session": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-1/OPEN-CODE-SESSION.json",
+        "sha256": "de659ebae34e1f260a399fceabe4f3c19a203ea9f42e69c7a0d94886d3fabca1"
+      },
+      "unit": "gpu-PAW-5-off-recommended-guidance-1",
+      "wire_ledger": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-1/wire/requests.jsonl",
+        "sha256": "6fd4fe8b11d5e2d38e20af7bd1bf5cda63af217a7b7aa5d881b7e864d443cd39"
+      },
+      "wire_sequence": 1
+    },
+    "historical_paid_2": {
+      "forwarded_at": 1795742763.8638246,
+      "forwarded_request": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-2/wire/gpu-PAW-5-off-recommended-guidance-2-0001.json.gz",
+        "sha256": "1a12cecf8d0d32382885386cb3ca7780c866b98c3bbb332931cc810eb17fa2f9"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-2/PROMPT.md",
+        "sha256": "a98559ec559bddd53c3ff23a57c921e8eff78e9ea55a0b928a1b9a6444cbce0a"
+      },
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-2/RESULT.json",
+        "sha256": "996f4084fb52a15ba12edc3ce258f216ca639be26779ecdf46a8b25335aebd5a"
+      },
+      "saved_user_message_id": "msg_21a9c0aed001aY2absaewfnXv3",
+      "saved_user_message_time": {
+        "created": 1795742763834
+      },
+      "session": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-2/OPEN-CODE-SESSION.json",
+        "sha256": "2cba04dde936f0e1959ad15c805dfcfc3021ac11da21038b20be9f45f234f6e0"
+      },
+      "unit": "gpu-PAW-5-off-recommended-guidance-2",
+      "wire_ledger": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended-guidance-2/wire/requests.jsonl",
+        "sha256": "e8c10968798267081a1d40b4351e4a0d6b7b1861acfc8a565e83b92704df1601"
+      },
+      "wire_sequence": 1
+    },
+    "historical_paid_diagnosis_cli_wall_s": 88.585042,
+    "historical_paid_diagnosis_measurement": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/guidance-2/measurement.json",
+      "sha256": "bdc35ed4c115c9eb040fa99f98a5cdd7b06bcbdbbe302432fb46d3f57969cbb9"
+    },
+    "historical_paid_final_review": {
+      "advisory": "REJECT",
+      "cli_wall_s": 86.494084,
+      "source": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/assistance-accounting.json",
+        "sha256": "e3d51757da7753016083085ec7524f5a7818f62d97addfc5cb1fb4301ad4f68b"
+      },
+      "usage": {
+        "cached_input_tokens": 90752,
+        "input_tokens": 112396,
+        "output_tokens": 737,
+        "reasoning_output_tokens": 15,
+        "uncached_input_tokens": 21644
+      }
+    },
+    "historical_paid_final_review_binding": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/assistance-accounting.json",
+      "sha256": "e3d51757da7753016083085ec7524f5a7818f62d97addfc5cb1fb4301ad4f68b"
+    },
+    "initial_raw_counter": {
+      "model_wall_s": 460.418,
+      "raw_observed_generated_tokens": 4685,
+      "raw_status": "oracle_fail",
+      "raw_unknown_generation_requests": 0,
+      "source": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended/RESULT.json",
+        "sha256": "35a92915e82d8f89e48ec675ca93b59dabedf5138bd482764ad87502859a959e"
+      }
+    },
+    "original_checkpoint": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended/RESULT.json",
+      "sha256": "35a92915e82d8f89e48ec675ca93b59dabedf5138bd482764ad87502859a959e"
+    },
+    "original_session": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended/OPEN-CODE-SESSION.json",
+      "sha256": "27d31957e5d63f73e6fe4c25f750ac544e0ad4f9cfccddeccec69019a2a5f891"
+    },
+    "prior_state_manifest": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-replay/PRIOR-STATE.json",
+      "sha256": "e17ca7e1e47c6436a61762b84a4b9846b4974f8576fc389e808cc81c0034673c"
+    }
+  },
+  "paw_on_genuine_seam": {
+    "feedback": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/feedback/policy-v4/receipts/gpu-PAW-5-on-coding.txt",
+      "sha256": "7e17764a897fd18a09d87544733e2c2d8347aaf742a0a32930d9be44f51179b5"
+    },
+    "forwarded_at": 1795740518.6014965,
+    "forwarded_request": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-on-coding-guidance-1/wire/gpu-PAW-5-on-coding-guidance-1-0001.json.gz",
+      "sha256": "0281c954e936649d8db5b2d5f4f80a160be6543382dfa9c8d2c4360dbe48c80d"
+    },
+    "prior_audit_classification": "genuine missing reviewed seam; retain corrected-harness feedback lineage",
+    "prompt": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-on-coding-guidance-1/PROMPT.md",
+      "sha256": "7e17764a897fd18a09d87544733e2c2d8347aaf742a0a32930d9be44f51179b5"
+    },
+    "result": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-on-coding-guidance-1/RESULT.json",
+      "sha256": "1b53781695438d628516c69693bcf9086d9b395e11a2a605e7a1c4a50fa049d2"
+    },
+    "saved_user_message_id": "msg_21a79c788001vVl3sFb2vdh3AH",
+    "saved_user_message_time": {
+      "created": 1795740518556
+    },
+    "session": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-on-coding-guidance-1/OPEN-CODE-SESSION.json",
+      "sha256": "6e013c5d1d85aeb7df8fb9440f2f4d087b5e6602021cc1731fdc38217b4f7601"
+    },
+    "unit": "gpu-PAW-5-on-coding-guidance-1",
+    "wire_ledger": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-on-coding-guidance-1/wire/requests.jsonl",
+      "sha256": "5cdfd7163c88017eecf8054ec827b9098afa36f02e1bf63d94563a290af7e403"
+    },
+    "wire_sequence": 1
+  },
+  "pfx": {
+    "consumed": {
+      "off-recommended": {
+        "feedback": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/feedback/policy-v5/receipts/gpu-PFXC-A3-off-recommended-921324e37584.txt",
+          "sha256": "db9412a928f6cbacf51a5699facfffbe3bd12a1b70f3fd436a6b506dbf8e5717"
+        },
+        "forwarded_at": 1795740995.8435442,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-1/wire/gpu-PFXC-A3-off-recommended-guidance-1-0001.json.gz",
+          "sha256": "a188ec8dc4a333dde07618adb8c0469620f9d0a6014067cbd5940a4f0214b2a7"
+        },
+        "prior_audit_classification": "genuine missing11896 sizing figure",
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-1/PROMPT.md",
+          "sha256": "db9412a928f6cbacf51a5699facfffbe3bd12a1b70f3fd436a6b506dbf8e5717"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-1/RESULT.json",
+          "sha256": "415e308f3b01dcf639557971a8c9c2019f5aa7122f749e9d0aa9dba73c98f312"
+        },
+        "saved_user_message_id": "msg_21a8110dc001b7Kwx3nUb27g7n",
+        "saved_user_message_time": {
+          "created": 1795740995819
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-1/OPEN-CODE-SESSION.json",
+          "sha256": "5020f186aa2110697c2ad27b20d998b3fe1d67c1666fda33d1385e188ee75de3"
+        },
+        "unit": "gpu-PFXC-A3-off-recommended-guidance-1",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-1/wire/requests.jsonl",
+          "sha256": "3b0e551e9ed4408b35bea3177e73a9aaf0e123ee3b69d03e1a6f9116b8df21a0"
+        },
+        "wire_sequence": 1
+      },
+      "on-coding": {
+        "feedback": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/deterministic-feedback-v4.txt",
+          "sha256": "773a41dcc193d8f2aa49806aacce7fbe1794229b9fba00809d25a29363c44278"
+        },
+        "forwarded_at": 1795740370.9147868,
+        "forwarded_request": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-1/wire/gpu-PFXC-A3-on-coding-guidance-1-0001.json.gz",
+          "sha256": "9f95a23ddf3b77d8a521ea1a99f8fbe7c2aa612c7bd36fa93a58c3fed67f378a"
+        },
+        "prior_audit_classification": "genuine 44 events with3duplicates; obsolete row-order diagnostic replaced before dispatch",
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-1/PROMPT.md",
+          "sha256": "773a41dcc193d8f2aa49806aacce7fbe1794229b9fba00809d25a29363c44278"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-1/RESULT.json",
+          "sha256": "72872481899b94a684b31c0f5632d5f09f204fea93e3c05d0b36bc448fb68deb"
+        },
+        "saved_user_message_id": "msg_21a77878c001VBazWWnKAmZx0t",
+        "saved_user_message_time": {
+          "created": 1795740370894
+        },
+        "session": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-1/OPEN-CODE-SESSION.json",
+          "sha256": "3aeaa96f50eceb85bf48c042e257e2f386cd81543d0e62885d3f4cfed63b5003"
+        },
+        "unit": "gpu-PFXC-A3-on-coding-guidance-1",
+        "wire_ledger": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-1/wire/requests.jsonl",
+          "sha256": "5ceb730b9e43e62683c90bf6d0cc7acbb499363a32514aa54691dfc95719445f"
+        },
+        "wire_sequence": 1
+      }
+    },
+    "migration": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/feedback-migration.json",
+      "sha256": "e42cbec876f4c62f2e0d9816a4f2ab624e0bd8b90e3ddaeb72b0ee4757eca990"
+    }
+  },
+  "prior_consumption_audit": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/feedback-confound-audit/CONSUMED-FEEDBACK.json",
+    "sha256": "1b4fc536fa9640b6f256254efb3e7234823108775a95c7bbf740ed2d0feb44ee"
+  },
+  "schema": "a3b.feedback-lineage-audit.v1",
+  "scope": "retained affected native feedback histories and protocol receipts",
+  "tu": {
+    "corrected_consumed_feedback": {
+      "forwarded_at": 1795751689.6997669,
+      "forwarded_request": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/worker/wire/TU-GR-1-0001.json.gz",
+        "sha256": "8180fb049df64c175be445358cf113467ff42a3e0694461a075808864ea026d7"
+      },
+      "prompt": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/FEEDBACK.txt",
+        "sha256": "9422b82ad2d1dcdc73f0dae667a9e5cb4ac42d570b3a8653bb96f5f407c66ca1"
+      },
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/RESULT.json",
+        "sha256": "dc10e819da8e7fa969979388cdc8ecd7120eb425707de7f29450e9773b637d8f"
+      },
+      "saved_user_message_id": "msg_21b243d5e001RYK1a4n6WQk6jU",
+      "saved_user_message_time": {
+        "created": 1795751689670
+      },
+      "session": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/worker/session.json",
+        "sha256": "f36027f293e0aba13029ac6dafb50233fc81bdcdfc8eb33abe50868198f7ea48"
+      },
+      "unit": "gpu-TU-GR-1-on-coding-v2-objective-1",
+      "wire_ledger": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/tu-on-retry-01/units/gpu-TU-GR-1-on-coding-v2-objective-1/worker/wire/requests.jsonl",
+        "sha256": "d5a69cfc50655136daece4d2bfbdf287d7b0bc31e12dbfde0e4e60666aa48dea"
+      },
+      "wire_sequence": 1
+    },
+    "corrected_grade_stdout": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/diagnostic-tu-on/stdout.log",
+      "sha256": "d43c779bdc218b6d971bedb9baffe981f6464c7566cf65f470d05f12b8e359f6"
+    },
+    "later_false_pass_controls": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v4-qualification-v2/CONTROL.json",
+      "sha256": "e1f66b12bc1c5c5690486446ee23bdf5baf0b49144b9c487b679b6e176215ee8"
+    },
+    "migration": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/tu-oracle-v2/acceptance-migration.json",
+      "sha256": "36a2511b8d256dde88b357a0e75d8c4dcfaf01c07f1363be9255ba3b0d09e195"
+    },
+    "obsolete_plan": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-on/TU-ON-PLAN.json",
+      "sha256": "2ca5abfb512527526e7a75baebd19c250f37f2c7463dcdf179c5736e3527df8d"
+    },
+    "old_grade": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/RESULT.json",
+      "sha256": "ed0d9388bf592ab6ed459cac23be3d1550e9b0b05991bb926ada9e44efabcbf2"
+    },
+    "withdrawal": {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-tu-on/WITHDRAWAL.json",
+      "sha256": "19f18ce44abd89fae5299016cf10be22af8c4d9b3ac7c8702935273096d446e1"
+    }
+  }
+}

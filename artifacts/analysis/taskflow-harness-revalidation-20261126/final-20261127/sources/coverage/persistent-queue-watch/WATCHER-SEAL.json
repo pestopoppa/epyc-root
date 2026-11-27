@@ -1,0 +1,10 @@
+{
+  "schema": "persistent-queue-watch.v1",
+  "callbacks_spawned_during_preparation": 0,
+  "sha256": {
+    "watch.py": "d743de5fd096223477d3ad1f766b16483a01c9b6366470b5c2a4ea359156c5a9",
+    "control.py": "1276501bc1a59d7c6fc5e37e659e6c3d190c53c908d1c3a05b1eed42c5de32c8",
+    "CONTROL.json": "c72b68423c04d2f38cc758ef3338f046a94617ede815db3c0b84e177c8220249",
+    "README.md": "d699e2a8b2f630d289c480ad31c83e97b84f5b18f789c39cbec86367cb6ce9cf"
+  }
+}

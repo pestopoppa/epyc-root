@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "native_calls": 0,
+  "actual_review_feedback_matched": true,
+  "clean_history_and_exact_profile_restored_offline": true,
+  "legacy_false_feedback_branch_excluded": true,
+  "raw_and_wire_previous_costs": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PAW-5-off-recommended",
+      "generated": 4685,
+      "model_wall_s": 460.418,
+      "wire_observed_generated": 4685,
+      "wire_records": 14,
+      "wire_records_missing_completion_usage": 0,
+      "wire_failed_records": 0,
+      "wire_matches_raw_generated": true,
+      "wire_sha256": "c6ca89c511e9ed5bcc761c1b3e27a84893c3a811a35fe4c2e013de40e844ae1c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1",
+      "generated": 2449,
+      "model_wall_s": 237.662,
+      "wire_observed_generated": 2449,
+      "wire_records": 8,
+      "wire_records_missing_completion_usage": 0,
+      "wire_failed_records": 0,
+      "wire_matches_raw_generated": true,
+      "wire_sha256": "e29f1ef4722a549784e7968e7b737f794097872a3a7529ca0732da95fb146cc9"
+    }
+  ],
+  "plan_sha256": "0e3685e72d53ec3a9c0c0d44948d028bf0976c8f74cfebb22a93d6e816aa1bfe",
+  "preparer_sha256": "5e00f581b4695a81add817109fd623b9bb611a26acb8d1f8f582265bd05af726"
+}

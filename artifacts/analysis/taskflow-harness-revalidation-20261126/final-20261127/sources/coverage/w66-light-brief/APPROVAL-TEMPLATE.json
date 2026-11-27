@@ -1,0 +1,10 @@
+{
+  "approved_by": null,
+  "scope": "one-case light-brief fresh paired thinkingON/OFF; preparation authorizes no inference",
+  "rows_sha256": "4b964928d5b91a5a6c4ae0d4811b68972f9a117481221d8fba712b8726c0c93a",
+  "prompt_sha256": "0db7c89b9e362cde01161b8d7e63a758f1a71ff3afcc9da4eae0f9b46865703f",
+  "baseline_manifest_identical": true,
+  "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+  "semantic_acceptance": "same unchanged independent acceptance followed by source review; no automatic semantic accept from rc",
+  "stop": "retain increments; stop on scoped answer or diagnostic futility; one pair sufficient initially; any further guidance separately classified and approved"
+}

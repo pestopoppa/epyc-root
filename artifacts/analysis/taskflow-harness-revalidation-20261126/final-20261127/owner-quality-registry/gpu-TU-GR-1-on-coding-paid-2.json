@@ -1,0 +1,14 @@
+{
+  "candidate_patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+  "decision": "rejected",
+  "accepted_scope": null,
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-on-paid-final-review/reviews/TU-GR-1/gpu-ON-on-coding/final-acceptance/runs/TU-GR-1/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "5446edb15246abc2b086dddf4d02acfc77d6e6612892b1a5d327dc4119e2f185",
+  "source_audit": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/gpu-tu-on-paid-final-review/reviews/TU-GR-1/gpu-ON-on-coding/final-acceptance/MAIN-AUDIT.json",
+  "source_audit_sha256": "341bda9d94c5074494c6a64c3a28dd79e9c1707d63b0171170cad7a07570f54e",
+  "normal_completion": true,
+  "qualification": "Main audited seven commands and full patch. Both errno checks repaired, but mount error with unshare in its path still causes skip. Qualified V4 and independent mocked reproduction agree with source rejection.",
+  "additional_robustness": null,
+  "review_cost_class": "paid final acceptance vector retained separately; manager source/audit effort unisolated notzero",
+  "at": 1795753142.7310398
+}

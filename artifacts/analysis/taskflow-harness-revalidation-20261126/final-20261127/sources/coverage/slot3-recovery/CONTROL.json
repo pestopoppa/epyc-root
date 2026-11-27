@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "native_calls": 0,
+  "raw_import_reproduced": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-runner/run.py",
+  "fixed_explicit_import": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/run.py",
+  "live_lease_and_slot3_idle": true,
+  "rejected_stale_holder_controller_gpu_births": true,
+  "rejected_incorrect_region_grant": true,
+  "mm_verify_only_passed": true,
+  "plan_sha256": "4abc785e289ce7532e16e37df6ec515e43639a0f2a8c3ee44baca1f1f69e7306"
+}

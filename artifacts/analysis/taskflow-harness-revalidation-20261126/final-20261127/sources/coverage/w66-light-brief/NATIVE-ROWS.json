@@ -1,0 +1,58 @@
+[
+  {
+    "id": "gpu-DS41-W-66-on-common-light",
+    "case": "DS41-W-66",
+    "backend": "gpu",
+    "thinking": true,
+    "profile": "on-common-light",
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "slot": 0,
+    "cohort": 0,
+    "request_cap": 32768,
+    "generated_ceiling": 120000,
+    "wall_s": 1800,
+    "brief_class": "light/original-task-only",
+    "fresh_session": true,
+    "case_dir": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief/cases/DS41-W-66",
+    "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief/cases/DS41-W-66/prompt.md",
+    "comparison_scope": "matched sameGPU common-sampler thinkingON/OFF; no device or speed benchmark",
+    "guidance_received": "none; original task/scope/pins/acceptance only",
+    "same_baseline_and_oracle_as_detailed": true
+  },
+  {
+    "id": "gpu-DS41-W-66-off-common-light",
+    "case": "DS41-W-66",
+    "backend": "gpu",
+    "thinking": false,
+    "profile": "off-common-light",
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "slot": 1,
+    "cohort": 0,
+    "request_cap": 32768,
+    "generated_ceiling": 120000,
+    "wall_s": 1800,
+    "brief_class": "light/original-task-only",
+    "fresh_session": true,
+    "case_dir": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief/cases/DS41-W-66",
+    "prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief/cases/DS41-W-66/prompt.md",
+    "comparison_scope": "matched sameGPU common-sampler thinkingON/OFF; no device or speed benchmark",
+    "guidance_received": "none; original task/scope/pins/acceptance only",
+    "same_baseline_and_oracle_as_detailed": true
+  }
+]

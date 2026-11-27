@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "native_calls": 0,
+  "offline_restored_sessions": {
+    "gpu-MM-5-off-common-on-sampling-v4-objective-2": "ses_de53dae52ffewe4XuP6IyfpIUj",
+    "gpu-MM-5-on-coding-v4-objective-1": "ses_de53298d6ffe1fo6g6BH6yA19B"
+  },
+  "new_active_grant_and_idle_slots": true,
+  "plan_sha256": "1c71921fa4d653a6996a4ae2a62dba1851c1b954980ed0840ee95f46d27353f4",
+  "preparer_sha256": "485c52237fd10e41bbe189eec25cdabb5acc865b69e04cbc170133a9c579dc8c"
+}

@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "native_calls": 0,
+  "offline_canonical_session_profile_restored": true,
+  "gpu0_idle_at_control": false,
+  "plan_sha256": "68d74d1d187b3603c225c20f14ecae229c561b9d51f60cda9131412a213ae471",
+  "preparer_sha256": "c2c2308231e3e6a6183673182ad5f7e1e1390e0ac2b3a99e2aebde3086bcc982"
+}

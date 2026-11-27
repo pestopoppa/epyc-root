@@ -1,0 +1,54 @@
+{
+  "class_fixture_body_ast_equivalent": true,
+  "model_calls": 0,
+  "preserved_prior_sources_and_grades": true,
+  "prior_accepted_main_grade": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-direct-repair/runs/TU-GR-1/direct-repair-1/oracle-result.json",
+    "sha256": "9e345d88c89d0778a38f71b6f9539da36b0b3bac354ae03ee2a2c77b12e980e0"
+  },
+  "rows": [
+    {
+      "diagnostic": "TU-GR-1 contract passed",
+      "id": "accepted-main-functions-v3",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd",
+      "test_sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede"
+    },
+    {
+      "diagnostic": "TU-GR-1 contract passed",
+      "id": "accepted-main-classes-v3",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd",
+      "test_sha256": "d0ed0ed5f332c8bc8fc6226477c718c50a9abff3e208c694885f530a21d578c4"
+    },
+    {
+      "diagnostic": "TU-GR-1 contract passed",
+      "id": "missing-launcher-skip-v2",
+      "oracle_sha256": "d2dc074c25d3373601dbd1ce9772bb4a240c465806c07ca1aeb13107fe51a9f6",
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd",
+      "test_sha256": "2c4201faa4669aadc43b6a22b9b80fd0b7b17cf8f3a0766c500483d4c2a3c129"
+    },
+    {
+      "diagnostic": "simulated namespace missing-launcher: expected rc=1 and control passed / isolated failure, got rc=0 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('skipped', 'unshare binary is unavailable')}",
+      "id": "missing-launcher-skip-v3",
+      "oracle_sha256": "a0da02125e33dbcbc04f98100b95cff800d24e6de4fb4fd14963e9532d94719a",
+      "rc": 1,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9f2d0e8340128a8ebf320ab6cca682044eda9e5ca5ca64eaff8b4d01c18c14c8",
+      "test_sha256": "2c4201faa4669aadc43b6a22b9b80fd0b7b17cf8f3a0766c500483d4c2a3c129"
+    }
+  ],
+  "schema": "tu-grader-isolation.v3.controls",
+  "unchanged_parser_controls": {
+    "duplicate_named_result": "rejected",
+    "empty_class_report": "rejected",
+    "foreign_module_with_same_prefix": "rejected",
+    "foreign_same_basename": "rejected"
+  }
+}

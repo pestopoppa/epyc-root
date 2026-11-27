@@ -1,0 +1,10 @@
+{
+  "sha256": {
+    "collect.py": "7e156ae93ca100e4ca425ee0fbf27bfe2aa1208643b7c1c99fb779a11b2bac84",
+    "SOURCE-LOCK.json": "a26a84717ad1b71ead012806e84724a47e33a5f603a9e89993e71c71546c488f",
+    "CONTROL.json": "f672059efa5016d56a8f1f4cce63cf4152b4a92241539139a8759b2184b2c8fe",
+    "README.md": "1d37ea225135b042d48652867f6c4c9cf8d5ab426d8be029d3ed80b255f07586",
+    "snapshot-04/ACCOUNTING.json": "e5a6c3199835d4d7128b69b0bcb7eaf3ad18efd32f14c6fa1cd96fd86aed94f7"
+  },
+  "model_calls": 0
+}

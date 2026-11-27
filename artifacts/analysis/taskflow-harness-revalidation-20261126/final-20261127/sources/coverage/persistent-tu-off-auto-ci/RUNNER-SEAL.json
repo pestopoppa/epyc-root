@@ -1,0 +1,16 @@
+{
+  "schema": "tu-off-auto-ci.v1",
+  "sha256": {
+    "CONTROL.json": "f676b712b0bf50175a5ee68a28de90711356031ebcea44bdb5d233840ec4120a",
+    "README.md": "5dad8054467e193653834e3c85c61a02dc523a8704193a0c138cfc492475cb15",
+    "ci_callback.py": "91649d5214a95bbdbf730395e3895456e1488f84e26c7cdecf9f1f7c8c77140a",
+    "ci_grade.py": "07aef4fc14c354914e3aa38c2184bec369bf1fbb1591f39aaa4bd124e62a1aba",
+    "controls.py": "b7345c32a254b782d0ff5141bb808d2e43b65155d4741e09875c17cf7f650eb3",
+    "controls/actual-main-positive/CONTAINER-INTENT.json": "dd1f702a0eaa71420859adbb589fa901170ba32abe0b640774e65a405c076228",
+    "controls/actual-main-positive/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "controls/actual-main-positive/stdout.log": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd",
+    "controls/actual-prior-negative/CONTAINER-INTENT.json": "68d56ad5bcea3abe00827b7b8d45cd5d08b5df59791090857b10547b3bce32e7",
+    "controls/actual-prior-negative/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "controls/actual-prior-negative/stdout.log": "6b6e7bbd90c15b4ea2fa60f07695bd1f6fc75719cfa2669b4a83de7dc5a043b1"
+  }
+}

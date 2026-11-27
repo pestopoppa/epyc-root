@@ -1,0 +1,10 @@
+{
+  "schema": "persistent-callback.v1",
+  "qualifying_custody_source_sha256": "0f61d02d42ae9fef8c4545901ac847ec2d70e8c70e3e94211efc27e7e20b852d",
+  "sha256": {
+    "callback.py": "a553a7fbafaa0070bc42ce9e4f74530737d83c4326e1a12e21b0c86fcbd7e10f",
+    "prepare_paw.py": "d7f6e7f484f7c110b74c92a4c3a44d836a662a30a8a0e2a6f49338f7c98bf861",
+    "PAW-CLEAN-PLAN.json": "4d001d4fc816fff31f9896d1f75cde25253ff144e724a58108f0b53d2a1d08f9",
+    "PAW-CONTROL.json": "ce7b58e50f6c76418ea5f88d98b8913cd392240d210c75942855580171a6bc97"
+  }
+}

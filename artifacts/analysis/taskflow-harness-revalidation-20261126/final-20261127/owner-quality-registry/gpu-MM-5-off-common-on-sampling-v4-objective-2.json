@@ -1,0 +1,14 @@
+{
+  "candidate_patch_sha256": "b9a257627af85dc1f2f024afee7aac3d2675f48a1ebec65c502b5a08f0c0c80b",
+  "decision": "accepted",
+  "accepted_scope": "original feasible-cap/startup-environment owner brief only",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-OFF-off-common-on-sampling/final-acceptance/runs/MM-5/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "3c931f010e8d92bc573c792e82213bde436584c012b4655ade28928b3e57e827",
+  "source_audit": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-OFF-off-common-on-sampling/final-acceptance/MAIN-AUDIT.json",
+  "source_audit_sha256": "bcc010a5f4676a6eb4328224d67be37cbddf4862c94601c22e9f4fd1932c01d8",
+  "normal_completion": true,
+  "qualification": "Original feasible-cap and startup-environment contract accepted independently. Main audited all seven commands, exact diff, independent payload/HTTP/recorder checks and focused suites. Additional infeasible cap <784 behavior remains separately failed; no robust or deployed claim.",
+  "additional_robustness": "failed; do not infer production robustness",
+  "review_cost_class": "paid final acceptance vector retained separately; manager source/audit effort unisolated notzero",
+  "at": 1795753142.7305396
+}

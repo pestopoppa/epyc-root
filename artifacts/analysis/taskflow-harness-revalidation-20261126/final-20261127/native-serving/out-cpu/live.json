@@ -1,0 +1,18 @@
+{
+  "pid": 147530,
+  "port": 52473,
+  "n_parallel": 4,
+  "n_ctx_slot": 131072,
+  "kv_unified": false,
+  "maps": [
+    "/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libllama-common.so.0.0.10748",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libllama-server-impl.so",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261126-ce6fcbbde-c22-composite/bin/libllama.so.0.0.10748"
+  ],
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "numa_sha256": "3db571485a1d29e08e45bdd5577206a99fef90b210a1c76abeaf788007613424",
+  "checked_at": 1795747842.56487
+}

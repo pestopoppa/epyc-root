@@ -1,0 +1,11 @@
+{
+  "schema": "legacy-objective-followup-seal.v1",
+  "source_callback_manifest_sha256": "b4e9a10f04507dbdeb2c11e86a5150feb415a70bd9098661dcd377e1b41cb372",
+  "sha256": {
+    "follow.py": "4cb92cd20d2e2eb7f7e6e3dea5165c01af72dda9eaac81ba62a05b629f0b951b",
+    "control.py": "93ef928e38239d9bc7bf10c8ee6a41aac3f369130df87bf7a559c620d3f435c0",
+    "README.md": "6a326d9ef7d97dd2abac68040f975393b482b1898281830dcd94b1c9362f6c88",
+    "CONTROL.json": "60668d0962cfc41861e9f7f945f634ed5b1acf32ec9aac58e926350775a8068f",
+    "TU-OBJECTIVE-PLAN.json": "d542a041a9e4b899993468dcd4d54e81d9d9d31c7f46af9a31b9a89ebcfaff4b"
+  }
+}

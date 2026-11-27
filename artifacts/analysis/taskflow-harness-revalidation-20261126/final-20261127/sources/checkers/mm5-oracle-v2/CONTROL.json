@@ -1,0 +1,193 @@
+{
+  "candidate_bytes_preserved": true,
+  "case": "MM-5",
+  "fixed_question_excludes_cap_below_one_patch": true,
+  "native_model_calls": 0,
+  "new_checks": [
+    "already-within-cap byte identity",
+    "capped PNG/decoded size/grid",
+    "orientation when a minimum side binds and multiple tiles fit",
+    "common-scale grid rounding for ordinary aspect ratios"
+  ],
+  "pinned_original_oracle_sha256": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+  "review_scope": "controls only; owning session grades and records final assessments",
+  "saved_control_candidates": [
+    {
+      "diagnostic": [
+        "ImportError: cannot import name 'encode_image_for_vl' from 'src.vision.analyzers.vl_describe' (/case/src/vision/analyzers/vl_describe.py)"
+      ],
+      "id": "original-baseline",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/baseline",
+      "original_oracle_rc_retained": 1,
+      "preserved_runtime_artifacts": [],
+      "source_sha256": "29f96ef634f040581ea9894920fe270a060f6be8562fc2c80cb5c600a4a9214a",
+      "stderr_sha256": "be5bd2974eeb52f2eae132bcf86d8657884f1a49f62fd83cac91f5d642e7cb3a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "v2_rc": 1
+    },
+    {
+      "diagnostic": null,
+      "id": "reviewed-main-direct",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/lane",
+      "original_oracle_rc_retained": null,
+      "preserved_runtime_artifacts": [
+        ".pytest_cache/.gitignore",
+        ".pytest_cache/CACHEDIR.TAG",
+        ".pytest_cache/README.md",
+        ".pytest_cache/v/cache/nodeids",
+        ".pytest_cache/v/cache/stepwise"
+      ],
+      "source_sha256": "ced7ba6f65bb9f76ddbcc3991ffa5e09063411371d7bc21d9010d503ddba4c2c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "faf7a91232cdc4d2560647d81ff5d00c4579fefd8665fb7326e2726306137805",
+      "v2_rc": 0
+    },
+    {
+      "diagnostic": [
+        "AssertionError: under-cap image at cap 30000: encoded bytes differ from the original"
+      ],
+      "id": "cpu-MM-5-off-recommended",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/grade-lane",
+      "original_oracle_rc_retained": 0,
+      "preserved_runtime_artifacts": [],
+      "source_sha256": "3966d1c0eef9926831ea31fdf1ec9fc24fbf21b7ea9dcb88b46b48f314f31bfc",
+      "stderr_sha256": "63f9c98e0353b61ef6fbe8ab144638defeb9c64c6819f2c243ed1300b2ca742b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "v2_rc": 1
+    },
+    {
+      "diagnostic": [
+        "AssertionError: source (100, 4000), cap 7840: encoded dimensions (28, 28) lose source orientation"
+      ],
+      "id": "gpu-MM-5-off-common-on-sampling",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/grade-lane",
+      "original_oracle_rc_retained": 0,
+      "preserved_runtime_artifacts": [],
+      "source_sha256": "64d1e88c0925759378f8541ed8f407f2c1cd68e2920590df4184eaade2744057",
+      "stderr_sha256": "7464a9b094e3b3f9dfa406b18149f615bd6831210ae193c0b867ef09fd899e19",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "v2_rc": 1
+    }
+  ],
+  "synthetic_geometry": {
+    "rejected_geometry_cases": [
+      [
+        [
+          100,
+          4000
+        ],
+        7840,
+        [
+          28,
+          28
+        ],
+        "lose source orientation"
+      ],
+      [
+        [
+          4000,
+          100
+        ],
+        7840,
+        [
+          28,
+          28
+        ],
+        "lose source orientation"
+      ],
+      [
+        [
+          641,
+          913
+        ],
+        200000,
+        [
+          532,
+          364
+        ],
+        "inconsistent with aspect-preserving grid rounding"
+      ]
+    ],
+    "valid_geometry_cases": [
+      [
+        [
+          641,
+          913
+        ],
+        200000,
+        [
+          364,
+          532
+        ]
+      ],
+      [
+        [
+          641,
+          913
+        ],
+        200000,
+        [
+          336,
+          476
+        ]
+      ],
+      [
+        [
+          913,
+          641
+        ],
+        200000,
+        [
+          532,
+          364
+        ]
+      ],
+      [
+        [
+          100,
+          4000
+        ],
+        7840,
+        [
+          28,
+          280
+        ]
+      ],
+      [
+        [
+          100,
+          4000
+        ],
+        7840,
+        [
+          28,
+          252
+        ]
+      ],
+      [
+        [
+          4000,
+          100
+        ],
+        7840,
+        [
+          280,
+          28
+        ]
+      ],
+      [
+        [
+          100,
+          4000
+        ],
+        784,
+        [
+          28,
+          28
+        ]
+      ]
+    ]
+  },
+  "unchanged_original_checker_called": true,
+  "version": "mm5.capped-encoding.v2"
+}

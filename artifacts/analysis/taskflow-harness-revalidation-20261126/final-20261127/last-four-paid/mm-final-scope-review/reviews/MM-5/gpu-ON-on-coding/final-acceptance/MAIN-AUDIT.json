@@ -1,0 +1,12 @@
+{
+  "at": 1795753142.730075,
+  "events_sha256": "0cf14abbbc10d9eecb9e93f53cefe11c03c583f55261b4a82724a9e9b5912f3a",
+  "completed_commands_audited": 7,
+  "scope": "candidate/baseline/pinned-source inspection and task-local tests or private mock probes; no real inference/server launch; candidates unchanged",
+  "read_scope_note": "GPU ON included a parent-directory AGENTS filename search; no external instructions or other answers were opened. This metadata search is retained in the raw trace.",
+  "advisory": "ACCEPT",
+  "main_decision": "accepted_original_scope",
+  "qualification": "Original feasible-cap and startup-environment contract accepted independently. Main audited all seven commands, exact diff, independent payload/HTTP/recorder checks and focused suites. Additional infeasible cap <784 behavior remains separately failed; no robust or deployed claim.",
+  "additional_infeasible_cap_robustness": "failed and separate from original-scope acceptance",
+  "candidate_patch_sha256": "8881ced49ee66bc0810b5dae8e3f6b184278a46db0cac485a4a7ceb97e4fce82"
+}

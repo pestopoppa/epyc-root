@@ -1,0 +1,22 @@
+{
+  "actual_result": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback-admission-v2/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/RESULT.json",
+  "actual_result_sha256": "8d6ef731747910ad3b70b82950986a6edc13aed7746dcac8c5e30acb4dc45234",
+  "raw_status_preserved": "oracle_fail",
+  "raw_oracle_preserved": {
+    "rc": 1,
+    "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+    "acceptance_version": "paw5.markdown-fields.v3",
+    "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "54da3fc2fe4cf39debb557bd724d294717d0d126dadcf331a9605e7194d74cc2",
+    "semantic_review_required": true
+  },
+  "qualified_v5_rc": 0,
+  "qualified_v5_receipt_sha256": "11c79165e574ca36b50271d06724cdc8a44acb281e68cfc70c195d06fd4d9f0c",
+  "source_safety": "one regular non-executable Markdown output in original allowlist; patch/file hashes match; unsafe/outside-scope fields empty; no candidate code executed",
+  "source_semantic_acceptance": "pending fresh paid expert review; not inferred from structure",
+  "history": "verbatim actual neutral1 + measured clean paid2 from distinct epochs; old false-pin branch excluded",
+  "review_seal_sha256": "48d2b5e9f430a76bf470c34f48441d513a7373616f023a2e3ba332c0b0d358e9",
+  "plan_sha256": "9045149c92a904cc63fac64f8e9208ade5a4fcdd161ade050a12f3fbbcb30ab5",
+  "model_calls_during_preparation": 0
+}

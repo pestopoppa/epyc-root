@@ -1,0 +1,179 @@
+{
+  "lease": {
+    "holder": {
+      "pid": 133800,
+      "ppid": 89061,
+      "start_ticks": 161837437
+    },
+    "controller": {
+      "pid": 133805,
+      "ppid": 133800,
+      "start_ticks": 161837443
+    },
+    "native": {
+      "gpu": {
+        "pid": 147287,
+        "ppid": 133805,
+        "start_ticks": 161842751
+      },
+      "cpu": {
+        "pid": 147530,
+        "ppid": 133805,
+        "start_ticks": 161842764
+      }
+    },
+    "providers": {
+      "gpu": {
+        "port": 56071,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/live.json",
+        "serving_receipt_sha256": "60e658b4147bbaba5e79cc93efa8621ef15756ff0c242ce9378e850ecfc8f81f",
+        "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      },
+      "cpu": {
+        "port": 52473,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/live.json",
+        "serving_receipt_sha256": "66b8b361767f3f124e4363766b51ab2476f18194accee0a53f8f497ad5d30741",
+        "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      }
+    },
+    "grant": {
+      "holder_pid": 133800,
+      "regions": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ]
+    },
+    "receipts": {
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/READY.json": "7da1bd085dea64c16d60b0316eb4cfd5378445ad394690d40f75e46a67c78d15",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/GRANT.json": "8573a8e5292de0c1c3622349998f1bfa9c4d26c98b6943ad318e6cd99ec814d3",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/SERVING.json": "9f4d4437231e0dc035b791b5e45634e75f355740693ed81438b7f9c28bde922d",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/serve.py": "97d17990a584623dc3c346fbee2023757df291ec251adcc012c76447cd410710"
+    }
+  },
+  "jobs": [
+    {
+      "id": "gpu-MM-5-off-common-on-sampling-v4-mechanical-3",
+      "kind": "canonical",
+      "row": {
+        "case": "MM-5",
+        "backend": "gpu",
+        "thinking": false,
+        "profile": "off-common-on-sampling",
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 223355
+        },
+        "slot": 2,
+        "cohort": 0,
+        "request_cap": 32768,
+        "generated_ceiling": 120000,
+        "wall_s": 1800,
+        "id": "gpu-MM-5-off-common-on-sampling",
+        "required_for_residual_question": true,
+        "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+      },
+      "sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/SOURCE-CONTROL.sha256": "0dd66ef730a0715235abbae6e78ac71f99bff80aa35fac7c24b09d19cda48368",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/oracle.py": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/vision_contract_v4.py": "b74f64cccb3ac7543f6283ad92a25067fe8e4e47ded63b310b2580992f75c091",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls.py": "93166e610f779fd4e9e4f3495ce6f0c08b80071f16af832634b28dd67321a641",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/grade_saved.py": "93a6da6437d16b8e6ce22ff9685496899f07c69b4adb75b4da59cc522cec8370",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/README.md": "a3f7d97a7162475777df858fae55673c3be6ee84cd7371bd385ef6789af8f168",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/CONTROL.json": "c302faec4f1e5405ab6d8f77a3f352befab2ea405b7ff12adc0556f01d02bb08",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/acceptance-migration.json": "87ac9c4f2c0af036dd302d41ee7b08bd3a6c59fc4c83a60b62aeac6e361bca24",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/baseline/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/baseline/stdout.log": "bae3b171c71f99da44cef6a063a5bf9a6e2e1d7e81c1099be88c3b3a64f74cf2",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/environment-control-removed/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/environment-control-removed/stdout.log": "3195c5f1a4d0af224349f404361fed2e53adcde06587568cf56cea3ad46e0e2c",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/environment-read-at-startup/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/environment-read-at-startup/stdout.log": "2dc3168da18a1ddd5ec03639519ea4dc630c032a766eb00970d1106f5ff4e5a8",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/environment-read-at-startup-old-v3/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/environment-read-at-startup-old-v3/stdout.log": "5c91a7c8cf33e51f1a0ada192e3f0dbebe31a9311c4ac390ba8b12d478957104",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/infeasible-cap-stalled/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/infeasible-cap-stalled/stdout.log": "0e28e214aaea523b1ce668b96db4c3416e01fc8fdd4a24d7b4b3885220bd437e",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/main-direct/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v4/controls/main-direct/stdout.log": "2dc3168da18a1ddd5ec03639519ea4dc630c032a766eb00970d1106f5ff4e5a8",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/REVIEW.json": "9a22346899b7458d4a3227deebb917f22cb1fab942530c08bc326410412c62f4",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/DEPENDENCIES.json": "1b5b4a2b378fa1cc1be7ec8d23be8b90789a3d7cdb72619ebd275676859271a4",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/PACKAGE-SEAL.json": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/case.json": "08d950e7bfe1447adbd9f0fe124f1bfcf0b34cf5b6199e6c80b7049474f4a655",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/evaluator-support/tu_grader_isolation.py": "6da203e37f636fe2d094f4742bbef5816daf2af04add8b5bf150fa3843891de5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/evaluator-support/vision_contract.py": "ebf06226092574fd21faeb026624618074308a82fa5307cbe488861482215cbb",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/oracle.py": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/task-env.json": "65abb3f4db8cc69ac0a53eca561fa9bc71fbb92dc832ff913f16d125e5289cc2",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/prepare.py": "9bd8e09ab2d3adb4cf44f1ed0a9c68eaacfa8dee6cbeb3d713266fc8b3b5b341",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-objective-followup/runs/mm-01/units/gpu-MM-5-off-common-on-sampling-objective-1/worker/receipt.json": "cba708baf6d6650fcf4bafb34e4af823f4f7705b887e36914445741bab230f54",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-objective-followup/runs/mm-01/units/gpu-MM-5-off-common-on-sampling-objective-1/worker/session.json": "72262dfff25896cd657477065a93381787d4399d3afa21c0dafea815e720e3ca",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/CALLBACK-RESULT.json": "a2bdadbfcb1548ef099acb67793a114c1444c324e7328ceff6f4d833f807b141",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/FEEDBACK.txt": "a75ac13b0028e6281782cc84a6a1a931a95ceae601cb7d044eaa63fe33181073",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/JOB.json": "94e2deeabba161e3511a6dfcb9d040e5aa773258ccf0075ef62b25792e19a986",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/RESULT.json": "a2bdadbfcb1548ef099acb67793a114c1444c324e7328ceff6f4d833f807b141",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/grade-lane/src/vision/analyzers/vl_describe.py": "d2925db56a8210bc0fda465164ff06852bfbdf6a595696edac570ce4d67c6090",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/grade-lane/tests/unit/test_vl_describe_resize.py": "04ed9e60a7cb373bd526d121ae14f94adf8396f733fea5132ac32363c3e1a267",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/candidate/candidate.patch": "b9a257627af85dc1f2f024afee7aac3d2675f48a1ebec65c502b5a08f0c0c80b",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/receipt.json": "4570e4e623a0c2bfd4911c945b64cd684df4c2307952eb676deb40cc099de839",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v2/SOURCE-CONTROL.sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v2/oracle.py": "6619c29e02b97122137357b410da8968344fcf55aa01033a61e55dc611804099",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v2/vision_contract_v2.py": "c08d80d2cd4c50599465c75687cc17ea83ebe5632d3ce768b970cc358da48bdd",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/grade_saved.py": "2a9372024b24a43c979750dbcedec54d0e9758525cf47bb6968ce29119a269e9",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/grade_v2.py": "9eb4305c6a1578024889191e764b20144c90a42b284b124cfd0e3efb97d75f8b",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/grades/gpu-MM-5-off-common-on-sampling-v4-objective-2/RESULT.json": "090f0236eac2d7b8add3b03d4249e9b1a4755096b2296e25cb8d33a828764436",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/grades-v2/gpu-MM-5-off-common-on-sampling-v4-objective-2/RESULT.json": "a9b8c41971a501c36fab661bd002099e81f349749ed20a89c3bc62258ae87f72",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/grades-v4/gpu-MM-5-off-common-on-sampling-v4-objective-2/stdout.log": "0aceee225cab492fe17ef991c7534b61ad26147a6e73ad26a0979b20806f6b96",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/grades-v4/gpu-MM-5-off-common-on-sampling-v4-objective-2/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-objective-2/grades-v4/gpu-MM-5-off-common-on-sampling-v4-objective-2/RESULT.json": "66414931b053ad1d9bfac19070a312b27e1ad1dca4e96e210444341dea8fb0f6",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/session.json": "700cf144f82aad74c24d97b17aad8fed5ccf8b6f03285e2d6938a600797eba11"
+      },
+      "owner_deadline_s": 300,
+      "feedback": {
+        "text": "Continue in the same saved workspace and session. A supplemental independent verifier reported:\n\ncap=1: AssertionError: source (200, 150), cap 1: encoded dimensions (28, 28) exceed the cap\n\nAddress only that observation, keeping the original scope and previous working behaviors.\n",
+        "prior_attempt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker",
+        "prior_receipt_sha256": "4570e4e623a0c2bfd4911c945b64cd684df4c2307952eb676deb40cc099de839",
+        "prior_session_sha256": "700cf144f82aad74c24d97b17aad8fed5ccf8b6f03285e2d6938a600797eba11",
+        "prior_workspace_session_sha256": "c54c2061b91760c0eb8a7bc8d9dda9118c98654c4697937c440072e9b2008888"
+      },
+      "state_paths": [
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/sandbox/work",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2/worker/sandbox/session"
+      ],
+      "state_sha256": "c54c2061b91760c0eb8a7bc8d9dda9118c98654c4697937c440072e9b2008888",
+      "prior_session": "ses_de53dae52ffewe4XuP6IyfpIUj",
+      "previous_attempts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling",
+          "generated": 8477,
+          "worker_wall_s": 362.92258644104004
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-objective-followup/runs/mm-01/units/gpu-MM-5-off-common-on-sampling-objective-1",
+          "generated": 3666,
+          "worker_wall_s": 182.3078682422638
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/mm-v4-01/units/gpu-MM-5-off-common-on-sampling-v4-objective-2",
+          "generated": 5032,
+          "worker_wall_s": 585.8623330593109
+        }
+      ],
+      "source_guidance": {
+        "paid_model_calls": 0,
+        "ordinal": 3,
+        "class": "extra post-review verifier-only",
+        "original_cap_two_robustness_reject_preserved": true,
+        "additional_infeasible_cap_robustness_only": true,
+        "claim_minimum_guidance": false
+      }
+    }
+  ],
+  "model_calls_during_preparation": 0,
+  "after": "W66 light-v2 OFF terminal, GPU2 lock released, native slot idle"
+}

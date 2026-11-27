@@ -1,0 +1,13 @@
+{
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/review.py": "90b51de0c741c889b5b6e749e8d09a0b8fc3a8463edee51dcaa685428f14287d",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/normalize.py": "898cd9b48e46d025f44b3339fa02b83b0bd09803a06c87344ac21f276e5397ed",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/CODE-LOCK.json": "6b0c746d5babcb869b603fa13e27c6c44e8ee3fa72b659829d6b9210f16410c3",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/CONTROL.json": "2017575c6eefc5b7b4becbb7ae454a650565225130a470f32293c065c6a1e8b6",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/README.md": "10518be04ad7e270e59d80ec65bf58c8b9bd4717fce3e7580d3d1892c5c9ef34"
+  },
+  "reuse_source": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py",
+  "review_seal_sha256": "515e8464402fb810456c8c2d45fac05a7e3e72d6be86223d497dbec873ef070c",
+  "plan_sha256": "3cdd7da8761a7b9cdf02198447f84b023375f334a2626dad53aa0b66f3361d1c",
+  "model_calls": 0
+}

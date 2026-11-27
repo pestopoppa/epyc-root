@@ -1,0 +1,95 @@
+{
+  "id": "MM-5",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 2,
+  "allowed_next_native_correction": null,
+  "native_correction_ceiling": 2,
+  "candidate_patch_sha256": "2341bd391d2a6fdbf8c574d20b538d029a26338a1f0ce43000db1f82fc72f9c1",
+  "local_result": {
+    "id": "cpu-MM-5-off-recommended-v4-objective-2",
+    "case": "MM-5",
+    "backend": "cpu",
+    "thinking": false,
+    "profile": "off-recommended",
+    "status": "awaiting_source_review",
+    "patch_sha256": "2341bd391d2a6fdbf8c574d20b538d029a26338a1f0ce43000db1f82fc72f9c1",
+    "oracle": {
+      "rc": 1,
+      "candidate_patch_sha256": "2341bd391d2a6fdbf8c574d20b538d029a26338a1f0ce43000db1f82fc72f9c1",
+      "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+      "acceptance_version": "MM V4",
+      "native_suite_components": {
+        "additional_infeasible_cap_robustness": {
+          "detail": "cap=1: AssertionError: source (200, 150), cap 1: encoded dimensions (28, 28) exceed the cap",
+          "failure_type": "AssertionError",
+          "status": "fail"
+        },
+        "brief_environment_control": {
+          "detail": null,
+          "status": "pass"
+        },
+        "unchanged_original_and_v2_feasible": {
+          "detail": null,
+          "status": "pass"
+        }
+      },
+      "scope": "observed contained V4 test outcomes; reviewer interprets original brief"
+    },
+    "changed_files": {
+      "src/vision/analyzers/vl_describe.py": {
+        "sha256": "68f23faa598523f05aa4ec346dc383d54682af6693aa282421257e34b9924772",
+        "bytes": 26482,
+        "executable": false
+      },
+      "tests/unit/test_vl_describe_resize.py": {
+        "sha256": "1464e55a1db48a7da86e7521ad9ef4c573eae2fc5cd16fea5878e78ab84e987a",
+        "bytes": 8296,
+        "executable": false
+      }
+    },
+    "outside_scope": [],
+    "unsafe_paths": [],
+    "generation_observed": 5475,
+    "model_wall_s": 1444.577395439148
+  },
+  "actual_prior_help": [
+    {
+      "native_ordinal": 1,
+      "help_kind": "deterministic verifier observations only",
+      "sha256": "506f1ed9c1388fdb871e7644edb6b4959852f09106ba50b05afc5f6dfc3ae13d",
+      "text": "Continue the same task and scope from the saved workspace and session.\n\nThe independent verifier reported:\n\nunder-cap image at cap 30000: encoded bytes differ from the original.\n\nAddress that observed failure. Preserve the original requirements and rerun the task-local check.\n",
+      "truncated": false
+    },
+    {
+      "native_ordinal": 2,
+      "help_kind": "deterministic verifier observations only",
+      "sha256": "a75ac13b0028e6281782cc84a6a1a931a95ceae601cb7d044eaa63fe33181073",
+      "text": "Continue the task in the same saved workspace and session. The independent versioned verifier observed:\n\n- cap=1: encoder did not return within 8 seconds\n\nAddress those observed behaviors and retain the original requirements, scope, and focused task tests.\n",
+      "truncated": false
+    }
+  ],
+  "objective_diagnostics": {},
+  "structural_reassessment": {
+    "rc": 1,
+    "candidate_patch_sha256": "2341bd391d2a6fdbf8c574d20b538d029a26338a1f0ce43000db1f82fc72f9c1",
+    "oracle_sha256": "0f3ab2bb06b1b6e209795e9aa103ed2a7b134322daaa04e37fa60a70d8aa3c2a",
+    "acceptance_version": "MM V4",
+    "native_suite_components": {
+      "additional_infeasible_cap_robustness": {
+        "detail": "cap=1: AssertionError: source (200, 150), cap 1: encoded dimensions (28, 28) exceed the cap",
+        "failure_type": "AssertionError",
+        "status": "fail"
+      },
+      "brief_environment_control": {
+        "detail": null,
+        "status": "pass"
+      },
+      "unchanged_original_and_v2_feasible": {
+        "detail": null,
+        "status": "pass"
+      }
+    },
+    "scope": "observed contained V4 test outcomes; reviewer interprets original brief"
+  },
+  "structural_pass_implies_semantic_acceptance": false
+}

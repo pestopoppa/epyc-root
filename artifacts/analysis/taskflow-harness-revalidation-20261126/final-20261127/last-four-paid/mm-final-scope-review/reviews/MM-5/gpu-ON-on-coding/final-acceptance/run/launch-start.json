@@ -1,0 +1,31 @@
+{
+  "started_unix": 1795753006.5870678,
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--json",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "danger-full-access",
+    "-C",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/mm-final-scope-review/reviews/MM-5/gpu-ON-on-coding/final-acceptance/runs/MM-5/guidance-1/lane",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "-c",
+    "model_provider=\"openai\"",
+    "-c",
+    "project_doc_max_bytes=0",
+    "-c",
+    "mcp_servers={}",
+    "-"
+  ],
+  "version": "codex-cli 0.172.0",
+  "approval_sha256": "e90a45154cc62c33194e9839d566e6dc773efa0fc87f3f944116b901782d9901"
+}

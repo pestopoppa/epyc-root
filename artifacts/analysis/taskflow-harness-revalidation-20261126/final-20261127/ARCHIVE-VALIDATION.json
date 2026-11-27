@@ -1,0 +1,14 @@
+{
+  "decoded_source_files_verified": 474,
+  "stored_files_before_validation_manifest": 477,
+  "total_bytes_before_validation_manifest": 8585614,
+  "last_four_paid_review_roots": 4,
+  "forbidden_directory_copies": 0,
+  "raw_wire_copies": 0,
+  "all_decoded_source_hashes_match": true,
+  "all_source_hashes_rechecked_after_copy": true,
+  "machine_layout": "ARCHIVE-LAYOUT.json.gz",
+  "raw_source_unchanged": true,
+  "packaging_correction": "Raw pytest stdout gzip; stable owned-review-affinity archive filename; original source paths retained exactly in naturally compressed machine layout",
+  "tests_measurements_models_api_commits_index_writes": 0
+}

@@ -1,0 +1,12 @@
+{
+  "sha256": {
+    "review.py": "4fa4aef9f5dc46a3f624adf2ad92921e8a33533016332f93b51f04d8a8358e0f",
+    "CODE-LOCK.json": "b7d24b19b97e515f03e4f6fe81bb44c8227ca6df43d4c92938f2cdc774d4c98e",
+    "HISTORY-INPUTS.json": "252dac17a05d93dd2c5bfe6885ab5361461ca06c4f4f403db9bdd4273cd9c1fc",
+    "CONTROL.json": "d0c9708e9b73d888cde2790f6cecd8ec5c924aea106d6023cdf3438c2ecfbe5b",
+    "README.md": "dccf25118b37c4c8f727c292954348809fbdc11d5d251e286e5fd46a3674a0fb",
+    "SUPERSEDES.json": "1016fff81c8663b154b87487e035037a71de72ee1828129f4464d19526d33a74"
+  },
+  "model_calls": 0,
+  "actual_final_result_pending": true
+}

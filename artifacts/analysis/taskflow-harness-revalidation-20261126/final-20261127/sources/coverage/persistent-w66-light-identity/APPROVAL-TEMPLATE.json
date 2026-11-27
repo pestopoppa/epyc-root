@@ -1,0 +1,7 @@
+{
+  "approved_by": null,
+  "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-identity/PLAN.json",
+  "plan_sha256": "4d1ed8cb2386558b090a051479222ac107f8f8a193441be40f39eb4e2e0040b8",
+  "runner_seal_sha256": "106eed9eb78c775d85941c359d1a999eb5c637da12f5bfbf91406962de220427",
+  "scope": "one evidence-only same-session continuation; template authorizes no model call"
+}

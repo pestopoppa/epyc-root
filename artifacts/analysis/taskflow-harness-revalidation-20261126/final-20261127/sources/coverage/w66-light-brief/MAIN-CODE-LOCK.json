@@ -1,0 +1,10 @@
+{
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-brief/main.py": "aa53d379b384a0c55047a5af88166ec838381336b5c4c0126480130b7c173027",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/prepare.py": "864bdad1512fc223469a372b78f779e47e00c6432d7515cba0884a753172ce0c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/measure.py": "3175392d9b99143501a3b3e385d549234bc7ef4c2d50a802b72bf9a42f251488"
+  },
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "scope": "new private light-brief baseline/oracle, fresh direct-1, no detailed result reuse"
+}

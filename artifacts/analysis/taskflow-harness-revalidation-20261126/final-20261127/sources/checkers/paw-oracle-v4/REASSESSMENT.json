@@ -1,0 +1,32 @@
+[
+  {
+    "unit": "gpu-PAW-5-on-coding-guidance-2",
+    "checker_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+    "candidate_doc_sha256": "de92f989f3dc094eee2d03a593e587209e66bd66d8eac0d07a80d600121cf075",
+    "raw_result_sha256": "a9c5f11c3617d48e9d88c1842e337c4c2cdceb214d6f96f37b80380356b01394",
+    "raw_result_preserved": true,
+    "rc": 0,
+    "candidate_unchanged": true,
+    "scope": "structure/provenance only; semantic main review separate"
+  },
+  {
+    "unit": "gpu-PAW-5-off-recommended-guidance-2",
+    "checker_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+    "candidate_doc_sha256": "8ae5744ec7741a7ad1c610d2c9e0fa36e3e307a4a2a17fe7ef4b0f38155f42cd",
+    "raw_result_sha256": "996f4084fb52a15ba12edc3ce258f216ca639be26779ecdf46a8b25335aebd5a",
+    "raw_result_preserved": true,
+    "rc": 0,
+    "candidate_unchanged": true,
+    "scope": "structure/provenance only; semantic main review separate"
+  },
+  {
+    "unit": "cpu-PAW-5-off-recommended-numa-resume-1",
+    "checker_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+    "candidate_doc_sha256": "506db508599080eb7b155165d58ef3f84c9d4c22e4b449556f945e5904fdfa0f",
+    "raw_result_sha256": "1c28ec8b83e34244e0c13345cf8a8533e662593d20d4fb4b7f553f936b76db3c",
+    "raw_result_preserved": true,
+    "rc": 0,
+    "candidate_unchanged": true,
+    "scope": "structure/provenance only; semantic main review separate"
+  }
+]

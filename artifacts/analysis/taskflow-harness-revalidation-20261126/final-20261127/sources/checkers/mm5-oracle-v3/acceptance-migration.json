@@ -1,0 +1,63 @@
+{
+  "additional_robustness": "Infeasible cap=1 on valid image must terminate within 8 seconds and report clear validation or satisfy the encoded cap and grid. Report this separately from the original feasible-cap question.",
+  "brief_environment_control": "Omitted constructor override; unset env yields original bytes; positive cap affects actual mocked server request.",
+  "model_calls": 0,
+  "original_and_v2_checks_changed": false,
+  "original_evaluator_support": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/evaluator-support/vision_contract.py",
+    "sha256": "ebf06226092574fd21faeb026624618074308a82fa5307cbe488861482215cbb"
+  },
+  "original_oracle": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/oracle.py",
+    "sha256": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745"
+  },
+  "original_raw_grades_preserved": true,
+  "prior_grade_refs": {
+    "gpu-MM-5-off-common-on-sampling-objective-1": {
+      "v1": {
+        "candidate_patch_sha256": "03d40a81c951c564af50ffb371cc9c8cb7cc78dbe0325d63a09f5a43221f83c5",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades/gpu-MM-5-off-common-on-sampling-objective-1/RESULT.json",
+        "rc": 0,
+        "sha256": "e2690add654aa4ce0a3042c806c9209907e9f5d88e4c48a7c74c5231662539d2"
+      },
+      "v2": {
+        "candidate_patch_sha256": "03d40a81c951c564af50ffb371cc9c8cb7cc78dbe0325d63a09f5a43221f83c5",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades-v2/gpu-MM-5-off-common-on-sampling-objective-1/RESULT.json",
+        "rc": 0,
+        "sha256": "cada29e1561c591455fd6095523ba8f967d0bbf55f5912179eb2dcf7d0c2bb34"
+      }
+    },
+    "gpu-MM-5-on-coding": {
+      "v1": {
+        "candidate_patch_sha256": "d17c8c5ae8c6276058a7da874cd5b04a447771f6524d1d547500bb089f39046e",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades/gpu-MM-5-on-coding/RESULT.json",
+        "rc": 0,
+        "sha256": "3151a605b4a066115f80ad99f18b3d179369100df99e124003d3f11c90d4ec94"
+      },
+      "v2": {
+        "candidate_patch_sha256": "d17c8c5ae8c6276058a7da874cd5b04a447771f6524d1d547500bb089f39046e",
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades-v2/gpu-MM-5-on-coding/RESULT.json",
+        "rc": 0,
+        "sha256": "e65e4df261de7a893751dcf8abad39b9541908e44c1d1cdc91d7983cdd0cf7a3"
+      }
+    }
+  },
+  "schema": "mm5.capped-encoding.v3.migration",
+  "v2_seal": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v2/SOURCE-CONTROL.sha256",
+    "sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976"
+  },
+  "v3_control_receipt": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v3/CONTROL.json",
+    "sha256": "caa0f29a12aaf65fa8a9d874bd4332aee460f7dac83b3c31d39adce2f8a49081"
+  },
+  "v3_evaluator_support": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v3/vision_contract_v3.py",
+    "sha256": "911693b0047603529e4151ba947c7bd09de2ec127fc5a4ceac735b73683520e1"
+  },
+  "v3_wrapper": {
+    "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/mm5-oracle-v3/oracle.py",
+    "sha256": "6ee94e2b493298daf71b1bee9df2026a9f0611b31a151464b2279ee50fbc8e0b"
+  },
+  "version": "v3"
+}

@@ -1,0 +1,7 @@
+{
+  "candidate_json_sha256": "9a3efddba10a216ccf1bfec0d122472e83f95040e67fc80074bfb186e82e7d7a",
+  "candidate_patch_sha256": "3b7698dc25dc23d8d8411fafa22354dc919f5271f8bd6d5e094ed93c5ff4325b",
+  "reviewed_by": null,
+  "safe_for_contained_grade": false,
+  "scope_findings": []
+}

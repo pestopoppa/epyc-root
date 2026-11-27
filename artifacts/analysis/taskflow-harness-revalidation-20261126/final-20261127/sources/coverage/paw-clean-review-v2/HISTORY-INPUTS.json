@@ -1,0 +1,54 @@
+{
+  "expected_final_result": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-paid-01/units/gpu-PAW-5-off-recommended-clean-paid-2/RESULT.json",
+  "expected_row": {
+    "case": "PAW-5",
+    "backend": "gpu",
+    "thinking": false,
+    "profile": "off-recommended",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 1.5,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "slot": 0,
+    "cohort": 8,
+    "request_cap": 32768,
+    "generated_ceiling": 120000,
+    "wall_s": 1800,
+    "id": "gpu-PAW-5-off-recommended-clean-paid-2",
+    "resume": {
+      "prior": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1",
+      "prior_result_sha256": "a0605fa4efe46cf5d3aa6184c96e6ad3cbe795a781c14b9e15af4ca2b6758b4a",
+      "prior_session_sha256": "518e860a32effbe5fa2f160ca39877922cafa33bfaf51d00bf960342143555c1",
+      "prior_state_sha256": "2fa51abf007d26dbf1d1f9937bcf0fb24786d0bbe3a3da33bee22f53fa4be7b1",
+      "feedback": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/FEEDBACK.txt",
+      "feedback_sha256": "58b9ecb5baadf1c3eda3af9ec666c70a846fcfaa222ecfe75d4894ad36012ec0",
+      "ordinal": 2,
+      "main_model_feedback_calls": 1
+    },
+    "protocol_class": "initial0 + clean neutral1 + reviewed paid2",
+    "replay_reason": "earlier no-pinned-source diagnostic was a placement false positive",
+    "latest_acceptance_version": "paw5.markdown-fields-and-shared-source-map.v5",
+    "latest_acceptance_checker": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/paw-oracle-v5/oracle.py",
+    "latest_acceptance_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345"
+  },
+  "neutral_result": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/RESULT.json",
+  "neutral_prompt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/PROMPT.md",
+  "paid_guidance": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/FEEDBACK.txt",
+  "paid_accounting": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/assistance-accounting.json",
+  "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/PAW-CLEAN-PAID-2-PLAN.json",
+  "expected_sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/RESULT.json": "a0605fa4efe46cf5d3aa6184c96e6ad3cbe795a781c14b9e15af4ca2b6758b4a",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/OPEN-CODE-SESSION.json": "518e860a32effbe5fa2f160ca39877922cafa33bfaf51d00bf960342143555c1",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/paw-clean-01/units/gpu-PAW-5-off-recommended-clean-guidance-1/PROMPT.md": "c733e2c901125608bbb21fb784936e08ad1d55576e95a78e7d17977fe61f9bdf",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/FEEDBACK.txt": "58b9ecb5baadf1c3eda3af9ec666c70a846fcfaa222ecfe75d4894ad36012ec0",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/paw-clean-review/reviews/PAW-5/gpu-OFF-off-recommended/initial-diagnosis/runs/PAW-5/guidance-1/assistance-accounting.json": "e1eb013dd464d6247a34dd870fb2a7c375c7b47e5a42aa743d11564458359e06",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/PAW-CLEAN-PAID-2-PLAN.json": "0e3685e72d53ec3a9c0c0d44948d028bf0976c8f74cfebb22a93d6e816aa1bfe"
+  },
+  "protocol": "original0 -> neutral self-check1/guidance0 -> one measured paid semantic correction2 -> final independent acceptance; old false-pin branch excluded",
+  "model_calls_during_preparation": 0
+}

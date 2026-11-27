@@ -1,0 +1,11 @@
+{
+  "candidate_patch_sha256": "a24ac34ebdf412036e50b8c03f6d895b9f0fb55e40b3bc48b3e1a91b12a6e3e3",
+  "decision": "accepted",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/w66-light-acceptance/MAIN-TOOL-AND-VERDICT-AUDIT.json",
+  "source_review_sha256": "5301d765c1e6768aa78f27458f88e3a532b01a5f90a8b265ac56b25a382adf87",
+  "normal_completion": true,
+  "raw_native_status": "oracle_pass",
+  "qualification": "Same original two-test pass and exact receipt assertion preserved; independent review advisory agrees.",
+  "review_cost_class": "paid CLI vectors preserved; additional manager/source-control effort unisolated, not zero",
+  "at": 1795751869.6362727
+}

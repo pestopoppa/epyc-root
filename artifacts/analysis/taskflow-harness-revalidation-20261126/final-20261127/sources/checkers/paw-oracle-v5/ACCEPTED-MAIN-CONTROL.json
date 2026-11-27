@@ -1,0 +1,7 @@
+{
+  "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/PAW-5/direct-1/lane",
+  "candidate_doc_sha256": "bd758267038b1f78f5ac93f687945d462a13dde2691190a943c2744c55385148",
+  "checker_sha256": "35bd6675864686c1494319e71b011d36ad2632ad09abdd8a10fae47b3c2f9345",
+  "rc": 0,
+  "candidate_unchanged": true
+}

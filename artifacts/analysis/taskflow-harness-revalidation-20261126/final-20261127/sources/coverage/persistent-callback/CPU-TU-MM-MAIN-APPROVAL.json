@@ -1,0 +1,6 @@
+{
+  "approved_by": "main",
+  "runner_seal_sha256": "e203f1389e8753223da7ff9623ce67fad0f627716dd735c39117cce8344c5803",
+  "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/CPU-TU-MM-PLAN.json",
+  "plan_sha256": "9dbe1061abdb87ca63f9943355ff94c647198eedd5a9c9ad817ce1680f0ac7f8"
+}

@@ -1,0 +1,164 @@
+{
+  "row": {
+    "case": "TU-GR-1",
+    "backend": "gpu",
+    "thinking": false,
+    "profile": "off-common-on-sampling",
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "slot": 1,
+    "cohort": 0,
+    "request_cap": 32768,
+    "generated_ceiling": 120000,
+    "wall_s": 1800,
+    "id": "gpu-TU-GR-1-off-common-on-sampling",
+    "required_for_residual_question": true,
+    "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+  },
+  "lease": {
+    "holder": {
+      "pid": 133800,
+      "ppid": 89061,
+      "start_ticks": 161837437
+    },
+    "controller": {
+      "pid": 133805,
+      "ppid": 133800,
+      "start_ticks": 161837443
+    },
+    "native": {
+      "gpu": {
+        "pid": 147287,
+        "ppid": 133805,
+        "start_ticks": 161842751
+      },
+      "cpu": {
+        "pid": 147530,
+        "ppid": 133805,
+        "start_ticks": 161842764
+      }
+    },
+    "providers": {
+      "gpu": {
+        "port": 56071,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-gpu/live.json",
+        "serving_receipt_sha256": "60e658b4147bbaba5e79cc93efa8621ef15756ff0c242ce9378e850ecfc8f81f",
+        "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      },
+      "cpu": {
+        "port": 52473,
+        "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/out-cpu/live.json",
+        "serving_receipt_sha256": "66b8b361767f3f124e4363766b51ab2476f18194accee0a53f8f497ad5d30741",
+        "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+        "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+      }
+    },
+    "grant": {
+      "holder_pid": 133800,
+      "regions": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ]
+    },
+    "receipts": {
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/READY.json": "7da1bd085dea64c16d60b0316eb4cfd5378445ad394690d40f75e46a67c78d15",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/GRANT.json": "8573a8e5292de0c1c3622349998f1bfa9c4d26c98b6943ad318e6cd99ec814d3",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/runs/final-01/SERVING.json": "9f4d4437231e0dc035b791b5e45634e75f355740693ed81438b7f9c28bde922d",
+      "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-serving/serve.py": "97d17990a584623dc3c346fbee2023757df291ec251adcc012c76447cd410710"
+    }
+  },
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/worker/candidate/candidate.patch": "f1f7cfadb670ba96989bfd6770b85c339fa5b24909e1ff4617697b05604072c5",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/worker/receipt.json": "b21f2b4cd35e61226f105790dfac39e535a5824ed0937ee293ab71587e8efdc6",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/worker/session.json": "8773bd426293d4b286041fac2cef91d7f664c3e85c6a59e91f68654510feee16",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/RESULT.json": "2dfc5101dce26b6fb772813999452e1ec5ca82739dfd16071bef9887362f6909",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/JOB.json": "cb3e099de929a34127079501419c7862a32d29e209d7b854ffc0f6ca62c19171",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/PLAN.json": "d542a041a9e4b899993468dcd4d54e81d9d9d31c7f46af9a31b9a89ebcfaff4b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/VERIFIER-FEEDBACK.md": "4d9ab57a8c9425baf239f4c3eb960fc11715db06893a8bf96ae831c17ec0f4f2",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-objective-followup/grades/gpu-TU-GR-1-off-common-on-sampling-objective-1/RESULT.json": "b7650ba8bc1243447ddf7023fcf3e79d30cd0c3f73f2290e85a8b015369b4170",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/initial-diagnosis/runs/TU-GR-1/guidance-1/FEEDBACK.txt": "1ec563ed3b597a5d7cb29eeb6b954e2ba5ce462d0929cebf5f24eac3c8173972",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/initial-diagnosis/runs/TU-GR-1/guidance-1/measurement.json": "5fe8e949026b57a3e7f0753f91fbca2a5cb8665541b5c25fa4ad6706af6113bd",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/initial-diagnosis/runs/TU-GR-1/guidance-1/events.jsonl": "b21c179599fc9b2712b975d7940c4cc36f8588e5c7a3cfdbe7097a1fdc05442b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/initial-diagnosis/runs/TU-GR-1/guidance-1/plan.json": "3cdd7da8761a7b9cdf02198447f84b023375f334a2626dad53aa0b66f3361d1c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/reviews/TU-GR-1/gpu-OFF-off-common-on-sampling/initial-diagnosis/MAIN-APPROVAL.json": "5b22b0690889bc999ed8ab89bd4ab9f8b4bf90d6b32bf469119b77f4c8cd5b82",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/projections/gpu-TU-GR-1-off-common-on-sampling-objective-1/PROJECTION.json": "5908dd74125eba1ec8ac27704385bdedb381bea6afe38601978a94b637b55abc",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-assisted-review/projections/gpu-TU-GR-1-off-common-on-sampling-objective-1/RESULT.json": "307affac5b954b3e3d2c639375545c7968f2e67e09e953c97c74761baefd5b03",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker/receipt.json": "2e5d8568f0262a4c65c5d4c582f2cc94aa2152708d339eeb57b6d86c5a0d24ec",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker/receipt.json": "16d98d75ac7370c0b5fdfe78df3e9ff5c90c981d234d7ceb45b7c2a1018dcc0a",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker/candidate/candidate.patch": "d89c9a99a771685eb8c9f884e2ff479a1680ee54b03ba4dd90d1d0d0ca07b037",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker/session.json": "d63e676159da3dbe484f8993076a1d389079113b04980b5f31952a137ca49a38",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/CALLBACK-RESULT.json": "d05b1b8df396c5237af39adef091974355f5f54cddf1b6240c85b852de3d8dfe",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/PLAN.json": "54efa40ccb5176f68cfe2cece2d942ac0359aa765846259fc13f4cf36a4d2f51",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-on-tu-paid/grades-tu-v2/gpu-TU-GR-1-off-common-on-sampling-paid-2/RESULT.json": "d3d3e72c122d2589d2d0aef972aec1c0e196c90a84cdd854ca70ab8f00ab89f1",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-on-tu-paid/grades-tu-v2/gpu-TU-GR-1-off-common-on-sampling-paid-2/stdout.log": "05ff07c56f324c159b70d35f65bf2edb49d7fff2d2b2ed844616735ea16237f0",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-gpu-mm-on-tu-paid/grades-tu-v2/gpu-TU-GR-1-off-common-on-sampling-paid-2/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/PLAN.json": "77674acc57934b69f84fa6ee49dab7ed5df020b0077733d5e510cf90125a55a1",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/APPROVAL.json": "244ccc9bfe42382b7f6cc035a6d625f24c4af38a6b3131f0b8db089eae2fb6c0"
+  },
+  "history": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker",
+      "receipt_sha256": "2e5d8568f0262a4c65c5d4c582f2cc94aa2152708d339eeb57b6d86c5a0d24ec",
+      "generated": 6470,
+      "charged": 6470,
+      "generation_unknown": 0
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/objective-followup/runs/tu-01/units/gpu-TU-GR-1-off-common-on-sampling-objective-1/worker",
+      "receipt_sha256": "b21f2b4cd35e61226f105790dfac39e535a5824ed0937ee293ab71587e8efdc6",
+      "generated": 12765,
+      "charged": 12765,
+      "generation_unknown": 0
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker",
+      "receipt_sha256": "16d98d75ac7370c0b5fdfe78df3e9ff5c90c981d234d7ceb45b7c2a1018dcc0a",
+      "generated": 9660,
+      "charged": 9660,
+      "generation_unknown": 0
+    }
+  ],
+  "session": "ses_de53dad49ffe3M7XhpEt7fmQ89",
+  "checkpoint": {
+    "prior_attempt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-callback/runs/tu-off-paid-01/units/gpu-TU-GR-1-off-common-on-sampling-paid-2/worker",
+    "prior_receipt_sha256": "16d98d75ac7370c0b5fdfe78df3e9ff5c90c981d234d7ceb45b7c2a1018dcc0a",
+    "prior_session_sha256": "d63e676159da3dbe484f8993076a1d389079113b04980b5f31952a137ca49a38",
+    "prior_workspace_session_sha256": "8c268a711c3fcb4a8b85e9e94ee2f3cf1eed1911428c4017536dc3d0b9a6dc6c"
+  },
+  "prior_paid_guidance": {
+    "paid_model_calls": 1,
+    "ordinal": 2,
+    "class": "measured paid source review corrective guidance",
+    "usage": {
+      "input_tokens": 128419,
+      "cached_input_tokens": 113664,
+      "output_tokens": 1128,
+      "reasoning_output_tokens": 70,
+      "uncached_input_tokens": 14755
+    },
+    "model": "gpt-6.1-sol",
+    "effort": "low",
+    "measured_wall_s": 35.28797
+  },
+  "new_paid_guidance_calls": 0,
+  "first_feedback": "The contained TU acceptance checker reported the result below for the saved candidate. Use this failure evidence to debug the existing candidate and continue the original task. Keep the original scope and test contract. The verifier will rerun after this turn.\n\nEvidence from the trusted TU V2 checker\n\n> simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('failure', 'RuntimeError: Launcher exited with code 1: Traceback (most recent call last):\\n  File \"<string>\", line 1, in <module>\\nModuleNotFoundError: No module named \\'harness\\'')}\n> FAILED scripts/autopilot/evals/dtap/tests/test_grader_isolation.py::test_isolated_launch_denies - RuntimeError: Launcher exited with code 1: Traceback (most recent call last):\n>   File \"<string>\", line 1, in <module>\n> ModuleNotFoundError: No module named 'harness'\n",
+  "first_diagnostic": "simulated namespace capable: expected rc=0 and control passed / isolated passed, got rc=1 and {'test_reachable_grader_is_flagged': ('passed', ''), 'test_isolated_launch_denies': ('failure', 'RuntimeError: Launcher exited with code 1: Traceback (most recent call last):\\n  File \"<string>\", line 1, in <module>\\nModuleNotFoundError: No module named \\'harness\\'')}\nFAILED scripts/autopilot/evals/dtap/tests/test_grader_isolation.py::test_isolated_launch_denies - RuntimeError: Launcher exited with code 1: Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nModuleNotFoundError: No module named 'harness'",
+  "original_verdict": "cap2_rejected_preserved",
+  "repeat_grade": "V3",
+  "budget": {
+    "turns": 2,
+    "branch_wall_s": 900,
+    "each_active_s": 450,
+    "cumulative_generated_ceiling": 120000
+  }
+}

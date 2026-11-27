@@ -1,0 +1,224 @@
+{
+  "controls": [
+    {
+      "name": "legacy-colon-accepted",
+      "candidate_sha256": "271dcb29bfa0a82a247c9441b0cfc73de5caf6ac7168c87a1dd08cc5b001f0f2",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "period-inside-bold-accepted",
+      "candidate_sha256": "984ade2a7309f3500687635b7ba1776e106ea08a852b0437c4fa1042d15c88d6",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "colon-outside-bold-accepted",
+      "candidate_sha256": "910ed888acf3115ec4a164b1468e7162c21001776d53ea75ab9201a5ba89340b",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "plaintext-inline-label-accepted",
+      "candidate_sha256": "e48dcb3949a864d28b6484cf438ec3a6ac8a47badb15463d93cfde99b0a57885",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "missing-Compile-once candidate",
+      "candidate_sha256": "28e1c27d4597b8cb60308b6f27dce5eb73f0b4615bcc414d93f153f987250512",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Compile-once candidate"
+    },
+    {
+      "name": "empty-Compile-once candidate",
+      "candidate_sha256": "c02e5a4d3258ea7373598846a6e39eb69716bd78eae6b42bac943dc7ec3e4e56",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Compile-once candidate"
+    },
+    {
+      "name": "missing-Direct-model baseline",
+      "candidate_sha256": "07d1badb3c945e8d019ad67a8c74d755dc8959852ed79ce5ebb6cb27c72f2b52",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Direct-model baseline"
+    },
+    {
+      "name": "empty-Direct-model baseline",
+      "candidate_sha256": "229081214eec89679cbbdcc19c605f500c9abd9d67e0d2e445902c969095f8fe",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Direct-model baseline"
+    },
+    {
+      "name": "missing-Comparison",
+      "candidate_sha256": "89f923b6b34c49760ff2bdcd8cf835ead0c73545e86793aa98de10540a2c3c0a",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Comparison"
+    },
+    {
+      "name": "empty-Comparison",
+      "candidate_sha256": "92a14fe7d024ca39631de4f190e8131e9cff528c974bbf34e7aeb6ea3de2553a",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Comparison"
+    },
+    {
+      "name": "missing-revision",
+      "candidate_sha256": "09c31f1307dba0d6b91b2ac41d0e6b2ad7d6540950f5c2e7750b5ad1b2193a3e",
+      "rc": 1,
+      "expected": false,
+      "witness": "candidate has no pinned source"
+    },
+    {
+      "name": "missing-seam",
+      "candidate_sha256": "14b896981daf7a2d825764a3be61f6231477c7d2d3d03110d19eca88a9e6cb8a",
+      "rc": 1,
+      "expected": false,
+      "witness": "candidate has no reviewed loop seam"
+    },
+    {
+      "name": "missing-prerequisite",
+      "candidate_sha256": "4e632707847d98603d5c801f806fe793f1f5b3783f7501820b6f4e92cd5b8f8e",
+      "rc": 1,
+      "expected": false,
+      "witness": "compilation prerequisites missing"
+    },
+    {
+      "name": "no-candidate",
+      "candidate_sha256": "c3cab4453737ae1143cfefa14acd3f4da01f2576db2e7acad20a94bf7c74c4c5",
+      "rc": 1,
+      "expected": false,
+      "witness": "expected 1-3 named candidates"
+    },
+    {
+      "name": "excluded-json-repair",
+      "candidate_sha256": "42906275ef1f63d6b4a126d4d49094d2c2a67236b0de45a6eb44ea2b729daf71",
+      "rc": 1,
+      "expected": false,
+      "witness": "excluded JSON repair"
+    },
+    {
+      "name": "heading-paragraphs",
+      "candidate_sha256": "d16bc16afb1d9789a9f7bc0f32a5c8ab595dba1e87990f90960fc0fe69447f23",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "empty-heading-Compile-once candidate",
+      "candidate_sha256": "966da4dc2abcd0c519bd31bb1fd6914bec5cd6cd23f652da83dae01a9d355110",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Compile-once candidate"
+    },
+    {
+      "name": "empty-table-Compile-once candidate",
+      "candidate_sha256": "1de1ab237ecf21fd19cbb13fb75d8d79f17a6ae3173ba3629ad4296e7fa0bcde",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Compile-once candidate"
+    },
+    {
+      "name": "absent-heading-Compile-once candidate",
+      "candidate_sha256": "676b1963601721f7990257b797bfe367192b1615481257d30e0a4ecfe6c3487c",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Compile-once candidate"
+    },
+    {
+      "name": "empty-heading-Direct-model baseline",
+      "candidate_sha256": "a457c7fd83e3a4584892b6b88d46a3aa19714bf119819f7398d4654ca8e83e0a",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Direct-model baseline"
+    },
+    {
+      "name": "empty-table-Direct-model baseline",
+      "candidate_sha256": "873b390dc2774b293017bee74db77de7be89bc9c1a9ef7ab9c9e4073e4d5bfa0",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Direct-model baseline"
+    },
+    {
+      "name": "absent-heading-Direct-model baseline",
+      "candidate_sha256": "010d4e6c192031838b9a4cf469f1d17cc01e91c33d0efe1e07f0d49e5e0aa064",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Direct-model baseline"
+    },
+    {
+      "name": "empty-heading-Comparison",
+      "candidate_sha256": "f60c3796cd0beb507b3ef901822b5edeec6b427c9db171a4e4e333ac563b7190",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Comparison"
+    },
+    {
+      "name": "empty-table-Comparison",
+      "candidate_sha256": "88838bba09fb48b074f73710220b12069f256bbbe7327f1d2a1375870815dae2",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Comparison"
+    },
+    {
+      "name": "absent-heading-Comparison",
+      "candidate_sha256": "1fc85d6a7b03b8172df56c7808604d8a25c80d030a940109dee0c61b683996dc",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Comparison"
+    },
+    {
+      "name": "heading-nonempty-tables",
+      "candidate_sha256": "161f19304f0dc81c55edffd180738946061118d45d4aa702fbfbb36767998b52",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "heading-colon-and-closing-hashes",
+      "candidate_sha256": "ad20a066c7e03bb5e893d766afe3d7b3d5e88ca6771fa43add7594497097a010",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "standalone-bold-label-following-bullets",
+      "candidate_sha256": "00308bc30616a3efa663f153f2103a0479c1e2010764ffd58cf0da057f6f207e",
+      "rc": 0,
+      "expected": true,
+      "witness": ""
+    },
+    {
+      "name": "empty-standalone-label-Compile-once candidate",
+      "candidate_sha256": "7e039d9018ecfeea4d65d9ae97b42d68e2edc66efbd050027a5bdf6e1e39e2b1",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Compile-once candidate"
+    },
+    {
+      "name": "empty-standalone-label-Direct-model baseline",
+      "candidate_sha256": "8693b3cec86b9c77f8138bfadc636e0ee5791c89b9621854ebd66ff2f81d7e42",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Direct-model baseline"
+    },
+    {
+      "name": "empty-standalone-label-Comparison",
+      "candidate_sha256": "2baed68c6e254105f1b58a64071d0e886c73dcd43b175fc04a44a5502766deab",
+      "rc": 1,
+      "expected": false,
+      "witness": "AssertionError: Comparison"
+    }
+  ],
+  "all_passed": true,
+  "oracle_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+  "old_controls_source_sha256": "c317117e10c4ae1a646072dc6434da0664ba130f398940946b2851af9ff1c6c5"
+}

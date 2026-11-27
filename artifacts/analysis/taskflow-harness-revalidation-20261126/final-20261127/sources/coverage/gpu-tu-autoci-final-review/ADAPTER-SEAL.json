@@ -1,0 +1,11 @@
+{
+  "schema": "gpu-tu-auto-ci-final-review.v1",
+  "sha256": {
+    "review.py": "49a3311eb7fe942e5049734cca660731dc6b08f0dc8aac3852bf50b89b1d7231",
+    "normalize.py": "74166cb4db83d2d54b1e1cd010eb4fe03a8d05c7c325fcb3d4ba5f59b0a73381",
+    "control.py": "761dce8a9365189811a9d3420a849b84e179223ad55b5dae91f7ea07447f18e3",
+    "CONTROL.json": "cfcbcc1f1aa8818a40a96a911e05764ca61d769414e55875acf97cf01898a535",
+    "CODE-LOCK.json": "1e3ef97554ff43ddeff4012fe4e9a1275b7ae7af9efb04b13e2d1e7d845a1ed6",
+    "LEGACY-REVIEWS.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  }
+}

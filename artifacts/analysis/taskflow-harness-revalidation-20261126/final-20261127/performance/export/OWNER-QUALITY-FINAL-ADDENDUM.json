@@ -1,0 +1,14 @@
+{
+  "schema": "a3b.final-owner-quality-addendum.v1",
+  "at": 1795753763.8989928,
+  "metrics_snapshot_sha256": "6e6bda47abd353471db29e0c9eb65498558ab05f80986482ebe4ab0b926ed60b",
+  "billing_snapshot_sha256": "d4e06ffde11edf6cf5268646fd182b35243cbe6591379c762389163e9dfe7a0c",
+  "id": "gpu-MM-5-off-common-on-sampling-v4-mechanical-3",
+  "candidate_patch_sha256": "78126c4fadaccb93782ef853a87e64048f99ffc8307d01d09a3fb01b99c59c43",
+  "raw_snapshot_acceptance": "pending_independent_review",
+  "owner_final_disposition": "rejected supplemental additional robustness condition",
+  "owner_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/registry/gpu-MM-5-off-common-on-sampling-v4-mechanical-3.json",
+  "owner_receipt_sha256": "915f37e9d9fa4ebb48ee7e7cdd44c6269f10f6ae3190a63e9a8ba13eb144d0c7",
+  "accepted_artifact_variant_count_unchanged": 9,
+  "no_new_measurement_or_paid_call": true
+}

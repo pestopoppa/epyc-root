@@ -1,0 +1,12 @@
+{
+  "candidate_patch_sha256": "78126c4fadaccb93782ef853a87e64048f99ffc8307d01d09a3fb01b99c59c43",
+  "decision": "rejected",
+  "scope": "supplemental additional infeasible-cap robustness correction, not the original feasible-cap contract",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-mm-mechanical-3/grades-v4/gpu-MM-5-off-common-on-sampling-v4-mechanical-3/RESULT.json",
+  "source_review_sha256": "26874b980180cad4927ea9dae73ec31490f332c67c722b73b0c16d0f06e9b63c",
+  "qualification": "Main reviewed exact source and executed qualified V4. Feasible/original+environment checks pass; added cap1 criterion fails because returned1x1 is off positive28grid. The bounded extra correction ends failed. Prior original-scope objective2 acceptance binds a different patch and is not transferred to these bytes. No pending new experiment or paid review is implied.",
+  "original_scope_accepted_reference": "gpu-MM-5-off-common-on-sampling-v4-objective-2",
+  "raw_earlier_source_state": "pending_independent_review in immutable metrics snapshot; this later explicit owner disposition supersedes only that display state",
+  "review_cost_class": "existing exact-source review and deterministic grader are unisolated manager work, not zero; no new paid reviewer call",
+  "at": 1795753763.7587805
+}

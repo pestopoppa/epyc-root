@@ -1,0 +1,23 @@
+{
+  "at": 1795752162.0836046,
+  "rows": [
+    {
+      "mode": "gpu-OFF-off-common-light",
+      "completed_commands_audited": 5,
+      "scope": "read-only lane candidate, supplied original, exact diff, pinned sources and hashes; no candidate execution or modification",
+      "events_sha256": "da1a112306790abc7bbcac7baea3f1a8683d381d2d645a3097b910274c9b3fd2",
+      "advisory": "ACCEPT",
+      "qualification": "Both reviewers saw actual diff and original. OFF explicitly judges dummy-reference assertion obsolete and shape checks plus exact serial handoff sufficient; main retains distinct original-test and expert-accept axes alongside proven first-leg assertion sensitivity loss. No third paid review to solicit expected answer."
+    },
+    {
+      "mode": "gpu-ON-on-common-light",
+      "completed_commands_audited": 7,
+      "scope": "read-only lane candidate, supplied original, exact diff, pinned sources and hashes; no candidate execution or modification",
+      "events_sha256": "309ce14af0887da23961c5e0484fb7ea3e5f1c711e80731d0a6ddf7639662e13",
+      "advisory": "ACCEPT",
+      "qualification": "Both reviewers saw actual diff and original. OFF explicitly judges dummy-reference assertion obsolete and shape checks plus exact serial handoff sufficient; main retains distinct original-test and expert-accept axes alongside proven first-leg assertion sensitivity loss. No third paid review to solicit expected answer."
+    }
+  ],
+  "prior_calls_and_advisories_preserved": true,
+  "experiment_interpretation": "Conservative preservation criterion differs from expert interpretation; not proof of general model inability or an intrinsic thinking effect."
+}

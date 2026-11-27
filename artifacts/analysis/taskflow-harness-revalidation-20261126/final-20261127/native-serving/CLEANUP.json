@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "gpu": {
+      "pid": 147287,
+      "rc": 0,
+      "dead_verified": true
+    },
+    "cpu": {
+      "pid": 147530,
+      "rc": 0,
+      "dead_verified": true
+    }
+  },
+  "kfd_pids": []
+}

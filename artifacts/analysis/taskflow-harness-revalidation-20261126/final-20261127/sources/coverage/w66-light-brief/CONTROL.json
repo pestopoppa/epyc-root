@@ -1,0 +1,22 @@
+{
+  "original_case": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/DS41-W-66/case.json",
+  "original_case_sha256": "8c0d052352d737a273153ede8ffc5501fa345ec401b5979f1ff13214e6a58a27",
+  "light_case_sha256": "1fe672349273afde331fd36c6630d225d514f562f7706f7b70002444e8ff683d",
+  "same_baseline_file_manifest": true,
+  "baseline_file_count": 2962,
+  "main_staged_before_files_equal_original_baseline": true,
+  "unchanged_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+  "native_prompt_sha256": "0db7c89b9e362cde01161b8d7e63a758f1a71ff3afcc9da4eae0f9b46865703f",
+  "fresh_main_prompt_sha256": "83ad6e7ca24d02cde9cb3cd10ef84fc7361adb656ac579b9ab585f0169ba0d4c",
+  "fresh_main_plan_sha256": "a510ab40fd4eba05d1f7ad75152cea342d9b4d264d19c3e85bcc3bb0dfb880ea",
+  "fresh_main_profile": {
+    "model": "gpt-6.1-sol",
+    "effort": "low",
+    "affinity": "180-183"
+  },
+  "no_detailed_solution_terms_in_prompts": true,
+  "baseline_control_reused": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-worker-local-replay/runs/baseline/RESULT.json",
+  "baseline_control_reused_sha256": "2cd57fb1eee89e17516f7badde593f71e62e6a061285453c30be11f6dd472517",
+  "no_positive_or_direct_answer_files_staged": true,
+  "model_calls": 0
+}
