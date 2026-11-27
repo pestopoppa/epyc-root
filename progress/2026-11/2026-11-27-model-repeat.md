@@ -55,3 +55,13 @@ The passive watcher originally silently initialized from all pre-existing termin
 One CPU PAW thinking fresh task plan completed24.899023s,65711 input/52224 cached/13487 uncached/892 output; eight source-specific planning bullets, no final document/patch/code, source unchanged. Its separately classified fresh retry is queued. One GPU MM nonthinking fresh uncoached3600s trial is also queued because CPU's accepted MM took longer than GPU's original1800s window. Only this new condition extends time; initial job bytes are unchanged, prior local cost retained, no capability-ceiling inference from censoring. [no-belief: interim owner decisions; complete closing audit pending]
 
 Next: codex-a3b-pilot completes remaining common conditions and bounded supplements, then publishes audited results and full cost/performance evidence.
+
+## Common GPU matrix closed; bounded corrections
+
+All14 GPU initial conditions closed: one normal TU nonthinking candidate failed the original namespace setup-refusal handling check; PFX nonthinking left a frozen budget artifact; twelve others ended at the declared1800s window without edits. The separate coached W66 thinking and registered-temperature W66 thinking retries also ended without edits. These are censored outcomes, not intrinsic capability ceilings. The fresh uncoached MM nonthinking3600s supplement is running.
+
+The PFX evaluator falsely rejected valid blank spacer columns. V7 preserves pinned source/count/order/value checks and passed28 controls including the accepted historical main answer, valid blank-spacer positive and duplicate/missing/wrong-value negatives. Main adopted an explicit evaluator amendment; raw V6 results remain withdrawn, never exposed to the worker. V7 correctly found46 versus41 rows in the GPU frozen artifact (five duplicates), and its same-session CI correction is running.
+
+CPU TU nonthinking closed3600s with a partial implementation but no required test file; the contained original behavioral check correctly failed file-not-found. One zero-paid-call same-session CI correction is queued on its original slot. CPU MM thinking similarly had a behavioral pass but lacked its explicitly requested test file; its separately recorded completion correction is queued. Neither frozen artifact counts as normal worker completion or accepted work. The coached CPU PAW thinking retry has now started on an otherwise free slot. [no-belief: interim evidence and owner actions, final observation register pending]
+
+Next: codex-a3b-pilot audits remaining initial conditions and bounded corrections, then exports complete performance and paid-management accounting.
