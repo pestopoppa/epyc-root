@@ -120,6 +120,9 @@ Retired Codex NI ROOT worktree custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy
       · done when: the live census carries at least one signed record, its ingest projects with nothing refused, and bnsig_context.py passes against the live census
       · gate: AK-BNSIG-CENSUS-TOPN
 
+- [ ] **VB-KERNEL-CENSUS-REPLAY-WIRE** [non-inference] Project prospective dispatch-time censuses, attention code-object joins, and Q15 and native sampler replays through the existing observation and measurement carriers.
+      · done when: planning-context canaries recover the exact request-window denominator and executed symbol, or the frozen input bytes, library identity, packing stage, filter order and probability denominator for a replay; refuse unmatched joins and historical measurement warrant
+      · gate: none        · inputs: `scripts/vidya/adapters/README.md` and `data/spec-filter-ties-20261127/SPEC-FILTER-TIES.json`
 - [ ] **VB-Q8-CONVCORE-WIRE** [non-inference] Project prospective Q8 GEMV static instruction counts and matched MI210 row records through the existing static-observation and AutoKernel measurement carriers. Retain symbol hashes, counted boundaries, denominators, arm and visit identity, and native failures.
       · done when: a planning-context canary retrieves the recorded value for its exact symbol, scope and denominator, and refuses a mismatched binary or static-to-runtime lookup
       · gate: none        · inputs: `scripts/vidya/adapters/gfx90a_static_register.py` and the [Q8 audit](../../research/deep-dives/q8-gemv-convcore-20261127/README.md)

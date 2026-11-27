@@ -1,0 +1,1850 @@
+{
+  "fixture_sha": "775069f2c4c5853575fca056a9f8bfa0fb3ee808c57da243725575e8feecd87e",
+  "original_test_sha": "87a7ff00a5f5f561486a46eed3a386682cf9b5d4ce3d9a8e1b622783c1c96708",
+  "library_sha256": {
+    "bin/libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+    "bin/libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+    "bin/libggml.so.0.16.0": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e",
+    "bin/libllama.so.0.0.10303": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+  },
+  "parameters": {
+    "top_k": 2,
+    "top_p": 0.5,
+    "min_p": 0.05,
+    "temp": 1.0
+  },
+  "cases": [
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.9999999961906914,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -1.3862943611198906
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 0,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.4999999980953457,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        3
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 1,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.4999999980953457,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.9999999961906914,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -1.3862943611198906
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 0,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.24999999904767284,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        3
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 1,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.4999999980953457,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [],
+      "raw_greedy": 2,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 2,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.9999999961906914,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -1.3862943611198906
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 2,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        2,
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 2,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.4999999980953457,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 2,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 1,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.4999999980953457,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 2,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 2,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.9999999961906914,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -1.3862943611198906
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 2,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        2
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 2,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.24999999904767284,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "uniform_pit_fixture",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992,
+        -1.3862943649291992
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 2,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": false,
+      "token": 1,
+      "full_mass": 0.9999999961906914,
+      "retained_mass": 0.4999999980953457,
+      "full_logprob": -1.3862943611198906,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.621686332567032,
+      "full_logprob": -0.7266316780724771,
+      "retained_logprob": -0.7266316780724771
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.436563980962555,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": -0.6931471209553022
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.436563980962555,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": -0.6931471209553022
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.436563980962555,
+      "full_logprob": -0.7266316780724771,
+      "retained_logprob": -0.6931472401645917
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 2.71828215250351,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 2.71828215250351,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.621686332567032,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": -0.7266315588631875
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.436563980962555,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": -0.6931471209553022
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.436563980962555,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": -0.6931471209553022
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 5.436563980962555,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": -0.6931471209553022
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 2.71828215250351,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "one_ulp_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        1.0,
+        1.0000001192092896,
+        -2.0,
+        -3.0
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 5.621686332567032,
+      "retained_mass": 2.71828215250351,
+      "full_logprob": -0.7266315588631875,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 21.58875164759572,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": -0.0721724219933173
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        2
+      ],
+      "whole_tie_reference": [
+        1,
+        2
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 21.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": -0.048587351573742055
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 21.58875164759572,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": -0.0721724219933173
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        2
+      ],
+      "whole_tie_reference": [
+        1,
+        2
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 21.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": -0.048587351573742055
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "wide_gap",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        -1.0,
+        3.0,
+        0.0,
+        -2.0
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 21.58875164759572,
+      "retained_mass": 20.085536923187668,
+      "full_logprob": -0.0721724219933173,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 2.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 2.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": false,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 1.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 2.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": false,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 1.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 0,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": false,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 1.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 2.0,
+      "retained_mass": 2.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0,
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 2.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "top_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": false,
+      "token": 1,
+      "full_mass": 2.0,
+      "retained_mass": 1.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "min_p"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1,
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": true,
+      "token": 1,
+      "full_mass": 2.0,
+      "retained_mass": 2.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": -0.6931471805599453
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "top_k",
+        "top_p",
+        "min_p",
+        "temp"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        0
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": false,
+      "token": 0,
+      "full_mass": 2.0,
+      "retained_mass": 1.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": 0.0
+    },
+    {
+      "row": "masked_tie",
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "logits": [
+        0.0,
+        0.0,
+        "-inf",
+        "-inf"
+      ],
+      "filter_order": [
+        "temp",
+        "min_p",
+        "top_p",
+        "top_k"
+      ],
+      "raw_greedy": 1,
+      "key": {
+        "seed": 3,
+        "draw_offset": 0
+      },
+      "support": [
+        1
+      ],
+      "whole_tie_reference": [
+        0,
+        1
+      ],
+      "same_support": false,
+      "token": 1,
+      "full_mass": 2.0,
+      "retained_mass": 1.0,
+      "full_logprob": -0.6931471805599453,
+      "retained_logprob": 0.0
+    }
+  ]
+}
