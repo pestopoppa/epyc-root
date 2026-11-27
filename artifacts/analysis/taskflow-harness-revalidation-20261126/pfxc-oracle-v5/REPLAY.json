@@ -1,0 +1,540 @@
+{
+  "additional_colon_negative_controls": [
+    {
+      "candidate_sha256": "c2f844334ba0dc2ef62afb45059864ebd2425cac2d786587c12c0f20a307032c",
+      "id": "prefixed-wrong-line",
+      "raw_original_rc_preserved": null,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': ':9999', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "ab39687dbaed8d336c16737a9c14a024bf57a1491f178e0faa4b40519a8aeb2e",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "event 1: source line 9999, expected 558",
+        "rc": 1,
+        "stderr_sha256": "9772099fee99cbaf626db019bfcc029af6fbc1eaba30d37b9cbe1e37439a07f5",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "f7a5a0f19f7718b03746f6bf1dba6b4f04913e54ad1ff040df52f194d80728ff",
+      "id": "double-colon",
+      "raw_original_rc_preserved": null,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': '::558', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "4c392912636906ac0a8d7de79004efcfdc180d275d5b0c4df43221796ec70495",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': '::558', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "4c392912636906ac0a8d7de79004efcfdc180d275d5b0c4df43221796ec70495",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "58fe067a316074cf3ae7d101ff8335771de997ec8b56273543b042f59e861cb0",
+      "id": "trailing-colon",
+      "raw_original_rc_preserved": null,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': '558:', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "7f8cebefd9936a745638151ca6831781dd9e42a41c9a90ad070505b11d4bc934",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': '558:', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "7f8cebefd9936a745638151ca6831781dd9e42a41c9a90ad070505b11d4bc934",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "001922a80d40fe722ba6bf57b969095072e2bb678728196c36516b9badce26ae",
+      "id": "colon-range",
+      "raw_original_rc_preserved": null,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': ':558:559', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "e9d55c26deea98c38a88721083e5c24b8b5b1641123be9fdea419d771d5c1b17",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': ':558:559', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "e9d55c26deea98c38a88721083e5c24b8b5b1641123be9fdea419d771d5c1b17",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "3b82151095f335ea475daf4e0ed7daf5f1753ddc255da7c62e78a3cb5b84e86d",
+      "id": "prefixed-ordinal",
+      "raw_original_rc_preserved": null,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "malformed entry table group: {'ordinal': ':1', 'line': ':558', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "a5644d7890511c45e3f45b20712d232c4c5f5244cef475a912736c45f3c7d647",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "malformed entry table group: {'ordinal': ':1', 'line': ':558', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "a5644d7890511c45e3f45b20712d232c4c5f5244cef475a912736c45f3c7d647",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "case": "PFXC-A3",
+  "input_report_sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/REPLAY.json": "af97112dc5677a283e35ffa93857fb06d1ec332e9f28d16638f3db2aa6de0d56",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/assessment-03/REPORT.json": "691722a77405ca8324ec72663e615ba598a1526fb58b7ece2024860f371bac84",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/oracle.py": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57"
+  },
+  "model_calls": 0,
+  "oracle_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+  "original_inputs_preserved": true,
+  "preserved_v4_controls": [
+    {
+      "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+      "id": "historical-main-direct",
+      "raw_original_rc_preserved": 0,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      }
+    },
+    {
+      "candidate_sha256": "8ca515281079fa4f16fd666077fc5d45240672e3321d651cb0ae1919f9ae265d",
+      "id": "valid-side-by-side",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      }
+    },
+    {
+      "candidate_sha256": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+      "id": "historical-gpu-on",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+        "rc": 1,
+        "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+        "rc": 1,
+        "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "3c715f8daef5e5ffcf414a5b3e049afeb621adba36639509e0a64cb777b0096b",
+      "id": "linear-duplicate-44",
+      "raw_original_rc_preserved": 0,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+        "rc": 1,
+        "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+        "rc": 1,
+        "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "2295475f5669c92c7092e459df93b41cd0004e267c5d2422c0907e77100ed16c",
+      "id": "extra-event-42",
+      "raw_original_rc_preserved": 0,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "expected 41 source events exactly once, found 42",
+        "rc": 1,
+        "stderr_sha256": "52c679c607f69a3edcbfccdda5a8c4c8ad908ee4df9c03442786a6b14ec666f5",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "expected 41 source events exactly once, found 42",
+        "rc": 1,
+        "stderr_sha256": "52c679c607f69a3edcbfccdda5a8c4c8ad908ee4df9c03442786a6b14ec666f5",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "a5978328f01ba5fb522ebd3bec929deddd35234f0a26c159224712b80e4a0826",
+      "id": "duplicate-instead-of-event",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "expected 41 source events exactly once, found 41; duplicate source lines: 1429",
+        "rc": 1,
+        "stderr_sha256": "1494acd10d9b967ca184d7d603b21c2fbee7160cd95f28061f2dc838f8e23247",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "expected 41 source events exactly once, found 41; duplicate source lines: 1429",
+        "rc": 1,
+        "stderr_sha256": "1494acd10d9b967ca184d7d603b21c2fbee7160cd95f28061f2dc838f8e23247",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "926a445eb58edc10394f389f26c0e8f18478cf24a7d6b08cc96f4f0620f01b1b",
+      "id": "missing-event",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "expected 41 source events exactly once, found 40",
+        "rc": 1,
+        "stderr_sha256": "3b03c88a4d180a8fb5919c87a6003e2ed6c92494e790adb1fabaf2e65c95e530",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "expected 41 source events exactly once, found 40",
+        "rc": 1,
+        "stderr_sha256": "3b03c88a4d180a8fb5919c87a6003e2ed6c92494e790adb1fabaf2e65c95e530",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "5768aea14dab28a7438b9546de747e8eafc609483c29501d25373217585d6933",
+      "id": "wrong-order",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "event 21: source line 1568, expected 1528",
+        "rc": 1,
+        "stderr_sha256": "9dcb9b936cd69af1824c7be157f0e8a5ecd14712c1edc7833a416643930c9918",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "event 21: source line 1568, expected 1528",
+        "rc": 1,
+        "stderr_sha256": "9dcb9b936cd69af1824c7be157f0e8a5ecd14712c1edc7833a416643930c9918",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "58a5df201f716ba2d0f7dcd7b8e8c1533deb8bdfc390048ebfc5a2d9f492726b",
+      "id": "wrong-source-line",
+      "raw_original_rc_preserved": 0,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "event 21: source line 9999, expected 1528",
+        "rc": 1,
+        "stderr_sha256": "18d92d2786f3a2ea923c7be43e463d3b16161e15b415c6bec519b1ad92d90ad8",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "event 21: source line 9999, expected 1528",
+        "rc": 1,
+        "stderr_sha256": "18d92d2786f3a2ea923c7be43e463d3b16161e15b415c6bec519b1ad92d90ad8",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "96ce2d9ebdc36e567fc79d7171959fd8f515c6a38792a45314851acf919c8ff5",
+      "id": "wrong-size",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "event 21: size 973.458 MiB, expected 973.457 MiB",
+        "rc": 1,
+        "stderr_sha256": "db0da90caa70705f4515212e56087c8e8fe0dcbc97576a152cec51762414e914",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "event 21: size 973.458 MiB, expected 973.457 MiB",
+        "rc": 1,
+        "stderr_sha256": "db0da90caa70705f4515212e56087c8e8fe0dcbc97576a152cec51762414e914",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "1548975ead23fc35db2b7ed527e253a9c59e1e19f71eb6879e4b18ad2bcaad98",
+      "id": "duplicate-ordinal",
+      "raw_original_rc_preserved": 0,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "entry ordinals must cover 1–41 exactly once",
+        "rc": 1,
+        "stderr_sha256": "04f5c7c0bca79645292ba98b3e2b7a45c1f5e04ec75342a468e089a4f1c16ead",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "entry ordinals must cover 1–41 exactly once",
+        "rc": 1,
+        "stderr_sha256": "04f5c7c0bca79645292ba98b3e2b7a45c1f5e04ec75342a468e089a4f1c16ead",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": null,
+      "id": "no-output",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "[Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/controls/no-output/lane/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md'",
+        "rc": 1,
+        "stderr_sha256": "78547de1614f3e133acbe5a6cd5b6f4b9c16d22fdd070705c802e6188d33ae18",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "[Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v4/controls/no-output/lane/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md'",
+        "rc": 1,
+        "stderr_sha256": "78547de1614f3e133acbe5a6cd5b6f4b9c16d22fdd070705c802e6188d33ae18",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "e258bc86734718485c6afa52bab79c52975bbcb4cb8950127515b09e3ce9bd63",
+      "id": "missing-probe-pin",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 1512c7b77500b66635c3ac23f46c4a3b6ff28c50f69d8066f5532bd65246f32d",
+        "rc": 1,
+        "stderr_sha256": "d600f50fb04d23ef57d22f79baad1a5dd0ec6bf774d1e0094098fdb690c98900",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 1512c7b77500b66635c3ac23f46c4a3b6ff28c50f69d8066f5532bd65246f32d",
+        "rc": 1,
+        "stderr_sha256": "d600f50fb04d23ef57d22f79baad1a5dd0ec6bf774d1e0094098fdb690c98900",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "ee7938b095a7257f142743ad448e9d80ee3032e4aa7ef072a569d28bdcd3b989",
+      "id": "missing-eviction-log-pin",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 85533337680e2dee4307f67fb0fda5e08beae1b122adc0f53cacf15a08c4e377",
+        "rc": 1,
+        "stderr_sha256": "d1efa9fbb46ef54d0f217eb986a92dc6bfb220595cd7092216b9b4272f6a2a04",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 85533337680e2dee4307f67fb0fda5e08beae1b122adc0f53cacf15a08c4e377",
+        "rc": 1,
+        "stderr_sha256": "d1efa9fbb46ef54d0f217eb986a92dc6bfb220595cd7092216b9b4272f6a2a04",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "b09f944fdc12a66290e92b160248b8d779bdab30f6b46a07aef5fb10efccd89a",
+      "id": "missing-sizing-minimum",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 11896",
+        "rc": 1,
+        "stderr_sha256": "3cb5f9fa0d80f4414cf6c6cf2314a1e7004dd057de84ff10fb23dbf28f697bae",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 11896",
+        "rc": 1,
+        "stderr_sha256": "3cb5f9fa0d80f4414cf6c6cf2314a1e7004dd057de84ff10fb23dbf28f697bae",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "candidate_sha256": "bf8e2d8e4da3ee9fcbf5a95c238a1972ec700de9d203c74ae088c0637af42779",
+      "id": "missing-np2-geometry",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: np2",
+        "rc": 1,
+        "stderr_sha256": "b893de982383ff3e2c9ccf7842682ab19232be469c5c9c872d64b04ac3cb6336",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: np2",
+        "rc": 1,
+        "stderr_sha256": "b893de982383ff3e2c9ccf7842682ab19232be469c5c9c872d64b04ac3cb6336",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "previous_oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+  "saved_assessments": {
+    "gpu-PFXC-A3-off-recommended": {
+      "candidate_sha256": "b2b8d40dfbbc009b295e003dfea4d65fb5b65a75594d2e3c427b4dfa26c7fb97",
+      "id": "gpu-PFXC-A3-off-recommended",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 11896",
+        "rc": 1,
+        "stderr_sha256": "3cb5f9fa0d80f4414cf6c6cf2314a1e7004dd057de84ff10fb23dbf28f697bae",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "required trace pin, sizing figure or geometry missing: 11896",
+        "rc": 1,
+        "stderr_sha256": "3cb5f9fa0d80f4414cf6c6cf2314a1e7004dd057de84ff10fb23dbf28f697bae",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "gpu-PFXC-A3-off-recommended-guidance-1": {
+      "candidate_sha256": "478c58ed56138fdd872d158b3585d51843cf516ce07e514330272199500c925e",
+      "id": "gpu-PFXC-A3-off-recommended-guidance-1",
+      "raw_original_rc_preserved": 0,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "malformed entry table group: {'ordinal': '1', 'line': ':558', 'size': '329.659'}",
+        "rc": 1,
+        "stderr_sha256": "e13a958dd37f06a065b15c46d32a3176e30a783b09bd3d1447cba203bf63f1ee",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      }
+    },
+    "gpu-PFXC-A3-on-coding": {
+      "candidate_sha256": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+      "id": "gpu-PFXC-A3-on-coding",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+        "rc": 1,
+        "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": "expected 41 source events exactly once, found 44; duplicate source lines: 1314, 1330, 1429",
+        "rc": 1,
+        "stderr_sha256": "3606f0a7367d45c81cb55014f196c9ad13387a66eb49e627cbdd75b7e96b938b",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "gpu-PFXC-A3-on-coding-guidance-1": {
+      "candidate_sha256": "25edce9d9321550bf64bc34cf778b465e259b899cf6b8b0cb6f3fb3d24e6bc08",
+      "id": "gpu-PFXC-A3-on-coding-guidance-1",
+      "raw_original_rc_preserved": 1,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      }
+    },
+    "main-direct-1": {
+      "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+      "id": "main-direct-1",
+      "raw_original_rc_preserved": 0,
+      "semantic_review": "unreviewed in this offline replay",
+      "v4": {
+        "checker_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      },
+      "v5": {
+        "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+        "diagnostic": null,
+        "rc": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+      }
+    }
+  },
+  "semantic_review_performed": false,
+  "version": "pfxc.exact-events.v5"
+}

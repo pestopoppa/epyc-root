@@ -1,0 +1,15 @@
+{
+  "verdict": "REJECT",
+  "proposal_unchanged": true,
+  "scope_review": "No flagged commands or external accesses; review/verification isolated from direct answer. Exact feedback and commands retained.",
+  "feedback_sha256": "2781eadf533c254a50c5325b2017ddb6dec91688f0551a8c05580af1dc84ca7b",
+  "approval_sha256": "376a2edd86f5ae27f1ca45186739e4a2cc297d46cf5a3a9da81f6434e6234a52",
+  "metered_usage": {
+    "input_tokens": 98366,
+    "cached_input_tokens": 80128,
+    "output_tokens": 1137,
+    "reasoning_output_tokens": 47,
+    "uncached_input_tokens": 18238
+  },
+  "wall_s": 93.118575
+}

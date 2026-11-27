@@ -1,0 +1,57 @@
+{
+  "approved_by": "main",
+  "server_ready_sha256": "ec89231f1bd496513b7e0eda368ff160d7360f7cf716dd4e8718c9c138f003c3",
+  "legacy_seal_sha256": "9498641010d8c6e910862f38e1f838e28432a7934b205a2a874b3079837c3fd2",
+  "quality_manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "legacy_rows": [
+    "cpu-TU-GR-1-off-recommended",
+    "cpu-MM-5-off-recommended"
+  ],
+  "quality_resume_rows": [
+    {
+      "initial_row": "cpu-PAW-5-off-recommended",
+      "mode": "resume",
+      "prior": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/cpu-PAW-5-off-recommended",
+      "prior_result_sha256": "f6fd1c9802ad43ac2585dd4acbc1606e2bcfaea4ea3bf33d59499b64ebf29989",
+      "prior_session_sha256": "dd524c8ed1540aab4b5dee9e13433fdd53e15dfe167f2664fd5e0bf0d46750d4",
+      "prior_state_sha256": "b5bfbd48dbdfbca99af67ed5f825dcfa8446dcd29832cf99ad4109d4ad974fc5",
+      "session_id": "ses_de5a2c534ffeJSNvRiSsHzXujD",
+      "previous_generated_observed": 623,
+      "previous_model_wall_s": 2671.04
+    },
+    {
+      "initial_row": "cpu-DS41-W-66-off-recommended",
+      "mode": "resume",
+      "prior": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/cpu-DS41-W-66-off-recommended",
+      "prior_result_sha256": "b76798d8c4d1ffe69689aa37b2922bc8143fd958d426df36f78c873e26fdef4a",
+      "prior_session_sha256": "c47845b80b4081b7cb833be2f6e0fd7f9a33785113021cb0d6c32dac8263ccbc",
+      "prior_state_sha256": "bd2cf398ad90d3baa6e6f9ff9278a7b1ff1226f660642daf153a1099eb96a7bc",
+      "session_id": "ses_de5a2c1fbffeMjQ64Vmr0zf7jw",
+      "previous_generated_observed": 3332,
+      "previous_model_wall_s": 2669.848
+    },
+    {
+      "initial_row": "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+      "mode": "resume",
+      "prior": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+      "prior_result_sha256": "57239632ebad892dfbc9e5b85f2799ab5eb533eeae491eebf7ca1c677ba2325c",
+      "prior_session_sha256": "648e56ade283ea28d89cbcbe5b2082546b5f5bd4254d9228dc25020c483f0b78",
+      "prior_state_sha256": "490997c461f4d1067e912c8246c411f8bd91e6b2ae4b3e091c90267d57b0b199",
+      "session_id": "ses_de5a2c86bffebCoWfDaps6ulJ5",
+      "previous_generated_observed": 1463,
+      "previous_model_wall_s": 2671.428
+    },
+    {
+      "initial_row": "cpu-PFXC-A3-off-recommended",
+      "mode": "resume",
+      "prior": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/cpu-PFXC-A3-off-recommended",
+      "prior_result_sha256": "01aef4dd49fe6fd57a3843ce1a5729cf8f50cb9e175692756fcfcdf7f7e0b601",
+      "prior_session_sha256": "9ff3bcbdb6e6615dd487104a06564253b683e156fdde4d314529626c33260ea1",
+      "prior_state_sha256": "ad3091b540d10f19fa988a20c8237fd9654aafe71d7f300b06c2183bc25ad798",
+      "session_id": "ses_de5a2c4f7ffePTR68lbooW0Egf",
+      "previous_generated_observed": 2444,
+      "previous_model_wall_s": 2671.203
+    }
+  ],
+  "continuation_text": "Resume the same task from your existing private workspace and session. The controller interrupted the previous turn for a CPU serving-placement repair. Continue the original pinned brief and its existing scopes and checks. No additional task guidance is available.\n"
+}

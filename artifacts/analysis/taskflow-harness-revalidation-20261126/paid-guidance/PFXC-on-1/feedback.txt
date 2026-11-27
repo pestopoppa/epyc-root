@@ -1,0 +1,12 @@
+REJECT
+
+The 41 indexed events match the pinned excerpt, including the range and p95; the side-by-side table is valid. Fix these substantive issues in `docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md`:
+
+- **Extraction command:** `awk` fails with `function ceil never defined`; `asort` also requires GNU awk. Replace it with runnable Python that filters the exact eviction message, prints sizes in source order, and computes nearest-rank p95.
+- **Selection bias:** Oldest-entry eviction does not establish that evicted entries are smaller or a lower-bound sample. Explain that eviction-only sampling omits retained entries and its bias direction is unknown. Remove the claim that 41 evictions prove 8192 MiB is undersized for live conversations.
+- **Geometry:** Explicitly state that the linked canonical recipe uses `np=4`, `ctx=16384`; the 12288 MiB recommendation applies only to the 32K/np1 controlled check and must not transfer automatically to that recipe.
+- Make the recipe reference a clickable relative Markdown link.
+
+Recheck `.taskflow-refs/external/pfxc/pfxc-source-excerpts.txt`. Run the replacement extractor against its 41 eviction lines: expect count 41, range 147.505–1348.877 MiB, p95 1189.547 MiB, and ten-entry ceiling 11896 MiB. Rerun the supplied heading check and verify the recipe SHA-256 remains `d3a3cf4f935a00dd9b020ea409f52a26caedfe3cf2325f636ae7c4edd5cf302b`.
+
+Proposal left unchanged.

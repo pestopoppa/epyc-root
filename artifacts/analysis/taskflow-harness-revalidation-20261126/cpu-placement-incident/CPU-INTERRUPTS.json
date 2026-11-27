@@ -1,0 +1,46 @@
+[
+  {
+    "unit": "cpu-DS41-W-66-off-recommended",
+    "at": 1795741312.5187647,
+    "prior_result_sha256": "71cc737ca446c40e2a939d1f8ee06dc4d3d28d3109f8c0dd197de19a96c1b747",
+    "container_id": "f3813eec2116ed2f4edaec1618c62d3b827c89b055a1297113f1e5beb3966d45",
+    "session": "ses_de5a2c1fbffeMjQ64Vmr0zf7jw",
+    "rc": 0,
+    "stdout": "{\"interrupted\": true}\n",
+    "stderr": "",
+    "reason": "owner interrupted serving-confounded CPU epoch for persistent shared-mmap NUMA placement repair; retain candidate/transcript; no GPU interruption"
+  },
+  {
+    "unit": "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+    "at": 1795741312.549088,
+    "prior_result_sha256": "16215c8734a50a69bd92d7103f00cb54f26b612500c07e59624315cb36228585",
+    "container_id": "127bef4f9d22debc406daee0e8bfc43eec0e939586dd07b98b3fafa0f75d93d0",
+    "session": "ses_de5a2c86bffebCoWfDaps6ulJ5",
+    "rc": 0,
+    "stdout": "{\"interrupted\": true}\n",
+    "stderr": "",
+    "reason": "owner interrupted serving-confounded CPU epoch for persistent shared-mmap NUMA placement repair; retain candidate/transcript; no GPU interruption"
+  },
+  {
+    "unit": "cpu-PAW-5-off-recommended",
+    "at": 1795741312.5587413,
+    "prior_result_sha256": "c6e07275a69f34cea55ace51906b19bbeefc167984a4f326a5e430dec3c754ee",
+    "container_id": "fa5646bc6cc3bf97b14b7bb342ff928707ef249d4c01e6b92bb565bb67d82698",
+    "session": "ses_de5a2c534ffeJSNvRiSsHzXujD",
+    "rc": 0,
+    "stdout": "{\"interrupted\": true}\n",
+    "stderr": "",
+    "reason": "owner interrupted serving-confounded CPU epoch for persistent shared-mmap NUMA placement repair; retain candidate/transcript; no GPU interruption"
+  },
+  {
+    "unit": "cpu-PFXC-A3-off-recommended",
+    "at": 1795741312.5379639,
+    "prior_result_sha256": "86f9cf580ab304d1694e8809d2ed48ff0f9873363ade03067996a0098d466b1c",
+    "container_id": "fbae6df3e4248e6d6f5bbfb175a1ad0a4a3ebe6970dcffee7e66b78de5e73608",
+    "session": "ses_de5a2c4f7ffePTR68lbooW0Egf",
+    "rc": 0,
+    "stdout": "{\"interrupted\": true}\n",
+    "stderr": "",
+    "reason": "owner interrupted serving-confounded CPU epoch for persistent shared-mmap NUMA placement repair; retain candidate/transcript; no GPU interruption"
+  }
+]

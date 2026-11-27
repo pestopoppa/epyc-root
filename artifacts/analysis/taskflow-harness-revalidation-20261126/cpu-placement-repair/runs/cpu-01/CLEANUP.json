@@ -1,0 +1,9 @@
+{
+  "cpu_only": {
+    "pid": 2323088,
+    "rc": 0,
+    "dead_verified": true
+  },
+  "gpu": 1016973,
+  "controller": 1016657
+}

@@ -1,0 +1,12 @@
+REJECT
+
+The 41 entries, source order, pinned hashes, p95, and required headings check out. Correct these issues in `docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md`:
+
+- **Selection bias:** Eviction-only sampling cannot establish whether the live-entry p95 is higher or lower. Remove claims that it overrepresents large entries and provides a conservative upper bound.
+- **VRAM budget:** Change “np from 4 to 8” to **np1 → np2**. Keep the brief’s 37.9 GiB baseline distinct from the probe’s 37.68/37.67 GiB measurements; remove unsupported geometry and explanations attributing the difference to runtime variance.
+- **Arithmetic:** Mean is **748.785 MiB**, median **812.094 MiB**, and 12288 MiB provides approximately **3.3%** headroom, not 2.2%. Correct or omit these optional statistics.
+- Scope zero-eviction conclusions to the observed **8-task trace**; it does not establish a general concurrency threshold.
+
+Recheck `.taskflow-refs/external/pfxc/pfxc-source-excerpts.txt`, especially the brief passage at lines 60–62. Preserve the valid `:558` citation format and existing entry table.
+
+Validate by rerunning the supplied heading check and independently recomputing statistics from the 41 extracted values. Leave the recipe JSON unchanged.

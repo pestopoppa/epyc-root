@@ -46,4 +46,23 @@ The separate measured TU main-only repair is launched under exec16235, preservin
 
 PFXC assessment snapshots replay original accepted-main and rejected-A3B artifacts without mutating scores; further terminal-only reassessment is separate from live candidates.
 
-Next: codex-a3b-pilot completes measured main repair, adds deterministic feedback for thinking-off candidates, reviews live corrections, and compares accepted artifacts, normal completions, tokens and elapsed time across all six cases.
+Previous next: codex-a3b-pilot completes measured main repair, adds deterministic feedback for thinking-off candidates, reviews live corrections, and compares accepted artifacts, normal completions, tokens and elapsed time across all six cases.
+
+
+## CPU NUMA placement repaired without interrupting GPU work
+
+Content audit confirms both binaries and loaded libraries match the signed C22 champion. A3B's three optional C22 knobs are intentionally off under the signed ratification; the 27B/Q38 winning settings do not apply. Existing timing does not establish fastest performance at this full canary context. A separate deployment defect is proven: two during-work samples placed99.956% of the CPU's35.19GiB mapped weights on GPU-local NUMA3 while its workers span all four nodes.
+
+Main API-interrupted only the four CPU sessions, saved all exports, and stopped exact CPU PID1016704 with death verified. Their raw no_candidate results are operator-interrupted and placement-confounded, not model task failures. GPU1016973 and controller1016657 stayed live. The old unstarted legacy boundary watcher was withdrawn so it cannot launch a competing CPU server.
+
+First CPU-only --no-mmap load2323088 eliminated the shared mapping but still placed69.7% of its anonymous weight buffer on NUMA2. Its strict residency gate rejected deployment and the process exited cleanly. Main then allocated20GiB under strict membind on each node, verified100% local residency, and released/reaped all four owned workers. This bounded80GiB cache-reclaim preparation used existing full-host authorization, no global cache flush or kernel policy change.
+
+Second load2386678, port56081, passed: the37.79GB anonymous weight allocation is25.31/25.00/25.00/24.68% across nodes0–3; KV allocation is evenly interleaved. C22 bytes, f16 split KV, context131072/slot, np4, D2 and cache0 are unchanged; only CPU no-mmap/placement changed. Exec24515 owns serving, exec26053 runs the approved six-job batch. TU and MM are fresh on slots0/1, NARIQ/PFXC resume original sessions on2/3, PAW/W66 resume on0/1 after the legacy tasks. Saved context is reused; original confounded token/time costs are retained cumulatively. These are continuations, not fresh first-pass successes.
+
+## Corrected event formatting and metered semantic review
+
+PFXC v5 accepts a single leading colon in its optional source-line column and still validates exact events. Both ON/OFF deterministic corrections pass, as does the reused main document. Original ON fails were partly old checker row-order errors; source-faithful reassessment is retained without rewriting raw scores. Both corrected documents failed fresh paid semantic review. ON review:93.118575s,98366 input/80128cached/18238uncached,1137 output including47 reasoning. OFF review:23.224709s,72026 input/51968cached/20058uncached,787 output with0 explicit reasoning. Findings concern executable extraction, unsupported bias/concurrency claims, geometry and arithmetic; exact feedback is queued as same-session ordinal2 for each mode. No direct main edit is passed off as A3B work.
+
+The deterministic main-only accounting now covers six initial cases plus one separately measured repair:1226305 input,1067136 cached,159169 uncached,19368 output including379 explicit reasoning tokens. Summed CLI turn duration674.876847s is not parallel batch elapsed or pure inference time. It excludes setup, management, independent review and all A3B-assisted main calls. Five cases passed initially and TU after repair.
+
+Next: codex-a3b-pilot verifies active CPU placement, reviews the paid-guidance corrections, runs the residual GPU legacy pairs without duplicating CPU results, and completes accepted-result/token/time comparisons.

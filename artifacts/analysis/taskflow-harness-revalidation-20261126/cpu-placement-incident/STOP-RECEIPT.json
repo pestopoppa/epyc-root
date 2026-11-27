@@ -1,0 +1,33 @@
+{
+  "cpu_pid": 1016704,
+  "dead_verified": true,
+  "gpu_pid_retained": 1016973,
+  "controller_pid_retained": 1016657,
+  "at": 1795741331.049018,
+  "attempts": {
+    "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended": {
+      "raw_status": "no_candidate",
+      "result_sha256": "57239632ebad892dfbc9e5b85f2799ab5eb533eeae491eebf7ca1c677ba2325c",
+      "session_sha256": "648e56ade283ea28d89cbcbe5b2082546b5f5bd4254d9228dc25020c483f0b78",
+      "classification": "operator interrupted, CPU placement confounded, not a model task failure"
+    },
+    "cpu-PFXC-A3-off-recommended": {
+      "raw_status": "no_candidate",
+      "result_sha256": "01aef4dd49fe6fd57a3843ce1a5729cf8f50cb9e175692756fcfcdf7f7e0b601",
+      "session_sha256": "9ff3bcbdb6e6615dd487104a06564253b683e156fdde4d314529626c33260ea1",
+      "classification": "operator interrupted, CPU placement confounded, not a model task failure"
+    },
+    "cpu-PAW-5-off-recommended": {
+      "raw_status": "no_candidate",
+      "result_sha256": "f6fd1c9802ad43ac2585dd4acbc1606e2bcfaea4ea3bf33d59499b64ebf29989",
+      "session_sha256": "dd524c8ed1540aab4b5dee9e13433fdd53e15dfe167f2664fd5e0bf0d46750d4",
+      "classification": "operator interrupted, CPU placement confounded, not a model task failure"
+    },
+    "cpu-DS41-W-66-off-recommended": {
+      "raw_status": "no_candidate",
+      "result_sha256": "b76798d8c4d1ffe69689aa37b2922bc8143fd958d426df36f78c873e26fdef4a",
+      "session_sha256": "c47845b80b4081b7cb833be2f6e0fd7f9a33785113021cb0d6c32dac8263ccbc",
+      "classification": "operator interrupted, CPU placement confounded, not a model task failure"
+    }
+  }
+}

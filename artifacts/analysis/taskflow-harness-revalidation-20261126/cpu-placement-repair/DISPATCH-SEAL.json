@@ -1,0 +1,15 @@
+{
+  "legacy_seal_sha256": "9498641010d8c6e910862f38e1f838e28432a7934b205a2a874b3079837c3fd2",
+  "quality_v4_seal_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "native_model_calls_during_preparation": 0,
+  "sha256": {
+    "serve.py": "2b1fc702bb14a23e3ebe804e82a95715ca22be1e374bf9696ce60109c10eaa46",
+    "dispatch.py": "4ada5b3de18a4fabc1edfa6108c6615d25ae03a2a84fb71ba65ac80e65669ba6",
+    "CONTROL.py": "aa1a12e561fe5a96ca8769dd74a7ccb968cba78e16be194cd7d97468b24669c4",
+    "CPU-APPROVAL-TEMPLATE.json": "c5415a76e7def01ef2c06a5b094dac880b8e75be499a01d85b37969112213418",
+    "DISPATCH-CONTROL.json": "67f9f8d92637d3c44ae4e8f306fe94c3b5c74cea21431bc7463b86c75965da89",
+    "DISPATCH.md": "d319b0fa9bf27d31e9850a0eded3d572987ee15d65618e750bf7264b32e3c9cc",
+    "NUMA-BEFORE.json": "3afa3859dc06a81315fafff683edd6bf1409460abf4edbd57eba1dfd7c12f1d8",
+    "REPORT.md": "6d1ab0704294d2fffee07aec5d29120ec1a7c591c3f181a5dd27790eb01e2c64"
+  }
+}

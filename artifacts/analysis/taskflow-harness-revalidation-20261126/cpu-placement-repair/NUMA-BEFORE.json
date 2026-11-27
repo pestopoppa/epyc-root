@@ -1,0 +1,27 @@
+{
+  "epoch": "quality-runs/cache-safe-01",
+  "cpu_pid": 1016704,
+  "gpu_pid": 1016973,
+  "quality_controller_pid": 1016657,
+  "region_lock_owner_pid": 1016652,
+  "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "cpu_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+  "gpu_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+  "samples": [
+    {
+      "time_utc": "2026-11-27 around 01:00 UTC",
+      "clock_note": "first read used proc and live times; exact sample wall timestamp not printed",
+      "active_cpu_inference": true,
+      "numa_maps": "71cc9787b000 interleave:0-3 file=model mapped=9226101 mapmax=2 active=0 N0=2177 N1=949 N2=956 N3=9222019 kernelpagesize_kB=4"
+    },
+    {
+      "read_started_utc": "2026-11-27T01:00:56.335260+00:00",
+      "active_cpu_inference": true,
+      "numa_maps": "71cc9787b000 interleave:0-3 file=/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf mapped=9226101 mapmax=2 active=0 N0=2177 N1=949 N2=956 N3=9222019 kernelpagesize_kB=4"
+    }
+  ],
+  "mapped_weights_GiB": 35.1948,
+  "node_3_page_fraction": 0.99955756,
+  "cpu_thread_affinity_union": "physical CPUs 0-95",
+  "gpu_weight_file_map": "bind:3 file=model mapped=1 mapmax=2 active=0 N3=1 kernelpagesize_kB=4"
+}

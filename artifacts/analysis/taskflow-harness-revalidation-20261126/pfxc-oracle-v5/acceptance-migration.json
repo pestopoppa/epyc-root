@@ -1,0 +1,43 @@
+{
+  "case": "PFXC-A3",
+  "change": "Accept one optional leading colon only in the Markdown source-line cell. Ordinal, source-line identity, size, exact event count, trace pins, budget, and geometry checks retain v4 behavior.",
+  "control_receipt": "REPLAY.json",
+  "control_receipt_sha256": "1e7ede9d8cfc30a7cceea7a7fbb050073ba0c2193d596c111dce1f8329de1bff",
+  "oracle": "oracle.py",
+  "oracle_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+  "previous_oracle_sha256": "1e9fda8b9996a3884d53072bc339ecc36454502103a7eb7a366c4b9fdfaefc57",
+  "saved_score_summary": {
+    "gpu-PFXC-A3-off-recommended": {
+      "candidate_sha256": "b2b8d40dfbbc009b295e003dfea4d65fb5b65a75594d2e3c427b4dfa26c7fb97",
+      "raw_original_rc": 1,
+      "v4_rc": 1,
+      "v5_rc": 1
+    },
+    "gpu-PFXC-A3-off-recommended-guidance-1": {
+      "candidate_sha256": "478c58ed56138fdd872d158b3585d51843cf516ce07e514330272199500c925e",
+      "raw_original_rc": 0,
+      "v4_rc": 1,
+      "v5_rc": 0
+    },
+    "gpu-PFXC-A3-on-coding": {
+      "candidate_sha256": "918e6eb3d92101bec050b2961d223437d53f5dff87a6d87be55f7518c757e776",
+      "raw_original_rc": 1,
+      "v4_rc": 1,
+      "v5_rc": 1
+    },
+    "gpu-PFXC-A3-on-coding-guidance-1": {
+      "candidate_sha256": "25edce9d9321550bf64bc34cf778b465e259b899cf6b8b0cb6f3fb3d24e6bc08",
+      "raw_original_rc": 1,
+      "v4_rc": 0,
+      "v5_rc": 0
+    },
+    "main-direct-1": {
+      "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+      "raw_original_rc": 0,
+      "v4_rc": 0,
+      "v5_rc": 0
+    }
+  },
+  "semantic_review": "unreviewed in this offline replay",
+  "version": "pfxc.exact-events.v5"
+}

@@ -1,0 +1,16 @@
+{
+  "verdict": "REJECT",
+  "proposal_unchanged": true,
+  "reviewed_commands": 4,
+  "scope_review": "Private pinned source and candidate reads, original recipe read and deterministic calculation only; no external or prior answer access. Missing promotion handoff filename read returned absent, no fallback beyond scope.",
+  "feedback_sha256": "0a4b603051fc82210aa60af0898f377aee6ed2621f84d967c1b82bb23c2eee40",
+  "approval_sha256": "d7477531b9aa780dcb9bf1edd8e57d9bce3332c04ccf625ad3c1dd49356807ee",
+  "metered_usage": {
+    "input_tokens": 72026,
+    "cached_input_tokens": 51968,
+    "output_tokens": 787,
+    "reasoning_output_tokens": 0,
+    "uncached_input_tokens": 20058
+  },
+  "wall_s": 23.224709
+}

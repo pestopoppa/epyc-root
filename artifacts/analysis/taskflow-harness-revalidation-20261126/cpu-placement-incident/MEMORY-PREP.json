@@ -1,0 +1,48 @@
+{
+  "started_at": 1795741564.6749432,
+  "ended_at": 1795741647.6537943,
+  "bounded_bytes": 85899345920,
+  "workers": [
+    {
+      "pid": 2351497,
+      "node": 0,
+      "bytes": 21474836480,
+      "counts": {
+        "0": 21474836480
+      },
+      "mapping": "797568c00000 bind:0 anon=5242880 dirty=5242880 active=2 N0=5242880 kernelpagesize_kB=4"
+    },
+    {
+      "pid": 2351498,
+      "node": 1,
+      "bytes": 21474836480,
+      "counts": {
+        "1": 21474836480
+      },
+      "mapping": "7bf9f3600000 bind:1 anon=5242880 dirty=5242880 active=2 N1=5242880 kernelpagesize_kB=4"
+    },
+    {
+      "pid": 2351499,
+      "node": 2,
+      "bytes": 21474836480,
+      "counts": {
+        "2": 21474836480
+      },
+      "mapping": "7ca7f8a00000 bind:2 anon=5242880 dirty=5242880 active=0 N2=5242880 kernelpagesize_kB=4"
+    },
+    {
+      "pid": 2351500,
+      "node": 3,
+      "bytes": 21474836480,
+      "counts": {
+        "3": 21474836480
+      },
+      "mapping": "74b7f3a00000 bind:3 anon=5242880 dirty=5242880 active=8 N3=5242880 kernelpagesize_kB=4"
+    }
+  ],
+  "all_workers_reaped": true,
+  "purpose": "strict per-node bounded cache reclaim then release; no global cache flush or kernel policy change",
+  "mem_available_before_bytes_display": "1_155_534_577_664",
+  "native_record_sha256": "17d6999821e256a36243de976b58f80c98e8b450929ce10d0b9d8e4d07a1c973",
+  "display_encoding": "Memory byte count uses decimal underscores for the repository scanner; remove underscores to recover the exact native integer. Native scratch record remains unchanged."
+}
