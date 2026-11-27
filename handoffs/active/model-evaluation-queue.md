@@ -1017,6 +1017,28 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 
 - [ ] **AMS-TCAP-1 — A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-Flash-Next (intake-2567#record, intake-2572#record, intake-2577#record).** Thinking is off for every Flash-Next role today because the base model fell into degenerate think loops (this handoff, prep finding 4; registry reasoning_policy_observation: reasoning auto gave 0/4 final answers). A finetune that shortens thinking is therefore a candidate higher-effort mode, not a curiosity. Download the bottlecapai ThinkingCap IQ4_XS GGUF (95.5 GB; one download at a time, disk checked first) and run three arms on llama-server with the qwen38-flash-next-cpu-mtp recipe: A base UD-IQ4_XS thinking off (production), B base thinking on, C ThinkingCap thinking on, plus C2 = ThinkingCap trunk with our shared-Q8_0 MTP head versus its embedded head. Frozen 40-60 prompt set (architect planning and critique, AIME-style reasoning, about 15 tau2-style agentic turns), at least 4 seeds, paired by prompt; record accuracy, thinking and answer tokens, the degenerate-loop and truncation rate, MTP alpha, and llama-bench pp/tg in one alternating window. Decision rule: propose a thinking-on effort mode (an operator-signed stack change) only if arm C beats arm A on the reasoning family with a paired 95% lower bound above 0, has degenerate or truncated thinking on at most 1% of requests, uses at most 60% of arm B's median thinking tokens, and keeps alpha within 0.03 of base; otherwise record the null and keep thinking off.
 
+### Backlog
+
+- [ ] **INK2-INKBLOT-ART** [non-inference] Build a matched IQ4_NL artifact pair from the pinned Base and Inkblot releases and produce a per-tensor change and conversion manifest for the CPU comparison.
+      · done when: Both input shard hashes, all 1,244 named tensors, comparison classifications, quantizer and converter revisions, output hashes, tokenizer and template identities are recorded. Unexpected expert or vision changes and any conversion drift have explicit dispositions.
+      · gate: none        · inputs: `research/deep-dives/intake-inkblot-20261127/intake-3026.md`
+
+- [ ] **INK2-INKBLOT-PAIR** [inference] Compare reloaded Inkling Base and Inkblot at three passes on the same CPU quarter using the frozen 64-item held-out manifest, complete paired outcomes and matched decode timing.
+      · done when: A result exists for every expected ID and arm, including failures, with source and build digests, per-item outputs, matched profile, paired counts and the predeclared decision.
+      · gate: INK2-INKBLOT-ART, INK2-MEAS-1        · inputs: `research/deep-dives/intake-inkblot-20261127/intake-3026.md` `research/deep-dives/intake-inkblot-20261127/intake-3027.md`
+
+- [ ] **INK2-INKBLOT-SLOTS** [inference] Validate the MI210 indexed-bias port on matched native Base prompts with one and two active requests on the same two-slot server before interpreting Inkblot outputs.
+      · done when: The same 12 frozen tool IDs have raw outputs, slot and stop records under both occupancy settings, plus recorded backend residency and a repeat or parity verdict for every ID.
+      · gate: INK2-PORT-2a        · inputs: `research/deep-dives/intake-inkblot-20261127/intake-3029.md` `research/deep-dives/intake-inkblot-20261127/intake-3030.md`
+
+### Inkblot study scope
+
+The three-pass CPU comparison uses a sealed 64-item panel after a disjoint smoke test. The MI210 acceptance check compares one and two busy slots on the same Base server. The protocol specifies the fixed denominators, stopping rules and throughput thresholds. Count resolved tasks separately from commands issued, and keep the parent’s copied evaluation YAML and publisher tables attributed to their source. [Approved evaluation protocol](../../research/deep-dives/intake-inkblot-20261127/stage3-plan.md#cpu-evaluation-protocol) · [Source findings](../../research/deep-dives/intake-inkblot-20261127/findings.md)
+
+Only if the native three-pass screen passes and the fixed-checkpoint forced-depth implementation has independent three-pass logit/cache parity, compare Base and Inkblot at both 3 and 4 passes. Hold items, conversion, prompt, generation budget and grader fixed. Report depth-specific repeat/completion rates and wall time per correct result on CPU and on qualified MI210. No production depth switch follows from the author table.
+
+Only reopen training attribution if the checkpoint passes the held-out screen and the historical owner supplies hash-bound parents, realized merge weights, calibration/train/gate splits and historical per-item records, or a separately approved new experiment has a specific model-development decision. Compare FP-Solve alone, a simple selection baseline, GSPO without the deeper-mode bonus and the complete policy under matched generation and validation budgets. Freeze an untouched test set, rescore the exported checkpoint and separate the new run from the historical claim.
+
 ## Track: angelslim-techniques-evaluation
 <!-- gate: none -->
 

@@ -443755,8 +443755,6 @@
     - intake-3026
     - intake-3027
     - intake-3028
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   notes: Read the pinned implementation, tests, six summary JSONs, README and four-page paper. No training set, gate split or per-item predictions in the tracked
     release. No training or inference run. The v5.24.0 native Transformers file at eeee110 lacks the cache class the wrapper imports. Items, seeds and evaluation-environment
@@ -443871,6 +443869,14 @@
     effect: unaffected
     note: The original generation summary records 118 correct for the accepted generation 2 winner, followed by 114 for the accepted generation 3 winner.
   source_revision: 765453d13878804c49876a656f39b57a4384dca4
+  integration_disposition: monitor
+  handoffs_updated: []
+  handoffs_created: []
+  disposition_evidence:
+  - Only reopen training attribution if the checkpoint passes the held-out screen and the historical owner supplies hash-bound parents, realized merge weights, calibration/train/gate
+    splits and historical per-item records, or a separately approved new experiment has a specific model-development decision. Compare FP-Solve alone, a simple selection
+    baseline, GSPO without the deeper-mode bonus and the complete policy under matched generation and validation budgets. Freeze an untouched test set, rescore the
+    exported checkpoint and separate the new run from the historical claim.
 - id: intake-3026
   dive_surfaced_sources: "The fixed parent already has a verified intake. The variable-depth card and HIP field report were selected for sweep 2. Release announcements, an empty discussion page and the openinterpretability review request supply no new observations."
   arxiv_id: null
@@ -443906,8 +443912,6 @@
     - intake-3025
     - intake-3027
     - intake-3031
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   notes: Read author card, edit list, audit, both pinned model trees, config, index, quantization, template and copied eval metadata. Base revision c9d028302cd0f035fdf8e7e91f089a4ce94d2195.
     Main LFS digest differs at equal 19,526,019,168 bytes. MTP LFS digest matches. No tensor payloads were downloaded. The 327 unique positive entries include 288
@@ -444047,6 +444051,12 @@
     effect: reattributed
     note: The packaged evaluation YAML cites the parent Inkling model card as its source.
   source_revision: fb0b924f46a74331e34ce4f4288177f9dc0383c8
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/model-evaluation-queue.md
+  handoffs_created: []
+  disposition_evidence:
+  - Owned same-depth CPU checkpoint comparison.
 - id: intake-3027
   dive_surfaced_sources: "The native Transformers pin and contributor tests were read as implementation dependencies of the PR. Base metadata was already covered. The PR supplies no independent checkpoint benchmark."
   arxiv_id: null
@@ -444079,8 +444089,6 @@
     - intake-2812
     - intake-2866
     - intake-3025
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   notes: Open and unmerged at review. Compared base and head git bytes, forward/optimizer, tests and documentation. Pretrained, distributed and GPU execution untested
     here. Repaired training changes sampling. The contributor reports 190 passing CPU tests and a 409-key base metadata check. Scores in the original six JSONs are
@@ -444191,6 +444199,12 @@
     note: The contributor audit reconstructs an accepted sequence containing a total-score regression from 118 to 114.
   source_revision: ad15629dfd09856a03a3313be5a08d2718f44829
   expanded_from: intake-3025
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/model-evaluation-queue.md
+  handoffs_created: []
+  disposition_evidence:
+  - Use saved-artifact validation and frozen pairing in the CPU study.
 - id: intake-3028
   dive_surfaced_sources: "The deterministic comparison was selected for sweep 3. Self-WSP (2611.28833), continual test-time ES (2610.24137) and EGGROLL (2609.10980) investigate distinct optimization methods. None compares the released checkpoints or explains their provenance; retain as bibliography only."
   arxiv_id: null
@@ -444224,8 +444238,6 @@
     - intake-3025
     - intake-3026
     - intake-3032
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: FULL
   notes: Read all four pages, equations, table and references plus same-commit HTML companion and result JSON. PDF sha256 ecc6351a086c5c6541c8fcd4cf4df0952c62c41ffbd3717f4c1cd0c7523f1ec2.
     §3 presents the preserve/edit/ridge objective. The layer-17 statistic is descriptive. No independent intervention isolates that direction. Harbor command count
@@ -444320,6 +444332,12 @@
   - '2611.34612'
   - '2610.24137'
   - '2609.10980'
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/model-evaluation-queue.md
+  handoffs_created: []
+  disposition_evidence:
+  - Separate actual task success, matched depth and diagnostic indicators in the CPU protocol.
 - id: intake-3029
   dive_surfaced_sources: "The #32740 interface is already intake-2797#record. The PR’s touched operator files and tests are retained at the merge SHA. No further candidate-quality evidence surfaced."
   arxiv_id: null
@@ -444351,8 +444369,6 @@
     - intake-2866
     - intake-2797
     - intake-3030
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   notes: Read PR, merge revision, dispatcher, tile/vector input access and operator fixtures including one and two streams. No whole-model HIP test was run. EPYC
     INK2-PORT-2a records champion source-slot conflicts; retain its re-home and test inputs. Operator fixtures do not exercise concurrent requests.
@@ -444414,6 +444430,12 @@
     note: The upstream indexed bias uses source slot 6 for an auxiliary input.
   source_revision: 2a335259caa98ff30013907efdf1beba484db119
   expanded_from: intake-3030
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/model-evaluation-queue.md
+  handoffs_created: []
+  disposition_evidence:
+  - Use the merge as a reference within the existing HIP acceptance.
 - id: intake-3030
   dive_surfaced_sources: "The merged indexed-bias implementation was selected for sweep 3. The older comparison CUDA run differs in device, context and KV; it supplies no additional controlled replication."
   arxiv_id: null
@@ -444446,8 +444468,6 @@
     - intake-2797
     - intake-3026
     - intake-3029
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   notes: Read issue body, config, hardware, results table, tail examples and comment inventory. Pre-merge f7d1bbb on two gfx1201 devices, IQ3_S, FA on, q8_0 KV, BFCL
     tool prompts. Different request subsets and counts. CUDA observation used another setup. No bisection or single-MI210 run.
@@ -444510,6 +444530,12 @@
     note: The reporter did not isolate the cause of the symptom.
   source_revision: GitHub issue body snapshot from 2026-11-27 (retained at claim level)
   expanded_from: intake-3026
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/model-evaluation-queue.md
+  handoffs_created: []
+  disposition_evidence:
+  - Add matched busy-slot acceptance to the existing HIP task.
 - id: intake-3031
   dive_surfaced_sources: "The official launch post and base card repeat the distinction or were previously covered. No additional experiment on the derivative surfaced."
   arxiv_id: null
@@ -444541,8 +444567,6 @@
     - intake-2866
     - intake-2805
     - intake-3026
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   notes: Read the pinned training description, evaluation notes and loop config. No weight download or model evaluation. This release shares pretraining and first
     midtraining with Mini but continued with variable depths and post-trained at three passes.
@@ -444604,6 +444628,11 @@
     note: The publisher cautions against direct comparison because the two models diverge in later training.
   source_revision: 91a57fe2b779bbd12c0f74d1f518cbd5b84e8d0d
   expanded_from: intake-3026
+  integration_disposition: knowledge_only
+  handoffs_updated: []
+  handoffs_created: []
+  disposition_evidence:
+  - Independent variable-depth training is context for the fixed-model baseline.
 - id: intake-3032
   dive_surfaced_sources: "The original Self-WSP paper is a separate study of weight-edit proposals. It cannot identify the cause of any Inkblot gain. No further primary comparison warranting a fourth sweep surfaced."
   arxiv_id: '2611.34612'
@@ -444634,8 +444663,6 @@
     - intake-2812
     - intake-2866
     - intake-3028
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   notes: Versioned HTML read from disk, focused on §4–5 and Table 1(b). Six DINOv2-Base faults × three seeds. Author reports 15/18 deterministic and 6/18 model exact
     dispatches. Same small tool library and bounded horizon. Other experiments concern different models, faults and optimization methods. No Inkblot or EPYC experiment.
@@ -444699,3 +444726,11 @@
     note: The authors tested open optimizers on structured faults.
   source_revision: 2611.34612v1
   expanded_from: intake-3028
+  integration_disposition: monitor
+  handoffs_updated: []
+  handoffs_created: []
+  disposition_evidence:
+  - Only reopen training attribution if the checkpoint passes the held-out screen and the historical owner supplies hash-bound parents, realized merge weights, calibration/train/gate
+    splits and historical per-item records, or a separately approved new experiment has a specific model-development decision. Compare FP-Solve alone, a simple selection
+    baseline, GSPO without the deeper-mode bonus and the complete policy under matched generation and validation budgets. Freeze an untouched test set, rescore the
+    exported checkpoint and separate the new run from the historical claim.
