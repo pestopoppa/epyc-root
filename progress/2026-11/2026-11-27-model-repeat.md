@@ -85,3 +85,37 @@ All GPU conditions and supplements are now terminal. The MM nonthinking3600s sup
 CPU PFX thinking left a closed budget document. V7 structural checks passed; fresh source review rejected unsupported population-bias conclusions and scaling arithmetic (19.346095s/22521 uncached/590 output). One separately labelled fresh-session supplement is queued for CPU0 or3, carrying only its own frozen document, original task and this paid diagnosis. Native same-session physical-slot guards are unchanged. No prior reasoning/tool history is carried, slot cache warmth is unmeasured, and prior charge41085 is debited (78915 remaining). This tests a checkpoint/restart workflow, not the isolated effect of guidance or normal original-window completion. Model-free controls reject wrong patch/model, unfinished/undrained artifacts and slots1/2. [no-belief: interim closing evidence; final observation register pending]
 
 Next: codex-a3b-pilot completes the remaining CPU cases/corrections, exports final evidence, then applies and tests the canonical V5 coverage fix.
+
+## Operator steering: model-driving improvements, not pure capability
+
+Operator correctly challenged treating the repeat as pure model-capability evidence and explicitly approved new bounded GPU driving tests. Earlier comparison is only the observed workflow outcome: A3B had accepted work in three task types versus one in the initial27B workflow, with different retries and thinking settings. It is not an intrinsic model ranking, and model-driving improvements have not been exhausted.
+
+Launched four fresh1800s GPU trials in parallel: MM OFF with a case-neutral execution/anti-repeated-inspection instruction; W66 ON xhigh with that instruction; W66 ON medium with byte-identical original brief; W66 ON medium with the instruction. Exact C22/Jinja source supports native medium; isolated request overlay changes only nested reasoning_effort for thinking-true calls, leaving OFF/title bytes unchanged. Actual archived requests confirm medium reached both target arms. Original model/source/sampler/context/fulltools remain unchanged, and original charge is debited per alternative branch. All prior costs remain in the study inventory.
+
+A fifth MM OFF original-brief trial is queued with only a deterministic stock OpenCode execute.after plugin. Stock2.2.5 contained scripted controls prove one appended warning on the third identical successful unchanged read, reset after writes/content changes, no warning on unique/failed reads, and preservation in tool output and exported history. Tools remain available. Stock CodeMode has no nested tools.read; no nested-read coverage is claimed. The plugin/overlay is job-local and leaves the active canonical driver unchanged. These are separate treatments, not replacements for the initial results, and no improvement is claimed until accepted artifacts and traces are audited. [no-belief: prospective steering and operational evidence; final observation register pending]
+
+Next: codex-a3b-pilot audits driving trials while completing CPU cases, then exports the full evidence and applies the queued canonical checker regression fix.
+
+## Driving improvement demonstrated on MM
+
+27B MM nonthinking + generic execution instruction completed normally in1472.812233s with7698 known generated tokens/0 unknown, six reads, six greps, four shell calls, eleven edits and one write; no tool input repeated. Original1800s run had no edit,108 reads/28 greps and max17 identical input occurrences; the3600s supplement still had no edit and502 greps. Current original-scope behavioral oracle and fresh source ACCEPT passed; main adopted exact patch. No task-specific corrective feedback or paid task plan was supplied, only case-neutral execution guidance. Source review21.208521s/23446 uncached/471 output. This accepted counterexample rules out treating the prior no-edit result as pure task incapability; one seed does not establish a general success rate.
+
+W66 xhigh+generic, medium+original and medium+generic all ended1800s without edits. The distinct native low+generic branch is running. The read-only warning test changed trajectory to repeated shell inspections (one missing-test-file sed command32x), so its direct-read hook did not fire. A separate V2 guard, stock-controlled on repeated exact input+content and unchanged allowed artifacts, is now running on the original MM OFF brief. It preserves all content/tools and includes repeated execution errors; no claim of improvement before outcome.
+
+All28 initial conditions are terminal. CPU PFX OFF left a budget document failing the original recipe hyperlink requirement. A fresh paired OFF artifact trial now runs on slot3 with actual CI diagnostic, one paid link diagnosis26.924709s/27804 uncached/866 output, plus an explicitly recorded main factual/extraction reminder. Original outcome stays interrupted; original debit47972 leaves72028. ON artifact repair, MM ON test completion and TU OFF test completion run concurrently on other CPU slots. [no-belief: incremental task evidence; final committed-conclusion register pending]
+
+Next: codex-a3b-pilot audits final trials, exports complete quality/cost/performance, then applies source-locked canonical fixes after archive capture.
+
+## Main-only reuse and second MM completion
+
+Operator reaffirmed reuse of valid main-only evidence and C22 throughout. No new main-only implementation calls are planned. Existing saved baseline bytes/ledger remain the comparator; a repaired acceptance check first rechecks the saved output.
+
+Q38FN MM thinking completed its same-session original-test reminder, passed the original behavioral contract and fresh source ACCEPT; main adopted the exact module/test patch. One CI correction, zero paid semantic diagnoses, one final review (34.783575s,25952 uncached input,552 output); original budget-interrupted partial remains distinct.
+
+A second27B MM OFF run with original brief and broader warning plugin completed normally1602.881971s/12684 generated/0 unknown and passed independent behavioral/source checks; main adopted it. The plugin loaded, but neither emission markers nor exported history show a delivered warning. Thus this is a successful repeat, not evidence of an activated warning benefit, and it reinforces trajectory variability as an alternative explanation for prompt-driving comparisons. Source review20.913138s/38085 uncached input/460 output.
+
+W66 low+generic also ended without edits. The proposed4096 thinking-budget treatment was not launched: a direct native zero-budget control failed to force visible completion; exact source/live diagnostics remain separately archived, with no reasoning-token inference from text length.
+
+CPU PFX OFF fresh artifact passed V7 but source review rejected unsupported population/lifecycle/coverage claims. Its first paid diagnosis had missed that original-requirement issue; a separately approved second paid-diagnosis continuation repairs reviewer coverage. It retains the stock native3600 configuration for exact-session restore and has a controller-enforced1800 phase deadline, same C22 CPU slot3 and remaining65711 generated allowance. All earlier verdicts and actual costs remain. [no-belief: incremental owner observations; final committed-conclusion register pending]
+
+Next: codex-a3b-pilot closes and audits CPU follow-ups, archives exact evidence before source-lock changes, then applies tested canonical fixes and verifies cleanup.

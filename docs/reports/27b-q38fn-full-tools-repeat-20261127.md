@@ -39,6 +39,16 @@ A separate CPU PFX thinking supplement carries its own budget-closed document an
 
 The future owner-v3 race controls and scheduler controls are tested scratch improvements; active epoch02 and its frozen task runner were not silently replaced while jobs ran.
 
+## Additional model-driving checks
+
+The operator challenged pure model-capability attribution and approved further GPU driving tests. These results describe model, harness, prompt, sampling and time limits together; a full tool surface does not establish optimal driving. The earlier A3B campaign had accepted runtime-test, image-sizing and cache-sizing work, but more retries and a different thinking setting. Initial observed27B results were weaker; this is not a controlled intrinsic ranking.
+
+Four fresh1800s trials isolate generic execution guidance and native medium effort on W66, plus generic guidance on MM nonthinking. The W66 medium control retains the original prompt bytes; both medium wire archives contain the native supported setting. A separate queued MM original-brief trial tests an automatic third-identical-read warning, preserving the full returned content and tool availability. Stock OpenCode scripted controls verify plugin loading, reset behavior and transcript preservation. The generic prompt is not itself an automatic loop detector. No claimed benefit precedes the artifact/trace audit; other driving options remain untested.
+
+The MM generic-driving arm is now accepted after normal completion:1472.812s,7698 generated tokens, no unknown generation, no task-specific corrective guidance, and one independent review. It used six reads and no repeated tool input. Original30-minute and extended60-minute trials left no edits; the original repeated some inputs17 times. This is a concrete counterexample to pure task-incapability attribution, while one seed and uncontrolled cache/concurrency prevent a general causal success-rate estimate.
+
+The xhigh/medium W66 driving arms ended without edits. Native low remains a distinct follow-up. The direct-read warning arm instead repeated shell inspections, so its guard did not activate; the broader separately controlled V2 warning is being tested against actual repeated-tool behavior. It is not valid to call an unexercised guard ineffective.
+
 ## Cost and timing interpretation
 
 Local tokens are treated as free for the user's benefit question, but elapsed time and paid review, planning, management and harness engineering still count. Separate exports retain actual recorded input, cached and uncached input, output and reasoning subsets, including unsuccessful paid calls and context compactions. Management totals include the owned helper lineage and have an explicit cutoff; closing work after that cutoff is unmetered, not zero.
@@ -54,3 +64,7 @@ Final exports will provide per-attempt and per-mode latency, upstream/delivered 
 Private branch: `codex/27b-q38fn-canary-20261127`. Protocol: [27b-q38fn-full-tools-repeat-20261127.md](../design/27b-q38fn-full-tools-repeat-20261127.md). Runtime source and raw receipts remain under `/mnt/raid0/llm/tmp/ws58-27b-q38fn-repeat-20261127`; final selected, compressed, content-verified evidence will be archived in this repository. Model binaries, private Codex rollouts and dependency trees are excluded. The exported manager usage contains counters and hashes, not conversation text.
 
 Next: codex-a3b-pilot closes the remaining conditions and bounded corrections, audits candidates, publishes the final tables and evidence, and verifies owned-process cleanup.
+
+### Later driving checkpoint
+
+A second MM OFF run, with the original brief and broader warning plugin, completed in1602.881971s/12684 generated and passed source review plus main adoption. Crucially, no advisory delivery was observed despite plugin loading. It is a successful repeat, not evidence for warning effectiveness, and trajectory variability qualifies any generic-prompt causal inference. CPU MM ON is now accepted after one test-completion CI reminder; original interruption remains separate. W66 low+generic ended without edits. Native zero-budget forcing failed qualification, so no4096 thinking-budget quality treatment was launched. Main-only results are reused, and C22 remains the only serving kernel throughout.
