@@ -5230,3 +5230,23 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
 
 - [ ] **W3 — reliability ladder** (ongoing): `scripts/lab/promote_job.py` enforcing shadow → reviewed → autonomous from logged stats (shadow ≥10 runs scored vs a cloud-reference run; autonomous only for read_only report-class jobs at ≥90% accept-rate over 20 reviewed runs) — acceptance: promotion only via the script; every (input, local output, cloud reference, verdict) tuple saved as F3 gold data. **Gate scaffold landed current branch 2026-06-14**: cherry-picked from branch-ready `775d230`/`78f9b93` into `epyc-orchestrator` `5ab007f`/`bad8bb9`, adding promotion evaluation/reporting over `lab_task_record.v1` + `lab_review_verdict.v1`, cloud-reference/gold-tuple requirements, read-only autonomous restrictions, guarded jobs-file mutation, and `scripts/lab/record_verdict.py` for `lab_gold_tuple.v1` rows. **Promotion-ladder hardening landed 2026-07-06**: `epyc-orchestrator` `9ca7061c` now rejects stage skips/downgrades, requires operator-reviewed evidence for autonomous promotion, and requires referenced F3 gold tuple files to exist when evaluating from the queue path. Remaining W3 acceptance: collect real shadow/reviewed verdicts and use the script as the only promotion path. Operator 2026-11-07: keep open — nightly accumulation continues (≤2 of 10 scored shadow verdicts per job so far).
   - **2026-11-09 audit (RTG-02):** Exit criterion already stated in the box (shadow >=10 scored runs vs a cloud reference; autonomous only at >=90% accept over 20 reviewed runs); operator 2026-11-07 kept it open (nightly accumulation, at most 2 of 10 scored shadow verdicts per job so far). Not an Autopilot item and needs no Autopilot hold-lift; ownership suggestion: lab handoff index. Audit claim "no exit criterion" was wrong.
+
+## Track: W66 serving attribution and local worker recovery
+<!-- gate: none -->
+
+### Backlog
+
+- [ ] **AP-W66-TRACE** [non-inference] Reconstruct the W66 timing breakdown and identify a comparable kernel benchmark using the [pinned replay brief](../../docs/reports/autopilot-w66-replay-plan.md).
+      · done when: all 140 receipts reconcile with the published per-mode totals, four replay inputs have verified bytes and predecessor plans, and a benchmark comparison records matched and mismatched settings.
+      · gate: none
+- [ ] **AP-W66-PAIR** [inference] Compare the four pinned requests alone and with concurrent slots under matched cache state.
+      · done when: per-pair receipts attribute recoverable prefill or decode seconds or record an inconclusive result with the specific mismatch or uncertainty.
+      · gate: AP-W66-TRACE
+      · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: C22 ce6fcbbde · harness: pinned streaming request replay · metric: accepted work per hour (higher), request and phase latency (lower) · region: MI210 and recorded host affinity · est: ON 28 alone historically spent 165 s decoding, excluding warmup
+      · stop rule: check after each pair, reverse order for noise, stop on stable attribution above repeat variation or after three matched pairs per target.
+- [ ] **AP-W66-LOOP** [non-inference] Project the phase evidence into the existing eval report and exercise the planner's shadow decision on a held-out trace.
+      · done when: the actual report and journal entry point distinguish prefill, decode and insufficient evidence with source receipts, pass legacy/missing-counter controls, and preserve quality-qualified goodput.
+      · gate: AP-W66-TRACE
+- [ ] **AP-W66-RECOVERY** [non-inference] Replay successful late edits, inspection loops and partial artifacts through a proposed artifact-aware retry policy.
+      · done when: an offline report records false interventions on accepted traces, missed loops, actionable corrections, remaining budgets and a bounded fresh-task pilot plan with acceptance, paid-cost and wall-time endpoints.
+      · gate: none

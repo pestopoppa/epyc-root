@@ -714,7 +714,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-27T14:43:09Z",
+  "generated_at": "2026-11-27T15:14:36Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2657,14 +2657,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 305,
-      "dispatchable": 85,
+      "dispatchable": 89,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-23",
       "next_action": "Run AP-POSTREBOOT-LH-RIGOR (R1-R5 accept for the Life-Harness run); smoke after reboot; hold-lift review last",
-      "open": 86,
+      "open": 90,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2879,6 +2879,15 @@
           "line": 5227,
           "name": "lab-reliability-ladder",
           "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 4,
+          "gates": [],
+          "line": 5234,
+          "name": "W66 serving attribution and local worker recovery",
+          "open": 4,
           "readiness": "ready"
         }
       ]
