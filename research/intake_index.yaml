@@ -441297,3 +441297,2331 @@
   disposition_evidence:
   - Assess retirement separately from observed skill uplift when a named skill/model pair is scheduled for removal. Freeze baseline unaided success, skill-on/skill-off
     trials, invalid calls and retirement rule; reserve new tasks/trials, check retained reward and false retirements before withdrawing any skill.
+
+- id: intake-3006
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+  title: 'Beyond Counters: Instruction-Level GPU Hotspot Profiling with PC Sampling in ROCprofiler-SDK'
+  authors:
+  - Vladimir Indic
+  source_type: blog
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The guide places the PC sampling tooling in ROCm 6.4 and later.
+  - MI200 can use host-trap hotspot sampling and lacks stochastic sampling.
+  - The worked GEMM example reports 357.1 ms for the naive kernel and 118.0 ms with 16×16 LDS tiling.
+  - The WAITCNT reduction refers to two selected hot lines.
+  reported_results:
+  - AMD's 2026-11-26 guide layers kernel dispatch trace and counters with host-trap PC neighborhoods, stochastic wave issue and stall classification, then ATT
+    as needed. A precompiled code object gives ISA attribution, while -g adds source-line mappings. Host trap uses host timing and wave-slot traps, has 1–2-instruction
+    skid and lacks stall cause. Stochastic starts at CDNA3 and records per-wave issue, stall reason, wave count and JSON arbiter state. One MI300A/gfx942 under
+    ROCm 10.1, 8192-cubed naive GEMM versus 16x16 LDS tiled, one timed launch after one warmup per binary, 357.1→118.0 ms. ~12.2x fewer WAITCNT samples was the
+    two selected compute lines only (146,507 versus 12,008), not a kernel-wide WAITCNT reduction. Host-trap sample counts also change with wave residency and
+    overhead, so preserve separate timing as the decision metric. The source attributes naive waiting specifically to uncoalesced B, but its example has B contiguous
+    across x lanes in a row and the rewrite changes A/B traffic, staging and reuse together. The hotspot evidence supports wait localization, not isolated B causality.
+    Blog's 2^20 stated hardware ceiling differs from the SDK docs' gfx942 advertised Max_Interval=2147483648 example, so query the actual installed capability
+    and verify observed cadence.
+  credibility_score: 2
+  contradicting_evidence:
+  - Official AMD SDK docs confirm skid and gfx942 stochastic support, but advertise a higher gfx942 maximum in their configuration example. HPCToolkit's GPU profiling
+    documentation independently corroborates ROCm 6.4 onset, MI200 host trap and skid, not AMD's GEMM numbers.
+  cross_references:
+    handoffs:
+    - rocm-kernel-authoring.md
+  recommended_actions:
+  - Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for stripped
+    objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
+  notes: 'handoffs/active/rocm-kernel-authoring.md:L1122-L1132 @ b93bd31; VATTN-LIMITER-1 at L1147. Use current ROCm 6.2 kernel traces/PMC and adopted rocprofv2
+    ATT adapter. MI210 host-trap can add hotspot-only evidence on an isolated compatible stack, capability- and privilege-gated. The EPYC 9655 has no use for
+    rocprof; use CPU perf/IBS as an analogous source of evidence. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Introduction, HTML L785–788
+    quote: ROCm™ software (version 6.4 and later)
+    quote_sha256: b00f9fb1bf48492a177e253971e3dfdb327f4fc51ae2f29cecb6c79c6d4b3a1d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8, found: true}
+    source_revision: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      requested_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      effective_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.461274+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      relative_path: sha256/02/021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8.raw
+      raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      byte_length: 186674
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Method 1 §When to Use, HTML L981
+    quote: Initial hotspot identification on a GPU that does not support stochastic sampling (e.g., AMD Instinct MI200 series accelerators).
+    quote_sha256: 397ff187a8b0b51772383f7f6d789a985fb4319210c5f29af139bda0ef395e3f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8, found: true}
+    source_revision: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      requested_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      effective_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.461274+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      relative_path: sha256/02/021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8.raw
+      raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      byte_length: 186674
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Real-World Use Case §Step 4 timing table, HTML L1406–1410
+    quote: mm (naive) 357.1 ms mm-lds (16×16 LDS tile) 118.0 ms
+    quote_sha256: 57329252ad3eeec73e71c61d4f7a24c034a8f767068f543224ef946218b94c1d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8, found: true}
+    source_revision: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      requested_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      effective_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.461274+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      relative_path: sha256/02/021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8.raw
+      raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      byte_length: 186674
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Real-World Use Case §Step 4 observations, HTML L1527
+    quote: This comparison is scoped to these two specific hot lines, not a kernel-wide WAITCNT count.
+    quote_sha256: ce9a7a7805d767a5e681778de10f5fa07502119403b2d08c1cf1ce813807e837
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8, found: true}
+    source_revision: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      requested_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      effective_url: https://rocm.blogs.amd.com/software-tools-optimization/pc-sampling-rocprofiler/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.461274+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      relative_path: sha256/02/021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8.raw
+      raw_sha256: 021ad2052b5e396b16e8663104ae4f05bbf854fcc5037dbc6534836e8dfb34d8
+      byte_length: 186674
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The guide places the PC sampling tooling in ROCm 6.4 and later.
+  - claim_index: 1
+    effect: unaffected
+    note: MI200 can use host-trap hotspot sampling and lacks stochastic sampling.
+  - claim_index: 2
+    effect: unaffected
+    note: The worked GEMM example reports 357.1 ms for the naive kernel and 118.0 ms with 16×16 LDS tiling.
+  - claim_index: 3
+    effect: unaffected
+    note: The WAITCNT reduction refers to two selected hot lines.
+  dive_corrections: 2026-11-27. Official AMD SDK docs confirm skid and gfx942 stochastic support, but advertise a higher gfx942 maximum in their configuration
+    example. HPCToolkit's GPU profiling documentation independently corroborates ROCm 6.4 onset, MI200 host trap and skid, not AMD's GEMM numbers.
+- id: intake-3007
+  local_review: "The frozen ffc1bac82 HIP IQ4_NL/XS vector dots already use get_int_from_table_16 with AMD byte permutes; emitted-code placement is the remaining hypothesis."
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+  title: Bringing MXFP4 MoE to AMD Instinct MI300 Series GPUs with FlyDSL
+  authors:
+  - Menghsuan Yang
+  - Felix Li
+  - Clement Lin
+  - Chunhung Wang
+  source_type: blog
+  categories:
+  - quantization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - At the tested MI300X geometry, against the reference software decode, the LUT sped up GEMM1 by 2.2×–2.4× and GEMM2 by 1.7×–2.5×.
+  - The performance comparator was a same-call-site development implementation absent from shipped AITER.
+  - Nonzero decoded weights matched the software decoder bit for bit in the one-hot GEMM2 readback.
+  - The reported speedups cover GEMMs alone.
+  reported_results:
+  - 'AMD measured AITER a16w4 GEMM1 and GEMM2 on one MI300X, E=896/model_dim=3584/inter_dim=384/topk=16, BF16 activation+SwiGLU, synthetic Gaussian weights/inputs
+    and random routing, forcing BF16 activations across token counts. SQ/ATT/source lines identified E2M1 decode as the dominant issue cost. The gfx942 LUT uses
+    four v_perm_b32 byte lookups plus eight interleaves per eight weights, restores signs and scales with E8M0 via f32 multiply and truncation. RX-independent
+    developmental software baseline was never merged. Seven token points from 1 to 8192: GEMM1 2.2–2.4x and GEMM2 1.7–2.5x, kernel times only, latest smaller
+    gain for GEMM2 as dependency waits surface. Bit check: GEMM2 one-hot readback checked 22,020,096 weights, all 64,768 byte/scale pairs, finite scales 0x00–0xFC,
+    nonzeros bit-identical to reference; -0 sign unobservable and 0x00 flushed to zero in both, leaving 76,208 departures from the mathematical reference; FD–FF
+    excluded. #6144 replaces most byte permutes with FP8 convert (gfx942) and #8184 proposes 21 vs 28 VALU instructions; neither is an independent corroboration
+    of the blog baseline.'
+  credibility_score: 2
+  contradicting_evidence:
+  - The AMD Limitations section narrows the headline. AITER release lineage corroborates implementation and supersedes this baseline, while indexed relays repeat
+    AMD's result. No independent MI210/9655 reproduction found.
+  cross_references:
+    handoffs:
+    - quantization-and-low-bit.md
+  recommended_actions:
+  - Compare emitted permutes, register pressure, waits and MFMA issue for observed IQ4_XS/NL hot shapes; inventory MMQ separately from MMVQ. Require exact nibble/scale/sign
+    reconstruction and an attributable decode bottleneck before moving decode or extending the design to EXL3.
+  notes: 'handoffs/active/rocm-kernel-authoring.md:L2588-L2598 @ b93bd31 documents live CPU/GPU MXFP4 scale semantics; handoffs/active/cpu-decode-roofline-program.md:L251
+    @ b93bd31 owns XFER-4b. MI210 can port plain byte-LUT logic into the actual GGUF gfx90a dequant family if trace/ISA shows relevant compute cost on MXFP4 expert
+    paths. Existing GPU and CPU code use different equivalent scale forms except 0xFF, making the native oracle and full local scale semantics mandatory. AITER''s
+    gfx942-specific FlyDSL runtime or FP8 convert isn''t a source of target speed; EPYC 9655 can reconsider LUT/SIMD only inside native iqk if current CPU prefill
+    exposes a decode bottleneck. Served read bandwidth stays the same. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Summary, HTML L1475
+    quote: the LUT makes GEMM1 2.2×–2.4× and GEMM2 1.7×–2.5× faster than the reference software decode
+    quote_sha256: 4d811e5904cf2c69679da6e6c53f594be7ad8b875329f27b35c8953a257d4b8a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f, found: true}
+    source_revision: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      requested_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      effective_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.632276+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      relative_path: sha256/80/8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f.raw
+      raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      byte_length: 164221
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Limitations, HTML L1461
+    quote: placed at the same call site; it was never merged into AITER.
+    quote_sha256: 20a368a19369c2a576a2b7c79ee3eb90af495ad552e0620f76127b2ba6476efe
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f, found: true}
+    source_revision: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      requested_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      effective_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.632276+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      relative_path: sha256/80/8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f.raw
+      raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      byte_length: 164221
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Checking Bit-Exactness on MI300X, HTML L1238
+    quote: Every nonzero weight is bit-identical between the software and LUT outputs.
+    quote_sha256: 17fd4e4147e8825201cac74da06512633b85079921902b66983438b1b650b9c9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f, found: true}
+    source_revision: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      requested_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      effective_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.632276+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      relative_path: sha256/80/8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f.raw
+      raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      byte_length: 164221
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Limitations, HTML L1462
+    quote: Table 7 covers the two GEMM kernels. MoE sorting and the rest of the model are not included
+    quote_sha256: fde1c9a72228773c728f2f01713a765348361d938e43c0a1a4ea1ea82713c652
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f, found: true}
+    source_revision: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+    source_artifact:
+      entry_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      requested_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      effective_url: https://rocm.blogs.amd.com/artificial-intelligence/gfx942-moe-mxfp4/README.html
+      retrieved_at_utc: '2026-11-27T11:48:54.632276+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      relative_path: sha256/80/8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f.raw
+      raw_sha256: 8029f9d0f969d653978b3bfffbeaca1a60616a7f3b17e49e201b00c2790c256f
+      byte_length: 164221
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: At the tested MI300X geometry, against the reference software decode, the LUT sped up GEMM1 by 2.2×–2.4× and GEMM2 by 1.7×–2.5×.
+  - claim_index: 1
+    effect: unaffected
+    note: The performance comparator was a same-call-site development implementation absent from shipped AITER.
+  - claim_index: 2
+    effect: unaffected
+    note: Nonzero decoded weights matched the software decoder bit for bit in the one-hot GEMM2 readback.
+  - claim_index: 3
+    effect: unaffected
+    note: The reported speedups cover GEMMs alone.
+  dive_corrections: 2026-11-27. The AMD Limitations section narrows the headline. AITER release lineage corroborates implementation and supersedes this baseline,
+    while indexed relays repeat AMD's result. No independent MI210/9655 reproduction found.
+- id: intake-3008
+  local_review: "Draft at retrieval. Qwen3.6-35B-A3B pp512 at ub256 rose from 693 to 730 t/s on the RX 7700 XT. The half-CU bound applies to unsplit tile count, not the slice count."
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/33167
+  title: 'HIP: add split-K F32 GEMM path for untuned RDNA3 chips'
+  authors:
+  - Alexandre Beloin
+  source_type: repo
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Split-K is gated to selected HIP RDNA3 targets with K at least 2048, excluding the base RDNA3 code.
+  - The best 32-slice microbenchmark took 36.2 µs versus 329.9 µs for rocBLAS at the specified shape.
+  reported_results:
+  - 'Open on 2026-11-27. F32 singleton GEMMs on HIP RDNA3 except gfx1100/generic: K>=2048, unsplit 64x128 tile count <= nsm/2, choose largest 2/4/8/16/32 equal
+    K slices with slice K>=64 and tiles*slices<=4*nsm. One strided batched SGEMM writes partial FP32 outputs and a separate GPU kernel deterministically sums
+    them in slice order, with a disable env guard. Bench only on RX 7700 XT/gfx1101, ROCm 10.2.0 and rocBLAS 5.8.0. The microbench saw 329.9→36.2 us for 64x256
+    K4608 (32 slices), 160.4→34.4 us for 128x256 K2304 (16), and 308.7→34.3 us for 64x192 K4608 (32), NMSE ~1e-12; Inkling prefill at ub256 ranged +9.0–12.2%,
+    and gains shrank for other model/shape/ubatch. Results compare same backend on/off; thresholds from one GPU. Four shape tests added including K=4600.'
+  credibility_score: 3
+  contradicting_evidence:
+  - No independent reproduction of the gfx1101 numbers found. rocBLAS/Tensile table explanation is uploader-reported and does not demonstrate gfx90a behavior;
+    code predicate settles direct applicability.
+  cross_references:
+    handoffs:
+    - rocm-kernel-authoring.md
+  recommended_actions:
+  - Join actual ffn_gate_inp and skinny F32 dispatches to shape, backend, duration and CU count; bound saved served time against current rocBLAS. If material,
+    compare fixed-order two-pass slice reduction with unsplit reference and repeat identical inputs bitwise.
+  notes: 'handoffs/active/autokernel-loop.md:L4280 @ b93bd31 already owns the two-pass reduction motif in AK-ASM-H7. handoffs/active/model-evaluation-queue.md:L725
+    @ b93bd31 owns Inkling port. MI210 is gfx90a; exact predicate excludes it, and local rocBLAS must establish an analogous F32 hotspot first. EPYC 9655 CPU
+    has no HIP path and K splitting adds partial write/reduction, so only reconsider if measured small-output CPU GEMM tile parallelism is actually limiting. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: ggml/src/ggml-cuda/ggml-cuda.cu:L1941-L1947 @ 9384a12
+    quote: if (ggml_cuda_f32_split_k_disabled() || k < 2048 || !GGML_CUDA_CC_IS_RDNA3(cc) || cc == GGML_CUDA_CC_RDNA3) {
+    quote_sha256: 1083373bd18cd3cd597736561723d65a13afebee63b1ef4895d3a8539313f4f8
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 83233fb63f30ec9defda211d55e3e8bba21e338350ebb828fed55dd151286e9f, found: true}
+    source_revision: https://raw.githubusercontent.com/abeloin/llama.cpp-mix/9384a12815111ccfa6fb6c34e1f47edad0dc987d/ggml/src/ggml-cuda/ggml-cuda.cu
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33167
+      requested_url: https://raw.githubusercontent.com/abeloin/llama.cpp-mix/9384a12815111ccfa6fb6c34e1f47edad0dc987d/ggml/src/ggml-cuda/ggml-cuda.cu
+      effective_url: https://raw.githubusercontent.com/abeloin/llama.cpp-mix/9384a12815111ccfa6fb6c34e1f47edad0dc987d/ggml/src/ggml-cuda/ggml-cuda.cu
+      retrieved_at_utc: '2026-11-27T11:50:40.559845+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:83233fb63f30ec9defda211d55e3e8bba21e338350ebb828fed55dd151286e9f
+      relative_path: sha256/83/83233fb63f30ec9defda211d55e3e8bba21e338350ebb828fed55dd151286e9f.raw
+      raw_sha256: 83233fb63f30ec9defda211d55e3e8bba21e338350ebb828fed55dd151286e9f
+      byte_length: 203995
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Additional information §Micro benchmark
+    quote: 64 x 256, 4608 ( ctrl_down , ubatch 256) 329.9 us 36.2 us (32 slices) 9.1x
+    quote_sha256: ddc4ce333587c6dfec4df44bf865e83f0cce243d0ec14ea31ea90128900e65ee
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: bfb9dac8066391753d64638c7010a1f464445f8cb864d72d4570e31a0827d843, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/33167
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33167
+      requested_url: https://github.com/ggml-org/llama.cpp/pull/33167
+      effective_url: https://github.com/ggml-org/llama.cpp/pull/33167
+      retrieved_at_utc: '2026-11-27T11:50:00.774260+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:bfb9dac8066391753d64638c7010a1f464445f8cb864d72d4570e31a0827d843
+      relative_path: sha256/bf/bfb9dac8066391753d64638c7010a1f464445f8cb864d72d4570e31a0827d843.raw
+      raw_sha256: bfb9dac8066391753d64638c7010a1f464445f8cb864d72d4570e31a0827d843
+      byte_length: 266500
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Split-K is gated to selected HIP RDNA3 targets with K at least 2048, excluding the base RDNA3 code.
+  - claim_index: 1
+    effect: unaffected
+    note: The best 32-slice microbenchmark took 36.2 µs versus 329.9 µs for rocBLAS at the specified shape.
+  dive_corrections: 2026-11-27. No independent reproduction of the gfx1101 numbers found. rocBLAS/Tensile table explanation is uploader-reported and does not
+    demonstrate gfx90a behavior; code predicate settles direct applicability.
+- id: intake-3009
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/33161
+  title: 'cuda : use constant V load length when head dim is unpadded'
+  authors:
+  - Sunny Yang
+  source_type: repo
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The unpadded head case uses a constant V length and leaves the clamp for padded V.
+  - At pp32000 the two baseline runs produced 652.50 and 652.86 t/s and the patched runs produced 1698.78 and 1726.56 t/s.
+  reported_results:
+  - 'Open on 2026-11-27. One-line change inside flash_attn_ext_f16_iter and nstages<=1 selects compile-time 2*nbatch_V2 for DVp==DV; padded head dimensions retain
+    min(i0_stop,DV)-i0_start. Author reports the 512-head f16 2x8 kernel stack frame shrank 272→16 B. A6000/sm_86 CUDA 12.0 Gemma-4-12B-it-qat-UD-Q4_K_XL against
+    master 94a1e4b72: pp16k 1052.81/1013.20→1940.21/1950.93 t/s and pp32k 652.50/652.86→1698.78/1726.56 t/s, two runs each, first baseline shared GPU. FLASH_ATTN_EXT
+    author tests 4430/4430 before and after.'
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Linked issue #32871 independently reports an A4000 prefill regression on build b12285, corroborating symptom only. The PR closes no demonstrated local gap.
+    Results paired on a shared GPU with another process active during first baseline.'
+  cross_references:
+    handoffs:
+    - rocm-kernel-authoring.md
+  recommended_actions:
+  - Join executed attention symbols to private-segment bytes and scratch instructions from content-identified code objects. Compare constant-length and dynamic-tail
+    paths only on affected shapes, retaining correctness for padded V and partial tiles.
+  notes: 'handoffs/active/rocm-kernel-authoring.md:L1147 @ b93bd31 owns served verify attention attribution, documented local shape 256 and q8_0 KV, distinct
+    from the external 512 f16 case. HIP shares parts of the header; test compiler scratch and VGPR changes on actual AMD instantiations before routing or timing
+    work. EPYC 9655 has separate FA backend; only the general compile-time-versus-runtime length specialization motif transfers. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L944-L949 @ 078992f
+    quote: 'const int i0_diff = DVp == DV ? 2*nbatch_V2 : min(i0_stop, DV) - i0_start;'
+    quote_sha256: f95827d7d64e4c9b920d65d46ceebd8a0a4bfd96680cdbb3adf44f2ac32f3a00
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac552a324560d8f0c4f0d320790472708b9c88dc516402375dc2a1334dbdf7cf, found: true}
+    source_revision: https://raw.githubusercontent.com/sunnyadn/llama.cpp/078992f0f1b522e8a716f793f5257c609ccaf4bc/ggml/src/ggml-cuda/fattn-mma-f16.cuh
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33161
+      requested_url: https://raw.githubusercontent.com/sunnyadn/llama.cpp/078992f0f1b522e8a716f793f5257c609ccaf4bc/ggml/src/ggml-cuda/fattn-mma-f16.cuh
+      effective_url: https://raw.githubusercontent.com/sunnyadn/llama.cpp/078992f0f1b522e8a716f793f5257c609ccaf4bc/ggml/src/ggml-cuda/fattn-mma-f16.cuh
+      retrieved_at_utc: '2026-11-27T11:50:40.864850+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ac552a324560d8f0c4f0d320790472708b9c88dc516402375dc2a1334dbdf7cf
+      relative_path: sha256/ac/ac552a324560d8f0c4f0d320790472708b9c88dc516402375dc2a1334dbdf7cf.raw
+      raw_sha256: ac552a324560d8f0c4f0d320790472708b9c88dc516402375dc2a1334dbdf7cf
+      byte_length: 117667
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Additional information §Prompt throughput table
+    quote: pp32000 652.50 / 652.86 t/s 1698.78 / 1726.56 t/s
+    quote_sha256: d3b6588df4fe978f57769a9b558e20cc083e45f187d668cdb0d27f648d196bb2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 71fdd59f3f397e0c2d0b9573d6bd526289556a9a4d88164b6b2c2d92275e5c17, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/33161
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33161
+      requested_url: https://github.com/ggml-org/llama.cpp/pull/33161
+      effective_url: https://github.com/ggml-org/llama.cpp/pull/33161
+      retrieved_at_utc: '2026-11-27T11:50:01.699274+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:71fdd59f3f397e0c2d0b9573d6bd526289556a9a4d88164b6b2c2d92275e5c17
+      relative_path: sha256/71/71fdd59f3f397e0c2d0b9573d6bd526289556a9a4d88164b6b2c2d92275e5c17.raw
+      raw_sha256: 71fdd59f3f397e0c2d0b9573d6bd526289556a9a4d88164b6b2c2d92275e5c17
+      byte_length: 252568
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The unpadded head case uses a constant V length and leaves the clamp for padded V.
+  - claim_index: 1
+    effect: unaffected
+    note: At pp32000 the two baseline runs produced 652.50 and 652.86 t/s and the patched runs produced 1698.78 and 1726.56 t/s.
+  dive_corrections: '2026-11-27. Linked issue #32871 independently reports an A4000 prefill regression on build b12285, corroborating symptom only. The PR closes
+    no demonstrated local gap. Results paired on a shared GPU with another process active during first baseline.'
+- id: intake-3010
+  local_review: "The final OpenCL PR merged 2026-11-26. Local Q8 w8 in-place passed its op gate; Q8-SERVED-PROFILE-1 found almost no served kernel gain against V5I. Classify F32 separately."
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/33098
+  title: 'opencl: add multi token f32 GEMV for spec verify'
+  authors:
+  - Li He
+  source_type: repo
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The kernel hoists each weight vector before iterating narrow columns.
+  - The final merged route is limited to N=2..8 and at most 512 output rows.
+  reported_results:
+  - Merged 2026-11-26 at 9fa7a33c. Contiguous aligned 2D F32 rows, N=2..8 K divisible by four, load a float4 weight once per lane for all N columns, lane-tile
+    K with 4..64 lanes per row in a 64-thread group, local memory reduction and private accumulators. M<=512 and at least 256 workgroups in final code. Initial
+    commit admitted M>512; follow-up specifically keeps those on tiled GEMM. Adreno X2E/A8X enabled by default, E17 quirks guarded, controls allow opt-in. Author
+    Gemma-4-E4B-it-Q4_K_M with draft max 7 reported 907.127→924.818 encoded t/s (+1.95%) and 32.959→34.280 decoded t/s (+4.01%), unchanged 194/465 accepted, 41.720%;
+    no runs, confidence interval or exact device identified in PR body.
+  credibility_score: 3
+  contradicting_evidence:
+  - Patch second commit contradicts first commit's wide-M behavior. No independent replication found; the PR describes one unchanged acceptance trace and a narrow
+    gain, while our separate HIP width-8 work demonstrates the motif's register-pressure tradeoff.
+  cross_references:
+    handoffs:
+    - autokernel-loop.md
+  recommended_actions:
+  - Classify retained verify calls by input type, rows, K, verify columns and selected kernel. Bound F32 time that a weight-sharing GEMV could recover against
+    served dispatch. Stop at zero eligible share or an immaterial upper bound.
+  notes: 'handoffs/active/rocm-kernel-authoring.md:L1150-L1154 @ b93bd31 already tests Q8-MULTICOL-GEMV-1 and Q8-W8-GEMV-1. Local Q8 row-reuse first design lost
+    served performance with width-8 dominant; width-8 successors already underway. MI210 transfer is shape gates, weight reuse and register/LDS pressure controls
+    only, no OpenCL port. On EPYC 9655 use the same principle only for a measured small-width CPU verification matrix where existing iqk behavior and vector register
+    pressure leave room. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: ggml/src/ggml-opencl/kernels/mul_mm_f32_f32_l4_lm.cl:L225-L232 @ 9fa7a33
+    quote: 'const float4 w = wrow[k]; #pragma unroll for (int n = 0; n < 8; n++)'
+    quote_sha256: 77867265fa8538e711bd4e9680ddf70968be6b7895553963cf433407842bc85e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1b690a8d26730a700bb7628829712bba54288a8d0c0b4e44fb5caa0bf1ef5596, found: true}
+    source_revision: https://raw.githubusercontent.com/ggml-org/llama.cpp/9fa7a33cbbba2400eeb773a475038bc49e4dbe16/ggml/src/ggml-opencl/kernels/mul_mm_f32_f32_l4_lm.cl
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33098
+      requested_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/9fa7a33cbbba2400eeb773a475038bc49e4dbe16/ggml/src/ggml-opencl/kernels/mul_mm_f32_f32_l4_lm.cl
+      effective_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/9fa7a33cbbba2400eeb773a475038bc49e4dbe16/ggml/src/ggml-opencl/kernels/mul_mm_f32_f32_l4_lm.cl
+      retrieved_at_utc: '2026-11-27T11:50:42.470873+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:1b690a8d26730a700bb7628829712bba54288a8d0c0b4e44fb5caa0bf1ef5596
+      relative_path: sha256/1b/1b690a8d26730a700bb7628829712bba54288a8d0c0b4e44fb5caa0bf1ef5596.raw
+      raw_sha256: 1b690a8d26730a700bb7628829712bba54288a8d0c0b4e44fb5caa0bf1ef5596
+      byte_length: 9091
+  - claim_index: 1
+    kind: page-and-quote
+    locator: ggml/src/ggml-opencl/ggml-opencl.cpp:L33713-L33720 @ 9fa7a33
+    quote: ne11 >= 2 && ne11 <= 8 && ne00 > 0 && ne00 <= INT_MAX && ne01 > 0 && ne01 <= 512
+    quote_sha256: 12b3ce5ac3e53c2cf7b2dd07a423c2d365d67dd81bea8a87389cd01a0d433a75
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 53ecc9a301e8a8fc7476e5e49b53d41b690c57996abad933cf0a2d0b70c1a97e, found: true}
+    source_revision: https://raw.githubusercontent.com/ggml-org/llama.cpp/9fa7a33cbbba2400eeb773a475038bc49e4dbe16/ggml/src/ggml-opencl/ggml-opencl.cpp
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33098
+      requested_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/9fa7a33cbbba2400eeb773a475038bc49e4dbe16/ggml/src/ggml-opencl/ggml-opencl.cpp
+      effective_url: https://raw.githubusercontent.com/ggml-org/llama.cpp/9fa7a33cbbba2400eeb773a475038bc49e4dbe16/ggml/src/ggml-opencl/ggml-opencl.cpp
+      retrieved_at_utc: '2026-11-27T11:50:42.195869+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:53ecc9a301e8a8fc7476e5e49b53d41b690c57996abad933cf0a2d0b70c1a97e
+      relative_path: sha256/53/53ecc9a301e8a8fc7476e5e49b53d41b690c57996abad933cf0a2d0b70c1a97e.raw
+      raw_sha256: 53ecc9a301e8a8fc7476e5e49b53d41b690c57996abad933cf0a2d0b70c1a97e
+      byte_length: 2077425
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The kernel hoists each weight vector before iterating narrow columns.
+  - claim_index: 1
+    effect: unaffected
+    note: The final merged route is limited to N=2..8 and at most 512 output rows.
+  dive_corrections: 2026-11-27. Patch second commit contradicts first commit's wide-M behavior. No independent replication found; the PR describes one unchanged
+    acceptance trace and a narrow gain, while our separate HIP width-8 work demonstrates the motif's register-pressure tradeoff.
+- id: intake-3011
+  local_review: "Draft at retrieval; the benchmark lacks a stock cache-on arm to isolate the contribution of physical-bank deduplication."
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/33130
+  title: 'moe-cache : deduplicate physical expert banks across looped MoE layers'
+  authors:
+  - Jason (jas3x)
+  source_type: repo
+  categories:
+  - moe_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Grouping host-resident expert banks requires the same assigned backend device and matching expert tensor pointers.
+  - After physical-layer planning, a virtual layer receives a copied map in its own destination.
+  reported_results:
+  - 'Open on 2026-11-27. Canonicalizes host-resident expert layer by backend device and complete expert ggml_tensor pointer vector. Shares physical bank and budget/LRU/trace/CPU-share
+    carry by phys_il; retains per-virtual-layer graph-facing slot_map, slot_map_cpu and cpu_map with sizing correct for no-alloc mode, copies current canonical
+    map into virtual layer after planning. Follow-up to closed unmerged #33072, which mixed LRU reweighting and aliasing issues. Author tested Inkling-2-Mini
+    IQ3_S (48 virtual/16 physical MoE layers) RTX 2070 8 GB + i7-13700K and UBSan. Cache disabled 8.5/13.4 t/s pp/tg, cache 2800 MiB 21.3/16.7 at CPU share 0,
+    and 33.0/21.6 at 0.65, reported identical greedy output for latter, hit rates at ubatch<=8 82.12% and 78.81%. No stock cache-on vs patched same-budget comparison;
+    no dedup speedup can be attributed.'
+  credibility_score: 3
+  contradicting_evidence:
+  - The referenced earlier PR was closed without merge and bundled an LRU heuristic; its asserted stock comparison does not establish the corrected patch. No
+    independent RTX/MI210 replication found.
+  cross_references:
+    handoffs:
+    - cpu-decode-roofline-program.md
+  recommended_actions:
+  - Extend the existing static-pool replay with physical tensor identity, capacity-matched LRU and measured NUMA-local CPU-miss versus PCIe upload costs. Compare
+    static pool, LRU, CPU-share and unpatched cache under identical route order.
+  notes: 'handoffs/active/model-evaluation-queue.md:L677-L730 @ b93bd31 owns Inkling2 Mini CPU-first port and estimates entire weights can fit MI210 for default
+    Mini recipes. Near-term candidate only where a looped larger model or high KV pressure forces host-resident experts plus a bounded cache. EPYC 9655 pure CPU
+    has no VRAM cache; paired role as host expert fallback is the relevant path. Port cost depends on upstream moe-cache API availability in a chosen experimental
+    base. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: src/llama-moe-cache.cpp:L430-L437 @ f13dcdf
+    quote: auto & candidates = phys_owner[model.dev_layer(il)][experts.front()]; auto it_owner = std::find_if(candidates.begin(), candidates.end(), [&](int32_t
+      cand_il) { return experts == llama_moe_cache_layer_experts(model.layers[cand_il]);
+    quote_sha256: 026465658d7b6db2cae18c66a5178bcd39c00f0736f17e5f191e9b6dcb3d3780
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591, found: true}
+    source_revision: https://raw.githubusercontent.com/jas3x/llama.cpp/f13dcdf450af71f3ca01375e32865e6b0916c5b5/src/llama-moe-cache.cpp
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33130
+      requested_url: https://raw.githubusercontent.com/jas3x/llama.cpp/f13dcdf450af71f3ca01375e32865e6b0916c5b5/src/llama-moe-cache.cpp
+      effective_url: https://raw.githubusercontent.com/jas3x/llama.cpp/f13dcdf450af71f3ca01375e32865e6b0916c5b5/src/llama-moe-cache.cpp
+      retrieved_at_utc: '2026-11-27T11:50:42.746877+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591
+      relative_path: sha256/68/68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591.raw
+      raw_sha256: 68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591
+      byte_length: 45196
+  - claim_index: 1
+    kind: page-and-quote
+    locator: src/llama-moe-cache.cpp:L866-L874 @ f13dcdf
+    quote: std::memcpy(l.slot_map->data, g.lru.slot_map[pil], ggml_nbytes(l.slot_map));
+    quote_sha256: 9b6bac5be703b25ab06ad39effa5fc96990bf0246656dd93d660b4dcb0782b56
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591, found: true}
+    source_revision: https://raw.githubusercontent.com/jas3x/llama.cpp/f13dcdf450af71f3ca01375e32865e6b0916c5b5/src/llama-moe-cache.cpp
+    source_artifact:
+      entry_url: https://github.com/ggml-org/llama.cpp/pull/33130
+      requested_url: https://raw.githubusercontent.com/jas3x/llama.cpp/f13dcdf450af71f3ca01375e32865e6b0916c5b5/src/llama-moe-cache.cpp
+      effective_url: https://raw.githubusercontent.com/jas3x/llama.cpp/f13dcdf450af71f3ca01375e32865e6b0916c5b5/src/llama-moe-cache.cpp
+      retrieved_at_utc: '2026-11-27T11:50:42.746877+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591
+      relative_path: sha256/68/68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591.raw
+      raw_sha256: 68896e22f36cfe19db8dc99812edbfe89e1e94dfb816c31ff1a0aa3ae1536591
+      byte_length: 45196
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Grouping host-resident expert banks requires the same assigned backend device and matching expert tensor pointers.
+  - claim_index: 1
+    effect: unaffected
+    note: After physical-layer planning, a virtual layer receives a copied map in its own destination.
+  dive_corrections: 2026-11-27. The referenced earlier PR was closed without merge and bundled an LRU heuristic; its asserted stock comparison does not establish
+    the corrected patch. No independent RTX/MI210 replication found.
+- id: intake-3012
+  local_review: "The direct X endpoint returned HTTP 403. On 2026-11-27 the public FxTwitter mirror returned post 2126041962272690479, dated 2026-11-26 19:54:38 UTC, with 63,398 views and 1,708 likes. These mutable counters describe reception only."
+  arxiv_id: null
+  url: https://github.com/alesha-pro/machine-code-llm-battle
+  title: 'Qwen3-0.6B in raw x86-64 machine code: Gemini 4 Neon vs Claude Opus 5.5'
+  authors:
+  - Alexey Fateev (repository maintainer)
+  - Claude Opus 5.5 and Gemini 4 Neon (contestant reports)
+  source_type: repo
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Neon reports 188.35 mean/188.93 peak vs recorded 103.82 tok/s at 32T.
+  - The Neon report records a one-token error with global-scale Q15.
+  - Opus’s L3-residency attempt gave no speedup and cost ~10% at 1T.
+  - Comparator values are a recorded EPYC 7642 baseline lookup, not contemporary measurements in the verifier.
+  - The candidate storage is a row-wise split quantized matrix layout.
+  reported_results:
+  - On a 47-online-core Zen 2 EPYC 7642 with 4 populated DDR4 channels and 16 × 16 MiB L3, specialized Qwen3-0.6B Q8_0 engines reproduce exact prompt and greedy
+    IDs across four prompts × 1/4/8/16 threads. Neon reports 188.35 mean tok/s against 103.82 at 32T, Opus 125.13 against the same recorded baseline; three repeats
+    on one 34p/64g prompt, shortened context envelope (Opus 1024 positions), engine-reported decode separated from prefill, and hard-coded historical llama-bench
+    lookup. Comparison uses row-split .asmbin against GGUF, different harness path, absent baseline commit/build/kernel/NUMA settings, and no raw paired repetition/dispersion
+    for comparator. High-thread speed sweeps still check prompt 0, separate from all-four prompt qualification. Both entrants use THP copy, software prefetch
+    and topology-aware workers; Neon uses 32-element block-scaled signed int16 activations, single monotonic row stream, mixed temporal/non-temporal prefetch
+    covering cache lines and per-CCX resident-row partitions. The Q15 path resolves reported Q8_0 activation divergences at near ties; global Q15 missed a token;
+    changing reduction order on the two-row Q15 variant also diverged. Opus f32 Q8_0 uses 4-row grouping and explicitly reports its own L3 partition experiment
+    gave no gain and ~10% loss at 1T. Neon reports an inferred rather than directly counter-verified L3 residency/383 MB-per-token explanation. Its progression
+    table bundles several changes in v7/v8/v9 and cannot isolate their effects. Format §2 suggests an integer-activation path that both reports found insufficient
+    for exact test identity.
+  credibility_score: 1
+  contradicting_evidence:
+  - Replace any universal or EPYC 9655 speed claim with an EPYC 7642 single-prompt three-repeat externally reported comparison against a fixed table. Mixed T0/NTA
+    benefits are design-specific. Opus reported a negative L3 experiment; do not attribute Neon’s full gain to this one knob. Four golden outputs are narrow token
+    agreement. Near-tie probes require change-controlled numerics, broad prompts, and identity on the same engine against its own reference.
+  cross_references:
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - autokernel-loop.md
+  recommended_actions:
+  - Replay near-tie and ordinary rows with incumbent Q8, per-block signed Q15 and FP32 reference. Save top-two gaps, argmax flips, accumulators and conversion
+    cost; verify AVX-512 signed-word dot semantics and overflow against a scalar oracle.
+  - Compare resident and streaming layer subsets for a draft head after accounting for per-CCD weight duplication, KV and scratch. Isolate four-row blocking,
+    worker pinning, barriers and THP; include a 27B bandwidth-bound negative control.
+  - Retain exact-token checks across thread counts as an additional witness when a generated CPU candidate reaches operator, numerical and served gates.
+  notes: 'Full reads of README, opus/REPORT.md, neon/REPORT.md, FORMAT_SPEC.md and read of entire verifier. Engine hex not exhaustively audited. X post https://x.com/superalesha/status/2126041962272690479
+    returned 403 and is provenance only. No external code was executed. 9655: Stage-3 candidate for experimental current-champion same-kernel fixed shape/affinity
+    baseline. Q15 per block vs existing quant and f32 reference with deliberate near-tie controls, separate speculative/plain and thread-count results; compare
+    throughput and paired output/logit accuracy. Selective residence only as part of the existing NTA seed: compare T0, NTA-only, and budgeted policy where measured
+    per-CCD fit survives worker placement. Compare hugepage relocation vs mmap while accounting for actual hugepages/TLB, cold load and warm service. Lane handoffs/active/autokernel-akx-program.md:1393–1395
+    closed generic CPU-NT-WEIGHT-STREAM as seed on NTA256 +0.69% [-1.8,+3.2]. MI210: Zen prefetch instructions and partition policy are CPU-specific. Existing
+    MI210 non-temporal weight-streaming result is an independent control cited by that handoff. The transferable question is whether per-32 higher-precision activation
+    quantization moves quality/speed on gfx90a at batch 1 or concurrent small-model serving versus FP16/int8 library paths, while recording HBM/L2 bytes and dequant
+    cost. Avoid porting the ELF/layout wholesale.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: neon/REPORT.md:L128-L136 @ 2d53727
+    quote: 188.35 | 188.93 | 103.82
+    quote_sha256: f30838614d65dbfae79dd741fbfb6f185064c804c1642b9b3757ee65e14720f4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b, found: true}
+    source_revision: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/neon/REPORT.md
+    source_artifact:
+      entry_url: https://github.com/alesha-pro/machine-code-llm-battle
+      requested_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/neon/REPORT.md
+      effective_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/neon/REPORT.md
+      retrieved_at_utc: '2026-11-27T11:50:40.610846+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b
+      relative_path: sha256/23/234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b.raw
+      raw_sha256: 234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b
+      byte_length: 17227
+  - claim_index: 1
+    kind: page-and-quote
+    locator: neon/REPORT.md:L144-L149 @ 2d53727
+    quote: Global-scale `Q15` failed by 1 token
+    quote_sha256: 05cc96af79faca43432d6d9e4b329bdb9c5c81153b1463e353bd0b5fa903c81d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b, found: true}
+    source_revision: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/neon/REPORT.md
+    source_artifact:
+      entry_url: https://github.com/alesha-pro/machine-code-llm-battle
+      requested_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/neon/REPORT.md
+      effective_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/neon/REPORT.md
+      retrieved_at_utc: '2026-11-27T11:50:40.610846+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b
+      relative_path: sha256/23/234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b.raw
+      raw_sha256: 234a4be94785e26da6d25ad0c285c27c7e1faa7e0716bb3095678be841429c1b
+      byte_length: 17227
+  - claim_index: 2
+    kind: page-and-quote
+    locator: opus/REPORT.md:L119-L121 @ 2d53727
+    quote: It gave no speedup and cost about 10% at 1T.
+    quote_sha256: 4393ccd1d1d38dbf12cdadf3d070236abbaa6a423a001c3c163e74168b69b48a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 97b6d21fa63c8708d9b24f415a8b7036235d8336363c395a509d0a4b0bda3b98, found: true}
+    source_revision: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/opus/REPORT.md
+    source_artifact:
+      entry_url: https://github.com/alesha-pro/machine-code-llm-battle
+      requested_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/opus/REPORT.md
+      effective_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/opus/REPORT.md
+      retrieved_at_utc: '2026-11-27T11:50:40.355842+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:97b6d21fa63c8708d9b24f415a8b7036235d8336363c395a509d0a4b0bda3b98
+      relative_path: sha256/97/97b6d21fa63c8708d9b24f415a8b7036235d8336363c395a509d0a4b0bda3b98.raw
+      raw_sha256: 97b6d21fa63c8708d9b24f415a8b7036235d8336363c395a509d0a4b0bda3b98
+      byte_length: 11105
+  - claim_index: 3
+    kind: page-and-quote
+    locator: scripts/verify_battle.py:L19-L28 @ 2d53727
+    quote: Recorded baseline from EPYC 7642
+    quote_sha256: 7506093d574f0ee53e9e1081e15f7d01a4417dddb31f4ff3fbb950f53d427c00
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3c06e409a1da7fe683e66f31fa11ea7005bc573978ac8b0dc3771ecadb2e7048, found: true}
+    source_revision: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/scripts/verify_battle.py
+    source_artifact:
+      entry_url: https://github.com/alesha-pro/machine-code-llm-battle
+      requested_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/scripts/verify_battle.py
+      effective_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/scripts/verify_battle.py
+      retrieved_at_utc: '2026-11-27T11:50:41.071853+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3c06e409a1da7fe683e66f31fa11ea7005bc573978ac8b0dc3771ecadb2e7048
+      relative_path: sha256/3c/3c06e409a1da7fe683e66f31fa11ea7005bc573978ac8b0dc3771ecadb2e7048.raw
+      raw_sha256: 3c06e409a1da7fe683e66f31fa11ea7005bc573978ac8b0dc3771ecadb2e7048
+      byte_length: 7877
+  - claim_index: 4
+    kind: page-and-quote
+    locator: FORMAT_SPEC.md:L34-L45 @ 2d53727
+    quote: Per-Row Split Q8_0 Matrix Layout
+    quote_sha256: 5ffdbdbf6334ea165124ed4e146a9c2ddb1007ace09c32abda7f6bd54a5c9e2e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 06204cb79056f4feda0507119fbe25f32c66d497ec4a5056d71af05f502b8fd2, found: true}
+    source_revision: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/FORMAT_SPEC.md
+    source_artifact:
+      entry_url: https://github.com/alesha-pro/machine-code-llm-battle
+      requested_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/FORMAT_SPEC.md
+      effective_url: https://raw.githubusercontent.com/alesha-pro/machine-code-llm-battle/2d53727ebb7a6e5fedd344298b405de50bdff1bc/FORMAT_SPEC.md
+      retrieved_at_utc: '2026-11-27T11:50:40.839849+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:06204cb79056f4feda0507119fbe25f32c66d497ec4a5056d71af05f502b8fd2
+      relative_path: sha256/06/06204cb79056f4feda0507119fbe25f32c66d497ec4a5056d71af05f502b8fd2.raw
+      raw_sha256: 06204cb79056f4feda0507119fbe25f32c66d497ec4a5056d71af05f502b8fd2
+      byte_length: 7820
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Neon reports 188.35 mean/188.93 peak vs recorded 103.82 tok/s at 32T.
+  - claim_index: 1
+    effect: unaffected
+    note: The Neon report records a one-token error with global-scale Q15.
+  - claim_index: 2
+    effect: unaffected
+    note: Opus’s L3-residency attempt gave no speedup and cost ~10% at 1T.
+  - claim_index: 3
+    effect: unaffected
+    note: Comparator values are a recorded EPYC 7642 baseline lookup, not contemporary measurements in the verifier.
+  - claim_index: 4
+    effect: unaffected
+    note: The candidate storage is a row-wise split quantized matrix layout.
+  dive_corrections: 2026-11-27. Replace any universal or EPYC 9655 speed claim with an EPYC 7642 single-prompt three-repeat externally reported comparison against
+    a fixed table. Mixed T0/NTA benefits are design-specific. Opus reported a negative L3 experiment; do not attribute Neon’s full gain to this one knob. Four
+    golden outputs are narrow token agreement. Near-tie probes require change-controlled numerics, broad prompts, and identity on the same engine against its
+    own reference.
+- id: intake-3013
+  arxiv_id: '2611.33257'
+  url: https://arxiv.org/abs/2611.33257v1
+  title: 'One Token, Many Lessons: Sliding-Window Attention within Gated Delta Networks'
+  authors:
+  - Yuchen Song
+  - Yangbin Chen
+  source_type: paper
+  categories:
+  - ssm_hybrid
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The learned Q/K/V mixer preserves the original recurrence and chunkwise parallel algorithm in the two tested backbones.
+  - On a single RTX 6000D at batch 1, SWGDN2-G1 reduced total prefill plus equal-length cached decode latency at 4K by 12.1% against GDN2.
+  reported_results:
+  - 'SWGDN substitutes width-4 causal attention for depthwise short convolution in Q/K/V projections; every branch and group has a learned fixed pseudo-query
+    (RMS norm, relative RoPE) that scores the same projected pre-mix keys, softmax-weighting that group’s payload. Recurrence and chunking algorithms are preserved.
+    Seven ~340M GDN2/KDA models share ~15B FineWeb-Edu tokens and 2048 sequence length. Table 4 SWKDA-G1 changes LAMBADA perplexity 28.8534→27.2252 and mean downstream
+    accuracy 45.62→46.11. Table 5 across 14 RULER settings the baseline and strongest SW groups change 35.0→43.9 (GDN2→G64) and 38.8→43.6 (KDA→G1), with regressions
+    in individual tests; Table 6 Q/A recall differs by grouping. Table 3 and Appendix E distinguish similar K/V pairs from stronger writes: layer 9 first-write
+    anchor residual reduction rates are 51.2→62.5% for KDA→SWKDA-G1 and 38.7→30.9% for GDN2→SWGDN2-G1; in a separate SWKDA-G1 intervention at layer 9, removing
+    later source contributions changes a 65.64% rate to 37.81%, while decay-inclusive residual still grows across the window. First evidence-token NLL shift spans
+    zero for layer-9 SWKDA-G1. Table 7 at 4K reports GDN2→SWGDN2-G1 prefill plus equal-length cached decode 92.005→80.888s (−12.1%) and KDA→SWKDA-G1 78.871→66.919s;
+    single RTX 6000D, batch 1, FP32 weights with BF16 autocast. Scope corrections: architecture and retraining, backbone-specific residual behavior, no CPU/gfx90a/throughput-at-concurrency
+    evidence. A bounded exact-source search found no independent reproduction; DynamicConv is a control with published gains at other scales, and its weaker SWGDN
+    paper result does not settle the broader comparison.'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - autokernel-loop.md
+  recommended_actions:
+  - When a qualified checkpoint contains sliding-window q/k/v mixing, trace window KV/cache traffic separately from recurrence on both backends and compare matched
+    quality/latency.
+  notes: Read methods and controls (§3–5), Tables 1–7, Appendix C pseudo-query/DynamicConv comparison and Appendix E intervention. Skimmed conclusion/related
+    work; background derivations, detailed Appendix B training and full Appendix D tables and references not read. Current GDNPROJ_FUSE/GATED_DELTA_NET paths
+    in kernel-champion-and-promotion.md are a relevant cost/diagnostic baseline. A tiny trained paired checkpoint and width-4 mixer could support a reference
+    parity and recurrent mixer cost screen. CPU per-token extra local math plus state traffic matters at batch 1; gfx90a compare fusion and batching with projected-key/payload
+    ring state. Use experimental paths and matching-weight baselines. Existing checkpoints lack these learned pseudo-query weights.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1, last paragraph (#S3.SS1)
+    quote: state update rules and chunkwise parallel algorithms of GDN2 and KDA remain unchanged
+    quote_sha256: 6ee4fad17cd177f7d9c7ef2e26e6ec245e2492004a81b3a489de545b43229df9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1, found: true}
+    source_revision: https://arxiv.org/html/2611.33257v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.33257v1
+      requested_url: https://arxiv.org/html/2611.33257v1
+      effective_url: https://arxiv.org/html/2611.33257v1
+      retrieved_at_utc: '2026-11-27T11:49:00.864370+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1
+      relative_path: sha256/ac/ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1.raw
+      raw_sha256: ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1
+      byte_length: 460587
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5, inference efficiency (#S5.SS0.SSS0.Px6)
+    quote: 80.888 s, compared with 92.005 s for GDN2, a reduction of 12.1%
+    quote_sha256: 722578bf4ce5e746176abd3f3b3632cb710a5d22c8fcf7e12dd7cc2a6f8249c9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1, found: true}
+    source_revision: https://arxiv.org/html/2611.33257v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.33257v1
+      requested_url: https://arxiv.org/html/2611.33257v1
+      effective_url: https://arxiv.org/html/2611.33257v1
+      retrieved_at_utc: '2026-11-27T11:49:00.864370+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1
+      relative_path: sha256/ac/ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1.raw
+      raw_sha256: ac8ecbde4a3e77ec910e97c4e34626f244548a5038ca89e2968410d1d3f4ccc1
+      byte_length: 460587
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The learned Q/K/V mixer preserves the original recurrence and chunkwise parallel algorithm in the two tested backbones.
+  - claim_index: 1
+    effect: unaffected
+    note: On a single RTX 6000D at batch 1, SWGDN2-G1 reduced total prefill plus equal-length cached decode latency at 4K by 12.1% against GDN2.
+  dive_corrections: '2026-11-27. SWGDN substitutes width-4 causal attention for depthwise short convolution in Q/K/V projections; every branch and group has a
+    learned fixed pseudo-query (RMS norm, relative RoPE) that scores the same projected pre-mix keys, softmax-weighting that group’s payload. Recurrence and chunking
+    algorithms are preserved. Seven ~340M GDN2/KDA models share ~15B FineWeb-Edu tokens and 2048 sequence length. Table 4 SWKDA-G1 changes LAMBADA perplexity
+    28.8534→27.2252 and mean downstream accuracy 45.62→46.11. Table 5 across 14 RULER settings the baseline and strongest SW groups change 35.0→43.9 (GDN2→G64)
+    and 38.8→43.6 (KDA→G1), with regressions in individual tests; Table 6 Q/A recall differs by grouping. Table 3 and Appendix E distinguish similar K/V pairs
+    from stronger writes: layer 9 first-write anchor residual reduction rates are 51.2→62.5% for KDA→SWKDA-G1 and 38.7→30.9% for GDN2→SWGDN2-G1; in a separate
+    SWKDA-G1 intervention at layer 9, removing later source contributions changes a 65.64% rate to 37.81%, while decay-inclusive residual still grows across the
+    window. First evidence-token NLL shift spans zero for layer-9 SWKDA-G1. Table 7 at 4K reports GDN2→SWGDN2-G1 prefill plus equal-length cached decode 92.005→80.888s
+    (−12.1%) and KDA→SWKDA-G1 78.871→66.919s; single RTX 6000D, batch 1, FP32 weights with BF16 autocast. Scope corrections: architecture and retraining, backbone-specific
+    residual behavior, no CPU/gfx90a/throughput-at-concurrency evidence. A bounded exact-source search found no independent reproduction; DynamicConv is a control
+    with published gains at other scales, and its weaker SWGDN paper result does not settle the broader comparison.'
+- id: intake-3014
+  arxiv_id: '2611.34777'
+  url: https://arxiv.org/abs/2611.34777v1
+  title: 'When Every Rollout Fails: Splicing Learner-Conditioned Options into Long-Horizon Agent RL'
+  authors:
+  - Haowen Hou
+  - Yicheng Liu
+  - Zhen Huang
+  - Jiaqi Wang
+  source_type: paper
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Local guidance values come from execution by the current learner after bounded teacher-proposed options.
+  - SPLICE achieved higher SWE training-set graduation despite a lower proposal hit rate than its adapted ReLIFT comparator.
+  reported_results:
+  - 'All-fail binary rewards give zero reward-dependent GRPO advantage. SPLICE samples a failed trajectory, uses a stronger model with full history and terminal
+    feedback to select from resumable points (every four turns), then proposes three local options at an adaptive horizon (0.3 times mean rollout length). Terminal
+    options go straight to the verifier; incomplete options get three learner continuations. Drop zero-return options; softmax over standardized positive means;
+    alternate GRPO and mean-token loss on bounded proposal-action tokens. The variable-length loss is only a surrogate for the sequence KL projection, and Proposition
+    1 concerns fixed empirical option returns, not post-update true return. Table 1 with three runs and equal available tasks, not compute: Qwen3-8B-CS SWE/BrowseComp
+    15.9/20.2→25.7/29.3, Qwen3.5-9B 58.4/46.2→61.2/50.7 versus GRPO; also beats tested SFT+RL and adapted ReLIFT. Table 2 on initially failed SWE training tasks:
+    graduation 18.9% vs GRPO 8.1% and ReLIFT 15.9%; fewer teacher turns than ReLIFT (93.5k vs 113.4k), despite lower teacher proposal hit (30.7% vs 55.1%). Figure
+    2 author reports less wall time than ReLIFT/SFT, while GRPO remains fastest. Table 4 teacher continuation raises SWE resolve slightly 25.7→26.2 with ~4× teacher
+    turns; supervising full teacher suffix drops it to 22.3. Appendix F proposal point selection +1.3 pp resolve over random (24.4→25.7) with three runs. Expensive
+    state restoration and 3 continuation samples can dominate economics or yield false zero-return. Appendix D training used 32 H200 GPUs; no test-time benchmark.
+    Bounded search surfaced source summaries and ReLIFT itself, no independent replication.'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - harness-program.md
+  recommended_actions:
+  - Audit retained all-fail trajectory groups for reproducible environment state, a bounded repair point and verifiable continuation. Count recoverable groups
+    before proposing any training or changing MemRL rewards.
+  notes: Read method §4, experiments/limitations §§5–6, Tables 1–4 and Appendices B–F including hardware, branch selection and verifier examples. Appendix A proof
+    algebra, introduction/related work in full and references not read. The transfer is checkpointed bounded continuation with terminal verifiers, tested against
+    restart/full-strong guidance in benign replay fixtures, rather than inferring serving gains from training. Compare branch restore, total learner and teacher
+    turns, and cost-to-verified-completion. CPU replay suits sandbox/fixture checks and later learner sampling on bandwidth-budgeted roles; MI210 could batch
+    parallel learner branches if state copy and verifier time do not dominate. Existing session checkpoints and trajectory artifacts are candidate consumers,
+    with exact environment restoration a separate requirement.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §4.1, learner-conditioned evaluation (#S4.SS1)
+    quote: evaluate each nonterminal option through continuations from the current policy
+    quote_sha256: 4ed17e9c57a0c502e1912db5cd4c6572a79874f50660930e5bf5024c21b333ba
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2, found: true}
+    source_revision: https://arxiv.org/html/2611.34777v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34777v1
+      requested_url: https://arxiv.org/html/2611.34777v1
+      effective_url: https://arxiv.org/html/2611.34777v1
+      retrieved_at_utc: '2026-11-27T11:49:00.969371+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2
+      relative_path: sha256/9c/9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2.raw
+      raw_sha256: 9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2
+      byte_length: 244320
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.3, proposal hit and graduation (#S5.SS3)
+    quote: 24.4 percentage points below ReLIFT
+    quote_sha256: 95f735585f9b3ca0c24a0eede0d36c79768e3e3e8b2a3dbf3ead891ce93e5376
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2, found: true}
+    source_revision: https://arxiv.org/html/2611.34777v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34777v1
+      requested_url: https://arxiv.org/html/2611.34777v1
+      effective_url: https://arxiv.org/html/2611.34777v1
+      retrieved_at_utc: '2026-11-27T11:49:00.969371+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2
+      relative_path: sha256/9c/9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2.raw
+      raw_sha256: 9ca366a3d91326fa87896c59d0f339fadc8099ca9c46dc5f2c41b02ffceb7ef2
+      byte_length: 244320
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Local guidance values come from execution by the current learner after bounded teacher-proposed options.
+  - claim_index: 1
+    effect: unaffected
+    note: SPLICE achieved higher SWE training-set graduation despite a lower proposal hit rate than its adapted ReLIFT comparator.
+  dive_corrections: '2026-11-27. All-fail binary rewards give zero reward-dependent GRPO advantage. SPLICE samples a failed trajectory, uses a stronger model
+    with full history and terminal feedback to select from resumable points (every four turns), then proposes three local options at an adaptive horizon (0.3
+    times mean rollout length). Terminal options go straight to the verifier; incomplete options get three learner continuations. Drop zero-return options; softmax
+    over standardized positive means; alternate GRPO and mean-token loss on bounded proposal-action tokens. The variable-length loss is only a surrogate for the
+    sequence KL projection, and Proposition 1 concerns fixed empirical option returns, not post-update true return. Table 1 with three runs and equal available
+    tasks, not compute: Qwen3-8B-CS SWE/BrowseComp 15.9/20.2→25.7/29.3, Qwen3.5-9B 58.4/46.2→61.2/50.7 versus GRPO; also beats tested SFT+RL and adapted ReLIFT.
+    Table 2 on initially failed SWE training tasks: graduation 18.9% vs GRPO 8.1% and ReLIFT 15.9%; fewer teacher turns than ReLIFT (93.5k vs 113.4k), despite
+    lower teacher proposal hit (30.7% vs 55.1%). Figure 2 author reports less wall time than ReLIFT/SFT, while GRPO remains fastest. Table 4 teacher continuation
+    raises SWE resolve slightly 25.7→26.2 with ~4× teacher turns; supervising full teacher suffix drops it to 22.3. Appendix F proposal point selection +1.3 pp
+    resolve over random (24.4→25.7) with three runs. Expensive state restoration and 3 continuation samples can dominate economics or yield false zero-return.
+    Appendix D training used 32 H200 GPUs; no test-time benchmark. Bounded search surfaced source summaries and ReLIFT itself, no independent replication.'
+- id: intake-3015
+  arxiv_id: '2611.34624'
+  url: https://arxiv.org/abs/2611.34624v1
+  title: 'HoMe: Toward Practical Harness Optimization of Memory Systems for AI Assistants'
+  authors:
+  - Yifei Xu
+  - Li Yu
+  - Zhaoyang Liu
+  - Ce Wang
+  - Sen Huang
+  - Yanyan Shen
+  - Yun Lin
+  - Linpeng Huang
+  - Hong Mei
+  source_type: paper
+  categories:
+  - memory_augmented
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Capture construction history per session to localize omission, maintenance damage, retrieval miss and answer misuse from trajectory evidence.
+  - On held-out LongMemEval-S, HoMe raised score from 0.888 to 0.916 while cutting query-stage token counts from 43.9K to 17.9K.
+  reported_results:
+  - 'HoMe varies versioned ReMe harness plugins in a Git DAG under a fixed runtime, with isolated evaluation and memory files committed at every conversation
+    boundary. Diagnosis asks whether needed evidence is in retrieved output, final memory, or source sessions and their mutation diffs, and aggregates supporting
+    case traces across failures. Smoke on deterministically truncated cases precedes formal evaluation; early half of six-candidate budget requires meaningful
+    structural edits. Adaptive sampling mixes loss, staleness, uncertainty, unresolved failures and uniform exploration; compare shared cases or use final independent
+    test, because changing sample aggregates cannot rank candidates directly. Reuse is stochastic (0.6) and permitted from the nearest evaluated ancestor with
+    construction-equivalent code/prompts/config, rerunning query and scoring. Table 1 vs tuned ReMe: held-out LME score 0.888→0.916, raw query tokens 43.9K→17.9K;
+    BEAM-1M 0.650→0.704 with token counts 101.8K→60.4K (BEAM search trained on independent BEAM-100K). Counts do not deduct KV-cache hits; BEAM calls rise 4.5→6.7.
+    Some categories regress. Second BEAM optimization reaches 0.720 at 68.3K; cross-transfer LME→BEAM goes 0.650→0.639 with 62% fewer tokens. Six formal evaluations
+    followed a full baseline, and timing for spot trials excludes baseline and agent overhead. Search cost BEAM 185.2M vs 331.2M raw tokens for MemPro; in these
+    matched runtime experiments MemPro changed only prompts/parameters, although its original design can edit structure. No independent replication found in bounded
+    search. Case winners include date-grouped topic directory, per-file diversity cap, user-action postings, and keyword-based selected lines with recoverable
+    citations and backing text.'
+  credibility_score: 2
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - memory-program.md
+  recommended_actions:
+  - Add content-addressed session-memory and harness identities to candidate replay. Smoke-test construction and retrieval, score candidates on a search split,
+    and use locked, unseen conversations for final quality and query-token comparisons.
+  notes: Read §§3–5, all main table passages and Figure 1–3 captions, Appendix A.4/A.6.3 and trace conclusion. The full trace, per-category tables, sampler details,
+    system prompts and references not read. Trajectory attribution and construction-equivalent snapshot reuse are closest to the orchestration harness loop and
+    active context/token-economy work. A defensible first transfer uses fixed case IDs, compare-on-common-cases, stable construction dependency fingerprints,
+    and small held-out evaluation, then checks evidence coverage and source diversity without launching a complete self-optimizer. CPU supports provenance/diff
+    replay and cold memory construction cost may dominate; MI210 batch/diversify retrieval comparisons with actual warm-prefix tokens, decode work and wall time,
+    because uncached raw token count is not device cost.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2, session-level versioning (#S3.SS2)
+    quote: the diff between two consecutive checkpoints records exactly what one session changed
+    quote_sha256: 214de805056b5906ab9e515663f050b8ecf5ca4ecc56c2a29ac1a52db2726025
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa, found: true}
+    source_revision: https://arxiv.org/html/2611.34624v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34624v1
+      requested_url: https://arxiv.org/html/2611.34624v1
+      effective_url: https://arxiv.org/html/2611.34624v1
+      retrieved_at_utc: '2026-11-27T11:49:01.109373+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa
+      relative_path: sha256/7b/7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa.raw
+      raw_sha256: 7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa
+      byte_length: 514375
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.2.1, main results (#S4.SS2.SSS1)
+    quote: query-stage tokens fall from 43.9K to 17.9K
+    quote_sha256: f3402212d93373070f3d6fa32fbca57ec4b0a93eb106504bc4514c49fc31f5b4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa, found: true}
+    source_revision: https://arxiv.org/html/2611.34624v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34624v1
+      requested_url: https://arxiv.org/html/2611.34624v1
+      effective_url: https://arxiv.org/html/2611.34624v1
+      retrieved_at_utc: '2026-11-27T11:49:01.109373+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa
+      relative_path: sha256/7b/7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa.raw
+      raw_sha256: 7bfacf9335656edc3cb1db82eb846a19d92b0fc2e182c035e34e844b5b659aaa
+      byte_length: 514375
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Capture construction history per session to localize omission, maintenance damage, retrieval miss and answer misuse from trajectory evidence.
+  - claim_index: 1
+    effect: unaffected
+    note: On held-out LongMemEval-S, HoMe raised score from 0.888 to 0.916 while cutting query-stage token counts from 43.9K to 17.9K.
+  dive_corrections: '2026-11-27. HoMe varies versioned ReMe harness plugins in a Git DAG under a fixed runtime, with isolated evaluation and memory files committed
+    at every conversation boundary. Diagnosis asks whether needed evidence is in retrieved output, final memory, or source sessions and their mutation diffs,
+    and aggregates supporting case traces across failures. Smoke on deterministically truncated cases precedes formal evaluation; early half of six-candidate
+    budget requires meaningful structural edits. Adaptive sampling mixes loss, staleness, uncertainty, unresolved failures and uniform exploration; compare shared
+    cases or use final independent test, because changing sample aggregates cannot rank candidates directly. Reuse is stochastic (0.6) and permitted from the
+    nearest evaluated ancestor with construction-equivalent code/prompts/config, rerunning query and scoring. Table 1 vs tuned ReMe: held-out LME score 0.888→0.916,
+    raw query tokens 43.9K→17.9K; BEAM-1M 0.650→0.704 with token counts 101.8K→60.4K (BEAM search trained on independent BEAM-100K). Counts do not deduct KV-cache
+    hits; BEAM calls rise 4.5→6.7. Some categories regress. Second BEAM optimization reaches 0.720 at 68.3K; cross-transfer LME→BEAM goes 0.650→0.639 with 62%
+    fewer tokens. Six formal evaluations followed a full baseline, and timing for spot trials excludes baseline and agent overhead. Search cost BEAM 185.2M vs
+    331.2M raw tokens for MemPro; in these matched runtime experiments MemPro changed only prompts/parameters, although its original design can edit structure.
+    No independent replication found in bounded search. Case winners include date-grouped topic directory, per-file diversity cap, user-action postings, and keyword-based
+    selected lines with recoverable citations and backing text.'
+- id: intake-3016
+  local_review: "CoordRoute needs a paced comparator. PILOT v2 supplies one; price real queue delay and model residency in local replay."
+  arxiv_id: '2611.34161'
+  url: https://arxiv.org/abs/2611.34161v1
+  title: 'CoordRoute: Coordinated Multi-Model Routing for Maximum Compute-Budget Utility'
+  authors:
+  - Boning Huangfu
+  - Boxiao Du
+  - Chen Chen
+  source_type: paper
+  categories:
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Trace replay uses a fungible FLOP budget and assumes instantaneous GPU redeployment.
+  - On two replayed traces and 21 modeled budgets, CoordRoute yielded 18.72% higher per-arrival satisfaction than fixed CARROT.
+  reported_results:
+  - 'Per-request prediction borrows historical scores from neighbors learned to minimize routing regret instead of text similarity. A cost-benefit curve from
+    128 recent requests values remaining window budget using the queue and forecast arrivals; each route includes future opportunity cost. During generation a
+    cheap token/FLOP check at geometric checkpoints gates stronger inspection (default gamma 4); paid inspection may continue, drop or stop and restart original
+    prompt on a stronger model. In pre-recorded-answer replay of 300 held-out UltraFeedback tasks assigned to Azure and BurstGPT timestamps, 21 budgets, 60 streams,
+    5-minute non-rollover windows, 3 model candidates, judges DeepSeek-V4.1-Flash and sensitivity GLM-5.3: mean per-arrival satisfaction 0.5672 vs best fixed
+    CARROT 0.4778 (+18.72% relative, 95% CI 15.48–22.26%); +10.89% vs hindsight-paced CARROT. Completion 91.88% vs 80.13% for fixed CARROT; unstarted/dropped/truncated
+    score zero. Figure 14 solver adds 10.88% over fixed-price version. Correction adds mean +3.72% over no correction across these replays; default inspection
+    overhead 4.55% of modeled computation in three analysis scenarios. Solver 0.92 ms of 45.17 ms CPU-thread routing. §5.2 explicitly assumes instantaneous redeployment;
+    no real-service SLO measurement, throughput/resource effects or locality contention. §6.5 varied model FLOP cost multipliers as a sensitivity check, not measured
+    CPU/MI210 timing. Bounded targeted search surfaced primary baselines and restatements but no independent reproduction.'
+  credibility_score: 2
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - routing-program.md
+  recommended_actions:
+  - Replay timestamped arrivals against the incumbent and a demand-ranked lookahead allocator with online budget correction. Charge actual CPU/GPU service occupancy,
+    misses, late completions and escalation; prevent use of future realized arrivals.
+  notes: Read design, assumptions and experiments §§4–6, targeted captions and appendix tables/algorithm constraints; results are from HTML. Full related work/theory,
+    appendix derivations and references not read. Use decision-aware routing admission ledger rather than a second occupancy model. Replay a planner-only policy
+    against fixed and paced baselines with replayed arrival/load, queue wait, latency and throughput constraints; price actual worker occupancy, model swaps,
+    prefix reuse/eviction and reserve for priority requests. CPU may spend largely memory bandwidth, with high latency/contended decoding; MI210 model residency
+    and batching drive queue service rates. In-flight restart/drop has wasted work and client/SLO semantics, and suits a separate follow-on only if measured gains
+    justify it.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §5.2, fixed GPU pools and redeployment (#S5.SS2.SSS0.Px3)
+    quote: Our evaluation therefore treats redeployment as instantaneous
+    quote_sha256: 98093f8763232c5d5ab7edfbb869513070f56dc95d1454ea5215639092f0fa7e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140, found: true}
+    source_revision: https://arxiv.org/html/2611.34161v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34161v1
+      requested_url: https://arxiv.org/html/2611.34161v1
+      effective_url: https://arxiv.org/html/2611.34161v1
+      retrieved_at_utc: '2026-11-27T11:49:01.229375+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140
+      relative_path: sha256/ae/ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140.raw
+      raw_sha256: ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140
+      byte_length: 308695
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §6.2, end-to-end performance (#S6.SS2)
+    quote: 0.5672 versus 0.4778 for CARROT, the strongest existing baseline, an 18.72% gain
+    quote_sha256: 1ec6fcf08c99fcd777fe18fbf84a93caffc5fd5fce2040c8c4240f0cefed0e21
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140, found: true}
+    source_revision: https://arxiv.org/html/2611.34161v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34161v1
+      requested_url: https://arxiv.org/html/2611.34161v1
+      effective_url: https://arxiv.org/html/2611.34161v1
+      retrieved_at_utc: '2026-11-27T11:49:01.229375+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140
+      relative_path: sha256/ae/ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140.raw
+      raw_sha256: ae3b5d9827bdc09284688879208a39688fe8efe98119116fc7696958c85df140
+      byte_length: 308695
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Trace replay uses a fungible FLOP budget and assumes instantaneous GPU redeployment.
+  - claim_index: 1
+    effect: unaffected
+    note: On two replayed traces and 21 modeled budgets, CoordRoute yielded 18.72% higher per-arrival satisfaction than fixed CARROT.
+  dive_corrections: '2026-11-27. Per-request prediction borrows historical scores from neighbors learned to minimize routing regret instead of text similarity.
+    A cost-benefit curve from 128 recent requests values remaining window budget using the queue and forecast arrivals; each route includes future opportunity
+    cost. During generation a cheap token/FLOP check at geometric checkpoints gates stronger inspection (default gamma 4); paid inspection may continue, drop
+    or stop and restart original prompt on a stronger model. In pre-recorded-answer replay of 300 held-out UltraFeedback tasks assigned to Azure and BurstGPT
+    timestamps, 21 budgets, 60 streams, 5-minute non-rollover windows, 3 model candidates, judges DeepSeek-V4.1-Flash and sensitivity GLM-5.3: mean per-arrival
+    satisfaction 0.5672 vs best fixed CARROT 0.4778 (+18.72% relative, 95% CI 15.48–22.26%); +10.89% vs hindsight-paced CARROT. Completion 91.88% vs 80.13% for
+    fixed CARROT; unstarted/dropped/truncated score zero. Figure 14 solver adds 10.88% over fixed-price version. Correction adds mean +3.72% over no correction
+    across these replays; default inspection overhead 4.55% of modeled computation in three analysis scenarios. Solver 0.92 ms of 45.17 ms CPU-thread routing.
+    §5.2 explicitly assumes instantaneous redeployment; no real-service SLO measurement, throughput/resource effects or locality contention. §6.5 varied model
+    FLOP cost multipliers as a sensitivity check, not measured CPU/MI210 timing. Bounded targeted search surfaced primary baselines and restatements but no independent
+    reproduction.'
+- id: intake-3017
+  arxiv_id: '2611.34398'
+  url: https://arxiv.org/abs/2611.34398v1
+  title: 'When Skills Fail to Compose: Compatibility and Retention in Language Models'
+  authors:
+  - Yan Lin
+  - Zhongliang Guo
+  - Jingyu Sun
+  - Qiyan Zhao
+  - Ruihong Zeng
+  - Ying Chen
+  - Zhengtao Yao
+  - Yan Wen
+  - Kunyu Peng
+  - Yuxia Wang
+  source_type: paper
+  categories:
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Digit one-call composition accuracy averaged 0.9% to 6.4% in this experiment.
+  - The post hoc partner replacement comparison drops to 12.7%/0.5% on these bases.
+  - Rehearsal retention comparison is not equal-total-supervision.
+  - Executable or textual skill library implications need separate validation.
+  reported_results:
+  - 'Frozen bases, known skill IDs/order, independently trained 20-row soft-prompt blocks. Table 1 matches diagnostic digit cases: one call 0.9–6.4%, sequential
+    88.2–100% across four bases; record edits 1.1–7.6% vs 99–100% across three, conditional on constituent proficiency. Two calls contain a parsed intermediate
+    and additional work (49 vs 58 prompt tokens, 1.61–2.06× batched latency), so mechanism is not isolated. Internally logged neutral insertion training improves
+    insertion robustness but does not remove interference; matched per-row norm controls show larger trained-partner harm on two Qwen bases, not the other two.
+    Table 2 post hoc replacement by independently learned rows of same operations drops medians 98.0→12.7% and 95.3→0.5% despite every replacement ≥90% alone;
+    held-out operations already score zero. Rehearsal preserves standalone skills on tested tasks with extra training examples; no equal-total-budget retention
+    comparison, and held-out partner transfer on one 0.5B library remains limited (90.4% trained vs 10.4% held out, 5.7% unrepaired). Record editing text procedures
+    with examples help some different-field pairs at 7B but all six order-dependent pairs still interfere; text and input information both changed. No common
+    internal mechanism established and no agent skill router or executable skills tested.'
+  credibility_score: 1
+  contradicting_evidence:
+  - Do not transfer numerical failure rates to text/code skills or claim separate calls dominate under equal computation. A standalone pass and rehearsal are
+    distinct from interface compatibility and replay of prior uses. Treat two new seed replacements and single-library held-out repair as bounded evidence.
+  cross_references:
+    handoffs:
+    - eval-tower-program.md
+  recommended_actions:
+  - Measure held-out pairs with component-only, combined single-call, explicit two-call and partner-shuffled arms; record step retention, token and tool cost
+    by model. Keep soft-prefix findings separate from text-skill outcomes.
+  notes: 'Read §3–§8, Limitations, F.5–F.6 and G, selected figures/table cells. Remaining appendices and full intervention details not read. Harness/MemSkill
+    admission replay: version ordered pair, prompt layout and explicit intermediate schema; compare each skill alone, selected ordered pairs (both directions
+    where meaningful), old partner replay and unfamiliar partners with one-vs-two-call protocol. Capture exact task success, model calls, input/output tokens
+    and latency with reader identity pinned. 9655 serial extra call carries another weight-pass/prefill tax, so test a smaller parser or exact intermediate artifact
+    only with comparable quality. MI210 double call may fit small model with batching, but measure single-request tail and throughput under concurrency; paper’s
+    H100 repair break-evens do not transfer.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §4.1 Table 1
+    quote: mean one-call accuracy is 0.9% to 6.4%
+    quote_sha256: d17599f171636b0b4e1b09306bce3c8e71a4bb040722fab97455b75b94b96a71
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2, found: true}
+    source_revision: https://arxiv.org/html/2611.34398v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34398v1
+      requested_url: https://arxiv.org/html/2611.34398v1
+      effective_url: https://arxiv.org/html/2611.34398v1
+      retrieved_at_utc: '2026-11-27T11:49:14.231569+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      relative_path: sha256/0d/0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2.raw
+      raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      byte_length: 893917
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.3 Table 2
+    quote: 12.7% on 0.5B and 0.5% on 1.5B
+    quote_sha256: 6b130a4e94786c300280c2d27021e897a925746ed3883d54493280977ddfba43
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2, found: true}
+    source_revision: https://arxiv.org/html/2611.34398v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34398v1
+      requested_url: https://arxiv.org/html/2611.34398v1
+      effective_url: https://arxiv.org/html/2611.34398v1
+      retrieved_at_utc: '2026-11-27T11:49:14.231569+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      relative_path: sha256/0d/0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2.raw
+      raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      byte_length: 893917
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §6.1
+    quote: no retention measurement matches an equal-budget comparison
+    quote_sha256: b0b352ef709c8e460acf130cf29f076699df22811a8c2829b7e83c0ab6069f27
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2, found: true}
+    source_revision: https://arxiv.org/html/2611.34398v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34398v1
+      requested_url: https://arxiv.org/html/2611.34398v1
+      effective_url: https://arxiv.org/html/2611.34398v1
+      retrieved_at_utc: '2026-11-27T11:49:14.231569+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      relative_path: sha256/0d/0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2.raw
+      raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      byte_length: 893917
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §7
+    quote: our parametric results motivate tests
+    quote_sha256: 51a2e8683c96d655599659d369cf500b36f024ed299c8935adfa262d37e5427c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2, found: true}
+    source_revision: https://arxiv.org/html/2611.34398v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34398v1
+      requested_url: https://arxiv.org/html/2611.34398v1
+      effective_url: https://arxiv.org/html/2611.34398v1
+      retrieved_at_utc: '2026-11-27T11:49:14.231569+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      relative_path: sha256/0d/0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2.raw
+      raw_sha256: 0d51ff83d970baee4073bbdfce0d4074be5ecfe46d4754ade77ad93edad616e2
+      byte_length: 893917
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Digit one-call composition accuracy averaged 0.9% to 6.4% in this experiment.
+  - claim_index: 1
+    effect: unaffected
+    note: The post hoc partner replacement comparison drops to 12.7%/0.5% on these bases.
+  - claim_index: 2
+    effect: unaffected
+    note: Rehearsal retention comparison is not equal-total-supervision.
+  - claim_index: 3
+    effect: unaffected
+    note: Executable or textual skill library implications need separate validation.
+  dive_corrections: 2026-11-27. Do not transfer numerical failure rates to text/code skills or claim separate calls dominate under equal computation. A standalone
+    pass and rehearsal are distinct from interface compatibility and replay of prior uses. Treat two new seed replacements and single-library held-out repair
+    as bounded evidence.
+- id: intake-3018
+  arxiv_id: '2611.33174'
+  url: https://arxiv.org/abs/2611.33174v1
+  title: 'MGMem: An Efficient, Deterministic, and Provenance-Preserving Framework for Long-Horizon Agent Memory'
+  authors:
+  - Junhong Huang
+  - Xin Tong
+  - Jun Xia
+  source_type: paper
+  categories:
+  - memory_augmented
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Incidence edges are provenance through co-occurrence, without semantic entailment.
+  - No generative calls are compatible with materially higher indexing compute than lexical or hybrid retrieval.
+  - MGMem leads or ties local single-session categories while overall LongMemEval-S trails BM25 and Hybrid.
+  reported_results:
+  - 'English raw episode retrieval. Deterministic spaCy en_core_web_trf mention extraction plus lexical normalization, embedded segmentation, mention co-occurrence/incidence
+    graph, exact→subject-local→global dense bridge, then confidence/IDF ranking; emits top five original episodes. No generative indexing calls/tokens but transformer
+    embeddings and parsing remain; LLM reader/judge remain. LoCoMo four-category (1,540 questions/10 conversations, adversarial separate): reported judge accuracy
+    75.89±0.10% vs locally matched EMem 73.29±0.10, AnchorMem 71.69±0.36, LightMem 62.42±0.10 and Hybrid 66.62±0.34; MGMem–EMem conversation-bootstrap +0.22 to
+    +5.15 pp and dev-conversation exclusion preserves ranking. Index build on Apple M5 Pro 199.02±43.37 s, slower than BM25 1.67±0.08s or Hybrid 13.53±0.76s,
+    faster than generated-memory matched baselines. Full LongMemEval-S 500 questions: 72.60% vs BM25 74.60% and Hybrid 73.80%; delta vs BM25 interval [-5.40,+1.40]
+    pp, not equivalence. MGMem multi-session accuracy 55.64% vs Hybrid 65.41%, and all-gold temporal coverage 68.42% vs BM25/Hybrid 77.44%. Original single-run
+    ablation removing subject-local bridge costs ~6.1 pp, near removing all bridges (6.0 pp); no replicated evidence of graph indispensability. Raw pointers enable
+    provenance, while the 200-response audit finds 94% evidence support. Parsing and results are English dialogue-specific; history scale and code-mixed logs
+    remain open.'
+  credibility_score: 1
+  contradicting_evidence:
+  - Provenance of source turns is not evidence that the answer is supported. The LongMemEval-S overall result is lower than lexical/hybrid; transfer is mixed
+    and current graph-versus-Hybrid ranking is dataset-dependent. No generative indexing means a CPU/accelerator cost still exists.
+  cross_references:
+    handoffs:
+    - memory-program.md
+  recommended_actions:
+  - Add a CPU parser and incidence-postings arm returning original episode IDs and text at the same answer budget. Compare with lexical, raw/full-context and
+    incumbent retrieval; include episode provenance, temporal errors and missed evidence.
+  notes: 'Read §3–§7, Appendices A, F, G, H selected tables and analysis. Remaining appendix prompt text, extended tuning tables and bibliography not read. EPYC
+    9655: replay raw fixed-window transcript/artifact episodes against shipped BM25+EmbeddingGemma RRF with all-gold-session recall and cited spans, first compare
+    exact lexical and graph candidates on the same freeze. Query-side project/session conditioning might help without generative rewrite. Consider graph/embedding
+    resource cost with real logs, and compare broad multi-session/temporal queries alongside within-thread. Existing lane harness-program.md:2823–2908 gives hybrid
+    control. MI210: reserve for embedding batches and local fixed-reader concurrency only if measured savings exceed residency/queue contention. No GPU acceleration
+    is implied for episode/graph traversal.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2
+    quote: an edge records co-occurrence, not entailment or causation
+    quote_sha256: 0258673fae1e1b3afeda1be335830765ea0a1d0aeb34fbad459784f349b0f8a7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c, found: true}
+    source_revision: https://arxiv.org/html/2611.33174v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.33174v1
+      requested_url: https://arxiv.org/html/2611.33174v1
+      effective_url: https://arxiv.org/html/2611.33174v1
+      retrieved_at_utc: '2026-11-27T11:49:14.370571+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c
+      relative_path: sha256/22/22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c.raw
+      raw_sha256: 22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c
+      byte_length: 586799
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.3 Table 3
+    quote: BM25, Dense, and Hybrid build faster than MGMem
+    quote_sha256: 9ce1e717422553eb89e1cd6fb3a6ea09d04cadfe5a07e97f9306ab91437f22e0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c, found: true}
+    source_revision: https://arxiv.org/html/2611.33174v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.33174v1
+      requested_url: https://arxiv.org/html/2611.33174v1
+      effective_url: https://arxiv.org/html/2611.33174v1
+      retrieved_at_utc: '2026-11-27T11:49:14.370571+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c
+      relative_path: sha256/22/22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c.raw
+      raw_sha256: 22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c
+      byte_length: 586799
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.3 and Appendix G Table 8
+    quote: leads or ties on single-session types
+    quote_sha256: 90d6b903693d0f366f2a086ef832cfa91f628cc652a4df6a8dc5738116bb596f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c, found: true}
+    source_revision: https://arxiv.org/html/2611.33174v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.33174v1
+      requested_url: https://arxiv.org/html/2611.33174v1
+      effective_url: https://arxiv.org/html/2611.33174v1
+      retrieved_at_utc: '2026-11-27T11:49:14.370571+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c
+      relative_path: sha256/22/22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c.raw
+      raw_sha256: 22481890727e2b6475e0e0e35625b8b37303f96c9fa90bf8176a2cb3a28b858c
+      byte_length: 586799
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Incidence edges are provenance through co-occurrence, without semantic entailment.
+  - claim_index: 1
+    effect: unaffected
+    note: No generative calls are compatible with materially higher indexing compute than lexical or hybrid retrieval.
+  - claim_index: 2
+    effect: unaffected
+    note: MGMem leads or ties local single-session categories while overall LongMemEval-S trails BM25 and Hybrid.
+  dive_corrections: 2026-11-27. Provenance of source turns is not evidence that the answer is supported. The LongMemEval-S overall result is lower than lexical/hybrid;
+    transfer is mixed and current graph-versus-Hybrid ranking is dataset-dependent. No generative indexing means a CPU/accelerator cost still exists.
+- id: intake-3019
+  arxiv_id: '2611.34492'
+  url: https://arxiv.org/abs/2611.34492v1
+  title: 'FlyingStart: Learned Cross-Token Warm Starts for Fixed-Point Decoding in Recurrent-Depth Language Models'
+  authors:
+  - Runguo Li
+  - Dezhen Lu
+  - Zixiang Ni
+  source_type: paper
+  categories:
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Huginn operating point uses 40.1 vs 46.8 layers/token on pooled math.
+  - CDB served with replayed exit trajectories for the stated throughput comparison.
+  - Method requires a start-independent attracting fixed point.
+  reported_results:
+  - 'Frozen recurrent model’s current prelude and previous token’s exit state predict a starting state using an affine ridge map calibrated at full-depth. Same
+    core and state-change stopping condition, terminal KV per token, 2h² map weights and no additional KV; the <5% of a loop cost is author-reported. Huginn-0125
+    on 5,078 pooled math items: at ε=.085, 40.1 vs 46.8 layers/token, 14% reduction; up to 18.9% along interpolated matched-accuracy frontier. A strict 1 pp confidence-bound
+    selection was inconclusive at its preset fallback rule (baseline 29% fallback). Constant-rate contraction and certificate are conditional on fixed context
+    and convergence; finite cutoffs, quantization and changing prefix caches do not guarantee bit-identical outputs. TinyLlama predicted ~0.71 loops; rapid-convergence
+    retrofits save ~0.6–0.9 loops and mostly help at tight budgets, and zero-shot math/code at the same threshold does not establish matched best frontier. H100
+    batch 128 synchronous fixed 12→10 loops yields 997→1,155 tok/s. RTX 6000 Ada CDB 533→628 (~18%) uses replay of 1,500 ShareGPT exit trajectories; adaptive
+    CDB same threshold +4–5%, not 18%. RTX 3090 GSM8K/WaveFront batch one +10% with full-depth verification and +14% with adaptive exit at reported paired task
+    accuracies. Spec-Bench full-depth verification +4% failed preset +5% threshold; adaptive +24%. Copy-only previous state no better than random, low-rank map/rank-32
+    under-delivers, and parallel prefill cannot use previous-token map term. Ouro-like non-convergent models are outside the demonstrated regime.'
+  credibility_score: 1
+  contradicting_evidence:
+  - 18% CDB gain is trajectory replay with fixed loop count; adaptive serving +4–5%. Fixed-point guarantee is conditional and finite decode has empirical accuracy,
+    not bit-exact output. Savings apply only to recurrent models with measured contraction and sufficient loops; changing the loop initialization is different
+    from changing the stopping rule.
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+  recommended_actions:
+  - Reopen when a qualified recurrent-depth model exposes latent-state initialization and adaptive exit. Compare loops, wall time, quality and acceptance at fixed
+    effort on CPU and MI210 separately.
+  notes: 'Read §§2–7, Limitations, Appendix A/B selected details, Tables 2/3/9/12/15/16 and relevant figure captions. Other appendix tables and bibliography not
+    read. EPYC 9655: measure whether avoided recurrent-core weight streams exceed added dense predictor traffic plus terminal KV; first contraction and same-output/quality
+    curves on a supported Huginn-like model and held-out prompts, fp/unquantized vs realistic quantized backend. MI210: BF16/HIP predictor matvec or batching
+    is plausible at 3.5B and 64GB HBM, but test batch 1 and throughput-concurrency/long-context at matched accuracy, with real serving throughputs and KV/state
+    bytes. Keep fixed depth, adaptive baseline, and warm-start arms; do not wire production until recurrent serving and qualifying model exist. Lane context-and-token-economy.md:2598–2605
+    contains Huginn lineage; it is prerequisite context, no EPYC warm-start speed warrant.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §4.2 operating point
+    quote: 40.1 layers per token and the baseline 46.8
+    quote_sha256: 47dc3a6a34c8178b25770bf0b3e20abc7327141de02adb8628fb80cff5bfce78
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48, found: true}
+    source_revision: https://arxiv.org/html/2611.34492v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34492v1
+      requested_url: https://arxiv.org/html/2611.34492v1
+      effective_url: https://arxiv.org/html/2611.34492v1
+      retrieved_at_utc: '2026-11-27T11:49:14.522574+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48
+      relative_path: sha256/2f/2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48.raw
+      raw_sha256: 2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48
+      byte_length: 639987
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.4 CDB paragraph
+    quote: driven by exit trajectories recorded on 1,500 ShareGPT conversations
+    quote_sha256: 1501efb8979e49a6d2235d1ac183f16a64e16d5bbdc0adb3a6bdeb9604bdc4be
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48, found: true}
+    source_revision: https://arxiv.org/html/2611.34492v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34492v1
+      requested_url: https://arxiv.org/html/2611.34492v1
+      effective_url: https://arxiv.org/html/2611.34492v1
+      retrieved_at_utc: '2026-11-27T11:49:14.522574+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48
+      relative_path: sha256/2f/2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48.raw
+      raw_sha256: 2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48
+      byte_length: 639987
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Limitations
+    quote: converges to a start-independent fixed point
+    quote_sha256: 349c88956000dc02fa95e7226953c05e19aad7d89db326c6387ecca489468fd7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48, found: true}
+    source_revision: https://arxiv.org/html/2611.34492v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2611.34492v1
+      requested_url: https://arxiv.org/html/2611.34492v1
+      effective_url: https://arxiv.org/html/2611.34492v1
+      retrieved_at_utc: '2026-11-27T11:49:14.522574+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48
+      relative_path: sha256/2f/2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48.raw
+      raw_sha256: 2ff916be9e490fab281e9d43755e931d77fd4ef00e22efd0fc1a65f61bd34e48
+      byte_length: 639987
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Huginn operating point uses 40.1 vs 46.8 layers/token on pooled math.
+  - claim_index: 1
+    effect: unaffected
+    note: CDB served with replayed exit trajectories for the stated throughput comparison.
+  - claim_index: 2
+    effect: unaffected
+    note: Method requires a start-independent attracting fixed point.
+  dive_corrections: 2026-11-27. 18% CDB gain is trajectory replay with fixed loop count; adaptive serving +4–5%. Fixed-point guarantee is conditional and finite
+    decode has empirical accuracy, not bit-exact output. Savings apply only to recurrent models with measured contraction and sufficient loops; changing the loop
+    initialization is different from changing the stopping rule.
+- id: intake-3020
+  arxiv_id: null
+  url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+  title: Using PC sampling
+  authors:
+  - AMD ROCm
+  source_type: blog
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The ROCprofiler SDK example advertises host-trap time sampling on gfx90a.
+  - Host-trap samples may appear up to two instructions from the actual latency site.
+  - The SDK documents sampling support on AMD GPUs starting at gfx90a.
+  reported_results:
+  - Official ROCprofiler-SDK 1.4.2 documentation. Enumerate supported combinations using rocprofv3 -L/--list-avail; example gfx90a advertises host_trap/time,
+    while gfx942 provides stochastic/cycle/pow2 and issue or stall information. Host trap can skid up to two instructions including across branch edges. Docs
+    give an example gfx942 max interval 2^31 versus blog's 2^20 stated hardware ceiling, so capability advertisement and measured setup should govern any experiment.
+    ROCm 7.0 firmware corrections are for MI300X and do not create MI210 stochastic support. Versioned 6.4.1 source documents gfx90a or later and host trap time-based
+    microsecond configuration, still subject to actual availability.
+  credibility_score: null
+  contradicting_evidence:
+  - Versioned ROCm documentation and HPCToolkit corroborate host trap on MI200+ and skid. The SDK reference clarifies the blog's ambiguous phrase 'arbitrary sampling
+    skid' as up to two instructions, including around branches; interval ceiling mismatch remains.
+  cross_references:
+    handoffs:
+    - rocm-kernel-authoring.md
+  recommended_actions:
+  - Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for stripped
+    objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
+  notes: 'Current ROCm 6.2 production and approved rocprofv2 trace do not change. On the MI210 use optional host-trap on a compatible isolated SDK/driver only
+    once capability is actually advertised. Host CPU 9655 can contribute analogous CPU sampling through its own tools. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PC sampling availability and configuration, HTML L703–713
+    quote: 'GPU:0 NAME:gfx90a configs: Method :host_trap Unit :time'
+    quote_sha256: f0103048281980a6bd39352f40aeed19675d6956bdbb0258682c1b484fd0d5d7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665, found: true}
+    source_revision: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+    source_artifact:
+      entry_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+      requested_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+      effective_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+      retrieved_at_utc: '2026-11-27T11:50:55.149059+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665
+      relative_path: sha256/e5/e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665.raw
+      raw_sha256: e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665
+      byte_length: 126077
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Host-trap PC sampling and arbitrary sampling skid, HTML L1590–1592
+    quote: up to two instructions away from the actual source of latency
+    quote_sha256: ac5b06ee07ded259287d8b2965cec501326cda0a66d11d31d51b8f64752c3692
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665, found: true}
+    source_revision: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+    source_artifact:
+      entry_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+      requested_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+      effective_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+      retrieved_at_utc: '2026-11-27T11:50:55.149059+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665
+      relative_path: sha256/e5/e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665.raw
+      raw_sha256: e5be06032f3755edf0891b5a41a6955f594c934939ff168b28983609e08c7665
+      byte_length: 126077
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Introduction, HTML L472
+    quote: PC sampling is supported on AMD GPUs with gfx90a and later architectures.
+    quote_sha256: a08240f32dd1d4ee8a52624fe68a0d1b2958e087103934b9ab26f87bcc2e0fb5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b6ca7194177e21e27684932b45358f048215c0ea6bfe713c7a9c13d85337f827, found: true}
+    source_revision: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/docs-6.4.1/how-to/using-pc-sampling.html
+    source_artifact:
+      entry_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
+      requested_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/docs-6.4.1/how-to/using-pc-sampling.html
+      effective_url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/docs-6.4.1/how-to/using-pc-sampling.html
+      retrieved_at_utc: '2026-11-27T11:50:55.251060+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:b6ca7194177e21e27684932b45358f048215c0ea6bfe713c7a9c13d85337f827
+      relative_path: sha256/b6/b6ca7194177e21e27684932b45358f048215c0ea6bfe713c7a9c13d85337f827.raw
+      raw_sha256: b6ca7194177e21e27684932b45358f048215c0ea6bfe713c7a9c13d85337f827
+      byte_length: 58279
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The ROCprofiler SDK example advertises host-trap time sampling on gfx90a.
+  - claim_index: 1
+    effect: unaffected
+    note: Host-trap samples may appear up to two instructions from the actual latency site.
+  - claim_index: 2
+    effect: unaffected
+    note: The SDK documents sampling support on AMD GPUs starting at gfx90a.
+  dive_corrections: 2026-11-27. Versioned ROCm documentation and HPCToolkit corroborate host trap on MI200+ and skid. The SDK reference clarifies the blog's ambiguous
+    phrase 'arbitrary sampling skid' as up to two instructions, including around branches; interval ceiling mismatch remains.
+- id: intake-3021
+  arxiv_id: null
+  url: https://github.com/ROCm/aiter/pull/5583
+  title: '[FlyDSL] [CI] [a16w4] Support MXFP4 weights on gfx942 (CDNA3)'
+  authors:
+  - Menghsuan Yang (MHYangAMD)
+  source_type: repo
+  categories:
+  - quantization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - A compile-time gfx942 branch selects a byte-permute E2M1 decode.
+  - In the submitted gfx942 GEMM1 assembly comparison the unsupported-instruction count fell from 1792 to 0.
+  reported_results:
+  - Merged 2026-09-22 as baef8156a. Allows E2M1 a16w4 kernels to assemble on gfx942 where native gfx950 v_cvt_scalef32_pk_bf16_fp4 is absent, by selecting the
+    byte-LUT helper at build time through rocm_arch. Threading arch through kernel factory/cache key prevents reusing gfx950 build for gfx942, and forcing K16
+    on gfx950 does not switch decode. Author MI308X/ROCm 7.14 FlyDSL 0.3.2 reports 1792→0 bad instructions on gfx942, 0→0 on gfx950 target assembly, a lifted-byte-identical
+    FlyDSL surrogate gate 3 fail/2 pass→5 pass; author's AITER suite was blocked by an older aiter_core enum mismatch, and gfx950 execution was not checked in
+    those reported results. Three-commit PR adds tuning and removes the development benchmark script from the merge. Blog's later MI300X reported results are
+    a separate source and no AITER on-target CPU/MI210 claim follows.
+  credibility_score: 3
+  contradicting_evidence:
+  - 'PR is direct implementation evidence, from same vendor/author as blog rather than an independent benchmark. It addresses initial gfx942 assembly failure;
+    successor #6144 supersedes implementation details where gfx942 FP8 conversion is available.'
+  cross_references:
+    handoffs:
+    - quantization-and-low-bit.md
+  recommended_actions:
+  - Compare emitted permutes, register pressure, waits and MFMA issue for observed IQ4_XS/NL hot shapes; inventory MMQ separately from MMVQ. Require exact nibble/scale/sign
+    reconstruction and an attributable decode bottleneck before moving decode or extending the design to EXL3.
+  notes: 'No gfx90a AITER build is demonstrated. A small native exact scale/packing oracle and ISA comparison can test MI210 dequant if a target served path warrants
+    it. CPU 9655 uses local existing IQK native code; no AITER adoption. '
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: aiter/ops/flydsl/kernels/moe_2stage_a16wmix/utils.py:L811-L814 @ baef815
+    quote: 'if const_expr(_is_gfx942): # gfx942: no v_cvt_scalef32_pk_bf16_fp4; decode E2M1 via v_perm_b32.'
+    quote_sha256: ac1e4cd6ae39206502afdd8f3fd032850dbdbe3497df3fe7b2ccc9047db35e12
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ef3acd22ff2159d1af7040f8cb5040a9aa21952f0c5f823230bf642fef581072, found: true}
+    source_revision: https://raw.githubusercontent.com/ROCm/aiter/baef8156aa222809e7aa77801f4b7d064ca94149/aiter/ops/flydsl/kernels/moe_2stage_a16wmix/utils.py
+    source_artifact:
+      entry_url: https://github.com/ROCm/aiter/pull/5583
+      requested_url: https://raw.githubusercontent.com/ROCm/aiter/baef8156aa222809e7aa77801f4b7d064ca94149/aiter/ops/flydsl/kernels/moe_2stage_a16wmix/utils.py
+      effective_url: https://raw.githubusercontent.com/ROCm/aiter/baef8156aa222809e7aa77801f4b7d064ca94149/aiter/ops/flydsl/kernels/moe_2stage_a16wmix/utils.py
+      retrieved_at_utc: '2026-11-27T11:50:55.535064+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ef3acd22ff2159d1af7040f8cb5040a9aa21952f0c5f823230bf642fef581072
+      relative_path: sha256/ef/ef3acd22ff2159d1af7040f8cb5040a9aa21952f0c5f823230bf642fef581072.raw
+      raw_sha256: ef3acd22ff2159d1af7040f8cb5040a9aa21952f0c5f823230bf642fef581072
+      byte_length: 37367
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Test Result table
+    quote: gfx942 assembly, unsupported instructions 1792 0
+    quote_sha256: bf44cd9190e51c332796345bb383905cdfed8cadc0e808af2dbe913cb56f158c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 16985ed169cb630fd396cb466b99faf524a12fe6812cd563b025480f865d6c94, found: true}
+    source_revision: https://github.com/ROCm/aiter/pull/5583
+    source_artifact:
+      entry_url: https://github.com/ROCm/aiter/pull/5583
+      requested_url: https://github.com/ROCm/aiter/pull/5583
+      effective_url: https://github.com/ROCm/aiter/pull/5583
+      retrieved_at_utc: '2026-11-27T11:50:54.327047+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:16985ed169cb630fd396cb466b99faf524a12fe6812cd563b025480f865d6c94
+      relative_path: sha256/16/16985ed169cb630fd396cb466b99faf524a12fe6812cd563b025480f865d6c94.raw
+      raw_sha256: 16985ed169cb630fd396cb466b99faf524a12fe6812cd563b025480f865d6c94
+      byte_length: 400953
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: A compile-time gfx942 branch selects a byte-permute E2M1 decode.
+  - claim_index: 1
+    effect: unaffected
+    note: In the submitted gfx942 GEMM1 assembly comparison the unsupported-instruction count fell from 1792 to 0.
+  dive_corrections: '2026-11-27. PR is direct implementation evidence, from same vendor/author as blog rather than an independent benchmark. It addresses initial
+    gfx942 assembly failure; successor #6144 supersedes implementation details where gfx942 FP8 conversion is available.'
+- id: intake-3022
+  arxiv_id: null
+  url: https://github.com/agentscope-ai/ReMe
+  title: ReMe — HoMe plugin, evaluation and optimization harness
+  authors:
+  - AgentScope contributors
+  source_type: repo
+  categories:
+  - memory_augmented
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - HoMe retains content-verified archives for final replay and records the specific reviewed SHA-256.
+  - The implementation intersects case/query IDs before comparing scores and reports coverage separately.
+  - The default BEAM evaluation splits can overlap. The independent set must be selected explicitly.
+  reported_results:
+  - The official artifact includes the HoMe plugin, dataset and benchmark preparation, revision-pinned candidate promotion, runtime docs, and multiple CLI entry
+    points for scoped smoke/formal evaluation and optional agent optimization. The implementation intersects before/after maps at (case ID, query ID) and carries
+    coverage separately, while classification/inspection tools join retriever traces, source-session IDs, memory construction and Git diffs. The reuse path qualifies
+    completed, infrastructure-error-free scored training ancestors by dataset and construction-config fingerprints (runtime, config, plugins, image and model
+    identity), then checks individual archive hashes and prior successes, retaining the exact reviewed snapshots; previously reviewed case source maps cannot
+    silently substitute any other archive. The LME default split excludes training IDs; BEAM default runner independently executes but evaluates 100K cases that
+    may overlap training. The paper’s BEAM-1M result needs an explicit independent variant and candidate revision. Baselines printed in README refer to the authors’
+    paper and are not replication. The plugin requires ReMe 0.4.3+, benchmark Docker image, model/embedding endpoint configuration, and the default Linux optimizer/diagnoser
+    uses Bubblewrap and delegated cgroup v2. Code was inspected only. No exact companion URL was found in the lane index.
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - memory-program.md
+  recommended_actions:
+  - Add content-addressed session-memory and harness identities to candidate replay. Smoke-test construction and retrieval, score candidates on a search split,
+    and use locked, unseen conversations for final quality and query-token comparisons.
+  notes: Read the HoMe plugin README setup and artifact conventions, evaluation-artifact guide, benchmark evaluation configs/docs, and targeted evaluation/reuse.py,
+    comparison.py and sampling.py implementation. Other repository modules, full tests, container build and runtime evaluation were not read or executed. Use
+    comparison and reuse code as inspectable reference patterns for CPU-side case/session identity, frozen input/manifest hashes and warm-construction artifact
+    reuse. Only if evaluating retrieval changes on MI210, measure warm/cold token-cache categories and wall time separately. Keep eval variants explicit and validate
+    disjoint benchmark case IDs before measuring. Extract reusable patterns into current harness surfaces rather than adopting the full framework by default.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: plugins/home/README.md:12–15
+    quote: requires a verified construction snapshot
+    quote_sha256: e651caa5060702283c5295e159f594e1e34bf2007f3c776480cf4fa27f9198c9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 87c6954d9ffa62ea59b8cce14ba919747330b5e0693dd9778968b158bf23c909, found: true}
+    source_revision: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/plugins/home/README.md
+    source_artifact:
+      entry_url: https://github.com/agentscope-ai/ReMe
+      requested_url: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/plugins/home/README.md
+      effective_url: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/plugins/home/README.md
+      retrieved_at_utc: '2026-11-27T11:51:56.475949+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:87c6954d9ffa62ea59b8cce14ba919747330b5e0693dd9778968b158bf23c909
+      relative_path: sha256/87/87c6954d9ffa62ea59b8cce14ba919747330b5e0693dd9778968b158bf23c909.raw
+      raw_sha256: 87c6954d9ffa62ea59b8cce14ba919747330b5e0693dd9778968b158bf23c909
+      byte_length: 9296
+  - claim_index: 1
+    kind: page-and-quote
+    locator: plugins/home/src/reme_home/evaluation/comparison.py:150
+    quote: shared = sorted(before.keys() & after.keys())
+    quote_sha256: 4d5d43b010bc007494592dd93d834dffd54ed9289d561a482abedc08588cac62
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6fcc42058ef16ad46b8823544a9f24c131b3c5c3e443a328e8885300350bc65e, found: true}
+    source_revision: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/plugins/home/src/reme_home/evaluation/comparison.py
+    source_artifact:
+      entry_url: https://github.com/agentscope-ai/ReMe
+      requested_url: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/plugins/home/src/reme_home/evaluation/comparison.py
+      effective_url: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/plugins/home/src/reme_home/evaluation/comparison.py
+      retrieved_at_utc: '2026-11-27T11:51:56.477949+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6fcc42058ef16ad46b8823544a9f24c131b3c5c3e443a328e8885300350bc65e
+      relative_path: sha256/6f/6fcc42058ef16ad46b8823544a9f24c131b3c5c3e443a328e8885300350bc65e.raw
+      raw_sha256: 6fcc42058ef16ad46b8823544a9f24c131b3c5c3e443a328e8885300350bc65e
+      byte_length: 12593
+  - claim_index: 2
+    kind: page-and-quote
+    locator: benchmark/beam/README.md:150–153
+    quote: which can overlap with training
+    quote_sha256: f757b586a6a4a2b2aa0dae8760606af8e549a278ef2a4fc3e30a52f89ccfa55d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2a708013f1ee68ea565d8b96b6cf3b90ec4bbbdba62551c71715e78e6a6ef105, found: true}
+    source_revision: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/benchmark/beam/README.md
+    source_artifact:
+      entry_url: https://github.com/agentscope-ai/ReMe
+      requested_url: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/benchmark/beam/README.md
+      effective_url: https://raw.githubusercontent.com/agentscope-ai/ReMe/e3d602cc9d24e69348d4f243bafa7159c79bfc0e/benchmark/beam/README.md
+      retrieved_at_utc: '2026-11-27T11:51:56.361947+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2a708013f1ee68ea565d8b96b6cf3b90ec4bbbdba62551c71715e78e6a6ef105
+      relative_path: sha256/2a/2a708013f1ee68ea565d8b96b6cf3b90ec4bbbdba62551c71715e78e6a6ef105.raw
+      raw_sha256: 2a708013f1ee68ea565d8b96b6cf3b90ec4bbbdba62551c71715e78e6a6ef105
+      byte_length: 8231
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: HoMe retains content-verified archives for final replay and records the specific reviewed SHA-256.
+  - claim_index: 1
+    effect: unaffected
+    note: The implementation intersects case/query IDs before comparing scores and reports coverage separately.
+  - claim_index: 2
+    effect: unaffected
+    note: The default BEAM evaluation splits can overlap. The independent set must be selected explicitly.
+  dive_corrections: 2026-11-27. The official artifact includes the HoMe plugin, dataset and benchmark preparation, revision-pinned candidate promotion, runtime
+    docs, and multiple CLI entry points for scoped smoke/formal evaluation and optional agent optimization. The implementation intersects before/after maps at
+    (case ID, query ID) and carries coverage separately, while classification/inspection tools join retriever traces, source-session IDs, memory construction
+    and Git diffs. The reuse path qualifies completed, infrastructure-error-free scored training ancestors by dataset and construction-config fingerprints (runtime,
+    config, plugins, image and model identity), then checks individual archive hashes and prior successes, retaining the exact reviewed snapshots; previously
+    reviewed case source maps cannot silently substitute any other archive. The LME default split excludes training IDs; BEAM default runner independently executes
+    but evaluates 100K cases that may overlap training. The paper’s BEAM-1M result needs an explicit independent variant and candidate revision. Baselines printed
+    in README refer to the authors’ paper and are not replication. The plugin requires ReMe 0.4.3+, benchmark Docker image, model/embedding endpoint configuration,
+    and the default Linux optimizer/diagnoser uses Bubblewrap and delegated cgroup v2. Code was inspected only. No exact companion URL was found in the lane index.
+- id: intake-3023
+  arxiv_id: '2508.21141'
+  url: https://arxiv.org/abs/2508.21141v2
+  title: Adaptive LLM Routing under Budget Constraints
+  authors:
+  - Pranoy Panda
+  - Raghav Magazine
+  - Chaitanya Devaguptapu
+  - Sho Takemori
+  - Vishal Sharma
+  source_type: paper
+  categories:
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - The paper divides a fixed-length sequence into budget bins and carries unused budget forward.
+  - The allocator consumes scores from a separate ranker, allowing an allocator-only comparison with shared scores.
+  reported_results:
+  - PILOT combines a preference-prior LinUCB (pretrained projections and model embeddings from ChatArena pairwise preferences, fit to selected-arm feedback) with
+    a separate online multi-choice knapsack allocator. The allocator observes scores and estimated token cost, gates on minimum value/cost rising with spent-budget
+    fraction, and selects the highest-scoring admissible model. It divides a known Q-request horizon into count-based bins with unused funds carried forward.
+    Appendix C.2 falls back to free budget per remaining query if no arm clears the threshold; it terminates if no arm fits. Output token cost uses a fixed mean
+    per model from tuning samples. Experiments replay RouterBench across 11 candidate LLMs, with 1000 tuning samples and a 10:1 learning/deployment split. Learning
+    is unbudgeted, and the same allocator wraps all learned scorers for Figure 3. Full PILOT achieves 93% of GPT-4 performance at 25% of its cost on the multitask
+    benchmark, and 86% at 27% on MMLU. The allocator-only Table 2 wins 3/4 budgets against retrospectively tuned price P−λC (at $1.00 PILOT 0.7240 vs 0.7265).
+    Routing time Table 3 gives 65 ms on Instructor-XL and 239 ms on OpenAI embedding versus 2.5s GPT-4; adjacent prose reverses which latency yields ~38× vs ~10×
+    speed ratios. No actual arrival-time queue, occupancy, redeployment, SLO or client runtime correction measured. CoordRoute’s Appendix F reports a minimum
+    11.04% advantage over a same-score knapsack threshold across 21 replay budgets, but uses training percentile bounds and expected-arrivals fallback, not the
+    full preference-prior PILOT pipeline.
+  credibility_score: 3
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - routing-program.md
+  recommended_actions:
+  - Replay timestamped arrivals against the incumbent and a demand-ranked lookahead allocator with online budget correction. Charge actual CPU/GPU service occupancy,
+    misses, late completions and escalation; prevent use of future realized arrivals.
+  notes: Read §§2–5 including Tables 2–3 and Figures 3–4 captions, Limitations, and Appendix C.2 allocation algorithm and D.1 comparator notes. Remaining mathematical
+    proofs, adjacent supplementary results and full references not read. Include allocator-only PILOT threshold with shared EPYC score and resource accounting
+    inputs as a low-complexity control beside fixed price, dual pacing and CoordRoute lookahead. Record if using native known-count bins or CoordRoute’s forecast-count
+    adaptation. CPU modeling prices active DDR/NUMA/slot time; MI210 modeling prices warm residency, batching and contention. Keep bandit updates as a different
+    decision requiring an actual chosen-arm reward stream.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §2.2.3 online cost policy (#S2.SS2.SSS3)
+    quote: with unused budget spilling over to the next
+    quote_sha256: 8be17b4c8ae7575de753d9555a8f74a498283a72a30d68422f4618a02ae1e585
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a, found: true}
+    source_revision: https://arxiv.org/html/2508.21141v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2508.21141v2
+      requested_url: https://arxiv.org/html/2508.21141v2
+      effective_url: https://arxiv.org/html/2508.21141v2
+      retrieved_at_utc: '2026-11-27T11:53:23.695198+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a
+      relative_path: sha256/1b/1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a.raw
+      raw_sha256: 1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a
+      byte_length: 315210
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §3.2 deployment cost estimate (#S3.SS2)
+    quote: the proposed online cost policy operates independently of the PILOT algorithm
+    quote_sha256: f202a0ab1f2b681dc3ff47b9ef0b3f34a51dcf175720453c2d2db788eee09d71
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a, found: true}
+    source_revision: https://arxiv.org/html/2508.21141v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2508.21141v2
+      requested_url: https://arxiv.org/html/2508.21141v2
+      effective_url: https://arxiv.org/html/2508.21141v2
+      retrieved_at_utc: '2026-11-27T11:53:23.695198+00:00'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a
+      relative_path: sha256/1b/1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a.raw
+      raw_sha256: 1b476739f5b0a928c7dc3ed7bbf53e06022dc9c7c59fc1418c38e98bf157ea2a
+      byte_length: 315210
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The paper divides a fixed-length sequence into budget bins and carries unused budget forward.
+  - claim_index: 1
+    effect: unaffected
+    note: The allocator consumes scores from a separate ranker, allowing an allocator-only comparison with shared scores.
+  dive_corrections: 2026-11-27. PILOT combines a preference-prior LinUCB (pretrained projections and model embeddings from ChatArena pairwise preferences, fit
+    to selected-arm feedback) with a separate online multi-choice knapsack allocator. The allocator observes scores and estimated token cost, gates on minimum
+    value/cost rising with spent-budget fraction, and selects the highest-scoring admissible model. It divides a known Q-request horizon into count-based bins
+    with unused funds carried forward. Appendix C.2 falls back to free budget per remaining query if no arm clears the threshold; it terminates if no arm fits.
+    Output token cost uses a fixed mean per model from tuning samples. Experiments replay RouterBench across 11 candidate LLMs, with 1000 tuning samples and a
+    10:1 learning/deployment split. Learning is unbudgeted, and the same allocator wraps all learned scorers for Figure 3. Full PILOT achieves 93% of GPT-4 performance
+    at 25% of its cost on the multitask benchmark, and 86% at 27% on MMLU. The allocator-only Table 2 wins 3/4 budgets against retrospectively tuned price P−λC
+    (at $1.00 PILOT 0.7240 vs 0.7265). Routing time Table 3 gives 65 ms on Instructor-XL and 239 ms on OpenAI embedding versus 2.5s GPT-4; adjacent prose reverses
+    which latency yields ~38× vs ~10× speed ratios. No actual arrival-time queue, occupancy, redeployment, SLO or client runtime correction measured. CoordRoute’s
+    Appendix F reports a minimum 11.04% advantage over a same-score knapsack threshold across 21 replay budgets, but uses training percentile bounds and expected-arrivals
+    fallback, not the full preference-prior PILOT pipeline.
+- id: intake-3024
+  arxiv_id: null
+  url: https://github.com/junhong-h/MGMem
+  title: 'MGMem: mention-graph retrieval for long-term dialogue memory question answering'
+  authors:
+  - Junhong Huang (maintainer and paper lead author)
+  source_type: repo
+  categories:
+  - memory_augmented
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-27'
+  key_claims:
+  - Public parser uses its first extracted mention as subject.
+  - Public evaluator uses the constructed client for the judge and for the reader at L129.
+  - Parser coerces missing spaCy extractor timing to 0.0.
+  - Default local extractor does not time itself in its returned result.
+  - Public resolver computes whole-pool similarity before subject prioritization.
+  - The passing release trial does not replicate the paper evaluation.
+  reported_results:
+  - 'The release provides a LoCoMo single-conversation fresh-index CLI with en_core_web_trf and progressive mentions, topic segmentation (utterance units, window
+    3, threshold 1.10 times mean, min peak distance 3, min segment units 2), all-MiniLM-L6-v2 for embedding, 8 workers default, and lexical backfill. The CLI
+    does not create a generative client for default spaCy indexing. Its evaluation reconstructs extraction flags from artifact metadata and disables speaker injection
+    on the query side, with top-5 bridge nodes, up to 3 ego candidates, 0.45 similarity floor, square-root IDF and turn-max dense tie-break by default. Significant
+    public release drift: the parser takes the first ranked extracted mention as subject, whereas paper §3.4 states nsubj/nsubjpass or known speaker aliases.
+    The release also bridges exact hits on short queries by default (two mentions or fewer), while paper §3.4 says Stage 2 visits unresolved mentions. NumPy builds
+    and normalizes a full graph embedding matrix per query and computes all-pool similarities before applying subject-local priority, so ego conditioning is a
+    ranking mechanism here, without an all-pool compute shortcut. The public evaluator invokes LoCoMo loading at entrypoint and shares a client between reader
+    and judge with qwen3-4b default; the paper uses distinct GPT-4o-mini and Qwen2.5-32B. LongMemEval loaders/batch helpers are present, without a tracked matched
+    CLI/experiment bundle. Release trials are packaging checks and explicitly did not rerun benchmark evaluation. Paper Appendix A attributes reported index phase
+    times (16.30s init, 37.67s segmentation, 85.66s extraction, 55.57s normalization/backfill/graph/embedding, 2.40s serialization) and 3.332 ± 0.186 GiB RSS
+    to separate trials, absent from tracked release. Public CLI calls segmentation before prebuilding extraction and again inside build_index, and has no wall-time
+    clock for that CLI. spaCy extraction reports None latency then query parser maps it to 0.0, so stage parse JSONL cannot attest parser wall time. Release persists
+    separate fresh index artifacts with no default overwrite, raw turns and IDs inside episodes, occurrences linked to episode plus surface and source class.
+    No explicit turn ID or byte span is carried in serialized MentionOccurrence, even though extractor has turn ID and text. Reverse backfill is a full pool ×
+    episode scan and sorts equal-length strings sourced from a set by length only, so cross-process byte determinism should be tested separately from stable ranking.'
+  credibility_score: 1
+  contradicting_evidence:
+  - The tracked release can demonstrate the architecture and data contract. It does not reproduce the paper’s exact parser/resolver and published matched metrics
+    out of the box. Derived source provenance in the release is episode-level. An exact cited turn/span must be located in the raw episode or recorded separately.
+    Instrument component/full wall time explicitly. A stored 0.0 parse latency represents a missing measurement for spaCy, and release elapsed_seconds=5.17 measures
+    packaging checks.
+  cross_references:
+    handoffs:
+    - memory-program.md
+  recommended_actions:
+  - Add a CPU parser and incidence-postings arm returning original episode IDs and text at the same answer budget. Compare with lexical, raw/full-context and
+    incumbent retrieval; include episode provenance, temporal errors and missed evidence.
+  notes: 'Read full README, build and evaluation entrypoints, both packaging-trial manifests and outcomes, parser, selected resolver/extraction/configuration,
+    builder, benchmark stage, and serializer paths. Remaining modules and tests were not exhaustively read. Static assessment only. Remote HEAD and fetched raw
+    text match the October 19 release commit. Decision-changing local test: compare shipped BM25+EmbeddingGemma RRF against the same fixed episode window and
+    reader token cap, with matched BM25+MiniLM or shared embeddings as attribution control only if needed. Baseline → exact-mention graph → paper-style dependency/alias-gated
+    ego bridge; track first-mention heuristic as a labeled implementation control if it changes recall on a named slice. Held-out source episodes and chronological/all-gold
+    exact evidence are required for multi-session/temporal. Start retrieval-only to avoid model-judge confounds. Capture stage wall, RSS, query p50/p95, exact
+    provenance, sizes and refreshed append/rebuild cost with raw IDs and parser/weights hashes. 9655 run retrieval/index first, compare to hybrid available in
+    lane, consume a common CPU thread budget and two input sizes if scaling answers a real decision. MI210 optionally batch only parser/embeddings if their measured
+    CPU component dominates or use it for the identical frozen reader in a follow-up after retrieval survives, with device/precision/queue competition measured.
+    Avoid importing code until reuse/license terms and behavior are verified; project can implement the narrow comparison using its own primitives.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: src/mgmem/query_parser.py:L60-L76 @ 67c53a2
+    quote: subjects = mentions[:1] if mentions else []
+    quote_sha256: db8ff2522229b1c0a58ebb668a638e77be93c18043aba1557ed2baf42cef64d3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda, found: true}
+    source_revision: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/query_parser.py
+    source_artifact:
+      entry_url: https://github.com/junhong-h/MGMem
+      requested_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/query_parser.py
+      effective_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/query_parser.py
+      retrieved_at_utc: '2026-11-27T11:54:02.795753+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda
+      relative_path: sha256/55/55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda.raw
+      raw_sha256: 55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda
+      byte_length: 2832
+  - claim_index: 1
+    kind: page-and-quote
+    locator: scripts/eval_qa.py:L74-L89 @ 67c53a2
+    quote: judge = build_judge(config.judge, client) if args.judge else build_judge(
+    quote_sha256: f40df7078058d1f49e4e52c89bdbb6af5b21b994b8ad500752d923d6e5e74433
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fb066a7d517ba0a899d8fba9c84060b7c76e969fc35ce792302e29e3ee5c306b, found: true}
+    source_revision: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/scripts/eval_qa.py
+    source_artifact:
+      entry_url: https://github.com/junhong-h/MGMem
+      requested_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/scripts/eval_qa.py
+      effective_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/scripts/eval_qa.py
+      retrieved_at_utc: '2026-11-27T11:54:03.786767+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:fb066a7d517ba0a899d8fba9c84060b7c76e969fc35ce792302e29e3ee5c306b
+      relative_path: sha256/fb/fb066a7d517ba0a899d8fba9c84060b7c76e969fc35ce792302e29e3ee5c306b.raw
+      raw_sha256: fb066a7d517ba0a899d8fba9c84060b7c76e969fc35ce792302e29e3ee5c306b
+      byte_length: 13985
+  - claim_index: 2
+    kind: page-and-quote
+    locator: src/mgmem/query_parser.py:L78-L82 @ 67c53a2
+    quote: latency_seconds=result.latency_seconds or 0.0,
+    quote_sha256: 44014461495d257d020582dec21b1822d0ff8f8353e4e5d89e5ccc7d376e6926
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda, found: true}
+    source_revision: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/query_parser.py
+    source_artifact:
+      entry_url: https://github.com/junhong-h/MGMem
+      requested_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/query_parser.py
+      effective_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/query_parser.py
+      retrieved_at_utc: '2026-11-27T11:54:02.795753+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda
+      relative_path: sha256/55/55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda.raw
+      raw_sha256: 55d8c67aee75164ade6eeb6427286d4f577b64769f13ce801e3704685a737fda
+      byte_length: 2832
+  - claim_index: 3
+    kind: page-and-quote
+    locator: src/mgmem/extractors/spacy_zero_shot.py:L217-L222 @ 67c53a2
+    quote: latency_seconds=None,
+    quote_sha256: 6b6cd71d662b1d0cac487729d149e3458b4a7f05d411f7d1bd1a7c1595df9992
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c0b437b17f657f7fd8b1943dbc1061c3122a1b3d4784730a03c62af1c20b68b8, found: true}
+    source_revision: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/extractors/spacy_zero_shot.py
+    source_artifact:
+      entry_url: https://github.com/junhong-h/MGMem
+      requested_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/extractors/spacy_zero_shot.py
+      effective_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/extractors/spacy_zero_shot.py
+      retrieved_at_utc: '2026-11-27T11:54:03.034756+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:c0b437b17f657f7fd8b1943dbc1061c3122a1b3d4784730a03c62af1c20b68b8
+      relative_path: sha256/c0/c0b437b17f657f7fd8b1943dbc1061c3122a1b3d4784730a03c62af1c20b68b8.raw
+      raw_sha256: c0b437b17f657f7fd8b1943dbc1061c3122a1b3d4784730a03c62af1c20b68b8
+      byte_length: 26773
+  - claim_index: 4
+    kind: page-and-quote
+    locator: src/mgmem/retrieval/resolver.py:L72-L82 @ 67c53a2
+    quote: sims_all = query_matrix @ pool_matrix.T
+    quote_sha256: 3e5667736206a7bba022b3ea2d30e6905cd39fee309493d58d4449d46caabb87
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f29e11d0af90aedbbc7e8e49fcdb490ffab9fb5eea0a000809337e79e2b7e607, found: true}
+    source_revision: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/retrieval/resolver.py
+    source_artifact:
+      entry_url: https://github.com/junhong-h/MGMem
+      requested_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/retrieval/resolver.py
+      effective_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/src/mgmem/retrieval/resolver.py
+      retrieved_at_utc: '2026-11-27T11:54:03.269759+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f29e11d0af90aedbbc7e8e49fcdb490ffab9fb5eea0a000809337e79e2b7e607
+      relative_path: sha256/f2/f29e11d0af90aedbbc7e8e49fcdb490ffab9fb5eea0a000809337e79e2b7e607.raw
+      raw_sha256: f29e11d0af90aedbbc7e8e49fcdb490ffab9fb5eea0a000809337e79e2b7e607
+      byte_length: 10447
+  - claim_index: 5
+    kind: page-and-quote
+    locator: trials/2026-10-19-002-mgmem-release-check/results.md:L9-L11 @ 67c53a2
+    quote: Benchmark evaluation was not rerun.
+    quote_sha256: 6fbea39b99b85e85f8d9ba8ace5267d1793aba1bd8413a2568b511f235715858
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d32364b17ac56aaf0199a8d4793b4d90f1d6dcd513c68da72be96ffac0f1f242, found: true}
+    source_revision: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/trials/2026-10-19-002-mgmem-release-check/results.md
+    source_artifact:
+      entry_url: https://github.com/junhong-h/MGMem
+      requested_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/trials/2026-10-19-002-mgmem-release-check/results.md
+      effective_url: https://raw.githubusercontent.com/junhong-h/MGMem/67c53a283f553c82cde573a84b82fac6b14b4e9a/trials/2026-10-19-002-mgmem-release-check/results.md
+      retrieved_at_utc: '2026-11-27T11:54:04.282774+00:00'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:d32364b17ac56aaf0199a8d4793b4d90f1d6dcd513c68da72be96ffac0f1f242
+      relative_path: sha256/d3/d32364b17ac56aaf0199a8d4793b4d90f1d6dcd513c68da72be96ffac0f1f242.raw
+      raw_sha256: d32364b17ac56aaf0199a8d4793b4d90f1d6dcd513c68da72be96ffac0f1f242
+      byte_length: 384
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Public parser uses its first extracted mention as subject.
+  - claim_index: 1
+    effect: unaffected
+    note: Public evaluator uses the constructed client for the judge and for the reader at L129.
+  - claim_index: 2
+    effect: unaffected
+    note: Parser coerces missing spaCy extractor timing to 0.0.
+  - claim_index: 3
+    effect: unaffected
+    note: Default local extractor does not time itself in its returned result.
+  - claim_index: 4
+    effect: unaffected
+    note: Public resolver computes whole-pool similarity before subject prioritization.
+  - claim_index: 5
+    effect: unaffected
+    note: The passing release trial does not replicate the paper evaluation.
+  dive_corrections: 2026-11-27. The tracked release can demonstrate the architecture and data contract. It does not reproduce the paper’s exact parser/resolver
+    and published matched metrics out of the box. Derived source provenance in the release is episode-level. An exact cited turn/span must be located in the raw
+    episode or recorded separately. Instrument component/full wall time explicitly. A stored 0.0 parse latency represents a missing measurement for spaCy, and
+    release elapsed_seconds=5.17 measures packaging checks.
