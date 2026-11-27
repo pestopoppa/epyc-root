@@ -1382,7 +1382,7 @@ Line references are at `98ff8a4` (C21, `llama.cpp-experimental-c21-20261124`).
       · done when: the compile log and verdict (lowers to gfx90a code object, or the first failing pass) are filed; a pass reopens a FlyDSL arm proposal, a fail closes it with evidence
       · gate: none
       · ✅ 2026-11-21 flydsl 0.5.1 compile-only vector-add for gfx90a PASS (needs a torch CPU import, undeclared); full pipeline to amdgcn gfx90a ISA (global_load_dwordx4, v_pk_add_f32, global_store_dwordx4). Log and ISA in /mnt/raid0/llm/tmp/flydsl-gfx90a-20261121/. No launch; execution and the ROCm-6.2 runtime untested. [no-belief: compile-only check]
-- [ ] **F32-ROUTER-DISPATCH-CAPTURE** [inference] Capture an MI210 A3B router prefill and decode trace on frozen v10 for the F32 split-K census, with a separate held-out request.
+- [x] **F32-ROUTER-DISPATCH-CAPTURE** [inference] Capture an MI210 A3B router prefill and decode trace on frozen v10 for the F32 split-K census, with a separate held-out request. ✅ 2026-11-27 [belief: cc] CENSUS_CAPTURED. Six frozen-v10 A3B request panels filed with the matched trace, request-round denominators and runtime HIP residency. [Census and replay](../../research/deep-dives/mi210-matmul-census-20261127/README.md)
       · model: Qwen3.6-35B-A3B-MTP-Q8_0 on MI210, greedy, four slots, F16 KV and MTP draft maximum two
       · build: production GPU store v10 ffc1bac82, private server with matched HIP library
       · metric: eligible ms per served round (lower is better), with actual F32 dispatches and workgroups
@@ -1394,6 +1394,9 @@ Line references are at `98ff8a4` (C21, `llama.cpp-experimental-c21-20261124`).
 - [ ] **F32-ROUTER-SPLITK-CENSUS** [non-inference] Join actual ffn_gate_inp and skinny F32 dispatches to shape, backend, duration and CU count; bound saved served time against current rocBLAS. If material, compare fixed-order two-pass slice reduction with unsplit reference and repeat identical inputs bitwise.
       · done when: Reuse retained A3B router traces at decode and prefill. Baseline is the resolved Tensile solution; keep a later request window. Record M/N/K, workgroups, slices and all partial-buffer writes. The upstream half-CU test bounds unsplit tile count, not slices. Stop if even eliminating targeted time would miss the owner’s served gate. Test CPU splitting only for underoccupied cores after NPS4-local partitioning.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3008.md`
+
+The MI210 census is filed. The 256-row router already has a served-tested chunked path. The remaining one-row F32 projection (K=2048) used 0.339–0.342 ms per C21 verify forward. To deliver a 1% served gain it would have to remove about 72% of that time. On frozen v10 at grouped width 12 the same projection already splits K five ways in Tensile. The remaining comparison is a deterministic fixed-order reduction against the actual C21 MMVF and v10 GSU5 paths, including all partial writes and reduction launches. CPU work is conditional on measured underoccupancy after NUMA-local placement. [Trace and opportunity bounds](../../research/deep-dives/mi210-matmul-census-20261127/README.md) [belief: cc]
+
 
 ### Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
