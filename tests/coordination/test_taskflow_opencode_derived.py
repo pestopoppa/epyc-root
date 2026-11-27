@@ -1,5 +1,6 @@
 """Regress output-bound, candidate-custody and transport failures seen in the A3B pilot."""
 from contextlib import closing
+import gzip
 import http.client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -120,9 +121,21 @@ def test_model_free_entrypoint_verifies_approval_and_all_case_bytes(tmp_path):
     assert load_job(job, approved)[-1] == "Task fixture"
     with pytest.raises(ValueError, match="approved receipt"):
         load_job(job, "bad")
+    default = json.loads(job.read_text())
+    selected = {**default, "backend": "gpu", "thinking": True,
+                "model": {"id": "qwen38-27b-dflash2", "name": "27B"}, "reasoning_effort": "low"}
+    job.write_text(json.dumps(selected))
+    assert load_job(job, digest(job))[0]["reasoning_effort"] == "low"
+    for incompatible in ({"reasoning_effort": "high"}, {"reasoning_effort": None},
+                         {"thinking": False}, {"backend": "cpu"},
+                         {"model": {"id": "other", "name": "Other"}}):
+        job.write_text(json.dumps({**selected, **incompatible}))
+        with pytest.raises(ValueError, match="reasoning_effort"):
+            load_job(job, digest(job))
+    job.write_text(json.dumps(default))
     (baseline / "input.txt").write_text("altered")
     with pytest.raises(RuntimeError, match="frozen case baseline changed"):
-        load_job(job, approved)
+        load_job(job, digest(job))
 
 
 def test_saved_session_resumes_only_with_same_case_profile_and_private_state(tmp_path):
@@ -158,7 +171,7 @@ def test_saved_session_resumes_only_with_same_case_profile_and_private_state(tmp
     assert (box.session / "db").read_text() == "prior reasoning"
     with pytest.raises(ValueError, match="OpenCode/model profile"):
         restore_session({**job, "thinking": False}, case, box)
-    new_model = {"id": "qwen38-test", "manifest_sha256": "a" * 64}
+    new_model = {"id": "qwen38-27b-dflash2", "manifest_sha256": "a" * 64}
     explicit = {**job, "model": new_model}
     with pytest.raises(ValueError, match="OpenCode/model profile"):
         restore_session(explicit, case, box)
@@ -170,6 +183,17 @@ def test_saved_session_resumes_only_with_same_case_profile_and_private_state(tmp
     other_weights = {"model": {**new_model, "manifest_sha256": "b" * 64}}
     with pytest.raises(ValueError, match="OpenCode/model profile"):
         restore_session({**explicit, **other_weights}, case, box)
+    effort = {**explicit, "reasoning_effort": "xhigh"}
+    with pytest.raises(ValueError, match="OpenCode/model profile"):
+        restore_session(effort, case, box)
+    assert "reasoning_effort" not in recorded["session_profile"]
+    recorded["session_profile"] = session_profile(effort)
+    p.write_text(json.dumps(recorded))
+    effort["resume"] = {**effort["resume"], "receipt_sha256": digest(p)}
+    assert restore_session(effort, case, box) == "ses_fixture"
+    for changed in (None, "medium", "low"):
+        with pytest.raises(ValueError, match="OpenCode/model profile"):
+            restore_session({**effort, "reasoning_effort": changed}, case, box)
     p.write_text(json.dumps({**recorded, "session_profile": session_profile(job)}))
     job["resume"]["receipt_sha256"] = digest(p)
     (workspace / "wip.txt").write_text("changed after approval")
@@ -188,6 +212,30 @@ def test_explicit_title_route_does_not_change_tool_bearing_replay_mode(model, tm
     assert title["max_completion_tokens"] == 64 and title["chat_template_kwargs"] == {"enable_thinking": False}
     assert primary["max_completion_tokens"] == 32768 and primary["chat_template_kwargs"]["preserve_thinking"]
     assert [row["digest"]["role"] for row in adapter.rows] == ["title", None]
+
+
+
+@pytest.mark.parametrize("effort", [None, "xhigh", "medium", "low"])
+def test_reasoning_effort_only_changes_primary_thinking_template_kwargs(model, tmp_path, effort):
+    from taskflow.harness.opencode_derived.transport import Model
+
+    selected = Model("qwen38-27b-dflash2", "27B")
+    limits = Limits(wall_s=5, output_cap=32768, cumulative_output=120000)
+    with proxy(model.server_port, tmp_path, limits=limits, backend="gpu", slot=2, task="fixture", label="effort",
+               thinking=True, preserve_resume=True, model=selected, reasoning_effort=effort) as adapter:
+        assert post(adapter.server_port, model=selected.title_id)[0] == 200
+        assert post(adapter.server_port, model=selected.id,
+                    chat_template_kwargs={"unrelated": "keep"})[0] == 200
+    title, primary = model.requests
+    assert title["chat_template_kwargs"] == {"enable_thinking": False}
+    expected = {"unrelated": "keep", "enable_thinking": True, "preserve_thinking": True,
+                "preserve_reasoning": True}
+    if effort is not None:
+        expected["reasoning_effort"] = effort
+    assert primary["chat_template_kwargs"] == expected
+    for row, request in zip(adapter.rows, model.requests, strict=True):
+        with gzip.open(tmp_path / row["body_ref"], "rt") as archive:
+            assert json.load(archive) == request
 
 
 def test_open_code_interrupt_returns_a_valid_unwrapped_response(tmp_path, monkeypatch):

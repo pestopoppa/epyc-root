@@ -1,0 +1,9 @@
+{
+  "decoded_source_files_verified": 21187,
+  "layout_sha256": "11bcc1151a583761818416c62f01bb4850d5daf91f66a50e8ef04ccb68397afd",
+  "native_calls": 0,
+  "schema": "taskflow.model-repeat-archive.v1",
+  "selection_sha256": "0644522edb0a78f23392fe597d1bba686cffe50e5acbd65fdc43cd79c0221799",
+  "shards_verified": 50,
+  "stored_shards_bytes": 254759507
+}

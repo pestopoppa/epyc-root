@@ -85,6 +85,11 @@ def test_contract_rejects_foreign_and_duplicate_junit_results(tmp_path):
 
 @pytest.mark.parametrize(("addition", "phase"), [
     ('diagnostic.endswith("Invalid argument")', "namespace-invalid-argument"),
+    (
+        'diagnostic.startswith("unshare:") and "/proc/self/" in diagnostic '
+        'and "Operation not permitted" in diagnostic',
+        "launcher-exec-permission-refusal",
+    ),
     ('"unshare" in diagnostic and "Operation not permitted" in diagnostic', "mount-permission-path-unshare"),
 ])
 def test_contract_rejects_other_errors_that_resemble_permission_refusals(lane, addition, phase):

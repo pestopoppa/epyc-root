@@ -15,6 +15,7 @@ from pathlib import Path
 
 _PERMISSION_REFUSAL = "unshare: write failed /proc/self/uid_map: Operation not permitted"
 _SETUP_FAILURE = "unshare: simulated namespace setup failure"
+_EXEC_PERMISSION_REFUSAL = "unshare: failed to execute /proc/self/exe: Operation not permitted"
 _INVALID_NAMESPACE = "unshare: cannot unshare: Invalid argument"
 _MOUNT_REFUSAL = "mount: simulated tmpfs setup: Operation not permitted"
 _CONTROL = "test_reachable_grader_is_flagged"
@@ -222,6 +223,9 @@ def validate(lane: Path, acceptance: str, timeout: float) -> str | None:
             ("null-listdir-errno-only", 1, "failure", {
                 "TASKFLOW_REWRITE_PROBE": str(rewriter), "TASKFLOW_LISTDIR_ERRNO_FAULT": "null",
             }),
+            ("launcher-exec-permission-refusal", 1, "failure", {
+                "TASKFLOW_NAMESPACE_ERROR": _EXEC_PERMISSION_REFUSAL, "TASKFLOW_REQUIRE_NAMESPACE_FAULT": "1",
+            }),
         )
         for phase, rc, isolated_status, overrides in phases:
             base = tmp / phase
@@ -256,6 +260,7 @@ def validate(lane: Path, acceptance: str, timeout: float) -> str | None:
             if phase in (
                 "mount-permission-refusal", "wrong-access-errno", "namespace-invalid-argument",
                 "mount-permission-path-unshare", "wrong-listdir-errno-only", "null-listdir-errno-only",
+                "launcher-exec-permission-refusal",
             ) and not fault_receipt.is_file():
                 return f"simulated namespace {phase}: worker did not reach the injected fault"
             if phase == "mount-permission-path-unshare" and "unshare" not in fault_receipt.read_text():

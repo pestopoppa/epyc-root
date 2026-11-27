@@ -42,6 +42,12 @@ OUT_KEYS = ("n_predict", "max_tokens", "max_completion_tokens", "maxOutputTokens
 SAMPLING_KEYS = {"seed", "temperature", "top_p", "top_k", "min_p", "repeat_penalty", "presence_penalty", "frequency_penalty"}
 
 
+def require_reasoning_effort(effort, *, backend, model, thinking):
+    if (not isinstance(effort, str) or effort not in ("xhigh", "medium", "low")
+            or backend != "gpu" or model.id != "qwen38-27b-dflash2" or thinking is not True):
+        raise ValueError("reasoning_effort requires xhigh, medium or low on thinking-on GPU 27B")
+
+
 def require_disabled_shared_cache(argv):
     values = [argv[i + 1] if i + 1 < len(argv) else None
               for i, arg in enumerate(argv) if arg in (b"--cache-ram", b"-cram")]
@@ -207,6 +213,8 @@ class Handler(BaseHTTPRequestHandler):
             kwargs.pop(key, None)
         if thinking and self.server.preserve_resume:
             kwargs.update(REASONING_MODE)
+        if thinking and self.server.reasoning_effort is not None:
+            kwargs["reasoning_effort"] = self.server.reasoning_effort
         payload.update(id_slot=self.server.slot, chat_template_kwargs=kwargs, timings_per_token=True)
         payload.update(self.server.sampling)
         payload["model"] = model.id
@@ -373,10 +381,13 @@ class Proxy(ThreadingHTTPServer):
 
 @contextmanager
 def proxy(upstream, output, *, limits, backend, slot, task, label, thinking,
-          preserve_resume=False, sampling=None, model=DEFAULT_MODEL, allow_cpu_thinking=False):
+          preserve_resume=False, sampling=None, model=DEFAULT_MODEL, allow_cpu_thinking=False,
+          reasoning_effort=None):
     if (backend == "cpu" and thinking and (model.id == DEFAULT_MODEL.id or not allow_cpu_thinking)
             or preserve_resume and not thinking):
         raise ValueError("invalid task mode or resume state")
+    if reasoning_effort is not None:
+        require_reasoning_effort(reasoning_effort, backend=backend, model=model, thinking=thinking)
     if set(sampling or {}) - SAMPLING_KEYS:
         raise ValueError("unsupported sampling keys in approved profile")
     output = Path(output)
@@ -387,6 +398,7 @@ def proxy(upstream, output, *, limits, backend, slot, task, label, thinking,
         server.model = model
         server.thinking, server.preserve_resume = thinking, preserve_resume
         server.sampling = dict(sampling or {})
+        server.reasoning_effort = reasoning_effort
         server.rows, server.write_lock = [], threading.Lock()
         server.connections, server.connection_lock, server.closed = set(), threading.Lock(), False
         with GATES_LOCK:

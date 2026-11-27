@@ -17,9 +17,10 @@ from .cpu_placement import require_cpu_placement
 from .drive import RunInterrupted, run
 from .model_route import job_model, verify_model, verify_thinking
 from .sandbox import Assets, Sandbox
-from .transport import Limits, proxy, require_disabled_shared_cache
+from .transport import Limits, proxy, require_disabled_shared_cache, require_reasoning_effort
 
 
+EFFORT_TEMPLATE_SHA256 = "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
 SESSION_PROFILE = ("backend", "slot", "thinking", "context", "request_cap", "sampling", "public_web")
 
 
@@ -33,7 +34,10 @@ def load_job(path, approved):
     if (digest(case_path) != job["case_sha256"] or digest(prompt_path) != job["prompt_sha256"]):
         raise ValueError("pinned task or prompt changed")
     case = read(case_path)
-    job_model(job)
+    model = job_model(job)
+    if "reasoning_effort" in job:
+        require_reasoning_effort(job["reasoning_effort"], backend=job.get("backend"),
+                                 model=model, thinking=job.get("thinking"))
     validate_baseline(case_dir, case)
     return job, case_dir, case, prompt_path.read_text()
 
@@ -67,6 +71,8 @@ def serving_proof(job):
         raise ValueError("owned native library or backend residency differs from receipt")
     model = job_model(job)
     model_files = verify_model(job, model, proof, cmdline, model_arg)
+    if "reasoning_effort" in job and proof["template_sha256"] != EFFORT_TEMPLATE_SHA256:
+        raise ValueError("reasoning_effort requires the qualified 27B chat template")
     verify_thinking(job, model, proof)
     if job["backend"] == "cpu":
         require_cpu_placement(pid, cmdline, model_arg, model_files=model_files)
@@ -101,6 +107,9 @@ def session_profile(job):
         config = job["model"]
         profile["model_id"] = config["id"]
         profile["model_manifest_sha256"] = config["manifest_sha256"]
+    # Legacy receipts omit this key. Absence means the native template default.
+    if job.get("reasoning_effort") is not None:
+        profile["reasoning_effort"] = job["reasoning_effort"]
     return profile
 
 
@@ -170,7 +179,8 @@ def dispatch(out, job, case_dir, case, prompt, approved):
         with proxy(job["port"], out / "wire", limits=limits, backend=job["backend"], slot=job["slot"],
                    task=case["id"], label=case["id"], thinking=job["thinking"],
                    preserve_resume=job["thinking"], sampling=job["sampling"], model=model,
-                   allow_cpu_thinking=job["backend"] == "cpu" and job["thinking"]) as adapter:
+                   allow_cpu_thinking=job["backend"] == "cpu" and job["thinking"],
+                   reasoning_effort=job.get("reasoning_effort")) as adapter:
             box.upstream_port = adapter.server_port
             with box.running():
                 session = session or box.new_session()

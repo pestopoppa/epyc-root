@@ -1,70 +1,118 @@
-# 27B GPU / Q38FN CPU full-tools repeat — November 27
+# 27B GPU and Q38FN CPU full-tools repeat, November 27
 
-Status: running; interim document. Final quality, performance and accounting exports follow all terminal records and independent audits.
+All **49 native task attempts** closed, including **28 of 28 initial conditions**. Main accepted seven variants spanning three fixtures. Q38FN CPU thinking OFF produced two accepted implementations on the original brief and within the original window, MM-5 and detailed W66. Neither used corrective guidance. The 27B GPU initial arms had no acceptances. Two subsequent 27B GPU MM attempts earned acceptance within 30 minutes, once with case-neutral execution guidance and once on the original brief in a lane that delivered no tool warning. Together, the results describe the observed model, harness, sampling, prompt and wall budgets. They do not establish an intrinsic model or hardware ranking.
 
-## What was repeated
+## Protocol
 
-The six original real-task fixtures plus the separate accurate-light W66 brief, each with thinking OFF and ON, on two models: 28 initial conditions, seven case/brief conditions per mode/model. This replays pinned task snapshots; it does not land duplicate work into today's backlog. Valid pinned main-only implementations and their paid usage were reused rather than rerun.
+The six pinned real-task fixtures and the separate accurate-light W66 brief ran with thinking OFF and ON on each model. The GPU route served Qwen3.8-27B Q8_0 with DFlash2. The CPU route served Qwen3.8-Flash-Next UD-IQ4_XS with shared MTP, with all three model shards bound to the serving identity. Both used verified kernel-store binaries built from **C22 `ce6fcbbde1ee58f165283fbfe74910f47bb2efba`**, four physical slots each and 131,072 context tokens per slot.
 
-- GPU only: Qwen3.8-27B Q8_0 with DFlash2.
-- CPU only: Qwen3.8-Flash-Next UD-IQ4_XS hybrid MoE with shared MTP (Q38FN).
-- Both: C22 composite source `ce6fcbbde1ee58f165283fbfe74910f47bb2efba`, verified store binaries, four physical slots, 131072 context per slot. Production v10 was untouched.
-- Full OpenCode2.2.5 twelve-tool surface: edit, execute, glob, grep, question, read, shell, skill, subagent, webfetch, websearch, write; CodeMode catalogue retained. No six-read or thirty-turn restriction. No extra explicit task-specific skill bundle was added, matching the pinned A3B briefs.
-- Common sampler: temperature0.6, top_p0.95, top_k20, min_p0, repeat1, presence0, seed223355. Primary request cap32768 and condition allowance120000 generated tokens. Thinking ON uses the model's embedded native default xhigh; OFF disables thinking. This is not a matched reasoning-effort comparison against A3B's earlier medium profile.
-- Original wall windows: 1800s GPU, 3600s CPU. All interrupted attempts remain censored outcomes against their own declared window. A late artifact is assessed separately from normal self-completion. No claim of CPU/GPU causality or intrinsic capability ceiling follows from these time windows.
+OpenCode 2.2.5 exposed edit, execute, glob, grep, question, read, shell, skill, subagent, webfetch, websearch and write, with the CodeMode catalogue. There was no six-read or thirty-turn limit and no extra task-specific skill bundle. The common setting was temperature 0.6, top-p 0.95, top-k 20, min-p 0, repeat penalty 1, presence penalty 0 and seed 223355. Primary requests had a 32,768 output-token cap and each condition had a 120,000 generated-token allowance. Original phase windows were 1,800 s GPU and 3,600 s CPU. Thinking ON used the native default xhigh unless the supplement explicitly set another effort. The earlier A3B work used a different effort and retry workflow, so its acceptance counts are descriptive context.
 
-Native qualification established ON/OFF reasoning control, preserved tool history, syntax-error repair through execute, read/write file custody, all four physical slots, real CPU/GPU residency and positive draft proposals/acceptance. Complete three-shard Q38FN identity is bound; the first shard is metadata, not the whole model.
+Acceptance required deterministic checks, independent exact-source review and explicit main adoption. Budget expiry remained censored against the declared window even when it left a reviewable artifact. A late-artifact continuation, a fresh retry with paid planning, and a fresh session carrying a prior artifact each have their own trace and cost. This was a replay on pinned source, without landing duplicate task implementations.
 
-## Acceptance and guidance
+## Original condition matrix
 
-An artifact requires the original deterministic checks, exact-source independent review and explicit main adoption. Neither a worker completion message nor a checker return code alone counts as accepted. Review sees the original source, exact patch, original brief and actual consumed feedback; it sees no accepted implementation or other candidate.
+| Fixture / brief | 27B GPU OFF | 27B GPU ON | Q38FN CPU OFF | Q38FN CPU ON |
+|---|---|---|---|---|
+| DS41-W-66, detailed | Expired, no edit | Expired, no edit | **Accepted**, normal completion | Expired, no edit |
+| DS41-W-66, accurate light | Expired, no edit | Expired, no edit | Expired, no edit | Expired, no edit |
+| TU-GR-1 | Normal candidate, checker failed | Expired, no edit | Expired, partial | Expired, no edit |
+| MM-5 | Expired, no edit | Expired, no edit | **Accepted**, normal completion | Expired, partial |
+| PAW-5 | Expired, no edit | Expired, no edit | Expired, no edit | Expired, no edit |
+| NARIQ-LIBTRELLIS-MAP-1 | Expired, no edit | Expired, no edit | Expired, no edit | Expired, no edit |
+| PFXC-A3 | Expired, partial | Expired, no edit | Expired, partial | Expired, partial |
 
-One actionable CI correction is a same-session continuation with check output, not an independently implemented patch. Fresh paid planning retries are separate guided conditions; the coach supplies source-specific pointers but no code or final deliverable. Prior local cost remains charged. Registered-temperature and longer-wall supplements are reported separately rather than replacing original results.
+Initial outcomes total three normal candidate returns (two accepted, one failed), five budget-closed partial artifacts and twenty budget-closed no-edit attempts. See `QUALITY.json` for per-attempt timestamps, grades, withdrawn results and owner dispositions.
 
-At the interim checkpoint Q38FN MM and detailed W66 nonthinking are independently accepted normal completions without corrective guidance. Each consumed one final independent review. GPU PFX nonthinking is now accepted after one CI correction, one paid source diagnosis and an additional main arithmetic reminder; its original initial attempt remains censored. Two distinct source reviews were consumed for that guided branch. The complete per-condition table will replace this checkpoint after the remaining work closes.
+## Continuations and driving checks
 
-## Defects repaired during this repeat
+| Condition | Observed result and help |
+|---|---|
+| GPU PFXC-A3 OFF | **Accepted** after same-session CI correction, source diagnosis and main arithmetic reminder. Two paid source reviews total, including diagnosis. Worker phases 1,802.315 + 1,346.068 + 340.891 s. |
+| CPU MM-5 ON | **Accepted** after one same-session CI correction for missing tests and one final paid review. The initial 3,605.160 s artifact remains partial. Its correction took 2,493.799 s, with 4,810 observed generated tokens and one unknown receipt. |
+| GPU MM-5 OFF, generic execution guidance | **Accepted**, normal completion in 1,472.812 s with 7,698 generated tokens, six reads, zero repeated tool inputs and one paid review. No task-specific corrective help. |
+| GPU MM-5 OFF, original brief with broader repeated-tool warning enabled | **Accepted** after behavioral PASS and one independent source review. Normal completion in 1,602.882 s with 12,684 generated tokens. The audit in `tool-warning-v2-owner-acceptance-prep` found one plugin load, at most two occurrences of any exact tool input and zero warning markers or delivered advisories. |
+| GPU MM-5 OFF, original brief extended to 60 min | Expired without edits at 3,602.390 s. The initial 30-minute attempt also made no edits and used an exact tool input up to 17 times. |
+| GPU MM-5 OFF, original brief with direct-read warning | Expired without edits. The run repeated shell inspections, which the direct-read guard did not cover. |
+| GPU detailed W66 ON | Generic execution guidance at native xhigh, medium and low each expired without an edit. The unchanged-brief medium control also expired without edits. Neither the separate paid planning retry nor the registered sampler supplement produced an edit. |
+| CPU PAW-5 ON | Separate paid planning retry and registered sampler supplement expired without edits. |
+| GPU TU-GR-1 OFF | Final guided candidate had old-checker PASS and paid source ACCEPT. Main rejected it after the amended checker found a classification gap for an injected executable-launch permission error mentioning `/proc/self/`. Eight contained controls retained the pinned main-only positive and rejected the exact GPU candidate and an overly broad synthetic classifier. |
+| CPU TU-GR-1 OFF | **Rejected** after one bounded same-session CI correction. The 3,603.563 s phase left a budget-closed patch with 25,592 observed generated tokens and one unknown receipt. V5 failed because the launcher overmounted the staged child script, and source audit found an overbroad refusal classifier. The chain exhausted its 120,000-token allowance. No paid review was needed. |
+| CPU PFXC-A3 ON | Expired without a reviewable patch after 3,601.807 s. A fresh session carried the frozen initial document and paid diagnosis, with prior charged allowance debited. This phase recorded 13,843 observed generated tokens, one unknown receipt and 46,611 charged tokens. No session history transfer or measured slot-cache equivalence. |
+| CPU PFXC-A3 OFF | **Accepted** on same-session repair after a fresh artifact-carryover phase. That phase took 1,021.588 s and 6,317 generated tokens, passed V7 and failed paid review on unsupported selection-bias claims. The repair completed in 531.848 s with 3,891 generated tokens and no unknowns, passed V7 and earned source ACCEPT. The chain used one CI correction, two paid diagnoses, a main factual reminder and three paid reviews total. The original budget-closed artifact and fresh-phase rejection remain recorded. |
 
-1. The first GPU qualification exposed C22's incompatibility between device DFlash selection and stochastic temperature0.6. No real GPU task had run. The second epoch uses the supported stochastic host selector (`LLAMA_DFLASH_DEV_SELECT=0`); native stochastic/speculation controls passed before dispatch. The aborted first epoch remains in evidence.
-2. CPU OpenMP `cores` places could include SMT siblings outside the intended physical CPU set. Explicit singleton physical places0–95 and an all-thread affinity check replaced the overly broad placement and the mistaken leader-only check. Actual four-node shard residency and compute placements passed before dispatch.
-3. The PFX independent parser incorrectly rejected a table containing a wholly blank spacer column. V7 permits empty spacers while retaining exact pinned source, event count/order, line/value and scope checks. Twenty-eight controls include the historical accepted answer, valid spacer positive and duplicate/missing/wrong-value negatives. The old verdict was withdrawn before its feedback reached the worker. The repaired parser then truthfully found46 versus41 rows in the GPU partial artifact; a bounded CI correction received that finding.
-4. A completion watcher could miss a terminal file created between an owner snapshot and watcher startup. Explicit owner acknowledgments and content-deduplicated notifications now cover that race; a zero-model race control passed. No native work was rerun for this monitoring defect.
-5. Nine CPU file-custody qualification records carried an erroneous hardcoded GPU instrumentation label. An exact-file amendment binds their unchanged raw records to the original CPU PID/birth proof. Offline projection corrects those nine labels while retaining the raw labels; 912 other shared receipt projections were identical at the validation checkpoint. No real-task assignment or model call changed.
+The two successful fresh GPU MM trajectories disprove an inability to deliver this fixture under the tested setup. An original-brief repeat succeeded with no actual warning delivery, so the evidence does not establish a warning benefit or isolate the generic prompt's effect from sampling, slot/cache history and concurrency. W66 supplied no positive evidence for the tested effort and generic-guidance variants.
 
-Closed-budget artifacts also required an explicit grading adapter, because the original adapter admitted only normal completion. The separate adapter checks elapsed budget, drained reservations, scope, exact candidate bytes and reference custody; it does not rewrite the native interrupted status. Missing tests in CPU MM thinking and TU nonthinking are genuine incomplete deliverables, not grounds to weaken acceptance.
+A separate native qualification sent matched cap-128 GPU requests differing only in the reasoning budget. Budget 0 returned 254 visible reasoning characters; the default returned 230. Both exhausted the cap with no final content. Two additional cap-128 controls set `speculative.n_max=0` and verified zero draft proposals. Budget 0 and the default each returned 255 reasoning characters. The zero-budget control failed with and without DFlash on C22. No 4,096-budget quality arm was launched. Visible reasoning characters and separately reported native token counters are distinct quantities.
 
-6. The final GPU TU source audit exposed an additional coverage gap despite old-checker PASS and paid reviewer ACCEPT: an `unshare` executable-launch permission error could be mistaken for namespace setup failure when the executable path contains `/proc/self/`. V5 adds this original-requirement diagnostic case. Eight contained controls preserve the pinned main-only positive and reject the exact GPU candidate and a synthetic broadened classifier. Main rejected the artifact, preserving both old verdicts and paid costs. This is an injected classification control, not a claim the normal worker launcher selects `/proc/self/exe`. The canonical checker/test patch is prepared for application after source-locked work and archive capture finish.
+## Performance
 
-A separate CPU PFX thinking supplement carries its own budget-closed document and adopted paid diagnosis into a fresh session on slot0 or3. The original budget outcome remains censored. Prior charged allowance is debited; no prior reasoning or tool history is transferred, and slot cache warmth is unmeasured. This is explicitly a checkpoint/restart workflow variant, not an isolated guidance intervention.
+The initial arms charge title and compaction requests to their parent task. Latencies are medians in seconds. Rates are tokens per second, first per-request medians and then approximate aggregate rates over the union of native phase intervals.
 
-The future owner-v3 race controls and scheduler controls are tested scratch improvements; active epoch02 and its frozen task runner were not silently replaced while jobs ran.
+| Initial arm | Forwarded / failed | Client wall | TTFT upstream / delivered | Prefill / decode median | Prefill / decode aggregate | Draft accepted / proposed |
+|---|---:|---:|---:|---:|---:|---:|
+| GPU OFF | 325 / 6 | 16.164 | 15.802 / 16.031 | 181.049 / 7.227 | 282.941 / 8.773 | 39,720 / 73,731 |
+| GPU ON | 68 / 7 | 74.711 | 16.793 / 23.607 | 231.869 / 5.392 | 293.648 / 9.381 | 48,282 / 109,116 |
+| CPU OFF | 307 / 7 | 32.300 | 27.899 / 29.492 | 63.526 / 6.081 | 119.175 / 5.167 | 43,640 / 54,281 |
+| CPU ON | 123 / 7 | 88.731 | 11.719 / 14.245 | 110.211 / 3.926 | 132.527 / 5.350 | 47,603 / 66,298 |
 
-## Additional model-driving checks
+| Initial arm | Actual thinking ON / OFF | Known generated tokens | Unknown generation receipts | Unknown reasoning-token receipts |
+|---|---:|---:|---:|---:|
+| GPU OFF | 0 / 325 | 50,551 | 2 | 325 |
+| GPU ON | 61 / 7 | 63,934 | 0 | 68 |
+| CPU OFF | 0 / 307 | 59,091 | 0 | 307 |
+| CPU ON | 116 / 7 | 70,465 | 0 | 123 |
 
-The operator challenged pure model-capability attribution and approved further GPU driving tests. These results describe model, harness, prompt, sampling and time limits together; a full tool surface does not establish optimal driving. The earlier A3B campaign had accepted runtime-test, image-sizing and cache-sizing work, but more retries and a different thinking setting. Initial observed27B results were weaker; this is not a controlled intrinsic ranking.
+Thinking ON produced no additional unaided acceptances in this sample. CPU MM ON became acceptable after a missing-test reminder, while its OFF counterpart had already completed unaided. The original ON arms generated 63,934 known tokens on GPU and 70,465 on CPU, including their title requests; separate reasoning-token counts were not reported. These observations do not establish a thinking benefit or a general absence of one.
 
-Four fresh1800s trials isolate generic execution guidance and native medium effort on W66, plus generic guidance on MM nonthinking. The W66 medium control retains the original prompt bytes; both medium wire archives contain the native supported setting. A separate queued MM original-brief trial tests an automatic third-identical-read warning, preserving the full returned content and tool availability. Stock OpenCode scripted controls verify plugin loading, reset behavior and transcript preservation. The generic prompt is not itself an automatic loop detector. No claimed benefit precedes the artifact/trace audit; other driving options remain untested.
+`COMMON-PERFORMANCE.json` includes metric sample counts and the actual thinking setting split. The full proxy inventory contains 2,027 receipts, with 2,003 forwarded, 43 forwarded failures and 24 blocked or otherwise unforwarded. Four direct native budget controls are archived separately from the proxy inventory.
 
-The MM generic-driving arm is now accepted after normal completion:1472.812s,7698 generated tokens, no unknown generation, no task-specific corrective guidance, and one independent review. It used six reads and no repeated tool input. Original30-minute and extended60-minute trials left no edits; the original repeated some inputs17 times. This is a concrete counterexample to pure task-incapability attribution, while one seed and uncontrolled cache/concurrency prevent a general causal success-rate estimate.
+The machine-readable performance summary and native request JSONL/CSV contain per-attempt, per-mode and physical-stream counts, client and upstream latency, upstream and delivered TTFT, native prefill and decode rates, cache counts, jointly observed draft/accepted counts, failures, cancellations and concurrent resource samples. Prefill/decode aggregates use approximate unions of right-aligned native phase durations and include observed post-terminal drain. Worker wall time includes tools. Native counters missing at interruption remain unknown. Charged allowance includes reservations and is separate from observed generation.
 
-The xhigh/medium W66 driving arms ended without edits. Native low remains a distinct follow-up. The direct-read warning arm instead repeated shell inspections, so its guard did not activate; the broader separately controlled V2 warning is being tested against actual repeated-tool behavior. It is not valid to call an unexercised guard ineffective.
+## Paid work and elapsed time
 
-## Cost and timing interpretation
+The valid main-only comparator was reused with **zero new implementations and zero new model calls**. It covers seven case/brief conditions and eight implementation calls, including the failed first TU implementation and its paid repair.
 
-Local tokens are treated as free for the user's benefit question, but elapsed time and paid review, planning, management and harness engineering still count. Separate exports retain actual recorded input, cached and uncached input, output and reasoning subsets, including unsuccessful paid calls and context compactions. Management totals include the owned helper lineage and have an explicit cutoff; closing work after that cutoff is unmetered, not zero.
+| Paid implementation scope | CLI wall, s | Input | Cached input | Uncached input | Output | Reasoning subset |
+|---|---:|---:|---:|---:|---:|---:|
+| Historical main-only, six detailed cases | 674.876847 | 1,226,305 | 1,067,136 | 159,169 | 19,368 | 379 |
+| Historical main-only, all seven including accurate-light W66 | 729.094734 | 1,430,897 | 1,256,832 | 174,065 | 20,498 | 401 |
 
-The accepted Q38FN MM result took2615.95s of worker wall time including tools; its source review took20.04s and29513 uncached input/456 output tokens. The reused main-only implementation took140.12s and13029 uncached input/2973 output. Detailed W66 took3393.22s plus28.48s review, whose usage was17774 uncached input/813 output. Output-token reduction alone is not net premium-token savings. Cache reuse differs between historical baseline and current review, and historical owner review is not isolated in the main-only implementation baseline.
+| Matched fixture | Local worker wall, s | Local paid source-review wall, s | Local review uncached input / output | Historical direct wall, s | Historical direct uncached input / output |
+|---|---:|---:|---:|---:|---:|
+| MM-5, CPU OFF initial | 2,615.949 | 20.04 | 29,513 / 456 | 140.117489 | 13,029 / 2,973 |
+| MM-5, GPU OFF generic | 1,472.812 | 21.21 | 23,446 / 471 | 140.117489 | 13,029 / 2,973 |
+| MM-5, GPU OFF warning-enabled repeat | 1,602.882 | 20.91 | 38,085 / 460 | 140.117489 | 13,029 / 2,973 |
+| W66 detailed, CPU OFF initial | 3,393.222 | 28.48 | 17,774 / 813 | 74.823704 | 40,204 / 2,056 |
+| PFXC-A3, GPU OFF guided chain | 3,489.274 | 37.31 | 43,069 / 1,058 | 111.710705 | 23,850 / 5,051 |
+| PFXC-A3, CPU OFF guided chain | 5,155.387 | 82.88 | 79,456 / 2,291 | 111.710705 | 23,850 / 5,051 |
 
-The existing main-only baseline used729.09s across all seven case/brief conditions, including the first failed TU implementation and repair:174065 uncached input and20498 output tokens. It is seven productive conditions, not a denominator that can be multiplied by every exploratory local mode/profile and called a saved task. Post-hoc selection of the best local mode is not free routing knowledge.
+Each MM row compares a different workflow against the same historical implementation. Each PFX row adds its initial censored phase and both guided continuations, with main reminders charged to management. The table excludes other failed/supplemental arms and the shared overhead below. Historical direct wall/usage covers implementation. Historical review, setup and management were not separately metered in that baseline.
 
-Final exports will provide per-attempt and per-mode latency, upstream/delivered TTFT, native prefill and decode rates, per-stream and approximate aggregate phase rates, cache and paired speculative counters, concurrent resource samples and all failures/cancellations. Aggregated native intervals are approximate and include post-terminal drain where recorded; they are not task throughput. Native counters missing on interrupted requests remain unknown. Charged generation allowance is not observed generation; visible reasoning characters are not reasoning tokens.
+`PAID-CALLS.json` accounts for 15 distinct paid review and planning threads, including rejected candidates and false-positive advice. Advice reused for a correction is counted once. All usage fields were known, with no unreported executions.
 
-## Evidence custody
+| Current paid calls | Calls | CLI wall, s | Input | Cached input | Uncached input | Output | Reasoning subset |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Independent source review | 13 | 304.100699 | 1,363,490 | 1,043,584 | 319,906 | 7,641 | 401 |
+| Fresh-task planning | 2 | 49.418567 | 162,743 | 131,712 | 31,031 | 1,660 | 0 |
+| Total | 15 | 353.519266 | 1,526,233 | 1,175,296 | 350,937 | 9,301 | 401 |
 
-Private branch: `codex/27b-q38fn-canary-20261127`. Protocol: [27b-q38fn-full-tools-repeat-20261127.md](../design/27b-q38fn-full-tools-repeat-20261127.md). Runtime source and raw receipts remain under `/mnt/raid0/llm/tmp/ws58-27b-q38fn-repeat-20261127`; final selected, compressed, content-verified evidence will be archived in this repository. Model binaries, private Codex rollouts and dependency trees are excluded. The exported manager usage contains counters and hashes, not conversation text.
+The separate sanitized management ledger covers root and helper responses, including context compaction, through **14:38:18.142105 UTC on November 27**. Closing work after that cutoff is unmetered.
 
-Next: codex-a3b-pilot closes the remaining conditions and bounded corrections, audits candidates, publishes the final tables and evidence, and verifies owned-process cleanup.
+| Management phase | Responses | Input | Cached input | Uncached input | Output | Reasoning subset |
+|---|---:|---:|---:|---:|---:|---:|
+| Setup before first dispatch | 349 | 63,788,445 | 62,704,768 | 1,083,677 | 186,282 | 50,344 |
+| Dispatch and iterative management | 889 | 179,635,115 | 178,159,360 | 1,475,755 | 691,884 | 419,501 |
+| Total | 1,238 | 243,423,560 | 240,864,128 | 2,559,432 | 878,166 | 469,845 |
 
-### Later driving checkpoint
+Free local tokens do not make the observed workflow faster or demonstrate net premium savings. The direct baseline is faster than these matched local worker paths. Several reviewed local paths used fewer paid output tokens but more uncached input than direct implementation before shared management costs. The total exploration includes failures and engineering work, and there is no measured up-front routing rule that chooses the best observed variant each time.
 
-A second MM OFF run, with the original brief and broader warning plugin, completed in1602.881971s/12684 generated and passed source review plus main adoption. Crucially, no advisory delivery was observed despite plugin loading. It is a successful repeat, not evidence for warning effectiveness, and trajectory variability qualifies any generic-prompt causal inference. CPU MM ON is now accepted after one test-completion CI reminder; original interruption remains separate. W66 low+generic ended without edits. Native zero-budget forcing failed qualification, so no4096 thinking-budget quality treatment was launched. Main-only results are reused, and C22 remains the only serving kernel throughout.
+## Corrections and evidence
+
+The first GPU qualification exposed stochastic device-selection incompatibility before task dispatch. The final GPU epoch used the supported host selector with native speculation controls. CPU used explicit singleton physical places 0–95 with all-thread affinity and live residency checks. PFX V7 fixed the blank spacer-column parser while preserving pinned row/order/value checks. A completion watcher startup race was fixed without rerunning tasks. An exact nine-record amendment corrects CPU file-custody labels and preserves raw records. The TU V5 control records the original-criteria false positive while preserving prior verdicts and paid usage.
+
+Evidence binds exact candidate, source, behavioral, independent review and owner receipts. `FINAL-CLEANUP-PROOF.json` confirms 49 terminal native attempts, absence of the four captured owner/holder/server PIDs and no remaining owned process locks. Archive verification decoded all 21,187 selected files across 50 shards totaling 254,759,507 stored bytes. Layout SHA-256 `11bcc1151a583761818416c62f01bb4850d5daf91f66a50e8ef04ccb68397afd`. See [archive and verification](../../artifacts/analysis/27b-q38fn-full-tools-repeat-20261127/README.md).
+
+The prepared TU V5 and generic-driving patches were applied after archive capture. The actual worktree passed all 43 targeted tests in 21.64 s: `tests/coordination/test_taskflow_tu_grader_isolation.py` and `tests/coordination/test_taskflow_opencode_derived.py`, with third-party pytest plugins disabled. The TU change adds the executable-launch refusal regression. Optional native reasoning-effort selection is restricted to the qualified thinking-on GPU27B template and preserves legacy defaults and exact-session resume identity. The verbatim generic instruction is retained as an explicit experimental recipe; passive warning presence is not promoted as a proven improvement.
+
+Next: codex-a3b-pilot reuses this evidence for the next authorized dispatch; this repeat is closed with no queued runs.

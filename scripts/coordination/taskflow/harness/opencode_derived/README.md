@@ -49,6 +49,24 @@ receipt's `path` and `sha256`. Bind that receipt to the active server
 actual model/template. Unqualified CPU thinking and a changed serving
 identity fail before the sandbox opens.
 
+## Optional driving controls
+
+For an approved 30-minute task, append the [driving instruction](DRIVING-INSTRUCTION-v1.md)
+to the original brief in a fresh private prompt file. Keep the original brief
+and case packet intact. Set the new absolute path in the job's `prompt`,
+set `prompt_sha256` to that file's SHA-256, and approve the new job digest.
+
+One seed on the Qwen3.8-27B MM-5 thinking-off arm with this guidance finished
+in 1472.812 native wall seconds using 7698 generated tokens. The original CI
+and a fresh independent source review accepted the result without corrective
+guidance. That single run supports keeping the instruction available as an opt-in.
+
+Thinking-on GPU `qwen38-27b-dflash2` jobs with the qualified native chat
+template can set `reasoning_effort` to `"xhigh"`, `"medium"`, or `"low"`.
+The setting applies to primary requests. Omit the field to keep native
+template defaults. A continuation must match the saved setting exactly.
+Older receipts have no effort field and can resume jobs that omit it.
+
 ## Same-task continuation
 
 A continuation job supplies a new approved `prompt` path and its exact `prompt_sha256`, plus `resume` containing `prior_run`, `receipt_sha256`, `session_sha256`, and `workspace_session_sha256` from the saved run. Keep the same case ID, original task and application revision, slot, context, mode, sampling, provider configuration, model manifest hash and output cap. The new attempt copies the prior writable workspace and session database, restages original read-only inputs, and addresses the existing OpenCode session ID. Its receipt meters newly forwarded requests. Pass the remaining cumulative allowance in `generated_ceiling`. The proxy clamps each forwarded request to that allowance, including when it is below `request_cap`. Keep the prior artifacts and charge unknown generations using their full reservation.
