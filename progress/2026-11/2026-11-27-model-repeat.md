@@ -35,3 +35,23 @@ W66 GPU thinking no-edit attempt observed110655 total-context tokens, eleven dir
 The predeclared registered-default sampler was also resolved: both task-role registries differ from common only in temperature1.0 versus0.6; seed223355 remains fixed. One GPU W66 thinking registered-sampler condition is separately queued. This is a targeted configuration check, not a silent change to common results or a bulk benchmark. Prepared same-session TU nonthinking CI-only correction waits for its original slot. [no-belief: incremental operational evidence, final quality audit pending]
 
 Next: codex-a3b-pilot completes and audits the initial matrix and the bounded queued supplements.
+
+## First independent accepted artifact
+
+Q38FN MM nonthinking completed unchanged by the controller and passed canonical original-scope behavioral checks, fresh gpt-6.1-sol low source ACCEPT and exact-patch main adoption. Native receipt8062 generated/0 unknown,2615.948577s; source review20.041445s,115145 input/85632 cached/29513 uncached/456 output including52 reasoning. No corrective guidance or CI feedback was exposed before completion. This establishes this one detailed-brief condition, not a general task capability.
+
+Its saved main-only comparator used140.117489s,142565 input/129536 cached/13029 uncached/2973 output including93 reasoning. Output reduction alone does not establish premium-token savings: the review used more uncached input in these differently cached executions, and the full manager/helper setup is separately metered. No overall benefit claim yet.
+
+Q38FN W66 nonthinking also delivered a normal one-file candidate and passed the two-test oracle; fresh exact-source review pending. CPU TU thinking and PAW thinking expired3600s with no edits. GPU first eight common conditions have one normal TU nonthinking CI rejection; the other seven are budget-limited no-edit outcomes. The W66 fresh coached GPU retry is admitted on a freed slot; GPU registered W66 thinking and CPU registered PAW thinking variants wait for unreserved slots, preserving current initial work. [no-belief: interim source observations; closing audit and register pending]
+
+Next: codex-a3b-pilot finishes all queued conditions, reviews artifacts, exports complete performance/accounting and verifies owned cleanup.
+
+## Second independent accepted artifact and monitoring correction
+
+Q38FN W66 detailed nonthinking passed both original tests, fresh exact-source ACCEPT and main adoption. Native3393.221564s/9551 generated/0 unknown; review28.481076s,121838 input/104064 cached/17774 uncached/813 output including14 reasoning. No corrective guidance was exposed. The original private-lock, recipe/floor/no-build/retained-source and serial paths remain tested.
+
+The passive watcher originally silently initialized from all pre-existing terminal files, which could hide a completion between the owner's snapshot and watcher startup. Replaced it with explicit owner acknowledgments plus per-content terminal events. A startup-race control proves a new pre-start record is emitted; native outputs were preserved and never rerun for this monitoring fix.
+
+One CPU PAW thinking fresh task plan completed24.899023s,65711 input/52224 cached/13487 uncached/892 output; eight source-specific planning bullets, no final document/patch/code, source unchanged. Its separately classified fresh retry is queued. One GPU MM nonthinking fresh uncoached3600s trial is also queued because CPU's accepted MM took longer than GPU's original1800s window. Only this new condition extends time; initial job bytes are unchanged, prior local cost retained, no capability-ceiling inference from censoring. [no-belief: interim owner decisions; complete closing audit pending]
+
+Next: codex-a3b-pilot completes remaining common conditions and bounded supplements, then publishes audited results and full cost/performance evidence.
