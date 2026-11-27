@@ -1,0 +1,12 @@
+calibration	Complete the sequence with the next number: 1, 1, 2, 3, 5, 8,
+calibration	Translate into French: The library opens before breakfast.
+calibration	What would a detective say on entering a locked greenhouse? Write one sentence.
+calibration	Return JSON with two keys named status and attempts, for a completed run with three attempts.
+heldout	The insurance adjuster had never seen hailstones shaped like
+heldout	Complete the sentence with one word: The opposite of transparent is
+heldout	Write the next line in Python: def count_nonempty(items):
+heldout	A train travels 45 kilometers in 30 minutes. Give its average speed in kilometers per hour.
+heldout	Which direction does a compass needle point if you walk due west? Explain briefly.
+heldout	Translate to English: Les enfants ont caché les clés sous la table.
+heldout	Continue the poem: The river keeps its own slow time,
+heldout	List three ways to reduce the amount of plastic used in a school cafeteria.

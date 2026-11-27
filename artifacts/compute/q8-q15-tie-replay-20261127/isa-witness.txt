@@ -1,0 +1,5 @@
+    62fa:	62 f2 7d 48 52 48 ff 	vpdpwssd -0x40(%rax),%zmm0,%zmm1
+    813d:	62 f2 75 48 52 87 04 	vpdpwssd 0x4(%rdi),%zmm1,%zmm0
+    e82a:	62 f2 75 48 52 84 24 	vpdpwssd 0xf0(%rsp),%zmm1,%zmm0
+    ea84:	62 f2 45 48 52 cf    	vpdpwssd %zmm7,%zmm7,%zmm1
+    ea8a:	62 f2 45 48 53 c7    	vpdpwssds %zmm7,%zmm7,%zmm0

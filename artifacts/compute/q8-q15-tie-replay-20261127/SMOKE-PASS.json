@@ -1,0 +1,29 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/q15-head-replay-cpu-20261127-r2/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-27T15:43:49Z reason=partial-native-incomplete",
+ "engine_sha256": "b1d8feafc1fe3ea374a555c02342e069991efa8a2b8b82a144303b92eea8c922",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 70,
+ "first_unit_at": "2026-11-27T15:43:49Z",
+ "id": "q15-head-replay-cpu-20261127-r2",
+ "launcher_sha256": "514fcb6a748eea8ffdf9ba45654d281031c01a110ce7687b5afd7d5fe65ec36f",
+ "measured_busy_fraction": null,
+ "measured_claimed_cpus": 24,
+ "measured_threads": null,
+ "passed_at": "2026-11-27T15:43:49Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "116-119",
+ "residency_evidence": null,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/out/RESULT.json",
+ "smoke_identity": {
+  "job_sha256": "efcfc644c964fd634ef762242a825ddf259e58c3b5c2ea053167ab876a17547d",
+  "spec_sha256": "6ea74ae978e6879e7c4c129cf65a29d7102103319d3c3eb6fb7937f9a51106f6"
+ },
+ "smoke_measure": null,
+ "smoke_measure_sha256": null,
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": "WARN SMOKE-NO-MEASURE: no valid fresh smoke_measure.json from this smoke"
+}

@@ -1,0 +1,89 @@
+{
+ "book_s": 315,
+ "budget_gib": 1.0,
+ "busy_fraction": 1.0,
+ "busy_fraction_source": "declared_threads",
+ "decision_rule": "Timing and correctness diagnostic. Question: does signed Q15 remove FP32-reference held-out greedy mismatches and improve replay throughput? Compare final-head logits for fixed activations, Q8 weight bytes, and greedy selection at t1/t8/t24. Higher full-head evaluations per second is better. Measure eight paired, interleaved rounds and same-count Q8 A/A floor, independently time packing. Checkpoints after real model capture, each thread width and report validation. Stop on answer once these units and the signed-word scalar oracle are valid. Stop on futility on missing input or library mismatch, failed oracle, or absent replay coverage. NO_KEEP on any new held-out mismatch or throughput no higher than native Q8 and matched Q8 plus floor. Diagnostic only.",
+ "declared_shape": "quarter",
+ "declared_threads": 24,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b1d8feafc1fe3ea374a555c02342e069991efa8a2b8b82a144303b92eea8c922"
+ },
+ "estimate_basis": {
+  "provisional": true,
+  "reason": "72 natural and 16 stress decisions over three thread widths, eight interleaved timing blocks per width, plus complete output hashing. Smoke measures one native model decision and four head replays.",
+  "rebook_from": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/out-smoke/smoke_measure.json",
+  "units": 88
+ },
+ "estimate_s": 420,
+ "first_progress_s": 70,
+ "gib": 4,
+ "handoff_task": "cpu-decode-roofline-program.md:Q15-HEAD-REPLAY-CAPTURE",
+ "id": "q15-head-replay-cpu-20261127-r2",
+ "keep": [
+  "out/*",
+  "out-smoke/SMOKE.json",
+  "out-smoke/replay.log",
+  "SOURCE.sha256",
+  "build-grant.txt",
+  "isa-witness.txt",
+  "spec.json",
+  "replay.cpp",
+  "prompts.txt",
+  "analyze.py",
+  "job.sh",
+  "launch.sh",
+  "out/RESULT.json"
+ ],
+ "kind": "compute",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/launch.sh",
+  "sha256": "514fcb6a748eea8ffdf9ba45654d281031c01a110ce7687b5afd7d5fe65ec36f"
+ },
+ "min_window_s": 300,
+ "notes": "A controlled head-local diagnostic. One full physical quarter is necessary for the main 24-thread timing coverage; the smoke runs a single real model decision and one row through each arm.",
+ "owner": "inference",
+ "ports": [
+  27929
+ ],
+ "priority_rank": 43.0,
+ "publish_warnings": [
+  "cpu-decode-roofline-program.md:2039: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "cpu-decode-roofline-program.md:2039: publish_row: box-index stale (older than its sources (regenerate=False or concurrent edit)); using last copy",
+  "cpu-decode-roofline-program.md:2039: box not found in .box-index.json (cpu-decode-roofline-program.md sha 121aa382662c2b96)",
+  "WARN preflight/store STORE-NO-IDENTITY: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82 has no BUILD-IDENTITY.json; the commit is unproven"
+ ],
+ "published_at": "2026-11-27T15:43:43Z",
+ "published_from": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-27T15:43:43Z",
+  "session": "01a21da2-fa3e-76c2-a3d8-4ad7cf714dda",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-of q0,q1,q2",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/out/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_gb": 2.0,
+ "scratch_root": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127",
+ "shape": "quarter",
+ "smoke_identity": {
+  "job_sha256": "efcfc644c964fd634ef762242a825ddf259e58c3b5c2ea053167ab876a17547d",
+  "spec_sha256": "6ea74ae978e6879e7c4c129cf65a29d7102103319d3c3eb6fb7937f9a51106f6"
+ },
+ "smoke_predicate": "/usr/bin/grep -q '\"ok\":true' /mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/out-smoke/SMOKE.json && [ \"$(stat -c %Y /mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/out-smoke/SMOKE.json)\" -ge \"${FILLER_SMOKE_T0:?}\" ]",
+ "spec_sha256_norank": "319a641e863ba50481eca53dc2e1e13441192c31342df1d332389d1414879c49",
+ "stop_file": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127/STOP",
+ "supersedes": [
+  "q15-head-replay-cpu-20261127"
+ ],
+ "verdict_by": "agent",
+ "window_s": 840,
+ "workdir": "/mnt/raid0/llm/tmp/q8-q15-tie-replay-20261127"
+}

@@ -1,0 +1,4 @@
+bin/libggml-base.so.0.16.0: OK
+bin/libggml-cpu.so.0.16.0: OK
+bin/libggml.so.0.16.0: OK
+bin/libllama.so.0.0.10303: OK

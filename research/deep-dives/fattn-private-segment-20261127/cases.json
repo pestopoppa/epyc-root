@@ -1,0 +1,171 @@
+{
+  "trace_root": "/mnt/raid0/llm/tmp",
+  "builds": [
+    {
+      "label": "Production v10",
+      "store": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82",
+      "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "cases": [
+        {
+          "case": "v10 llama-bench decode 16",
+          "trace": "c6-admission-live-proof-r15/out/trace/proof_kernel_trace.csv"
+        },
+        {
+          "case": "v10 llama-bench decode 128",
+          "trace": "ak-c14-c6-dispatch-reprofile-20261119-r2/out/trace-v10/v10_kernel_trace.csv"
+        },
+        {
+          "case": "A3B v10 prefill256",
+          "panel": "prefill256",
+          "trace": "codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv",
+          "main_only": true
+        },
+        {
+          "case": "A3B v10 prefill1024",
+          "panel": "prefill1024",
+          "trace": "codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv",
+          "main_only": true
+        },
+        {
+          "case": "A3B v10 decode_np1",
+          "panel": "decode_np1",
+          "trace": "codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv",
+          "main_only": true
+        },
+        {
+          "case": "A3B v10 decode_np4",
+          "panel": "decode_np4",
+          "trace": "codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv",
+          "main_only": true
+        },
+        {
+          "case": "A3B v10 later_np1",
+          "panel": "later_np1",
+          "trace": "codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv",
+          "main_only": true
+        },
+        {
+          "case": "A3B v10 later_np4",
+          "panel": "later_np4",
+          "trace": "codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv",
+          "main_only": true
+        }
+      ],
+      "translation_units": {
+        "flash_attn_ext_vec": "template-instances/fattn-vec-instance-f16-f16.cu.o",
+        "flash_attn_combine_results": "template-instances/fattn-vec-instance-f16-f16.cu.o"
+      },
+      "negative_controls": [
+        "flash_attn_ext_f16ILi512ELi512ELi2ELi8ELb0ELb0"
+      ]
+    },
+    {
+      "label": "C22 RF1/2/4",
+      "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-2f7f5b0df-c22vattnrf2",
+      "commit": "2f7f5b0df12dba352238e483baef08ed74ae0e69",
+      "cases": [
+        {
+          "case": "Limiter OFF, q=1 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq1-T-OFF/u-kv32768-nq1-T-OFF_kernel_trace.csv"
+        },
+        {
+          "case": "Limiter RF1, q=1 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq1-T-RF1/u-kv32768-nq1-T-RF1_kernel_trace.csv"
+        },
+        {
+          "case": "Limiter RF2, q=1 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq1-T-RF2/u-kv32768-nq1-T-RF2_kernel_trace.csv"
+        },
+        {
+          "case": "Limiter RF4, q=1 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq1-T-RF4/u-kv32768-nq1-T-RF4_kernel_trace.csv"
+        },
+        {
+          "case": "Limiter OFF, q=8 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq8-T-OFF/u-kv32768-nq8-T-OFF_kernel_trace.csv"
+        },
+        {
+          "case": "Limiter RF1, q=8 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq8-T-RF1/u-kv32768-nq8-T-RF1_kernel_trace.csv"
+        },
+        {
+          "case": "Limiter RF2, q=8 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq8-T-RF2/u-kv32768-nq8-T-RF2_kernel_trace.csv"
+        },
+        {
+          "case": "Limiter RF4, q=8 KV=32768 tail=0",
+          "trace": "ak-vattn-limiter-counters-gpu-20261124/out/prof/u-kv32768-nq8-T-RF4/u-kv32768-nq8-T-RF4_kernel_trace.csv"
+        }
+      ]
+    },
+    {
+      "label": "C22 RF6",
+      "store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-1f752b468-c22vattnrf6",
+      "commit": "1f752b46891a403bd85f7d334e6bc73731938dfc",
+      "cases": [
+        {
+          "case": "RF6 row OFF, q=1 KV=32768 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv32768-nq1-OFF/op-r1-kv32768-nq1-OFF_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF1, q=1 KV=32768 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv32768-nq1-RF1/op-r1-kv32768-nq1-RF1_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF6, q=1 KV=32768 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv32768-nq1-RF6/op-r1-kv32768-nq1-RF6_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row OFF, q=8 KV=32768 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv32768-nq8-OFF/op-r1-kv32768-nq8-OFF_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF1, q=8 KV=32768 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv32768-nq8-RF1/op-r1-kv32768-nq8-RF1_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF6, q=8 KV=32768 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv32768-nq8-RF6/op-r1-kv32768-nq8-RF6_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row OFF, q=1 KV=65536 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv65536-nq1-OFF/op-r1-kv65536-nq1-OFF_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF1, q=1 KV=65536 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv65536-nq1-RF1/op-r1-kv65536-nq1-RF1_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF6, q=1 KV=65536 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv65536-nq1-RF6/op-r1-kv65536-nq1-RF6_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row OFF, q=8 KV=65536 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv65536-nq8-OFF/op-r1-kv65536-nq8-OFF_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF1, q=8 KV=65536 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv65536-nq8-RF1/op-r1-kv65536-nq8-RF1_kernel_trace.csv"
+        },
+        {
+          "case": "RF6 row RF6, q=8 KV=65536 tail=0",
+          "trace": "ak-c22-vattn-rf6-gate-gpu-20261124-r2/out/prof/op-r1-kv65536-nq8-RF6/op-r1-kv65536-nq8-RF6_kernel_trace.csv"
+        }
+      ]
+    },
+    {
+      "label": "C22 RF7",
+      "store": "/mnt/raid0/llm/kernels/builds/gpu-20261125-f5bfe3473-c22vattnrf7",
+      "commit": "f5bfe347325196451a959af651b45d8833041d0d",
+      "cases": [
+        {
+          "case": "RF7 smoke, q=1 KV=32768 tail=0",
+          "trace": "ak-c22-vattn-rf7-op-gpu-20261125/out-smoke/prof/smoke-op-kv32768-nq1-RF7/smoke-op-kv32768-nq1-RF7_kernel_trace.csv"
+        }
+      ],
+      "negative_controls": [
+        "flash_attn_ext_f16ILi512ELi512ELi2ELi8ELb0ELb0"
+      ]
+    }
+  ]
+}
