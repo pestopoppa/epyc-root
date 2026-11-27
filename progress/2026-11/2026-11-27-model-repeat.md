@@ -19,3 +19,19 @@ Next: codex-a3b-pilot launches CPU queue after capability proof and audits exact
 Q38FN native ON/OFF and full-tool controls passed; MTP postcheck reports617 proposals/461 accepted inON and186/134 inOFF. Main derived generic serving metadata from unchanged native PID/argv/library hashes, current four idle slots and split-context startup log; original LIVE/PASS preserved. Zero-model adapter gap and final MM isolated dependency mount fixed before acceptance. Both14-condition queues are now active at4 workers/model. Index-state check exits0 with pre-existing advisories; git diff check clean. Manual impact review confines canonical changes to worker identity/route/capability and shard placement; no production kernels changed. [no-belief: native and harness conformance, model task verdicts pending]
 
 Next: codex-a3b-pilot audits terminal candidates and records deterministic versus paid corrections separately.
+
+## First GPU outcomes and budget correction
+
+First GPU wave: TU nonthinking delivered a normal two-file candidate; independent canonical CI rejected its overly narrow namespace-refusal recognition (explicit uid_map EPERM was not accepted as a skip). Same-session zero-paid CI feedback is prepared. W66 thinking, MM thinking and PAW nonthinking reached1800s without edits; classify budget-limited no-candidate, not an intrinsic capability ceiling. Other initial conditions continue.
+
+Correction to first protocol prose: frozen MATRIX and actual CPU JOBs have3600s, while GPU1800s. CPU is continuing normally; an intermediate commentary incorrectly inferred cancellation from the GPU budget. Job bytes never changed. The documented windows now match the actual pinned profiles. [no-belief: incremental outcomes; final independent audit pending]
+
+Next: codex-a3b-pilot audits further candidates and separately labels bounded fresh coaching after no-edit interruptions.
+
+## Bounded rescue variants prepared
+
+W66 GPU thinking no-edit attempt observed110655 total-context tokens, eleven direct read calls/331793 returned text characters,7694 known generated tokens plus one unmetered interrupted response. One fresh gpt-6.1-sol low read-only planning call completed24.519544s with97032 input/79488 cached/17544 uncached/768 output/0 reasoning. Main audited eight bounded bullets, no code/patch and original-source-only commands, and adopted it for one separately labelled fresh guided retry. Original failed local cost is retained; fresh generation allowance debits the prior charged25606 tokens. The retry waits for an unreserved physical slot; active initial runs are untouched.
+
+The predeclared registered-default sampler was also resolved: both task-role registries differ from common only in temperature1.0 versus0.6; seed223355 remains fixed. One GPU W66 thinking registered-sampler condition is separately queued. This is a targeted configuration check, not a silent change to common results or a bulk benchmark. Prepared same-session TU nonthinking CI-only correction waits for its original slot. [no-belief: incremental operational evidence, final quality audit pending]
+
+Next: codex-a3b-pilot completes and audits the initial matrix and the bounded queued supplements.
