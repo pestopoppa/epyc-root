@@ -1,0 +1,66 @@
+{
+  "server_pids": [
+    {
+      "launch": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/launch.json",
+      "pid": 1536938,
+      "exists": false
+    },
+    {
+      "launch": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/common-03/launch.json",
+      "pid": 1953115,
+      "exists": false
+    },
+    {
+      "launch": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/startup-01/launch.json",
+      "pid": 1536804,
+      "exists": false
+    },
+    {
+      "launch": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/checkpoint-04/launch.json",
+      "pid": 2527033,
+      "exists": false
+    },
+    {
+      "launch": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/qualified-02/launch.json",
+      "pid": 1664705,
+      "exists": false
+    }
+  ],
+  "worker_containers": [
+    {
+      "receipt": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/preserve-off/sandbox/CONTAINER.json",
+      "id": "2817ddc4b6b8cd49684e91691a153dc72aa4828e679785b308deebb8dc088800",
+      "exists": false,
+      "cpus": "0-71",
+      "mems": "0,1,2"
+    },
+    {
+      "receipt": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/common-03/preserve-off/sandbox/CONTAINER.json",
+      "id": "98f6225dd3dee59aae65ccdafbc5c651e33dd5d02dc123a87ca20daec6d17df8",
+      "exists": false,
+      "cpus": "0-71",
+      "mems": "0,1,2"
+    },
+    {
+      "receipt": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/checkpoint-04/preserve-off/sandbox/CONTAINER.json",
+      "id": "c2aded3e086599474db1e9d05fc6ee9e293f7fd567c6cd939cc98a6d5ce2feed",
+      "exists": false,
+      "cpus": "0-71",
+      "mems": "0,1,2"
+    },
+    {
+      "receipt": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/checkpoint-04/preserve-on/sandbox/CONTAINER.json",
+      "id": "9c1ff5e8fda1b39b5976bda92c45e5425cf27d4df21f7f4c3466b813c6a0f960",
+      "exists": false,
+      "cpus": "0-71",
+      "mems": "0,1,2"
+    },
+    {
+      "receipt": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/qualified-02/preserve-off/sandbox/CONTAINER.json",
+      "id": "ff47cb8adcd86c2bc65732cabe466157a8adfeae446846f81cedacba4796205a",
+      "exists": false,
+      "cpus": "0-71",
+      "mems": "0,1,2"
+    }
+  ]
+}

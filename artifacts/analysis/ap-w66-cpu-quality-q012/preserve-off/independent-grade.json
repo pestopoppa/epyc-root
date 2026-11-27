@@ -1,0 +1,36 @@
+{
+  "app_commit": "332ceb2e14d16f2031bd17b1f7c839ce8276a24b",
+  "app_sha256": "a94b7cb2613f4ceb13ef1928627e06f9749512e14b0127e5e8de793019ac297f",
+  "arm": "preserve-off",
+  "baseline_file_count": 2962,
+  "case_sha256": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+  "image": "sha256:9c429a17180a9b3ce2bce942d1bb05a7b7dfbf8218edbc267d190c35fe2b7635",
+  "isolated_environment": {
+    "cpuset": "0-71",
+    "git_grep_threads": 1,
+    "memory_nodes": [
+      0,
+      1,
+      2
+    ]
+  },
+  "model_calls": 0,
+  "observer_sha256": "2b251ee54206e8281640c776634e5b88cbf42409fcc5bc7b0781acd9f1055f4d",
+  "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+  "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "phase": "followup",
+  "reason": "empty patch",
+  "scope_pass": false,
+  "worker_terminal": {
+    "changed": [],
+    "generated_tokens": 1779,
+    "requests": 11,
+    "scope_ok": false,
+    "session": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+    "status": "timeout",
+    "test_rc": 1,
+    "unknown_requests": 1,
+    "wall_s": 602.1480543101206
+  },
+  "worker_terminal_sha256": "05fbf533715bd1eddfd31904589bfffcde0f150445f4119cb7da9b34cb19ff60"
+}

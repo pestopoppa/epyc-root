@@ -1,0 +1,48 @@
+{
+  "app_commit": "332ceb2e14d16f2031bd17b1f7c839ce8276a24b",
+  "app_sha256": "a94b7cb2613f4ceb13ef1928627e06f9749512e14b0127e5e8de793019ac297f",
+  "arm": "preserve-on",
+  "baseline_file_count": 2962,
+  "case_sha256": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+  "changed": [
+    "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+  ],
+  "image": "sha256:9c429a17180a9b3ce2bce942d1bb05a7b7dfbf8218edbc267d190c35fe2b7635",
+  "isolated_environment": {
+    "cpuset": "0-71",
+    "git_grep_threads": 1,
+    "memory_nodes": [
+      0,
+      1,
+      2
+    ]
+  },
+  "model_calls": 0,
+  "mutation": "substitution_not_observed",
+  "normal_pass": false,
+  "observer_sha256": "2b251ee54206e8281640c776634e5b88cbf42409fcc5bc7b0781acd9f1055f4d",
+  "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+  "original_nonreceipt_assertions_missing_verbatim": [],
+  "patch_sha256": "90013002004ca8a11728a3e9725036bfb2aff88d60a32a483f1263b46957bf7e",
+  "phase": "followup",
+  "scope_pass": true,
+  "source": {
+    "bytes": 5756,
+    "executable": false,
+    "sha256": "7dd69eccaf40965d09f463e91ff1ee37a23d4ed1a9494c94ca13c1cb56d26c48"
+  },
+  "worker_terminal": {
+    "changed": [
+      "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+    ],
+    "generated_tokens": 5536,
+    "requests": 28,
+    "scope_ok": true,
+    "session": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+    "status": "timeout",
+    "test_rc": 1,
+    "unknown_requests": 1,
+    "wall_s": 601.7125753050204
+  },
+  "worker_terminal_sha256": "5ff22b80bb4fe4f3e72de789240f8f9f5f7055abca00b91e61d69cd82153f7c4"
+}

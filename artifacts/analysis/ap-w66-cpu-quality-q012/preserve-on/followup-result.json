@@ -1,0 +1,13 @@
+{
+  "status": "timeout",
+  "test_rc": 1,
+  "wall_s": 601.7125753050204,
+  "session": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+  "generated_tokens": 5536,
+  "unknown_requests": 1,
+  "requests": 28,
+  "changed": [
+    "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+  ],
+  "scope_ok": true
+}

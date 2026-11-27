@@ -1,0 +1,265 @@
+{
+  "schema": "epyc.w66.cpu_quality.diagnostic.v1",
+  "question": "Effect of preserve_thinking on latency and repair quality for identical real W66 continuation inputs",
+  "scope": "A3B Q8 C22 CPU only, q0-q2, thinking off, common sampler; one saved inspection checkpoint, one identical followup per arm,600s each",
+  "initial": "common-03 spent900s inspecting with no edit; timeoutackadapter fault preserved checkpoint; reconstructed independently",
+  "checkpoint": {
+    "source": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/common-03",
+    "session_id": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+    "db_sha256": "837cfaf38205a94a011980babaed4fe101ff390cf0f03e203ec1a34fa49094de",
+    "original_initial_status": "interrupted at900s; timeoutackadapterfault; source remainsunchanged",
+    "last_request": "/mnt/raid0/llm/tmp/w66-cpu-quality-q012/common-03/preserve-off/wire/preserve-off-0059.json.gz",
+    "arms": "same savedwork and session checkpoint cloned independently; nativeprefix reconstructed max1 output discarded; identical followup600sec each"
+  },
+  "paired_inputs": {
+    "same_messages": true,
+    "same_tools": true,
+    "different_fields": [
+      "chat_template_kwargs"
+    ],
+    "off_template": {
+      "enable_thinking": false
+    },
+    "on_template": {
+      "enable_thinking": false,
+      "preserve_reasoning": true,
+      "preserve_thinking": true
+    }
+  },
+  "arms": {
+    "off": {
+      "terminal": {
+        "status": "timeout",
+        "test_rc": 1,
+        "wall_s": 602.1480543101206,
+        "session": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+        "generated_tokens": 1779,
+        "unknown_requests": 1,
+        "requests": 11,
+        "changed": [],
+        "scope_ok": false
+      },
+      "closed_wire_generated_tokens": 1788,
+      "native_generated_after_terminal_count": 9,
+      "request_count": 11,
+      "prefill_s_sum": 471.897476,
+      "decode_s_sum": 118.674152,
+      "first_followup": {
+        "task": "DS41-W-66",
+        "label": "preserve-off",
+        "seq": 1,
+        "slot": 0,
+        "backend": "cpu",
+        "t0": 1795798133.2903185,
+        "wall_s": 414.4006,
+        "http_status": 200,
+        "first_body_s": 0.1779,
+        "ttft_s": 410.0483,
+        "delivered_ttft_s": 410.0485,
+        "server_error": null,
+        "transport_error": null,
+        "generation_complete": true,
+        "finish_reason": "tool_calls",
+        "body_ref": "preserve-off-0001.json.gz",
+        "usage": {
+          "completion_tokens": 59,
+          "prompt_tokens": 81033,
+          "total_tokens": 81092,
+          "prompt_tokens_details": {
+            "cached_tokens": 5491
+          }
+        },
+        "prompt_n": 75542,
+        "cache_n": 5491,
+        "prompt_tok_s": 184.29557448267025,
+        "prompt_ms": 409895.898,
+        "predicted_n": 59,
+        "decode_tok_s": 13.567138826092965,
+        "predicted_ms": 4348.743,
+        "draft_n": 46,
+        "draft_accepted": 35,
+        "digest": {
+          "tools": 12,
+          "thinking": false,
+          "preserve_thinking": false,
+          "cap_agent": 8192,
+          "upstream_requested_cap": 8192
+        },
+        "reasoning_characters": 0,
+        "tool_calls": 1
+      },
+      "warm_wall_s": 355.7144010751508,
+      "noncache_untracked_files": [],
+      "within_allowed_source_scope": true,
+      "independent_grade": {
+        "app_commit": "332ceb2e14d16f2031bd17b1f7c839ce8276a24b",
+        "app_sha256": "a94b7cb2613f4ceb13ef1928627e06f9749512e14b0127e5e8de793019ac297f",
+        "arm": "preserve-off",
+        "baseline_file_count": 2962,
+        "case_sha256": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+        "image": "sha256:9c429a17180a9b3ce2bce942d1bb05a7b7dfbf8218edbc267d190c35fe2b7635",
+        "isolated_environment": {
+          "cpuset": "0-71",
+          "git_grep_threads": 1,
+          "memory_nodes": [
+            0,
+            1,
+            2
+          ]
+        },
+        "model_calls": 0,
+        "observer_sha256": "2b251ee54206e8281640c776634e5b88cbf42409fcc5bc7b0781acd9f1055f4d",
+        "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+        "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "phase": "followup",
+        "reason": "empty patch",
+        "scope_pass": false,
+        "worker_terminal": {
+          "changed": [],
+          "generated_tokens": 1779,
+          "requests": 11,
+          "scope_ok": false,
+          "session": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+          "status": "timeout",
+          "test_rc": 1,
+          "unknown_requests": 1,
+          "wall_s": 602.1480543101206
+        },
+        "worker_terminal_sha256": "05fbf533715bd1eddfd31904589bfffcde0f150445f4119cb7da9b34cb19ff60"
+      },
+      "native_decode_tps_closed_counters": 15.066465358016629,
+      "delivered_generated_tokens_per_worker_wall_s": 2.9693693888100436
+    },
+    "on": {
+      "terminal": {
+        "status": "timeout",
+        "test_rc": 1,
+        "wall_s": 601.7125753050204,
+        "session": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+        "generated_tokens": 5536,
+        "unknown_requests": 1,
+        "requests": 28,
+        "changed": [
+          "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+        ],
+        "scope_ok": true
+      },
+      "closed_wire_generated_tokens": 5622,
+      "native_generated_after_terminal_count": 86,
+      "request_count": 28,
+      "prefill_s_sum": 189.997399,
+      "decode_s_sum": 396.2354,
+      "first_followup": {
+        "task": "DS41-W-66",
+        "label": "preserve-on",
+        "seq": 1,
+        "slot": 0,
+        "backend": "cpu",
+        "t0": 1795799092.110068,
+        "wall_s": 12.1598,
+        "http_status": 200,
+        "first_body_s": 0.1911,
+        "ttft_s": 6.2206,
+        "delivered_ttft_s": 6.2208,
+        "server_error": null,
+        "transport_error": null,
+        "generation_complete": true,
+        "finish_reason": "tool_calls",
+        "body_ref": "preserve-on-0001.json.gz",
+        "usage": {
+          "completion_tokens": 94,
+          "prompt_tokens": 81261,
+          "total_tokens": 81355,
+          "prompt_tokens_details": {
+            "cached_tokens": 81165
+          }
+        },
+        "prompt_n": 96,
+        "cache_n": 81165,
+        "prompt_tok_s": 15.824378410998339,
+        "prompt_ms": 6066.589,
+        "predicted_n": 94,
+        "decode_tok_s": 15.830000612991514,
+        "predicted_ms": 5938.092,
+        "draft_n": 64,
+        "draft_accepted": 62,
+        "digest": {
+          "tools": 12,
+          "thinking": false,
+          "preserve_thinking": true,
+          "cap_agent": 8192,
+          "upstream_requested_cap": 8192
+        },
+        "reasoning_characters": 0,
+        "tool_calls": 1
+      },
+      "warm_wall_s": 354.36999104195274,
+      "noncache_untracked_files": [],
+      "within_allowed_source_scope": true,
+      "independent_grade": {
+        "app_commit": "332ceb2e14d16f2031bd17b1f7c839ce8276a24b",
+        "app_sha256": "a94b7cb2613f4ceb13ef1928627e06f9749512e14b0127e5e8de793019ac297f",
+        "arm": "preserve-on",
+        "baseline_file_count": 2962,
+        "case_sha256": "2b155290349cae145c253bc57411d6b699ef1d1fc42abd3e9abce5889253f61f",
+        "changed": [
+          "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+        ],
+        "image": "sha256:9c429a17180a9b3ce2bce942d1bb05a7b7dfbf8218edbc267d190c35fe2b7635",
+        "isolated_environment": {
+          "cpuset": "0-71",
+          "git_grep_threads": 1,
+          "memory_nodes": [
+            0,
+            1,
+            2
+          ]
+        },
+        "model_calls": 0,
+        "mutation": "substitution_not_observed",
+        "normal_pass": false,
+        "observer_sha256": "2b251ee54206e8281640c776634e5b88cbf42409fcc5bc7b0781acd9f1055f4d",
+        "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+        "original_nonreceipt_assertions_missing_verbatim": [],
+        "patch_sha256": "90013002004ca8a11728a3e9725036bfb2aff88d60a32a483f1263b46957bf7e",
+        "phase": "followup",
+        "scope_pass": true,
+        "source": {
+          "bytes": 5756,
+          "executable": false,
+          "sha256": "7dd69eccaf40965d09f463e91ff1ee37a23d4ed1a9494c94ca13c1cb56d26c48"
+        },
+        "worker_terminal": {
+          "changed": [
+            "scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py"
+          ],
+          "generated_tokens": 5536,
+          "requests": 28,
+          "scope_ok": true,
+          "session": "ses_de22ca44cffeK9Ld5S0xKkfypM",
+          "status": "timeout",
+          "test_rc": 1,
+          "unknown_requests": 1,
+          "wall_s": 601.7125753050204
+        },
+        "worker_terminal_sha256": "5ff22b80bb4fe4f3e72de789240f8f9f5f7055abca00b91e61d69cd82153f7c4"
+      },
+      "native_decode_tps_closed_counters": 14.188535400925812,
+      "delivered_generated_tokens_per_worker_wall_s": 9.343331402289694
+    }
+  },
+  "cleanup": {
+    "pid": 2527033,
+    "returncode": 0,
+    "exists": false,
+    "ended": 1795799696.746876
+  },
+  "resource_samples": 751,
+  "all_sampled_threads_on_q012": true,
+  "kfd_residency_observed": false,
+  "first_ttft_ratio_off_over_on": 65.91571823559671,
+  "accepted_repairs": {
+    "off": false,
+    "on": false
+  }
+}
