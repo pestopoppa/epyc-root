@@ -1,0 +1,552 @@
+{
+  "benchmarks": {
+    "S1-r2": {
+      "aa": {
+        "arms": [
+          "INCUMBENT",
+          "INCUMBENT2"
+        ],
+        "max": 0.02,
+        "ratio": 1.0013168493622349
+      },
+      "filing": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/filing-done/ak-c22-prodcfg-27b-gpu-20261126-r2.verdict.json",
+        "sha256": "2aa794e2a76626596b6f591901f0c3abe912839d01c9b314edac9ed68376313a"
+      },
+      "load": {
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261126-ce6fcbbde-c22-composite/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "27896",
+          "-np",
+          "4",
+          "-c",
+          "393216",
+          "-t",
+          "8",
+          "-b",
+          "512",
+          "-ub",
+          "512",
+          "--flash-attn",
+          "on",
+          "--jinja",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--kv-unified",
+          "--no-mmap",
+          "-ngl",
+          "all",
+          "--cache-ram",
+          "65536",
+          "--ctx-checkpoints",
+          "32",
+          "--chat-template-file",
+          "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "--no-cache-idle-slots",
+          "-md",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+          "-ngld",
+          "99",
+          "--spec-type",
+          "draft-dflash",
+          "--spec-draft-n-max",
+          "7",
+          "--device",
+          "ROCm0",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/ak-c22-prodcfg-27b-gpu-20261126-r2/out/kv_slots",
+          "--device-draft",
+          "ROCm0",
+          "-lv",
+          "4"
+        ],
+        "generation_sizes": [
+          256
+        ],
+        "paired_draft_accepted": 1121,
+        "paired_draft_proposed": 2836,
+        "prompt_sizes": [
+          7939,
+          8485,
+          8640
+        ],
+        "requests": 6,
+        "sum_tokens_per_summed_decode_second": 10.520448793578494,
+        "units": 2
+      },
+      "native_verdict": "KEEP_C21+C22",
+      "per_arm": {
+        "C21": {
+          "block_log_ratios": [
+            0.3819981534127593,
+            0.4248263007605735,
+            0.4314975610057217,
+            0.38699359070071926,
+            0.400126740857244,
+            0.4527839982962444,
+            0.4100369891517372,
+            0.4019721415197749
+          ],
+          "ci95": [
+            1.4789833587882775,
+            1.5391093991915972
+          ],
+          "mean_metric": 69.3829125137053,
+          "metric": "tok_s",
+          "n": 8,
+          "speedup": 1.50874689353748
+        },
+        "C22": {
+          "block_log_ratios": [
+            0.33986107518074776,
+            0.4445264351185723,
+            0.43449610216731904,
+            0.4471355428192744,
+            0.44474720032503223,
+            0.37217929534128946,
+            0.3978804643045393,
+            0.2903883587374859
+          ],
+          "ci95": [
+            1.4158719727822633,
+            1.5605807724589362
+          ],
+          "mean_metric": 68.43454878457766,
+          "metric": "tok_s",
+          "n": 8,
+          "speedup": 1.4864664735497746
+        },
+        "INCUMBENT": {
+          "mean_metric": 45.94313056658322,
+          "metric": "tok_s",
+          "n": 8
+        },
+        "INCUMBENT2": {
+          "mean_metric": 46.00306297978632,
+          "metric": "tok_s",
+          "n": 8
+        }
+      },
+      "reason": "8 blocks; KEEP iff CI lower > 1.0: C21 (1.50874689353748, 1.4789833587882775, 1.5391093991915972), C22 (1.4864664735497746, 1.4158719727822633, 1.5605807724589362)",
+      "receipt": {
+        "path": "/mnt/raid0/llm/tmp/ak-c22-prodcfg-27b-gpu-20261126-r2/out/RESULT.json",
+        "sha256": "0881f77eac239e786326b18639c7c7d317e0ff398c4408044be66de57d39b1f7"
+      },
+      "sampler_source": {
+        "path": "/mnt/raid0/llm/tmp/ak-c22-prodcfg-27b-gpu-20261126-r2/ak_gate.py",
+        "sha256": "174874d2e211a609671359c0442217d5d8cf16ed68771f1d7b79c149412e8b30"
+      },
+      "visit": {
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261126-ce6fcbbde-c22-composite/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "27896",
+          "-np",
+          "4",
+          "-c",
+          "393216",
+          "-t",
+          "8",
+          "-b",
+          "512",
+          "-ub",
+          "512",
+          "--flash-attn",
+          "on",
+          "--jinja",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--kv-unified",
+          "--no-mmap",
+          "-ngl",
+          "all",
+          "--cache-ram",
+          "65536",
+          "--ctx-checkpoints",
+          "32",
+          "--chat-template-file",
+          "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "--no-cache-idle-slots",
+          "-md",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+          "-ngld",
+          "99",
+          "--spec-type",
+          "draft-dflash",
+          "--spec-draft-n-max",
+          "7",
+          "--device",
+          "ROCm0",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/ak-c22-prodcfg-27b-gpu-20261126-r2/out/kv_slots",
+          "--device-draft",
+          "ROCm0",
+          "-lv",
+          "4"
+        ],
+        "generation_sizes": [
+          256
+        ],
+        "paired_draft_accepted": 5074,
+        "paired_draft_proposed": 12564,
+        "prompt_sizes": [
+          7939,
+          8485,
+          8640
+        ],
+        "requests": 27,
+        "sum_tokens_per_summed_decode_second": 68.75013185314458,
+        "units": 9
+      },
+      "visits_src": {
+        "path": "/mnt/raid0/llm/tmp/ak-c22-prodcfg-27b-gpu-20261126-r2/out/results.jsonl",
+        "sha256": "936ecf84a31b8436232853bb03098361d326efa4fe3b4ff45c9b3e96946a1428"
+      }
+    },
+    "S5-r2": {
+      "aa": {
+        "arms": [
+          "INCUMBENT",
+          "INCUMBENT2"
+        ],
+        "max": 0.02,
+        "ratio": 1.0283880311026485
+      },
+      "filing": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/filing-done/ak-c22-prodcfg-a3b-gpu-20261126-r2.verdict.json",
+        "sha256": "d2fc83edc503c0adadbbdf43aa395212bcfdc04695c45538a34b841d4d805086"
+      },
+      "load": {
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261126-ce6fcbbde-c22-composite/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "27546",
+          "--metrics",
+          "--jinja",
+          "--device",
+          "ROCm0",
+          "-ngl",
+          "all",
+          "-fa",
+          "on",
+          "-t",
+          "8",
+          "-tb",
+          "8",
+          "-b",
+          "2048",
+          "-ub",
+          "2048",
+          "-ctk",
+          "f16",
+          "-ctv",
+          "f16",
+          "--reasoning",
+          "off",
+          "-np",
+          "4",
+          "-c",
+          "16384",
+          "--spec-type",
+          "draft-mtp",
+          "--spec-draft-n-max",
+          "2",
+          "-lv",
+          "4"
+        ],
+        "generation_sizes": [
+          256
+        ],
+        "paired_draft_accepted": 1143,
+        "paired_draft_proposed": 1783,
+        "prompt_sizes": [
+          907,
+          927,
+          1021,
+          1458
+        ],
+        "requests": 8,
+        "sum_tokens_per_summed_decode_second": 57.15105506624151,
+        "units": 2
+      },
+      "native_verdict": "FUTILITY_HARNESS_AA",
+      "per_arm": {
+        "C21": {
+          "block_log_ratios": [
+            -0.062217379654138275,
+            -0.023782982352261124,
+            -0.032304736786408404,
+            -0.053342491307184464
+          ],
+          "ci95": [
+            0.9311159401935075,
+            0.9856516149006215
+          ],
+          "mean_metric": 130.29685135358744,
+          "metric": "tok_s",
+          "n": 4,
+          "speedup": 0.9579957881491135
+        },
+        "C22": {
+          "block_log_ratios": [
+            -0.03887592455794045,
+            -0.05814536248271924,
+            -0.0379750766748199,
+            -0.00265628272484965
+          ],
+          "ci95": [
+            0.9312706787668987,
+            1.002381812947921
+          ],
+          "mean_metric": 131.3868984314738,
+          "metric": "tok_s",
+          "n": 4,
+          "speedup": 0.9661722368851243
+        },
+        "INCUMBENT": {
+          "mean_metric": 134.0631243844541,
+          "metric": "tok_s",
+          "n": 4
+        },
+        "INCUMBENT2": {
+          "mean_metric": 137.91167438075996,
+          "metric": "tok_s",
+          "n": 4
+        }
+      },
+      "reason": "A/A INCUMBENT2/INCUMBENT = 1.0284, |aa-1| > 0.02: the instrument is noisier than the effect; knob not judged",
+      "receipt": {
+        "path": "/mnt/raid0/llm/tmp/ak-c22-prodcfg-a3b-gpu-20261126-r2/out/RESULT.json",
+        "sha256": "b0930eefa7269e8ec75e4c4ffd65ffc2c8435eac47d425176ee10838d564afbb"
+      },
+      "sampler_source": {
+        "path": "/mnt/raid0/llm/tmp/ak-c22-prodcfg-a3b-gpu-20261126-r2/ak_gate.py",
+        "sha256": "6cfa5d23756f8ff1fed4016858cd00cbe38a3eeb51a4bc7207bfb85eb3cc4eee"
+      },
+      "visit": {
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261126-ce6fcbbde-c22-composite/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "27546",
+          "--metrics",
+          "--jinja",
+          "--device",
+          "ROCm0",
+          "-ngl",
+          "all",
+          "-fa",
+          "on",
+          "-t",
+          "8",
+          "-tb",
+          "8",
+          "-b",
+          "2048",
+          "-ub",
+          "2048",
+          "-ctk",
+          "f16",
+          "-ctv",
+          "f16",
+          "--reasoning",
+          "off",
+          "-np",
+          "4",
+          "-c",
+          "16384",
+          "--spec-type",
+          "draft-mtp",
+          "--spec-draft-n-max",
+          "2",
+          "-lv",
+          "4"
+        ],
+        "generation_sizes": [
+          256
+        ],
+        "paired_draft_accepted": 3035,
+        "paired_draft_proposed": 4114,
+        "prompt_sizes": [
+          907,
+          927,
+          1021,
+          1458
+        ],
+        "requests": 20,
+        "sum_tokens_per_summed_decode_second": 130.35802347396648,
+        "units": 5
+      },
+      "visits_src": {
+        "path": "/mnt/raid0/llm/tmp/ak-c22-prodcfg-a3b-gpu-20261126-r2/out/results.jsonl",
+        "sha256": "89b854d373506d04d95fa2650bc8ac55fc343d890361f84150f15063bef18c0c"
+      }
+    }
+  },
+  "by_mode": {
+    "OFF": {
+      "after_task_terminal_receipts": 0,
+      "cache_n": 4827393,
+      "decode_median_token_rate": 48.68081547029661,
+      "decode_weighted_token_rate": 26.38198754030573,
+      "draft_accepted": 8952,
+      "draft_n": 10242,
+      "estimated_native_phase_union_s": 943.4192760000003,
+      "finish_reasons": {
+        "stop": 3,
+        "tool_calls": 67
+      },
+      "first_request_cached_tokens": 0,
+      "matched_controls_receipts": 39,
+      "native_seconds": {
+        "decode": 534.8725139999999,
+        "prompt": 408.546762
+      },
+      "native_union_seconds": {
+        "decode": 534.8725140000004,
+        "prompt": 408.54676199999994
+      },
+      "noncomplete_receipts": 0,
+      "predicted_n": 14111,
+      "prompt_n": 226495,
+      "receipts": 70,
+      "request_wall_union_s": 1095.3376009464264,
+      "slot_erase": {
+        "id_slot": 2,
+        "n_erased": 48870
+      },
+      "source_slot_erase": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/SLOT-ERASE.json",
+        "sha256": "00b7cb295c6c922413b6ab7aaa8e5ec4af672f274208f373aa2005d810bfe1b0"
+      },
+      "source_worker_result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/RESULT.json",
+        "sha256": "a2d386c92ef7994622c4fd408d487fd886c456d121d8a0b21e4728218da1394c"
+      },
+      "tools": {
+        "overlap_request_union_s": 0.05299997329711914,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-off-common-light-v2/OPEN-CODE-SESSION.json",
+          "sha256": "af455e95ab5e6306b5a03798ad4ee36866304d6932edc06efee7281215f74830"
+        },
+        "sum_seconds": 28.17300033569336,
+        "timed_calls": 73,
+        "union_seconds": 28.046000242233276,
+        "unknown_intervals": 0
+      },
+      "transport_or_server_errors": 0,
+      "unknown": {
+        "client_ttft_s": 0,
+        "draft_accepted": 0,
+        "draft_n": 0,
+        "predicted_ms": 0,
+        "predicted_n": 0,
+        "prompt_ms": 0,
+        "reasoning_tokens": 70
+      },
+      "worker_minus_native_sum_s": 189.87572400000022,
+      "worker_seconds": 1133.295,
+      "worker_token_rate": 12.451303499971322
+    },
+    "ON": {
+      "after_task_terminal_receipts": 0,
+      "cache_n": 5133330,
+      "decode_median_token_rate": 43.49559273751446,
+      "decode_weighted_token_rate": 22.383563354948866,
+      "draft_accepted": 14413,
+      "draft_n": 18302,
+      "estimated_native_phase_union_s": 1354.1369919999997,
+      "finish_reasons": {
+        "stop": 2,
+        "tool_calls": 68
+      },
+      "first_request_cached_tokens": 0,
+      "matched_controls_receipts": 37,
+      "native_seconds": {
+        "decode": 1054.300409,
+        "prompt": 299.83658299999996
+      },
+      "native_union_seconds": {
+        "decode": 1054.3004089999997,
+        "prompt": 299.836583
+      },
+      "noncomplete_receipts": 0,
+      "predicted_n": 23599,
+      "prompt_n": 93346,
+      "receipts": 70,
+      "request_wall_union_s": 1489.505699634552,
+      "slot_erase": {
+        "id_slot": 1,
+        "n_erased": 98145
+      },
+      "source_slot_erase": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-on-common-light-v2/SLOT-ERASE.json",
+        "sha256": "79723391d7361898932ecf32e3c8d44e5f3c8faecdf190042d7aa4e0736d5783"
+      },
+      "source_worker_result": {
+        "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-on-common-light-v2/RESULT.json",
+        "sha256": "ee87f1daec76cd43c021ac0dfaa5ed60ef57fd2d28816c9517def37a06799c64"
+      },
+      "tools": {
+        "overlap_request_union_s": 0.018000125885009766,
+        "source": {
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/persistent-w66-light-12/runs/light-01/units/gpu-DS41-W-66-on-common-light-v2/OPEN-CODE-SESSION.json",
+          "sha256": "87fabe1636ca38e06be64497a39cc95eefec5a5e2f489b7160cb4e8d9e80b3f8"
+        },
+        "sum_seconds": 12.591999292373657,
+        "timed_calls": 80,
+        "union_seconds": 12.420999526977539,
+        "unknown_intervals": 0
+      },
+      "transport_or_server_errors": 0,
+      "unknown": {
+        "client_ttft_s": 0,
+        "draft_accepted": 0,
+        "draft_n": 0,
+        "predicted_ms": 0,
+        "predicted_n": 0,
+        "prompt_ms": 0,
+        "reasoning_tokens": 70
+      },
+      "worker_minus_native_sum_s": 156.90000800000007,
+      "worker_seconds": 1511.037,
+      "worker_token_rate": 15.617751252947478
+    }
+  },
+  "combined": {
+    "decode": {
+      "seconds": 1254.7984489999992,
+      "tokens": 37710,
+      "tokens_per_union_active_second": 30.052635170255954
+    },
+    "prompt": {
+      "seconds": 673.6920219999995,
+      "tokens": 319841,
+      "tokens_per_union_active_second": 474.7584794762498
+    }
+  },
+  "task_csv": {
+    "path": "artifacts/analysis/taskflow-harness-revalidation-20261126/final-20261127/performance/export/TASKS.csv",
+    "sha256": "dca30bdcf534657a0fbd9b19fadf2c76f366cb2156f87696fc058d199b226b72"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "epyc.w66.native_prefix_control.v1",
+  "source_sha": "ce6fcbbde1ee58f165283fbfe74910f47bb2efba",
+  "model_registry_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "historical_launch_proof_sha256": "3ab7735b923c50b424b7241a1d11629c017c9a8ac55b83cce18d834e14a36e80",
+  "probe_source_sha256": "a85f7e2cb53b5b94eb8dba1623ed965f3e56341104b1f43cdb100b1c1a0e4709",
+  "libraries_sha256": {
+    "libllama-server-impl.so": "06c92442c44573714b12ee73f08d3c194619d64e97118afd0e524fc2b93a971d",
+    "libllama-common.so": "454355fa1dee5dc22d90f1277673c098a016c5c9d8e4daec598481426bb52f76",
+    "libllama.so": "78f765bdda32dfbc6e481d8404229000c311916c863e91dea133d451919a2907"
+  },
+  "bodies": [
+    {
+      "seq": 55,
+      "body_ref": "gpu-DS41-W-66-off-common-light-v2-0055.json.gz",
+      "cache_n": 110721,
+      "prompt_n": 40,
+      "gzip_sha256": "b87fda4a0d2569bb402351f1980642b97dfb733098fe600f2678ab25ff1b1882"
+    },
+    {
+      "seq": 56,
+      "body_ref": "gpu-DS41-W-66-off-common-light-v2-0056.json.gz",
+      "cache_n": 4334,
+      "prompt_n": 107912,
+      "gzip_sha256": "524ca4ae734f5f2ea56d0c36a2141d31823110e6bc18fb5b34d2e765c6f664af"
+    }
+  ],
+  "result": {
+    "previous_messages": 114,
+    "current_messages": 117,
+    "common_leading_messages": 114,
+    "recorded": {
+      "previous_prompt_tokens": 110761,
+      "current_prompt_tokens": 112246,
+      "common_leading_tokens": 5962
+    },
+    "omit_appended_user_for_diagnosis": {
+      "previous_prompt_tokens": 110761,
+      "current_prompt_tokens": 111877,
+      "common_leading_tokens": 110761
+    },
+    "preserve_thinking_on_both_for_diagnosis": {
+      "previous_prompt_tokens": 110761,
+      "current_prompt_tokens": 112462,
+      "common_leading_tokens": 110761
+    }
+  }
+}

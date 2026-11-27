@@ -5236,7 +5236,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
 
 ### Backlog
 
-- [ ] **AP-W66-TRACE** [non-inference] Reconstruct the W66 timing breakdown and identify a comparable kernel benchmark using the [pinned replay brief](../../docs/reports/autopilot-w66-replay-plan.md).
+- [x] **AP-W66-TRACE** [non-inference] Reconstruct the W66 timing breakdown and identify a comparable kernel benchmark using the [pinned replay brief](../../docs/reports/autopilot-w66-replay-plan.md). ✅ 2026-11-27 [belief: cc] 140 receipts reconciled. OFF 56 prefill overlapped ON 28 decode. Offline C22 formatting explained the largest prefix break. [Trace report](../../docs/reports/autopilot-w66-trace.md).
       · done when: all 140 receipts reconcile with the published per-mode totals, four replay inputs have verified bytes and predecessor plans, and a benchmark comparison records matched and mismatched settings.
       · gate: none
 - [ ] **AP-W66-PAIR** [inference] Compare the four pinned requests alone and with concurrent slots under matched cache state.
@@ -5244,9 +5244,9 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
       · gate: AP-W66-TRACE
       · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: C22 ce6fcbbde · harness: pinned streaming request replay · metric: accepted work per hour (higher), request and phase latency (lower) · region: MI210 and recorded host affinity · est: ON 28 alone historically spent 165 s decoding, excluding warmup
       · stop rule: check after each pair, reverse order for noise, stop on stable attribution above repeat variation or after three matched pairs per target.
-- [ ] **AP-W66-LOOP** [non-inference] Project the phase evidence into the existing eval report and exercise the planner's shadow decision on a held-out trace.
+- [x] **AP-W66-LOOP** [non-inference] Project the phase evidence into the existing eval report and exercise the planner's shadow decision on a held-out trace. ✅ 2026-11-27 [belief: cc] Orchestrator main 03e002c9 records optional phase evidence. Held-out prefix, decode and unknown controls produced five advisory journal events. [Replay](../../artifacts/analysis/ap-w66-loop/README.md).
       · done when: the actual report and journal entry point distinguish prefill, decode and insufficient evidence with source receipts, pass legacy/missing-counter controls, and preserve quality-qualified goodput.
       · gate: AP-W66-TRACE
-- [ ] **AP-W66-RECOVERY** [non-inference] Replay successful late edits, inspection loops and partial artifacts through a proposed artifact-aware retry policy.
+- [x] **AP-W66-RECOVERY** [non-inference] Replay successful late edits, inspection loops and partial artifacts through a proposed artifact-aware retry policy. ✅ 2026-11-27 [belief: cc] 49 saved attempts replayed. The primary rule flagged one of seven accepted trajectories and caught two of five inspection-heavy expiry proxies. [Recovery report](../../docs/reports/autopilot-w66-recovery-replay.md).
       · done when: an offline report records false interventions on accepted traces, missed loops, actionable corrections, remaining budgets and a bounded fresh-task pilot plan with acceptance, paid-cost and wall-time endpoints.
       · gate: none

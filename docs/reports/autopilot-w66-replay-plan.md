@@ -2,6 +2,8 @@
 
 Owner: autopilot backlog agent (RTG-02). Start with AP-W66-TRACE in the [autopilot program](../../handoffs/active/autopilot-program.md#track-w66-serving-attribution-and-local-worker-recovery). Offline analysis and shadow planning can proceed under the existing loop-launch hold. The operator wants to know where weeks of kernel improvements show up during actual tool use. A matched comparison with an applicable benchmark is still needed before calling this a regression.
 
+The three offline tasks are complete. [Serving attribution and native prefix control](autopilot-w66-trace.md) · [Shadow planner evidence](../../artifacts/analysis/ap-w66-loop/README.md) · [Worker recovery replay](autopilot-w66-recovery-replay.md). AP-W66-PAIR is the remaining live comparison.
+
 ## Start from these receipts
 
 [Replay input manifest](../../artifacts/analysis/ap-w66-replay-inputs/requests.json) binds four previously recorded GPU requests by epoch, unit, slot, sequence, wire receipt hash and compressed/decoded body hashes. Look up each body beside its recorded requests.jsonl on the EPYC host. The [per-request CSV](https://github.com/pestopoppa/epyc-root/blob/06b010e1361768b7d1d65b83cb4428df28a0d1c3/artifacts/analysis/taskflow-harness-revalidation-20261126/final-20261127/performance/export/REQUESTS.csv) and [A3B report](https://github.com/pestopoppa/epyc-root/blob/06b010e1361768b7d1d65b83cb4428df28a0d1c3/docs/reports/a3b-full-tools-canary-20261127.md) are on the evidence branch. Verify the CSV digest and join before replay. Use the manifest's receipt rows and retained predecessor bodies to reconstruct slot history.
