@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 577
+      "open": 585
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 2,
       "handoffs": 4,
       "oldest_advance": "2026-11-20",
-      "open": 257
+      "open": 258
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,13 +28,13 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 491
+      "open": 494
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 110
+      "open": 111
     }
   },
   "duplicates": {},
@@ -105,7 +105,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-26",
       "needs_owner": 2,
-      "open": 136,
+      "open": 137,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -114,7 +114,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1161,
+      "total": 1162,
       "tracks": [
         {
           "blocked": 0,
@@ -129,14 +129,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 63
+          "open": 64
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5577,
+          "line": 5584,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -146,7 +146,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5662,
+          "line": 5669,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -161,7 +161,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5843,
+          "line": 5850,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 7
@@ -175,7 +175,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7728,
+          "line": 7735,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 29
@@ -187,7 +187,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 11074,
+          "line": 11081,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -211,7 +211,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11321,
+          "line": 11328,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -223,7 +223,7 @@
             "INF-06"
           ],
           "guarded": 0,
-          "line": 11941,
+          "line": 11948,
           "markers": 1,
           "name": "autokernel-roofline-surface-loop",
           "open": 8
@@ -780,7 +780,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-24",
       "needs_owner": 8,
-      "open": 41,
+      "open": 44,
       "owner_index": "inference-research-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -790,7 +790,7 @@
       },
       "row_id": "INF-70",
       "state": "active",
-      "total": 199,
+      "total": 202,
       "tracks": [
         {
           "blocked": 0,
@@ -802,14 +802,14 @@
           "line": 100,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
-          "open": 26
+          "open": 28
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 5164,
+          "line": 5170,
           "markers": 1,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0
@@ -819,7 +819,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 5317,
+          "line": 5323,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
           "open": 6
@@ -829,7 +829,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5832,
+          "line": 5838,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
           "open": 0
@@ -841,10 +841,10 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5946,
+          "line": 5952,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
-          "open": 9
+          "open": 10
         }
       ]
     },
@@ -960,7 +960,7 @@
       "closed": 240,
       "guarded": 1,
       "last_advanced": "2026-11-25",
-      "open": 47,
+      "open": 48,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -969,7 +969,7 @@
       },
       "row_id": "EVL-14",
       "state": "active",
-      "total": 288,
+      "total": 289,
       "tracks": [
         {
           "blocked": 0,
@@ -1069,7 +1069,7 @@
           "line": 3113,
           "markers": 1,
           "name": "scoring-infra-standardization",
-          "open": 12
+          "open": 13
         }
       ]
     },
@@ -1080,7 +1080,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-24",
       "needs_owner": 8,
-      "open": 103,
+      "open": 104,
       "owner_index": "user-facing-harness-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -1090,7 +1090,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 394,
+      "total": 395,
       "tracks": [
         {
           "blocked": 0,
@@ -1142,7 +1142,7 @@
           "line": 1723,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 10
+          "open": 11
         },
         {
           "blocked": 0,
@@ -1151,7 +1151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2474,
+          "line": 2477,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1168,7 +1168,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2563,
+          "line": 2566,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 16
@@ -1181,7 +1181,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 3042,
+          "line": 3045,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 28
@@ -1191,7 +1191,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 4009,
+          "line": 4012,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1521,7 +1521,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "needs_owner": 38,
-      "open": 37,
+      "open": 39,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1530,7 +1530,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 177,
+      "total": 179,
       "tracks": [
         {
           "blocked": 0,
@@ -1540,24 +1540,24 @@
           "line": 38,
           "markers": 1,
           "name": "memory-program",
-          "open": 11
+          "open": 12
         },
         {
           "blocked": 0,
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 961,
+          "line": 966,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 9
+          "open": 10
         },
         {
           "blocked": 1,
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 1445,
+          "line": 1455,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1928,
+          "line": 1938,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2026,7 +2026,7 @@
       "closed": 71,
       "guarded": 0,
       "last_advanced": "2026-11-26",
-      "open": 39,
+      "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2035,7 +2035,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 111,
+      "total": 112,
       "tracks": [
         {
           "blocked": 0,
@@ -2055,14 +2055,14 @@
           "line": 242,
           "markers": 1,
           "name": "iqk-iquant-enablement",
-          "open": 18
+          "open": 19
         },
         {
           "blocked": 1,
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 768,
+          "line": 771,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 4
@@ -2159,7 +2159,7 @@
       "closed": 326,
       "guarded": 0,
       "last_advanced": "2026-11-26",
-      "open": 11,
+      "open": 14,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2168,7 +2168,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 337,
+      "total": 340,
       "tracks": [
         {
           "blocked": 0,
@@ -2180,7 +2180,7 @@
           "line": 60,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 9
+          "open": 11
         },
         {
           "blocked": 0,
@@ -2190,10 +2190,10 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1316,
+          "line": 1322,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
-          "open": 0
+          "open": 1
         },
         {
           "blocked": 0,
@@ -2203,7 +2203,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2462,
+          "line": 2471,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 2
@@ -2213,7 +2213,7 @@
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2837,
+          "line": 2846,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2223,7 +2223,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3273,
+          "line": 3282,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2233,7 +2233,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3368,
+          "line": 3377,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2246,7 +2246,7 @@
       "frozen": 7,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 61,
+      "open": 62,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2255,7 +2255,7 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 253,
+      "total": 254,
       "tracks": [
         {
           "blocked": 0,
@@ -2360,14 +2360,14 @@
           "line": 3681,
           "markers": 1,
           "name": "routing-intelligence",
-          "open": 9
+          "open": 10
         },
         {
           "blocked": 0,
           "closed": 1,
           "gates": null,
           "guarded": 0,
-          "line": 4170,
+          "line": 4175,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
@@ -2410,7 +2410,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 1028,
+          "line": 1030,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 19
