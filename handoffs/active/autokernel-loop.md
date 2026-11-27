@@ -5340,6 +5340,9 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
       · done when: check_regrowth_guards.py shows >= 500 lines of headroom under the current ceiling with the loop test pass/fail sets unchanged
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/bloat-A.md` `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/bloat-B.md` `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/dead.py` `/mnt/raid0/llm/tmp/loop-bloat-review-20261126/deadA.py`
       · 2026-11-26 partial review (workspace-f2, stopped for host reboot): guard counts non-blank, non-comment, non-docstring lines of non-test .py under loop/ (deleting tests saves nothing). 0 proven lines yet. Unproven leads: run.py _recover_legacy_cor_build (~40), production.py LEGACY_COMMIT/LEGACY_BUILD v9 fallback (~8; v9 is the rollback anchor, check first), run.py deprecated q3 spelling of --cpu-measurement-gpu-quiet (~6). Bulk sits in run.py inner closures (commit_pooled 449, gate 359 lines): compare against serial_run/resume for duplication. Callers to grep beyond imports: /mnt/raid0/llm/tmp/*/job.py and launch.sh, .claude/skills/row-owner-loop/scripts, watch_rows, seeds/negatives.json and journal-key readers, BW census and bottleneck-signature readers. Partition C (smaller modules, whole-module dead check) not reported.
+- [ ] **VERIFY-F32-GEMV-CENSUS** [non-inference] Classify retained verify calls by input type, rows, K, verify columns and selected kernel. Bound F32 time that a weight-sharing GEMV could recover against served dispatch. Stop at zero eligible share or an immaterial upper bound.
+      · done when: Freeze verify traces from both dense and MoE, train/test split by request. Report all rows and F32-eligible rows by width, M and K. Preserve actual dispatch including width one and wide M; compare incumbent GEMV versus tiled GEMM for surviving bins. On CPU compare blocked GEMV to existing GEMM with NUMA-local weights; never import Adreno subgroups or the numeric threshold.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3010.md`
 
 
 ### Done
@@ -5573,6 +5576,10 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 - [x] **—** ✅ 2026-09-26 _(detail → completed ledger)_
 - [x] **AK-HR-1** ✅ 2026-10-20 _(detail → completed ledger)_
 - [x] **AK-HR-2.1** ✅ 2026-10-20
+
+**Research intake monitor (M9, 2026-11-27).** Golden greedy prompts exercise too few shapes for kernel promotion. Wall time, turns and cost are author-reported and provide planning context. Retain exact-token checks across thread counts as an additional witness when a generated CPU candidate reaches operator, numerical and served gates. Apply only at the existing AutoKernel candidate gate. Record full build/recipe and aggregate agent cost separately from runtime; exact greedy fixtures supplement backend, KLD and served-baseline checks. [Approved plan](../../research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md)
+
+**Research intake monitor (M10, 2026-11-27).** Existing GDN fusion and KDA exponential work measure recurrence or state movement; substituting a trained mixer changes the model. When a qualified checkpoint contains sliding-window q/k/v mixing, trace window KV/cache traffic separately from recurrence on both backends and compare matched quality/latency. Checkpoint-and-architecture trigger only. Keep causal window width and pre-mix keys explicit. Compare quality at equal training budget before any inference-cost conclusion. GPU wave/LDS tiling and CPU memory traffic belong to the resulting graph. [Approved plan](../../research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md)
 
 ## Track: agent-collab-rnd-harness
 <!-- gate: none -->

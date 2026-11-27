@@ -1025,6 +1025,8 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 
 **Research-intake monitor M6 (2026-11-26).** intake-2985#record, intake-3002#record. Retain request-local RNG and filtered-score semantics for a consumer that requires reproducible stochastic sampling across slots. Trigger on a recorded fixed-logit replay difference at equal seed and offset under reorder, recycle or filter-boundary ties, or a consumer requiring full versus retained log probabilities. Compare frozen logits/filters first. SPEC-RNG.1 at lines 679–688 already tested keyed RNG. Position-keyed draws do not resolve earlier logit drift; no reason to repeat a served sweep merely from this release.
 
+**Research intake monitor (M16, 2026-11-27).** The existing DFlash2 target/drafter interface has no interchangeable fixed-point latent; layer savings depend on stability of a shared recurrent block. Reopen when a qualified recurrent-depth model exposes latent-state initialization and adaptive exit. Compare loops, wall time, quality and acceptance at fixed effort on CPU and MI210 separately. Require a serving candidate with repeated shared weights, a stable latent convention and a real adaptive exit. Freeze input/exit rules and compare the lived adaptive workload separately from trajectory replay on CPU/GPU. Include warm-start overhead and speculative verification. [Approved plan](../../research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md)
+
 ## Track: dflash2-block-drafter-experimental-build
 <!-- gate: INF-06#autokernel-research-loop, INF-50#speculative-decoding-mtp-refresh -->
 

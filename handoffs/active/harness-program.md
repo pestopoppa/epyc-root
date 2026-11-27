@@ -1871,6 +1871,9 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
     - **Refused:** private, loopback, link-local, metadata, IPv6, numeric-literal and `file://` destinations. Redirects are not followed.
     - **Switch:** default ON via `http_post_guard`, pinned observe-only for the autopilot, with kill switch `ORCHESTRATOR_HTTP_POST_GUARD=0`.
     - **Residual:** there is no connect-time DNS pinning, so a rebind between the check and the connect is still open. [no-belief: build/landing]
+- [ ] **FAIL-GROUP-SPLICE-AUDIT** [non-inference] Audit retained all-fail trajectory groups for reproducible environment state, a bounded repair point and verifiable continuation. Count recoverable groups before proposing any training or changing MemRL rewards.
+      · done when: Freeze same-policy group membership, exact task environment, tools, rollouts and rewards; hold out tasks. Record all failures including infra faults, repairability, local success and continuation success separately. Advance a training proposal only if at least one held-out repair verifies end to end and usable counts support the planned comparison; never relabel terminal failures from local success alone.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3014.md`
 
 ### Harness Improvement Loop — self-improvement for orchestrator-side harness features
 

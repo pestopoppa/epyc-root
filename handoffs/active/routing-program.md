@@ -3681,6 +3681,11 @@ uv run python scripts/benchmark/xmas_live_ab.py --summarize-results benchmarks/r
 ## Track: routing-intelligence
 <!-- gate: UFH-01 -->
 
+### Backlog
+- [ ] **ROUTE-BUDGET-LOOKAHEAD** [non-inference] Replay timestamped arrivals against the incumbent and a demand-ranked lookahead allocator with online budget correction. Charge actual CPU/GPU service occupancy, misses, late completions and escalation; prevent use of future realized arrivals.
+      · done when: Replay ordered arrival sets without future leakage. Compare incumbent, percentile pacing with same demand scores, and full lookahead under identical occupancy and budget; use a later trace with bursts. Report per-request route, satisfaction definition, time, starvation and budget breaches. Advance only on budget compliance and positive held-out utility over pacing after solver cost.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3016.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3023.md`
+
 > Folded from `handoffs/active/routing-intelligence.md` @ `1befe3bc860d` on 2026-11-03 (BRF-T7-F16, route 1b, operator D1/D5; retired row RTG-30 → RTG-09). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### Routing Intelligence: Factual-Risk Rollout

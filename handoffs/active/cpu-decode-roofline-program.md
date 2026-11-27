@@ -2036,6 +2036,12 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
 - [ ] **CPU-KDA-EXP-CENSUS** [non-inference] Identify whether either KDA exponential loop executes in Q38FN CPU traces and bound its contribution to decode and prefill.
       · done when: CPU-KDA-EXP-CENSUS.json contains model, graph, cpu_isa, kda_count, self_time, upper_bound. Both decode and prefill have a confirmed upper bound or an identified missing witness.
       · gate: none        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
+- [ ] **Q8-Q15-TIE-REPLAY** [non-inference] Replay near-tie and ordinary rows with incumbent Q8, per-block signed Q15 and FP32 reference. Save top-two gaps, argmax flips, accumulators and conversion cost; verify AVX-512 signed-word dot semantics and overflow against a scalar oracle.
+      · done when: Freeze pre-activation rows plus weight bytes and golden logits with deliberate near and wide gaps; compare Q8, Q15 and reference on unseen prompts and thread counts. Persist token, gap, logits, packing time, and signed-pair overflow cases. Reject a candidate on a new held-out greedy mismatch or if conversion cost erases its measured benefit.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3012.md`
+- [ ] **DRAFTER-CCD-RESIDENCY** [non-inference] Compare resident and streaming layer subsets for a draft head after accounting for per-CCD weight duplication, KV and scratch. Isolate four-row blocking, worker pinning, barriers and THP; include a 27B bandwidth-bound negative control.
+      · done when: Size working sets per CCD after KV and scratch. Baselines include current champion, NTA-only and unmodified OS page policy. Record realized page size and NUMA placement plus per-thread work; separate prefill, single-stream and drafts at a later prompt/width. Stop if LLC misses or matched-throughput intervals fail to improve, or if a negative control regresses.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3012.md`
 
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
@@ -5995,6 +6001,9 @@ MoE-Spec Phase 0
 - [ ] **MOE-STATIC-POOL-REPLAY** [non-inference] Replay existing per-layer expert routes against a capacity-bounded static GPU pool and price NUMA-local cold routes and deduplicated long-prefill uploads.
       · done when: MOE-STATIC-POOL-REPLAY.json contains reservations_bytes, pool_bytes, unique_upload_bytes, cold_rows, join_bound_ms. The pool fits after reservations and all route rows reconcile to resident, cold or unresolved.
       · gate: none        · inputs: `handoffs/active/cpu-decode-roofline-program.md`
+- [ ] **MOE-PHYSICAL-BANK-REPLAY** [non-inference] Extend the existing static-pool replay with physical tensor identity, capacity-matched LRU and measured NUMA-local CPU-miss versus PCIe upload costs. Compare static pool, LRU, CPU-share and unpatched cache under identical route order.
+      · done when: Bind each expert tensor to a physical bank, backend and epoch. Reserve model, KV and scratch before pricing the pool; hold back later routes. Output every hit/miss, unique bytes, PCIe overlap, CPU affinity, and uncovered bank. Stop if experts fit, identities are all distinct for dedup, or cold-route/transfer costs erase the margin; report these cases separately.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3011.md`
 
 ### MoE per-token routing tap and locality measurement (INF-72)
 

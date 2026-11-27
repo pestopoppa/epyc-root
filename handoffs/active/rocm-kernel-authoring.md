@@ -1269,6 +1269,12 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - [ ] **Q8-GEMV-CONVCORE-1** [inference] Redesign the V5I served 27B Q8_0 weight GEMV conversion-heavy core (about 40 VALU per wave per unit, cvt_f32_i32 int8-to-float path) to cut VALU per KB from 29 toward the stream kernel's 9, since V5I is issue-bound not bandwidth-bound (q8wt, q8lean, knee-batch all lost)
       · done when: a gate row files KEEP / NO_KEEP / FAIL_* / FUTILITY_* with op VALU per KB, GB/s vs V5I, KLD and served ms/round CI; or a note names why the conversion core cannot shrink (packed int8 dot / MFMA operand path already ruled out)
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md` `/mnt/raid0/llm/tmp/ak-c22-q8wt-op-diag-gpu-20261125`
+- [ ] **PC-HOSTTRAP-COVERAGE** [non-inference] Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for stripped objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
+      · done when: Use the original ELFs, code objects, store manifests and build IDs. Keep one other binary for validation. Record symbol+offset, source line or unmappable reason for each sampled PC. Only trial host-trap if unresolved hotspots remain and firmware/driver enumerate the capability; collect separate baseline runtime and check perturbation, skid and sample loss.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3006.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3020.md`
+- [ ] **FATTN-PRIVATE-SEGMENT** [non-inference] Join executed attention symbols to private-segment bytes and scratch instructions from content-identified code objects. Compare constant-length and dynamic-tail paths only on affected shapes, retaining correctness for padded V and partial tiles.
+      · done when: Compare deployed GPU symbols on a train and holdout context length, retaining code-object hash, VGPR/scratch metadata, ISA and dispatch hits. A nonzero private segment alone cannot prove traffic. Stop on absent path or equal material scratch traffic; specialize and time only if affected. Check both padded and unpadded tails.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3009.md`
 
 ### Done
 
@@ -1366,6 +1372,9 @@ Line references are at `98ff8a4` (C21, `llama.cpp-experimental-c21-20261124`).
       · done when: the compile log and verdict (lowers to gfx90a code object, or the first failing pass) are filed; a pass reopens a FlyDSL arm proposal, a fail closes it with evidence
       · gate: none
       · ✅ 2026-11-21 flydsl 0.5.1 compile-only vector-add for gfx90a PASS (needs a torch CPU import, undeclared); full pipeline to amdgcn gfx90a ISA (global_load_dwordx4, v_pk_add_f32, global_store_dwordx4). Log and ISA in /mnt/raid0/llm/tmp/flydsl-gfx90a-20261121/. No launch; execution and the ROCm-6.2 runtime untested. [no-belief: compile-only check]
+- [ ] **F32-ROUTER-SPLITK-CENSUS** [non-inference] Join actual ffn_gate_inp and skinny F32 dispatches to shape, backend, duration and CU count; bound saved served time against current rocBLAS. If material, compare fixed-order two-pass slice reduction with unsplit reference and repeat identical inputs bitwise.
+      · done when: Reuse retained A3B router traces at decode and prefill. Baseline is the resolved Tensile solution; keep a later request window. Record M/N/K, workgroups, slices and all partial-buffer writes. The upstream half-CU test bounds unsplit tile count, not slices. Stop if even eliminating targeted time would miss the owner’s served gate. Test CPU splitting only for underoccupied cores after NPS4-local partitioning.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3008.md`
 
 ### Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 

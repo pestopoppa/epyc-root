@@ -3255,6 +3255,9 @@ Structural change → **implement in a follow-on pass** (not in this design task
 - [ ] **EV-SKILL-NULL-REPLAY** [non-inference] Add a task-level replay report for skill gating that records effective skills, scorer requirements, within-cell shuffled labels and held-out decisions.
       · done when: EV-SKILL-NULL-REPLAY.json contains paired_cells, effective_manifest_by_arm, heldout_delta, shuffled_delta, missing_arm_count. Each cell has a traceable manifest or explicit exclusion and zero training/holdout overlap.
       · gate: none        · inputs: `handoffs/active/eval-tower-program.md`
+- [ ] **SKILL-PAIR-COMPAT-REPLAY** [non-inference] Measure held-out pairs with component-only, combined single-call, explicit two-call and partner-shuffled arms; record step retention, token and tool cost by model. Keep soft-prefix findings separate from text-skill outcomes.
+      · done when: Freeze model, executor, evidence and cost ceiling. Compare both orders, shuffled partners, constituent controls and explicit two-step intermediate on held-out tasks. Record stale skills, tool failures, invalid completions, abstentions and additional compute. Reopen admission policy only for effects surviving shuffled labels and cost-matched controls.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3017.md`
 
 ### Scoring Infrastructure Standardization + Tool-Use Eval Harness
 

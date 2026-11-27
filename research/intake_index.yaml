@@ -441341,8 +441341,6 @@
     ATT adapter. MI210 host-trap can add hotspot-only evidence on an isolated compatible stack, capability- and privilege-gated. The EPYC 9655 has no use for
     rocprof; use CPU perf/IBS as an analogous source of evidence. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -441440,6 +441438,13 @@
     note: The WAITCNT reduction refers to two selected hot lines.
   dive_corrections: 2026-11-27. Official AMD SDK docs confirm skid and gfx942 stochastic support, but advertise a higher gfx942 maximum in their configuration
     example. HPCToolkit's GPU profiling documentation independently corroborates ROCm 6.4 onset, MI200 host trap and skid, not AMD's GEMM numbers.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/rocm-kernel-authoring.md
+  handoffs_created: []
+  disposition_evidence:
+  - Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for
+    stripped objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
 - id: intake-3007
   local_review: "The frozen ffc1bac82 HIP IQ4_NL/XS vector dots already use get_int_from_table_16 with AMD byte permutes; emitted-code placement is the remaining hypothesis."
   arxiv_id: null
@@ -441488,8 +441493,6 @@
     gfx942-specific FlyDSL runtime or FP8 convert isn''t a source of target speed; EPYC 9655 can reconsider LUT/SIMD only inside native iqk if current CPU prefill
     exposes a decode bottleneck. Served read bandwidth stays the same. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -441587,6 +441590,13 @@
     note: The reported speedups cover GEMMs alone.
   dive_corrections: 2026-11-27. The AMD Limitations section narrows the headline. AITER release lineage corroborates implementation and supersedes this baseline,
     while indexed relays repeat AMD's result. No independent MI210/9655 reproduction found.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/quantization-and-low-bit.md
+  handoffs_created: []
+  disposition_evidence:
+  - Compare emitted permutes, register pressure, waits and MFMA issue for observed IQ4_XS/NL hot shapes; inventory MMQ separately from MMVQ. Require exact nibble/scale/sign
+    reconstruction and an attributable decode bottleneck before moving decode or extending the design to EXL3.
 - id: intake-3008
   local_review: "Draft at retrieval. Qwen3.6-35B-A3B pp512 at ub256 rose from 693 to 730 t/s on the RX 7700 XT. The half-CU bound applies to unsplit tile count, not the slice count."
   arxiv_id: null
@@ -441625,8 +441635,6 @@
     @ b93bd31 owns Inkling port. MI210 is gfx90a; exact predicate excludes it, and local rocBLAS must establish an analogous F32 hotspot first. EPYC 9655 CPU
     has no HIP path and K splitting adds partial write/reduction, so only reconsider if measured small-output CPU GEMM tile parallelism is actually limiting. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -441678,6 +441686,13 @@
     note: The best 32-slice microbenchmark took 36.2 µs versus 329.9 µs for rocBLAS at the specified shape.
   dive_corrections: 2026-11-27. No independent reproduction of the gfx1101 numbers found. rocBLAS/Tensile table explanation is uploader-reported and does not
     demonstrate gfx90a behavior; code predicate settles direct applicability.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/rocm-kernel-authoring.md
+  handoffs_created: []
+  disposition_evidence:
+  - Join actual ffn_gate_inp and skinny F32 dispatches to shape, backend, duration and CU count; bound saved served time against current rocBLAS. If material,
+    compare fixed-order two-pass slice reduction with unsplit reference and repeat identical inputs bitwise.
 - id: intake-3009
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/33161
@@ -441714,8 +441729,6 @@
     from the external 512 f16 case. HIP shares parts of the header; test compiler scratch and VGPR changes on actual AMD instantiations before routing or timing
     work. EPYC 9655 has separate FA backend; only the general compile-time-versus-runtime length specialization motif transfers. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -441767,6 +441780,13 @@
     note: At pp32000 the two baseline runs produced 652.50 and 652.86 t/s and the patched runs produced 1698.78 and 1726.56 t/s.
   dive_corrections: '2026-11-27. Linked issue #32871 independently reports an A4000 prefill regression on build b12285, corroborating symptom only. The PR closes
     no demonstrated local gap. Results paired on a shared GPU with another process active during first baseline.'
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/rocm-kernel-authoring.md
+  handoffs_created: []
+  disposition_evidence:
+  - Join executed attention symbols to private-segment bytes and scratch instructions from content-identified code objects. Compare constant-length and dynamic-tail
+    paths only on affected shapes, retaining correctness for padded V and partial tiles.
 - id: intake-3010
   local_review: "The final OpenCL PR merged 2026-11-26. Local Q8 w8 in-place passed its op gate; Q8-SERVED-PROFILE-1 found almost no served kernel gain against V5I. Classify F32 separately."
   arxiv_id: null
@@ -441806,8 +441826,6 @@
     only, no OpenCL port. On EPYC 9655 use the same principle only for a measured small-width CPU verification matrix where existing iqk behavior and vector register
     pressure leave room. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -441859,6 +441877,13 @@
     note: The final merged route is limited to N=2..8 and at most 512 output rows.
   dive_corrections: 2026-11-27. Patch second commit contradicts first commit's wide-M behavior. No independent replication found; the PR describes one unchanged
     acceptance trace and a narrow gain, while our separate HIP width-8 work demonstrates the motif's register-pressure tradeoff.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
+  handoffs_created: []
+  disposition_evidence:
+  - Classify retained verify calls by input type, rows, K, verify columns and selected kernel. Bound F32 time that a weight-sharing GEMV could recover against
+    served dispatch. Stop at zero eligible share or an immaterial upper bound.
 - id: intake-3011
   local_review: "Draft at retrieval; the benchmark lacks a stock cache-on arm to isolate the contribution of physical-bank deduplication."
   arxiv_id: null
@@ -441899,8 +441924,6 @@
     has no VRAM cache; paired role as host expert fallback is the relevant path. Port cost depends on upstream moe-cache API availability in a chosen experimental
     base. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -441953,6 +441976,13 @@
     note: After physical-layer planning, a virtual layer receives a copied map in its own destination.
   dive_corrections: 2026-11-27. The referenced earlier PR was closed without merge and bundled an LRU heuristic; its asserted stock comparison does not establish
     the corrected patch. No independent RTX/MI210 replication found.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/cpu-decode-roofline-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Extend the existing static-pool replay with physical tensor identity, capacity-matched LRU and measured NUMA-local CPU-miss versus PCIe upload costs. Compare
+    static pool, LRU, CPU-share and unpatched cache under identical route order.
 - id: intake-3012
   local_review: "The direct X endpoint returned HTTP 403. On 2026-11-27 the public FxTwitter mirror returned post 2126041962272690479, dated 2026-11-26 19:54:38 UTC, with 63,398 views and 1,708 likes. These mutable counters describe reception only."
   arxiv_id: null
@@ -442012,8 +442042,6 @@
     quantization moves quality/speed on gfx90a at batch 1 or concurrent small-model serving versus FP16/int8 library paths, while recording HBM/L2 bytes and dequant
     cost. Avoid porting the ELF/layout wholesale.'
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442136,6 +442164,16 @@
     a fixed table. Mixed T0/NTA benefits are design-specific. Opus reported a negative L3 experiment; do not attribute Neon’s full gain to this one knob. Four
     golden outputs are narrow token agreement. Near-tie probes require change-controlled numerics, broad prompts, and identity on the same engine against its
     own reference.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/cpu-decode-roofline-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Replay near-tie and ordinary rows with incumbent Q8, per-block signed Q15 and FP32 reference. Save top-two gaps, argmax flips, accumulators and conversion
+    cost; verify AVX-512 signed-word dot semantics and overflow against a scalar oracle.
+  - Compare resident and streaming layer subsets for a draft head after accounting for per-CCD weight duplication, KV and scratch. Isolate four-row blocking,
+    worker pinning, barriers and THP; include a 27B bandwidth-bound negative control.
+  - Retain exact-token checks across thread counts as an additional witness when a generated CPU candidate reaches operator, numerical and served gates.
 - id: intake-3013
   arxiv_id: '2611.33257'
   url: https://arxiv.org/abs/2611.33257v1
@@ -442180,8 +442218,6 @@
     parity and recurrent mixer cost screen. CPU per-token extra local math plus state traffic matters at batch 1; gfx90a compare fusion and batching with projected-key/payload
     ring state. Use experimental paths and matching-weight baselines. Existing checkpoints lack these learned pseudo-query weights.
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442242,6 +442278,12 @@
     (−12.1%) and KDA→SWKDA-G1 78.871→66.919s; single RTX 6000D, batch 1, FP32 weights with BF16 autocast. Scope corrections: architecture and retraining, backbone-specific
     residual behavior, no CPU/gfx90a/throughput-at-concurrency evidence. A bounded exact-source search found no independent reproduction; DynamicConv is a control
     with published gains at other scales, and its weaker SWGDN paper result does not settle the broader comparison.'
+  integration_disposition: monitor
+  handoffs_updated: []
+  handoffs_created: []
+  disposition_evidence:
+  - When a qualified checkpoint contains sliding-window q/k/v mixing, trace window KV/cache traffic separately from recurrence on both backends and compare
+    matched quality/latency.
 - id: intake-3014
   arxiv_id: '2611.34777'
   url: https://arxiv.org/abs/2611.34777v1
@@ -442289,8 +442331,6 @@
     parallel learner branches if state copy and verifier time do not dominate. Existing session checkpoints and trajectory artifacts are candidate consumers,
     with exact environment restoration a separate requirement.
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442351,6 +442391,13 @@
     raises SWE resolve slightly 25.7→26.2 with ~4× teacher turns; supervising full teacher suffix drops it to 22.3. Appendix F proposal point selection +1.3 pp
     resolve over random (24.4→25.7) with three runs. Expensive state restoration and 3 continuation samples can dominate economics or yield false zero-return.
     Appendix D training used 32 H200 GPUs; no test-time benchmark. Bounded search surfaced source summaries and ReLIFT itself, no independent replication.'
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/harness-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Audit retained all-fail trajectory groups for reproducible environment state, a bounded repair point and verifiable continuation. Count recoverable groups
+    before proposing any training or changing MemRL rewards.
 - id: intake-3015
   arxiv_id: '2611.34624'
   url: https://arxiv.org/abs/2611.34624v1
@@ -442404,8 +442451,6 @@
     replay and cold memory construction cost may dominate; MI210 batch/diversify retrieval comparisons with actual warm-prefix tokens, decode work and wall time,
     because uncached raw token count is not device cost.
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442467,6 +442512,13 @@
     331.2M raw tokens for MemPro; in these matched runtime experiments MemPro changed only prompts/parameters, although its original design can edit structure.
     No independent replication found in bounded search. Case winners include date-grouped topic directory, per-file diversity cap, user-action postings, and keyword-based
     selected lines with recoverable citations and backing text.'
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/memory-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Add content-addressed session-memory and harness identities to candidate replay. Smoke-test construction and retrieval, score candidates on a search split,
+    and use locked, unseen conversations for final quality and query-token comparisons.
 - id: intake-3016
   local_review: "CoordRoute needs a paced comparator. PILOT v2 supplies one; price real queue delay and model residency in local replay."
   arxiv_id: '2611.34161'
@@ -442513,8 +442565,6 @@
     and batching drive queue service rates. In-flight restart/drop has wasted work and client/SLO semantics, and suits a separate follow-on only if measured gains
     justify it.
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442575,6 +442625,13 @@
     §5.2 explicitly assumes instantaneous redeployment; no real-service SLO measurement, throughput/resource effects or locality contention. §6.5 varied model
     FLOP cost multipliers as a sensitivity check, not measured CPU/MI210 timing. Bounded targeted search surfaced primary baselines and restatements but no independent
     reproduction.'
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/routing-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Replay timestamped arrivals against the incumbent and a demand-ranked lookahead allocator with online budget correction. Charge actual CPU/GPU service occupancy,
+    misses, late completions and escalation; prevent use of future realized arrivals.
 - id: intake-3017
   arxiv_id: '2611.34398'
   url: https://arxiv.org/abs/2611.34398v1
@@ -442630,8 +442687,6 @@
     only with comparable quality. MI210 double call may fit small model with batching, but measure single-request tail and throughput under concurrency; paper’s
     H100 repair break-evens do not transfer.'
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442730,6 +442785,13 @@
   dive_corrections: 2026-11-27. Do not transfer numerical failure rates to text/code skills or claim separate calls dominate under equal computation. A standalone
     pass and rehearsal are distinct from interface compatibility and replay of prior uses. Treat two new seed replacements and single-library held-out repair
     as bounded evidence.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/eval-tower-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Measure held-out pairs with component-only, combined single-call, explicit two-call and partner-shuffled arms; record step retention, token and tool cost
+    by model. Keep soft-prefix findings separate from text-skill outcomes.
 - id: intake-3018
   arxiv_id: '2611.33174'
   url: https://arxiv.org/abs/2611.33174v1
@@ -442778,8 +442840,6 @@
     control. MI210: reserve for embedding batches and local fixed-reader concurrency only if measured savings exceed residency/queue contention. No GPU acceleration
     is implied for episode/graph traversal.'
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442854,6 +442914,13 @@
     note: MGMem leads or ties local single-session categories while overall LongMemEval-S trails BM25 and Hybrid.
   dive_corrections: 2026-11-27. Provenance of source turns is not evidence that the answer is supported. The LongMemEval-S overall result is lower than lexical/hybrid;
     transfer is mixed and current graph-versus-Hybrid ranking is dataset-dependent. No generative indexing means a CPU/accelerator cost still exists.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/memory-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Add a CPU parser and incidence-postings arm returning original episode IDs and text at the same answer budget. Compare with lexical, raw/full-context and
+    incumbent retrieval; include episode provenance, temporal errors and missed evidence.
 - id: intake-3019
   arxiv_id: '2611.34492'
   url: https://arxiv.org/abs/2611.34492v1
@@ -442903,8 +442970,6 @@
     bytes. Keep fixed depth, adaptive baseline, and warm-start arms; do not wire production until recurrent serving and qualifying model exist. Lane context-and-token-economy.md:2598–2605
     contains Huginn lineage; it is prerequisite context, no EPYC warm-start speed warrant.'
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -442980,6 +443045,12 @@
   dive_corrections: 2026-11-27. 18% CDB gain is trajectory replay with fixed loop count; adaptive serving +4–5%. Fixed-point guarantee is conditional and finite
     decode has empirical accuracy, not bit-exact output. Savings apply only to recurrent models with measured contraction and sufficient loops; changing the loop
     initialization is different from changing the stopping rule.
+  integration_disposition: monitor
+  handoffs_updated: []
+  handoffs_created: []
+  disposition_evidence:
+  - Reopen when a qualified recurrent-depth model exposes latent-state initialization and adaptive exit. Compare loops, wall time, quality and acceptance at
+    fixed effort on CPU and MI210 separately.
 - id: intake-3020
   arxiv_id: null
   url: https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/how-to/using-pc-sampling.html
@@ -443017,8 +443088,6 @@
   notes: 'Current ROCm 6.2 production and approved rocprofv2 trace do not change. On the MI210 use optional host-trap on a compatible isolated SDK/driver only
     once capability is actually advertised. Host CPU 9655 can contribute analogous CPU sampling through its own tools. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -443093,6 +443162,13 @@
     note: The SDK documents sampling support on AMD GPUs starting at gfx90a.
   dive_corrections: 2026-11-27. Versioned ROCm documentation and HPCToolkit corroborate host trap on MI200+ and skid. The SDK reference clarifies the blog's ambiguous
     phrase 'arbitrary sampling skid' as up to two instructions, including around branches; interval ceiling mismatch remains.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/rocm-kernel-authoring.md
+  handoffs_created: []
+  disposition_evidence:
+  - Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for
+    stripped objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
 - id: intake-3021
   arxiv_id: null
   url: https://github.com/ROCm/aiter/pull/5583
@@ -443130,8 +443206,6 @@
   notes: 'No gfx90a AITER build is demonstrated. A small native exact scale/packing oracle and ISA comparison can test MI210 dequant if a target served path warrants
     it. CPU 9655 uses local existing IQK native code; no AITER adoption. '
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -443183,6 +443257,13 @@
     note: In the submitted gfx942 GEMM1 assembly comparison the unsupported-instruction count fell from 1792 to 0.
   dive_corrections: '2026-11-27. PR is direct implementation evidence, from same vendor/author as blog rather than an independent benchmark. It addresses initial
     gfx942 assembly failure; successor #6144 supersedes implementation details where gfx942 FP8 conversion is available.'
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/quantization-and-low-bit.md
+  handoffs_created: []
+  disposition_evidence:
+  - Compare emitted permutes, register pressure, waits and MFMA issue for observed IQ4_XS/NL hot shapes; inventory MMQ separately from MMVQ. Require exact nibble/scale/sign
+    reconstruction and an attributable decode bottleneck before moving decode or extending the design to EXL3.
 - id: intake-3022
   arxiv_id: null
   url: https://github.com/agentscope-ai/ReMe
@@ -443225,8 +443306,6 @@
     reuse. Only if evaluating retrieval changes on MI210, measure warm/cold token-cache categories and wall time separately. Keep eval variants explicit and validate
     disjoint benchmark case IDs before measuring. Extract reusable patterns into current harness surfaces rather than adopting the full framework by default.
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -443308,6 +443387,13 @@
     but evaluates 100K cases that may overlap training. The paper’s BEAM-1M result needs an explicit independent variant and candidate revision. Baselines printed
     in README refer to the authors’ paper and are not replication. The plugin requires ReMe 0.4.3+, benchmark Docker image, model/embedding endpoint configuration,
     and the default Linux optimizer/diagnoser uses Bubblewrap and delegated cgroup v2. Code was inspected only. No exact companion URL was found in the lane index.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/memory-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Add content-addressed session-memory and harness identities to candidate replay. Smoke-test construction and retrieval, score candidates on a search split,
+    and use locked, unseen conversations for final quality and query-token comparisons.
 - id: intake-3023
   arxiv_id: '2508.21141'
   url: https://arxiv.org/abs/2508.21141v2
@@ -443355,8 +443441,6 @@
     adaptation. CPU modeling prices active DDR/NUMA/slot time; MI210 modeling prices warm residency, batching and contention. Keep bandit updates as a different
     decision requiring an actual chosen-arm reward stream.
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -443417,6 +443501,13 @@
     which latency yields ~38× vs ~10× speed ratios. No actual arrival-time queue, occupancy, redeployment, SLO or client runtime correction measured. CoordRoute’s
     Appendix F reports a minimum 11.04% advantage over a same-score knapsack threshold across 21 replay budgets, but uses training percentile bounds and expected-arrivals
     fallback, not the full preference-prior PILOT pipeline.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/routing-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Replay timestamped arrivals against the incumbent and a demand-ranked lookahead allocator with online budget correction. Charge actual CPU/GPU service occupancy,
+    misses, late completions and escalation; prevent use of future realized arrivals.
 - id: intake-3024
   arxiv_id: null
   url: https://github.com/junhong-h/MGMem
@@ -443478,8 +443569,6 @@
     CPU component dominates or use it for the identical frozen reader in a follow-up after retrieval survives, with device/precision/queue competition measured.
     Avoid importing code until reuse/license terms and behavior are verified; project can implement the narrow comparison using its own primitives.'
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -443625,3 +443714,10 @@
     and published matched metrics out of the box. Derived source provenance in the release is episode-level. An exact cited turn/span must be located in the raw
     episode or recorded separately. Instrument component/full wall time explicitly. A stored 0.0 parse latency represents a missing measurement for spaCy, and
     release elapsed_seconds=5.17 measures packaging checks.
+  integration_disposition: integrated
+  handoffs_updated:
+  - handoffs/active/memory-program.md
+  handoffs_created: []
+  disposition_evidence:
+  - Add a CPU parser and incidence-postings arm returning original episode IDs and text at the same answer budget. Compare with lexical, raw/full-context and
+    incumbent retrieval; include episode provenance, temporal errors and missed evidence.

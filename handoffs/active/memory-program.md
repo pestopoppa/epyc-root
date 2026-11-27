@@ -38,6 +38,11 @@ coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are fol
 ## Track: memory-program
 <!-- gate: none -->
 
+### Backlog
+- [ ] **MEM-HARNESS-CANDIDATE-REPLAY** [non-inference] Add content-addressed session-memory and harness identities to candidate replay. Smoke-test construction and retrieval, score candidates on a search split, and use locked, unseen conversations for final quality and query-token comparisons.
+      · done when: Pin M-12 judge, prompts, receipts, dataset and explicit independent BEAM partition. Hold out conversations from search, filter post-hoc intersections visibly and score all scheduled cases. Compare incumbent, smoke-gated and fully evaluated candidate on quality, total construction cost, query tokens, and unchanged-memory reuse. Reject leaked cases or unverified archive hashes. Preserve ratified abstention handling.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3015.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3022.md`
+
 > Folded from the body of `handoffs/active/memory-program.md` (row EVL-10), from its first `##` section on, @ `ec0a9febab21` on 2026-11-03 (BRF-T7-F14, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
 #### Objective
@@ -960,6 +965,11 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
 
 ## Track: repl-session-memory-maturity
 <!-- gate: none -->
+
+### Backlog
+- [ ] **MEM-RAW-EPISODE-ARM** [non-inference] Add a CPU parser and incidence-postings arm returning original episode IDs and text at the same answer budget. Compare with lexical, raw/full-context and incumbent retrieval; include episode provenance, temporal errors and missed evidence.
+      · done when: Use identical conversations, raw turns, parser version and token cap. Compare lexical/hybrid, exact mentions, released first-mention heuristic and dependency/alias gated edges. Record raw episode IDs, all-gold recall, time/order failures, build and query wall time measured externally. Promote only if held-out evidence recall or answer quality improves without exceeding the cost ceiling.
+      · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3018.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3024.md`
 
 > Folded from `handoffs/active/repl-session-memory-maturity.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F24, route 1a, operator D1/D5; retired row EVL-36 → EVL-10). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
