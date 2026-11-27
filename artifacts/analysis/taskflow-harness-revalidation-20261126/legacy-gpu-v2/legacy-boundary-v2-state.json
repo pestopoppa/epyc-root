@@ -1,0 +1,9 @@
+{
+  "status": "waiting_for_owned_controller",
+  "pid": 2544629,
+  "at": 1795742074.966602,
+  "controller": {
+    "pid": 1016657,
+    "start_ticks": "160922944"
+  }
+}

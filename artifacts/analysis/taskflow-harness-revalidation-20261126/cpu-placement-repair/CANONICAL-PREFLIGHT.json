@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "at": 1795742184.690137,
+  "pid": 2386678,
+  "job": {
+    "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/out-cpu/live.json",
+    "serving_receipt_sha256": "30f7ab3c29a823c294a9c4b9d928c2f002211d30fae060aec4977b8e3490a194",
+    "server_executable_sha256": "811475d0707823c9cdeba68fd06275cf05ac66556bde7060654af6296ed831c3",
+    "port": 56081,
+    "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "context": 131072,
+    "slot": 0,
+    "backend": "cpu"
+  },
+  "model_calls": 0,
+  "source_sha256": {
+    "scripts/coordination/taskflow/harness/opencode_derived/__main__.py": "e05b42f9b84d0c648d7c0adc1b6baa3c9ba80d8b16d4e3bce732761c374b5c15",
+    "scripts/coordination/taskflow/harness/opencode_derived/cpu_placement.py": "e89b64c0b78cd10aaf204ac10d8486882f57cf7cf769d1659cb69b7641cf5d95"
+  },
+  "tests": "257 Taskflow tests passed; 18 entrypoint/placement tests included"
+}

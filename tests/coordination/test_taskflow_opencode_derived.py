@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts/coordinati
 
 from taskflow.harness.opencode_derived.__main__ import load_job
 from taskflow.harness.opencode_derived.case_snapshot import candidate_state, digest, file_map
+from taskflow.harness.opencode_derived.cpu_placement import require_cpu_placement
 from taskflow.harness.opencode_derived.transport import Limits, proxy
 
 
@@ -219,3 +220,98 @@ def test_c22_requires_explicit_zero_shared_ram_cache():
                  (b"llama-server", b"--cache-ram", b"0", b"-cram", b"1")):
         with pytest.raises(ValueError, match="explicit --cache-ram 0"):
             require_disabled_shared_cache(args)
+
+
+@pytest.fixture
+def cpu_placement(tmp_path, monkeypatch):
+    proc, topology = tmp_path / "proc", tmp_path / "topology"
+    process = proc / "100"
+    for thread in (100, 101):
+        (process / "task" / str(thread)).mkdir(parents=True)
+    for node, cpus in {1: "10-12,90", 3: "30-32", 5: "50-52", 7: "70-72"}.items():
+        path = topology / f"node{node}"
+        path.mkdir(parents=True)
+        (path / "cpulist").write_text(cpus + "\n")
+    affinity = {100: {10, 30}, 101: {50, 70}}
+    monkeypatch.setattr("os.sched_getaffinity", affinity.__getitem__)
+    model = tmp_path / "fixture weights.gguf"
+    model.write_bytes(bytes(4096 * 100))
+    return proc, topology, process, model, affinity
+
+
+@pytest.mark.parametrize("one_node", [False, True])
+def test_cpu_placement_checks_model_mapping_separately_from_kv(cpu_placement, one_node):
+    proc, topology, process, model, affinity = cpu_placement
+    weight_pages = "N1=25 N3=25 N5=25 N7=25"
+    if one_node:
+        affinity.update({100: {70}, 101: {71}})
+        weight_pages = "N7=100"
+    (process / "numa_maps").write_text(
+        "1000 default anon=20 N1=20 kernelpagesize_kB=4\n"
+        f"2000 default anon=100 {weight_pages} kernelpagesize_kB=4\n")
+    require_cpu_placement(100, [b"--no-mmap"], model, proc_root=proc, node_root=topology)
+
+
+@pytest.mark.parametrize(("maps", "reason"), [
+    ("1000 interleave:1,3,5,7 anon=100 N1=1 N3=1 N5=1 N7=97 kernelpagesize_kB=4\n",
+     "unbalanced anonymous weight residency"),
+    ("1000 default anon=100 N1=25 N3=25 N5=25 N9=25 kernelpagesize_kB=4\n",
+     "unbalanced anonymous weight residency"),
+    ("1000 default anon=60 N1=30 N3=30 kernelpagesize_kB=4\n"
+     "9000 default anon=50 N5=25 N7=25 kernelpagesize_kB=4\n", "split allocations are unsupported"),
+    ("1000 default anon=100 N1=25 N3=25 N5=25 N7=25 kernelpagesize_kB=4\n"
+     "9000 default anon=100 N1=25 N3=25 N5=25 N7=25 kernelpagesize_kB=4\n", "found 2"),
+    ("1000 default anon=100 kernelpagesize_kB=4\n", "found 0"),
+])
+def test_cpu_placement_refuses_bad_or_incomplete_residency(cpu_placement, maps, reason):
+    proc, topology, process, model, _ = cpu_placement
+    (process / "numa_maps").write_text(maps)
+    with pytest.raises(ValueError, match=reason):
+        require_cpu_placement(100, [b"--no-mmap"], model, proc_root=proc, node_root=topology)
+
+
+def test_cpu_placement_requires_live_evidence_and_no_gguf_mapping(cpu_placement):
+    proc, topology, process, model, affinity = cpu_placement
+    with pytest.raises(ValueError, match="--no-mmap"):
+        require_cpu_placement(100, [], model, proc_root=proc, node_root=topology)
+    with pytest.raises(ValueError, match="numa_maps"):
+        require_cpu_placement(100, [b"--no-mmap"], model, proc_root=proc, node_root=topology)
+    encoded = str(model).replace(" ", r"\040")
+    (process / "numa_maps").write_text(f"1000 interleave:1,3,5,7 file={encoded} N7=100 kernelpagesize_kB=4\n")
+    with pytest.raises(ValueError, match="file-backed mapping"):
+        require_cpu_placement(100, [b"--no-mmap"], model, proc_root=proc, node_root=topology)
+    affinity[101].add(999)
+    with pytest.raises(ValueError, match="topology does not cover"):
+        require_cpu_placement(100, [b"--no-mmap"], model, proc_root=proc, node_root=topology)
+
+
+def test_serving_preflight_applies_placement_only_to_cpu(tmp_path, monkeypatch):
+    from taskflow.harness.opencode_derived import __main__ as driver
+
+    process = tmp_path / "100"
+    process.mkdir()
+    executable = process / "exe"
+    executable.write_text("test binary")
+    model = tmp_path / "weights.gguf"
+    library = "/fixture/libggml.so"
+    (process / "maps").write_text(library + "\n")
+    argv = [b"llama-server", b"--cache-ram", b"0", b"--port", b"10080", b"--host", b"127.0.0.1", b"-m", bytes(model)]
+    (process / "cmdline").write_bytes(b"\0".join(argv) + b"\0")
+    proof = tmp_path / "live.json"
+    proof.write_text(json.dumps({"pid": 100, "port": 10080, "maps": [library], "kv_unified": False,
+                                 "n_ctx_slot": 32768, "n_parallel": 1}))
+    kfd = tmp_path / "kfd"
+    def fixture_path(value):
+        if str(value).startswith("/proc/100/"):
+            return process / Path(value).name
+        if str(value) == "/sys/class/kfd/kfd/proc/100":
+            return kfd
+        return Path(value)
+    monkeypatch.setattr(driver, "Path", fixture_path)
+    job = {"serving_receipt": str(proof), "serving_receipt_sha256": digest(proof),
+           "server_executable_sha256": digest(executable), "port": 10080, "model_path": str(model),
+           "context": 32768, "slot": 0, "backend": "cpu"}
+    with pytest.raises(ValueError, match="--no-mmap"):
+        driver.serving_proof(job)
+    kfd.mkdir()
+    assert driver.serving_proof({**job, "backend": "gpu"}) == 100

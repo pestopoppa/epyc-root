@@ -1,0 +1,6 @@
+{
+  "stopped_watcher": 1815819,
+  "dead_verified": true,
+  "reason": "CPU NUMA repair requires revised server-lifetime boundary and CPU row deduplication; legacy GPU replay remains authorized and will be requed after owned replacement setup",
+  "at": 1795741354.1104562
+}

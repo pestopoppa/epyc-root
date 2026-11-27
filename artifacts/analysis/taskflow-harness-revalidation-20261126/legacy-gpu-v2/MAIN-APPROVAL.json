@@ -1,0 +1,12 @@
+{
+  "approved_by": "main",
+  "runner_seal_sha256": "ada24479670aae02ffbce7eadb0c1c941a1ffcb5183865cef475b35710191bd7",
+  "initial_rows": [
+    "gpu-TU-GR-1-on-coding",
+    "gpu-TU-GR-1-off-common-on-sampling",
+    "gpu-MM-5-off-common-on-sampling",
+    "gpu-MM-5-on-coding"
+  ],
+  "idle_for_feedback_s": 900,
+  "reuse": "Legacy CPU rows execute under repaired CPU batch; this new phase selects only four GPU matched rows"
+}

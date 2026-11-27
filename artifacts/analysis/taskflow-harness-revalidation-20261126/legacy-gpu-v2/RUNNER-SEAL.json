@@ -1,0 +1,51 @@
+{
+  "package_seal_sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+  "equivalence": {
+    "canonical_source_commit": "beb0225b173e98d2e5de40351d42de5c32279d64",
+    "v4_source_manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+    "reuse_of_existing_native_control_sha256": "8052d3d468fd61ec12720e8c3fa1d1730a6f4314b57d033e69d8d1eb3423672f",
+    "prior_legacy_runner_seal_sha256": "9498641010d8c6e910862f38e1f838e28432a7934b205a2a874b3079837c3fd2",
+    "prior_legacy_contained_control_sha256": "3b4f97e5c279f8c24955a6c93010a779cb71a36d2046cf5ef09fd3b29ab6542a",
+    "same_core_and_serving_configuration": {
+      "engine/opencode_derived/__init__.py": "6327a5adf8329a850d4070a03246e15e88a837ee1a2ef44e723d11cdef76cd1e",
+      "engine/opencode_derived/__main__.py": "732069fa17ab70412cfd35aceec144a96763ddee431a44442edbaa2c36df742b",
+      "engine/opencode_derived/case_snapshot.py": "7cc9a7125a7382c47cec3f81cdc52ecf8088de10aa1fc3e25ef59fdc8b9baee5",
+      "engine/opencode_derived/drive.py": "e2ee0ca9e167204a6064604cd56028b2720eda57c48013778ef63a35c65fc459",
+      "engine/opencode_derived/public_web.py": "9d1428e73b7c9f8326b6e197b1a42a1c39a700f1e0517399d2bef1ccb1c1d33d",
+      "engine/opencode_derived/sandbox.py": "cab793c1aad2993108de43ebe8e8b2de1aadf5b1ddc523fe99ee655ca8cba684",
+      "engine/opencode_derived/sandbox_form_api.py": "39d0de0ca13c6c4ed8e3d09c6f39dcf684e5ddbc811ccbef5ca9f2121cc81be3",
+      "engine/opencode_derived/socket_bridge.py": "c3e799091de2bdcf6b1dd71425e0d02d5eac9f90f5f17df11f52e7f9298f8393",
+      "engine/opencode_derived/transport.py": "e526039e88666bd327cc9c8d4c683de52111806920e50fd21b3655ca0ba3143d",
+      "CONFIG-gpu.json": "e761950638cc9cf98d57b285445e6fd80a9035d16cb5a3afa012ef69921ca267",
+      "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/runtime/pilot.py": "0b06e0db50ef48021f24774029fd2c3657053f00cccfff2199c2184908886610",
+      "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/runtime/server.py": "fc6bf52c15db13eaf784bfd9efe6764f1fe4d2820f336141af0a79f578027787"
+    },
+    "comparison_changes": [
+      "GPU-only two-case coordinator; CPU measured in separate owner epoch"
+    ]
+  },
+  "control_receipt": "CONTROL.json",
+  "backends": [
+    "gpu"
+  ],
+  "native_inference_during_preparation": false,
+  "sha256": {
+    "APPROVAL-TEMPLATE.json": "5135dc1ee8dc86657eaf1c29ddb510d19bb24cb892b207f5021c2529f845ffd8",
+    "CONFIG-gpu.json": "e761950638cc9cf98d57b285445e6fd80a9035d16cb5a3afa012ef69921ca267",
+    "CONTROL.json": "7fc4ad22845565d6e22f57d51181acaddb27f8f7b9b01994251e62155cebbde9",
+    "README.md": "82238322089a0503ff84a93a0e6555a1b8341aec50ef13d01e159ebca4104bfc",
+    "control.py": "84751bb01cdda8939e241e64de1a01c5bb3c4d38dccbc7f7abaec0cdab38ce2f",
+    "engine/opencode_derived/README.md": "0e7d8fc191c21b1ce08528750428e331ee9396773f520d56df455d7ec7cccd1b",
+    "engine/opencode_derived/__init__.py": "6327a5adf8329a850d4070a03246e15e88a837ee1a2ef44e723d11cdef76cd1e",
+    "engine/opencode_derived/__main__.py": "732069fa17ab70412cfd35aceec144a96763ddee431a44442edbaa2c36df742b",
+    "engine/opencode_derived/case_snapshot.py": "7cc9a7125a7382c47cec3f81cdc52ecf8088de10aa1fc3e25ef59fdc8b9baee5",
+    "engine/opencode_derived/drive.py": "e2ee0ca9e167204a6064604cd56028b2720eda57c48013778ef63a35c65fc459",
+    "engine/opencode_derived/public_web.py": "9d1428e73b7c9f8326b6e197b1a42a1c39a700f1e0517399d2bef1ccb1c1d33d",
+    "engine/opencode_derived/sandbox.py": "cab793c1aad2993108de43ebe8e8b2de1aadf5b1ddc523fe99ee655ca8cba684",
+    "engine/opencode_derived/sandbox_form_api.py": "39d0de0ca13c6c4ed8e3d09c6f39dcf684e5ddbc811ccbef5ca9f2121cc81be3",
+    "engine/opencode_derived/socket_bridge.py": "c3e799091de2bdcf6b1dd71425e0d02d5eac9f90f5f17df11f52e7f9298f8393",
+    "engine/opencode_derived/transport.py": "e526039e88666bd327cc9c8d4c683de52111806920e50fd21b3655ca0ba3143d",
+    "run.py": "45e85ee362a757a0896b5641d280bde6ca95789ff4afec60024cb610238f3ed8",
+    "seal.py": "63d40f4a5128845f1f13d4137e850c6abd9c7e018a377796982eea0ee720c318"
+  }
+}

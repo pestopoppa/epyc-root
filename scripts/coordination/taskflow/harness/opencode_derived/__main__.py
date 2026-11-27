@@ -13,6 +13,7 @@ import threading
 import time
 
 from .case_snapshot import compare, digest, file_map, read, sanitize, stage, validate_baseline, write
+from .cpu_placement import require_cpu_placement
 from .drive import RunInterrupted, run
 from .sandbox import Assets, Sandbox
 from .transport import Limits, proxy, require_disabled_shared_cache
@@ -62,6 +63,8 @@ def serving_proof(job):
     gpu_resident = Path(f"/sys/class/kfd/kfd/proc/{pid}").exists()
     if not actual_maps or actual_maps != proof["maps"] or gpu_resident != (job["backend"] == "gpu"):
         raise ValueError("owned native library or backend residency differs from receipt")
+    if job["backend"] == "cpu":
+        require_cpu_placement(pid, cmdline, model_arg)
     return pid
 
 

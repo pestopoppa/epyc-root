@@ -1,0 +1,48 @@
+{
+  "approved_by": "main",
+  "controller": {
+    "pid": 1016657,
+    "start_ticks": "160922944"
+  },
+  "servers": [
+    {
+      "pid": 1016973,
+      "start_ticks": "160923084"
+    },
+    {
+      "pid": 2386678,
+      "start_ticks": "161224986"
+    }
+  ],
+  "approval_sha256": "754c365d2976747d87451bcc57b15651cd812f02c051ed494507097175163baf",
+  "cwd": "/workspace/repos/epyc-orchestrator",
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "-u",
+    "-m",
+    "src.runtime.region_lock_cli",
+    "run",
+    "--regions",
+    "q3",
+    "--gpu-quiet",
+    "none",
+    "--role",
+    "a3b-legacy-gpu",
+    "--tag",
+    "ws58-a3b-legacy-gpu-20261127",
+    "--timeout-s",
+    "90",
+    "--",
+    "/usr/bin/python3",
+    "-B",
+    "-u",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/run.py",
+    "launch",
+    "ada24479670aae02ffbce7eadb0c1c941a1ffcb5183865cef475b35710191bd7",
+    "--approval",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/MAIN-APPROVAL.json",
+    "--out",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/runs/gpu-01"
+  ]
+}

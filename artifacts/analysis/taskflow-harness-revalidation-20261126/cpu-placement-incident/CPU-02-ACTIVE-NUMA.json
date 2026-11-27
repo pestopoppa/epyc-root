@@ -1,0 +1,124 @@
+{
+  "pid": 2386678,
+  "cpu_serve_ready_sha256": "ec89231f1bd496513b7e0eda368ff160d7360f7cf716dd4e8718c9c138f003c3",
+  "startup_residency_sha256": "7b7e8511d02a618eb66e5b4dac22f98140355a989650b0972b7c8c5e20aa18d5",
+  "before": {
+    "utc": "2026-11-27T01:09:36.612288+00:00",
+    "start_ticks": 161224986,
+    "process_cpu_ticks": 1156261,
+    "units": {
+      "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1": "running",
+      "cpu-TU-GR-1-off-recommended": "running",
+      "cpu-MM-5-off-recommended": "running",
+      "cpu-PFXC-A3-off-recommended-numa-resume-1": "running"
+    },
+    "server_log_bytes": 7927,
+    "recent_native_activity": [
+      "1.14.683.288 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   2701, progress = 0.42, t =   9.39 s / 287.50 tokens per second",
+      "1.18.944.989 I slot print_timing: id  0 | task 8 | prompt processing, n_tokens =   6496, progress = 1.00, t =  23.81 s / 272.82 tokens per second",
+      "1.18.956.469 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   3744, progress = 0.58, t =  13.67 s / 273.92 tokens per second",
+      "1.18.956.656 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   2048, progress = 0.06, t =  30.75 s / 66.61 tokens per second",
+      "1.23.891.963 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   4371, progress = 0.68, t =  18.60 s / 234.96 tokens per second",
+      "1.23.901.924 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   3465, progress = 0.10, t =  35.69 s / 97.08 tokens per second",
+      "1.29.193.943 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   5491, progress = 0.86, t =  23.91 s / 229.70 tokens per second",
+      "1.29.204.449 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   4390, progress = 0.12, t =  41.00 s / 107.08 tokens per second",
+      "1.34.844.846 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   6415, progress = 1.00, t =  29.56 s / 217.04 tokens per second",
+      "1.34.857.942 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   5491, progress = 0.15, t =  46.65 s / 117.71 tokens per second",
+      "1.34.870.519 I slot print_timing: id  3 | task 7 | prompt processing, n_tokens =     20, progress = 0.00, t =   5.67 s / 3.53 tokens per second",
+      "1.40.132.889 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   6679, progress = 0.19, t =  51.92 s / 128.63 tokens per second",
+      "1.45.423.924 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   8721, progress = 0.24, t =  57.21 s / 152.43 tokens per second",
+      "1.45.424.147 I slot print_timing: id  3 | task 7 | prompt processing, n_tokens =    873, progress = 0.02, t =  16.22 s / 53.82 tokens per second",
+      "1.53.502.948 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =  10424, progress = 0.29, t =  65.29 s / 159.65 tokens per second",
+      "1.59.413.273 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =  12466, progress = 0.35, t =  71.20 s / 175.07 tokens per second"
+    ]
+  },
+  "after": {
+    "utc": "2026-11-27T01:10:11.012233+00:00",
+    "start_ticks": 161224986,
+    "process_cpu_ticks": 1479722,
+    "units": {
+      "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended-numa-resume-1": "running",
+      "cpu-TU-GR-1-off-recommended": "running",
+      "cpu-MM-5-off-recommended": "running",
+      "cpu-PFXC-A3-off-recommended-numa-resume-1": "running"
+    },
+    "server_log_bytes": 8102,
+    "recent_native_activity": [
+      "1.14.683.288 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   2701, progress = 0.42, t =   9.39 s / 287.50 tokens per second",
+      "1.18.944.989 I slot print_timing: id  0 | task 8 | prompt processing, n_tokens =   6496, progress = 1.00, t =  23.81 s / 272.82 tokens per second",
+      "1.18.956.469 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   3744, progress = 0.58, t =  13.67 s / 273.92 tokens per second",
+      "1.18.956.656 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   2048, progress = 0.06, t =  30.75 s / 66.61 tokens per second",
+      "1.23.891.963 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   4371, progress = 0.68, t =  18.60 s / 234.96 tokens per second",
+      "1.23.901.924 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   3465, progress = 0.10, t =  35.69 s / 97.08 tokens per second",
+      "1.29.193.943 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   5491, progress = 0.86, t =  23.91 s / 229.70 tokens per second",
+      "1.29.204.449 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   4390, progress = 0.12, t =  41.00 s / 107.08 tokens per second",
+      "1.34.844.846 I slot print_timing: id  1 | task 9 | prompt processing, n_tokens =   6415, progress = 1.00, t =  29.56 s / 217.04 tokens per second",
+      "1.34.857.942 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   5491, progress = 0.15, t =  46.65 s / 117.71 tokens per second",
+      "1.34.870.519 I slot print_timing: id  3 | task 7 | prompt processing, n_tokens =     20, progress = 0.00, t =   5.67 s / 3.53 tokens per second",
+      "1.40.132.889 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   6679, progress = 0.19, t =  51.92 s / 128.63 tokens per second",
+      "1.45.423.924 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   8721, progress = 0.24, t =  57.21 s / 152.43 tokens per second",
+      "1.45.424.147 I slot print_timing: id  3 | task 7 | prompt processing, n_tokens =    873, progress = 0.02, t =  16.22 s / 53.82 tokens per second",
+      "1.53.502.948 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =  10424, progress = 0.29, t =  65.29 s / 159.65 tokens per second",
+      "1.59.413.273 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =  12466, progress = 0.35, t =  71.20 s / 175.07 tokens per second"
+    ]
+  },
+  "active_weight_nodes_bytes": {
+    "0": 9566789632,
+    "1": 9447526400,
+    "2": 9447526400,
+    "3": 9328259072
+  },
+  "startup_weight_nodes_bytes": {
+    "0": 9566789632,
+    "1": 9447526400,
+    "2": 9447526400,
+    "3": 9328259072
+  },
+  "weight_bytes": 37790101504,
+  "active_weight_node_fractions": {
+    "0": 0.25315596548443714,
+    "1": 0.25000002709704283,
+    "2": 0.25000002709704283,
+    "3": 0.24684398032147714
+  },
+  "identical_weight_placement_to_startup": true,
+  "residency": {
+    "model_file_mapped_bytes": 0,
+    "anonymous_large_interleaved_bytes": 48527515648,
+    "nodes_bytes": {
+      "0": 12251144192,
+      "1": 12131880960,
+      "2": 12131880960,
+      "3": 12012609536
+    },
+    "node_fractions": {
+      "0": 0.25245768361325366,
+      "1": 0.25000004220286104,
+      "2": 0.25000004220286104,
+      "3": 0.24754223198102424
+    },
+    "mappings": [
+      {
+        "line": "7809f8000000 interleave:0-3 anon=2621439 dirty=2621439 active=0 N0=655360 N1=655360 N2=655360 N3=655359 kernelpagesize_kB=4",
+        "bytes": 10737414144,
+        "nodes": {
+          "0": 2684354560,
+          "1": 2684354560,
+          "2": 2684354560,
+          "3": 2684350464
+        }
+      },
+      {
+        "line": "780ef788c000 interleave:0-3 anon=9226099 dirty=9226099 active=0 N0=2335642 N1=2306525 N2=2306525 N3=2277407 kernelpagesize_kB=4",
+        "bytes": 37790101504,
+        "nodes": {
+          "0": 9566789632,
+          "1": 9447526400,
+          "2": 9447526400,
+          "3": 9328259072
+        }
+      }
+    ]
+  },
+  "scope": "passive live residency observation; no compute-rate comparison"
+}
