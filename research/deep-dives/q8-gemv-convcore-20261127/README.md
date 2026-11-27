@@ -2,6 +2,22 @@
 
 Run `python3 replay.py` in a copy of this directory on the EPYC host, pinned to the CPUs of a build grant. This reads and hashes the local archives, extracts gfx90a ELF images with the existing research `gfx90a_isa_audit.py`, disassembles the two recorded symbols, validates their nonflush control flow, and writes `audit.json` and the two ISA listings. The SHA-256 manifests pass for all four historical stores. No device access is needed.
 
+## Result
+
+**NO_KEEP.** On the MI210, replacing the integer-to-float conversions reduced dynamic vector instructions by 12.9% per KiB of weight traffic. The six-shape operator aggregate gained 0.46% bandwidth. Served speedup was 0.9981× against V5I (95% CI 0.9904–1.0060, eight scored blocks). The confidence interval includes parity, and its upper bound is below the 1.01× keep threshold. The experiment supports keeping V5I for the tested greedy single-request recipe. [Native result](RESULT.json)
+
+| Metric | V5I controls | Packed conversion |
+|---|---:|---:|
+| Dynamic VALU instructions per KiB | 28.490 | 24.823 |
+| Call-weighted logical weight bandwidth, GB/s | 1182.98 | 1188.45 |
+| Call-weighted operator time, ms | 22.024 | 21.922 |
+| Served ms per verify round, arm means | 47.442 / 47.831 | 47.727 |
+| Descriptive decode tokens/s | 87.38 / 86.41 | 87.12 |
+
+Each arm passed all 46 operator cases. Mean candidate KLD was 0.000240, 0.000231, 0.000428 and zero at microbatch sizes 8, 4, 16 and 512 respectively. The baseline repeat ratio was 0.9918, within the 2% limit. The report uses the paired block log ratios for its speedup interval. Pooled token rates are descriptive. The operator figures refer only to the width-eight panel, which has a different denominator from the 28.25 ms historical served-family trace.
+
+The run owner filed row `ak-q8-convcore-gpu-20261127` with native result SHA-256 `76957323821cd84e03119174e2a19c534a4acdd41f2cf2f5faec9c2cd513b7c1`. An offline replay independently read the saved operator logs, KLD logs, profiler CSVs and served visit records and returned the same operator speedup and NO_KEEP verdict. The native files are under `/mnt/raid0/llm/tmp/codex-convcore-gate-20261127/out/`.
+
 ## Provenance
 
 The `5d85e7e737d5557cd38d86a39a07a37e35b2f12f` servedperf store produced the historical knee op trace for attn_q, 12288 × 5120 at width 8. The trace records 15,801 instances of `_ZL13q8mf6_mul_matILi2ELi2EEvPKcjS1_jiiiiPfl.kd`, all 416 workgroups × 256 threads, with 15,360 B LDS, 0 B private. This is `q8mf6_mul_mat<2,2>`. The accompanying op log confirms stage-contiguous Q8_0 packing and MF=6, P=2, slc=1. The loader is `test-backend-ops`; the measured program is a served-shape reproduction. The matching function in the library's gfx90a code object starts at address 0x10800 and has 5184 bytes. The ELF starts at library file offset 0x67b000, with SHA-256 `a087dd97647819bed290a3f5d9c5d6484d28cb64b2944878dee21b286bb4bf8f`. The function's SHA-256 is `62a9267aca1923209bbbae7105cd2405e45293db3756bc57e60ae40a7f51d7e8`.
@@ -63,6 +79,6 @@ The target model SHA-256 is `a680f44a06920e5d689774823782006aa3acc8db95750323373
 
 ## Named MI210 row
 
-Row `ak-q8-convcore-gpu-20261127` uses the [sealed runner and inputs](gate-source.tar.gz). Its archive includes the row specification, gate declaration, input hashes, correctness checks, profiler, and decision code. The target and draft GGUF files are external inputs. The CPU-reference panel contains 26 required shape filters. The test runner emits 46 matching cases per arm, including duplicates. At ub 16 and 512 the larger-width fallback is an accepted control route.
+Row `ak-q8-convcore-gpu-20261127` uses the [sealed runner and inputs](gate-source.tar.gz). Its archive includes the row specification, gate declaration, input hashes, correctness checks, profiler, and decision code. The target and draft GGUF files are external inputs. The CPU-reference panel contains 26 required shape filters. The test runner emits 46 matching cases per arm, including cases sharing a filter. At ub 16 and 512 the larger-width fallback is an accepted control route.
 
 The complete operator panel comprises six width-eight shapes in both arms, two trace passes and one independent counter pass per shape and arm. The aggregate sums logical Q8_0 weight bytes and dispatch durations weighted by the pre-existing call counts. It reports decimal GB/s and dynamic vector instructions per 1,024 weight bytes. All timing visits use fresh servers. The initial three-arm smoke recorded 34,568,626,176 bytes of own-process VRAM in each visit and observed the conversion marker only in ON.
